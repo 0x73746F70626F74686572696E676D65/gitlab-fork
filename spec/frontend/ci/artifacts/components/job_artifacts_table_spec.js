@@ -434,6 +434,17 @@ describe('JobArtifactsTable component', () => {
       );
     });
 
+    it('refetches jobs when an artifactless job remains in the list', async () => {
+      jest.spyOn(wrapper.vm.$apollo.queries.jobArtifacts, 'refetch');
+
+      findDeleteButton().vm.$emit('click');
+      findBulkDeleteModal().vm.$emit('primary');
+
+      await waitForPromises();
+
+      expect(wrapper.vm.$apollo.queries.jobArtifacts.refetch).toHaveBeenCalled();
+    });
+
     it('does not clear selected artifacts on success', async () => {
       // select job 2 via checkbox
       findJobCheckbox(2).vm.$emit('change', true);

@@ -181,6 +181,16 @@ export default {
         ? I18N_BULK_DELETE_MAX_SELECTED
         : '';
     },
+    hasJobWithNoArtifacts() {
+      return this.jobArtifacts.some((job) => !job.hasArtifacts);
+    },
+  },
+  watch: {
+    hasJobWithNoArtifacts(newValue) {
+      if (newValue) {
+        this.refetchArtifacts();
+      }
+    },
   },
   methods: {
     refetchArtifacts() {
