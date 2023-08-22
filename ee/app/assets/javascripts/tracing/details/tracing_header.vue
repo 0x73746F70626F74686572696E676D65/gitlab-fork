@@ -51,7 +51,7 @@ export default {
   <div class="gl-mb-6">
     <h1>
       {{ title }}
-      <gl-badge v-if="incomplete" variant="warning" size="md" class="gl-ml-3 gl-align-middle">{{
+      <gl-badge v-if="incomplete" variant="warning" class="gl-ml-3 gl-align-middle">{{
         $options.i18n.inProgress
       }}</gl-badge>
     </h1>

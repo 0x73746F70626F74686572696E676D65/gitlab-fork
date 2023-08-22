@@ -30,7 +30,7 @@ export default {
 </script>
 
 <template>
-  <gl-badge size="sm" :variant="variant">
+  <gl-badge :variant="variant">
     {{ label }}
   </gl-badge>
 </template>

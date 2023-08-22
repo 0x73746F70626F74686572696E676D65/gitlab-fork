@@ -17,7 +17,7 @@ export default {
 
 <template>
   <div v-if="criteria.tags.length" class="gl-mt-2 gl-display-flex gl-gap-2 gl-flex-wrap">
-    <gl-badge v-for="tag in criteria.tags" :key="tag" variant="info" size="sm">
+    <gl-badge v-for="tag in criteria.tags" :key="tag" variant="info">
       {{ tag }}
     </gl-badge>
   </div>

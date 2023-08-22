@@ -223,7 +223,7 @@ export default {
     <template #title>
       <span class="gl-whitespace-nowrap">
         {{ title }}
-        <gl-badge size="sm" class="gl-tab-counter-badge">{{ formattedCount }}</gl-badge>
+        <gl-badge class="gl-tab-counter-badge">{{ formattedCount }}</gl-badge>
       </span>
     </template>
     <template v-if="$apollo.queries.pipelines.loading || hasPipelines">

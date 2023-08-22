@@ -126,7 +126,7 @@ export default {
     >
       {{ __('Generate commit message') }}
     </gl-button>
-    <gl-badge class="gl-ml-2" size="sm">
+    <gl-badge class="gl-ml-2">
       {{ __('Experiment') }}
     </gl-badge>
     <gl-modal
@@ -139,7 +139,7 @@ export default {
     >
       <template #modal-title>
         {{ __('Commit message') }}
-        <gl-badge class="gl-ml-2" size="sm">
+        <gl-badge class="gl-ml-2">
           {{ __('Experiment') }}
         </gl-badge>
       </template>

@@ -62,7 +62,7 @@ export default {
     <template #cell(role)="{ item }">
       <template v-if="item.access_level.custom_role">
         <div>{{ item.access_level.custom_role.name }}</div>
-        <gl-badge size="sm" class="gl-mt-3">{{ s__('MemberRole|Custom role') }}</gl-badge>
+        <gl-badge class="gl-mt-3">{{ s__('MemberRole|Custom role') }}</gl-badge>
       </template>
       <template v-else>{{ item.access_level.string_value }}</template>
     </template>

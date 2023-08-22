@@ -236,7 +236,7 @@ export default {
             :sub-label="item.usernameWithHandle"
           >
             <template #meta>
-              <gl-badge v-if="userMembershipType(item)" size="sm" variant="muted">
+              <gl-badge v-if="userMembershipType(item)" variant="muted">
                 {{ userMembershipType(item) }}
               </gl-badge>
             </template>

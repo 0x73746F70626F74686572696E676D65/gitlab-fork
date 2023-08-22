@@ -87,7 +87,7 @@ export default {
       @click="handleClick"
     >
       {{ selectedButton.name }}
-      <gl-badge v-if="selectedButton.badge" class="gl-ml-1" size="sm" variant="info">
+      <gl-badge v-if="selectedButton.badge" class="gl-ml-1" variant="info">
         {{ selectedButton.badge }}
       </gl-badge>
     </gl-button>
@@ -107,7 +107,7 @@ export default {
           </strong>
           <p class="gl-m-0">
             {{ item.tagline }}
-            <gl-badge v-if="item.badge" variant="info" size="sm">{{ item.badge }}</gl-badge>
+            <gl-badge v-if="item.badge" variant="info">{{ item.badge }}</gl-badge>
           </p>
         </div>
       </template>

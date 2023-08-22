@@ -118,7 +118,7 @@ export default {
     >
       <template #title>
         <span class="gl-mr-2">{{ $options.i18n.tabs.licensesTitle }}</span>
-        <gl-badge v-if="showLicenseCount" size="sm" data-testid="license-counter">{{
+        <gl-badge v-if="showLicenseCount" data-testid="license-counter">{{
           licenseCount
         }}</gl-badge>
       </template>
@@ -146,7 +146,7 @@ export default {
     >
       <template #title>
         <span class="gl-mr-2">{{ $options.i18n.tabs.codeQualityTitle }}</span>
-        <gl-badge v-if="codeQualityCountFetched" size="sm" data-testid="codequality-counter">{{
+        <gl-badge v-if="codeQualityCountFetched" data-testid="codequality-counter">{{
           codeQualityCount
         }}</gl-badge>
       </template>

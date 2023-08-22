@@ -115,7 +115,6 @@ export default {
                 v-gl-tooltip
                 :variant="badgeVariant(approval)"
                 :title="badgeTooltip(approval)"
-                size="sm"
               >
                 {{ badgeText(approval) }}
               </gl-badge>
