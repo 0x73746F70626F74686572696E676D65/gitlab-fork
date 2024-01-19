@@ -62259,6 +62259,9 @@ msgstr ""
 msgid "unicode domains should use IDNA encoding"
 msgstr ""
 
+msgid "unsubscribed %{emails}"
+msgstr ""
+
 msgid "updated"
 msgstr ""
 
