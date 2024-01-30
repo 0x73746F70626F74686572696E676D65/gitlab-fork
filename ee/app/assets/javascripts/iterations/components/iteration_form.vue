@@ -274,7 +274,7 @@ export default {
 
 <template>
   <div>
-    <div class="gl-display-flex">
+    <div class="gl-flex">
       <h1 ref="pageTitle" class="page-title gl-font-size-h-display">
         {{ isEditing ? $options.i18n.title.edit : $options.i18n.title.new }}
       </h1>
@@ -338,7 +338,7 @@ export default {
         />
       </gl-form-group>
     </gl-form>
-    <div class="form-actions d-flex">
+    <div class="form-actions gl-flex">
       <gl-button :loading="loading" data-testid="save-iteration" variant="confirm" @click="save">
         {{ isEditing ? $options.i18n.submitButton.save : $options.i18n.submitButton.create }}
       </gl-button>

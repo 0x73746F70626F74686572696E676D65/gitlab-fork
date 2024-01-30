@@ -49,7 +49,7 @@ export default {
 </script>
 
 <template>
-  <div :class="headerClasses" class="card-header border-0 py-2 d-flex gl-align-items-center">
+  <div :class="headerClasses" class="card-header border-0 gl-py-3 gl-flex gl-items-center">
     <div class="flex-grow-1 block-truncated">
       <gl-link
         v-gl-tooltip

@@ -45,7 +45,7 @@ export default {
       <div class="table-section section-70 section-wrap pr-md-3">
         <div class="table-mobile-header" role="rowheader">{{ s__('Licenses|Policy') }}</div>
         <div
-          class="table-mobile-content text-capitalize d-flex gl-align-items-center justify-content-end justify-content-md-start status"
+          class="table-mobile-content text-capitalize gl-flex gl-items-center justify-content-end justify-content-md-start status"
         >
           <issue-status-icon :status="iconStatus" />
           {{ textStatus }}

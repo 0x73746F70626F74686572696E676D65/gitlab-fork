@@ -57,7 +57,7 @@ export default {
         'dashboard-card-body-warning': !this.hasPipelineFailed && this.hasPipelineErrors,
         'dashboard-card-body-failed': this.hasPipelineFailed,
         'bg-secondary': !this.hasPipelineFailed && !this.hasPipelineErrors,
-        'd-flex flex-column justify-content-center gl-align-items-center': !this.lastDeployment,
+        'gl-flex flex-column justify-content-center gl-align-items-center': !this.lastDeployment,
       };
     },
     user() {
@@ -178,7 +178,7 @@ export default {
         </div>
       </div>
 
-      <div v-else class="gl-h-full d-flex justify-content-center gl-align-items-center">
+      <div v-else class="gl-h-full gl-flex justify-content-center gl-items-center">
         <div class="text-plain text-metric text-center bold">
           {{ $options.noDeploymentMessage }}
         </div>

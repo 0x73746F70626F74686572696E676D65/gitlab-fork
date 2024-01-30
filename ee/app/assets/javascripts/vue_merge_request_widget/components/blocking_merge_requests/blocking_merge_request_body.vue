@@ -41,7 +41,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="issue.hiddenCount" class="p-3 d-flex gl-align-items-center">
+  <div v-if="issue.hiddenCount" class="p-3 gl-flex gl-items-center">
     <gl-icon class="gl-mr-3" name="eye-slash" />
     {{ hiddenBlockingMRsText }}
   </div>

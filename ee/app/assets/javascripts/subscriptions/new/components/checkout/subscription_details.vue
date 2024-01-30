@@ -320,7 +320,7 @@ export default {
     <template #body>
       <div
         data-testid="subscription-loading-container"
-        class="gl-display-flex gl-h-200! gl-justify-content-center gl-align-items-center gl-flex-direction-column"
+        class="gl-flex gl-h-200! gl-justify-content-center gl-align-items-center gl-flex-direction-column"
       >
         <gl-loading-icon v-if="true" size="lg" />
         <span>{{ $options.i18n.loadingText }}</span>
@@ -367,7 +367,7 @@ export default {
       >
         <gl-form-input ref="organization-name" v-model="organizationNameModel" type="text" />
       </gl-form-group>
-      <div class="combined gl-display-flex">
+      <div class="combined gl-flex">
         <gl-form-group
           data-testid="number-of-users-field"
           :label="$options.i18n.numberOfUsersLabel"

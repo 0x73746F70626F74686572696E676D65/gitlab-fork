@@ -191,7 +191,7 @@ export default {
       "
     />
     <template v-if="showAppContent">
-      <div class="d-flex justify-content-between">
+      <div class="gl-flex justify-content-between">
         <h4>{{ s__('ProductivityAnalytics|Merge Requests') }}</h4>
         <gl-button
           v-if="isFilteringByDaysToMerge"
@@ -308,15 +308,15 @@ export default {
           </div>
 
           <div
-            class="js-mr-table-sort d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-2"
+            class="js-mr-table-sort gl-flex flex-column flex-md-row align-items-md-center justify-content-between mb-2"
           >
             <h5>{{ s__('ProductivityAnalytics|List') }}</h5>
             <div
               v-if="showMergeRequestTable"
-              class="d-flex flex-column flex-md-row align-items-md-center"
+              class="gl-flex flex-column flex-md-row align-items-md-center"
             >
               <strong class="gl-mr-3">{{ __('Sort by') }}</strong>
-              <div class="d-flex">
+              <div class="gl-flex">
                 <gl-collapsible-listbox
                   block
                   class="gl-mr-3 flex-grow"

@@ -5,10 +5,10 @@ exports[`MergeRequestTableRow component on creation matches the snapshot 1`] = `
   class="gl-responsive-table-row gl-responsive-table-row-layout"
 >
   <div
-    class="d-flex flex-md-row flex-row-reverse js-mr-details justify-content-between justify-content-md-start section-50 table-section"
+    class="flex-md-row flex-row-reverse gl-flex js-mr-details justify-content-between justify-content-md-start section-50 table-section"
   >
     <div
-      class="d-flex mr-md-2"
+      class="gl-flex mr-md-2"
     >
       <gl-avatar-stub
         alt="avatar"
@@ -19,7 +19,7 @@ exports[`MergeRequestTableRow component on creation matches the snapshot 1`] = `
       />
     </div>
     <div
-      class="d-flex flex-column flex-grow gl-mr-1 overflow-auto"
+      class="flex-column flex-grow gl-flex gl-mr-1 overflow-auto"
     >
       <h5
         class="d-block gl-max-w-34 item-title my-0 str-truncated"
@@ -50,7 +50,7 @@ exports[`MergeRequestTableRow component on creation matches the snapshot 1`] = `
     </div>
   </div>
   <div
-    class="align-items-start d-flex flex-row js-mr-metrics section-50 table-section"
+    class="align-items-start flex-row gl-flex js-mr-metrics section-50 table-section"
   >
     <metric-column-stub
       label="Time to merge"

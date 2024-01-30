@@ -254,7 +254,7 @@ export default {
             )
           }}
         </p>
-        <div class="d-flex flex-column flex-md-row">
+        <div class="gl-flex flex-column flex-md-row">
           <project-selector
             class="flex-grow mr-md-2"
             :project-search-results="projectSearchResults"

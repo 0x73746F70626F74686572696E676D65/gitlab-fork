@@ -169,7 +169,7 @@ export default {
         </div>
       </div>
 
-      <div v-else class="gl-h-full d-flex justify-content-center gl-align-items-center">
+      <div v-else class="gl-h-full gl-flex justify-content-center gl-items-center">
         <div class="text-plain text-metric text-center bold w-75">
           {{ noPipelineMessage }}
         </div>

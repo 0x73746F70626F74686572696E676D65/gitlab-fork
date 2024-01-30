@@ -2,7 +2,7 @@
 
 exports[`LicenseManagementRow allowed license renders the allowed status text with the status icon 1`] = `
 <div
-  class="d-flex gl-align-items-center justify-content-end justify-content-md-start status table-mobile-content text-capitalize"
+  class="gl-flex gl-items-center justify-content-end justify-content-md-start status table-mobile-content text-capitalize"
 >
   <issue-status-icon-stub
     status="success"
@@ -22,7 +22,7 @@ exports[`LicenseManagementRow allowed license renders the license name 1`] = `
 
 exports[`LicenseManagementRow denied license renders the denied status text with the status icon 1`] = `
 <div
-  class="d-flex gl-align-items-center justify-content-end justify-content-md-start status table-mobile-content text-capitalize"
+  class="gl-flex gl-items-center justify-content-end justify-content-md-start status table-mobile-content text-capitalize"
 >
   <issue-status-icon-stub
     status="failed"

@@ -251,7 +251,7 @@ export default {
     @cancel="track('hand_raise_form_canceled')"
   >
     {{ modalHeaderText }}
-    <div class="combined d-flex gl-mt-5">
+    <div class="combined gl-display-flex gl-mt-5">
       <gl-form-group
         :label="$options.i18n.firstNameLabel"
         label-size="sm"
@@ -281,7 +281,7 @@ export default {
         />
       </gl-form-group>
     </div>
-    <div class="combined d-flex">
+    <div class="combined gl-display-flex">
       <gl-form-group
         :label="$options.i18n.companyNameLabel"
         label-size="sm"

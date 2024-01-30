@@ -106,7 +106,7 @@ export default {
       <div>{{ tooltipTitle }} ({{ xAxisTitle }})</div>
     </template>
     <template #tooltip-content>
-      <div class="d-flex">
+      <div class="gl-flex">
         <div class="flex-grow-1">{{ yAxisTitle }}:&nbsp;</div>
         <div class="font-weight-bold">{{ tooltipContent }}</div>
       </div>

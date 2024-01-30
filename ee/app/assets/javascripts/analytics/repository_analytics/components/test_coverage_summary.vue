@@ -181,7 +181,7 @@ export default {
 </script>
 <template>
   <div>
-    <div class="gl-display-flex gl-align-items-center">
+    <div class="gl-flex gl-items-center">
       <h4 data-testid="test-coverage-header">
         {{ $options.i18n.codeCoverageHeader }}
       </h4>
@@ -192,7 +192,7 @@ export default {
       </strong>
     </div>
     <div
-      class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-my-6 gl-align-items-flex-start"
+      class="gl-flex gl-flex-direction-column gl-md-flex-direction-row gl-my-6 gl-align-items-flex-start"
     >
       <gl-skeleton-loader v-if="isLoading" />
       <template v-for="metric in metrics" v-else>
@@ -216,7 +216,7 @@ export default {
 
     <gl-card>
       <template #header>
-        <div class="gl-display-flex gl-align-items-center">
+        <div class="gl-flex gl-items-center">
           <h5>{{ $options.i18n.graphCardHeader }}</h5>
           <strong class="gl-font-sm gl-ml-3 gl-text-gray-600">{{
             $options.i18n.graphCardSubheader

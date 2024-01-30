@@ -56,41 +56,41 @@ export default {
       key: 'mr_details',
       label: __('Merge Request'),
       thClass: 'w-30p',
-      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
+      tdClass: 'table-col gl-flex gl-items-center sm:gl-table-cell',
     },
     {
       key: 'review_time',
       label: __('Review time'),
       class: 'text-right',
-      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
+      tdClass: 'table-col gl-flex gl-items-center sm:gl-table-cell',
     },
     {
       key: 'author',
       label: __('Author'),
-      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
+      tdClass: 'table-col gl-flex gl-items-center sm:gl-table-cell',
     },
     {
       key: 'approved_by',
       label: __('Approvers'),
-      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
+      tdClass: 'table-col gl-flex gl-items-center sm:gl-table-cell',
     },
     {
       key: 'notes_count',
       label: __('Comments'),
       class: 'text-right',
-      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
+      tdClass: 'table-col gl-flex gl-items-center sm:gl-table-cell',
     },
     {
       key: 'diff_stats',
       label: __('Commits'),
       class: 'text-right',
-      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
+      tdClass: 'table-col gl-flex gl-items-center sm:gl-table-cell',
     },
     {
       key: 'line_changes',
       label: __('Line changes'),
       class: 'text-right',
-      tdClass: 'table-col d-flex gl-align-items-center d-sm-table-cell',
+      tdClass: 'table-col gl-flex gl-items-center sm:gl-table-cell',
     },
   ],
 };
@@ -104,7 +104,7 @@ export default {
     stacked="sm"
   >
     <template #cell(mr_details)="items">
-      <div class="d-flex flex-column flex-grow align-items-end align-items-sm-start">
+      <div class="gl-flex flex-column flex-grow align-items-end align-items-sm-start">
         <div class="gl-max-w-34 str-truncated my-2">
           <gl-link :href="items.item.web_url" target="_blank" class="font-weight-bold text-plain">{{
             items.item.title
@@ -114,7 +114,7 @@ export default {
           <li>!{{ items.item.iid }}</li>
           <li>{{ getTimeAgoString(items.item.created_at) }}</li>
           <li v-if="items.item.milestone">
-            <span class="d-flex gl-align-items-center">
+            <span class="gl-flex gl-items-center">
               <gl-icon name="milestone" class="gl-mr-2" />
               {{ items.item.milestone.title }}
             </span>
