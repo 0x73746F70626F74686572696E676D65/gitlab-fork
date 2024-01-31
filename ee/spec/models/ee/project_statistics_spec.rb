@@ -25,6 +25,7 @@ RSpec.describe ProjectStatistics do
           pipeline_artifacts_size: other_sizes,
           build_artifacts_size: other_sizes,
           packages_size: other_sizes,
+          container_registry_size: other_sizes,
           uploads_size: uploads_size
         )
 
@@ -44,6 +45,7 @@ RSpec.describe ProjectStatistics do
           pipeline_artifacts_size: other_sizes,
           build_artifacts_size: other_sizes,
           packages_size: other_sizes,
+          container_registry_size: other_sizes,
           uploads_size: uploads_size
         )
 
