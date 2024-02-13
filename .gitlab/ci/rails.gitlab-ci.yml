@@ -31,7 +31,9 @@ setup-test-env:
     paths:
       - ${TMP_TEST_FOLDER}/gitaly/_build/bin/
       - ${TMP_TEST_FOLDER}/gitaly/config.toml
+      - ${TMP_TEST_FOLDER}/gitaly/config.toml.transactions
       - ${TMP_TEST_FOLDER}/gitaly/gitaly2.config.toml
+      - ${TMP_TEST_FOLDER}/gitaly/gitaly2.config.toml.transactions
       - ${TMP_TEST_FOLDER}/gitaly/internal/
       - ${TMP_TEST_FOLDER}/gitaly/Makefile
       - ${TMP_TEST_FOLDER}/gitaly/praefect.config.toml
