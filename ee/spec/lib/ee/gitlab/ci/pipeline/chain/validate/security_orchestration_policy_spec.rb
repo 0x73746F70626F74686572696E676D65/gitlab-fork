@@ -26,9 +26,12 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::SecurityOrchestrationPolic
     ).execute
   end
 
+  let(:execution_policy_dry_run) { nil }
+
   let(:command) do
     Gitlab::Ci::Pipeline::Chain::Command.new(
-      project: project, current_user: user, yaml_processor_result: yaml_processor_result, save_incompleted: true
+      project: project, current_user: user, yaml_processor_result: yaml_processor_result, save_incompleted: true,
+      execution_policy_dry_run: execution_policy_dry_run
     )
   end
 
@@ -36,6 +39,23 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::SecurityOrchestrationPolic
 
   describe '#perform' do
     subject(:warning_messages) { pipeline.warning_messages.map(&:content) }
+
+    context 'when running as execution_policy_dry_run' do
+      let(:execution_policy_dry_run) { true }
+
+      it 'does not return warning' do
+        step.perform!
+
+        expect(warning_messages).to be_empty
+      end
+
+      it 'does not query security_orchestration_policy_configuration' do
+        expect(security_orchestration_policy_configuration).not_to receive(:policy_configuration_exists?)
+        expect(security_orchestration_policy_configuration).not_to receive(:policy_configuration_valid?)
+
+        step.perform!
+      end
+    end
 
     context 'when security policies feature is not licensed' do
       before do

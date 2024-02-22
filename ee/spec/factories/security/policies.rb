@@ -240,8 +240,14 @@ FactoryBot.define do
       approval_policy = attributes[:approval_policy]
       pipeline_execution_policy = attributes[:pipeline_execution_policy]
 
-      YAML.dump(new(scan_execution_policy, scan_result_policy, approval_policy,
-        pipeline_execution_policy).to_h.compact.deep_stringify_keys)
+      YAML.dump(
+        new(
+          scan_execution_policy,
+          scan_result_policy,
+          approval_policy,
+          pipeline_execution_policy
+        ).to_h.compact.deep_stringify_keys
+      )
     end
   end
 end
