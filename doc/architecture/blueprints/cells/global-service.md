@@ -165,6 +165,20 @@ The purpose of this service is find owning cell of a given resource by string va
 Allowing other Cells, HTTP Routing Service and SSH Routing Service to find on which Cell
 the project, group or organization is located.
 
+## Reasons
+
+The original [Cells 1.0](iterations/cells-1.0.md) described [Primary Cell API](iterations/cells-1.0.md#primary-cell), this changes this decision to implement Global Service for the following reasons:
+
+1. Provide stable and well described set of cluster-wide services that can be used
+   by various services (HTTP Routing Service, SSH Routing Service, each Cell).
+1. As part of Cells 1.0 PoC we discovered that we need to provide robust classification API
+   to support more workflows than anticipated. We need to classify various resources
+   (username for login, projects for ssh routing, etc.) to route to correct Cell.
+   This would put a lot of dependency on resilience of the First Cell.
+1. It is our desire long-term to have Global Service for passing information across Cells.
+   This does a first step towards long-term direction, allowing us to much easier perform
+   additional functions.
+
 ## FAQ
 
 1. Does Global Service implement all services for Cells 1.0?
