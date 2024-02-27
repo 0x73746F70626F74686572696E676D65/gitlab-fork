@@ -257,6 +257,7 @@ This section links all different technical proposals that are being evaluated.
 - [HTTP Routing Service](routing-service.md)
 - [Global Service](global-service.md)
 - [Feature Flags](feature_flags.md)
+- Planned: SSH Routing Service
 - Planned: Indexing Service
 
 ## Impacted features
