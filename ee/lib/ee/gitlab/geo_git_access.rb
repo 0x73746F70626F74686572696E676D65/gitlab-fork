@@ -23,6 +23,9 @@ module EE
             'geo_proxy_fetch_direct_to_primary_with_options' => ::Feature.enabled?(
               :geo_proxy_fetch_direct_to_primary_with_options
             ),
+            'geo_proxy_fetch_ssh_direct_to_primary' => ::Feature.enabled?(
+              :geo_proxy_fetch_ssh_to_primary
+            ),
             'request_headers' => proxy_direct_to_primary_headers
           }
         }
