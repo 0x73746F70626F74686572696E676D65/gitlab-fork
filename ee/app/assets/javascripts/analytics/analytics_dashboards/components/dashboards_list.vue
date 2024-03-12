@@ -195,6 +195,7 @@ export default {
       :primary-button-text="s__('Analytics|Configure Dashboard Project')"
       :primary-button-link="analyticsSettingsPath"
       :title="s__('Analytics|Custom dashboards')"
+      data-testid="configure-dashboard-container"
       class="gl-mt-3 gl-mb-6"
       >{{
         s__(
