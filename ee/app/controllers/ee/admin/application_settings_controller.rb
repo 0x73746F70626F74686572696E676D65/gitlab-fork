@@ -176,6 +176,14 @@ module EE
         attrs << :new_user_signups_cap
         attrs << :namespace_storage_forks_cost_factor
 
+        if License.feature_available?(:code_owner_approval_required)
+          defaults = attrs.find do |item|
+            item.is_a?(Hash) && item.key?(:default_branch_protection_defaults)
+          end
+
+          defaults[:default_branch_protection_defaults] << :code_owner_approval_required
+        end
+
         attrs
       end
       # rubocop:enable Metrics/PerceivedComplexity
