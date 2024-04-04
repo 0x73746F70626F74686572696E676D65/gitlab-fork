@@ -21,6 +21,8 @@ module QA
                 element 'approvals-required'
                 element 'approvers-group'
                 element 'rule-name-field'
+                element 'users-selector'
+                element 'groups-selector'
               end
 
               view 'ee/app/assets/javascripts/approvals/components/rule_drawer/create_rule.vue' do
@@ -39,11 +41,13 @@ module QA
                   fill_element('rule-name-field', rule[:name])
                   fill_element('approvals-required', rule[:approvals_required])
 
-                  rule.key?(:users) && rule[:users].each do |user|
-                    select_member(user.username)
-                  end
-                  rule.key?(:groups) && rule[:groups].each do |group|
-                    select_member(group.full_path)
+                  within_element('approvers-group') do
+                    rule.key?(:users) && rule[:users].each do |user|
+                      select_user(user.username)
+                    end
+                    rule.key?(:groups) && rule[:groups].each do |group|
+                      select_group(group.name)
+                    end
                   end
 
                   click_approvers_modal_ok_button
@@ -65,16 +69,18 @@ module QA
 
               private
 
-              def select_member(name)
+              def select_user(username)
                 retry_until do
-                  within_element('approvers-group') do
-                    click_button('Search users or groups')
-                    search_item(name)
+                  within_element('users-selector') do
+                    search_and_select(username)
+                  end
+                end
+              end
 
-                    # we must send an extra key to trigger the dropdown to filter
-                    # as the filtering does not work correctly with Capybara input
-                    send_keys_to_search(:space)
-                    select_item(name)
+              def select_group(group_name)
+                retry_until do
+                  within_element('groups-selector') do
+                    search_and_select(group_name)
                   end
                 end
               end

@@ -13,6 +13,8 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
   let_it_be(:non_member) { create(:user) }
   let_it_be(:config_selector) { '[data-testid="mr-approval-rules"]' }
   let_it_be(:modal_selector) { '#project-settings-approvals-create-modal' }
+  let_it_be(:users_testid) { 'users-selector' }
+  let_it_be(:groups_testid) { 'groups-selector' }
 
   before do
     sign_in(user)
@@ -28,16 +30,16 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
     visit project_settings_merge_requests_path(project)
 
     click_button('Add approval rule')
-    click_button 'Search users or groups'
+    search(user.name, users_testid)
 
     expect_listbox_item(user.name)
     expect_no_listbox_item(non_member.name)
 
     select_listbox_item(user.name)
 
-    expect(find('.content-list')).to have_content(user.name)
+    expect(find_by_testid(users_testid)).to have_content(user.name)
 
-    click_button 'Search users or groups'
+    search(user.name, users_testid)
 
     expect_no_listbox_item(user.name)
 
@@ -53,13 +55,13 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js, feature_c
     visit project_settings_merge_requests_path(project)
 
     click_button('Add approval rule')
-    click_button 'Search users or groups'
+    search(group.name, groups_testid)
 
     expect_listbox_item(group.name)
 
     select_listbox_item(group.name)
 
-    expect(find('.content-list')).to have_content(group.name)
+    expect(find_by_testid(groups_testid)).to have_content(group.name)
 
     within('.gl-drawer') do
       click_button 'Save changes'

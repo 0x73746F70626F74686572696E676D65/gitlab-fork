@@ -4,12 +4,15 @@ require 'spec_helper'
 
 RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature_category: :code_review_workflow do
   include ListboxHelpers
+  include FeatureApprovalHelper
 
   include_context 'with project with approval rules'
 
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
   let_it_be(:approver) { create(:user) }
   let_it_be(:mr_rule_names) { %w[foo lorem ipsum] }
+  let_it_be(:users_testid) { 'users-selector' }
+  let_it_be(:groups_testid) { 'groups-selector' }
   let_it_be(:mr_rules) do
     mr_rule_names.map do |name|
       create(
@@ -53,7 +56,8 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
 
     within('.gl-drawer') do
       fill_in 'Rule name', with: rule_name
-      select_from_listbox approver.name, from: 'Search users or groups'
+      search(approver.name, users_testid)
+      select_listbox_item(approver.name)
       click_button 'Save changes'
     end
 
@@ -78,14 +82,17 @@ RSpec.describe 'Merge request > User edits MR with approval rules', :js, feature
     end
 
     it "with empty search, does not show public group" do
-      click_button 'Search users or groups'
+      search(public_group.name, groups_testid)
 
       expect_no_listbox_item(public_group.name)
     end
 
     it "with non-empty search, shows public group" do
-      click_button 'Search users or groups'
-      send_keys public_group.name
+      within_testid('groups-selector') do
+        click_button "Project groups"
+        find_by_testid("listbox-item-false").click
+      end
+      search(public_group.name, groups_testid)
 
       expect_listbox_item(public_group.name)
     end

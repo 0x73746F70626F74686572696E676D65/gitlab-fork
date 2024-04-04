@@ -1,5 +1,7 @@
 import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { parseBoolean } from '~/lib/utils/common_utils';
+import createDefaultClient from '~/lib/graphql';
 import createStore from '../stores';
 import mrEditModule from '../stores/modules/mr_edit';
 import MrEditApp from './app.vue';
@@ -33,6 +35,9 @@ export default function mountApprovalInput(el) {
   return new Vue({
     el,
     store,
+    apolloProvider: new VueApollo({
+      defaultClient: createDefaultClient(),
+    }),
     render(h) {
       return h(MrEditApp);
     },

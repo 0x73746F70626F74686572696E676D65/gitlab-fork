@@ -4,6 +4,7 @@ import { groupBy, isEqual, isNumber } from 'lodash';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
+import ListSelector from '~/vue_shared/components/list_selector/index.vue';
 import { sprintf } from '~/locale';
 import {
   ALL_BRANCHES,
@@ -16,8 +17,6 @@ import {
   COVERAGE_CHECK_NAME,
   APPROVAL_DIALOG_I18N,
 } from '../../constants';
-import ApproversList from '../approvers/approvers_list.vue';
-import ApproversSelect from '../approvers/approvers_select.vue';
 
 const DEFAULT_NAME = 'Default';
 
@@ -29,8 +28,7 @@ function mapServerResponseToValidationErrors(messages) {
 
 export default {
   components: {
-    ApproversList,
-    ApproversSelect,
+    ListSelector,
     GlFormGroup,
     GlFormInput,
     ProtectedBranchesSelector,
@@ -352,6 +350,13 @@ export default {
         branches,
       };
     },
+    handleDeleteApprover(id) {
+      const approverIndex = this.approvers.findIndex((approver) => approver.id === id);
+      this.approvers.splice(approverIndex, 1);
+    },
+    handleSelectApprover(approver, type) {
+      this.approvers.push({ ...approver, type });
+    },
   },
   APPROVAL_DIALOG_I18N,
   ruleNameInput: 'rule-name-input',
@@ -398,6 +403,7 @@ export default {
       />
     </gl-form-group>
     <gl-form-group
+      class="gl-mb-3"
       :label="$options.APPROVAL_DIALOG_I18N.form.approvalsRequiredLabel"
       :label-for="$options.approvalsRequiredInput"
       :state="isValidApprovalsRequired"
@@ -415,21 +421,27 @@ export default {
       />
     </gl-form-group>
     <gl-form-group
-      :label="$options.APPROVAL_DIALOG_I18N.form.approversLabel"
       :state="isValidApprovers"
       :invalid-feedback="invalidApprovers"
       data-testid="approvers-group"
     >
-      <approvers-select
-        v-model="approversToAdd"
-        :namespace-id="settings.projectId"
-        :skip-user-ids="skipUserIds"
-        :skip-group-ids="groupIds"
-        :is-invalid="!isValidApprovers"
+      <list-selector
+        type="users"
+        data-testid="users-selector"
+        :selected-items="users"
+        :project-path="settings.projectId"
+        @delete="handleDeleteApprover"
+        @select="(approver) => handleSelectApprover(approver, 'user')"
+      />
+      <list-selector
+        type="groups"
+        data-testid="groups-selector"
+        class="gl-mt-5"
+        :project-path="settings.projectId"
+        :selected-items="groups"
+        @delete="handleDeleteApprover"
+        @select="(approver) => handleSelectApprover(approver, 'group')"
       />
     </gl-form-group>
-    <div class="bordered-box overflow-auto h-12em">
-      <approvers-list v-model="approvers" />
-    </div>
   </form>
 </template>
