@@ -5,6 +5,8 @@ description: 'Cells: Global Service'
 status: accepted
 ---
 
+<!-- vale gitlab.FutureTense = NO -->
+
 # Cells: Global Service
 
 This document describes design goals and architecture of Global Service
@@ -19,7 +21,7 @@ Global Service, that can be deployed in many regions.
 
 1. **Technology.**
 
-    The Global Service will be written in [Golang](https://go.dev/)
+    The Global Service will be written in [Go](https://go.dev/)
     and expose API over [gRPC](https://grpc.io/).
 
 1. **Cells aware.**
@@ -173,11 +175,116 @@ The original [Cells 1.0](iterations/cells-1.0.md) described [Primary Cell API](i
    by various services (HTTP Routing Service, SSH Routing Service, each Cell).
 1. As part of Cells 1.0 PoC we discovered that we need to provide robust classification API
    to support more workflows than anticipated. We need to classify various resources
-   (username for login, projects for ssh routing, etc.) to route to correct Cell.
+   (username for login, projects for SSH routing, etc.) to route to correct Cell.
    This would put a lot of dependency on resilience of the First Cell.
 1. It is our desire long-term to have Global Service for passing information across Cells.
    This does a first step towards long-term direction, allowing us to much easier perform
    additional functions.
+
+## Spanner
+
+[Spanner](https://cloud.google.com/spanner) will be a new data store introduced into the GitLab Stack, the reasons we are going with Spanner are:
+
+1. It supports Multi-Regional read-write access with a lot less operations when compared to PostgreSQL helping with out [regional DR](../disaster_recovery/index.md)
+1. The data is read heavy not write heavy.
+1. Spanner provides [99.999%](https://cloud.google.com/spanner/sla) SLA when using Multi-Regional deployments.
+1. Provides consistency whilst still being globally distributed.
+1. Shards/[Splits](https://cloud.google.com/spanner/docs/schema-and-data-model#database-splits) are handled for us.
+
+The cons of using Spanners are:
+
+1. Vendor lock-in, our data will be hosted in a proprietary data.
+    - How to prevent this: Global Service will use generic SQL.
+1. Not self-managed friendly, when we want to have Global Service available for self-managed customers.
+    - How to prevent this: Spanner supports PostgreSQL dialect.
+1. Brand new data store we need to learn to operate/develop with.
+
+### GoogleSQL vs PostgreSQL dialects
+
+Spanner supports two dialects one called [GoogleSQL](https://cloud.google.com/spanner/docs/reference/standard-sql/overview) and [PostgreSQL](https://cloud.google.com/spanner/docs/reference/postgresql/overview).
+The dialect [doesn't change the performance characteristics of Spanner](https://cloud.google.com/spanner/docs/postgresql-interface#choose), it's mostly how the Database schemas and queries are written.
+Choosing a dialect is a one-way door decision, to change the dialect we'll have to go through a data migration process.
+
+We will use the `GoogleSQL` dialect for the Global Service, and [go-sql-spanner](https://github.com/googleapis/go-sql-spanner) to connect to it, because:
+
+1. Using Go's standard library `database/sql` will allow us to swap implementations which is needed to support self-managed.
+1. GoogleSQL [data types](https://cloud.google.com/spanner/docs/reference/standard-sql/data-types) are narrower and don't allow to make mistakes for example choosing int32 because it only supports int64.
+1. New features seem to be released on GoogleSQL first, for example, <https://cloud.google.com/spanner/docs/ml>. We don't need this feature specifically, but it shows that new features support GoogleSQL first.
+1. A more clear split in the code when we are using Google Spanner or native PostgreSQL, and won't hit edge cases.
+
+Citations:
+
+1. Google (n.d.). _PostgreSQL interface for Spanner._ Google Cloud. Retrieved April 1, 2024, from <https://cloud.google.com/spanner/docs/postgresql-interface>
+1. Google (n.d.). _Dialect parity between GoogleSQL and PostgreSQL._ Google Cloud. Retrieved April 1, 2024, from <https://cloud.google.com/spanner/docs/reference/dialect-differences>
+
+### Multi-Regional
+
+Running Multi-Regional read-write is one of the biggest selling points of Spanner.
+When provisioning an instance you can choose single Region or Multi-region.
+After provisioning you can [move an instance](https://cloud.google.com/spanner/docs/move-instance) whilst is running but this is a manual process that requires assistance from GCP.
+
+We will provision a Multi-Regional Cloud Spanner instance because:
+
+1. Won't require migration to Multi-Regional in the future.
+1. Have Multi Regional on day 0 which cuts the scope of multi region deployments at GitLab.
+
+This will however increase the cost considerably, using public facing numbers from GCP:
+
+1. [Regional](https://cloud.google.com/products/calculator?hl=en&dl=CiRlMjU0ZDQyMy05MmE5LTRhNjktYjUzYi1hZWE2MjQ4N2JkNDcQIhokOTlGQUM4RjUtNjdBRi00QTY1LTk5NDctNThCODRGM0ZFMERC): $1,716
+1. [Multi Regional](https://cloud.google.com/products/calculator?hl=en&dl=CiQzNjc2ODc5My05Y2JjLTQ4NDQtYjRhNi1iYzIzODMxYjRkYzYQIhokOTlGQUM4RjUtNjdBRi00QTY1LTk5NDctNThCODRGM0ZFMERC): $9,085
+
+Citations:
+
+1. Google (n.d.). _Regional and multi-region configurations._ Google Cloud. Retrieved April 1, 2024, from <https://cloud.google.com/spanner/docs/instance-configurations>
+1. Google (n.d.). FeedbackReplication. Google Cloud. Retrieved April 1, 2024, from <https://cloud.google.com/spanner/docs/replication>
+
+### Performance
+
+We haven't run any benchmarks ourselves because we don't have a full schema designed.
+However looking at the [performance documentation](https://cloud.google.com/spanner/docs/performance), both the read and write throughputs of a Spanner instance scale linearly as you add more compute capacity.
+
+### Alternatives
+
+1. PostgreSQL: Having a multi-regional deployment requires a lot of operations.
+1. ClickHouse: It's an `OLAP` database not an `OLTP`.
+1. Elasticsearch: Search and analytics document store.
+
+## Disaster Recovery
+
+We must stay in our [Disaster Recovery targets](../disaster_recovery/index.md#dr-implementation-targets) for the Global Service.
+Ideally, we need smaller windows for recovery because this service is in the critical path.
+
+The service is stateless, which should be much easier to deploy to multiple regions using [runway](https://gitlab.com/groups/gitlab-com/gl-infra/-/epics/1206).
+The state is stored in Cloud Spanner, the state consists of database sequences, projects, username, and anything we need to keep global uniqueness in the application.
+This data is critical, and if we loose this data we won't be able to route requests accordingly or keep global uniqueness to have the ability to move data between cells in the future.
+For this reason we are going to set up [Multi-Regional read-write deployment](#multi-regional) for Cloud Spanner so even if a region goes down, we can still read-write to the state.
+
+Cloud Spanner provides 3 ways of recovery:
+
+1. [Backups](https://cloud.google.com/spanner/docs/backup): A backup of a database _inside_ of the instance. You can copy the backup to another instance but this requires an instance [of the same size of storage](https://cloud.google.com/spanner/docs/backup/copy-backup#prereqs) which can 2x the costs.
+    One concern with using backups is if the instance gets deleted by mistake (even with [deletion protection](https://cloud.google.com/spanner/docs/prevent-database-deletion))
+1. [Import/Export](https://cloud.google.com/spanner/docs/import-export-overview): Export the database as a [medium priority](https://cloud.google.com/spanner/docs/cpu-utilization#task-priority) task inside of Google Cloud Storage.
+1. [Point-in-time recovery](https://cloud.google.com/spanner/docs/pitr): Version [retention period](https://cloud.google.com/spanner/docs/use-pitr#set-period) up to 7 days, this can help with recovery of a [portion of the database](https://cloud.google.com/spanner/docs/use-pitr#recover-portion) or create a backup/restore from a specific time to [recover the full database](https://cloud.google.com/spanner/docs/use-pitr#recover-entire).
+    Increasing the retention period does have [performance implications](https://cloud.google.com/spanner/docs/pitr#performance)
+
+As you can see all these options only handle the data side, not the storage/compute side, this is because storage/compute is managed for us.
+This means our Disaster Recovery plan should only account for potential logical application errors where it deletes/logically corrupts the data.
+
+These require testing, and validation but to have all the protection we can have:
+
+1. Import/Export: Daily
+1. Backups: Hourly
+1. Point-in-time recovery: Retention period of 2 days.
+
+On top of those backups we'll also make sure:
+
+1. We have [database deletion protection](https://cloud.google.com/spanner/docs/prevent-database-deletion#enable) on.
+1. Make sure the application user doesn't have `spanner.database.drop` IAM.
+1. The Import/Export bucket will have [bucket lock](https://cloud.google.com/storage/docs/bucket-lock) configured to prevent deletion.
+
+Citations:
+
+1. Google (n.d.). _Choose between backup and restore or import and export._ Google Cloud. Retrieved April 2, 2024, from <https://cloud.google.com/spanner/docs/backup/choose-backup-import>
 
 ## FAQ
 
@@ -192,7 +299,7 @@ The original [Cells 1.0](iterations/cells-1.0.md) described [Primary Cell API](i
 1. How we will push all existing claims from "First Cell" into Global Service?
 
     We would add `rake gitlab:cells:claims:create` task. Then we would configure First Cell
-    to use Global Service, and execute the rake task. That way First Cell would claim all new
+    to use Global Service, and execute the Rake task. That way First Cell would claim all new
     records via Global Service, and concurrently we would copy data over.
 
 1. How and where the Global Service will be deployed?
@@ -214,6 +321,6 @@ The original [Cells 1.0](iterations/cells-1.0.md) described [Primary Cell API](i
 
 ## Links
 
-- [Cells 1.0](cells-1.0.md)
+- [Cells 1.0](iterations/cells-1.0.md)
 - [Routing Service](routing-service.md)
 - [Global Service PoC](https://gitlab.com/gitlab-org/tenant-scale-group/pocs/global-service)
