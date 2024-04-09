@@ -44108,9 +44108,6 @@ msgstr ""
 msgid "Runners|Enter the job timeout in seconds. Must be a minimum of 600 seconds."
 msgstr ""
 
-msgid "Runners|Environment"
-msgstr ""
-
 msgid "Runners|Environment in Google Cloud where runners execute CI/CD jobs. Runners are created in temporary virtual machines based on demand."
 msgstr ""
 
