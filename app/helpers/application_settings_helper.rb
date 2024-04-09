@@ -499,6 +499,7 @@ module ApplicationSettingsHelper
       :bulk_import_concurrent_pipeline_batch_limit,
       :bulk_import_enabled,
       :bulk_import_max_download_file_size,
+      :silent_admin_exports_enabled,
       :allow_runner_registration_token,
       :user_defaults_to_private_profile,
       :deactivation_email_additional_text,
