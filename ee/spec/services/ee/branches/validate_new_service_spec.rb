@@ -27,14 +27,14 @@ RSpec.describe Branches::ValidateNewService, feature_category: :source_code_mana
     end
 
     context 'when a push rules with branch names are set' do
-      let_it_be(:push_rules) { create(:push_rule, project: project, branch_name_regex: '(feature|hotfix)\/*') }
+      let_it_be(:push_rules) { create(:push_rule, project: project, branch_name_regex: '(feature|hotfix)\/.*') }
 
       context 'when branch_name_regex field of push_rule are configured' do
         context 'if the regex is not respected' do
           it 'returns an appropriate error message' do
             result = service.execute('no-match')
             error_message =
-              'Cannot create branch. The branch name must match this regular expression: (feature|hotfix)\/*'
+              'Cannot create branch. The branch name must match this regular expression: (feature|hotfix)\/.*'
 
             expect(result[:status]).to eq(:error)
             expect(result[:message]).to eq(error_message)

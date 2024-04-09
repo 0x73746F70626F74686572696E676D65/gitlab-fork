@@ -40,7 +40,7 @@ module API
           optional :prevent_secrets, type: Boolean, desc: 'GitLab will reject any files that are likely to contain secrets'
           optional :commit_message_regex, type: String, desc: 'All commit messages must match this', documentation: { example: 'Fixed \d+\..*' }
           optional :commit_message_negative_regex, type: String, desc: 'No commit message is allowed to match this', documentation: { example: 'ssh\:\/\/' }
-          optional :branch_name_regex, type: String, desc: 'All branches names must match this', documentation: { example: '(feature|hotfix)\/*' }
+          optional :branch_name_regex, type: String, desc: 'All branches names must match this', documentation: { example: '(feature|hotfix)\/.*' }
           optional :author_email_regex, type: String, desc: 'All commit author emails must match this', documentation: { example: '@my-company.com$' }
           optional :file_name_regex, type: String, desc: 'All committed filenames must not match this', documentation: { example: '(jar|exe)$' }
           optional :max_file_size, type: Integer, desc: 'Maximum file size (MB)', documentation: { example: 20 }

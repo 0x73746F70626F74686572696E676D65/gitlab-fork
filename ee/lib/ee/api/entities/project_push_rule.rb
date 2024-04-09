@@ -10,7 +10,7 @@ module EE
         expose :created_at, documentation: { type: 'date-time', example: '2020-08-31T15:53:00.073Z' }
         expose :commit_message_regex, documentation: { type: 'string', example: 'Fixed \d+\..*' }
         expose :commit_message_negative_regex, documentation: { type: 'string', example: 'ssh\:\/\/' }
-        expose :branch_name_regex, documentation: { type: 'string', example: '(feature|hotfix)\/*' }
+        expose :branch_name_regex, documentation: { type: 'string', example: '(feature|hotfix)\/.*' }
         expose :deny_delete_tag, documentation: { type: 'boolean', example: true }
         expose :member_check, documentation: { type: 'boolean', example: true }
         expose :prevent_secrets, documentation: { type: 'boolean', example: true }

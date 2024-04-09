@@ -37,7 +37,7 @@
 
 .form-group
   = f.label :branch_name_regex, s_("PushRules|Branch name"), class: "label-bold"
-  = f.text_field :branch_name_regex, class: "form-control gl-form-input-xl", placeholder: _('Example: (feature|hotfix)\/*'), data: { testid: 'branch-name-field' }
+  = f.text_field :branch_name_regex, class: "form-control gl-form-input-xl", placeholder: _('Example: (feature|hotfix)\/.*'), data: { testid: 'branch-name-field' }
   .form-text.text-muted
     = s_("PushRules|All branch names must match this %{wiki_syntax_link_start}regular expression%{wiki_syntax_link_end}. If empty, any branch name is allowed.").html_safe % { wiki_syntax_link_start: wiki_syntax_link_start, wiki_syntax_link_end: '</a>'.html_safe }
   - if context.is_a?(Project)
