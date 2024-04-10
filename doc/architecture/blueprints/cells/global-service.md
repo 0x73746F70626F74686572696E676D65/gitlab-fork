@@ -2,7 +2,7 @@
 stage: core platform
 group: Tenant Scale
 description: 'Cells: Global Service'
-status: accepted
+status: proposed
 ---
 
 <!-- vale gitlab.FutureTense = NO -->
@@ -16,7 +16,7 @@ used by Cells.
 
 The purpose of Global Service is to provide essential features for Cells
 to operate. The Global Service will implement a limited set of functions
-and serve a authoritative entity within the Cluster. There's only a single
+and serve as an authoritative entity within the Cluster. There's only a single
 Global Service, that can be deployed in many regions.
 
 1. **Technology.**
@@ -28,13 +28,23 @@ Global Service, that can be deployed in many regions.
 
     The Global Service will contain a list of all Cells. The Global Service
     will monitor Cells health, and could pass this information down to Cells
-    itself or Routing Service.
+    itself or Routing Service. Whether the Cell is healthy will be determined
+    by various factors:
+
+    - Watchdog: last time Cell contacted,
+    - Failure rate: information gathered from the Routing Service
+    - Configuration: Cells explicitly marked as orphaned
 
 1. **Cloud first.**
 
     The Global Service will be deployed in Cloud, and use Cloud managed services
     to operate. Those services at later point could be extended with on-premise
     equivalents if required.
+
+    The Global Service will be written using a dual dialect:
+
+    - GoogleSQL to run at scale for GitLab.com with Cloud Spanner
+    - PostgreSQL for use internally and later provide on-premise compatibility.
 
 1. **Small.**
 
@@ -43,13 +53,14 @@ Global Service, that can be deployed in many regions.
 
 ## Requirements
 
-| Requirement         | Description                                                       | Priority |
-| ------------------- | ----------------------------------------------------------------- | -------- |
-| Discovery           | needs to be able to discover and monitor the health of all Cells. | high     |
-| Security            | only authorized cells can use it                                  | high     |
-| Cloud-managed       | can use cloud managed services to operate                         | high     |
-| Self-managed        | can be eventually used by [self-managed](goals.md#self-managed)   | low      |
-| Regional            | can route requests to different [regions](goals.md#regions)       | low      |
+| Requirement   | Description                                                                | Priority |
+| ------------- | -------------------------------------------------------------------------- | -------- |
+| Configurable  | contains information about all Cells                                       | high     |
+| Security      | only authorized cells can use it                                           | high     |
+| Cloud-managed | can use cloud managed services to operate                                  | high     |
+| Self-managed  | can be eventually used by [self-managed](goals.md#self-managed)            | low      |
+| Regional      | can route requests to different [regions](goals.md#regions)                | low      |
+| Latency       | Satisfactory Latency Threshold of 20ms, 99.95% Error SLO, 99.95% Apdex SLO | high     |
 
 ## Non-Goals
 
@@ -58,12 +69,16 @@ Those Goals are outside of the Global Service scope as they heavily inflate the 
 - The Global Service will not provide indexing of the user-facing information for Cells.
   Example: CI Catalog to show data available cluster-wide will have to use another means
   to merge the information from all Cells.
+- The Global Service has no knowledge of the business logic of GitLab.
+  In theory it can work with any other web application that has the same authentication/access
+  tokens as GitLab.
 
 ## Proposal
 
 The Global Service implements the following design guidelines:
 
-- Global Service implements only a few services.
+- Global Service implements only a few gRPC services.
+- Some services due to backward compatibility are additionally exposed with REST API.
 - Global Service does not perform complex processing of information.
 - Global Service does not aggregate information from Cells.
 
@@ -145,12 +160,12 @@ tokens) within the cluster.
 ### Classify Service
 
 ```proto
-enum ClassifyMatch {
+enum ClassifyType {
     Route = 0;
 }
 
 message ClassifyRequest {
-    ClassifyMatch match = 2;
+    ClassifyType type = 2;
     string value = 3;
 }
 
@@ -314,10 +329,17 @@ Citations:
     connected to the same multi-write database. We anticipate one Global Service deployment per-region
     that might scale up to desired number of replicas / pods based on the load.
 
-1. Will Global Service information be encrypted?
+1. Will Global Service information be encrypted at runtime?
 
     This is yet to be defined. However, Global Service could encrypt customer sensitive information
-    allowing for the information to be decrypted by the Cell that did create that entry.
+    allowing for the information to be decrypted by the Cell that did create that entry. Cells could
+    transfer encrypted/hashed information to Global Service making the Global Service to only store
+    metadata without the knowledge of information.
+
+1. Will Global Service data to be encrypted at rest?
+
+    This is yet to be defined. Data is encrypted during transport (TLS/gRPC and HTTPS)
+    and at rest by Spanner.
 
 ## Links
 
