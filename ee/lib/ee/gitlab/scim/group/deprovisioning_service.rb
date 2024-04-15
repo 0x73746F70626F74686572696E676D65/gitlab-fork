@@ -8,11 +8,11 @@ module EE
           def execute
             if group.last_owner?(user)
               return error(format(
-                             _(
-                               "Could not remove %{user} from %{group}. Cannot remove last group owner."),
+                _(
+                  "Could not remove %{user} from %{group}. Cannot remove last group owner."),
                               user: user.name,
                               group: group.name
-                           )
+              )
                           )
             end
 
