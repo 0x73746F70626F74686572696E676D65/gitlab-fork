@@ -1,9 +1,0 @@
----
-name: restrict_member_roles
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/439167
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/142637
-rollout_issue_url: https://gitlab.com/gitlab-com/gl-infra/production/-/issues/17458
-milestone: '16.9'
-group: group::authorization
-type: beta
-default_enabled: false

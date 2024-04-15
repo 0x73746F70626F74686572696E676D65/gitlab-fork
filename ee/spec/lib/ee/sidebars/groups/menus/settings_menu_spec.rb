@@ -30,6 +30,7 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
         context 'when custom_roles feature is licensed' do
           before do
             stub_licensed_features(custom_roles: true)
+            stub_saas_features(gitlab_com_subscriptions: true)
           end
 
           it { is_expected.to be_present }
@@ -45,11 +46,20 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
 
             it { is_expected.not_to be_present }
           end
+
+          context 'when on self-managed' do
+            before do
+              stub_saas_features(gitlab_com_subscriptions: false)
+            end
+
+            it { is_expected.not_to be_present }
+          end
         end
 
         context 'when custom_roles feature is not licensed' do
           before do
             stub_licensed_features(custom_roles: false)
+            stub_saas_features(gitlab_com_subscriptions: true)
           end
 
           it { is_expected.not_to be_present }

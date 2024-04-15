@@ -8,6 +8,10 @@ RSpec.describe Groups::Settings::RolesAndPermissionsController, feature_category
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
+  before do
+    stub_saas_features(gitlab_com_subscriptions: true)
+  end
+
   describe 'GET #index' do
     subject(:get_index) { get(group_settings_roles_and_permissions_path(group)) }
 
@@ -75,6 +79,14 @@ RSpec.describe Groups::Settings::RolesAndPermissionsController, feature_category
       end
 
       it_behaves_like 'page is found under proper conditions'
+
+      context 'on self-managed' do
+        before do
+          stub_saas_features(gitlab_com_subscriptions: false)
+        end
+
+        it_behaves_like 'page is not found'
+      end
     end
 
     context 'with group owners' do

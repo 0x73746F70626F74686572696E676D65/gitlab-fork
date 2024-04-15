@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Member Roles', :js, feature_category: :permissions do
+RSpec.describe 'Member Roles', feature_category: :permissions do
   let_it_be(:group) { create(:group) }
   let_it_be(:custom_role) { create(:member_role, namespace: group) }
   let_it_be(:owner) { create(:user) }
@@ -83,7 +83,7 @@ RSpec.describe 'Member Roles', :js, feature_category: :permissions do
     end
   end
 
-  context 'when on SaaS' do
+  context 'when on SaaS', :js do
     before do
       stub_saas_features(gitlab_com_subscriptions: true)
 
@@ -99,28 +99,10 @@ RSpec.describe 'Member Roles', :js, feature_category: :permissions do
       stub_saas_features(gitlab_com_subscriptions: false)
     end
 
-    context 'when restrict_member_roles feature-flag is disabled' do
-      before do
-        stub_feature_flags(restrict_member_roles: false)
+    it 'renders 404' do
+      visit group_settings_roles_and_permissions_path(group)
 
-        visit group_settings_roles_and_permissions_path(group)
-      end
-
-      it_behaves_like 'creates a new custom role'
-    end
-
-    context 'when restrict_member_roles feature-flag is enabled' do
-      before do
-        stub_feature_flags(restrict_member_roles: true)
-
-        visit group_settings_roles_and_permissions_path(group)
-      end
-
-      it 'shows an error message' do
-        create_role(access_level, name, description, permissions)
-
-        expect(page).to have_content('Failed to create role')
-      end
+      expect(page).to have_gitlab_http_status(:not_found)
     end
   end
 end
