@@ -28,12 +28,7 @@ export default {
 </script>
 
 <template>
-  <state-container
-    status="failed"
-    is-collapsible
-    :collapsed="mr.mergeDetailsCollapsed"
-    @toggle="() => mr.toggleMergeDetails()"
-  >
+  <state-container status="failed" is-collapsible>
     <bold-text :message="$options.message" />
     <a
       v-gl-tooltip

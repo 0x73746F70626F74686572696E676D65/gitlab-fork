@@ -64,6 +64,8 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
     before do
       visit project_merge_request_path(project, merge_request)
       click_button 'Set to auto-merge'
+
+      wait_for_requests
     end
 
     it 'informs merge request that auto merge is enabled' do
@@ -77,6 +79,8 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
     context "when user clicks 'Cancel' button" do
       before do
         click_button 'Cancel auto-merge'
+
+        wait_for_requests
       end
 
       it 'cancels automatic merge' do

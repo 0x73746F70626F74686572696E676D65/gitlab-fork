@@ -1,6 +1,5 @@
 import { stateToComponentMap as ceStateMap } from '~/vue_merge_request_widget/stores/state_maps';
 
-export { statesToShowHelpWidget } from '~/vue_merge_request_widget/stores/state_maps';
 export const stateKey = {
   policyViolation: 'policyViolation',
   jiraAssociationMissing: 'jiraAssociationMissing',
