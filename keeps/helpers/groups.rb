@@ -34,7 +34,7 @@ module Keeps
 
       def fetch_groups
         @groups_json ||= begin
-          response = Gitlab::HTTP.get(GROUPS_JSON_URL)
+          response = Gitlab::HTTP_V2.get(GROUPS_JSON_URL)
 
           unless (200..299).cover?(response.code)
             raise Error,
