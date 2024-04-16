@@ -86,6 +86,16 @@ module API
           render_api_error!(response.message, 400)
         end
       end
+
+      def deprecation_message
+        docs_page = Rails.application.routes.url_helpers.help_page_url(
+          'ee/update/deprecations.html',
+          anchor: 'deprecate-custom-role-creation-for-group-owners-on-self-managed'
+        )
+
+        "Group-level custom roles are deprecated on self-managed instances. " \
+          "See #{docs_page}"
+      end
     end
 
     params do
@@ -93,6 +103,10 @@ module API
     end
 
     resource :groups do
+      before do
+        bad_request!(deprecation_message) unless ::Gitlab::Saas.feature_available?(:gitlab_com_subscriptions)
+      end
+
       desc 'Get Member Roles for a group' do
         success EE::API::Entities::MemberRole
         is_array true
@@ -133,6 +147,10 @@ module API
     end
 
     resource :member_roles do
+      before do
+        bad_request! if ::Gitlab::Saas.feature_available?(:gitlab_com_subscriptions)
+      end
+
       desc 'Get Member Roles for this GitLab instance' do
         success EE::API::Entities::MemberRole
         failure [[401, 'Unauthorized']]
