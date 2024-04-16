@@ -13409,6 +13409,9 @@ msgstr ""
 msgid "ComplianceFrameworks| Project frameworks export"
 msgstr ""
 
+msgid "ComplianceFrameworks|\"%{name}\" is a reserved word and cannot be used as a compliance framework name."
+msgstr ""
+
 msgid "ComplianceFrameworks|%{count} linked policy."
 msgid_plural "ComplianceFrameworks|%{count} linked policies."
 msgstr[0] ""

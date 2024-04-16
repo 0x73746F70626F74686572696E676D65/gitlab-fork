@@ -46,7 +46,7 @@ describe('Edit Framework Form', () => {
   const findDeleteModal = () => wrapper.findComponent(DeleteModal);
 
   const invalidFeedback = (input) =>
-    input.closest('[role=group]').querySelector('.invalid-feedback').textContent;
+    input.closest('[role=group]').querySelector('.invalid-feedback')?.textContent ?? '';
 
   function createComponent(
     mountFn = mountExtended,
