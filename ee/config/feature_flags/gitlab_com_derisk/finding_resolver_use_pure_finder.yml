@@ -1,0 +1,8 @@
+---
+name: finding_resolver_use_pure_finder
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/149797
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/457433
+milestone: '17.0'
+type: gitlab_com_derisk
+group: group::threat insights
+default_enabled: false

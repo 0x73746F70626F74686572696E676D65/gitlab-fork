@@ -55,6 +55,20 @@ RSpec.describe 'PipelineSecurityReportFinding', feature_category: :vulnerability
           graphql_data_at(:project, :pipeline, :security_report_finding, :merge_request)
         ).to match(a_graphql_entity_for(id: merge_request.to_global_id.to_s))
       end
+
+      context 'when feature flag finding_resolver_use_pure_finder is disabled' do
+        before do
+          stub_feature_flags(finding_resolver_use_pure_finder: false)
+        end
+
+        it 'returns the merge request' do
+          subject
+
+          expect(
+            graphql_data_at(:project, :pipeline, :security_report_finding, :merge_request)
+          ).to match(a_graphql_entity_for(id: merge_request.to_global_id.to_s))
+        end
+      end
     end
   end
 

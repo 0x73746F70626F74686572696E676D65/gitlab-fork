@@ -47,19 +47,10 @@ RSpec.describe 'Query.project(fullPath).pipeline(iid).securityReportFinding',
   let(:security_report_finding) { subject.dig('project', 'pipeline', 'securityReportFinding') }
 
   before_all do
-    content = File.read(artifact.file.path)
-    Gitlab::Ci::Parsers::Security::Sast.parse!(content, report)
-    report.merge!(report)
-
-    scan.report_findings.each do |finding|
-      create(
-        :security_finding,
-        severity: finding.severity,
-        project_fingerprint: finding.project_fingerprint,
-        deduplicated: true,
-        scan: scan,
-        uuid: finding.uuid
-      )
+    Gitlab::ExclusiveLease.skipping_transaction_check do
+      Security::StoreGroupedScansService.new(
+        [artifact]
+      ).execute
     end
   end
 
