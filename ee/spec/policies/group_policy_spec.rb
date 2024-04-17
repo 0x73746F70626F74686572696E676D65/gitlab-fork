@@ -1002,16 +1002,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   context 'with ip restriction' do
     let(:current_user) { maintainer }
 
-    # To be removed when raise_group_admin_package_permission_to_owner FF is removed
-    shared_examples 'disabling admin_package feature flag' do
-      before do
-        stub_feature_flags(raise_group_admin_package_permission_to_owner: false)
-      end
-
-      it { is_expected.to be_allowed(:admin_package) }
-      it { is_expected.to be_allowed(:admin_dependency_proxy) }
-    end
-
     before do
       allow(Gitlab::IpAddressState).to receive(:current).and_return('192.168.0.2')
       stub_licensed_features(group_ip_restriction: true)
@@ -1027,8 +1017,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       it { is_expected.to be_allowed(:read_dependency_proxy) }
       it { is_expected.to be_disallowed(:admin_package) }
       it { is_expected.to be_disallowed(:admin_dependency_proxy) }
-
-      it_behaves_like 'disabling admin_package feature flag'
     end
 
     context 'with restriction' do
@@ -1047,8 +1035,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         it { is_expected.to be_allowed(:read_dependency_proxy) }
         it { is_expected.to be_disallowed(:admin_package) }
         it { is_expected.to be_disallowed(:admin_dependency_proxy) }
-
-        it_behaves_like 'disabling admin_package feature flag'
       end
 
       context 'address is outside the range' do

@@ -8506,9 +8506,7 @@ Input type: `UpdateContainerRegistryProtectionRuleInput`
 
 ### `Mutation.updateDependencyProxyImageTtlGroupPolicy`
 
-These settings can be adjusted by the group Owner or Maintainer.
-[Issue 370471](https://gitlab.com/gitlab-org/gitlab/-/issues/370471) proposes limiting
-this to Owners only to match the permissions level in the user interface.
+These settings can be adjusted only by the group Owner.
 
 Input type: `UpdateDependencyProxyImageTtlGroupPolicyInput`
 
@@ -8558,9 +8556,7 @@ Input type: `UpdateDependencyProxyPackagesSettingsInput`
 
 ### `Mutation.updateDependencyProxySettings`
 
-These settings can be adjusted by the group Owner or Maintainer.
-[Issue 370471](https://gitlab.com/gitlab-org/gitlab/-/issues/370471) proposes limiting
-this to Owners only to match the permissions level in the user interface.
+These settings can be adjusted only by the group Owner.
 
 Input type: `UpdateDependencyProxySettingsInput`
 
@@ -8721,9 +8717,7 @@ Input type: `UpdateIterationInput`
 
 ### `Mutation.updateNamespacePackageSettings`
 
-These settings can be adjusted by the group Owner or Maintainer.
-[Issue 370471](https://gitlab.com/gitlab-org/gitlab/-/issues/370471) proposes limiting
-this to Owners only to match the permissions level in the user interface.
+These settings can be adjusted only by the group Owner.
 
 Input type: `UpdateNamespacePackageSettingsInput`
 
