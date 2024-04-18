@@ -4,7 +4,7 @@
 #
 #   This is an e2e test that doesnt manage / orchestrate KAS / agentk / gitlab but expects them to be up and running.
 #   This test is currently quarantined and its used for local testing by the engineers
-#   This can be removed in the fututre when we have a better approach for local testing
+#   This can be removed in the future when we have a better approach for local testing
 #
 #   How to setup the test
 #

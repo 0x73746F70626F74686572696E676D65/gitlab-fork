@@ -9,6 +9,10 @@ module QA
             element 'list-new-workspace-button'
           end
 
+          view 'ee/app/assets/javascripts/workspaces/common/components/workspaces_list/empty_state.vue' do
+            element 'new-workspace-button'
+          end
+
           view 'ee/app/assets/javascripts/workspaces/common/components/workspaces_list/workspaces_list.vue' do
             element 'workspace-list-item'
           end
@@ -17,8 +21,16 @@ module QA
             element 'workspace-state-indicator'
           end
 
+          def has_empty_workspace?
+            has_element?('new-workspace-button')
+          end
+
           def create_workspace(agent, project)
-            click_element('list-new-workspace-button', skip_finished_loading_check: true)
+            if has_empty_workspace?
+              click_element('new-workspace-button', skip_finished_loading_check: true)
+            else
+              click_element('list-new-workspace-button', skip_finished_loading_check: true)
+            end
 
             QA::EE::Page::Workspace::New.perform do |new|
               new.select_devfile_project(project)

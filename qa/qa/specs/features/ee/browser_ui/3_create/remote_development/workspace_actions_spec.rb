@@ -1,5 +1,26 @@
 # frozen_string_literal: true
 
+#   What does this test do
+#
+#   This is an e2e test that sets up the entire workspaces environment from scratch as mentioned in this documentation
+#   https://gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/-/blob/main/doc/local-development-environment-setup.md
+#   This test creates project, devfile, agents and workspaces on the fly
+#   The other test ee/browser_ui/3_create/remote_development/with_prerequisite_done/
+#   workspace_actions_with_prerequisite_done_spec.rb is used for local testing and requires an existing agent and
+#   devfile project
+#
+#   How to run the test
+#
+#   1. Run the test against staging environment
+#      The full list of env variable and their values to run this test can be found in 1password "Run workspaces tests
+#      against staging"
+#      bundle exec bin/qa Test::Instance::All https://staging.gitlab.com -- -- qa/specs/features/ee/browser_ui/3_create
+#      /remote_development/workspace_actions_spec.rb
+#   2. When the test is run locally, it will try to install helm (requires local password) and if unnoticed the script
+#      would fail eventually. To overcome this, install helm manually using the installation steps in
+#      https://gitlab.com/gitlab-org/gitlab/-/blob/6bb010046a9f8922f827eb035d05e28954352311/qa/qa/service/cluster_provider/gcloud.rb#L129-135
+#      then run the test using step 1
+
 module QA
   RSpec.describe 'Create', only: { pipeline: %i[staging staging-canary] }, product_group: :ide do
     describe 'Remote Development' do
@@ -21,7 +42,7 @@ module QA
 
         let(:agent_project) { create(:project, group: parent_group, name: 'agent-project') }
         let(:kubernetes_agent) do
-          create(:cluster_agent, name: "removedev-#{SecureRandom.hex(4)}", project: agent_project)
+          create(:cluster_agent, name: "remotedev-#{SecureRandom.hex(4)}", project: agent_project)
         end
 
         let!(:agent_token) { create(:cluster_agent_token, agent: kubernetes_agent) }
