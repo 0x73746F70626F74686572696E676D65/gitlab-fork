@@ -2,7 +2,7 @@
 import { GlLineChart } from '@gitlab/ui/dist/charts';
 import merge from 'lodash/merge';
 
-import { formatVisualizationValue } from './utils';
+import { formatVisualizationTooltipTitle, formatVisualizationValue } from './utils';
 
 export default {
   name: 'LineChart',
@@ -28,6 +28,7 @@ export default {
   },
   methods: {
     formatVisualizationValue,
+    formatVisualizationTooltipTitle,
   },
 };
 </script>
@@ -40,6 +41,9 @@ export default {
     responsive
     class="gl-overflow-hidden"
   >
+    <template #tooltip-title="{ title, params }">
+      {{ formatVisualizationTooltipTitle(title, params) }}</template
+    >
     <template #tooltip-value="{ value }">{{ formatVisualizationValue(value) }}</template>
   </gl-line-chart>
 </template>
