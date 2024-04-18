@@ -48,7 +48,7 @@ export default {
       return !this.isBasic && this.mr.requirePasswordToApprove;
     },
     hasAllApprovals() {
-      return (this.approvals.approvalsLeft || 0) === 0;
+      return (this.approvals?.approvalsLeft || 0) === 0;
     },
   },
   methods: {

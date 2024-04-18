@@ -29,7 +29,7 @@ export default {
           iid: this.iid,
         };
       },
-      update: (data) => data.project.mergeRequest,
+      update: (data) => data?.project?.mergeRequest,
       subscribeToMore: {
         document: mergeRequestApprovalStateUpdated,
         variables() {
@@ -90,7 +90,7 @@ export default {
   },
   data() {
     return {
-      mergeRequest: {},
+      mergeRequest: null,
     };
   },
   computed: {
@@ -169,7 +169,7 @@ export default {
         <th class="gl-bg-white! gl-w-full">{{ s__('MRApprovals|Approved by') }}</th>
       </tr>
     </thead>
-    <tbody v-if="$apollo.queries.mergeRequest.loading" class="border-top-0">
+    <tbody v-if="$apollo.queries.mergeRequest.loading || !mergeRequest" class="border-top-0">
       <tr>
         <td></td>
         <td class="gl-pl-0!">
