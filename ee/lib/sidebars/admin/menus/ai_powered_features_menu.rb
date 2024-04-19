@@ -8,6 +8,7 @@ module Sidebars
         def configure_menu_items
           add_item(code_suggestions_menu_item)
           add_item(self_hosted_models_menu_item)
+          add_item(features_menu_item)
 
           true
         end
@@ -24,14 +25,14 @@ module Sidebars
 
         override :extra_container_html_options
         def extra_container_html_options
-          { testid: 'admin-duo-pro-menu-link' }
+          { testid: 'admin-ai-powered-features-link' }
         end
 
         private
 
         def code_suggestions_menu_item
           ::Sidebars::MenuItem.new(
-            title: 'GitLab Duo Pro',
+            title: s_('Admin|GitLab Duo Pro'),
             link: admin_code_suggestions_path,
             active_routes: { controller: :code_suggestions },
             item_id: :duo_pro_code_suggestions,
@@ -40,14 +41,22 @@ module Sidebars
         end
 
         def self_hosted_models_menu_item
-          return unless Feature.enabled?(:ai_custom_model) # rubocop:disable Gitlab/FeatureFlagWithoutActor -- The feature flag is global
-
           ::Sidebars::MenuItem.new(
-            title: _('Models'),
+            title: s_('Admin|Models'),
             link: admin_ai_self_hosted_models_path,
             active_routes: { controller: 'admin/ai/self_hosted_models' },
             item_id: :duo_pro_self_hosted_models,
             container_html_options: { title: 'Models' }
+          )
+        end
+
+        def features_menu_item
+          ::Sidebars::MenuItem.new(
+            title: s_('Admin|Features'),
+            link: admin_ai_feature_settings_path,
+            active_routes: { controller: 'admin/ai/feature_settings' },
+            item_id: :duo_pro_features,
+            container_html_options: { title: 'Features' }
           )
         end
       end

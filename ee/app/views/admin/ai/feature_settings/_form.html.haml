@@ -1,0 +1,45 @@
+- add_page_specific_style 'page_bundles/labels'
+- options = Ai::SelfHostedModel.all.map { |model| [model.model.humanize, model.id] }
+- feature_name = feature.titleize
+- provider_field_name = 'feature_setting[provider]'
+
+= gitlab_ui_form_for @feature_setting, as: :feature_setting, url: url, html: { class: 'label-form js-quick-submit js-requires-input' } do |f|
+  = form_errors(@feature_setting)
+
+  = f.hidden_field :feature, value: feature
+
+  %fieldset.form-group.gl-form-group
+    %legend.col-form-label
+      = s_('AdminAiPoweredFeatures|Model Provider')
+      .gl-font-normal.form-text.text-gl-muted
+        = s_("AdminAiPoweredFeatures|Choose the AI model for %{feature_name} feature") % { feature_name: feature_name }
+
+    = render Pajamas::RadioTagComponent.new(name: provider_field_name,
+        label: ::Ai::FeatureSetting::PROVIDER_TITLES[:disabled],
+        value: :disabled,
+        radio_options: { class: 'js-self-hosted-model-setting' },
+        checked: @feature_setting.disabled?) do |c|
+      = c.with_help_text do
+        = s_("AdminAiPoweredFeatures|Disables %{feature_name} for the instance.") % { feature_name: feature_name }
+    = render Pajamas::RadioTagComponent.new(name: provider_field_name,
+        label: ::Ai::FeatureSetting::PROVIDER_TITLES[:vendored],
+        radio_options: { class: 'js-self-hosted-model-setting' },
+        value: :vendored,
+        checked: @feature_setting.vendored?) do |c|
+      = c.with_help_text do
+        = s_("AdminAiPoweredFeatures|Enables %{feature_name} empowered by a GitLab AI Vendor. The model must be configured for the instance.") % { feature_name: feature_name }
+    = render Pajamas::RadioTagComponent.new(name: provider_field_name,
+        radio_options: { class: 'js-self-hosted-model-setting' },
+        value: :self_hosted,
+        checked: @feature_setting.self_hosted?) do |c|
+      = c.with_help_text do
+        = s_("AdminAiPoweredFeatures|Enables %{feature_name} empowered by a Self-Hosted model") % { feature_name: feature_name }
+      = c.with_label do
+        = ::Ai::FeatureSetting::PROVIDER_TITLES[:self_hosted]
+    = f.select(:ai_self_hosted_model_id, options_for_select(options, @feature_setting.ai_self_hosted_model_id), {}, { class: 'custom-select gl-form-select gl-form-select-lg gl-ml-6 js-self-hosted-model-select', data: { testid: 'ai-feature-settings-model' }, disabled: !@feature_setting.self_hosted?, 'aria-label': ::Ai::FeatureSetting::PROVIDER_TITLES[:self_hosted] })
+
+  .gl-mt-2
+    %div
+      = f.submit _('Save changes'), class: 'js-save-button gl-mr-2', pajamas_button: true
+      = render Pajamas::ButtonComponent.new(href: back_path) do
+        = _('Cancel')
