@@ -80,8 +80,6 @@ module EE
       attribute :future_subscriptions, ::Gitlab::Database::Type::IndifferentJsonb.new
       validates :future_subscriptions, json_schema: { filename: 'future_subscriptions' }
 
-      validates :required_instance_ci_template, presence: true, allow_nil: true
-
       validates :geo_node_allowed_ips, length: { maximum: 255 }, presence: true
       validate :check_geo_node_allowed_ips
 

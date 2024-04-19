@@ -11,30 +11,6 @@ RSpec.describe Gitlab::Ci::Config, feature_category: :pipeline_composition do
     EOS
   end
 
-  describe 'with required instance template' do
-    let(:template_name) { 'test_template' }
-    let(:template_repository) { create(:project, :custom_repo, files: { "gitlab-ci/#{template_name}.yml" => template_yml }) }
-
-    let(:template_yml) do
-      <<-EOS
-      sample_job:
-        script:
-          - echo 'not test'
-      EOS
-    end
-
-    subject(:config) { described_class.new(ci_yml) }
-
-    before do
-      stub_application_setting(file_template_project: template_repository, required_instance_ci_template: template_name)
-      stub_licensed_features(custom_file_templates: true, required_ci_templates: true)
-    end
-
-    it 'processes the required includes' do
-      expect(config.to_hash[:sample_job][:script]).to eq(["echo 'not test'"])
-    end
-  end
-
   describe 'with security orchestration policy' do
     let(:source) { 'push' }
 
