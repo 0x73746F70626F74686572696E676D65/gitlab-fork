@@ -17,11 +17,11 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content, feature_category:
     EOY
   end
 
-  subject { described_class.new(pipeline, command) }
+  subject(:step) { described_class.new(pipeline, command) }
 
   shared_examples 'does not include compliance pipeline configuration content' do
     it do
-      subject.perform!
+      step.perform!
 
       expect(pipeline.config_source).not_to eq 'compliance_source'
       expect(pipeline.pipeline_config.content).not_to eq(content_result)
@@ -31,7 +31,7 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content, feature_category:
 
   shared_examples 'does include compliance pipeline configuration content' do
     it do
-      subject.perform!
+      step.perform!
 
       expect(pipeline.config_source).to eq 'compliance_source'
       expect(pipeline.pipeline_config.content).to eq(content_result)
@@ -118,6 +118,33 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Config::Content, feature_category:
       end
 
       it_behaves_like 'does not include compliance pipeline configuration content'
+    end
+  end
+
+  context 'when there are execution policy pipelines' do
+    let_it_be(:project) { create(:project) }
+    let(:ci_config_path) { nil }
+    let(:config_content_result) do
+      <<~EOY
+          ---
+          Pipeline execution policy trigger:
+            stage: ".pre"
+            script:
+            - echo "Forcing project pipeline to run policy jobs."
+      EOY
+    end
+
+    before do
+      command.execution_policy_pipelines = build_list(:ci_empty_pipeline, 2)
+    end
+
+    it 'forces the pipeline creation' do
+      step.perform!
+
+      expect(pipeline.config_source).to eq 'pipeline_execution_policy_forced'
+      expect(pipeline.pipeline_config.content).to eq(config_content_result)
+      expect(command.config_content).to eq(config_content_result)
+      expect(command.pipeline_config.internal_include_prepended?).to eq(false)
     end
   end
 end

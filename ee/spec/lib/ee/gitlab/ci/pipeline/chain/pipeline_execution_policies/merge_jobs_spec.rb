@@ -3,11 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs, feature_category: :security_policy_management do
+  include Ci::PipelineExecutionPolicyHelpers
+
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:user) { create(:user, developer_of: project) }
   let(:pipeline) { build(:ci_pipeline, project: project, ref: 'master', user: user) }
-
   let(:execution_policy_pipelines) do
     [
       build_mock_policy_pipeline({ 'build' => ['docker'] }),
@@ -37,11 +38,18 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
   end
 
   before do
-    stub_ci_pipeline_yaml_file(YAML.dump(config))
+    stub_ci_pipeline_yaml_file(YAML.dump(config)) if config
   end
 
   describe '#perform!' do
-    it 'reassigns jobs to the correct stage and assigns policy index to their name', :aggregate_failures do
+    it 'reassigns jobs to the correct stage using JobsMerger', :aggregate_failures do
+      expect(::Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger)
+        .to receive(:new).with(
+          pipeline: pipeline,
+          execution_policy_pipelines: execution_policy_pipelines,
+          declared_stages: %w[.pre build test deploy .post]
+        ).and_call_original
+
       run_chain
 
       build_stage = pipeline.stages.find { |stage| stage.name == 'build' }
@@ -51,98 +59,44 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
       expect(test_stage.statuses.map(&:name)).to contain_exactly('rake', 'rspec')
     end
 
-    context 'with conflicting jobs' do
-      context 'when two policy pipelines have the same job names' do
-        let(:execution_policy_pipelines) do
-          [
-            build_mock_policy_pipeline({ 'test' => ['rspec'] }),
-            build_mock_policy_pipeline({ 'test' => ['rspec'] })
-          ]
-        end
-
-        it 'injects both jobs to the correct stage', :aggregate_failures do
-          run_chain
-
-          test_stage = pipeline.stages.find { |stage| stage.name == 'test' }
-          expect(test_stage.statuses.size).to eq(3)
-          expect(test_stage.statuses.map(&:name)).to contain_exactly('rake', 'rspec', 'rspec')
-        end
-      end
-
-      context 'when project and policy pipelines have the same job names' do
-        let(:execution_policy_pipelines) do
-          [
-            build_mock_policy_pipeline({ 'test' => ['rake'] }),
-            build_mock_policy_pipeline({ 'test' => ['rspec'] })
-          ]
-        end
-
-        it 'injects the jobs while keeping the project job', :aggregate_failures do
-          run_chain
-
-          test_stage = pipeline.stages.find { |stage| stage.name == 'test' }
-          expect(test_stage.statuses.size).to eq(3)
-          expect(test_stage.statuses.map(&:name)).to contain_exactly('rake', 'rake', 'rspec')
-        end
-      end
-    end
-
-    context 'when policy defines additional stages' do
-      context 'when custom policy stage is also defined but not used in the main pipeline' do
-        let(:config) do
-          { stages: %w[build test custom],
-            rspec: { stage: 'test', script: 'rake' },
-            build: { stage: 'build', script: 'make .' } }
-        end
-
-        let(:execution_policy_pipelines) do
-          [build_mock_policy_pipeline({ 'custom' => ['docker'] })]
-        end
-
-        it 'ignores the job in the custom stage' do
-          run_chain
-
-          expect(pipeline.stages.map(&:name)).to contain_exactly('build', 'test')
-        end
-      end
-
-      context 'when custom policy stage is not defined in the main pipeline' do
-        let(:execution_policy_pipelines) do
-          [build_mock_policy_pipeline({ 'custom' => ['docker'] })]
-        end
-
-        before do
-          run_chain
-        end
-
-        it 'does not break the processing chain' do
-          expect(step.break?).to eq(false)
-        end
-
-        it 'ignores the stage' do
-          expect(pipeline.stages.map(&:name)).to contain_exactly('build', 'test')
-        end
-      end
-    end
-
-    context 'when the policy stage is defined in a different position than the stage in the main pipeline' do
+    context 'when project CI configuration declares custom stages' do
       let(:config) do
-        { stages: %w[build test],
-          rake: { stage: 'test', script: 'rake' },
-          build: { stage: 'build', script: 'make .' } }
+        { stages: %w[pre-test test post-test],
+          rake: { stage: 'test', script: 'rake' } }
       end
 
-      let(:execution_policy_pipelines) do
-        [build_mock_policy_pipeline({ 'test' => ['rspec'] })]
-      end
+      it 'passes down the declared stages to the JobsMerger' do
+        expect(::Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger)
+          .to receive(:new).with(
+            pipeline: pipeline,
+            execution_policy_pipelines: execution_policy_pipelines,
+            declared_stages: %w[.pre pre-test test post-test .post]
+          ).and_call_original
 
-      it 'reassigns the position and stage_idx for the jobs to match the main pipeline', :aggregate_failures do
+        run_chain
+      end
+    end
+
+    context 'when there is no project CI configuration' do
+      let(:config) { nil }
+
+      it 'removes the dummy job that forced the pipeline creation and only keeps policy jobs in default stages' do
+        expect(::Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger)
+          .to receive(:new).with(
+            pipeline: pipeline,
+            execution_policy_pipelines: execution_policy_pipelines,
+            declared_stages: %w[.pre build test deploy .post]
+          ).and_call_original
+
         run_chain
 
+        expect(pipeline.stages.map(&:name)).to contain_exactly('build', 'test')
+
+        build_stage = pipeline.stages.find { |stage| stage.name == 'build' }
+        expect(build_stage.statuses.map(&:name)).to contain_exactly('docker')
+
         test_stage = pipeline.stages.find { |stage| stage.name == 'test' }
-        expect(test_stage.position).to eq(2) # pipeline contains [.pre build test]
-        expect(test_stage.statuses.map(&:name)).to contain_exactly('rake', 'rspec')
-        expect(test_stage.statuses.map(&:stage_idx)).to all(eq(test_stage.position))
+        expect(test_stage.statuses.map(&:name)).to contain_exactly('rspec')
       end
     end
 
@@ -156,7 +110,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
       end
     end
 
-    context 'when running in execution_policy_pipelines is empty' do
+    context 'when execution_policy_pipelines is not defined' do
       let(:execution_policy_pipelines) { nil }
 
       it 'does not change pipeline stages' do
@@ -178,16 +132,6 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
 
     def perform_chain(pipeline, command)
       described_class.new(pipeline, command).perform!
-    end
-
-    def build_mock_policy_pipeline(config)
-      build(:ci_pipeline, project: project).tap do |pipeline|
-        pipeline.stages = config.map.with_index do |(stage, builds), index|
-          build(:ci_stage, name: stage, pipeline: pipeline).tap do |s|
-            s.statuses = builds.map { |name| build(:ci_build, name: name, stage_idx: index, pipeline: pipeline) }
-          end
-        end
-      end
     end
   end
 end

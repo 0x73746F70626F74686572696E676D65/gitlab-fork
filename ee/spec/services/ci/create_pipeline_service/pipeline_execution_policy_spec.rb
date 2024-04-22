@@ -116,4 +116,62 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :security_policy_man
       expect(stages.find_by(name: 'build').builds.map(&:name)).to contain_exactly('build', 'namespace_policy_job')
     end
   end
+
+  context 'when policy pipelines use declared, but unused project stages' do
+    let(:project_ci_yaml) do
+      <<~YAML
+        stages:
+        - build
+        - test
+        rspec:
+          stage: test
+          script:
+            - echo 'rspec'
+      YAML
+    end
+
+    it 'responds with success' do
+      expect(execute).to be_success
+    end
+
+    it 'persists pipeline' do
+      expect(execute.payload).to be_persisted
+    end
+
+    it 'persists jobs in the correct stages', :aggregate_failures do
+      expect { execute }.to change { Ci::Build.count }.from(0).to(3)
+
+      stages = execute.payload.stages
+      expect(stages.map(&:name)).to contain_exactly('build', 'test')
+
+      expect(stages.find_by(name: 'build').builds.map(&:name)).to contain_exactly('namespace_policy_job')
+      expect(stages.find_by(name: 'test').builds.map(&:name)).to contain_exactly('rspec', 'project_policy_job')
+    end
+  end
+
+  context 'when project CI configuration is missing' do
+    let(:project_ci_yaml) { nil }
+
+    it 'responds with success' do
+      expect(execute).to be_success
+    end
+
+    it 'persists pipeline' do
+      expect(execute.payload).to be_persisted
+    end
+
+    it 'sets the correct config_source' do
+      expect(execute.payload.config_source).to eq('pipeline_execution_policy_forced')
+    end
+
+    it 'injects the policy jobs', :aggregate_failures do
+      expect { execute }.to change { Ci::Build.count }.from(0).to(2)
+
+      stages = execute.payload.stages
+      expect(stages.map(&:name)).to contain_exactly('build', 'test')
+
+      expect(stages.find_by(name: 'build').builds.map(&:name)).to contain_exactly('namespace_policy_job')
+      expect(stages.find_by(name: 'test').builds.map(&:name)).to contain_exactly('project_policy_job')
+    end
+  end
 end

@@ -15,14 +15,11 @@ module EE
         module Chain
           module PipelineExecutionPolicies
             module MergeJobs
-              include ::Gitlab::Utils::StrongMemoize
-              include ::Gitlab::Ci::Pipeline::Chain::Helpers
-              extend ::Gitlab::Utils::Override
-
               def perform!
                 return if ::Feature.disabled?(:pipeline_execution_policy_type, project.group)
                 return if command.execution_policy_mode? || command.execution_policy_pipelines.blank?
 
+                clear_project_pipeline
                 merge_policy_jobs
               end
 
@@ -32,32 +29,20 @@ module EE
 
               private
 
+              def clear_project_pipeline
+                # We need to remove the DUMMY job from the pipeline which was added to
+                # enforce the pipeline without project CI configuration.
+                pipeline.stages = [] if pipeline.pipeline_execution_policy_forced?
+              end
+
               def merge_policy_jobs
-                command.execution_policy_pipelines.each do |policy_pipeline|
-                  inject_jobs_from(policy_pipeline)
-                end
-              end
-
-              def inject_jobs_from(policy_pipeline)
-                pipeline_stages_by_name = pipeline.stages.index_by(&:name)
-                policy_pipeline.stages.each do |policy_stage|
-                  matching_pipeline_stage = pipeline_stages_by_name[policy_stage.name]
-
-                  # If a policy configuration uses a stage that does not exist in the
-                  # project pipeline we silently ignore all the policy jobs in it.
-                  next unless matching_pipeline_stage
-
-                  insert_jobs(from_stage: policy_stage, to_stage: matching_pipeline_stage)
-                end
-              end
-
-              def insert_jobs(from_stage:, to_stage:)
-                from_stage.statuses.each do |job|
-                  # We need to assign the new stage_idx for the jobs
-                  # because the policy stages could have had different positions
-                  job.assign_attributes(pipeline: pipeline, stage_idx: to_stage.position)
-                  to_stage.statuses << job
-                end
+                ::Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger
+                  .new(pipeline: pipeline,
+                    execution_policy_pipelines: command.execution_policy_pipelines,
+                    # `yaml_processor_result` contains the declared project stages, even if they are unused.
+                    declared_stages: command.yaml_processor_result.stages
+                  )
+                  .execute
               end
             end
           end
