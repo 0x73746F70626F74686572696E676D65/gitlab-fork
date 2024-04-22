@@ -488,7 +488,6 @@ module EE
 
       rule { auditor }.policy do
         enable :read_group
-        enable :read_group_security_dashboard
         enable :read_group_audit_events
         enable :read_billing
         enable :read_container_image
@@ -562,8 +561,9 @@ module EE
         enable :update_security_orchestration_policy_project
       end
 
-      rule { security_dashboard_enabled & developer }.policy do
-        enable :read_group_security_dashboard
+      rule { security_dashboard_enabled & (auditor | developer) }.policy do
+        enable :read_dependency
+        enable :read_vulnerability
       end
 
       rule { security_dashboard_enabled & (can?(:maintainer_access) | developer_access_to_admin_vulnerability) }.policy do
@@ -575,11 +575,10 @@ module EE
       end
 
       rule { custom_roles_allowed & role_enables_read_vulnerability }.policy do
-        enable :read_group_security_dashboard
+        enable :read_vulnerability
       end
 
       rule { custom_roles_allowed & role_enables_admin_vulnerability }.policy do
-        enable :read_group_security_dashboard
         enable :admin_vulnerability
       end
 
@@ -634,10 +633,17 @@ module EE
         enable :view_edit_page
       end
 
-      rule { can?(:read_group_security_dashboard) }.policy do
+      rule { can?(:read_vulnerability) }.policy do
+        enable :read_group_security_dashboard
         enable :create_vulnerability_export
         enable :read_security_resource
-        enable :read_dependency
+      end
+
+      rule { can?(:admin_vulnerability) }.policy do
+        enable :read_vulnerability
+      end
+
+      rule { can?(:read_dependency) }.policy do
         enable :read_licenses
       end
 

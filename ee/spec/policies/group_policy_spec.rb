@@ -1576,21 +1576,78 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
   end
 
+  describe "security dashboard policies" do
+    where(:policy, :role, :admin_mode, :allowed) do
+      :admin_vulnerability           | :admin      | false | false
+      :admin_vulnerability           | :admin      | true  | true
+      :admin_vulnerability           | :auditor    | nil   | false
+      :admin_vulnerability           | :developer  | nil   | false
+      :admin_vulnerability           | :guest      | nil   | false
+      :admin_vulnerability           | :maintainer | nil   | true
+      :admin_vulnerability           | :owner      | nil   | true
+      :admin_vulnerability           | :reporter   | nil   | false
+      :read_dependency               | :admin      | false | false
+      :read_dependency               | :admin      | true  | true
+      :read_dependency               | :auditor    | nil   | true
+      :read_dependency               | :developer  | nil   | true
+      :read_dependency               | :guest      | nil   | false
+      :read_dependency               | :maintainer | nil   | true
+      :read_dependency               | :owner      | nil   | true
+      :read_dependency               | :reporter   | nil   | false
+      :read_group_security_dashboard | :admin      | false | false
+      :read_group_security_dashboard | :admin      | true  | true
+      :read_group_security_dashboard | :auditor    | nil   | true
+      :read_group_security_dashboard | :developer  | nil   | true
+      :read_group_security_dashboard | :guest      | nil   | false
+      :read_group_security_dashboard | :maintainer | nil   | true
+      :read_group_security_dashboard | :owner      | nil   | true
+      :read_group_security_dashboard | :reporter   | nil   | false
+      :read_licenses                 | :admin      | false | false
+      :read_licenses                 | :admin      | true  | true
+      :read_licenses                 | :auditor    | nil   | true
+      :read_licenses                 | :developer  | nil   | true
+      :read_licenses                 | :guest      | nil   | false
+      :read_licenses                 | :maintainer | nil   | true
+      :read_licenses                 | :owner      | nil   | true
+      :read_licenses                 | :reporter   | nil   | false
+      :read_vulnerability            | :admin      | false | false
+      :read_vulnerability            | :admin      | true  | true
+      :read_vulnerability            | :auditor    | nil   | true
+      :read_vulnerability            | :developer  | nil   | true
+      :read_vulnerability            | :guest      | nil   | false
+      :read_vulnerability            | :maintainer | nil   | true
+      :read_vulnerability            | :owner      | nil   | true
+      :read_vulnerability            | :reporter   | nil   | false
+    end
+
+    with_them do
+      let(:current_user) { public_send(role) }
+
+      before do
+        enable_admin_mode!(current_user) if admin_mode
+      end
+
+      context "with security_dashboard enabled" do
+        before do
+          stub_licensed_features(security_dashboard: true)
+        end
+
+        it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
+      end
+
+      context "with security_dashboard disabled" do
+        before do
+          stub_licensed_features(security_dashboard: false)
+        end
+
+        it { is_expected.to be_disallowed(policy) }
+      end
+    end
+  end
+
   describe 'admin_vulnerability' do
     before do
       stub_licensed_features(security_dashboard: true)
-    end
-
-    context 'with guest' do
-      let(:current_user) { auditor }
-
-      it { is_expected.to be_disallowed(:admin_vulnerability) }
-    end
-
-    context 'with reporter' do
-      let(:current_user) { reporter }
-
-      it { is_expected.to be_disallowed(:admin_vulnerability) }
     end
 
     context 'with developer' do
@@ -1605,24 +1662,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
         it { is_expected.to be_allowed(:admin_vulnerability) }
       end
-    end
-
-    context 'with maintainer' do
-      let(:current_user) { maintainer }
-
-      it { is_expected.to be_allowed(:admin_vulnerability) }
-    end
-
-    context 'with owner' do
-      let(:current_user) { owner }
-
-      it { is_expected.to be_allowed(:admin_vulnerability) }
-    end
-
-    context 'with admin', :enable_admin_mode do
-      let(:current_user) { admin }
-
-      it { is_expected.to be_allowed(:admin_vulnerability) }
     end
 
     context 'with auditor' do
@@ -3333,18 +3372,20 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       it 'does not enable to admin_vulnerability' do
         expect(subject).to be_disallowed(:admin_vulnerability)
       end
+
+      it { is_expected.to be_disallowed(:read_dependency) }
     end
 
     context 'for a member role with admin_vulnerability true' do
       let(:member_role_abilities) { { read_vulnerability: true, admin_vulnerability: true } }
-      let(:allowed_abilities) { [:read_group_security_dashboard, :admin_vulnerability] }
+      let(:allowed_abilities) { [:read_group_security_dashboard, :read_vulnerability, :admin_vulnerability] }
 
       it_behaves_like 'custom roles abilities'
     end
 
     context 'for a member role with read_dependency true' do
       let(:member_role_abilities) { { read_dependency: true } }
-      let(:allowed_abilities) { [:read_dependency] }
+      let(:allowed_abilities) { [:read_dependency, :read_licenses] }
 
       it_behaves_like 'custom roles abilities'
     end
