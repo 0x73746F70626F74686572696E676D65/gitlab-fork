@@ -226,11 +226,6 @@ module EE
         Ability.allowed?(@user, :developer_access, security_orchestration_policy_configuration.security_policy_management_project)
       end
 
-      condition(:developer_access_to_admin_vulnerability) do
-        ::Feature.disabled?(:disable_developer_access_to_admin_vulnerability, subject&.root_ancestor) &&
-          can?(:developer_access)
-      end
-
       condition(:chat_allowed_for_group, scope: :subject) do
         next true unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
 
@@ -485,7 +480,7 @@ module EE
         enable :read_vulnerability
       end
 
-      rule { security_dashboard_enabled & (can?(:maintainer_access) | developer_access_to_admin_vulnerability) }.policy do
+      rule { security_dashboard_enabled & can?(:maintainer_access) }.policy do
         enable :admin_vulnerability
       end
 

@@ -730,17 +730,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it { is_expected.to be_disallowed(:create_vulnerability_feedback) }
       it { is_expected.to be_disallowed(:update_vulnerability_feedback) }
       it { is_expected.to be_disallowed(:destroy_vulnerability_feedback) }
-
-      context "with `disable_developer_access_to_admin_vulnerability` disabled" do
-        before do
-          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
-        end
-
-        it { is_expected.to be_allowed(:read_vulnerability_feedback) }
-        it { is_expected.to be_allowed(:create_vulnerability_feedback) }
-        it { is_expected.to be_allowed(:update_vulnerability_feedback) }
-        it { is_expected.to be_allowed(:destroy_vulnerability_feedback) }
-      end
     end
 
     where(permission: %i[
@@ -3433,14 +3422,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       let(:current_user) { developer }
 
       it { is_expected.to be_disallowed(:admin_vulnerability) }
-
-      context "with `disable_developer_access_to_admin_vulnerability` disabled" do
-        before do
-          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
-        end
-
-        it { is_expected.to be_allowed(:admin_vulnerability) }
-      end
     end
 
     context "with maintainer" do

@@ -104,13 +104,5 @@ RSpec.describe Vulnerabilities::ConfirmService, feature_category: :vulnerability
     it { expect { confirm_vulnerability }.to be_denied_for(:reporter).of(project) }
     it { expect { confirm_vulnerability }.to be_denied_for(:guest).of(project) }
     it { expect { confirm_vulnerability }.to be_denied_for(:anonymous) }
-
-    context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
-      before do
-        stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
-      end
-
-      it { expect { confirm_vulnerability }.to be_allowed_for(:developer).of(project) }
-    end
   end
 end
