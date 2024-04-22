@@ -92,6 +92,7 @@ Roles are bound to a specific authentication path so you need to add new roles f
      "policies": ["myproject-staging"],
      "token_explicit_max_ttl": 60,
      "user_claim": "user_email",
+     "bound_audiences": ["https://vault.example.com"],
      "bound_claims": {
        "project_id": "22",
        "ref": "master",
@@ -210,7 +211,7 @@ job:
     VAULT_AUTH_ROLE: myproject-staging
   id_tokens:
     VAULT_ID_TOKEN:
-      aud: https://gitlab.example.com
+      aud: https://vault.example.com
   secrets:
     PASSWORD:
       vault:
@@ -241,7 +242,7 @@ job:
     VAULT_AUTH_ROLE: myproject-staging
   id_tokens:
     VAULT_ID_TOKEN:
-      aud: https://gitlab.example.com
+      aud: https://vault.example.com
   secrets:
     PASSWORD:
       vault:
@@ -265,7 +266,7 @@ job:
     VAULT_AUTH_ROLE: myproject-staging
   id_tokens:
     VAULT_ID_TOKEN:
-      aud: https://gitlab.example.com
+      aud: https://vault.example.com
   secrets:
       PASSWORD:
         vault: myproject/staging/db/password@secret
