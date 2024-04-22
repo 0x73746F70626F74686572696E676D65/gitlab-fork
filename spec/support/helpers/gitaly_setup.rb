@@ -101,10 +101,12 @@ module GitalySetup
   end
 
   def start_gitaly(toml = nil)
+    FileUtils.mkdir_p(GitalySetup.storage_path)
     start(:gitaly, toml)
   end
 
   def start_gitaly2
+    FileUtils.mkdir_p(GitalySetup.second_storage_path)
     start(:gitaly2)
   end
 
@@ -319,6 +321,8 @@ module GitalySetup
       next if ENV['GITALY_PID_FILE']
 
       pids.each { |pid| stop(pid) }
+
+      [storage_path, second_storage_path].each { |storage_dir| FileUtils.rm_rf(storage_dir) }
     end
   rescue StandardError
     raise gitaly_failure_message
