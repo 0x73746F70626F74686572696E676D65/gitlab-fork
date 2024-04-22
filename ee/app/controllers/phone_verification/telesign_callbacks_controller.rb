@@ -39,7 +39,10 @@ module PhoneVerification
       return unless user.offer_phone_number_exemption?
 
       user.create_phone_number_exemption!
-      Gitlab::EtagCaching::Store.new.touch(verification_state_signup_identity_verification_path)
+      Gitlab::EtagCaching::Store.new.touch(
+        verification_state_signup_identity_verification_path,
+        verification_state_identity_verification_path
+      )
 
       Gitlab::AppLogger.info(
         message: 'Phone number verification exemption created',
