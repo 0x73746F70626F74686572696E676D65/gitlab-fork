@@ -8,12 +8,4 @@ module SecretsHelper
       base_path: project_secrets_path(project)
     }
   end
-
-  def group_secrets_app_data(group)
-    {
-      group_path: group.full_path,
-      group_id: group.id,
-      base_path: group_secrets_path(group)
-    }
-  end
 end

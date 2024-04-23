@@ -1,8 +1,9 @@
 ---
 name: ci_tanukey_ui
+feature_issue_url: https://gitlab.com/groups/gitlab-org/-/epics/11373
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/131224
 rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/427026
 milestone: '16.6'
-type: development
 group: group::pipeline security
+type: wip
 default_enabled: false
