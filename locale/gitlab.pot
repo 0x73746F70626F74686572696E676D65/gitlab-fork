@@ -29844,9 +29844,6 @@ msgstr ""
 msgid "Label %{labelName} was not found"
 msgstr ""
 
-msgid "Label actions"
-msgstr ""
-
 msgid "Label actions dropdown"
 msgstr ""
 
@@ -29900,7 +29897,16 @@ msgstr ""
 msgid "Labels|%{spanStart}Promote label%{spanEnd} %{labelTitle} %{spanStart}to Group Label?%{spanEnd}"
 msgstr ""
 
+msgid "Labels|Label actions"
+msgstr ""
+
+msgid "Labels|Label actions dropdown"
+msgstr ""
+
 msgid "Labels|Promote Label"
+msgstr ""
+
+msgid "Labels|Promote to group label"
 msgstr ""
 
 msgid "Labels|Promoting %{labelTitle} will make it available for all projects inside %{groupName}. Existing project labels with the same title will be merged. If a group label with the same title exists, it will also be merged. This action cannot be reversed."
@@ -41238,9 +41244,6 @@ msgid "Promote issue to incident"
 msgstr ""
 
 msgid "Promote to epic"
-msgstr ""
-
-msgid "Promote to group label"
 msgstr ""
 
 msgid "Promote to objective"
