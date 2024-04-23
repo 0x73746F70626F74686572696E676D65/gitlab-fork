@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Doctor::Secrets do
   let!(:user) { create(:user, otp_secret: "test") }
-  let!(:group) { create(:group, runners_token: "test") }
+  let!(:group) { create(:group, :allow_runner_registration_token, runners_token: "test") }
   let!(:project) { create(:project) }
   let!(:grafana_integration) { create(:grafana_integration, project: project, token: "test") }
   let!(:integration) { create(:integration, project: project, properties: { test_key: "test_value" }) }

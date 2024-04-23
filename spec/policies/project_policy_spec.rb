@@ -7,7 +7,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   include AdminModeHelper
   include_context 'ProjectPolicy context'
 
-  let_it_be_with_refind(:project_with_runner_registration_token) do
+  let_it_be_with_reload(:project_with_runner_registration_token) do
     create(:project, :public, :allow_runner_registration_token)
   end
 
