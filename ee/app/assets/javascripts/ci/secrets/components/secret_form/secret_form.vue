@@ -4,18 +4,21 @@ import {
   GlCollapsibleListbox,
   GlDatepicker,
   GlDropdownDivider,
-  GlLink,
   GlForm,
   GlFormGroup,
   GlFormInput,
   GlFormTextarea,
+  GlLink,
   GlSprintf,
 } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { isDate } from 'lodash';
+import { createAlert } from '~/alert';
+import { __, s__ } from '~/locale';
 import { getDateInFuture } from '~/lib/utils/datetime_utility';
 import CiEnvironmentsDropdown from '~/ci/common/private/ci_environments_dropdown';
-import { INDEX_ROUTE_NAME, ROTATION_PERIOD_OPTIONS } from '../../constants';
+import { INDEX_ROUTE_NAME, DETAILS_ROUTE_NAME, ROTATION_PERIOD_OPTIONS } from '../../constants';
 import { convertRotationPeriod } from '../../utils';
+import CreateSecretMutation from '../../graphql/mutations/client/create_secret.mutation.graphql';
 import SecretPreviewModal from './secret_preview_modal.vue';
 
 export default {
@@ -26,11 +29,11 @@ export default {
     GlCollapsibleListbox,
     GlDropdownDivider,
     GlDatepicker,
-    GlLink,
     GlForm,
     GlFormGroup,
     GlFormInput,
     GlFormTextarea,
+    GlLink,
     GlSprintf,
     SecretPreviewModal,
   },
@@ -44,12 +47,12 @@ export default {
       required: false,
       default: () => [],
     },
-    isEditing: {
-      type: Boolean,
+    fullPath: {
+      type: String,
       required: true,
     },
-    redirectToRouteName: {
-      type: String,
+    isEditing: {
+      type: Boolean,
       required: true,
     },
   },
@@ -57,20 +60,37 @@ export default {
     return {
       customRotationPeriod: '',
       isPreviewing: false,
+      isSubmitting: false,
       secret: {
         createdAt: undefined,
         environment: '*',
-        expiration: null,
+        expiration: undefined,
         description: '',
-        key: '',
+        key: undefined,
         rotationPeriod: '',
-        value: '',
+        value: undefined,
       },
     };
   },
   computed: {
+    canSubmit() {
+      if (this.isExpirationValid && this.isKeyValid && this.isValueValid) {
+        return true;
+      }
+
+      return false;
+    },
     createdAt() {
       return this.secret.createdAt || Date.now();
+    },
+    isExpirationValid() {
+      return isDate(this.secret.expiration);
+    },
+    isKeyValid() {
+      return this.secret.key.length > 0;
+    },
+    isValueValid() {
+      return this.secret.value.length > 0;
     },
     minExpirationDate() {
       // secrets can expire tomorrow, but not today or yesterday
@@ -89,6 +109,34 @@ export default {
     },
   },
   methods: {
+    async createSecret() {
+      this.isSubmitting = true;
+
+      try {
+        const { data } = await this.$apollo.mutate({
+          mutation: CreateSecretMutation,
+          variables: {
+            fullPath: this.fullPath,
+            secret: this.secret,
+          },
+        });
+
+        this.isSubmitting = false;
+
+        const { errors } = data.createSecret.project.secret || [];
+        if (errors.length > 0) {
+          createAlert({ message: errors[0] });
+        } else {
+          this.$router.push({ name: DETAILS_ROUTE_NAME, params: { key: this.secret.key } });
+        }
+      } catch (e) {
+        this.isSubmitting = false;
+        createAlert({ message: __('Something went wrong on our end. Please try again.') });
+      }
+    },
+    editSecret() {
+      // TODO
+    },
     hidePreviewModal() {
       this.isPreviewing = false;
     },
@@ -99,41 +147,61 @@ export default {
       this.secret = { ...this.secret, environment };
     },
     showPreviewModal() {
-      this.isPreviewing = true;
+      if (this.canSubmit) {
+        this.isPreviewing = true;
+      }
     },
-    submitSecret() {
-      // TODO: submit secret
+    async submitSecret() {
+      if (this.isEditing) {
+        await this.editSecret();
+      } else {
+        await this.createSecret();
+      }
     },
   },
   datePlaceholder: 'YYYY-MM-DD',
   cronPlaceholder: '0 6 * * *',
-  secretsIndexRoute: INDEX_ROUTE_NAME,
+  i18n: {
+    fieldRequired: __('This field is required'),
+  },
   rotationPeriodOptions: ROTATION_PERIOD_OPTIONS,
+  secretsIndexRoute: INDEX_ROUTE_NAME,
 };
 </script>
 <template>
   <div>
     <gl-form @submit.prevent="showPreviewModal">
-      <gl-form-group :label="s__('Secrets|Secret key')" label-for="secret-key">
+      <gl-form-group
+        data-testid="secret-key-field-group"
+        label-for="secret-key"
+        :label="s__('Secrets|Secret key')"
+        :invalid-feedback="$options.i18n.fieldRequired"
+        :state="secret.key === undefined || isKeyValid"
+      >
         <gl-form-input
           id="secret-key"
           v-model="secret.key"
-          data-testid="secret-key"
           :placeholder="s__('Secrets|Enter a key name')"
+          :state="secret.key === undefined || isKeyValid"
         />
       </gl-form-group>
-      <gl-form-group :label="s__('Secrets|Value')" label-for="secret-value">
+      <gl-form-group
+        data-testid="secret-value-field-group"
+        label-for="secret-value"
+        :label="s__('Secrets|Value')"
+        :invalid-feedback="$options.i18n.fieldRequired"
+      >
         <gl-form-textarea
           id="secret-value"
           v-model="secret.value"
-          data-testid="secret-value"
           rows="5"
           max-rows="15"
           :placeholder="s__('Secrets|Value for the key')"
           :spellcheck="false"
+          :state="secret.value === undefined || isValueValid"
         />
       </gl-form-group>
-      <gl-form-group :label="__('Description')" label-for="secret-description">
+      <gl-form-group :label="__('Description')" label-for="secret-description" optional>
         <gl-form-input
           id="secret-description"
           v-model="secret.description"
@@ -144,7 +212,7 @@ export default {
       <gl-form-group
         :label="s__('Secrets|Select environment')"
         label-for="secret-environment"
-        class="gl-w-half"
+        class="gl-w-half gl-pr-2"
       >
         <ci-environments-dropdown
           :are-environments-loading="areEnvironmentsLoading"
@@ -159,8 +227,8 @@ export default {
       <div class="gl-display-flex gl-gap-4">
         <gl-form-group
           class="gl-w-full"
-          :label="s__('Secrets|Set expiration')"
           label-for="secret-expiration"
+          :label="s__('Secrets|Set expiration')"
         >
           <gl-datepicker
             id="secret-expiration"
@@ -174,6 +242,7 @@ export default {
           class="gl-w-full"
           :label="s__('Secrets|Rotation period')"
           label-for="secret-rotation-period"
+          optional
         >
           <gl-collapsible-listbox
             id="secret-rotation-period"
@@ -206,6 +275,7 @@ export default {
                   data-testid="add-custom-rotation-button"
                   size="small"
                   variant="confirm"
+                  :aria-label="__('Add interval')"
                   @click="setCustomRotationPeriod"
                 >
                   {{ __('Add interval') }}
@@ -215,7 +285,8 @@ export default {
           </gl-collapsible-listbox>
         </gl-form-group>
       </div>
-      <!-- TODO: replace placeholder access permission fields with the real thing -->
+      <!-- TODO: Access permission fields will be added in a future iteration -->
+      <!-- See: https://gitlab.com/gitlab-org/gitlab/-/issues/457380 -->
       <gl-form-group label-for="secret-roles-and-users" :label="__('Access permission')">
         <div class="gl-display-flex gl-gap-4">
           <gl-form-input :placeholder="__('Select roles or users')" disabled />
@@ -223,13 +294,22 @@ export default {
         </div>
       </gl-form-group>
       <div class="gl-my-3">
-        <gl-button variant="confirm" data-testid="submit-form-button" @click="showPreviewModal">
+        <gl-button
+          variant="confirm"
+          data-testid="submit-form-button"
+          :aria-label="__('Continue')"
+          :disabled="!canSubmit || isSubmitting"
+          :loading="isSubmitting"
+          @click="showPreviewModal"
+        >
           {{ __('Continue') }}
         </gl-button>
         <gl-button
           :to="{ name: $options.secretsIndexRoute }"
           data-testid="cancel-button"
           class="gl-my-4"
+          :aria-label="__('Cancel')"
+          :disabled="isSubmitting"
         >
           {{ __('Cancel') }}
         </gl-button>
@@ -238,6 +318,7 @@ export default {
     <secret-preview-modal
       :created-at="createdAt"
       :description="secret.description"
+      :environment="secret.environment"
       :expiration="secret.expiration"
       :is-editing="isEditing"
       :is-visible="isPreviewing"

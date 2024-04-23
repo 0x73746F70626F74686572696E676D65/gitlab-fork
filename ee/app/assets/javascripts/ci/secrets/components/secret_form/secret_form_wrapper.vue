@@ -8,7 +8,7 @@ import {
   ENVIRONMENT_QUERY_LIMIT,
   mapEnvironmentNames,
 } from '~/ci/common/private/ci_environments_dropdown';
-import { DETAILS_ROUTE_NAME, ENTITY_PROJECT, INDEX_ROUTE_NAME } from '../../constants';
+import { ENTITY_PROJECT } from '../../constants';
 import SecretForm from './secret_form.vue';
 
 const i18n = {
@@ -100,8 +100,6 @@ export default {
       this.$apollo.queries.environments.refetch({ search: searchTerm });
     },
   },
-  INDEX_ROUTE_NAME,
-  DETAILS_ROUTE_NAME,
   i18n,
 };
 </script>
@@ -112,8 +110,8 @@ export default {
     <secret-form
       :are-environments-loading="areEnvironmentsLoading"
       :environments="environments"
+      :full-path="fullPath"
       :is-editing="isEditing"
-      :redirect-to-route-name="isEditing ? $options.DETAILS_ROUTE_NAME : $options.INDEX_ROUTE_NAME"
       @search-environment="searchEnvironment"
     />
   </div>
