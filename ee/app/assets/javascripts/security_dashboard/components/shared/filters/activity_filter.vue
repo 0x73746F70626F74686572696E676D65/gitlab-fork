@@ -42,12 +42,6 @@ export const ITEMS = {
   },
 };
 
-export const GROUPS_MR = {
-  text: s__('SecurityReports|Merge Request'),
-  options: [ITEMS.HAS_MERGE_REQUEST, ITEMS.DOES_NOT_HAVE_MERGE_REQUEST],
-  icon: 'git-merge',
-};
-
 export const GROUPS = [
   {
     text: '',
@@ -69,6 +63,11 @@ export const GROUPS = [
     text: s__('SecurityReports|Issue'),
     options: [ITEMS.HAS_ISSUE, ITEMS.DOES_NOT_HAVE_ISSUE],
     icon: 'issues',
+  },
+  {
+    text: s__('SecurityReports|Merge Request'),
+    options: [ITEMS.HAS_MERGE_REQUEST, ITEMS.DOES_NOT_HAVE_MERGE_REQUEST],
+    icon: 'git-merge',
   },
   {
     text: s__('SecurityReports|Solution available'),
@@ -106,9 +105,6 @@ export default {
     },
     items() {
       const groups = [...GROUPS];
-      if (this.glFeatures.activityFilterHasMr) {
-        groups.push(GROUPS_MR);
-      }
       return groups;
     },
   },
@@ -127,8 +123,8 @@ export default {
         this.$emit('filter-changed', {
           hasResolution,
           hasIssues,
-          ...(this.glFeatures.activityFilterHasMr ? { hasMergeRequest } : {}),
-          ...(this.glFeatures.activityFilterHasMr ? { hasRemediations } : {}),
+          hasMergeRequest,
+          hasRemediations,
         });
       },
     },
