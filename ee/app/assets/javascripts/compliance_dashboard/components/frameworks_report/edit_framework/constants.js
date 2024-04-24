@@ -1,6 +1,7 @@
 import { __, s__, n__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
+export const maxNameLength = 255;
 export const i18n = {
   basicInformation: s__('ComplianceFrameworks|Basic information'),
   basicInformationDetails: s__('ComplianceFrameworks|Name, description'),
@@ -42,7 +43,9 @@ export const i18n = {
 
   successMessageText: s__('ComplianceFrameworks|Compliance framework created'),
   titleInputLabel: s__('ComplianceFrameworks|Name'),
-  titleInputInvalid: s__('ComplianceFrameworks|Name is required'),
+  titleInputInvalid: s__(
+    'ComplianceFrameworks|Name is required, and must be less than 255 characters',
+  ),
   descriptionInputLabel: s__('ComplianceFrameworks|Description'),
   descriptionInputInvalid: s__('ComplianceFrameworks|Description is required'),
   pipelineConfigurationInputLabel: s__(
