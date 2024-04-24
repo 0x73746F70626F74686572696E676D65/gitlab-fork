@@ -29958,6 +29958,9 @@ msgstr ""
 msgid "Last activity"
 msgstr ""
 
+msgid "Last activity:"
+msgstr ""
+
 msgid "Last attempted number:"
 msgstr ""
 
@@ -55922,6 +55925,9 @@ msgid "User caps is enabled for this group, visit the %{pending_members_link_sta
 msgstr ""
 
 msgid "User created at"
+msgstr ""
+
+msgid "User created:"
 msgstr ""
 
 msgid "User deleted own account on %{timestamp}"
