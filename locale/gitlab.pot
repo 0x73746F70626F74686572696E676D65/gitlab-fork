@@ -54191,6 +54191,9 @@ msgstr ""
 msgid "Todos|yourself"
 msgstr ""
 
+msgid "Toggle DuoChat"
+msgstr ""
+
 msgid "Toggle GitLab Next"
 msgstr ""
 
