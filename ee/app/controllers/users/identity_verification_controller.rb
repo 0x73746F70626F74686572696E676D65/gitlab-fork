@@ -4,8 +4,13 @@ module Users
   class IdentityVerificationController < BaseIdentityVerificationController
     before_action :ensure_feature_enabled
 
+    def show
+      session[:identity_verification_referer] = request.referer
+    end
+
     def success
-      redirect_to root_path
+      redirect_url = session.delete(:identity_verification_referer) || root_path
+      redirect_to redirect_url
     end
 
     private

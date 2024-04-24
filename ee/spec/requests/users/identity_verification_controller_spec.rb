@@ -41,7 +41,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
   end
 
   describe 'GET show' do
-    subject(:do_request) { get identity_verification_path }
+    subject(:do_request) { get identity_verification_path, params: {}, headers: { referer: '/referer/path' } }
 
     it_behaves_like 'it requires a signed in user'
     it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
@@ -52,6 +52,12 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
       do_request
 
       expect(response).to render_template('show', layout: 'minimal')
+    end
+
+    it 'sets session[:identity_verification_referer]' do
+      do_request
+
+      expect(session[:identity_verification_referer]).to eq '/referer/path'
     end
   end
 
@@ -157,10 +163,24 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
     it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
 
-    it 'redirects to root_path' do
-      do_request
+    context 'when session[:identity_verification_referer] is set' do
+      before do
+        stub_session(session_data: { identity_verification_referer: '/expected/redirect/path' })
+      end
 
-      expect(response).to redirect_to(root_path)
+      it 'redirects to the path set in session[:identity_verification_referer]' do
+        do_request
+
+        expect(response).to redirect_to('/expected/redirect/path')
+      end
+    end
+
+    context 'when session[:identity_verification_referer] is not set' do
+      it 'redirects to the path set in session[:identity_verification_referer]' do
+        do_request
+
+        expect(response).to redirect_to(root_path)
+      end
     end
   end
 end
