@@ -5,7 +5,7 @@ module Mutations
     class CreateExternalIssueLink < BaseMutation
       graphql_name 'VulnerabilityExternalIssueLinkCreate'
 
-      authorize :admin_vulnerability
+      authorize :create_external_issue_link
 
       field :external_issue_link, Types::Vulnerability::ExternalIssueLinkType,
             null: true,
