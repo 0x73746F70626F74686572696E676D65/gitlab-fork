@@ -5,27 +5,25 @@ module EE
     module UpdateService
       extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
+      include ::MemberManagement::PromotionManagementUtils
 
       override :execute
       def execute(members, permission: :update)
         return super unless non_admin_and_member_promotion_management_enabled?
 
         members = Array.wrap(members)
-        members_to_update, members_requiring_approval = split_members_requiring_update_and_approval(members)
+        validate_update_permission!(members, permission)
 
-        if members_requiring_approval.present?
-          members_queued_for_approval = queue_members_for_approval(members_requiring_approval, permission)
-          if members_queued_for_approval.empty?
-            return error("Invalid record while enqueuing members for approval", pass_back: {
-              members: members_requiring_approval
-            })
-          end
-        end
+        service_response = MemberManagement::CreateService.new(current_user, members, params).execute
+        return service_response if service_response.error?
 
-        response = super(members_to_update, permission: permission)
-        return response if response[:status] == :error
+        members_to_update = service_response.payload[:members_to_update]
+        members_queued_for_approval = service_response.payload[:members_queued_for_approval]
 
-        response.merge(members_queued_for_approval: members_queued_for_approval)
+        update_member_response = super(members_to_update, permission: permission)
+        return update_member_response if update_member_response[:status] == :error
+
+        update_member_response.merge(members_queued_for_approval: members_queued_for_approval)
       end
 
       override :after_execute
@@ -48,34 +46,16 @@ module EE
         member.prevent_role_assignement?(current_user, params.merge(current_access_level: member.access_level))
       end
 
-      def split_members_requiring_update_and_approval(members)
-        members_to_queue, members_to_update = members.partition do |member|
-          member.member_promotion_management_required?(
-            new_access_level: params[:access_level],
-            member_role_id: params[:member_role_id]
-          )
-        end
-
-        [members_to_update, members_to_queue]
-      end
-
-      def queue_members_for_approval(members_to_queue, permission)
-        ::Members::MemberApproval.transaction do
-          members_to_queue.map do |member|
-            raise ::Gitlab::Access::AccessDeniedError unless has_update_permissions?(member, permission)
-
-            member.queue_for_approval(params[:access_level], current_user)
-          end
-        end
-      rescue ActiveRecord::RecordInvalid
-        []
-      end
-
       def non_admin_and_member_promotion_management_enabled?
         return false if current_user.can_admin_all_resources?
 
-        ::Feature.enabled?(:member_promotion_management, type: :wip) &&
-          ::Gitlab::CurrentSettings.enable_member_promotion_management?
+        promotion_management_applicable?
+      end
+
+      def validate_update_permission!(members, permission)
+        return if members.all? { |member| has_update_permissions?(member, permission) }
+
+        raise ::Gitlab::Access::AccessDeniedError
       end
 
       override :update_member
