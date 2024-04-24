@@ -70,30 +70,6 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
     it_behaves_like 'well behaved cube query'
   end
 
-  describe 'GET projects/:id/product_analytics/funnels' do
-    let(:request) { get api("/projects/#{project.id}/product_analytics/funnels", current_user) }
-
-    context 'when project is not moved' do
-      before do
-        stub_cube_product_analytics_enabled
-      end
-
-      it_behaves_like 'well behaved cube query', { sub_service: false }
-    end
-
-    context 'when a project is moved' do
-      let_it_be(:redirect_route) { 'new/project/location' }
-
-      it 'returns 404 error' do
-        project.route.create_redirect(redirect_route)
-
-        get api("/projects/#{CGI.escape(redirect_route)}/product_analytics/funnels", current_user)
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-  end
-
   private
 
   def stub_cube_proxy_setup
