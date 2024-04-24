@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Ci::Runners::AssignRunnerService, '#execute', feature_category: :fleet_visibility do
+RSpec.describe ::Ci::Runners::AssignRunnerService, '#execute', feature_category: :runner do
   let_it_be(:owner_project) { create(:project) }
   let_it_be(:new_project) { create(:project) }
   let_it_be(:project_runner) { create(:ci_runner, :project, projects: [owner_project]) }

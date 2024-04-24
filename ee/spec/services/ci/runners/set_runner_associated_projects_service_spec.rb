@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Ci::Runners::SetRunnerAssociatedProjectsService, '#execute', feature_category: :fleet_visibility do
+RSpec.describe ::Ci::Runners::SetRunnerAssociatedProjectsService, '#execute', feature_category: :runner do
   subject(:execute) do
     described_class.new(runner: project_runner, current_user: user, project_ids: [new_project.id]).execute
   end
