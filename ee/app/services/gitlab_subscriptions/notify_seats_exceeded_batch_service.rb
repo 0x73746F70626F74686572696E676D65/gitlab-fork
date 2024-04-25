@@ -13,7 +13,7 @@ module GitlabSubscriptions
           Gitlab::SubscriptionPortal::Client.send_seat_overage_notification_batch(payload)
         end
 
-        ServiceResponse.success( message: 'Overage notifications sent' )
+        ServiceResponse.success(message: 'Overage notifications sent')
       end
 
       private

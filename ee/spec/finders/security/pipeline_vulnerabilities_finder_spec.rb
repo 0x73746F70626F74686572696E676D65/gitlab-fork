@@ -270,7 +270,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
         end
 
         context 'when `dismissed`' do
-          subject { described_class.new(pipeline: pipeline, params: { report_type: %w[dependency_scanning], scope: 'dismissed' } ).execute }
+          subject { described_class.new(pipeline: pipeline, params: { report_type: %w[dependency_scanning], scope: 'dismissed' }).execute }
 
           it 'returns non-dismissed vulnerabilities' do
             expect(subject.findings.count).to eq(ds_count - 1)
@@ -317,7 +317,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
         end
 
         context 'when `dismissed`' do
-          subject { described_class.new(pipeline: pipeline, params: { report_type: %w[sast], scope: 'dismissed' } ).execute }
+          subject { described_class.new(pipeline: pipeline, params: { report_type: %w[sast], scope: 'dismissed' }).execute }
 
           it 'returns non-dismissed vulnerabilities' do
             expect(subject.findings.count).to eq(sast_count - 1)
@@ -345,7 +345,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
       end
 
       context 'when `low`' do
-        subject { described_class.new(pipeline: pipeline, params: { severity: 'low' } ).execute }
+        subject { described_class.new(pipeline: pipeline, params: { severity: 'low' }).execute }
 
         it 'returns only low-severity vulnerabilities' do
           expect(subject.findings.map(&:severity).uniq).to match_array(%w[low])
@@ -363,7 +363,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
       end
 
       context 'when `medium`' do
-        subject { described_class.new(pipeline: pipeline, params: { confidence: 'medium' } ).execute }
+        subject { described_class.new(pipeline: pipeline, params: { confidence: 'medium' }).execute }
 
         it 'returns only medium-confidence vulnerabilities' do
           expect(subject.findings.map(&:confidence).uniq).to match_array(%w[medium])
@@ -387,7 +387,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
       end
 
       context 'when `zaproxy`' do
-        subject { described_class.new(pipeline: pipeline, params: { scanner: 'zaproxy' } ).execute }
+        subject { described_class.new(pipeline: pipeline, params: { scanner: 'zaproxy' }).execute }
 
         it 'returns only vulnerabilities with selected scanner external id' do
           expect(subject.findings.map(&:scanner).map(&:external_id).uniq).to match_array(%w[zaproxy])

@@ -123,7 +123,7 @@ module EE
 
           def import_kerberos_identities?
             # Kerberos may be enabled for Git HTTP access and/or as an Omniauth provider
-            ldap_config.active_directory && (::Gitlab.config.kerberos.enabled || ::AuthHelper.kerberos_enabled? )
+            ldap_config.active_directory && (::Gitlab.config.kerberos.enabled || ::AuthHelper.kerberos_enabled?)
           end
 
           # rubocop: disable CodeReuse/ActiveRecord

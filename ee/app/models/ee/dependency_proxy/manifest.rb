@@ -28,12 +28,12 @@ module EE
         scope :checksummed,
           -> do
             joins(:dependency_proxy_manifest_state)
-              .where.not(dependency_proxy_manifest_states: { verification_checksum: nil } )
+              .where.not(dependency_proxy_manifest_states: { verification_checksum: nil })
           end
         scope :not_checksummed,
           -> do
             joins(:dependency_proxy_manifest_state)
-              .where(dependency_proxy_manifest_states: { verification_checksum: nil } )
+              .where(dependency_proxy_manifest_states: { verification_checksum: nil })
           end
 
         scope :available_verifiables, -> { joins(:dependency_proxy_manifest_state) }
