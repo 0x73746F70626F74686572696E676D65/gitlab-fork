@@ -25,8 +25,6 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
   condition(:migration_bot, scope: :user) { @user&.migration_bot? }
   condition(:can_read_group_member) { can_read_group_member? }
 
-  condition(:allow_runner_registration_tokens, scope: :subject) { @subject.allow_runner_registration_token? }
-
   desc "User is a project bot"
   condition(:project_bot) { user.project_bot? && access_level >= GroupMember::GUEST }
 
