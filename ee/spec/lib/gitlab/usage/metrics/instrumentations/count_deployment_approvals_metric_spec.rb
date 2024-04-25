@@ -21,8 +21,8 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountDeploymentApproval
 
     let(:expected_value) { 2 }
     let(:expected_query) do
-      "SELECT COUNT(\"deployment_approvals\".\"id\") FROM \"deployment_approvals\"" \
-      " WHERE \"deployment_approvals\".\"created_at\" BETWEEN '#{start}' AND '#{finish}'"
+      "SELECT COUNT(\"deployment_approvals\".\"id\") FROM \"deployment_approvals\" " \
+      "WHERE \"deployment_approvals\".\"created_at\" BETWEEN '#{start}' AND '#{finish}'"
     end
 
     it_behaves_like 'a correct instrumented metric value and query', time_frame: '28d'

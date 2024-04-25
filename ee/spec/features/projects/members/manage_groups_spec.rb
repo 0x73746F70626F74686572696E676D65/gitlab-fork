@@ -36,8 +36,8 @@ RSpec.describe 'Projects > Members > Manage groups', feature_category: :groups_a
       visit project_project_members_path(project)
       invite_group(group_to_add.name, role: 'Maintainer')
 
-      error_msg = 'Invited group allowed email domains must contain a subset of the allowed email domains'\
-      ' of the root ancestor group'
+      error_msg = 'Invited group allowed email domains must contain a subset of the allowed email domains '\
+      'of the root ancestor group'
       expect(page).to have_content(error_msg)
     end
   end

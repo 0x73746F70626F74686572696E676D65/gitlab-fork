@@ -1300,8 +1300,8 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
           }
         )
 
-        error_message = "OTP verification is required to access the repository.\n\n"\
-                        "   Use: ssh #{user}@#{host} -p #{port} 2fa_verify"
+        error_message = "OTP verification is required to access the repository.\n\n   "\
+                        "Use: ssh #{user}@#{host} -p #{port} 2fa_verify"
 
         aggregate_failures do
           expect { push_changes }.to raise_forbidden(error_message)

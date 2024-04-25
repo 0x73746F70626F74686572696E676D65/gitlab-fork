@@ -41,8 +41,8 @@ RSpec.describe 'Pending group memberships', :js, feature_category: :groups_and_p
       visit group_path(group)
 
       expect(page).to have_content "Group ID: #{group.id}"
-      expect(page).to have_content s_('GroupsEmptyState|You do not have necessary permissions to create a subgroup or' \
-        ' project in this group. Please contact an owner of this group to create a new subgroup or project.')
+      expect(page).to have_content s_('GroupsEmptyState|You do not have necessary permissions to create a subgroup or ' \
+        'project in this group. Please contact an owner of this group to create a new subgroup or project.')
       expect(page).not_to have_content _('New project')
       expect(page).not_to have_content s_('GroupActivityMetrics|Recent activity')
     end

@@ -71,8 +71,8 @@ RSpec.describe 'approaching seat count threshold alert', :saas, :js, feature_cat
       expect(page).to have_content("#{group.name} is approaching the limit of available seats")
       expect(page)
         .to have_content(
-          "Your subscription has #{gitlab_subscription.seats - gitlab_subscription.max_seats_used} out of" \
-          " #{gitlab_subscription.seats} seats remaining."
+          "Your subscription has #{gitlab_subscription.seats - gitlab_subscription.max_seats_used} out of " \
+          "#{gitlab_subscription.seats} seats remaining."
         )
       expect(page).to have_link('View seat usage', href: usage_quotas_path(group, anchor: 'seats-quota-tab'))
 
@@ -93,8 +93,8 @@ RSpec.describe 'approaching seat count threshold alert', :saas, :js, feature_cat
       expect(page).to have_content("#{group.name} is approaching the limit of available seats")
       expect(page)
         .to have_content(
-          "Your subscription has #{gitlab_subscription.seats - gitlab_subscription.max_seats_used} out of" \
-          " #{gitlab_subscription.seats} seats remaining."
+          "Your subscription has #{gitlab_subscription.seats - gitlab_subscription.max_seats_used} out of " \
+          "#{gitlab_subscription.seats} seats remaining."
         )
       expect(page).to have_link('View seat usage', href: usage_quotas_path(group, anchor: 'seats-quota-tab'))
 
