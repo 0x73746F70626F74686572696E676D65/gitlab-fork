@@ -64,16 +64,16 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
 
     context 'with multiple epics' do
       let_it_be(:user2) { create(:user) }
-      let_it_be(:epic2) { create(:epic, author: user2, group: group, title: 'foo', description: 'bar', created_at: 5.days.ago, updated_at: 3.days.ago, start_date: 3.days.ago, end_date: 3.days.ago ) }
+      let_it_be(:epic2) { create(:epic, author: user2, group: group, title: 'foo', description: 'bar', created_at: 5.days.ago, updated_at: 3.days.ago, start_date: 3.days.ago, end_date: 3.days.ago) }
 
       before do
         stub_licensed_features(epics: true)
       end
 
       context 'with sort and pagination' do
-        let_it_be(:epic3) { create(:epic, group: group, start_date: 4.days.ago, end_date: 7.days.ago, created_at: 4.days.ago, updated_at: 1.day.ago ) }
-        let_it_be(:epic4) { create(:epic, group: group, start_date: 5.days.ago, end_date: 6.days.ago ) }
-        let_it_be(:epic5) { create(:epic, group: group, start_date: nil, end_date: nil ) }
+        let_it_be(:epic3) { create(:epic, group: group, start_date: 4.days.ago, end_date: 7.days.ago, created_at: 4.days.ago, updated_at: 1.day.ago) }
+        let_it_be(:epic4) { create(:epic, group: group, start_date: 5.days.ago, end_date: 6.days.ago) }
+        let_it_be(:epic5) { create(:epic, group: group, start_date: nil, end_date: nil) }
 
         let(:current_user) { user }
         let(:data_path) { [:group, :epics] }
@@ -166,8 +166,8 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
       end
 
       it 'has upvote/downvote information' do
-        create(:award_emoji, name: 'thumbsup', awardable: epic, user: user )
-        create(:award_emoji, name: 'thumbsdown', awardable: epic2, user: user )
+        create(:award_emoji, name: 'thumbsup', awardable: epic, user: user)
+        create(:award_emoji, name: 'thumbsdown', awardable: epic2, user: user)
 
         post_graphql(query, current_user: user)
 

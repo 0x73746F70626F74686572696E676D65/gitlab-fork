@@ -159,7 +159,7 @@ RSpec.describe 'Updating an Iteration', feature_category: :team_planning do
         end
 
         context 'when another iteration with given dates overlap' do
-          let_it_be(:another_iteration) { create(:iteration, iterations_cadence: cadence, start_date: start_date.strftime('%F'), due_date: end_date.strftime('%F') ) }
+          let_it_be(:another_iteration) { create(:iteration, iterations_cadence: cadence, start_date: start_date.strftime('%F'), due_date: end_date.strftime('%F')) }
 
           it_behaves_like 'a mutation that returns errors in the response',
                           errors: ["Dates cannot overlap with other existing Iterations within this iterations cadence"]

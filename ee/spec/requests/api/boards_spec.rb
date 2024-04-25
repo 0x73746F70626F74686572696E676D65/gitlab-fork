@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe API::Boards, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public, maintainers: user) }
-  let_it_be(:board_parent) { create(:project, :public, group: group ) }
+  let_it_be(:board_parent) { create(:project, :public, group: group) }
   let_it_be(:milestone) { create(:milestone, project: board_parent) }
   let_it_be(:board) { create(:board, project: board_parent, milestone: milestone, assignee: user) }
 
