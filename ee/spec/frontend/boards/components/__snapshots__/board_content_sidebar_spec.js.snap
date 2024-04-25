@@ -90,7 +90,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
         <button
           aria-keyshortcuts=""
           aria-label=""
-          class="btn btn-default btn-default-tertiary btn-sm gl-button gl-ml-auto gl-mr-n2 gl-text-gray-900! hide-collapsed shortcut-sidebar-dropdown-toggle"
+          class="-gl-mr-2 btn btn-default btn-default-tertiary btn-sm gl-button gl-ml-auto gl-text-gray-900! hide-collapsed shortcut-sidebar-dropdown-toggle"
           data-testid="edit-button"
           id="reference-0"
           title=""

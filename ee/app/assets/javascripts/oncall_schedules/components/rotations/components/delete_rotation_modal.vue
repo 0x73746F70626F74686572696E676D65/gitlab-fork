@@ -122,7 +122,7 @@ export default {
     @primary.prevent="deleteRotation"
     @cancel="$emit('set-rotation-to-update', {})"
   >
-    <gl-alert v-if="error" variant="danger" class="gl-mt-n3 gl-mb-3" @dismiss="hideErrorAlert">
+    <gl-alert v-if="error" variant="danger" class="-gl-mt-3 gl-mb-3" @dismiss="hideErrorAlert">
       {{ error || $options.i18n.errorMsg }}
     </gl-alert>
     <gl-sprintf :message="$options.i18n.deleteRotationMessage">
