@@ -388,14 +388,14 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
         'main' =>
         {
           'provider_name' => 'ldapmain',
-          'group_base'    => 'ou=groups',
-          'admin_group'   => 'my_group'
+          'group_base' => 'ou=groups',
+          'admin_group' => 'my_group'
         },
         'secondary' =>
         {
           'provider_name' => 'ldapsecondary',
-          'group_base'    => nil,
-          'admin_group'   => nil
+          'group_base' => nil,
+          'admin_group' => nil
         }
       }
     end
