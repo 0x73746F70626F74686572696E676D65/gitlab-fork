@@ -261,6 +261,10 @@ RSpec.describe 'GitLab Markdown', :aggregate_failures, feature_category: :team_p
         expect(doc).to create_header_links
       end
 
+      aggregate_failures 'TableOfContentsTagFilter' do
+        expect(doc).to create_toc
+      end
+
       aggregate_failures 'AutolinkFilter' do
         expect(doc).to create_autolinks
       end
@@ -378,6 +382,10 @@ RSpec.describe 'GitLab Markdown', :aggregate_failures, feature_category: :team_p
 
       aggregate_failures 'TableOfContentsFilter' do
         expect(doc).to create_header_links
+      end
+
+      aggregate_failures 'TableOfContentsTagFilter' do
+        expect(doc).to create_toc
       end
 
       aggregate_failures 'AutolinkFilter' do
