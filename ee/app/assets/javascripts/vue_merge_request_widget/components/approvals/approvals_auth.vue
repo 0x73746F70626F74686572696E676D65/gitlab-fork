@@ -1,9 +1,11 @@
 <script>
-import { GlModal } from '@gitlab/ui';
-import { __ } from '~/locale';
+import { GlFormGroup, GlFormInput, GlModal } from '@gitlab/ui';
+import { __, s__ } from '~/locale';
 
 export default {
   components: {
+    GlFormGroup,
+    GlFormInput,
     GlModal,
   },
   props: {
@@ -42,6 +44,12 @@ export default {
         text: __('Cancel'),
       };
     },
+    inputState() {
+      return this.hasError ? false : null;
+    },
+    invalidFeedback() {
+      return this.hasError ? s__('mrWidget|Approval password is invalid.') : null;
+    },
   },
   methods: {
     approve(event) {
@@ -54,7 +62,7 @@ export default {
     },
     onShow() {
       setTimeout(() => {
-        this.$refs.approvalPasswordInput.focus();
+        this.$refs.approvalPasswordInput.$el.focus();
       }, 0);
     },
   },
@@ -80,24 +88,22 @@ export default {
           )
         }}
       </p>
-      <div class="form-group mb-0">
-        <label class="mb-1" for="approvalPasswordInput">{{ s__('mrWidget|Your password') }}</label>
-        <div>
-          <input
-            id="approvalPasswordInput"
-            ref="approvalPasswordInput"
-            v-model="approvalPassword"
-            type="password"
-            class="form-control"
-            :class="{ 'is-invalid': hasError }"
-            autocomplete="new-password"
-            :placeholder="__('Password')"
-          />
-        </div>
-      </div>
-      <div v-if="hasError">
-        <span class="gl-field-error">{{ s__('mrWidget|Approval password is invalid.') }}</span>
-      </div>
+      <gl-form-group
+        :label="s__('mrWidget|Your password')"
+        label-for="approvalPasswordInput"
+        :invalid-feedback="invalidFeedback"
+        class="gl-mb-0"
+      >
+        <gl-form-input
+          id="approvalPasswordInput"
+          ref="approvalPasswordInput"
+          v-model="approvalPassword"
+          type="password"
+          autocomplete="new-password"
+          :placeholder="__('Password')"
+          :state="inputState"
+        />
+      </gl-form-group>
     </form>
   </gl-modal>
 </template>

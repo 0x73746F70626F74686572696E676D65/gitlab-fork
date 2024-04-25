@@ -1,5 +1,6 @@
 import { GlModal } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { stubComponent } from 'helpers/stub_component';
 import ApprovalsAuth from 'ee/vue_merge_request_widget/components/approvals/approvals_auth.vue';
 
 const TEST_PASSWORD = 'password';
@@ -8,16 +9,19 @@ describe('Approval auth component', () => {
   let wrapper;
 
   const createComponent = (props = {}) => {
-    wrapper = shallowMount(ApprovalsAuth, {
+    wrapper = mountExtended(ApprovalsAuth, {
       propsData: {
         ...props,
         modalId: 'testid',
+      },
+      stubs: {
+        GlModal: stubComponent(GlModal),
       },
     });
   };
 
   const findInput = () => wrapper.find('input[type=password]');
-  const findErrorMessage = () => wrapper.find('.gl-field-error');
+  const findErrorMessage = () => wrapper.findByText('Approval password is invalid.');
 
   describe('when created', () => {
     beforeEach(() => {
