@@ -54,7 +54,6 @@ module Vulnerabilities
         Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
           attribute_name: 'traversal_ids',
           order_expression: arel_table[:traversal_ids].asc,
-          distinct: false,
           nullable: :not_nullable
         ),
         Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
@@ -136,8 +135,7 @@ module Vulnerabilities
           Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
             attribute_name: :location_image,
             column_expression: arel_table[:location_image],
-            order_expression: arel_table[:location_image].asc,
-            distinct: true
+            order_expression: arel_table[:location_image].asc
           )
         ])
 
