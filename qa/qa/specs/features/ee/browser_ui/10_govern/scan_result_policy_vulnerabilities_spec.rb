@@ -163,7 +163,7 @@ module QA
         end
       end
 
-      def create_commit(branch_name:, report_name:, report_path:, severity: )
+      def create_commit(branch_name:, report_name:, report_path:, severity:)
         create(:commit,
           project: project,
           start_branch: project.default_branch,
