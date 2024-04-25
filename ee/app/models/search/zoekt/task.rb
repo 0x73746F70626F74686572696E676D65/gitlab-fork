@@ -65,7 +65,7 @@ module Search
           orphaned_task_ids = []
 
           tasks.each do |task|
-            unless task.zoekt_repository&.project
+            unless task.delete_repo? || task.zoekt_repository&.project
               orphaned_task_ids << task.id
               next
             end
