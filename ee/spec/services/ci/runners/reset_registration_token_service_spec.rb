@@ -35,7 +35,7 @@ RSpec.describe ::Ci::Runners::ResetRegistrationTokenService, '#execute', feature
       let(:current_user) { admin_user }
       let(:audit_service) { instance_double(::AuditEvents::RunnersTokenAuditEventService) }
 
-      before do
+      it 'calls security_event on RunnersTokenAuditEventService and returns the new token', :aggregate_failures do
         expect(scope).to receive(token_reset_method_name) do
           expect(scope).to receive(token_method_name).and_return("new #{scope.class.name} token value")
           true
@@ -45,11 +45,22 @@ RSpec.describe ::Ci::Runners::ResetRegistrationTokenService, '#execute', feature
           .with(current_user, scope, scope.public_send(token_method_name), "new #{scope.class.name} token value")
           .once.and_return(audit_service)
         expect(audit_service).to receive(:security_event).once.and_return('track_event_return_value')
-      end
 
-      it 'calls security_event on RunnersTokenAuditEventService and returns the new token', :aggregate_failures do
         expect(execute).to be_success
         expect(execute.payload[:new_registration_token]).to eq("new #{scope.class.name} token value")
+      end
+
+      context 'when allow_runner_registration_token is false' do
+        before do
+          stub_application_setting(allow_runner_registration_token: false)
+        end
+
+        it 'does not log an audit event and returns an error' do
+          expect(scope).not_to receive(token_reset_method_name)
+          expect(::AuditEvents::RunnersTokenAuditEventService).not_to receive(:new)
+
+          expect(execute).to be_error
+        end
       end
     end
   end

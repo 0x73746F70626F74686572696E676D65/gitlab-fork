@@ -236,8 +236,7 @@ class ProjectPolicy < BasePolicy
     !@subject.restrict_user_defined_variables?
   end
 
-  with_scope :subject
-  condition(:packages_disabled) { !@subject.packages_enabled }
+  condition(:packages_disabled, scope: :subject) { !@subject.packages_enabled }
 
   condition(:runner_registration_token_enabled, scope: :subject) { @subject.namespace.allow_runner_registration_token? }
 

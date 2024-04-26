@@ -163,13 +163,11 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute', feature_categor
     context 'when project registration token is used' do
       let_it_be_with_reload(:project) { create(:project, :allow_runner_registration_token) }
 
-      let(:token) { project.runners_token }
+      # Ensure we have a valid token to start with (runners_token is nil when allow_runner_registration_token is false)
+      let!(:token) { project.runners_token }
       let(:allow_group_runner_registration_token) { true }
 
       before do
-        # Ensure we have a valid token to start with (runners_token is nil when allow_runner_registration_token is false)
-        token
-
         project.namespace.update!(allow_runner_registration_token: allow_group_runner_registration_token)
       end
 
@@ -247,13 +245,11 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute', feature_categor
     context 'when group registration token is used' do
       let_it_be_with_reload(:group) { create(:group, :allow_runner_registration_token) }
 
-      let(:token) { group.runners_token }
+      # Ensure we have a valid token to start with (runners_token is nil when allow_runner_registration_token is false)
+      let!(:token) { group.runners_token }
       let(:allow_group_runner_registration_token) { true }
 
       before do
-        # Ensure we have a valid token to start with (runners_token is nil when allow_runner_registration_token is false)
-        token
-
         group.update!(allow_runner_registration_token: allow_group_runner_registration_token)
       end
 
