@@ -40,7 +40,7 @@ RSpec.describe ApplicationSettingPolicy do
         context 'with registration tokens disabled' do
           let(:allow_runner_registration_token) { false }
 
-          it { is_expected.to be_disallowed(:register_project_runners) }
+          it { is_expected.to be_disallowed(:update_runners_registration_token) }
         end
       end
 

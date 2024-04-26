@@ -1417,7 +1417,7 @@ RSpec.describe GroupPolicy, feature_category: :system_access do
         context 'with registration tokens disabled' do
           let(:allow_runner_registration_token) { false }
 
-          it { is_expected.to be_disallowed(:register_project_runners) }
+          it { is_expected.to be_disallowed(:register_group_runners) }
         end
 
         context 'with specific group runner registration disabled' do
@@ -1438,7 +1438,7 @@ RSpec.describe GroupPolicy, feature_category: :system_access do
           context 'with registration tokens disabled' do
             let(:allow_runner_registration_token) { false }
 
-            it { is_expected.to be_disallowed(:register_project_runners) }
+            it { is_expected.to be_disallowed(:register_group_runners) }
           end
 
           context 'with specific group runner registration disabled' do
@@ -1472,7 +1472,7 @@ RSpec.describe GroupPolicy, feature_category: :system_access do
       context 'with registration tokens disabled' do
         let(:allow_runner_registration_token) { false }
 
-        it { is_expected.to be_disallowed(:register_project_runners) }
+        it { is_expected.to be_disallowed(:register_group_runners) }
       end
 
       context 'with group runner registration disabled' do
