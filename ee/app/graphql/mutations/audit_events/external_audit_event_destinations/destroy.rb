@@ -9,8 +9,8 @@ module Mutations
         authorize :admin_external_audit_events
 
         argument :id, ::Types::GlobalIDType[::AuditEvents::ExternalAuditEventDestination],
-                 required: true,
-                 description: 'ID of external audit event destination to destroy.'
+          required: true,
+          description: 'ID of external audit event destination to destroy.'
 
         def resolve(id:)
           destination = authorized_find!(id)

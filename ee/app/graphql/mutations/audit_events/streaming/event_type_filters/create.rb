@@ -9,8 +9,8 @@ module Mutations
           authorize :admin_external_audit_events
 
           argument :destination_id, ::Types::GlobalIDType[::AuditEvents::ExternalAuditEventDestination],
-                   required: true,
-                   description: 'Destination id.'
+            required: true,
+            description: 'Destination id.'
         end
       end
     end
