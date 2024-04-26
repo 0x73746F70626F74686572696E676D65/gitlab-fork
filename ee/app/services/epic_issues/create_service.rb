@@ -59,7 +59,7 @@ module EpicIssues
     def linkable_issue?(issue)
       issue.supports_epic? &&
         can?(current_user, :admin_issue_relation, issue) &&
-        !previous_related_issuables.include?(issue)
+        previous_related_issuables.exclude?(issue)
     end
 
     def previous_related_issuables
