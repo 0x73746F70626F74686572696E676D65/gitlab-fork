@@ -1,32 +1,32 @@
 ---
 stage: core platform
 group: Tenant Scale
-description: 'Cells: Global Service'
+description: 'Cells: Topology Service'
 status: proposed
 ---
 
 <!-- vale gitlab.FutureTense = NO -->
 
-# Cells: Global Service
+# Cells: Topology Service
 
-This document describes design goals and architecture of Global Service
+This document describes design goals and architecture of Topology Service
 used by Cells.
 
 ## Goals
 
-The purpose of Global Service is to provide essential features for Cells
-to operate. The Global Service will implement a limited set of functions
+The purpose of Topology Service is to provide essential features for Cells
+to operate. The Topology Service will implement a limited set of functions
 and serve as an authoritative entity within the Cluster. There's only a single
-Global Service, that can be deployed in many regions.
+Topology Service, that can be deployed in many regions.
 
 1. **Technology.**
 
-    The Global Service will be written in [Go](https://go.dev/)
+    The Topology Service will be written in [Go](https://go.dev/)
     and expose API over [gRPC](https://grpc.io/).
 
 1. **Cells aware.**
 
-    The Global Service will contain a list of all Cells. The Global Service
+    The Topology Service will contain a list of all Cells. The Topology Service
     will monitor Cells health, and could pass this information down to Cells
     itself or Routing Service. Whether the Cell is healthy will be determined
     by various factors:
@@ -37,18 +37,18 @@ Global Service, that can be deployed in many regions.
 
 1. **Cloud first.**
 
-    The Global Service will be deployed in Cloud, and use Cloud managed services
+    The Topology Service will be deployed in Cloud, and use Cloud managed services
     to operate. Those services at later point could be extended with on-premise
     equivalents if required.
 
-    The Global Service will be written using a dual dialect:
+    The Topology Service will be written using a dual dialect:
 
     - GoogleSQL to run at scale for GitLab.com with Cloud Spanner
     - PostgreSQL for use internally and later provide on-premise compatibility.
 
 1. **Small.**
 
-    The Global Service due to its criticality in architecture will be limited to
+    The Topology Service due to its criticality in architecture will be limited to
     provide only essential functions required for cluster to operate.
 
 ## Requirements
@@ -64,30 +64,30 @@ Global Service, that can be deployed in many regions.
 
 ## Non-Goals
 
-Those Goals are outside of the Global Service scope as they heavily inflate the complexity:
+Those Goals are outside of the Topology Service scope as they heavily inflate the complexity:
 
-- The Global Service will not provide indexing of the user-facing information for Cells.
+- The Topology Service will not provide indexing of the user-facing information for Cells.
   Example: CI Catalog to show data available cluster-wide will have to use another means
   to merge the information from all Cells.
-- The Global Service has no knowledge of the business logic of GitLab.
+- The Topology Service has no knowledge of the business logic of GitLab.
   In theory it can work with any other web application that has the same authentication/access
   tokens as GitLab.
 
 ## Proposal
 
-The Global Service implements the following design guidelines:
+The Topology Service implements the following design guidelines:
 
-- Global Service implements only a few gRPC services.
+- Topology Service implements only a few gRPC services.
 - Some services due to backward compatibility are additionally exposed with REST API.
-- Global Service does not perform complex processing of information.
-- Global Service does not aggregate information from Cells.
+- Topology Service does not perform complex processing of information.
+- Topology Service does not aggregate information from Cells.
 
 ```mermaid
 graph TD;
     user((User));
     http_router[HTTP Routing Service];
     ssh_router[SSH Routing Service];
-    global[Global Service];
+    global[Topology Service];
     cell_1{Cell 1};
     cell_N{Cell N};
     spanner[Google Cloud Spanner];
@@ -184,7 +184,7 @@ the project, group or organization is located.
 
 ## Reasons
 
-The original [Cells 1.0](iterations/cells-1.0.md) described [Primary Cell API](iterations/cells-1.0.md#primary-cell), this changes this decision to implement Global Service for the following reasons:
+The original [Cells 1.0](iterations/cells-1.0.md) described [Primary Cell API](iterations/cells-1.0.md#primary-cell), this changes this decision to implement Topology Service for the following reasons:
 
 1. Provide stable and well described set of cluster-wide services that can be used
    by various services (HTTP Routing Service, SSH Routing Service, each Cell).
@@ -192,7 +192,7 @@ The original [Cells 1.0](iterations/cells-1.0.md) described [Primary Cell API](i
    to support more workflows than anticipated. We need to classify various resources
    (username for login, projects for SSH routing, etc.) to route to correct Cell.
    This would put a lot of dependency on resilience of the First Cell.
-1. It is our desire long-term to have Global Service for passing information across Cells.
+1. It is our desire long-term to have Topology Service for passing information across Cells.
    This does a first step towards long-term direction, allowing us to much easier perform
    additional functions.
 
@@ -209,8 +209,8 @@ The original [Cells 1.0](iterations/cells-1.0.md) described [Primary Cell API](i
 The cons of using Spanners are:
 
 1. Vendor lock-in, our data will be hosted in a proprietary data.
-    - How to prevent this: Global Service will use generic SQL.
-1. Not self-managed friendly, when we want to have Global Service available for self-managed customers.
+    - How to prevent this: Topology Service will use generic SQL.
+1. Not self-managed friendly, when we want to have Topology Service available for self-managed customers.
     - How to prevent this: Spanner supports PostgreSQL dialect.
 1. Brand new data store we need to learn to operate/develop with.
 
@@ -220,7 +220,7 @@ Spanner supports two dialects one called [GoogleSQL](https://cloud.google.com/sp
 The dialect [doesn't change the performance characteristics of Spanner](https://cloud.google.com/spanner/docs/postgresql-interface#choose), it's mostly how the Database schemas and queries are written.
 Choosing a dialect is a one-way door decision, to change the dialect we'll have to go through a data migration process.
 
-We will use the `GoogleSQL` dialect for the Global Service, and [go-sql-spanner](https://github.com/googleapis/go-sql-spanner) to connect to it, because:
+We will use the `GoogleSQL` dialect for the Topology Service, and [go-sql-spanner](https://github.com/googleapis/go-sql-spanner) to connect to it, because:
 
 1. Using Go's standard library `database/sql` will allow us to swap implementations which is needed to support self-managed.
 1. GoogleSQL [data types](https://cloud.google.com/spanner/docs/reference/standard-sql/data-types) are narrower and don't allow to make mistakes for example choosing int32 because it only supports int64.
@@ -266,7 +266,7 @@ However looking at the [performance documentation](https://cloud.google.com/span
 
 ## Disaster Recovery
 
-We must stay in our [Disaster Recovery targets](../disaster_recovery/index.md#dr-implementation-targets) for the Global Service.
+We must stay in our [Disaster Recovery targets](../disaster_recovery/index.md#dr-implementation-targets) for the Topology Service.
 Ideally, we need smaller windows for recovery because this service is in the critical path.
 
 The service is stateless, which should be much easier to deploy to multiple regions using [runway](https://gitlab.com/groups/gitlab-com/gl-infra/-/epics/1206).
@@ -303,40 +303,40 @@ Citations:
 
 ## FAQ
 
-1. Does Global Service implement all services for Cells 1.0?
+1. Does Topology Service implement all services for Cells 1.0?
 
-    No, for Cells 1.0 Global Service will implement `ClaimService` and `ClassifyService` only.
+    No, for Cells 1.0 Topology Service will implement `ClaimService` and `ClassifyService` only.
     Due to complexity the `SequenceService` will be implemented by the existing Cell of the cluster.
     The reason is to reduce complexity of deployment: as we would only add a function to the first cell.
     We would add new feature, but we would not change "First Cell" behavior. At later point
-    the Global Service will take over that function from First Cell.
+    the Topology Service will take over that function from First Cell.
 
-1. How we will push all existing claims from "First Cell" into Global Service?
+1. How we will push all existing claims from "First Cell" into Topology Service?
 
     We would add `rake gitlab:cells:claims:create` task. Then we would configure First Cell
-    to use Global Service, and execute the Rake task. That way First Cell would claim all new
-    records via Global Service, and concurrently we would copy data over.
+    to use Topology Service, and execute the Rake task. That way First Cell would claim all new
+    records via Topology Service, and concurrently we would copy data over.
 
-1. How and where the Global Service will be deployed?
+1. How and where the Topology Service will be deployed?
 
     We will use [Runway](https://handbook.gitlab.com/handbook/engineering/infrastructure/platforms/tools/runway/),
-    and configure Global Service to use [Spanner](https://cloud.google.com/spanner) for data storage.
+    and configure Topology Service to use [Spanner](https://cloud.google.com/spanner) for data storage.
 
-1. How Global Service handle regions?
+1. How Topology Service handle regions?
 
     We anticipate that [Spanner](https://cloud.google.com/spanner) will provide regional database support,
-    with high-performance read access. In such case the Global Service will be run in each region
-    connected to the same multi-write database. We anticipate one Global Service deployment per-region
+    with high-performance read access. In such case the Topology Service will be run in each region
+    connected to the same multi-write database. We anticipate one Topology Service deployment per-region
     that might scale up to desired number of replicas / pods based on the load.
 
-1. Will Global Service information be encrypted at runtime?
+1. Will Topology Service information be encrypted at runtime?
 
-    This is yet to be defined. However, Global Service could encrypt customer sensitive information
+    This is yet to be defined. However, Topology Service could encrypt customer sensitive information
     allowing for the information to be decrypted by the Cell that did create that entry. Cells could
-    transfer encrypted/hashed information to Global Service making the Global Service to only store
+    transfer encrypted/hashed information to Topology Service making the Topology Service to only store
     metadata without the knowledge of information.
 
-1. Will Global Service data to be encrypted at rest?
+1. Will Topology Service data to be encrypted at rest?
 
     This is yet to be defined. Data is encrypted during transport (TLS/gRPC and HTTPS)
     and at rest by Spanner.
@@ -345,4 +345,4 @@ Citations:
 
 - [Cells 1.0](iterations/cells-1.0.md)
 - [Routing Service](routing-service.md)
-- [Global Service PoC](https://gitlab.com/gitlab-org/tenant-scale-group/pocs/global-service)
+- [Topology Service PoC](https://gitlab.com/gitlab-org/tenant-scale-group/pocs/global-service)
