@@ -533,6 +533,10 @@ module EE
       diffs.diff_files.select(&:ai_reviewable?)
     end
 
+    def temporarily_unapproved?
+      approval_state.temporarily_unapproved?
+    end
+
     private
 
     def security_comparision?(service_class)

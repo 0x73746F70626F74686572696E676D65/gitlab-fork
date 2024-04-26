@@ -2735,6 +2735,28 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
+  describe '#temporarily_unapproved?' do
+    subject(:temporarily_unapproved) { merge_request.temporarily_unapproved? }
+
+    let(:merge_request) { create(:merge_request) }
+
+    context 'when the MR is not temporarily unapproved' do
+      it 'returns false' do
+        expect(temporarily_unapproved).to eq(false)
+      end
+    end
+
+    context 'when the MR is temporarily unapproved' do
+      before do
+        merge_request.approval_state.temporarily_unapprove!
+      end
+
+      it 'returns true' do
+        expect(temporarily_unapproved).to eq(true)
+      end
+    end
+  end
+
   describe '#ai_reviewable_diff_files' do
     let(:merge_request) { build_stubbed(:merge_request) }
     let(:diff_file_a) { instance_double(Gitlab::Diff::File, ai_reviewable?: true) }
