@@ -9,8 +9,8 @@ module Mutations
           authorize :admin_external_audit_events
 
           argument :header_id, ::Types::GlobalIDType[::AuditEvents::Streaming::Header],
-                   required: true,
-                   description: 'Header to delete.'
+            required: true,
+            description: 'Header to delete.'
 
           def resolve(header_id:)
             header = authorized_find!(id: header_id)

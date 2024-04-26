@@ -7,12 +7,12 @@ module Mutations
 
       prepended do
         argument :labels, [GraphQL::Types::String],
-                 required: false,
-                 description: copy_field_description(::Types::IssueType, :labels)
+          required: false,
+          description: copy_field_description(::Types::IssueType, :labels)
 
         argument :label_ids, [::Types::GlobalIDType[::Label]],
-                 required: false,
-                 description: 'IDs of labels to be added to the board.'
+          required: false,
+          description: 'IDs of labels to be added to the board.'
       end
 
       def resolve(**args)

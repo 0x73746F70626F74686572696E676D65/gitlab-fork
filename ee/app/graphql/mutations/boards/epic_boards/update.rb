@@ -10,14 +10,14 @@ module Mutations
         prepend Mutations::Boards::ScopedBoardMutation
 
         argument :id,
-                 ::Types::GlobalIDType[::Boards::EpicBoard],
-                 required: true,
-                 description: 'Epic board global ID.'
+          ::Types::GlobalIDType[::Boards::EpicBoard],
+          required: true,
+          description: 'Epic board global ID.'
 
         field :epic_board,
-              Types::Boards::EpicBoardType,
-              null: true,
-              description: 'Updated epic board.'
+          Types::Boards::EpicBoardType,
+          null: true,
+          description: 'Updated epic board.'
 
         def resolve(**args)
           board = authorized_find!(id: args[:id])

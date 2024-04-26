@@ -11,13 +11,13 @@ module Mutations
         prepend Mutations::Boards::ScopedBoardMutation
 
         argument :group_path, GraphQL::Types::ID,
-                 required: false,
-                 description: 'Full path of the group with which the resource is associated.'
+          required: false,
+          description: 'Full path of the group with which the resource is associated.'
 
         field :epic_board,
-              Types::Boards::EpicBoardType,
-              null: true,
-              description: 'Created epic board.'
+          Types::Boards::EpicBoardType,
+          null: true,
+          description: 'Created epic board.'
 
         def resolve(args)
           group_path = args.delete(:group_path)

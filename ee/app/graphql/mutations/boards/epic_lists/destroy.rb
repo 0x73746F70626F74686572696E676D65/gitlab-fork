@@ -8,14 +8,14 @@ module Mutations
         description 'Destroys an epic board list.'
 
         argument :list_id, ::Types::GlobalIDType[::Boards::EpicList],
-                 required: true,
-                 loads: Types::Boards::EpicListType,
-                 description: 'Global ID of the epic board list to destroy.'
+          required: true,
+          loads: Types::Boards::EpicListType,
+          description: 'Global ID of the epic board list to destroy.'
 
         field :list,
-              Types::Boards::EpicListType,
-              null: true,
-              description: 'Epic board list. `null` if the board was destroyed successfully.'
+          Types::Boards::EpicListType,
+          null: true,
+          description: 'Epic board list. `null` if the board was destroyed successfully.'
 
         authorize :admin_epic_board_list
 

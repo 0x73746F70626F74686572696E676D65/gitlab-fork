@@ -7,17 +7,17 @@ module Mutations
         graphql_name 'CreateComplianceFramework'
 
         field :framework,
-              Types::ComplianceManagement::ComplianceFrameworkType,
-              null: true,
-              description: 'Created compliance framework.'
+          Types::ComplianceManagement::ComplianceFrameworkType,
+          null: true,
+          description: 'Created compliance framework.'
 
         argument :namespace_path, GraphQL::Types::ID,
-                 required: true,
-                 description: 'Full path of the namespace to add the compliance framework to.'
+          required: true,
+          description: 'Full path of the namespace to add the compliance framework to.'
 
         argument :params, Types::ComplianceManagement::ComplianceFrameworkInputType,
-                 required: true,
-                 description: 'Parameters to update the compliance framework with.'
+          required: true,
+          description: 'Parameters to update the compliance framework with.'
 
         def resolve(**args)
           group = namespace(args[:namespace_path])
@@ -25,8 +25,8 @@ module Mutations
           raise_resource_not_available_error! unless group
 
           service = ::ComplianceManagement::Frameworks::CreateService.new(namespace: group,
-                                                                          params: args[:params].to_h,
-                                                                          current_user: current_user).execute
+            params: args[:params].to_h,
+            current_user: current_user).execute
 
           service.success? ? success(service) : error(service)
         end

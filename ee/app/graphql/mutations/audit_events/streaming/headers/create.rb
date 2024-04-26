@@ -9,25 +9,25 @@ module Mutations
           authorize :admin_external_audit_events
 
           argument :key, GraphQL::Types::String,
-                   required: true,
-                   description: 'Header key.'
+            required: true,
+            description: 'Header key.'
 
           argument :value, GraphQL::Types::String,
-                   required: true,
-                   description: 'Header value.'
+            required: true,
+            description: 'Header value.'
 
           argument :destination_id, ::Types::GlobalIDType[::AuditEvents::ExternalAuditEventDestination],
-                   required: true,
-                   description: 'Destination to associate header with.'
+            required: true,
+            description: 'Destination to associate header with.'
 
           argument :active, GraphQL::Types::Boolean,
-                   required: false,
-                   default_value: true,
-                   description: 'Boolean option determining whether header is active or not.'
+            required: false,
+            default_value: true,
+            description: 'Boolean option determining whether header is active or not.'
 
           field :header, ::Types::AuditEvents::Streaming::HeaderType,
-                null: true,
-                description: 'Created header.'
+            null: true,
+            description: 'Created header.'
 
           def resolve(destination_id:, key:, value:, active:)
             response = ::AuditEvents::Streaming::Headers::CreateService.new(

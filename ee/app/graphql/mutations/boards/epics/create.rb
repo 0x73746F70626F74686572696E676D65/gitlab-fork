@@ -9,26 +9,26 @@ module Mutations
         include Mutations::ResolvesGroup
 
         argument :group_path, GraphQL::Types::ID,
-                 required: true,
-                 description: 'Group the epic to create is in.'
+          required: true,
+          description: 'Group the epic to create is in.'
 
         argument :board_id, ::Types::GlobalIDType[::Boards::EpicBoard],
-                 required: true,
-                 description: 'Global ID of the board that the epic is in.'
+          required: true,
+          description: 'Global ID of the board that the epic is in.'
 
         argument :list_id, ::Types::GlobalIDType[::Boards::EpicList],
-                 required: true,
-                 description: 'Global ID of the epic board list in which epic will be created.'
+          required: true,
+          description: 'Global ID of the epic board list in which epic will be created.'
 
         argument :title,
-                 GraphQL::Types::String,
-                 required: true,
-                 description: 'Title of the epic.'
+          GraphQL::Types::String,
+          required: true,
+          description: 'Title of the epic.'
 
         field :epic,
-              Types::EpicType,
-              null: true,
-              description: 'Epic after creation.'
+          Types::EpicType,
+          null: true,
+          description: 'Epic after creation.'
 
         authorize :create_epic
 

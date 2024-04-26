@@ -7,14 +7,14 @@ module Mutations
         graphql_name 'DestroyEpicBoard'
 
         field :epic_board,
-              Types::Boards::EpicBoardType,
-              null: true,
-              description: 'Epic board after mutation.'
+          Types::Boards::EpicBoardType,
+          null: true,
+          description: 'Epic board after mutation.'
 
         argument :id,
-                 ::Types::GlobalIDType[::Boards::EpicBoard],
-                 required: true,
-                 description: 'Global ID of the board to destroy.'
+          ::Types::GlobalIDType[::Boards::EpicBoard],
+          required: true,
+          description: 'Global ID of the board to destroy.'
 
         authorize :admin_epic_board
 
