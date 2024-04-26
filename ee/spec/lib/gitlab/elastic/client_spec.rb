@@ -247,7 +247,7 @@ RSpec.describe Gitlab::Elastic::Client, feature_category: :global_search do
     with_them do
       before do
         allow(Gitlab).to receive(:dev_or_test_env?).and_return(dev_or_test_env)
-        allow(ENV).to receive(:[]).with('ELASTIC_CLIENT_DEBUG').and_return(env_variable)
+        stub_env('ELASTIC_CLIENT_DEBUG', env_variable)
       end
 
       it 'returns expected result' do
