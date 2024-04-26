@@ -86,6 +86,17 @@ tests = [
   },
 
   {
+    explanation: 'Map Ruby config to respective specs',
+    changed_file: 'config/application.rb',
+    expected: ['spec/config/application_spec.rb']
+  },
+  {
+    explanation: 'Map YAML config to respective specs',
+    changed_file: 'config/mail_room.yml',
+    expected: ['spec/config/mail_room_spec.rb']
+  },
+
+  {
     explanation: 'Initializers should map to respective spec',
     changed_file: 'config/initializers/action_mailer_hooks.rb',
     expected: ['spec/initializers/action_mailer_hooks_spec.rb']
