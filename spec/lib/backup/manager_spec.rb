@@ -9,6 +9,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
   let(:logger) { subject.logger }
   let(:backup_tasks) { nil }
   let(:options) { build(:backup_options, :skip_none) }
+  let(:backup_path) { Pathname(Dir.mktmpdir('backup-manager', TestEnv::TMP_TEST_PATH)) }
 
   subject { described_class.new(progress, backup_tasks: backup_tasks) }
 
@@ -20,10 +21,11 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
     allow(FileUtils).to receive(:rm_rf).and_call_original
 
     allow(progress).to receive(:puts).and_call_original
+    allow(Gitlab.config.backup).to receive(:path).and_return(backup_path)
   end
 
-  def backup_path
-    Pathname(Gitlab.config.backup.path)
+  after do
+    FileUtils.rm_rf(backup_path)
   end
 
   describe '#run_create_task' do
@@ -136,7 +138,6 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
 
     let(:backup_information) { { backup_created_at: Time.zone.parse('2019-01-01'), gitlab_version: '12.3' } }
     let(:backup_id) { "1546300800_2019_01_01_#{Gitlab::VERSION}" }
-    let(:backup_path) { Pathname.new('tmp/backups') }
     let(:restore_process) do
       Backup::Restore::Process.new(
         backup_id: backup_id,
@@ -513,7 +514,7 @@ RSpec.describe Backup::Manager, feature_category: :backup_restore do
       end
 
       describe 'cloud storage' do
-        let(:backup_file) { Tempfile.new('backup', Gitlab.config.backup.path) }
+        let(:backup_file) { Tempfile.new('backup', backup_path) }
         let(:backup_filename) { File.basename(backup_file.path) }
 
         before do
