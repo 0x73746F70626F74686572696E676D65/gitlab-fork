@@ -2,7 +2,7 @@
 stage: core platform
 group: Tenant Scale
 description: 'Cells: Topology Service'
-status: proposed
+status: accepted
 ---
 
 <!-- vale gitlab.FutureTense = NO -->
@@ -73,7 +73,7 @@ Those Goals are outside of the Topology Service scope as they heavily inflate th
   In theory it can work with any other web application that has the same authentication/access
   tokens as GitLab.
 
-## Proposal
+## Architecture
 
 The Topology Service implements the following design guidelines:
 
@@ -235,7 +235,7 @@ The purpose of this service is find owning cell of a given resource by string va
 Allowing other Cells, HTTP Routing Service and SSH Routing Service to find on which Cell
 the project, group or organization is located.
 
-### Path Classification workflow with Classify Service
+#### Path Classification workflow with Classify Service
 
 ```mermaid
 sequenceDiagram
@@ -254,7 +254,7 @@ sequenceDiagram
     HTTP Router->>User1: Issues Page Response
 ```
 
-### User login workflow with Classify Service
+#### User login workflow with Classify Service
 
 ```mermaid
 sequenceDiagram
@@ -274,6 +274,107 @@ sequenceDiagram
     HTTP Router->>+Cell 2: Sign in with Username: john, password: test123.
     Cell 2-->>-HTTP Router: Success
     HTTP Router-->>User: Success
+```
+
+### Metadata Service (**future**, implemented for Cells 1.5)
+
+The Metadata Service is a way for Cells to distribute information cluster-wide:
+
+- metadata is defined by the `resource_id`
+- metadata can be owned by all Cells (each Cell can modify it), or owned by a Cell (only Cell can modify the metadata)
+- get request returns all metadata for a given `resource_id`
+- the metadata structure is owned by the application, it is strongly preferred to use protobuf to encode information due to multi-version compatibility
+- metadata owned by Cell is to avoid having to handle race conditions of updating a shared resource
+
+The purpose of the metadata is to allow Cells to own a piece of distributed information,
+and allow Cells to merge the distributed information.
+
+Example usage for different owners:
+
+- owned by all Cells: a user profile metadata is published representing the latest snapshot of a user publicly displayable information.
+- owner by Cell: a list of organizations to which user belongs is owned by the Cell (a distributed information), each Cell can get all metadata shared by other Cells and aggregate it.
+
+```proto
+enum MetadataOwner {
+    Global = 1; // metadata is shared and any Cell can overwrite it
+    Cell = 2; // metadata is scoped to Cell, and only Cell owning metadata can overwrite it
+}
+
+enum MetadataType {
+    UserProfile = 1; // a single global user profile
+    UserOrganizations = 2; // a metadata provided by each Cell individually
+    OrganizationProfile = 3; // a single global organization information profile
+}
+
+message ResourceID {
+    ResourceType type = 1;
+    int64 id = 2;
+};
+
+message MetadataInfo {
+    bytes data = 1;
+    MetadataOwner owner = 2;
+    optional CellInfo owning_cell = 3;
+};
+
+message CreateMetadataRequest {
+    string uuid = 1;
+    ResourceID resource_id = 2;
+    MetadataOwner owner = 3;
+    bytes data = 4;
+};
+
+message GetMetadataRequest {
+    ResourceID resource_id = 1;
+};
+
+message GetMetadataResponse {
+    repeated MetadataInfo metadata = 1;
+};
+
+service MetadataService {
+    rpc CreateMetadata(CreateMetadataRequest) returns (CreateaMetadataResponse) {}
+    rpc GetMetadata(GetMetadataRequest) returns (GetMetadataResponse) {}
+    rpc DestroyMetadata(DestroyMetadataRequest) returns (DestroyMetadataResponse) {}
+}
+```
+
+#### Example: User profile published by a Cell
+
+```mermaid
+sequenceDiagram
+    participant Cell 1
+    participant Cell 2
+    participant TS as TS / Metadata Service Service;
+    participant CS as Cloud Spanner;
+
+    Cell 1 ->>+ TS: CreateMetadata(UserProfile, 100,<br/>"{username:'joerubin',displayName:'Joe Rubin'})")
+    TS ->>- CS: INSERT INTO metadata SET (resource_id, data, cell_id)<br/>VALUES("user_profile/100",<br/>"{username:'joerubin',displayName:'Joe Rubin'})", NULL)
+
+    Cell 2 ->>+ TS: CreateMetadata(UserProfile, 100,<br/>"{username:'joerubin',displayName:'Rubin is on PTO'})")
+    TS ->>- CS: INSERT INTO metadata SET (resource_id, data, cell_id)<br/>VALUES("user_profile/100",<br/>"{username:'joerubin',displayName:'Rubin is on PTO'})", NULL)
+
+    Cell 1 ->>+ TS: GetMetadata(UserProfile, 100)
+    TS ->>- Cell 1: global => "{username:'joerubin',displayName:'Rubin is on PTO'}"
+```
+
+#### Example: Globally accessible list of Organizations to which user belongs
+
+```mermaid
+sequenceDiagram
+    participant Cell 1
+    participant Cell 2
+    participant TS as TS / Metadata Service Service;
+    participant CS as Cloud Spanner;
+
+    Cell 1 ->>+ TS: CreateMetadata(UserOrganizations, 100,<br/>"[{id:200,access:'developer'}]")
+    TS ->>- CS: INSERT INTO metadata SET (resource_id, data, cell_id)<br/>VALUES("user_organizations/100", "[{id:200,access:'developer'}]", "cell_1")
+
+    Cell 2 ->>+ TS: CreateMetadata(UserOrganizations, 100,<br/>"[{id:300,access:'developer'},{id:400,access:'owner'}]")
+    TS ->>- CS: INSERT INTO metadata SET (resource_id, data, cell_id)<br/>VALUES("user_organizations/100", "[{id:300,access:'developer'},{id:400,access:'owner'}]", "cell_2")
+
+    Cell 1 ->>+ TS: GetMetadata(UserOrganizations, 100)
+    TS ->>- Cell 1: cell_1 => "[{id:200,access:'developer'}]", "cell_1"<br/>cell_2 => "[{id:300,access:'developer'},{id:400,access:'owner'}]"
 ```
 
 ## Reasons
@@ -348,8 +449,6 @@ Citations:
 1. Google (n.d.). FeedbackReplication. Google Cloud. Retrieved April 1, 2024, from <https://cloud.google.com/spanner/docs/replication>
 
 #### Architecture of multi-regional deployment of Topology Service
-
-```mermaid
 
 ```mermaid
 graph TD;
