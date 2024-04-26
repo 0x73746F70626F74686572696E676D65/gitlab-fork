@@ -9,22 +9,22 @@ module Mutations
       include Mutations::AppSec::Dast::SiteProfiles::SharedArguments
 
       field :id, SiteProfileID,
-            null: true,
-            description: 'ID of the site profile.',
-            deprecated: { reason: 'use `dastSiteProfile.id` field', milestone: '14.10' }
+        null: true,
+        description: 'ID of the site profile.',
+        deprecated: { reason: 'use `dastSiteProfile.id` field', milestone: '14.10' }
 
       field :dast_site_profile, ::Types::DastSiteProfileType,
-            null: true,
-            description: 'Site Profile object.'
+        null: true,
+        description: 'Site Profile object.'
 
       argument :full_path, GraphQL::Types::ID,
-               required: true,
-               description: 'Project the site profile belongs to.'
+        required: true,
+        description: 'Project the site profile belongs to.'
 
       argument :excluded_urls, [GraphQL::Types::String],
-               required: false,
-               default_value: [],
-               description: 'URLs to skip during an authenticated scan. Defaults to `[]`.'
+        required: false,
+        default_value: [],
+        description: 'URLs to skip during an authenticated scan. Defaults to `[]`.'
 
       authorize :create_on_demand_dast_scan
 

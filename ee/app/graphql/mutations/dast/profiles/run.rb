@@ -9,17 +9,17 @@ module Mutations
         ProfileID = ::Types::GlobalIDType[::Dast::Profile]
 
         field :pipeline_url, GraphQL::Types::String,
-              null: true,
-              description: 'URL of the pipeline that was created.'
+          null: true,
+          description: 'URL of the pipeline that was created.'
 
         argument :full_path, GraphQL::Types::ID,
-                 required: false,
-                 deprecated: { reason: 'Full path not required to qualify Global ID', milestone: '14.5' },
-                 description: 'Full path for the project the scanner profile belongs to.'
+          required: false,
+          deprecated: { reason: 'Full path not required to qualify Global ID', milestone: '14.5' },
+          description: 'Full path for the project the scanner profile belongs to.'
 
         argument :id, ProfileID,
-                 required: true,
-                 description: 'ID of the profile to be used for the scan.'
+          required: true,
+          description: 'ID of the profile to be used for the scan.'
 
         authorize :create_on_demand_dast_scan
 

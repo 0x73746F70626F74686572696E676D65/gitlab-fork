@@ -9,8 +9,8 @@ module Mutations
         ProfileID = ::Types::GlobalIDType[::Dast::Profile]
 
         argument :id, ProfileID,
-                 required: true,
-                 description: 'ID of the profile to be deleted.'
+          required: true,
+          description: 'ID of the profile to be deleted.'
 
         authorize :create_on_demand_dast_scan
 
