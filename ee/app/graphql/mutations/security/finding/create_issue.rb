@@ -6,7 +6,7 @@ module Mutations
       class CreateIssue < BaseMutation
         graphql_name 'SecurityFindingCreateIssue'
 
-        authorize :admin_vulnerability
+        authorize :read_security_resource
 
         field :issue, Types::IssueType,
               null: true,

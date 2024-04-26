@@ -79,7 +79,7 @@ RSpec.describe 'PipelineSecurityReportFinding', feature_category: :vulnerability
       graphql_query_for(:project, { full_path: project.full_path },
         query_graphql_field(:pipeline, { iid: pipeline.iid.to_s },
           query_graphql_field(:security_report_finding, { uuid: uuid },
-            query_graphql_field(:user_permissions, [:admin_vulnerability])
+            query_graphql_field(:user_permissions, [:admin_vulnerability, :create_issue])
           )
         )
       )
@@ -89,6 +89,18 @@ RSpec.describe 'PipelineSecurityReportFinding', feature_category: :vulnerability
       context 'when permission is absent' do
         before do
           project.add_developer(current_user)
+        end
+
+        it 'returns true for createIssue' do
+          subject
+
+          expect(graphql_data_at(
+            :project,
+            :pipeline,
+            :security_report_finding,
+            :user_permissions,
+            :create_issue
+          )).to eq(true)
         end
 
         it 'returns false for adminVulnerability' do

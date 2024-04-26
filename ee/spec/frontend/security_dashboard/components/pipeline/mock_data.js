@@ -580,6 +580,7 @@ export const pipelineSecurityReportFinding = {
   },
   userPermissions: {
     adminVulnerability: true,
+    createIssue: true,
   },
 };
 

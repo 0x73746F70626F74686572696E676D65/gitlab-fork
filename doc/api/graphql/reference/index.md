@@ -26433,6 +26433,7 @@ Check permissions for the current user on a vulnerability finding.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="pipelinesecurityreportfindingpermissionsadminvulnerability"></a>`adminVulnerability` | [`Boolean!`](#boolean) | If `true`, the user can perform `admin_vulnerability` on this resource. |
+| <a id="pipelinesecurityreportfindingpermissionscreateissue"></a>`createIssue` | [`Boolean!`](#boolean) | If `true`, the user can perform `create_issue` on this resource. |
 
 ### `PipelineTrigger`
 

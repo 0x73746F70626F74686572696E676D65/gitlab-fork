@@ -11,6 +11,16 @@ RSpec.describe Vulnerabilities::FeedbackPolicy, feature_category: :vulnerability
   subject { described_class.new(current_user, vulnerability_feedback) }
 
   describe 'create_vulnerability_feedback' do
+    context 'when the user is able to create issues in the project' do
+      let(:vulnerability_feedback) { Vulnerabilities::Feedback.new(project: project, feedback_type: :issue) }
+
+      before do
+        project.add_developer(current_user)
+      end
+
+      it { is_expected.to be_allowed(:create_vulnerability_feedback) }
+    end
+
     context 'when issue cannot be created' do
       let(:vulnerability_feedback) { Vulnerabilities::Feedback.new(project: project, feedback_type: :issue) }
 
