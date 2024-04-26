@@ -8,9 +8,9 @@ module EE
 
         prepended do
           field :jobs_statistics, ::Types::Ci::JobsStatisticsType,
-                null: true,
-                resolver: ::Resolvers::Ci::RunnersJobsStatisticsResolver,
-                extras: [:lookahead]
+            null: true,
+            resolver: ::Resolvers::Ci::RunnersJobsStatisticsResolver,
+            extras: [:lookahead]
         end
       end
     end

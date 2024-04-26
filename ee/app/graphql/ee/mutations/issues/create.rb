@@ -11,19 +11,19 @@ module EE
           include ::Mutations::Issues::CommonEEMutationArguments
 
           argument :epic_id, ::Types::GlobalIDType[::Epic],
-                   required: false,
-                   description: 'ID of an epic to associate the issue with.'
+            required: false,
+            description: 'ID of an epic to associate the issue with.'
           argument :iteration_id, ::Types::GlobalIDType[::Iteration],
-                   required: false,
-                   description: 'Global iteration ID. Mutually exlusive argument with `iterationWildcardId`.'
+            required: false,
+            description: 'Global iteration ID. Mutually exlusive argument with `iterationWildcardId`.'
           argument :iteration_wildcard_id, ::Types::IssueCreationIterationWildcardIdEnum,
-                   required: false,
-                   description: 'Iteration wildcard ID. Supported values are: `CURRENT`. ' \
-                                'Mutually exclusive argument with `iterationId`. ' \
-                                'iterationCadenceId also required when this argument is provided.'
+            required: false,
+            description: 'Iteration wildcard ID. Supported values are: `CURRENT`. ' \
+                         'Mutually exclusive argument with `iterationId`. ' \
+                         'iterationCadenceId also required when this argument is provided.'
           argument :iteration_cadence_id, ::Types::GlobalIDType[::Iterations::Cadence],
-                   required: false,
-                   description: 'Global iteration cadence ID. Required when `iterationWildcardId` is provided.'
+            required: false,
+            description: 'Global iteration cadence ID. Required when `iterationWildcardId` is provided.'
         end
 
         override :resolve
