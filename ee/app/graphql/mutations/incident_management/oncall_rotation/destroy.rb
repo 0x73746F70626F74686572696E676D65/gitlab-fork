@@ -7,16 +7,16 @@ module Mutations
         graphql_name 'OncallRotationDestroy'
 
         argument :project_path, GraphQL::Types::ID,
-                 required: true,
-                 description: 'Project to remove the on-call schedule from.'
+          required: true,
+          description: 'Project to remove the on-call schedule from.'
 
         argument :schedule_iid, GraphQL::Types::String,
-                 required: true,
-                 description: 'IID of the on-call schedule to the on-call rotation belongs to.'
+          required: true,
+          description: 'IID of the on-call schedule to the on-call rotation belongs to.'
 
         argument :id, Types::GlobalIDType[::IncidentManagement::OncallRotation],
-                 required: true,
-                 description: 'ID of the on-call rotation to remove.'
+          required: true,
+          description: 'ID of the on-call rotation to remove.'
 
         def resolve(project_path:, schedule_iid:, id:)
           oncall_rotation = authorized_find!(project_path: project_path, schedule_iid: schedule_iid, id: id)

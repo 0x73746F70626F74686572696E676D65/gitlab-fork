@@ -8,13 +8,13 @@ module Mutations
       include Mutations::ResolvesGroup
 
       argument :group_path, GraphQL::Types::ID,
-               required: false,
-               description: 'Group the promoted epic will belong to.'
+        required: false,
+        description: 'Group the promoted epic will belong to.'
 
       field :epic,
-            Types::EpicType,
-            null: true,
-            description: "Epic after issue promotion."
+        Types::EpicType,
+        null: true,
+        description: "Epic after issue promotion."
 
       def resolve(project_path:, iid:, group_path: nil)
         errors = []

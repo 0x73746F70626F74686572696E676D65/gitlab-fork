@@ -5,9 +5,9 @@ module Mutations
     module OncallSchedule
       class OncallScheduleBase < BaseMutation
         field :oncall_schedule,
-              ::Types::IncidentManagement::OncallScheduleType,
-              null: true,
-              description: 'On-call schedule.'
+          ::Types::IncidentManagement::OncallScheduleType,
+          null: true,
+          description: 'On-call schedule.'
 
         authorize :admin_incident_management_oncall_schedule
 
