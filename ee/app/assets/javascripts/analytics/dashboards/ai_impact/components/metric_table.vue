@@ -2,6 +2,7 @@
 import { GlTableLite, GlSkeletonLoader } from '@gitlab/ui';
 import { toYmd } from '~/analytics/shared/utils';
 import { dasherize } from '~/lib/utils/text_utility';
+import { formatNumber } from '~/locale';
 import { BUCKETING_INTERVAL_ALL } from '../../graphql/constants';
 import VulnerabilitiesQuery from '../graphql/vulnerabilities.query.graphql';
 import FlowMetricsQuery from '../graphql/flow_metrics.query.graphql';
@@ -194,6 +195,7 @@ export default {
         ...extractGraphqlAiData(responseData),
       };
     },
+    formatNumber,
   },
 };
 </script>
@@ -221,9 +223,7 @@ export default {
       <span v-if="value === undefined" data-testid="metric-skeleton-loader">
         <gl-skeleton-loader :lines="1" :width="50" />
       </span>
-      <template v-else>
-        {{ value }}
-      </template>
+      <template v-else> {{ formatNumber(value) }} </template>
     </template>
 
     <template #cell(change)="{ value: { value }, item: { invertTrendColor } }">

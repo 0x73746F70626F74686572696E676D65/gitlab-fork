@@ -141,3 +141,54 @@ export const mockTableValues = [
     codeSuggestionsUsageRate: 25,
   },
 ];
+
+export const mockTableLargeValues = [
+  {
+    deploymentFrequency: 10000,
+    changeFailureRate: 0.1,
+    cycleTime: 4,
+    leadTime: 0,
+    criticalVulnerabilities: 4000,
+    codeSuggestionsUsageRate: 500,
+  },
+  {
+    deploymentFrequency: 20000,
+    changeFailureRate: 0.2,
+    cycleTime: 2,
+    leadTime: 2,
+    criticalVulnerabilities: 2000,
+    codeSuggestionsUsageRate: 1000,
+  },
+  {
+    deploymentFrequency: 40000,
+    changeFailureRate: 0.4,
+    cycleTime: 1,
+    leadTime: 4,
+    criticalVulnerabilities: 1000,
+    codeSuggestionsUsageRate: 2500,
+  },
+  {
+    deploymentFrequency: 10000,
+    changeFailureRate: 0.1,
+    cycleTime: 4,
+    leadTime: 1,
+    criticalVulnerabilities: 4000,
+    codeSuggestionsUsageRate: 5000,
+  },
+  {
+    deploymentFrequency: 20000,
+    changeFailureRate: 0.2,
+    cycleTime: 2,
+    leadTime: 2,
+    criticalVulnerabilities: 2000,
+    codeSuggestionsUsageRate: 1000,
+  },
+  {
+    deploymentFrequency: 40,
+    changeFailureRate: 0.4,
+    cycleTime: 1,
+    leadTime: 4,
+    criticalVulnerabilities: 5000,
+    codeSuggestionsUsageRate: 2500,
+  },
+];
