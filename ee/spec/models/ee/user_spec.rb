@@ -1920,7 +1920,6 @@ RSpec.describe User, feature_category: :system_access do
   describe '#authorized_groups' do
     let_it_be(:user) { create(:user) }
     let_it_be(:private_group) { create(:group) }
-    let_it_be(:child_group) { create(:group, parent: private_group) }
     let_it_be(:minimal_access_group) { create(:group) }
 
     let_it_be(:project_group) { create(:group) }
