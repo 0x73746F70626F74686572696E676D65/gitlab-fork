@@ -2,23 +2,6 @@
 # Cop supports --autocorrect.
 Layout/ArgumentAlignment:
   Exclude:
-    - 'app/graphql/mutations/customer_relations/contacts/base.rb'
-    - 'app/graphql/mutations/customer_relations/contacts/create.rb'
-    - 'app/graphql/mutations/customer_relations/contacts/update.rb'
-    - 'app/graphql/mutations/customer_relations/organizations/create.rb'
-    - 'app/graphql/mutations/customer_relations/organizations/update.rb'
-    - 'app/graphql/mutations/dependency_proxy/group_settings/update.rb'
-    - 'app/graphql/mutations/dependency_proxy/image_ttl_group_policy/update.rb'
-    - 'app/graphql/mutations/design_management/base.rb'
-    - 'app/graphql/mutations/design_management/delete.rb'
-    - 'app/graphql/mutations/design_management/upload.rb'
-    - 'app/graphql/mutations/discussions/toggle_resolve.rb'
-    - 'app/graphql/mutations/echo.rb'
-    - 'app/graphql/mutations/environments/canary_ingress/update.rb'
-    - 'app/graphql/mutations/groups/update.rb'
-    - 'app/graphql/mutations/incident_management/timeline_event/base.rb'
-    - 'app/graphql/mutations/incident_management/timeline_event/create.rb'
-    - 'app/graphql/mutations/incident_management/timeline_event/destroy.rb'
     - 'app/graphql/mutations/timelogs/base.rb'
     - 'app/graphql/mutations/timelogs/create.rb'
     - 'app/graphql/mutations/timelogs/delete.rb'
