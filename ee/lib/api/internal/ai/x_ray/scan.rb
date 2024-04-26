@@ -46,7 +46,6 @@ module API
 
             def model_gateway_headers(headers, gateway_token)
               {
-                'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
                 'X-Gitlab-Authentication-Type' => 'oidc',
                 'Authorization' => "Bearer #{gateway_token}",
                 'Content-Type' => 'application/json',

@@ -104,7 +104,6 @@ module Gitlab
 
         def request_headers
           {
-            'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
             'X-Gitlab-Authentication-Type' => 'oidc',
             'Authorization' => "Bearer #{chat_access_token}",
             'Content-Type' => 'application/json',

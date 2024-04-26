@@ -754,17 +754,22 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     context 'when authorized' do
       let(:current_user) { authorized_user }
       let(:expected_expiration) { Time.now.to_i + 3600 }
+      let(:headers) { {} }
+      let(:base_headers) do
+        {
+          'X-Gitlab-Global-User-Id' => global_user_id,
+          'X-Gitlab-Instance-Id' => global_instance_id,
+          'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
+          'X-Gitlab-Realm' => gitlab_realm
+        }
+      end
+
       let(:expected_response) do
         {
           'base_url' => 'https://cloud.gitlab.com/ai',
           'expires_at' => expected_expiration,
           'token' => an_instance_of(String),
-          'headers' => {
-            'X-Gitlab-Global-User-Id' => global_user_id,
-            'X-Gitlab-Instance-Id' => global_instance_id,
-            'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
-            'X-Gitlab-Realm' => gitlab_realm
-          }
+          'headers' => base_headers.merge(headers)
         }
       end
 
@@ -776,11 +781,31 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         end
       end
 
-      it 'returns direct access details', :freeze_time do
-        post_api
+      context 'when user belongs to a namespace with an active code suggestions purchase' do
+        let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
 
-        expect(response).to have_gitlab_http_status(:created)
-        expect(json_response).to match(expected_response)
+        let(:headers) do
+          {
+            'X-Gitlab-Saas-Namespace-Ids' => '',
+            'X-Gitlab-Saas-Duo-Pro-Namespace-Ids' => add_on_purchase.namespace_id.to_s
+          }
+        end
+
+        before_all do
+          add_on_purchase.namespace.add_reporter(authorized_user)
+          create(
+            :gitlab_subscription_user_add_on_assignment,
+            user: authorized_user,
+            add_on_purchase: add_on_purchase
+          )
+        end
+
+        it 'returns direct access details', :freeze_time do
+          post_api
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response).to match(expected_response)
+        end
       end
 
       context 'when not SaaS' do
