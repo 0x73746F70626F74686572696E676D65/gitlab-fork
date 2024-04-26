@@ -2,22 +2,6 @@
 # Cop supports --autocorrect.
 Layout/ArgumentAlignment:
   Exclude:
-    - 'app/graphql/mutations/achievements/create.rb'
-    - 'app/graphql/mutations/admin/sidekiq_queues/delete_jobs.rb'
-    - 'app/graphql/mutations/award_emojis/base.rb'
-    - 'app/graphql/mutations/base_mutation.rb'
-    - 'app/graphql/mutations/boards/common_mutation_arguments.rb'
-    - 'app/graphql/mutations/boards/create.rb'
-    - 'app/graphql/mutations/boards/destroy.rb'
-    - 'app/graphql/mutations/boards/issues/issue_move_list.rb'
-    - 'app/graphql/mutations/boards/lists/base_create.rb'
-    - 'app/graphql/mutations/boards/lists/base_update.rb'
-    - 'app/graphql/mutations/boards/lists/create.rb'
-    - 'app/graphql/mutations/boards/lists/destroy.rb'
-    - 'app/graphql/mutations/boards/lists/update.rb'
-    - 'app/graphql/mutations/boards/update.rb'
-    - 'app/graphql/mutations/branches/create.rb'
-    - 'app/graphql/mutations/ci/job/artifacts_destroy.rb'
     - 'app/graphql/mutations/ci/job/base.rb'
     - 'app/graphql/mutations/ci/job/cancel.rb'
     - 'app/graphql/mutations/ci/job/play.rb'
