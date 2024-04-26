@@ -10,17 +10,17 @@ module Mutations
       authorize :admin_epic_relation
 
       argument :project_path, GraphQL::Types::ID,
-               required: true,
-               description: 'Full path of the project the issue belongs to.'
+        required: true,
+        description: 'Full path of the project the issue belongs to.'
 
       argument :issue_iid, GraphQL::Types::String,
-               required: true,
-               description: 'IID of the issue to be added.'
+        required: true,
+        description: 'IID of the issue to be added.'
 
       field :epic_issue,
-            Types::EpicIssueType,
-            null: true,
-            description: 'Epic-issue relationship.'
+        Types::EpicIssueType,
+        null: true,
+        description: 'Epic-issue relationship.'
 
       def resolve(group_path:, iid:, project_path:, issue_iid:)
         epic = authorized_find!(group_path: group_path, iid: iid)

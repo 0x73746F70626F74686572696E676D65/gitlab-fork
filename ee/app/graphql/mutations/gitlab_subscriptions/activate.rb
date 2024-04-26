@@ -8,16 +8,16 @@ module Mutations
       authorize :manage_subscription
 
       argument :activation_code, GraphQL::Types::String,
-               required: true,
-               description: 'Activation code received after purchasing a GitLab subscription.'
+        required: true,
+        description: 'Activation code received after purchasing a GitLab subscription.'
 
       field :license, Types::Admin::CloudLicenses::CurrentLicenseType,
-            null: true,
-            description: 'Current license.'
+        null: true,
+        description: 'Current license.'
 
       field :future_subscriptions, [::Types::Admin::CloudLicenses::SubscriptionFutureEntryType],
-            null: true,
-            description: 'Array of future subscriptions.'
+        null: true,
+        description: 'Array of future subscriptions.'
 
       def resolve(activation_code:)
         authorize! :global

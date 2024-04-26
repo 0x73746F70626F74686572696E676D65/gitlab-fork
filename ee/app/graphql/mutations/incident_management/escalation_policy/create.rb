@@ -9,20 +9,20 @@ module Mutations
         include ResolvesProject
 
         argument :project_path, GraphQL::Types::ID,
-                 required: true,
-                 description: 'Project to create the escalation policy for.'
+          required: true,
+          description: 'Project to create the escalation policy for.'
 
         argument :name, GraphQL::Types::String,
-                 required: true,
-                 description: 'Name of the escalation policy.'
+          required: true,
+          description: 'Name of the escalation policy.'
 
         argument :description, GraphQL::Types::String,
-                 required: false,
-                 description: 'Description of the escalation policy.'
+          required: false,
+          description: 'Description of the escalation policy.'
 
         argument :rules, [Types::IncidentManagement::EscalationRuleInputType],
-                 required: true,
-                 description: 'Steps of the escalation policy.'
+          required: true,
+          description: 'Steps of the escalation policy.'
 
         def resolve(project_path:, **args)
           project = authorized_find!(project_path: project_path, **args)

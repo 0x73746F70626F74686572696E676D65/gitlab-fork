@@ -8,28 +8,28 @@ module Mutations
       include FindsProject
 
       field :id, ::Types::GlobalIDType[::DastSiteValidation],
-            null: true,
-            description: 'ID of the site validation.'
+        null: true,
+        description: 'ID of the site validation.'
 
       field :status, ::Types::DastSiteProfileValidationStatusEnum,
-            null: true,
-            description: 'Current validation status.'
+        null: true,
+        description: 'Current validation status.'
 
       argument :full_path, GraphQL::Types::ID,
-               required: true,
-               description: 'Project the site profile belongs to.'
+        required: true,
+        description: 'Project the site profile belongs to.'
 
       argument :dast_site_token_id, ::Types::GlobalIDType[::DastSiteToken],
-               required: true,
-               description: 'ID of the site token.'
+        required: true,
+        description: 'ID of the site token.'
 
       argument :validation_path, GraphQL::Types::String,
-               required: true,
-               description: 'Path to be requested during validation.'
+        required: true,
+        description: 'Path to be requested during validation.'
 
       argument :strategy, ::Types::DastSiteValidationStrategyEnum,
-               required: false,
-               description: 'Validation strategy to be used.'
+        required: false,
+        description: 'Validation strategy to be used.'
 
       authorize :create_on_demand_dast_scan
 
