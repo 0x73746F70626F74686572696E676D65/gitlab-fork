@@ -88,7 +88,7 @@ export default {
         </h4>
         <div class="gl-display-flex">
           <div class="gl-flex-grow-1 gl-max-w-62 gl-mr-5">
-            <ul class="gl-list-style-position-inside gl-p-0 gl-mb-3">
+            <ul class="gl-list-inside gl-p-0 gl-mb-3">
               <li v-for="(statement, index) in $options.i18n.valueStatements" :key="index">
                 {{ statement }}
               </li>

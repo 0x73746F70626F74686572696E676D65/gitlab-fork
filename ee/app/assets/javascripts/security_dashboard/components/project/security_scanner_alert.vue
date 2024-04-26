@@ -59,7 +59,7 @@ export default {
 <template>
   <section>
     <gl-alert v-if="alertMessages.length > 0" variant="warning" @dismiss="$emit('dismiss')">
-      <ul class="gl-list-style-none gl-mb-0 gl-pl-0">
+      <ul class="gl-list-none gl-mb-0 gl-pl-0">
         <li
           v-for="alertMessage in alertMessages"
           :key="alertMessage.key"

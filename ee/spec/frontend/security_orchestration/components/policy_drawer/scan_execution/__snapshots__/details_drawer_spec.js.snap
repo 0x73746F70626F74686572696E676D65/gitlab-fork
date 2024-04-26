@@ -206,7 +206,7 @@ exports[`DetailsDrawer component policy with tags and CI variables renders the c
           >
             With the following customized CI variables:
             <ul
-              class="gl-list-style-none gl-mt-2 gl-pl-0"
+              class="gl-list-none gl-mt-2 gl-pl-0"
             >
               <li>
                 SECRET_DETECTION_HISTORIC_SCAN: true

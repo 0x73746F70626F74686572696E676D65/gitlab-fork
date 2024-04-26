@@ -446,7 +446,7 @@ export default {
         :is="treeRootWrapper"
         v-if="!list.collapsed"
         v-bind="treeRootOptions"
-        class="board-cell gl-p-2 gl-m-0 gl-h-full gl-list-style-none"
+        class="board-cell gl-p-2 gl-m-0 gl-h-full gl-list-none"
         :class="{
           'board-column-highlighted': highlighted,
           'gl-bg-red-50 gl-rounded-base': boardItemsSizeExceedsMax,

@@ -248,7 +248,7 @@ export default {
       <gl-dropdown-item
         v-if="allowAllBranchesOption"
         data-testid="all-branches-option"
-        class="gl-list-style-none"
+        class="gl-list-none"
         :is-check-item="true"
         :is-checked="isSelected($options.ALL_BRANCHES.name)"
         @click="handleFooterClick($options.ALL_BRANCHES.name)"
@@ -258,7 +258,7 @@ export default {
       <gl-dropdown-item
         v-if="allowAllProtectedBranchesOption"
         data-testid="all-protected-branches-option"
-        class="gl-list-style-none"
+        class="gl-list-none"
         :is-check-item="true"
         :is-checked="isSelected($options.ALL_PROTECTED_BRANCHES.name)"
         @click="handleFooterClick($options.ALL_PROTECTED_BRANCHES.name)"

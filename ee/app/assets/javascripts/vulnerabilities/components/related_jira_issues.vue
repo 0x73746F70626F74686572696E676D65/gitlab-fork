@@ -167,7 +167,7 @@ export default {
             :label="$options.i18n.loadingStateLabel"
             class="gl-my-3"
           />
-          <ul class="gl-list-style-none gl-m-0 gl-p-0">
+          <ul class="gl-list-none gl-m-0 gl-p-0">
             <li
               v-for="issue in relatedIssues"
               :key="issue.created_at"
