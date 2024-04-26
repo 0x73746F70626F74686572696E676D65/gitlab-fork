@@ -33,7 +33,7 @@ module QA
             def assign_iteration(iteration_period)
               within_element('iteration-container') do
                 click_element('edit-button')
-                click_on("#{iteration_period}")
+                click_on(iteration_period.to_s)
               end
 
               wait_until(reload: false) do

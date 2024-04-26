@@ -124,7 +124,7 @@ module QA
               has_element?(
                 'vulnerability-status-content',
                 status_description: vulnerability_name,
-                text: "#{status.split.map(&:capitalize).join(' ')}"
+                text: status.split.map(&:capitalize).join(' ').to_s
               )
             end
           end
