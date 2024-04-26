@@ -122,17 +122,4 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
     let(:record1) { create(:merge_request, source_project: project, title: 'test-mr') }
     let(:record2) { create(:merge_request, source_project: project2, title: 'test-mr') }
   end
-
-  context 'when hashed root namespace id merge_requests migration has not been finished' do
-    before do
-      set_elasticsearch_migration_to(:add_hashed_root_namespace_id_to_merge_requests, including: false)
-    end
-
-    it 'does not include hashed_root_namespace_id' do
-      mr = create(:merge_request)
-      payload = mr.__elasticsearch__.as_indexed_json
-
-      expect(payload).not_to include('hashed_root_namespace_id')
-    end
-  end
 end
