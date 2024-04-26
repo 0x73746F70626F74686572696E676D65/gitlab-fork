@@ -205,7 +205,6 @@ export default {
             data-testid="item-status-icon"
           >
             <gl-icon
-              class="gl-text-secondary"
               :class="statusIconClass"
               :name="statusIconName"
               :aria-label="stateTimestampTypeText"
