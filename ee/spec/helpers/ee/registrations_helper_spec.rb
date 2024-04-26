@@ -62,16 +62,6 @@ RSpec.describe EE::RegistrationsHelper, feature_category: :user_management do
       end
     end
 
-    context 'when arkose_labs_signup_data_exchange feature flag is disabled' do
-      before do
-        stub_feature_flags(arkose_labs_signup_data_exchange: false)
-      end
-
-      it 'does not include data exchange payload' do
-        expect(data.keys).not_to include(:data_exchange_payload)
-      end
-    end
-
     context 'when data exchange payload is nil' do
       let(:data_exchange_payload) { nil }
 

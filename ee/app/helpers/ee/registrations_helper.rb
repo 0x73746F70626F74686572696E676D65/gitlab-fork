@@ -14,12 +14,9 @@ module EE
     def arkose_labs_data
       data = {
         api_key: Arkose::Settings.arkose_public_api_key,
-        domain: Arkose::Settings.arkose_labs_domain
+        domain: Arkose::Settings.arkose_labs_domain,
+        data_exchange_payload: arkose_labs_data_exchange_payload
       }
-
-      if ::Feature.enabled?(:arkose_labs_signup_data_exchange)
-        data[:data_exchange_payload] = arkose_labs_data_exchange_payload
-      end
 
       data.compact
     end
