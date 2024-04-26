@@ -246,7 +246,7 @@ flowchart LR
 
 The changes from the co-existing scenario are the following ones:
 
-1. New rings exists after Ring 2. The progression of packages is coordinated by the ring-deployment engine enforcing the gates on each ring.
+1. New rings exist after Ring 2. The progression of packages is coordinated by the ring-deployment engine enforcing the gates on each ring.
 1. The release-tools coordinator pipeline only manage rings, there is no longer a concept of canary and main stage in production.
 1. The post deployment migration pipeline controls the execution of the migrations in Ring 1 (Subject to further discussion that are not necessary at this stage of the project).
 
