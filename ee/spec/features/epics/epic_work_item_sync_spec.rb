@@ -11,8 +11,8 @@ RSpec.describe 'Epic Work Item sync', :js, feature_category: :portfolio_manageme
   let(:epic_title) { 'New epic' }
   let(:updated_title) { 'Another title' }
   let(:updated_description) { 'Updated description' }
-  let(:start_date) { Time.current + 1.day }
-  let(:due_date) { start_date + 5.days }
+  let(:start_date) { 1.day.after(Time.current).to_date }
+  let(:due_date) { 5.days.after(start_date) }
   let(:description_input) do
     "#{description}\n/parent_epic #{parent_epic.to_reference}\n"
   end
@@ -36,13 +36,13 @@ RSpec.describe 'Epic Work Item sync', :js, feature_category: :portfolio_manageme
       find_by_testid('confidential-epic-checkbox').set(true)
 
       page.within(find_by_testid('epic-start-date')) do
-        find_by_testid('gl-datepicker-input').native.send_keys(start_date.strftime('%Y-%m-%d'))
+        find_by_testid('gl-datepicker-input').native.send_keys(start_date.iso8601)
       end
       find('body').click
       send_keys(:tab) # make sure by tabbing that we no longer show the date picker
 
       page.within(find_by_testid('epic-due-date')) do
-        find_by_testid('gl-datepicker-input').native.send_keys(due_date.strftime('%Y-%m-%d'))
+        find_by_testid('gl-datepicker-input').native.send_keys(due_date.iso8601)
       end
       find('body').click
       send_keys(:tab) # make sure by tabbing that we no longer show the date picker
@@ -61,8 +61,8 @@ RSpec.describe 'Epic Work Item sync', :js, feature_category: :portfolio_manageme
       expect(epic.description).to eq(description)
       expect(epic).to be_confidential
       expect(epic.parent).to eq(parent_epic)
-      expect(epic.start_date.strftime('%Y-%m-%d')).to eq(start_date.strftime('%Y-%m-%d'))
-      expect(epic.due_date.strftime('%Y-%m-%d')).to eq(due_date.strftime('%Y-%m-%d'))
+      expect(epic.start_date.iso8601).to eq(start_date.iso8601)
+      expect(epic.due_date.iso8601).to eq(due_date.iso8601)
 
       expect(Gitlab::EpicWorkItemSync::Diff.new(epic, epic.work_item, strict_equal: true).attributes).to be_empty
     end
