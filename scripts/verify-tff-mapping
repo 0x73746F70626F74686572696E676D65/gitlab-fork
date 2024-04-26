@@ -437,8 +437,8 @@ if failed_tests.any?
   exit 1
 end
 
-bad_sources = YAML.load_file(mapping_file)['mapping'].filter_map do |map|
-  Array(map['source']).any? { |source| source.match(/(?<!\\)\.\w+\z/)&.string }
+bad_sources = YAML.load_file(mapping_file)['mapping'].flat_map do |map|
+  Array(map['source']).filter_map { |source| source.match(/(?<!\\)\.\w+\z/)&.string }
 end
 
 if bad_sources.any?
