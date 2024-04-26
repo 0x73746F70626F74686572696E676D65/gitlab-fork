@@ -255,7 +255,7 @@ The Cells architecture has long lasting implications to data processing, locatio
 This section links all different technical proposals that are being evaluated.
 
 - [HTTP Routing Service](routing-service.md)
-- [Topology Service](topology-service.md)
+- [Topology Service](topology_service.md)
 - [Feature Flags](feature_flags.md)
 - Planned: SSH Routing Service
 - Planned: Indexing Service
