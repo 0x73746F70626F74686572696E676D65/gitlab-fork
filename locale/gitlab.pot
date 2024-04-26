@@ -60262,6 +60262,9 @@ msgstr ""
 msgid "active project"
 msgstr ""
 
+msgid "activity"
+msgstr ""
+
 msgid "add at least one file to the repository"
 msgstr ""
 
