@@ -171,7 +171,7 @@ A package can be released to self-managed customers only after running its post 
 
 ##### Co-existence of the legacy infrastructure and Cells
 
-For some time the existing (legacy) deployment and Cells will co-exist. Initially our ring deployment implementation will only consist of tree rings:
+For some time the existing (legacy) deployment and Cells will co-exist. Initially our ring deployment implementation will only consist of three rings:
 
 - Ring 0: hosting a QA Cell and eventually other experimental builds, this ring is kept in sync with the legacy production canary stage.
 - Ring 1: an empty placeholder for the legacy production main stage. As we will be able to begin extracting existing users from the legacy deployment, this ring could host ourselves, our free users, and more in general every organization interested in having a fast track to our new features.
