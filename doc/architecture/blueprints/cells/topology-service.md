@@ -22,7 +22,7 @@ Topology Service, that can be deployed in many regions.
 1. **Technology.**
 
     The Topology Service will be written in [Go](https://go.dev/)
-    and expose API over [gRPC](https://grpc.io/).
+    and expose API over [gRPC](https://grpc.io/), and REST API.
 
 1. **Cells aware.**
 
@@ -58,9 +58,9 @@ Topology Service, that can be deployed in many regions.
 | Configurable  | contains information about all Cells                                       | high     |
 | Security      | only authorized cells can use it                                           | high     |
 | Cloud-managed | can use cloud managed services to operate                                  | high     |
+| Latency       | Satisfactory Latency Threshold of 20ms, 99.95% Error SLO, 99.95% Apdex SLO | high     |
 | Self-managed  | can be eventually used by [self-managed](goals.md#self-managed)            | low      |
 | Regional      | can route requests to different [regions](goals.md#regions)                | low      |
-| Latency       | Satisfactory Latency Threshold of 20ms, 99.95% Error SLO, 99.95% Apdex SLO | high     |
 
 ## Non-Goals
 
@@ -87,21 +87,21 @@ graph TD;
     user((User));
     http_router[HTTP Routing Service];
     ssh_router[SSH Routing Service];
-    global[Topology Service];
+    topology[Topology Service];
     cell_1{Cell 1};
     cell_N{Cell N};
     spanner[Google Cloud Spanner];
     user--HTTP-->http_router;
     user--SSH-->ssh_router;
-    http_router--REST-->global;
+    http_router--REST-->topology;
     http_router--HTTP-->cell_1;
     http_router--HTTP-->cell_N;
-    ssh_router--gRPC-->global;
+    ssh_router--gRPC-->topology;
     ssh_router--HTTP-->cell_1;
     ssh_router--HTTP-->cell_N;
-    cell_1--gRPC-->global;
-    cell_N--gRPC-->global;
-    global-->spanner;
+    cell_1--gRPC-->topology;
+    cell_N--gRPC-->topology;
+    topology-->spanner;
     subgraph Cloudflare
         http_router;
     end
@@ -109,7 +109,7 @@ graph TD;
         ssh_router;
         cell_1;
         cell_N;
-        global;
+        topology;
     end
     subgraph Google Cloud
         spanner;
@@ -119,18 +119,49 @@ graph TD;
 ### Sequence Service
 
 ```proto
-message CreateSequenceRequest {
+message LeaseSequenceRequest {
+  string uuid = 3;
   string table_name = 1;
   int64 block_size = 2;
 }
 
 service SequenceService {
-  rpc CreateSequence(CreateSequenceRequest) returns (CreateSequenceResponse) {}
   rpc ValidateSequence(ValidateSequenceRequest) returns (ValidateSequenceResponse) {}
+  rpc LeaseSequence(LeaseSequenceRequest) returns (LeaseSequenceRequest) {}
+  rpc ReleaseSequence(ReleaseSequenceRequest) returns (ReleaseSequenceRequest) {}
 }
 ```
 
 The purpose of this service is to global allocator of the [Database Sequences](impacted_features/database-sequences.md).
+
+#### Sequence Allocation workflow
+
+Sequences will be allocated once, at the Cell provisioning.
+
+```mermaid
+sequenceDiagram
+    box
+        participant Cell 1
+        participant Cell 1 DB
+    end
+    box
+        participant Cell 2
+        participant Cell 2 DB
+    end
+    participant GS as GS / Sequence Service;
+
+    critical Allocate sequence to projects
+        Cell 1 ->>+ GS: LeaseSequence(projects, 1_000_000);
+        GS -->>- Cell 1: SequenceInfo(projects, start: 10_000_000, size: 1_000_000)
+        Cell 1 ->> Cell 1 DB: ALTER SEQUENCE projects_id_seq <br/>MINVALUE 10_000_000 <br/>MAXVALUE 10_999_999 <br/>START WITH 10_000_000
+    end
+
+    critical Allocate sequence to projects
+        Cell 2 ->> GS: LeaseSequence(projects, 1_000_000);
+        GS ->> Cell 2: SequenceInfo(projects, start: 11_000_000, size: 1_000_000)
+        Cell 2 ->> Cell 2 DB: ALTER SEQUENCE projects_id_seq <br/>MINVALUE 11_000_000 <br/>MAXVALUE 11_999_999 <br/>START WITH 11_000_000
+    end
+```
 
 ### Claim Service
 
@@ -157,6 +188,28 @@ service ClaimService {
 The purpose of this service is to provide a way to enforce uniqueness (ex. usernames, e-mails,
 tokens) within the cluster.
 
+#### Example usage of Claim Service in Rails
+
+```ruby
+class User < MainClusterwide::ApplicationRecord
+  include CellsUniqueness
+
+  cell_cluster_unique_attributes :username,
+   sharding_key_object: -> { self },
+   claim_type: Gitlab::Cells::ClaimType::Usernames,
+ owner_type: Gitlab::Cells::OwnerType::User
+
+  cell_cluster_unique_attributes :email,
+   sharding_key_object: -> { self },
+   claim_type: Gitlab::Cells::ClaimType::Emails,
+ owner_type: Gitlab::Cells::OwnerType::User
+end
+```
+
+The `CellsUniqueness` concern will implement `cell_cluster_unique_attributes`.
+The concern will register before and after hooks to call Topology Service gRPC
+endpoints for Claims within a transaction.
+
 ### Classify Service
 
 ```proto
@@ -181,6 +234,47 @@ service ClassifyService {
 The purpose of this service is find owning cell of a given resource by string value.
 Allowing other Cells, HTTP Routing Service and SSH Routing Service to find on which Cell
 the project, group or organization is located.
+
+### Path Classification workflow with Classify Service
+
+```mermaid
+sequenceDiagram
+    participant User1
+    participant HTTP Router
+    participant TS / Classify Service
+    participant Cell 1
+    participant Cell 2
+
+    User1->> HTTP Router :GET "/gitlab-org/gitlab/-/issues"
+    Note over HTTP Router: Extract "gitlab-org/gitlab" from Path Rules
+    HTTP Router->> TS / Classify Service: Classify "gitlab-org/gitlab"
+    TS / Classify Service->>HTTP Router: gitlab-org/gitlab => Cell 2
+    HTTP Router->> Cell 2: GET "/gitlab-org/gitlab/-/issues"
+    Cell 2->> HTTP Router: Issues Page Response
+    HTTP Router->>User1: Issues Page Response
+```
+
+### User login workflow with Classify Service
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant HTTP Router
+    participant Cell 1
+    participant Cell 2
+    participant TS / Classify Service
+    User->>HTTP Router: Sign in with Username: john, password: test123
+    HTTP Router->>+Cell 1: Sign in with Username: john, password: test123
+    Note over Cell 1: User not found
+    Cell 1->>+TS / Classify Service: Classify "john"
+    TS / Classify Service-->>- Cell 1: "john": Cell 2
+    Cell 1 ->>- HTTP Router: "Cell 2". <br /> 307 Temporary Redirect 
+    HTTP Router ->> User: Set Header Cell "Cell 2". <br /> 307 Temporary Redirect
+    User->>HTTP Router: Headers: Cell: Cell 2 <br /> Sign in with Username: john, password: test123.
+    HTTP Router->>+Cell 2: Sign in with Username: john, password: test123.
+    Cell 2-->>-HTTP Router: Success
+    HTTP Router-->>User: Success
+```
 
 ## Reasons
 
@@ -253,10 +347,61 @@ Citations:
 1. Google (n.d.). _Regional and multi-region configurations._ Google Cloud. Retrieved April 1, 2024, from <https://cloud.google.com/spanner/docs/instance-configurations>
 1. Google (n.d.). FeedbackReplication. Google Cloud. Retrieved April 1, 2024, from <https://cloud.google.com/spanner/docs/replication>
 
+#### Architecture of multi-regional deployment of Topology Service
+
+```mermaid
+
+```mermaid
+graph TD;
+    user_eu((User in EU));
+    user_us((User in US));
+    gitlab_com_gcp_load_balancer[GitLab.com GCP Load Balancer];
+    topology_service_gcp_load_balancer[Topology Service GCP Load Balancer];
+    http_router[HTTP Routing Service];
+    topology_service_eu[Topology Service in EU];
+    topology_service_us[Topology Service in US];
+    cell_us{Cell US};
+    cell_eu{Cell EU};
+    spanner[Google Cloud Spanner];
+    subgraph Cloudflare
+        http_router;
+    end
+    subgraph Google Cloud
+      subgraph Multi-regional Load Balancers / AnyCast DNS
+        gitlab_com_gcp_load_balancer;
+        topology_service_gcp_load_balancer;
+      end
+      subgraph Europe
+        topology_service_eu;
+        cell_eu;
+      end
+      subgraph US
+        topology_service_us;
+        cell_us;
+      end
+      subgraph Multi-regional Cloud Spanner
+        spanner;
+      end
+    end
+
+    user_eu--HTTPS-->http_router;
+    user_us--HTTPS-->http_router;
+    http_router--REST/mTLS-->topology_service_gcp_load_balancer;
+    http_router--HTTPS-->gitlab_com_gcp_load_balancer;
+    gitlab_com_gcp_load_balancer--HTTPS-->cell_eu;
+    gitlab_com_gcp_load_balancer--HTTPS-->cell_us;
+    topology_service_gcp_load_balancer--HTTPS-->topology_service_eu;
+    topology_service_gcp_load_balancer--HTTPS-->topology_service_us;
+    cell_eu--gRPC/mTLS-->topology_service_eu;
+    cell_us--gRPC/mTLS-->topology_service_us;
+    topology_service_eu--gRPC-->spanner;
+    topology_service_us--gRPC-->spanner;
+```
+
 ### Performance
 
 We haven't run any benchmarks ourselves because we don't have a full schema designed.
-However looking at the [performance documentation](https://cloud.google.com/spanner/docs/performance), both the read and write throughputs of a Spanner instance scale linearly as you add more compute capacity.
+However looking at the [performance documentation](https://cloud.google.com/spanner/docs/performance), both the read and write throughput of a Spanner instance scale linearly as you add more compute capacity.
 
 ### Alternatives
 
@@ -345,4 +490,9 @@ Citations:
 
 - [Cells 1.0](iterations/cells-1.0.md)
 - [Routing Service](routing-service.md)
+
+### Topology Service discussions
+
 - [Topology Service PoC](https://gitlab.com/gitlab-org/tenant-scale-group/pocs/global-service)
+- [Topology Service Fastboot Presentation](https://docs.google.com/presentation/d/12NlfOwolRf10DSLszQi9NjxFy0UUKc2XVC2kYW0HFGk/edit#slide=id.g2cd2d29ce3d_0_147)
+- [Topology Service Fastboot Agenda](https://docs.google.com/document/d/1fTeiS6ksvhxJggui_DnCZ9tl5xIN23IZGrqgiqzB5JU/edit#heading=h.24quiflbyl2c)
