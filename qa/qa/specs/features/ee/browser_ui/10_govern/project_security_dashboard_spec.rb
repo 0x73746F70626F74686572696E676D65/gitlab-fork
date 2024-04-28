@@ -13,7 +13,7 @@ module QA
         { "Gryffindor vulnerability": "Brave courageous and pompous vulnerability",
           "Ravenclaw vulnerability": "Witty and intelligent vulnerability",
           "Hufflepuff vulnerability": "Vulnerability with justice",
-          "Slytherin": "Cunning yet loyal vulnerability",
+          Slytherin: "Cunning yet loyal vulnerability",
           "CVE-2017-18269 in glibc": "Short description to match in specs" }
       end
 
