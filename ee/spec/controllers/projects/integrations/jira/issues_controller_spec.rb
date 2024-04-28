@@ -276,7 +276,7 @@ RSpec.describe Projects::Integrations::Jira::IssuesController, feature_category:
             reporter: {
               accountId: '123',
               avatarUrls: {
-                  '48x48' => 'https://secure.gravatar.com/avatar/123.png'
+                '48x48' => 'https://secure.gravatar.com/avatar/123.png'
               },
               displayName: 'John'
             },

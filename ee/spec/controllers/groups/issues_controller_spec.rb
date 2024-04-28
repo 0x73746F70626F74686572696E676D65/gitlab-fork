@@ -20,9 +20,9 @@ RSpec.describe Groups::IssuesController, feature_category: :team_planning do
           milestone_id: milestone.id,
           issuable_ids: "#{issue1.id}, #{issue2.id}",
           epic_id: epic.id
-          },
+        },
         group_id: group
-        }
+      }
     end
 
     context 'when group bulk edit feature is not enabled' do

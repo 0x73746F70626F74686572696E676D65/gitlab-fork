@@ -84,11 +84,11 @@ module Gitlab
           return [] if params[:label_names].blank?
 
           @labels ||= LabelsFinder.new(current_user, {
-                                         group_id: group.id,
-                                         include_ancestor_groups: true,
-                                         only_group_labels: true,
-                                         title: params[:label_names]
-                                       }).execute
+            group_id: group.id,
+            include_ancestor_groups: true,
+            only_group_labels: true,
+            title: params[:label_names]
+          }).execute
         end
 
         # rubocop: enable CodeReuse/ActiveRecord

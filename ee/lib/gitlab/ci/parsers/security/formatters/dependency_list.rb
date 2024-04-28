@@ -74,9 +74,9 @@ module Gitlab
               return base_location unless dependency['iid']
 
               base_location.merge({
-                                    ancestors: formatted_dependency_path(dependency['dependency_path']),
-                                    top_level: !!dependency['direct']
-                                  })
+                ancestors: formatted_dependency_path(dependency['dependency_path']),
+                top_level: !!dependency['direct']
+              })
             end
 
             def formatted_dependency_path(dependency_path)

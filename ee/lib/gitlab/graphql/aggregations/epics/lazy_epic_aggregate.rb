@@ -29,9 +29,9 @@ module Gitlab
             # Initialize the loading state for this query,
             # or get the previously-initiated state
             @lazy_state = query_ctx[:lazy_epic_aggregate] ||= {
-                pending_ids: Set.new,
-                facets: Set.new,
-                tree: {}
+              pending_ids: Set.new,
+              facets: Set.new,
+              tree: {}
             }
             # Register this ID to be loaded later:
             @lazy_state[:pending_ids] << epic_id

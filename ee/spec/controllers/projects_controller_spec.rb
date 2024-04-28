@@ -380,10 +380,10 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
       }
       put :update,
         params: {
-        namespace_id: project.namespace,
-        id: project,
-        project: params
-      }
+          namespace_id: project.namespace,
+          id: project,
+          project: params
+        }
       project.reload
 
       expect(project.project_setting.cve_id_request_enabled).to eq(true)

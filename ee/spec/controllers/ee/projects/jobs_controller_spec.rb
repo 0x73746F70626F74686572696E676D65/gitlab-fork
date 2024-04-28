@@ -180,8 +180,8 @@ RSpec.describe Projects::JobsController, feature_category: :continuous_integrati
 
     def get_show(**extra_params)
       params = {
-          namespace_id: project.namespace.to_param,
-          project_id: project
+        namespace_id: project.namespace.to_param,
+        project_id: project
       }
 
       get :show, params: params.merge(extra_params)
