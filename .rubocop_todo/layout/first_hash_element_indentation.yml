@@ -2,19 +2,6 @@
 # Cop supports --autocorrect.
 Layout/FirstHashElementIndentation:
   Exclude:
-    - 'app/helpers/projects/project_members_helper.rb'
-    - 'app/helpers/search_helper.rb'
-    - 'app/helpers/ssh_keys_helper.rb'
-    - 'app/helpers/tags_helper.rb'
-    - 'app/models/application_setting.rb'
-    - 'app/models/ci/build_metadata.rb'
-    - 'app/models/concerns/has_wiki_page_slug_attributes.rb'
-    - 'app/models/concerns/subscribable.rb'
-    - 'app/models/concerns/taskable.rb'
-    - 'app/models/diff_note.rb'
-    - 'app/models/merge_request.rb'
-    - 'app/models/milestone.rb'
-    - 'app/models/operations/feature_flags/strategy.rb'
     - 'app/models/project.rb'
     - 'app/presenters/ci/build_metadata_presenter.rb'
     - 'app/serializers/detailed_status_entity.rb'
