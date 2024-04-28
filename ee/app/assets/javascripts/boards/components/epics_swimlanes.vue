@@ -399,6 +399,8 @@ export default {
       <div v-else class="gl-pb-5"></div>
     </div>
 
+    <slot name="create-list-button"></slot>
+
     <transition name="slide" @after-enter="afterFormEnters">
       <slot></slot>
     </transition>

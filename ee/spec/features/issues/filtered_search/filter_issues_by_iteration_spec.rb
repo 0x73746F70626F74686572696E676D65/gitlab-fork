@@ -164,6 +164,7 @@ RSpec.describe 'Filter issues by iteration', :js, feature_category: :team_planni
 
     before_all do
       group.add_developer(user)
+      create(:callout, feature_name: :board_add_new_column_trigger_popover, user: user)
     end
 
     before do
