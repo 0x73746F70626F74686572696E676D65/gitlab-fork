@@ -16,15 +16,15 @@ module EE::Groups::GroupMembersHelper
     group, members:, invited:, access_requests:, banned:, include_relations:, search:, pending_members:
   )
     super.merge!({
-       can_export_members: can?(current_user, :export_group_memberships, group),
-       export_csv_path: export_csv_group_group_members_path(group),
-       can_filter_by_enterprise: group.domain_verification_available? && can?(current_user, :admin_group_member, group),
-       banned: group_members_list_data(group, banned),
-       manage_member_roles_path: manage_member_roles_path(group),
-       promotion_request: pending_members.present? ? promotion_pending_members_list_data(pending_members) : [],
-       can_approve_access_requests: !::Namespaces::FreeUserCap::Enforcement.new(group.root_ancestor).reached_limit?,
-       namespace_user_limit: ::Namespaces::FreeUserCap.dashboard_limit
-     })
+      can_export_members: can?(current_user, :export_group_memberships, group),
+      export_csv_path: export_csv_group_group_members_path(group),
+      can_filter_by_enterprise: group.domain_verification_available? && can?(current_user, :admin_group_member, group),
+      banned: group_members_list_data(group, banned),
+      manage_member_roles_path: manage_member_roles_path(group),
+      promotion_request: pending_members.present? ? promotion_pending_members_list_data(pending_members) : [],
+      can_approve_access_requests: !::Namespaces::FreeUserCap::Enforcement.new(group.root_ancestor).reached_limit?,
+      namespace_user_limit: ::Namespaces::FreeUserCap.dashboard_limit
+    })
   end
 
   def group_member_header_subtext(group)

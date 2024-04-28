@@ -73,8 +73,8 @@ module Security
         token_revocation_url,
         body: revoke_token_body,
         headers: {
-         'Content-Type' => 'application/json',
-         'Authorization' => revocation_api_token
+          'Content-Type' => 'application/json',
+          'Authorization' => revocation_api_token
         }
       )
     end

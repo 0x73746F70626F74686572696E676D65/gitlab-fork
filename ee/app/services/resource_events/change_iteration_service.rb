@@ -29,9 +29,9 @@ module ResourceEvents
       action = iteration.blank? ? :remove : :add
 
       super.merge({
-                    action: ResourceTimeboxEvent.actions[action],
-                    iteration_id: iteration.blank? ? old_iteration_id : iteration&.id
-                  })
+        action: ResourceTimeboxEvent.actions[action],
+        iteration_id: iteration.blank? ? old_iteration_id : iteration&.id
+      })
     end
   end
 end
