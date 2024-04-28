@@ -107,7 +107,7 @@ module Dora
     def validate
       unless (end_date - start_date).days <= MAX_RANGE
         return error(_("Date range must be shorter than %{max_range} days.") % { max_range: MAX_RANGE.in_days.to_i },
-                     :bad_request)
+          :bad_request)
       end
 
       unless start_date < end_date
@@ -120,24 +120,24 @@ module Dora
 
       unless ::Dora::DailyMetrics::AVAILABLE_INTERVALS.include?(interval)
         return error(_("The interval must be one of %{intervals}.") % { intervals: ::Dora::DailyMetrics::AVAILABLE_INTERVALS.join(',') },
-                     :bad_request)
+          :bad_request)
       end
 
       if metrics.empty?
         return error(_("The metric must be one of %{metrics}.") % { metrics: ::Dora::DailyMetrics::AVAILABLE_METRICS.join(',') },
-                     :bad_request)
+          :bad_request)
       end
 
       metrics.each do |metric|
         unless ::Dora::DailyMetrics::AVAILABLE_METRICS.include?(metric)
           return error(_("The metric must be one of %{metrics}.") % { metrics: ::Dora::DailyMetrics::AVAILABLE_METRICS.join(',') },
-                       :bad_request)
+            :bad_request)
         end
       end
 
       unless environment_tiers.all? { |tier| Environment.tiers[tier] }
         return error(_("The environment tiers must be from %{environment_tiers}.") % { environment_tiers: Environment.tiers.keys.join(', ') },
-                     :bad_request)
+          :bad_request)
       end
 
       nil

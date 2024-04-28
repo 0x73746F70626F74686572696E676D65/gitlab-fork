@@ -7,8 +7,8 @@ module Types
         graphql_name 'StatusInput'
 
         argument :status, ::Types::RequirementsManagement::TestReportStateEnum,
-                 required: true,
-                 description: 'Status to assign to the work item.'
+          required: true,
+          description: 'Status to assign to the work item.'
       end
     end
   end

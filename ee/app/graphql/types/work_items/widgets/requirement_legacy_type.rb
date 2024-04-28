@@ -11,8 +11,8 @@ module Types
         implements Types::WorkItems::WidgetInterface
 
         field :legacy_iid, GraphQL::Types::Int,
-              deprecated: { reason: 'Use Work Item IID instead', milestone: '15.9' },
-              null: true, description: 'Legacy requirement IID associated with the work item.'
+          deprecated: { reason: 'Use Work Item IID instead', milestone: '15.9' },
+          null: true, description: 'Legacy requirement IID associated with the work item.'
       end
       # rubocop:enable Graphql/AuthorizeTypes
     end

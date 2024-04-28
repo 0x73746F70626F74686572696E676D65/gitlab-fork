@@ -31,9 +31,9 @@ module Dashboard
       private
 
       attr_reader :feature,
-                  :ability,
-                  :projects_relation,
-                  :user
+        :ability,
+        :projects_relation,
+        :user
 
       def find_projects(project_ids)
         ProjectsFinder.new(

@@ -28,7 +28,7 @@ module AuditEvents
 
         def error_message(missing_filters)
           format(_("Couldn't find event type filters where audit event type(s): %{missing_filters}"),
-                 missing_filters: missing_filters.join(', '))
+            missing_filters: missing_filters.join(', '))
         end
       end
     end

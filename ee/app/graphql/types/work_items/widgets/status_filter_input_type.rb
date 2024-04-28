@@ -7,8 +7,8 @@ module Types
         graphql_name 'StatusFilterInput'
 
         argument :status, ::Types::RequirementsManagement::RequirementStatusFilterEnum,
-                 required: true,
-                 description: 'Status of the work item.'
+          required: true,
+          description: 'Status of the work item.'
       end
     end
   end

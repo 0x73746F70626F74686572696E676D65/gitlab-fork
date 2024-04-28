@@ -29,10 +29,10 @@ module EE
 
           if had_epic
             ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_changed_epic_action(author: current_user,
-                                                                                                    project: project)
+              project: project)
           else
             ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_added_to_epic_action(author: current_user,
-                                                                                                     project: project)
+              project: project)
           end
         end
       end
@@ -45,7 +45,7 @@ module EE
           next unless result[:status] == :success
 
           ::Gitlab::UsageDataCounters::IssueActivityUniqueCounter.track_issue_removed_from_epic_action(author: current_user,
-                                                                                                       project: project)
+            project: project)
         end
       end
 
@@ -69,7 +69,7 @@ module EE
         return unless group.present?
 
         EpicsFinder.new(current_user, group_id: group.id,
-                                      include_ancestor_groups: true).find(epic_id)
+          include_ancestor_groups: true).find(epic_id)
       end
 
       def epic_param_present?

@@ -100,7 +100,7 @@ module EE
           return issues if all_milestone_lists.empty?
 
           issues.where("milestone_id NOT IN (?) OR milestone_id IS NULL",
-                       all_milestone_lists.select(:milestone_id))
+            all_milestone_lists.select(:milestone_id))
         end
         # rubocop: enable CodeReuse/ActiveRecord
 

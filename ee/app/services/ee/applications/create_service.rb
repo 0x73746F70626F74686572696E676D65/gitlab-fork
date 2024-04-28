@@ -15,10 +15,10 @@ module EE
 
       def audit_event_service(entity, ip_address)
         ::AuditEventService.new(current_user,
-                                entity,
-                                action: :custom,
-                                custom_message: 'OAuth application added',
-                                ip_address: ip_address)
+          entity,
+          action: :custom,
+          custom_message: 'OAuth application added',
+          ip_address: ip_address)
       end
     end
   end
