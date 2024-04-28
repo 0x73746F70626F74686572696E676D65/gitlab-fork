@@ -149,7 +149,7 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
 
     let(:url) { "/projects/#{project.id}/merge_requests/#{merge_request.iid}/approval_rules/#{mr_approval_rule.id}" }
     let(:schema_path) { 'public_api/v4/merge_request_approval_rule' }
-    let(:get_rule) { -> (response) { response } }
+    let(:get_rule) { ->(response) { response } }
 
     it_behaves_like 'getting approval rule/s'
   end
@@ -159,7 +159,7 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
 
     let(:url) { "/projects/#{project.id}/merge_requests/#{merge_request.iid}/approval_rules" }
     let(:schema_path) { 'public_api/v4/merge_request_approval_rules' }
-    let(:get_rule) { -> (response) { response.first } }
+    let(:get_rule) { ->(response) { response.first } }
 
     it_behaves_like 'getting approval rule/s'
 

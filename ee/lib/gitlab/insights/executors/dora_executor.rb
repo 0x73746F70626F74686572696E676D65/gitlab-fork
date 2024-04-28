@@ -45,7 +45,7 @@ module Gitlab
                                             to: Date.today,
                                             period: group_by.to_sym,
                                             default_value: DEFAULT_VALUES[metric],
-                                            date_formatter: -> (date) { date.strftime(FORMATTERS[group_by]) }
+                                            date_formatter: ->(date) { date.strftime(FORMATTERS[group_by]) }
                                            ).fill
         end
 

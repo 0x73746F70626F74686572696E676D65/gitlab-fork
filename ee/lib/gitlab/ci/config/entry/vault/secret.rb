@@ -9,8 +9,8 @@ module Gitlab
           # Entry that represents Vault secret.
           #
           class Secret < ::Gitlab::Config::Entry::Simplifiable
-            strategy :StringStrategy, if: -> (config) { config.is_a?(String) }
-            strategy :HashStrategy, if: -> (config) { config.is_a?(Hash) }
+            strategy :StringStrategy, if: ->(config) { config.is_a?(String) }
+            strategy :HashStrategy, if: ->(config) { config.is_a?(Hash) }
 
             class UnknownStrategy < ::Gitlab::Config::Entry::Node
               def errors

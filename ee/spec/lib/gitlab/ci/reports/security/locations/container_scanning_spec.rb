@@ -21,7 +21,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Locations::ContainerScanning do
   subject { described_class.new(**params) }
 
   describe 'fingerprint' do
-    sha1_of = -> (input) { Digest::SHA1.hexdigest(input) }
+    sha1_of = ->(input) { Digest::SHA1.hexdigest(input) }
 
     where(:image, :default_branch_image, :valid_default_branch_image, :expected_fingerprint_input) do
       [
