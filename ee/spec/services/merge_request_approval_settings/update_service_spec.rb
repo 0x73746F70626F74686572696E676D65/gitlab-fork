@@ -95,7 +95,7 @@ RSpec.describe MergeRequestApprovalSettings::UpdateService, feature_category: :c
     shared_examples 'call audit changes service' do
       it 'executes GroupMergeRequestApprovalSettingChangesAuditor' do
         expect(Audit::GroupMergeRequestApprovalSettingChangesAuditor).to receive(:new).with(user,
-                           instance_of(GroupMergeRequestApprovalSetting), params).and_call_original
+          instance_of(GroupMergeRequestApprovalSetting), params).and_call_original
 
         subject.execute
       end

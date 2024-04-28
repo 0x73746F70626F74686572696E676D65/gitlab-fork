@@ -21,33 +21,33 @@ RSpec.describe Groups::ComplianceReportCsvService, :freeze_time, feature_categor
 
   let_it_be(:project1_merge_request) do
     create(:merge_request_with_diffs,
-           :with_merged_metrics,
-           merged_by: merge_user,
-           source_project: project1,
-           target_project: project1,
-           author: user,
-           merge_commit_sha: '347yrv45')
+      :with_merged_metrics,
+      merged_by: merge_user,
+      source_project: project1,
+      target_project: project1,
+      author: user,
+      merge_commit_sha: '347yrv45')
   end
 
   let_it_be(:project2_merge_request) do
     create(:merge_request_with_diffs,
-           :with_merged_metrics,
-           merged_by: merge_user,
-           source_project: project2,
-           target_project: project2,
-           author: user,
-           merge_commit_sha: '347yrv46')
+      :with_merged_metrics,
+      merged_by: merge_user,
+      source_project: project2,
+      target_project: project2,
+      author: user,
+      merge_commit_sha: '347yrv46')
   end
 
   let_it_be(:sub_group_merge_request) do
     create(:merge_request_with_diffs,
-           :with_merged_metrics,
-           merged_by: merge_user,
-           source_project: sub_group_project,
-           target_project: sub_group_project,
-           author: user,
-           state: :merged,
-           merge_commit_sha: '6f4907e7')
+      :with_merged_metrics,
+      merged_by: merge_user,
+      source_project: sub_group_project,
+      target_project: sub_group_project,
+      author: user,
+      state: :merged,
+      merge_commit_sha: '6f4907e7')
   end
 
   let_it_be(:project1_approval1) { create(:approval, merge_request: project1_merge_request, user: merge_user) }

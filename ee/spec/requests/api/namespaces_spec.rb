@@ -30,18 +30,18 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to include_pagination_headers
         expect(group_kind_json_response.keys).to contain_exactly('id', 'kind', 'name', 'path', 'full_path',
-                                                                 'parent_id', 'members_count_with_descendants',
-                                                                 'plan', 'shared_runners_minutes_limit',
-                                                                 'avatar_url', 'web_url', 'trial_ends_on', 'trial',
-                                                                 'extra_shared_runners_minutes_limit', 'billable_members_count',
-                                                                 'root_repository_size', 'projects_count',
-                                                                 'additional_purchased_storage_size', 'additional_purchased_storage_ends_on')
+          'parent_id', 'members_count_with_descendants',
+          'plan', 'shared_runners_minutes_limit',
+          'avatar_url', 'web_url', 'trial_ends_on', 'trial',
+          'extra_shared_runners_minutes_limit', 'billable_members_count',
+          'root_repository_size', 'projects_count',
+          'additional_purchased_storage_size', 'additional_purchased_storage_ends_on')
 
         expect(user_kind_json_response.keys).to contain_exactly('id', 'kind', 'name', 'path', 'full_path',
-                                                                'parent_id', 'plan', 'shared_runners_minutes_limit',
-                                                                'avatar_url', 'web_url', 'trial_ends_on', 'trial',
-                                                                'extra_shared_runners_minutes_limit', 'billable_members_count',
-                                                                'additional_purchased_storage_size', 'additional_purchased_storage_ends_on')
+          'parent_id', 'plan', 'shared_runners_minutes_limit',
+          'avatar_url', 'web_url', 'trial_ends_on', 'trial',
+          'extra_shared_runners_minutes_limit', 'billable_members_count',
+          'additional_purchased_storage_size', 'additional_purchased_storage_ends_on')
       end
     end
 
@@ -54,9 +54,9 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
         owned_group_response = json_response.find { |resource| resource['id'] == group1.id }
 
         expect(owned_group_response.keys).to contain_exactly('id', 'kind', 'name', 'path', 'full_path', 'trial_ends_on',
-                                                             'plan', 'parent_id', 'members_count_with_descendants', 'trial',
-                                                             'avatar_url', 'web_url', 'billable_members_count',
-                                                             'root_repository_size', 'projects_count')
+          'plan', 'parent_id', 'members_count_with_descendants', 'trial',
+          'avatar_url', 'web_url', 'billable_members_count',
+          'root_repository_size', 'projects_count')
       end
 
       it "returns correct attributes when user cannot admin group" do
@@ -67,7 +67,7 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
         guest_group_response = json_response.find { |resource| resource['id'] == group1.id }
 
         expect(guest_group_response.keys).to contain_exactly('id', 'kind', 'name', 'path', 'full_path', 'parent_id',
-                                                             'avatar_url', 'web_url', 'billable_members_count')
+          'avatar_url', 'web_url', 'billable_members_count')
       end
     end
 
@@ -128,7 +128,7 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
         group1.add_guest(user)
 
         create(:gitlab_subscription, namespace: group1, max_seats_used: 1,
-               max_seats_used_changed_at: 1.week.ago, seats_in_use: 1, end_date: Date.current + 2.days)
+          max_seats_used_changed_at: 1.week.ago, seats_in_use: 1, end_date: Date.current + 2.days)
       end
 
       # We seem to have some N+1 queries.

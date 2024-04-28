@@ -50,8 +50,8 @@ RSpec.describe Groups::MarkForDeletionService, feature_category: :groups_and_pro
         let(:deletion_date) { 3.days.ago }
         let(:group) do
           create(:group_with_deletion_schedule,
-                 marked_for_deletion_on: deletion_date,
-                 deleting_user: user)
+            marked_for_deletion_on: deletion_date,
+            deleting_user: user)
         end
 
         it 'does not change the attributes associated with delayed deletion' do

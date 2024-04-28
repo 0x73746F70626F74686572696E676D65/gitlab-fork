@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::Reconciliations::CheckSeatUsageAlertsEligibilityService,
-               :use_clean_rails_memory_store_caching, :saas, feature_category: :subscription_management do
+  :use_clean_rails_memory_store_caching, :saas, feature_category: :subscription_management do
   using RSpec::Parameterized::TableSyntax
 
   describe '#execute' do

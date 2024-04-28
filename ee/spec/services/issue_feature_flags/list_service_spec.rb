@@ -39,17 +39,17 @@ RSpec.describe IssueFeatureFlags::ListService, feature_category: :team_planning 
         expect(subject.size).to eq(4)
 
         expect(subject).to include(include(id: feature_flag.id,
-                                           name: feature_flag.name,
-                                           path: "/#{project.full_path}/-/feature_flags/#{feature_flag.iid}/edit"))
+          name: feature_flag.name,
+          path: "/#{project.full_path}/-/feature_flags/#{feature_flag.iid}/edit"))
         expect(subject).to include(include(id: feature_flag_b.id,
-                                           name: feature_flag_b.name,
-                                           path: "/#{project.full_path}/-/feature_flags/#{feature_flag_b.iid}/edit"))
+          name: feature_flag_b.name,
+          path: "/#{project.full_path}/-/feature_flags/#{feature_flag_b.iid}/edit"))
         expect(subject).to include(include(id: feature_flag_c.id,
-                                           name: feature_flag_c.name,
-                                           path: "/#{project.full_path}/-/feature_flags/#{feature_flag_c.iid}/edit"))
+          name: feature_flag_c.name,
+          path: "/#{project.full_path}/-/feature_flags/#{feature_flag_c.iid}/edit"))
         expect(subject).to include(include(id: feature_flag_d.id,
-                                           name: feature_flag_d.name,
-                                           path: "/#{project.full_path}/-/feature_flags/#{feature_flag_d.iid}/edit"))
+          name: feature_flag_d.name,
+          path: "/#{project.full_path}/-/feature_flags/#{feature_flag_d.iid}/edit"))
       end
     end
 

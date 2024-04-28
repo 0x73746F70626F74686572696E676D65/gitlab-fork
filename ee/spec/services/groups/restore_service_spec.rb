@@ -6,8 +6,8 @@ RSpec.describe Groups::RestoreService, feature_category: :groups_and_projects do
   let(:user) { create(:user) }
   let(:group) do
     create(:group_with_deletion_schedule,
-           marked_for_deletion_on: 1.day.ago,
-           deleting_user: user)
+      marked_for_deletion_on: 1.day.ago,
+      deleting_user: user)
   end
 
   subject { described_class.new(group, user, {}).execute }
