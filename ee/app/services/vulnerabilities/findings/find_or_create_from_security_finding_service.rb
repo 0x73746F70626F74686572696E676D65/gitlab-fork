@@ -21,7 +21,7 @@ module Vulnerabilities
 
       def vulnerability_finding_creation_error_msg
         format(_("Error creating vulnerability finding: %{errors}"),
-errors: vulnerability_finding.errors.full_messages.join(', '))
+          errors: vulnerability_finding.errors.full_messages.join(', '))
       end
 
       def vulnerability_finding

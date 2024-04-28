@@ -38,7 +38,7 @@ module Iterations
       end
     rescue ActiveRecord::RecordNotFound => e
       ::ServiceResponse.error(message: _('Iterations cadence not found'),
-                              payload: { errors: [e.message] }, http_status: 404)
+        payload: { errors: [e.message] }, http_status: 404)
     end
 
     private

@@ -8,7 +8,7 @@ module Vulnerabilities
 
     def update_vulnerability!
       update_vulnerability_with(state: :confirmed, confirmed_by: @user,
-                                confirmed_at: Time.current) do
+        confirmed_at: Time.current) do
         DestroyDismissalFeedbackService.new(@user, @vulnerability).execute # we can remove this as part of https://gitlab.com/gitlab-org/gitlab/-/issues/324899
       end
     end
