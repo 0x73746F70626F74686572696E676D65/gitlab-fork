@@ -34,7 +34,7 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
 
       render
 
-      expect(rendered).to have_content /An alert.*Users in License/
+      expect(rendered).to have_content(/An alert.*Users in License/)
     end
 
     it 'includes license overview' do

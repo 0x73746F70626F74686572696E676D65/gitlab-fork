@@ -136,7 +136,7 @@ module EE
           end
 
           def next_member_range_start(entry)
-            match = member_range_attribute(entry).match /^member;range=\d+-(\d+|\*)$/
+            match = member_range_attribute(entry).match(/^member;range=\d+-(\d+|\*)$/)
 
             match[1].to_i + 1 if match.present? && match[1] != '*'
           end

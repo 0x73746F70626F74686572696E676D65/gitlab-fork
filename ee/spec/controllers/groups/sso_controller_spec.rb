@@ -178,7 +178,7 @@ RSpec.describe Groups::SsoController, feature_category: :system_access do
       it 'sets a flash message explaining that setup is required' do
         get :saml, params: { group_id: group }
 
-        expect(flash[:notice]).to match /not been configured/
+        expect(flash[:notice]).to match(/not been configured/)
       end
     end
   end

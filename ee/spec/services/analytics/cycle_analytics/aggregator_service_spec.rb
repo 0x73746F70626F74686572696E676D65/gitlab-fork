@@ -15,7 +15,7 @@ RSpec.describe Analytics::CycleAnalytics::AggregatorService do
     let(:mode) { :other_mode }
 
     it 'raises error' do
-      expect { run_service }.to raise_error /Only :incremental and :full modes are supported/
+      expect { run_service }.to raise_error(/Only :incremental and :full modes are supported/)
     end
   end
 

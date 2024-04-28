@@ -179,7 +179,7 @@ RSpec.describe Projects::MirrorsController, feature_category: :source_code_manag
         do_put(project, { import_url: 'ftp://invalid.invalid' }, format: :json)
 
         expect(response).to have_gitlab_http_status(:unprocessable_entity)
-        expect(json_response['import_url'].first).to match /is blocked/
+        expect(json_response['import_url'].first).to match(/is blocked/)
       end
 
       it "preserves the import_data object when the ID isn't in the request" do
