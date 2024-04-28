@@ -11,52 +11,52 @@ module Types
       authorize :read_incident_management_oncall_schedule
 
       field :id,
-            Types::GlobalIDType[::IncidentManagement::OncallRotation],
-            null: false,
-            description: 'ID of the on-call rotation.'
+        Types::GlobalIDType[::IncidentManagement::OncallRotation],
+        null: false,
+        description: 'ID of the on-call rotation.'
 
       field :name,
-            GraphQL::Types::String,
-            null: false,
-            description: 'Name of the on-call rotation.'
+        GraphQL::Types::String,
+        null: false,
+        description: 'Name of the on-call rotation.'
 
       field :starts_at,
-            Types::TimeType,
-            null: true,
-            description: 'Start date of the on-call rotation.'
+        Types::TimeType,
+        null: true,
+        description: 'Start date of the on-call rotation.'
 
       field :ends_at,
-            Types::TimeType,
-            null: true,
-            description: 'End date and time of the on-call rotation.'
+        Types::TimeType,
+        null: true,
+        description: 'End date and time of the on-call rotation.'
 
       field :length,
-            GraphQL::Types::Int,
-            null: true,
-            description: 'Length of the on-call schedule, in the units specified by lengthUnit.'
+        GraphQL::Types::Int,
+        null: true,
+        description: 'Length of the on-call schedule, in the units specified by lengthUnit.'
 
       field :length_unit,
-            Types::IncidentManagement::OncallRotationLengthUnitEnum,
-            null: true,
-            description: 'Unit of the on-call rotation length.'
+        Types::IncidentManagement::OncallRotationLengthUnitEnum,
+        null: true,
+        description: 'Unit of the on-call rotation length.'
 
       field :active_period,
-            Types::IncidentManagement::OncallRotationActivePeriodType,
-            null: true,
-            description: 'Active period for the on-call rotation.'
+        Types::IncidentManagement::OncallRotationActivePeriodType,
+        null: true,
+        description: 'Active period for the on-call rotation.'
 
       field :participants,
-            ::Types::IncidentManagement::OncallParticipantType.connection_type,
-            null: true,
-            description: 'Participants of the on-call rotation.',
-            method: :active_participants
+        ::Types::IncidentManagement::OncallParticipantType.connection_type,
+        null: true,
+        description: 'Participants of the on-call rotation.',
+        method: :active_participants
 
       field :shifts,
-            ::Types::IncidentManagement::OncallShiftType.connection_type,
-            null: true,
-            description: 'Blocks of time for which a participant is on-call within a given time frame. Time frame cannot exceed one month.',
-            max_page_size: MAX_SHIFTS_FOR_TIMEFRAME,
-            resolver: ::Resolvers::IncidentManagement::OncallShiftsResolver
+        ::Types::IncidentManagement::OncallShiftType.connection_type,
+        null: true,
+        description: 'Blocks of time for which a participant is on-call within a given time frame. Time frame cannot exceed one month.',
+        max_page_size: MAX_SHIFTS_FOR_TIMEFRAME,
+        resolver: ::Resolvers::IncidentManagement::OncallShiftsResolver
     end
   end
 end
