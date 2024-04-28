@@ -8,8 +8,8 @@ module Resolvers
       alias_method :list, :object
 
       argument :filters, Types::Boards::BoardEpicInputType,
-         required: false,
-         description: 'Filters applied when selecting epics in the board list.'
+        required: false,
+        description: 'Filters applied when selecting epics in the board list.'
 
       def resolve(filters: {}, **args)
         filter_params = { board: list.epic_board, list: list }.merge(filters)

@@ -11,8 +11,8 @@ module Resolvers
         type Types::Analytics::DevopsAdoption::EnabledNamespaceType.connection_type, null: true
 
         argument :display_namespace_id, ::Types::GlobalIDType[::Namespace],
-                 required: false,
-                 description: 'Filter by display namespace.'
+          required: false,
+          description: 'Filter by display namespace.'
 
         def resolve_with_lookahead(display_namespace_id: nil, **)
           display_namespace_id = GlobalID.parse(display_namespace_id)

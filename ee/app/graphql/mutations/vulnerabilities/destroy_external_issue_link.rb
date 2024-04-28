@@ -10,8 +10,8 @@ module Mutations
       ERROR_MSG = 'Error deleting the vulnerability external issue link'
 
       argument :id, ::Types::GlobalIDType[::Vulnerabilities::ExternalIssueLink],
-               required: true,
-               description: 'Global ID of the vulnerability external issue link.'
+        required: true,
+        description: 'Global ID of the vulnerability external issue link.'
 
       def resolve(id:)
         vulnerability_external_issue_link = authorized_find!(id: id)

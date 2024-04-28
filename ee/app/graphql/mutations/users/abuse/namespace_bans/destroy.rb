@@ -10,13 +10,13 @@ module Mutations
           authorize :owner_access
 
           argument :id, Types::GlobalIDType[::Namespaces::NamespaceBan],
-                  required: true,
-                  description: 'Global ID of the namespace ban to remove.'
+            required: true,
+            description: 'Global ID of the namespace ban to remove.'
 
           field :namespace_ban,
-                Types::Namespaces::NamespaceBanType,
-                null: true,
-                description: 'Namespace Ban.'
+            Types::Namespaces::NamespaceBanType,
+            null: true,
+            description: 'Namespace Ban.'
 
           def resolve(id:)
             namespace_ban = authorized_find!(id: id)

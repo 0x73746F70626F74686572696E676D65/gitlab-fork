@@ -9,14 +9,14 @@ module Resolvers
         type Types::Analytics::DevopsAdoption::SnapshotType.connection_type, null: true
 
         argument :end_time_before,
-                 ::Types::TimeType,
-                 required: false,
-                 description: 'Filter to snapshots with month end before the provided date.'
+          ::Types::TimeType,
+          required: false,
+          description: 'Filter to snapshots with month end before the provided date.'
 
         argument :end_time_after,
-                 ::Types::TimeType,
-                 required: false,
-                 description: 'Filter to snapshots with month end after the provided date.'
+          ::Types::TimeType,
+          required: false,
+          description: 'Filter to snapshots with month end after the provided date.'
 
         def resolve(end_time_after: nil, end_time_before: nil)
           return [] unless authorize(object)
