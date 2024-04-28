@@ -12,10 +12,10 @@ RSpec.describe API::Analytics::ProjectDeploymentFrequency, feature_category: :va
 
   def make_deployment(finished_at, env)
     create(:deployment,
-           status: :success,
-           project: project,
-           environment: env,
-           finished_at: finished_at)
+      status: :success,
+      project: project,
+      environment: env,
+      finished_at: finished_at)
   end
 
   let_it_be(:deployment_2020_01_01) { make_deployment(DateTime.new(2020, 1, 1), prod) }

@@ -177,21 +177,21 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
       let(:user2) { create(:user) }
       let!(:epic) do
         create(:epic,
-               group: group,
-               title: 'baz',
-               state: :closed,
-               created_at: 3.days.ago,
-               updated_at: 2.days.ago)
+          group: group,
+          title: 'baz',
+          state: :closed,
+          created_at: 3.days.ago,
+          updated_at: 2.days.ago)
       end
 
       let!(:epic2) do
         create(:epic,
-               author: user2,
-               group: group,
-               title: 'foo',
-               description: 'bar',
-               created_at: 2.days.ago,
-               updated_at: 3.days.ago)
+          author: user2,
+          group: group,
+          title: 'foo',
+          description: 'bar',
+          created_at: 2.days.ago,
+          updated_at: 3.days.ago)
       end
 
       let!(:label) { create(:group_label, title: 'a-test', group: group) }

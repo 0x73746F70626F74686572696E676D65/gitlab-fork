@@ -14,7 +14,7 @@ RSpec.describe API::Branches, feature_category: :source_code_management do
   describe 'PUT /projects/:id/repository/branches/:branch/protect' do
     subject(:protect) do
       put api("/projects/#{project.id}/repository/branches/#{protected_branch.name}/protect", user),
-          params: { developers_can_push: true, developers_can_merge: true }
+        params: { developers_can_push: true, developers_can_merge: true }
     end
 
     context "when no one can push" do

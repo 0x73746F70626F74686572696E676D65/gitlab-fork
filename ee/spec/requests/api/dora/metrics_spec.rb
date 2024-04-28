@@ -23,26 +23,26 @@ RSpec.describe API::Dora::Metrics, feature_category: :dora_metrics do
 
     before_all do
       create(:dora_daily_metrics,
-             deployment_frequency: 1,
-             lead_time_for_changes_in_seconds: 3,
-             time_to_restore_service_in_seconds: 5,
-             incidents_count: 7,
-             environment: production,
-             date: '2021-01-01')
+        deployment_frequency: 1,
+        lead_time_for_changes_in_seconds: 3,
+        time_to_restore_service_in_seconds: 5,
+        incidents_count: 7,
+        environment: production,
+        date: '2021-01-01')
       create(:dora_daily_metrics,
-             deployment_frequency: 2,
-             lead_time_for_changes_in_seconds: 4,
-             time_to_restore_service_in_seconds: 6,
-             incidents_count: 8,
-             environment: production,
-             date: '2021-01-02')
+        deployment_frequency: 2,
+        lead_time_for_changes_in_seconds: 4,
+        time_to_restore_service_in_seconds: 6,
+        incidents_count: 8,
+        environment: production,
+        date: '2021-01-02')
       create(:dora_daily_metrics,
-             deployment_frequency: 100,
-             lead_time_for_changes_in_seconds: 200,
-             time_to_restore_service_in_seconds: 300,
-             incidents_count: 400,
-             environment: staging,
-             date: '2021-01-02')
+        deployment_frequency: 100,
+        lead_time_for_changes_in_seconds: 200,
+        time_to_restore_service_in_seconds: 300,
+        incidents_count: 400,
+        environment: staging,
+        date: '2021-01-02')
     end
 
     before do

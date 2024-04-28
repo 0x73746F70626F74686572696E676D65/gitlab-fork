@@ -84,14 +84,14 @@ RSpec.describe OmniAuth::Strategies::GroupSaml, type: :strategy do
           end
 
           post "/groups/my-group/-/saml/callback",
-               { SAMLResponse: saml_response, RelayState: relay_state },
-               'rack.session' => mock_session
+            { SAMLResponse: saml_response, RelayState: relay_state },
+            'rack.session' => mock_session
         end
 
         it 'redirects back to the settings page' do
           post "/groups/my-group/-/saml/callback",
-               { SAMLResponse: saml_response, RelayState: relay_state },
-               'rack.session' => mock_session
+            { SAMLResponse: saml_response, RelayState: relay_state },
+            'rack.session' => mock_session
 
           expect(last_response.location).to eq(group_saml_providers_path(group, anchor: 'response'))
         end
