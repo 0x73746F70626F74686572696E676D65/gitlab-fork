@@ -10,12 +10,12 @@ module Types
       description 'Represents the source of a security policy belonging to a group'
 
       field :inherited, GraphQL::Types::Boolean,
-            null: false,
-            description: 'Indicates whether this policy is inherited from parent group.'
+        null: false,
+        description: 'Indicates whether this policy is inherited from parent group.'
 
       field :namespace, Types::NamespaceType,
-            null: true,
-            description: 'Project the policy is associated with.'
+        null: true,
+        description: 'Project the policy is associated with.'
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end

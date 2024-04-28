@@ -8,9 +8,9 @@ module Types
 
     ::Enums::Vulnerability.report_types.keys.each do |report_type|
       field report_type,
-            ::Types::SecurityReportSummarySectionType,
-            null: true,
-            description: "Aggregated counts for the `#{report_type}` scan"
+        ::Types::SecurityReportSummarySectionType,
+        null: true,
+        description: "Aggregated counts for the `#{report_type}` scan"
     end
   end
 end
