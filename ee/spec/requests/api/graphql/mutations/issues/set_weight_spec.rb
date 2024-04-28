@@ -16,14 +16,14 @@ RSpec.describe 'Setting weight of an issue', feature_category: :team_planning do
       iid: issue.iid.to_s
     }
     graphql_mutation(:issue_set_weight, variables.merge(input),
-                     <<-QL.strip_heredoc
+      <<-QL.strip_heredoc
                        clientMutationId
                        errors
                        issue {
                          iid
                          weight
                        }
-                     QL
+      QL
     )
   end
 

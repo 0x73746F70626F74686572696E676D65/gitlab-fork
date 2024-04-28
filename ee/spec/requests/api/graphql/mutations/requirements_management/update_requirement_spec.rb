@@ -105,7 +105,7 @@ RSpec.describe 'Updating a Requirement', feature_category: :requirements_managem
         let(:attributes) { { title: 'new title' } }
 
         it_behaves_like 'a mutation that returns top-level errors',
-                        errors: ['One and only one of iid or workItemIid is required']
+          errors: ['One and only one of iid or workItemIid is required']
       end
 
       context 'when there are no update params nor iid params' do
@@ -121,7 +121,7 @@ RSpec.describe 'Updating a Requirement', feature_category: :requirements_managem
         let(:attributes) { { title: 'new title' } }
 
         it_behaves_like 'a mutation that returns top-level errors',
-                        errors: ['One and only one of iid or workItemIid is required']
+          errors: ['One and only one of iid or workItemIid is required']
       end
     end
   end

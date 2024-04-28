@@ -62,8 +62,8 @@ RSpec.describe 'Updating an iteration cadence', feature_category: :team_planning
       end
 
       it_behaves_like 'a mutation that returns top-level errors',
-                      errors: ['The resource that you are attempting to access does not '\
-                 'exist or you don\'t have permission to perform this action']
+        errors: ['The resource that you are attempting to access does not '\
+   'exist or you don\'t have permission to perform this action']
     end
 
     context 'when iterations feature is enabled' do
@@ -99,7 +99,7 @@ RSpec.describe 'Updating an iteration cadence', feature_category: :team_planning
         let(:attributes) { { id: iteration_cadence.to_global_id.to_s, title: '' } }
 
         it_behaves_like 'a mutation that returns errors in the response',
-                        errors: ["Title can't be blank"]
+          errors: ["Title can't be blank"]
 
         it 'does not update the iteration cadence' do
           expect do

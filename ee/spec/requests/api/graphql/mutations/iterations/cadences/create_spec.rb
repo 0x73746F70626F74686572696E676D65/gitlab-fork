@@ -59,8 +59,8 @@ RSpec.describe 'Creating an iteration cadence', feature_category: :team_planning
       end
 
       it_behaves_like 'a mutation that returns top-level errors',
-                      errors: ['The resource that you are attempting to access does not '\
-                 'exist or you don\'t have permission to perform this action']
+        errors: ['The resource that you are attempting to access does not '\
+   'exist or you don\'t have permission to perform this action']
     end
 
     context 'when iterations feature is enabled' do
@@ -90,7 +90,7 @@ RSpec.describe 'Creating an iteration cadence', feature_category: :team_planning
         let(:attributes) { { title: '', duration_in_weeks: 1, active: false, automatic: true } }
 
         it_behaves_like 'a mutation that returns errors in the response',
-                        errors: ["Iterations in advance can't be blank", "Start date can't be blank", "Title can't be blank"]
+          errors: ["Iterations in advance can't be blank", "Start date can't be blank", "Title can't be blank"]
 
         it 'does not create the iteration cadence' do
           expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iterations::Cadence, :count)

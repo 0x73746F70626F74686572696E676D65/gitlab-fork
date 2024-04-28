@@ -89,8 +89,8 @@ RSpec.describe 'Creating an Iteration', :freeze_time, feature_category: :team_pl
       end
 
       it_behaves_like 'a mutation that returns top-level errors',
-                      errors: ['The resource that you are attempting to access does not '\
-                 'exist or you don\'t have permission to perform this action']
+        errors: ['The resource that you are attempting to access does not '\
+   'exist or you don\'t have permission to perform this action']
     end
 
     context 'when iterations are enabled' do
@@ -134,7 +134,7 @@ RSpec.describe 'Creating an Iteration', :freeze_time, feature_category: :team_pl
         let(:attributes) { { description: '' } }
 
         it_behaves_like 'a mutation that returns errors in the response',
-                        errors: ["Start date can't be blank", "Due date can't be blank"]
+          errors: ["Start date can't be blank", "Due date can't be blank"]
 
         it 'does not create the iteration' do
           expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)
@@ -145,7 +145,7 @@ RSpec.describe 'Creating an Iteration', :freeze_time, feature_category: :team_pl
         let(:attributes) { {} }
 
         it_behaves_like 'a mutation that returns top-level errors',
-                        errors: ['The list of iteration attributes is empty']
+          errors: ['The list of iteration attributes is empty']
 
         it 'does not create the iteration' do
           expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)
@@ -156,7 +156,7 @@ RSpec.describe 'Creating an Iteration', :freeze_time, feature_category: :team_pl
         let(:params) { {} }
 
         it_behaves_like 'a mutation that returns top-level errors',
-                        errors: ['Exactly one of group_path or project_path arguments is required']
+          errors: ['Exactly one of group_path or project_path arguments is required']
 
         it 'does not create the iteration' do
           expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)
@@ -167,7 +167,7 @@ RSpec.describe 'Creating an Iteration', :freeze_time, feature_category: :team_pl
         let(:params) { { group_path: group.full_path, project_path: 'doesnotreallymatter' } }
 
         it_behaves_like 'a mutation that returns top-level errors',
-                        errors: ['Exactly one of group_path or project_path arguments is required']
+          errors: ['Exactly one of group_path or project_path arguments is required']
 
         it 'does not create the iteration' do
           expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)

@@ -150,7 +150,7 @@ RSpec.describe 'Updating an epic tree', feature_category: :portfolio_management 
           end
 
           it_behaves_like 'a mutation that returns top-level errors',
-                          errors: ['Variable $epicTreeReorderInput of type EpicTreeReorderInput! was provided invalid value for moved.relativePosition (Expected "invalid" to be one of: before, after)']
+            errors: ['Variable $epicTreeReorderInput of type EpicTreeReorderInput! was provided invalid value for moved.relativePosition (Expected "invalid" to be one of: before, after)']
         end
 
         context 'when object being moved is not supported type' do
