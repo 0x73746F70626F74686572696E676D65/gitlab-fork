@@ -40,10 +40,10 @@ RSpec.describe Audit::ProjectCiCdSettingChangesAuditor, feature_category: :audit
             it 'creates an audit event' do
               expect { project_ci_cd_setting_changes_auditor.execute }.to change(AuditEvent, :count).by(1)
               expect(AuditEvent.last.details).to include({
-                                                           change: column,
-                                                           from: prev_value,
-                                                           to: new_value
-                                                         })
+                change: column,
+                from: prev_value,
+                to: new_value
+              })
             end
 
             it 'streams correct audit event', :aggregate_failures do

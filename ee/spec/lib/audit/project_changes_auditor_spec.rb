@@ -268,10 +268,10 @@ RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
               it 'creates an audit event' do
                 expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
                 expect(AuditEvent.last.details).to include({
-                                                            change: column,
-                                                            from: prev_value,
-                                                            to: new_value
-                                                          })
+                  change: column,
+                  from: prev_value,
+                  to: new_value
+                })
               end
 
               it 'streams correct audit event', :aggregate_failures do
@@ -321,8 +321,8 @@ RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
 
             expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
             expect(AuditEvent.last.details).to include({
-                                                         custom_message: "Changed merge method to #{method}"
-                                                       })
+              custom_message: "Changed merge method to #{method}"
+            })
           end
 
           it 'streams correct audit event' do
@@ -352,8 +352,8 @@ RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
 
             expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
             expect(AuditEvent.last.details).to include({
-                                                         custom_message: "Changed merge method to Merge"
-                                                       })
+              custom_message: "Changed merge method to Merge"
+            })
           end
 
           it 'streams correct audit event' do

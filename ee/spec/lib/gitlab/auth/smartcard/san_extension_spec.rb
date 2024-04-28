@@ -53,9 +53,9 @@ RSpec.describe Gitlab::Auth::Smartcard::SANExtension do
 
         it {
           is_expected.to match([{
-                                  described_class::EMAIL_TAG => email,
-                                  described_class::URI_TAG => uri
-                                }])
+            described_class::EMAIL_TAG => email,
+            described_class::URI_TAG => uri
+          }])
         }
       end
 
