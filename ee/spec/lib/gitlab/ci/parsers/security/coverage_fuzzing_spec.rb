@@ -23,9 +23,9 @@ RSpec.describe Gitlab::Ci::Parsers::Security::CoverageFuzzing do
 
       expect(location).to be_a(::Gitlab::Ci::Reports::Security::Locations::CoverageFuzzing)
       expect(location).to have_attributes(
-        "crash_address": "0x602000001573",
-        "crash_state": "FuzzMe\nstart\nstart+0x0\n\n",
-        "crash_type": "Heap-buffer-overflow\nREAD 1")
+        crash_address: "0x602000001573",
+        crash_state: "FuzzMe\nstart\nstart+0x0\n\n",
+        crash_type: "Heap-buffer-overflow\nREAD 1")
     end
   end
 end

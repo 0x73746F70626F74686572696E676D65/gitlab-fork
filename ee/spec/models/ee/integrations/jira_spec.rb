@@ -259,54 +259,54 @@ RSpec.describe Integrations::Jira, feature_category: :integrations do
         context 'when deployment type is server' do
           let(:project_info_result) do
             {
-              "id": "10000",
-              "issueTypes": issue_types_response
+              id: "10000",
+              issueTypes: issue_types_response
             }
           end
 
           let(:issue_types_response) do
             [
               {
-                "avatarId": 10318,
-                "description": "A task that needs to be done.",
-                "iconUrl": "http://jira.reali.sh:8080/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype",
-                "id": "10003",
-                "name": "Task",
-                "self": "http://jira.reali.sh:8080/rest/api/2/issuetype/10003",
-                "subtask": false
+                avatarId: 10318,
+                description: "A task that needs to be done.",
+                iconUrl: "http://jira.reali.sh:8080/secure/viewavatar?size=xsmall&avatarId=10318&avatarType=issuetype",
+                id: "10003",
+                name: "Task",
+                self: "http://jira.reali.sh:8080/rest/api/2/issuetype/10003",
+                subtask: false
               },
               {
-                "description": "The sub-task of the issue",
-                "iconUrl": "http://jira.reali.sh:8080/images/icons/issuetypes/subtask_alternate.png",
-                "id": "10000",
-                "name": "Sub-task",
-                "self": "http://jira.reali.sh:8080/rest/api/2/issuetype/10000",
-                "subtask": true
+                description: "The sub-task of the issue",
+                iconUrl: "http://jira.reali.sh:8080/images/icons/issuetypes/subtask_alternate.png",
+                id: "10000",
+                name: "Sub-task",
+                self: "http://jira.reali.sh:8080/rest/api/2/issuetype/10000",
+                subtask: true
               },
               {
-                "description": "Created by Jira Software - do not edit or delete. Issue type for a user story.",
-                "iconUrl": "http://jira.reali.sh:8080/images/icons/issuetypes/story.svg",
-                "id": "10002",
-                "name": "Story",
-                "self": "http://jira.reali.sh:8080/rest/api/2/issuetype/10002",
-                "subtask": false
+                description: "Created by Jira Software - do not edit or delete. Issue type for a user story.",
+                iconUrl: "http://jira.reali.sh:8080/images/icons/issuetypes/story.svg",
+                id: "10002",
+                name: "Story",
+                self: "http://jira.reali.sh:8080/rest/api/2/issuetype/10002",
+                subtask: false
               },
               {
-                "avatarId": 10303,
-                "description": "A problem which impairs or prevents the functions of the product.",
-                "iconUrl": "http://jira.reali.sh:8080/secure/viewavatar?size=xsmall&avatarId=10303&avatarType=issuetype",
-                "id": "10004",
-                "name": "Bug",
-                "self": "http://jira.reali.sh:8080/rest/api/2/issuetype/10004",
-                "subtask": false
+                avatarId: 10303,
+                description: "A problem which impairs or prevents the functions of the product.",
+                iconUrl: "http://jira.reali.sh:8080/secure/viewavatar?size=xsmall&avatarId=10303&avatarType=issuetype",
+                id: "10004",
+                name: "Bug",
+                self: "http://jira.reali.sh:8080/rest/api/2/issuetype/10004",
+                subtask: false
               },
               {
-                "description": "Created by Jira Software - do not edit or delete. Issue type for a big user story that needs to be broken down.",
-                "iconUrl": "http://jira.reali.sh:8080/images/icons/issuetypes/epic.svg",
-                "id": "10001",
-                "name": "Epic",
-                "self": "http://jira.reali.sh:8080/rest/api/2/issuetype/10001",
-                "subtask": false
+                description: "Created by Jira Software - do not edit or delete. Issue type for a big user story that needs to be broken down.",
+                iconUrl: "http://jira.reali.sh:8080/images/icons/issuetypes/epic.svg",
+                id: "10001",
+                name: "Epic",
+                self: "http://jira.reali.sh:8080/rest/api/2/issuetype/10001",
+                subtask: false
               }
             ]
           end
@@ -330,7 +330,7 @@ RSpec.describe Integrations::Jira, feature_category: :integrations do
 
   describe '#create_issue' do
     let(:jira_integration) { described_class.new(options) }
-    let(:issue_info) { { 'id': '10000' } }
+    let(:issue_info) { { id: '10000' } }
 
     before do
       allow(jira_integration).to receive(:jira_project_id).and_return('11223')

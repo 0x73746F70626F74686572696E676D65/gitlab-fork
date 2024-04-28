@@ -283,16 +283,16 @@ RSpec.describe Integrations::Github, feature_category: :integrations do
       let(:api_response) { instance_double(Sawyer::Response) }
       let(:response_result) do
         {
-          "id": 1234,
-          "node_id": "FOO_BAR",
-          "state": "success",
-          "description": "Pipeline passed on GitLab",
-          "target_url": "https://gitlab.example.com/pipelines/1234",
-          "context": "ci/gitlab/gitlab.example.com",
-          "created_at": "2022-05-20T09:04:21.000Z",
-          "updated_at": "2022-05-20T09:04:22.000Z",
-          "avatar_url": "https://gitlab.example.com/avatar-ignored.png",
-          "creator": { "section_not_to_be_logged": "some_ignored_value" }
+          id: 1234,
+          node_id: "FOO_BAR",
+          state: "success",
+          description: "Pipeline passed on GitLab",
+          target_url: "https://gitlab.example.com/pipelines/1234",
+          context: "ci/gitlab/gitlab.example.com",
+          created_at: "2022-05-20T09:04:21.000Z",
+          updated_at: "2022-05-20T09:04:22.000Z",
+          avatar_url: "https://gitlab.example.com/avatar-ignored.png",
+          creator: { section_not_to_be_logged: "some_ignored_value" }
         }
       end
 
