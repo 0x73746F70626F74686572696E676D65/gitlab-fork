@@ -34,11 +34,11 @@ module Iterations
 
     after_commit :ensure_iterations_in_advance, on: [:create, :update], if: :changed_iterations_automation_fields?
 
-    scope :by_title, -> (title) { where(title: title) }
-    scope :with_groups, -> (group_ids) { where(group_id: group_ids) }
-    scope :with_duration, -> (duration) { where(duration_in_weeks: duration) }
-    scope :is_automatic, -> (automatic) { where(automatic: automatic) }
-    scope :is_active, -> (active) { where(active: active) }
+    scope :by_title, ->(title) { where(title: title) }
+    scope :with_groups, ->(group_ids) { where(group_id: group_ids) }
+    scope :with_duration, ->(duration) { where(duration_in_weeks: duration) }
+    scope :is_automatic, ->(automatic) { where(automatic: automatic) }
+    scope :is_active, ->(active) { where(active: active) }
     scope :ordered_by_title, -> { order(:title) }
     scope :next_to_auto_schedule, -> do
       is_automatic(true)

@@ -13,7 +13,7 @@ class MergeRequestBlock < ApplicationRecord
   MAX_BLOCKS_COUNT = 10
   MAX_BLOCKED_BY_COUNT = 10
 
-  scope :with_blocking_mr_ids, -> (ids) do
+  scope :with_blocking_mr_ids, ->(ids) do
     where(blocking_merge_request_id: ids).includes(:blocking_merge_request)
   end
 

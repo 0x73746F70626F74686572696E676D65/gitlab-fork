@@ -32,7 +32,7 @@ class GitlabSubscription < ApplicationRecord
     where(hosted_plan_id: plan_ids)
   end
 
-  scope :with_hosted_plan, -> (plan_name) do
+  scope :with_hosted_plan, ->(plan_name) do
     joins(:hosted_plan).where(trial: [false, nil], 'plans.name' => plan_name)
     .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422013')
   end
@@ -48,12 +48,12 @@ class GitlabSubscription < ApplicationRecord
 
   scope :preload_for_refresh_seat, -> { preload([{ namespace: :route }, :hosted_plan]) }
 
-  scope :max_seats_used_changed_between, -> (from:, to:) do
+  scope :max_seats_used_changed_between, ->(from:, to:) do
     where('max_seats_used_changed_at >= ?', from)
       .where('max_seats_used_changed_at <= ?', to)
   end
 
-  scope :requiring_seat_refresh, -> (limit) do
+  scope :requiring_seat_refresh, ->(limit) do
     # look for subscriptions that have not been refreshed in more than
     # 18 hours (catering for 6-hourly refresh schedule)
     with_a_paid_hosted_plan
@@ -61,7 +61,7 @@ class GitlabSubscription < ApplicationRecord
       .limit(limit)
   end
 
-  scope :not_expired, -> (before_date: Date.today) { where('end_date IS NULL OR end_date >= ?', before_date) }
+  scope :not_expired, ->(before_date: Date.today) { where('end_date IS NULL OR end_date >= ?', before_date) }
 
   scope :namespace_id_in, ->(namespace_ids) do
     where(namespace_id: namespace_ids)

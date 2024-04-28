@@ -18,16 +18,16 @@ module MergeRequests
     scope :join_metrics, -> { with_merge_requests.joins(merge_request: :metrics) }
 
     scope :by_approved_by_committer, -> { where(reason: ::Gitlab::ComplianceManagement::Violations::ApprovedByCommitter::REASON) }
-    scope :by_group, -> (group) { join_projects.where(merge_requests: { projects: { namespace_id: group.self_and_descendants } }) }
-    scope :by_projects, -> (project_ids) { join_merge_requests.where(merge_requests: { target_project_id: project_ids }) }
-    scope :merged_before, -> (date) { where("merged_at <= ?", date.end_of_day) }
-    scope :merged_after, -> (date) { where("merged_at >= ?", date.beginning_of_day) }
-    scope :by_target_branch, -> (branch) { where(target_branch: branch) }
-    scope :order_by_reason, -> (direction) { order(reason: direction, id: direction) }
-    scope :order_by_severity_level, -> (direction) { order(severity_level: direction, id: direction) }
+    scope :by_group, ->(group) { join_projects.where(merge_requests: { projects: { namespace_id: group.self_and_descendants } }) }
+    scope :by_projects, ->(project_ids) { join_merge_requests.where(merge_requests: { target_project_id: project_ids }) }
+    scope :merged_before, ->(date) { where("merged_at <= ?", date.end_of_day) }
+    scope :merged_after, ->(date) { where("merged_at >= ?", date.beginning_of_day) }
+    scope :by_target_branch, ->(branch) { where(target_branch: branch) }
+    scope :order_by_reason, ->(direction) { order(reason: direction, id: direction) }
+    scope :order_by_severity_level, ->(direction) { order(severity_level: direction, id: direction) }
 
-    scope :in_optimization_array_mapping_scope, -> (id_expression) { where(arel_table[:target_project_id].eq(id_expression)) }
-    scope :in_optimization_finder_query, -> (_, id_expression) { where(arel_table[:id].eq(id_expression)) }
+    scope :in_optimization_array_mapping_scope, ->(id_expression) { where(arel_table[:target_project_id].eq(id_expression)) }
+    scope :in_optimization_finder_query, ->(_, id_expression) { where(arel_table[:id].eq(id_expression)) }
 
     belongs_to :violating_user, class_name: 'User'
     belongs_to :merge_request
@@ -37,7 +37,7 @@ module MergeRequests
       presence: true,
       uniqueness: {
         scope: [:violating_user, :reason],
-        message: -> (_object, _data) { _('compliance violation has already been recorded') }
+        message: ->(_object, _data) { _('compliance violation has already been recorded') }
       }
     validates :reason, presence: true
     validates :severity_level, presence: true
