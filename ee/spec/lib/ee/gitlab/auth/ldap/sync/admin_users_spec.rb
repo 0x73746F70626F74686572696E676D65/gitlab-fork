@@ -46,9 +46,9 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::AdminUsers do
     it 'leaves admin users that have a different provider identity' do
       admin = create(:admin)
       create(:identity,
-             user: admin,
-             provider: 'ldapsecondary',
-             extern_uid: user_dn(admin.username))
+        user: admin,
+        provider: 'ldapsecondary',
+        extern_uid: user_dn(admin.username))
 
       expect { sync_admin.update_permissions }
         .not_to change { admin.reload.admin? }

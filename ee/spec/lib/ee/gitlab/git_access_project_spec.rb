@@ -71,8 +71,8 @@ RSpec.describe Gitlab::GitAccessProject do
       context 'when GIT_OBJECT_DIRECTORY_RELATIVE env var is set', :request_store do
         before do
           ::Gitlab::Git::HookEnv.set(project.repository.gl_repository,
-                                     project.repository.raw_repository.relative_path,
-                                     'GIT_OBJECT_DIRECTORY_RELATIVE' => 'objects')
+            project.repository.raw_repository.relative_path,
+            'GIT_OBJECT_DIRECTORY_RELATIVE' => 'objects')
 
           simulate_quarantine_size(repository, object_directory_size)
         end
@@ -357,8 +357,8 @@ RSpec.describe Gitlab::GitAccessProject do
     let(:authentication_abilities) { %i[download_code] }
     let(:access) do
       described_class.new(actor, container, protocol,
-                          authentication_abilities: authentication_abilities,
-                          repository_path: repository_path)
+        authentication_abilities: authentication_abilities,
+        repository_path: repository_path)
     end
 
     let(:changes) { Gitlab::GitAccess::ANY }

@@ -12,8 +12,8 @@ RSpec.describe Gitlab::ImportExport::RepoRestorer do
     let(:gitlab_shell) { Gitlab::Shell.new }
     let(:restorer) do
       described_class.new(path_to_bundle: bundle_path,
-                          shared: shared,
-                          importable: GroupWiki.new(group))
+        shared: shared,
+        importable: GroupWiki.new(group))
     end
 
     before do
