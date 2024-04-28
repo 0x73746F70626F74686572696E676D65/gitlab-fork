@@ -42,9 +42,9 @@ module Gitlab
       class FailedAPIResponse < APIResponse
         def self.from_exception(ex_message, primary_repo, code: 500)
           new(code.to_i,
-              status: false,
-              message: failed_message(ex_message, primary_repo),
-              result: nil)
+            status: false,
+            message: failed_message(ex_message, primary_repo),
+            result: nil)
         end
       end
 

@@ -25,9 +25,9 @@ module Gitlab
 
       class << self
         delegate :find_registries_never_attempted_sync,
-                 :find_registries_needs_sync_again,
-                 :fail_sync_timeouts,
-                 to: :registry_class
+          :find_registries_needs_sync_again,
+          :fail_sync_timeouts,
+          to: :registry_class
       end
 
       # Declare supported event

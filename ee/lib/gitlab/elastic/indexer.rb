@@ -56,12 +56,12 @@ module Gitlab
 
         repository.__elasticsearch__.elastic_writing_targets.each do |target|
           logger.debug(build_structured_payload(message: 'indexing_commit_range',
-                                                group_id: group&.id,
-                                                project_id: project&.id,
-                                                from_sha: from_sha,
-                                                to_sha: commit_sha,
-                                                index_wiki: index_wiki?
-                                               )
+            group_id: group&.id,
+            project_id: project&.id,
+            from_sha: from_sha,
+            to_sha: commit_sha,
+            index_wiki: index_wiki?
+          )
                       )
 
           # This might happen when default branch has been reset or rebased.
@@ -305,7 +305,7 @@ module Gitlab
       rescue ActiveRecord::InvalidForeignKey
         logger.debug(
           build_structured_payload(message: "Index status not created, #{container.class.name.downcase} not found",
-                                   group_id: group&.id, project_id: project&.id)
+            group_id: group&.id, project_id: project&.id)
         )
       end
 

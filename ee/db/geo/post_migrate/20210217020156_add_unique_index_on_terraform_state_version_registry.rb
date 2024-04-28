@@ -24,17 +24,17 @@ class AddUniqueIndexOnTerraformStateVersionRegistry < ActiveRecord::Migration[6.
     SQL
 
     add_concurrent_index(:terraform_state_version_registry,
-                         :terraform_state_version_id,
-                         unique: true,
-                         name: NEW_INDEX_NAME)
+      :terraform_state_version_id,
+      unique: true,
+      name: NEW_INDEX_NAME)
 
     remove_concurrent_index_by_name :terraform_state_version_registry, OLD_INDEX_NAME
   end
 
   def down
     add_concurrent_index(:terraform_state_version_registry,
-                         :terraform_state_version_id,
-                         name: OLD_INDEX_NAME)
+      :terraform_state_version_id,
+      name: OLD_INDEX_NAME)
 
     remove_concurrent_index_by_name :terraform_state_version_registry, NEW_INDEX_NAME
   end
