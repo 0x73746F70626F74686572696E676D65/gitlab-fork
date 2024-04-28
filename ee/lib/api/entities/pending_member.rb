@@ -4,10 +4,10 @@ module API
   module Entities
     class PendingMember < Grape::Entity
       expose :id
-      expose :user_name, as: :name, if: -> (_) { user.present? }
-      expose :user_username, as: :username, if: -> (_) { user.present? }
+      expose :user_name, as: :name, if: ->(_) { user.present? }
+      expose :user_username, as: :username, if: ->(_) { user.present? }
       expose :email
-      expose :web_url, if: -> (_) { user.present? }
+      expose :web_url, if: ->(_) { user.present? }
       expose :invite?, as: :invited
 
       expose :avatar_url do |_|

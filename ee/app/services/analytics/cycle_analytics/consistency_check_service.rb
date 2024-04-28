@@ -71,7 +71,7 @@ module Analytics
         opts = {
           in_operator_optimization_options: {
             array_scope: group.self_and_descendant_ids,
-            array_mapping_scope: -> (id_expression) { event_model.where(event_model.arel_table[:group_id].eq(id_expression)) }
+            array_mapping_scope: ->(id_expression) { event_model.where(event_model.arel_table[:group_id].eq(id_expression)) }
           }
         }
 
