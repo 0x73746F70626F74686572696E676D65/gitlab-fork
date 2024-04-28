@@ -6,8 +6,8 @@ module Resolvers
       type ::Types::Ci::CodeCoverageActivityType, null: true
 
       argument :start_date, Types::DateType,
-                required: true,
-                description: 'First day for which to fetch code coverage activity (maximum time window is set to 90 days).'
+        required: true,
+        description: 'First day for which to fetch code coverage activity (maximum time window is set to 90 days).'
 
       alias_method :group, :object
 

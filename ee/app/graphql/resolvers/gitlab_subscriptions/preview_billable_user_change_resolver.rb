@@ -13,7 +13,7 @@ module Resolvers
       argument :member_role_id, GraphQL::Types::Int,
         required: false, description: 'Custom role assigned to the users.'
       argument :role, Types::GitlabSubscriptions::UserRoleEnum, required: true,
-                                                                description: 'Role of users being added to group.'
+        description: 'Role of users being added to group.'
 
       def resolve(**args)
         authorize!

@@ -11,20 +11,20 @@ module Resolvers
     alias_method :container, :object
 
     argument :start_date, Types::DateType,
-             required: false,
-             description: 'Date range to start from. Default is 3 months ago.'
+      required: false,
+      description: 'Date range to start from. Default is 3 months ago.'
 
     argument :end_date, Types::DateType,
-             required: false,
-             description: 'Date range to end at. Default is the current date.'
+      required: false,
+      description: 'Date range to end at. Default is the current date.'
 
     argument :interval, Types::DoraMetricBucketingIntervalEnum,
-             required: false,
-             description: 'How the metric should be aggregated. Defaults to `DAILY`. In the case of `ALL`, the `date` field in the response will be `null`.'
+      required: false,
+      description: 'How the metric should be aggregated. Defaults to `DAILY`. In the case of `ALL`, the `date` field in the response will be `null`.'
 
     argument :environment_tiers, [Types::DeploymentTierEnum],
-             required: false,
-             description: 'Deployment tiers of the environments to return. Defaults to `[PRODUCTION]`.'
+      required: false,
+      description: 'Deployment tiers of the environments to return. Defaults to `[PRODUCTION]`.'
 
     def resolve_with_lookahead(**params)
       params[:metrics] = selected_metrics

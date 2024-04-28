@@ -15,14 +15,14 @@ module Resolvers
         authorizes_object!
 
         argument :filters, Types::ComplianceManagement::MergeRequests::ComplianceViolationInputType,
-                 required: false,
-                 default_value: {},
-                 description: 'Filters applied when retrieving compliance violations.'
+          required: false,
+          default_value: {},
+          description: 'Filters applied when retrieving compliance violations.'
 
         argument :sort, ::Types::ComplianceManagement::MergeRequests::ComplianceViolationSortEnum,
-                 required: false,
-                 default_value: 'SEVERITY_LEVEL_DESC',
-                 description: 'List compliance violations by sort order.'
+          required: false,
+          default_value: 'SEVERITY_LEVEL_DESC',
+          description: 'List compliance violations by sort order.'
 
         def resolve(filters: {}, sort: 'SEVERITY_LEVEL_DESC')
           violations = ::ComplianceManagement::MergeRequests::ComplianceViolationsFinder.new(current_user: current_user, group: group, params: filters.to_h.merge(sort: sort)).execute

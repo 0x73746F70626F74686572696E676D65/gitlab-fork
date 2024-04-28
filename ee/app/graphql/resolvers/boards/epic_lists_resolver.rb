@@ -10,12 +10,12 @@ module Resolvers
       type Types::Boards::EpicListType.connection_type, null: true
 
       argument :id, ::Types::GlobalIDType[::Boards::EpicList],
-               required: false,
-               description: 'Find an epic board list by ID.'
+        required: false,
+        description: 'Find an epic board list by ID.'
 
       argument :epic_filters, Types::Boards::BoardEpicInputType,
-               required: false,
-               description: 'Filters applied when getting epic metadata in the epic board list.'
+        required: false,
+        description: 'Filters applied when getting epic metadata in the epic board list.'
 
       alias_method :epic_board, :object
 
