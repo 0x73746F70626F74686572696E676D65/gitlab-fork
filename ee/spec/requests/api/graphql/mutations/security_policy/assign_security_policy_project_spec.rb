@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Assigns scan execution policy project to a project/namespace',
-feature_category: :security_policy_management do
+  feature_category: :security_policy_management do
   include GraphqlHelpers
 
   let_it_be_with_refind(:owner) { create(:user) }
@@ -62,14 +62,14 @@ feature_category: :security_policy_management do
         end
 
         it_behaves_like 'a mutation that returns top-level errors',
-                  errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
+          errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
       end
 
       context 'when policy_project_id is invalid' do
         let_it_be_with_refind(:policy_project_id) { "gid://gitlab/Project/#{non_existing_record_id}" }
 
         it_behaves_like 'a mutation that returns top-level errors',
-                    errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
+          errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
       end
     end
 
@@ -79,7 +79,7 @@ feature_category: :security_policy_management do
       end
 
       it_behaves_like 'a mutation that returns top-level errors',
-                  errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
+        errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
     end
   end
 

@@ -313,7 +313,7 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures, feature_category: :tea
 
       subject do
         get api("/groups/#{group.id}/issues", user),
-            params: { assignee_username: [assignee.username, another_assignee.username], scope: 'all' }
+          params: { assignee_username: [assignee.username, another_assignee.username], scope: 'all' }
       end
 
       it 'returns issues with multiple assignees' do
@@ -404,7 +404,7 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures, feature_category: :tea
 
       subject do
         get api("/projects/#{project.id}/issues", user),
-            params: { assignee_username: [assignee.username, another_assignee.username], scope: 'all' }
+          params: { assignee_username: [assignee.username, another_assignee.username], scope: 'all' }
       end
 
       it 'returns issues with multiple assignees' do

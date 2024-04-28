@@ -184,8 +184,8 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
   describe 'GET /projects/:id/merge_trains/merge_requests/:merge_request_iid' do
     let(:merge_request_1) do
       create(:merge_request, :with_merge_request_pipeline,
-             source_project: project, source_branch: 'feature',
-             target_project: project, target_branch: 'master', title: 'Test')
+        source_project: project, source_branch: 'feature',
+        target_project: project, target_branch: 'master', title: 'Test')
     end
 
     let!(:train_car_1) { create(:merge_train_car, merge_request: merge_request_1) }
@@ -225,7 +225,7 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
     context 'when merge request is not in a merge train' do
       let(:merge_request_2) do
         create(:merge_request, source_project: project, source_branch: 'second',
-                               target_project: project, target_branch: 'master')
+          target_project: project, target_branch: 'master')
       end
 
       subject { get api("/projects/#{project.id}/merge_trains/merge_requests/#{merge_request_2.iid}", developer) }
@@ -241,9 +241,9 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
   describe 'POST /projects/:id/merge_trains/merge_requests/:merge_request_iid' do
     let(:merge_request) do
       create(:merge_request,
-             source_project: project, source_branch: 'feature',
-             target_project: project, target_branch: 'master',
-             merge_status: 'can_be_merged')
+        source_project: project, source_branch: 'feature',
+        target_project: project, target_branch: 'master',
+        merge_status: 'can_be_merged')
     end
 
     let(:params) { {} }
@@ -262,8 +262,8 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
 
     before do
       create(:ci_pipeline, pipeline_status, ref: merge_request.source_branch,
-                                            sha: merge_request.diff_head_sha,
-                                            project: merge_request.source_project)
+        sha: merge_request.diff_head_sha,
+        project: merge_request.source_project)
 
       merge_request.update_head_pipeline
     end

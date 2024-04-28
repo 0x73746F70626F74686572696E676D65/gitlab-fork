@@ -67,7 +67,7 @@ RSpec.describe 'Unassigns scan execution policy project from a project/namespace
         end
 
         it_behaves_like 'a mutation that returns top-level errors',
-                  errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
+          errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
       end
     end
 
@@ -77,7 +77,7 @@ RSpec.describe 'Unassigns scan execution policy project from a project/namespace
       end
 
       it_behaves_like 'a mutation that returns top-level errors',
-                  errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
+        errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
     end
   end
 

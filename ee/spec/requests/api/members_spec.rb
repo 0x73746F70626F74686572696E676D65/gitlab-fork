@@ -41,7 +41,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
       subject(:post_members) do
         post api("/groups/#{group.id}/members", owner),
-             params: { user_id: stranger.id, access_level: access_level }
+          params: { user_id: stranger.id, access_level: access_level }
       end
 
       context 'with free user cap considerations', :saas do
@@ -121,7 +121,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
           it 'cannot be assigned to subgroup' do
             expect do
               post api("/groups/#{subgroup.id}/members", owner),
-                   params: { user_id: stranger.id, access_level: access_level }
+                params: { user_id: stranger.id, access_level: access_level }
             end.not_to change { subgroup.all_group_members.count }
 
             expect(response).to have_gitlab_http_status(:bad_request)
@@ -1672,7 +1672,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
         context 'project in a group' do
           it 'returns a 405 method not allowed error when group membership lock is enabled' do
             post api("/projects/#{project.id}/members", owner),
-                 params: { user_id: user.id, access_level: Member::MAINTAINER }
+              params: { user_id: user.id, access_level: Member::MAINTAINER }
 
             expect(response).to have_gitlab_http_status(:method_not_allowed)
           end
@@ -1875,7 +1875,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
         expect(response).to have_gitlab_http_status(:created)
 
         put api("/groups/#{group.id}/members/#{ldap_developer.id}", owner),
-            params: { access_level: Member::MAINTAINER }
+          params: { access_level: Member::MAINTAINER }
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response['id']).to eq(ldap_developer.id)
@@ -1885,7 +1885,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
       it 'fails when access level is modified without an override' do
         put api("/groups/#{group.id}/members/#{ldap_developer.id}", owner),
-            params: { access_level: Member::MAINTAINER }
+          params: { access_level: Member::MAINTAINER }
 
         expect(response).to have_gitlab_http_status(:forbidden)
       end
@@ -1896,7 +1896,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
       it 'returns a forbidden response' do
         post api("/groups/#{group.id}/members", owner),
-             params: { user_id: stranger.id, access_level: Member::DEVELOPER }
+          params: { user_id: stranger.id, access_level: Member::DEVELOPER }
 
         expect(response).to have_gitlab_http_status(:forbidden)
       end
@@ -1906,7 +1906,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
 
         it 'does not allow adding the account to the group' do
           post api("/groups/#{group.id}/members", owner),
-               params: { user_id: service_account.id, access_level: Member::DEVELOPER }
+            params: { user_id: service_account.id, access_level: Member::DEVELOPER }
 
           expect(response).to have_gitlab_http_status(:forbidden)
         end
@@ -1919,7 +1919,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
           it 'adds the service account to the group' do
             expect do
               post api("/groups/#{group.id}/members", owner),
-                   params: { user_id: service_account.id, access_level: Member::DEVELOPER }
+                params: { user_id: service_account.id, access_level: Member::DEVELOPER }
             end.to change { Member.count }.by(1)
           end
         end

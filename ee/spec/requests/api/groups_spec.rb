@@ -1278,14 +1278,14 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
 
                 context 'when full_path param is not passed' do
                   it_behaves_like 'does not immediately enqueues the job to delete the group',
-                                  '`full_path` is incorrect. You must enter the complete path for the subgroup.'
+                    '`full_path` is incorrect. You must enter the complete path for the subgroup.'
                 end
 
                 context 'when full_path param is not equal to full_path' do
                   let(:params) { { permanently_remove: true, full_path: subgroup.path } }
 
                   it_behaves_like 'does not immediately enqueues the job to delete the group',
-                                  '`full_path` is incorrect. You must enter the complete path for the subgroup.'
+                    '`full_path` is incorrect. You must enter the complete path for the subgroup.'
                 end
 
                 context 'when the full_path param is passed and it matches the full path of subgroup' do
@@ -1412,8 +1412,8 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
   describe "POST /groups/:id/restore" do
     let(:group) do
       create(:group_with_deletion_schedule,
-      marked_for_deletion_on: 1.day.ago,
-      deleting_user: user)
+        marked_for_deletion_on: 1.day.ago,
+        deleting_user: user)
     end
 
     subject { post api("/groups/#{group.id}/restore", user) }
