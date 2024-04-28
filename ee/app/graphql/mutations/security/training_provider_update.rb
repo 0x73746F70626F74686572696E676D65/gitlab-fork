@@ -10,24 +10,24 @@ module Mutations
       authorize :access_security_and_compliance
 
       argument :project_path, GraphQL::Types::ID,
-               required: true,
-               description: 'Full path of the project.'
+        required: true,
+        description: 'Full path of the project.'
 
       argument :provider_id, ::Types::GlobalIDType[::Security::TrainingProvider],
-               required: true,
-               description: 'ID of the provider.'
+        required: true,
+        description: 'ID of the provider.'
 
       argument :is_enabled, GraphQL::Types::Boolean,
-               required: true,
-               description: 'Sets the training provider as enabled for the project.'
+        required: true,
+        description: 'Sets the training provider as enabled for the project.'
 
       argument :is_primary, GraphQL::Types::Boolean,
-               required: false,
-               description: 'Sets the training provider as primary for the project.'
+        required: false,
+        description: 'Sets the training provider as primary for the project.'
 
       field :training, ::Types::Security::TrainingType,
-            null: true,
-            description: 'Represents the training entity subject to mutation.'
+        null: true,
+        description: 'Represents the training entity subject to mutation.'
 
       def resolve(project_path:, **params)
         project = authorized_find!(project_path)

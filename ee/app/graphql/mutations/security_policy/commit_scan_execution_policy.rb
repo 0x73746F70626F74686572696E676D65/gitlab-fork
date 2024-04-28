@@ -11,36 +11,36 @@ module Mutations
       authorize :modify_security_policy
 
       argument :full_path, GraphQL::Types::String,
-               required: false,
-               description: 'Full path of the project.'
+        required: false,
+        description: 'Full path of the project.'
 
       argument :project_path, GraphQL::Types::ID,
-               required: false,
-               deprecated: { reason: 'Use `fullPath`', milestone: '14.10' },
-               description: 'Full path of the project.'
+        required: false,
+        deprecated: { reason: 'Use `fullPath`', milestone: '14.10' },
+        description: 'Full path of the project.'
 
       argument :policy_yaml, GraphQL::Types::String,
-               required: true,
-               description: 'YAML snippet of the policy.'
+        required: true,
+        description: 'YAML snippet of the policy.'
 
       argument :operation_mode,
-               Types::MutationOperationModeEnum,
-               required: true,
-               description: 'Changes the operation mode.'
+        Types::MutationOperationModeEnum,
+        required: true,
+        description: 'Changes the operation mode.'
 
       argument :name, GraphQL::Types::String,
-               required: true,
-               description: 'Name of the policy. If the name is null, the `name` field from `policy_yaml` is used.'
+        required: true,
+        description: 'Name of the policy. If the name is null, the `name` field from `policy_yaml` is used.'
 
       field :branch,
-            GraphQL::Types::String,
-            null: true,
-            description: 'Name of the branch to which the policy changes are committed.'
+        GraphQL::Types::String,
+        null: true,
+        description: 'Name of the branch to which the policy changes are committed.'
 
       field :validation_errors,
-            [Types::SecurityPolicyValidationError],
-            null: true,
-            description: 'Validation errors encountered during execution of the mutation.'
+        [Types::SecurityPolicyValidationError],
+        null: true,
+        description: 'Validation errors encountered during execution of the mutation.'
 
       def resolve(args)
         project_or_group = authorized_find!(**args)

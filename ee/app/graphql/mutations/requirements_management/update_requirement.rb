@@ -8,21 +8,21 @@ module Mutations
       authorize :update_requirement
 
       argument :state, Types::RequirementsManagement::RequirementStateEnum,
-               required: false,
-               description: 'State of the requirement.'
+        required: false,
+        description: 'State of the requirement.'
 
       argument :iid, GraphQL::Types::String,
-               required: false,
-               deprecated: { reason: 'Use work_item_iid instead', milestone: '15.8' },
-               description: 'IID of the requirement to update.'
+        required: false,
+        deprecated: { reason: 'Use work_item_iid instead', milestone: '15.8' },
+        description: 'IID of the requirement to update.'
 
       argument :work_item_iid, GraphQL::Types::String,
-               required: false,
-               description: 'IID of the requirement work item to update.'
+        required: false,
+        description: 'IID of the requirement work item to update.'
 
       argument :last_test_report_state, Types::RequirementsManagement::TestReportStateEnum,
-               required: false,
-               description: 'Creates a test report for the requirement with the given state.'
+        required: false,
+        description: 'Creates a test report for the requirement with the given state.'
 
       def ready?(**args)
         errors = []
