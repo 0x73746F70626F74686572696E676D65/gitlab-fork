@@ -9,24 +9,24 @@ module Types
       description 'Approval of the deployment.'
 
       field :user,
-            ::Types::UserType,
-            description: 'User who approved or rejected the deployment.'
+        ::Types::UserType,
+        description: 'User who approved or rejected the deployment.'
 
       field :status,
-            Types::Deployments::ApprovalStatusEnum,
-            description: 'Whether the deployment was approved/rejected.'
+        Types::Deployments::ApprovalStatusEnum,
+        description: 'Whether the deployment was approved/rejected.'
 
       field :created_at,
-            Types::TimeType,
-            description: 'When the user approved/rejected first time.'
+        Types::TimeType,
+        description: 'When the user approved/rejected first time.'
 
       field :updated_at,
-            Types::TimeType,
-            description: 'When the user updated the approval.'
+        Types::TimeType,
+        description: 'When the user updated the approval.'
 
       field :comment,
-            GraphQL::Types::String,
-            description: 'Additional comment.'
+        GraphQL::Types::String,
+        description: 'Additional comment.'
     end
     # rubocop:enable Graphql/AuthorizeTypes
   end

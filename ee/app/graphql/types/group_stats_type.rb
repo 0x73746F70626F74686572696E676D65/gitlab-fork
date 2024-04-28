@@ -8,7 +8,7 @@ module Types
     authorize :read_group
 
     field :release_stats, Types::GroupReleaseStatsType,
-          null: true, method: :itself,
-          description: 'Statistics related to releases within the group.'
+      null: true, method: :itself,
+      description: 'Statistics related to releases within the group.'
   end
 end
