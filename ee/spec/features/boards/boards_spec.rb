@@ -340,6 +340,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
     before_all do
       create(:issue_link, source: issue2, target: issue1, link_type: IssueLink::TYPE_BLOCKS)
       project.add_developer(user)
+      create(:callout, feature_name: :board_add_new_column_trigger_popover, user: user)
     end
 
     before do
