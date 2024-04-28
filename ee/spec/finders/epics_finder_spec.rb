@@ -506,9 +506,9 @@ RSpec.describe EpicsFinder, feature_category: :team_planning do
             let_it_be(:epic2) { base_epic2 }
             let_it_be(:params) do
               {
-                  group_id: base_group.id,
-                  include_descendant_groups: false,
-                  include_ancestor_groups: false
+                group_id: base_group.id,
+                include_descendant_groups: false,
+                include_ancestor_groups: false
               }
             end
 

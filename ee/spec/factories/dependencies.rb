@@ -22,11 +22,11 @@ FactoryBot.define do
     trait :with_vulnerabilities do
       vulnerabilities do
         [{
-           name: 'DDoS',
-           severity: 'high',
-           id: 42,
-           url: 'http://gitlab.org/some-group/some-project/-/security/vulnerabilities/42'
-         },
+          name: 'DDoS',
+          severity: 'high',
+          id: 42,
+          url: 'http://gitlab.org/some-group/some-project/-/security/vulnerabilities/42'
+        },
          {
            name: 'XSS vulnerability',
            severity: 'low',
@@ -39,9 +39,9 @@ FactoryBot.define do
     trait :with_licenses do
       licenses do
         [{
-           name: 'MIT',
-           url: 'http://opensource.org/licenses/mit-license'
-         }]
+          name: 'MIT',
+          url: 'http://opensource.org/licenses/mit-license'
+        }]
       end
     end
 
@@ -53,9 +53,9 @@ FactoryBot.define do
           path: 'package_file.lock',
           ancestors:
             [{
-               name: 'dep1',
-               version: '1.2'
-             },
+              name: 'dep1',
+              version: '1.2'
+            },
              {
                name: 'dep2',
                version: '10.11'

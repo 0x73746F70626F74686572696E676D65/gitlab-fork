@@ -52,10 +52,10 @@ RSpec.describe GitlabSchema.types['AssetType'] do
       asset = vulnerability['assets'].first
 
       expect(asset).to eq({
-                            "name" => "Test Postman Collection",
-                            "type" => "postman",
-                            "url" => "http://localhost/test.collection"
-                          })
+        "name" => "Test Postman Collection",
+        "type" => "postman",
+        "url" => "http://localhost/test.collection"
+      })
     end
   end
 end
