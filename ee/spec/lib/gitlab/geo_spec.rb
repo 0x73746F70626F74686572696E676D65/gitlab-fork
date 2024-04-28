@@ -66,9 +66,9 @@ RSpec.describe Gitlab::Geo, :geo, :request_store, feature_category: :geo_replica
     end
 
     it_behaves_like 'a Geo cached value',
-                    :proxy_extra_data,
-                    :proxy_extra_data,
-                    expected_l2_expiry: ::Gitlab::Geo::PROXY_JWT_CACHE_EXPIRY
+      :proxy_extra_data,
+      :proxy_extra_data,
+      expected_l2_expiry: ::Gitlab::Geo::PROXY_JWT_CACHE_EXPIRY
   end
 
   describe '.uncached_proxy_extra_data' do

@@ -40,7 +40,7 @@ RSpec.describe Gitlab::LicenseScanning::BranchComponents, feature_category: :sof
     context 'when the pipeline does not have an sbom report' do
       let_it_be(:pipeline) do
         create(:ee_ci_pipeline, :with_dependency_scanning_report,
-               project: project, ref: branch.name, sha: branch.target)
+          project: project, ref: branch.name, sha: branch.target)
       end
 
       it_behaves_like 'does not fetch pipeline components'

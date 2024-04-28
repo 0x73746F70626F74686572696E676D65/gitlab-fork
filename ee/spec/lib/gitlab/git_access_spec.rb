@@ -464,8 +464,8 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
     context 'when GIT_OBJECT_DIRECTORY_RELATIVE env var is set', :request_store do
       before do
         ::Gitlab::Git::HookEnv.set(project.repository.gl_repository,
-                                   project.repository.raw_repository.relative_path,
-                                   "GIT_OBJECT_DIRECTORY_RELATIVE" => "objects")
+          project.repository.raw_repository.relative_path,
+          "GIT_OBJECT_DIRECTORY_RELATIVE" => "objects")
 
         # Stub the object directory size to "simulate" quarantine size
         allow(repository)
@@ -948,7 +948,7 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
       permissions_matrix.each_pair do |role, matrix|
         it "has the correct permissions for group #{role}s" do
           create(:project_group_link, role, group: group,
-                                            project: project)
+            project: project)
 
           protected_branch.save!
 
@@ -1051,8 +1051,8 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
           let(:protected_branch) { build(:protected_branch, authorize_user_to_push: user, name: protected_branch_name, project: project) }
 
           run_permission_checks(permissions_matrix.deep_merge(developer: { push_protected_branch: true, push_all: true, merge_into_protected_branch: true },
-                                                              guest: { push_protected_branch: false, merge_into_protected_branch: false },
-                                                              reporter: { push_protected_branch: false, merge_into_protected_branch: false }))
+            guest: { push_protected_branch: false, merge_into_protected_branch: false },
+            reporter: { push_protected_branch: false, merge_into_protected_branch: false }))
         end
 
         context "when a specific user is allowed to merge into the #{protected_branch_type} protected branch" do
@@ -1063,11 +1063,11 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
           end
 
           run_permission_checks(permissions_matrix.deep_merge(admin_with_admin_mode: { push_protected_branch: false, push_all: false, merge_into_protected_branch: true },
-                                                              admin_without_admin_mode: { push_protected_branch: false, merge_into_protected_branch: false },
-                                                              maintainer: { push_protected_branch: false, push_all: false, merge_into_protected_branch: true },
-                                                              developer: { push_protected_branch: false, push_all: false, merge_into_protected_branch: true },
-                                                              guest: { push_protected_branch: false, merge_into_protected_branch: false },
-                                                              reporter: { push_protected_branch: false, merge_into_protected_branch: false }))
+            admin_without_admin_mode: { push_protected_branch: false, merge_into_protected_branch: false },
+            maintainer: { push_protected_branch: false, push_all: false, merge_into_protected_branch: true },
+            developer: { push_protected_branch: false, push_all: false, merge_into_protected_branch: true },
+            guest: { push_protected_branch: false, merge_into_protected_branch: false },
+            reporter: { push_protected_branch: false, merge_into_protected_branch: false }))
         end
 
         context "when a specific user is allowed to push & merge into the #{protected_branch_type} protected branch" do
@@ -1078,8 +1078,8 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
           end
 
           run_permission_checks(permissions_matrix.deep_merge(developer: { push_protected_branch: true, push_all: true, merge_into_protected_branch: true },
-                                                              guest: { push_protected_branch: false, merge_into_protected_branch: false },
-                                                              reporter: { push_protected_branch: false, merge_into_protected_branch: false }))
+            guest: { push_protected_branch: false, merge_into_protected_branch: false },
+            reporter: { push_protected_branch: false, merge_into_protected_branch: false }))
         end
       end
 
@@ -1110,8 +1110,8 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
 
           permissions = permissions_matrix.except(:admin_with_admin_mode, :admin_without_admin_mode)
                             .deep_merge(developer: { push_protected_branch: true, push_all: true, merge_into_protected_branch: true },
-                                        guest: { push_protected_branch: false, merge_into_protected_branch: false },
-                                        reporter: { push_protected_branch: false, merge_into_protected_branch: false })
+                              guest: { push_protected_branch: false, merge_into_protected_branch: false },
+                              reporter: { push_protected_branch: false, merge_into_protected_branch: false })
 
           run_group_permission_checks(permissions)
         end
@@ -1125,9 +1125,9 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
 
           permissions = permissions_matrix.except(:admin_with_admin_mode, :admin_without_admin_mode)
                             .deep_merge(maintainer: { push_protected_branch: false, push_all: false, merge_into_protected_branch: true },
-                                        developer: { push_protected_branch: false, push_all: false, merge_into_protected_branch: true },
-                                        guest: { push_protected_branch: false, merge_into_protected_branch: false },
-                                        reporter: { push_protected_branch: false, merge_into_protected_branch: false })
+                              developer: { push_protected_branch: false, push_all: false, merge_into_protected_branch: true },
+                              guest: { push_protected_branch: false, merge_into_protected_branch: false },
+                              reporter: { push_protected_branch: false, merge_into_protected_branch: false })
 
           run_group_permission_checks(permissions)
         end
@@ -1141,8 +1141,8 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
 
           permissions = permissions_matrix.except(:admin_with_admin_mode, :admin_without_admin_mode)
                             .deep_merge(developer: { push_protected_branch: true, push_all: true, merge_into_protected_branch: true },
-                                        guest: { push_protected_branch: false, merge_into_protected_branch: false },
-                                        reporter: { push_protected_branch: false, merge_into_protected_branch: false })
+                              guest: { push_protected_branch: false, merge_into_protected_branch: false },
+                              reporter: { push_protected_branch: false, merge_into_protected_branch: false })
 
           run_group_permission_checks(permissions)
         end

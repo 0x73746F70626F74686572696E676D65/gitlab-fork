@@ -15,8 +15,8 @@ RSpec.describe Gitlab::GitAccessWiki do
 
   let(:access) do
     described_class.new(user, wiki, 'web',
-                        authentication_abilities: authentication_abilities,
-                        redirected_path: redirected_path)
+      authentication_abilities: authentication_abilities,
+      redirected_path: redirected_path)
   end
 
   before do
