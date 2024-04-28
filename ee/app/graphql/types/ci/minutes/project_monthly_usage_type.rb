@@ -9,26 +9,26 @@ module Types
         graphql_name 'CiMinutesProjectMonthlyUsage'
 
         field :minutes,
-              ::GraphQL::Types::Int,
-              null: true,
-              method: :amount_used,
-              description: 'Number of compute minutes used by the project in the month.'
+          ::GraphQL::Types::Int,
+          null: true,
+          method: :amount_used,
+          description: 'Number of compute minutes used by the project in the month.'
 
         field :shared_runners_duration,
-              ::GraphQL::Types::Int,
-              null: true,
-              description: 'Total duration (in seconds) of shared runners use by the project for the month.'
+          ::GraphQL::Types::Int,
+          null: true,
+          description: 'Total duration (in seconds) of shared runners use by the project for the month.'
 
         field :project,
-              Types::ProjectType,
-              null: true,
-              description: 'Project having the recorded usage.'
+          Types::ProjectType,
+          null: true,
+          description: 'Project having the recorded usage.'
 
         field :name,
-              ::GraphQL::Types::String,
-              null: true,
-              deprecated: { reason: 'Use `project.name`', milestone: '15.6' },
-              description: 'Name of the project.'
+          ::GraphQL::Types::String,
+          null: true,
+          deprecated: { reason: 'Use `project.name`', milestone: '15.6' },
+          description: 'Name of the project.'
 
         def name
           object.project&.name

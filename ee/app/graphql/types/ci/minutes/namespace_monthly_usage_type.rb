@@ -10,29 +10,29 @@ module Types
         authorize :read_usage
 
         field :month, ::GraphQL::Types::String, null: true,
-                                                description: 'Month related to the usage data.'
+          description: 'Month related to the usage data.'
 
         field :month_iso8601,
-              ::GraphQL::Types::ISO8601Date,
-              method: :date,
-              null: true,
-              description: 'Month related to the usage data in ISO 8601 date format.'
+          ::GraphQL::Types::ISO8601Date,
+          method: :date,
+          null: true,
+          description: 'Month related to the usage data in ISO 8601 date format.'
 
         field :minutes,
-              ::GraphQL::Types::Int,
-              null: true,
-              method: :amount_used,
-              description: 'Total number of compute minutes used by all projects in the namespace.'
+          ::GraphQL::Types::Int,
+          null: true,
+          method: :amount_used,
+          description: 'Total number of compute minutes used by all projects in the namespace.'
 
         field :projects,
-              ::Types::Ci::Minutes::ProjectMonthlyUsageType.connection_type,
-              null: true,
-              description: 'Compute usage data for projects in the namespace.'
+          ::Types::Ci::Minutes::ProjectMonthlyUsageType.connection_type,
+          null: true,
+          description: 'Compute usage data for projects in the namespace.'
 
         field :shared_runners_duration,
-              ::GraphQL::Types::Int,
-              null: true,
-              description: 'Total duration (in seconds) of shared runners use by the namespace for the month.'
+          ::GraphQL::Types::Int,
+          null: true,
+          description: 'Total duration (in seconds) of shared runners use by the namespace for the month.'
 
         def month
           object.date.strftime('%B')
