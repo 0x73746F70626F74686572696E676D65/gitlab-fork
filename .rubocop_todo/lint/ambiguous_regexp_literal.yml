@@ -79,12 +79,4 @@ Lint/AmbiguousRegexpLiteral:
     - 'spec/requests/api/helpers_spec.rb'
     - 'spec/scripts/lib/glfm/update_specification_spec.rb'
     - 'spec/serializers/commit_entity_spec.rb'
-    - 'spec/services/loose_foreign_keys/cleaner_service_spec.rb'
-    - 'spec/services/snippets/repository_validation_service_spec.rb'
-    - 'spec/services/system_notes/merge_requests_service_spec.rb'
-    - 'spec/support/shared_examples/lib/gitlab/sql/set_operator_shared_examples.rb'
-    - 'spec/support_specs/database/multiple_databases_helpers_spec.rb'
-    - 'spec/tasks/gitlab/gitaly_rake_spec.rb'
-    - 'spec/tasks/gitlab/workhorse_rake_spec.rb'
-    - 'spec/views/admin/dashboard/index.html.haml_spec.rb'
-    - 'spec/views/devise/sessions/new.html.haml_spec.rb'
+
