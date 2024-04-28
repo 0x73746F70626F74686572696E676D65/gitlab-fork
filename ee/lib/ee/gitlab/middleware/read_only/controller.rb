@@ -56,12 +56,12 @@ module EE
           # @return [Boolean] true whether current route is in allow list.
           def allowlisted_routes
             allowed = super ||
-                      geo_node_update_route? ||
-                      geo_resync_designs_route? ||
-                      geo_sign_out_route? ||
-                      admin_settings_update? ||
-                      geo_node_status_update_route? ||
-                      geo_graphql_query?
+              geo_node_update_route? ||
+              geo_resync_designs_route? ||
+              geo_sign_out_route? ||
+              admin_settings_update? ||
+              geo_node_status_update_route? ||
+              geo_graphql_query?
 
             return true if allowed
             return sign_in_route? if ::Gitlab.maintenance_mode?
@@ -135,9 +135,9 @@ module EE
             return unless request.post?
 
             is_regular_sign_in_route = request.path.start_with?('/users/sign_in', '/oauth/token', '/users/auth/geo/sign_in') &&
-                                       ALLOWLISTED_SIGN_IN_ROUTES[route_hash[:controller]]&.include?(route_hash[:action])
+              ALLOWLISTED_SIGN_IN_ROUTES[route_hash[:controller]]&.include?(route_hash[:action])
             is_sso_callback_route = request.path.start_with?('/users/auth/') &&
-                                    ALLOWLISTED_SSO_SIGN_IN_CONTROLLERS.include?(route_hash[:controller])
+              ALLOWLISTED_SSO_SIGN_IN_CONTROLLERS.include?(route_hash[:controller])
 
             is_regular_sign_in_route || is_sso_callback_route
           end

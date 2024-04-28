@@ -65,8 +65,8 @@ module EE
         authenticate!
 
         forbidden! unless current_user.admin? ||
-            ::Gitlab::CurrentSettings.current_application_settings
-              .allow_group_owners_to_manage_ldap
+          ::Gitlab::CurrentSettings.current_application_settings
+            .allow_group_owners_to_manage_ldap
       end
 
       override :read_project_ability
