@@ -110,8 +110,8 @@ RSpec.describe Vulnerabilities::DismissService, feature_category: :vulnerability
               expect(vulnerability.findings).to all have_vulnerability_dismissal_feedback
               expect(vulnerability.findings.map(&:dismissal_feedback)).to(
                 all(have_attributes(comment: comment, comment_author: user,
-                                    comment_timestamp: be_like_time(Time.current), pipeline_id: pipeline.id,
-                                    migrated_to_state_transition: true)
+                  comment_timestamp: be_like_time(Time.current), pipeline_id: pipeline.id,
+                  migrated_to_state_transition: true)
                    )
               )
             end

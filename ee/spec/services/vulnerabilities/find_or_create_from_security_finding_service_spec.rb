@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Vulnerabilities::FindOrCreateFromSecurityFindingService, '#execute',
-feature_category: :vulnerability_management do
+  feature_category: :vulnerability_management do
   before do
     stub_licensed_features(security_dashboard: true)
     project.add_developer(user)
@@ -278,10 +278,10 @@ feature_category: :vulnerability_management do
   def insert_security_findings
     report.findings.map do |finding|
       create(:security_finding,
-             severity: finding.severity,
-             confidence: finding.confidence,
-             uuid: finding.uuid,
-             scan: scan)
+        severity: finding.severity,
+        confidence: finding.confidence,
+        uuid: finding.uuid,
+        scan: scan)
     end
   end
 end

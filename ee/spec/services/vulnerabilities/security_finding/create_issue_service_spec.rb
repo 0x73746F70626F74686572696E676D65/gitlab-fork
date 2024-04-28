@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Vulnerabilities::SecurityFinding::CreateIssueService, '#execute',
-feature_category: :vulnerability_management do
+  feature_category: :vulnerability_management do
   before do
     stub_licensed_features(security_dashboard: true)
     project.add_developer(user)
@@ -15,7 +15,7 @@ feature_category: :vulnerability_management do
   let_it_be(:build_sast) { create(:ci_build, :success, name: 'sast', pipeline: pipeline) }
   let_it_be(:artifact_sast) do
     create(:ee_ci_job_artifact, :sast_with_signatures_and_vulnerability_flags,
-           job: build_sast)
+      job: build_sast)
   end
 
   let_it_be(:report_sast) { create(:ci_reports_security_report, pipeline: pipeline, type: :sast) }
@@ -41,8 +41,8 @@ feature_category: :vulnerability_management do
     let(:user_not_member_of_project) { create(:user) }
     let(:subject) do
       described_class.new(project: project,
-                          current_user: user_not_member_of_project,
-                          params: params).execute
+        current_user: user_not_member_of_project,
+        params: params).execute
     end
 
     it 'raises an error' do
@@ -178,10 +178,10 @@ feature_category: :vulnerability_management do
   def insert_security_findings(report, scan)
     report.findings.map do |finding|
       create(:security_finding,
-             severity: finding.severity,
-             confidence: finding.confidence,
-             uuid: finding.uuid,
-             scan: scan)
+        severity: finding.severity,
+        confidence: finding.confidence,
+        uuid: finding.uuid,
+        scan: scan)
     end
   end
 end

@@ -47,7 +47,7 @@ RSpec.describe ProtectedEnvironments::UpdateService, '#execute', feature_categor
     context 'multiple deploy access levels' do
       let(:params) do
         attributes_for(:protected_environment,
-                       deploy_access_levels_attributes: [{ group_id: group.id, user_id: user_to_add.id }])
+          deploy_access_levels_attributes: [{ group_id: group.id, user_id: user_to_add.id }])
       end
 
       it_behaves_like 'invalid multiple deployment access levels'
@@ -65,7 +65,7 @@ RSpec.describe ProtectedEnvironments::UpdateService, '#execute', feature_categor
   context 'deploy access level by user' do
     let(:params) do
       attributes_for(:protected_environment,
-                     deploy_access_levels_attributes: [{ user_id: user_to_add.id }])
+        deploy_access_levels_attributes: [{ user_id: user_to_add.id }])
     end
 
     it_behaves_like 'invalid protected environment user'
