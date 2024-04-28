@@ -7,8 +7,8 @@ module Resolvers
     type Types::TimeboxReportType, null: true
 
     argument :full_path, GraphQL::Types::String,
-             required: false,
-             description: 'Full path of the project or group used as a scope for report. For example, `gitlab-org` or `gitlab-org/gitlab`.'
+      required: false,
+      description: 'Full path of the project or group used as a scope for report. For example, `gitlab-org` or `gitlab-org/gitlab`.'
 
     alias_method :timebox, :object
 

@@ -8,13 +8,13 @@ module Resolvers
     type [::Types::VulnerableProjectsByGradeType], null: true
 
     argument :include_subgroups, GraphQL::Types::Boolean,
-              required: false,
-              default_value: false,
-              description: 'Include grades belonging to subgroups.'
+      required: false,
+      default_value: false,
+      description: 'Include grades belonging to subgroups.'
 
     argument :letter_grade, Types::VulnerabilityGradeEnum,
-             required: false,
-             description: "Filter the response by given letter grade."
+      required: false,
+      description: "Filter the response by given letter grade."
 
     def resolve(**args)
       authorize!

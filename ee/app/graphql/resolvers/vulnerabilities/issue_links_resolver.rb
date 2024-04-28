@@ -6,8 +6,8 @@ module Resolvers
       type Types::Vulnerability::IssueLinkType, null: true
 
       argument :link_type, Types::Vulnerability::IssueLinkTypeEnum,
-               required: false,
-               description: 'Filter issue links by link type.'
+        required: false,
+        description: 'Filter issue links by link type.'
 
       def resolve(link_type: nil, **)
         Gitlab::Graphql::Loaders::Vulnerabilities::IssueLinksLoader.new(context, object, link_type: link_type)

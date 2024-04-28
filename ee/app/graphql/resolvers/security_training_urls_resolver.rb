@@ -10,14 +10,14 @@ module Resolvers
     authorizes_object!
 
     argument :identifier_external_ids,
-         [GraphQL::Types::String],
-         required: true,
-         description: 'List of external IDs of vulnerability identifiers.'
+      [GraphQL::Types::String],
+      required: true,
+      description: 'List of external IDs of vulnerability identifiers.'
 
     argument :filename,
-         GraphQL::Types::String,
-         required: false,
-         description: 'Filename to filter security training URLs by programming language.'
+      GraphQL::Types::String,
+      required: false,
+      description: 'Filename to filter security training URLs by programming language.'
 
     alias_method :project, :object
 

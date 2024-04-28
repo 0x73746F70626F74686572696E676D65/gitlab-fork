@@ -9,21 +9,21 @@ module Types
       end
 
       argument :not, NegatedEpicBoardIssueInputType,
-               required: false,
-               description: 'Negated epic arguments.'
+        required: false,
+        description: 'Negated epic arguments.'
 
       argument :or, Types::Epics::UnionedEpicFilterInputType,
-               required: false,
-               description: 'List of arguments with inclusive OR. ' \
-                            'Ignored unless `or_issuable_queries` flag is enabled.'
+        required: false,
+        description: 'List of arguments with inclusive OR. ' \
+                     'Ignored unless `or_issuable_queries` flag is enabled.'
 
       argument :search, GraphQL::Types::String,
-               required: false,
-               description: 'Search query for epic title or description.'
+        required: false,
+        description: 'Search query for epic title or description.'
 
       argument :confidential, GraphQL::Types::Boolean,
-               required: false,
-               description: 'Filter by confidentiality.'
+        required: false,
+        description: 'Filter by confidentiality.'
     end
   end
 end

@@ -8,76 +8,76 @@ module Resolvers
     type Types::VulnerabilityType, null: true
 
     argument :project_id, [GraphQL::Types::ID],
-             required: false,
-             description: 'Filter vulnerabilities by project.'
+      required: false,
+      description: 'Filter vulnerabilities by project.'
 
     argument :report_type, [Types::VulnerabilityReportTypeEnum],
-             required: false,
-             description: 'Filter vulnerabilities by report type.'
+      required: false,
+      description: 'Filter vulnerabilities by report type.'
 
     argument :severity, [Types::VulnerabilitySeverityEnum],
-             required: false,
-             description: 'Filter vulnerabilities by severity.'
+      required: false,
+      description: 'Filter vulnerabilities by severity.'
 
     argument :state, [Types::VulnerabilityStateEnum],
-             required: false,
-             description: 'Filter vulnerabilities by state.'
+      required: false,
+      description: 'Filter vulnerabilities by state.'
 
     argument :owasp_top_ten, [Types::VulnerabilityOwaspTop10Enum],
-             required: false,
-             as: :owasp_top_10,
-             description: 'Filter vulnerabilities by OWASP Top 10 category.'
+      required: false,
+      as: :owasp_top_10,
+      description: 'Filter vulnerabilities by OWASP Top 10 category.'
 
     argument :scanner, [GraphQL::Types::String],
-             required: false,
-             description: 'Filter vulnerabilities by VulnerabilityScanner.externalId.'
+      required: false,
+      description: 'Filter vulnerabilities by VulnerabilityScanner.externalId.'
 
     argument :scanner_id, [::Types::GlobalIDType[::Vulnerabilities::Scanner]],
-             required: false,
-             description: 'Filter vulnerabilities by scanner ID.'
+      required: false,
+      description: 'Filter vulnerabilities by scanner ID.'
 
     argument :sort, Types::VulnerabilitySortEnum,
-             required: false,
-             default_value: 'severity_desc',
-             description: 'List vulnerabilities by sort order.'
+      required: false,
+      default_value: 'severity_desc',
+      description: 'List vulnerabilities by sort order.'
 
     argument :has_resolution, GraphQL::Types::Boolean,
-             required: false,
-             description: 'Returns only the vulnerabilities which have been resolved on default branch.'
+      required: false,
+      description: 'Returns only the vulnerabilities which have been resolved on default branch.'
 
     argument :has_issues, GraphQL::Types::Boolean,
-             required: false,
-             description: 'Returns only the vulnerabilities which have linked issues.'
+      required: false,
+      description: 'Returns only the vulnerabilities which have linked issues.'
 
     argument :has_merge_request, GraphQL::Types::Boolean,
-             required: false,
-             description: 'Returns only the vulnerabilities which have linked merge requests.'
+      required: false,
+      description: 'Returns only the vulnerabilities which have linked merge requests.'
 
     argument :image, [GraphQL::Types::String],
-             required: false,
-             description: "Filter vulnerabilities by location image. When this filter is present, "\
-                          "the response only matches entries for a `reportType` "\
-                          "that includes #{::Vulnerabilities::Finding::REPORT_TYPES_WITH_LOCATION_IMAGE.map { |type| "`#{type}`" }.join(', ')}."
+      required: false,
+      description: "Filter vulnerabilities by location image. When this filter is present, "\
+                   "the response only matches entries for a `reportType` "\
+                   "that includes #{::Vulnerabilities::Finding::REPORT_TYPES_WITH_LOCATION_IMAGE.map { |type| "`#{type}`" }.join(', ')}."
 
     argument :cluster_id, [::Types::GlobalIDType[::Clusters::Cluster]],
-             prepare: ->(ids, _) { ids.map(&:model_id) },
-             required: false,
-             description: "Filter vulnerabilities by `cluster_id`. Vulnerabilities with a `reportType` "\
-                          "of `cluster_image_scanning` are only included with this filter."
+      prepare: ->(ids, _) { ids.map(&:model_id) },
+      required: false,
+      description: "Filter vulnerabilities by `cluster_id`. Vulnerabilities with a `reportType` "\
+                   "of `cluster_image_scanning` are only included with this filter."
 
     argument :cluster_agent_id, [::Types::GlobalIDType[::Clusters::Agent]],
-             prepare: ->(ids, _) { ids.map(&:model_id) },
-             required: false,
-             description: "Filter vulnerabilities by `cluster_agent_id`. Vulnerabilities with a `reportType` "\
-                          "of `cluster_image_scanning` are only included with this filter."
+      prepare: ->(ids, _) { ids.map(&:model_id) },
+      required: false,
+      description: "Filter vulnerabilities by `cluster_agent_id`. Vulnerabilities with a `reportType` "\
+                   "of `cluster_image_scanning` are only included with this filter."
 
     argument :dismissal_reason, [Types::Vulnerabilities::DismissalReasonEnum],
       required: false,
       description: "Filter by dismissal reason. Only dismissed Vulnerabilities will be included with the filter."
 
     argument :has_remediations, GraphQL::Types::Boolean,
-             required: false,
-             description: 'Returns only the vulnerabilities which have remediations.'
+      required: false,
+      description: 'Returns only the vulnerabilities which have remediations.'
 
     def resolve_with_lookahead(**args)
       return Vulnerability.none unless vulnerable
