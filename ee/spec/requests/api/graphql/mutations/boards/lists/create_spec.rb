@@ -40,7 +40,7 @@ RSpec.describe 'Create a milestone or assignee board list', feature_category: :t
         expect(response).to have_gitlab_http_status(:success)
         expect(mutation_response['list'])
           .to include('position' => 0, 'listType' => 'milestone',
-                      'milestone' => include('title' => milestone.title))
+            'milestone' => include('title' => milestone.title))
       end
     end
 
@@ -53,7 +53,7 @@ RSpec.describe 'Create a milestone or assignee board list', feature_category: :t
         expect(response).to have_gitlab_http_status(:success)
         expect(mutation_response['list'])
           .to include('position' => 0, 'listType' => 'assignee',
-                      'assignee' => include('id' => guest.to_global_id.to_s))
+            'assignee' => include('id' => guest.to_global_id.to_s))
       end
     end
   end

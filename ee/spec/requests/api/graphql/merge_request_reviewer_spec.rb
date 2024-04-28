@@ -29,10 +29,10 @@ RSpec.describe 'MergeRequestReviewer', feature_category: :code_review_workflow d
 
     let(:interaction) do
       graphql_data_at(:project,
-                      :merge_request,
-                      :reviewers,
-                      :nodes, 0,
-                      :merge_request_interaction)
+        :merge_request,
+        :reviewers,
+        :nodes, 0,
+        :merge_request_interaction)
     end
 
     before do

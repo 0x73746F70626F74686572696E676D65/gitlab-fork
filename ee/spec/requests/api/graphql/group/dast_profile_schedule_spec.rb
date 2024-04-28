@@ -44,8 +44,8 @@ RSpec.describe 'Query.group(fullPath).projects.dastProfiles.dastProfileSchedule'
 
   def run_query(query)
     run_with_clean_state(query,
-                         context: { current_user: current_user },
-                         variables: {})
+      context: { current_user: current_user },
+      variables: {})
   end
 
   before do
@@ -62,10 +62,10 @@ RSpec.describe 'Query.group(fullPath).projects.dastProfiles.dastProfileSchedule'
     it 'returns a dast_profile_schedule' do
       r = run_query(query).to_h
       schedule = graphql_dig_at(r, :data,
-                                   :group,
-                                   :projects, :edges, :node,
-                                   :dast_profiles, :edges, :node,
-                                   :dast_profile_schedule, 0)
+        :group,
+        :projects, :edges, :node,
+        :dast_profiles, :edges, :node,
+        :dast_profile_schedule, 0)
 
       expect(schedule).to include('ownerValid' => eq(true))
     end

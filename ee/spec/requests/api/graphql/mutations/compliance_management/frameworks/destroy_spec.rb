@@ -27,7 +27,7 @@ RSpec.describe 'Delete a compliance framework', feature_category: :compliance_ma
     end
 
     it_behaves_like 'a mutation that returns top-level errors',
-                    errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
+      errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
   end
 
   context 'when licensed' do
@@ -53,7 +53,7 @@ RSpec.describe 'Delete a compliance framework', feature_category: :compliance_ma
 
     context 'current_user is not namespace owner' do
       it_behaves_like 'a mutation that returns top-level errors',
-                      errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
+        errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
 
       it 'does not destroy a compliance framework' do
         expect { subject }.not_to change { ComplianceManagement::Framework.count }

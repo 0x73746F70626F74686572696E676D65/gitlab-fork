@@ -36,7 +36,7 @@ RSpec.describe 'Getting issues for an epic', feature_category: :portfolio_manage
 
   def epic_query(params = {}, epic_fields = epic_node)
     graphql_query_for("group", { "fullPath" => group.full_path },
-                       query_graphql_field("epics", params, epic_fields)
+      query_graphql_field("epics", params, epic_fields)
     )
   end
 

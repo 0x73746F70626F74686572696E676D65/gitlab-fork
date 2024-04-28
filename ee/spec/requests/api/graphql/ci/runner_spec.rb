@@ -96,8 +96,8 @@ RSpec.describe 'Query.runner(id)', feature_category: :fleet_visibility do
 
         shared_examples 'when runner managers have all possible statuses' do
           where(:manager1_version_status, :manager2_version_status,
-                :expected_manager1_upgrade_status,
-                :expected_manager2_upgrade_status, :expected_upgrade_status) do
+            :expected_manager1_upgrade_status,
+            :expected_manager2_upgrade_status, :expected_upgrade_status) do
             :error           | :error           | nil             | nil             | nil
             :invalid_version | :invalid_version | 'INVALID'       | 'INVALID'       | 'INVALID'
             :unavailable     | :unavailable     | 'NOT_AVAILABLE' | 'NOT_AVAILABLE' | 'NOT_AVAILABLE'
@@ -242,12 +242,12 @@ RSpec.describe 'Query.runner(id)', feature_category: :fleet_visibility do
         context 'with builds' do
           let!(:build1) do
             create(:ci_build, :running, runner: project_runner1, pipeline: pipeline1,
-                   queued_at: 5.minutes.ago, started_at: 1.minute.ago)
+              queued_at: 5.minutes.ago, started_at: 1.minute.ago)
           end
 
           let!(:build2) do
             create(:ci_build, :success, runner: project_runner2, pipeline: pipeline2,
-                   queued_at: 10.minutes.ago, started_at: 8.minutes.ago, finished_at: 7.minutes.ago)
+              queued_at: 10.minutes.ago, started_at: 8.minutes.ago, finished_at: 7.minutes.ago)
           end
 
           it 'retrieves expected fields' do
@@ -288,7 +288,7 @@ RSpec.describe 'Query.runner(id)', feature_category: :fleet_visibility do
         context 'with builds' do
           let!(:build1) do
             create(:ci_build, :running, runner: project_runner1, pipeline: pipeline1,
-                   queued_at: 5.minutes.ago, started_at: 1.minute.ago)
+              queued_at: 5.minutes.ago, started_at: 1.minute.ago)
           end
 
           specify { expect(jobs_data).to be_nil }

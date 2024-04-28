@@ -22,7 +22,7 @@ RSpec.describe 'Update board epic user preferences', feature_category: :portfoli
     }
 
     graphql_mutation(mutation_name, params,
-                     <<-QL.strip_heredoc
+      <<-QL.strip_heredoc
                        clientMutationId
                        epicUserPreferences {
                          collapsed

@@ -79,7 +79,7 @@ RSpec.describe 'Update list limit metrics', feature_category: :team_planning do
 
   def build_mutation(metric, additional_params = {})
     graphql_mutation(mutation_name, list_update_params(metric).merge(additional_params),
-                     <<-QL.strip_heredoc
+      <<-QL.strip_heredoc
                        clientMutationId
                        list {
                          id, maxIssueCount, maxIssueWeight, limitMetric

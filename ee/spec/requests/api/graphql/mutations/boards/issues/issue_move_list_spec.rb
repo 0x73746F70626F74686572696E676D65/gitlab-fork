@@ -109,7 +109,7 @@ RSpec.describe 'Reposition and move issue within board lists', feature_category:
 
   def mutation(additional_params = {})
     graphql_mutation(mutation_name, issue_move_params.merge(additional_params),
-                     <<-QL.strip_heredoc
+      <<-QL.strip_heredoc
                        clientMutationId
                        issue {
                          iid,
@@ -124,7 +124,7 @@ RSpec.describe 'Reposition and move issue within board lists', feature_category:
                          }
                        }
                        errors
-                     QL
+      QL
     )
   end
 end
