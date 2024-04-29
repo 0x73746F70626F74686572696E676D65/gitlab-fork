@@ -1,9 +1,0 @@
----
-name: auto_request_phone_number_verification_exemption
-feature_issue_url:
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/142788
-rollout_issue_url: https://gitlab.com/gitlab-com/gl-infra/production/-/issues/17477
-milestone: '16.9'
-group: group::anti-abuse
-type: gitlab_com_derisk
-default_enabled: false

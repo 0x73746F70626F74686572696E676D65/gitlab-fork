@@ -36,7 +36,6 @@ describe('Phone Verification component', () => {
     phoneShowArkoseChallenge: true,
     phoneShowRecaptchaChallenge: true,
     phoneNumber: undefined,
-    glFeatures: { autoRequestPhoneNumberVerificationExemption: true },
   };
 
   const findInternationalPhoneInput = () => wrapper.findComponent(InternationalPhoneInput);
@@ -411,16 +410,6 @@ describe('Phone Verification component', () => {
         expect(pollRequest).toHaveBeenCalledTimes(1);
         expect(pollStop).toHaveBeenCalledTimes(1);
         expect(wrapper.emitted('set-verification-state')).toBeUndefined();
-      });
-    });
-
-    describe('when autoRequestPhoneNumberVerificationExemption feature flag is disabled', () => {
-      it('does not start', () => {
-        setupComponent({ glFeatures: { autoRequestPhoneNumberVerificationExemption: false } });
-
-        jest.advanceTimersByTime(5000);
-
-        expect(pollRequest).not.toHaveBeenCalled();
       });
     });
   });
