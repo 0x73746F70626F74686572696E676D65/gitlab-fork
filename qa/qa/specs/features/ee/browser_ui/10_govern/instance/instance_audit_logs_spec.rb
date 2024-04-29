@@ -113,7 +113,8 @@ module QA
           Page::Main::Menu.perform(&:go_to_admin_area)
           Page::Admin::Menu.perform(&:go_to_users_overview)
           Page::Admin::Overview::Users::Index.perform do |index|
-            index.search_user(user_for_impersonation.username)
+            index.choose_search_user(user_for_impersonation.username)
+            index.click_search
             index.click_user(user_for_impersonation.name)
           end
 

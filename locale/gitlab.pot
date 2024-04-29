@@ -4048,12 +4048,6 @@ msgstr ""
 msgid "AdminStatistics|Snippets"
 msgstr ""
 
-msgid "AdminUsers|2FA Disabled"
-msgstr ""
-
-msgid "AdminUsers|2FA Enabled"
-msgstr ""
-
 msgid "AdminUsers|A user can validate themselves by inputting a credit/debit card, or an admin can manually validate a user. Validated users can use free CI minutes on instance runners."
 msgstr ""
 
@@ -4075,9 +4069,6 @@ msgstr ""
 msgid "AdminUsers|Activate user %{username}?"
 msgstr ""
 
-msgid "AdminUsers|Active"
-msgstr ""
-
 msgid "AdminUsers|Adjust the user cap setting on your instance"
 msgstr ""
 
@@ -4085,9 +4076,6 @@ msgid "AdminUsers|Admin"
 msgstr ""
 
 msgid "AdminUsers|Administrator"
-msgstr ""
-
-msgid "AdminUsers|Admins"
 msgstr ""
 
 msgid "AdminUsers|An error occurred while fetching this user's contributions, and the request cannot return the number of issues, merge requests, groups, and projects linked to this user. If you proceed with deleting the user, all their contributions will still be deleted."
@@ -4298,9 +4286,6 @@ msgid "AdminUsers|Restore user access to the account, including web, Git and API
 msgstr ""
 
 msgid "AdminUsers|Search by name, email, or username"
-msgstr ""
-
-msgid "AdminUsers|Search users"
 msgstr ""
 
 msgid "AdminUsers|Send email to users"
