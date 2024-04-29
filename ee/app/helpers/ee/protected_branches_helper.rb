@@ -20,7 +20,9 @@ module EE
       return true unless entity.is_a?(Project)
       return true if branches_protected_from_push.blank?
 
-      !protected_branch.name.in?(branches_protected_from_push)
+      branches_protected_from_push.none? do |branch|
+        RefMatcher.new(branch).matches?(protected_branch.name)
+      end
     end
   end
 end
