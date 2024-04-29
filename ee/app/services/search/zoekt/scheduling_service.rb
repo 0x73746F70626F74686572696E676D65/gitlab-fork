@@ -206,7 +206,10 @@ module Search
             logger.error(build_structured_payload(
               task: :node_assignment,
               message: 'Space is not available in Node', zoekt_enabled_namespace_id: zoekt_enabled_namespace.id,
-              node_id: node.id
+              metadata: {
+                "meta.zoekt.node_name" => node.metadata['name'],
+                "meta.zoekt.node_id" => node.id
+              }
             ))
           end
         end
