@@ -3,10 +3,12 @@
 module Security
   module SecurityOrchestrationPolicies
     class ProtectedBranchesDeletionCheckService < BaseProjectService
+      include Gitlab::Utils::StrongMemoize
+
       def execute(protected_branches)
         protected_branches.reject do |protected_branch|
           applicable_branches.none? do |branch|
-            ::ProtectedBranch.matching(branch, protected_refs: [protected_branch]).any?
+            RefMatcher.new(branch).matching([protected_branch.name]).any?
           end
         end
       end
@@ -14,7 +16,12 @@ module Security
       private
 
       def applicable_branches
-        @applicable_branches ||= PolicyBranchesService.new(project: project).scan_result_branches(rules)
+        PolicyBranchesService.new(project: project).scan_result_branches(rules).merge(blocked_branch_patterns)
+      end
+      strong_memoize_attr :applicable_branches
+
+      def blocked_branch_patterns
+        rules.filter_map { |rule| rule[:branches] }.flatten
       end
 
       def rules
@@ -24,6 +31,7 @@ module Security
 
         blocking_policies.pluck(:rules).flatten # rubocop: disable CodeReuse/ActiveRecord -- blocking_policies is not expected to be an ActiveRecord::Relation but an Array
       end
+      strong_memoize_attr :rules
 
       def applicable_scan_result_policies
         policy_scope_service = Security::SecurityOrchestrationPolicies::PolicyScopeService.new(project: project)
