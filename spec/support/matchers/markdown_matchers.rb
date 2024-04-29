@@ -60,6 +60,16 @@ module MarkdownMatchers
     end
   end
 
+  # TableOfContentsTagFilter
+  matcher :create_toc do
+    set_default_markdown_messages
+
+    match do |actual|
+      expect(actual).to have_selector('li > a[href="#gitlab-markdown"]')
+      expect(actual).to have_selector('li > a[href="#tableofcontentstagfilter"]')
+    end
+  end
+
   # AutolinkFilter
   matcher :create_autolinks do
     def have_autolink(link)

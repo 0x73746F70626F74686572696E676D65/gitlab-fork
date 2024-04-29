@@ -70,10 +70,8 @@ module Banzai
         header_root = current_header = HeaderNode.new
 
         doc.xpath(HEADER_XPATH).each do |node|
-          header_anchor = node.children.first
+          header_anchor = node.css('a.anchor').first
           next unless header_anchor
-          next unless header_anchor.name == 'a'
-          next unless header_anchor[:class] == 'anchor'
 
           # remove leading anchor `#` so we can add it back later
           href = header_anchor[:href].slice(1..)
