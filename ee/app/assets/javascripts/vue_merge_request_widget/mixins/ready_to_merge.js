@@ -106,10 +106,22 @@ export default {
       );
     },
     shouldShowMergeImmediatelyDropdown() {
-      if (this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY) {
+      if (window.gon?.features?.autoMergeWhenIncompletePipelineSucceeds) {
+        if (!this.isAutoMergeAvailable || !this.isMergeAllowed) {
+          return false;
+        }
+      }
+
+      if (
+        this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY ||
+        this.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY
+      ) {
         return !this.mr.ffOnlyEnabled || this.mr.ffMergePossible;
       }
 
+      if (window.gon?.features?.autoMergeWhenIncompletePipelineSucceeds) {
+        return true;
+      }
       return this.isPipelineActive && !this.state.onlyAllowMergeIfPipelineSucceeds;
     },
     shouldDisplayMergeImmediatelyDropdownOptions() {
