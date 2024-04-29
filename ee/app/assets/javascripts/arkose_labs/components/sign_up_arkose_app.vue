@@ -3,7 +3,7 @@ import { uniqueId } from 'lodash';
 import { logError } from '~/lib/logger';
 import { createAlert } from '~/alert';
 import DomElementListener from '~/vue_shared/components/dom_element_listener.vue';
-import { initArkoseLabsScript } from '../init_arkose_labs_script';
+import { initArkoseLabsChallenge } from '../init_arkose_labs';
 import {
   VERIFICATION_LOADING_MESSAGE,
   VERIFICATION_REQUIRED_MESSAGE,
@@ -46,7 +46,17 @@ export default {
   },
   async mounted() {
     try {
-      await this.initArkoseLabs();
+      await initArkoseLabsChallenge({
+        publicKey: this.publicKey,
+        domain: this.domain,
+        dataExchangePayload: this.dataExchangePayload,
+        config: {
+          selector: `.${this.arkoseLabsContainerClass}`,
+          onShown: this.onArkoseLabsIframeShown,
+          onCompleted: this.passArkoseLabsChallenge,
+          onError: this.bypassArkoseOnFailure,
+        },
+      });
     } catch (error) {
       this.bypassArkoseOnFailure(error);
     }
@@ -64,24 +74,6 @@ export default {
     },
     onArkoseLabsIframeShown() {
       this.arkoseLabsIframeShown = true;
-    },
-    async initArkoseLabs() {
-      const arkoseObject = await initArkoseLabsScript({
-        publicKey: this.publicKey,
-        domain: this.domain,
-      });
-
-      const blob = this.dataExchangePayload;
-      const data = blob ? { data: { blob } } : {};
-
-      arkoseObject.setConfig({
-        ...data,
-        mode: 'inline',
-        selector: `.${this.arkoseLabsContainerClass}`,
-        onShown: this.onArkoseLabsIframeShown,
-        onCompleted: this.passArkoseLabsChallenge,
-        onError: this.bypassArkoseOnFailure,
-      });
     },
     passArkoseLabsChallenge(response) {
       this.arkoseToken = response.token;

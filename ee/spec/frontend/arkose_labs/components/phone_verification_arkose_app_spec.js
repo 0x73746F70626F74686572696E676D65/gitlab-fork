@@ -1,20 +1,22 @@
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import PhoneVerificationArkoseApp from 'ee/arkose_labs/components/phone_verification_arkose_app.vue';
-import { initArkoseLabsScript } from 'ee/arkose_labs/init_arkose_labs_script';
+import { initArkoseLabsChallenge } from 'ee/arkose_labs/init_arkose_labs';
+import { logError } from '~/lib/logger';
 
-jest.mock('ee/arkose_labs/init_arkose_labs_script');
+jest.mock('~/lib/logger');
+jest.mock('ee/arkose_labs/init_arkose_labs');
 let onShown;
 let onCompleted;
 const mockResetHandler = jest.fn();
 
-initArkoseLabsScript.mockImplementation(() => ({
-  setConfig: ({ onShown: shownHandler, onCompleted: completedHandler }) => {
-    onShown = shownHandler;
-    onCompleted = completedHandler;
-  },
-  reset: mockResetHandler,
-}));
+const mockDataExchangePayload = 'fakeDataExchangePayload';
+initArkoseLabsChallenge.mockImplementation(({ config }) => {
+  onShown = config.onShown;
+  onCompleted = config.onCompleted;
+
+  return { reset: mockResetHandler };
+});
 
 const MOCK_ARKOSE_RESPONSE = { token: 'verification-token' };
 const MOCK_PUBLIC_KEY = 'arkose-labs-public-api-key';
@@ -30,6 +32,7 @@ describe('PhoneVerificationArkoseApp', () => {
       propsData: {
         publicKey: MOCK_PUBLIC_KEY,
         domain: MOCK_DOMAIN,
+        dataExchangePayload: mockDataExchangePayload,
         resetSession: false,
       },
     });
@@ -40,9 +43,14 @@ describe('PhoneVerificationArkoseApp', () => {
   });
 
   it('should initialise the arkose labs script', () => {
-    expect(initArkoseLabsScript).toHaveBeenCalledWith({
+    expect(initArkoseLabsChallenge).toHaveBeenCalledWith({
       publicKey: MOCK_PUBLIC_KEY,
       domain: MOCK_DOMAIN,
+      dataExchangePayload: mockDataExchangePayload,
+      config: expect.objectContaining({
+        onShown: expect.any(Function),
+        onCompleted: expect.any(Function),
+      }),
     });
   });
 
@@ -74,5 +82,21 @@ describe('PhoneVerificationArkoseApp', () => {
     });
 
     expect(mockResetHandler).toHaveBeenCalled();
+  });
+
+  describe('when challenge initialization fails', () => {
+    const arkoseError = new Error();
+
+    beforeEach(() => {
+      initArkoseLabsChallenge.mockImplementation(() => {
+        throw arkoseError;
+      });
+
+      createComponent();
+    });
+
+    it('logs the error', () => {
+      expect(logError).toHaveBeenCalledWith('ArkoseLabs initialization error', arkoseError);
+    });
   });
 });

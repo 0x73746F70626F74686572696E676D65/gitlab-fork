@@ -2,7 +2,7 @@
 import { GlForm, GlLoadingIcon } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
 import csrf from '~/lib/utils/csrf';
-import { initArkoseLabsScript } from '../init_arkose_labs_script';
+import { initArkoseLabsChallenge } from '../init_arkose_labs';
 import { VERIFICATION_TOKEN_INPUT_NAME, CHALLENGE_CONTAINER_CLASS } from '../constants';
 
 export default {
@@ -36,7 +36,16 @@ export default {
   },
   async mounted() {
     try {
-      await this.initArkoseLabs();
+      await initArkoseLabsChallenge({
+        publicKey: this.publicKey,
+        domain: this.domain,
+        dataExchangePayload: this.dataExchangePayload,
+        config: {
+          selector: `.${this.$options.CHALLENGE_CONTAINER_CLASS}`,
+          onShown: this.onArkoseLabsIframeShown,
+          onCompleted: this.submit,
+        },
+      });
     } catch (error) {
       logError('ArkoseLabs initialization error', error);
       this.submit();
@@ -45,23 +54,6 @@ export default {
   methods: {
     onArkoseLabsIframeShown() {
       this.arkoseLabsIframeShown = true;
-    },
-    async initArkoseLabs() {
-      const arkoseObject = await initArkoseLabsScript({
-        publicKey: this.publicKey,
-        domain: this.domain,
-      });
-
-      const blob = this.dataExchangePayload;
-      const data = blob ? { data: { blob } } : {};
-
-      arkoseObject.setConfig({
-        ...data,
-        mode: 'inline',
-        selector: `.${this.$options.CHALLENGE_CONTAINER_CLASS}`,
-        onShown: this.onArkoseLabsIframeShown,
-        onCompleted: this.submit,
-      });
     },
     submit({ token } = { token: '' }) {
       this.arkoseToken = token;

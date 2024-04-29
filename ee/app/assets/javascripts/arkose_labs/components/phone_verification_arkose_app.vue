@@ -1,6 +1,7 @@
 <script>
 import { uniqueId } from 'lodash';
-import { initArkoseLabsScript } from '../init_arkose_labs_script';
+import { logError } from '~/lib/logger';
+import { initArkoseLabsChallenge } from '../init_arkose_labs';
 import { CHALLENGE_CONTAINER_CLASS } from '../constants';
 
 export default {
@@ -18,6 +19,11 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    dataExchangePayload: {
+      type: String,
+      required: false,
+      default: undefined,
     },
   },
   data() {
@@ -38,24 +44,24 @@ export default {
     },
   },
   async mounted() {
-    await this.initArkoseLabs();
+    try {
+      this.arkoseObject = await initArkoseLabsChallenge({
+        publicKey: this.publicKey,
+        domain: this.domain,
+        dataExchangePayload: this.dataExchangePayload,
+        config: {
+          selector: `.${this.arkoseLabsContainerClass}`,
+          onShown: this.onArkoseLabsIframeShown,
+          onCompleted: this.passArkoseLabsChallenge,
+        },
+      });
+    } catch (error) {
+      logError('ArkoseLabs initialization error', error);
+    }
   },
   methods: {
     onArkoseLabsIframeShown() {
       this.arkoseLabsIframeShown = true;
-    },
-    async initArkoseLabs() {
-      this.arkoseObject = await initArkoseLabsScript({
-        publicKey: this.publicKey,
-        domain: this.domain,
-      });
-
-      this.arkoseObject.setConfig({
-        mode: 'inline',
-        selector: `.${this.arkoseLabsContainerClass}`,
-        onShown: this.onArkoseLabsIframeShown,
-        onCompleted: this.passArkoseLabsChallenge,
-      });
     },
     passArkoseLabsChallenge(response) {
       const arkoseToken = response.token;
