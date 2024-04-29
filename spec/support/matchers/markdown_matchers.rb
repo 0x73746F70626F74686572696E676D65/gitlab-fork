@@ -49,7 +49,7 @@ module MarkdownMatchers
     end
   end
 
-  # TableOfContentsFilter
+  # TableOfContentsLegacyFilter
   matcher :create_header_links do
     set_default_markdown_messages
 

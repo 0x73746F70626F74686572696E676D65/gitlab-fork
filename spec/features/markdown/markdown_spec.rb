@@ -257,7 +257,7 @@ RSpec.describe 'GitLab Markdown', :aggregate_failures, feature_category: :team_p
         expect(doc).to parse_emoji
       end
 
-      aggregate_failures 'TableOfContentsFilter' do
+      aggregate_failures 'TableOfContentsLegacyFilter' do
         expect(doc).to create_header_links
       end
 
@@ -380,7 +380,7 @@ RSpec.describe 'GitLab Markdown', :aggregate_failures, feature_category: :team_p
         expect(doc).to parse_emoji
       end
 
-      aggregate_failures 'TableOfContentsFilter' do
+      aggregate_failures 'TableOfContentsLegacyFilter' do
         expect(doc).to create_header_links
       end
 
