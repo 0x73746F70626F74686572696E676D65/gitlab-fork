@@ -2,22 +2,22 @@ import { nextTick } from 'vue';
 import { GlForm, GlLoadingIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import IdentityVerificationArkoseApp from 'ee/arkose_labs/components/identity_verification_arkose_app.vue';
-import { initArkoseLabsScript } from 'ee/arkose_labs/init_arkose_labs_script';
+import { initArkoseLabsChallenge } from 'ee/arkose_labs/init_arkose_labs';
 import { VERIFICATION_TOKEN_INPUT_NAME, CHALLENGE_CONTAINER_CLASS } from 'ee/arkose_labs/constants';
 import { logError } from '~/lib/logger';
 
 jest.mock('~/lib/utils/csrf', () => ({ token: 'mock-csrf-token' }));
-jest.mock('ee/arkose_labs/init_arkose_labs_script');
+jest.mock('ee/arkose_labs/init_arkose_labs');
 jest.mock('~/lib/logger');
 
 let onShown;
 let onCompleted;
-initArkoseLabsScript.mockImplementation(() => ({
-  setConfig: ({ onShown: shownHandler, onCompleted: completedHandler }) => {
-    onShown = shownHandler;
-    onCompleted = completedHandler;
-  },
-}));
+
+const mockDataExchangePayload = 'fakeDataExchangePayload';
+initArkoseLabsChallenge.mockImplementation(({ config }) => {
+  onShown = config.onShown;
+  onCompleted = config.onCompleted;
+});
 
 const MOCK_ARKOSE_RESPONSE = { token: 'verification-token' };
 const MOCK_PUBLIC_KEY = 'arkose-labs-public-api-key';
@@ -37,6 +37,7 @@ describe('IdentityVerificationArkoseApp', () => {
       propsData: {
         publicKey: MOCK_PUBLIC_KEY,
         domain: MOCK_DOMAIN,
+        dataExchangePayload: mockDataExchangePayload,
         sessionVerificationPath: MOCK_SESSION_VERIFICATION_PATH,
         ...props,
       },
@@ -47,10 +48,16 @@ describe('IdentityVerificationArkoseApp', () => {
     createComponent();
   });
 
-  it("includes Arkose Labs' script", () => {
-    expect(initArkoseLabsScript).toHaveBeenCalledWith({
+  it('initializes Arkose Labs challenge', () => {
+    expect(initArkoseLabsChallenge).toHaveBeenCalledWith({
       publicKey: MOCK_PUBLIC_KEY,
       domain: MOCK_DOMAIN,
+      dataExchangePayload: mockDataExchangePayload,
+      config: expect.objectContaining({
+        selector: `.${CHALLENGE_CONTAINER_CLASS}`,
+        onShown: expect.any(Function),
+        onCompleted: expect.any(Function),
+      }),
     });
   });
 
@@ -111,7 +118,7 @@ describe('IdentityVerificationArkoseApp', () => {
     const arkoseError = new Error();
 
     beforeEach(() => {
-      initArkoseLabsScript.mockImplementation(() => {
+      initArkoseLabsChallenge.mockImplementation(() => {
         throw arkoseError;
       });
 
@@ -126,41 +133,6 @@ describe('IdentityVerificationArkoseApp', () => {
 
     it('submits the form', () => {
       expect(formSubmitSpy).toHaveBeenCalled();
-    });
-  });
-
-  describe('Arkose configuration', () => {
-    const setConfig = jest.fn();
-    const defaultConfig = {
-      mode: 'inline',
-      selector: `.${CHALLENGE_CONTAINER_CLASS}`,
-      onShown: expect.any(Function),
-      onCompleted: expect.any(Function),
-    };
-
-    beforeEach(() => {
-      setConfig.mockClear();
-      initArkoseLabsScript.mockImplementation(() => ({ setConfig }));
-    });
-
-    it('is executed with the default config options', async () => {
-      createComponent();
-
-      await nextTick();
-
-      expect(setConfig).toHaveBeenCalledTimes(1);
-      expect(setConfig).toHaveBeenCalledWith(defaultConfig);
-    });
-
-    describe('when Data Exchange payload is present', () => {
-      it('is included in the configuration object', async () => {
-        createComponent({ props: { dataExchangePayload: 'payload' } });
-
-        await nextTick();
-
-        expect(setConfig).toHaveBeenCalledTimes(1);
-        expect(setConfig).toHaveBeenCalledWith({ data: { blob: 'payload' }, ...defaultConfig });
-      });
     });
   });
 });

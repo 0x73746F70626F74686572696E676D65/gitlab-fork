@@ -4,7 +4,7 @@ const CALLBACK_NAME = '_initArkoseLabsScript_callback_';
 
 const getCallbackName = () => uniqueId(CALLBACK_NAME);
 
-export const initArkoseLabsScript = ({ publicKey, domain }) => {
+const initArkoseLabsScript = ({ publicKey, domain }) => {
   const callbackFunctionName = getCallbackName();
 
   return new Promise((resolve, reject) => {
@@ -34,3 +34,20 @@ export const initArkoseLabsScript = ({ publicKey, domain }) => {
     document.head.appendChild(tag);
   });
 };
+
+const configureArkoseLabs = (configObject, dataExchangePayload, options = {}) => {
+  const blob = dataExchangePayload;
+  const data = blob ? { data: { blob } } : {};
+
+  configObject.setConfig({
+    mode: 'inline',
+    ...data,
+    ...options,
+  });
+};
+
+export const initArkoseLabsChallenge = ({ publicKey, domain, dataExchangePayload, config }) =>
+  initArkoseLabsScript({ publicKey, domain }).then((arkoseObject) => {
+    configureArkoseLabs(arkoseObject, dataExchangePayload, config);
+    return arkoseObject;
+  });
