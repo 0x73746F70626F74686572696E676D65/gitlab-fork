@@ -314,8 +314,8 @@ RSpec.describe EpicsFinder, feature_category: :team_planning do
         context 'by timeframe' do
           it 'returns epics which start in the timeframe' do
             params = {
-              start_date: 2.days.before(reference_time).strftime('%Y-%m-%d'),
-              end_date: 1.day.before(reference_time).strftime('%Y-%m-%d')
+              start_date: 2.days.before(reference_time).to_date.iso8601,
+              end_date: 1.day.before(reference_time).to_date.iso8601
             }
 
             expect(epics(params)).to contain_exactly(epic2)
@@ -323,8 +323,8 @@ RSpec.describe EpicsFinder, feature_category: :team_planning do
 
           it 'returns epics which end in the timeframe' do
             params = {
-              start_date: 4.days.before(reference_time).strftime('%Y-%m-%d'),
-              end_date: 3.days.before(reference_time).strftime('%Y-%m-%d')
+              start_date: 4.days.before(reference_time).to_date.iso8601,
+              end_date: 3.days.before(reference_time).to_date.iso8601
             }
 
             expect(epics(params)).to contain_exactly(epic3)
@@ -332,8 +332,8 @@ RSpec.describe EpicsFinder, feature_category: :team_planning do
 
           it 'returns epics which start before and end after the timeframe' do
             params = {
-              start_date: 4.days.before(reference_time).strftime('%Y-%m-%d'),
-              end_date: 4.days.before(reference_time).strftime('%Y-%m-%d')
+              start_date: 4.days.before(reference_time).to_date.iso8601,
+              end_date: 4.days.before(reference_time).to_date.iso8601
             }
 
             expect(epics(params)).to contain_exactly(epic3)
@@ -341,13 +341,13 @@ RSpec.describe EpicsFinder, feature_category: :team_planning do
 
           describe 'when one of the timeframe params are missing' do
             it 'does not filter by timeframe if start_date is missing' do
-              only_end_date = epics(end_date: 1.year.before(reference_time).strftime('%Y-%m-%d'))
+              only_end_date = epics(end_date: 1.year.before(reference_time).to_date.iso8601)
 
               expect(only_end_date).to eq(epics)
             end
 
             it 'does not filter by timeframe if end_date is missing' do
-              only_start_date = epics(start_date: 1.year.since(reference_time).strftime('%Y-%m-%d'))
+              only_start_date = epics(start_date: 1.year.since(reference_time).to_date.iso8601)
 
               expect(only_start_date).to eq(epics)
             end
