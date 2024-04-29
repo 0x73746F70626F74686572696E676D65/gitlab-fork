@@ -38,6 +38,10 @@ module EE
         def logs_search_url(project)
           "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/logs/search"
         end
+
+        def logs_search_metadata_url(project)
+          "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/logs/searchmetadata"
+        end
       end
     end
   end
