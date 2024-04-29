@@ -3814,4 +3814,69 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
     end
   end
+
+  describe '#enable_auto_assign_gitlab_duo_pro_seats?' do
+    let_it_be(:root_group) { create(:group) }
+    let_it_be(:subgroup) { create(:group, parent: root_group) }
+
+    context 'when the feature flag is globally enabled' do
+      it 'returns false for non-root namespace' do
+        expect(subgroup.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsey
+      end
+
+      it 'returns true when namespace_settings.enable_auto_assign_gitlab_duo_pro_seats is enabled' do
+        root_group.namespace_settings.update!(enable_auto_assign_gitlab_duo_pro_seats: true)
+
+        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to eq(true)
+      end
+
+      it 'returns false when namespace_settings.enable_auto_assign_gitlab_duo_pro_seats is disabled' do
+        root_group.namespace_settings.update!(enable_auto_assign_gitlab_duo_pro_seats: false)
+
+        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to eq(false)
+      end
+    end
+
+    context 'when the feature flag is disabled globally' do
+      before do
+        stub_feature_flags(auto_assign_gitlab_duo_pro_seats: false)
+      end
+
+      it 'returns false' do
+        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsey
+      end
+    end
+
+    context 'when the feature flag is disabled for a specific group' do
+      before do
+        stub_feature_flags(auto_assign_gitlab_duo_pro_seats: false, thing: root_group)
+      end
+
+      it 'returns false' do
+        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsey
+      end
+    end
+
+    context 'when the feature flag is enabled for a specific group' do
+      before do
+        stub_feature_flags(auto_assign_gitlab_duo_pro_seats: true, thing: root_group)
+      end
+
+      it 'returns true when namespace_settings.enable_auto_assign_gitlab_duo_pro_seats is enabled' do
+        root_group.namespace_settings.update!(enable_auto_assign_gitlab_duo_pro_seats: true)
+
+        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to eq(true)
+      end
+
+      it 'returns false for non-root namespace' do
+        expect(subgroup.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsey
+      end
+
+      it 'returns false when namespace_settings.enable_auto_assign_gitlab_duo_pro_seats is disabled' do
+        root_group.namespace_settings.update!(enable_auto_assign_gitlab_duo_pro_seats: false)
+
+        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to eq(false)
+      end
+    end
+  end
 end

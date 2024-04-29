@@ -1011,6 +1011,12 @@ module EE
         namespace_settings.disable_personal_access_tokens?
     end
 
+    def enable_auto_assign_gitlab_duo_pro_seats?
+      return false unless ::Feature.enabled?(:auto_assign_gitlab_duo_pro_seats, self) && root?
+
+      namespace_settings.enable_auto_assign_gitlab_duo_pro_seats?
+    end
+
     private
 
     def active_project_tokens_of_root_ancestor
