@@ -78,57 +78,126 @@ RSpec.describe 'Query.runners', feature_category: :fleet_visibility do
     end
 
     context 'when sorting by MOST_ACTIVE_DESC' do
-      let_it_be(:runners) { create_list(:ci_runner, 6) }
+      let_it_be(:instance_runners) { create_list(:ci_runner, 6) }
+      let_it_be(:group) { create(:group) }
+      let_it_be(:group_runners) { create_list(:ci_runner, 3, :group, groups: [group]) }
+
+      let(:args) { { type: :INSTANCE_TYPE, sort: :MOST_ACTIVE_DESC } }
+      let(:query) { graphql_query_for(:runners, args, 'nodes { id }') }
+
+      subject(:request) { post_graphql(query, current_user: current_user) }
 
       before_all do
-        runners.map.with_index do |runner, number_of_builds|
+        instance_runners.map.with_index do |runner, number_of_builds|
           create_list(:ci_build, number_of_builds, :picked, runner: runner, project: project)
+        end
+
+        group_runners.map.with_index do |runner, number_of_builds|
+          create_list(:ci_build, 3 + number_of_builds, :picked, runner: runner, project: project)
         end
       end
 
-      it_behaves_like 'sorted paginated query' do
+      context 'when runner_performance_insights feature is available' do
+        using RSpec::Parameterized::TableSyntax
+
         before do
           stub_licensed_features(runner_performance_insights: true)
         end
 
-        def pagination_query(params)
-          graphql_query_for(:runners, params.merge(type: :INSTANCE_TYPE), "#{page_info} nodes { id }")
+        it_behaves_like 'sorted paginated query' do
+          def pagination_query(params)
+            graphql_query_for(:runners, params.merge(type: :INSTANCE_TYPE), "#{page_info} nodes { id }")
+          end
+
+          def pagination_results_data(runners)
+            runners.map { |runner| GitlabSchema.parse_gid(runner['id'], expected_type: ::Ci::Runner).model_id.to_i }
+          end
+
+          let(:sort_param) { :MOST_ACTIVE_DESC }
+          let(:first_param) { 2 }
+          let(:all_records) { instance_runners[1..5].reverse.map(&:id) }
+          let(:data_path) { [:runners] }
         end
 
-        def pagination_results_data(runners)
-          runners.map { |runner| GitlabSchema.parse_gid(runner['id'], expected_type: ::Ci::Runner).model_id.to_i }
+        context 'when requesting group runners' do
+          let(:query) do
+            graphql_query_for(:group, { full_path: group.full_path }, query_nodes(:runners, :id, args: args))
+          end
+
+          context 'with direct membership' do
+            let(:args) { { membership: :DIRECT, sort: :MOST_ACTIVE_DESC } }
+
+            it 'returns expected runners' do
+              request
+
+              expect_graphql_errors_to_be_empty
+              expect(graphql_data_at(:group, :runners, :nodes)).to match(
+                group_runners.reverse.map { |runner| a_graphql_entity_for(runner) }
+              )
+            end
+          end
+
+          context 'with invalid membership' do
+            let(:args) { extra_args.merge(sort: :MOST_ACTIVE_DESC) }
+
+            where(:case_name, :extra_args) do
+              'when requesting all available group runners' | { membership: :ALL_AVAILABLE }
+              'when requesting group descendant runners' | { membership: :DESCENDANTS }
+              'when requesting group runners with unspecified membership' | {}
+            end
+
+            with_them do
+              it 'returns error' do
+                request
+
+                expect_graphql_errors_to_include(
+                  'MOST_ACTIVE_DESC sorting is only supported on groups when membership is DIRECT')
+              end
+            end
+          end
         end
 
-        let(:sort_param) { :MOST_ACTIVE_DESC }
-        let(:first_param) { 2 }
-        let(:all_records) { runners[1..5].reverse.map(&:id) }
-        let(:data_path) { [:runners] }
+        context 'when requesting project runners' do
+          let(:args) { { sort: :MOST_ACTIVE_DESC } }
+          let(:query) do
+            graphql_query_for(:project, { full_path: project.full_path }, query_nodes(:runners, :id, args: args))
+          end
+
+          it 'returns error' do
+            request
+
+            expect_graphql_errors_to_include(
+              'MOST_ACTIVE_DESC sorting is only available for groups or when type is INSTANCE_TYPE')
+          end
+        end
+
+        context 'with invalid type' do
+          let(:args) { extra_args.merge(sort: :MOST_ACTIVE_DESC) }
+
+          where(:case_name, :extra_args) do
+            'when requesting GROUP_TYPE runners' | { type: :GROUP_TYPE }
+            'when requesting PROJECT_TYPE runners' | { type: :PROJECT_TYPE }
+            'when requesting runners without type' | {}
+          end
+
+          with_them do
+            it 'returns error' do
+              request
+
+              expect_graphql_errors_to_include(
+                'MOST_ACTIVE_DESC sorting is only available for groups or when type is INSTANCE_TYPE')
+            end
+          end
+        end
       end
 
-      it 'when requesting not instance_type runners' do
-        stub_licensed_features(runner_performance_insights: true)
-        query = graphql_query_for(:runners, { type: :GROUP_TYPE, sort: :MOST_ACTIVE_DESC }, "nodes { id }")
-        post_graphql(query, current_user: current_user)
+      context 'when runner_performance_insights feature is not available' do
+        it 'returns error' do
+          request
 
-        expect(graphql_errors).to include(a_hash_including(
-          'message' => 'MOST_ACTIVE_DESC sorting is only available when type is INSTANCE_TYPE'))
-      end
-
-      it 'when requesting not runners without type' do
-        stub_licensed_features(runner_performance_insights: true)
-        query = graphql_query_for(:runners, { sort: :MOST_ACTIVE_DESC }, "nodes { id }")
-        post_graphql(query, current_user: current_user)
-
-        expect(graphql_errors).to include(a_hash_including(
-          'message' => 'MOST_ACTIVE_DESC sorting is only available when type is INSTANCE_TYPE'))
-      end
-
-      it 'returns error when feature is not enabled' do
-        query = graphql_query_for(:runners, params.merge(type: :INSTANCE_TYPE, sort: :MOST_ACTIVE_DESC), "nodes { id }")
-        post_graphql(query, current_user: current_user)
-
-        expect(graphql_errors).to include(a_hash_including(
-          'message' => 'runner_performance_insights feature is required for MOST_ACTIVE_DESC sorting'))
+          expect_graphql_errors_to_include(
+            'runner_performance_insights feature is required for MOST_ACTIVE_DESC sorting')
+        end
       end
     end
   end

@@ -10,17 +10,19 @@ module EE
       prepended do
         has_one :cost_settings, class_name: 'Ci::Minutes::CostSetting', foreign_key: :runner_id, inverse_of: :runner
 
+        scope :with_top_running_builds_of_runner_type, ->(runner_type) do
+          most_active_runners(->(relation) { relation.where(runner_type: runner_type) })
+        end
+
+        scope :with_top_running_builds_by_namespace_id, ->(namespace_id) do
+          most_active_runners(
+            ->(relation) { relation.where(runner_type: :group_type).where(runner_owner_namespace_xid: namespace_id) }
+          )
+        end
+
+        # NOTE: This scope is meant to be used with scopes that leverage the most_active_runners method
         scope :order_most_active_desc, -> do
-          joins(
-            <<~SQL
-            INNER JOIN (
-              SELECT "runner_id", ROW_NUMBER() OVER(PARTITION BY "runner_id" ORDER BY "runner_id") as rn
-              FROM "ci_running_builds"
-            ) as "limited_builds" ON "limited_builds"."runner_id" = "ci_runners"."id"
-                                  AND "limited_builds".rn <= #{MOST_ACTIVE_RUNNERS_BUILDS_LIMIT}
-            SQL
-          ).group(:id)
-           .reorder('COUNT(limited_builds.runner_id) DESC NULLS LAST', arel_table['id'].desc)
+          group(:id).reorder('COUNT(limited_builds.runner_id) DESC NULLS LAST', arel_table['id'].desc)
         end
 
         def self.any_shared_runners_with_enabled_cost_factor?(project)
@@ -65,16 +67,19 @@ module EE
       end
 
       class_methods do
-        extend ::Gitlab::Utils::Override
+        def most_active_runners(inner_query_fn = nil)
+          inner_query = ::Ci::RunningBuild.select(
+            'runner_id',
+            Arel.sql('ROW_NUMBER() OVER (PARTITION BY runner_id ORDER BY runner_id) AS rn')
+          )
+          inner_query = inner_query_fn.call(inner_query) if inner_query_fn
 
-        override :order_by
-        def order_by(order)
-          case order
-          when 'most_active_desc'
-            order_most_active_desc
-          else
-            super
-          end
+          joins(
+            <<~SQL
+            INNER JOIN (#{inner_query.to_sql}) AS "limited_builds" ON "limited_builds"."runner_id" = "ci_runners"."id"
+                                               AND "limited_builds".rn <= #{MOST_ACTIVE_RUNNERS_BUILDS_LIMIT}
+            SQL
+          )
         end
       end
     end
