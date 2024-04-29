@@ -473,43 +473,6 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     end
   end
 
-  def verify_credit_card
-    # It's too hard to simulate an actual credit card validation, since it relies on loading an external script,
-    # rendering external content in an iframe and several API calls to the subscription portal from the backend.
-    # So instead we create a credit_card_validation directly and reload the page here.
-    create(:credit_card_validation, user: user)
-    visit current_path
-  end
-
-  def verify_phone_number
-    phone_number = '400000000'
-    verification_code = '4319315'
-    stub_telesign_verification
-
-    select_from_listbox('🇦🇺 Australia (+61)', from: '🇺🇸 United States of America (+1)')
-
-    fill_in 'phone_number', with: phone_number
-    click_button s_('IdentityVerification|Send code')
-
-    expect(page).to have_content(
-      format(
-        s_("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
-        phoneNumber: '61400000000'
-      )
-    )
-
-    fill_in 'verification_code', with: verification_code
-    click_button s_('IdentityVerification|Verify phone number')
-  end
-
-  def expect_to_see_dashboard_page
-    expect(page).to have_content(_('Welcome to GitLab'))
-  end
-
-  def request_phone_exemption
-    click_button s_('IdentityVerification|Verify with a credit card instead?')
-  end
-
   def user_signs_out
     find_by_testid('user-dropdown').click
     click_link 'Sign out'
