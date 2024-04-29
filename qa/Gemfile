@@ -48,5 +48,6 @@ group :development do
 end
 
 group :ci do
+  gem 'gitlab-cng', path: '../gems/gitlab-cng'
   gem 'junit_merge', '~> 0.1.2'
 end
