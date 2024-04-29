@@ -100,8 +100,16 @@ export default {
     clearFilters() {
       this.filters = {};
     },
-    setSelected(selected) {
+    onGroupSelected(selected) {
       this.selected = selected.text;
+
+      this.$router.push({
+        query: {
+          ...this.$route.query,
+          before: undefined,
+          after: undefined,
+        },
+      });
     },
   },
   i18n: {
@@ -137,7 +145,7 @@ export default {
           class="gl-mr-6 gl-lg-mb-0"
           :items="dropdownItems"
           :toggle-text="selected"
-          @action="setSelected"
+          @action="onGroupSelected"
         />
       </div>
       <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-2">

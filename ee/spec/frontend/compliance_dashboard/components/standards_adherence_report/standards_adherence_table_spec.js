@@ -142,6 +142,20 @@ describe('ComplianceStandardsAdherenceTable component', () => {
       ]);
     });
 
+    it('resets pagination', async () => {
+      findDropdown().vm.$emit('action', { text: 'Checks' });
+      await nextTick();
+
+      expect($router.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          query: {
+            after: undefined,
+            before: undefined,
+          },
+        }),
+      );
+    });
+
     describe('by none', () => {
       it('fetches the non grouped adherences', () => {
         expect(findDropdown().props('toggleText')).toBe('None');
