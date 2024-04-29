@@ -36887,6 +36887,9 @@ msgstr ""
 msgid "Pagination|Prev"
 msgstr ""
 
+msgid "Pagination|Previous"
+msgstr ""
+
 msgid "Pagination|« First"
 msgstr ""
 
@@ -38823,9 +38826,6 @@ msgid "Preview diagram"
 msgstr ""
 
 msgid "Preview payload"
-msgstr ""
-
-msgid "Previous"
 msgstr ""
 
 msgid "Previous commit"

@@ -146,10 +146,6 @@ describe('EE - CorpusManagement', () => {
             endCursor: 'end-cursor',
             hasNextPage: true,
             hasPreviousPage: true,
-            nextButtonLink: null,
-            nextText: 'Next',
-            prevButtonLink: null,
-            prevText: 'Prev',
             startCursor: 'start-cursor',
           });
         });

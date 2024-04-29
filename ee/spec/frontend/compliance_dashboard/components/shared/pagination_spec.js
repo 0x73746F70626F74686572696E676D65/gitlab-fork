@@ -19,7 +19,7 @@ describe('Pagination component', () => {
 
   const findKeysetPagination = () => wrapper.findComponent(GlKeysetPagination);
   const findNextButton = () => wrapper.findByText('Next');
-  const findPrevButton = () => wrapper.findByText('Prev');
+  const findPrevButton = () => wrapper.findByText('Previous');
   const findPageSizeSelector = () => wrapper.findComponent(PageSizeSelector);
 
   const createComponent = (props = {}) => {
@@ -50,8 +50,6 @@ describe('Pagination component', () => {
           hasPreviousPage: true,
           startCursor: 'abc',
           disabled: false,
-          nextText: 'Next',
-          prevText: 'Prev',
         }),
       );
     });
