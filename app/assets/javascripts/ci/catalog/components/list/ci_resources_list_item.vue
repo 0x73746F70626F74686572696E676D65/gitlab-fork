@@ -140,7 +140,7 @@ export default {
     data-testid="catalog-resource-item"
   >
     <gl-avatar
-      class="gl-mr-4"
+      class="gl-mr-4 gl-align-self-start"
       :entity-id="entityId"
       :entity-name="resource.name"
       shape="rect"
