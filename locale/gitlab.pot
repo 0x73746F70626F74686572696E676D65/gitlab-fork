@@ -3196,9 +3196,6 @@ msgstr ""
 msgid "Add tag"
 msgstr ""
 
-msgid "Add text to the sign-in page. Markdown enabled."
-msgstr ""
-
 msgid "Add time entry"
 msgstr ""
 
@@ -3307,13 +3304,10 @@ msgstr ""
 msgid "Additional text for deactivation email"
 msgstr ""
 
-msgid "Additional text for the sign-in and Help page."
+msgid "Additional text for the Help page."
 msgstr ""
 
 msgid "Additional text to show on the Help page"
-msgstr ""
-
-msgid "Additional text to show on the sign-in page"
 msgstr ""
 
 msgid "Additional units"
@@ -25680,6 +25674,9 @@ msgid "HelloMessage|Welcome to GitLab!"
 msgstr ""
 
 msgid "Help"
+msgstr ""
+
+msgid "Help page"
 msgstr ""
 
 msgid "Help translate GitLab into your language"
@@ -48722,9 +48719,6 @@ msgstr ""
 msgid "Sign up for your free trial with:"
 msgstr ""
 
-msgid "Sign-in and Help page"
-msgstr ""
-
 msgid "Sign-in count:"
 msgstr ""
 
@@ -48732,9 +48726,6 @@ msgid "Sign-in page"
 msgstr ""
 
 msgid "Sign-in restrictions"
-msgstr ""
-
-msgid "Sign-in text"
 msgstr ""
 
 msgid "Sign-in using %{provider} auth failed"

@@ -18,7 +18,6 @@ RSpec.describe Admin::ApplicationSettingsController do
 
     it 'updates the EE specific application settings' do
       settings = {
-        help_text: 'help_text',
         repository_size_limit: 1024,
         shared_runners_minutes: 60,
         geo_status_timeout: 30,
