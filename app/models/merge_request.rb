@@ -1258,7 +1258,8 @@ class MergeRequest < ApplicationRecord
       skip_draft_check: skip_additional_checks,
       skip_blocked_check: skip_additional_checks,
       skip_discussions_check: skip_additional_checks,
-      skip_external_status_check: skip_additional_checks
+      skip_external_status_check: skip_additional_checks,
+      skip_requested_changes_check: skip_additional_checks
     }
   end
 
@@ -1269,6 +1270,7 @@ class MergeRequest < ApplicationRecord
   # skip_approved_check
   # skip_blocked_check
   # skip_external_status_check
+  # skip_requested_changes_check
   def mergeable?(check_mergeability_retry_lease: false, skip_rebase_check: false, **mergeable_state_check_params)
     return false unless mergeable_state?(**mergeable_state_check_params)
 
@@ -1307,6 +1309,7 @@ class MergeRequest < ApplicationRecord
   # skip_approved_check
   # skip_blocked_check
   # skip_external_status_check
+  # skip_requested_changes_check
   def mergeable_state?(**params)
     results = check_mergeability_states(checks: self.class.mergeable_state_checks, **params)
 
