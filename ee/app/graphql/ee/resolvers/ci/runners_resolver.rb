@@ -11,8 +11,8 @@ module EE
         end
 
         override :ready?
-        def ready?(sort: nil, type: nil, **args)
-          check_sort_conditions(type) if sort == :most_active_desc
+        def ready?(sort: nil, type: nil, membership: nil, **args)
+          check_sort_conditions(type, membership) if sort == :most_active_desc
 
           super
         end
@@ -28,10 +28,15 @@ module EE
 
         private
 
-        def check_sort_conditions(type)
-          if type != 'instance_type'
+        def check_sort_conditions(type, membership)
+          unless type == 'instance_type' || parent.is_a?(::Group)
             raise ::Gitlab::Graphql::Errors::ArgumentError,
-              'MOST_ACTIVE_DESC sorting is only available when type is INSTANCE_TYPE'
+              'MOST_ACTIVE_DESC sorting is only available for groups or when type is INSTANCE_TYPE'
+          end
+
+          if parent.is_a?(::Group) && membership != :direct
+            raise ::Gitlab::Graphql::Errors::ArgumentError,
+              'MOST_ACTIVE_DESC sorting is only supported on groups when membership is DIRECT'
           end
 
           return if License.feature_available?(:runner_performance_insights)

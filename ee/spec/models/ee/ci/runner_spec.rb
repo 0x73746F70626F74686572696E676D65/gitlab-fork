@@ -210,40 +210,75 @@ RSpec.describe Ci::Runner, feature_category: :continuous_integration do
   end
 
   describe '.order_most_active_desc' do
-    let_it_be(:project) { create(:project) }
-    let_it_be(:runners) { create_list(:ci_runner, 5) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:instance_runners) { create_list(:ci_runner, 2) }
+    let_it_be(:group_runners) { create_list(:ci_runner, 3, :group, groups: [group]) }
 
-    before_all do
-      runners.map.with_index do |runner, idx|
-        create_list(:ci_build, 10 - idx, :picked, runner: runner, project: project)
+    let(:child_scope) { described_class.all }
+
+    subject(:scope) { child_scope.order_most_active_desc.pluck(:id) }
+
+    describe '.with_top_running_builds_of_runner_type' do
+      let(:child_scope) { described_class.with_top_running_builds_of_runner_type(runner_type) }
+
+      context 'with no running builds' do
+        context 'when runner_type is instance_type' do
+          let(:runner_type) { :instance_type }
+
+          it { is_expected.to be_empty }
+        end
+
+        context 'when runner_type is group_type' do
+          let(:runner_type) { :group_type }
+
+          it { is_expected.to be_empty }
+        end
+      end
+
+      context 'with running builds' do
+        before_all do
+          # Create builds for each runner
+          instance_runners.map.with_index do |runner, idx|
+            create_list(:ci_build, 3 - idx, :picked, runner: runner, project: project)
+          end
+
+          group_runners.map.with_index do |runner, idx|
+            create_list(:ci_build, 2 - idx, :picked, runner: runner, project: project)
+          end
+        end
+
+        context 'when runner_type is instance_type' do
+          let(:runner_type) { :instance_type }
+
+          it 'returns instance runners sorted by running builds' do
+            is_expected.to eq(instance_runners.pluck(:id))
+          end
+
+          it 'limits the number of running builds counted and sorts by id desc' do
+            stub_const("EE::Ci::Runner::MOST_ACTIVE_RUNNERS_BUILDS_LIMIT", 2)
+
+            # The first 2 instance runners with most builds have 2 or more builds, but we're capping at 2 builds,
+            # so they are all tied for 1st place, and therefore sorted by id desc
+            runner_ids = instance_runners.pluck(:id)
+            expected_runner_ids = runner_ids[0..1].sort.reverse + runner_ids[2..]
+
+            is_expected.to eq(expected_runner_ids)
+          end
+        end
+
+        context 'when runner_type is group_type' do
+          let(:runner_type) { :group_type }
+
+          it 'returns group runners sorted by running builds' do
+            is_expected.to eq(group_runners.pluck(:id).take(2)) # Only returns runners that have builds
+          end
+        end
       end
     end
 
-    it 'returns runners sorted by running builds' do
-      expect(described_class.order_most_active_desc.pluck(:id)).to eq(runners.pluck(:id))
-    end
-
-    it 'limits the number of running builds counted and sorts by id desc' do
-      stub_const("EE::Ci::Runner::MOST_ACTIVE_RUNNERS_BUILDS_LIMIT", 8)
-
-      runner_ids = runners.pluck(:id)
-
-      expected_runner_ids = runner_ids[0..2].reverse + runner_ids[3..5]
-
-      expect(described_class.order_most_active_desc.pluck(:id)).to eq(expected_runner_ids)
-    end
-  end
-
-  describe '.order_by' do
-    subject(:order_by) do
-      described_class.order_by(sort_key)
-    end
-
-    context 'when sort_key is most_active_desc' do
-      let_it_be(:project) { create(:project) }
-      let_it_be(:runners) { create_list(:ci_runner, 3) }
-
-      let(:sort_key) { 'most_active_desc' }
+    describe '.with_top_running_builds_by_namespace_id' do
+      let(:child_scope) { described_class.with_top_running_builds_by_namespace_id(group.id) }
 
       context 'with no running builds' do
         it { is_expected.to be_empty }
@@ -251,13 +286,25 @@ RSpec.describe Ci::Runner, feature_category: :continuous_integration do
 
       context 'with running builds' do
         before_all do
-          runners.each_with_index do |runner, running_build_count|
-            create_list(:ci_running_build, running_build_count, runner: runner, project: project)
+          group_runners.map.with_index do |runner, idx|
+            create_list(:ci_build, 3 - idx, :picked, runner: runner, project: project)
           end
         end
 
-        it 'contains the runners in the correct order' do
-          is_expected.to eq([runners[2], runners[1]])
+        it 'returns group runners sorted by running builds' do
+          is_expected.to eq(group_runners.pluck(:id))
+        end
+
+        it 'limits the number of running builds counted and sorts by id desc' do
+          stub_const("EE::Ci::Runner::MOST_ACTIVE_RUNNERS_BUILDS_LIMIT", 2)
+
+          runner_ids = group_runners.pluck(:id)
+
+          # The first 2 group runners with most builds have 2 or more builds, but we're capping at 2 builds,
+          # so they are all tied for 1st place, and therefore sorted by id desc
+          expected_runner_ids = runner_ids[0..1].reverse + runner_ids[2..]
+
+          is_expected.to eq(expected_runner_ids)
         end
       end
     end
