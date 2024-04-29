@@ -153,6 +153,8 @@ export default {
           ? { fullPath: this.fullPath, search, isProject: this.isProject }
           : { fullPath: this.fullPath, id, isProject: this.isProject };
 
+      variables.state = 'all';
+
       return this.$apollo
         .query({
           query: searchIterationsQuery,

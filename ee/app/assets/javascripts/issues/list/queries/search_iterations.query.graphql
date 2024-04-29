@@ -1,6 +1,12 @@
 #import "./iteration.fragment.graphql"
 
-query searchIterations($fullPath: ID!, $search: String, $id: ID, $isProject: Boolean = false) {
+query searchIterations(
+  $fullPath: ID!
+  $search: String
+  $id: ID
+  $isProject: Boolean = false
+  $state: IterationState = opened
+) {
   group(fullPath: $fullPath) @skip(if: $isProject) {
     id
     iterations(
@@ -9,7 +15,7 @@ query searchIterations($fullPath: ID!, $search: String, $id: ID, $isProject: Boo
       id: $id
       includeAncestors: true
       sort: CADENCE_AND_DUE_DATE_DESC
-      state: opened
+      state: $state
     ) {
       nodes {
         ...Iteration
@@ -24,7 +30,7 @@ query searchIterations($fullPath: ID!, $search: String, $id: ID, $isProject: Boo
       id: $id
       includeAncestors: true
       sort: CADENCE_AND_DUE_DATE_DESC
-      state: opened
+      state: $state
     ) {
       nodes {
         ...Iteration
