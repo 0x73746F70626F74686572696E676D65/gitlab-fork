@@ -20,7 +20,7 @@ module MemberRoles
     end
 
     def allowed_for_group?
-      return false if restrict_member_roles? && !gitlab_com_subscription?
+      return false unless gitlab_com_subscription?
       return false unless can?(current_user, :admin_member_role, group)
 
       group.custom_roles_enabled?
@@ -53,10 +53,6 @@ module MemberRoles
       else
         ::ServiceResponse.error(message: member_role.errors.full_messages.join(', '))
       end
-    end
-
-    def restrict_member_roles?
-      Feature.enabled?(:restrict_member_roles, type: :beta)
     end
   end
 end

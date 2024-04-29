@@ -125,23 +125,9 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
           end
 
           context 'when on self-managed' do
-            context 'when restrict_member_roles feature-flag is enabled' do
-              let(:error_message) { 'Operation not allowed' }
+            let(:error_message) { 'Operation not allowed' }
 
-              before do
-                stub_feature_flags(restrict_member_roles: true)
-              end
-
-              it_behaves_like 'service returns error'
-            end
-
-            context 'when restrict_member_roles feature-flag is disabled' do
-              before do
-                stub_feature_flags(restrict_member_roles: false)
-              end
-
-              it_behaves_like 'member role creation'
-            end
+            it_behaves_like 'service returns error'
           end
         end
 
@@ -187,7 +173,7 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
           it_behaves_like 'member role creation'
         end
 
-        context 'when on Saas', :saas do
+        context 'when on SaaS', :saas do
           let(:error_message) { 'Operation not allowed' }
 
           it_behaves_like 'service returns error'
