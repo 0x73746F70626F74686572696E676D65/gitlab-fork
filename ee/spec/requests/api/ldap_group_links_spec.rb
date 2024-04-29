@@ -69,7 +69,7 @@ RSpec.describe API::LdapGroupLinks, api: true, feature_category: :system_access 
     shared_examples 'creates LDAP group link' do
       context "when unauthenticated" do
         it "returns authentication error" do
-          params_test = params.merge( { group_access: GroupMember::GUEST, provider: 'ldap3' } )
+          params_test = params.merge({ group_access: GroupMember::GUEST, provider: 'ldap3' })
           post api("/groups/#{group_with_ldap_links.id}/ldap_group_links"), params: params_test
 
           expect(response).to have_gitlab_http_status(:unauthorized)
@@ -78,7 +78,7 @@ RSpec.describe API::LdapGroupLinks, api: true, feature_category: :system_access 
 
       context "when a less priviledged user" do
         it "does not allow less priviledged user to add LDAP group link" do
-          params_test = params.merge( { group_access: GroupMember::GUEST, provider: 'ldap3' } )
+          params_test = params.merge({ group_access: GroupMember::GUEST, provider: 'ldap3' })
           expect do
             post api("/groups/#{group_with_ldap_links.id}/ldap_group_links", user), params: params_test
           end.not_to change { group_with_ldap_links.ldap_group_links.count }
@@ -89,7 +89,7 @@ RSpec.describe API::LdapGroupLinks, api: true, feature_category: :system_access 
 
       context "when owner of the group" do
         it "returns ok and add ldap group link" do
-          params_test = params.merge( { group_access: GroupMember::GUEST, provider: 'ldap3' } )
+          params_test = params.merge({ group_access: GroupMember::GUEST, provider: 'ldap3' })
           expect do
             post api("/groups/#{group_with_ldap_links.id}/ldap_group_links", owner), params: params_test
           end.to change { group_with_ldap_links.ldap_group_links.count }.by(1)
@@ -102,7 +102,7 @@ RSpec.describe API::LdapGroupLinks, api: true, feature_category: :system_access 
         end
 
         it "returns error if LDAP group link already exists" do
-          params_test = params.merge( { group_access: GroupMember::GUEST, provider: 'ldap2' } )
+          params_test = params.merge({ group_access: GroupMember::GUEST, provider: 'ldap2' })
           post api("/groups/#{group_with_ldap_links.id}/ldap_group_links", owner), params: params_test
 
           expect(response).to have_gitlab_http_status(:conflict)
@@ -116,14 +116,14 @@ RSpec.describe API::LdapGroupLinks, api: true, feature_category: :system_access 
         end
 
         it "returns a 400 error when group access is not given" do
-          params_test = params.merge( { provider: 'ldap1' } )
+          params_test = params.merge({ provider: 'ldap1' })
           post api("/groups/#{group_with_ldap_links.id}/ldap_group_links", owner), params: params_test
 
           expect(response).to have_gitlab_http_status(:bad_request)
         end
 
         it "returns a 422 error when group access is not valid" do
-          params_test = params.merge( { group_access: 11, provider: 'ldap1' } )
+          params_test = params.merge({ group_access: 11, provider: 'ldap1' })
           post api("/groups/#{group_with_ldap_links.id}/ldap_group_links", owner), params: params_test
 
           expect(response).to have_gitlab_http_status(:bad_request)

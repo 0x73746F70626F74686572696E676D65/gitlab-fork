@@ -9,7 +9,7 @@ RSpec.describe API::GroupBoards, feature_category: :team_planning do
   let_it_be(:admin) { create(:user, :admin) }
   let_it_be(:board_parent) { create(:group, :public, owners: user) }
 
-  let_it_be(:project) { create(:project, :public, namespace: board_parent ) }
+  let_it_be(:project) { create(:project, :public, namespace: board_parent) }
 
   let_it_be(:dev_label) do
     create(:group_label, title: 'Development', color: '#FFAABB', group: board_parent)

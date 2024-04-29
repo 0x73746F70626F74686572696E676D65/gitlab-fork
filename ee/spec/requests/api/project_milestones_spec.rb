@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe API::ProjectMilestones, feature_category: :team_planning do
   let(:user) { create(:user) }
-  let!(:project) { create(:project, namespace: user.namespace ) }
+  let!(:project) { create(:project, namespace: user.namespace) }
   let!(:milestone) { create(:milestone, project: project, title: 'version2', description: 'open milestone', start_date: Date.today, due_date: Date.today + 3.days) }
   let!(:issue1) { create(:issue, created_at: Date.today.beginning_of_day, weight: 2, project: project, milestone: milestone) }
   let!(:issue2) { create(:issue, created_at: Date.today.middle_of_day, weight: 5, project: project, milestone: milestone) }

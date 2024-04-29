@@ -8,7 +8,7 @@ RSpec.describe 'Querying an Iteration', feature_category: :team_planning do
   let_it_be(:group_member) { create(:user) }
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:cadence) { create(:iterations_cadence, group: group) }
-  let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence ) }
+  let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence) }
 
   let(:current_user) { group_member }
   let(:fields) { 'title' }
