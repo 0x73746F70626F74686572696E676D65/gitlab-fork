@@ -105,6 +105,10 @@ FactoryBot.define do
       role { 'assistant' }
     end
 
+    trait :review_merge_request do
+      ai_action { :review_merge_request }
+    end
+
     skip_create
 
     factory :ai_chat_message, class: 'Gitlab::Llm::ChatMessage' do

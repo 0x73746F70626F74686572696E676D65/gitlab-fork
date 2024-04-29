@@ -21,6 +21,17 @@ module EE
           command :reassign_reviewer do |reassign_param|
             @updates[:reviewer_ids] = extract_users(reassign_param).map(&:id)
           end
+
+          desc { _('Creates a LLM-generated review') }
+          explanation { _('Creates a LLM-generated review.') }
+          execution_message { _('Request for review queued.') }
+          types MergeRequest
+          condition do
+            quick_action_target.ai_review_merge_request_allowed?(current_user)
+          end
+          command :ai_review do
+            Llm::ReviewMergeRequestService.new(current_user, quick_action_target).execute
+          end
         end
       end
     end
