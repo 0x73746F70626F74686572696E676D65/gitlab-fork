@@ -31493,9 +31493,6 @@ msgstr ""
 msgid "MemberRole|Are you sure you want to delete this custom role? Before you delete this custom role, make sure no group member has this role."
 msgstr ""
 
-msgid "MemberRole|Are you sure you want to delete this role?"
-msgstr ""
-
 msgid "MemberRole|Base role"
 msgstr ""
 
@@ -31580,9 +31577,6 @@ msgstr ""
 msgid "MemberRole|New role"
 msgstr ""
 
-msgid "MemberRole|No custom roles found"
-msgstr ""
-
 msgid "MemberRole|No description"
 msgstr ""
 
@@ -31593,9 +31587,6 @@ msgid "MemberRole|Permissions"
 msgstr ""
 
 msgid "MemberRole|Role is assigned to one or more group members. Remove role from all group members, then delete role."
-msgstr ""
-
-msgid "MemberRole|Role successfully created."
 msgstr ""
 
 msgid "MemberRole|Role successfully deleted."
@@ -31613,13 +31604,7 @@ msgstr ""
 msgid "MemberRole|Standard roles"
 msgstr ""
 
-msgid "MemberRole|To create a role select 'New role'."
-msgstr ""
-
 msgid "MemberRole|To delete custom role, remove role from all group members."
-msgstr ""
-
-msgid "MemberRole|To delete the custom role make sure no group member has this custom role"
 msgstr ""
 
 msgid "MemberRole|You can create a custom role by adding specific %{linkStart}permissions to a base role.%{linkEnd}"
