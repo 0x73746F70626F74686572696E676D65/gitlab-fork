@@ -15,3 +15,5 @@ class AddHashedRootNamespaceIdToMergeRequests < Elastic::Migration
     }
   end
 end
+
+AddHashedRootNamespaceIdToMergeRequests.prepend ::Elastic::MigrationObsolete
