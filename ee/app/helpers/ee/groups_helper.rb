@@ -11,6 +11,14 @@ module EE
       "Max size for repositories within this group #{show_lfs}. Can be overridden inside each project. For no limit, enter 0. To inherit the global value, leave blank."
     end
 
+    override :subgroup_creation_data
+    def subgroup_creation_data(group)
+      super.merge({
+        identity_verification_required: false.to_s,
+        identity_verification_path: '#'
+      })
+    end
+
     override :show_prevent_inviting_groups_outside_hierarchy_setting?
     def show_prevent_inviting_groups_outside_hierarchy_setting?(group)
       super && !group.block_seat_overages?

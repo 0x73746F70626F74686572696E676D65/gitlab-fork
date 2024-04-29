@@ -72,7 +72,7 @@ module Search
 
       def delete_repo_payload
         {
-          RepoId: task.zoekt_repository.project_id,
+          RepoId: task.project_identifier,
           Callback: { name: 'delete', payload: { task_id: task.id } }
         }
       end

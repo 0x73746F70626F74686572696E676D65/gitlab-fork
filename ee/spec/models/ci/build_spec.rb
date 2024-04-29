@@ -1205,10 +1205,8 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     it 'removes records through partitioned LFK' do
       pipeline.destroy!
 
-      Gitlab::Database::SharedModel.using_connection(job.connection) do
-        expect { LooseForeignKeys::ProcessDeletedRecordsService.new(connection: job.connection).execute }
-          .to change { Security::Scan.count }.by(-1)
-      end
+      expect { LooseForeignKeys::ProcessDeletedRecordsService.new(connection: job.connection).execute }
+        .to change { Security::Scan.count }.by(-1)
     end
   end
 

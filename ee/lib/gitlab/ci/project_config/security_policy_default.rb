@@ -6,6 +6,7 @@ module Gitlab
       class SecurityPolicyDefault < Gitlab::Ci::ProjectConfig::Source
         def content
           return unless @triggered_for_branch
+          return unless should_enforce_policy_for_pipeline_source?
           return unless @project.licensed_feature_available?(:security_orchestration_policies)
           return unless active_scan_execution_policies?
 
@@ -44,6 +45,10 @@ module Gitlab
           applicable_branches = service.scan_execution_branches(policy[:rules])
 
           @ref.in?(applicable_branches)
+        end
+
+        def should_enforce_policy_for_pipeline_source?
+          [:parent_pipeline, :ondemand_dast_scan, :container_registry_push].exclude?(@pipeline_source)
         end
       end
     end

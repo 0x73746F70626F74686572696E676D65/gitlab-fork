@@ -28,6 +28,7 @@ export const WIDGET_TYPE_NOTES = 'NOTES';
 export const WIDGET_TYPE_HEALTH_STATUS = 'HEALTH_STATUS';
 export const WIDGET_TYPE_LINKED_ITEMS = 'LINKED_ITEMS';
 export const WIDGET_TYPE_COLOR = 'COLOR';
+export const WIDGET_TYPE_DESIGNS = 'DESIGNS';
 
 export const WORK_ITEM_TYPE_ENUM_INCIDENT = 'INCIDENT';
 export const WORK_ITEM_TYPE_ENUM_ISSUE = 'ISSUE';
@@ -78,6 +79,9 @@ export const I18N_WORK_ITEM_ERROR_DELETING = s__(
 export const I18N_WORK_ITEM_DELETE = s__('WorkItem|Delete %{workItemType}');
 export const I18N_WORK_ITEM_ARE_YOU_SURE_DELETE = s__(
   'WorkItem|Are you sure you want to delete the %{workItemType}? This action cannot be reversed.',
+);
+export const I18N_WORK_ITEM_ARE_YOU_SURE_DELETE_HIERARCHY = s__(
+  'WorkItem|Delete this %{workItemType} and release all child items? This action cannot be reversed.',
 );
 export const I18N_WORK_ITEM_DELETED = s__('WorkItem|%{workItemType} deleted');
 

@@ -14,10 +14,10 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
 
   let(:content_result) do
     <<~CICONFIG
-    ---
-    include:
-    - project: compliance/hippa
-      file: ".compliance-gitlab-ci.yml"
+      ---
+      include:
+      - project: compliance/hippa
+        file: ".compliance-gitlab-ci.yml"
     CICONFIG
   end
 
@@ -239,6 +239,26 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
 
             it 'does not include security policies default pipeline configuration content' do
               expect(config.source).to eq(nil)
+            end
+          end
+
+          context 'when the policy should not be enforced to the pipeline source' do
+            context 'when pipeline source is :parent_pipeline' do
+              let(:source) { :parent_pipeline }
+
+              it_behaves_like 'does not include security policies default pipeline configuration content'
+            end
+
+            context 'when pipeline source is :ondemand_dast_scan' do
+              let(:source) { :ondemand_dast_scan }
+
+              it_behaves_like 'does not include security policies default pipeline configuration content'
+            end
+
+            context 'when pipeline source is :container_registry_push' do
+              let(:source) { :container_registry_push }
+
+              it_behaves_like 'does not include security policies default pipeline configuration content'
             end
           end
         end

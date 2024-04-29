@@ -17,11 +17,11 @@ RSpec.describe Mutations::Issues::SetEscalationPolicy do
 
     subject(:result) { mutation.resolve(project_path: issue.project.full_path, iid: issue.iid, **args) }
 
-    it_behaves_like 'permission level for issue mutation is correctly verified', true
-
     before do
       stub_licensed_features(oncall_schedules: true, escalation_policies: true)
     end
+
+    it_behaves_like 'permission level for issue mutation is correctly verified', true
 
     context 'when the user can update the issue' do
       before_all do

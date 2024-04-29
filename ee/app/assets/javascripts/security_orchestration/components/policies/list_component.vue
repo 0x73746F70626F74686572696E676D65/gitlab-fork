@@ -18,6 +18,8 @@ import projectScanExecutionPoliciesQuery from '../../graphql/queries/project_sca
 import groupScanExecutionPoliciesQuery from '../../graphql/queries/group_scan_execution_policies.query.graphql';
 import projectScanResultPoliciesQuery from '../../graphql/queries/project_scan_result_policies.query.graphql';
 import groupScanResultPoliciesQuery from '../../graphql/queries/group_scan_result_policies.query.graphql';
+import projectPipelineExecutionPoliciesQuery from '../../graphql/queries/project_pipeline_execution_policies.query.graphql';
+import groupPipelineExecutionPoliciesQuery from '../../graphql/queries/group_pipeline_execution_policies.query.graphql';
 import { getPolicyType } from '../../utils';
 import DrawerWrapper from '../policy_drawer/drawer_wrapper.vue';
 import { isPolicyInherited, policyHasNamespace, isGroup, isProject } from '../utils';
@@ -41,6 +43,10 @@ const NAMESPACE_QUERY_DICT = {
   scanResult: {
     [NAMESPACE_TYPES.PROJECT]: projectScanResultPoliciesQuery,
     [NAMESPACE_TYPES.GROUP]: groupScanResultPoliciesQuery,
+  },
+  pipelineExecution: {
+    [NAMESPACE_TYPES.PROJECT]: projectPipelineExecutionPoliciesQuery,
+    [NAMESPACE_TYPES.GROUP]: groupPipelineExecutionPoliciesQuery,
   },
 };
 
@@ -148,6 +154,24 @@ export default {
         return data?.namespace?.scanResultPolicies?.nodes ?? [];
       },
       error: createPolicyFetchError,
+    },
+    pipelineExecutionPolicies: {
+      query() {
+        return NAMESPACE_QUERY_DICT.pipelineExecution[this.namespaceType];
+      },
+      variables() {
+        return {
+          fullPath: this.namespacePath,
+          relationship: this.selectedPolicySource,
+        };
+      },
+      update(data) {
+        return data?.namespace?.pipelineExecutionPolicies?.nodes ?? [];
+      },
+      error: createPolicyFetchError,
+      skip() {
+        return !this.pipelineExecutionPolicyEnabled;
+      },
     },
   },
   data() {

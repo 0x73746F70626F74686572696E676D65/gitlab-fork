@@ -798,6 +798,11 @@ module EE
       rule { container_scanning_for_registry_available & can?(:maintainer_access) }.policy do
         enable :enable_container_scanning_for_registry
       end
+
+      rule { can?(:admin_group) }.policy do
+        enable :read_web_hook
+        enable :admin_web_hook
+      end
     end
 
     override :lookup_access_level!

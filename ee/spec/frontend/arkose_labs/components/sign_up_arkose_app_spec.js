@@ -4,7 +4,7 @@ import DomElementListener from '~/vue_shared/components/dom_element_listener.vue
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { logError } from '~/lib/logger';
 import SignUpArkoseApp from 'ee/arkose_labs/components/sign_up_arkose_app.vue';
-import { initArkoseLabsScript } from 'ee/arkose_labs/init_arkose_labs_script';
+import { initArkoseLabsChallenge } from 'ee/arkose_labs/init_arkose_labs';
 import {
   VERIFICATION_LOADING_MESSAGE,
   VERIFICATION_REQUIRED_MESSAGE,
@@ -13,15 +13,14 @@ import {
 
 jest.mock('~/alert');
 jest.mock('~/lib/logger');
-jest.mock('ee/arkose_labs/init_arkose_labs_script');
+jest.mock('ee/arkose_labs/init_arkose_labs');
 let onShown;
 let onCompleted;
-initArkoseLabsScript.mockImplementation(() => ({
-  setConfig: ({ onShown: shownHandler, onCompleted: completedHandler }) => {
-    onShown = shownHandler;
-    onCompleted = completedHandler;
-  },
-}));
+const mockDataExchangePayload = 'fakeDataExchangePayload';
+initArkoseLabsChallenge.mockImplementation(({ config }) => {
+  onShown = config.onShown;
+  onCompleted = config.onCompleted;
+});
 
 const MOCK_ARKOSE_RESPONSE = { token: 'verification-token' };
 const MOCK_PUBLIC_KEY = 'arkose-labs-public-api-key';
@@ -44,6 +43,7 @@ describe('SignUpArkoseApp', () => {
       propsData: {
         publicKey: MOCK_PUBLIC_KEY,
         domain: MOCK_DOMAIN,
+        dataExchangePayload: mockDataExchangePayload,
         formSelector: 'dummy',
         ...props,
       },
@@ -58,10 +58,15 @@ describe('SignUpArkoseApp', () => {
     createComponent();
   });
 
-  it('includes Arkose Labs script', () => {
-    expect(initArkoseLabsScript).toHaveBeenCalledWith({
+  it('initializes Arkose Labs challenge', () => {
+    expect(initArkoseLabsChallenge).toHaveBeenCalledWith({
       publicKey: MOCK_PUBLIC_KEY,
       domain: MOCK_DOMAIN,
+      dataExchangePayload: mockDataExchangePayload,
+      config: expect.objectContaining({
+        onShown: expect.any(Function),
+        onCompleted: expect.any(Function),
+      }),
     });
   });
 
@@ -153,7 +158,7 @@ describe('SignUpArkoseApp', () => {
       const arkoseError = new Error();
 
       beforeEach(() => {
-        initArkoseLabsScript.mockImplementation(() => {
+        initArkoseLabsChallenge.mockImplementation(() => {
           throw arkoseError;
         });
 
@@ -169,38 +174,6 @@ describe('SignUpArkoseApp', () => {
 
         expect(mockSubmitEvent.preventDefault).not.toHaveBeenCalled();
         expect(mockSubmitEvent.stopPropagation).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('Data Exchange payload', () => {
-      const setConfig = jest.fn();
-
-      beforeEach(() => {
-        initArkoseLabsScript.mockImplementation(() => ({ setConfig }));
-      });
-
-      describe('when payload is present', () => {
-        it('is included in the configuration object', async () => {
-          createComponent({ props: { dataExchangePayload: 'payload' } });
-
-          await nextTick();
-
-          expect(setConfig).toHaveBeenCalledWith(
-            expect.objectContaining({ data: { blob: 'payload' } }),
-          );
-        });
-      });
-
-      describe('when payload is not present', () => {
-        it('does not include data object in the configuration object', async () => {
-          createComponent();
-
-          await nextTick();
-
-          const configObject = setConfig.mock.calls[0][0];
-
-          expect(configObject).not.toHaveProperty('data');
-        });
       });
     });
   });

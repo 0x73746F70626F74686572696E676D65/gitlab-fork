@@ -10,13 +10,13 @@ RSpec.describe GitlabSchema.types['CoverageFuzzingCorpus'] do
   let_it_be(:user) { create(:user, developer_of: project) }
   let_it_be(:fields) { %i[id package] }
 
-  specify { expect(described_class.graphql_name).to eq('CoverageFuzzingCorpus') }
-  specify { expect(described_class.description).to eq('Corpus for a coverage fuzzing job.') }
-  specify { expect(described_class).to require_graphql_authorizations(:read_coverage_fuzzing) }
-
   before do
     stub_licensed_features(coverage_fuzzing: true)
   end
+
+  specify { expect(described_class.graphql_name).to eq('CoverageFuzzingCorpus') }
+  specify { expect(described_class.description).to eq('Corpus for a coverage fuzzing job.') }
+  specify { expect(described_class).to require_graphql_authorizations(:read_coverage_fuzzing) }
 
   it { expect(described_class).to have_graphql_fields(fields) }
 

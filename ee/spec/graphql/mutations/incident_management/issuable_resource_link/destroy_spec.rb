@@ -10,11 +10,11 @@ RSpec.describe Mutations::IncidentManagement::IssuableResourceLink::Destroy do
   let(:issuable_resource_link) { create(:issuable_resource_link, issue: incident) }
   let(:args) { { id: issuable_resource_link.to_global_id } }
 
-  specify { expect(described_class).to require_graphql_authorizations(:admin_issuable_resource_link) }
-
   before do
     stub_licensed_features(issuable_resource_links: true)
   end
+
+  specify { expect(described_class).to require_graphql_authorizations(:admin_issuable_resource_link) }
 
   describe '#resolve' do
     subject(:resolve) { mutation_for(project, current_user).resolve(**args) }

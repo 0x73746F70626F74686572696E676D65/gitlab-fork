@@ -3,11 +3,11 @@ import { GlLoadingIcon, GlInfiniteScroll, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { contentTop } from '~/lib/utils/common_utils';
+import UrlSync from '~/vue_shared/components/url_sync.vue';
 import LogsTable from './logs_table.vue';
 import LogsDrawer from './logs_drawer.vue';
 import LogsFilteredSearch from './filter_bar/logs_filtered_search.vue';
-
-const DEFAULT_TIME_RANGE = '1h';
+import { queryToFilterObj, filterObjToQuery } from './filter_bar/filters';
 
 const LIST_V_PADDING = 100;
 const PAGE_SIZE = 100;
@@ -20,6 +20,7 @@ export default {
     GlInfiniteScroll,
     GlSprintf,
     LogsFilteredSearch,
+    UrlSync,
   },
   i18n: {
     infiniteScrollLegend: s__(`ObservabilityLogs|Showing %{count} logs`),
@@ -34,12 +35,7 @@ export default {
     return {
       loading: false,
       logs: [],
-      filters: {
-        dateRange: {
-          value: DEFAULT_TIME_RANGE,
-        },
-        attributes: {},
-      },
+      filters: queryToFilterObj(window.location.search),
       isDrawerOpen: false,
       selectedLog: null,
       nextPageToken: null,
@@ -48,6 +44,9 @@ export default {
   computed: {
     listHeight() {
       return window.innerHeight - contentTop() - LIST_V_PADDING;
+    },
+    query() {
+      return filterObjToQuery(this.filters);
     },
   },
   created() {
@@ -104,6 +103,8 @@ export default {
 
 <template>
   <div>
+    <url-sync :query="query" />
+
     <div v-if="loading && logs.length === 0" class="gl-py-5">
       <gl-loading-icon size="lg" />
     </div>

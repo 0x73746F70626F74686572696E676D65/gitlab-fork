@@ -80,6 +80,8 @@ module API
                 requires :token, type: String, desc: %q(Job's authentication token)
               end
               post ':id/x_ray/scan' do
+                check_rate_limit!(:code_suggestions_x_ray_scan, scope: current_job.project)
+
                 workhorse_headers =
                   Gitlab::Workhorse.send_url(
                     File.join(::CodeSuggestions::Tasks::Base.base_url, 'v1', 'x-ray', 'libraries'),

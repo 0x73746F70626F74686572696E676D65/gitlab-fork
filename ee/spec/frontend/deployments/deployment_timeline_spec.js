@@ -19,6 +19,11 @@ describe('ee/deployments/components/deployment_timeline.vue', () => {
   };
 
   const getAllApprovals = () => approvalSummary.rules.flatMap((rule) => rule.approvals);
+  const getRelatedRule = (approval) =>
+    approvalSummary.rules.find((rule) =>
+      rule?.approvals.find((ruleApproval) => ruleApproval.user.name === approval.user.name),
+    );
+  const getRoleName = (rule) => rule.user?.name || rule.group?.name;
 
   describe('with approval', () => {
     beforeEach(() => {
@@ -66,6 +71,18 @@ describe('ee/deployments/components/deployment_timeline.vue', () => {
         expect(badge.props('variant')).toBe('success');
       });
     });
+
+    it('shows a tooltip with the role user approved for', () => {
+      getAllApprovals().forEach((approval) => {
+        const approvalBlock = wrapper.findByTestId(`approval-${approval.user.username}`);
+        const badge = approvalBlock.findComponent(GlBadge);
+
+        const relatedRule = getRelatedRule(approval);
+        const role = getRoleName(relatedRule);
+
+        expect(badge.attributes('title')).toBe(`Approved as ${role}`);
+      });
+    });
   });
 
   describe('with rejection', () => {
@@ -101,6 +118,18 @@ describe('ee/deployments/components/deployment_timeline.vue', () => {
 
         expect(badge.text()).toBe('Rejected');
         expect(badge.props('variant')).toBe('danger');
+      });
+    });
+
+    it('shows a tooltip with the role user approved for', () => {
+      getAllApprovals().forEach((approval) => {
+        const approvalBlock = wrapper.findByTestId(`approval-${approval.user.username}`);
+        const badge = approvalBlock.findComponent(GlBadge);
+
+        const relatedRule = getRelatedRule(approval);
+        const role = getRoleName(relatedRule);
+
+        expect(badge.attributes('title')).toBe(`Rejected as ${role}`);
       });
     });
   });

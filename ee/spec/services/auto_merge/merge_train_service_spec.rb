@@ -407,9 +407,9 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       2.times { is_expected.to be_truthy }
     end
 
-    context 'when merge trains flag is disabled' do
+    context 'when merge trains are disabled' do
       before do
-        project.update!(merge_trains_enabled: false)
+        allow(project).to receive(:merge_trains_enabled?).and_return false
       end
 
       it { is_expected.to be_falsy }
@@ -424,13 +424,9 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       it { is_expected.to be_falsy }
     end
 
-    context 'when merge train ci setting is disabled' do
-      it { is_expected.to be_falsy }
-    end
-
     context 'when merge request is not mergeable' do
       before do
-        allow(merge_request).to receive(:mergeable_state?) { false }
+        allow(merge_request).to receive(:mergeability_checks_pass?).and_return false
       end
 
       it { is_expected.to be_falsy }
@@ -444,12 +440,38 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       it { is_expected.to be_falsy }
     end
 
-    context 'when the head pipeline of the merge request has not finished' do
+    context 'when the head pipeline of the merge request has not finished and is not blocked' do
       before do
         allow(pipeline).to receive(:complete?) { false }
+        allow(pipeline).to receive(:blocked?) { false }
       end
 
       it { is_expected.to be_falsy }
+    end
+
+    context 'when the head pipeline of the pipeline is blocked' do
+      before do
+        allow(pipeline).to receive(:complete?) { false }
+        allow(pipeline).to receive(:blocked?) { true }
+      end
+
+      it { is_expected.to be_truthy }
+
+      context 'when "Pipelines must succeed" is enabled' do
+        before do
+          allow(merge_request).to receive(:only_allow_merge_if_pipeline_succeeds?) { true }
+        end
+
+        it { is_expected.to be_falsy }
+      end
+
+      context 'when FF auto_merge_when_incomplete_pipeline_succeeds is disabled' do
+        before do
+          stub_feature_flags(auto_merge_when_incomplete_pipeline_succeeds: false)
+        end
+
+        it { is_expected.to be_falsy }
+      end
     end
   end
 

@@ -509,5 +509,52 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
         end
       end
     end
+
+    describe "merge request webhooks" do
+      let(:service) { described_class.new(project: project, current_user: user, params: opts) }
+
+      let(:opts) do
+        {
+          title: 'New title',
+          description: 'Also please fix',
+          assignee_ids: [user.id],
+          reviewer_ids: [],
+          state_event: 'close',
+          label_ids: [label.id],
+          target_branch: 'target',
+          force_remove_source_branch: '1',
+          discussion_locked: true
+        }
+      end
+
+      before do
+        allow(service).to receive(:execute_hooks)
+
+        perform_enqueued_jobs do
+          @merge_request = service.execute(merge_request)
+          @merge_request.reload
+        end
+      end
+
+      it 'executes hooks with update action' do
+        expect(service).to have_received(:execute_hooks)
+          .with(
+            @merge_request,
+            'update',
+            old_associations: {
+              approval_rules: [],
+              labels: [],
+              mentioned_users: [],
+              assignees: [user3],
+              reviewers: [],
+              target_branch: "master",
+              milestone: nil,
+              total_time_spent: 0,
+              time_change: 0,
+              description: "FYI #{user2.to_reference}"
+            }
+          )
+      end
+    end
   end
 end

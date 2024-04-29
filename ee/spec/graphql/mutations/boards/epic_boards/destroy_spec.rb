@@ -14,15 +14,15 @@ RSpec.describe ::Mutations::Boards::EpicBoards::Destroy do
 
   subject { mutation.resolve(id: board.to_global_id) }
 
+  before do
+    stub_licensed_features(epics: true)
+  end
+
   context 'field tests' do
     subject { described_class }
 
     it { is_expected.to have_graphql_arguments(:clientMutationId, :id) }
     it { is_expected.to have_graphql_fields(:epic_board).at_least }
-  end
-
-  before do
-    stub_licensed_features(epics: true)
   end
 
   it 'raises error when user does not have permission to destroy the board' do

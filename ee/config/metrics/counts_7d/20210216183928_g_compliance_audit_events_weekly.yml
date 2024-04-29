@@ -1,13 +1,12 @@
 ---
 data_category: optional
 key_path: redis_hll_counters.compliance.g_compliance_audit_events_weekly
-description: Number of unique visitors to group-level audit events screen in a given
-  week
+description: Removed as duplicate of compliance_unique_visits.g_compliance_audit_events
 product_section: sec
 product_stage: govern
 product_group: compliance
 value_type: number
-status: active
+status: removed
 time_frame: 7d
 data_source: redis_hll
 instrumentation_class: RedisHLLMetric
@@ -21,3 +20,5 @@ tier:
 - ultimate
 performance_indicator_type: []
 milestone: "<13.9"
+milestone_removed: "17.0"
+removed_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/150678

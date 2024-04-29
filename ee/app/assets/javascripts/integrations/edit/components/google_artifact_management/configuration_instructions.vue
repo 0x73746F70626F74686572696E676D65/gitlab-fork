@@ -151,7 +151,7 @@ export default {
           <clipboard-button
             :title="s__('GoogleArtifactRegistry|Copy command')"
             :text="instructions"
-            class="gl-absolute gl-top-3 gl-right-3 gl-z-index-1"
+            class="gl-absolute gl-top-3 gl-right-3 gl-z-1"
           />
           <code-block-highlighted
             class="gl-border gl-p-4"

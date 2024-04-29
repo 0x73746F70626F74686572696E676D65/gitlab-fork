@@ -39,6 +39,7 @@ RSpec.describe Key do
             stub_licensed_features(ssh_key_expiration_policy: true)
             stub_application_setting(max_ssh_key_lifetime: max_ssh_key_lifetime)
           end
+
           it 'checks if ssh key expiration is valid' do
             expect(key.valid?).to eq(valid)
           end
@@ -56,6 +57,7 @@ RSpec.describe Key do
             stub_licensed_features(ssh_key_expiration_policy: true)
             stub_application_setting(max_ssh_key_lifetime: max_ssh_key_lifetime)
           end
+
           it 'checks validity properly in the future too' do
             # Travel to the day before the key is set to 'expire'.
             # max_ssh_key_lifetime should still be enforced correctly.

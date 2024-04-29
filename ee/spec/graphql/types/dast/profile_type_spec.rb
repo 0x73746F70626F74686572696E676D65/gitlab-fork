@@ -17,14 +17,14 @@ RSpec.describe GitlabSchema.types['DastProfile'], :dynamic_analysis,
       dastPreScanVerification tagList]
   end
 
-  specify { expect(described_class.graphql_name).to eq('DastProfile') }
-  specify { expect(described_class).to require_graphql_authorizations(:read_on_demand_dast_scan) }
-
   before do
     ActsAsTaggableOn::Tag.create!(name: 'ruby')
     ActsAsTaggableOn::Tag.create!(name: 'postgres')
     stub_licensed_features(security_on_demand_scans: true)
   end
+
+  specify { expect(described_class.graphql_name).to eq('DastProfile') }
+  specify { expect(described_class).to require_graphql_authorizations(:read_on_demand_dast_scan) }
 
   it { expect(described_class).to have_graphql_fields(fields) }
   it { expect(described_class).to have_graphql_field(:branch, calls_gitaly?: true) }

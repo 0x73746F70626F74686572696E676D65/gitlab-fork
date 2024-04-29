@@ -3643,6 +3643,18 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
   end
 
+  describe 'web_hooks' do
+    let(:current_user) { maintainer }
+
+    it { is_expected.to be_disallowed(:read_web_hook, :admin_web_hook) }
+
+    context 'when user is an owner' do
+      let(:current_user) { owner }
+
+      it { is_expected.to be_allowed(:read_web_hook, :admin_web_hook) }
+    end
+  end
+
   describe 'enable_pre_receive_secret_detection' do
     using RSpec::Parameterized::TableSyntax
 

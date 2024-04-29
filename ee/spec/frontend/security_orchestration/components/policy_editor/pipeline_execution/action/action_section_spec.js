@@ -7,7 +7,7 @@ import {
   INJECT,
   OVERRIDE,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
-import { configFileObject } from '../mock_data';
+import { withoutRefObject } from '../mock_data';
 
 jest.mock('ee/api');
 
@@ -26,11 +26,11 @@ describe('ActionSection', () => {
   const ref = 'main';
   const filePath = 'path/to/ci/file.yml';
 
-  const defaultAction = configFileObject.content;
+  const defaultAction = withoutRefObject.content;
 
   const defaultProps = {
     action: defaultAction,
-    overrideType: configFileObject.override_project_ci,
+    overrideType: withoutRefObject.override_project_ci,
   };
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {

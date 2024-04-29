@@ -7,7 +7,6 @@ import { DETAILS_FIELDS } from '../constants';
 import SubscriptionSeatDetailsLoader from './subscription_seat_details_loader.vue';
 
 export default {
-  name: 'SubscriptionSeatDetails',
   components: {
     GlBadge,
     GlTableLite,
@@ -48,14 +47,7 @@ export default {
   <div v-if="isLoaderShown">
     <subscription-seat-details-loader />
   </div>
-  <gl-table-lite
-    v-else
-    :fields="$options.fields"
-    :items="items"
-    data-testid="seat-usage-details"
-    borderless
-    class="gl-mb-0!"
-  >
+  <gl-table-lite v-else :fields="$options.fields" :items="items" data-testid="seat-usage-details">
     <template #cell(source_full_name)="{ item }">
       <gl-link :href="item.source_members_url" target="_blank">{{ item.source_full_name }}</gl-link>
     </template>
@@ -66,7 +58,11 @@ export default {
       <span>{{ item.expires_at ? formatDate(item.expires_at, 'yyyy-mm-dd') : __('Never') }}</span>
     </template>
     <template #cell(role)="{ item }">
-      <gl-badge>{{ item.access_level.string_value }}</gl-badge>
+      <template v-if="item.access_level.custom_role">
+        <div>{{ item.access_level.custom_role.name }}</div>
+        <gl-badge size="sm" class="gl-mt-3">{{ s__('MemberRole|Custom role') }}</gl-badge>
+      </template>
+      <template v-else>{{ item.access_level.string_value }}</template>
     </template>
   </gl-table-lite>
 </template>

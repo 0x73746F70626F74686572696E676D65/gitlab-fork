@@ -101,16 +101,16 @@ RSpec.describe MergeTrains::CreatePipelineService, feature_category: :continuous
                 project.repository.create_ref('master', previous_ref)
               end
 
+              after do
+                project.repository.delete_refs(previous_ref)
+              end
+
               it 'creates train ref with the specified ref' do
                 subject
 
                 commit = project.repository.commit(merge_request.train_ref_path)
                 expect(commit.parent_ids[1]).to eq(merge_request.diff_head_sha)
                 expect(commit.parent_ids[0]).to eq(previous_ref_sha)
-              end
-
-              after do
-                project.repository.delete_refs(previous_ref)
               end
             end
 

@@ -21,12 +21,6 @@ module Epics
       # are composite fields managed by the system.
       params.extract!(:start_date, :end_date)
 
-      epic.run_after_commit do
-        ::Gitlab::EventStore.publish(
-          ::Epics::EpicUpdatedEvent.new(data: { id: epic.id, group_id: epic.group_id })
-        )
-      end
-
       update_task_event(epic) || update(epic)
 
       if saved_change_to_epic_dates?(epic)
@@ -114,6 +108,17 @@ module Epics
         break save_result unless save_result
 
         update_work_item_for!(epic)
+      end
+    end
+
+    def after_update(epic, _old_associations)
+      super
+
+      epic.run_after_commit_or_now do
+        # trigger this event after all actions related to saving an epic are done, after commit is not late enough,
+        # because after update epic transaction is commited, there are still things happening related to epic, e.g.
+        # some associations are updated/linked to the newly updated epic, etc.
+        ::Gitlab::EventStore.publish(::Epics::EpicUpdatedEvent.new(data: { id: epic.id, group_id: epic.group_id }))
       end
     end
 

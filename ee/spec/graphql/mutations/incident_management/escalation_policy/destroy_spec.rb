@@ -9,11 +9,11 @@ RSpec.describe Mutations::IncidentManagement::EscalationPolicy::Destroy do
   let(:escalation_policy) { create(:incident_management_escalation_policy, project: project) }
   let(:args) { { id: escalation_policy.to_global_id } }
 
-  specify { expect(described_class).to require_graphql_authorizations(:admin_incident_management_escalation_policy) }
-
   before do
     stub_licensed_features(oncall_schedules: true, escalation_policies: true)
   end
+
+  specify { expect(described_class).to require_graphql_authorizations(:admin_incident_management_escalation_policy) }
 
   describe '#resolve' do
     subject(:resolve) { mutation_for(project, current_user).resolve(**args) }

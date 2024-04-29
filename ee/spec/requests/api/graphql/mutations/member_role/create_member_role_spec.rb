@@ -39,6 +39,10 @@ RSpec.describe 'creating member role', feature_category: :system_access do
 
   subject(:create_member_role) { graphql_mutation_response(:member_role_create) }
 
+  before_all do
+    group.add_owner(current_user)
+  end
+
   shared_examples 'a mutation that creates a member role' do
     it 'returns success', :aggregate_failures do
       post_graphql_mutation(mutation, current_user: current_user)
@@ -56,25 +60,16 @@ RSpec.describe 'creating member role', feature_category: :system_access do
       member_role = MemberRole.last
 
       expect(member_role.read_vulnerability).to eq(true)
-
-      expect(member_role.namespace).to eq(group)
     end
   end
 
   context 'without the custom roles feature' do
     before do
-      input.delete(:group_path)
-
       stub_licensed_features(custom_roles: false)
+      stub_saas_features(gitlab_com_subscriptions: true)
     end
 
-    context 'with owner role' do
-      before_all do
-        group.add_owner(current_user)
-      end
-
-      it_behaves_like 'a mutation that returns a top-level access error'
-    end
+    it_behaves_like 'a mutation that returns a top-level access error'
   end
 
   # to make this spec passing add a new argument to the mutation
@@ -84,70 +79,24 @@ RSpec.describe 'creating member role', feature_category: :system_access do
       stub_licensed_features(custom_roles: true)
     end
 
-    context 'when creating a group level member role' do
-      context 'with maintainer role' do
-        before_all do
-          group.add_maintainer(current_user)
-
-          stub_feature_flags(restrict_member_roles: false)
-        end
-
-        it_behaves_like 'a mutation that returns a top-level access error'
+    context 'when on SaaS' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
       end
 
-      shared_examples 'handling group-level custom roles' do
-        context 'when on self-managed' do
-          context 'when restrict_member_roles feature-flag is disabled' do
-            before do
-              stub_feature_flags(restrict_member_roles: false)
-            end
-
-            it_behaves_like 'a mutation that creates a member role'
-
-            context 'with invalid group_path' do
-              let(:group_path) { 'invalid_path' }
-
-              it_behaves_like 'a mutation that returns top-level errors',
-                errors: ["The resource that you are attempting to access does not exist " \
-                         "or you don't have permission to perform this action"]
-            end
+      context 'when creating a group level member role' do
+        context 'when the current user is a maintainer' do
+          before_all do
+            group.add_maintainer(current_user)
           end
 
-          context 'when restrict_member_roles feature-flag is enabled' do
-            before do
-              stub_feature_flags(restrict_member_roles: true)
-            end
-
-            context 'with valid group_path' do
-              it_behaves_like 'a mutation that returns top-level errors',
-                errors: ['group_path argument is not allowed on self-managed instances.']
-            end
-
-            context 'with invalid group_path' do
-              let(:group_path) { 'invalid_path' }
-
-              it_behaves_like 'a mutation that returns top-level errors',
-                errors: ['group_path argument is not allowed on self-managed instances.']
-            end
-          end
+          it_behaves_like 'a mutation that returns a top-level access error'
         end
 
-        context 'when on SaaS' do
-          before do
-            stub_saas_features(gitlab_com_subscriptions: true)
-          end
+        context 'when the current user is an owner' do
+          it_behaves_like 'a mutation that creates a member role'
 
-          context 'with valid arguments' do
-            it_behaves_like 'a mutation that creates a member role'
-          end
-
-          context 'with an array of permissions' do
-            let(:permissions) { ['READ_VULNERABILITY'] }
-
-            it_behaves_like 'a mutation that creates a member role'
-          end
-
-          context 'with an unknown permission' do
+          context 'with unknown permissions' do
             let(:permissions) { ['read_unknown'] }
 
             it 'returns an error' do
@@ -157,81 +106,59 @@ RSpec.describe 'creating member role', feature_category: :system_access do
             end
           end
 
+          context 'with missing group_path' do
+            let(:group_path) { nil }
+
+            it_behaves_like 'a mutation that returns top-level errors',
+              errors: ['group_path argument is required.']
+          end
+
+          context 'with an invalid group_path' do
+            let(:group_path) { 'invalid_path' }
+
+            it_behaves_like 'a mutation that returns top-level errors',
+              errors: ["The resource that you are attempting to access does not exist or " \
+                       "you don't have permission to perform this action"]
+          end
+
           context 'with missing arguments' do
-            let(:input) { { group_path: group.path } }
+            before do
+              input.delete(:base_access_level)
+            end
 
             it_behaves_like 'an invalid argument to the mutation', argument_name: 'baseAccessLevel'
           end
         end
       end
-
-      context 'with owner role' do
-        before_all do
-          group.add_owner(current_user)
-        end
-
-        it_behaves_like 'handling group-level custom roles'
-      end
-
-      context 'with admin', :enable_admin_mode do
-        before do
-          current_user.update!(admin: true)
-        end
-
-        it_behaves_like 'handling group-level custom roles'
-      end
     end
 
-    context 'when creating an instance level member role' do
+    context 'when on self-managed', :enable_admin_mode do
+      let(:group_path) { nil }
+
       before do
         stub_saas_features(gitlab_com_subscriptions: false)
       end
 
-      let(:input) do
-        {
-          base_access_level: 'GUEST',
-          permissions: permissions
-        }
+      context 'when the current user is not an instance admin' do
+        it_behaves_like 'a mutation that returns a top-level access error',
+          errors: ["The resource that you are attempting to access does not exist or " \
+                   "you don't have permission to perform this action"]
       end
 
-      context 'with unauthorized user' do
-        it_behaves_like 'a mutation that returns a top-level access error'
-      end
-
-      context 'with admin', :enable_admin_mode do
+      context 'when the current user is an instance admin' do
         before do
           current_user.update!(admin: true)
         end
 
-        context 'when on self-managed' do
-          it 'returns success', :aggregate_failures do
-            post_graphql_mutation(mutation, current_user: current_user)
+        context 'when creating a group level member role' do
+          let(:group_path) { group.path }
 
-            expect(graphql_errors).to be_nil
-
-            expect(create_member_role['memberRole']['enabledPermissions']['nodes'].flat_map(&:values))
-              .to match_array(permissions)
-          end
-
-          it 'creates the member role', :aggregate_failures do
-            expect { post_graphql_mutation(mutation, current_user: current_user) }
-              .to change { MemberRole.count }.by(1)
-
-            member_role = MemberRole.last
-
-            expect(member_role.read_vulnerability).to eq(true)
-
-            expect(member_role.namespace).to be_nil
-          end
+          it_behaves_like 'a mutation that returns top-level errors',
+            errors: ["group_path argument is not allowed on self-managed instances."]
         end
 
-        context 'when on SaaS' do
-          before do
-            stub_saas_features(gitlab_com_subscriptions: true)
-            stub_feature_flags(restrict_member_roles: false)
-          end
-
-          it_behaves_like 'a mutation that returns top-level errors', errors: ['group_path argument is required.']
+        context 'when creating a instance level member role' do
+          it_behaves_like 'a mutation that creates a member role'
         end
       end
     end

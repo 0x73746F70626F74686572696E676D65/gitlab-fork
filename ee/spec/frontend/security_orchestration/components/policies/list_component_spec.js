@@ -12,6 +12,9 @@ import groupScanExecutionPoliciesQuery from 'ee/security_orchestration/graphql/q
 import projectScanResultPoliciesQuery from 'ee/security_orchestration/graphql/queries/project_scan_result_policies.query.graphql';
 import groupScanResultPoliciesQuery from 'ee/security_orchestration/graphql/queries/group_scan_result_policies.query.graphql';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
+import projectPipelineExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/project_pipeline_execution_policies.query.graphql';
+import groupPipelineExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/group_pipeline_execution_policies.query.graphql';
+
 import {
   POLICY_SOURCE_OPTIONS,
   POLICY_TYPE_FILTER_OPTIONS,
@@ -27,6 +30,8 @@ import {
   groupScanExecutionPolicies,
   projectScanResultPolicies,
   groupScanResultPolicies,
+  groupPipelineResultPolicies,
+  projectPipelineResultPolicies,
   mockLinkedSppItemsResponse,
 } from '../../mocks/mock_apollo';
 import {
@@ -38,6 +43,7 @@ import {
   mockGroupScanResultPolicy,
   mockProjectScanResultPolicy,
 } from '../../mocks/mock_scan_result_policy_data';
+import { mockPipelineExecutionPoliciesResponse } from '../../mocks/mock_pipeline_execution_policy_data';
 
 Vue.use(VueApollo);
 
@@ -48,12 +54,21 @@ const projectScanExecutionPoliciesSpy = projectScanExecutionPolicies(
 const groupScanExecutionPoliciesSpy = groupScanExecutionPolicies(mockScanExecutionPoliciesResponse);
 const projectScanResultPoliciesSpy = projectScanResultPolicies(mockScanResultPoliciesResponse);
 const groupScanResultPoliciesSpy = groupScanResultPolicies(mockScanResultPoliciesResponse);
+const projectPipelineExecutionPoliciesSpy = projectPipelineResultPolicies(
+  mockPipelineExecutionPoliciesResponse,
+);
+const groupPipelineExecutionPoliciesSpy = groupPipelineResultPolicies(
+  mockPipelineExecutionPoliciesResponse,
+);
+
 const linkedSppItemsResponseSpy = mockLinkedSppItemsResponse();
 const defaultRequestHandlers = {
   projectScanExecutionPolicies: projectScanExecutionPoliciesSpy,
   groupScanExecutionPolicies: groupScanExecutionPoliciesSpy,
   projectScanResultPolicies: projectScanResultPoliciesSpy,
   groupScanResultPolicies: groupScanResultPoliciesSpy,
+  projectPipelineExecutionPolicies: projectPipelineExecutionPoliciesSpy,
+  groupPipelineExecutionPolicies: groupPipelineExecutionPoliciesSpy,
   linkedSppItemsResponse: linkedSppItemsResponseSpy,
 };
 
@@ -86,6 +101,8 @@ describe('List component', () => {
         [projectScanResultPoliciesQuery, requestHandlers.projectScanResultPolicies],
         [groupScanResultPoliciesQuery, requestHandlers.groupScanResultPolicies],
         [getSppLinkedProjectsNamespaces, requestHandlers.linkedSppItemsResponse],
+        [projectPipelineExecutionPoliciesQuery, requestHandlers.projectPipelineExecutionPolicies],
+        [groupPipelineExecutionPoliciesQuery, requestHandlers.groupPipelineExecutionPolicies],
       ]),
       stubs: {
         DrawerWrapper: stubComponent(DrawerWrapper, {
@@ -140,6 +157,9 @@ describe('List component', () => {
         relationship: POLICY_SOURCE_OPTIONS.ALL.value,
       });
       expect(requestHandlers.groupScanResultPolicies).not.toHaveBeenCalled();
+
+      expect(requestHandlers.groupPipelineExecutionPolicies).not.toHaveBeenCalled();
+      expect(requestHandlers.projectPipelineExecutionPolicies).not.toHaveBeenCalled();
     });
 
     it("sets table's loading state", () => {
@@ -580,6 +600,39 @@ describe('List component', () => {
         title: 'Test title',
         url: `http://test.host/?type=${PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value.toLowerCase()}`,
         replace: true,
+      });
+    });
+
+    it('fetches pipeline execution policies on project level', () => {
+      mountShallowWrapper({
+        provide: {
+          customCiToggleEnabled: true,
+          glFeatures: {
+            pipelineExecutionPolicyType: true,
+          },
+        },
+      });
+
+      expect(requestHandlers.projectPipelineExecutionPolicies).toHaveBeenCalledWith({
+        fullPath: namespacePath,
+        relationship: POLICY_SOURCE_OPTIONS.ALL.value,
+      });
+    });
+
+    it('fetches pipeline execution policies on group level', () => {
+      mountShallowWrapper({
+        provide: {
+          namespaceType: NAMESPACE_TYPES.GROUP,
+          customCiToggleEnabled: true,
+          glFeatures: {
+            pipelineExecutionPolicyType: true,
+          },
+        },
+      });
+
+      expect(requestHandlers.groupPipelineExecutionPolicies).toHaveBeenCalledWith({
+        fullPath: namespacePath,
+        relationship: POLICY_SOURCE_OPTIONS.ALL.value,
       });
     });
   });

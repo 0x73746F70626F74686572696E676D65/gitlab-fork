@@ -77,7 +77,7 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures,
     end
 
     it 'does not show other list types', :aggregate_failures do
-      click_button 'Create list'
+      click_button 'New list'
       wait_for_all_requests
 
       within_testid('board-add-new-column') do
@@ -89,7 +89,7 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures,
   end
 
   def add_list(list_type, title)
-    click_button 'Create list'
+    click_button 'New list'
     wait_for_all_requests
 
     page.choose(list_type)

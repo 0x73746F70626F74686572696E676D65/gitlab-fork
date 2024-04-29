@@ -168,6 +168,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
       expect(group).to be_ldap_synced
       group.start_ldap_sync
     end
+
     after do
       group.finish_ldap_sync
     end

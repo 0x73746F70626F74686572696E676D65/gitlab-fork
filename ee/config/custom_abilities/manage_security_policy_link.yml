@@ -1,6 +1,6 @@
 ---
 name: manage_security_policy_link
-description: Allows assigning security policy projects.
+description: Allows linking security policy projects.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/440226
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/148371
 feature_category: security_policy_management

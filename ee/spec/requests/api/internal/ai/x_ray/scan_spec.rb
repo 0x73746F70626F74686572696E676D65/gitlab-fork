@@ -187,6 +187,12 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
 
       it_behaves_like 'successful send request via workhorse'
 
+      it_behaves_like 'rate limited endpoint', rate_limit_key: :code_suggestions_x_ray_scan do
+        def request
+          post api(api_url), params: params, headers: headers
+        end
+      end
+
       context 'when add on subscription is expired' do
         let(:namespace_without_expired_ai_access) { create(:group) }
         let(:job_without_ai_access) { create(:ci_build, :running, namespace: namespace_without_expired_ai_access) }

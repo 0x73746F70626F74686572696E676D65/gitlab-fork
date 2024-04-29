@@ -17,16 +17,10 @@ RSpec.describe "GraphQL Pipeline Subscriptions", '(JavaScript fixtures)', type: 
     create(:project, :public, :repository, upstream_projects: [project], namespace: group)
   end
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, maintainer_of: [project, upstream_project, downstream_project]) }
 
   let(:upstream_query_path) { 'ci/pipeline_subscriptions/graphql/queries/get_upstream_subscriptions.query.graphql' }
   let(:downstream_query_path) { 'ci/pipeline_subscriptions/graphql/queries/get_downstream_subscriptions.query.graphql' }
-
-  before_all do
-    project.add_maintainer(user)
-    upstream_project.add_maintainer(user)
-    downstream_project.add_maintainer(user)
-  end
 
   context 'with upstream pipeline subscriptions' do
     it "graphql/pipeline_subscriptions/upstream.json" do

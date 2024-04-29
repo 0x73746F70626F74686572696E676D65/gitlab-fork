@@ -121,6 +121,7 @@ module Sbom
     scope :with_source, -> { includes(:source) }
     scope :with_version, -> { includes(:component_version) }
     scope :with_pipeline_project_and_namespace, -> { preload(pipeline: { project: :namespace }) }
+    scope :with_vulnerabilities, -> { preload(:vulnerabilities) }
     scope :with_component_source_version_and_project, -> do
       includes(:component, :source, :component_version, :project)
     end

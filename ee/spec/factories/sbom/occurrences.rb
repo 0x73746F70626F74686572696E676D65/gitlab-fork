@@ -17,6 +17,14 @@ FactoryBot.define do
       end
     end
 
+    trait :with_vulnerabilities do
+      transient do
+        vulnerability_count { 2 }
+      end
+
+      vulnerabilities { build_list(:vulnerability, vulnerability_count) }
+    end
+
     transient do
       packager_name { 'npm' }
     end

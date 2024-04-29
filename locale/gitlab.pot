@@ -821,6 +821,9 @@ msgstr ""
 msgid "%{group_name}&%{epic_iid} &middot; created %{epic_created} by %{author}"
 msgstr ""
 
+msgid "%{group} is a top level group and cannot be immediately deleted from here.  Please visit the %{linkStart}Group Settings%{linkEnd} to immediately delete this group."
+msgstr ""
+
 msgid "%{host} sign-in from new location"
 msgstr ""
 
@@ -6304,7 +6307,7 @@ msgstr ""
 msgid "ApplicationSettings|Off"
 msgstr ""
 
-msgid "ApplicationSettings|Only users with e-mail addresses that match these domain(s) can sign up. Wildcards allowed. Use separate lines for multiple entries. Example: domain.com, *.domain.com"
+msgid "ApplicationSettings|Only users with e-mail addresses that match these domain(s) can sign up. Wildcards allowed. Enter multiple entries on separate lines. Example: domain.com, *.domain.com"
 msgstr ""
 
 msgid "ApplicationSettings|Require admin approval for new sign-ups"
@@ -6358,7 +6361,7 @@ msgstr ""
 msgid "ApplicationSettings|User cap"
 msgstr ""
 
-msgid "ApplicationSettings|Users with e-mail addresses that match these domain(s) cannot sign up. Wildcards allowed. Use separate lines for multiple entries. Example: domain.com, *.domain.com"
+msgid "ApplicationSettings|Users with e-mail addresses that match these domain(s) cannot sign up. Wildcards allowed. Enter multiple entries on separate lines. Example: domain.com, *.domain.com"
 msgstr ""
 
 msgid "ApplicationSettings|Users with e-mail addresses that match these domain(s) cannot sign up. Wildcards allowed. Use separate lines or commas for multiple entries."
@@ -6556,7 +6559,10 @@ msgstr ""
 msgid "ApprovalRule|Rule name"
 msgstr ""
 
-msgid "ApprovalRule|Search in"
+msgid "ApprovalRule|Search in all groups"
+msgstr ""
+
+msgid "ApprovalRule|Search in project groups"
 msgstr ""
 
 msgid "ApprovalRule|Search users or groups"
@@ -6571,16 +6577,10 @@ msgstr ""
 msgid "ApprovalRule|Try for free"
 msgstr ""
 
-msgid "ApprovalRule|all groups"
-msgstr ""
-
 msgid "ApprovalRule|day(s)"
 msgstr ""
 
 msgid "ApprovalRule|month(s)"
-msgstr ""
-
-msgid "ApprovalRule|project groups"
 msgstr ""
 
 msgid "ApprovalRule|week(s)"
@@ -6806,9 +6806,6 @@ msgid "Are you sure you want to delete this deploy key?"
 msgstr ""
 
 msgid "Are you sure you want to delete this device? This action cannot be undone."
-msgstr ""
-
-msgid "Are you sure you want to delete this label?"
 msgstr ""
 
 msgid "Are you sure you want to delete this pipeline? Doing so will expire all pipeline caches and delete all related objects, such as builds, logs, artifacts, and triggers. This action cannot be undone."
@@ -8818,6 +8815,9 @@ msgstr ""
 msgid "Boards|Failed to fetch blocking %{issuableType}s"
 msgstr ""
 
+msgid "Boards|Got it"
+msgstr ""
+
 msgid "Boards|Move to end of list"
 msgstr ""
 
@@ -8833,10 +8833,16 @@ msgstr ""
 msgid "Boards|Retrieving blocking %{issuableType}s"
 msgstr ""
 
+msgid "Boards|The \"New list\" button has moved"
+msgstr ""
+
 msgid "Boards|View all blocking %{issuableType}s"
 msgstr ""
 
 msgid "Boards|View scope"
+msgstr ""
+
+msgid "Boards|You can add a new list to the board here"
 msgstr ""
 
 msgid "Board|Are you sure you want to delete this board?"
@@ -11494,6 +11500,11 @@ msgstr ""
 
 msgid "Closed date"
 msgstr ""
+
+msgid "Closed issue"
+msgid_plural "Closed issues"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Closed issues"
 msgstr ""
@@ -14908,6 +14919,9 @@ msgstr ""
 msgid "Could not delete chat nickname %{chat_name}."
 msgstr ""
 
+msgid "Could not delete the label %{labelName}. Please try again."
+msgstr ""
+
 msgid "Could not delete wiki page"
 msgstr ""
 
@@ -15152,9 +15166,6 @@ msgid "Create issue"
 msgstr ""
 
 msgid "Create label"
-msgstr ""
-
-msgid "Create list"
 msgstr ""
 
 msgid "Create lists from labels. Issues with that label appear in that list."
@@ -17085,6 +17096,9 @@ msgstr ""
 msgid "Delete file"
 msgstr ""
 
+msgid "Delete group immediately?"
+msgstr ""
+
 msgid "Delete identity"
 msgstr ""
 
@@ -17147,7 +17161,7 @@ msgstr ""
 msgid "Delete this attachment"
 msgstr ""
 
-msgid "Delete this epic and all descendants?"
+msgid "Delete this epic and release all child items?"
 msgstr ""
 
 msgid "Delete this project"
@@ -17920,6 +17934,9 @@ msgstr ""
 msgid "Deployment|Approved"
 msgstr ""
 
+msgid "Deployment|Approved as %{role}"
+msgstr ""
+
 msgid "Deployment|Branch"
 msgstr ""
 
@@ -17984,6 +18001,9 @@ msgid "Deployment|Reject"
 msgstr ""
 
 msgid "Deployment|Rejected"
+msgstr ""
+
+msgid "Deployment|Rejected as %{role}"
 msgstr ""
 
 msgid "Deployment|Related Tags"
@@ -26069,6 +26089,12 @@ msgstr ""
 msgid "IdentityVerification|A new code has been sent."
 msgstr ""
 
+msgid "IdentityVerification|Before you can create additional groups, we need to verify your account."
+msgstr ""
+
+msgid "IdentityVerification|Before you can run concurrent pipelines, we need to verify your account."
+msgstr ""
+
 msgid "IdentityVerification|Before you finish creating your account, we need to verify your identity. On the verification page, enter the following code."
 msgstr ""
 
@@ -26207,6 +26233,9 @@ msgstr ""
 msgid "IdentityVerification|Verify email address"
 msgstr ""
 
+msgid "IdentityVerification|Verify my account"
+msgstr ""
+
 msgid "IdentityVerification|Verify payment method"
 msgstr ""
 
@@ -26223,6 +26252,9 @@ msgid "IdentityVerification|Verify your identity"
 msgstr ""
 
 msgid "IdentityVerification|We sent a new code to +%{phoneNumber}"
+msgstr ""
+
+msgid "IdentityVerification|We won't ask you for this information again. It will never be used for marketing purposes."
 msgstr ""
 
 msgid "IdentityVerification|We've sent a verification code to %{email}"
@@ -29820,6 +29852,12 @@ msgstr ""
 msgid "Label"
 msgstr ""
 
+msgid "Label %{labelName} was not found"
+msgstr ""
+
+msgid "Label actions"
+msgstr ""
+
 msgid "Label actions dropdown"
 msgstr ""
 
@@ -32560,7 +32598,13 @@ msgstr ""
 msgid "Milestones|Group Milestone"
 msgstr ""
 
+msgid "Milestones|Labels from issues in this milestone will appear here."
+msgstr ""
+
 msgid "Milestones|Milestone %{milestoneTitle} was not found"
+msgstr ""
+
+msgid "Milestones|No labels found"
 msgstr ""
 
 msgid "Milestones|Ongoing Issues (open and assigned)"
@@ -33218,6 +33262,9 @@ msgid "Namespace must be provided."
 msgstr ""
 
 msgid "Namespace or project is required"
+msgstr ""
+
+msgid "Namespace reached its allowed limit of %{limit} extra deployments"
 msgstr ""
 
 msgid "Namespace:"
@@ -33969,6 +34016,9 @@ msgid "No data available"
 msgstr ""
 
 msgid "No deployments found"
+msgstr ""
+
+msgid "No description"
 msgstr ""
 
 msgid "No email participants were added. Either none were provided, or they already exist."
@@ -35722,6 +35772,11 @@ msgstr ""
 msgid "Open in your IDE"
 msgstr ""
 
+msgid "Open issue"
+msgid_plural "Open issues"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "Open new window"
 msgstr ""
 
@@ -36394,6 +36449,9 @@ msgstr ""
 msgid "PackageRegistry|Debian"
 msgstr ""
 
+msgid "PackageRegistry|Default"
+msgstr ""
+
 msgid "PackageRegistry|Delete %{count} assets"
 msgstr ""
 
@@ -36440,6 +36498,9 @@ msgid "PackageRegistry|Enforce %{packageType} setting for all subgroups"
 msgstr ""
 
 msgid "PackageRegistry|Enforce %{package_type} setting for all subgroups"
+msgstr ""
+
+msgid "PackageRegistry|Error"
 msgstr ""
 
 msgid "PackageRegistry|Error publishing"
@@ -36497,6 +36558,9 @@ msgid "PackageRegistry|Gradle Kotlin DSL install command"
 msgstr ""
 
 msgid "PackageRegistry|Helm"
+msgstr ""
+
+msgid "PackageRegistry|Hidden"
 msgstr ""
 
 msgid "PackageRegistry|If you haven't already done so, you will need to add the below to your %{codeStart}.pypirc%{codeEnd} file."
@@ -36600,6 +36664,9 @@ msgstr ""
 msgid "PackageRegistry|Packages deleted successfully"
 msgstr ""
 
+msgid "PackageRegistry|Pending deletion"
+msgstr ""
+
 msgid "PackageRegistry|Permanently delete"
 msgstr ""
 
@@ -36607,6 +36674,9 @@ msgid "PackageRegistry|Permanently delete assets"
 msgstr ""
 
 msgid "PackageRegistry|Pip Command"
+msgstr ""
+
+msgid "PackageRegistry|Processing"
 msgstr ""
 
 msgid "PackageRegistry|Project-level"
@@ -38254,12 +38324,6 @@ msgid "PlantUML URL"
 msgstr ""
 
 msgid "PlantUML diagram"
-msgstr ""
-
-msgid "Play"
-msgstr ""
-
-msgid "Play all manual"
 msgstr ""
 
 msgid "Please %{link_to_register} or %{link_to_sign_in} to comment"
@@ -41712,6 +41776,9 @@ msgstr ""
 msgid "ProtectedEnvironment|Only specified users can execute deployments in a protected environment."
 msgstr ""
 
+msgid "ProtectedEnvironment|Parameter 'required_approval_count' is deprecated and shouldn't be used. See https://gitlab.com/groups/gitlab-org/-/epics/9662"
+msgstr ""
+
 msgid "ProtectedEnvironment|Parent group"
 msgstr ""
 
@@ -42949,6 +43016,9 @@ msgstr ""
 msgid "Reply to this email directly or %{view_it_on_gitlab}."
 msgstr ""
 
+msgid "Reply to this email to participate in the discussion. All other participants of the ticket will receive notifications of your reply."
+msgstr ""
+
 msgid "Reply…"
 msgstr ""
 
@@ -43771,6 +43841,9 @@ msgstr ""
 msgid "Rules that define what git pushes are accepted for a project. All newly created projects will use these settings."
 msgstr ""
 
+msgid "Run"
+msgstr ""
+
 msgid "Run %{code_start}git fsck%{code_end} periodically in all project and wiki repositories to look for silent disk corruption issues."
 msgstr ""
 
@@ -43784,6 +43857,9 @@ msgid "Run CI/CD pipelines with Jenkins."
 msgstr ""
 
 msgid "Run again"
+msgstr ""
+
+msgid "Run all manual"
 msgstr ""
 
 msgid "Run housekeeping"
@@ -43857,6 +43933,9 @@ msgid "Runners|%{installLinkStart}Upgrade GitLab Runner%{installLinkEnd} to matc
 msgstr ""
 
 msgid "Runners|%{linkStart}Create a new runner%{linkEnd} to get started."
+msgstr ""
+
+msgid "Runners|%{linkStart}View available zones%{linkEnd}. Must have the format %{format}. Example: %{example}."
 msgstr ""
 
 msgid "Runners|%{link_start}These runners%{link_end} are available to all groups and projects."
@@ -44153,7 +44232,7 @@ msgstr ""
 msgid "Runners|Fleet dashboard"
 msgstr ""
 
-msgid "Runners|For most CI/CD jobs, use a %{linkStart}N2D standard machine type%{linkEnd}."
+msgid "Runners|For most CI/CD jobs, use a %{linkStart}N2D standard machine type%{linkEnd}. Must have the format %{format}. Example: %{example}."
 msgstr ""
 
 msgid "Runners|Get started with runners"
@@ -44255,7 +44334,7 @@ msgstr ""
 msgid "Runners|Machine type is required."
 msgstr ""
 
-msgid "Runners|Machine type must have the format `family-series-size`. Example: n2d-standard-2"
+msgid "Runners|Machine type must have the right format."
 msgstr ""
 
 msgid "Runners|Machine type with preset amounts of virtual machines processors (vCPUs) and memory"
@@ -44289,6 +44368,9 @@ msgid "Runners|Most recent failures"
 msgstr ""
 
 msgid "Runners|Most used instance runners"
+msgstr ""
+
+msgid "Runners|Must have the format %{format}. Example: %{example}."
 msgstr ""
 
 msgid "Runners|Never contacted"
@@ -44391,7 +44473,7 @@ msgstr ""
 msgid "Runners|Project ID is required."
 msgstr ""
 
-msgid "Runners|Project ID must be 6 to 30 lowercase letters, digits, or hyphens. It needs to start with a lowercase letter and end with a letter or number."
+msgid "Runners|Project ID must have the right format."
 msgstr ""
 
 msgid "Runners|Project runners"
@@ -44418,7 +44500,7 @@ msgstr ""
 msgid "Runners|Region is required."
 msgstr ""
 
-msgid "Runners|Region must have the correct format. Example: us-central1"
+msgid "Runners|Region must have the right format."
 msgstr ""
 
 msgid "Runners|Register"
@@ -44734,7 +44816,7 @@ msgstr ""
 msgid "Runners|To follow the setup instructions, %{gcloudLinkStart}install the Google Cloud CLI%{gcloudLinkEnd} and %{terraformLinkStart}install Terraform%{terraformLinkEnd}."
 msgstr ""
 
-msgid "Runners|To improve security, use a dedicated project for CI/CD, separate from resources and identity management projects. %{linkStart}Where’s my project ID in Google Cloud?%{linkEnd}"
+msgid "Runners|To improve security, use a project just for CI/CD. %{linkStart}Where's my project ID?%{linkEnd} Can be 6 to 30 lowercase letters, digits, or hyphens. Must start with a letter and end with a letter or number. Example: %{example}."
 msgstr ""
 
 msgid "Runners|To install Runner in Kubernetes follow the instructions described in the GitLab documentation."
@@ -44821,9 +44903,6 @@ msgstr ""
 msgid "Runners|Version starts with"
 msgstr ""
 
-msgid "Runners|View available zones"
-msgstr ""
-
 msgid "Runners|View installation instructions"
 msgstr ""
 
@@ -44878,7 +44957,7 @@ msgstr ""
 msgid "Runners|Zone is required."
 msgstr ""
 
-msgid "Runners|Zone must have the correct format. Example: us-central1-a"
+msgid "Runners|Zone must have the right format."
 msgstr ""
 
 msgid "Runners|active"
@@ -46124,6 +46203,9 @@ msgstr ""
 msgid "SecurityConfiguration|Vulnerability details and statistics in the merge request"
 msgstr ""
 
+msgid "SecurityOrchestraation|(Formerly Scan result policy)"
+msgstr ""
+
 msgid "SecurityOrchestration| and "
 msgstr ""
 
@@ -46719,6 +46801,12 @@ msgstr ""
 msgid "SecurityOrchestration|Summary of syntax changes:"
 msgstr ""
 
+msgid "SecurityOrchestration|The %{oldNameStart}Scan result policy%{oldNameEnd} is now called the %{newNameStart}Merge request approval policy%{newNameEnd} to better align with its purpose. For more details, see %{linkStart}the release notes%{linkEnd}."
+msgstr ""
+
+msgid "SecurityOrchestration|The Scan result policy is now called the Merge request approval policy to better align with its purpose. For more details, see %{linkStart}the release notes%{linkEnd}."
+msgstr ""
+
 msgid "SecurityOrchestration|The following branches do not exist on this development project: %{branches}. Please review all protected branches to ensure the values are accurate before updating this policy."
 msgstr ""
 
@@ -46788,6 +46876,12 @@ msgstr ""
 msgid "SecurityOrchestration|Update scan policies"
 msgstr ""
 
+msgid "SecurityOrchestration|Update via merge request"
+msgstr ""
+
+msgid "SecurityOrchestration|Updated policy name"
+msgstr ""
+
 msgid "SecurityOrchestration|Use a merge request approval policy to create rules that check for security vulnerabilities and license compliance before merging a merge request."
 msgstr ""
 
@@ -46836,7 +46930,7 @@ msgstr ""
 msgid "SecurityOrchestration|YAML"
 msgstr ""
 
-msgid "SecurityOrchestration|You already have the maximum %{maximumAllowed} %{policyType} policies."
+msgid "SecurityOrchestration|You already have the maximum %{maximumAllowed} %{policyType} %{instance}."
 msgstr ""
 
 msgid "SecurityOrchestration|You can't change the default branch because its protection is enforced by one or more %{security_policies_link_start}security policies%{security_policies_link_end}. %{learn_more_link_start}Learn more%{learn_more_link_end}."
@@ -51814,9 +51908,6 @@ msgstr ""
 msgid "The license you uploaded is invalid. If the issue persists, contact support at %{link}."
 msgstr ""
 
-msgid "The list creation wizard is already open"
-msgstr ""
-
 msgid "The map can not be displayed because there was an error loading the GeoJSON file."
 msgstr ""
 
@@ -52699,6 +52790,9 @@ msgstr ""
 msgid "This group and its subgroups and projects will be placed in a 'pending deletion' state for %{deletion_delayed_period} days, then permanently deleted on %{date}. The group can be fully restored before that date."
 msgstr ""
 
+msgid "This group can be restored until %{date}. %{linkStart}Learn more%{linkEnd}."
+msgstr ""
+
 msgid "This group can't be removed because it is linked to a subscription. To remove this group, %{linkStart}link the subscription%{linkEnd} with a different group."
 msgstr ""
 
@@ -52724,6 +52818,9 @@ msgid "This group is linked to a subscription"
 msgstr ""
 
 msgid "This group is not permitted to create compliance violations"
+msgstr ""
+
+msgid "This group is scheduled to be deleted on %{date}. You are about to delete this group, including its subgroups and projects, immediately. This action cannot be undone."
 msgstr ""
 
 msgid "This group, its subgroups and projects has been scheduled for removal on %{date}."
@@ -56611,10 +56708,10 @@ msgstr ""
 msgid "VersionCheck|Additionally, there is an available stable patch for your current GitLab minor version: %{latestStableVersionOfMinor}"
 msgstr ""
 
-msgid "VersionCheck|Important notice - Critical security release"
+msgid "VersionCheck|Important notice - Critical patch release"
 msgstr ""
 
-msgid "VersionCheck|Learn more about this critical security release."
+msgid "VersionCheck|Learn more about this critical patch release."
 msgstr ""
 
 msgid "VersionCheck|Remind me again in 3 days"
@@ -58384,6 +58481,9 @@ msgstr ""
 msgid "WorkItem|Delete %{workItemType}"
 msgstr ""
 
+msgid "WorkItem|Delete this %{workItemType} and release all child items? This action cannot be reversed."
+msgstr ""
+
 msgid "WorkItem|Discard changes"
 msgstr ""
 
@@ -59220,6 +59320,9 @@ msgstr ""
 msgid "You can still use and manage existing tokens. %{link_start}Learn more.%{link_end}"
 msgstr ""
 
+msgid "You can unsubscribe from further updates to this ticket. To receive updates in the future, you will have to be added again as a participant."
+msgstr ""
+
 msgid "You can view the source or %{linkStart}%{cloneIcon} clone the repository%{linkEnd}"
 msgstr ""
 
@@ -59389,6 +59492,9 @@ msgid "You have already reported this user"
 msgstr ""
 
 msgid "You have already requested access."
+msgstr ""
+
+msgid "You have been added to ticket #%{issue_iid}."
 msgstr ""
 
 msgid "You have been granted %{access_level} access to the %{source_link} %{source_type}."
@@ -60717,11 +60823,6 @@ msgstr ""
 msgid "closed %{timeago}"
 msgstr ""
 
-msgid "closed issue"
-msgid_plural "closed issues"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "comment"
 msgstr ""
 
@@ -61882,11 +61983,6 @@ msgstr ""
 msgid "only supports valid HTTP(S) URLs"
 msgstr ""
 
-msgid "open issue"
-msgid_plural "open issues"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "or"
 msgstr ""
 
@@ -61945,6 +62041,11 @@ msgstr ""
 
 msgid "point"
 msgid_plural "points"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "policy"
+msgid_plural "policies"
 msgstr[0] ""
 msgstr[1] ""
 

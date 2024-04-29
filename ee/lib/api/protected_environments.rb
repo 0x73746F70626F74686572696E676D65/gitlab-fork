@@ -13,6 +13,12 @@ module API
     urgency :low
 
     helpers do
+      def has_deprecated_approval_rules_params?
+        return false unless Feature.enabled?(:deprecate_unified_approval_rules)
+
+        params[:required_approval_count].present? && params[:required_approval_count] > 0
+      end
+
       params :shared_params do
         optional :user_id, type: Integer, desc: 'The ID of a user with access to the project'
         optional :group_id, type: Integer, desc: 'The ID of a group with access to the project'
@@ -140,12 +146,16 @@ module API
       end
       params do
         requires :name, type: String, desc: 'The name of the environment'
-        optional :required_approval_count, type: Integer, desc: 'The number of approvals required to deploy to this environment', default: 0
+        optional :required_approval_count, type: Integer, desc: '[DEPRECATED] The number of approvals required to deploy to this environment', default: 0
 
         use :deploy_access_levels
         use :optional_approval_rules
       end
       post ':id/protected_environments' do
+        if has_deprecated_approval_rules_params?
+          unprocessable_entity!(s_("ProtectedEnvironment|Parameter 'required_approval_count' is deprecated and shouldn't be used. See https://gitlab.com/groups/gitlab-org/-/epics/9662"))
+        end
+
         protected_environment = user_project.protected_environments.find_by_name(params[:name])
 
         if protected_environment
@@ -174,13 +184,17 @@ module API
       end
       params do
         requires :name, type: String, desc: 'The name of the environment'
-        optional :required_approval_count, type: Integer, desc: 'The number of approvals required to deploy to this environment'
+        optional :required_approval_count, type: Integer, desc: '[DEPRECATED] The number of approvals required to deploy to this environment'
 
         use :optional_deploy_access_levels
         use :optional_approval_rules
       end
       put ':id/protected_environments/:name', requirements: ENVIRONMENT_ENDPOINT_REQUIREMENTS do
         not_found! unless protected_environment
+
+        if has_deprecated_approval_rules_params?
+          unprocessable_entity!(s_("ProtectedEnvironment|Parameter 'required_approval_count' is deprecated and shouldn't be used. See https://gitlab.com/groups/gitlab-org/-/epics/9662"))
+        end
 
         declared_params = declared_params(include_missing: false)
 
@@ -277,13 +291,17 @@ module API
 
         optional :required_approval_count,
           type: Integer,
-          desc: 'The number of approvals required to deploy to this environment',
+          desc: '[DEPRECATED] The number of approvals required to deploy to this environment',
           default: 0
 
         use :deploy_access_levels
         use :optional_approval_rules
       end
       post ':id/protected_environments' do
+        if has_deprecated_approval_rules_params?
+          unprocessable_entity!(s_("ProtectedEnvironment|Parameter 'required_approval_count' is deprecated and shouldn't be used. See https://gitlab.com/groups/gitlab-org/-/epics/9662"))
+        end
+
         protected_environment = user_group.protected_environments.find_by_name(params[:name])
 
         if protected_environment
@@ -318,7 +336,7 @@ module API
 
         optional :required_approval_count,
           type: Integer,
-          desc: 'The number of approvals required to deploy to this environment',
+          desc: '[DEPRECATED] The number of approvals required to deploy to this environment',
           default: 0
 
         use :optional_deploy_access_levels
@@ -326,6 +344,10 @@ module API
       end
       put ':id/protected_environments/:name' do
         not_found! unless protected_environment
+
+        if has_deprecated_approval_rules_params?
+          unprocessable_entity!(s_("ProtectedEnvironment|Parameter 'required_approval_count' is deprecated and shouldn't be used. See https://gitlab.com/groups/gitlab-org/-/epics/9662"))
+        end
 
         declared_params = declared_params(include_missing: false)
 

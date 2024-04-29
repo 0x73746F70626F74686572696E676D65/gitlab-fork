@@ -54,6 +54,7 @@ RSpec.describe ExternalStatusChecks::UpdateService, feature_category: :groups_an
       before do
         stub_licensed_features(audit_events: true)
       end
+
       let_it_be(:master_branch) { create(:protected_branch, project: project, name: 'master') }
       let_it_be(:main_branch) { create(:protected_branch, project: project, name: 'main') }
       let_it_be(:external_status_check, reload: true) { create(:external_status_check, name: 'QA', project: project, protected_branches: []) }

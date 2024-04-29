@@ -105,7 +105,7 @@ export default {
   >
     <template #title>
       <div data-testid="drawer-title">
-        <h2 class="gl-font-size-h2 gl-mt-0 gl-mb-0">{{ title }}</h2>
+        <h2 class="gl-font-size-h2 gl-mt-0 gl-mb-0 gl-overflow-wrap-anywhere">{{ title }}</h2>
       </div>
     </template>
 

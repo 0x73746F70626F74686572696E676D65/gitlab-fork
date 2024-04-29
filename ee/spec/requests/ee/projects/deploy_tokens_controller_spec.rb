@@ -22,6 +22,11 @@ RSpec.describe Projects::DeployTokensController, feature_category: :continuous_d
       put "/#{project.path_with_namespace}/-/deploy_tokens/#{deploy_token.id}/revoke", params: params
     end
 
+    before do
+      stub_licensed_features(external_audit_events: true)
+      group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
+    end
+
     it 'creates an audit event' do
       expect { put_revoke }.to change { AuditEvent.count }.by(1)
 
@@ -37,11 +42,6 @@ RSpec.describe Projects::DeployTokensController, feature_category: :continuous_d
                                                    custom_message: expected_message,
                                                    action: :custom
                                                  })
-    end
-
-    before do
-      stub_licensed_features(external_audit_events: true)
-      group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
     end
 
     it_behaves_like 'sends correct event type in audit event stream' do

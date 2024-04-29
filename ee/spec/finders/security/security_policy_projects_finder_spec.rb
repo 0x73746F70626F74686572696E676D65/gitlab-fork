@@ -16,13 +16,11 @@ RSpec.describe Security::SecurityPolicyProjectsFinder, "#execute", feature_categ
   let_it_be(:other_group) { create(:group, :public, name: "other") }
   let_it_be(:other_project) { create(:project, :public, group: other_group, path: "alpha") }
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, developer_of: top_level_group) }
 
   let(:feature_enabled) { true }
 
   before_all do
-    top_level_group.add_developer(user)
-
     create(
       :security_orchestration_policy_configuration,
       :namespace,

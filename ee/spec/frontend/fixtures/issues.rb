@@ -8,11 +8,7 @@ RSpec.describe GraphQL::Query, type: :request do
   include JavaScriptFixturesHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project) }
-
-  before_all do
-    project.add_reporter(user)
-  end
+  let_it_be(:project) { create(:project, reporters: user) }
 
   issue_popover_query_path = 'issuable/popover/queries/issue.query.graphql'
 

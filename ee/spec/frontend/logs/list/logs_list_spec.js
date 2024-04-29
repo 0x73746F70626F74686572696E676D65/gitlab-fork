@@ -7,6 +7,8 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import LogsList from 'ee/logs/list/logs_list.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
+import UrlSync from '~/vue_shared/components/url_sync.vue';
+import setWindowLocation from 'helpers/set_window_location_helper';
 import { mockLogs } from './mock_data';
 
 jest.mock('~/alert');
@@ -29,6 +31,8 @@ describe('LogsList', () => {
   const findDrawer = () => wrapper.findComponent(LogsDrawer);
   const isDrawerOpen = () => findDrawer().props('open');
   const getDrawerSelectedLog = () => findDrawer().props('log');
+
+  const findUrlSync = () => wrapper.findComponent(UrlSync);
 
   const mountComponent = async () => {
     wrapper = shallowMountExtended(LogsList, {
@@ -237,7 +241,45 @@ describe('LogsList', () => {
   });
 
   describe('filtered search', () => {
+    const attributesFiltersObj = {
+      service: [
+        { operator: '=', value: 'serviceName' },
+        { operator: '!=', value: 'serviceName2' },
+      ],
+      severityName: [
+        { operator: '=', value: 'info' },
+        { operator: '!=', value: 'warning' },
+      ],
+      traceId: [{ operator: '=', value: 'traceId' }],
+      spanId: [{ operator: '=', value: 'spanId' }],
+      fingerprint: [{ operator: '=', value: 'fingerprint' }],
+      traceFlags: [
+        { operator: '=', value: '1' },
+        { operator: '!=', value: '2' },
+      ],
+      attribute: [{ operator: '=', value: 'attr=bar' }],
+      resourceAttribute: [{ operator: '=', value: 'res=foo' }],
+      search: [{ value: 'some-search' }],
+    };
+
     beforeEach(async () => {
+      setWindowLocation(
+        '?attribute[]=attr%3Dbar' +
+          '&fingerprint[]=fingerprint' +
+          '&service[]=serviceName' +
+          '&not%5Bservice%5D[]=serviceName2' +
+          '&resourceAttribute[]=res%3Dfoo' +
+          '&search[]=some-search' +
+          '&severityName[]=info' +
+          '&not%5BseverityName%5D[]=warning' +
+          '&spanId[]=spanId' +
+          '&traceFlags[]=1' +
+          '&not%5BtraceFlags%5D[]=2' +
+          '&traceId[]=traceId' +
+          '&date_range=custom' +
+          '&date_end=2020-01-02T00%3A00%3A00.000Z' +
+          '&date_start=2020-01-01T00%3A00%3A00.000Z',
+      );
       await mountComponent();
     });
 
@@ -247,20 +289,78 @@ describe('LogsList', () => {
       expect(findFilteredSearch().exists()).toBe(true);
     });
 
-    it('sets data-range-filter prop to the default date range', () => {
-      expect(findFilteredSearch().props('dateRangeFilter')).toEqual({ value: '1h' });
+    it('initialises filtered-search props with values from query', () => {
+      expect(findFilteredSearch().props('dateRangeFilter')).toEqual({
+        endDate: new Date('2020-01-02T00:00:00.000Z'),
+        startDate: new Date('2020-01-01T00:00:00.000Z'),
+        value: 'custom',
+      });
+
+      expect(findFilteredSearch().props('attributesFilters')).toEqual(attributesFiltersObj);
     });
 
-    it('fetches logs with default time range filter', () => {
+    it('renders UrlSync and sets query prop', () => {
+      expect(findUrlSync().props('query')).toEqual({
+        attribute: ['attr=bar'],
+        fingerprint: ['fingerprint'],
+        'not[fingerprint]': null,
+        'not[resourceAttribute]': null,
+        'not[service]': ['serviceName2'],
+        'not[severityName]': ['warning'],
+        'not[spanId]': null,
+        'not[traceFlags]': ['2'],
+        'not[traceId]': null,
+        'not[attribute]': null,
+        resourceAttribute: ['res=foo'],
+        search: 'some-search',
+        service: ['serviceName'],
+        severityName: ['info'],
+        spanId: ['spanId'],
+        traceFlags: ['1'],
+        traceId: ['traceId'],
+        date_range: 'custom',
+        date_end: '2020-01-02T00:00:00.000Z',
+        date_start: '2020-01-01T00:00:00.000Z',
+      });
+    });
+
+    it('fetches logs with filters', () => {
       expect(observabilityClientMock.fetchLogs).toHaveBeenCalledWith({
         filters: {
+          attributes: attributesFiltersObj,
           dateRange: {
-            value: '1h',
+            value: 'custom',
+            startDate: new Date('2020-01-01'),
+            endDate: new Date('2020-01-02'),
           },
-          attributes: {},
         },
         pageSize: 100,
         pageToken: null,
+      });
+    });
+
+    describe('if no date range is provided', () => {
+      beforeEach(async () => {
+        setWindowLocation('?');
+
+        await mountComponent();
+      });
+
+      it('sets data-range-filter prop to the default date range', () => {
+        expect(findFilteredSearch().props('dateRangeFilter')).toEqual({ value: '1h' });
+      });
+
+      it('fetches logs with default time range filter', () => {
+        expect(observabilityClientMock.fetchLogs).toHaveBeenCalledWith({
+          filters: {
+            dateRange: {
+              value: '1h',
+            },
+            attributes: {},
+          },
+          pageSize: 100,
+          pageToken: null,
+        });
       });
     });
 
@@ -293,6 +393,31 @@ describe('LogsList', () => {
         expect(findFilteredSearch().props('dateRangeFilter')).toEqual({ value: '7d' });
         expect(findFilteredSearch().props('attributesFilters')).toEqual({
           search: [{ value: 'some-log' }],
+        });
+      });
+
+      it('updates the query', () => {
+        expect(findUrlSync().props('query')).toEqual({
+          attribute: null,
+          date_end: undefined,
+          date_range: '7d',
+          date_start: undefined,
+          fingerprint: null,
+          'not[attribute]': null,
+          'not[fingerprint]': null,
+          'not[resourceAttribute]': null,
+          'not[service]': null,
+          'not[severityName]': null,
+          'not[spanId]': null,
+          'not[traceFlags]': null,
+          'not[traceId]': null,
+          resourceAttribute: null,
+          search: 'some-log',
+          service: null,
+          severityName: null,
+          spanId: null,
+          traceFlags: null,
+          traceId: null,
         });
       });
     });

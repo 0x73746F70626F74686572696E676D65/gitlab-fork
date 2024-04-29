@@ -185,7 +185,8 @@ module EE
     end
 
     def duo_chat_free_access_was_cut_off_for_sm?
-      !CloudConnector::AccessService.new.free_access_for?(:duo_chat)
+      ::Feature.enabled?(:duo_chat_requires_licensed_seat_sm) ||
+        !CloudConnector::AccessService.new.free_access_for?(:duo_chat)
     end
   end
 end

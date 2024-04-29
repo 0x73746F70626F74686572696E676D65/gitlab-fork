@@ -252,6 +252,7 @@ RSpec.describe Gitlab::Audit::Auditor, feature_category: :audit_events do
             before do
               stub_licensed_features(admin_audit_log: true)
             end
+
             it 'logs audit events to database' do
               audit!
 

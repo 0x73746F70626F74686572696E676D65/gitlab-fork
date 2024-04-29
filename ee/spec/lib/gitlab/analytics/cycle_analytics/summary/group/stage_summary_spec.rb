@@ -227,14 +227,14 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary, 
         }).data.third
       end
 
-      it 'includes the unit: `/day`' do
-        expect(subject[:unit]).to eq(_('/day'))
-      end
-
       before do
         travel_to(five_days_ago) do
           create_deployment(finished_at: Time.current, project: project)
         end
+      end
+
+      it 'includes the unit: `/day`' do
+        expect(subject[:unit]).to eq(_('/day'))
       end
 
       context 'when `to` is nil' do

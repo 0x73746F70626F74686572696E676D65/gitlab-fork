@@ -23,8 +23,8 @@ RSpec.describe 'User creates iteration in a cadence', :js, feature_category: :te
 
     fill_in('Title', with: title)
     fill_in('Description', with: desc)
-    fill_in('Start date', with: start_date.strftime('%Y-%m-%d'))
-    fill_in('Due date', with: due_date.strftime('%Y-%m-%d'))
+    fill_in('Start date', with: start_date.to_date.iso8601)
+    fill_in('Due date', with: due_date.to_date.iso8601)
     click_button('Create iteration')
 
     wait_for_requests

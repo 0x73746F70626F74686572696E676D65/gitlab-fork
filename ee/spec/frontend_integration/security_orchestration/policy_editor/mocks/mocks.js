@@ -18,6 +18,8 @@ export const DEFAULT_PROVIDE = {
   globalGroupApproversEnabled: false,
   maxActiveScanExecutionPoliciesReached: false,
   maxActiveScanResultPoliciesReached: false,
+  maxActivePipelineExecutionPoliciesReached: false,
+  maxPipelineExecutionPoliciesAllowed: 1,
   maxScanExecutionPoliciesAllowed: 5,
   maxScanResultPoliciesAllowed: 5,
   policiesPath: 'path/to/policies',

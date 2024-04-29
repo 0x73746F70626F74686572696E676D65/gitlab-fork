@@ -55,7 +55,7 @@ export const DETAILS_FIELDS = [
 ].map((field) => ({
   ...field,
   thClass: 'gl-border-0!',
-  tdClass: 'gl-border-0! !gl-align-middle',
+  tdClass: 'gl-border-0!',
 }));
 
 export const CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID = 'cannot-remove-member-modal';

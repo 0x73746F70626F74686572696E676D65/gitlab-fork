@@ -8,11 +8,7 @@ import {
   GlFormRadio,
 } from '@gitlab/ui';
 import { s__ } from '~/locale';
-
-const accessLevelDisplay = {
-  MAINTAINER: s__('DeploymentApprovals|Maintainers'),
-  DEVELOPER: s__('DeploymentApprovals|Developers + Maintainers'),
-};
+import { ACCESS_LEVEL_DISPLAY } from 'ee/deployments/constants';
 
 export default {
   name: 'MultipleApprovalRulesTable',
@@ -74,7 +70,7 @@ export default {
         return { name: rule.user.name, link: rule.user.webUrl };
       }
 
-      return { name: accessLevelDisplay[rule.accessLevel.stringValue] };
+      return { name: ACCESS_LEVEL_DISPLAY[rule.accessLevel.stringValue] };
     },
     getRuleName(rule) {
       return this.getRuleData(rule).name;

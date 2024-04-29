@@ -30,11 +30,20 @@ export default {
     },
   },
   computed: {
-    isEnabled() {
+    isViewOnly() {
       const requiredFilters = [SERVICE_NAME_FILTER_TOKEN_TYPE, OPERATION_FILTER_TOKEN_TYPE];
-      return requiredFilters.every((filter) =>
+      const hasAllRequiredFilters = requiredFilters.every((filter) =>
         this.currentValue.find(({ type }) => type === filter),
       );
+      return !hasAllRequiredFilters;
+    },
+    computedConfig() {
+      const operators = this.config.operators ?? [];
+      return {
+        ...this.config,
+        // having multiple operators in view-only seem to break the token
+        operators: this.isViewOnly ? [operators[0]] : operators,
+      };
     },
   },
 };
@@ -43,14 +52,14 @@ export default {
 <template>
   <gl-filtered-search-token
     v-bind="{ ...$props, ...$attrs }"
-    :config="config"
+    :config="computedConfig"
     :value="value"
     :active="active"
-    :view-only="!isEnabled"
+    :view-only="isViewOnly"
     v-on="$listeners"
   >
     <template #suggestions>
-      <gl-dropdown-text v-if="!isEnabled">{{ $options.i18n.disabledText }}</gl-dropdown-text>
+      <gl-dropdown-text v-if="isViewOnly">{{ $options.i18n.disabledText }}</gl-dropdown-text>
     </template>
   </gl-filtered-search-token>
 </template>

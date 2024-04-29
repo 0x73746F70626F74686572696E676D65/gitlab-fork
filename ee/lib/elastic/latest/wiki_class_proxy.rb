@@ -168,11 +168,9 @@ module Elastic
       # rubocop:disable Metrics/PerceivedComplexity -- Same as above
       # rubocop:disable Metrics/CyclomaticComplexity -- Same as above
       def query_for_main_index(query, options)
-        options = options.merge(features: 'wiki', scope: es_type)
+        options = options.merge(features: 'wiki', scope: es_type, no_join_project: true)
         bool_expr = ::Gitlab::Elastic::BoolExpr.new
         query_hash = { query: { bool: bool_expr } }
-        options[:no_join_project] =
-          Elastic::DataMigrationService.migration_has_finished?(:backfill_wiki_permissions_in_main_index)
         fields = %w[blob.content blob.file_name blob.path]
         bool_expr = apply_simple_query_string(
           name: context.name(:wiki_blob, :match, :search_terms, :main_index),

@@ -90,7 +90,7 @@ module EE
           namespace_attributes: [
             :id,
             :shared_runners_minutes_limit,
-            gitlab_subscription_attributes: [:hosted_plan_id]
+            { gitlab_subscription_attributes: [:hosted_plan_id] }
           ],
           custom_attributes_attributes: [:id, :value]
         ]

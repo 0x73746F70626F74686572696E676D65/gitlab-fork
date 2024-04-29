@@ -77,8 +77,6 @@ module BulkImports
         if epic.parent_id || epic.parent
           params[:parent_id] = epic.parent_id
           params[:parent] = epic.parent
-          # epic.parent_id = nil
-          # epic.parent = nil
         end
 
         params

@@ -58,7 +58,7 @@ module AutoMerge
         else
           next false if Feature.disabled?(:merge_when_checks_pass, merge_request.project)
           next false if merge_request.project.merge_trains_enabled?
-          next false if merge_request.mergeable? && !merge_request.diff_head_pipeline&.active?
+          next false if merge_request.mergeable? && !merge_request.diff_head_pipeline_considered_in_progress?
 
           next true
         end
@@ -83,9 +83,9 @@ module AutoMerge
       return false if Feature.disabled?(:merge_when_checks_pass, merge_request.project)
       return false unless merge_request.approval_feature_available?
       return false if merge_request.project.merge_trains_enabled?
-      return false if merge_request.mergeable? && !merge_request.diff_head_pipeline&.active?
+      return false if merge_request.mergeable? && !merge_request.diff_head_pipeline_considered_in_progress?
 
-      merge_request.diff_head_pipeline&.active? ||
+      merge_request.diff_head_pipeline_considered_in_progress? ||
         !merge_request.approved? ||
         (Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project) &&
          (merge_request.draft? ||

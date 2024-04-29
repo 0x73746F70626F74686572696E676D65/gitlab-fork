@@ -114,7 +114,7 @@ export default {
 };
 </script>
 <template>
-  <gl-drawer :open="isShown" class="gl-z-index-9999!" @close="closeDrawer">
+  <gl-drawer :open="isShown" class="!gl-z-9999" @close="closeDrawer">
     <template #title>
       <div class="gl--flex-center">
         <h3 class="gl-m-0">{{ $options.i18n.drawerTitle }}</h3>

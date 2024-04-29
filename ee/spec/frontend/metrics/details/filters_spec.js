@@ -56,16 +56,6 @@ describe('filterObjToQuery', () => {
       expect(filterObjToQuery(filterObj)).toEqual(queryObj);
     });
 
-    it('handles non-custom time range', () => {
-      expect(
-        filterObjToQuery({
-          dateRange: {
-            value: '7d',
-          },
-        }),
-      ).toEqual({ date_range: '7d' });
-    });
-
     it('handles empty group by attrs', () => {
       expect(
         filterObjToQuery({
@@ -84,36 +74,6 @@ describe('filterObjToQuery', () => {
   describe('queryToFilterObj', () => {
     it('should build a filter obj', () => {
       expect(queryToFilterObj(query)).toEqual(filterObj);
-    });
-
-    it('adds the default date range value if missing', () => {
-      expect(queryToFilterObj('')).toEqual({
-        attributes: {},
-        dateRange: {
-          value: '1h',
-        },
-        groupBy: {},
-      });
-    });
-
-    it('handles non-custom time range', () => {
-      expect(queryToFilterObj('date_range=7d')).toEqual({
-        attributes: {},
-        dateRange: {
-          value: '7d',
-        },
-        groupBy: {},
-      });
-    });
-
-    it('handles invalid dates', () => {
-      expect(queryToFilterObj('date_range=custom&date_start=foo&date_end=bar')).toEqual({
-        attributes: {},
-        dateRange: {
-          value: '1h',
-        },
-        groupBy: {},
-      });
     });
 
     it('handles empty group by attrs', () => {

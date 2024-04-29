@@ -358,9 +358,9 @@ gem 'gitlab-license', '~> 2.4', feature_category: :shared
 gem 'rack-attack', '~> 6.7.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Sentry integration
-gem 'sentry-ruby', '~> 5.10.0', feature_category: :error_tracking
-gem 'sentry-rails', '~> 5.10.0', feature_category: :error_tracking
-gem 'sentry-sidekiq', '~> 5.10.0', feature_category: :error_tracking
+gem 'sentry-ruby', '~> 5.17.3', feature_category: :error_tracking
+gem 'sentry-rails', '~> 5.17.3', feature_category: :error_tracking
+gem 'sentry-sidekiq', '~> 5.17.3', feature_category: :error_tracking
 
 # PostgreSQL query parsing
 #
@@ -374,7 +374,7 @@ gem 'gitlab-labkit', '~> 0.36.0', feature_category: :shared
 gem 'thrift', '>= 0.16.0' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # I18n
-gem 'rails-i18n', '~> 7.0', feature_category: :internationalization
+gem 'rails-i18n', '~> 7.0', '>= 7.0.9', feature_category: :internationalization
 gem 'gettext_i18n_rails', '~> 1.12.0', feature_category: :internationalization
 gem 'gettext', '~> 3.4', '>= 3.4.9',
   require: false,
@@ -434,7 +434,7 @@ group :development do
   gem 'solargraph', '~> 0.47.2', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 
   gem 'letter_opener_web', '~> 2.0.0' # rubocop:todo Gemfile/MissingFeatureCategory
-  gem 'lookbook', '~> 2.2', '>= 2.2.2' # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'lookbook', '~> 2.3' # rubocop:todo Gemfile/MissingFeatureCategory
 
   # Better errors handler
   gem 'better_errors', '~> 2.10.1' # rubocop:todo Gemfile/MissingFeatureCategory
@@ -593,7 +593,7 @@ gem 'spamcheck', '~> 1.3.0' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'gitaly', '~> 17.0.0.pre.rc2', feature_category: :gitaly
 
 # KAS GRPC protocol definitions
-gem 'kas-grpc', '~> 0.4.0', feature_category: :deployment_management
+gem 'kas-grpc', '~> 0.5.0', feature_category: :deployment_management
 
 gem 'grpc', '~> 1.62', feature_category: :shared
 

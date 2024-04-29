@@ -203,8 +203,6 @@ When upgrading:
 
 1. Find where your version sits in the upgrade path:
 
-   - GitLab 14: [`14.0.12`](versions/gitlab_14_changes.md#1400) > [`14.3.6`](versions/gitlab_14_changes.md#1430) >
-     [`14.9.5`](versions/gitlab_14_changes.md#1490) > [`14.10.5`](versions/gitlab_14_changes.md#14100).
    - GitLab 15: [`15.0.5`](versions/gitlab_15_changes.md#1500) > [`15.1.6`](versions/gitlab_15_changes.md#1510) (for
      GitLab instances with multiple web nodes) > [`15.4.6`](versions/gitlab_15_changes.md#1540) >
      [`15.11.13`](versions/gitlab_15_changes.md#15110).
@@ -213,8 +211,9 @@ When upgrading:
      [large pipeline variables history](versions/gitlab_16_changes.md#1610)) >
      [`16.1.6`](versions/gitlab_16_changes.md#1610) (instances with NPM packages in their package registry) >
      [`16.2.9`](versions/gitlab_16_changes.md#1620) (only instances with [large pipeline variables history](versions/gitlab_16_changes.md#1630)) >
-     [`16.3.7`](versions/gitlab_16_changes.md#1630) > [`16.7.z`](versions/gitlab_16_changes.md#1670)
-     > [latest `16.Y.Z`](https://gitlab.com/gitlab-org/gitlab/-/releases).
+     [`16.3.7`](versions/gitlab_16_changes.md#1630) > [`16.7.z`](versions/gitlab_16_changes.md#1670) >
+     [`16.11.z`](https://gitlab.com/gitlab-org/gitlab/-/releases).
+   - GitLab 17: [`17.y.z`](versions/gitlab_17_changes.md#1700).
 
 1. Check for [required upgrade stops](#required-upgrade-stops).
 1. Consult the [version-specific upgrade instructions](#version-specific-upgrading-instructions).
@@ -222,7 +221,7 @@ When upgrading:
 
 NOTE:
 When not explicitly specified, upgrade GitLab to the latest available patch
-release of the `major`.`minor` release rather than the first patch release, for example `13.8.8` instead of `13.8.0`.
+release of the `major`.`minor` release rather than the first patch release, for example `16.8.7` instead of `16.8.0`.
 This includes `major`.`minor` versions you must stop at on the upgrade path as there may
 be fixes for issues relating to the upgrade process.
 Specifically around a [major version](#upgrading-to-a-new-major-version),
@@ -316,10 +315,6 @@ Before upgrading to GitLab 16, see [GitLab 16 changes](versions/gitlab_16_change
 ### GitLab 15
 
 Before upgrading to GitLab 15, see [GitLab 15 changes](versions/gitlab_15_changes.md).
-
-### GitLab 14
-
-Before upgrading to GitLab 14, see [GitLab 14 changes](versions/gitlab_14_changes.md).
 
 ## Miscellaneous
 

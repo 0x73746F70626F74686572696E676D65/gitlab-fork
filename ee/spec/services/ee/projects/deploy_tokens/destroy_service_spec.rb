@@ -12,6 +12,11 @@ RSpec.describe Projects::DeployTokens::DestroyService, feature_category: :contin
   describe '#execute' do
     subject { described_class.new(entity, user, deploy_token_params).execute }
 
+    before do
+      stub_licensed_features(external_audit_events: true)
+      group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
+    end
+
     it "destroys a token record and it's associated DeployToken" do
       expect { subject }.to change { ProjectDeployToken.count }.by(-1)
                                                                .and change { DeployToken.count }.by(-1)
@@ -29,11 +34,6 @@ RSpec.describe Projects::DeployTokens::DestroyService, feature_category: :contin
                                                    custom_message: expected_message,
                                                    action: :custom
                                                  })
-    end
-
-    before do
-      stub_licensed_features(external_audit_events: true)
-      group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
     end
 
     it_behaves_like 'sends correct event type in audit event stream' do

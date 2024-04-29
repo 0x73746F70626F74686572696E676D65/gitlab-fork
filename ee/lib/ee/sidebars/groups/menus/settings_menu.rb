@@ -6,6 +6,7 @@ module EE
       module Menus
         module SettingsMenu
           extend ::Gitlab::Utils::Override
+          include ::GitlabSubscriptions::SubscriptionHelper
 
           override :configure_menu_items
           def configure_menu_items
@@ -51,7 +52,7 @@ module EE
           end
 
           def custom_roles_enabled?
-            context.group.root? && context.group.licensed_feature_available?(:custom_roles)
+            context.group.root? && context.group.licensed_feature_available?(:custom_roles) && gitlab_com_subscription?
           end
 
           def ldap_sync_menu_item

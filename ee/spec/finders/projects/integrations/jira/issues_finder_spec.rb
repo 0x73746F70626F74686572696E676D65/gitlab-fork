@@ -184,6 +184,42 @@ RSpec.describe Projects::Integrations::Jira::IssuesFinder, feature_category: :in
       end
     end
 
+    context 'when filtering by vulnerability_ids' do
+      let(:params) { { vulnerability_ids: ['123'] } }
+
+      context 'when jira service integration does not have project_key' do
+        it 'raises error' do
+          expect { subject }.to raise_error(Projects::Integrations::Jira::IssuesFinder::IntegrationError, 'Jira project key is not configured.')
+        end
+      end
+
+      context 'when jira service integration has project_key' do
+        let(:client) { double(options: { site: 'https://jira.example.com' }) }
+
+        before do
+          jira_integration.update!(project_key: 'TEST')
+          expect_next_instance_of(Jira::Requests::Issues::ListService) do |instance|
+            expect(instance).to receive(:client).at_least(:once).and_return(client)
+          end
+          expect(client).to receive(:get).and_return(
+            {
+              "total" => 375,
+              "startAt" => 0,
+              "issues" => [{ "key" => 'TEST-1' }, { "key" => 'TEST-2' }]
+            }
+          )
+        end
+
+        it 'passes the project_key to JqlBuilderService' do
+          expect(::Jira::JqlBuilderService).to receive(:new)
+            .with('TEST', include({ sort: 'created', sort_direction: 'DESC', vulnerability_ids: ['123'] }))
+            .and_call_original
+
+          subject
+        end
+      end
+    end
+
     context 'when feature :multiple_jira_project_keys is disabled' do
       before do
         stub_feature_flags(jira_multiple_project_keys: false)

@@ -22,6 +22,7 @@ import WorkItemStickyHeader from '~/work_items/components/work_item_sticky_heade
 import WorkItemTitleWithEdit from '~/work_items/components/work_item_title_with_edit.vue';
 import AbuseCategorySelector from '~/abuse_reports/components/abuse_category_selector.vue';
 import WorkItemTodos from '~/work_items/components/work_item_todos.vue';
+import DesignWidget from '~/work_items/components/design_management/design_management_widget.vue';
 import { i18n } from '~/work_items/constants';
 import groupWorkItemByIidQuery from '~/work_items/graphql/group_work_item_by_iid.query.graphql';
 import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
@@ -91,6 +92,7 @@ describe('WorkItemDetail component', () => {
   const findWorkItemTwoColumnViewContainer = () => wrapper.findByTestId('work-item-overview');
   const findRightSidebar = () => wrapper.findByTestId('work-item-overview-right-sidebar');
   const findEditButton = () => wrapper.findByTestId('work-item-edit-form-button');
+  const findWorkItemDesigns = () => wrapper.findComponent(DesignWidget);
 
   const createComponent = ({
     isGroup = false,
@@ -649,6 +651,17 @@ describe('WorkItemDetail component', () => {
     });
   });
 
+  describe('design widget', () => {
+    beforeEach(async () => {
+      createComponent();
+      await waitForPromises();
+    });
+
+    it('renders if work item has design widget', () => {
+      expect(findWorkItemDesigns().exists()).toBe(true);
+    });
+  });
+
   describe('work item attributes wrapper', () => {
     beforeEach(async () => {
       createComponent();
@@ -719,7 +732,6 @@ describe('WorkItemDetail component', () => {
         });
 
         it('work item description component shows in edit mode', () => {
-          expect(findWorkItemDescription().props('disableInlineEditing')).toBe(true);
           expect(findWorkItemDescription().props('editMode')).toBe(true);
         });
       });

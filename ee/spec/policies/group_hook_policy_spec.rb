@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupHookPolicy do
+RSpec.describe GroupHookPolicy, feature_category: :webhooks do
   let_it_be(:user) { create(:user) }
 
   let(:hook) { create(:group_hook) }
@@ -14,8 +14,9 @@ RSpec.describe GroupHookPolicy do
       hook.group.add_maintainer(user)
     end
 
-    it "cannot destroy web-hooks" do
-      expect(policy).to be_disallowed(:destroy_web_hook)
+    it "cannot read or admin web-hooks" do
+      expect(policy).to be_disallowed(:read_web_hook)
+      expect(policy).to be_disallowed(:admin_web_hook)
     end
   end
 
@@ -24,8 +25,9 @@ RSpec.describe GroupHookPolicy do
       hook.group.add_owner(user)
     end
 
-    it "can destroy web-hooks" do
-      expect(policy).to be_allowed(:destroy_web_hook)
+    it "can admin web-hooks" do
+      expect(policy).to be_allowed(:read_web_hook)
+      expect(policy).to be_allowed(:admin_web_hook)
     end
   end
 end

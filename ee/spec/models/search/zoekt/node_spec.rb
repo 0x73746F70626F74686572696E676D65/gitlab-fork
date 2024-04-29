@@ -34,6 +34,12 @@ RSpec.describe ::Search::Zoekt::Node, feature_category: :global_search do
     end
   end
 
+  describe 'validations' do
+    describe 'metadata' do
+      it { expect(described_class).to validate_jsonb_schema(['zoekt_node_metadata']) }
+    end
+  end
+
   describe '.find_or_initialize_by_task_request', :freeze_time do
     let(:base_params) do
       {

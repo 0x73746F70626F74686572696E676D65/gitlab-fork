@@ -24,9 +24,7 @@ module EE
           private
 
           def roles_and_permissions_menu_item
-            if gitlab_com_subscription? || !custom_roles_enabled?
-              return ::Sidebars::NilMenuItem.new(item_id: :roles_and_permissions)
-            end
+            return ::Sidebars::NilMenuItem.new(item_id: :roles_and_permissions) unless custom_roles_enabled?
 
             ::Sidebars::MenuItem.new(
               title: _('Roles and Permissions'),
@@ -37,7 +35,7 @@ module EE
           end
 
           def custom_roles_enabled?
-            ::License.feature_available?(:custom_roles)
+            ::License.feature_available?(:custom_roles) && !gitlab_com_subscription?
           end
 
           def advanced_search_menu_item

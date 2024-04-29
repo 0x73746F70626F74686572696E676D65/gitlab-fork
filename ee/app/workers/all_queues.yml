@@ -1582,7 +1582,7 @@
   :worker_name: Llm::CompletionWorker
   :feature_category: :ai_abstraction_layer
   :has_external_dependencies: false
-  :urgency: :low
+  :urgency: :high
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true

@@ -64,10 +64,9 @@ module Mutations
       end
 
       def extra_group_path?(args)
-        return false if args[:group_path].blank?
         return false if gitlab_com_subscription?
 
-        restrict_member_roles?
+        args[:group_path].present?
       end
 
       def canonicalize(args)
@@ -75,10 +74,6 @@ module Mutations
         permissions.each_with_object(args) do |permission, new_args|
           new_args[permission.downcase] = true
         end
-      end
-
-      def restrict_member_roles?
-        Feature.enabled?(:restrict_member_roles, type: :beta)
       end
     end
   end

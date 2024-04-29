@@ -1,6 +1,6 @@
 ---
 name: admin_compliance_framework
-description: Enables administrator access to the compliance framework.
+description: Create, read, update, and delete compliance frameworks. Users with this permission can also assign a compliance framework label to a project, and set the default framework of a group.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/411502
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/144183
 feature_category: compliance_management

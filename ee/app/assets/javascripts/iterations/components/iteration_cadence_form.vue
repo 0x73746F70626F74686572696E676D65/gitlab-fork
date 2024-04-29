@@ -81,10 +81,16 @@ export default {
   availableDurations: [{ value: null, text: i18n.duration.placeholder }, 1, 2, 3, 4],
   availableUpcomingIterations: [
     { value: null, text: i18n.upcomingIterations.placeholder },
+    0,
+    1,
     2,
+    3,
     4,
+    5,
     6,
+    7,
     8,
+    9,
     10,
   ],
 
@@ -261,7 +267,8 @@ export default {
   },
   methods: {
     validate(field) {
-      this.validationState[field] = Boolean(this[field]);
+      this.validationState[field] =
+        this[field] !== null && this[field] !== undefined && this[field] !== '';
     },
     validateAllFields() {
       this.validate('title');

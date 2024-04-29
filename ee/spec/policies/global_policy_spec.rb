@@ -616,17 +616,18 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
       let_it_be(:yesterday) { Time.current - 1.day }
 
       where(:licensed, :duo_features_enabled, :duo_chat_cut_off_date, :duo_pro_seat_assigned,
-        :duo_chat_enabled_for_user) do
-        true  | false | ref(:tomorrow)  | false | be_disallowed(policy)
-        true  | true  | ref(:tomorrow)  | false | be_allowed(policy)
-        false | false | ref(:tomorrow)  | false | be_disallowed(policy)
-        false | true  | ref(:tomorrow)  | false | be_disallowed(policy)
-        false | true  | ref(:tomorrow)  | true  | be_disallowed(policy)
-        false | true  | ref(:yesterday) | false | be_disallowed(policy)
-        false | true  | ref(:yesterday) | true  | be_disallowed(policy)
-        false | false | ref(:yesterday) | true  | be_disallowed(policy)
-        true  | false | ref(:yesterday) | true  | be_allowed(policy)
-        true  | true  | ref(:yesterday) | false | be_disallowed(policy)
+        :requires_licensed_seat_sm, :duo_chat_enabled_for_user) do
+        true  | false | ref(:tomorrow)  | false | false | be_disallowed(policy)
+        true  | true  | ref(:tomorrow)  | false | false | be_allowed(policy)
+        true  | true  | ref(:tomorrow)  | false | true  | be_disallowed(policy)
+        false | false | ref(:tomorrow)  | false | false | be_disallowed(policy)
+        false | true  | ref(:tomorrow)  | false | false | be_disallowed(policy)
+        false | true  | ref(:tomorrow)  | true  | false | be_disallowed(policy)
+        false | true  | ref(:yesterday) | false | false | be_disallowed(policy)
+        false | true  | ref(:yesterday) | true  | false | be_disallowed(policy)
+        false | false | ref(:yesterday) | true  | false | be_disallowed(policy)
+        true  | false | ref(:yesterday) | true  | false | be_allowed(policy)
+        true  | true  | ref(:yesterday) | false | false | be_disallowed(policy)
       end
 
       with_them do
@@ -635,6 +636,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
           stub_ee_application_setting(duo_features_enabled: duo_features_enabled)
           stub_licensed_features(ai_chat: licensed)
           allow(current_user).to receive(:duo_pro_add_on_available?).and_return(duo_pro_seat_assigned)
+          stub_feature_flags(duo_chat_requires_licensed_seat_sm: requires_licensed_seat_sm)
 
           duo_chat = CloudConnector::ConnectedService.new(name: :duo_chat, cut_off_date: duo_chat_cut_off_date)
           allow_next_instance_of(::CloudConnector::AccessService) do |instance|

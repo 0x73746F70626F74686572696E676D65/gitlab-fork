@@ -440,7 +440,7 @@ class MergeRequest < ApplicationRecord
   scope :preload_milestoneish_associations, -> { preload_routables.preload(:assignees, :labels) }
 
   scope :with_web_entity_associations, -> do
-    preload(:author, :labels, target_project: [:project_feature, group: [:route, :parent], namespace: :route])
+    preload(:author, :labels, target_project: [:project_feature, { group: [:route, :parent], namespace: :route }])
   end
 
   scope :with_auto_merge_enabled, -> do
@@ -690,9 +690,13 @@ class MergeRequest < ApplicationRecord
     [:assignees, :reviewers] + super
   end
 
-  def committers(with_merge_commits: false, lazy: false)
-    strong_memoize_with(:committers, with_merge_commits, lazy) do
-      commits.committers(with_merge_commits: with_merge_commits, lazy: lazy)
+  def committers(with_merge_commits: false, lazy: false, include_author_when_signed: false)
+    strong_memoize_with(:committers, with_merge_commits, lazy, include_author_when_signed) do
+      commits.committers(
+        with_merge_commits: with_merge_commits,
+        lazy: lazy,
+        include_author_when_signed: include_author_when_signed
+      )
     end
   end
 
@@ -1594,7 +1598,8 @@ class MergeRequest < ApplicationRecord
   end
 
   def mergeable_ci_state?
-    return true unless only_allow_merge_if_pipeline_succeeds?
+    # When using MWCP auto merge strategy, the ci must be mergeable, regardless of the project setting
+    return true unless only_allow_merge_if_pipeline_succeeds? || (auto_merge_strategy == ::AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS && project.has_ci?)
     return false unless diff_head_pipeline
 
     return true if project.allow_merge_on_skipped_pipeline?(inherit_group_setting: true) && diff_head_pipeline.skipped?
@@ -2235,20 +2240,25 @@ class MergeRequest < ApplicationRecord
     merge_request_diff.get_patch_id_sha
   end
 
-  def auto_merge_available_when_pipeline_succeeds?
+  def diff_head_pipeline_considered_in_progress?
     pipeline = diff_head_pipeline
-    return unless pipeline
+    return false unless pipeline
 
+    # We allow auto-merge on blocked pipelines when "Pipelines must succeed" is
+    # enabled, because in that case the pipeline blocks the merge. When
+    # "Pipelines must succeed" is disabled, immediate merges are neither blocked
+    # nor discouraged on blocked pipelines, so auto merge should not wait for
+    # the pipeline to finish.
     if auto_merge_when_incomplete_pipeline_succeeds_enabled?
-      !pipeline.complete?
+      if only_allow_merge_if_pipeline_succeeds?
+        !pipeline.complete?
+      else
+        pipeline.active? || pipeline.created?
+      end
     else
       pipeline.active?
     end
   end
-
-  private
-
-  attr_accessor :skip_fetch_ref
 
   def auto_merge_when_incomplete_pipeline_succeeds_enabled?
     Feature.enabled?(
@@ -2257,6 +2267,10 @@ class MergeRequest < ApplicationRecord
       type: :gitlab_com_derisk
     )
   end
+
+  private
+
+  attr_accessor :skip_fetch_ref
 
   def check_mergeability_states(checks:, execute_all: false, **params)
     execute_merge_checks(

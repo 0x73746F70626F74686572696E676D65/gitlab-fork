@@ -50,6 +50,7 @@ RSpec.describe Projects::PushRulesController, feature_category: :source_code_man
         before do
           stub_licensed_features(rule_attr => false)
         end
+
         it_behaves_like 'updateable setting', rule_attr, false, true
       end
 
@@ -57,6 +58,7 @@ RSpec.describe Projects::PushRulesController, feature_category: :source_code_man
         before do
           stub_licensed_features(rule_attr => true)
         end
+
         it_behaves_like 'updateable setting', rule_attr, updates, true
       end
 
@@ -65,6 +67,7 @@ RSpec.describe Projects::PushRulesController, feature_category: :source_code_man
           stub_licensed_features(rule_attr => true)
           create(:push_rule_sample, rule_attr => true)
         end
+
         it_behaves_like 'updateable setting', rule_attr, updates_when_global_enabled, false
       end
     end
@@ -81,6 +84,7 @@ RSpec.describe Projects::PushRulesController, feature_category: :source_code_man
           before do
             project.add_maintainer(user)
           end
+
           it_behaves_like 'a setting with global default', rule_attr, updates: true
         end
 
@@ -88,6 +92,7 @@ RSpec.describe Projects::PushRulesController, feature_category: :source_code_man
           before do
             project.add_developer(user)
           end
+
           it_behaves_like 'a setting with global default', rule_attr, updates: false, updates_when_global_enabled: false
         end
       end
@@ -117,6 +122,7 @@ RSpec.describe Projects::PushRulesController, feature_category: :source_code_man
           before do
             project.add_maintainer(user)
           end
+
           it_behaves_like 'updates push rule commit_committer_name_check of project', false
         end
 
@@ -124,6 +130,7 @@ RSpec.describe Projects::PushRulesController, feature_category: :source_code_man
           before do
             project.add_developer(user)
           end
+
           it_behaves_like 'updates push rule commit_committer_name_check of project', false
         end
       end
@@ -143,6 +150,7 @@ RSpec.describe Projects::PushRulesController, feature_category: :source_code_man
           before do
             project.add_maintainer(user)
           end
+
           it_behaves_like 'updates push rule commit_committer_name_check of project', true
         end
 
@@ -150,6 +158,7 @@ RSpec.describe Projects::PushRulesController, feature_category: :source_code_man
           before do
             project.add_developer(user)
           end
+
           it_behaves_like 'updates push rule commit_committer_name_check of project', false
         end
       end

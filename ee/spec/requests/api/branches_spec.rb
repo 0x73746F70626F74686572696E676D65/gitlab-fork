@@ -4,11 +4,10 @@ require 'spec_helper'
 
 RSpec.describe API::Branches, feature_category: :source_code_management do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :repository, creator: user, path: 'my.project') }
+  let_it_be(:project) { create(:project, :repository, creator: user, path: 'my.project', maintainers: user) }
   let_it_be(:protected_branch) { create(:protected_branch, project: project) }
 
   before_all do
-    project.add_maintainer(user)
     project.repository.add_branch(user, protected_branch.name, 'master')
   end
 

@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import {
   PAGINATION_SORT_FIELD_DURATION,
   PAGINATION_SORT_DIRECTION_DESC,
@@ -140,13 +139,12 @@ export default {
     state.enableCustomizableStages = enableCustomizableStages;
     state.enableProjectsFilter = enableProjectsFilter;
 
-    Vue.set(state, 'aggregation', aggregation);
-
-    Vue.set(state, 'pagination', {
+    state.aggregation = aggregation;
+    state.pagination = {
       page: pagination.page ?? state.pagination.page,
       sort: pagination.sort ?? state.pagination.sort,
       direction: pagination.direction ?? state.pagination.direction,
-    });
+    };
   },
   [types.INITIALIZE_VALUE_STREAM_SUCCESS](state) {
     state.isLoading = false;
@@ -216,12 +214,12 @@ export default {
       });
   },
   [types.SET_PAGINATION](state, { page, hasNextPage, sort, direction }) {
-    Vue.set(state, 'pagination', {
+    state.pagination = {
       page,
       hasNextPage,
       sort: sort || PAGINATION_SORT_FIELD_DURATION,
       direction: direction || PAGINATION_SORT_DIRECTION_DESC,
-    });
+    };
   },
   [types.SET_CREATING_AGGREGATION](state, value) {
     state.isCreatingAggregation = value;

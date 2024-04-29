@@ -107,6 +107,7 @@ RSpec.describe 'Issues > Bulk edit issues', feature_category: :team_planning do
       before do
         enable_bulk_update(context)
       end
+
       context 'to all issues' do
         before do
           check 'Select all'

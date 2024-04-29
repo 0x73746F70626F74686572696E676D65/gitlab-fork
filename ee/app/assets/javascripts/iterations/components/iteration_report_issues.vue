@@ -37,6 +37,12 @@ export default {
       thClass: 'gl-w-eighth',
     },
     {
+      key: 'weight',
+      label: __('Weight'),
+      class: 'gl-bg-transparent! gl-text-center',
+      thClass: 'gl-w-12',
+    },
+    {
       key: 'assignees',
       label: __('Assignees'),
       class: 'gl-bg-transparent! gl-text-right',
@@ -72,6 +78,7 @@ export default {
           ...issue,
           labels: issue?.labels?.nodes || [],
           assignees: issue?.assignees?.nodes || [],
+          weight: issue?.weight || null,
         }));
 
         return {

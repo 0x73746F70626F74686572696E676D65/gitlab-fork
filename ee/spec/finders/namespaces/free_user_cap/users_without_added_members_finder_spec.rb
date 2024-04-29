@@ -8,8 +8,8 @@ RSpec.describe Namespaces::FreeUserCap::UsersWithoutAddedMembersFinder, feature_
   let_it_be(:invited_group) { create(:group) }
   let_it_be(:invited_group_with_same_user) { create(:group) }
 
-  let_it_be(:user_with_multiple_members) { create(:user) }
-  let_it_be(:user_for_group_and_project) { create(:user) }
+  let_it_be(:user_with_multiple_members) { create(:user, developer_of: [group, project, invited_group]) }
+  let_it_be(:user_for_group_and_project) { create(:user, developer_of: [group, project]) }
   let_it_be(:project_developer) { project.add_developer(create(:user)).user }
   let_it_be(:group_guest) { group.add_guest(create(:user)).user }
   let_it_be(:project_guest) { project.add_guest(create(:user)).user }
@@ -21,13 +21,6 @@ RSpec.describe Namespaces::FreeUserCap::UsersWithoutAddedMembersFinder, feature_
   before_all do
     group.add_maintainer(create(:user, :project_bot))
     project.add_maintainer(create(:user, :project_bot))
-
-    group.add_developer(user_for_group_and_project)
-    project.add_developer(user_for_group_and_project)
-
-    group.add_developer(user_with_multiple_members)
-    project.add_developer(user_with_multiple_members)
-    invited_group.add_developer(user_with_multiple_members)
 
     create(:group_group_link, { shared_with_group: invited_group, shared_group: group })
     create(:group_group_link, { shared_with_group: invited_group_with_same_user, shared_group: group })

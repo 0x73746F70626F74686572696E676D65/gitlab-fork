@@ -9,11 +9,11 @@ RSpec.describe Mutations::IncidentManagement::OncallSchedule::Destroy do
   let(:oncall_schedule) { create(:incident_management_oncall_schedule, project: project) }
   let(:args) { { project_path: project.full_path, iid: oncall_schedule.iid.to_s } }
 
-  specify { expect(described_class).to require_graphql_authorizations(:admin_incident_management_oncall_schedule) }
-
   before do
     stub_licensed_features(oncall_schedules: true)
   end
+
+  specify { expect(described_class).to require_graphql_authorizations(:admin_incident_management_oncall_schedule) }
 
   describe '#resolve' do
     subject(:resolve) { mutation_for(project, current_user).resolve(**args) }

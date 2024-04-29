@@ -21,7 +21,6 @@ export default {
   inject: {
     analyticsSettingsPath: {},
     namespaceFullPath: {},
-    chartEmptyStateIllustrationPath: {},
     projectLevelAnalyticsProviderSettings: {},
   },
   props: {
@@ -33,6 +32,7 @@ export default {
   data() {
     return {
       loading: this.loadingInstance,
+      loadingStateSvgPath: null,
     };
   },
   computed: {
@@ -41,7 +41,8 @@ export default {
     },
   },
   methods: {
-    onConfirm() {
+    onConfirm(loadingStateSvgPath) {
+      this.loadingStateSvgPath = loadingStateSvgPath;
       this.loading = true;
       this.initialize();
     },
@@ -84,7 +85,7 @@ export default {
     <gl-empty-state
       v-if="loading"
       :title="s__('ProductAnalytics|Creating your product analytics instance...')"
-      :svg-path="chartEmptyStateIllustrationPath"
+      :svg-path="loadingStateSvgPath"
       :svg-height="null"
     >
       <template #description>

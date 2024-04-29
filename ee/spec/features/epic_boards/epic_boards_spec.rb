@@ -74,7 +74,7 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
     end
 
     it 'creates new column for label containing labeled epic' do
-      click_button 'Create list'
+      click_button 'New list'
       wait_for_all_requests
 
       click_button 'Select a label'

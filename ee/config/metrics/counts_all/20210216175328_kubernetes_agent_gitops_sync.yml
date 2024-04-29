@@ -8,7 +8,7 @@ product_stage: configure
 product_group: environments
 product_category: deployment_management
 value_type: number
-status: active
+status: removed
 time_frame: all
 data_source: redis
 instrumentation_class: RedisMetric
@@ -22,3 +22,5 @@ tier:
 - ultimate
 performance_indicator_type: []
 milestone: "<13.9"
+removed_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/149542
+milestone_removed: '17.0'

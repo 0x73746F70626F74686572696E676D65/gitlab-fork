@@ -1,10 +1,10 @@
 <script>
-import { GlAvatarLink, GlAvatar, GlBadge, GlLink } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { GlAvatarLink, GlAvatar, GlBadge, GlLink, GlTooltipDirective } from '@gitlab/ui';
+import { s__, sprintf } from '~/locale';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import TimelineEntryItem from '~/vue_shared/components/notes/timeline_entry_item.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { APPROVAL_STATUSES } from '../constants';
+import { APPROVAL_STATUSES, ACCESS_LEVEL_DISPLAY } from '../constants';
 
 export default {
   components: {
@@ -14,6 +14,9 @@ export default {
     GlLink,
     TimelineEntryItem,
     TimeAgoTooltip,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     approvalSummary: {
@@ -44,11 +47,33 @@ export default {
         ? this.$options.i18n.approved
         : this.$options.i18n.rejected;
     },
+    badgeTooltip(approval) {
+      const relatedRule = this.approvalSummary.rules.find((rule) =>
+        rule?.approvals.find(
+          (ruleApproval) => ruleApproval.user.username === approval.user.username,
+        ),
+      );
+
+      if (!relatedRule) {
+        return '';
+      }
+
+      const role =
+        relatedRule.user?.name ||
+        relatedRule.group?.name ||
+        ACCESS_LEVEL_DISPLAY[relatedRule.accessLevel?.stringValue];
+
+      return approval.status === APPROVAL_STATUSES.APPROVED
+        ? sprintf(this.$options.i18n.approvedAs, { role })
+        : sprintf(this.$options.i18n.rejectedAs, { role });
+    },
   },
   i18n: {
     header: s__('Deployment|Approval Comments'),
     approved: s__('Deployment|Approved'),
     rejected: s__('Deployment|Rejected'),
+    approvedAs: s__('Deployment|Approved as %{role}'),
+    rejectedAs: s__('Deployment|Rejected as %{role}'),
   },
 };
 </script>
@@ -86,7 +111,12 @@ export default {
                 <span class="note-headline-light">@{{ approval.user.username }}</span>
               </gl-link>
               <span class="note-headline-light"> &middot; </span>
-              <gl-badge :variant="badgeVariant(approval)" size="sm">
+              <gl-badge
+                v-gl-tooltip
+                :variant="badgeVariant(approval)"
+                :title="badgeTooltip(approval)"
+                size="sm"
+              >
                 {{ badgeText(approval) }}
               </gl-badge>
               <span class="note-headline-light"> &middot; </span>

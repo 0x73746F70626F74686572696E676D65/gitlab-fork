@@ -1,13 +1,12 @@
 ---
 data_category: optional
 key_path: counts_weekly.aggregated_metrics.compliance_features_track_unique_visits_union
-description: Unique users that have used audit event screen, audit event API, compliance
-  report, or credential inventory
+description: Removed as duplicate of redis_hll_counters.compliance.compliance_total_unique_counts_weekly
 product_section: sec
 product_stage: govern
 product_group: compliance
 value_type: number
-status: active
+status: removed
 time_frame: 7d
 instrumentation_class: RedisHLLMetric
 data_source: redis_hll
@@ -29,3 +28,5 @@ tier:
 - ultimate
 performance_indicator_type: []
 milestone: "<13.9"
+milestone_removed: "17.0"
+removed_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/150678

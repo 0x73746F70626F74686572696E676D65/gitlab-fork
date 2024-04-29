@@ -7,6 +7,7 @@ module Gitlab
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
         include ::Gitlab::Llm::Concerns::EventTracking
         include ::Gitlab::Llm::Concerns::AvailableModels
+        include ::Gitlab::Llm::Concerns::AllowedParams
         include ::Gitlab::Utils::StrongMemoize
         include ::API::Helpers::CloudConnector
         include Langsmith::RunHelpers
@@ -17,8 +18,6 @@ module Gitlab
         CHAT_ENDPOINT = '/v1/chat/agent'
 
         JWT_AUDIENCE = 'gitlab-ai-gateway'
-
-        ALLOWED_PAYLOAD_PARAM_KEYS = %i[temperature max_tokens_to_sample stop_sequences].freeze
 
         ConnectionError = Class.new(StandardError)
 
@@ -137,7 +136,8 @@ module Gitlab
         end
 
         def payload_params(options)
-          params = options.slice(*ALLOWED_PAYLOAD_PARAM_KEYS)
+          allowed_params = ALLOWED_PARAMS.fetch(provider(options))
+          params = options.slice(*allowed_params)
 
           return {} if params.empty?
 

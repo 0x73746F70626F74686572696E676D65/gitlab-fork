@@ -24,7 +24,7 @@ module EE
         super + [
           :repository_size_limit,
           :shared_runners_minutes_limit,
-          gitlab_subscription_attributes: [:hosted_plan_id]
+          { gitlab_subscription_attributes: [:hosted_plan_id] }
         ]
       end
 

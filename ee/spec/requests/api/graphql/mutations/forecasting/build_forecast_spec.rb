@@ -53,7 +53,7 @@ RSpec.describe 'buildForecast', feature_category: :devops_reports do
 
     let(:expected_forecast) do
       [3, 2, 1, 0, 1, 2, 3].map.with_index do |value, i|
-        { 'datapoint' => (Date.today + 1 + i).strftime('%Y-%m-%d'), 'value' => value }
+        { 'datapoint' => (Date.today + 1 + i).iso8601, 'value' => value }
       end
     end
 

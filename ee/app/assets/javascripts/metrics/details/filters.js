@@ -6,13 +6,13 @@ import {
 import {
   OPERERATOR_LIKE,
   OPERERATOR_NOT_LIKE,
-  CUSTOM_DATE_RANGE_OPTION,
+  FILTERED_SEARCH_TERM_QUERY_KEY,
+  DATE_RANGE_QUERY_KEY,
+  DATE_RANGE_START_QUERY_KEY,
+  DATE_RANGE_END_QUERY_KEY,
 } from '~/observability/constants';
+import { dateFilterObjToQuery, queryToDateFilterObj } from '~/observability/utils';
 import { queryToObject } from '~/lib/utils/url_utility';
-import { isValidDate } from '~/lib/utils/datetime_utility';
-
-const DEFAULT_TIME_RANGE = '1h';
-const FILTERED_SEARCH_TERM_KEY = 'search';
 
 const customOperators = [
   {
@@ -27,13 +27,10 @@ const customOperators = [
 
 const GROUP_BY_FN_QUERY_KEY = 'group_by_fn';
 const GROUP_BY_ATTRIBUTES_QUERY_KEY = 'group_by_attrs';
-const DATE_RANGE_QUERY_KEY = 'date_range';
-const DATE_RANGE_START_QUERY_KEY = 'date_start';
-const DATE_RANGE_END_QUERY_KEY = 'date_end';
 
 export function filterObjToQuery(filters) {
   const attributes = filterToQueryObject(filters.attributes, {
-    filteredSearchTermKey: FILTERED_SEARCH_TERM_KEY,
+    filteredSearchTermKey: FILTERED_SEARCH_TERM_QUERY_KEY,
     customOperators,
   });
   return {
@@ -42,31 +39,7 @@ export function filterObjToQuery(filters) {
     [GROUP_BY_ATTRIBUTES_QUERY_KEY]: filters.groupBy?.attributes?.length
       ? filters.groupBy.attributes
       : undefined,
-    [DATE_RANGE_QUERY_KEY]: filters.dateRange?.value,
-    ...(filters.dateRange?.value === CUSTOM_DATE_RANGE_OPTION
-      ? {
-          [DATE_RANGE_START_QUERY_KEY]: filters.dateRange?.startDate?.toISOString(),
-          [DATE_RANGE_END_QUERY_KEY]: filters.dateRange?.endDate?.toISOString(),
-        }
-      : {}),
-  };
-}
-
-function validatedDateRangeQuery(dateRangeValue, dateRangeStart, dateRangeEnd) {
-  if (dateRangeValue === CUSTOM_DATE_RANGE_OPTION) {
-    if (isValidDate(new Date(dateRangeStart)) && isValidDate(new Date(dateRangeEnd))) {
-      return {
-        value: dateRangeValue,
-        startDate: new Date(dateRangeStart),
-        endDate: new Date(dateRangeEnd),
-      };
-    }
-    return {
-      value: DEFAULT_TIME_RANGE,
-    };
-  }
-  return {
-    value: dateRangeValue ?? DEFAULT_TIME_RANGE,
+    ...dateFilterObjToQuery(filters.dateRange),
   };
 }
 
@@ -80,17 +53,17 @@ export function queryToFilterObj(queryString) {
   const {
     [GROUP_BY_FN_QUERY_KEY]: groupByFn,
     [GROUP_BY_ATTRIBUTES_QUERY_KEY]: groupByAttributes,
-    [DATE_RANGE_QUERY_KEY]: dateRangeValue,
-    [DATE_RANGE_START_QUERY_KEY]: dateRangeStart,
-    [DATE_RANGE_END_QUERY_KEY]: dateRangeEnd,
     ...attributes
   } = omit(queryObj, [
     // not all query params are filters, so omitting them from the query object
     'type',
+    DATE_RANGE_QUERY_KEY,
+    DATE_RANGE_START_QUERY_KEY,
+    DATE_RANGE_END_QUERY_KEY,
   ]);
 
   const attributesFilter = urlQueryToFilter(attributes, {
-    filteredSearchTermKey: FILTERED_SEARCH_TERM_KEY,
+    filteredSearchTermKey: FILTERED_SEARCH_TERM_QUERY_KEY,
     customOperators,
   });
 
@@ -100,6 +73,6 @@ export function queryToFilterObj(queryString) {
       func: groupByFn,
       attributes: validatedGroupByAttributes(groupByAttributes),
     },
-    dateRange: validatedDateRangeQuery(dateRangeValue, dateRangeStart, dateRangeEnd),
+    dateRange: queryToDateFilterObj(queryObj),
   };
 }

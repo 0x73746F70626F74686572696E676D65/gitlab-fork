@@ -4,6 +4,7 @@ import { joinPaths } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NEW_POLICY_BUTTON_TEXT } from '../constants';
+import ApprovalPolicyNameUpdateBanner from './banners/approval_policy_name_update_banner.vue';
 import BreakingChangesBanner from './banners/breaking_changes_banner.vue';
 import ExperimentFeaturesBanner from './banners/experiment_features_banner.vue';
 import ProjectModal from './project_modal.vue';
@@ -11,6 +12,7 @@ import ProjectModal from './project_modal.vue';
 export default {
   BANNER_STORAGE_KEY: 'security_policies_scan_result_name_change',
   components: {
+    ApprovalPolicyNameUpdateBanner,
     BreakingChangesBanner,
     ExperimentFeaturesBanner,
     GlAlert,
@@ -81,6 +83,9 @@ export default {
     },
     showNewPolicyModal() {
       this.modalVisible = true;
+    },
+    showApprovalPolicyBanner(hideBreakingChangesBanner) {
+      this.approvalPolicyNameBannerVisible = hideBreakingChangesBanner;
     },
   },
 };
@@ -157,6 +162,12 @@ export default {
       />
     </header>
 
-    <breaking-changes-banner v-if="breakingChangesBannerEnabled" class="gl-mt-3 gl-mb-6" />
+    <approval-policy-name-update-banner class="gl-my-3" />
+
+    <breaking-changes-banner
+      v-if="breakingChangesBannerEnabled"
+      class="gl-mt-3 gl-mb-6"
+      @dismiss="showApprovalPolicyBanner"
+    />
   </div>
 </template>

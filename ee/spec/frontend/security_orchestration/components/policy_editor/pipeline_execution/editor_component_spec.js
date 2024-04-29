@@ -1,4 +1,5 @@
 import { GlEmptyState } from '@gitlab/ui';
+import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
 import EditorComponent from 'ee/security_orchestration/components/policy_editor/pipeline_execution/editor_component.vue';
@@ -6,13 +7,39 @@ import ActionSection from 'ee/security_orchestration/components/policy_editor/pi
 import RuleSection from 'ee/security_orchestration/components/policy_editor/pipeline_execution/rule/rule_section.vue';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
 import { DEFAULT_PIPELINE_EXECUTION_POLICY } from 'ee/security_orchestration/components/policy_editor/pipeline_execution/constants';
+import { fromYaml } from 'ee/security_orchestration/components/policy_editor/pipeline_execution/utils';
+import { visitUrl } from '~/lib/utils/url_utility';
+import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor/utils';
+import {
+  EDITOR_MODE_YAML,
+  SECURITY_POLICY_ACTIONS,
+} from 'ee/security_orchestration/components/policy_editor/constants';
 
-import { configFileManifest, configFileObject } from './mock_data';
+import {
+  ASSIGNED_POLICY_PROJECT,
+  NEW_POLICY_PROJECT,
+} from 'ee_jest/security_orchestration/mocks/mock_data';
+import { withoutRefManifest, withoutRefObject } from './mock_data';
+
+jest.mock('~/lib/utils/url_utility', () => ({
+  ...jest.requireActual('~/lib/utils/url_utility'),
+  visitUrl: jest.fn().mockName('visitUrlMock'),
+}));
+
+jest.mock('ee/security_orchestration/components/policy_editor/utils', () => ({
+  ...jest.requireActual('ee/security_orchestration/components/policy_editor/utils'),
+  assignSecurityPolicyProject: jest.fn().mockResolvedValue({
+    branch: 'main',
+    fullPath: 'path/to/new-project',
+  }),
+  modifyPolicy: jest.fn().mockResolvedValue({ id: '2' }),
+}));
 
 describe('EditorComponent', () => {
   let wrapper;
   const policyEditorEmptyStateSvgPath = 'path/to/svg';
   const scanPolicyDocumentationPath = 'path/to/docs';
+  const defaultProjectPath = 'path/to/project';
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(EditorComponent, {
@@ -22,6 +49,7 @@ describe('EditorComponent', () => {
       },
       provide: {
         disableScanPolicyUpdate: false,
+        namespacePath: defaultProjectPath,
         policyEditorEmptyStateSvgPath,
         scanPolicyDocumentationPath,
         ...provide,
@@ -29,10 +57,24 @@ describe('EditorComponent', () => {
     });
   };
 
+  const factoryWithExistingPolicy = ({ policy = {}, glFeatures = {} } = {}) => {
+    return factory({
+      propsData: {
+        assignedPolicyProject: ASSIGNED_POLICY_PROJECT,
+        existingPolicy: { ...withoutRefObject, ...policy },
+        isEditing: true,
+      },
+      glFeatures,
+    });
+  };
+
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findPolicyEditorLayout = () => wrapper.findComponent(EditorLayout);
   const findActionSection = () => wrapper.findComponent(ActionSection);
   const findRuleSection = () => wrapper.findComponent(RuleSection);
+
+  const changesToYamlMode = () =>
+    findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_YAML);
 
   describe('rule mode', () => {
     it('renders the editor', () => {
@@ -68,9 +110,9 @@ describe('EditorComponent', () => {
   describe('yaml mode', () => {
     it('updates the policy', async () => {
       factory();
-      await findPolicyEditorLayout().vm.$emit('update-yaml', configFileManifest);
-      expect(findPolicyEditorLayout().props('policy')).toEqual(configFileObject);
-      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(configFileManifest);
+      await findPolicyEditorLayout().vm.$emit('update-yaml', withoutRefManifest);
+      expect(findPolicyEditorLayout().props('policy')).toEqual(withoutRefObject);
+      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(withoutRefManifest);
     });
   });
 
@@ -86,6 +128,92 @@ describe('EditorComponent', () => {
       expect(emptyState.props('primaryButtonLink')).toMatch(scanPolicyDocumentationPath);
       expect(emptyState.props('primaryButtonLink')).toMatch('pipeline-execution-policy-editor');
       expect(emptyState.props('svgPath')).toBe(policyEditorEmptyStateSvgPath);
+    });
+  });
+
+  describe('saving a policy', () => {
+    it.each`
+      status                            | action                             | event              | factoryFn                    | yamlEditorValue                      | currentlyAssignedPolicyProject
+      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_PIPELINE_EXECUTION_POLICY} | ${NEW_POLICY_PROJECT}
+      ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${factoryWithExistingPolicy} | ${withoutRefManifest}                | ${ASSIGNED_POLICY_PROJECT}
+      ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${factoryWithExistingPolicy} | ${withoutRefManifest}                | ${ASSIGNED_POLICY_PROJECT}
+    `(
+      'navigates to the new merge request when "modifyPolicy" is emitted $status',
+      async ({ action, event, factoryFn, yamlEditorValue, currentlyAssignedPolicyProject }) => {
+        factoryFn();
+        findPolicyEditorLayout().vm.$emit(event);
+        await waitForPromises();
+        expect(modifyPolicy).toHaveBeenCalledTimes(1);
+        expect(modifyPolicy).toHaveBeenCalledWith({
+          action,
+          assignedPolicyProject: currentlyAssignedPolicyProject,
+          name:
+            action === SECURITY_POLICY_ACTIONS.APPEND
+              ? fromYaml({ manifest: yamlEditorValue }).name
+              : withoutRefObject.name,
+          namespacePath: defaultProjectPath,
+          yamlEditorValue,
+        });
+        expect(visitUrl).toHaveBeenCalledWith(
+          `/${currentlyAssignedPolicyProject.fullPath}/-/merge_requests/2`,
+        );
+      },
+    );
+
+    describe('error handling', () => {
+      describe('when in rule mode', () => {
+        it('clears the error message before making the network request', () => {
+          const error = { message: 'There was a graphql error', cause: '' };
+          modifyPolicy.mockRejectedValue(error);
+          factory();
+          findPolicyEditorLayout().vm.$emit('save-policy');
+          expect(wrapper.emitted('error')).toStrictEqual([['']]);
+        });
+
+        it('passes graphql errors', async () => {
+          const error = { message: 'There was a graphql error', cause: '' };
+          modifyPolicy.mockRejectedValue(error);
+          factory();
+          await findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+          expect(wrapper.emitted('error')).toStrictEqual([
+            [''],
+            ['There was a problem creating the new security policy'],
+          ]);
+        });
+
+        it('passes non-graphql errors', async () => {
+          const error = { message: 'There was an error', cause: '' };
+          modifyPolicy.mockRejectedValue(error);
+          factory();
+          await findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+          expect(wrapper.emitted('error')).toStrictEqual([[''], ['There was an error']]);
+        });
+
+        it('sets the loading flag on error', async () => {
+          const error = { message: 'There was an error', cause: '' };
+          modifyPolicy.mockRejectedValue(error);
+          factory();
+          expect(findPolicyEditorLayout().props('isUpdatingPolicy')).toBe(false);
+          await findPolicyEditorLayout().vm.$emit('save-policy');
+          expect(findPolicyEditorLayout().props('isUpdatingPolicy')).toBe(true);
+          await waitForPromises();
+          expect(findPolicyEditorLayout().props('isUpdatingPolicy')).toBe(false);
+        });
+      });
+
+      describe('when in yaml mode', () => {
+        it('emits errors', async () => {
+          const error = { message: 'There was an error', cause: '' };
+          modifyPolicy.mockRejectedValue(error);
+          factory();
+          changesToYamlMode();
+          await findPolicyEditorLayout().vm.$emit('save-policy');
+          await waitForPromises();
+          expect(wrapper.emitted('error')).toStrictEqual([[''], [error.message]]);
+        });
+      });
     });
   });
 });

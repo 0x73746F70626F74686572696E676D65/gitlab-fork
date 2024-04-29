@@ -1245,7 +1245,8 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
           'expires_at' => nil,
           'access_level' => {
             'string_value' => 'Developer',
-            'integer_value' => 30
+            'integer_value' => 30,
+            'custom_role' => nil
           }
         }])
       end
@@ -1357,7 +1358,8 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
               'expires_at' => nil,
               'access_level' => {
                 'string_value' => 'Developer',
-                'integer_value' => 30
+                'integer_value' => 30,
+                'custom_role' => nil
               }
             }])
           end
@@ -1414,7 +1416,8 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
               'expires_at' => nil,
               'access_level' => {
                 'string_value' => 'Developer',
-                'integer_value' => 30
+                'integer_value' => 30,
+                'custom_role' => nil
               }
             }])
           end

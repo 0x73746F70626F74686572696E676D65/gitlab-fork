@@ -278,42 +278,86 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
         end
 
         context 'when additional params are passed in as options' do
-          let(:options) do
-            { temperature: 1, stop_sequences: %W[\n\nHuman Observation:], max_tokens_to_sample: 1024,
-              disallowed_param: 1 }
-          end
+          context 'for Anthropic' do
+            let(:options) do
+              { temperature: 1, stop_sequences: %W[\n\nHuman Observation:], max_tokens_to_sample: 1024,
+                disallowed_param: 1, topP: 1 }
+            end
 
-          let(:expected_response) { "Hello World" }
+            let(:expected_response) { "Hello World" }
 
-          before do
-            allow(Gitlab::HTTP).to receive(:post).and_return(success)
-              .and_yield("Hello").and_yield(" ").and_yield("World")
-          end
+            before do
+              allow(Gitlab::HTTP).to receive(:post).and_return(success)
+                .and_yield("Hello").and_yield(" ").and_yield("World")
+            end
 
-          it 'passes the allowed options as params' do
-            expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
+            it 'passes the allowed options as params' do
+              expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
 
-            expect(Gitlab::HTTP).to have_received(:post).with(
-              anything,
-              hash_including(
-                body: including(
-                  '"temperature":1',
-                  '"stop_sequences":["\n\nHuman","Observation:"]',
-                  '"max_tokens_to_sample":1024'
+              expect(Gitlab::HTTP).to have_received(:post).with(
+                anything,
+                hash_including(
+                  body: including(
+                    '"temperature":1',
+                    '"stop_sequences":["\n\nHuman","Observation:"]',
+                    '"max_tokens_to_sample":1024'
+                  )
                 )
               )
-            )
+            end
+
+            it 'does not pass the disallowed options as params' do
+              expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
+
+              expect(Gitlab::HTTP).to have_received(:post).with(
+                anything,
+                hash_excluding(
+                  body: include('disallowed_param', 'topP')
+                )
+              )
+            end
           end
 
-          it 'does not pass the disallowed options as params' do
-            expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
+          context 'for Vertex' do
+            let(:options) do
+              { temperature: 1, maxOutputTokens: 1024, topK: 10, topP: 10,
+                disallowed_param: 1, max_tokens_to_sample: 1024,
+                model: ::Gitlab::Llm::Concerns::AvailableModels::VERTEX_MODEL_CHAT }
+            end
 
-            expect(Gitlab::HTTP).to have_received(:post).with(
-              anything,
-              hash_excluding(
-                body: include('disallowed_param')
+            let(:expected_response) { "Hello World" }
+
+            before do
+              allow(Gitlab::HTTP).to receive(:post).and_return(success)
+                                                   .and_yield("Hello").and_yield(" ").and_yield("World")
+            end
+
+            it 'passes the allowed options as params' do
+              expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
+
+              expect(Gitlab::HTTP).to have_received(:post).with(
+                anything,
+                hash_including(
+                  body: including(
+                    '"temperature":1',
+                    '"topK":10',
+                    '"topP":10',
+                    '"maxOutputTokens":1024'
+                  )
+                )
               )
-            )
+            end
+
+            it 'does not pass the disallowed options as params' do
+              expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq(expected_response)
+
+              expect(Gitlab::HTTP).to have_received(:post).with(
+                anything,
+                hash_excluding(
+                  body: include('disallowed_param', 'max_tokens_to_sample')
+                )
+              )
+            end
           end
         end
       end

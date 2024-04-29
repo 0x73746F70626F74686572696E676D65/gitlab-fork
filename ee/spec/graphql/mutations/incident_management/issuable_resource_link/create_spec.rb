@@ -12,11 +12,11 @@ RSpec.describe Mutations::IncidentManagement::IssuableResourceLink::Create do
   let(:link) { 'http://gitlab.foo.com/zoom_link' }
   let(:args) { { link: link, link_text: link_text, link_type: link_type } }
 
-  specify { expect(described_class).to require_graphql_authorizations(:admin_issuable_resource_link) }
-
   before do
     stub_licensed_features(issuable_resource_links: true)
   end
+
+  specify { expect(described_class).to require_graphql_authorizations(:admin_issuable_resource_link) }
 
   describe '#resolve' do
     subject(:resolve) { mutation_for(project, current_user).resolve(id: incident.to_global_id, **args) }

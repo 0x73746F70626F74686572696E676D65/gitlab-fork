@@ -16,13 +16,11 @@ RSpec.describe Resolvers::SecurityOrchestration::SecurityPolicyProjectSuggestion
   let_it_be(:other_group) { create(:group, :public, name: "other") } # other
   let_it_be(:other_project) { create(:project, :public, group: other_group, path: "alpha") } # other/alpha
 
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, developer_of: top_level_group) }
   let_it_be(:suggestion_limit) { ::Security::SecurityPolicyProjectsFinder::SUGGESTION_LIMIT }
   let_it_be(:search_space_limit) { ::Security::SecurityPolicyProjectsFinder::SEARCH_SPACE_LIMIT }
 
   before_all do
-    top_level_group.add_developer(user)
-
     create(
       :security_orchestration_policy_configuration,
       :namespace,

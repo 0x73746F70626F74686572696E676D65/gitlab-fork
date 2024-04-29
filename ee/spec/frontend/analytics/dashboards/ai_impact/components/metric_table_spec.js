@@ -16,13 +16,14 @@ import AiMetricsQuery from 'ee/analytics/dashboards/ai_impact/graphql/ai_metrics
 import MetricTable from 'ee/analytics/dashboards/ai_impact/components/metric_table.vue';
 import MetricTableCell from 'ee/analytics/dashboards/components/metric_table_cell.vue';
 import TrendIndicator from 'ee/analytics/dashboards/components/trend_indicator.vue';
+import { setLanguage } from 'jest/__helpers__/locale_helper';
 import {
   mockDoraMetricsResponse,
   mockFlowMetricsResponse,
   mockVulnerabilityMetricsResponse,
   mockAiMetricsResponse,
 } from '../helpers';
-import { mockTableValues } from '../mock_data';
+import { mockTableValues, mockTableLargeValues } from '../mock_data';
 
 const mockTypePolicy = {
   Query: { fields: { project: { merge: false }, group: { merge: false } } },
@@ -56,7 +57,43 @@ describe('Metric table', () => {
     );
   };
 
+  const createMockApolloProviderLargeValues = ({
+    flowMetricsRequest = mockFlowMetricsResponse(mockTableLargeValues),
+    doraMetricsRequest = mockDoraMetricsResponse(mockTableLargeValues),
+    vulnerabilityMetricsRequest = mockVulnerabilityMetricsResponse(mockTableLargeValues),
+    aiMetricsRequest = mockAiMetricsResponse(mockTableLargeValues),
+  } = {}) => {
+    return createMockApollo(
+      [
+        [FlowMetricsQuery, flowMetricsRequest],
+        [DoraMetricsQuery, doraMetricsRequest],
+        [VulnerabilitiesQuery, vulnerabilityMetricsRequest],
+        [AiMetricsQuery, aiMetricsRequest],
+      ],
+      {},
+      {
+        typePolicies: mockTypePolicy,
+      },
+    );
+  };
+
   const createWrapper = ({ props = {}, apolloProvider = createMockApolloProvider() } = {}) => {
+    wrapper = mountExtended(MetricTable, {
+      apolloProvider,
+      propsData: {
+        namespace,
+        isProject,
+        ...props,
+      },
+    });
+
+    return waitForPromises();
+  };
+
+  const createLargeValuesWrapper = ({
+    props = {},
+    apolloProvider = createMockApolloProviderLargeValues(),
+  } = {}) => {
     wrapper = mountExtended(MetricTable, {
       apolloProvider,
       propsData: {
@@ -147,6 +184,25 @@ describe('Metric table', () => {
           expect(findTrendIndicator(testId).props().change).toBe(change);
         });
       }
+    });
+  });
+
+  describe('i18n', () => {
+    describe.each`
+      language   | formattedValue
+      ${'en-US'} | ${'5,000'}
+      ${'de-DE'} | ${'5.000'}
+    `('When the language is $language', ({ formattedValue, language }) => {
+      beforeEach(() => {
+        setLanguage(language);
+        return createLargeValuesWrapper();
+      });
+
+      it('formats numbers correctly', () => {
+        expect(findTableRow('ai-impact-metric-vulnerability-critical').html()).toContain(
+          formattedValue,
+        );
+      });
     });
   });
 });

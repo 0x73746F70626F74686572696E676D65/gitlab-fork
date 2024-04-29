@@ -16,8 +16,8 @@ export const customYaml = `variable: true
 
 export const customYamlObject = { variable: true };
 
-export const configFileManifest = `name: "Ci config file"
-description: "triggers all protected branches except main"
+export const withoutRefManifest = `name: Ci config file
+description: triggers all protected branches except main
 enabled: true
 override_project_ci: false
 content:
@@ -26,10 +26,10 @@ content:
     file: .pipeline-execution.yml
 `;
 
-export const configFileObject = fromYaml({ manifest: configFileManifest });
+export const withoutRefObject = fromYaml({ manifest: withoutRefManifest });
 
-export const nonBooleanOverrideTypeManifest = `name: "Ci config file"
-description: "triggers all protected branches except main"
+export const nonBooleanOverrideTypeManifest = `name: Ci config file
+description: triggers all protected branches except main
 enabled: true
 override_project_ci: this_is_wrong
 content:

@@ -15,7 +15,7 @@ RSpec.describe ::Gitlab::Ci::Config::Entry::Needs, feature_category: :pipeline_c
     end
 
     context 'when entry config value is correct' do
-      let(:config) { ['job_name', pipeline: 'some/project'] }
+      let(:config) { ['job_name', { pipeline: 'some/project' }] }
 
       describe '#valid?' do
         it { is_expected.to be_valid }
@@ -38,7 +38,7 @@ RSpec.describe ::Gitlab::Ci::Config::Entry::Needs, feature_category: :pipeline_c
     end
 
     context 'when bridge needs has wrong attributes' do
-      let(:config) { ['job_name', project: 'some/project'] }
+      let(:config) { ['job_name', { project: 'some/project' }] }
 
       describe '#valid?' do
         it { is_expected.not_to be_valid }

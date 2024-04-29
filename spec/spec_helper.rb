@@ -332,6 +332,10 @@ RSpec.configure do |config|
       # Disable license requirement for duo chat, which is subject to change.
       # See https://gitlab.com/gitlab-org/gitlab/-/issues/457090
       stub_feature_flags(duo_chat_requires_licensed_seat: false)
+
+      # Disable license requirement for duo chat (self managed), which is subject to change.
+      # See https://gitlab.com/gitlab-org/gitlab/-/issues/457283
+      stub_feature_flags(duo_chat_requires_licensed_seat_sm: false)
     else
       unstub_all_feature_flags
     end

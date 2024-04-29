@@ -9,11 +9,19 @@ module API
 
     helpers do
       def dependencies_by(params)
-        pipeline = ::Security::ReportFetchService.new(user_project, ::Ci::JobArtifact.of_report_type(:dependency_list)).pipeline
+        project = params[:project]
+        if ::Feature.enabled?(:use_database_for_dependencies_api, project)
+          params[:package_managers] = params.delete(:package_manager)
+          dependencies = ::Sbom::DependenciesFinder.new(project, params: params).execute.with_component.with_version
+          dependencies = dependencies.with_vulnerabilities if params[:preload_vulnerabilities]
+          dependencies
+        else
+          pipeline = ::Security::ReportFetchService.new(user_project, ::Ci::JobArtifact.of_report_type(:dependency_list)).pipeline
 
-        return ::Gitlab::ItemsCollection.new([]) unless pipeline
+          return ::Gitlab::ItemsCollection.new([]) unless pipeline
 
-        ::Security::DependencyListService.new(pipeline: pipeline, params: params).execute
+          ::Security::DependencyListService.new(pipeline: pipeline, params: params).execute
+        end
       end
     end
 
@@ -44,7 +52,11 @@ module API
 
         ::Gitlab::Tracking.event(self.options[:for].name, 'view_dependencies', project: user_project, user: current_user, namespace: user_project.namespace)
 
-        dependency_params = declared_params(include_missing: false).merge(project: user_project)
+        dependency_params = declared_params(include_missing: false)
+          .merge(
+            project: user_project,
+            preload_vulnerabilities: Ability.allowed?(current_user, :read_vulnerability, user_project)
+          )
         dependencies = paginate(dependencies_by(dependency_params))
 
         present dependencies, with: ::EE::API::Entities::Dependency, user: current_user, project: user_project

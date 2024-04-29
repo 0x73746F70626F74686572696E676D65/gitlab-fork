@@ -181,7 +181,7 @@ export default {
       :search-input-placeholder="__('Filter results')"
       :tokens="tokens"
       :initial-filter-value="initialFilterValue"
-      suggestions-list-class="gl-z-index-9999"
+      suggestions-list-class="gl-z-9999"
       terms-as-tokens
       @onFilter="handleFilter"
     />

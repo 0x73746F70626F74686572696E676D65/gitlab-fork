@@ -3,7 +3,7 @@ name: read_code
 description: Allows read-only access to the source code.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/20277
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/issues/376180
-feature_category: code_review_workflow
+feature_category: source_code_management
 milestone: '15.7'
 group_ability: false
 project_ability: true

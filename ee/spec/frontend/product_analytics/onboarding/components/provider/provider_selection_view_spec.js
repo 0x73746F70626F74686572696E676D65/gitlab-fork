@@ -80,15 +80,15 @@ describe('ProviderSelectionView', () => {
   });
 
   describe.each`
-    scenario            | findComponent
-    ${'self-managed'}   | ${findSelfManagedProviderCard}
-    ${'GitLab-managed'} | ${findGitLabManagedProviderCard}
-  `('$scenario', ({ findComponent }) => {
+    scenario            | findComponent                    | loadingStateSvgPath
+    ${'self-managed'}   | ${findSelfManagedProviderCard}   | ${'/self-managed.svg'}
+    ${'GitLab-managed'} | ${findGitLabManagedProviderCard} | ${'/gitlab-managed.svg'}
+  `('$scenario', ({ findComponent, loadingStateSvgPath }) => {
     describe('when component emits "confirm" event', () => {
       describe('when initialization succeeds', () => {
         beforeEach(() => {
           createWrapper();
-          findComponent().vm.$emit('confirm');
+          findComponent().vm.$emit('confirm', loadingStateSvgPath);
           return waitForPromises();
         });
 
@@ -99,7 +99,7 @@ describe('ProviderSelectionView', () => {
         it('should show loading state', () => {
           expect(findGlEmptyState().props()).toMatchObject({
             title: 'Creating your product analytics instance...',
-            svgPath: '/path/to/illustration.svg',
+            svgPath: loadingStateSvgPath,
           });
           expect(findLoadingIcon().exists()).toBe(true);
         });

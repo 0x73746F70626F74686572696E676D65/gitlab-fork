@@ -18,7 +18,7 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
     )
   end
 
-  it_behaves_like 'worker with data consistency', described_class, data_consistency: :delayed
+  it_behaves_like 'worker with data consistency', described_class, data_consistency: :sticky
 
   describe '#perform' do
     subject { described_class.new.perform(described_class.serialize_message(prompt_message), options) }

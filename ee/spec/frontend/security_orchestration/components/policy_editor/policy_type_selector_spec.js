@@ -1,3 +1,4 @@
+import { GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import PolicyTypeSelector from 'ee/security_orchestration/components/policy_editor/policy_type_selector.vue';
@@ -6,15 +7,17 @@ describe('PolicyTypeSelector component', () => {
   const policiesPath = '/policies/path';
   let wrapper;
 
-  const factory = (provide = {}) => {
+  const factory = (provide = {}, stubs = {}) => {
     wrapper = shallowMountExtended(PolicyTypeSelector, {
-      stubs: { GlCard: true },
+      stubs: { GlCard: true, ...stubs },
       provide: {
         policiesPath,
         maxScanExecutionPoliciesAllowed: 5,
         maxScanResultPoliciesAllowed: 5,
+        maxPipelineExecutionPoliciesAllowed: 1,
         maxActiveScanExecutionPoliciesReached: true,
         maxActiveScanResultPoliciesReached: false,
+        maxActivePipelineExecutionPoliciesReached: false,
         customCiToggleEnabled: true,
         ...provide,
       },
@@ -92,6 +95,33 @@ describe('PolicyTypeSelector component', () => {
         expect(
           findMaxAllowedPolicyText(POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter).text(),
         ).toBe('');
+      });
+
+      it('displays warning text for pipeline execution policy type', () => {
+        factory(
+          {
+            maxActivePipelineExecutionPoliciesReached: true,
+            glFeatures: {
+              pipelineExecutionPolicyType: true,
+            },
+          },
+          {
+            GlSprintf,
+          },
+        );
+        expect(
+          findMaxAllowedPolicyText(
+            POLICY_TYPE_COMPONENT_OPTIONS.pipelineExecution.urlParameter,
+          ).exists(),
+        ).toBe(true);
+        expect(
+          findMaxAllowedPolicyText(
+            POLICY_TYPE_COMPONENT_OPTIONS.pipelineExecution.urlParameter,
+          ).text(),
+        ).toBe('You already have the maximum 1 pipeline execution policy.');
+        expect(
+          findPolicyButton(POLICY_TYPE_COMPONENT_OPTIONS.pipelineExecution.urlParameter).exists(),
+        ).toBe(false);
       });
     });
   });

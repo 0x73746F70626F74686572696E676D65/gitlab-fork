@@ -48,8 +48,6 @@ module Geo
 
         gauge = Gitlab::Metrics.gauge(gauge_metric_name(column), docstring, {}, :max)
         gauge.set(metric_labels(node), value)
-
-        set_old_metric(column, docstring, node, value)
       end
     end
 
@@ -88,24 +86,6 @@ module Geo
 
     def prometheus_enabled?
       Gitlab::Metrics.prometheus_metrics_enabled?
-    end
-
-    # To support some old metric names until a major release, see
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/429617.
-    # Remove in 17.0.
-    def set_old_metric(column, docstring, node, value)
-      mapping = {
-        'project_repositories_checksummed_count' => 'repositories_checksummed_count',
-        'project_repositories_checksum_failed_count' => 'repositories_checksum_failed_count',
-        'project_repositories_synced_count' => 'repositories_synced_count',
-        'project_repositories_failed_count' => 'repositories_failed_count',
-        'project_repositories_verified_count' => 'repositories_verified_count',
-        'project_repositories_verification_failed_count' => 'repositories_verification_failed_count'
-      }
-
-      column = mapping[column.to_s]
-      gauge = Gitlab::Metrics.gauge(gauge_metric_name(column), docstring, {}, :max)
-      gauge.set(metric_labels(node), value)
     end
   end
 end

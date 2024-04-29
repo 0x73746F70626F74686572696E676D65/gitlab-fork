@@ -254,6 +254,7 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
     before do
       stub_licensed_features(group_saml: true)
     end
+
     let(:saml_provider) { create(:saml_provider) }
 
     it_behaves_like 'POST request permissions for admin mode' do
@@ -333,6 +334,7 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
       before do
         stub_licensed_features(auditor_user: true)
       end
+
       let_it_be(:auditor_user) { create(:user, :auditor) }
 
       it 'returns all users' do

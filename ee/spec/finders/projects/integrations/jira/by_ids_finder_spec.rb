@@ -8,7 +8,7 @@ RSpec.describe Projects::Integrations::Jira::ByIdsFinder do
   let_it_be(:project) { create(:project) }
 
   let(:jira_issue_ids) { %w[10000 10001] }
-  let(:finder_params) { [project, issue_ids: jira_issue_ids] }
+  let(:finder_params) { [project, { issue_ids: jira_issue_ids }] }
 
   let(:by_ids_finder) { described_class.new(project, jira_issue_ids) }
 

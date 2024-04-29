@@ -56,7 +56,7 @@ export default {
         <gl-button variant="confirm" @click="show($options.STATE_GUIDED)">{{
           s__('GoogleCloud|Guided setup')
         }}</gl-button>
-        <gl-button @click="show($options.STATE_MANUAL)">{{
+        <gl-button data-testid="manual-setup-button" @click="show($options.STATE_MANUAL)">{{
           s__('GoogleCloud|Manual setup')
         }}</gl-button>
         <invite-members-trigger

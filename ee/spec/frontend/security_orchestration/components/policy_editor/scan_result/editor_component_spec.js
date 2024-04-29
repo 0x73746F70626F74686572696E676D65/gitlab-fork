@@ -33,6 +33,8 @@ import {
   APPROVAL_POLICY_DEFAULT_POLICY,
   APPROVAL_POLICY_DEFAULT_POLICY_WITH_SCOPE,
   APPROVAL_POLICY_DEFAULT_POLICY_WITH_BOT_MESSAGE,
+  ASSIGNED_POLICY_PROJECT,
+  NEW_POLICY_PROJECT,
 } from 'ee_jest/security_orchestration/mocks/mock_data';
 import { visitUrl } from '~/lib/utils/url_utility';
 import {
@@ -69,10 +71,6 @@ jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn().mockName('visitUrlMock'),
 }));
 
-const newlyCreatedPolicyProject = {
-  branch: 'main',
-  fullPath: 'path/to/new-project',
-};
 jest.mock('ee/security_orchestration/components/policy_editor/utils', () => ({
   ...jest.requireActual('ee/security_orchestration/components/policy_editor/utils'),
   assignSecurityPolicyProject: jest.fn().mockResolvedValue({
@@ -87,10 +85,6 @@ describe('EditorComponent', () => {
   const defaultProjectPath = 'path/to/project';
   const policyEditorEmptyStateSvgPath = 'path/to/svg';
   const scanPolicyDocumentationPath = 'path/to/docs';
-  const assignedPolicyProject = {
-    branch: 'main',
-    fullPath: 'path/to/existing-project',
-  };
   const scanResultPolicyApprovers = {
     user: [{ id: 1, username: 'the.one', state: 'active' }],
     group: [],
@@ -131,7 +125,7 @@ describe('EditorComponent', () => {
 
     return factory({
       propsData: {
-        assignedPolicyProject,
+        assignedPolicyProject: ASSIGNED_POLICY_PROJECT,
         existingPolicy: { ...existingPolicy, ...policy },
         isEditing: true,
       },
@@ -647,17 +641,16 @@ describe('EditorComponent', () => {
   describe('CRUD operations', () => {
     it.each`
       status                            | action                             | event              | factoryFn                    | yamlEditorValue                          | currentlyAssignedPolicyProject
-      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_SCAN_RESULT_POLICY}            | ${newlyCreatedPolicyProject}
-      ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${factoryWithExistingPolicy} | ${mockDefaultBranchesScanResultManifest} | ${assignedPolicyProject}
-      ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${factoryWithExistingPolicy} | ${mockDefaultBranchesScanResultManifest} | ${assignedPolicyProject}
+      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_SCAN_RESULT_POLICY}            | ${NEW_POLICY_PROJECT}
+      ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${factoryWithExistingPolicy} | ${mockDefaultBranchesScanResultManifest} | ${ASSIGNED_POLICY_PROJECT}
+      ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${factoryWithExistingPolicy} | ${mockDefaultBranchesScanResultManifest} | ${ASSIGNED_POLICY_PROJECT}
     `(
       'navigates to the new merge request when "modifyPolicy" is emitted $status',
       async ({ action, event, factoryFn, yamlEditorValue, currentlyAssignedPolicyProject }) => {
         factoryFn();
-
         findPolicyEditorLayout().vm.$emit(event);
         await waitForPromises();
-
+        expect(modifyPolicy).toHaveBeenCalledTimes(1);
         expect(modifyPolicy).toHaveBeenCalledWith({
           action,
           assignedPolicyProject: currentlyAssignedPolicyProject,

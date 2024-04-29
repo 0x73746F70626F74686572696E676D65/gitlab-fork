@@ -46,6 +46,10 @@ describe('Experimental new project creation app', () => {
           ...DEFAULT_PROPS,
           ...props,
         },
+        provide: {
+          identityVerificationRequired: false,
+          identityVerificationPath: '#',
+        },
         apolloProvider: createMockApollo([[getUserCalloutsQuery, {}]]),
       }),
     );

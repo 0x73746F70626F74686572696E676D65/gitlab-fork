@@ -23,7 +23,12 @@ module WorkItems
         return if params[:color] == color.color.to_s
 
         color.color = params[:color]
-        raise_error(color.errors.full_messages.join(', ')) unless color.save
+
+        if color.save
+          synced_epic_params[:color] = ::Gitlab::Color.of(params[:color])
+        else
+          raise_error(color.errors.full_messages.join(', '))
+        end
       end
 
       def create_system_notes?

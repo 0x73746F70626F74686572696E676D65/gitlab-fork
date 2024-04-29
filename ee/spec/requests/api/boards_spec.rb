@@ -9,11 +9,11 @@ RSpec.describe API::Boards, feature_category: :team_planning do
   let_it_be(:milestone) { create(:milestone, project: board_parent) }
   let_it_be(:board) { create(:board, project: board_parent, milestone: milestone, assignee: user) }
 
-  it_behaves_like 'multiple and scoped issue boards', "/projects/:id/boards"
-
   before do
     stub_licensed_features(swimlanes: true)
   end
+
+  it_behaves_like 'multiple and scoped issue boards', "/projects/:id/boards"
 
   describe 'POST /projects/:id/boards/:board_id/lists' do
     let(:url) { "/projects/#{board_parent.id}/boards/#{board.id}/lists" }

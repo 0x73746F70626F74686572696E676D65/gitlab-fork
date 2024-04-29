@@ -54,7 +54,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
               >
                 <svg
                   aria-label="Success WidgetLicenseCompliance"
-                  class="gl-icon gl-relative gl-z-index-1 s12"
+                  class="gl-icon gl-relative gl-z-1 s12"
                   data-testid="status-success-icon"
                   role="img"
                 >
@@ -243,7 +243,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
               >
                 <svg
                   aria-label="Failed WidgetLicenseCompliance"
-                  class="gl-icon gl-relative gl-z-index-1 s12"
+                  class="gl-icon gl-relative gl-z-1 s12"
                   data-testid="status-failed-icon"
                   role="img"
                 >
@@ -351,7 +351,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
               >
                 <svg
                   aria-label="Notice WidgetLicenseCompliance"
-                  class="gl-icon gl-relative gl-z-index-1 s12"
+                  class="gl-icon gl-relative gl-z-1 s12"
                   data-testid="status-notice-icon"
                   role="img"
                 >

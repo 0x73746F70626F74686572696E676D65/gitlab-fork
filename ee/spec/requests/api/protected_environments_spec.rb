@@ -38,6 +38,22 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
   end
 
   shared_examples 'requests to update deploy access levels' do
+    context 'when deprecate_unified_approval_rules feature flag is disabled' do
+      before do
+        stub_feature_flags(deprecate_unified_approval_rules: false)
+      end
+
+      it 'updates the environment / updating required approval count' do
+        put request_url, params: {
+          required_approval_count: 3
+        }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+        expect(json_response['required_approval_count']).to eq(3)
+      end
+    end
+
     it 'updates the environment / creating deploy access level' do
       put request_url, params: {
         deploy_access_levels: [
@@ -108,9 +124,7 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
         required_approval_count: 3
       }
 
-      expect(response).to have_gitlab_http_status(:ok)
-      expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
-      expect(json_response['required_approval_count']).to eq(3)
+      expect(response).to have_gitlab_http_status(:unprocessable_entity)
     end
   end
 
@@ -253,17 +267,48 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
         project.add_maintainer(user)
       end
 
-      it 'protects the environment with user allowed to deploy' do
-        deployer = create(:user)
-        project.add_developer(deployer)
+      context 'with deprecate_unified_approval_rules FF disabled' do
+        before do
+          stub_feature_flags(deprecate_unified_approval_rules: false)
+        end
 
-        post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }], required_approval_count: 3 }
+        it 'protects the environment with user allowed to deploy' do
+          deployer = create(:user)
+          project.add_developer(deployer)
 
-        expect(response).to have_gitlab_http_status(:created)
-        expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
-        expect(json_response['name']).to eq('staging')
-        expect(json_response['deploy_access_levels'].first['user_id']).to eq(deployer.id)
-        expect(json_response['required_approval_count']).to eq(3)
+          post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }], required_approval_count: 3 }
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+          expect(json_response['name']).to eq('staging')
+          expect(json_response['deploy_access_levels'].first['user_id']).to eq(deployer.id)
+          expect(json_response['required_approval_count']).to eq(3)
+        end
+      end
+
+      context 'when required_approval_count is set' do
+        it 'returns unprocessible entity status code' do
+          deployer = create(:user)
+          project.add_developer(deployer)
+
+          post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }], required_approval_count: 3 }
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+        end
+      end
+
+      context 'when required_approval_count is not set' do
+        it 'protects the environment with user allowed to deploy' do
+          deployer = create(:user)
+          project.add_developer(deployer)
+
+          post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }] }
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+          expect(json_response['name']).to eq('staging')
+          expect(json_response['deploy_access_levels'].first['user_id']).to eq(deployer.id)
+        end
       end
 
       it 'protects the environment with group allowed to deploy' do
@@ -486,17 +531,46 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
         group.add_owner(user)
       end
 
+      context 'when deprecate_unified_approval_rules is disabled' do
+        before do
+          stub_feature_flags(deprecate_unified_approval_rules: false)
+        end
+
+        it 'protects the environment with user allowed to deploy' do
+          deployer = create(:user)
+          group.add_maintainer(deployer)
+
+          post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }], required_approval_count: 3 }
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+          expect(json_response['name']).to eq('staging')
+          expect(json_response['deploy_access_levels'].first['user_id']).to eq(deployer.id)
+          expect(json_response['required_approval_count']).to eq(3)
+        end
+      end
+
+      context 'when required_approval_count is set' do
+        it 'returns unprocessible_entity status' do
+          deployer = create(:user)
+          group.add_maintainer(deployer)
+
+          post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }], required_approval_count: 3 }
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+        end
+      end
+
       it 'protects the environment with user allowed to deploy' do
         deployer = create(:user)
         group.add_maintainer(deployer)
 
-        post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }], required_approval_count: 3 }
+        post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }] }
 
         expect(response).to have_gitlab_http_status(:created)
         expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
         expect(json_response['name']).to eq('staging')
         expect(json_response['deploy_access_levels'].first['user_id']).to eq(deployer.id)
-        expect(json_response['required_approval_count']).to eq(3)
       end
 
       it 'protects the environment with group allowed to deploy' do
@@ -614,6 +688,52 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
         let(:protected_environment) { group_protected_environment }
       end
 
+      context 'when deprecate_unified_approval_rules feature flag is disabled' do
+        before do
+          stub_feature_flags(deprecate_unified_approval_rules: false)
+        end
+
+        it 'updates the environment with shared group allowed to deploy' do
+          put api_url, params: {
+            deploy_access_levels: [
+              {
+                id: group_protected_environment.deploy_access_levels.first.id,
+                group_id: shared_group.id,
+                access_level: nil
+              }
+            ],
+            required_approval_count: 1
+          }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+          expect(json_response['deploy_access_levels'].length).to eq(1)
+          expect(json_response['deploy_access_levels'].first['group_id']).to eq(shared_group.id)
+          expect(json_response['required_approval_count']).to eq(1)
+        end
+
+        it 'updates the environment with group allowed to deploy with inheritance' do
+          put api_url, params: {
+            deploy_access_levels: [
+              {
+                id: group_protected_environment.deploy_access_levels.last.id,
+                group_id: subgroup.id,
+                access_level: nil,
+                group_inheritance_type: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL]
+              }
+            ],
+            required_approval_count: 1
+          }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+          expect(json_response['deploy_access_levels'].length).to eq(1)
+          expect(json_response['deploy_access_levels'].last['group_id']).to eq(subgroup.id)
+          expect(json_response['deploy_access_levels'].last['group_inheritance_type']).to eq(::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL])
+          expect(json_response['required_approval_count']).to eq(1)
+        end
+      end
+
       it 'updates the environment with shared group allowed to deploy' do
         put api_url, params: {
           deploy_access_levels: [
@@ -622,15 +742,13 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
               group_id: shared_group.id,
               access_level: nil
             }
-          ],
-          required_approval_count: 1
+          ]
         }
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
         expect(json_response['deploy_access_levels'].length).to eq(1)
         expect(json_response['deploy_access_levels'].first['group_id']).to eq(shared_group.id)
-        expect(json_response['required_approval_count']).to eq(1)
       end
 
       it 'updates the environment with group allowed to deploy with inheritance' do
@@ -642,8 +760,7 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
               access_level: nil,
               group_inheritance_type: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL]
             }
-          ],
-          required_approval_count: 1
+          ]
         }
 
         expect(response).to have_gitlab_http_status(:ok)
@@ -651,7 +768,24 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
         expect(json_response['deploy_access_levels'].length).to eq(1)
         expect(json_response['deploy_access_levels'].last['group_id']).to eq(subgroup.id)
         expect(json_response['deploy_access_levels'].last['group_inheritance_type']).to eq(::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL])
-        expect(json_response['required_approval_count']).to eq(1)
+      end
+
+      context 'when required_approval_count is set' do
+        it 'returns unprocessible_entity status' do
+          put api_url, params: {
+            deploy_access_levels: [
+              {
+                id: group_protected_environment.deploy_access_levels.last.id,
+                group_id: subgroup.id,
+                access_level: nil,
+                group_inheritance_type: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL]
+              }
+            ],
+            required_approval_count: 1
+          }
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+        end
       end
 
       it 'returns error with invalid deploy access level' do

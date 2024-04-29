@@ -23,6 +23,13 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
   let_it_be(:epic_issue1) { create(:epic_issue, epic: epic1, issue: issue1) }
   let_it_be(:epic_issue2) { create(:epic_issue, epic: epic2, issue: issue2) }
 
+  before do
+    stub_licensed_features(epics: true, swimlanes: true)
+    sign_in(user)
+    visit_board_page
+    load_epic_swimlanes
+  end
+
   context 'link to swimlanes view' do
     before do
       stub_licensed_features(epics: true, swimlanes: true)
@@ -58,13 +65,6 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
         expect(list.find('.board-title')).to have_content(lists[i])
       end
     end
-  end
-
-  before do
-    stub_licensed_features(epics: true, swimlanes: true)
-    sign_in(user)
-    visit_board_page
-    load_epic_swimlanes
   end
 
   context 'switch to swimlanes view' do

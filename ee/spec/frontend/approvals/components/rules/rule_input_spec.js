@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
@@ -13,7 +13,7 @@ describe('Rule Input', () => {
   let store;
 
   const createComponent = (props = {}) => {
-    wrapper = shallowMount(RuleInput, {
+    wrapper = mount(RuleInput, {
       propsData: {
         rule: {
           approvalsRequired: 9,
@@ -49,13 +49,13 @@ describe('Rule Input', () => {
     store.state.settings.canEdit = false;
     createComponent();
 
-    expect(findInput().attributes().disabled).toBe('disabled');
+    expect(findInput().attributes().disabled).toBeDefined();
   });
 
   it('is disabled when settings can edit', () => {
     createComponent();
 
-    expect(findInput().attributes().disabled).not.toBe('disabled');
+    expect(findInput().attributes().disabled).not.toBeDefined();
   });
 
   it('has min equal to the minApprovalsRequired', () => {
@@ -77,8 +77,7 @@ describe('Rule Input', () => {
   it('dispatches putRule on change', async () => {
     const action = store.modules.approvals.actions.putRule;
     createComponent();
-    findInput().element.value = wrapper.props().rule.approvalsRequired + 1;
-    findInput().trigger('input');
+    findInput().setValue(wrapper.props().rule.approvalsRequired + 1);
 
     jest.runAllTimers();
 

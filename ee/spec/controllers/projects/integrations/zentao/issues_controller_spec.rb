@@ -116,6 +116,7 @@ RSpec.describe Projects::Integrations::Zentao::IssuesController, feature_categor
             allow(serializer).to receive(:represent).and_raise(::Gitlab::Zentao::Client::Error)
           end
         end
+
         it 'renders `show` template successfully' do
           get :show, params: { namespace_id: project.namespace, project_id: project, id: 'story-1' }
 

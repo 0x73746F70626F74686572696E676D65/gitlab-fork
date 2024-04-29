@@ -70,6 +70,7 @@ RSpec.shared_examples 'protected environments access' do |developer_access: true
 
             update_user_access(access_level, user, project)
           end
+
           it { is_expected.to eq(result) }
         end
       end

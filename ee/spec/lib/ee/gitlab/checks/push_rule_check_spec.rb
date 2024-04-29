@@ -106,14 +106,14 @@ RSpec.describe EE::Gitlab::Checks::PushRuleCheck, feature_category: :source_code
 
   describe '#validate!' do
     context "parallel push checks" do
-      it_behaves_like "push checks"
-
       before do
         ::Gitlab::Git::HookEnv.set(project.repository.gl_repository,
                                    project.repository.raw_repository.relative_path,
                                    "GIT_OBJECT_DIRECTORY_RELATIVE" => "objects",
                                    "GIT_ALTERNATE_OBJECT_DIRECTORIES_RELATIVE" => [])
       end
+
+      it_behaves_like "push checks"
 
       it "sets the git env correctly for all hooks", :request_store do
         expect(Gitaly::Repository).to receive(:new)

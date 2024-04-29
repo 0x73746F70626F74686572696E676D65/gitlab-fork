@@ -1,13 +1,12 @@
 ---
 data_category: optional
 key_path: compliance_unique_visits.compliance_unique_visits_for_any_target
-description: Number of unique visits to any compliance page
+description: Removed as duplicate of redis_hll_counters.compliance.compliance_total_unique_counts_weekly
 product_section: sec
 product_stage: govern
 product_group: compliance
 value_type: number
-status: broken
-repair_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/378091
+status: removed
 time_frame: 7d
 data_source: redis_hll
 instrumentation_class: RedisHLLMetric
@@ -29,3 +28,5 @@ tier:
 - ultimate
 performance_indicator_type: []
 milestone: "<13.9"
+milestone_removed: "17.0"
+removed_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/150678

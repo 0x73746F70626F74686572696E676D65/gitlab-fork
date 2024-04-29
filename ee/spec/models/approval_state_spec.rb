@@ -150,7 +150,10 @@ RSpec.describe ApprovalState do
         end
 
         it 'passes the expected parameter to committers method' do
-          expect(merge_request).to receive(:committers).with(with_merge_commits: true).and_return(User.where(id: committers))
+          expect(merge_request)
+            .to receive(:committers)
+            .with(with_merge_commits: true, include_author_when_signed: true)
+            .and_return(User.where(id: committers))
 
           results
         end

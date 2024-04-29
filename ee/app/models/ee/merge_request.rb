@@ -35,7 +35,7 @@ module EE
         def applicable_to_branch(branch)
           ActiveRecord::Associations::Preloader.new(
             records: self,
-            associations: [:users, :groups, approval_project_rule: [:users, :groups, :protected_branches]]
+            associations: [:users, :groups, { approval_project_rule: [:users, :groups, :protected_branches] }]
           ).call
 
           self.select { |rule| rule.applicable_to_branch?(branch) }
@@ -161,7 +161,7 @@ module EE
         super.preload(
           :blocking_merge_requests,
           :approval_rules,
-          target_project: [:regular_or_any_approver_approval_rules, group: :saml_provider]
+          target_project: [:regular_or_any_approver_approval_rules, { group: :saml_provider }]
         )
       end
 

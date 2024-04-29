@@ -26,26 +26,31 @@ RSpec.describe ::Search::Zoekt::Task, feature_category: :global_search do
       task_1 = create(:zoekt_task, perform_at: 1.minute.ago)
       task_2 = create(:zoekt_task, perform_at: 3.minutes.ago)
       task_3 = create(:zoekt_task, perform_at: 2.minutes.ago)
+      task_in_future = create(:zoekt_task, perform_at: 3.minutes.from_now)
 
       tasks = []
       described_class.each_task(limit: 10) do |task|
         tasks << task
       end
 
+      expect(tasks).not_to include(task_in_future)
       expect(tasks).to eq([task_2, task_3, task_1])
     end
 
     context 'with orphaned task' do
-      let_it_be(:orphaned_task) { create(:zoekt_task) }
+      let_it_be(:orphaned_indexing_task) { create(:zoekt_task) }
+      let_it_be(:orphaned_delete_task) { create(:zoekt_task, task_type: :delete_repo) }
 
       before do
-        orphaned_task.zoekt_repository.destroy!
+        orphaned_indexing_task.zoekt_repository.project.destroy!
+        orphaned_delete_task.zoekt_repository.project.destroy!
       end
 
-      it 'marks tasks as orphaned' do
+      it 'marks indexing tasks as orphaned' do
         expect do
           described_class.each_task(limit: 10) { |t| t }
-        end.to change { orphaned_task.reload.state }.from('pending').to('orphaned')
+        end.to change { orphaned_indexing_task.reload.state }.from('pending').to('orphaned')
+        expect(orphaned_delete_task.reload.state).to eq('pending')
       end
     end
   end

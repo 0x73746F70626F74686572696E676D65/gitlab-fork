@@ -3,7 +3,7 @@ import Vue from 'vue';
 import { GlButton, GlLoadingIcon, GlSearchBoxByClick, GlTable, GlToast, GlLink } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import FrameworkBadge from '../shared/framework_badge.vue';
-import { ROUTE_NEW_FRAMEWORK } from '../../constants';
+import { ROUTE_EDIT_FRAMEWORK, ROUTE_NEW_FRAMEWORK } from '../../constants';
 import FrameworkInfoDrawer from './framework_info_drawer.vue';
 
 Vue.use(GlToast);
@@ -62,6 +62,9 @@ export default {
     },
     newFramework() {
       this.$router.push({ name: ROUTE_NEW_FRAMEWORK });
+    },
+    editFramework({ id }) {
+      this.$router.push({ name: ROUTE_EDIT_FRAMEWORK, params: { id } });
     },
     getPoliciesList(item) {
       const { scanExecutionPolicies, scanResultPolicies } = item;
@@ -158,6 +161,7 @@ export default {
       :show-drawer="showDrawer"
       :framework="selectedFramework"
       @close="closeDrawer"
+      @edit="editFramework"
     />
   </section>
 </template>

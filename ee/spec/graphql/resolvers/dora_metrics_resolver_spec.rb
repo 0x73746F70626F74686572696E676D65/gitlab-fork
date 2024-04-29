@@ -5,21 +5,18 @@ require 'spec_helper'
 RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', feature_category: :dora_metrics do
   include GraphqlHelpers
 
-  let_it_be(:guest) { create(:user) }
-  let_it_be(:reporter) { create(:user) }
   let_it_be_with_refind(:group) { create(:group) }
   let_it_be_with_refind(:project) { create(:project, group: group) }
   let_it_be(:production) { create(:environment, :production, project: project) }
   let_it_be(:staging) { create(:environment, :staging, project: project) }
+  let_it_be(:guest) { create(:user, guest_of: group) }
+  let_it_be(:reporter) { create(:user, reporter_of: group) }
 
   let(:number_of_days) { (Time.current.to_date - 3.months.ago.to_date).to_i + 1 }
 
   let(:current_user) { reporter }
 
   before_all do
-    group.add_guest(guest)
-    group.add_reporter(reporter)
-
     create(:dora_daily_metrics, deployment_frequency: 20, environment: production, date: '2020-01-01')
     create(:dora_daily_metrics, deployment_frequency: 19, environment: production, date: '2021-01-01')
     create(:dora_daily_metrics, deployment_frequency: 18, environment: production, date: '2021-03-01')

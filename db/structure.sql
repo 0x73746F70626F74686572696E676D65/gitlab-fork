@@ -643,6 +643,67 @@ $$;
 
 COMMENT ON FUNCTION table_sync_function_0992e728d3() IS 'Partitioning migration: table sync for merge_request_diff_commits table';
 
+CREATE FUNCTION table_sync_function_3f39f64fc3() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF (TG_OP = 'DELETE') THEN
+  DELETE FROM merge_request_diff_files_99208b8fac where "merge_request_diff_id" = OLD."merge_request_diff_id" AND "relative_order" = OLD."relative_order";
+ELSIF (TG_OP = 'UPDATE') THEN
+  UPDATE merge_request_diff_files_99208b8fac
+  SET "new_file" = NEW."new_file",
+    "renamed_file" = NEW."renamed_file",
+    "deleted_file" = NEW."deleted_file",
+    "too_large" = NEW."too_large",
+    "a_mode" = NEW."a_mode",
+    "b_mode" = NEW."b_mode",
+    "new_path" = NEW."new_path",
+    "old_path" = NEW."old_path",
+    "diff" = NEW."diff",
+    "binary" = NEW."binary",
+    "external_diff_offset" = NEW."external_diff_offset",
+    "external_diff_size" = NEW."external_diff_size",
+    "generated" = NEW."generated"
+  WHERE merge_request_diff_files_99208b8fac."merge_request_diff_id" = NEW."merge_request_diff_id" AND merge_request_diff_files_99208b8fac."relative_order" = NEW."relative_order";
+ELSIF (TG_OP = 'INSERT') THEN
+  INSERT INTO merge_request_diff_files_99208b8fac ("new_file",
+    "renamed_file",
+    "deleted_file",
+    "too_large",
+    "a_mode",
+    "b_mode",
+    "new_path",
+    "old_path",
+    "diff",
+    "binary",
+    "external_diff_offset",
+    "external_diff_size",
+    "generated",
+    "merge_request_diff_id",
+    "relative_order")
+  VALUES (NEW."new_file",
+    NEW."renamed_file",
+    NEW."deleted_file",
+    NEW."too_large",
+    NEW."a_mode",
+    NEW."b_mode",
+    NEW."new_path",
+    NEW."old_path",
+    NEW."diff",
+    NEW."binary",
+    NEW."external_diff_offset",
+    NEW."external_diff_size",
+    NEW."generated",
+    NEW."merge_request_diff_id",
+    NEW."relative_order");
+END IF;
+RETURN NULL;
+
+END
+$$;
+
+COMMENT ON FUNCTION table_sync_function_3f39f64fc3() IS 'Partitioning migration: table sync for merge_request_diff_files table';
+
 CREATE FUNCTION trigger_10ee1357e825() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -974,7 +1035,7 @@ CREATE TABLE p_ci_builds (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     started_at timestamp without time zone,
-    runner_id integer,
+    runner_id_convert_to_bigint integer,
     coverage double precision,
     commit_id_convert_to_bigint integer,
     name character varying,
@@ -989,7 +1050,7 @@ CREATE TABLE p_ci_builds (
     type character varying,
     target_url character varying,
     description character varying,
-    project_id integer,
+    project_id_convert_to_bigint integer,
     erased_by_id integer,
     erased_at timestamp without time zone,
     artifacts_expire_at timestamp without time zone,
@@ -1017,8 +1078,8 @@ CREATE TABLE p_ci_builds (
     auto_canceled_by_id bigint,
     commit_id bigint,
     erased_by_id_convert_to_bigint bigint,
-    project_id_convert_to_bigint bigint,
-    runner_id_convert_to_bigint bigint,
+    project_id bigint,
+    runner_id bigint,
     trigger_request_id_convert_to_bigint bigint,
     upstream_pipeline_id bigint,
     user_id_convert_to_bigint bigint,
@@ -1171,6 +1232,25 @@ CREATE TABLE merge_request_diff_commits_b5377a7a34 (
 )
 PARTITION BY RANGE (merge_request_diff_id);
 
+CREATE TABLE merge_request_diff_files_99208b8fac (
+    new_file boolean NOT NULL,
+    renamed_file boolean NOT NULL,
+    deleted_file boolean NOT NULL,
+    too_large boolean NOT NULL,
+    a_mode character varying NOT NULL,
+    b_mode character varying NOT NULL,
+    new_path text NOT NULL,
+    old_path text NOT NULL,
+    diff text,
+    "binary" boolean,
+    external_diff_offset integer,
+    external_diff_size integer,
+    generated boolean,
+    merge_request_diff_id bigint NOT NULL,
+    relative_order integer NOT NULL
+)
+PARTITION BY RANGE (merge_request_diff_id);
+
 CREATE TABLE p_batched_git_ref_updates_deletions (
     id bigint NOT NULL,
     project_id bigint NOT NULL,
@@ -1206,7 +1286,7 @@ PARTITION BY LIST (partition_id);
 
 CREATE TABLE p_ci_finished_build_ch_sync_events (
     build_id bigint NOT NULL,
-    partition bigint DEFAULT 2 NOT NULL,
+    partition bigint DEFAULT 1 NOT NULL,
     build_finished_at timestamp without time zone NOT NULL,
     processed boolean DEFAULT false NOT NULL
 )
@@ -5124,6 +5204,23 @@ CREATE SEQUENCE audit_events_streaming_instance_event_type_filters_id_seq
 
 ALTER SEQUENCE audit_events_streaming_instance_event_type_filters_id_seq OWNED BY audit_events_streaming_instance_event_type_filters.id;
 
+CREATE TABLE audit_events_streaming_instance_namespace_filters (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    external_streaming_destination_id bigint NOT NULL,
+    namespace_id bigint NOT NULL
+);
+
+CREATE SEQUENCE audit_events_streaming_instance_namespace_filters_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE audit_events_streaming_instance_namespace_filters_id_seq OWNED BY audit_events_streaming_instance_namespace_filters.id;
+
 CREATE TABLE authentication_events (
     id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -6029,7 +6126,7 @@ CREATE TABLE ci_builds (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     started_at timestamp without time zone,
-    runner_id integer,
+    runner_id_convert_to_bigint integer,
     coverage double precision,
     commit_id_convert_to_bigint integer,
     name character varying,
@@ -6044,7 +6141,7 @@ CREATE TABLE ci_builds (
     type character varying,
     target_url character varying,
     description character varying,
-    project_id integer,
+    project_id_convert_to_bigint integer,
     erased_by_id integer,
     erased_at timestamp without time zone,
     artifacts_expire_at timestamp without time zone,
@@ -6072,8 +6169,8 @@ CREATE TABLE ci_builds (
     auto_canceled_by_id bigint,
     commit_id bigint,
     erased_by_id_convert_to_bigint bigint,
-    project_id_convert_to_bigint bigint,
-    runner_id_convert_to_bigint bigint,
+    project_id bigint,
+    runner_id bigint,
     trigger_request_id_convert_to_bigint bigint,
     upstream_pipeline_id bigint,
     user_id_convert_to_bigint bigint,
@@ -6418,15 +6515,6 @@ CREATE TABLE ci_partitions (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL
 );
-
-CREATE SEQUENCE ci_partitions_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE ci_partitions_id_seq OWNED BY ci_partitions.id;
 
 CREATE TABLE ci_pending_builds (
     id bigint NOT NULL,
@@ -11240,7 +11328,7 @@ CREATE TABLE merge_request_metrics (
     merged_at timestamp without time zone,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    pipeline_id integer,
+    pipeline_id_convert_to_bigint integer,
     merged_by_id integer,
     latest_closed_by_id integer,
     latest_closed_at timestamp with time zone,
@@ -11257,7 +11345,7 @@ CREATE TABLE merge_request_metrics (
     target_project_id integer,
     id bigint NOT NULL,
     first_contribution boolean DEFAULT false NOT NULL,
-    pipeline_id_convert_to_bigint bigint,
+    pipeline_id bigint,
     CONSTRAINT check_e03d0900bf CHECK ((target_project_id IS NOT NULL))
 );
 
@@ -11466,7 +11554,7 @@ CREATE TABLE merge_trains (
     id bigint NOT NULL,
     merge_request_id integer NOT NULL,
     user_id integer NOT NULL,
-    pipeline_id integer,
+    pipeline_id_convert_to_bigint integer,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     target_project_id integer NOT NULL,
@@ -11474,7 +11562,7 @@ CREATE TABLE merge_trains (
     status smallint DEFAULT 0 NOT NULL,
     merged_at timestamp with time zone,
     duration integer,
-    pipeline_id_convert_to_bigint bigint
+    pipeline_id bigint
 );
 
 CREATE SEQUENCE merge_trains_id_seq
@@ -13492,7 +13580,8 @@ CREATE TABLE plan_limits (
     ci_job_annotations_num integer DEFAULT 20 NOT NULL,
     file_size_limit_mb double precision DEFAULT 100.0 NOT NULL,
     audit_events_amazon_s3_configurations integer DEFAULT 5 NOT NULL,
-    ci_max_artifact_size_repository_xray bigint DEFAULT 1073741824 NOT NULL
+    ci_max_artifact_size_repository_xray bigint DEFAULT 1073741824 NOT NULL,
+    active_versioned_pages_deployments_limit_by_namespace integer DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE plan_limits_id_seq
@@ -18939,6 +19028,8 @@ ALTER TABLE ONLY audit_events_streaming_http_instance_namespace_filters ALTER CO
 
 ALTER TABLE ONLY audit_events_streaming_instance_event_type_filters ALTER COLUMN id SET DEFAULT nextval('audit_events_streaming_instance_event_type_filters_id_seq'::regclass);
 
+ALTER TABLE ONLY audit_events_streaming_instance_namespace_filters ALTER COLUMN id SET DEFAULT nextval('audit_events_streaming_instance_namespace_filters_id_seq'::regclass);
+
 ALTER TABLE ONLY authentication_events ALTER COLUMN id SET DEFAULT nextval('authentication_events_id_seq'::regclass);
 
 ALTER TABLE ONLY automation_rules ALTER COLUMN id SET DEFAULT nextval('automation_rules_id_seq'::regclass);
@@ -19042,8 +19133,6 @@ ALTER TABLE ONLY ci_minutes_additional_packs ALTER COLUMN id SET DEFAULT nextval
 ALTER TABLE ONLY ci_namespace_mirrors ALTER COLUMN id SET DEFAULT nextval('ci_namespace_mirrors_id_seq'::regclass);
 
 ALTER TABLE ONLY ci_namespace_monthly_usages ALTER COLUMN id SET DEFAULT nextval('ci_namespace_monthly_usages_id_seq'::regclass);
-
-ALTER TABLE ONLY ci_partitions ALTER COLUMN id SET DEFAULT nextval('ci_partitions_id_seq'::regclass);
 
 ALTER TABLE ONLY ci_pending_builds ALTER COLUMN id SET DEFAULT nextval('ci_pending_builds_id_seq'::regclass);
 
@@ -20747,6 +20836,9 @@ ALTER TABLE ONLY audit_events_streaming_http_instance_namespace_filters
 ALTER TABLE ONLY audit_events_streaming_instance_event_type_filters
     ADD CONSTRAINT audit_events_streaming_instance_event_type_filters_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY audit_events_streaming_instance_namespace_filters
+    ADD CONSTRAINT audit_events_streaming_instance_namespace_filters_pkey PRIMARY KEY (id);
+
 ALTER TABLE ONLY authentication_events
     ADD CONSTRAINT authentication_events_pkey PRIMARY KEY (id);
 
@@ -21700,6 +21792,9 @@ ALTER TABLE ONLY merge_request_diff_commits
 
 ALTER TABLE ONLY merge_request_diff_details
     ADD CONSTRAINT merge_request_diff_details_pkey PRIMARY KEY (merge_request_diff_id);
+
+ALTER TABLE ONLY merge_request_diff_files_99208b8fac
+    ADD CONSTRAINT merge_request_diff_files_99208b8fac_pkey PRIMARY KEY (merge_request_diff_id, relative_order);
 
 ALTER TABLE ONLY merge_request_diff_files
     ADD CONSTRAINT merge_request_diff_files_pkey PRIMARY KEY (merge_request_diff_id, relative_order);
@@ -24214,6 +24309,8 @@ CREATE INDEX idx_streaming_group_namespace_filters_on_namespace_id ON audit_even
 
 CREATE INDEX idx_streaming_headers_on_external_audit_event_destination_id ON audit_events_streaming_headers USING btree (external_audit_event_destination_id);
 
+CREATE INDEX idx_streaming_instance_namespace_filters_on_namespace_id ON audit_events_streaming_instance_namespace_filters USING btree (namespace_id);
+
 CREATE INDEX idx_test_reports_on_issue_id_created_at_and_id ON requirements_management_test_reports USING btree (issue_id, created_at, id);
 
 CREATE UNIQUE INDEX idx_uniq_analytics_dashboards_pointers_on_project_id ON analytics_dashboards_pointers USING btree (project_id);
@@ -24245,14 +24342,6 @@ CREATE UNIQUE INDEX idx_vulnerability_issue_links_on_vulnerability_id_and_link_t
 CREATE INDEX idx_vulnerability_reads_project_id_scanner_id_vulnerability_id ON vulnerability_reads USING btree (project_id, scanner_id, vulnerability_id);
 
 CREATE UNIQUE INDEX idx_work_item_types_on_namespace_id_and_name_null_namespace ON work_item_types USING btree (btrim(lower(name)), ((namespace_id IS NULL))) WHERE (namespace_id IS NULL);
-
-CREATE INDEX p_ci_builds_project_id_bigint_id_idx ON ONLY p_ci_builds USING btree (project_id_convert_to_bigint, id);
-
-CREATE INDEX index_3591adffe4 ON ci_builds USING btree (project_id_convert_to_bigint, id);
-
-CREATE INDEX p_ci_builds_status_type_runner_id_bigint_idx ON ONLY p_ci_builds USING btree (status, type, runner_id_convert_to_bigint);
-
-CREATE INDEX index_9f1fa3baee ON ci_builds USING btree (status, type, runner_id_convert_to_bigint);
 
 CREATE INDEX index_abuse_events_on_abuse_report_id ON abuse_events USING btree (abuse_report_id);
 
@@ -24295,10 +24384,6 @@ CREATE UNIQUE INDEX "index_achievements_on_namespace_id_LOWER_name" ON achieveme
 CREATE UNIQUE INDEX index_activity_pub_releases_sub_on_project_id_inbox_url ON activity_pub_releases_subscriptions USING btree (project_id, lower(subscriber_inbox_url));
 
 CREATE UNIQUE INDEX index_activity_pub_releases_sub_on_project_id_sub_url ON activity_pub_releases_subscriptions USING btree (project_id, lower(subscriber_url));
-
-CREATE INDEX p_ci_builds_runner_id_bigint_id_idx ON ONLY p_ci_builds USING btree (runner_id_convert_to_bigint, id DESC);
-
-CREATE INDEX index_adafd086ad ON ci_builds USING btree (runner_id_convert_to_bigint, id DESC);
 
 CREATE INDEX index_agent_activity_events_on_agent_id_and_recorded_at_and_id ON agent_activity_events USING btree (agent_id, recorded_at, id);
 
@@ -24467,10 +24552,6 @@ CREATE INDEX index_award_emoji_on_awardable_type_and_awardable_id ON award_emoji
 CREATE UNIQUE INDEX index_aws_roles_on_role_external_id ON aws_roles USING btree (role_external_id);
 
 CREATE UNIQUE INDEX index_aws_roles_on_user_id ON aws_roles USING btree (user_id);
-
-CREATE INDEX p_ci_builds_runner_id_bigint_idx ON ONLY p_ci_builds USING btree (runner_id_convert_to_bigint) WHERE (((status)::text = 'running'::text) AND ((type)::text = 'Ci::Build'::text));
-
-CREATE INDEX index_b4cf879bcf ON ci_builds USING btree (runner_id_convert_to_bigint) WHERE (((status)::text = 'running'::text) AND ((type)::text = 'Ci::Build'::text));
 
 CREATE INDEX index_background_migration_jobs_for_partitioning_migrations ON background_migration_jobs USING btree (((arguments ->> 2))) WHERE (class_name = 'Gitlab::Database::PartitioningMigrationHelpers::BackfillPartitionedTable'::text);
 
@@ -26203,8 +26284,6 @@ CREATE INDEX index_merge_requests_on_target_branch ON merge_requests USING btree
 CREATE INDEX index_merge_requests_on_target_project_id_and_created_at_and_id ON merge_requests USING btree (target_project_id, created_at, id);
 
 CREATE UNIQUE INDEX index_merge_requests_on_target_project_id_and_iid ON merge_requests USING btree (target_project_id, iid);
-
-CREATE INDEX index_merge_requests_on_target_project_id_and_iid_and_state_id ON merge_requests USING btree (target_project_id, iid, state_id);
 
 CREATE INDEX index_merge_requests_on_target_project_id_and_merged_commit_sha ON merge_requests USING btree (target_project_id, merged_commit_sha);
 
@@ -28094,6 +28173,10 @@ CREATE INDEX tmp_index_project_statistics_updated_at ON project_statistics USING
 
 CREATE INDEX tmp_index_vulnerability_dismissal_info ON vulnerabilities USING btree (id) WHERE ((state = 2) AND ((dismissed_at IS NULL) OR (dismissed_by_id IS NULL)));
 
+CREATE INDEX tmp_index_vulnerability_occurrences_id_and_initial_pipline_id ON vulnerability_occurrences USING btree (id, initial_pipeline_id) WHERE (initial_pipeline_id IS NULL);
+
+CREATE INDEX tmp_index_vulnerability_occurrences_id_and_latest_pipeline_id ON vulnerability_occurrences USING btree (id, latest_pipeline_id) WHERE (latest_pipeline_id IS NULL);
+
 CREATE INDEX tmp_index_vulnerability_overlong_title_html ON vulnerabilities USING btree (id) WHERE (length(title_html) > 800);
 
 CREATE UNIQUE INDEX u_project_compliance_standards_adherence_for_reporting ON project_compliance_standards_adherence USING btree (project_id, check_name, standard);
@@ -28108,7 +28191,9 @@ CREATE UNIQUE INDEX uniq_audit_instance_event_filters_destination_id_and_event_t
 
 CREATE UNIQUE INDEX uniq_google_cloud_logging_configuration_namespace_id_and_name ON audit_events_google_cloud_logging_configurations USING btree (namespace_id, name);
 
-CREATE UNIQUE INDEX uniq_idx_packages_packages_on_project_id_name_version_ml_model ON packages_packages USING btree (project_id, name, version) WHERE (package_type = 14);
+CREATE UNIQUE INDEX uniq_idx_packages_packages_on_project_id_name_version_ml_model ON packages_packages USING btree (project_id, name, version) WHERE ((package_type = 14) AND (status <> 4));
+
+CREATE UNIQUE INDEX uniq_idx_streaming_destination_id_and_namespace_id ON audit_events_streaming_instance_namespace_filters USING btree (external_streaming_destination_id, namespace_id);
 
 CREATE UNIQUE INDEX uniq_idx_streaming_group_destination_id_and_namespace_id ON audit_events_streaming_group_namespace_filters USING btree (external_streaming_destination_id, namespace_id);
 
@@ -29650,14 +29735,6 @@ ALTER INDEX p_ci_stages_pkey ATTACH PARTITION ci_stages_pkey;
 
 ALTER INDEX p_ci_job_artifacts_job_id_file_type_partition_id_idx ATTACH PARTITION idx_ci_job_artifacts_on_job_id_file_type_and_partition_id_uniq;
 
-ALTER INDEX p_ci_builds_project_id_bigint_id_idx ATTACH PARTITION index_3591adffe4;
-
-ALTER INDEX p_ci_builds_status_type_runner_id_bigint_idx ATTACH PARTITION index_9f1fa3baee;
-
-ALTER INDEX p_ci_builds_runner_id_bigint_id_idx ATTACH PARTITION index_adafd086ad;
-
-ALTER INDEX p_ci_builds_runner_id_bigint_idx ATTACH PARTITION index_b4cf879bcf;
-
 ALTER INDEX p_ci_builds_metadata_build_id_idx ATTACH PARTITION index_ci_builds_metadata_on_build_id_and_has_exposed_artifacts;
 
 ALTER INDEX p_ci_builds_metadata_build_id_id_idx ATTACH PARTITION index_ci_builds_metadata_on_build_id_and_id_and_interruptible;
@@ -29791,6 +29868,8 @@ CREATE TRIGGER projects_loose_fk_trigger AFTER DELETE ON projects REFERENCING OL
 CREATE TRIGGER push_rules_loose_fk_trigger AFTER DELETE ON push_rules REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
 CREATE TRIGGER table_sync_trigger_57c8465cd7 AFTER INSERT OR DELETE OR UPDATE ON merge_request_diff_commits FOR EACH ROW EXECUTE FUNCTION table_sync_function_0992e728d3();
+
+CREATE TRIGGER table_sync_trigger_cd362c20e2 AFTER INSERT OR DELETE OR UPDATE ON merge_request_diff_files FOR EACH ROW EXECUTE FUNCTION table_sync_function_3f39f64fc3();
 
 CREATE TRIGGER tags_loose_fk_trigger AFTER DELETE ON tags REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
@@ -30334,6 +30413,9 @@ ALTER TABLE ONLY dast_profile_schedules
 ALTER TABLE ONLY vulnerability_merge_request_links
     ADD CONSTRAINT fk_6d7aa8796e FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY audit_events_streaming_instance_namespace_filters
+    ADD CONSTRAINT fk_6e0be28087 FOREIGN KEY (external_streaming_destination_id) REFERENCES audit_events_instance_external_streaming_destinations(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY projects
     ADD CONSTRAINT fk_6e5c14658a FOREIGN KEY (pool_repository_id) REFERENCES pool_repositories(id) ON DELETE SET NULL;
 
@@ -30624,6 +30706,9 @@ ALTER TABLE ONLY boards
 
 ALTER TABLE ONLY audit_events_streaming_http_instance_namespace_filters
     ADD CONSTRAINT fk_abe44125bc FOREIGN KEY (audit_events_instance_external_audit_event_destination_id) REFERENCES audit_events_instance_external_audit_event_destinations(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY audit_events_streaming_instance_namespace_filters
+    ADD CONSTRAINT fk_ac20a85a68 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY merge_requests
     ADD CONSTRAINT fk_ad525e1f87 FOREIGN KEY (merge_user_id) REFERENCES users(id) ON DELETE SET NULL;

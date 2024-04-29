@@ -63,6 +63,10 @@ module EE
       false
     end
 
+    def supports_approval_rules?
+      is_a?(MergeRequest)
+    end
+
     override :hook_association_changes
     def hook_association_changes(old_associations)
       changes = super
@@ -76,7 +80,20 @@ module EE
         end
       end
 
+      if supports_approval_rules?
+        approval_rules_hook_attributes = approval_rules.map(&:hook_attrs)
+        if old_approval_rules(old_associations) != approval_rules_hook_attributes
+          changes[:approval_rules] = [old_approval_rules(old_associations), approval_rules_hook_attributes]
+        end
+      end
+
       changes
+    end
+
+    private
+
+    def old_approval_rules(assoc)
+      @_old_approval_rules ||= assoc.fetch(:approval_rules, approval_rules)
     end
   end
 end

@@ -1,19 +1,21 @@
 <script>
 import { GlEmptyState } from '@gitlab/ui';
-import { setUrlFragment } from '~/lib/utils/url_utility';
-import { __ } from '~/locale';
+import { joinPaths, setUrlFragment, visitUrl } from '~/lib/utils/url_utility';
+import { s__, __ } from '~/locale';
 import {
+  ACTIONS_LABEL,
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
+  GRAPHQL_ERROR_MESSAGE,
   PARSING_ERROR_MESSAGE,
   SECURITY_POLICY_ACTIONS,
-  ACTIONS_LABEL,
 } from '../constants';
+import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import EditorLayout from '../editor_layout.vue';
 import DimDisableContainer from '../dim_disable_container.vue';
 import ActionSection from './action/action_section.vue';
 import RuleSection from './rule/rule_section.vue';
-import { createPolicyObject, policyToYaml } from './utils';
+import { createPolicyObject, fromYaml, policyToYaml } from './utils';
 import { CONDITIONS_LABEL, DEFAULT_PIPELINE_EXECUTION_POLICY } from './constants';
 
 export default {
@@ -26,6 +28,7 @@ export default {
     CONDITIONS_LABEL,
     PARSING_ERROR_MESSAGE,
     notOwnerButtonText: __('Learn more'),
+    createMergeRequest: s__('SecurityOrchestration|Update via merge request'),
   },
   components: {
     ActionSection,
@@ -37,6 +40,7 @@ export default {
   inject: [
     'disableScanPolicyUpdate',
     'policyEditorEmptyStateSvgPath',
+    'namespacePath',
     'scanPolicyDocumentationPath',
   ],
   props: {
@@ -68,15 +72,17 @@ export default {
     const parsingError = hasParsingError ? this.$options.i18n.PARSING_ERROR_MESSAGE : '';
 
     return {
-      policy,
-      hasParsingError,
-      parsingError,
-      yamlEditorValue,
-      mode: EDITOR_MODE_RULE,
       documentationPath: setUrlFragment(
         this.scanPolicyDocumentationPath,
         'pipeline-execution-policy-editor',
       ),
+      hasParsingError,
+      isCreatingMR: false,
+      isRemovingPolicy: false,
+      mode: EDITOR_MODE_RULE,
+      parsingError,
+      policy,
+      yamlEditorValue,
     };
   },
   computed: {
@@ -91,6 +97,46 @@ export default {
     changeEditorMode(mode) {
       this.mode = mode;
     },
+    async getSecurityPolicyProject() {
+      if (!this.newlyCreatedPolicyProject && !this.assignedPolicyProject.fullPath) {
+        this.newlyCreatedPolicyProject = await assignSecurityPolicyProject(this.namespacePath);
+      }
+
+      return this.newlyCreatedPolicyProject || this.assignedPolicyProject;
+    },
+    handleError(error) {
+      if (error.message.toLowerCase().includes('graphql')) {
+        this.$emit('error', GRAPHQL_ERROR_MESSAGE);
+      } else {
+        this.$emit('error', error.message);
+      }
+    },
+    async handleModifyPolicy(act) {
+      const action =
+        act ||
+        (this.isEditing
+          ? this.$options.SECURITY_POLICY_ACTIONS.REPLACE
+          : this.$options.SECURITY_POLICY_ACTIONS.APPEND);
+
+      this.$emit('error', '');
+      this.setLoadingFlag(action, true);
+
+      try {
+        const assignedPolicyProject = await this.getSecurityPolicyProject();
+        const mergeRequest = await modifyPolicy({
+          action,
+          assignedPolicyProject,
+          name: this.originalName || fromYaml({ manifest: this.yamlEditorValue })?.name,
+          namespacePath: this.namespacePath,
+          yamlEditorValue: this.yamlEditorValue,
+        });
+
+        this.redirectToMergeRequest({ mergeRequest, assignedPolicyProject });
+      } catch (e) {
+        this.handleError(e);
+        this.setLoadingFlag(action, false);
+      }
+    },
     handleUpdateProperty(property, value) {
       this.policy[property] = value;
       this.updateYamlEditorValue(this.policy);
@@ -103,6 +149,23 @@ export default {
       this.parsingError = hasParsingError ? this.$options.i18n.PARSING_ERROR_MESSAGE : '';
       this.policy = policy;
     },
+    redirectToMergeRequest({ mergeRequest, assignedPolicyProject }) {
+      visitUrl(
+        joinPaths(
+          gon.relative_url_root || '/',
+          assignedPolicyProject.fullPath,
+          '/-/merge_requests',
+          mergeRequest.id,
+        ),
+      );
+    },
+    setLoadingFlag(action, val) {
+      if (action === SECURITY_POLICY_ACTIONS.REMOVE) {
+        this.isRemovingPolicy = val;
+      } else {
+        this.isCreatingMR = val;
+      }
+    },
     updateYamlEditorValue(policy) {
       this.yamlEditorValue = policyToYaml(policy);
     },
@@ -113,11 +176,16 @@ export default {
 <template>
   <editor-layout
     v-if="!disableScanPolicyUpdate"
+    :custom-save-button-text="$options.i18n.createMergeRequest"
     :has-parsing-error="hasParsingError"
     :is-editing="isEditing"
+    :is-removing-policy="isRemovingPolicy"
+    :is-updating-policy="isCreatingMR"
     :parsing-error="parsingError"
     :policy="policy"
     :yaml-editor-value="yamlEditorValue"
+    @remove-policy="handleModifyPolicy($options.SECURITY_POLICY_ACTIONS.REMOVE)"
+    @save-policy="handleModifyPolicy()"
     @update-editor-mode="changeEditorMode"
     @update-property="handleUpdateProperty"
     @update-yaml="handleUpdateYaml"

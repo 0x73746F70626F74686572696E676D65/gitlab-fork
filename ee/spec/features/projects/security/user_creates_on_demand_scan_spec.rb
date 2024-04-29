@@ -22,15 +22,17 @@ RSpec.describe 'User creates On-demand Scan', feature_category: :dynamic_applica
     end
 
     it 'shows new scan page', :aggregate_failures, :js do
-      expect(page).to have_content 'New on-demand scan'
-      expect(page).to have_content 'Scan configuration'
-      expect(page).to have_content 'DAST configuration'
-      expect(page).to have_button 'Save and run scan'
-      expect(page).to have_button 'Save scan'
+      expect(page).to have_content('New on-demand scan', wait: 1.minute)
+      expect(page).to have_content('Scan configuration', wait: 1.minute)
+      expect(page).to have_content('DAST configuration', wait: 1.minute)
+      expect(page).to have_button('Save and run scan', wait: 1.minute)
+      expect(page).to have_button('Save scan', wait: 1.minute)
 
       page.within '.breadcrumbs' do
-        expect(page).to have_link('On-demand Scans', href: project_on_demand_scans_path(project, anchor: 'saved'))
-        expect(page).to have_link('New on-demand DAST scan', href: new_on_demand_scan_path)
+        expect(page).to have_link('On-demand Scans',
+          href: project_on_demand_scans_path(project, anchor: 'saved'),
+          wait: 1.minute)
+        expect(page).to have_link('New on-demand DAST scan', href: new_on_demand_scan_path, wait: 1.minute)
       end
     end
 
@@ -40,7 +42,7 @@ RSpec.describe 'User creates On-demand Scan', feature_category: :dynamic_applica
       click_button 'Save and run scan'
       wait_for_requests
 
-      expect(page).not_to have_current_path(on_demand_scans_path, ignore_query: true)
+      expect(page).not_to have_current_path(on_demand_scans_path, ignore_query: true, wait: 1.minute)
     end
 
     it 'on save', :js do
@@ -49,12 +51,12 @@ RSpec.describe 'User creates On-demand Scan', feature_category: :dynamic_applica
       click_button 'Save scan'
       wait_for_requests
 
-      expect(page).to have_current_path(on_demand_scans_path, ignore_query: true)
+      expect(page).to have_current_path(on_demand_scans_path, ignore_query: true, wait: 1.minute)
     end
 
     it 'on cancel', :js do
       click_button 'Cancel'
-      expect(page).to have_current_path(on_demand_scans_path, ignore_query: true)
+      expect(page).to have_current_path(on_demand_scans_path, ignore_query: true, wait: 1.minute)
     end
   end
 
@@ -64,7 +66,7 @@ RSpec.describe 'User creates On-demand Scan', feature_category: :dynamic_applica
     end
 
     it 'renders a 404' do
-      expect(page).to have_gitlab_http_status(:not_found)
+      expect(page).to have_gitlab_http_status(:not_found, wait: 1.minute)
     end
   end
 

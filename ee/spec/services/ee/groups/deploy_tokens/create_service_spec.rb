@@ -13,6 +13,10 @@ RSpec.describe Groups::DeployTokens::CreateService, feature_category: :continuou
     subject { described_class.new(entity, user, deploy_token_params).execute }
 
     context 'when the deploy token is valid' do
+      before do
+        stub_licensed_features(external_audit_events: true)
+      end
+
       it 'creates an audit event' do
         expect { subject }.to change { AuditEvent.count }.by(1)
 
@@ -22,10 +26,6 @@ RSpec.describe Groups::DeployTokens::CreateService, feature_category: :continuou
         MESSAGE
 
         expect(AuditEvent.last.details[:custom_message]).to eq(expected_message)
-      end
-
-      before do
-        stub_licensed_features(external_audit_events: true)
       end
 
       it_behaves_like 'sends correct event type in audit event stream' do
@@ -49,16 +49,16 @@ RSpec.describe Groups::DeployTokens::CreateService, feature_category: :continuou
     context 'when the deploy token is invalid' do
       let(:deploy_token_params) { attributes_for(:deploy_token, read_repository: false, read_registry: false, write_registry: false) }
 
+      before do
+        stub_licensed_features(external_audit_events: true)
+      end
+
       it 'creates an audit event' do
         expect { subject }.to change { AuditEvent.count }.by(1)
 
         expected_message = "Attempted to create group deploy token but failed with message: Scopes can't be blank"
 
         expect(AuditEvent.last.details[:custom_message]).to eq(expected_message)
-      end
-
-      before do
-        stub_licensed_features(external_audit_events: true)
       end
 
       it_behaves_like 'sends correct event type in audit event stream' do

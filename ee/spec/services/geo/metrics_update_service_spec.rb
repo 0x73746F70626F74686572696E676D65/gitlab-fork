@@ -136,17 +136,6 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus, feature_category: :
         expect(metric_value(:geo_project_repositories_verification_failed)).to eq(8)
       end
 
-      it 'adds legacy project repo metrics' do
-        subject.execute
-
-        expect(metric_value(:geo_repositories_checksummed)).to eq(3)
-        expect(metric_value(:geo_repositories_checksum_failed)).to eq(4)
-        expect(metric_value(:geo_repositories_synced)).to eq(5)
-        expect(metric_value(:geo_repositories_failed)).to eq(6)
-        expect(metric_value(:geo_repositories_verified)).to eq(7)
-        expect(metric_value(:geo_repositories_verification_failed)).to eq(8)
-      end
-
       it 'increments a counter when metrics fail to retrieve' do
         allow_next_instance_of(Geo::NodeStatusRequestService) do |instance|
           allow(instance).to receive(:execute).and_return(false)

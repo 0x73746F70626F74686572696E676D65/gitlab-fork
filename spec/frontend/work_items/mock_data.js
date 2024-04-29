@@ -708,6 +708,7 @@ export const workItemResponseFactory = ({
   iterationWidgetPresent = true,
   healthStatusWidgetPresent = true,
   notesWidgetPresent = true,
+  designWidgetPresent = true,
   confidential = false,
   discussionLocked = false,
   canInviteMembers = false,
@@ -988,6 +989,12 @@ export const workItemResponseFactory = ({
               textColor: '#FFFFFF',
               type: 'COLOR',
               __typename: 'WorkItemWidgetColor',
+            }
+          : { type: 'MOCK TYPE' },
+        designWidgetPresent
+          ? {
+              __typename: 'WorkItemWidgetDesigns',
+              type: 'DESIGNS',
             }
           : { type: 'MOCK TYPE' },
       ],
@@ -3868,6 +3875,11 @@ export const groupWorkItemsQueryResponse = {
   data: {
     group: {
       id: 'gid://gitlab/Group/3',
+      workItemStateCounts: {
+        all: 3,
+        closed: 1,
+        opened: 2,
+      },
       workItems: {
         nodes: [
           {

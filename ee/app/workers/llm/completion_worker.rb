@@ -5,9 +5,9 @@ module Llm
     include ApplicationWorker
 
     idempotent!
-    data_consistency :delayed
+    data_consistency :sticky
     feature_category :ai_abstraction_layer
-    urgency :low
+    urgency :high
     deduplicate :until_executed
 
     class << self

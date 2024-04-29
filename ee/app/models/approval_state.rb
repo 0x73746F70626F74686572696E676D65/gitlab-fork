@@ -37,9 +37,9 @@ class ApprovalState
     return users unless merge_request.merge_requests_disable_committers_approval?
 
     if users.is_a?(ActiveRecord::Relation) && !users.loaded?
-      users.where.not(id: merge_request.committers(with_merge_commits: true).select(:id))
+      users.where.not(id: merge_request.committers(with_merge_commits: true, include_author_when_signed: true).select(:id))
     else
-      users - merge_request.committers(with_merge_commits: true, lazy: true)
+      users - merge_request.committers(with_merge_commits: true, lazy: true, include_author_when_signed: true)
     end
   end
 
@@ -182,7 +182,10 @@ class ApprovalState
     # At this point, follow self-approval rules. Otherwise authors must
     # have been in the list of unactioned_approvers to have been approved.
     return false if !authors_can_approve? && merge_request.author == user
-    return false if !committers_can_approve? && merge_request.committers.include?(user)
+
+    if !committers_can_approve? && merge_request.committers(include_author_when_signed: true).include?(user)
+      return false
+    end
 
     true
   end

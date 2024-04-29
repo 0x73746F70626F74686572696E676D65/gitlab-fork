@@ -1,5 +1,6 @@
-import { GlButton, GlSprintf } from '@gitlab/ui';
+import { GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
 import { nextTick } from 'vue';
+import ApprovalPolicyNameUpdateBanner from 'ee/security_orchestration/components/policies/banners/approval_policy_name_update_banner.vue';
 import BreakingChangesBanner from 'ee/security_orchestration/components/policies/banners/breaking_changes_banner.vue';
 import ExperimentFeaturesBanner from 'ee/security_orchestration/components/policies/banners/experiment_features_banner.vue';
 import ListHeader from 'ee/security_orchestration/components/policies/list_header.vue';
@@ -23,6 +24,8 @@ describe('List Header Component', () => {
   const findNewPolicyButton = () => wrapper.findByTestId('new-policy-button');
   const findSubheader = () => wrapper.findByTestId('policies-subheader');
   const findExperimentFeaturesBanner = () => wrapper.findComponent(ExperimentFeaturesBanner);
+  const findApprovalPolicyNameUpdateBanner = () =>
+    wrapper.findComponent(ApprovalPolicyNameUpdateBanner);
   const findBreakingChangesBanner = () => wrapper.findComponent(BreakingChangesBanner);
 
   const linkSecurityPoliciesProject = async () => {
@@ -112,6 +115,18 @@ describe('List Header Component', () => {
         expect(findErrorAlert().exists()).toBe(false);
       });
     });
+
+    describe('migration alert', () => {
+      it('shows the migration alert by default', () => {
+        expect(findApprovalPolicyNameUpdateBanner().exists()).toBe(true);
+      });
+
+      it('dismiss migration alert', async () => {
+        await findApprovalPolicyNameUpdateBanner().vm.$emit('dismiss', true);
+
+        expect(findApprovalPolicyNameUpdateBanner().findComponent(GlAlert).exists()).toBe(false);
+      });
+    });
   });
 
   describe('breaking changes alert', () => {
@@ -127,6 +142,14 @@ describe('List Header Component', () => {
 
     it('hides shows breaking change alert by default', () => {
       expect(findBreakingChangesBanner().exists()).toBe(true);
+      expect(findApprovalPolicyNameUpdateBanner().exists()).toBe(true);
+    });
+
+    it('shows migration alert when breaking changes are dismissed', async () => {
+      await findBreakingChangesBanner().vm.$emit('dismiss', true);
+
+      expect(findBreakingChangesBanner().findComponent(GlAlert).exists()).toBe(false);
+      expect(findApprovalPolicyNameUpdateBanner().exists()).toBe(true);
     });
   });
 

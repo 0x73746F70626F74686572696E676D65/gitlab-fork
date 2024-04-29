@@ -155,6 +155,7 @@ describe('GitlabManagedProviderCard', () => {
 
           it('should emit "confirm" event', () => {
             expect(wrapper.emitted('confirm')).toHaveLength(1);
+            expect(wrapper.emitted('confirm').at(0)).toStrictEqual(['file-mock']);
           });
         });
       });

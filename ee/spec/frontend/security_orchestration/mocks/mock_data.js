@@ -68,3 +68,13 @@ export const SCAN_EXECUTION_DEFAULT_POLICY_WITH_SCOPE = {
   ...SCAN_EXECUTION_DEFAULT_POLICY,
   policy_scope: { projects: { excluding: [] } },
 };
+
+export const ASSIGNED_POLICY_PROJECT = {
+  branch: 'main',
+  fullPath: 'path/to/existing-project',
+};
+
+export const NEW_POLICY_PROJECT = {
+  ...ASSIGNED_POLICY_PROJECT,
+  fullPath: 'path/to/new-project',
+};

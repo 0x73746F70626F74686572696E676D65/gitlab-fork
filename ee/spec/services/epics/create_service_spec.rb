@@ -93,6 +93,14 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
         let(:epic) { Epic.last }
       end
 
+      context 'when title has trailing spaces' do
+        let(:params) { { title: 'some epic ' } }
+
+        it_behaves_like 'syncs all data from an epic to a work item' do
+          let(:epic) { Epic.last }
+        end
+      end
+
       context 'when date params are not set and is_fixed is false' do
         let!(:params) do
           {

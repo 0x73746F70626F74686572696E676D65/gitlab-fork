@@ -118,11 +118,13 @@ describe('Iterations report issues', () => {
         title: `Issue ${i}`,
         assignees: assignees.slice(0, i),
         labels,
+        weight: i,
       }));
 
     const findIssues = () => wrapper.findAll('table tbody tr');
     const findAssigneesForIssue = (index) => findIssues().at(index).findAllComponents(GlAvatar);
     const findLabelsForIssue = (index) => findIssues().at(index).findAllComponents(GlLabel);
+    const findWeightsForIssue = (index) => findIssues().at(index).findAll('td').at(2);
 
     describe('issue_list', () => {
       beforeEach(() => {
@@ -158,6 +160,12 @@ describe('Iterations report issues', () => {
         expect(findAssigneesForIssue(0)).toHaveLength(0);
         expect(findAssigneesForIssue(1)).toHaveLength(1);
         expect(findAssigneesForIssue(10)).toHaveLength(10);
+      });
+
+      it('shows weight', () => {
+        expect(findWeightsForIssue(0).text()).toBe('0');
+        expect(findWeightsForIssue(5).text()).toBe('5');
+        expect(findWeightsForIssue(8).text()).toBe('8');
       });
     });
 

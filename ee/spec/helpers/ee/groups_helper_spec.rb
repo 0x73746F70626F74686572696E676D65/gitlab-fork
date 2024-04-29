@@ -718,6 +718,13 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
   describe '#subgroup_creation_data' do
     subject { helper.subgroup_creation_data(group) }
 
+    it 'returns expected hash' do
+      expect(subject).to include({
+        identity_verification_required: 'false',
+        identity_verification_path: '#'
+      })
+    end
+
     context 'when self-managed' do
       it { is_expected.to include(is_saas: 'false') }
     end

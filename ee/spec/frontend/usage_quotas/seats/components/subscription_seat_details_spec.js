@@ -1,8 +1,9 @@
-import { GlTableLite } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlTableLite, GlBadge } from '@gitlab/ui';
+import { shallowMount, mount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import { cloneDeep } from 'lodash';
 import SubscriptionSeatDetails from 'ee/usage_quotas/seats/components/subscription_seat_details.vue';
 import SubscriptionSeatDetailsLoader from 'ee/usage_quotas/seats/components/subscription_seat_details_loader.vue';
 import createStore from 'ee/usage_quotas/seats/store';
@@ -18,7 +19,7 @@ describe('SubscriptionSeatDetails', () => {
     fetchBillableMemberDetails: jest.fn(),
   };
 
-  const createComponent = ({ initialUserDetails } = { initialUserDetails: {} }) => {
+  const createComponent = ({ initialUserDetails, mountFn = shallowMount } = {}) => {
     const seatMemberId = 1;
     const store = createStore(initState({ namespaceId: 1 }));
     store.state = {
@@ -33,16 +34,16 @@ describe('SubscriptionSeatDetails', () => {
       },
     };
 
-    wrapper = shallowMount(SubscriptionSeatDetails, {
+    wrapper = mountFn(SubscriptionSeatDetails, {
       propsData: {
         seatMemberId,
       },
       store: new Vuex.Store({ ...store, actions }),
-      stubs: {
-        GlTableLite: stubComponent(GlTableLite),
-      },
+      stubs: mountFn === shallowMount ? { GlTableLite: stubComponent(GlTableLite) } : {},
     });
   };
+
+  const findRoleCell = () => wrapper.find('tbody td:nth-child(4)');
 
   describe('on created', () => {
     beforeEach(() => {
@@ -80,6 +81,31 @@ describe('SubscriptionSeatDetails', () => {
 
     it('displays skeleton loader', () => {
       expect(wrapper.findComponent(SubscriptionSeatDetailsLoader).isVisible()).toBe(true);
+    });
+  });
+
+  describe('membership role', () => {
+    it('shows base role if there is no custom role', () => {
+      createComponent({ mountFn: mount });
+
+      expect(findRoleCell().text()).toBe('Owner');
+    });
+
+    describe('when there is a custom role', () => {
+      beforeEach(() => {
+        const items = cloneDeep(mockMemberDetails);
+        items[0].access_level.custom_role = { id: 1, name: 'Custom role name' };
+
+        createComponent({ mountFn: mount, initialUserDetails: { items } });
+      });
+
+      it('shows custom role name', () => {
+        expect(findRoleCell().text()).toContain('Custom role name');
+      });
+
+      it('shows custom role badge', () => {
+        expect(wrapper.findComponent(GlBadge).text()).toBe('Custom role');
+      });
     });
   });
 });

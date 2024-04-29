@@ -19,6 +19,9 @@ module EE
         expose :access_level do
           expose :human_access, as: :string_value
           expose :access_level, as: :integer_value
+          expose :custom_role do |member|
+            { id: member.member_role.id, name: member.member_role.name } if member.member_role.present?
+          end
         end
       end
     end

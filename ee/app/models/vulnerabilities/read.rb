@@ -79,16 +79,16 @@ module Vulnerabilities
     scope :with_merge_request, -> (has_merge_request = true) { where(has_merge_request: has_merge_request) }
     scope :with_remediations, -> (has_remediations = true) { where(has_remediations: has_remediations) }
     scope :with_scanner_external_ids, -> (scanner_external_ids) { joins(:scanner).merge(::Vulnerabilities::Scanner.with_external_id(scanner_external_ids)) }
-    scope :with_findings_scanner_and_identifiers, -> { includes(vulnerability: { findings: [:scanner, :identifiers, finding_identifiers: :identifier] }) }
+    scope :with_findings_scanner_and_identifiers, -> { includes(vulnerability: { findings: [:scanner, :identifiers, { finding_identifiers: :identifier }] }) }
     scope :resolved_on_default_branch, -> { where('resolved_on_default_branch IS TRUE') }
     scope :with_dismissal_reason, -> (dismissal_reason) { where(dismissal_reason: dismissal_reason) }
     scope :with_export_entities, -> do
       preload(
         vulnerability: [
           :group,
-          project: [:route],
-          notes: [:updated_by, :author],
-          findings: [:scanner, :identifiers]
+          { project: [:route],
+            notes: [:updated_by, :author],
+            findings: [:scanner, :identifiers] }
         ]
       )
     end

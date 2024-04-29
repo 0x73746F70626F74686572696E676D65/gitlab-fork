@@ -1,5 +1,6 @@
 <script>
 import { GlButton, GlFormCheckbox } from '@gitlab/ui';
+import CloudUserIllustrationPath from '@gitlab/svgs/dist/illustrations/cloud-user-sm.svg';
 
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_action';
 import { s__ } from '~/locale';
@@ -55,7 +56,7 @@ export default {
         return;
       }
 
-      this.$emit('confirm');
+      this.$emit('confirm', CloudUserIllustrationPath);
     },
     async promptToSetSettings() {
       const redirectMessage = this.useInstanceConfiguration
@@ -80,13 +81,17 @@ export default {
       }
     },
   },
+  CloudUserIllustrationPath,
 };
 </script>
 <template>
   <div
     class="gl-display-flex gl-gap-6 gl-border-gray-100 gl-border-solid border-radius-default gl-w-full gl-p-6"
   >
-    <div class="gl-display-flex gl-flex-direction-column">
+    <div class="gl-flex-shrink-0 gl-display-none gl-md-display-block">
+      <img class="gl-dark-invert-keep-hue" :src="$options.CloudUserIllustrationPath" :alt="''" />
+    </div>
+    <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-w-full">
       <h3 class="gl-mt-0 text-4">
         {{ s__('ProductAnalytics|Self-managed provider') }}
       </h3>

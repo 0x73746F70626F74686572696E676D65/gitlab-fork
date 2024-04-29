@@ -9,8 +9,8 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
   let_it_be(:owner) { create(:user) }
   let_it_be(:user) { create(:user) }
 
-  let_it_be(:group_with_member_roles) { create(:group) }
-  let_it_be(:group_with_no_member_roles) { create(:group) }
+  let_it_be(:group_with_member_roles) { create(:group, owners: owner) }
+  let_it_be(:group_with_no_member_roles) { create(:group, owners: owner) }
 
   let_it_be(:member_role_1) { create(:member_role, :read_dependency, namespace: group_with_member_roles) }
   let_it_be(:member_role_2) { create(:member_role, :read_code, namespace: group_with_member_roles) }
@@ -19,11 +19,6 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
 
   let(:group) { group_with_member_roles }
   let(:current_user) { nil }
-
-  before do
-    group_with_member_roles.add_owner(owner)
-    group_with_no_member_roles.add_owner(owner)
-  end
 
   shared_examples "it requires a valid license" do
     context "when licensed feature is unavailable" do

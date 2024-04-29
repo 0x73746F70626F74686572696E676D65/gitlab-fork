@@ -387,5 +387,143 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
         end
       end
     end
+
+    context 'with a synced epic' do
+      let_it_be(:work_item, refind: true) { create(:work_item, :epic_with_legacy_epic, namespace: group) }
+      let_it_be(:epic) { work_item.synced_epic }
+      let(:start_date) { (Time.current + 1.day).to_date }
+      let(:due_date) { (Time.current + 2.days).to_date }
+
+      let(:widget_params) do
+        {
+          description_widget: {
+            description: 'new description'
+          },
+          color_widget: {
+            color: '#FF0000'
+          },
+          start_and_due_date_widget: { start_date: start_date, due_date: due_date }
+        }
+      end
+
+      let(:params) do
+        {
+          confidential: true,
+          title: 'new title',
+          external_key: 'external_key'
+        }
+      end
+
+      before_all do
+        group.add_developer(developer)
+      end
+
+      before do
+        stub_feature_flags(make_synced_work_item_read_only: false)
+        stub_licensed_features(epics: true, subepics: true, epic_colors: true)
+      end
+
+      subject(:execute) { update_work_item }
+
+      it_behaves_like 'syncs all data from a work_item to an epic'
+
+      it 'syncs the data to the epic', :aggregate_failures do
+        update_work_item
+
+        expect(epic.reload.title).to eq('new title')
+        expect(work_item.reload.title).to eq('new title')
+        expect(epic.title_html).to eq(work_item.title_html)
+
+        expect(epic.last_edited_by).to eq(current_user)
+
+        expect(epic.updated_at).to eq(work_item.updated_at)
+
+        expect(epic.description).to eq('new description')
+        expect(work_item.description).to eq('new description')
+        expect(epic.description_html).to eq(work_item.description_html)
+
+        expect(epic.reload.confidential).to eq(true)
+        expect(work_item.confidential).to eq(true)
+
+        expect(work_item.color.color.to_s).to eq('#FF0000')
+        expect(epic.color.to_s).to eq('#FF0000')
+
+        expect(work_item.start_date).to eq(start_date)
+        expect(work_item.due_date).to eq(due_date)
+
+        expect(epic.start_date).to eq(start_date)
+        expect(epic.due_date).to eq(due_date)
+      end
+
+      context 'when updating the work item fails' do
+        before do
+          allow_next_found_instance_of(WorkItem) do |work_item|
+            allow(work_item).to receive(:update).and_return(false)
+          end
+        end
+
+        it 'does not update the epic or work item' do
+          expect { execute }
+            .to not_change { work_item.reload }
+            .and not_change { epic.reload }
+        end
+      end
+
+      context 'when updating the epic fails' do
+        before do
+          allow_next_found_instance_of(Epic) do |epic|
+            allow(epic).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new)
+          end
+        end
+
+        it 'does not update the work item' do
+          expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
+            .with({
+              message: "Not able to update epic",
+              error_message: "Record invalid",
+              group_id: group.id,
+              work_item_id: work_item.id
+            })
+
+          expect { execute }
+            .to not_change { work_item.reload }
+            .and not_change { epic.reload }
+            .and raise_error(ActiveRecord::RecordInvalid)
+        end
+      end
+
+      context 'when changes are invalid' do
+        let(:widget_params) { {} }
+        let(:params) { { title: '' } }
+
+        it 'does not propagate them to the epic' do
+          expect { execute }
+            .to not_change { work_item.reload.title }
+            .and not_change { epic.reload.title }
+        end
+      end
+
+      context 'when work item has no synced epic' do
+        let_it_be(:work_item, refind: true) { create(:work_item, :epic, namespace: group) }
+
+        it 'does not error and updates the work item' do
+          expect { execute }.not_to raise_error
+
+          expect(work_item.reload.title).to eq('new title')
+        end
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(make_synced_work_item_read_only: false, sync_work_item_to_epic: false)
+        end
+
+        it 'updates work item but not the epic' do
+          expect { execute }
+            .to change { work_item.reload.title }
+            .and not_change { epic.reload.title }
+        end
+      end
+    end
   end
 end

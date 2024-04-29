@@ -3,7 +3,7 @@ name: admin_merge_request
 description: Allows approval of merge requests.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/412708
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/128302
-feature_category: code_review_workflow
+feature_category: source_code_management
 milestone: '16.4'
 group_ability: false
 project_ability: true

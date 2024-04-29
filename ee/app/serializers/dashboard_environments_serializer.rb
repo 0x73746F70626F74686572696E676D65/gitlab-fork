@@ -19,10 +19,10 @@ class DashboardEnvironmentsSerializer < BaseSerializer
       records: projects,
       associations: [
         :route,
-        environments_for_dashboard: [
-          project: [:project_feature, :group, namespace: :route]
-        ],
-        namespace: [:route, :owner]
+        { environments_for_dashboard: [
+            project: [:project_feature, :group, { namespace: :route }]
+          ],
+          namespace: [:route, :owner] }
       ]
     ).call
 

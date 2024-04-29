@@ -3,7 +3,7 @@
 module Types
   module Epics
     class NegatedEpicFilterInputType < BaseInputObject
-      argument :label_name, [GraphQL::Types::String, null: true],
+      argument :label_name, [GraphQL::Types::String, { null: true }],
                required: false,
                description: 'Filter by label name.'
 

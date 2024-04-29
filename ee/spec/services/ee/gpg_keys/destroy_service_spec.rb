@@ -12,6 +12,7 @@ RSpec.describe GpgKeys::DestroyService, feature_category: :source_code_managemen
       before do
         stub_licensed_features(admin_audit_log: true, audit_events: true, extended_audit_events: true)
       end
+
       it 'creates an audit event', :aggregate_failures do
         key = create(:gpg_key)
 

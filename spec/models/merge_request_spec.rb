@@ -2145,21 +2145,38 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
     let(:commits) { double }
     let(:committers) { double }
 
-    context 'when not given with_merge_commits and lazy' do
+    context 'when not given with_merge_commits, lazy and include_author_when_signed' do
       it 'calls committers on the commits object with the expected param' do
         expect(subject).to receive(:commits).and_return(commits)
-        expect(commits).to receive(:committers).with(with_merge_commits: false, lazy: false).and_return(committers)
+
+        expect(commits)
+          .to receive(:committers)
+          .with(
+            with_merge_commits: false,
+            lazy: false,
+            include_author_when_signed: false
+          )
+          .and_return(committers)
 
         expect(subject.committers).to eq(committers)
       end
 
-      context 'when with_merge_commits and lazy arguments changes' do
+      context 'when with_merge_commits, lazy and include_author_when_signed arguments changes' do
         it 'does not use memoized value' do
           subject.committers # this memoizes the value with with_merge_commits and lazy as false
 
           expect(subject).to receive(:commits).and_return(commits)
-          expect(commits).to receive(:committers).with(with_merge_commits: true, lazy: true).and_return(committers)
-          subject.committers(with_merge_commits: true, lazy: true)
+
+          expect(commits)
+            .to receive(:committers)
+            .with(
+              with_merge_commits: true,
+              lazy: true,
+              include_author_when_signed: true
+            )
+            .and_return(committers)
+
+          subject.committers(with_merge_commits: true, lazy: true, include_author_when_signed: true)
         end
       end
     end
@@ -2167,7 +2184,15 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
     context 'when given with_merge_commits true' do
       it 'calls committers on the commits object with the expected param' do
         expect(subject).to receive(:commits).and_return(commits)
-        expect(commits).to receive(:committers).with(with_merge_commits: true, lazy: false).and_return(committers)
+
+        expect(commits)
+          .to receive(:committers)
+          .with(
+            with_merge_commits: true,
+            lazy: false,
+            include_author_when_signed: false
+          )
+          .and_return(committers)
 
         expect(subject.committers(with_merge_commits: true)).to eq(committers)
       end
@@ -2176,9 +2201,34 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
     context 'when given lazy true' do
       it 'calls committers on the commits object with the expected param' do
         expect(subject).to receive(:commits).and_return(commits)
-        expect(commits).to receive(:committers).with(with_merge_commits: false, lazy: true).and_return(committers)
+
+        expect(commits)
+          .to receive(:committers)
+          .with(
+            with_merge_commits: false,
+            lazy: true,
+            include_author_when_signed: false
+          )
+          .and_return(committers)
 
         expect(subject.committers(lazy: true)).to eq(committers)
+      end
+    end
+
+    context 'when given include_author_when_signed true' do
+      it 'calls committers on the commits object with the expected param' do
+        expect(subject).to receive(:commits).and_return(commits)
+
+        expect(commits)
+          .to receive(:committers)
+          .with(
+            with_merge_commits: false,
+            lazy: false,
+            include_author_when_signed: true
+          )
+          .and_return(committers)
+
+        expect(subject.committers(include_author_when_signed: true)).to eq(committers)
       end
     end
   end
@@ -3927,17 +3977,20 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
   end
 
   describe '#mergeable_ci_state?' do
-    let(:pipeline) { create(:ci_empty_pipeline) }
+    let(:pipeline) { build(:ci_empty_pipeline) }
 
-    context 'when it is only allowed to merge when build is green' do
-      let_it_be(:project) { create(:project, :repository, only_allow_merge_if_pipeline_succeeds: true) }
+    before do
+      allow(subject).to receive(:head_pipeline) { pipeline }
+    end
 
-      subject { build(:merge_request, source_project: project) }
+    context 'when the auto merge strategy is merge when checks pass and project has ci' do
+      subject { build(:merge_request, source_project: project, auto_merge_strategy: ::AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS, auto_merge_enabled: true) }
+
+      let(:project) { build(:project, :auto_devops, only_allow_merge_if_pipeline_succeeds: false) }
 
       context 'and a failed pipeline is associated' do
         before do
-          pipeline.update!(status: 'failed', sha: subject.diff_head_sha)
-          allow(subject).to receive(:head_pipeline) { pipeline }
+          pipeline.status = 'failed'
         end
 
         it { expect(subject.mergeable_ci_state?).to be_falsey }
@@ -3945,7 +3998,7 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
 
       context 'and a successful pipeline is associated' do
         before do
-          pipeline.update!(status: 'success', sha: subject.diff_head_sha)
+          pipeline.status = 'success'
           allow(subject).to receive(:head_pipeline) { pipeline }
         end
 
@@ -3954,8 +4007,54 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
 
       context 'and a skipped pipeline is associated' do
         before do
-          pipeline.update!(status: 'skipped', sha: subject.diff_head_sha)
+          pipeline.status = 'skipped'
           allow(subject).to receive(:head_pipeline).and_return(pipeline)
+        end
+
+        it { expect(subject.mergeable_ci_state?).to be_falsey }
+
+        context 'when project allows skipped pipelines' do
+          before do
+            project.allow_merge_on_skipped_pipeline = true
+          end
+
+          it { expect(subject.mergeable_ci_state?).to be_truthy }
+        end
+      end
+
+      context 'when no pipeline is associated' do
+        before do
+          allow(subject).to receive(:head_pipeline).and_return(nil)
+        end
+
+        it { expect(subject.mergeable_ci_state?).to be_falsey }
+      end
+    end
+
+    context 'when it is only allowed to merge when build is green' do
+      subject { build(:merge_request, source_project: project) }
+
+      let(:project) { build(:project, :repository, only_allow_merge_if_pipeline_succeeds: true) }
+
+      context 'and a failed pipeline is associated' do
+        before do
+          pipeline.status = 'failed'
+        end
+
+        it { expect(subject.mergeable_ci_state?).to be_falsey }
+      end
+
+      context 'and a successful pipeline is associated' do
+        before do
+          pipeline.status = 'success'
+        end
+
+        it { expect(subject.mergeable_ci_state?).to be_truthy }
+      end
+
+      context 'and a skipped pipeline is associated' do
+        before do
+          pipeline.status = 'skipped'
         end
 
         it { expect(subject.mergeable_ci_state?).to be_falsey }
@@ -3971,13 +4070,13 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
     end
 
     context 'when it is only allowed to merge when build is green or skipped' do
-      let_it_be(:project) { create(:project, :repository, only_allow_merge_if_pipeline_succeeds: true, allow_merge_on_skipped_pipeline: true) }
+      let(:project) { build(:project, :repository, only_allow_merge_if_pipeline_succeeds: true, allow_merge_on_skipped_pipeline: true) }
 
       subject { build(:merge_request, source_project: project) }
 
       context 'and a failed pipeline is associated' do
         before do
-          pipeline.update!(status: 'failed', sha: subject.diff_head_sha)
+          pipeline.status = 'failed'
           allow(subject).to receive(:head_pipeline).and_return(pipeline)
         end
 
@@ -3986,8 +4085,7 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
 
       context 'and a successful pipeline is associated' do
         before do
-          pipeline.update!(status: 'success', sha: subject.diff_head_sha)
-          allow(subject).to receive(:head_pipeline).and_return(pipeline)
+          pipeline.status = 'success'
         end
 
         it { expect(subject.mergeable_ci_state?).to be_truthy }
@@ -3995,8 +4093,7 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
 
       context 'and a skipped pipeline is associated' do
         before do
-          pipeline.update!(status: 'skipped', sha: subject.diff_head_sha)
-          allow(subject).to receive(:head_pipeline).and_return(pipeline)
+          pipeline.status = 'skipped'
         end
 
         it { expect(subject.mergeable_ci_state?).to be_truthy }
@@ -4012,14 +4109,13 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
     end
 
     context 'when merges are not restricted to green builds' do
-      let_it_be(:project) { create(:project, :repository, only_allow_merge_if_pipeline_succeeds: false) }
+      let(:project) { build(:project, :repository, only_allow_merge_if_pipeline_succeeds: false) }
 
       subject { build(:merge_request, source_project: project) }
 
       context 'and a failed pipeline is associated' do
         before do
-          pipeline.statuses << create(:commit_status, status: 'failed', project: project)
-          allow(subject).to receive(:head_pipeline) { pipeline }
+          pipeline.statuses << build(:commit_status, status: 'failed', project: project)
         end
 
         it { expect(subject.mergeable_ci_state?).to be_truthy }
@@ -4035,8 +4131,7 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
 
       context 'and a skipped pipeline is associated' do
         before do
-          pipeline.update!(status: 'skipped', sha: subject.diff_head_sha)
-          allow(subject).to receive(:head_pipeline).and_return(pipeline)
+          pipeline.status = 'skipped'
         end
 
         it { expect(subject.mergeable_ci_state?).to be_truthy }
@@ -6465,10 +6560,10 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
     end
   end
 
-  describe '#auto_merge_available_when_pipeline_succeeds?' do
+  describe '#diff_head_pipeline_considered_in_progress?' do
     let(:merge_request) { build(:merge_request, project: project) }
 
-    subject { merge_request.auto_merge_available_when_pipeline_succeeds? }
+    subject { merge_request.diff_head_pipeline_considered_in_progress? }
 
     context 'when there is no pipeline' do
       it { is_expected.to be_falsy }
@@ -6477,18 +6572,27 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
     context 'when there is a pipeline' do
       before do
         merge_request.head_pipeline = build(:ci_pipeline, sha: merge_request.diff_head_sha, status: pipeline_status)
+        allow(merge_request).to receive(:only_allow_merge_if_pipeline_succeeds?).and_return(pipelines_must_succeed)
       end
 
-      where(:pipeline_status, :expected) do
-        'success'   | false
-        'failed'    | false
-        'canceled'  | false
-        'skipped'   | false
-        'created'   | true
-        'pending'   | true
-        'running'   | true
-        'scheduled' | true
-        'manual'    | true
+      where(:pipeline_status, :pipelines_must_succeed, :expected) do
+        # completed statuses
+        'success'   | false | false
+        'failed'    | false | false
+        'canceled'  | false | false
+        'skipped'   | false | false
+        # not completed, pipeline must succeed disabled
+        'created'   | false | true
+        'pending'   | false | true
+        'running'   | false | true
+        'scheduled' | false | false
+        'manual'    | false | false
+        # not completed, pipeline must succeed enabled
+        'created'   | true  | true
+        'pending'   | true  | true
+        'running'   | true  | true
+        'scheduled' | true  | true
+        'manual'    | true  | true
       end
 
       with_them do
@@ -6500,11 +6604,15 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
           stub_feature_flags(auto_merge_when_incomplete_pipeline_succeeds: false)
         end
 
+        let(:pipelines_must_succeed) { false }
+
         where(:pipeline_status, :expected) do
+          # completed statuses
           'success'   | false
           'failed'    | false
           'canceled'  | false
           'skipped'   | false
+          # not completed statuses
           'created'   | false
           'pending'   | true
           'running'   | true

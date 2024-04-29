@@ -8,7 +8,7 @@ import { stubComponent } from 'helpers/stub_component';
 import { createComplianceFrameworksReportResponse } from 'ee_jest/compliance_dashboard/mock_data';
 import FrameworksTable from 'ee/compliance_dashboard/components/frameworks_report/frameworks_table.vue';
 import FrameworkInfoDrawer from 'ee/compliance_dashboard/components/frameworks_report/framework_info_drawer.vue';
-import { ROUTE_NEW_FRAMEWORK } from 'ee/compliance_dashboard/constants';
+import { ROUTE_EDIT_FRAMEWORK, ROUTE_NEW_FRAMEWORK } from 'ee/compliance_dashboard/constants';
 
 Vue.use(VueApollo);
 
@@ -160,6 +160,19 @@ describe('FrameworksTable component', () => {
           await findFrameworkInfoSidebar().vm.$emit('close');
 
           expect(findFrameworkInfoSidebar().props('framework')).toBe(null);
+        });
+      });
+
+      describe('edit button in sidebar', () => {
+        it('opens edit form for the framework', async () => {
+          await openSidebar();
+
+          await findFrameworkInfoSidebar().vm.$emit('edit', frameworks[rowCheckIndex]);
+
+          expect(routerPushMock).toHaveBeenCalledWith({
+            name: ROUTE_EDIT_FRAMEWORK,
+            params: { id: frameworks[rowCheckIndex].id },
+          });
         });
       });
 

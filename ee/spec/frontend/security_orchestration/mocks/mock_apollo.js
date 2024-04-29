@@ -1,57 +1,33 @@
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_COMPLIANCE_FRAMEWORK } from '~/graphql_shared/constants';
 
-export const projectScanExecutionPolicies = (nodes) =>
+const mockPolicyResponse = ({ nodes = [], namespaceType, policyType }) =>
   jest.fn().mockResolvedValue({
     data: {
       namespace: {
         id: '3',
-        __typename: 'Project',
-        scanExecutionPolicies: {
+        __typename: namespaceType,
+        [policyType]: {
           nodes,
         },
       },
     },
   });
 
+export const projectScanExecutionPolicies = (nodes) =>
+  mockPolicyResponse({ nodes, namespaceType: 'Project', policyType: 'scanExecutionPolicies' });
 export const groupScanExecutionPolicies = (nodes) =>
-  jest.fn().mockResolvedValue({
-    data: {
-      namespace: {
-        id: '3',
-        __typename: 'Group',
-        scanExecutionPolicies: {
-          nodes,
-        },
-      },
-    },
-  });
+  mockPolicyResponse({ nodes, namespaceType: 'Group', policyType: 'scanExecutionPolicies' });
 
 export const projectScanResultPolicies = (nodes) =>
-  jest.fn().mockResolvedValue({
-    data: {
-      namespace: {
-        id: '3',
-        __typename: 'Project',
-        scanResultPolicies: {
-          nodes,
-        },
-      },
-    },
-  });
-
+  mockPolicyResponse({ nodes, namespaceType: 'Project', policyType: 'scanResultPolicies' });
 export const groupScanResultPolicies = (nodes) =>
-  jest.fn().mockResolvedValue({
-    data: {
-      namespace: {
-        id: '3',
-        __typename: 'Group',
-        scanResultPolicies: {
-          nodes,
-        },
-      },
-    },
-  });
+  mockPolicyResponse({ nodes, namespaceType: 'Group', policyType: 'scanResultPolicies' });
+
+export const projectPipelineResultPolicies = (nodes) =>
+  mockPolicyResponse({ nodes, namespaceType: 'Project', policyType: 'pipelineExecutionPolicies' });
+export const groupPipelineResultPolicies = (nodes) =>
+  mockPolicyResponse({ nodes, namespaceType: 'Group', policyType: 'pipelineExecutionPolicies' });
 
 export const mockLinkSecurityPolicyProjectResponses = {
   success: jest.fn().mockResolvedValue({

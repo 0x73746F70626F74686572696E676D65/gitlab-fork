@@ -12,6 +12,10 @@ RSpec.describe Groups::DeployTokens::RevokeService, feature_category: :continuou
   describe '#execute' do
     subject { described_class.new(entity, user, deploy_token_params).execute }
 
+    before do
+      stub_licensed_features(external_audit_events: true)
+    end
+
     it "creates an audit event" do
       expect { subject }.to change { AuditEvent.count }.by(1)
 
@@ -21,10 +25,6 @@ RSpec.describe Groups::DeployTokens::RevokeService, feature_category: :continuou
       MESSAGE
 
       expect(AuditEvent.last.details[:custom_message]).to eq(expected_message)
-    end
-
-    before do
-      stub_licensed_features(external_audit_events: true)
     end
 
     it_behaves_like 'sends correct event type in audit event stream' do

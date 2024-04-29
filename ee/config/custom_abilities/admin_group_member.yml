@@ -3,7 +3,7 @@ name: admin_group_member
 description: Add or remove users in a group, and assign roles to users. When assigning a role, users with this custom permission must select a role that has the same or fewer permissions as the default role used as the base for their custom role.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/17364
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/131914
-feature_category: group_and_projects
+feature_category: groups_and_projects
 milestone: '16.5'
 group_ability: true
 project_ability: false

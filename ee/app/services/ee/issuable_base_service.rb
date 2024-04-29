@@ -12,6 +12,7 @@ module EE
       associations = super
 
       associations[:escalation_policy] = issuable.escalation_status&.policy if issuable.escalation_policies_available?
+      associations[:approval_rules] = issuable.approval_rules.map(&:hook_attrs) if issuable.supports_approval_rules?
 
       associations
     end

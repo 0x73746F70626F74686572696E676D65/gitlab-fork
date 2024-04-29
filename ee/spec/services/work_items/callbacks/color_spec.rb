@@ -27,11 +27,23 @@ RSpec.describe WorkItems::Callbacks::Color, feature_category: :team_planning do
           .to not_change { work_item_color }
           .and not_change { work_item.updated_at }
       end
+
+      it 'does not set synced_epic_params' do
+        after_initialize_callback
+
+        expect(callback.synced_epic_params).to be_empty
+      end
     end
 
     shared_examples 'color is updated' do |color|
       it 'updates work item color value' do
         expect { after_initialize_callback }.to change { work_item_color }.to(color)
+      end
+
+      it 'sets synced_epic_params' do
+        after_initialize_callback
+
+        expect(callback.synced_epic_params[:color].to_s).to eq(color)
       end
     end
 

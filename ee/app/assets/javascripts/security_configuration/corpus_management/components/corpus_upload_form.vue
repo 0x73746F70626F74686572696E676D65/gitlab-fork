@@ -137,7 +137,7 @@ export default {
         />
 
         <gl-button
-          class="gl-absolute gl-top-2 gl-right-2 gl-z-index-3"
+          class="gl-absolute gl-top-2 gl-right-2 gl-z-3"
           variant="default"
           category="tertiary"
           size="small"

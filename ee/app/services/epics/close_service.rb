@@ -20,7 +20,7 @@ module Epics
         next true unless work_item
 
         work_item.close!(current_user)
-        work_item.update!(closed_at: epic.closed_at)
+        work_item.update!(closed_at: epic.closed_at, updated_at: epic.updated_at)
       end
 
     rescue StateMachines::InvalidTransition

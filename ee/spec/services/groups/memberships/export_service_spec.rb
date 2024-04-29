@@ -85,6 +85,7 @@ RSpec.describe Groups::Memberships::ExportService, feature_category: :groups_and
           create(:group_member, :blocked, group: group)
           create(:group_member, :minimal_access, group: group)
         end
+
         let(:csv) { CSV.parse(service.execute.payload, headers: true) }
 
         it 'has the correct headers' do

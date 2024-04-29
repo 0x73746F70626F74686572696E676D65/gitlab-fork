@@ -141,6 +141,7 @@ export default {
           namespace="metrics-list-filtered-search"
           :tokens="tokens"
           :search-input-placeholder="$options.i18n.searchInputPlaceholder"
+          terms-as-tokens
           @onFilter="onFilter"
         />
       </div>

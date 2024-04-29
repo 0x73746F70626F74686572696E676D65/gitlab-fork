@@ -48,14 +48,19 @@ module Epics
       user = current_user
       epic.run_after_commit do
         NewEpicWorker.perform_async(epic.id, user.id)
-
-        ::Gitlab::EventStore.publish(::Epics::EpicCreatedEvent.new(data: { id: epic.id, group_id: epic.group_id }))
       end
     end
 
     def after_create(epic)
       assign_parent_epic_for(epic)
       assign_child_epic_for(epic)
+
+      epic.run_after_commit_or_now do
+        # trigger this event after all actions related to saving an epic are done, after commit is not late enough,
+        # because after epic creation transaction is commited there are still things happening related to epic, e.g.
+        # some associations are updated/linked to the newly created epic, etc.
+        ::Gitlab::EventStore.publish(::Epics::EpicCreatedEvent.new(data: { id: epic.id, group_id: epic.group_id }))
+      end
     end
 
     def set_date_params
