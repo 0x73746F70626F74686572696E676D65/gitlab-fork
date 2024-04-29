@@ -13,6 +13,7 @@ module AuditEvents
       validates :name, uniqueness: true
 
       has_many :event_type_filters, class_name: 'AuditEvents::Instance::EventTypeFilter'
+      has_many :namespace_filters, class_name: 'AuditEvents::Instance::NamespaceFilter'
     end
   end
 end

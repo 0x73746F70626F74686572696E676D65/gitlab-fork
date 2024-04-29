@@ -60,6 +60,7 @@ module EE
       has_one :audit_event_http_instance_namespace_filter, class_name: 'AuditEvents::Streaming::HTTP::Instance::NamespaceFilter'
       has_many :work_items_colors, inverse_of: :namespace, class_name: 'WorkItems::Color'
       has_many :audit_events_streaming_group_namespace_filters, class_name: 'AuditEvents::Group::NamespaceFilter'
+      has_many :audit_events_streaming_instance_namespace_filters, class_name: 'AuditEvents::Instance::NamespaceFilter'
 
       has_one :zoekt_enabled_namespace, class_name: '::Search::Zoekt::EnabledNamespace',
         foreign_key: :root_namespace_id, inverse_of: :namespace
