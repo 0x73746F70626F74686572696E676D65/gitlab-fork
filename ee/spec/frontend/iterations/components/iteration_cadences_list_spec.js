@@ -126,7 +126,7 @@ describe('Iteration cadences list', () => {
   const createCadenceButton = () =>
     wrapper.findByRole('link', { name: 'New iteration cadence', href: cadencesListPath });
   const findNextPageButton = () => wrapper.findByRole('button', { name: 'Next' });
-  const findPrevPageButton = () => wrapper.findByRole('button', { name: 'Prev' });
+  const findPrevPageButton = () => wrapper.findByRole('button', { name: 'Previous' });
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findPagination = () => wrapper.findComponent(GlKeysetPagination);
 

@@ -183,7 +183,6 @@ export default {
     <div class="gl-display-flex gl-justify-content-center">
       <gl-keyset-pagination
         v-bind="pageInfo"
-        :prev-text="__('Previous')"
         @prev="$emit('prev-page')"
         @next="$emit('next-page')"
       />
