@@ -78,6 +78,9 @@ export default {
         error(err) {
           this.error = err.toString();
         },
+        skip() {
+          return !this.helpCenterState.showTanukiBotChatDrawer;
+        },
       },
       aiCompletionResponseStream: {
         query: aiResponseSubscription,
@@ -94,6 +97,9 @@ export default {
         },
         error(err) {
           this.error = err.toString();
+        },
+        skip() {
+          return !this.helpCenterState.showTanukiBotChatDrawer;
         },
       },
     },

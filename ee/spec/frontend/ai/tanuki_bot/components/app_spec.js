@@ -368,4 +368,24 @@ describe('GitLab Duo Chat', () => {
       });
     });
   });
+
+  describe('Subscriptions', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+    afterEach(() => {
+      helpCenterState.showTanukiBotChatDrawer = false;
+    });
+
+    it('activates subscriptions when showTanukiBotChatDrawer is true', async () => {
+      helpCenterState.showTanukiBotChatDrawer = true;
+      await waitForPromises();
+      expect(subscriptionHandlerMock).toHaveBeenCalled();
+    });
+
+    it('skips subscriptions when showTanukiBotChatDrawer is false', async () => {
+      await waitForPromises();
+      expect(subscriptionHandlerMock).not.toHaveBeenCalled();
+    });
+  });
 });
