@@ -12,6 +12,10 @@ module QA
                 element 'grid-stack-panel'
               end
 
+              def panels
+                all_elements('grid-stack-panel', minimum: 1)
+              end
+
               def audience_dashboard_panels
                 all_elements('grid-stack-panel', minimum: 9)
               end
@@ -20,8 +24,8 @@ module QA
                 all_elements('grid-stack-panel', minimum: 5)
               end
 
-              def panel_value_content(panel:)
-                within_element_by_index('grid-stack-panel', panel) do
+              def panel_value_content(panel_index:)
+                within_element_by_index('grid-stack-panel', panel_index) do
                   find('[data-testid="displayValue"]').text.to_i
                 end
               end
