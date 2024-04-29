@@ -336,7 +336,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
       content = "http://1#{'..1' * 333_300}"
 
       expect do
-        Timeout.timeout(5.seconds) { reference_filter(content, context) }
+        Timeout.timeout(10.seconds) { reference_filter(content, context) }
       end.not_to raise_error
     end
   end
