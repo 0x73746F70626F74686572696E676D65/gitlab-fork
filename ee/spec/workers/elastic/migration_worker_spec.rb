@@ -186,10 +186,10 @@ RSpec.describe Elastic::MigrationWorker, :elastic_clean, feature_category: :glob
 
             it 'handles batched migrations' do
               if batched && !completed
-                expect( Elastic::MigrationWorker).to receive(:perform_in)
+                expect(Elastic::MigrationWorker).to receive(:perform_in)
                   .with(3.minutes)
               else
-                expect( Elastic::MigrationWorker).not_to receive(:perform_in)
+                expect(Elastic::MigrationWorker).not_to receive(:perform_in)
               end
 
               subject.perform
