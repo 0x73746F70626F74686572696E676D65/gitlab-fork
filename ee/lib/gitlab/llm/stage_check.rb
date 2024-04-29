@@ -14,7 +14,8 @@ module Gitlab
         :generate_commit_message,
         :fill_in_merge_request_template,
         :summarize_new_merge_request,
-        :summarize_submitted_review
+        :summarize_submitted_review,
+        :ai_review_merge_request
       ].freeze
       BETA_FEATURES = [].freeze
       GA_FEATURES = [].freeze

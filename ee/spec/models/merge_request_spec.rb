@@ -2681,4 +2681,74 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       expect { merge_request.destroy_requested_changes(user) }.to change { merge_request.requested_changes.count }.from(1).to(0)
     end
   end
+
+  describe '#ai_review_merge_request_allowed?' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
+    let_it_be(:current_user) { create(:user, developer_of: project) }
+
+    let(:authorizer) { instance_double(::Gitlab::Llm::FeatureAuthorizer) }
+
+    subject(:ai_review_merge_request_allowed?) { merge_request.ai_review_merge_request_allowed?(current_user) }
+
+    before do
+      stub_licensed_features(ai_review_mr: true)
+      allow(::Gitlab::Llm::FeatureAuthorizer).to receive(:new).and_return(authorizer)
+    end
+
+    context "when feature is authorized" do
+      before do
+        allow(authorizer).to receive(:allowed?).and_return(true)
+      end
+
+      it { is_expected.to eq(true) }
+
+      context 'when ai_review_merge_request feature flag is disabled' do
+        before do
+          stub_feature_flags(ai_review_merge_request: false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when license is not set' do
+        before do
+          stub_licensed_features(ai_review_mr: false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when user cannot create note' do
+        let(:current_user) { create(:user, guest_of: project) }
+
+        it { is_expected.to eq(false) }
+      end
+    end
+
+    context "when feature is not authorized" do
+      before do
+        allow(authorizer).to receive(:allowed?).and_return(false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
+  describe '#ai_reviewable_diff_files' do
+    let(:merge_request) { build_stubbed(:merge_request) }
+    let(:diff_file_a) { instance_double(Gitlab::Diff::File, ai_reviewable?: true) }
+    let(:diff_file_b) { instance_double(Gitlab::Diff::File, ai_reviewable?: false) }
+    let(:diff_file_c) { instance_double(Gitlab::Diff::File, ai_reviewable?: true) }
+    let(:diff_files) { [diff_file_a, diff_file_b, diff_file_c] }
+    let(:diffs) { instance_double(Gitlab::Diff::FileCollection::MergeRequestDiff, diff_files: diff_files) }
+
+    before do
+      allow(merge_request).to receive(:diffs).and_return(diffs)
+    end
+
+    it 'returns only AI reviewable diff files' do
+      expect(merge_request.ai_reviewable_diff_files).to match_array([diff_file_a, diff_file_c])
+    end
+  end
 end

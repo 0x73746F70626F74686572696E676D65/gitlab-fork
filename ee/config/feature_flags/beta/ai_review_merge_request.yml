@@ -1,0 +1,9 @@
+---
+name: ai_review_merge_request
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/454938
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/149529
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/456106
+milestone: '17.0'
+group: group::code review
+type: beta
+default_enabled: false

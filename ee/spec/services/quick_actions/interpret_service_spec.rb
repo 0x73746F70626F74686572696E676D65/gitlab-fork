@@ -1369,6 +1369,36 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
     end
 
     it_behaves_like 'quick actions that change work item type ee'
+
+    context 'ai_review command' do
+      let(:content) { '/ai_review' }
+      let(:allowed?) { true }
+
+      before do
+        allow(merge_request)
+          .to receive(:ai_review_merge_request_allowed?)
+          .with(current_user)
+          .and_return(allowed?)
+      end
+
+      it 'calls Llm::ReviewMergeRequestService#execute' do
+        expect_next_instance_of(Llm::ReviewMergeRequestService, current_user, merge_request) do |svc|
+          expect(svc).to receive(:execute)
+        end
+
+        service.execute(content, merge_request)
+      end
+
+      context 'when user is not allowed to execute quick action' do
+        let(:allowed?) { false }
+
+        it 'does not call Llm::ReviewMergeRequestService#execute' do
+          expect(Llm::ReviewMergeRequestService).not_to receive(:new)
+
+          service.execute(content, merge_request)
+        end
+      end
+    end
   end
 
   describe '#explain' do
