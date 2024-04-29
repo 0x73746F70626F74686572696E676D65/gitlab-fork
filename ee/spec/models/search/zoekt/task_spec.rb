@@ -26,12 +26,14 @@ RSpec.describe ::Search::Zoekt::Task, feature_category: :global_search do
       task_1 = create(:zoekt_task, perform_at: 1.minute.ago)
       task_2 = create(:zoekt_task, perform_at: 3.minutes.ago)
       task_3 = create(:zoekt_task, perform_at: 2.minutes.ago)
+      task_in_future = create(:zoekt_task, perform_at: 3.minutes.from_now)
 
       tasks = []
       described_class.each_task(limit: 10) do |task|
         tasks << task
       end
 
+      expect(tasks).not_to include(task_in_future)
       expect(tasks).to eq([task_2, task_3, task_1])
     end
 
