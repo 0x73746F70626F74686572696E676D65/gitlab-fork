@@ -180,6 +180,40 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
               expect(Epics::UpdateDatesService).not_to have_received(:new)
             end
           end
+
+          context 'when synced_epic argument is true' do
+            subject(:destroy_link) { described_class.new(epic_issue, user, synced_epic: true).execute }
+
+            it 'does not call WorkItems::ParentLinks::DestroyService nor create notes' do
+              allow(::WorkItems::ParentLinks::DestroyService).to receive(:new).and_call_original
+              expect(::WorkItems::ParentLinks::DestroyService).not_to receive(:new)
+
+              expect { destroy_link }
+                .to change { EpicIssue.count }.by(-1)
+                .and(not_change { WorkItems::ParentLink.count })
+                .and(not_change { Note.count })
+            end
+
+            it 'does not call Epics::UpdateDatesService' do
+              allow(Epics::UpdateDatesService).to receive(:new).and_call_original
+              expect(Epics::UpdateDatesService).not_to receive(:new)
+
+              destroy_link
+            end
+
+            context 'when work_items_rolledup_dates feature flag is disabled' do
+              before do
+                stub_feature_flags(work_items_rolledup_dates: false)
+              end
+
+              it 'calls Epics::UpdateDatesService' do
+                allow(Epics::UpdateDatesService).to receive(:new).and_call_original
+                expect(Epics::UpdateDatesService).to receive(:new).with([epic])
+
+                destroy_link
+              end
+            end
+          end
         end
 
         context 'when epic_relations_for_non_members feature flag is disabled' do

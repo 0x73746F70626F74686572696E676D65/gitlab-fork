@@ -7,20 +7,70 @@ module EE
         extend ActiveSupport::Concern
         extend ::Gitlab::Utils::Override
 
+        def execute
+          super
+        rescue ::WorkItems::SyncAsEpic::SyncAsEpicError => error
+          ::Gitlab::ErrorTracking.track_exception(error, work_item_parent_id: parent.id)
+
+          error(_("Couldn't delete link due to an internal error."), 422)
+        end
+
         private
+
+        def remove_relation
+          return super unless !synced_work_item? && parent.work_item_type.epic?
+
+          ::ApplicationRecord.transaction do
+            destroy_parent_link = super
+            sync_to_work_item! if destroy_parent_link
+          end
+        end
+
+        def sync_to_work_item!
+          return unless parent.synced_epic.present?
+
+          service_response = child.work_item_type.epic? ? handle_epic_link : handle_issue_link
+          return if service_response[:status] == :success
+
+          ::Gitlab::EpicWorkItemSync::Logger.error(
+            message: 'Not able to remove work item parent link',
+            error_message: service_response[:message],
+            namespace_id: parent.namespace.id,
+            work_item_id: child.id,
+            work_item_parent_id: parent.id
+          )
+          raise ::WorkItems::SyncAsEpic::SyncAsEpicError, service_response[:message]
+        end
 
         override :create_notes
         def create_notes
-          return if params.fetch(:synced_work_item, false)
+          return if synced_work_item?
 
           super
         end
 
         override :permission_to_remove_relation?
         def permission_to_remove_relation?
-          return true if params.fetch(:synced_work_item, false)
+          return true if synced_work_item?
 
           super
+        end
+
+        def synced_work_item?
+          params.fetch(:synced_work_item, false)
+        end
+
+        def handle_epic_link
+          return { status: :success } unless child.synced_epic&.parent.present?
+
+          ::Epics::EpicLinks::DestroyService.new(child.synced_epic, current_user, synced_epic: true).execute
+        end
+
+        def handle_issue_link
+          epic_issue_link = ::EpicIssue.in_issue(child.id).first
+          return { status: :success } unless epic_issue_link
+
+          ::EpicIssues::DestroyService.new(epic_issue_link, current_user, synced_epic: true).execute
         end
       end
     end

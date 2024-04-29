@@ -204,6 +204,18 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
               expect(parent.reload.work_item_children).not_to include(child)
             end
           end
+
+          context 'when synced_epic argument is true' do
+            it 'does not call WorkItems::ParentLinks::DestroyService nor create notes' do
+              allow(::WorkItems::ParentLinks::DestroyService).to receive(:new).and_call_original
+              expect(::WorkItems::ParentLinks::DestroyService).not_to receive(:new)
+
+              expect { described_class.new(child_epic, user, synced_epic: true).execute }
+                .to change { parent_epic.children.count }.by(-1)
+                .and(not_change { WorkItems::ParentLink.count })
+                .and(not_change { Note.count })
+            end
+          end
         end
       end
     end
