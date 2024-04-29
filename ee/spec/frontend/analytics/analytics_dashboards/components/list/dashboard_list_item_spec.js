@@ -1,4 +1,4 @@
-import { GlBadge, GlIcon, GlTruncateText } from '@gitlab/ui';
+import { GlIcon, GlTruncateText } from '@gitlab/ui';
 import { visitUrl } from '~/lib/utils/url_utility';
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -20,17 +20,24 @@ const REDIRECTED_DASHBOARD = {
   slug: '/slug',
   redirect: true,
 };
+const BETA_DASHBOARD = {
+  title: 'title',
+  description: 'description',
+  slug: '/slug',
+  status: 'beta',
+};
 
 describe('DashboardsListItem', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
   const findIcon = () => wrapper.findComponent(GlIcon);
-  const findBadge = () => wrapper.findComponent(GlBadge);
+  const findBuiltInBadge = () => wrapper.findByTestId('dashboard-by-gitlab');
   const findListItem = () => wrapper.findByTestId('dashboard-list-item');
   const findRedirectLink = () => wrapper.findByTestId('dashboard-redirect-link');
   const findRouterLink = () => wrapper.findByTestId('dashboard-router-link');
   const findDescriptionTruncate = () => wrapper.findComponent(GlTruncateText);
+  const findBetaBadge = () => wrapper.findByTestId('dashboard-beta-badge');
 
   const $router = {
     push: jest.fn(),
@@ -72,7 +79,11 @@ describe('DashboardsListItem', () => {
     });
 
     it('does not render the built in label', () => {
-      expect(findBadge().exists()).toBe(false);
+      expect(findBuiltInBadge().exists()).toBe(false);
+    });
+
+    it('does not render the `Beta` badge', () => {
+      expect(findBetaBadge().exists()).toBe(false);
     });
 
     it('routes to the dashboard when a list item is clicked', async () => {
@@ -88,7 +99,7 @@ describe('DashboardsListItem', () => {
     });
 
     it('renders the dashboard badge', () => {
-      expect(findBadge().text()).toBe('Created by GitLab');
+      expect(findBuiltInBadge().text()).toBe('Created by GitLab');
     });
   });
 
@@ -105,6 +116,16 @@ describe('DashboardsListItem', () => {
       await findListItem().trigger('click');
 
       expect(visitUrl).toHaveBeenCalledWith(expect.stringContaining(REDIRECTED_DASHBOARD.slug));
+    });
+  });
+
+  describe('with a beta dashboard', () => {
+    beforeEach(() => {
+      createWrapper(BETA_DASHBOARD);
+    });
+
+    it('renders the `Beta` badge', () => {
+      expect(findBetaBadge().exists()).toBe(true);
     });
   });
 });

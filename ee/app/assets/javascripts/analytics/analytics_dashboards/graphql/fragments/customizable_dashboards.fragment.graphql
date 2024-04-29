@@ -4,5 +4,6 @@ fragment CustomizableDashboardsFragment on CustomizableDashboardConnection {
     title
     description
     userDefined
+    status
   }
 }

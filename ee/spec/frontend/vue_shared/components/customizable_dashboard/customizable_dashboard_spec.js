@@ -2,6 +2,7 @@ import { nextTick } from 'vue';
 import { RouterLinkStub } from '@vue/test-utils';
 import { GlLink, GlSprintf } from '@gitlab/ui';
 import { createAlert } from '~/alert';
+import BetaBadge from '~/vue_shared/components/badges/beta_badge.vue';
 import { mockTracking } from 'helpers/tracking_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
@@ -31,6 +32,7 @@ import { stubComponent } from 'helpers/stub_component';
 import {
   dashboard,
   builtinDashboard,
+  betaDashboard,
   mockDateRangeFilterChangePayload,
   mockUsageOverviewPanel,
 } from './mock_data';
@@ -125,6 +127,7 @@ describe('CustomizableDashboard', () => {
   const findGridstackWrapper = () => wrapper.findComponent(GridstackWrapper);
   const findUsageOverviewAggregationWarning = () =>
     wrapper.findComponent(UsageOverviewBackgroundAggregationWarning);
+  const findBetaBadge = () => wrapper.findComponent(BetaBadge);
 
   const enterDashboardTitle = async (title, titleValidationError = '') => {
     await findTitleInput().vm.$emit('input', title);
@@ -224,6 +227,10 @@ describe('CustomizableDashboard', () => {
     it('does not show the usage overview aggregation warning', () => {
       expect(findUsageOverviewAggregationWarning().exists()).toBe(false);
     });
+
+    it('does not render the `Beta` badge', () => {
+      expect(findBetaBadge().exists()).toBe(false);
+    });
   });
 
   describe('when usage overview aggregation is not enabled', () => {
@@ -282,6 +289,16 @@ describe('CustomizableDashboard', () => {
 
     it('does not show the "edit" button', () => {
       expect(findEditButton().exists()).toBe(false);
+    });
+  });
+
+  describe('when a dashboard is in beta', () => {
+    beforeEach(() => {
+      createWrapper({}, betaDashboard);
+    });
+
+    it('renders the `Beta` badge', () => {
+      expect(findBetaBadge().exists()).toBe(true);
     });
   });
 

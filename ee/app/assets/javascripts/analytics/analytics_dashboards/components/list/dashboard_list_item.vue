@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { GlIcon, GlBadge, GlLink, GlTruncateText } from '@gitlab/ui';
 import { visitUrl, joinPaths } from '~/lib/utils/url_utility';
+import { DASHBOARD_STATUS_BETA } from '../../constants';
 
 const TRUNCATE_BUTTON_ID = `desc-truncate-btn-${uuidv4()}`;
 
@@ -23,6 +24,9 @@ export default {
   computed: {
     isBuiltInDashboard() {
       return 'userDefined' in this.dashboard && !this.dashboard.userDefined;
+    },
+    showBetaBadge() {
+      return this.dashboard?.status === DASHBOARD_STATUS_BETA;
     },
     redirectHref() {
       return joinPaths(window.location.pathname, this.dashboard.slug);
@@ -59,20 +63,30 @@ export default {
       class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-flex-grow-1"
     >
       <div class="gl-display-flex gl-flex-direction-column">
-        <gl-link
-          v-if="dashboard.redirect"
-          data-testid="dashboard-redirect-link"
-          :href="redirectHref"
-          class="gl-font-weight-bold gl-line-height-normal gl-text-decoration-none!"
-          >{{ dashboard.title }}</gl-link
-        >
-        <router-link
-          v-else
-          data-testid="dashboard-router-link"
-          class="gl-font-weight-bold gl-line-height-normal"
-          :to="dashboard.slug"
-          >{{ dashboard.title }}</router-link
-        >
+        <div class="gl-display-flex gl-align-items-center">
+          <gl-link
+            v-if="dashboard.redirect"
+            data-testid="dashboard-redirect-link"
+            :href="redirectHref"
+            class="gl-font-weight-bold gl-line-height-normal gl-text-decoration-none!"
+            >{{ dashboard.title }}</gl-link
+          >
+          <router-link
+            v-else
+            data-testid="dashboard-router-link"
+            class="gl-font-weight-bold gl-line-height-normal"
+            :to="dashboard.slug"
+            >{{ dashboard.title }}</router-link
+          >
+          <gl-badge
+            v-if="showBetaBadge"
+            data-testid="dashboard-beta-badge"
+            class="gl-ml-2"
+            size="sm"
+          >
+            {{ __('Beta') }}
+          </gl-badge>
+        </div>
         <gl-truncate-text
           class="gl-line-height-normal gl-text-gray-500"
           :toggle-button-props="$options.truncateTextToggleButtonProps"
