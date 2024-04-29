@@ -24,7 +24,7 @@ RSpec.describe Mutations::Vulnerabilities::CreateExternalIssueLink, feature_cate
 
         context 'when user has access to the project' do
           before do
-            vulnerability.project.add_maintainer(user)
+            vulnerability.project.add_developer(user)
             allow_next_instance_of(::VulnerabilityExternalIssueLinks::CreateService) do |create_service|
               allow(create_service).to receive(:execute).and_return(result)
             end
