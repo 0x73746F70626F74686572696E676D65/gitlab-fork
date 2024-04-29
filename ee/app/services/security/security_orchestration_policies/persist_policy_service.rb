@@ -83,7 +83,7 @@ module Security
       end
 
       def upsert_policy(policy_hash, policy_index)
-        Security::Policy.upsert_policy(security_policies, policy_hash, policy_index)
+        Security::Policy.upsert_policy(security_policies, policy_hash, policy_index, policy_configuration)
       end
     end
   end

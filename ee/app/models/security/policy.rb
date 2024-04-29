@@ -27,7 +27,7 @@ module Security
       Digest::SHA256.hexdigest(policy_hash.to_json)
     end
 
-    def self.attributes_from_policy_hash(policy_hash)
+    def self.attributes_from_policy_hash(policy_hash, policy_configuration)
       {
         type: :approval_policy,
         name: policy_hash[:name],
@@ -36,19 +36,20 @@ module Security
         actions: policy_hash[:actions],
         approval_settings: policy_hash[:approval_settings],
         scope: policy_hash.fetch(:policy_scope, {}),
-        checksum: checksum(policy_hash)
+        checksum: checksum(policy_hash),
+        security_policy_management_project_id: policy_configuration.security_policy_management_project_id
       }
     end
 
-    def self.upsert_policy(policies, policy_hash, policy_index, policy_type: :approval_policy)
+    def self.upsert_policy(policies, policy_hash, policy_index, policy_configuration, policy_type: :approval_policy)
       transaction do
         policy = policies.find_or_initialize_by(policy_index: policy_index, type: policy_type)
-        policy.update!(attributes_from_policy_hash(policy_hash))
+        policy.update!(attributes_from_policy_hash(policy_hash, policy_configuration))
 
         policy_hash[:rules].map.with_index do |rule_hash, rule_index|
           Security::ApprovalPolicyRule
             .find_or_initialize_by(security_policy_id: policy.id, rule_index: rule_index)
-            .update!(Security::ApprovalPolicyRule.attributes_from_rule_hash(rule_hash))
+            .update!(Security::ApprovalPolicyRule.attributes_from_rule_hash(rule_hash, policy_configuration))
         end
       end
     end
