@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['Pipeline'] do
+RSpec.describe GitlabSchema.types['Pipeline'], feature_category: :vulnerability_management do
   it { expect(described_class.graphql_name).to eq('Pipeline') }
 
   it 'includes the ee specific fields' do
@@ -61,20 +61,10 @@ RSpec.describe GitlabSchema.types['Pipeline'] do
 
     context 'when security findings exist for the pipeline' do
       before_all do
-        content = File.read(artifact.file.path)
-        Gitlab::Ci::Parsers::Security::Sast.parse!(content, report)
-        report.merge!(report)
-
-        scan.report_findings.each do |finding|
-          create(
-            :security_finding,
-            severity: finding.severity,
-            confidence: finding.confidence,
-            project_fingerprint: finding.project_fingerprint,
-            deduplicated: true,
-            scan: scan,
-            uuid: finding.uuid
-          )
+        Gitlab::ExclusiveLease.skipping_transaction_check do
+          Security::StoreGroupedScansService.new(
+            [artifact]
+          ).execute
         end
       end
 
