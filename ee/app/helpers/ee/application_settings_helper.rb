@@ -44,7 +44,6 @@ module EE
         :enforce_namespace_storage_limit,
         :geo_node_allowed_ips,
         :geo_status_timeout,
-        :help_text,
         :instance_level_ai_beta_features_enabled,
         :lock_memberships_to_ldap,
         :lock_memberships_to_saml,

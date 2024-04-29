@@ -18,7 +18,7 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
 
   describe "PUT /application/settings" do
     it_behaves_like 'PUT request permissions for admin mode' do
-      let(:params) { { help_text: 'Help text', file_template_project_id: project.id } }
+      let(:params) { { file_template_project_id: project.id } }
     end
 
     it 'sets EE specific settings' do
@@ -26,13 +26,11 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
 
       put api(path, admin, admin_mode: true),
         params: {
-          help_text: 'Help text',
           file_template_project_id: project.id,
           package_metadata_purl_types: [1]
         }
 
       expect(response).to have_gitlab_http_status(:ok)
-      expect(json_response['help_text']).to eq('Help text')
       expect(json_response['file_template_project_id']).to eq(project.id)
       expect(json_response['package_metadata_purl_types']).to eq([1])
     end
