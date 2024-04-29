@@ -87,7 +87,7 @@ RSpec.shared_context 'with base security policies graphql context' do
           "webUrl" => "http://localhost/#{user.full_path}"
         }
       ],
-      "groupApprovers" => [
+      "allGroupApprovers" => [
         {
           "id" => "gid://gitlab/Group/#{group.id}",
           "webUrl" => "http://localhost/groups/#{group.full_path}"
@@ -166,7 +166,7 @@ RSpec.shared_context 'with project level approval policies' do
                 id
                 webUrl
               }
-              groupApprovers{
+              allGroupApprovers{
                 id
                 webUrl
               }
@@ -254,7 +254,7 @@ RSpec.shared_context 'with group level approval policies' do
                 id
                 webUrl
               }
-              groupApprovers{
+              allGroupApprovers{
                 id
                 webUrl
               }

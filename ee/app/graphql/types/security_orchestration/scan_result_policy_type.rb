@@ -18,8 +18,6 @@ module Types
             description: 'All deprecated properties in the policy. Returns `null` ' \
                          'if security_policies_breaking_changes feature flag is disabled.',
             alpha: { milestone: '16.10' }
-      field :group_approvers, ['::Types::GroupType'], null: true, description: 'Approvers of the group type.',
-            deprecated: { reason: 'Use `allGroupApprovers`', milestone: '16.5' }
       field :role_approvers, [::Types::MemberAccessLevelNameEnum],
             null: true,
             description: 'Approvers of the role type. Users belonging to these role(s) alone will be approvers.'
