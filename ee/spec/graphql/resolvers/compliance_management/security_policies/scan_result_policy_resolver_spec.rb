@@ -53,7 +53,6 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPoli
             yaml: YAML.dump(policy.deep_stringify_keys),
             updated_at: policy_configuration.policy_last_updated_at,
             user_approvers: [],
-            group_approvers: [],
             all_group_approvers: [],
             role_approvers: [],
             source: {
@@ -105,7 +104,6 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPoli
               yaml: YAML.dump(policy.deep_stringify_keys),
               updated_at: policy_configuration.policy_last_updated_at,
               user_approvers: [],
-              group_approvers: [],
               all_group_approvers: [],
               deprecated_properties: [],
               role_approvers: [],

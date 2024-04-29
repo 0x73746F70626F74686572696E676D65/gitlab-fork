@@ -57,7 +57,6 @@ module ConstructSecurityPolicies
         yaml: YAML.dump(policy.slice(*POLICY_YAML_ATTRIBUTES).deep_stringify_keys),
         updated_at: policy[:config].policy_last_updated_at,
         user_approvers: approvers[:users],
-        group_approvers: approvers[:groups],
         all_group_approvers: approvers[:all_groups],
         role_approvers: approvers[:roles],
         source: {
