@@ -756,6 +756,22 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_43484cb41aca() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "project_wiki_repositories"
+  WHERE "project_wiki_repositories"."id" = NEW."project_wiki_repository_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_56d49f4ed623() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -18113,6 +18129,7 @@ CREATE TABLE wiki_repository_states (
     verification_retry_count smallint,
     verification_checksum bytea,
     verification_failure text,
+    project_id bigint,
     CONSTRAINT check_2933ff60dc CHECK ((char_length(verification_failure) <= 255))
 );
 
@@ -27971,6 +27988,8 @@ CREATE INDEX index_wiki_repository_states_failed_verification ON wiki_repository
 
 CREATE INDEX index_wiki_repository_states_needs_verification ON wiki_repository_states USING btree (verification_state) WHERE ((verification_state = 0) OR (verification_state = 3));
 
+CREATE INDEX index_wiki_repository_states_on_project_id ON wiki_repository_states USING btree (project_id);
+
 CREATE UNIQUE INDEX index_wiki_repository_states_on_project_wiki_repository_id ON wiki_repository_states USING btree (project_wiki_repository_id);
 
 CREATE INDEX index_wiki_repository_states_on_verification_state ON wiki_repository_states USING btree (verification_state);
@@ -29887,6 +29906,8 @@ CREATE TRIGGER trigger_3857ca5ea4af BEFORE INSERT OR UPDATE ON merge_trains FOR 
 
 CREATE TRIGGER trigger_388e93f88fdd BEFORE INSERT OR UPDATE ON packages_build_infos FOR EACH ROW EXECUTE FUNCTION trigger_388e93f88fdd();
 
+CREATE TRIGGER trigger_43484cb41aca BEFORE INSERT OR UPDATE ON wiki_repository_states FOR EACH ROW EXECUTE FUNCTION trigger_43484cb41aca();
+
 CREATE TRIGGER trigger_56d49f4ed623 BEFORE INSERT OR UPDATE ON workspace_variables FOR EACH ROW EXECUTE FUNCTION trigger_56d49f4ed623();
 
 CREATE TRIGGER trigger_94514aeadc50 BEFORE INSERT OR UPDATE ON deployment_approvals FOR EACH ROW EXECUTE FUNCTION trigger_94514aeadc50();
@@ -30860,6 +30881,9 @@ ALTER TABLE ONLY timelogs
 
 ALTER TABLE ONLY geo_event_log
     ADD CONSTRAINT fk_c4b1c1f66e FOREIGN KEY (repository_deleted_event_id) REFERENCES geo_repository_deleted_events(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY wiki_repository_states
+    ADD CONSTRAINT fk_c558ca51b8 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY issues
     ADD CONSTRAINT fk_c63cbf6c25 FOREIGN KEY (closed_by_id) REFERENCES users(id) ON DELETE SET NULL;
