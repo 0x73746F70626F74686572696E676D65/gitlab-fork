@@ -17,7 +17,7 @@ module Projects
     end
 
     def check_secrets_enabled!
-      render_404 unless Feature.enabled?(:ci_tanukey_ui, project.root_ancestor)
+      render_404 unless Feature.enabled?(:ci_tanukey_ui, project)
     end
   end
 end
