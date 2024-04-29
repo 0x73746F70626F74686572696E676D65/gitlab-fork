@@ -37,7 +37,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
 
         let(:params) { { policy_yaml: invalid_input_policy_yaml, operation: operation } }
 
-        it 'returns error' do
+        it 'returns error', :aggregate_failures do
           response = service.execute
 
           expect(response[:status]).to eq(:error)
@@ -51,7 +51,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
 
         let(:params) { { policy_yaml: input_policy_yaml, operation: operation } }
 
-        it 'returns error' do
+        it 'returns error', :aggregate_failures do
           response = service.execute
 
           expect(response[:status]).to eq(:error)
@@ -63,7 +63,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
       context 'when security_orchestration_policies_configuration does not exist for container' do
         let_it_be(:container) { create(:project, :repository) }
 
-        it 'does not create new project' do
+        it 'does not create new project', :aggregate_failures do
           response = service.execute
 
           expect(response[:status]).to eq(:error)
@@ -85,7 +85,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
         end
 
         context 'append' do
-          it 'does not create branch' do
+          it 'does not create branch', :aggregate_failures do
             response = service.execute
 
             expect(response[:status]).to eq(:error)
@@ -98,7 +98,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
           let(:input_policy_yaml) { build(:scan_execution_policy, name: 'Updated Policy').merge(type: 'scan_execution_policy').to_yaml }
           let(:policy_name) { 'Test Policy' }
 
-          it 'creates branch with updated policy' do
+          it 'creates branch with updated policy', :aggregate_failures do
             response = service.execute
 
             expect(response[:status]).to eq(:success)
@@ -113,7 +113,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
         context 'remove' do
           let(:operation) { :remove }
 
-          it 'creates branch with removed policy' do
+          it 'creates branch with removed policy', :aggregate_failures do
             response = service.execute
 
             expect(response[:status]).to eq(:success)
