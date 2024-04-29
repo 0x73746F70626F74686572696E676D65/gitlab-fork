@@ -67,9 +67,7 @@ export default {
         'data-testid': `dora-chart-metric-${identifier.replaceAll('_', '-')}`,
       };
     },
-    formatValueToLocale(value) {
-      return formatNumber(value);
-    },
+    formatNumber,
   },
 };
 </script>
@@ -95,7 +93,7 @@ export default {
         <gl-skeleton-loader :lines="1" :width="100" />
       </span>
       <template v-else>
-        {{ formatValueToLocale(value) }}
+        {{ formatNumber(value) }}
         <gl-icon
           v-if="valueLimitMessage"
           v-gl-tooltip.hover
