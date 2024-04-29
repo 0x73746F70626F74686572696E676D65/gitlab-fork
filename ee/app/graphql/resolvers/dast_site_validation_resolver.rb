@@ -7,12 +7,12 @@ module Resolvers
     type Types::DastSiteValidationType.connection_type, null: true
 
     argument :normalized_target_urls, [GraphQL::Types::String],
-             required: false,
-             description: 'Normalized URL of the target to be scanned.'
+      required: false,
+      description: 'Normalized URL of the target to be scanned.'
 
     argument :status, Types::DastSiteValidationStatusEnum,
-             required: false,
-             description: 'Status of the site validation.'
+      required: false,
+      description: 'Status of the site validation.'
 
     def resolve(**args)
       DastSiteValidationsFinder

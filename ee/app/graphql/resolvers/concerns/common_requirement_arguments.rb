@@ -5,19 +5,19 @@ module CommonRequirementArguments
 
   included do
     argument :sort, Types::SortEnum,
-              required: false,
-              description: 'List requirements by sort order.'
+      required: false,
+      description: 'List requirements by sort order.'
 
     argument :state, Types::RequirementsManagement::RequirementStateEnum,
-              required: false,
-              description: 'Filter requirements by state.'
+      required: false,
+      description: 'Filter requirements by state.'
 
     argument :search, GraphQL::Types::String,
-              required: false,
-              description: 'Search query for requirement title.'
+      required: false,
+      description: 'Search query for requirement title.'
 
     argument :author_username, [GraphQL::Types::String],
-              required: false,
-              description: 'Filter requirements by author username.'
+      required: false,
+      description: 'Filter requirements by author username.'
   end
 end

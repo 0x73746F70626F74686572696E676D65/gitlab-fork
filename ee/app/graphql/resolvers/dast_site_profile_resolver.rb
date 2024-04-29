@@ -10,8 +10,8 @@ module Resolvers
 
     when_single do
       argument :id, ::Types::GlobalIDType[::DastSiteProfile],
-               required: true,
-               description: "ID of the site profile."
+        required: true,
+        description: "ID of the site profile."
     end
 
     def resolve_with_lookahead(**args)

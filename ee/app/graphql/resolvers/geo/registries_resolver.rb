@@ -15,21 +15,21 @@ module Resolvers
         type replicator_class.graphql_registry_type, null: true
 
         argument :ids,
-                 [GraphQL::Types::ID],
-                 required: false,
-                 description: 'Filters registries by their ID.'
+          [GraphQL::Types::ID],
+          required: false,
+          description: 'Filters registries by their ID.'
 
         argument :replication_state, ::Types::Geo::ReplicationStateEnum,
-                 required: false,
-                 description: 'Filters registries by their replication state.'
+          required: false,
+          description: 'Filters registries by their replication state.'
 
         argument :verification_state, ::Types::Geo::VerificationStateEnum,
-                 required: false,
-                 description: 'Filters registries by their verification state.'
+          required: false,
+          description: 'Filters registries by their verification state.'
 
         argument :keyword, GraphQL::Types::String,
-                 required: false,
-                 description: 'Filters registries by their attributes using a keyword.'
+          required: false,
+          description: 'Filters registries by their attributes using a keyword.'
 
         def resolve(**args)
           return registry_class.none unless geo_node_is_current?

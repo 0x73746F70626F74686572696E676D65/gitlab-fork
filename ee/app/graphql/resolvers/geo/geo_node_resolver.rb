@@ -6,8 +6,8 @@ module Resolvers
       type Types::Geo::GeoNodeType, null: true
 
       argument :name, GraphQL::Types::String,
-               required: false,
-               description: 'Name of the Geo node. Defaults to the current Geo node name.'
+        required: false,
+        description: 'Name of the Geo node. Defaults to the current Geo node name.'
 
       def resolve(name: GeoNode.current_node_name)
         GeoNodeFinder.new(context[:current_user], names: [name]).execute.first

@@ -10,13 +10,13 @@ module Resolvers
       type ::Types::ComplianceManagement::ComplianceFrameworkType.connection_type, null: true
 
       argument :id, ::Types::GlobalIDType[::ComplianceManagement::Framework],
-               description: 'Global ID of a specific compliance framework to return.',
-               required: false
+        description: 'Global ID of a specific compliance framework to return.',
+        required: false
 
       argument :search, GraphQL::Types::String,
-               required: false,
-               default_value: nil,
-               description: 'Search framework with most similar names.'
+        required: false,
+        default_value: nil,
+        description: 'Search framework with most similar names.'
 
       argument :ids, [::Types::GlobalIDType[::ComplianceManagement::Framework]],
         description: 'List of Global IDs of compliance frameworks to return.',

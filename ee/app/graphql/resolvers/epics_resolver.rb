@@ -7,82 +7,82 @@ module Resolvers
     include LooksAhead
 
     argument :iid, GraphQL::Types::ID,
-             required: false,
-             description: 'IID of the epic, e.g., "1".'
+      required: false,
+      description: 'IID of the epic, e.g., "1".'
 
     argument :iids, [GraphQL::Types::ID],
-             required: false,
-             description: 'List of IIDs of epics, e.g., `[1, 2]`.'
+      required: false,
+      description: 'List of IIDs of epics, e.g., `[1, 2]`.'
 
     argument :state, Types::EpicStateEnum,
-             required: false,
-             description: 'Filter epics by state.'
+      required: false,
+      description: 'Filter epics by state.'
 
     argument :sort, Types::EpicSortEnum,
-             required: false,
-             description: 'List epics by sort order.'
+      required: false,
+      description: 'List epics by sort order.'
 
     argument :author_username, GraphQL::Types::String,
-             required: false,
-             description: 'Filter epics by author.'
+      required: false,
+      description: 'Filter epics by author.'
 
     argument :label_name, [GraphQL::Types::String],
-             required: false,
-             description: 'Filter epics by labels.'
+      required: false,
+      description: 'Filter epics by labels.'
 
     argument :milestone_title, GraphQL::Types::String,
-             required: false,
-             description: "Filter epics by milestone title, computed from epic's issues."
+      required: false,
+      description: "Filter epics by milestone title, computed from epic's issues."
 
     argument :iid_starts_with, GraphQL::Types::String,
-             required: false,
-             description: 'Filter epics by IID for autocomplete.'
+      required: false,
+      description: 'Filter epics by IID for autocomplete.'
 
     argument :include_ancestor_groups, GraphQL::Types::Boolean,
-             required: false,
-             description: 'Include epics from ancestor groups.',
-             default_value: false
+      required: false,
+      description: 'Include epics from ancestor groups.',
+      default_value: false
 
     argument :include_descendant_groups, GraphQL::Types::Boolean,
-             required: false,
-             description: 'Include epics from descendant groups.',
-             default_value: true
+      required: false,
+      description: 'Include epics from descendant groups.',
+      default_value: true
 
     argument :confidential, GraphQL::Types::Boolean,
-             required: false,
-             description: 'Filter epics by given confidentiality.'
+      required: false,
+      description: 'Filter epics by given confidentiality.'
 
     argument :my_reaction_emoji, GraphQL::Types::String,
-             required: false,
-             description: 'Filter by reaction emoji applied by the current user.'
+      required: false,
+      description: 'Filter by reaction emoji applied by the current user.'
 
     argument :created_after, Types::TimeType,
-             required: false,
-             description: 'Epics created after this date.'
+      required: false,
+      description: 'Epics created after this date.'
     argument :created_before, Types::TimeType,
-             required: false,
-             description: 'Epics created before this date.'
+      required: false,
+      description: 'Epics created before this date.'
     argument :updated_after, Types::TimeType,
-             required: false,
-             description: 'Epics updated after this date.'
+      required: false,
+      description: 'Epics updated after this date.'
     argument :updated_before, Types::TimeType,
-             required: false,
-             description: 'Epics updated before this date.'
+      required: false,
+      description: 'Epics updated before this date.'
 
     argument :not, ::Types::Epics::NegatedEpicFilterInputType,
-             required: false,
-             description: 'Negated epic arguments.'
+      required: false,
+      description: 'Negated epic arguments.'
 
     argument :or, Types::Epics::UnionedEpicFilterInputType,
-             # remove alpha with or_issuable_queries feature flag
-             alpha: { milestone: '15.9' },
-             required: false,
-             description: 'List of arguments with inclusive OR. ' \
-                          'Ignored unless `or_issuable_queries` flag is enabled.'
+      # remove alpha with or_issuable_queries feature flag
+      alpha: { milestone: '15.9' },
+      required: false,
+      description: 'List of arguments with inclusive OR. ' \
+                   'Ignored unless `or_issuable_queries` flag is enabled.'
 
     argument :top_level_hierarchy_only, GraphQL::Types::Boolean,
-             required: false,
-             description: 'Filter epics with a top-level hierarchy.'
+      required: false,
+      description: 'Filter epics with a top-level hierarchy.'
 
     type Types::EpicType, null: true
 

@@ -9,8 +9,8 @@ module Resolvers
 
       when_single do
         argument :id, ::Types::GlobalIDType[::Boards::EpicBoard],
-                 required: true,
-                 description: 'Find an epic board by ID.'
+          required: true,
+          description: 'Find an epic board by ID.'
       end
 
       alias_method :group, :object

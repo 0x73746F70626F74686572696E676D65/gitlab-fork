@@ -5,9 +5,9 @@ module Resolvers
     type Types::EpicType, null: true
 
     argument :include_ancestor_groups, GraphQL::Types::Boolean,
-             required: false,
-             description: 'Include epics from ancestor groups.',
-             default_value: true
+      required: false,
+      description: 'Include epics from ancestor groups.',
+      default_value: true
 
     # EpicResolver defines parent method to get the "parent" object which used the resolver,
     # which for epic's ancestors is always the epic for which we want to get list of ancestors

@@ -6,9 +6,9 @@ module Resolvers
       type Types::EpicType, null: true
 
       argument :include_ancestor_groups, GraphQL::Types::Boolean,
-               required: false,
-               description: 'Include child epics from ancestor groups.',
-               default_value: true
+        required: false,
+        description: 'Include child epics from ancestor groups.',
+        default_value: true
 
       def find_epics(args)
         apply_lookahead(
