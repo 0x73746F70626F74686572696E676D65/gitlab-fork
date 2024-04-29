@@ -51356,9 +51356,6 @@ msgstr ""
 msgid "Terraform|Remove"
 msgstr ""
 
-msgid "Terraform|Remove state file and versions"
-msgstr ""
-
 msgid "Terraform|Removed"
 msgstr ""
 
