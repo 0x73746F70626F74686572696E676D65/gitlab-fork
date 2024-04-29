@@ -17,7 +17,7 @@ RSpec.describe "Admin Runners", feature_category: :fleet_visibility do
 
   describe "Admin Runners page", :js do
     context "with a GitLab version and runner releases" do
-      let_it_be(:runner) { create(:ci_runner, :instance, version: '15.0.0') }
+      let_it_be(:runner) { create(:ci_runner) }
       let_it_be(:runner_manager) { create(:ci_runner_machine, runner: runner, version: '15.0.0') }
 
       let(:upgrade_status) { :unavailable }
