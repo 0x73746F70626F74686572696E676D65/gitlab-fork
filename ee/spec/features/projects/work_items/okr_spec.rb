@@ -25,7 +25,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   end
 
   shared_examples 'work items progress' do
-    let(:progress_wrapper) { '[data-testid="work-item-progress-with-edit"]' }
+    let(:progress_wrapper) { '[data-testid="work-item-progress-wrapper"]' }
     let(:form_selector) { '[data-testid="work-item-progress"]' }
     let(:input_selector) { '[data-testid="work-item-progress-input"]' }
 
@@ -98,7 +98,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   end
 
   shared_examples 'work items health status' do
-    let(:health_status_selector) { '[data-testid="work-item-health-status-with-edit"]' }
+    let(:health_status_selector) { '[data-testid="work-item-health-status"]' }
 
     it 'successfully sets health status' do
       within(health_status_selector) do

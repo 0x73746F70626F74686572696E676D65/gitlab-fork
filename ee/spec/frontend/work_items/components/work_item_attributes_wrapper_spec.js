@@ -1,11 +1,11 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
-import WorkItemProgressWithEdit from 'ee/work_items/components/work_item_progress_with_edit.vue';
-import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status_with_edit.vue';
-import WorkItemWeight from 'ee/work_items/components/work_item_weight_with_edit.vue';
-import WorkItemIteration from 'ee/work_items/components/work_item_iteration_with_edit.vue';
-import WorkItemColorWithEdit from 'ee/work_items/components/work_item_color_with_edit.vue';
+import WorkItemProgress from 'ee/work_items/components/work_item_progress.vue';
+import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status.vue';
+import WorkItemWeight from 'ee/work_items/components/work_item_weight.vue';
+import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
+import WorkItemColor from 'ee/work_items/components/work_item_color.vue';
 import WorkItemRolledupDates from 'ee/work_items/components/work_item_rolledup_dates.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -29,8 +29,8 @@ describe('EE WorkItemAttributesWrapper component', () => {
 
   const findWorkItemIteration = () => wrapper.findComponent(WorkItemIteration);
   const findWorkItemWeight = () => wrapper.findComponent(WorkItemWeight);
-  const findWorkItemProgressWithEdit = () => wrapper.findComponent(WorkItemProgressWithEdit);
-  const findWorkItemColorWithEdit = () => wrapper.findComponent(WorkItemColorWithEdit);
+  const findWorkItemProgress = () => wrapper.findComponent(WorkItemProgress);
+  const findWorkItemColor = () => wrapper.findComponent(WorkItemColor);
   const findWorkItemHealthStatus = () => wrapper.findComponent(WorkItemHealthStatus);
   const findWorkItemRolledupDates = () => wrapper.findComponent(WorkItemRolledupDates);
 
@@ -176,16 +176,16 @@ describe('EE WorkItemAttributesWrapper component', () => {
         const response = workItemResponseFactory({ progressWidgetPresent });
         createComponent({ workItem: response.data.workItem });
 
-        expect(findWorkItemProgressWithEdit().exists()).toBe(exists);
+        expect(findWorkItemProgress().exists()).toBe(exists);
       });
     });
 
-    it('renders WorkItemProgressWithEdit', async () => {
+    it('renders WorkItemProgress', async () => {
       createComponent();
 
       await waitForPromises();
 
-      expect(findWorkItemProgressWithEdit().exists()).toBe(true);
+      expect(findWorkItemProgress().exists()).toBe(true);
     });
 
     it('emits an error event to the wrapper', async () => {
@@ -193,7 +193,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
       createComponent({ workItem: response.data.workItem });
       const updateError = 'Failed to update';
 
-      findWorkItemProgressWithEdit().vm.$emit('error', updateError);
+      findWorkItemProgress().vm.$emit('error', updateError);
       await nextTick();
 
       expect(wrapper.emitted('error')).toEqual([[updateError]]);
@@ -211,16 +211,16 @@ describe('EE WorkItemAttributesWrapper component', () => {
 
         createComponent({ workItem: response.data.workItem });
 
-        expect(findWorkItemColorWithEdit().exists()).toBe(exists);
+        expect(findWorkItemColor().exists()).toBe(exists);
       });
     });
 
-    it('renders WorkItemColorWithEdit', async () => {
+    it('renders WorkItemColor', async () => {
       createComponent();
 
       await waitForPromises();
 
-      expect(findWorkItemColorWithEdit().exists()).toBe(true);
+      expect(findWorkItemColor().exists()).toBe(true);
     });
 
     it('emits an error event to the wrapper', async () => {
@@ -228,7 +228,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
       createComponent({ workItem: response.data.workItem });
       const updateError = 'Failed to update';
 
-      findWorkItemColorWithEdit().vm.$emit('error', updateError);
+      findWorkItemColor().vm.$emit('error', updateError);
       await nextTick();
 
       expect(wrapper.emitted('error')).toEqual([[updateError]]);

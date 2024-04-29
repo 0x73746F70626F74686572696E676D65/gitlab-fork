@@ -1,23 +1,23 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import WorkItemMilestone from '~/work_items/components/work_item_milestone_with_edit.vue';
-import WorkItemSidebarDropdownWidgetWithEdit from '~/work_items/components/shared/work_item_sidebar_dropdown_widget_with_edit.vue';
+import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
+import WorkItemSidebarDropdownWidget from '~/work_items/components/shared/work_item_sidebar_dropdown_widget.vue';
+import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
-import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
-import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
-import projectMilestonesQuery from '~/sidebar/queries/project_milestones.query.graphql';
 import {
-  projectMilestonesResponse,
-  projectMilestonesResponseWithNoMilestones,
-  mockMilestoneWidgetResponse,
+  groupIterationsResponse,
+  groupIterationsResponseWithNoIterations,
+  mockIterationWidgetResponse,
   updateWorkItemMutationErrorResponse,
   updateWorkItemMutationResponse,
-} from '../mock_data';
+} from 'jest/work_items/mock_data';
+import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
+import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 
-describe('WorkItemMilestoneWithEdit component', () => {
+describe('WorkItemIteration component', () => {
   Vue.use(VueApollo);
 
   let wrapper;
@@ -25,67 +25,69 @@ describe('WorkItemMilestoneWithEdit component', () => {
   const workItemId = 'gid://gitlab/WorkItem/1';
   const workItemType = 'Task';
 
-  const findSidebarDropdownWidget = () =>
-    wrapper.findComponent(WorkItemSidebarDropdownWidgetWithEdit);
+  const findSidebarDropdownWidget = () => wrapper.findComponent(WorkItemSidebarDropdownWidget);
 
-  const successSearchQueryHandler = jest.fn().mockResolvedValue(projectMilestonesResponse);
-  const successSearchWithNoMatchingMilestones = jest
+  const successSearchQueryHandler = jest.fn().mockResolvedValue(groupIterationsResponse);
+  const successSearchWithNoMatchingIterations = jest
     .fn()
-    .mockResolvedValue(projectMilestonesResponseWithNoMilestones);
+    .mockResolvedValue(groupIterationsResponseWithNoIterations);
   const successUpdateWorkItemMutationHandler = jest
     .fn()
     .mockResolvedValue(updateWorkItemMutationResponse);
 
-  const showDropdown = () => findSidebarDropdownWidget().vm.$emit('dropdownShown');
+  const showDropdown = () => {
+    findSidebarDropdownWidget().vm.$emit('dropdownShown');
+  };
 
   const createComponent = ({
     mountFn = shallowMountExtended,
     canUpdate = true,
-    milestone = mockMilestoneWidgetResponse,
+    iteration = mockIterationWidgetResponse,
     searchQueryHandler = successSearchQueryHandler,
     mutationHandler = successUpdateWorkItemMutationHandler,
   } = {}) => {
-    wrapper = mountFn(WorkItemMilestone, {
+    wrapper = mountFn(WorkItemIteration, {
       apolloProvider: createMockApollo([
-        [projectMilestonesQuery, searchQueryHandler],
+        [projectIterationsQuery, searchQueryHandler],
         [updateWorkItemMutation, mutationHandler],
       ]),
       propsData: {
-        fullPath: 'full-path',
         canUpdate,
-        workItemMilestone: milestone,
+        fullPath: 'test-project-path',
+        iteration,
         workItemId,
         workItemType,
+      },
+      provide: {
+        hasIterationsFeature: true,
       },
     });
   };
 
-  it('has "Milestone" label', () => {
+  it('has "Iteration" label', () => {
     createComponent();
 
-    expect(findSidebarDropdownWidget().props('dropdownLabel')).toBe('Milestone');
+    expect(findSidebarDropdownWidget().props('dropdownLabel')).toBe('Iteration');
   });
 
-  describe('Default text with canUpdate false and milestone value', () => {
+  describe('Default text with canUpdate false and iteration value', () => {
     describe.each`
-      description             | milestone                      | value
-      ${'when no milestone'}  | ${null}                        | ${'None'}
-      ${'when milestone set'} | ${mockMilestoneWidgetResponse} | ${mockMilestoneWidgetResponse.title}
-    `('$description', ({ milestone, value }) => {
+      description             | iteration                      | value
+      ${'when no iteration'}  | ${null}                        | ${'None'}
+      ${'when iteration set'} | ${mockIterationWidgetResponse} | ${mockIterationWidgetResponse.title}
+    `('$description', ({ iteration, value }) => {
       it(`has a value of "${value}"`, () => {
-        createComponent({ mountFn: mountExtended, canUpdate: false, milestone });
+        createComponent({ mountFn: mountExtended, canUpdate: false, iteration });
 
-        expect(findSidebarDropdownWidget().props('canUpdate')).toBe(false);
         expect(wrapper.text()).toContain(value);
+        expect(findSidebarDropdownWidget().props('canUpdate')).toBe(false);
       });
     });
   });
 
   describe('Dropdown search', () => {
-    it('shows no matching results when no items', () => {
-      createComponent({
-        searchQueryHandler: successSearchWithNoMatchingMilestones,
-      });
+    it('shows no items in the dropdown when no results matching', () => {
+      createComponent({ searchQueryHandler: successSearchWithNoMatchingIterations });
 
       expect(findSidebarDropdownWidget().props('listItems')).toHaveLength(0);
     });
@@ -98,13 +100,11 @@ describe('WorkItemMilestoneWithEdit component', () => {
 
     it('calls successSearchQueryHandler with variables when dropdown is opened', async () => {
       showDropdown();
-
       await waitForPromises();
 
       expect(successSearchQueryHandler).toHaveBeenCalledWith({
-        first: 20,
-        fullPath: 'full-path',
-        state: 'active',
+        fullPath: 'test-project-path',
+        state: 'opened',
         title: '',
       });
     });
@@ -117,40 +117,35 @@ describe('WorkItemMilestoneWithEdit component', () => {
       expect(findSidebarDropdownWidget().props('loading')).toBe(true);
     });
 
-    it('shows the milestones in dropdown when the items have finished fetching', async () => {
+    it('shows the iterations in dropdown when the items have finished fetching', async () => {
       showDropdown();
 
       await waitForPromises();
 
       expect(findSidebarDropdownWidget().props('loading')).toBe(false);
       expect(findSidebarDropdownWidget().props('listItems')).toHaveLength(
-        projectMilestonesResponse.data.workspace.attributes.nodes.length,
+        groupIterationsResponse.data.workspace.attributes.nodes.length,
       );
     });
 
-    it('changes the milestone to null when clicked on Clear', async () => {
+    it('changes the iteration to null on reset/clear', async () => {
       findSidebarDropdownWidget().vm.$emit('updateValue', null);
-
       await nextTick();
 
       expect(findSidebarDropdownWidget().props('updateInProgress')).toBe(true);
 
       await waitForPromises();
+
       expect(findSidebarDropdownWidget().props('updateInProgress')).toBe(false);
-      expect(findSidebarDropdownWidget().props('itemValue')).toBe(null);
     });
 
-    it('changes the milestone to the selected milestone', async () => {
-      const milestoneAtIndex = projectMilestonesResponse.data.workspace.attributes.nodes[0];
+    it('changes the iteration to the selected iteration', async () => {
+      const iterationAtIndex = groupIterationsResponse.data.workspace.attributes.nodes[0];
 
-      showDropdown();
-
+      findSidebarDropdownWidget().vm.$emit('updateValue', iterationAtIndex.id);
       await waitForPromises();
-      findSidebarDropdownWidget().vm.$emit('updateValue', milestoneAtIndex.id);
 
-      await nextTick();
-
-      expect(findSidebarDropdownWidget().props('itemValue')).toBe(milestoneAtIndex.id);
+      expect(findSidebarDropdownWidget().props('itemValue')).toBe(iterationAtIndex.id);
     });
   });
 
@@ -167,9 +162,7 @@ describe('WorkItemMilestoneWithEdit component', () => {
           canUpdate: true,
         });
 
-        showDropdown();
         findSidebarDropdownWidget().vm.$emit('updateValue', null);
-
         await waitForPromises();
 
         expect(wrapper.emitted('error')).toEqual([[expectedErrorMessage]]);
@@ -178,18 +171,16 @@ describe('WorkItemMilestoneWithEdit component', () => {
   });
 
   describe('Tracking event', () => {
-    it('tracks updating the milestone', async () => {
+    it('tracks updating the iteration', async () => {
       const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
       createComponent({ canUpdate: true });
 
-      showDropdown();
       findSidebarDropdownWidget().vm.$emit('updateValue', null);
-
       await waitForPromises();
 
-      expect(trackingSpy).toHaveBeenCalledWith(TRACKING_CATEGORY_SHOW, 'updated_milestone', {
+      expect(trackingSpy).toHaveBeenCalledWith(TRACKING_CATEGORY_SHOW, 'updated_iteration', {
         category: TRACKING_CATEGORY_SHOW,
-        label: 'item_milestone',
+        label: 'item_iteration',
         property: 'type_Task',
       });
     });

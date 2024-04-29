@@ -1,6 +1,5 @@
 <script>
-import { GlForm, GlFormGroup, GlFormInput, GlIcon, GlPopover } from '@gitlab/ui';
-import { isNumber } from 'lodash';
+import { GlForm, GlFormInput, GlIcon, GlPopover, GlButton, GlLoadingIcon } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { __ } from '~/locale';
@@ -19,18 +18,19 @@ export default {
   maxValue: 100,
   components: {
     GlForm,
-    GlFormGroup,
     GlFormInput,
     GlIcon,
     GlPopover,
+    GlButton,
+    GlLoadingIcon,
   },
   mixins: [Tracking.mixin(), glFeatureFlagMixin()],
-  inject: ['hasOkrsFeature'],
   i18n: {
     progressPopoverTitle: __('How is progress calculated?'),
     progressPopoverContent: __(
-      'This field is auto-calculated based on the Progress score of its direct children. You can overwrite this value but it will be replaced by the auto-calculation anytime the Progress score of its direct children are updated.',
+      'This field is auto-calculated based on the progress score of its direct children. You can overwrite this value but it will be replaced by the auto-calculation anytime the progress score of its direct children are updated.',
     ),
+    progressTitle: __('Progress'),
   },
   props: {
     canUpdate: {
@@ -56,6 +56,7 @@ export default {
     return {
       isEditing: false,
       localProgress: this.progress,
+      isUpdating: false,
     };
   },
   computed: {
@@ -69,16 +70,10 @@ export default {
         property: `type_${this.workItemType}`,
       };
     },
-    showPercent() {
-      return !this.isEditing && isNumber(this.localProgress);
-    },
     showProgressPopover() {
       return (
         this.glFeatures.okrAutomaticRollups && this.workItemType === WORK_ITEM_TYPE_VALUE_OBJECTIVE
       );
-    },
-    isOkrsEnabled() {
-      return this.hasOkrsFeature && this.glFeatures.okrsMvc;
     },
   },
   watch: {
@@ -94,27 +89,16 @@ export default {
         progress <= this.$options.maxValue
       );
     },
-    blurInput() {
-      this.$refs.input.$el.blur();
-    },
-    handleFocus() {
-      this.isEditing = true;
-    },
-    updateProgress(event) {
+    updateProgress() {
       if (!this.canUpdate) return;
-      this.isEditing = false;
+      const valueAsNumber = Number(this.localProgress);
 
-      const { valueAsNumber } = event.target;
-
-      if (
-        !this.canUpdate ||
-        valueAsNumber === this.progress ||
-        !this.isValidProgress(valueAsNumber)
-      ) {
-        this.localProgress = this.progress;
+      if (valueAsNumber === this.progress || !this.isValidProgress(valueAsNumber)) {
+        this.cancelEditing();
         return;
       }
 
+      this.isUpdating = true;
       this.track('updated_progress');
       this.$apollo
         .mutate({
@@ -135,60 +119,93 @@ export default {
         })
         .catch((error) => {
           const msg = sprintfWorkItem(I18N_WORK_ITEM_ERROR_UPDATING, this.workItemType);
+          this.localProgress = this.progress;
           this.$emit('error', msg);
           Sentry.captureException(error);
+        })
+        .finally(() => {
+          this.isUpdating = false;
+          this.isEditing = false;
         });
+    },
+    cancelEditing() {
+      this.localProgress = this.progress;
+      this.isEditing = false;
     },
   },
 };
 </script>
 
 <template>
-  <gl-form v-if="isOkrsEnabled" data-testid="work-item-progress" @submit.prevent="blurInput">
-    <gl-form-group
-      class="gl-align-items-center"
-      label-for="progress-widget-input"
-      label-class="gl-pb-0! gl-overflow-wrap-break work-item-field-label"
-      label-cols="3"
-      label-cols-lg="2"
-    >
-      <template #label>
-        {{ __('Progress') }}
+  <div data-testid="work-item-progress-wrapper">
+    <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
+      <h3 :class="{ 'gl-sr-only': isEditing }" class="gl-mb-0! gl-heading-5">
+        {{ $options.i18n.progressTitle }}
         <template v-if="showProgressPopover">
-          <gl-icon id="okr-progress-popover" class="gl-text-blue-600" name="question-o" />
+          <gl-icon id="okr-progress-popover-title" class="gl-text-blue-600" name="question-o" />
           <gl-popover
             triggers="hover"
-            target="okr-progress-popover"
+            target="okr-progress-popover-title"
             placement="right"
             :title="$options.i18n.progressPopoverTitle"
             :content="$options.i18n.progressPopoverContent"
           />
         </template>
-      </template>
-
+      </h3>
+      <gl-button
+        v-if="canUpdate && !isEditing"
+        data-testid="edit-progress"
+        category="tertiary"
+        size="small"
+        @click="isEditing = true"
+        >{{ __('Edit') }}</gl-button
+      >
+    </div>
+    <gl-form v-if="isEditing" data-testid="work-item-progress" @submit.prevent="updateProgress">
+      <div class="gl-display-flex gl-align-items-center">
+        <label for="progress-widget-input" class="gl-mb-0"
+          >{{ $options.i18n.progressTitle }}
+          <template v-if="showProgressPopover">
+            <gl-icon id="okr-progress-popover-label" class="gl-text-blue-600" name="question-o" />
+            <gl-popover
+              triggers="hover"
+              target="okr-progress-popover-label"
+              placement="right"
+              :title="$options.i18n.progressPopoverTitle"
+              :content="$options.i18n.progressPopoverContent"
+            />
+          </template>
+        </label>
+        <gl-loading-icon v-if="isUpdating" size="sm" inline class="gl-ml-3" />
+        <gl-button
+          data-testid="apply-progress"
+          category="tertiary"
+          size="small"
+          class="gl-ml-auto"
+          :disabled="isUpdating"
+          @click="updateProgress"
+        >
+          {{ __('Apply') }}
+        </gl-button>
+      </div>
       <gl-form-input
         id="progress-widget-input"
         ref="input"
         v-model="localProgress"
+        autofocus
         :min="$options.minValue"
         :max="$options.maxValue"
         data-testid="work-item-progress-input"
-        class="gl-hover-border-gray-200! gl-border-solid! hide-unfocused-input-decoration work-item-field-value"
-        :class="{ 'hide-spinners gl-shadow-none!': !isEditing }"
+        class="gl-hover-border-gray-200! gl-border-solid! hide-unfocused-input-decoration work-item-field-value gl-max-w-full!"
         :placeholder="placeholder"
-        :readonly="!canUpdate"
         width="sm"
         type="number"
         @blur="updateProgress"
-        @focus="handleFocus"
+        @keyup.escape="cancelEditing"
       />
-      <span
-        v-if="showPercent"
-        class="gl-mx-4 gl-my-3 gl-absolute gl-top-0 gl-bg-transparent gl-border gl-border-transparent gl-line-height-normal gl-pointer-events-none"
-        data-testid="progress-displayed-value"
-      >
-        {{ localProgress }}%
-      </span>
-    </gl-form-group>
-  </gl-form>
+    </gl-form>
+    <span v-else class="gl-my-3" data-testid="progress-displayed-value">
+      {{ localProgress }}%
+    </span>
+  </div>
 </template>

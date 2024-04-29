@@ -7025,9 +7025,6 @@ msgstr ""
 msgid "Assign to me"
 msgstr ""
 
-msgid "Assign yourself"
-msgstr ""
-
 msgid "Assigned"
 msgstr ""
 
@@ -52806,9 +52803,6 @@ msgstr ""
 msgid "This feature requires local storage to be enabled"
 msgstr ""
 
-msgid "This field is auto-calculated based on the Progress score of its direct children. You can overwrite this value but it will be replaced by the auto-calculation anytime the Progress score of its direct children are updated."
-msgstr ""
-
 msgid "This field is auto-calculated based on the progress score of its direct children. You can overwrite this value but it will be replaced by the auto-calculation anytime the progress score of its direct children are updated."
 msgstr ""
 
@@ -58426,24 +58420,6 @@ msgstr ""
 msgid "WorkItem|Add a to do"
 msgstr ""
 
-msgid "WorkItem|Add assignee"
-msgstr ""
-
-msgid "WorkItem|Add assignees"
-msgstr ""
-
-msgid "WorkItem|Add due date"
-msgstr ""
-
-msgid "WorkItem|Add start date"
-msgstr ""
-
-msgid "WorkItem|Add to iteration"
-msgstr ""
-
-msgid "WorkItem|Add to milestone"
-msgstr ""
-
 msgid "WorkItem|All activity"
 msgstr ""
 
@@ -58467,11 +58443,6 @@ msgstr ""
 
 msgid "WorkItem|Assign parent"
 msgstr ""
-
-msgid "WorkItem|Assignee"
-msgid_plural "WorkItem|Assignees"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "WorkItem|Blocked by"
 msgstr ""
@@ -58546,9 +58517,6 @@ msgid "WorkItem|Discard changes"
 msgstr ""
 
 msgid "WorkItem|Due"
-msgstr ""
-
-msgid "WorkItem|Due date"
 msgstr ""
 
 msgid "WorkItem|Epic"
@@ -58798,9 +58766,6 @@ msgid "WorkItem|Something went wrong while updating the work item. Please try ag
 msgstr ""
 
 msgid "WorkItem|Start"
-msgstr ""
-
-msgid "WorkItem|Start date"
 msgstr ""
 
 msgid "WorkItem|Task"

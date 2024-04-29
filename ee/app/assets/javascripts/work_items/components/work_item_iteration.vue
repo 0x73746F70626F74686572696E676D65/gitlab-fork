@@ -3,7 +3,7 @@ import { GlLink } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { getIterationPeriod, groupOptionsByIterationCadences } from 'ee/iterations/utils';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
-import WorkItemSidebarDropdownWidgetWithEdit from '~/work_items/components/shared/work_item_sidebar_dropdown_widget_with_edit.vue';
+import WorkItemSidebarDropdownWidget from '~/work_items/components/shared/work_item_sidebar_dropdown_widget.vue';
 import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
 import { STATUS_OPEN } from '~/issues/constants';
 import { s__ } from '~/locale';
@@ -24,7 +24,7 @@ export default {
     iterationPlaceholder: s__('WorkItem|No iteration'),
   },
   components: {
-    WorkItemSidebarDropdownWidgetWithEdit,
+    WorkItemSidebarDropdownWidget,
     IterationTitle,
     GlLink,
   },
@@ -188,7 +188,7 @@ export default {
 </script>
 
 <template>
-  <work-item-sidebar-dropdown-widget-with-edit
+  <work-item-sidebar-dropdown-widget
     v-if="hasIterationsFeature"
     :dropdown-label="$options.i18n.iteration"
     :can-update="canUpdate"
@@ -200,7 +200,7 @@ export default {
     :toggle-dropdown-text="dropdownText"
     :header-text="__('Select iteration')"
     :reset-button-label="__('Clear')"
-    data-testid="work-item-iteration-with-edit"
+    data-testid="work-item-iteration"
     @dropdownShown="onDropdownShown"
     @searchStarted="search"
     @updateValue="updateWorkItemIteration"
@@ -222,5 +222,5 @@ export default {
         <iteration-title v-if="localIteration.title" :title="localIteration.title" />
       </gl-link>
     </template>
-  </work-item-sidebar-dropdown-widget-with-edit>
+  </work-item-sidebar-dropdown-widget>
 </template>
