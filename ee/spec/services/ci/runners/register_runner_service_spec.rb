@@ -11,6 +11,7 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute', feature_categor
   before do
     stub_application_setting(runners_registration_token: registration_token)
     stub_application_setting(valid_runner_registrars: ApplicationSetting::VALID_RUNNER_REGISTRAR_TYPES)
+    stub_application_setting(allow_runner_registration_token: true)
 
     expect(audit_service).to receive(:track_event).once.and_return('track_event_return_value')
   end
@@ -63,7 +64,7 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute', feature_categor
   end
 
   context 'when project token is used' do
-    let_it_be(:project) { create(:project, :with_namespace_settings) }
+    let_it_be(:project) { create(:project, :allow_runner_registration_token) }
 
     let(:token) { project.runners_token }
     let(:token_scope) { project }
@@ -81,7 +82,8 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute', feature_categor
   end
 
   context 'when group token is used' do
-    let(:group) { create(:group) }
+    let_it_be_with_reload(:group) { create(:group, :allow_runner_registration_token) }
+
     let(:token) { group.runners_token }
     let(:token_scope) { group }
 
