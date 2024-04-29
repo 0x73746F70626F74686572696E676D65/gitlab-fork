@@ -147,6 +147,14 @@ module EE
           description: 'Users within the self-managed instance who are eligible for add-ons.',
           resolver: ::Resolvers::GitlabSubscriptions::SelfManaged::AddOnEligibleUsersResolver,
           alpha: { milestone: '16.7' }
+        field :self_managed_users_queued_for_role_promotion,
+          EE::Types::GitlabSubscriptions::MemberManagement::UsersQueuedForRolePromotionType.connection_type,
+          null: true,
+          alpha: { milestone: '17.1' },
+          resolver: ::Resolvers::GitlabSubscriptions::MemberManagement::SelfManaged::
+              UsersQueuedForRolePromotionResolver,
+          description: 'Fields related to users within a self-managed instance that are pending role ' \
+                       'promotion approval.'
         field :audit_events_instance_amazon_s3_configurations,
           ::Types::AuditEvents::Instance::AmazonS3ConfigurationType.connection_type,
           null: true,

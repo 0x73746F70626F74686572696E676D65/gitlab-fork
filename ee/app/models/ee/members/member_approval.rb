@@ -12,6 +12,11 @@ module EE
         scope :pending_member_approvals, ->(member_namespace_id) do
           where(member_namespace_id: member_namespace_id).where(status: statuses[:pending])
         end
+
+        scope :pending_member_approvals_with_max_new_access_level, -> do
+          where(status: statuses[:pending]).select('DISTINCT ON (user_id) *')
+                        .order(:user_id, new_access_level: :desc, created_at: :asc)
+        end
       end
 
       private

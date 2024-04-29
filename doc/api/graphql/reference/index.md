@@ -961,6 +961,20 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="queryselfmanagedaddoneligibleusersaddontype"></a>`addOnType` | [`GitlabSubscriptionsAddOnType!`](#gitlabsubscriptionsaddontype) | Type of add on to filter the eligible users by. |
 | <a id="queryselfmanagedaddoneligibleuserssearch"></a>`search` | [`String`](#string) | Search the user list. |
 
+### `Query.selfManagedUsersQueuedForRolePromotion`
+
+Fields related to users within a self-managed instance that are pending role promotion approval.
+
+DETAILS:
+**Introduced** in GitLab 17.1.
+**Status**: Experiment.
+
+Returns [`UsersQueuedForRolePromotionConnection`](#usersqueuedforrolepromotionconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#pagination-arguments):
+`before: String`, `after: String`, `first: Int`, and `last: Int`.
+
 ### `Query.snippets`
 
 Find Snippets visible to the current user.
@@ -15305,6 +15319,30 @@ The edge type for [`UserCore`](#usercore).
 | ---- | ---- | ----------- |
 | <a id="usercoreedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="usercoreedgenode"></a>`node` | [`UserCore`](#usercore) | The item at the end of the edge. |
+
+#### `UsersQueuedForRolePromotionConnection`
+
+The connection type for [`UsersQueuedForRolePromotion`](#usersqueuedforrolepromotion).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="usersqueuedforrolepromotionconnectioncount"></a>`count` | [`Int!`](#int) | Total count of collection. |
+| <a id="usersqueuedforrolepromotionconnectionedges"></a>`edges` | [`[UsersQueuedForRolePromotionEdge]`](#usersqueuedforrolepromotionedge) | A list of edges. |
+| <a id="usersqueuedforrolepromotionconnectionnodes"></a>`nodes` | [`[UsersQueuedForRolePromotion]`](#usersqueuedforrolepromotion) | A list of nodes. |
+| <a id="usersqueuedforrolepromotionconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `UsersQueuedForRolePromotionEdge`
+
+The edge type for [`UsersQueuedForRolePromotion`](#usersqueuedforrolepromotion).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="usersqueuedforrolepromotionedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="usersqueuedforrolepromotionedgenode"></a>`node` | [`UsersQueuedForRolePromotion`](#usersqueuedforrolepromotion) | The item at the end of the edge. |
 
 #### `ValueStreamConnection`
 
@@ -31264,6 +31302,17 @@ fields relate to interactions between the two entities.
 | <a id="userstatusemoji"></a>`emoji` | [`String`](#string) | String representation of emoji. |
 | <a id="userstatusmessage"></a>`message` | [`String`](#string) | User status message. |
 | <a id="userstatusmessagehtml"></a>`messageHtml` | [`String`](#string) | HTML of the user status message. |
+
+### `UsersQueuedForRolePromotion`
+
+Represents a Pending Member Approval Queued for Role Promotion.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="usersqueuedforrolepromotionnewaccesslevel"></a>`newAccessLevel` | [`AccessLevel`](#accesslevel) | Highest New GitLab::Access level requested for the member. |
+| <a id="usersqueuedforrolepromotionuser"></a>`user` | [`UserCore`](#usercore) | User that is associated with the member approval object. |
 
 ### `ValueStream`
 
