@@ -119,7 +119,6 @@ module EE
           custom_file_templates: :file_template_project_id,
           default_project_deletion_protection: :default_project_deletion_protection,
           adjourned_deletion_for_projects_and_groups: :deletion_adjourned_period,
-          required_ci_templates: :required_instance_ci_template,
           disable_name_update_for_users: :updating_name_disabled_for_users,
           package_forwarding: [:npm_package_requests_forwarding,
                                :lock_npm_package_requests_forwarding,

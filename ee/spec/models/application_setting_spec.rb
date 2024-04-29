@@ -103,13 +103,6 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
       it { is_expected.not_to allow_value(nil).for(:future_subscriptions) }
     end
 
-    describe 'required_instance', feature_category: :pipeline_composition do
-      it { is_expected.to allow_value(nil).for(:required_instance_ci_template) }
-      it { is_expected.not_to allow_value("").for(:required_instance_ci_template) }
-      it { is_expected.not_to allow_value("  ").for(:required_instance_ci_template) }
-      it { is_expected.to allow_value("template_name").for(:required_instance_ci_template) }
-    end
-
     describe 'max_personal_access_token', feature_category: :user_management do
       it { is_expected.to validate_numericality_of(:max_personal_access_token_lifetime).only_integer.is_greater_than(0).is_less_than_or_equal_to(365).allow_nil }
     end
