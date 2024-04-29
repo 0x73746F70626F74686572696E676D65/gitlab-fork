@@ -83,7 +83,7 @@ RSpec.describe Security::Policy, feature_category: :security_policy_management d
     let(:policy_hash) { build(:scan_result_policy, name: "foobar") }
     let(:policy_index) { 0 }
 
-    subject(:upsert!) { described_class.upsert_policy(policies, policy_hash, policy_index) }
+    subject(:upsert!) { described_class.upsert_policy(policies, policy_hash, policy_index, policy_configuration) }
 
     context 'when the policy does not exist' do
       let(:upserted_policy) { policy_configuration.security_policies.last }

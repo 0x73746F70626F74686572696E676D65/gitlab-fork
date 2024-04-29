@@ -4700,7 +4700,8 @@ CREATE TABLE approval_policy_rules (
     updated_at timestamp with time zone NOT NULL,
     rule_index smallint NOT NULL,
     type smallint NOT NULL,
-    content jsonb DEFAULT '{}'::jsonb NOT NULL
+    content jsonb DEFAULT '{}'::jsonb NOT NULL,
+    security_policy_management_project_id bigint NOT NULL
 );
 
 CREATE SEQUENCE approval_policy_rules_id_seq
@@ -15934,6 +15935,7 @@ CREATE TABLE security_policies (
     scope jsonb DEFAULT '{}'::jsonb NOT NULL,
     actions jsonb DEFAULT '[]'::jsonb NOT NULL,
     approval_settings jsonb DEFAULT '{}'::jsonb NOT NULL,
+    security_policy_management_project_id bigint NOT NULL,
     CONSTRAINT check_3fa0f29e4b CHECK ((char_length(name) <= 255)),
     CONSTRAINT check_966e08b242 CHECK ((char_length(checksum) <= 255)),
     CONSTRAINT check_99c8e08928 CHECK ((char_length(description) <= 255))
@@ -24489,6 +24491,8 @@ CREATE UNIQUE INDEX index_approval_merge_request_rules_users_1 ON approval_merge
 
 CREATE INDEX index_approval_merge_request_rules_users_2 ON approval_merge_request_rules_users USING btree (user_id);
 
+CREATE INDEX index_approval_policy_rules_on_policy_management_project_id ON approval_policy_rules USING btree (security_policy_management_project_id);
+
 CREATE UNIQUE INDEX index_approval_policy_rules_on_unique_policy_rule_index ON approval_policy_rules USING btree (security_policy_id, rule_index);
 
 CREATE UNIQUE INDEX index_approval_project_rules_groups_1 ON approval_project_rules_groups USING btree (approval_project_rule_id, group_id);
@@ -27340,6 +27344,8 @@ CREATE INDEX index_secure_ci_builds_on_user_id_name_created_at ON ci_builds USIN
 CREATE INDEX p_ci_builds_name_id_idx ON ONLY p_ci_builds USING btree (name, id) WHERE (((name)::text = ANY (ARRAY[('container_scanning'::character varying)::text, ('dast'::character varying)::text, ('dependency_scanning'::character varying)::text, ('license_management'::character varying)::text, ('sast'::character varying)::text, ('secret_detection'::character varying)::text, ('coverage_fuzzing'::character varying)::text, ('license_scanning'::character varying)::text, ('apifuzzer_fuzz'::character varying)::text, ('apifuzzer_fuzz_dnd'::character varying)::text])) AND ((type)::text = 'Ci::Build'::text));
 
 CREATE INDEX index_security_ci_builds_on_name_and_id_parser_features ON ci_builds USING btree (name, id) WHERE (((name)::text = ANY (ARRAY[('container_scanning'::character varying)::text, ('dast'::character varying)::text, ('dependency_scanning'::character varying)::text, ('license_management'::character varying)::text, ('sast'::character varying)::text, ('secret_detection'::character varying)::text, ('coverage_fuzzing'::character varying)::text, ('license_scanning'::character varying)::text, ('apifuzzer_fuzz'::character varying)::text, ('apifuzzer_fuzz_dnd'::character varying)::text])) AND ((type)::text = 'Ci::Build'::text));
+
+CREATE INDEX index_security_policies_on_policy_management_project_id ON security_policies USING btree (security_policy_management_project_id);
 
 CREATE UNIQUE INDEX index_security_policies_on_unique_config_type_policy_index ON security_policies USING btree (security_orchestration_policy_configuration_id, type, policy_index);
 
@@ -31234,6 +31240,9 @@ ALTER TABLE ONLY search_namespace_index_assignments
 ALTER TABLE ONLY issue_assignment_events
     ADD CONSTRAINT fk_rails_07683f8e80 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
 
+ALTER TABLE ONLY security_policies
+    ADD CONSTRAINT fk_rails_08722e8ac7 FOREIGN KEY (security_policy_management_project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY work_item_hierarchy_restrictions
     ADD CONSTRAINT fk_rails_08cd7fef58 FOREIGN KEY (child_type_id) REFERENCES work_item_types(id) ON DELETE CASCADE;
 
@@ -32853,6 +32862,9 @@ ALTER TABLE ONLY issue_emails
 
 ALTER TABLE ONLY vulnerability_finding_evidences
     ADD CONSTRAINT fk_rails_e3205a0c65 FOREIGN KEY (vulnerability_occurrence_id) REFERENCES vulnerability_occurrences(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY approval_policy_rules
+    ADD CONSTRAINT fk_rails_e344cb2d35 FOREIGN KEY (security_policy_management_project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY clusters_integration_prometheus
     ADD CONSTRAINT fk_rails_e44472034c FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;

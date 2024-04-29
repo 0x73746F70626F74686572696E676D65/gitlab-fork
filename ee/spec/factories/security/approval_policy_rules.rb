@@ -4,6 +4,9 @@ FactoryBot.define do
   factory :approval_policy_rule, class: 'Security::ApprovalPolicyRule' do
     security_policy
     sequence(:rule_index)
+    security_policy_management_project_id do
+      security_policy.security_orchestration_policy_configuration.security_policy_management_project_id
+    end
     scan_finding
 
     trait :scan_finding do

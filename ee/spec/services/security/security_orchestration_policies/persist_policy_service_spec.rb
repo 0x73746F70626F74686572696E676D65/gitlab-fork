@@ -103,7 +103,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PersistPolicyService, '#
             enabled: true,
             scope: scan_finding_policy[:policy_scope].deep_stringify_keys,
             actions: scan_finding_policy[:actions].map(&:stringify_keys),
-            approval_settings: scan_finding_policy[:approval_settings].stringify_keys
+            approval_settings: scan_finding_policy[:approval_settings].stringify_keys,
+            security_policy_management_project_id: policy_configuration.security_policy_management_project_id
           }
         end
 
@@ -120,7 +121,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PersistPolicyService, '#
             security_policy_id: policy_configuration.security_policies.first.id,
             type: 'scan_finding',
             rule_index: 0,
-            content: scan_finding_policy[:rules].first.except(:type).stringify_keys
+            content: scan_finding_policy[:rules].first.except(:type).stringify_keys,
+            security_policy_management_project_id: policy_configuration.security_policy_management_project_id
           }
         end
 
