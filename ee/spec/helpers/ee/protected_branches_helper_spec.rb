@@ -35,5 +35,11 @@ RSpec.describe ProtectedBranchesHelper, feature_category: :source_code_managemen
 
       it { is_expected.to eq true }
     end
+
+    context 'with wildcard pattern' do
+      let(:branches_protected_from_push) { %w[ma*] }
+
+      it { is_expected.to eq false }
+    end
   end
 end
