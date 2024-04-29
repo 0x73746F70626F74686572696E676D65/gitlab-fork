@@ -66,6 +66,7 @@ RSpec.describe ::Search::Zoekt::TaskSerializerService, feature_category: :global
       it 'serializes the task' do
         expect(execute_task[:name]).to eq(:delete)
         expect(execute_task[:payload].keys).to contain_exactly(:RepoId, :Callback)
+        expect(execute_task[:payload][:RepoId]).to eq(task.project_identifier)
       end
     end
 
