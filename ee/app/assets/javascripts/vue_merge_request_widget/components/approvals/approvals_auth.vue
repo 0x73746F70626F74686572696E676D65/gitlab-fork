@@ -99,7 +99,7 @@ export default {
           ref="approvalPasswordInput"
           v-model="approvalPassword"
           type="password"
-          autocomplete="new-password"
+          autocomplete="current-password"
           :placeholder="__('Password')"
           :state="inputState"
         />
