@@ -59642,7 +59642,7 @@ msgstr ""
 msgid "You see projects here when you're added to a group or project."
 msgstr ""
 
-msgid "You should add a %{linkStart}.gitlab-ci.yml%{linkEnd} file to this project to avoid pipeline failures. %{compliancePipelineLinkStart}Why?%{compliancePipelineLinkEnd}"
+msgid "You should add a .gitlab-ci.yml file to this project to avoid pipeline failures. %{compliancePipelineLinkStart}Why?%{compliancePipelineLinkEnd}"
 msgstr ""
 
 msgid "You successfully declined the invitation"
