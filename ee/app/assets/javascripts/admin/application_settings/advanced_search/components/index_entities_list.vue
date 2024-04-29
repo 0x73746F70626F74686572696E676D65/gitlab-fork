@@ -21,7 +21,7 @@ export default {
 
 <template>
   <div class="index-entities-list gl-border gl-rounded-small gl-overflow-auto gl-bg-white">
-    <ul v-if="entities.length" class="gl-list-style-none gl-p-0 gl-my-2">
+    <ul v-if="entities.length" class="gl-list-none gl-p-0 gl-my-2">
       <li v-for="entity in entities" :key="entity.id" class="gl-px-5 gl-py-2">
         <div class="gl-display-flex gl-align-items-center">
           <div class="gl-flex-grow-1 gl-pr-3 gl-truncate-end">{{ entity.text }}</div>

@@ -32,7 +32,7 @@ export default {
       v-for="item in items"
       :key="item.name"
       data-testid="generic-report-type-list-item"
-      :class="{ 'gl-list-style-none!': isOfTypeList(item) }"
+      :class="{ '!gl-list-none': isOfTypeList(item) }"
     >
       <report-item :item="item" data-testid="report-item" />
     </li>

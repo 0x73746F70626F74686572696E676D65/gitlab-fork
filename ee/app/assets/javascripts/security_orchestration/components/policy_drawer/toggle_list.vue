@@ -3,7 +3,7 @@ import { GlButton, GlSprintf } from '@gitlab/ui';
 import { s__, __, sprintf } from '~/locale';
 
 const ITEMS_MAX_LIST = 5;
-const NO_STYLE_LIST_ITEMS_CSS = ['gl-list-style-none'];
+const NO_STYLE_LIST_ITEMS_CSS = ['gl-list-none'];
 const INLINE_STYLE_CSS = ['gl-display-flex', 'gl-flex-wrap', 'gl-gap-2'];
 
 export default {

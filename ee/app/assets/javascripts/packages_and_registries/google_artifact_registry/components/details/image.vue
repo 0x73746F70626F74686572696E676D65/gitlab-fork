@@ -95,7 +95,7 @@ export default {
 
 <template>
   <gl-skeleton-loader v-if="isLoading" :lines="11" />
-  <ul v-else class="gl-list-style-none gl-pl-0" data-testid="image-details">
+  <ul v-else class="gl-list-none gl-pl-0" data-testid="image-details">
     <li
       v-for="[key, row] in rows"
       :key="key"

@@ -43,7 +43,7 @@ export default {
       <template #title>
         {{ popoverTitle }}
       </template>
-      <ul class="gl-list-style-none gl-p-0 gl-m-0">
+      <ul class="gl-list-none gl-p-0 gl-m-0">
         <li v-for="{ issue } in issues" :key="issue.iid">
           <issue-link :issue="issue" :is-jira="isJira" />
         </li>

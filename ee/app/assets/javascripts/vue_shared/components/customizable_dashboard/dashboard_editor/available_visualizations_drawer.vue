@@ -156,7 +156,7 @@ export default {
         <div data-testid="category-title" class="gl-text-gray-900 gl-font-weight-bold gl-mb-4">
           {{ category.title }}
         </div>
-        <ul class="gl-p-0 gl-list-style-none gl-mb-6">
+        <ul class="gl-p-0 gl-list-none gl-mb-6">
           <li
             v-for="(visualization, index) in category.visualizations"
             :key="index"

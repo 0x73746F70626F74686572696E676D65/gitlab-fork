@@ -32,7 +32,7 @@ describe('ToggleList', () => {
       expect(findToggleButton().exists()).toBe(true);
       expect(findToggleButton().text()).toBe('+ 5 more');
       expect(findAllListItems()).toHaveLength(5);
-      expect(findItemsList().classes()).toContain('gl-list-style-none');
+      expect(findItemsList().classes()).toContain('gl-list-none');
     });
 
     it('should show all branches when show all is clicked', async () => {
@@ -90,7 +90,7 @@ describe('ToggleList', () => {
         },
       });
 
-      expect(findItemsList().classes()).not.toContain('gl-list-style-none');
+      expect(findItemsList().classes()).not.toContain('gl-list-none');
     });
   });
 
@@ -178,7 +178,7 @@ describe('ToggleList', () => {
 
       expect(findItemsList().element.tagName).toBe('UL');
       expect(findAllListItems().at(0).element.tagName).toBe('LI');
-      expect(findItemsList().classes()).toContain('gl-list-style-none');
+      expect(findItemsList().classes()).toContain('gl-list-none');
     });
 
     it('renders div for inline list', () => {

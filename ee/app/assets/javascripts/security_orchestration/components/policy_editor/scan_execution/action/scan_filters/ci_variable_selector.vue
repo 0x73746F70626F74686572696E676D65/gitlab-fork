@@ -117,7 +117,7 @@ export default {
         >
           <template #footer>
             <gl-dropdown-divider />
-            <gl-dropdown-item class="gl-list-style-none" @click="handleFooterClick">
+            <gl-dropdown-item class="gl-list-none" @click="handleFooterClick">
               {{ $options.i18n.createKeyLabel }}
             </gl-dropdown-item>
           </template>

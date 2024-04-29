@@ -25,7 +25,7 @@ export default {
     <li
       v-for="item in items"
       :key="item.name"
-      :class="{ 'gl-list-style-none!': $options.isOfTypeList(item) }"
+      :class="{ '!gl-list-none': $options.isOfTypeList(item) }"
     >
       <report-item :item="item" data-testid="reportItem" />
     </li>

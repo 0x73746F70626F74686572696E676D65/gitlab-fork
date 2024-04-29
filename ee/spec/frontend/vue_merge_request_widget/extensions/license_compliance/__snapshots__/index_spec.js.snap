@@ -43,7 +43,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
           </div>
         </div>
         <ul
-          class="gl-list-style-none gl-m-0 gl-p-0"
+          class="gl-list-none gl-m-0 gl-p-0"
         >
           <li>
             <div
@@ -232,7 +232,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
           </div>
         </div>
         <ul
-          class="gl-list-style-none gl-m-0 gl-p-0"
+          class="gl-list-none gl-m-0 gl-p-0"
         >
           <li>
             <div
@@ -340,7 +340,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
           </div>
         </div>
         <ul
-          class="gl-list-style-none gl-m-0 gl-p-0"
+          class="gl-list-none gl-m-0 gl-p-0"
         >
           <li>
             <div
