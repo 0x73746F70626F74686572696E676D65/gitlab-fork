@@ -627,6 +627,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
         false | true  | ref(:yesterday) | true  | false | be_disallowed(policy)
         false | false | ref(:yesterday) | true  | false | be_disallowed(policy)
         true  | false | ref(:yesterday) | true  | false | be_allowed(policy)
+        true  | false | ref(:yesterday) | true  | true  | be_allowed(policy)
         true  | true  | ref(:yesterday) | false | false | be_disallowed(policy)
       end
 
