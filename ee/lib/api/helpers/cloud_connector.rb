@@ -9,6 +9,7 @@ module API
         instance_id, user_id = global_instance_and_user_id_for(user)
 
         {
+          'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
           'X-Gitlab-Instance-Id' => instance_id,
           'X-Gitlab-Realm' => Gitlab::CloudConnector.gitlab_realm
         }.tap do |result|

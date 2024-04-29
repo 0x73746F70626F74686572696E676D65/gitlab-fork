@@ -10,17 +10,20 @@ RSpec.describe API::Helpers::CloudConnector, feature_category: :cloud_connector 
   end
 
   describe '#cloud_connector_headers' do
+    let(:expected_headers) do
+      {
+        'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
+        'X-Gitlab-Instance-Id' => an_instance_of(String),
+        'X-Gitlab-Realm' => Gitlab::CloudConnector::GITLAB_REALM_SELF_MANAGED
+      }
+    end
+
     context 'when the the user is present' do
       let(:user) { build(:user, id: 1) }
 
       it 'generates a hash with the required fields based on the user' do
-        expect(helper.cloud_connector_headers(user)).to match(
-          {
-            'X-Gitlab-Instance-Id' => an_instance_of(String),
-            'X-Gitlab-Global-User-Id' => an_instance_of(String),
-            'X-Gitlab-Realm' => Gitlab::CloudConnector::GITLAB_REALM_SELF_MANAGED
-          }
-        )
+        expect(helper.cloud_connector_headers(user))
+          .to match(expected_headers.merge('X-Gitlab-Global-User-Id' => an_instance_of(String)))
       end
     end
 
@@ -28,12 +31,7 @@ RSpec.describe API::Helpers::CloudConnector, feature_category: :cloud_connector 
       let(:user) { nil }
 
       it 'generates a hash without `X-Gitlab-Global-User-Id`' do
-        expect(helper.cloud_connector_headers(user)).to match(
-          {
-            'X-Gitlab-Instance-Id' => an_instance_of(String),
-            'X-Gitlab-Realm' => Gitlab::CloudConnector::GITLAB_REALM_SELF_MANAGED
-          }
-        )
+        expect(helper.cloud_connector_headers(user)).to match(expected_headers)
       end
     end
   end

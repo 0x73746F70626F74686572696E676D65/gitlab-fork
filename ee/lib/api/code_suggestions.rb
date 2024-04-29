@@ -34,12 +34,12 @@ module API
           'Authorization' => "Bearer #{gateway_token}",
           'Content-Type' => 'application/json',
           'User-Agent' => headers["User-Agent"] # Forward the User-Agent on to the model gateway
-        }.merge(telemetry_headers).merge(saas_headers).merge(connector_headers)
+        }.merge(telemetry_headers).merge(connector_public_headers)
           .transform_values { |v| Array(v) }
       end
 
-      def connector_headers
-        cloud_connector_headers(current_user).merge('X-Gitlab-Host-Name' => Gitlab.config.gitlab.host)
+      def connector_public_headers
+        cloud_connector_headers(current_user).merge(saas_headers)
       end
 
       def saas_headers
@@ -158,7 +158,7 @@ module API
             # https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist/-/issues/429
             token: ::Gitlab::Llm::AiGateway::Client.access_token(scopes: [:code_suggestions]),
             expires_at: token_expiration_time,
-            headers: connector_headers
+            headers: connector_public_headers
           }
           present access, with: Grape::Presenters::Presenter
         end
