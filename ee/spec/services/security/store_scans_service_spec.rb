@@ -222,6 +222,7 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
 
       context 'when StoreGroupedScansService.execute return false' do
         before do
+          allow(pipeline).to receive(:default_branch?).and_return(true)
           allow(Security::StoreGroupedScansService).to receive(:execute).and_return(false)
         end
 
@@ -237,12 +238,30 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
           expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
         end
 
-        it 'does not schedule `SyncFindingsToApprovalRulesWorker`' do
-          allow(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).to receive(:perform_async)
+        describe 'scheduling `SyncFindingsToApprovalRulesWorker`' do
+          before do
+            stub_licensed_features(security_orchestration_policies: true, sast: true)
+          end
 
-          store_group_of_artifacts
+          context 'when the pipeline is for the default branch' do
+            it 'does not schedule the `SyncFindingsToApprovalRulesWorker`' do
+              expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).not_to receive(:perform_async)
 
-          expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).not_to have_received(:perform_async)
+              store_group_of_artifacts
+            end
+          end
+
+          context 'when the pipeline is not for the default branch' do
+            before do
+              allow(pipeline).to receive(:default_branch?).and_return(false)
+            end
+
+            it 'schedules the `SyncFindingsToApprovalRulesWorker`' do
+              expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).to receive(:perform_async)
+
+              store_group_of_artifacts
+            end
+          end
         end
       end
 
