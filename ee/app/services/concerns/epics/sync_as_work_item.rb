@@ -76,7 +76,7 @@ module Epics
     end
 
     def sync_dates!(epic, work_item)
-      return unless (params.keys.map(&:to_s) & %w[start_date due_date start_date_is_fixed due_date_is_fixed]).present?
+      return unless params.keys.map(&:to_s).intersect?(%w[start_date due_date start_date_is_fixed due_date_is_fixed])
 
       dates_source = work_item.dates_source || work_item.build_dates_source
 
