@@ -9,14 +9,14 @@ module Epics
     # Note: we do not need to sync `lock_version`.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/439716
     ALLOWED_PARAMS = %i[
-      iid title description confidential author created_at updated_at updated_by_id
+      iid title description confidential author_id created_at updated_at updated_by_id
       last_edited_by_id last_edited_at closed_by_id closed_at state_id external_key
     ].freeze
 
     def create_work_item_for!(epic)
       return unless group.epic_sync_to_work_item_enabled?
 
-      work_item = WorkItem.create!(create_params)
+      work_item = WorkItem.create!(create_params(epic))
       sync_color!(work_item)
       sync_dates!(epic, work_item)
 
@@ -38,19 +38,19 @@ module Epics
 
     private
 
-    def filtered_params
-      params.to_h.with_indifferent_access.slice(*ALLOWED_PARAMS)
+    def filtered_params(epic)
+      ALLOWED_PARAMS.index_with { |attr| epic[attr] }
     end
 
-    def create_params
-      filtered_params.merge(
+    def create_params(epic)
+      filtered_params(epic).merge(
         work_item_type: WorkItems::Type.default_by_type(:epic),
         namespace_id: group.id
       )
     end
 
     def update_params(epic)
-      update_params = filtered_params.merge({
+      update_params = filtered_params(epic).merge({
         updated_by: epic.updated_by,
         updated_at: epic.updated_at
       })
