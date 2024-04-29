@@ -25,6 +25,7 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
   it { is_expected.to have_one(:zoekt_enabled_namespace) }
   it { is_expected.to have_many(:work_items_colors) }
   it { is_expected.to have_many(:audit_events_streaming_group_namespace_filters).class_name('AuditEvents::Group::NamespaceFilter') }
+  it { is_expected.to have_many(:audit_events_streaming_instance_namespace_filters).class_name('AuditEvents::Instance::NamespaceFilter') }
 
   it { is_expected.to delegate_method(:trial?).to(:gitlab_subscription) }
   it { is_expected.to delegate_method(:trial_ends_on).to(:gitlab_subscription) }
