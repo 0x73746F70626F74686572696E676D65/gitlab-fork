@@ -20,6 +20,11 @@
           "items": {
             "$ref": "#/definitions/Panel"
           }
+        },
+        "status": {
+          "enum": [
+            "beta"
+          ]
         }
       },
       "required": [

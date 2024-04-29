@@ -4,7 +4,7 @@ module ProductAnalytics
   class Dashboard
     include SchemaValidator
 
-    attr_reader :title, :description, :schema_version, :panels, :container,
+    attr_reader :title, :description, :schema_version, :status, :panels, :container,
       :config_project, :slug, :path, :user_defined, :category, :errors
 
     DASHBOARD_ROOT_LOCATION = '.gitlab/analytics/dashboards'
@@ -43,6 +43,7 @@ module ProductAnalytics
       @title = @yaml_definition['title']
       @description = @yaml_definition['description']
       @schema_version = @yaml_definition['version']
+      @status = @yaml_definition['status']
       @panels = ProductAnalytics::Panel.from_data(@yaml_definition['panels'], config_project)
       @category = 'analytics'
 
