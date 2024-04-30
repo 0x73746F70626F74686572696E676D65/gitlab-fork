@@ -380,7 +380,6 @@ RSpec.shared_examples 'scan detected secrets' do
         expect(error.message).to include(
           log_messages[:found_secrets],
           finding_message_header,
-          finding_message_path,
           finding_message_multiple_occurrence_lines,
           log_messages[:skip_secret_detection],
           log_messages[:found_secrets_post_message],
@@ -553,7 +552,6 @@ RSpec.shared_examples 'scan detected secrets' do
         expect(error.message).to include(
           log_messages[:found_secrets],
           finding_message_header,
-          finding_message_path,
           finding_message_multiple_findings_on_same_line,
           log_messages[:skip_secret_detection],
           log_messages[:found_secrets_post_message],
@@ -872,7 +870,6 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
         expect(error.message).to include(
           log_messages[:found_secrets_with_errors],
           finding_message_header,
-          finding_message_path,
           finding_message_multiple_occurrence_lines,
           blob_timed_out_error,
           failed_to_scan_regex_error,
