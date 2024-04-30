@@ -193,8 +193,7 @@ module Gitlab
 
       def build_blob_specific_flags
         %W[--repository-access-level=#{container.repository_access_level}].tap do |c|
-          migration_done = migration_finished?(:add_hashed_root_namespace_id_to_commits)
-          c << "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}" if migration_done
+          c << "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}"
           c << "--schema-version-blob=#{BLOB_SCHEMA_VERSION}"
           if migration_finished?(:add_schema_version_to_commits)
             c << '--schema-version-commits'
