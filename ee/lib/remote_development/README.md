@@ -5,13 +5,37 @@
 - [TL;DR and Quickstart](#tldr-and-quickstart)
 - [Overview](#overview)
   - [Layered architecture](#layered-architecture)
+  - [Avoid coupling Domain Logic layer to Rails application](#avoid-coupling-domain-logic-layer-to-rails-application)
 - [Type safety](#type-safety)
+    - [Type checking](#type-checking)
+    - [Union types](#union-types)
+    - [Pattern matching with types](#pattern-matching-with-types)
+    - [Null safety](#null-safety)
+    - ["Type signatures" in Ruby without a type system](#type-signatures-in-ruby-without-a-type-system)
 - [Functional patterns](#functional-patterns)
+    - [Immutable state](#immutable-state)
+    - [Higher order functions](#higher-order-functions)
+    - [Pure functions](#pure-functions)
+    - [Concurrency and parallelism](#concurrency-and-parallelism)
+    - [Error Handling](#error-handling)
 - [Object-Oriented patterns](#object-oriented-patterns)
+    - [Value Objects](#value-objects)
+    - [Mixins/Inheritance](#mixinsinheritance)
+- [Other patterns](#other-patterns)
+    - [Inversion of Control](#inversion-of-control)
+    - [Metaprogramming](#metaprogramming)
 - [Railway Oriented Programming and the Result Class](#railway-oriented-programming-and-the-result-class)
+    - [Result class](#result-class)
+    - [Message class and Messages module](#message-class-and-messages-module)
+    - [ROP code examples](#rop-code-examples)
+    - [Passing information along the ROP chain](#passing-information-along-the-rop-chain)
 - [Benefits](#benefits)
 - [Differences from standard GitLab patterns](#differences-from-standard-gitlab-patterns)
 - [Remote Development Settings](#remote-development-settings)
+    - [Overview of Remote Development Settings module](#overview-of-remote-development-settings-module)
+  - [Adding a new setting](#adding-a-new-setting)
+  - [Reading settings](#reading-settings)
+  - [Precedence of settings](#precedence-of-settings)
 - [FAQ](#faq)
 
 ## TL;DR and Quickstart
@@ -92,7 +116,11 @@ See [this thread](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/126785#n
 
 ## Type safety
 
-The Remote Development domain leverages type safety where possible and pragmatic. This allows us to have some run-time safety nets in addition to test coverage, and also helps RubyMine provide useful warnings when the wrong types are used.
+The Remote Development domain leverages type safety where _possible and pragmatic_.
+
+We also refer to this approach as being **"as type safe as _profitable_"**.
+
+This allows us to have some run-time safety nets in addition to test coverage, and also helps RubyMine provide useful warnings when the wrong types are used.
 
 Although Ruby is traditionally weakly-typed, without null safety and little support for type inference, there are several options to achieve a type safety net, especially since the 3.0 release.
 
@@ -107,7 +135,7 @@ We also simulate ["Union Types"](https://en.wikipedia.org/wiki/Union_type) in Ru
 
 ### Pattern matching with types
 
-#### Pattern matching
+#### Case statements with types
 
 - The `case ... in` structure can be used to pattern-match on types. When used with the approach of throwing an exception in the `else` clause, this can provide exhaustive type checking at runtime.
 
@@ -145,10 +173,24 @@ Also note that the destructuring a hash or array, even without the type checks (
 
 ### Null safety
 
-When accessing a `Hash` entry by key, where we expect that the value must present (or otherwise an upstream bug exists), we prefer to use `Hash#fetch`
+When accessing a `Hash` entry by key (outside of pattern matching), where we expect that the value must present, we prefer to use `Hash#fetch`
 instead of `Hash#[]`.
 
-However, this is only necessary in cases cases where it is not possible or desireable to otherwise use type safety or
+### "Type signatures" in Ruby without a type system
+
+So, in the absence of a real type system like RBS, we can consider the above patterns as **_achieving a similar effect to a type signature in a typed language_**.
+
+This is because this type+existence checking ensures that the type requirement(s) of a cohesive method are met.
+
+As we'll see below in the section on Railway Oriented Programming, this serves the same purpose as the typed F# signatures of the "internal" functions of the [Domain Modeling Made Functional](https://pragprog.com/titles/swdddf/domain-modeling-made-functional/) book's examples, which _do_ specify their explicit dependencies.
+
+This may be a strange concept to people coming from compiled languages, because in Ruby this _does_ happens at runtime, like everything else in an interpreted language like Ruby.
+
+But, we also have strict adherence to thorough testing at multiple levels of the testing pyramid, which ensures that this type-checking code is always executed during development/CI.
+
+Thus, when viewed holistically, if you squint at it in the right way, this approach is acting as a sort of "type-safe compiler".
+
+**_But remember that this "compiler" is only as good as your manual type checks and test coverage!_**
 
 ## Functional patterns
 
@@ -160,7 +202,13 @@ However, we try to avoid functional patterns which would add little value, and/o
 
 ### Immutable state
 
-Wherever possible, we use immutable state. This leads to fewer state-related bugs, and code which is easier to understand, test, and debug. This is a common pattern, and is the basis of many widely used frameworks, such as Redux and Vuex. It is also the basis of architectures such as Event Sourcing, which we [may consider for some GitLab features/domains in the future as we move towards a modular monolith](https://docs.gitlab.com/ee/architecture/blueprints/modular_monolith/references.html#reference-implementations--guides).
+Wherever possible, we use immutable state. This leads to fewer state-related bugs, and code which is easier to understand, test, and debug. This is a common pattern, and many widely used frameworks, such as Redux and Vuex, use immutable state or controls around how state can be mutated. Immutability is also the basis of architectures such as Event Sourcing, which we [may consider for some GitLab features/domains in the future as we move towards a modular monolith](https://docs.gitlab.com/ee/architecture/blueprints/modular_monolith/references.html#reference-implementations--guides).
+
+We enforce imutability through the usage of patterns such as [pure functions and the usage of of "singleton" (or class) methods](#pure-functions).
+
+However, we still mutate objects in some cases _where it makes sense in the context of our patterns_. For example, the mutable context object which is used when [Passing information along the ROP chain](#passing-information-along-the-rop-chain), and this results in concise and simple code.
+
+_Usually_, mutating parameters which are passed to a method/function is "Not A Good Idea". However, in this case, due to the nature of the architecture and these patterns as we currently use them, there is minimal risk. There would also be a risk of increased performance over if we attempted to enforce immutability. One way to frame this topic is by thinking about how we could enforce `call-by-value` vs. `call-by-reference`, and more importantly, where and when _should_ try to enforce it. Note that Ruby uses "pass by object reference", as explained by [this stackoverflow answer](https://stackoverflow.com/a/23421320/25192). See [this thread](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/150208#note_1875548528) for an extensive discussion on this topic.
 
 ### Higher order functions
 
@@ -172,13 +220,15 @@ Note that we do not use procs (and enforce their non-usage), because of their be
 
 ### Pure functions
 
-We rely on ["pure functions"](https://en.wikipedia.org/wiki/Pure_function), which are necessary to support and enforce functional patterns such as immutable state and higher order functions.
+We rely on ["pure functions"](https://en.wikipedia.org/wiki/Pure_function), which are necessary to support and enforce functional patterns such as immutable state and higher order functions as described above.
 
 Instance variables are are a form of state, and are incompatible with the usage of pure functions, so we avoid their usage except in ["value object"](#value-objects) classes, which are intended only to encapsulate state in an object, but have no business logic in the class.
 
 In Ruby, higher order functions are implemented and enforced through the usage of "singleton" or class methods, which by definition do not allow the usage of constructors and instance variables, and therefore cannot contain or reference state (unless you try to set state in a class variable, which you should never do in the context of a Rails request anyway 😉).
 
-### Concurrency and Parallelism
+So, this pattern of always using class methods for our business logic _intentionally prevents us_ from holding on to any mutable state in the class, which results in classes which are easier to debug and test. We also use this approach for "`Finder`" classes and other "standalone" classes.
+
+### Concurrency and parallelism
 
 By using patterns such as immutable state and pure functions, we are able to support concurrency and parallelism in the domain logic, which Ruby supports though various standard library features.
 
@@ -203,19 +253,37 @@ The custom classes are a form of the ["Value Object](https://thoughtbot.com/blog
 
 For these custom value object classes, the `#==` method should be implemented.
 
-### Mixins
+### Mixins/Inheritance
 
 Mixins (implemented as modules in standard Ruby or "concerns" in Rails) are a common pattern for sharing logic in Ruby and Rails.
 
 We prefer mixins/modules instead of superclasses/inheritance for sharing code. This is because modules (which are actually a form of [multiple inheritance](https://en.wikipedia.org/wiki/Multiple_inheritance)) provide more flexibility than single inheritance.
 
-### Other OO patterns
+However, we do use inheritance in the higher layers of the architecture where this is necessary confirm with existing patterns, e.g. in controllers or API classes.
 
-We _currently_ do not make heavy or explicit use of [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) or [composition over inheritance](https://en.wikipedia.org/wiki/Composition_over_inheritance). But, we may adopt these patterns in the future if they provide benefits.
+## Other Patterns
+
+### Inversion of Control
+
+We use the pattern of "Inversion of Control" when applicable, to help achieve loose coupling between modules which implement business logic.
+
+In our [pure functional approach with the usage of of "singleton" (or class) methods](#pure-functions), "Inversion of Control" means "injecting" the dependencies as arguments passed to the pure functions.
+
+An example of this is how we inject all necessary dependencies into the beginning of a [Railway Oriented Programming](#railway-oriented-programming-and-the-result-class) (ROP) chain as entried in a single context object which is of type `Hash`. Then, all the steps of the ROP chain depend upon this for all of their context.
+
+In many cases, these business logic classes _COULD_ use static method calls to obtain their dependencies (e.g. `Rails.logger`), but we intentionally avoid that in order to maintain the pure functional approach, and avoid coupling them to the Rails infrastructure or other classes outside of our domain. This has benefits in testability (e.g. facilitating wider usage of `fast_spec_helper`).
+
+See more details and examples of this in the sections below.
+
+### Metaprogramming
+
+We _currently_ do not make heavy use of metaprogramming. But, we may make use of it in the future in areas where it makes sense.
 
 ## Railway Oriented Programming and the Result class
 
-The Domain Logic layer uses the ["Railway Oriented Programming"](https://fsharpforfunandprofit.com/rop/) pattern (AKA "ROP"). See the presentation slides on that page for an overview which explains the motivation and implementation of this pattern.
+The Domain Logic layer uses the "Railway Oriented Programming" pattern (AKA "ROP"), which is [explained here in a presentation and video](https://fsharpforfunandprofit.com/rop/) by Scott Wlaschin. The presentation slides on that page give an overview which explains the motivation and implementation of this pattern.
+
+This pattern is also explored further in the book [Domain Modeling Made Functional](https://pragprog.com/titles/swdddf/domain-modeling-made-functional/) by the same author.
 
 ### Result class
 
@@ -324,6 +392,31 @@ class Updater
 end
 ```
 
+### Passing information along the ROP chain
+
+In our implementation of Railway Oriented Programming, **we pass all "context" along the ROP/Result chain via a single `value` parameter which is a `Hash` type**. 
+
+This allows us to avoid explicit parameters in order to reduce coupling and increase cohesion of the higher-level methods like `Main.main`. (_NOTE: Although this parameter is currently called "value", [we are considering renaming it to "context"](https://gitlab.com/gitlab-org/gitlab/-/issues/452475) to make its usage more clear, and to also be aligned with the [concept of "context" from Golang](https://www.reddit.com/r/golang/comments/18mphqt/what_even_is_context/) which many people will be familiar with_)
+
+In other words, in these higher-level `Main.main` methods which are our "public API", and in all the classes that are steps in the ROP chain which each have their own single "public API" method, we "hide" dependency information they do not directly use. And inside these "public API" methods, we _only extract/destructure the dependencies which are directly used by the class_ from the `value` parameter `Hash`, and we _never extract or reference anything that is not directly used by that class_.
+
+Note that "internal" methods which are _not_ part of the public API of the class may have individual arguments for their dependencies, and we usually prefer to make these [keyword arguments](https://thoughtbot.com/blog/ruby-2-keyword-arguments) for a bit of extra type safety.
+
+This approach is aligned with the guidance from the section `Are Dependencies Part of the Design?` in the [Domain Modeling Made Functional](https://pragprog.com/titles/swdddf/domain-modeling-made-functional/) book page 137.
+
+It says:
+
+> ...let’s follow this guideline:
+>
+> - For functions exposed in a public API, hide dependency information from callers.
+>
+> - For functions used internally, be explicit about their dependencies.
+>
+> In this case, the dependencies for the top-level PlaceOrder workflow function should not be exposed, because the caller doesn’t need to know about them.
+
+There are implementation differences for F# vs Ruby, but the sentiment is the same: _hide dependencies in places where they are not used._
+
+
 ## Benefits
 
 ### Loose coupling, high cohesion
@@ -391,7 +484,7 @@ Remote Development has a dedicated module in the domain logic for handling setti
 1. Allow usage of the same settings module from both the backend domain logic as well as the frontend
    Vue components, by obtaining necessary settings values in the Rails controller and passing them
    through to the frontend.
-1. Use inversion of control, or dependency injection, to avoid coupling the
+1. Use [inversion of control](#inversion-of-control), to avoid coupling the
    Remote Development domain logic to the rest of the monolith. At the domain logic layer
    all settings are injected and represented as a simple Hash. This injection approach also allows the
    Settings module to be used from controllers, models, or services without introducing
