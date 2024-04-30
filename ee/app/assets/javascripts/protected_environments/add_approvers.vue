@@ -142,7 +142,7 @@ export default {
     },
     updateApproverInfo(approver, approvals) {
       const i = this.approverInfo.indexOf(approver);
-      this.$set(this.approverInfo, i, { ...approver, approvals });
+      this.approverInfo[i] = { ...approver, approvals };
       this.emitApprovalRules();
     },
     updateApproverInheritance(approver, groupInheritanceType) {
