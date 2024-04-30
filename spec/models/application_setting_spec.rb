@@ -37,6 +37,12 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
     it { expect(setting.nuget_skip_metadata_url_validation).to eq(false) }
   end
 
+  describe 'USERS_UNCONFIRMED_SECONDARY_EMAILS_DELETE_AFTER_DAYS' do
+    subject { described_class::USERS_UNCONFIRMED_SECONDARY_EMAILS_DELETE_AFTER_DAYS }
+
+    it { is_expected.to eq(3) }
+  end
+
   describe 'validations' do
     let(:http)  { 'http://example.com' }
     let(:https) { 'https://example.com' }
