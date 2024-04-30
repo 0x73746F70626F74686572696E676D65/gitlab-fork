@@ -1,0 +1,30 @@
+---
+# ============================
+# CLOUD CONNECTOR ACCESS DATA
+# ============================
+#
+services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
+  code_suggestions:
+    # The name of the backend who is serving this service. The name is used as a token audience claim.
+    backend: 'gitlab-ai-gateway'
+    # Represents the cut-off date when the service is no longer available for free (beta)
+    # If it's not set, the service is available for free (in beta) by default
+    # During free access period, all unit primitives will be available for free
+    cut_off_date: 2024-02-15 00:00:00 UTC
+    # The group of UP that are bundled and sold together.
+    # Example: code_suggestions and duo_chat are 2 UP sold together under DUO_PRO add-on.
+    # Unit primitives from different services can be bundled and sold together under same add-on.
+    # The same UP can be also bundled with different add-ons.
+    bundled_with:
+      code_suggestions:
+        # The smallest logical feature that a permission/access scope can govern. Currently,
+        # we have duo_chat and code_suggestions as UP. In the next iteration, we could split duo_chat to smaller
+        # unit_primitives. At the moment, unit_primitive name is used as a scope when ServiceToken is being issued
+        unit_primitives:
+          - code_suggestions
+  duo_chat:
+    backend: 'gitlab-ai-gateway'
+    bundled_with:
+      code_suggestions:
+        unit_primitives:
+          - duo_chat

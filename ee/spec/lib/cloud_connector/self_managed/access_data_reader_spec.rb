@@ -25,31 +25,15 @@ RSpec.describe CloudConnector::SelfManaged::AccessDataReader, feature_category: 
     end
 
     let_it_be(:cloud_connector_access) { create(:cloud_connector_access, data: data) }
-    let_it_be(:available_service_data_class) { CloudConnector::AvailableServiceData }
-    let_it_be(:arguments_map) do
-      {
-        code_suggestions: [cs_cut_off_date, cs_bundled_with],
-        duo_chat: [nil, duo_chat_bundled_with]
-      }
-    end
 
-    subject(:available_services) do
-      described_module = described_class
-      Class.new { include described_module }.new.read_available_services
-    end
-
-    it 'creates AvailableServiceData with correct params' do
-      arguments_map.each do |name, args|
-        expect(available_service_data_class).to receive(:new).with(name, *args).and_call_original
+    include_examples 'access data reader' do
+      let_it_be(:available_service_data_class) { CloudConnector::SelfManaged::AvailableServiceData }
+      let_it_be(:arguments_map) do
+        {
+          code_suggestions: [cs_cut_off_date, cs_bundled_with],
+          duo_chat: [nil, duo_chat_bundled_with]
+        }
       end
-
-      available_services
-    end
-
-    it 'returns a hash containing all available services', :aggregate_failures do
-      expect(available_services.keys).to match_array(arguments_map.keys)
-
-      expect(available_services.values).to all(be_instance_of(available_service_data_class))
     end
   end
 end

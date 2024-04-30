@@ -2,24 +2,33 @@
 
 module CloudConnector
   class AvailableServices
-    include Singleton
-    include SelfManaged::AccessDataReader
+    extend Gitlab::Utils::StrongMemoize
 
     CLOUD_CONNECTOR_SERVICES_KEY = 'cloud-connector:services'
 
     class << self
       def find_by_name(name)
-        service_data_map = instance.available_services
+        service_data_map = available_services
 
         return CloudConnector::MissingServiceData.new if service_data_map.empty?
 
         service_data_map[name]
       end
-    end
 
-    def available_services
-      Rails.cache.fetch(CLOUD_CONNECTOR_SERVICES_KEY) do
-        read_available_services
+      def available_services
+        Rails.cache.fetch(CLOUD_CONNECTOR_SERVICES_KEY) do
+          access_data_reader.read_available_services
+        end
+      end
+
+      def access_data_reader
+        # rubocop:disable Gitlab/AvoidGitlabInstanceChecks -- we don't have dedicated SM/.com Cloud Connector features
+        # or other checks that would allow us to identify where the code is running. We rely on instance checks for now.
+        # Will be addressed in https://gitlab.com/gitlab-org/gitlab/-/issues/437725
+        strong_memoize(:access_data_reader) do # rubocop:disable Gitlab/StrongMemoizeAttr -- class method
+          Gitlab.org_or_com? ? GitlabCom::AccessDataReader.new : SelfManaged::AccessDataReader.new
+        end
+        # rubocop:enable Gitlab/AvoidGitlabInstanceChecks
       end
     end
   end
