@@ -256,15 +256,16 @@ module Gitlab
             # Skip if the blob doesn't have any findings.
             next unless findings_by_blobs[entry.id].present?
 
-            findings_by_commits.merge!(
-              # Put findings with tree entries inside `findings_by_commits` hash.
-              findings_by_blobs[entry.id].each_with_object({}) do |finding, hash|
-                hash[entry.commit_id] ||= {}
-                hash[entry.commit_id][entry.path] ||= []
-                hash[entry.commit_id][entry.path] << finding
-              end
-            )
+            new_entry = findings_by_blobs[entry.id].each_with_object({}) do |finding, hash|
+              hash[entry.commit_id] ||= {}
+              hash[entry.commit_id][entry.path] ||= []
+              hash[entry.commit_id][entry.path] << finding
+            end
 
+            # Put findings with tree entries inside `findings_by_commits` hash.
+            findings_by_commits.merge!(new_entry) do |_commit_sha, existing_findings, new_findings|
+              existing_findings.merge!(new_findings)
+            end
             # Mark as found with tree entry already.
             blobs_found_with_tree_entries << entry.id
           end

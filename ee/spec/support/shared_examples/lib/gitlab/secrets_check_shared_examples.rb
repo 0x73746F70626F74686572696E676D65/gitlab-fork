@@ -562,6 +562,69 @@ RSpec.shared_examples 'scan detected secrets' do
       end
     end
   end
+
+  context 'when multiple blobs contain secrets in a commit' do
+    let_it_be(:new_commit) do
+      create_commit('.env' => "SECRET=glpat-JUST20LETTERSANDNUMB", # gitleaks:allow
+        'test.txt' => "SECRET=glrt-JUST20LETTERSANDNUMB") # gitleaks:allow
+    end
+
+    let(:new_blob_reference2) { '5f571267577ed6e0b4b24fb87f7a8218d5912eb9' }
+    let(:new_blob) { have_attributes(class: Gitlab::Git::Blob, id: new_blob_reference, size: 33) }
+    let(:new_blob2) { have_attributes(class: Gitlab::Git::Blob, id: new_blob_reference2, size: 32) }
+
+    let(:successful_with_multiple_files_findings_scan_response) do
+      ::Gitlab::SecretDetection::Response.new(
+        Gitlab::SecretDetection::Status::FOUND,
+        [
+          Gitlab::SecretDetection::Finding.new(
+            new_blob_reference,
+            Gitlab::SecretDetection::Status::FOUND,
+            1,
+            "gitlab_personal_access_token",
+            "GitLab Personal Access Token"
+          ),
+          Gitlab::SecretDetection::Finding.new(
+            new_blob_reference2,
+            Gitlab::SecretDetection::Status::FOUND,
+            2,
+            "gitlab_runner_authentication_token",
+            "GitLab Runner Authentication Token"
+          )
+        ]
+      )
+    end
+
+    it 'displays all findings with their corresponding commit sha/filepath' do
+      expect_next_instance_of(::Gitlab::SecretDetection::Scan) do |instance|
+        expect(instance).to receive(:secrets_scan)
+          .with(
+            array_including(new_blob, new_blob2),
+            timeout: kind_of(Float)
+          )
+          .once.and_call_original do |*args|
+            expect(instance.secrets_scan(*args)).to eq(successful_with_multiple_files_findings_scan_response)
+          end
+      end
+
+      expect(secret_detection_logger).to receive(:info)
+        .once
+        .with(message: log_messages[:found_secrets])
+
+      expect { subject.validate! }.to raise_error do |error|
+        expect(error).to be_a(::Gitlab::GitAccess::ForbiddenError)
+        expect(error.message).to include(
+          log_messages[:found_secrets],
+          finding_message_header,
+          finding_message_path,
+          finding_message_multiple_files_occurrence_lines,
+          log_messages[:skip_secret_detection],
+          log_messages[:found_secrets_post_message],
+          found_secrets_docs_link
+        )
+      end
+    end
+  end
 end
 
 RSpec.shared_examples 'scan detected secrets but some errors occured' do
