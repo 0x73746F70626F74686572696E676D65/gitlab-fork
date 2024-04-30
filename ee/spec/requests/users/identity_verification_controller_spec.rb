@@ -10,33 +10,44 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
   before do
     allow(user).to receive(:verification_method_allowed?).and_return(true)
+    allow(user).to receive(:identity_verified?).and_return(false)
 
     stub_saas_features(identity_verification: true)
 
     login_as(user)
   end
 
-  shared_examples 'it returns 404 when opt_in_identity_verification feature flag is disabled' do
-    before do
-      stub_feature_flags(opt_in_identity_verification: false)
-    end
+  shared_examples 'it redirects to root_path when user is already verified' do
+    let_it_be_with_reload(:user) { create(:user, :with_sign_ins) }
 
-    it 'returns 404' do
+    subject do
       do_request
 
-      expect(response).to have_gitlab_http_status(:not_found)
+      response
     end
-  end
 
-  shared_examples 'it returns 404 when identity_verification saas feature is not available' do
     before do
-      stub_saas_features(identity_verification: false)
+      allow(user).to receive(:identity_verified?).and_call_original
+
+      create(:phone_number_validation, :validated, user: user)
     end
 
-    it 'returns 404' do
-      do_request
+    it { is_expected.to redirect_to(root_path) }
 
-      expect(response).to have_gitlab_http_status(:not_found)
+    context 'when identity_verification saas feature is not available' do
+      before do
+        stub_saas_features(identity_verification: false)
+      end
+
+      it { is_expected.to redirect_to(root_path) }
+    end
+
+    context 'when opt_in_identity_verification feature flag is disabled' do
+      before do
+        stub_feature_flags(opt_in_identity_verification: false)
+      end
+
+      it { is_expected.to redirect_to(root_path) }
     end
   end
 
@@ -44,8 +55,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
     subject(:do_request) { get identity_verification_path, params: {}, headers: { referer: '/referer/path' } }
 
     it_behaves_like 'it requires a signed in user'
-    it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
-    it_behaves_like 'it returns 404 when identity_verification saas feature is not available'
+    it_behaves_like 'it redirects to root_path when user is already verified'
     it_behaves_like 'it loads reCAPTCHA'
 
     it 'renders show template with minimal layout' do
@@ -65,7 +75,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
     subject(:do_request) { get verification_state_identity_verification_path }
 
     it_behaves_like 'it requires a signed in user'
-    it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
+    it_behaves_like 'it redirects to root_path when user is already verified'
     it_behaves_like 'it sets poll interval header'
 
     it 'returns verification methods and state' do
@@ -93,8 +103,6 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
         mock_send_phone_number_verification_code(success: true)
       end
 
-      it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
-
       describe 'Arkose session token verification' do
         context 'when verification fails' do
           it 'returns a 400 with an error message', :aggregate_failures do
@@ -118,6 +126,8 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
           end
         end
       end
+
+      it_behaves_like 'it redirects to root_path when user is already verified'
 
       it_behaves_like 'it ensures verification attempt is allowed', 'phone' do
         let(:target_user) { user }
@@ -144,7 +154,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
         let(:target_user) { user }
       end
 
-      it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
+      it_behaves_like 'it redirects to root_path when user is already verified'
     end
 
     it_behaves_like 'it successfully verifies a phone number verification code'
@@ -163,7 +173,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
       let(:target_user) { user }
     end
 
-    it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
+    it_behaves_like 'it redirects to root_path when user is already verified'
     it_behaves_like 'it verifies presence of credit_card_validation record for the user'
   end
 
@@ -172,7 +182,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
     subject(:do_request) { patch toggle_phone_exemption_identity_verification_path(format: :json) }
 
-    it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
+    it_behaves_like 'it redirects to root_path when user is already verified'
     it_behaves_like 'toggles phone number verification exemption for the user' do
       let(:target_user) { user }
     end
@@ -180,8 +190,6 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
   describe 'GET success' do
     subject(:do_request) { get success_identity_verification_path }
-
-    it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
 
     context 'when session[:identity_verification_referer] is set' do
       before do
