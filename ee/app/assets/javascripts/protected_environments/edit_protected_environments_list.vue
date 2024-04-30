@@ -124,7 +124,7 @@ export default {
         >
           <access-dropdown
             id="update-deployer-dropdown"
-            class="gl-w-30p"
+            class="gl-w-3/10"
             :label="$options.i18n.accessDropdownLabel"
             :access-levels-data="accessLevelsData"
             groups-with-project-access
@@ -153,15 +153,15 @@ export default {
           @addRule="addRule"
         >
           <template #card-header>
-            <span class="gl-w-30p">{{ $options.i18n.deployersHeader }}</span>
+            <span class="gl-w-3/10">{{ $options.i18n.deployersHeader }}</span>
             <span class="">{{ $options.i18n.usersHeader }}</span>
           </template>
           <template #rule="{ rule, ruleKey }">
-            <span class="gl-w-30p" data-testid="rule-description">
+            <span class="gl-w-3/10" data-testid="rule-description">
               {{ rule.access_level_description }}
             </span>
 
-            <div class="gl-w-half">
+            <div class="gl-w-1/2">
               <show-more
                 #default="{ item }"
                 :limit="$options.AVATAR_LIMIT"
@@ -202,17 +202,17 @@ export default {
           @addRule="addRule"
         >
           <template #card-header>
-            <span class="gl-w-30p">{{ $options.i18n.approversHeader }}</span>
-            <span class="gl-w-20p">{{ $options.i18n.usersHeader }}</span>
-            <span class="gl-w-20p">{{ $options.i18n.approvalsHeader }}</span>
-            <span class="gl-w-30p">{{ $options.i18n.inheritanceLabel }}</span>
+            <span class="gl-w-3/10">{{ $options.i18n.approversHeader }}</span>
+            <span class="gl-w-2/10">{{ $options.i18n.usersHeader }}</span>
+            <span class="gl-w-2/10">{{ $options.i18n.approvalsHeader }}</span>
+            <span class="gl-w-3/10">{{ $options.i18n.inheritanceLabel }}</span>
           </template>
           <template #rule="{ rule, ruleKey }">
-            <span class="gl-w-30p" data-testid="rule-description">
+            <span class="gl-w-3/10" data-testid="rule-description">
               {{ rule.access_level_description }}
             </span>
 
-            <div class="gl-w-20p">
+            <div class="gl-w-2/10">
               <show-more
                 #default="{ item }"
                 :limit="$options.AVATAR_LIMIT"
@@ -234,7 +234,7 @@ export default {
                 :label-for="`approval-count-${rule.id}`"
                 :label="$options.i18n.approvalCount"
                 label-sr-only
-                class="gl-w-20p gl-mb-0"
+                class="gl-w-2/10 gl-mb-0"
               >
                 <gl-form-input
                   :id="`approval-count-${rule.id}`"
@@ -263,7 +263,7 @@ export default {
               </gl-button>
             </template>
             <template v-else>
-              <span class="gl-w-20p gl-text-center">{{ rule.required_approvals }}</span>
+              <span class="gl-w-2/10 gl-text-center">{{ rule.required_approvals }}</span>
 
               <gl-toggle
                 v-if="isGroupRule(rule)"

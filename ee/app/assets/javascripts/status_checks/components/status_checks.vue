@@ -59,17 +59,17 @@ export default {
     {
       key: 'name',
       label: i18n.nameHeader,
-      thClass: 'gl-w-20p',
+      thClass: 'gl-w-2/10',
     },
     {
       key: 'externalUrl',
       label: i18n.apiHeader,
-      thClass: 'gl-w-40p',
+      thClass: 'gl-w-4/10',
     },
     {
       key: 'protectedBranches',
       label: i18n.branchHeader,
-      thClass: 'gl-w-20p',
+      thClass: 'gl-w-2/10',
     },
     {
       key: 'actions',

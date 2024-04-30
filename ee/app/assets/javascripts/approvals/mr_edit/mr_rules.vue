@@ -43,7 +43,7 @@ export default {
       return this.hasNamedRule ? '1' : '2';
     },
     firstColumnWidth() {
-      return this.hasNamedRule ? 'gl-w-30p' : 'w-75';
+      return this.hasNamedRule ? 'gl-w-3/10' : 'gl-w-3/4';
     },
     canEdit() {
       return this.settings.canEdit;
@@ -122,7 +122,7 @@ export default {
         <th :colspan="firstColumnSpan" :class="firstColumnWidth">
           {{ hasNamedRule ? name : members }}
         </th>
-        <th v-if="hasNamedRule" class="gl-w-40p">
+        <th v-if="hasNamedRule" class="gl-w-2/5">
           <span>{{ members }}</span>
         </th>
         <th class="gl-text-center">{{ approvalsRequired }}</th>

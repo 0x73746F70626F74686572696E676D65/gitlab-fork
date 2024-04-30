@@ -290,7 +290,7 @@ export default {
         {
           key: 'name',
           label: __('Name'),
-          thClass: this.showPolicyScope ? 'gl-w-30p' : 'gl-w-half',
+          thClass: this.showPolicyScope ? 'gl-w-3/10' : 'gl-w-1/2',
           sortable: true,
         },
         {

@@ -240,7 +240,7 @@ export default {
       </div>
       <div class="gl-display-flex gl-mb-3">
         <spp-selector
-          class="gl-w-90p"
+          class="gl-w-9/10"
           :disabled="disableSecurityPolicyProject"
           :only-linked="searchOnlyPolicyProjects"
           :selected-project="selectedProject"

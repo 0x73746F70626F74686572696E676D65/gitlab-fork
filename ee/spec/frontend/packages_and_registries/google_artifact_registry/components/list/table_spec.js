@@ -81,7 +81,7 @@ describe('ListTable', () => {
       {
         key: 'image',
         label: 'Name',
-        thClass: 'gl-w-40p',
+        thClass: 'gl-w-2/5',
         tdClass: 'gl-pt-3!',
       },
       {

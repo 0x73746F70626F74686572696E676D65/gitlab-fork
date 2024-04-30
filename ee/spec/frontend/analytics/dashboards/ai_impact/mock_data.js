@@ -4,7 +4,7 @@ export const mockDoraTimePeriods = [
     label: 'Oct',
     start: new Date('2023-10-01T00:00:00.000Z'),
     end: new Date('2023-10-31T23:59:59.000Z'),
-    thClass: 'gl-w-10p',
+    thClass: 'gl-w-1/10',
     deployment_frequency: {
       identifier: 'deployment_frequency',
       value: 10,
@@ -19,7 +19,7 @@ export const mockDoraTimePeriods = [
     label: 'Nov',
     start: new Date('2023-11-01T00:00:00.000Z'),
     end: new Date('2023-11-30T23:59:59.000Z'),
-    thClass: 'gl-w-10p',
+    thClass: 'gl-w-1/10',
     deployment_frequency: {
       identifier: 'deployment_frequency',
       value: 15,
@@ -34,7 +34,7 @@ export const mockDoraTimePeriods = [
     label: 'Dec',
     start: new Date('2023-12-01T00:00:00.000Z'),
     end: new Date('2024-12-31T23:59:59.000Z'),
-    thClass: 'gl-w-10p',
+    thClass: 'gl-w-1/10',
     deployment_frequency: {
       identifier: 'deployment_frequency',
       value: null,
@@ -49,7 +49,7 @@ export const mockDoraTimePeriods = [
     label: 'Jan',
     start: new Date('2024-01-01T00:00:00.000Z'),
     end: new Date('2024-01-31T23:59:59.000Z'),
-    thClass: 'gl-w-10p',
+    thClass: 'gl-w-1/10',
     deployment_frequency: {
       identifier: 'deployment_frequency',
       value: 30,
@@ -64,7 +64,7 @@ export const mockDoraTimePeriods = [
     label: 'Feb',
     start: new Date('2024-02-01T00:00:00.000Z'),
     end: new Date('2024-02-29T23:59:59.000Z'),
-    thClass: 'gl-w-10p',
+    thClass: 'gl-w-1/10',
     deployment_frequency: {
       identifier: 'deployment_frequency',
       value: '-',
@@ -79,7 +79,7 @@ export const mockDoraTimePeriods = [
     label: 'Mar',
     start: new Date('2024-03-01T00:00:00.000Z'),
     end: new Date('2024-03-15T13:00:00.000Z'),
-    thClass: 'gl-w-10p',
+    thClass: 'gl-w-1/10',
     deployment_frequency: {
       identifier: 'deployment_frequency',
       value: 30,

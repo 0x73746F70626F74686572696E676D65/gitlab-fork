@@ -137,7 +137,7 @@ export default {
           {{ $options.i18n.projectDropdownHeader }}
         </label>
 
-        <div class="gl-display-inline-block gl-w-half">
+        <div class="gl-display-inline-block gl-w-1/2">
           <select-projects-dropdown
             ref="projectsDropdown"
             @projects-query-error="projectsQueryError"
@@ -161,7 +161,7 @@ export default {
         </label>
         <gl-collapsible-listbox
           block
-          toggle-class="gl-w-half"
+          toggle-class="gl-w-1/2"
           :header-text="$options.i18n.dateRangeHeader"
           :items="$options.dateRangeOptions"
           :selected="selectedDateRange.value"

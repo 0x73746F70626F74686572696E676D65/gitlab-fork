@@ -26,29 +26,29 @@ export default {
     {
       key: 'name',
       label: s__('CorpusManagement|Corpus name'),
-      thClass: 'gl-w-40p',
+      thClass: 'gl-w-8/20',
       tdClass: 'gl-text-truncate gl-max-w-15',
     },
     {
       key: 'target',
       label: s__('CorpusManagement|Target'),
-      thClass: 'gl-w-20p',
+      thClass: 'gl-w-4/20',
       tdClass: 'gl-word-break-word',
     },
     {
       key: 'lastUpdated',
       label: s__('CorpusManagement|Last updated'),
-      thClass: 'gl-w-15p',
+      thClass: 'gl-w-3/20',
     },
     {
       key: 'lastUsed',
       label: s__('CorpusManagement|Last used'),
-      thClass: 'gl-w-15p',
+      thClass: 'gl-w-3/20',
     },
     {
       key: 'actions',
       label: s__('CorpusManagement|Actions'),
-      thClass: 'gl-w-10p',
+      thClass: 'gl-w-2/20',
     },
   ],
   i18n: {

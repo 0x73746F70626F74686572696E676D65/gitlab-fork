@@ -89,7 +89,7 @@ export default {
       <container :rules="policies">
         <template #thead="{ name, approvalsRequired, branches }">
           <tr class="gl-display-table-row!">
-            <th class="gl-w-half!">{{ name }}</th>
+            <th class="!gl-w-1/2">{{ name }}</th>
             <th>{{ branches }}</th>
             <th>{{ approvalsRequired }}</th>
             <th></th>

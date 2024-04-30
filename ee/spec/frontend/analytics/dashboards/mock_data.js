@@ -38,7 +38,7 @@ const THIS_MONTH = {
   label: 'Month to date',
   start: new Date('2020-07-01T00:00:00.000Z'),
   end: new Date('2020-07-06T00:00:00.000Z'),
-  thClass: 'gl-w-20p',
+  thClass: 'gl-w-1/5',
 };
 
 const LAST_MONTH = {
@@ -46,7 +46,7 @@ const LAST_MONTH = {
   label: 'June',
   start: new Date('2020-06-01T00:00:00.000Z'),
   end: new Date('2020-06-30T23:59:59.000Z'),
-  thClass: 'gl-w-20p',
+  thClass: 'gl-w-1/5',
 };
 
 const TWO_MONTHS_AGO = {
@@ -54,7 +54,7 @@ const TWO_MONTHS_AGO = {
   label: 'May',
   start: new Date('2020-05-01T00:00:00.000Z'),
   end: new Date('2020-05-31T23:59:59.000Z'),
-  thClass: 'gl-w-20p',
+  thClass: 'gl-w-1/5',
 };
 
 const THREE_MONTHS_AGO = {
@@ -78,7 +78,7 @@ export const MOCK_DASHBOARD_TABLE_FIELDS = [
   {
     key: 'metric',
     label: 'Metric',
-    thClass: 'gl-w-25p',
+    thClass: 'gl-w-1/4',
   },
   ...MOCK_TABLE_TIME_PERIODS.slice(0, -1),
   {
@@ -86,7 +86,7 @@ export const MOCK_DASHBOARD_TABLE_FIELDS = [
     label: 'Past 6 Months',
     start: new Date('2020-01-06T00:00:00.000Z'),
     end: new Date('2020-07-06T00:00:00.000Z'),
-    thClass: 'gl-w-15p',
+    thClass: 'gl-w-3/20',
     tdClass: 'gl-py-2!',
   },
 ];

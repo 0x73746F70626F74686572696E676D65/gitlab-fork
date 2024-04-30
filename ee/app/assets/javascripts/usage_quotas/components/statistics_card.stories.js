@@ -9,7 +9,7 @@ export default {
 const Template = (_, { argTypes }) => ({
   components: { StatisticsCard, GlCard },
   props: Object.keys(argTypes),
-  template: `<gl-card class="gl-w-half">
+  template: `<gl-card class="gl-w-1/2">
       <statistics-card v-bind="$props">
       </statistics-card>
      </gl-card>`,
@@ -28,7 +28,7 @@ Default.args = {
 export const WithUnits = (_, { argTypes }) => ({
   components: { StatisticsCard, GlCard },
   props: Object.keys(argTypes),
-  template: `<gl-card class="gl-w-half">
+  template: `<gl-card class="gl-w-1/2">
       <statistics-card v-bind="$props">
       </statistics-card>
      </gl-card>`,

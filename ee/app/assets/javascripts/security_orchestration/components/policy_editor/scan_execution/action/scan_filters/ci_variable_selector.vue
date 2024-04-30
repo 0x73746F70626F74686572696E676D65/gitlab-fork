@@ -100,7 +100,7 @@ export default {
     @remove="removeVariable"
   >
     <template #selector>
-      <div class="gl-flex-grow-2 gl-w-30p gl-display-flex gl-align-items-center">
+      <div class="gl-flex-grow-2 gl-w-3/10 gl-display-flex gl-align-items-center">
         <label class="gl-mb-0 gl-mr-3" :title="$options.i18n.keyLabel">
           {{ $options.i18n.keyLabel }}
         </label>

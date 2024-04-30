@@ -9,7 +9,7 @@ export default {
 const Template = (_, { argTypes }) => ({
   components: { StatisticsSeatsCard, GlCard },
   props: Object.keys(argTypes),
-  template: `<gl-card class="gl-w-half">
+  template: `<gl-card class="gl-w-1/2">
       <statistics-seats-card v-bind="$props">
       </statistics-seats-card>
      </gl-card>`,

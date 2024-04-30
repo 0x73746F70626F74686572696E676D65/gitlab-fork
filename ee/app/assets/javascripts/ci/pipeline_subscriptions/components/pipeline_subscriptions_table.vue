@@ -13,19 +13,19 @@ export default {
     {
       key: 'project',
       label: __('Project'),
-      columnClass: 'gl-w-60p',
+      columnClass: 'gl-w-6/10',
       tdClass: '!gl-align-middle',
     },
     {
       key: 'namespace',
       label: __('Namespace'),
-      columnClass: 'gl-w-30p',
+      columnClass: 'gl-w-3/10',
       tdClass: '!gl-align-middle',
     },
     {
       key: 'actions',
       label: '',
-      columnClass: 'gl-w-20p',
+      columnClass: 'gl-w-2/10',
       tdClass: 'gl-text-right',
     },
   ],
