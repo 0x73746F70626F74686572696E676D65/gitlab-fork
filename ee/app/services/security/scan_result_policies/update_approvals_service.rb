@@ -16,7 +16,13 @@ module Security
       end
 
       def execute
-        return if pipeline.incomplete?
+        pipeline_complete = if pipeline.include_manual_to_pipeline_completion_enabled?
+                              pipeline.complete_or_manual?
+                            else
+                              pipeline.complete?
+                            end
+
+        return unless pipeline_complete
         return unless pipeline.can_store_security_reports?
 
         all_scan_finding_rules = merge_request.approval_rules.scan_finding

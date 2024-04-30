@@ -30,9 +30,9 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     end
   end
 
-  describe '.latest_completed_pipeline_ids_per_source', feature_category: :security_policy_management do
+  describe '.latest_completed_or_manual_pipeline_ids_per_source', feature_category: :security_policy_management do
     let_it_be(:push_pipeline_1) { create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:push], sha: 'sha') }
-    let_it_be(:web_pipeline) { create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:web], sha: 'sha') }
+    let_it_be(:web_pipeline) { create(:ci_pipeline, :manual, project: project, source: Enums::Ci::Pipeline.sources[:web], sha: 'sha') }
     let_it_be(:merge_request_pipeline_1) { create(:ci_pipeline, :failed, project: project, source: Enums::Ci::Pipeline.sources[:merge_request_event], sha: 'sha') }
     let_it_be(:security_policy_pipeline) { create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:security_orchestration_policy], sha: 'sha') }
 
@@ -41,7 +41,7 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     let_it_be(:web_pipeline_with_different_sha) { create(:ci_pipeline, :success, project: project, source: Enums::Ci::Pipeline.sources[:web], sha: 'sha2') }
 
     it 'returns expected pipeline ids' do
-      expect(described_class.latest_completed_pipeline_ids_per_source('sha'))
+      expect(described_class.latest_completed_or_manual_pipeline_ids_per_source('sha'))
         .to contain_exactly(web_pipeline, security_policy_pipeline, push_pipeline_2, merge_request_pipeline_2)
     end
   end
