@@ -32,7 +32,7 @@ describe('BreakingChangesIcon', () => {
       '/help/user/application_security/policies/scan-result-policies#merge-request-approval-policy-schema',
     );
     expect(findPopover().text()).toBe(
-      "This policy won't work after GitLab 17.0 (May 16, 2024). You must edit the policy and replace the deprecated syntax. For details on which syntax has been deprecated, see Documentation.",
+      "You must edit the policy and replace the deprecated syntax. For details on it's replacement, see the policy documentation.",
     );
   });
 
@@ -44,7 +44,7 @@ describe('BreakingChangesIcon', () => {
     });
 
     expect(findPopover().text()).toBe(
-      "This policy won't work after GitLab 17.0 (May 16, 2024). You must edit the policy and replace the deprecated syntax (test, test1). For details on which syntax has been deprecated, see Documentation.",
+      "You must edit the policy and replace the deprecated syntax (test, test1). For details on it's replacement, see the policy documentation.",
     );
   });
 });

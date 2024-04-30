@@ -153,6 +153,12 @@ export default {
       update(data) {
         return data?.namespace?.scanResultPolicies?.nodes ?? [];
       },
+      result({ data }) {
+        const policies = data?.namespace?.scanResultPolicies?.nodes ?? [];
+        this.hasInvalidPolicies = policies.some(
+          (policy) => policy.deprecatedProperties?.length > 0,
+        );
+      },
       error: createPolicyFetchError,
     },
     pipelineExecutionPolicies: {
@@ -182,6 +188,7 @@ export default {
     );
 
     return {
+      hasInvalidPolicies: false,
       selectedPolicy: null,
       pipelineExecutionPolicies: [],
       scanExecutionPolicies: [],
@@ -320,6 +327,9 @@ export default {
     },
   },
   watch: {
+    hasInvalidPolicies(hasInvalidPolicies) {
+      this.$emit('has-invalid-policies', hasInvalidPolicies);
+    },
     shouldUpdatePolicyList(newShouldUpdatePolicyList) {
       // This check prevents an infinite loop of `update-policy-list` being called
       if (newShouldUpdatePolicyList) {

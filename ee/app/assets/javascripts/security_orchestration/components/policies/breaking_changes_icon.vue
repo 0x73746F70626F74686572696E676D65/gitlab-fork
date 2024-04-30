@@ -9,9 +9,9 @@ export default {
   }),
   i18n: {
     description: s__(
-      "SecurityOrchestration|This policy won't work after GitLab 17.0 (May 16, 2024). You must edit the policy and replace the deprecated syntax%{deprecatedProperties}. For details on which syntax has been deprecated, see %{linkStart}Documentation%{linkEnd}.",
+      "SecurityOrchestration|You must edit the policy and replace the deprecated syntax%{deprecatedProperties}. For details on it's replacement, see the %{linkStart}policy documentation%{linkEnd}.",
     ),
-    title: s__('SecurityOrchestration|Policy contains deprecated syntax'),
+    title: s__('SecurityOrchestration|Policy is invalid'),
   },
   name: 'BreakingChangesIcon',
   components: {

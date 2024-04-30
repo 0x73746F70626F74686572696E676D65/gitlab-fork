@@ -7,6 +7,7 @@ import { NEW_POLICY_BUTTON_TEXT } from '../constants';
 import ApprovalPolicyNameUpdateBanner from './banners/approval_policy_name_update_banner.vue';
 import BreakingChangesBanner from './banners/breaking_changes_banner.vue';
 import ExperimentFeaturesBanner from './banners/experiment_features_banner.vue';
+import InvalidPoliciesBanner from './banners/invalid_policies_banner.vue';
 import ProjectModal from './project_modal.vue';
 
 export default {
@@ -19,6 +20,7 @@ export default {
     GlButton,
     GlIcon,
     GlSprintf,
+    InvalidPoliciesBanner,
     ProjectModal,
   },
   mixins: [glFeatureFlagMixin()],
@@ -29,6 +31,12 @@ export default {
     'documentationPath',
     'newPolicyPath',
   ],
+  props: {
+    hasInvalidPolicies: {
+      type: Boolean,
+      required: true,
+    },
+  },
   i18n: {
     title: s__('SecurityOrchestration|Policies'),
     subtitle: s__(
@@ -83,9 +91,6 @@ export default {
     },
     showNewPolicyModal() {
       this.modalVisible = true;
-    },
-    showApprovalPolicyBanner(hideBreakingChangesBanner) {
-      this.approvalPolicyNameBannerVisible = hideBreakingChangesBanner;
     },
   },
 };
@@ -164,10 +169,8 @@ export default {
 
     <approval-policy-name-update-banner class="gl-my-3" />
 
-    <breaking-changes-banner
-      v-if="breakingChangesBannerEnabled"
-      class="gl-mt-3 gl-mb-6"
-      @dismiss="showApprovalPolicyBanner"
-    />
+    <breaking-changes-banner v-if="breakingChangesBannerEnabled" class="gl-mt-3 gl-mb-6" />
+
+    <invalid-policies-banner v-if="hasInvalidPolicies" />
   </div>
 </template>

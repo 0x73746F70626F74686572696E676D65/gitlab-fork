@@ -523,6 +523,20 @@ describe('List component', () => {
     );
   });
 
+  describe('invalid policies', () => {
+    it('renders breaking changes icon when flag is enabled but there are deprecated properties in scan result policies', async () => {
+      mountWrapper({
+        handlers: {
+          projectScanResultPolicies: projectScanResultPolicies([
+            { ...mockProjectScanResultPolicy, deprecatedProperties: ['test', 'test1'] },
+          ]),
+        },
+      });
+      await waitForPromises();
+      expect(wrapper.emitted('has-invalid-policies')).toEqual([[true]]);
+    });
+  });
+
   describe('breaking changes icon', () => {
     it('does not render breaking changes icon when flag is disabled', async () => {
       mountWrapper();

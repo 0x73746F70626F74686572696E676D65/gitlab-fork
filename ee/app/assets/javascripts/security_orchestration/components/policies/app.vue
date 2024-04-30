@@ -10,11 +10,15 @@ export default {
   inject: ['assignedPolicyProject'],
   data() {
     return {
+      hasInvalidPolicies: false,
       hasPolicyProject: Boolean(this.assignedPolicyProject?.id),
       shouldUpdatePolicyList: false,
     };
   },
   methods: {
+    handleHasInvalidPolicies(hasInvalidPolicies) {
+      this.hasInvalidPolicies = hasInvalidPolicies;
+    },
     handleUpdatePolicyList({ hasPolicyProject, shouldUpdatePolicyList = false }) {
       if (hasPolicyProject !== undefined) {
         this.hasPolicyProject = hasPolicyProject;
@@ -27,10 +31,14 @@ export default {
 </script>
 <template>
   <div>
-    <list-header @update-policy-list="handleUpdatePolicyList" />
+    <list-header
+      :has-invalid-policies="hasInvalidPolicies"
+      @update-policy-list="handleUpdatePolicyList"
+    />
     <list-component
       :has-policy-project="hasPolicyProject"
       :should-update-policy-list="shouldUpdatePolicyList"
+      @has-invalid-policies="handleHasInvalidPolicies"
       @update-policy-list="handleUpdatePolicyList"
     />
   </div>
