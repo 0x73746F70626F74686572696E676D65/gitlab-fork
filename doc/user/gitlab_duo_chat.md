@@ -26,7 +26,7 @@ It can assist various tasks of your daily work with the AI-generated content.
 > - GitLab self-managed users with a Premium or Ultimate subscription.
 > - GitLab Dedicated users.
 >
-> Eventually a subscription add-on will be required for continued access to GitLab Duo Chat. 
+> Eventually a subscription add-on will be required for continued access to GitLab Duo Chat.
 > Learn more about [Duo Pro and Duo Enterprise pricing](https://about.gitlab.com/gitlab-duo/#pricing).
 
 Here are examples of common use cases:
@@ -431,9 +431,13 @@ To use GitLab Duo Chat in the GitLab Duo plugin for JetBrains IDEs:
 1. In a JetBrains IDE, open a project.
 1. Open Chat by using one of the following methods:
    - On the right tool window bar, select **GitLab Duo Chat**.
-   - In the file that you have open in the editor, select some code.
+   - Use a keyboard shortcut: <kbd>ALT</kbd> + <kbd>d</kbd> on Windows and Linux, or
+     <kbd>Option</kbd> + <kbd>d</kbd> on macOS.
+   - In the file that you have open in the editor:
+     1. Optional. Select some code.
      1. Right-click and select **GitLab Duo Chat**.
-     1. Select **Explain Code** or **Generate Tests** or **Refactor Code**.
+     1. Select **Open Chat Window**.
+     1. Select **Explain Code**, **Generate Tests**, or **Refactor Code**.
    - Add keyboard or mouse shortcuts for each action under **Keymap** in the **Settings**.
 1. In the message box, enter your question and press **Enter** or select **Send**.
 
