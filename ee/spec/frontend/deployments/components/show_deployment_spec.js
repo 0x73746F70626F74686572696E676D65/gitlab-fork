@@ -10,6 +10,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import DeploymentTimeline from 'ee/deployments/components/deployment_timeline.vue';
 import DeploymentApprovals from 'ee/deployments/components/deployment_approvals.vue';
+import ApprovalsEmptyState from 'ee_else_ce/deployments/components/approvals_empty_state.vue';
 
 Vue.use(VueApollo);
 
@@ -18,6 +19,7 @@ const PROJECT_PATH = 'group/project';
 const ENVIRONMENT_NAME = mockEnvironmentFixture.data.project.environment.name;
 const DEPLOYMENT_IID = deployment.iid;
 const GRAPHQL_ETAG_KEY = 'project/environments';
+const PROTECTED_ENVIRONMENTS_SETTINGS_PATH = '/settings/ci_cd#js-protected-environments-settings';
 
 describe('~/deployments/components/show_deployment.vue', () => {
   let wrapper;
@@ -42,6 +44,8 @@ describe('~/deployments/components/show_deployment.vue', () => {
         environmentName: ENVIRONMENT_NAME,
         deploymentIid: DEPLOYMENT_IID,
         graphqlEtagKey: GRAPHQL_ETAG_KEY,
+        protectedEnvironmentsAvailable: true,
+        protectedEnvironmentsSettingsPath: PROTECTED_ENVIRONMENTS_SETTINGS_PATH,
       },
     });
     return waitForPromises();
@@ -64,6 +68,12 @@ describe('~/deployments/components/show_deployment.vue', () => {
     expect(wrapper.findComponent(DeploymentTimeline).props()).toEqual({
       approvalSummary: deployment.approvalSummary,
     });
+  });
+
+  it('shows the approvals empty state', () => {
+    expect(wrapper.findComponent(ApprovalsEmptyState).props('approvalSummary')).toEqual(
+      mockDeploymentFixture.data.project.deployment.approvalSummary,
+    );
   });
 
   it('refetches the deployment on approval change', async () => {

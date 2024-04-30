@@ -17887,6 +17887,9 @@ msgstr ""
 msgid "Deployments|No deployment history"
 msgstr ""
 
+msgid "Deployment|A colleague"
+msgstr ""
+
 msgid "Deployment|Add approval comment"
 msgstr ""
 
@@ -17920,6 +17923,9 @@ msgstr ""
 msgid "Deployment|Deployment ID"
 msgstr ""
 
+msgid "Deployment|Deployment approvals require a Premium or Ultimate subscription"
+msgstr ""
+
 msgid "Deployment|Failed"
 msgstr ""
 
@@ -17944,6 +17950,9 @@ msgstr ""
 msgid "Deployment|Flux sync status is unknown"
 msgstr ""
 
+msgid "Deployment|Improve your continuous delivery practices with deployment approvals. Configure rules for required approvals, control which users can deploy to your environments, and collaborate throughout the delivery process."
+msgstr ""
+
 msgid "Deployment|Job"
 msgstr ""
 
@@ -17960,6 +17969,9 @@ msgid "Deployment|Open URL"
 msgstr ""
 
 msgid "Deployment|Ready to be deployed."
+msgstr ""
+
+msgid "Deployment|Ready to use deployment approvals?"
 msgstr ""
 
 msgid "Deployment|Reject"
@@ -17980,6 +17992,15 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "Deployment|Running"
+msgstr ""
+
+msgid "Deployment|Set up Deployment Approvals"
+msgstr ""
+
+msgid "Deployment|Set up deployment approvals to get more our of your deployments"
+msgstr ""
+
+msgid "Deployment|Set up deployment approvals to get started"
 msgstr ""
 
 msgid "Deployment|Skipped"
@@ -18015,6 +18036,9 @@ msgstr ""
 msgid "Deployment|Unknown"
 msgstr ""
 
+msgid "Deployment|Upgrade to get more our of your deployments"
+msgstr ""
+
 msgid "Deployment|Waiting"
 msgstr ""
 
@@ -18025,6 +18049,9 @@ msgid "Deployment|We know this page is a bit empty at the moment, but we're work
 msgstr ""
 
 msgid "Deployment|What would you like to see here?"
+msgstr ""
+
+msgid "Deployment|You"
 msgstr ""
 
 msgid "Deprecated API rate limits"
@@ -23233,6 +23260,9 @@ msgid "GitLab Pages"
 msgstr ""
 
 msgid "GitLab Pages has moved"
+msgstr ""
+
+msgid "GitLab Premium"
 msgstr ""
 
 msgid "GitLab Shell"
