@@ -30,7 +30,7 @@ module Security
 
       violations = Security::SecurityOrchestrationPolicies::UpdateViolationsService.new(merge_request, report_type)
       applicable_rules.each do |rule|
-        next if rule.scan_result_policy_read.fail_open?
+        next if rule.scan_result_policy_read&.fail_open?
 
         violations.add_error(rule.scan_result_policy_id, :artifacts_missing)
       end
