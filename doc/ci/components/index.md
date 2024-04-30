@@ -426,7 +426,7 @@ create-release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
   rules:
-    - if: $CI_COMMIT_TAG =~ /\d+/
+    - if: $CI_COMMIT_TAG
   script: echo "Creating release $CI_COMMIT_TAG"
   release:
     tag_name: $CI_COMMIT_TAG
