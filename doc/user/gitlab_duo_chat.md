@@ -168,7 +168,7 @@ This feature is available in VS Code, JetBrains IDEs, and the Web IDE only.
 
 `/tests` is a special command to generate a testing suggestion for the selected code in your editor.
 You can also add additional instructions to be considered, for example: `/tests using the Boost.Test framework`
-See [Use GitLab Duo Chat in the VS Code](#use-gitlab-duo-chat-in-vs-code) for more information.
+See [Use GitLab Duo Chat in VS Code](#use-gitlab-duo-chat-in-vs-code) for more information.
 
 - Use a specific test framework, for example `/tests using the Boost.test framework` (C++) or `/tests using Jest` (JavaScript).
 - Focus on extreme test cases, for example `/tests focus on extreme cases, force regression testing`.
