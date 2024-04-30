@@ -47419,6 +47419,9 @@ msgstr ""
 msgid "SecurityReports|There was an error creating the issue. Please try again."
 msgstr ""
 
+msgid "SecurityReports|There was an error creating the merge request"
+msgstr ""
+
 msgid "SecurityReports|There was an error creating the merge request."
 msgstr ""
 
@@ -62174,9 +62177,6 @@ msgid "seat"
 msgid_plural "seats"
 msgstr[0] ""
 msgstr[1] ""
-
-msgid "security Reports|There was an error creating the merge request"
-msgstr ""
 
 msgid "security policy bot users cannot be added to other projects"
 msgstr ""
