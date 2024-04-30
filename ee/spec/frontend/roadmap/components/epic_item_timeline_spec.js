@@ -1,16 +1,17 @@
 import { GlIcon, GlPopover, GlProgressBar } from '@gitlab/ui';
 import Vue from 'vue';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import { useFakeDate } from 'helpers/fake_date';
 import EpicItemTimeline from 'ee/roadmap/components/epic_item_timeline.vue';
+
 import { DATE_RANGES, PRESET_TYPES, PROGRESS_COUNT, PROGRESS_WEIGHT } from 'ee/roadmap/constants';
-import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import { mockTimeframeInitialDate, mockFormattedEpic, mockEpic } from 'ee_jest/roadmap/mock_data';
+import { setLocalSettingsInCache } from '../local_cache_helpers';
 
-Vue.use(Vuex);
+Vue.use(VueApollo);
 
 const mockTimeframeMonths = getTimeframeForRangeType({
   timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
@@ -29,24 +30,23 @@ const createComponent = ({
   startDate,
   endDate,
 } = {}) => {
-  const store = createStore();
-
-  store.dispatch('setInitialData', {
-    progressTracking,
+  const apolloProvider = createMockApollo();
+  setLocalSettingsInCache(apolloProvider, {
     isProgressTrackingActive,
+    progressTracking,
+    presetType,
+    timeframe,
   });
 
   return shallowMount(EpicItemTimeline, {
-    store,
     propsData: {
       epic,
       startDate: startDate || epic.originalStartDate,
       endDate: endDate || epic.originalEndDate,
-      presetType,
-      timeframe,
       timeframeItem,
       timeframeString,
     },
+    apolloProvider,
   });
 };
 

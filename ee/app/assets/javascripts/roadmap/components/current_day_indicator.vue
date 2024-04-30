@@ -1,13 +1,11 @@
 <script>
 import CommonMixin from '../mixins/common_mixin';
+import localRoadmapSettingsQuery from '../queries/local_roadmap_settings.query.graphql';
+import { mapLocalSettings } from '../utils/roadmap_utils';
 
 export default {
   mixins: [CommonMixin],
   props: {
-    presetType: {
-      type: String,
-      required: true,
-    },
     timeframeItem: {
       type: [Date, Object],
       required: true,
@@ -21,6 +19,14 @@ export default {
       currentDate,
       indicatorStyles: {},
     };
+  },
+  apollo: {
+    localRoadmapSettings: {
+      query: localRoadmapSettingsQuery,
+    },
+  },
+  computed: {
+    ...mapLocalSettings(['presetType']),
   },
   mounted() {
     this.$nextTick(() => {

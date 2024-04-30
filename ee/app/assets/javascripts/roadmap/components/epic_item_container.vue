@@ -7,14 +7,6 @@ export default {
     EpicItem: () => import('./epic_item.vue'),
   },
   props: {
-    presetType: {
-      type: String,
-      required: true,
-    },
-    timeframe: {
-      type: Array,
-      required: true,
-    },
     clientWidth: {
       type: Number,
       required: false,
@@ -40,9 +32,7 @@ export default {
     <epic-item
       v-for="child in children"
       :key="generateKey(child)"
-      :preset-type="presetType"
       :epic="child"
-      :timeframe="timeframe"
       :client-width="clientWidth"
       :child-level="childLevel"
     />

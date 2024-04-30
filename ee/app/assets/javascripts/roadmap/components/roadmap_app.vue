@@ -1,7 +1,5 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapState } from 'vuex';
 import { isEmpty } from 'lodash';
 
 import RoadmapShell from 'jh_else_ee/roadmap/components/roadmap_shell.vue';
@@ -10,7 +8,7 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
 
-import { getEpicsTimeframeRange } from '../utils/roadmap_utils';
+import { getEpicsTimeframeRange, mapLocalSettings } from '../utils/roadmap_utils';
 import { transformFetchEpicFilterParams } from '../utils/epic_utils';
 import { ROADMAP_PAGE_SIZE } from '../constants';
 import {
@@ -73,10 +71,14 @@ export default {
     },
   },
   computed: {
-    ...mapState(['timeframe', 'presetType', 'timeframeRangeType', 'epicsState', 'sortedBy']),
-    filterParams() {
-      return this.localRoadmapSettings?.filterParams;
-    },
+    ...mapLocalSettings([
+      'filterParams',
+      'timeframe',
+      'presetType',
+      'timeframeRangeType',
+      'epicsState',
+      'sortedBy',
+    ]),
     epicColorHighlightEnabled() {
       return Boolean(this.glFeatures.epicColorHighlight);
     },
@@ -206,7 +208,6 @@ export default {
     <roadmap-filters
       v-if="showFilteredSearchbar && !epicIid"
       ref="roadmapFilters"
-      :filter-params="filterParams"
       @toggleSettings="toggleSettings"
     />
     <div
@@ -224,12 +225,9 @@ export default {
       />
       <roadmap-shell
         v-else-if="!epicsFetchFailure"
-        :preset-type="presetType"
         :epics="epics"
-        :timeframe="timeframe"
         :epics-fetch-next-page-in-progress="epicsFetchNextPageInProgress"
         :has-next-page="hasNextPage"
-        :filter-params="filterParams"
         :is-settings-sidebar-open="isSettingsSidebarOpen"
         @scrolledToEnd="fetchNextPage"
       />

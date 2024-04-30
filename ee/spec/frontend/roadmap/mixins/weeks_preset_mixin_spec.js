@@ -1,15 +1,17 @@
 import Vue from 'vue';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
+
+import createMockApollo from 'helpers/mock_apollo_helper';
+
 import EpicItemTimelineComponent from 'ee/roadmap/components/epic_item_timeline.vue';
-import { DATE_RANGES, PRESET_TYPES, PROGRESS_WEIGHT } from 'ee/roadmap/constants';
-import createStore from 'ee/roadmap/store';
+import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import { mockTimeframeInitialDate, mockEpic } from 'ee_jest/roadmap/mock_data';
+import { setLocalSettingsInCache } from '../local_cache_helpers';
 
-Vue.use(Vuex);
+Vue.use(VueApollo);
 
 const mockTimeframeWeeks = getTimeframeForRangeType({
   timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
@@ -26,22 +28,20 @@ describe('WeeksPresetMixin', () => {
     timeframeItem = mockTimeframeWeeks[0],
     epic = mockEpic,
   } = {}) => {
-    const store = createStore();
-
-    store.dispatch('setInitialData', {
-      progressTracking: PROGRESS_WEIGHT,
+    const apolloProvider = createMockApollo();
+    setLocalSettingsInCache(apolloProvider, {
+      presetType,
+      timeframe,
     });
 
     return shallowMount(EpicItemTimelineComponent, {
-      store,
       propsData: {
-        presetType,
-        timeframe,
         timeframeItem,
         epic,
         startDate: epic.startDate,
         endDate: epic.endDate,
       },
+      apolloProvider,
     });
   };
 

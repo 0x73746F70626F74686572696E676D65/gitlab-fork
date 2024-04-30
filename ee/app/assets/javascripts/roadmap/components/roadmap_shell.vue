@@ -1,11 +1,10 @@
 <script>
-// eslint-disable-next-line no-restricted-imports
-import { mapState } from 'vuex';
 import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
 
 import groupMilestones from '../queries/group_milestones.query.graphql';
-import { getEpicsTimeframeRange } from '../utils/roadmap_utils';
+import localRoadmapSettingsQuery from '../queries/local_roadmap_settings.query.graphql';
+import { getEpicsTimeframeRange, mapLocalSettings } from '../utils/roadmap_utils';
 import {
   formatRoadmapItemDetails,
   timeframeStartDate,
@@ -27,15 +26,7 @@ export default {
   },
   inject: ['fullPath', 'epicIid'],
   props: {
-    presetType: {
-      type: String,
-      required: true,
-    },
     epics: {
-      type: Array,
-      required: true,
-    },
-    timeframe: {
       type: Array,
       required: true,
     },
@@ -47,16 +38,13 @@ export default {
       type: Boolean,
       required: true,
     },
-    filterParams: {
-      type: Object,
-      required: true,
-    },
   },
   data() {
     return {
       containerStyles: {},
       canCalculateEpicsListHeight: false,
       milestones: [],
+      localRoadmapSettings: {},
     };
   },
   apollo: {
@@ -100,9 +88,19 @@ export default {
         });
       },
     },
+    localRoadmapSettings: {
+      query: localRoadmapSettingsQuery,
+    },
   },
   computed: {
-    ...mapState(['isShowingMilestones', 'milestonesType']),
+    ...mapLocalSettings([
+      'isShowingMilestones',
+      'milestonesType',
+      'bufferSize',
+      'timeframe',
+      'filterParams',
+      'presetType',
+    ]),
     isScopedRoadmap() {
       return Boolean(this.epicIid);
     },
@@ -164,18 +162,18 @@ export default {
     />
     <milestones-list-section
       v-if="displayMilestones"
-      :preset-type="presetType"
       :milestones="milestonesToShow"
       :timeframe="timeframe"
+      :buffer-size="bufferSize"
       @milestonesMounted="toggleCanCalculateEpicsListHeight"
     />
     <epics-list-section
       :key="canCalculateEpicsListHeight"
-      :preset-type="presetType"
       :epics="epics"
       :timeframe="timeframe"
       :epics-fetch-next-page-in-progress="epicsFetchNextPageInProgress"
       :has-next-page="hasNextPage"
+      :buffer-size="bufferSize"
       @scrolledToEnd="$emit('scrolledToEnd')"
     />
   </div>

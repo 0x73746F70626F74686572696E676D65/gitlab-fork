@@ -1,14 +1,14 @@
 <script>
 import { GlButton, GlIcon, GlLabel, GlTooltip } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapState } from 'vuex';
+import { isEmpty } from 'lodash';
+
 import { getIdFromGraphQLId, getNodesOrDefault } from '~/graphql_shared/utils';
 import { convertObjectPropsToCamelCase, isScopedLabel } from '~/lib/utils/common_utils';
 import { queryToObject, updateHistory } from '~/lib/utils/url_utility';
 import { __, n__ } from '~/locale';
 import IssuableBlockedIcon from '~/vue_shared/components/issuable_blocked_icon/issuable_blocked_icon.vue';
 import { EPIC_LEVEL_MARGIN, UNSUPPORTED_ROADMAP_PARAMS } from '../constants';
-import setLocalRoadmapSettingsMutation from '../queries/set_local_roadmap_settings.mutation.graphql';
+import updateLocalRoadmapSettingsMutation from '../queries/update_local_roadmap_settings.mutation.graphql';
 
 export default {
   components: {
@@ -32,10 +32,6 @@ export default {
       type: Number,
       required: true,
     },
-    hasFiltersApplied: {
-      type: Boolean,
-      required: true,
-    },
     isChildrenEmpty: {
       type: Boolean,
       required: false,
@@ -53,9 +49,15 @@ export default {
       type: Object,
       required: true,
     },
+    isShowingLabels: {
+      type: Boolean,
+      required: true,
+    },
   },
   computed: {
-    ...mapState(['isShowingLabels']),
+    hasFiltersApplied() {
+      return !isEmpty(this.filterParams);
+    },
     itemId() {
       return this.epic.id;
     },
@@ -142,7 +144,7 @@ export default {
     },
     setFilterParams(filterParams) {
       this.$apollo.mutate({
-        mutation: setLocalRoadmapSettingsMutation,
+        mutation: updateLocalRoadmapSettingsMutation,
         variables: {
           input: {
             filterParams,

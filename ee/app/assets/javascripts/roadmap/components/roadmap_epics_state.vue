@@ -1,7 +1,5 @@
 <script>
 import { GlFormGroup, GlFormRadioGroup } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapActions, mapState } from 'vuex';
 import { STATUS_ALL, STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 import { __ } from '~/locale';
 
@@ -10,8 +8,13 @@ export default {
     GlFormGroup,
     GlFormRadioGroup,
   },
+  props: {
+    epicsState: {
+      type: String,
+      required: true,
+    },
+  },
   computed: {
-    ...mapState(['epicsState']),
     availableStates() {
       const all = { text: __('Show all epics'), value: STATUS_ALL };
       const opened = { text: __('Show open epics'), value: STATUS_OPEN };
@@ -21,10 +24,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setEpicsState']),
     handleEpicStateChange(epicsState) {
       if (epicsState !== this.epicsState) {
-        this.setEpicsState(epicsState);
+        this.$emit('setEpicsState', { epicsState });
       }
     },
   },

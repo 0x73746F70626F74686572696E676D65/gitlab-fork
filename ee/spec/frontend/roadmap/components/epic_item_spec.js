@@ -14,13 +14,12 @@ import EpicItemDetails from 'ee/roadmap/components/epic_item_details.vue';
 import EpicItemTimeline from 'ee/roadmap/components/epic_item_timeline.vue';
 
 import epicChildEpicsQuery from 'ee/roadmap/queries/epic_child_epics.query.graphql';
-import localRoadmapSettingsQuery from 'ee/roadmap/queries/local_roadmap_settings.query.graphql';
 
 import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
-import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import { mockEpic, mockGroupId, mockEpicChildEpicsQueryResponse } from 'ee_jest/roadmap/mock_data';
+import { setLocalSettingsInCache } from '../local_cache_helpers';
 
 Vue.use(VueApollo);
 
@@ -36,7 +35,6 @@ const childEpicsQueryHandler = jest.fn().mockResolvedValue(mockEpicChildEpicsQue
 
 describe('EpicItemComponent', () => {
   let wrapper;
-  let store;
 
   const findTimelineCells = () => wrapper.findAllByTestId('epic-timeline-cell');
   const findEpicItemContainer = () => wrapper.findComponent(EpicItemContainer);
@@ -49,23 +47,17 @@ describe('EpicItemComponent', () => {
     filterParams = {},
   } = {}) => {
     const apolloProvider = createMockApollo([[epicChildEpicsQuery, childEpicsQueryHandler]]);
-    apolloProvider.clients.defaultClient.cache.writeQuery({
-      query: localRoadmapSettingsQuery,
-      data: {
-        localRoadmapSettings: {
-          __typename: 'LocalRoadmapSettings',
-          filterParams,
-        },
-      },
+    setLocalSettingsInCache(apolloProvider, {
+      timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+      presetType: PRESET_TYPES.MONTHS,
+      filterParams,
+      timeframe,
     });
 
     wrapper = shallowMountExtended(EpicItemComponent, {
-      store,
       apolloProvider,
       propsData: {
-        presetType: PRESET_TYPES.MONTHS,
         epic,
-        timeframe,
         childLevel: 0,
       },
       provide: {
@@ -79,27 +71,6 @@ describe('EpicItemComponent', () => {
       },
     });
   };
-
-  beforeEach(() => {
-    store = createStore();
-  });
-
-  it('passes correct props to EpicItemDetails component when filter params are empty', () => {
-    createComponent();
-
-    expect(findEpicItemDetails().props()).toMatchObject(
-      expect.objectContaining({ hasFiltersApplied: false, filterParams: {} }),
-    );
-  });
-
-  it('passes correct props to EpicItemDetails component when filter params are present', () => {
-    const filterParams = { authorUsername: 'author', labelName: ['label'], search: 'search' };
-    createComponent({ filterParams });
-
-    expect(findEpicItemDetails().props()).toMatchObject(
-      expect.objectContaining({ hasFiltersApplied: true, filterParams }),
-    );
-  });
 
   describe('start date', () => {
     it('returns Epic.startDate when start date is within range', () => {
@@ -213,15 +184,16 @@ describe('EpicItemComponent', () => {
         findEpicItemDetails().vm.$emit('toggleEpic');
       });
 
-      it('calls children epics query', () => {
+      it('calls children epics query', async () => {
+        await waitForPromises();
         expect(childEpicsQueryHandler).toHaveBeenCalledWith({
           authorUsername: '',
           fullPath: '/groups/gitlab-org/',
           iid: 1,
           labelName: [],
           search: '',
-          sort: '',
-          state: '',
+          sort: 'start_date_asc',
+          state: 'all',
           withColor: false,
         });
       });

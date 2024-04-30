@@ -1,5 +1,11 @@
 <script>
 import { GlDrawer } from '@gitlab/ui';
+
+import updateLocalRoadmapSettingsMutation from '../queries/update_local_roadmap_settings.mutation.graphql';
+import localRoadmapSettingsQuery from '../queries/local_roadmap_settings.query.graphql';
+
+import { mapLocalSettings } from '../utils/roadmap_utils';
+
 import RoadmapDaterange from './roadmap_daterange.vue';
 import RoadmapEpicsState from './roadmap_epics_state.vue';
 import RoadmapMilestones from './roadmap_milestones.vue';
@@ -20,15 +26,26 @@ export default {
       type: Boolean,
       required: true,
     },
-    timeframeRangeType: {
-      type: String,
-      required: true,
-    },
   },
   data() {
     return {
       headerHeight: '',
     };
+  },
+  apollo: {
+    localRoadmapSettings: {
+      query: localRoadmapSettingsQuery,
+    },
+  },
+  computed: {
+    ...mapLocalSettings([
+      'epicsState',
+      'progressTracking',
+      'isProgressTrackingActive',
+      'milestonesType',
+      'isShowingMilestones',
+      'isShowingLabels',
+    ]),
   },
   mounted() {
     this.$nextTick(() => {
@@ -37,6 +54,16 @@ export default {
 
       this.headerHeight = `${offsetTop + clientHeight}px`;
     });
+  },
+  methods: {
+    setLocalSettings(settings) {
+      this.$apollo.mutate({
+        mutation: updateLocalRoadmapSettingsMutation,
+        variables: {
+          input: settings,
+        },
+      });
+    },
   },
 };
 </script>
@@ -53,11 +80,22 @@ export default {
       <h2 class="gl-my-0 gl-font-size-h2 gl-line-height-24">{{ __('Roadmap settings') }}</h2>
     </template>
     <template #default>
-      <roadmap-daterange :timeframe-range-type="timeframeRangeType" />
-      <roadmap-milestones />
-      <roadmap-epics-state />
-      <roadmap-progress-tracking />
-      <roadmap-toggle-labels />
+      <roadmap-daterange @setDateRange="setLocalSettings" />
+      <roadmap-milestones
+        :milestones-type="milestonesType"
+        :is-showing-milestones="isShowingMilestones"
+        @setMilestonesSettings="setLocalSettings"
+      />
+      <roadmap-epics-state :epics-state="epicsState" @setEpicsState="setLocalSettings" />
+      <roadmap-progress-tracking
+        :progress-tracking="progressTracking"
+        :is-progress-tracking-active="isProgressTrackingActive"
+        @setProgressTracking="setLocalSettings"
+      />
+      <roadmap-toggle-labels
+        :is-showing-labels="isShowingLabels"
+        @setLabelsVisibility="setLocalSettings"
+      />
     </template>
   </gl-drawer>
 </template>

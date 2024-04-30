@@ -1,3 +1,4 @@
+import { isEqual } from 'lodash';
 import { totalDaysInQuarter, dayInQuarter } from '~/lib/utils/datetime_utility';
 
 export default {
@@ -89,7 +90,10 @@ export default {
     getTimelineBarWidthForQuarters(roadmapItem) {
       let timelineBarWidth = 0;
 
-      const indexOfCurrentQuarter = this.timeframe.indexOf(this.timeframeItem);
+      const indexOfCurrentQuarter = this.timeframe.findIndex((item) =>
+        isEqual(item, this.timeframeItem),
+      );
+
       const { cellWidth } = this.$options;
       const itemStartDate = roadmapItem.startDate;
       const itemEndDate = roadmapItem.endDate;

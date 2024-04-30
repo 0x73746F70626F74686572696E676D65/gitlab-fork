@@ -6,6 +6,8 @@ import CommonMixin from '../mixins/common_mixin';
 import MonthsPresetMixin from '../mixins/months_preset_mixin';
 import QuartersPresetMixin from '../mixins/quarters_preset_mixin';
 import WeeksPresetMixin from '../mixins/weeks_preset_mixin';
+import localRoadmapSettingsQuery from '../queries/local_roadmap_settings.query.graphql';
+import { mapLocalSettings } from '../utils/roadmap_utils';
 
 export default {
   cellWidth: TIMELINE_CELL_MIN_WIDTH,
@@ -15,14 +17,6 @@ export default {
   },
   mixins: [CommonMixin, QuartersPresetMixin, MonthsPresetMixin, WeeksPresetMixin],
   props: {
-    presetType: {
-      type: String,
-      required: true,
-    },
-    timeframe: {
-      type: Array,
-      required: true,
-    },
     timeframeItem: {
       type: [Date, Object],
       required: true,
@@ -37,7 +31,13 @@ export default {
       hoverStyles: {},
     };
   },
+  apollo: {
+    localRoadmapSettings: {
+      query: localRoadmapSettingsQuery,
+    },
+  },
   computed: {
+    ...mapLocalSettings(['presetType', 'timeframe']),
     startDate() {
       return this.milestone.startDateOutOfRange
         ? this.milestone.originalStartDate
@@ -119,6 +119,7 @@ export default {
       ]"
       :style="timelineBarStyles(milestone)"
       class="milestone-item-details d-inline-block position-absolute"
+      data-testid="milestone-item-wrapper"
     >
       <a :href="milestone.webPath" class="milestone-url d-block">
         <span

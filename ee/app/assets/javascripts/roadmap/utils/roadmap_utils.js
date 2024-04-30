@@ -267,3 +267,23 @@ export const getPresetTypeForTimeframeRangeType = (timeframeRangeType, initialPr
   }
   return presetType;
 };
+
+/**
+ * This method acts similar to Vuex's mapState/mapGetters. It takes an array of keys and returns a list of computed properties.
+ * These computed properties can be used in Vue components to access localRoadmapSettings query data.
+ *
+ * @param {array} keys Array of properties to be mapped to localRoadmapSettings query data.
+ *
+ * @returns {object} Returns an object containing a list of computed properties to be used in Vue components.
+ */
+export function mapLocalSettings(keys) {
+  return keys.reduce((computed, key) => {
+    // eslint-disable-next-line no-param-reassign
+    computed[key] = {
+      get() {
+        return this.localRoadmapSettings[key];
+      },
+    };
+    return computed;
+  }, {});
+}

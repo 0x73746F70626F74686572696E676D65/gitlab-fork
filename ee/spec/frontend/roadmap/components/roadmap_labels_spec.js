@@ -1,24 +1,16 @@
 import { GlToggle } from '@gitlab/ui';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import createStore from 'ee/roadmap/store';
 import RoadmapLabels from 'ee/roadmap/components/roadmap_toggle_labels.vue';
 
 describe('RoadmapLabels', () => {
   let wrapper;
-  let store;
 
   const createComponent = ({ isShowingLabels = false } = {}) => {
-    store = createStore();
-
-    store.dispatch('setInitialData', {
-      isShowingLabels,
-    });
-
-    jest.spyOn(store, 'dispatch').mockImplementation();
-
     wrapper = shallowMountExtended(RoadmapLabels, {
-      store,
+      propsData: {
+        isShowingLabels,
+      },
     });
   };
 
@@ -44,10 +36,10 @@ describe('RoadmapLabels', () => {
       expect(findToggle().props('value')).toBe(isShowingLabels);
     });
 
-    it('calls toggleLabels on click toggle', () => {
-      expect(store.dispatch).not.toHaveBeenCalledWith('toggleLabels');
+    it('emits `setLabelsVisibility` event on click toggle', () => {
+      expect(wrapper.emitted('setLabelsVisibility')).toBeUndefined();
       findToggle().vm.$emit('change', true);
-      expect(store.dispatch).toHaveBeenCalledWith('toggleLabels', true);
+      expect(wrapper.emitted('setLabelsVisibility')).toEqual([[{ isShowingLabels: true }]]);
     });
   });
 });

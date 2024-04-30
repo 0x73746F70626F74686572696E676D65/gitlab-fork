@@ -1,11 +1,8 @@
 import Vue from 'vue';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 
 import RoadmapFilters from 'ee/roadmap/components/roadmap_filters.vue';
-import { PRESET_TYPES, DATE_RANGES, PROGRESS_WEIGHT, MILESTONES_ALL } from 'ee/roadmap/constants';
-import createStore from 'ee/roadmap/store';
+import { PRESET_TYPES, DATE_RANGES } from 'ee/roadmap/constants';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import {
   mockSortedBy,
@@ -34,26 +31,20 @@ import {
   TOKEN_TYPE_MY_REACTION,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import { setLocalSettingsInCache, expectPayload } from '../local_cache_helpers';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   setUrlParams: jest.requireActual('~/lib/utils/url_utility').setUrlParams,
   updateHistory: jest.requireActual('~/lib/utils/url_utility').updateHistory,
 }));
 
-Vue.use(Vuex);
 Vue.use(VueApollo);
 
-const setLocalSettingsMutationMock = jest.fn();
-
-const resolvers = {
-  Mutation: {
-    setLocalRoadmapSettings: setLocalSettingsMutationMock,
-  },
-};
+const updateLocalSettingsMutationMock = jest.fn();
 
 describe('RoadmapFilters', () => {
   let wrapper;
-  let store;
+  let apolloProvider;
 
   const createComponent = ({
     presetType = PRESET_TYPES.MONTHS,
@@ -68,28 +59,27 @@ describe('RoadmapFilters', () => {
     }),
     filterParams = {},
   } = {}) => {
-    store = createStore();
-
-    store.dispatch('setInitialData', {
+    apolloProvider = createMockApollo([], {
+      Mutation: {
+        updateLocalRoadmapSettings: updateLocalSettingsMutationMock,
+      },
+    });
+    setLocalSettingsInCache(apolloProvider, {
       presetType,
-      epicsState,
+      timeframeRangeType: DATE_RANGES.THREE_YEARS,
       sortedBy,
       timeframe,
+      epicsState,
       isProgressTrackingActive: true,
-      progressTracking: PROGRESS_WEIGHT,
-      milestonesType: MILESTONES_ALL,
+      filterParams,
     });
 
     wrapper = shallowMountExtended(RoadmapFilters, {
-      store,
-      propsData: {
-        filterParams,
-      },
       provide: {
         groupFullPath,
         groupMilestonesPath,
       },
-      apolloProvider: createMockApollo([], resolvers),
+      apolloProvider,
     });
   };
 
@@ -100,19 +90,17 @@ describe('RoadmapFilters', () => {
     describe('urlParams', () => {
       it('updates window URL based on presence of props for state, filtered search and sort criteria', async () => {
         createComponent();
+        await waitForPromises();
 
         expect(global.window.location.href).toBe(
-          `${TEST_HOST}/?state=${STATUS_ALL}&sort=start_date_asc&layout=MONTHS&timeframe_range_type=&progress=WEIGHT&show_progress=true&show_milestones=true&milestones_type=ALL&show_labels=false`,
+          `${TEST_HOST}/?state=${STATUS_ALL}&sort=start_date_asc&layout=MONTHS&timeframe_range_type=THREE_YEARS&progress=WEIGHT&show_progress=true&show_milestones=true&milestones_type=ALL&show_labels=false`,
         );
 
-        store.dispatch('setEpicsState', STATUS_CLOSED);
-        store.dispatch('setSortedBy', 'end_date_asc');
-        store.dispatch('setDaterange', {
+        setLocalSettingsInCache(apolloProvider, {
+          epicsState: STATUS_CLOSED,
+          sortedBy: 'end_date_asc',
           timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
           presetType: PRESET_TYPES.MONTHS,
-        });
-
-        await wrapper.setProps({
           filterParams: {
             authorUsername: 'root',
             labelName: ['Bug'],
@@ -120,6 +108,9 @@ describe('RoadmapFilters', () => {
             confidential: true,
           },
         });
+
+        jest.runOnlyPendingTimers();
+        await waitForPromises();
 
         expect(global.window.location.href).toBe(
           `${TEST_HOST}/?state=${STATUS_CLOSED}&sort=end_date_asc&layout=MONTHS&timeframe_range_type=CURRENT_YEAR&author_username=root&label_name[]=Bug&milestone_title=4.0&confidential=true&progress=WEIGHT&show_progress=true&show_milestones=true&milestones_type=ALL&show_labels=false`,
@@ -238,7 +229,7 @@ describe('RoadmapFilters', () => {
         expect(findFilteredSearchBar().props('initialFilterValue')).toEqual(mockInitialFilterValue);
       });
 
-      it('calls `setLocalRoadmapSettings` mutation with correct payload when `onFilter` event is emitted', async () => {
+      it('calls `updateLocalRoadmapSettings` mutation with correct payload when `onFilter` event is emitted', async () => {
         const filterParams = {
           authorUsername: 'root',
           confidential: true,
@@ -253,32 +244,26 @@ describe('RoadmapFilters', () => {
         findFilteredSearchBar().vm.$emit('onFilter', mockInitialFilterValue);
         await waitForPromises();
 
-        expect(setLocalSettingsMutationMock).toHaveBeenCalledWith(
-          {},
-          expect.objectContaining({
-            input: {
-              filterParams,
-            },
-          }),
-          expect.any(Object),
-          expect.any(Object),
+        expect(updateLocalSettingsMutationMock).toHaveBeenCalledWith(
+          ...expectPayload({ filterParams }),
         );
       });
 
-      it('updates sort order when `onSort` event is emitted', () => {
+      it('updates sort order when `onSort` event is emitted', async () => {
         createComponent();
-        jest.spyOn(store, 'dispatch');
         findFilteredSearchBar().vm.$emit('onSort', 'end_date_asc');
+        await waitForPromises();
 
-        expect(store.dispatch).toHaveBeenCalledWith('setSortedBy', 'end_date_asc');
+        expect(updateLocalSettingsMutationMock).toHaveBeenCalledWith(
+          ...expectPayload({ sortedBy: 'end_date_asc' }),
+        );
       });
 
       it('does not set filters params when onFilter event is triggered with empty filters array and cleared param set to false', () => {
         createComponent();
-        jest.spyOn(store, 'dispatch');
         findFilteredSearchBar().vm.$emit('onFilter', [], false);
 
-        expect(store.dispatch).not.toHaveBeenCalledWith('setFilterParams');
+        expect(updateLocalSettingsMutationMock).not.toHaveBeenCalled();
       });
 
       describe('when user is logged in', () => {

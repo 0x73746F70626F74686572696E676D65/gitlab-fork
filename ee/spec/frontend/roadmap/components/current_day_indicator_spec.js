@@ -1,9 +1,18 @@
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
+
 import { shallowMount } from '@vue/test-utils';
 import { useFakeDate } from 'helpers/fake_date';
+import createMockApollo from 'helpers/mock_apollo_helper';
+
 import CurrentDayIndicator from 'ee/roadmap/components/current_day_indicator.vue';
 import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
+
 import { mockTimeframeInitialDate } from 'ee_jest/roadmap/mock_data';
+import { setLocalSettingsInCache } from '../local_cache_helpers';
+
+Vue.use(VueApollo);
 
 const mockTimeframeQuarters = getTimeframeForRangeType({
   timeframeRangeType: DATE_RANGES.THREE_YEARS,
@@ -24,13 +33,18 @@ const mockTimeframeWeeks = getTimeframeForRangeType({
 describe('CurrentDayIndicator', () => {
   let wrapper;
 
-  const createComponent = (props) => {
+  const createComponent = ({
+    presetType = PRESET_TYPES.MONTHS,
+    timeframeItem = mockTimeframeMonths[0],
+  } = {}) => {
+    const apolloProvider = createMockApollo();
+    setLocalSettingsInCache(apolloProvider, { presetType });
+
     wrapper = shallowMount(CurrentDayIndicator, {
       propsData: {
-        presetType: PRESET_TYPES.MONTHS,
-        timeframeItem: mockTimeframeMonths[0],
-        ...props,
+        timeframeItem,
       },
+      apolloProvider,
     });
   };
 

@@ -1,6 +1,6 @@
 import { GlFilteredSearchToken } from '@gitlab/ui';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
-import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+import { DATE_RANGES, PRESET_TYPES, PROGRESS_WEIGHT, MILESTONES_ALL } from 'ee/roadmap/constants';
 
 import { dateFromString } from 'helpers/datetime_helpers';
 import {
@@ -138,6 +138,12 @@ export const mockTimeframeWeeksAppend = [
   new Date(2018, 1, 25),
   new Date(2018, 2, 4),
 ];
+
+const mockTimeframeWeeks = getTimeframeForRangeType({
+  timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
+  presetType: PRESET_TYPES.WEEKS,
+  initialDate: mockTimeframeInitialDate,
+});
 
 const OCT_11_2020 = dateFromString('Oct 11 2020');
 export const mockWeekly = {
@@ -1122,4 +1128,19 @@ export const mockGroupTokenConfig = {
   token: GroupToken,
   operators: OPERATORS_IS,
   fullPath: 'gitlab-org',
+};
+
+export const mockLocalRoadmapSettings = {
+  filterParams: {},
+  sortedBy: 'start_date_asc',
+  bufferSize: 0,
+  epicsState: 'all',
+  timeframe: mockTimeframeWeeks,
+  timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
+  progressTracking: PROGRESS_WEIGHT,
+  milestonesType: MILESTONES_ALL,
+  isShowingMilestones: true,
+  isShowingLabels: false,
+  presetType: PRESET_TYPES.WEEKS,
+  isProgressTrackingActive: true,
 };

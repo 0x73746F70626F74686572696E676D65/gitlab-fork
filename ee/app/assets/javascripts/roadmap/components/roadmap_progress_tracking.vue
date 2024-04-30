@@ -1,7 +1,5 @@
 <script>
 import { GlFormGroup, GlFormRadioGroup, GlToggle } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapActions, mapState } from 'vuex';
 
 import { __ } from '~/locale';
 import { PROGRESS_TRACKING_OPTIONS } from '../constants';
@@ -12,14 +10,20 @@ export default {
     GlFormRadioGroup,
     GlToggle,
   },
-  computed: {
-    ...mapState(['progressTracking', 'isProgressTrackingActive']),
+  props: {
+    progressTracking: {
+      type: String,
+      required: true,
+    },
+    isProgressTrackingActive: {
+      type: Boolean,
+      required: true,
+    },
   },
   methods: {
-    ...mapActions(['setProgressTracking', 'toggleProgressTrackingActive']),
     handleProgressTrackingChange(option) {
       if (option !== this.progressTracking) {
-        this.setProgressTracking(option);
+        this.$emit('setProgressTracking', { progressTracking: option });
       }
     },
   },
@@ -42,7 +46,9 @@ export default {
       <gl-toggle
         :value="isProgressTrackingActive"
         :label="$options.i18n.toggleLabel"
-        @change="toggleProgressTrackingActive"
+        @change="
+          $emit('setProgressTracking', { isProgressTrackingActive: !isProgressTrackingActive })
+        "
       >
         <template #label>
           <span class="gl-font-weight-normal">{{ $options.i18n.toggleLabel }}</span>

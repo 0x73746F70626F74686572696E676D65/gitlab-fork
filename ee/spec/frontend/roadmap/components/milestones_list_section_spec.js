@@ -1,5 +1,11 @@
 import { GlButton } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
+
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import createMockApollo from 'helpers/mock_apollo_helper';
+
 import milestonesListSectionComponent from 'ee/roadmap/components/milestones_list_section.vue';
 import {
   DATE_RANGES,
@@ -7,28 +13,19 @@ import {
   EPIC_DETAILS_CELL_WIDTH,
   TIMELINE_CELL_MIN_WIDTH,
 } from 'ee/roadmap/constants';
-import createStore from 'ee/roadmap/store';
 import { scrollToCurrentDay } from 'ee/roadmap/utils/epic_utils';
 import eventHub from 'ee/roadmap/event_hub';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import { mockTimeframeInitialDate, mockGroupMilestones } from 'ee_jest/roadmap/mock_data';
-import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { expectPayload } from '../local_cache_helpers';
 
+Vue.use(VueApollo);
 jest.mock('ee/roadmap/utils/epic_utils');
 
-const initializeStore = (mockTimeframeMonths) => {
-  const store = createStore();
-  store.dispatch('setInitialData', {
-    presetType: PRESET_TYPES.MONTHS,
-    timeframe: mockTimeframeMonths,
-  });
-  return store;
-};
+const updateLocalRoadmapSettingsMutationMock = jest.fn();
 
 describe('MilestonesListSectionComponent', () => {
   let wrapper;
-  let store;
 
   const mockTimeframeMonths = getTimeframeForRangeType({
     timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
@@ -50,21 +47,25 @@ describe('MilestonesListSectionComponent', () => {
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(milestonesListSectionComponent, {
-      store,
       propsData: {
         milestones: mockGroupMilestones,
         timeframe: mockTimeframeMonths,
         presetType: PRESET_TYPES.MONTHS,
+        bufferSize: mockGroupMilestones.length + 1,
         ...props,
       },
       directives: {
         GlTooltip: createMockDirective('gl-tooltip'),
       },
+      apolloProvider: createMockApollo([], {
+        Mutation: {
+          updateLocalRoadmapSettings: updateLocalRoadmapSettingsMutationMock,
+        },
+      }),
     });
   };
 
   beforeEach(() => {
-    store = initializeStore(mockTimeframeMonths);
     createWrapper();
   });
 
@@ -75,6 +76,12 @@ describe('MilestonesListSectionComponent', () => {
 
     it('calls `scrollToCurrentDay` method', () => {
       expect(scrollToCurrentDay).toHaveBeenCalled();
+    });
+
+    it('calls `updateLocalRoadmapSettings` mutation with correct variables', () => {
+      expect(updateLocalRoadmapSettingsMutationMock).toHaveBeenCalledWith(
+        ...expectPayload({ bufferSize: 16 }),
+      );
     });
   });
 
