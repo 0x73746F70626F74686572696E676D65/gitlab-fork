@@ -10868,9 +10868,6 @@ msgstr ""
 msgid "CiCatalog|GitLab-maintained"
 msgstr ""
 
-msgid "CiCatalog|Go to the project"
-msgstr ""
-
 msgid "CiCatalog|How do I publish a component?"
 msgstr ""
 
@@ -10896,9 +10893,6 @@ msgid "CiCatalog|Readme"
 msgstr ""
 
 msgid "CiCatalog|Released %{date}"
-msgstr ""
-
-msgid "CiCatalog|Released %{timeAgo}"
 msgstr ""
 
 msgid "CiCatalog|Released %{timeAgo} by %{author}"
