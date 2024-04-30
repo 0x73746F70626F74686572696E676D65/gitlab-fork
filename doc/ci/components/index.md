@@ -414,7 +414,7 @@ ensure-job-added:
   script:
     - |
       route="${CI_API_V4_URL}/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/jobs"
-      count=`curl --silent --header $route | jq 'map(select(.name | contains("component job of my-component"))) | length'`
+      count=`curl --silent $route | jq 'map(select(.name | contains("component job of my-component"))) | length'`
       if [ "$count" != "1" ]; then
         exit 1; else
         echo "Component Job present"
