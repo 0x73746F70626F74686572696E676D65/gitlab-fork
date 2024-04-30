@@ -37,9 +37,9 @@ export const parseProvideData = (el) => {
       firstName,
       lastName,
       companyName,
-      glmContent,
-      productInteraction,
     },
+    glmContent,
+    productInteraction,
     ctaTracking: {
       action: trackAction,
       label: trackLabel,

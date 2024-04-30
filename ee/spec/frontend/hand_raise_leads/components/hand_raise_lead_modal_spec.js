@@ -2,6 +2,7 @@ import { GlModal, GlFormTextarea } from '@gitlab/ui';
 import { kebabCase, pick } from 'lodash';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import { createWrapper } from '@vue/test-utils';
 import { sprintf } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockTracking } from 'helpers/tracking_helper';
@@ -13,31 +14,52 @@ import {
   PQL_MODAL_CANCEL,
   PQL_MODAL_HEADER_TEXT,
   PQL_MODAL_FOOTER_TEXT,
+  PQL_HAND_RAISE_MODAL_TRACKING_LABEL,
 } from 'ee/hand_raise_leads/hand_raise_lead/constants';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
-import { FORM_DATA, USER, CREATE_HAND_RAISE_LEAD_PATH } from './mock_data';
+import eventHub from 'ee/hand_raise_leads/hand_raise_lead/event_hub';
+import { BV_SHOW_MODAL } from '~/lib/utils/constants';
+import {
+  FORM_DATA,
+  USER,
+  CREATE_HAND_RAISE_LEAD_PATH,
+  GLM_CONTENT,
+  PRODUCT_INTERACTION,
+  MODAL_ID,
+} from './mock_data';
 
 Vue.use(VueApollo);
 
 describe('HandRaiseLeadModal', () => {
   let wrapper;
   let trackingSpy;
-  const ctaTracking = {};
 
   const createComponent = (props = {}) => {
     return shallowMountExtended(HandRaiseLeadModal, {
       propsData: {
-        small: false,
         submitPath: CREATE_HAND_RAISE_LEAD_PATH,
         user: USER,
-        ctaTracking,
-        modalId: 'hand-raise-lead-modal',
+        modalId: MODAL_ID,
         ...props,
       },
     });
   };
 
+  const expectTracking = (action) =>
+    expect(trackingSpy).toHaveBeenCalledWith(undefined, action, {
+      label: PQL_HAND_RAISE_MODAL_TRACKING_LABEL,
+    });
+
   const findModal = () => wrapper.findComponent(GlModal);
+  const triggerOpenModal = async ({
+    productInteraction = PRODUCT_INTERACTION,
+    ctaTracking = {},
+    glmContent = GLM_CONTENT,
+    modalIdToOpen = MODAL_ID,
+  } = {}) => {
+    eventHub.$emit('openModal', { productInteraction, ctaTracking, glmContent, modalIdToOpen });
+    await nextTick();
+  };
   const findFormInput = (testId) => wrapper.findByTestId(testId);
   const findCountryOrRegionSelector = () => wrapper.findComponent(CountryOrRegionSelector);
   const submitForm = () => findModal().vm.$emit('primary');
@@ -68,9 +90,12 @@ describe('HandRaiseLeadModal', () => {
   };
 
   describe('rendering', () => {
+    let rootWrapper;
+
     beforeEach(() => {
       wrapper = createComponent();
       trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+      rootWrapper = createWrapper(wrapper.vm.$root);
     });
 
     it('has the default injected values', () => {
@@ -119,10 +144,28 @@ describe('HandRaiseLeadModal', () => {
     });
 
     it('tracks modal view', async () => {
-      await findModal().vm.$emit('change');
+      await triggerOpenModal();
 
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_form_viewed', {
-        label: 'hand_raise_lead_form',
+      expectTracking('hand_raise_form_viewed');
+    });
+
+    it('opens the modal', async () => {
+      await triggerOpenModal();
+
+      expect(rootWrapper.emitted(BV_SHOW_MODAL)).toHaveLength(1);
+    });
+
+    describe('with mismatched modelId', () => {
+      beforeEach(async () => {
+        await triggerOpenModal({ modalIdToOpen: '_bogus_modal_id_' });
+      });
+
+      it('does not track', () => {
+        expect(trackingSpy).not.toHaveBeenCalled();
+      });
+
+      it('does not open the modal', () => {
+        expect(rootWrapper.emitted(BV_SHOW_MODAL)).toBeUndefined();
       });
     });
   });
@@ -166,8 +209,10 @@ describe('HandRaiseLeadModal', () => {
     });
 
     describe('successful submission', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         jest.spyOn(SubscriptionsApi, 'sendHandRaiseLead').mockResolvedValue();
+
+        await triggerOpenModal();
 
         submitForm();
       });
@@ -178,8 +223,8 @@ describe('HandRaiseLeadModal', () => {
           {
             namespaceId: 1,
             comment: 'comment',
-            glmContent: 'some-content',
-            productInteraction: '_product_interaction_',
+            glmContent: GLM_CONTENT,
+            productInteraction: PRODUCT_INTERACTION,
             ...FORM_DATA,
           },
         );
@@ -199,9 +244,7 @@ describe('HandRaiseLeadModal', () => {
       });
 
       it('tracks successful submission', () => {
-        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_submit_form_succeeded', {
-          label: 'hand_raise_lead_form',
-        });
+        expectTracking('hand_raise_submit_form_succeeded');
       });
     });
 
@@ -213,9 +256,7 @@ describe('HandRaiseLeadModal', () => {
       });
 
       it('tracks failed submission', () => {
-        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_submit_form_failed', {
-          label: 'hand_raise_lead_form',
-        });
+        expectTracking('hand_raise_submit_form_failed');
       });
     });
 
@@ -224,10 +265,8 @@ describe('HandRaiseLeadModal', () => {
         findModal().vm.$emit('cancel');
       });
 
-      it('tracks failed submission', () => {
-        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_form_canceled', {
-          label: 'hand_raise_lead_form',
-        });
+      it('tracks cancel', () => {
+        expectTracking('hand_raise_form_canceled');
       });
     });
   });

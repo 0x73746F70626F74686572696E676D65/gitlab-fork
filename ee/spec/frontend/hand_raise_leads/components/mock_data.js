@@ -17,11 +17,18 @@ export const USER = {
   firstName: 'Joe',
   lastName: 'Doe',
   companyName: 'ACME',
-  glmContent: 'some-content',
-  productInteraction: '_product_interaction_',
 };
 
+export const GLM_CONTENT = 'some-content';
+export const PRODUCT_INTERACTION = '_product_interaction_';
+export const MODAL_ID = '_some_id_';
+export const BUTTON_TEXT = '_button_text_';
 export const CREATE_HAND_RAISE_LEAD_PATH = '/-/subscriptions/hand_raise_leads';
+
+export const BUTTON_ATTRIBUTES = {
+  href: '#',
+  buttonTextClasses: 'gl-font-sm',
+};
 
 export const FORM_DATA = {
   firstName: 'Joe',
