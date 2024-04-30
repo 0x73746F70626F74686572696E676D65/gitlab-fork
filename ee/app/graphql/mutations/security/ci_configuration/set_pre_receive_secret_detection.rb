@@ -30,7 +30,7 @@ module Mutations
           namespace = find_namespace(namespace_path)
 
           response = ::Security::Configuration::SetPreReceiveSecretDetection
-            .execute(namespace: namespace, enable: enable)
+            .execute(current_user: current_user, namespace: namespace, enable: enable)
 
           { pre_receive_secret_detection_enabled: response.payload[:enabled], errors: response.errors }
         end
