@@ -10,11 +10,11 @@ RSpec.describe ExternalStatusChecks::UpdateService, feature_category: :groups_an
   let(:current_user) { project.first_owner }
   let(:params) { { id: project.id, check_id: check.id, external_url: 'http://newvalue.com', name: 'new name', protected_branch_ids: [protected_branch.id] } }
 
-  subject { described_class.new(container: project, current_user: current_user, params: params).execute }
+  subject(:execute) { described_class.new(container: project, current_user: current_user, params: params).execute }
 
   context 'when current user is project owner' do
-    it 'updates an approval rule' do
-      subject
+    it 'updates an external status check' do
+      execute
 
       check.reload
 
@@ -24,28 +24,28 @@ RSpec.describe ExternalStatusChecks::UpdateService, feature_category: :groups_an
     end
 
     it 'is successful' do
-      expect(subject.success?).to be true
+      expect(execute.success?).to be true
     end
   end
 
   context 'when current user is not a project owner' do
     let_it_be(:current_user) { create(:user) }
 
-    it 'does not change an approval rule' do
-      expect { subject }.not_to change { check.name }
+    it 'does not change an external status check' do
+      expect { execute }.not_to change { check.name }
     end
 
     it 'is unsuccessful' do
-      expect(subject.error?).to be true
+      expect(execute.error?).to be true
     end
 
     it 'returns an unauthorized status' do
-      expect(subject.http_status).to eq(:unauthorized)
+      expect(execute.http_status).to eq(:unauthorized)
     end
 
     it 'contains an appropriate message and error' do
-      expect(subject.message).to eq('Failed to update rule')
-      expect(subject.payload[:errors]).to contain_exactly('Not allowed')
+      expect(execute.message).to eq('Failed to update external status check')
+      expect(execute.payload[:errors]).to contain_exactly('Not allowed')
     end
   end
 
@@ -64,7 +64,7 @@ RSpec.describe ExternalStatusChecks::UpdateService, feature_category: :groups_an
           let_it_be(:params) { { id: project.id, check_id: external_status_check.id, protected_branch_ids: [main_branch.id] } }
 
           it 'logs an audit event' do
-            expect { subject }.to change { AuditEvent.count }.by(1)
+            expect { execute }.to change { AuditEvent.count }.by(1)
             expect(AuditEvent.last.details[:custom_message]).to eq "Added protected branch main to QA status check and removed all other branches from status check"
           end
         end
@@ -77,7 +77,7 @@ RSpec.describe ExternalStatusChecks::UpdateService, feature_category: :groups_an
           let_it_be(:params) { { id: project.id, check_id: external_status_check.id, protected_branch_ids: [main_branch.id, master_branch.id] } }
 
           it 'logs an audit event' do
-            expect { subject }.to change { AuditEvent.count }.by(1)
+            expect { execute }.to change { AuditEvent.count }.by(1)
             expect(AuditEvent.last.details[:custom_message]).to eq "Added protected branch master to QA status check"
           end
         end
@@ -92,7 +92,7 @@ RSpec.describe ExternalStatusChecks::UpdateService, feature_category: :groups_an
           let_it_be(:params) { { id: project.id, check_id: external_status_check.id, protected_branch_ids: [] } }
 
           it 'logs an audit event' do
-            expect { subject }.to change { AuditEvent.count }.by(1)
+            expect { execute }.to change { AuditEvent.count }.by(1)
             expect(AuditEvent.last.details[:custom_message]).to eq "Added all branches to QA status check"
           end
         end
@@ -105,7 +105,7 @@ RSpec.describe ExternalStatusChecks::UpdateService, feature_category: :groups_an
           let_it_be(:params) { { id: project.id, check_id: external_status_check.id, protected_branch_ids: [main_branch.id] } }
 
           it 'logs an audit event' do
-            expect { subject }.to change { AuditEvent.count }.by(1)
+            expect { execute }.to change { AuditEvent.count }.by(1)
             expect(AuditEvent.last.details[:custom_message]).to eq "Removed protected branch master from QA status check"
           end
         end
@@ -115,7 +115,7 @@ RSpec.describe ExternalStatusChecks::UpdateService, feature_category: :groups_an
     it 'executes ExternalStatusCheckChangesAuditor' do
       expect(Audit::ExternalStatusCheckChangesAuditor).to receive(:new).with(current_user, check).and_call_original
 
-      subject
+      execute
     end
   end
 
