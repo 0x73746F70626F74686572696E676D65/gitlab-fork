@@ -16,7 +16,7 @@ CI/CD variables are a type of environment variable. You can use them to:
 - Store values you want to re-use.
 - Avoid hard-coding values in your `.gitlab-ci.yml` file.
 
-You can [override variable values manually for a specific pipeline](../jobs/index.md#specifying-variables-when-running-manual-jobs),
+You can [override variable values](#cicd-variable-precedence) for a specific pipeline when you [run a pipeline manually](../pipelines/index.md#run-a-pipeline-manually), [run a manual job](../jobs/index.md#specifying-variables-when-running-manual-jobs),
 or have them [prefilled in manual pipelines](../pipelines/index.md#prefill-variables-in-manual-pipelines).
 
 Variable names are limited by the [shell the runner uses](https://docs.gitlab.com/runner/shells/index.html)
@@ -696,6 +696,7 @@ The order of precedence for variables is (from highest to lowest):
    - [Scheduled pipeline variables](../pipelines/schedules.md#add-a-pipeline-schedule).
    - [Manual pipeline run variables](../pipelines/index.md#run-a-pipeline-manually).
    - Variables added when [creating a pipeline with the API](../../api/pipelines.md#create-a-new-pipeline).
+   - [Manual job variables](../jobs/index.md#specifying-variables-when-running-manual-jobs).
 1. Project [variables](#for-a-project).
 1. Group [variables](#for-a-group). If the same variable name exists in a
    group and its subgroups, the job uses the value from the closest subgroup. For example, if
@@ -721,8 +722,8 @@ job1:
     - echo "The variable is '$API_TOKEN'"
 ```
 
-In this example, `job1` outputs `The variable is 'secure'` because variables defined in jobs
-have higher precedence than variables defined globally.
+In this example, `job1` outputs `The variable is 'secure'` because variables defined in jobs in the `.gitlab-ci.yml` file
+have higher precedence than variables defined globally in the `.gitlab-ci.yml` file.
 
 ### Override a defined CI/CD variable
 
@@ -734,6 +735,7 @@ You can override the value of a variable when you:
 - Trigger a pipeline by using [the `triggers` API endpoint](../triggers/index.md#pass-cicd-variables-in-the-api-call).
 - Pass variables to a downstream pipeline [by using the `variable` keyword](../pipelines/downstream_pipelines.md#pass-cicd-variables-to-a-downstream-pipeline)
   or [by using `dotenv` variables](../pipelines/downstream_pipelines.md#pass-dotenv-variables-created-in-a-job).
+- Specify variables when [running a manual job](../pipelines/index.md#run-a-pipeline-manually).
 
 You should avoid overriding [predefined variables](predefined_variables.md), as it
 can cause the pipeline to behave unexpectedly.
