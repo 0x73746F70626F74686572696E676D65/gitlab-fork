@@ -8,7 +8,15 @@ module Gitlab
           def prompt
             return { prompt: base_prompt } unless provider_prompt_class
 
-            provider_prompt_class.prompt(prompt_options)
+            if claude_3_enabled? && provider_prompt_class.respond_to?(:claude_3_prompt)
+              provider_prompt_class.claude_3_prompt(prompt_options)
+            else
+              provider_prompt_class.prompt(prompt_options)
+            end
+          end
+
+          def claude_3_enabled?
+            Feature.enabled?(:ai_claude_3_sonnet, context.current_user)
           end
 
           def request(&block)

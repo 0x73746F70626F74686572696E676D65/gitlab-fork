@@ -31,10 +31,8 @@ module Gitlab
               vertex_ai: ::Gitlab::Llm::Chain::Tools::EpicIdentifier::Prompts::VertexAi
             }.freeze
 
-            # our template
-            PROMPT_TEMPLATE = [
-              Utils::Prompt.as_system(
-                <<~PROMPT
+            SYSTEM_PROMPT = Utils::Prompt.as_system(
+              <<~PROMPT
                 You can fetch information about a resource called: an epic.
                 An epic can be referenced by url or numeric IDs preceded by symbol.
                 An epic can also be referenced by a GitLab reference.
@@ -95,8 +93,11 @@ module Gitlab
                 ```
 
                 Begin!
-                PROMPT
-              ),
+              PROMPT
+            )
+
+            PROMPT_TEMPLATE = [
+              SYSTEM_PROMPT,
               Utils::Prompt.as_assistant("%<suggestions>s"),
               Utils::Prompt.as_user("Question: %<input>s")
             ].freeze
