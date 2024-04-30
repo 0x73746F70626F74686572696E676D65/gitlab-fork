@@ -118,6 +118,28 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
         expect(execute).to be_success
       end
 
+      context 'with project template' do
+        let(:project_params) { super().merge(template_name: 'plainhtml') }
+
+        it 'allows for the project to be created' do
+          # rubocop:disable Rails/NegateInclude -- This is ActionController::Parameters
+          expect(::Projects::CreateService).to receive(:new).with(
+            user,
+            an_object_satisfying do |permitted|
+              permitted.include?(:template_name) && !permitted.include?(:initialize_with_readme)
+            end
+          ).once.and_call_original
+          # rubocop:enable Rails/NegateInclude
+
+          expect(::Projects::CreateService).to receive(:new).with(
+            user,
+            an_object_satisfying { |permitted| permitted.include?(:import_data) }
+          ).once.and_call_original
+
+          expect(execute).to be_success
+        end
+      end
+
       context 'with trial_discover_page experiment not called' do
         subject(:service) { described_class.new(user, params) }
 
