@@ -233,8 +233,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Template,
         let(:expected_jobs) do
           [
             :"dependency-scanning-0",
-            :"bundler-audit-dependency-scanning-0",
-            :"retire-js-dependency-scanning-0",
             *expected_jobs_with_excluded_variable_rules
           ]
         end
