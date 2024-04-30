@@ -162,14 +162,18 @@ RSpec.describe Namespaces::FreeUserCap::GroupOverLimitNotificationWorker, :saas,
       end
 
       context 'when top level group limit has been reached' do
-        before do
-          stub_const("#{described_class}::TOP_LEVEL_GROUPS_LIMIT", 1)
-        end
+        context 'when top level group limit is one' do
+          before do
+            stub_const("#{described_class}::TOP_LEVEL_GROUPS_LIMIT", 1)
+            under_top_level_group.destroy! # so that it does not become the group we check
+          end
 
-        it 'runs notify service for first group only' do
-          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).exactly(1).time
+          it 'runs notify service for one group only' do
+            expect(::Namespaces::FreeUserCap::Enforcement).to receive(:new).exactly(1).time.and_call_original
+            expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).exactly(1).time
 
-          perform
+            perform
+          end
         end
 
         context 'with precedent given to groups with invited groups over projects' do
