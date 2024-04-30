@@ -413,7 +413,7 @@ ensure-job-added:
   # Replace "component job of my-component" with the job name in your component.
   script:
     - |
-      route="${CI_API_V4_URL}/projects/$CI_PROJECT_ID/pipelines/$CI_PIPELINE_ID/jobs"
+      route="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/pipelines/${CI_PIPELINE_ID}/jobs"
       count=`curl --silent $route | jq 'map(select(.name | contains("component job of my-component"))) | length'`
       if [ "$count" != "1" ]; then
         exit 1; else
