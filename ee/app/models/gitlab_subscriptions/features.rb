@@ -72,7 +72,6 @@ module GitlabSubscriptions
       pipelines_usage_quotas
       transfer_usage_quotas
       product_analytics_usage_quotas
-      visual_review_app
       wip_limits
       zoekt_code_search
       blocked_work_items

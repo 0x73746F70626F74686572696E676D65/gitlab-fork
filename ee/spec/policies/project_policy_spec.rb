@@ -1386,7 +1386,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   context 'visual review bot' do
     let(:current_user) { Users::Internal.visual_review_bot }
 
-    it { expect_allowed(:create_note) }
+    it { expect_disallowed(:create_note) }
     it { expect_disallowed(:read_note) }
     it { expect_disallowed(:resolve_note) }
   end
