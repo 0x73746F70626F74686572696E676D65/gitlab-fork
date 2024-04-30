@@ -20,7 +20,7 @@ import { addEnabledNamespacesToCache } from 'ee/analytics/devops_reports/devops_
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { mockTracking } from 'helpers/tracking_helper';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 import DevopsScore from '~/analytics/devops_reports/components/devops_score.vue';
 import API from '~/api';
 import { groupNodes, devopsAdoptionNamespaceData } from '../mock_data';
@@ -366,24 +366,14 @@ describe('DevopsAdoptionApp', () => {
   describe('tabs', () => {
     const eventTrackingBehaviour = (testId, event) => {
       describe('event tracking', () => {
-        it(`tracks the ${event} event when clicked`, () => {
-          jest.spyOn(API, 'trackInternalEvent');
-          const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+        const { bindInternalEventDocument } = useMockInternalEventsTracking();
 
-          expect(API.trackInternalEvent).not.toHaveBeenCalled();
+        it(`tracks the ${event} event when clicked`, () => {
+          const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
 
           wrapper.findByTestId(testId).vm.$emit('click');
 
-          expect(API.trackInternalEvent).toHaveBeenCalledWith(event, {});
-          expect(trackingSpy).toHaveBeenCalledWith(undefined, event, {
-            context: {
-              schema: 'iglu:com.gitlab/gitlab_service_ping/jsonschema/1-0-1',
-              data: {
-                event_name: event,
-                data_source: 'redis_hll',
-              },
-            },
-          });
+          expect(trackEventSpy).toHaveBeenCalledWith(event, {}, undefined);
         });
 
         it('only tracks the event once', () => {
