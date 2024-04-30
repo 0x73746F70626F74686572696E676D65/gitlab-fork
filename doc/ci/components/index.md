@@ -253,7 +253,7 @@ To publish a new version of the component to the catalog:
 
    ```yaml
    create-release:
-     stage: deploy
+     stage: release
      image: registry.gitlab.com/gitlab-org/release-cli:latest
      script: echo "Creating release $CI_COMMIT_TAG"
      rules:
@@ -425,9 +425,9 @@ ensure-job-added:
 create-release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
+  script: echo "Creating release $CI_COMMIT_TAG"
   rules:
     - if: $CI_COMMIT_TAG
-  script: echo "Creating release $CI_COMMIT_TAG"
   release:
     tag_name: $CI_COMMIT_TAG
     description: "Release $CI_COMMIT_TAG of components repository $CI_PROJECT_PATH"
@@ -545,7 +545,7 @@ For example, to create a component with `stage` configuration that can be define
 - In a project using the component:
 
   ```yaml
-  stages: [verify, deploy]
+  stages: [verify, release]
 
   include:
     - component: $CI_SERVER_FQDN/myorg/ruby/test@1.0.0
