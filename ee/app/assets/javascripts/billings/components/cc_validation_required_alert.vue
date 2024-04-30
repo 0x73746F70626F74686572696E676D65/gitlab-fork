@@ -2,6 +2,7 @@
 import { GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
+import { PROMO_URL } from '~/lib/utils/url_utility';
 import AccountVerificationModal from './account_verification_modal.vue';
 
 const i18n = {
@@ -18,7 +19,7 @@ const i18n = {
     %{strongStart}GitLab will not charge your card, it will only be used for validation.%{strongEnd} %{linkStart}Learn more%{linkEnd}.`),
     primaryButtonText: s__('Billings|Validate account'),
   },
-  pipelineVerificationLink: 'https://about.gitlab.com/blog/2021/05/17/prevent-crypto-mining-abuse/',
+  pipelineVerificationLink: `${PROMO_URL}/blog/2021/05/17/prevent-crypto-mining-abuse/`,
 };
 
 export default {

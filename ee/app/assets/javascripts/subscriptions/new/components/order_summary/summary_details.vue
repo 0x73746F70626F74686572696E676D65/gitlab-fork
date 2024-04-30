@@ -4,6 +4,7 @@ import { GlAlert, GlLink, GlSprintf, GlLoadingIcon } from '@gitlab/ui';
 import { mapState, mapGetters } from 'vuex';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
+import { PROMO_URL } from '~/lib/utils/url_utility';
 import { PROMO_CODE_OFFER_TEXT, PROMO_CODE_TERMS_LINK } from 'ee/subscriptions/new/constants';
 import formattingMixins from '../../formatting_mixins';
 
@@ -49,6 +50,7 @@ export default {
     taxNote: s__('Checkout|(may be %{linkStart}charged upon purchase%{linkEnd})'),
     total: s__('Checkout|Total'),
   },
+  taxHelpUrl: `${PROMO_URL}/handbook/tax/#indirect-taxes-management`,
 };
 </script>
 <template>
@@ -114,7 +116,7 @@ export default {
             <template #link="{ content }">
               <gl-link
                 class="gl-text-decoration-underline gl-text-gray-500"
-                href="https://about.gitlab.com/handbook/tax/#indirect-taxes-management"
+                :href="$options.taxHelpUrl"
                 target="_blank"
                 data-testid="tax-help-link"
                 @click="track('click_button', { label: 'tax_link' })"
