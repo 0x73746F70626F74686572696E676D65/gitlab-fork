@@ -17,3 +17,5 @@ class AddHashedRootNamespaceIdToCommits < Elastic::Migration
     }
   end
 end
+
+AddHashedRootNamespaceIdToCommits.prepend ::Elastic::MigrationObsolete
