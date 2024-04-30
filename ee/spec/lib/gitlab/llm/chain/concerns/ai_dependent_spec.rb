@@ -17,17 +17,27 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
   let(:logger) { instance_double('Gitlab::Llm::Logger') }
 
   describe '#prompt' do
-    context 'when prompt is called' do
-      it 'returns provider specific prompt' do
-        tool = ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor.new(context: context, options: options)
+    context "when claude3 FF is enabled" do
+      it "returns claude 3 prompt" do
+        tool = ::Gitlab::Llm::Chain::Tools::IssueReader::Executor.new(context: context, options: options)
 
-        expect(tool).not_to receive(:base_prompt).and_call_original
+        expect(tool.class::PROVIDER_PROMPT_CLASSES[:anthropic]).to receive(:claude_3_prompt).and_call_original
 
-        prompt = tool.prompt[:prompt]
+        tool.prompt
+      end
+    end
 
-        expect(prompt).to include("You can fetch information about a resource called: an issue.")
-        expect(prompt).to include("Human:")
-        expect(prompt).to include("Assistant:")
+    context "when claude 3 FF is disabled" do
+      before do
+        stub_feature_flags(ai_claude_3_sonnet: false)
+      end
+
+      it "returns provider base prompt" do
+        tool = ::Gitlab::Llm::Chain::Tools::IssueReader::Executor.new(context: context, options: options)
+
+        expect(tool.class::PROVIDER_PROMPT_CLASSES[:anthropic]).to receive(:prompt).and_call_original
+
+        tool.prompt
       end
     end
 

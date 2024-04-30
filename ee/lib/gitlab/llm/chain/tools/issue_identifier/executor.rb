@@ -35,10 +35,8 @@ module Gitlab
               'reference' => Issue.reference_pattern
             }.freeze
 
-            # our template
-            PROMPT_TEMPLATE = [
-              Utils::Prompt.as_system(
-                <<~PROMPT
+            SYSTEM_PROMPT = Utils::Prompt.as_system(
+              <<~PROMPT
                 You can fetch information about a resource called: an issue.
                 An issue can be referenced by url or numeric IDs preceded by symbol.
                 An issue can also be referenced by a GitLab reference. A GitLab reference ends with a number preceded by the delimiter # and contains one or more /.
@@ -97,8 +95,11 @@ module Gitlab
                 ```
 
                 Begin!
-                PROMPT
-              ),
+              PROMPT
+            )
+
+            PROMPT_TEMPLATE = [
+              SYSTEM_PROMPT,
               Utils::Prompt.as_assistant("%<suggestions>s"),
               Utils::Prompt.as_user("Question: %<input>s")
             ].freeze

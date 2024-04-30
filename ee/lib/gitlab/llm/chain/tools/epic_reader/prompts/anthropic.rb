@@ -9,9 +9,25 @@ module Gitlab
             class Anthropic
               include Concerns::AnthropicPrompt
 
+              def self.claude_3_prompt(options)
+                conversation = Utils::Prompt.role_conversation([
+                  ::Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor::SYSTEM_PROMPT,
+                  Utils::Prompt.as_user(options[:input]),
+                  Utils::Prompt.as_assistant(options[:suggestions], "```json
+                    \{
+                      \"ResourceIdentifierType\": \"")
+                ])
+
+                {
+                  prompt: conversation,
+                  options: { model: ::Gitlab::Llm::AiGateway::Client::CLAUDE_3_HAIKU }
+                }
+              end
+
               def self.prompt(options)
                 base_prompt = Utils::Prompt.no_role_text(
-                  ::Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor::PROMPT_TEMPLATE, options
+                  ::Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor::PROMPT_TEMPLATE,
+                  options
                 )
 
                 {
