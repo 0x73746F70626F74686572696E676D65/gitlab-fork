@@ -259,9 +259,15 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
 
   describe 'workspaces' do
     context 'when creating' do
-      # TODO Unskip feature spec once the Agent mapping GraphQL API is implemented
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/455214
-      describe 'when the remote_development_namespace_agent_authorization feature flag is on', :skip do
+      context 'when the remote_development_namespace_agent_authorization feature flag is on' do
+        let_it_be(:cluster_agent_mapping) do
+          create(
+            :remote_development_namespace_cluster_agent_mapping,
+            user: user, agent: agent,
+            namespace: group
+          )
+        end
+
         before do
           stub_feature_flags(remote_development_namespace_agent_authorization: true)
         end
@@ -269,7 +275,7 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
         it_behaves_like 'creates a workspace'
       end
 
-      describe 'when the remote_development_namespace_agent_authorization feature flag is off' do
+      context 'when the remote_development_namespace_agent_authorization feature flag is off' do
         before do
           stub_feature_flags(remote_development_namespace_agent_authorization: false)
         end

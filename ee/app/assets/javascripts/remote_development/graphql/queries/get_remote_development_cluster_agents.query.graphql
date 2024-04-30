@@ -1,7 +1,7 @@
 query getRemoteDevelopmentClusterAgents($namespace: ID!) {
   namespace(fullPath: $namespace) {
     id
-    remoteDevelopmentClusterAgents(filter: "AVAILABLE") @client {
+    remoteDevelopmentClusterAgents(filter: AVAILABLE) {
       nodes {
         id
         name
