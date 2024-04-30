@@ -58932,9 +58932,6 @@ msgstr ""
 msgid "Workspaces|The branch, tag, or commit hash GitLab uses to create your workspace."
 msgstr ""
 
-msgid "Workspaces|To create a workspace for this project, an administrator must %{linkStart}configure a cluster agent%{linkEnd} for the project's group."
-msgstr ""
-
 msgid "Workspaces|To create a workspace, add a devfile to this project. A devfile is a configuration file for your workspace."
 msgstr ""
 
@@ -58957,6 +58954,9 @@ msgid "Workspaces|Workspaces Settings"
 msgstr ""
 
 msgid "Workspaces|You can't create a workspace for this project"
+msgstr ""
+
+msgid "Workspaces|You must have access to a cluster agent. An administrator can configure an agent for the project or group."
 msgstr ""
 
 msgid "Workspaces|Your workspaces"

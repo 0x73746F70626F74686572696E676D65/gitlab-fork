@@ -240,12 +240,6 @@ describe('remote_development/pages/create.vue', () => {
       });
     });
 
-    it('displays a link that navigates to the workspaces documentation', () => {
-      expect(wrapper.findComponent(GlLink).attributes().href).toBe(
-        '/help/user/clusters/agent/install/index.md',
-      );
-    });
-
     it('does not display cluster agents form select group', () => {
       expect(findClusterAgentsFormGroup().exists()).toBe(false);
     });

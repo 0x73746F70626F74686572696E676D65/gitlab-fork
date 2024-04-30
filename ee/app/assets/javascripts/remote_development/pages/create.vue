@@ -10,7 +10,6 @@ import {
   GlFormInputGroup,
   GlIcon,
   GlPopover,
-  GlSprintf,
   GlTooltipDirective,
   GlLink,
 } from '@gitlab/ui';
@@ -60,7 +59,7 @@ export const i18n = {
   invalidProjectAlert: {
     title: s__("Workspaces|You can't create a workspace for this project"),
     noAgentsContent: s__(
-      "Workspaces|To create a workspace for this project, an administrator must %{linkStart}configure a cluster agent%{linkEnd} for the project's group.",
+      'Workspaces|You must have access to a cluster agent. An administrator can configure an agent for the project or group.',
     ),
     noDevFileContent: s__(
       'Workspaces|To create a workspace, add a devfile to this project. A devfile is a configuration file for your workspace.',
@@ -76,7 +75,6 @@ export const i18n = {
   ),
 };
 
-const clusterAgentsHelpPath = helpPagePath('user/clusters/agent/install/index.md');
 export const devfileHelpPath = helpPagePath('user/workspace/index.md#devfile');
 
 export default {
@@ -90,7 +88,6 @@ export default {
     GlFormInput,
     GlIcon,
     GlPopover,
-    GlSprintf,
     GlLink,
     RefSelector,
     SearchProjectsListbox,
@@ -241,7 +238,6 @@ export default {
   i18n,
   ROUTES,
   PROJECT_VISIBILITY,
-  clusterAgentsHelpPath,
   devfileHelpPath,
 };
 </script>
@@ -281,11 +277,7 @@ export default {
           variant="danger"
           :dismissible="false"
         >
-          <gl-sprintf :message="$options.i18n.invalidProjectAlert.noAgentsContent">
-            <template #link="{ content }">
-              <gl-link :href="$options.clusterAgentsHelpPath">{{ content }}</gl-link>
-            </template>
-          </gl-sprintf>
+          {{ $options.i18n.invalidProjectAlert.noAgentsContent }}
         </gl-alert>
       </gl-form-group>
       <template v-if="!emptyAgents">
