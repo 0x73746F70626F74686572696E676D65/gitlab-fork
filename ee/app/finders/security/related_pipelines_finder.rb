@@ -50,7 +50,7 @@ module Security
     def latest_completed_pipelines_matching_sha(pipelines)
       # merged_result_pipeline should include itself and the pipelines with source_sha
       sha = pipeline.merged_result_pipeline? ? [pipeline.source_sha, pipeline.sha] : pipeline.sha
-      pipelines.latest_completed_pipeline_ids_per_source(sha)
+      pipelines.latest_completed_or_manual_pipeline_ids_per_source(sha)
     end
   end
 end

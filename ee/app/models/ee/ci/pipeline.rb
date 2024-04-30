@@ -32,8 +32,8 @@ module EE
           joins(:downloadable_artifacts).where(ci_builds: { name: %w[sast secret_detection dependency_scanning container_scanning dast] })
         end
 
-        scope :latest_completed_pipeline_ids_per_source, ->(sha) do
-          complete
+        scope :latest_completed_or_manual_pipeline_ids_per_source, ->(sha) do
+          complete_or_manual
             .group(:source)
             .select('max(id) as id')
             .for_sha(sha)

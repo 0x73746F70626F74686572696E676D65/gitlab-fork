@@ -135,6 +135,30 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       end
     end
 
+    context 'when there are no violations and pipeline is manual' do
+      let_it_be_with_refind(:pipeline) do
+        create(:ee_ci_pipeline, :with_dependency_scanning_report,
+          project: project,
+          status: :manual,
+          ref: merge_request.source_branch,
+          sha: merge_request.diff_head_sha)
+      end
+
+      before do
+        create(:security_scan, :succeeded, project: project, pipeline: pipeline, scan_type: 'dependency_scanning')
+      end
+
+      it_behaves_like 'sets approvals_required to 0'
+
+      context 'when include_manual_to_pipeline_completion is disabled' do
+        before do
+          stub_feature_flags(include_manual_to_pipeline_completion: false)
+        end
+
+        it_behaves_like 'does not update approvals_required'
+      end
+    end
+
     context 'when security scan is removed in current pipeline' do
       let_it_be(:pipeline) { create(:ee_ci_pipeline, :success, project: project, ref: merge_request.source_branch) }
 
