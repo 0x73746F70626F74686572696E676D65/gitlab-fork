@@ -643,7 +643,9 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       it 'returns the confidential message' do
         _, _, message = service.execute(content, issuable)
 
-        expect(message).to eq('Made this issue confidential.')
+        issuable_type = issuable.to_ability_name.humanize(capitalize: false)
+
+        expect(message).to eq("Made this #{issuable_type} confidential.")
       end
 
       context 'when issuable is already confidential' do
@@ -1607,6 +1609,12 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       it_behaves_like 'confidential command' do
         let(:content) { '/confidential' }
         let(:issuable) { issue }
+      end
+
+      it_behaves_like 'confidential command' do
+        let_it_be(:work_item) { create(:work_item, :task, project: project) }
+        let(:content) { '/confidential' }
+        let(:issuable) { work_item }
       end
 
       it_behaves_like 'confidential command' do
