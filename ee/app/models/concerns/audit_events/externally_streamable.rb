@@ -5,6 +5,7 @@ module AuditEvents
     extend ActiveSupport::Concern
 
     MAXIMUM_NAMESPACE_FILTER_COUNT = 5
+    MAXIMUM_DESTINATIONS_PER_ENTITY = 5
 
     included do
       before_validation :assign_default_name
@@ -18,9 +19,13 @@ module AuditEvents
       validates :name, length: { maximum: 72 }
       validates :category, presence: true
 
-      validates :config, presence: true, json_schema: { filename: 'external_streaming_destination_config' }
+      validates :config, presence: true,
+        json_schema: { filename: 'audit_events_http_external_streaming_destination_config' }, if: :http?
+      validates :config, presence: true, json_schema: { filename: 'external_streaming_destination_config' },
+        unless: :http?
       validates :secret_token, presence: true
 
+      validates_with AuditEvents::HttpDestinationValidator, if: :http?
       validate :no_more_than_5_namespace_filters?
 
       attr_encrypted :secret_token,
@@ -29,6 +34,10 @@ module AuditEvents
         algorithm: 'aes-256-gcm',
         encode: false,
         encode_iv: false
+
+      scope :configs_of_parent, ->(record_id, category) {
+        where.not(id: record_id).where(category: category).limit(MAXIMUM_DESTINATIONS_PER_ENTITY).pluck(:config)
+      }
 
       private
 

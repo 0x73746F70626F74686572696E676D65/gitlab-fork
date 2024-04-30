@@ -66,4 +66,24 @@ RSpec.describe AuditEvents::Group::ExternalStreamingDestination, feature_categor
 
     let(:model_factory_name) { :audit_events_group_external_streaming_destination }
   end
+
+  describe ".configs_of_parent" do
+    let!(:http_destinations) do
+      create_list(:audit_events_group_external_streaming_destination, 3, group: destination.group)
+    end
+
+    let!(:other_group_destination) { create(:audit_events_group_external_streaming_destination) }
+    let!(:non_http_destination) do
+      create(:audit_events_group_external_streaming_destination, group: destination.group, category: 'aws')
+    end
+
+    it 'returns configs of other destinations of same category for same group' do
+      configs = destination.group.external_audit_event_streaming_destinations.configs_of_parent(destination.id, 'http')
+
+      expect(configs.length).to eq(http_destinations.length)
+      expect(configs).to match_array(http_destinations.pluck(:config))
+      expect(configs).to exclude(other_group_destination.config)
+      expect(configs).to exclude(non_http_destination.config)
+    end
+  end
 end

@@ -22,7 +22,7 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
       groupPath: group.full_path,
       config: config,
       category: 'http',
-      secret_token: 'asdasfregerg'
+      secret_token: 'some_secret_token'
     }
   end
 
@@ -72,7 +72,7 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
         expect(destination.config).to eq(config)
         expect(destination.name).not_to be_empty
         expect(destination.category).to eq('http')
-        expect(destination.secret_token).to eq('asdasfregerg')
+        expect(destination.secret_token).to eq('some_secret_token')
       end
 
       it_behaves_like 'creates an audit event'
@@ -84,7 +84,7 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
               groupPath: group.full_path,
               config: config,
               category: 'invalid',
-              secret_token: 'asdasfregerg'
+              secret_token: 'some_secret_token'
             }
           end
 
@@ -96,7 +96,7 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
             {
               groupPath: group.full_path,
               config: config,
-              secret_token: 'asdasfregerg'
+              secret_token: 'some_secret_token'
             }
           end
 
@@ -123,7 +123,7 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
               groupPath: group.full_path,
               config: "string_value",
               category: 'http',
-              secret_token: 'asdasfregerg'
+              secret_token: 'some_secret_token'
             }
           end
 
@@ -135,7 +135,7 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
             {
               groupPath: group.full_path,
               category: 'http',
-              secret_token: 'asdasfregerg'
+              secret_token: 'some_secret_token'
             }
           end
 
