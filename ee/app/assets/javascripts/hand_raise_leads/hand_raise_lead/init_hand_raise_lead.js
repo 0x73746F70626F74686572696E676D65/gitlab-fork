@@ -27,18 +27,20 @@ export const initHandRaiseLead = (el) => {
     el,
     apolloProvider,
     provide: {
+      // these will be the same for all modal cases
       createHandRaiseLeadPath,
-      buttonAttributes: buttonAttributes && JSON.parse(buttonAttributes),
-      buttonText: buttonText || PQL_BUTTON_TEXT,
       user: {
         namespaceId,
         userName,
         firstName,
         lastName,
         companyName,
-        glmContent,
-        productInteraction,
       },
+      // the below can/will likely vary per instance of the button/modal
+      buttonAttributes: buttonAttributes && JSON.parse(buttonAttributes),
+      buttonText: buttonText || PQL_BUTTON_TEXT,
+      glmContent,
+      productInteraction,
       ctaTracking: {
         category: trackCategory,
         action: trackAction,

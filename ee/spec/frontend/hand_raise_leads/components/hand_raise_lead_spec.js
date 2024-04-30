@@ -4,7 +4,7 @@ import HandRaiseLeadModal from 'ee/hand_raise_leads/hand_raise_lead/components/h
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import HandRaiseLead from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead.vue';
 import { PQL_BUTTON_TEXT } from 'ee/hand_raise_leads/hand_raise_lead/constants';
-import { USER, CREATE_HAND_RAISE_LEAD_PATH } from './mock_data';
+import { USER, CREATE_HAND_RAISE_LEAD_PATH, GLM_CONTENT, PRODUCT_INTERACTION } from './mock_data';
 
 describe('HandRaiseLead', () => {
   let wrapper;
@@ -13,10 +13,11 @@ describe('HandRaiseLead', () => {
   const createComponent = () => {
     return shallowMountExtended(HandRaiseLead, {
       provide: {
-        small: false,
         createHandRaiseLeadPath: CREATE_HAND_RAISE_LEAD_PATH,
         user: USER,
         ctaTracking,
+        glmContent: GLM_CONTENT,
+        productInteraction: PRODUCT_INTERACTION,
       },
     });
   };
@@ -41,13 +42,16 @@ describe('HandRaiseLead', () => {
       expect(findButton().props('modalId').startsWith('hand-raise-lead-modal-')).toBe(true);
       expect(findButton().props('buttonAttributes')).toStrictEqual({});
       expect(findButton().props('buttonText')).toStrictEqual(PQL_BUTTON_TEXT);
+      expect(findButton().props('glmContent')).toStrictEqual(GLM_CONTENT);
+      expect(findButton().props('productInteraction')).toStrictEqual(PRODUCT_INTERACTION);
+      expect(findButton().props('ctaTracking')).toStrictEqual(ctaTracking);
       expect(findButton().props('isLoading')).toBe(false);
     });
 
     it('has the correct modal props', () => {
       expect(findModal().props('user')).toStrictEqual(USER);
       expect(findModal().props('submitPath')).toStrictEqual(CREATE_HAND_RAISE_LEAD_PATH);
-      expect(findModal().props('ctaTracking')).toStrictEqual(ctaTracking);
+      expect(findModal().props('modalId').startsWith('hand-raise-lead-modal-')).toBe(true);
     });
   });
 

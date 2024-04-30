@@ -21,3 +21,4 @@ export const PQL_HAND_RAISE_ACTION_ERROR = s__(
 export const PQL_HAND_RAISE_ACTION_SUCCESS = s__(
   'PQL|Thank you for reaching out! Our sales team will get back to you soon.',
 );
+export const PQL_HAND_RAISE_MODAL_TRACKING_LABEL = 'hand_raise_lead_form';

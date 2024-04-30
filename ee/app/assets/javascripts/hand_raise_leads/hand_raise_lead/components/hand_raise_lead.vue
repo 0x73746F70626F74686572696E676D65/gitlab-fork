@@ -24,6 +24,8 @@ export default {
     ctaTracking: {
       default: {},
     },
+    glmContent: {},
+    productInteraction: {},
   },
   data() {
     return { isLoading: false, modalId: uniqueId('hand-raise-lead-modal-') };
@@ -42,13 +44,15 @@ export default {
       :modal-id="modalId"
       :button-attributes="buttonAttributes"
       :button-text="buttonText"
+      :glm-content="glmContent"
+      :product-interaction="productInteraction"
+      :cta-tracking="ctaTracking"
       :is-loading="isLoading"
     />
 
     <hand-raise-lead-modal
       :user="user"
       :submit-path="createHandRaiseLeadPath"
-      :cta-tracking="ctaTracking"
       :modal-id="modalId"
       @loading="updateLoading"
     />

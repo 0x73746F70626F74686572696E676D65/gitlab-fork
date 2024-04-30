@@ -2,29 +2,31 @@ import { GlButton } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
-import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import eventHub from 'ee/hand_raise_leads/hand_raise_lead/event_hub';
+import {
+  BUTTON_ATTRIBUTES,
+  BUTTON_TEXT,
+  GLM_CONTENT,
+  MODAL_ID,
+  PRODUCT_INTERACTION,
+} from './mock_data';
 
 describe('HandRaiseLeadButton', () => {
   let wrapper;
   let trackingSpy;
-  const ctaTracking = {};
-  const buttonAttributes = {
-    href: '#',
-    buttonTextClasses: 'gl-font-sm',
-  };
+  const ctaTracking = { action: '_action_', label: '_label_' };
 
   const createComponent = (props = {}) => {
     return shallowMountExtended(HandRaiseLeadButton, {
       propsData: {
-        modalId: '_some_id_',
-        buttonText: '_button_text_',
+        modalId: MODAL_ID,
+        buttonText: BUTTON_TEXT,
         isLoading: false,
-        buttonAttributes,
+        buttonAttributes: BUTTON_ATTRIBUTES,
         ctaTracking,
+        glmContent: GLM_CONTENT,
+        productInteraction: PRODUCT_INTERACTION,
         ...props,
-      },
-      directives: {
-        glModal: createMockDirective('gl-modal'),
       },
     });
   };
@@ -47,12 +49,6 @@ describe('HandRaiseLeadButton', () => {
       expect(button.props('variant')).toBe('default');
       expect(button.props('size')).toBe('medium');
       expect(button.text()).toBe('_button_text_');
-    });
-
-    it('button is bound to the modal', () => {
-      const { value } = getBinding(findButton().element, 'gl-modal');
-
-      expect(value).toBe('_some_id_');
     });
 
     describe('sets button attributes', () => {
@@ -142,6 +138,26 @@ describe('HandRaiseLeadButton', () => {
         button.trigger('click');
 
         expect(trackingSpy).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('clicking the button', () => {
+    let spy;
+
+    beforeEach(() => {
+      spy = jest.spyOn(eventHub, '$emit');
+      wrapper = createComponent();
+    });
+
+    it('emits openModal from a named source', () => {
+      findButton().vm.$emit('click');
+
+      expect(spy).toHaveBeenCalledWith('openModal', {
+        productInteraction: PRODUCT_INTERACTION,
+        ctaTracking,
+        glmContent: GLM_CONTENT,
+        modalIdToOpen: MODAL_ID,
       });
     });
   });

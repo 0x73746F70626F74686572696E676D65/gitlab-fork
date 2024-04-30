@@ -8,6 +8,7 @@ import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.gra
 import statesQuery from 'ee/subscriptions/graphql/queries/states.query.graphql';
 import CountryOrRegionSelector from 'ee/trials/components/country_or_region_selector.vue';
 import {
+  companySizes,
   LEADS_COMPANY_NAME_LABEL,
   LEADS_COMPANY_SIZE_LABEL,
   LEADS_COUNTRY_LABEL,
@@ -15,22 +16,24 @@ import {
   LEADS_FIRST_NAME_LABEL,
   LEADS_LAST_NAME_LABEL,
   LEADS_PHONE_NUMBER_LABEL,
-  companySizes,
 } from 'ee/vue_shared/leads/constants';
+import { BV_SHOW_MODAL } from '~/lib/utils/constants';
 import {
+  PQL_COMMENT_LABEL,
   PQL_COMPANY_SIZE_PROMPT,
+  PQL_HAND_RAISE_ACTION_ERROR,
+  PQL_HAND_RAISE_ACTION_SUCCESS,
+  PQL_HAND_RAISE_MODAL_TRACKING_LABEL,
+  PQL_MODAL_CANCEL,
+  PQL_MODAL_FOOTER_TEXT,
+  PQL_MODAL_HEADER_TEXT,
+  PQL_MODAL_PRIMARY,
+  PQL_MODAL_TITLE,
   PQL_PHONE_DESCRIPTION,
   PQL_STATE_LABEL,
   PQL_STATE_PROMPT,
-  PQL_COMMENT_LABEL,
-  PQL_MODAL_TITLE,
-  PQL_MODAL_PRIMARY,
-  PQL_MODAL_CANCEL,
-  PQL_MODAL_HEADER_TEXT,
-  PQL_MODAL_FOOTER_TEXT,
-  PQL_HAND_RAISE_ACTION_ERROR,
-  PQL_HAND_RAISE_ACTION_SUCCESS,
 } from '../constants';
+import eventHub from '../event_hub';
 
 export default {
   name: 'HandRaiseLeadModal',
@@ -52,11 +55,6 @@ export default {
       type: String,
       required: true,
     },
-    ctaTracking: {
-      type: Object,
-      required: false,
-      default: () => ({}),
-    },
     modalId: {
       type: String,
       required: true,
@@ -75,6 +73,9 @@ export default {
       states: [],
       comment: '',
       stateRequired: false,
+      ctaTracking: {},
+      glmContent: '',
+      productInteraction: '',
     };
   },
   apollo: {
@@ -123,7 +124,7 @@ export default {
     },
     tracking() {
       return {
-        label: 'hand_raise_lead_form',
+        label: PQL_HAND_RAISE_MODAL_TRACKING_LABEL,
         experiment: this.ctaTracking.experiment,
       };
     },
@@ -147,12 +148,36 @@ export default {
         country: this.country,
         state: this.stateRequired ? this.state : null,
         comment: this.comment,
-        glmContent: this.user.glmContent,
-        productInteraction: this.user.productInteraction,
+        glmContent: this.glmContent,
+        productInteraction: this.productInteraction,
       };
     },
   },
+  mounted() {
+    eventHub.$on('openModal', (options) => {
+      this.openModal(options);
+    });
+  },
   methods: {
+    openModal({ productInteraction, ctaTracking, glmContent, modalIdToOpen }) {
+      // The items being passed here are what can be unique about a particular
+      // instance of this modal.
+      this.productInteraction = productInteraction;
+      this.ctaTracking = ctaTracking;
+      this.glmContent = glmContent;
+
+      // TODO: Since we are still potentially putting multiple modals into the DOM, we need to ensure
+      // we only open the one we care about. In the next step of
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/443674 we will ensure only one
+      // instance of the modal is loaded and we can remove this logic and passing
+      // of modalId.
+      if (modalIdToOpen !== this.modalId) {
+        return;
+      }
+
+      this.$root.$emit(BV_SHOW_MODAL, this.modalId);
+      this.track('hand_raise_form_viewed');
+    },
     resetForm() {
       this.firstName = '';
       this.lastName = '';
@@ -229,7 +254,6 @@ export default {
     :action-cancel="actionCancel"
     @primary="submit"
     @cancel="track('hand_raise_form_canceled')"
-    @change="track('hand_raise_form_viewed')"
   >
     {{ modalHeaderText }}
     <div class="combined d-flex gl-mt-5">
