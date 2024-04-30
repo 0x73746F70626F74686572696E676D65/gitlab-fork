@@ -24,6 +24,10 @@ describe('App', () => {
       expect(findPoliciesList().props('hasPolicyProject')).toBe(false);
     });
 
+    it('renders the policy header correctly', () => {
+      expect(findPoliciesHeader().props('hasInvalidPolicies')).toBe(false);
+    });
+
     it.each`
       component         | emitFn                | emitData                                                    | finalPropStates
       ${'PolicyHeader'} | ${findPoliciesHeader} | ${{ shouldUpdatePolicyList: true, hasPolicyProject: true }} | ${true}
@@ -39,6 +43,12 @@ describe('App', () => {
         expect(findPoliciesList().props('hasPolicyProject')).toBe(finalPropStates);
       },
     );
+
+    it('updates hasInvalidPolicies when a change is made from the PolicyHeader component', async () => {
+      expect(findPoliciesHeader().props('hasInvalidPolicies')).toBe(false);
+      await findPoliciesList().vm.$emit('has-invalid-policies', true);
+      expect(findPoliciesHeader().props('hasInvalidPolicies')).toBe(true);
+    });
   });
 
   it('renders correctly when a policy project is linked', async () => {

@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import ApprovalPolicyNameUpdateBanner from 'ee/security_orchestration/components/policies/banners/approval_policy_name_update_banner.vue';
 import BreakingChangesBanner from 'ee/security_orchestration/components/policies/banners/breaking_changes_banner.vue';
 import ExperimentFeaturesBanner from 'ee/security_orchestration/components/policies/banners/experiment_features_banner.vue';
+import InvalidPoliciesBanner from 'ee/security_orchestration/components/policies/banners/invalid_policies_banner.vue';
 import ListHeader from 'ee/security_orchestration/components/policies/list_header.vue';
 import ProjectModal from 'ee/security_orchestration/components/policies/project_modal.vue';
 import { NEW_POLICY_BUTTON_TEXT } from 'ee/security_orchestration/components/constants';
@@ -27,6 +28,7 @@ describe('List Header Component', () => {
   const findApprovalPolicyNameUpdateBanner = () =>
     wrapper.findComponent(ApprovalPolicyNameUpdateBanner);
   const findBreakingChangesBanner = () => wrapper.findComponent(BreakingChangesBanner);
+  const findInvalidPoliciesBanner = () => wrapper.findComponent(InvalidPoliciesBanner);
 
   const linkSecurityPoliciesProject = async () => {
     findScanNewPolicyModal().vm.$emit('project-updated', {
@@ -36,8 +38,12 @@ describe('List Header Component', () => {
     await nextTick();
   };
 
-  const createWrapper = ({ provide } = {}) => {
+  const createWrapper = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(ListHeader, {
+      propsData: {
+        hasInvalidPolicies: false,
+        ...props,
+      },
       provide: {
         documentationPath,
         newPolicyPath,
@@ -71,6 +77,7 @@ describe('List Header Component', () => {
       ${'does not'} | ${'view policy project button'} | ${findViewPolicyProjectButton} | ${false}
       ${'does not'} | ${'alert component'}            | ${findErrorAlert}              | ${false}
       ${'does'}     | ${'header'}                     | ${findHeader}                  | ${true}
+      ${'does not'} | ${'invalid policies banner'}    | ${findInvalidPoliciesBanner}   | ${false}
     `('$status display the $component', ({ findFn, exists }) => {
       expect(findFn().exists()).toBe(exists);
     });
@@ -150,6 +157,16 @@ describe('List Header Component', () => {
 
       expect(findBreakingChangesBanner().findComponent(GlAlert).exists()).toBe(false);
       expect(findApprovalPolicyNameUpdateBanner().exists()).toBe(true);
+    });
+  });
+
+  describe('invalid policies alert', () => {
+    beforeEach(() => {
+      createWrapper({ props: { hasInvalidPolicies: true } });
+    });
+
+    it('displays the invalid policies banner when there are invalid policies', () => {
+      expect(findInvalidPoliciesBanner().exists()).toBe(true);
     });
   });
 
