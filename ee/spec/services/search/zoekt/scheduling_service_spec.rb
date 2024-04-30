@@ -281,9 +281,12 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
                                                           'zoekt_enabled_namespace_id' => zkt_enabled_namespace.id }
           )
           expect(logger).to receive(:error).with({ 'class' => described_class.to_s, 'task' => task,
-                                                          'node_id' => node.id,
                                                           'message' => 'Space is not available in Node',
-                                                          'zoekt_enabled_namespace_id' => zkt_enabled_namespace2.id }
+                                                          'zoekt_enabled_namespace_id' => zkt_enabled_namespace2.id,
+                                                          'metadata' => {
+                                                            "meta.zoekt.node_name" => node.metadata['name'],
+                                                            "meta.zoekt.node_id" => node.id
+                                                          } }
           )
           expect { execute_task }.not_to change { Search::Zoekt::Index.count }
           expect(zkt_enabled_namespace.indices).to be_empty
@@ -308,9 +311,12 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
                                                     'zoekt_enabled_namespace_id' => zkt_enabled_namespace.id }
             )
             expect(logger).to receive(:error).with({ 'class' => described_class.to_s, 'task' => task,
-                                                    'node_id' => node.id,
                                                     'message' => 'Space is not available in Node',
-                                                    'zoekt_enabled_namespace_id' => zkt_enabled_namespace2.id }
+                                                    'zoekt_enabled_namespace_id' => zkt_enabled_namespace2.id,
+                                                    'metadata' => {
+                                                      "meta.zoekt.node_name" => node.metadata['name'],
+                                                      "meta.zoekt.node_id" => node.id
+                                                    } }
             )
             expect { execute_task }.not_to change { Search::Zoekt::Index.count }
             expect(zkt_enabled_namespace.indices).to be_empty
