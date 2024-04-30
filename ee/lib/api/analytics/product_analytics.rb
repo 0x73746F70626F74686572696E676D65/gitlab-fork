@@ -34,16 +34,6 @@ module API
           render_response(response)
         end
 
-        def funnel_data
-          project.product_analytics_funnels.map do |funnel|
-            {
-              name: funnel.name,
-              sql: funnel.to_sql,
-              steps: funnel.steps.map(&:step_definition)
-            }
-          end
-        end
-
         params :cube_query_params do
           requires :project_id, type: Integer, desc: 'ID of the project to query'
           requires :query,
@@ -87,19 +77,6 @@ module API
             container: project, current_user: current_user, params: params
           ).execute
           render_response(response)
-        end
-
-        desc 'Get a list of defined funnels for a project'
-        get ':project_id/product_analytics/funnels' do
-          response = ::ProductAnalytics::CubeDataQueryService.new(
-            container: project, current_user: current_user, params: { path: 'funnels' }
-          ).cannot_query_data?
-
-          if response
-            render_response(response)
-          else
-            funnel_data
-          end
         end
       end
     end
