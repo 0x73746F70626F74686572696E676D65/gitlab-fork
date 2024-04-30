@@ -6,14 +6,18 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPoli
   include GraphqlHelpers
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project) }
-  let_it_be(:framework) { create(:compliance_framework) }
-  let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
+  let_it_be_with_reload(:framework) { create(:compliance_framework) }
+  let_it_be_with_reload(:policy_configuration) do
+    create(:security_orchestration_policy_configuration, project: project)
+  end
+
   let_it_be(:compliance_framework_security_policy) do
     create(:compliance_framework_security_policy, policy_configuration: policy_configuration, framework: framework)
   end
 
-  let_it_be(:policy_scope) { { compliance_frameworks: [{ id: framework.id }] } }
-  let_it_be(:policy) { build(:scan_result_policy, name: 'Enforce approvals', policy_scope: policy_scope) }
+  let(:policy_scope) { { compliance_frameworks: [{ id: framework.id }] } }
+  let(:policy) { build(:scan_result_policy, name: 'Enforce approvals', policy_scope: policy_scope) }
+  let(:policy_content) { { scan_result_policy: [policy] } }
 
   describe '#resolve' do
     subject(:resolve_policies) do
@@ -74,7 +78,7 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPoli
         stub_feature_flags(security_policies_breaking_changes: false)
 
         allow_next_instance_of(Repository) do |repository|
-          allow(repository).to receive(:blob_data_at).and_return({ scan_result_policy: [policy] }.to_yaml)
+          allow(repository).to receive(:blob_data_at).and_return(policy_content.to_yaml)
         end
       end
 
@@ -105,7 +109,7 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPoli
               updated_at: policy_configuration.policy_last_updated_at,
               user_approvers: [],
               all_group_approvers: [],
-              deprecated_properties: [],
+              deprecated_properties: deprecated_properties,
               role_approvers: [],
               source: {
                 inherited: false,
@@ -116,8 +120,22 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPoli
           ]
         end
 
-        it 'returns the policy' do
-          expect(resolve_policies).to match_array(expected_response)
+        context 'when the policy type is scan_result_policy' do
+          let(:deprecated_properties) { ['scan_result_policy'] }
+
+          it 'returns the policy' do
+            expect(resolve_policies).to match_array(expected_response)
+          end
+        end
+
+        context 'when the policy type is approval_policy' do
+          let(:policy) { build(:approval_policy, name: 'Enforce approvals', policy_scope: policy_scope) }
+          let(:policy_content) { { approval_policy: [policy] } }
+          let(:deprecated_properties) { [] }
+
+          it 'returns the policy' do
+            expect(resolve_policies).to match_array(expected_response)
+          end
         end
       end
     end
