@@ -1168,13 +1168,13 @@ module EE
       all_security_orchestration_policy_configurations.pluck(:id)
     end
 
-    def all_inherited_security_orchestration_policy_configurations
+    def all_inherited_security_orchestration_policy_configurations(include_invalid: false)
       all_parent_groups = group&.self_and_ancestor_ids
       return [] if all_parent_groups.blank?
 
       security_policies = ::Security::OrchestrationPolicyConfiguration.for_namespace(all_parent_groups)
 
-      security_orchestration_policies_for_scope(security_policies)
+      security_orchestration_policies_for_scope(security_policies, include_invalid: include_invalid)
     end
 
     override :inactive?
