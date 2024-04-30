@@ -2,6 +2,7 @@
 import { GlLink, GlIcon, GlTooltipDirective, GlSprintf } from '@gitlab/ui';
 import formattingMixins from 'ee/subscriptions/new/formatting_mixins';
 import { formatNumber } from '~/locale';
+import { PROMO_URL } from '~/lib/utils/url_utility';
 import {
   I18N_SUMMARY_DATES,
   I18N_SUMMARY_QUANTITY,
@@ -100,6 +101,7 @@ export default {
     total: I18N_SUMMARY_TOTAL,
     tooltipNote: I18N_STORAGE_TOOLTIP_NOTE,
   },
+  vatHelpUrl: `${PROMO_URL}/handbook/tax/#indirect-taxes-management`,
 };
 </script>
 <template>
@@ -149,7 +151,7 @@ export default {
             <template #link="{ content }">
               <gl-link
                 class="gl-text-decoration-underline gl-text-gray-500"
-                href="https://about.gitlab.com/handbook/tax/#indirect-taxes-management"
+                :href="$options.vatHelpUrl"
                 target="_blank"
                 data-testid="vat-help-link"
                 >{{ content }}</gl-link

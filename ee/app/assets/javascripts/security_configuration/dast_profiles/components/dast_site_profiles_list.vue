@@ -13,6 +13,7 @@ import {
 import dastSiteValidationsQuery from 'ee/security_configuration/dast_site_validation/graphql/dast_site_validations.query.graphql';
 import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
+import { DOCS_URL_IN_EE_DIR } from '~/lib/utils/url_utility';
 import { getTimeDifferenceMinutes } from 'ee/security_configuration/utils';
 import { updateSiteProfilesStatuses } from '../graphql/cache_utils';
 import ProfilesList from './dast_profiles_list.vue';
@@ -76,6 +77,7 @@ export default {
       validations: [],
     };
   },
+  DOCS_LINK: `${DOCS_URL_IN_EE_DIR}/user/application_security/dast/proxy-based#site-profile-validation`,
   statuses: DAST_SITE_VALIDATION_STATUS_PROPS,
   DAST_SITE_VALIDATION_MODAL_ID,
   DAST_SITE_VALIDATION_REVOKE_MODAL_ID,
@@ -166,11 +168,7 @@ export default {
   <profiles-list :full-path="fullPath" :profiles="profiles" v-bind="$attrs" v-on="$listeners">
     <template #head(validationStatus)="{ label }">
       {{ label }}
-      <gl-link
-        href="https://docs.gitlab.com/ee/user/application_security/dast/proxy-based#site-profile-validation"
-        target="_blank"
-        class="gl-text-gray-300 gl-ml-2"
-      >
+      <gl-link :href="$options.DOCS_LINK" target="_blank" class="gl-text-gray-300 gl-ml-2">
         <gl-icon name="question-o" />
       </gl-link>
     </template>
