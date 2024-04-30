@@ -50,6 +50,7 @@
 
 ### Videos
 
+- A Knowledge Sharing session, covering most of the topics covered in this README: https://www.youtube.com/watch?v=RJrBPbBNE9Y
 - A recording of a backend pairing session, where Chad presents an overview of the Remote Development architecture, covering several of the topics and patterns discussed below in this README: https://www.youtube.com/watch?v=Z6n7IKbtuDk
   - Note that in the second half of this video includes speculation on how the reconciliation logic will be redesigned to work with Railway Oriented Programming, but the [final implementation ended up looking a bit different](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/126785) (and simpler).
 
