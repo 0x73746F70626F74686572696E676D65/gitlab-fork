@@ -20,6 +20,7 @@ describe('WorkItemsListApp EE component', () => {
 
     expect(findCreateWorkItemModal().props()).toEqual({
       workItemType: 'EPIC',
+      asDropdownItem: false,
     });
   });
 

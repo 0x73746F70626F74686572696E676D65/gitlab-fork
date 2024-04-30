@@ -15,7 +15,11 @@ RSpec.describe Nav::NewDropdownHelper, feature_category: :navigation do
       allow(helper).to receive(:can?).with(user, :create_epic, group).and_return(true)
     end
 
-    context 'with group and can create_epic' do
+    context 'when namespace_level_work_items is disabled' do
+      before do
+        stub_feature_flags(namespace_level_work_items: false)
+      end
+
       it 'shows create epic menu item' do
         epic_item = {
           title: 'In this group',
@@ -24,6 +28,32 @@ RSpec.describe Nav::NewDropdownHelper, feature_category: :navigation do
               id: 'create_epic',
               title: 'New epic',
               href: "/groups/#{group.path}/-/epics/new",
+              data: {
+                track_action: 'click_link_new_epic',
+                track_label: 'plus_menu_dropdown',
+                track_property: 'navigation_top'
+              }
+            )
+          ]
+        }
+
+        expect(subject[:menu_sections][0]).to eq(epic_item)
+      end
+    end
+
+    context 'with group and can create_epic' do
+      before do
+        stub_feature_flags(namespace_level_work_items: true)
+      end
+
+      it 'shows create epic menu item' do
+        epic_item = {
+          title: 'In this group',
+          menu_items: [
+            ::Gitlab::Nav::TopNavMenuItem.build(
+              id: 'create_epic',
+              title: 'New epic',
+              component: 'create_new_work_item_modal',
               data: {
                 track_action: 'click_link_new_epic',
                 track_label: 'plus_menu_dropdown',
