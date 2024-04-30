@@ -97,9 +97,12 @@ RSpec.describe PhoneVerification::TelesignCallbacksController, feature_category:
           expect { do_request }.to change { user.exempt_from_phone_number_verification? }.from(false).to(true)
         end
 
-        it 'invalidates verification_state_signup_identity_verification_path cache' do
+        it 'invalidates verification_state_*identity_verification_path cache' do
           expect_next_instance_of(Gitlab::EtagCaching::Store) do |store|
-            expect(store).to receive(:touch).with(verification_state_signup_identity_verification_path)
+            expect(store).to receive(:touch).with(
+              verification_state_signup_identity_verification_path,
+              verification_state_identity_verification_path
+            )
           end
 
           do_request

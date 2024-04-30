@@ -19,6 +19,12 @@ module EE
               'user_identity_verification_state',
               ::Users::RegistrationsIdentityVerificationController,
               :verification_state
+            ],
+            [
+              %r{^/-/identity_verification/verification_state\z},
+              'active_user_identity_verification_state',
+              ::Users::IdentityVerificationController,
+              :verification_state
             ]
           ].freeze
 

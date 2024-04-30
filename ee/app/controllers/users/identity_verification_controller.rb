@@ -4,8 +4,6 @@ module Users
   class IdentityVerificationController < BaseIdentityVerificationController
     before_action :ensure_feature_enabled
 
-    def show; end
-
     def success
       redirect_to root_path
     end
