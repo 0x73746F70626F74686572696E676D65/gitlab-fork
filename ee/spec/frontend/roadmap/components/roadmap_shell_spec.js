@@ -1,19 +1,15 @@
 import Vue, { nextTick } from 'vue';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 
 import { createAlert } from '~/alert';
-
-import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import createMockApollo from 'helpers/mock_apollo_helper';
 
 import RoadmapShell from 'ee/roadmap/components/roadmap_shell.vue';
 import MilestonesListSection from 'ee/roadmap/components/milestones_list_section.vue';
 import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import eventHub from 'ee/roadmap/event_hub';
-import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import groupMilestonesQuery from 'ee/roadmap/queries/group_milestones.query.graphql';
@@ -24,51 +20,44 @@ import {
   mockGroupMilestonesQueryResponse,
   mockGroupMilestonesQueryResponseWithInvalidDates,
 } from 'ee_jest/roadmap/mock_data';
+import { setLocalSettingsInCache } from '../local_cache_helpers';
 
 jest.mock('~/alert');
 
 Vue.use(VueApollo);
-Vue.use(Vuex);
 
 const mockTimeframeMonths = getTimeframeForRangeType({
   timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
   presetType: PRESET_TYPES.MONTHS,
   initialDate: mockTimeframeInitialDate,
 });
-const presetType = PRESET_TYPES.MONTHS;
-const timeframeRangeType = DATE_RANGES.CURRENT_YEAR;
 
 const groupMilestonesQueryHandler = jest.fn().mockResolvedValue(mockGroupMilestonesQueryResponse);
 
 describe('RoadmapShell', () => {
-  let store;
   let wrapper;
+  let apolloProvider;
 
   const findRoadmapShellWrapper = () => wrapper.findByTestId('roadmap-shell');
   const findMilestonesListSection = () => wrapper.findComponent(MilestonesListSection);
 
-  const storeFactory = () => {
-    store = createStore();
-    store.dispatch('setInitialData', {
-      timeframe: mockTimeframeMonths,
-      presetType,
-      timeframeRangeType,
-      isShowingMilestones: false,
-      filterParams: {
-        milestoneTitle: '',
-      },
+  const createComponent = ({
+    epics = [mockEpic],
+    timeframe = mockTimeframeMonths,
+    isShowingMilestones = false,
+  } = {}) => {
+    apolloProvider = createMockApollo([[groupMilestonesQuery, groupMilestonesQueryHandler]]);
+    setLocalSettingsInCache(apolloProvider, {
+      timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
+      presetType: PRESET_TYPES.MONTHS,
+      timeframe,
+      isShowingMilestones,
     });
-  };
 
-  const createComponent = ({ epics = [mockEpic], timeframe = mockTimeframeMonths } = {}) => {
     wrapper = shallowMountExtended(RoadmapShell, {
-      store,
       attachTo: document.body,
       propsData: {
-        presetType: PRESET_TYPES.MONTHS,
         epics,
-        timeframe,
-        filterParams: {},
         epicsFetchNextPageInProgress: false,
         hasNextPage: false,
       },
@@ -76,17 +65,9 @@ describe('RoadmapShell', () => {
         fullPath: 'gitlab-org',
         epicIid: null,
       },
-      apolloProvider: createMockApollo([[groupMilestonesQuery, groupMilestonesQueryHandler]]),
+      apolloProvider,
     });
   };
-
-  beforeEach(() => {
-    storeFactory();
-  });
-
-  afterEach(() => {
-    store = null;
-  });
 
   it('sets container styles on component mount', async () => {
     createComponent();
@@ -116,12 +97,9 @@ describe('RoadmapShell', () => {
   });
 
   describe('when milestones are shown', () => {
-    beforeEach(() => {
-      store.state.isShowingMilestones = true;
-    });
-
-    it('calls the groupMilestonesQuery with the correct timeframe', () => {
-      createComponent();
+    it('calls the groupMilestonesQuery with the correct timeframe', async () => {
+      createComponent({ isShowingMilestones: true });
+      await waitForPromises();
 
       expect(groupMilestonesQueryHandler).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -135,14 +113,14 @@ describe('RoadmapShell', () => {
 
     describe('when milestones query is successful', () => {
       it('renders the MilestonesListSection component', async () => {
-        createComponent();
+        createComponent({ isShowingMilestones: true });
         await waitForPromises();
 
         expect(findMilestonesListSection().exists()).toBe(true);
       });
 
       it('passes the correct number of milestones to the MilestonesListSection component', async () => {
-        createComponent();
+        createComponent({ isShowingMilestones: true });
         await waitForPromises();
 
         expect(findMilestonesListSection().props('milestones')).toHaveLength(2);
@@ -153,7 +131,7 @@ describe('RoadmapShell', () => {
           mockGroupMilestonesQueryResponseWithInvalidDates,
         );
 
-        createComponent();
+        createComponent({ isShowingMilestones: true });
         await waitForPromises();
 
         expect(findMilestonesListSection().props('milestones')).toHaveLength(1);
@@ -164,7 +142,7 @@ describe('RoadmapShell', () => {
       beforeEach(async () => {
         groupMilestonesQueryHandler.mockRejectedValue('Houston, we have a problem');
 
-        createComponent();
+        createComponent({ isShowingMilestones: true });
         await waitForPromises();
       });
 

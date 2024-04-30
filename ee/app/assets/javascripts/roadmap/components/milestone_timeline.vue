@@ -8,10 +8,6 @@ export default {
     CurrentDayIndicator,
   },
   props: {
-    presetType: {
-      type: String,
-      required: true,
-    },
     timeframe: {
       type: Array,
       required: true,
@@ -35,14 +31,12 @@ export default {
       :key="timeframeItem.id"
       class="milestone-timeline-cell gl-display-table-cell gl-relative border-right border-bottom"
     >
-      <current-day-indicator :preset-type="presetType" :timeframe-item="timeframeItem" />
+      <current-day-indicator :timeframe-item="timeframeItem" />
       <template v-if="milestonesExpanded">
         <milestone-item
           v-for="milestone in milestones"
           :key="milestone.id"
-          :preset-type="presetType"
           :milestone="milestone"
-          :timeframe="timeframe"
           :timeframe-item="timeframeItem"
         />
       </template>

@@ -1,7 +1,5 @@
 <script>
 import { GlPopover, GlProgressBar, GlIcon } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapState } from 'vuex';
 import { __, sprintf } from '~/locale';
 import {
   EPIC_DETAILS_CELL_WIDTH,
@@ -13,10 +11,13 @@ import {
 } from '../constants';
 import CommonMixin from '../mixins/common_mixin';
 
+import localRoadmapSettingsQuery from '../queries/local_roadmap_settings.query.graphql';
+
 import MonthsPresetMixin from '../mixins/months_preset_mixin';
 import QuartersPresetMixin from '../mixins/quarters_preset_mixin';
 import WeeksPresetMixin from '../mixins/weeks_preset_mixin';
 import { generateKey } from '../utils/epic_utils';
+import { mapLocalSettings } from '../utils/roadmap_utils';
 
 export default {
   cellWidth: TIMELINE_CELL_MIN_WIDTH,
@@ -27,14 +28,6 @@ export default {
   },
   mixins: [CommonMixin, QuartersPresetMixin, MonthsPresetMixin, WeeksPresetMixin],
   props: {
-    presetType: {
-      type: String,
-      required: true,
-    },
-    timeframe: {
-      type: Array,
-      required: true,
-    },
     timeframeItem: {
       type: [Date, Object],
       required: true,
@@ -57,8 +50,18 @@ export default {
       default: 0,
     },
   },
+  apollo: {
+    localRoadmapSettings: {
+      query: localRoadmapSettingsQuery,
+    },
+  },
   computed: {
-    ...mapState(['progressTracking', 'isProgressTrackingActive']),
+    ...mapLocalSettings([
+      'progressTracking',
+      'isProgressTrackingActive',
+      'presetType',
+      'timeframe',
+    ]),
     timelineBarInnerStyle() {
       return {
         maxWidth: `${this.clientWidth - EPIC_DETAILS_CELL_WIDTH}px`,

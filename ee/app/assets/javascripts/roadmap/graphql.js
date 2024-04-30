@@ -5,7 +5,7 @@ import localRoadmapSettingsQuery from './queries/local_roadmap_settings.query.gr
 
 const resolvers = {
   Mutation: {
-    setLocalRoadmapSettings: (_, { input }, { cache }) => {
+    updateLocalRoadmapSettings: (_, { input }, { cache }) => {
       const existingSettings = cache.readQuery({ query: localRoadmapSettingsQuery });
       const updatedSettings = {
         ...existingSettings.localRoadmapSettings,

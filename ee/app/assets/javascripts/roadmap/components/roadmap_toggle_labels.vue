@@ -1,17 +1,15 @@
 <script>
 import { GlToggle } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapActions, mapState } from 'vuex';
 
 export default {
   components: {
     GlToggle,
   },
-  computed: {
-    ...mapState(['isShowingLabels']),
-  },
-  methods: {
-    ...mapActions(['toggleLabels']),
+  props: {
+    isShowingLabels: {
+      type: Boolean,
+      required: true,
+    },
   },
   tracking: {
     label: 'roadmap_settings_labels',
@@ -30,7 +28,7 @@ export default {
       data-track-action="click_toggle"
       :data-track-label="$options.tracking.label"
       :data-track-property="$options.tracking.property"
-      @change="toggleLabels"
+      @change="$emit('setLabelsVisibility', { isShowingLabels: !isShowingLabels })"
     />
   </div>
 </template>

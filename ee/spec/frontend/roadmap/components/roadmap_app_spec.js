@@ -1,7 +1,5 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import Vue from 'vue';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -15,17 +13,13 @@ import RoadmapApp from 'ee/roadmap/components/roadmap_app.vue';
 import RoadmapFilters from 'ee/roadmap/components/roadmap_filters.vue';
 import RoadmapShell from 'ee/roadmap/components/roadmap_shell.vue';
 import { PRESET_TYPES, DATE_RANGES } from 'ee/roadmap/constants';
-import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import epicChildEpicsQuery from 'ee/roadmap/queries/epic_child_epics.query.graphql';
 import groupEpicsQuery from 'ee/roadmap/queries/group_epics.query.graphql';
 import groupEpicsWithColorQuery from 'ee/roadmap/queries/group_epics_with_color.query.graphql';
-import localRoadmapSettingsQuery from 'ee/roadmap/queries/local_roadmap_settings.query.graphql';
 
 import {
-  basePath,
-  mockSortedBy,
   mockSvgPath,
   mockPageInfo,
   mockTimeframeInitialDate,
@@ -33,8 +27,8 @@ import {
   mockEpicChildEpicsQueryResponse,
   mockGroupEpicsQueryResponseEmpty,
 } from 'ee_jest/roadmap/mock_data';
+import { setLocalSettingsInCache } from '../local_cache_helpers';
 
-Vue.use(Vuex);
 Vue.use(VueApollo);
 
 jest.mock('~/alert');
@@ -44,11 +38,9 @@ const groupEpicsQueryHandler = jest.fn().mockResolvedValue(mockGroupEpicsQueryRe
 const groupEpicsWithColorQueryHandler = jest.fn().mockResolvedValue(mockGroupEpicsQueryResponse);
 
 describe('RoadmapApp', () => {
-  let store;
   let wrapper;
 
   const emptyStateIllustrationPath = mockSvgPath;
-  const hasFiltersApplied = true;
   const presetType = PRESET_TYPES.MONTHS;
   const timeframeRangeType = DATE_RANGES.CURRENT_YEAR;
   const timeframe = getTimeframeForRangeType({
@@ -63,15 +55,11 @@ describe('RoadmapApp', () => {
       [groupEpicsQuery, groupEpicsQueryHandler],
       [groupEpicsWithColorQuery, groupEpicsWithColorQueryHandler],
     ]);
-
-    apolloProvider.clients.defaultClient.cache.writeQuery({
-      query: localRoadmapSettingsQuery,
-      data: {
-        localRoadmapSettings: {
-          __typename: 'LocalRoadmapSettings',
-          filterParams,
-        },
-      },
+    setLocalSettingsInCache(apolloProvider, {
+      filterParams,
+      presetType,
+      timeframe,
+      timeframeRangeType,
     });
 
     wrapper = shallowMountExtended(RoadmapApp, {
@@ -88,7 +76,6 @@ describe('RoadmapApp', () => {
         },
       },
       apolloProvider,
-      store,
     });
   };
 
@@ -97,19 +84,6 @@ describe('RoadmapApp', () => {
   const findGlLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findRoadmapFilters = () => wrapper.findComponent(RoadmapFilters);
   const findRoadmapShell = () => wrapper.findComponent(RoadmapShell);
-
-  beforeEach(() => {
-    store = createStore();
-    store.dispatch('setInitialData', {
-      sortedBy: mockSortedBy,
-      presetType,
-      timeframe,
-      hasFiltersApplied,
-      filterQueryString: '',
-      basePath,
-      timeframeRangeType,
-    });
-  });
 
   describe.each`
     testLabel         | hasEpics | hasError | showLoading | showRoadmapShell | showEpicsListEmpty | showAlert

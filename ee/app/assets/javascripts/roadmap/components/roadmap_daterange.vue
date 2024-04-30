@@ -1,12 +1,15 @@
 <script>
 import { GlCollapsibleListbox, GlFormGroup, GlFormRadioGroup } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapActions, mapState } from 'vuex';
 
 import { __, s__ } from '~/locale';
 
+import localRoadmapSettingsQuery from '../queries/local_roadmap_settings.query.graphql';
+import {
+  getPresetTypeForTimeframeRangeType,
+  getTimeframeForRangeType,
+  mapLocalSettings,
+} from '../utils/roadmap_utils';
 import { PRESET_TYPES, DATE_RANGES } from '../constants';
-import { getPresetTypeForTimeframeRangeType } from '../utils/roadmap_utils';
 
 export default {
   availableDateRanges: [
@@ -19,19 +22,22 @@ export default {
     GlFormGroup,
     GlFormRadioGroup,
   },
-  props: {
-    timeframeRangeType: {
-      type: String,
-      required: true,
-    },
-  },
   data() {
     return {
-      selectedDaterange: this.timeframeRangeType,
+      initialSelectedDaterange: null,
+      selectedDaterange: null,
     };
   },
+  apollo: {
+    localRoadmapSettings: {
+      query: localRoadmapSettingsQuery,
+      result({ data }) {
+        this.selectedDaterange = data.localRoadmapSettings.timeframeRangeType;
+      },
+    },
+  },
   computed: {
-    ...mapState(['presetType']),
+    ...mapLocalSettings(['presetType']),
     daterangeDropdownText() {
       switch (this.selectedDaterange) {
         case DATE_RANGES.CURRENT_QUARTER:
@@ -59,7 +65,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setDaterange']),
     handleDaterangeSelect(value) {
       this.selectedDaterange = value;
     },
@@ -78,6 +83,13 @@ export default {
       if (presetType !== this.presetType) {
         this.setDaterange({ timeframeRangeType: this.selectedDaterange, presetType });
       }
+    },
+    setDaterange({ timeframeRangeType, presetType }) {
+      const timeframe = getTimeframeForRangeType({
+        timeframeRangeType,
+        presetType,
+      });
+      this.$emit('setDateRange', { timeframeRangeType, presetType, timeframe });
     },
   },
   i18n: {

@@ -1,12 +1,11 @@
 <script>
 import { GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapState, mapActions } from 'vuex';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { EPIC_DETAILS_CELL_WIDTH, TIMELINE_CELL_MIN_WIDTH, EPIC_ITEM_HEIGHT } from '../constants';
 import eventHub from '../event_hub';
 import { generateKey, scrollToCurrentDay } from '../utils/epic_utils';
+import updateLocalRoadmapSettingsMutation from '../queries/update_local_roadmap_settings.mutation.graphql';
 
 import CurrentDayIndicator from './current_day_indicator.vue';
 import EpicItem from './epic_item.vue';
@@ -26,10 +25,6 @@ export default {
     },
   },
   props: {
-    presetType: {
-      type: String,
-      required: true,
-    },
     epics: {
       type: Array,
       required: true,
@@ -46,6 +41,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    bufferSize: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {
@@ -56,7 +55,6 @@ export default {
     };
   },
   computed: {
-    ...mapState(['bufferSize']),
     isScopedRoadmap() {
       return Boolean(this.epicIid);
     },
@@ -112,7 +110,16 @@ export default {
     window.removeEventListener('resize', this.syncClientWidth);
   },
   methods: {
-    ...mapActions(['setBufferSize']),
+    setBufferSize(bufferSize) {
+      this.$apollo.mutate({
+        mutation: updateLocalRoadmapSettingsMutation,
+        variables: {
+          input: {
+            bufferSize,
+          },
+        },
+      });
+    },
     initMounted() {
       const containerInnerHeight = this.isScopedRoadmap
         ? this.$root.$el.clientHeight
@@ -169,7 +176,6 @@ export default {
       v-for="epic in displayedEpics"
       ref="epicItems"
       :key="generateKey(epic)"
-      :preset-type="presetType"
       :epic="epic"
       :timeframe="timeframe"
       :client-width="clientWidth"
@@ -187,7 +193,7 @@ export default {
           :key="index"
           class="epic-timeline-cell gl-display-flex"
         >
-          <current-day-indicator :preset-type="presetType" :timeframe-item="timeframeItem" />
+          <current-day-indicator :timeframe-item="timeframeItem" />
         </span>
       </div>
     </div>

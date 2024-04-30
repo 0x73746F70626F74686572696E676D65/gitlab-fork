@@ -1,28 +1,24 @@
-import { GlFormGroup, GlFormRadioGroup } from '@gitlab/ui';
+import { GlFormGroup, GlFormRadioGroup, GlToggle } from '@gitlab/ui';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import createStore from 'ee/roadmap/store';
 import RoadmapMilestones from 'ee/roadmap/components/roadmap_milestones.vue';
-import { MILESTONES_ALL, MILESTONES_OPTIONS } from 'ee/roadmap/constants';
+import { MILESTONES_ALL, MILESTONES_OPTIONS, MILESTONES_GROUP } from 'ee/roadmap/constants';
 
 describe('RoadmapMilestones', () => {
   let wrapper;
 
   const createComponent = ({ isShowingMilestones = true } = {}) => {
-    const store = createStore();
-
-    store.dispatch('setInitialData', {
-      milestonesType: MILESTONES_ALL,
-      isShowingMilestones,
-    });
-
     wrapper = shallowMountExtended(RoadmapMilestones, {
-      store,
+      propsData: {
+        milestonesType: MILESTONES_ALL,
+        isShowingMilestones,
+      },
     });
   };
 
   const findFormGroup = () => wrapper.findComponent(GlFormGroup);
   const findFormRadioGroup = () => wrapper.findComponent(GlFormRadioGroup);
+  const findToggle = () => wrapper.findComponent(GlToggle);
 
   beforeEach(() => {
     createComponent();
@@ -46,5 +42,31 @@ describe('RoadmapMilestones', () => {
         expect(findFormRadioGroup().props('options')).toEqual(MILESTONES_OPTIONS);
       }
     });
+  });
+
+  it('emits `setMilestonesSettings` event when radio group changes', () => {
+    createComponent();
+    findFormRadioGroup().vm.$emit('change', MILESTONES_GROUP);
+
+    expect(wrapper.emitted('setMilestonesSettings')).toEqual([
+      [
+        {
+          milestonesType: MILESTONES_GROUP,
+        },
+      ],
+    ]);
+  });
+
+  it('emits `setMilestonesSettings` event when milestones visibility is toggled', () => {
+    createComponent();
+    findToggle().vm.$emit('change');
+
+    expect(wrapper.emitted('setMilestonesSettings')).toEqual([
+      [
+        {
+          isShowingMilestones: false,
+        },
+      ],
+    ]);
   });
 });

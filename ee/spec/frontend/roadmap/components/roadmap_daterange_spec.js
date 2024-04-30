@@ -1,15 +1,15 @@
 import { GlCollapsibleListbox, GlFormGroup, GlFormRadioGroup } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
+
+import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import * as actions from 'ee/roadmap/store/actions';
-import state from 'ee/roadmap/store/state';
-import mutations from 'ee/roadmap/store/mutations';
+
 import RoadmapDaterange from 'ee/roadmap/components/roadmap_daterange.vue';
 import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
+import { setLocalSettingsInCache } from '../local_cache_helpers';
 
-Vue.use(Vuex);
+Vue.use(VueApollo);
 
 describe('RoadmapDaterange', () => {
   let wrapper;
@@ -18,25 +18,14 @@ describe('RoadmapDaterange', () => {
   const months = { text: 'By month', value: PRESET_TYPES.MONTHS };
   const weeks = { text: 'By week', value: PRESET_TYPES.WEEKS };
 
-  const createComponent = ({ timeframeRangeType = DATE_RANGES.CURRENT_QUARTER } = {}) => {
-    const store = new Vuex.Store({
-      actions: {
-        ...actions,
-        fetchGroupMilestones: jest.fn(),
-        fetchMilestones: jest.fn(),
-      },
-      mutations,
-      state: state(),
-    });
+  const createComponent = ({
+    timeframeRangeType = DATE_RANGES.CURRENT_QUARTER,
+    presetType = PRESET_TYPES.MONTHS,
+  } = {}) => {
+    const apolloProvider = createMockApollo();
+    setLocalSettingsInCache(apolloProvider, { presetType, timeframeRangeType });
 
-    store.dispatch('setInitialData', {
-      presetType: PRESET_TYPES.MONTHS,
-    });
-
-    wrapper = shallowMountExtended(RoadmapDaterange, {
-      store,
-      propsData: { timeframeRangeType },
-    });
+    wrapper = shallowMountExtended(RoadmapDaterange, { apolloProvider });
   };
 
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);

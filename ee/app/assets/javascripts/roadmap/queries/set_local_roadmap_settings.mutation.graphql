@@ -1,5 +1,0 @@
-mutation setLocalRoadmapSettings($input: LocalRoadmapSettingsInput!) {
-  setLocalRoadmapSettings(input: $input) @client {
-    filterParams
-  }
-}

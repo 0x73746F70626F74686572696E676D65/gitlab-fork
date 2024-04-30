@@ -3,33 +3,10 @@ import { shallowMount } from '@vue/test-utils';
 import EpicItem from 'ee/roadmap/components/epic_item.vue';
 import EpicItemContainer from 'ee/roadmap/components/epic_item_container.vue';
 
-import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
-import createStore from 'ee/roadmap/store';
-import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
+import { mockGroupId, mockFormattedChildEpic1 } from 'ee_jest/roadmap/mock_data';
 
-import {
-  mockTimeframeInitialDate,
-  mockGroupId,
-  mockFormattedChildEpic1,
-} from 'ee_jest/roadmap/mock_data';
-
-let store;
-
-const mockTimeframeMonths = getTimeframeForRangeType({
-  timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
-  presetType: PRESET_TYPES.MONTHS,
-  initialDate: mockTimeframeInitialDate,
-});
-
-const createComponent = ({
-  presetType = PRESET_TYPES.MONTHS,
-  timeframe = mockTimeframeMonths,
-  currentGroupId = mockGroupId,
-  children = [],
-  childLevel = 0,
-} = {}) => {
+const createComponent = ({ currentGroupId = mockGroupId, children = [], childLevel = 0 } = {}) => {
   return shallowMount(EpicItemContainer, {
-    store,
     stubs: {
       EpicItem: true,
     },
@@ -37,9 +14,6 @@ const createComponent = ({
       currentGroupId,
     },
     propsData: {
-      presetType,
-      timeframe,
-      currentGroupId,
       children,
       childLevel,
       filterParams: {},
@@ -51,7 +25,6 @@ describe('EpicItemContainer', () => {
   let wrapper;
 
   beforeEach(() => {
-    store = createStore();
     wrapper = createComponent();
   });
 

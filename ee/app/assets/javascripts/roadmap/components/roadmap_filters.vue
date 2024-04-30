@@ -1,14 +1,14 @@
 <script>
 import { GlButton } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapState, mapActions } from 'vuex';
 
 import { updateHistory, setUrlParams } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
-import setLocalRoadmapSettingsMutation from '../queries/set_local_roadmap_settings.mutation.graphql';
+import updateLocalRoadmapSettingsMutation from '../queries/update_local_roadmap_settings.mutation.graphql';
+import localRoadmapSettingsQuery from '../queries/local_roadmap_settings.query.graphql';
 
 import EpicsFilteredSearchMixin from '../mixins/filtered_search_mixin';
+import { mapLocalSettings } from '../utils/roadmap_utils';
 
 export default {
   availableSortOptions: [
@@ -34,15 +34,19 @@ export default {
     FilteredSearchBar,
   },
   mixins: [EpicsFilteredSearchMixin],
-  props: {
-    filterParams: {
-      type: Object,
-      required: true,
+  data() {
+    return {
+      localRoadmapSettings: {},
+    };
+  },
+  apollo: {
+    localRoadmapSettings: {
+      query: localRoadmapSettingsQuery,
     },
   },
   computed: {
-    ...mapState([
-      'presetType',
+    ...mapLocalSettings([
+      'filterParams',
       'epicsState',
       'sortedBy',
       'timeframeRangeType',
@@ -51,6 +55,7 @@ export default {
       'isShowingMilestones',
       'milestonesType',
       'isShowingLabels',
+      'presetType',
     ]),
   },
   watch: {
@@ -69,24 +74,21 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setSortedBy']),
-    setFilterParams(filterParams) {
+    setLocalSettings(settings) {
       this.$apollo.mutate({
-        mutation: setLocalRoadmapSettingsMutation,
+        mutation: updateLocalRoadmapSettingsMutation,
         variables: {
-          input: {
-            filterParams,
-          },
+          input: settings,
         },
       });
     },
     handleFilterEpics(filters, cleared) {
       if (filters.length || cleared) {
-        this.setFilterParams(this.getFilterParams(filters));
+        this.setLocalSettings({ filterParams: this.getFilterParams(filters) });
       }
     },
     handleSortEpics(sortedBy) {
-      this.setSortedBy(sortedBy);
+      this.setLocalSettings({ sortedBy });
     },
   },
   i18n: {

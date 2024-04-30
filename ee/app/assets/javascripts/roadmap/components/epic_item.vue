@@ -1,8 +1,4 @@
 <script>
-// eslint-disable-next-line no-restricted-imports
-import { mapState } from 'vuex';
-import { isEmpty } from 'lodash';
-
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -19,6 +15,7 @@ import {
   timeframeStartDate,
   timeframeEndDate,
 } from '../utils/roadmap_item_utils';
+import { mapLocalSettings } from '../utils/roadmap_utils';
 
 import CurrentDayIndicator from './current_day_indicator.vue';
 
@@ -44,16 +41,8 @@ export default {
   ],
   inject: ['currentGroupId'],
   props: {
-    presetType: {
-      type: String,
-      required: true,
-    },
     epic: {
       type: Object,
-      required: true,
-    },
-    timeframe: {
-      type: Array,
       required: true,
     },
     clientWidth: {
@@ -124,10 +113,14 @@ export default {
     },
   },
   computed: {
-    ...mapState(['epicsState', 'sortedBy']),
-    filterParams() {
-      return this.localRoadmapSettings?.filterParams;
-    },
+    ...mapLocalSettings([
+      'epicsState',
+      'sortedBy',
+      'filterParams',
+      'timeframe',
+      'presetType',
+      'isShowingLabels',
+    ]),
     epicColorHighlightEnabled() {
       return Boolean(this.glFeatures.epicColorHighlight);
     },
@@ -161,9 +154,6 @@ export default {
     isFetchingChildren() {
       return this.$apollo.queries.childEpics.loading;
     },
-    hasFiltersApplied() {
-      return !isEmpty(this.filterParams);
-    },
   },
   methods: {
     toggleEpic() {
@@ -184,9 +174,9 @@ export default {
         :child-level="childLevel"
         :is-expanded="isExpanded"
         :is-fetching-children="isFetchingChildren"
-        :has-filters-applied="hasFiltersApplied"
         :is-children-empty="isChildrenEmpty"
         :filter-params="filterParams"
+        :is-showing-labels="isShowingLabels"
         @toggleEpic="toggleEpic"
       />
       <span
@@ -207,8 +197,6 @@ export default {
         />
         <epic-item-timeline
           v-if="index === roadmapItemIndex"
-          :preset-type="presetType"
-          :timeframe="timeframe"
           :timeframe-item="timeframeItem"
           :epic="epic"
           :start-date="startDate"
@@ -219,8 +207,6 @@ export default {
     </div>
     <epic-item-container
       v-if="hasChildrenToShow"
-      :preset-type="presetType"
-      :timeframe="timeframe"
       :client-width="clientWidth"
       :children="childEpics"
       :child-level="childLevel + 1"

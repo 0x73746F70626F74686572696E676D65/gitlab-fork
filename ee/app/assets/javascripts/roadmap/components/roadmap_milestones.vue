@@ -1,7 +1,5 @@
 <script>
 import { GlFormGroup, GlFormRadioGroup, GlToggle } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapActions, mapState } from 'vuex';
 
 import { __ } from '~/locale';
 import { MILESTONES_OPTIONS } from '../constants';
@@ -12,14 +10,20 @@ export default {
     GlFormRadioGroup,
     GlToggle,
   },
-  computed: {
-    ...mapState(['milestonesType', 'isShowingMilestones', 'milestones']),
+  props: {
+    milestonesType: {
+      type: String,
+      required: true,
+    },
+    isShowingMilestones: {
+      type: Boolean,
+      required: true,
+    },
   },
   methods: {
-    ...mapActions(['setMilestonesType', 'toggleMilestones']),
     handleMilestonesChange(option) {
       if (option !== this.milestonesType) {
-        this.setMilestonesType(option);
+        this.$emit('setMilestonesSettings', { milestonesType: option });
       }
     },
   },
@@ -49,7 +53,7 @@ export default {
         data-track-action="click_toggle"
         :data-track-label="$options.tracking.label"
         :data-track-property="$options.tracking.property"
-        @change="toggleMilestones"
+        @change="$emit('setMilestonesSettings', { isShowingMilestones: !isShowingMilestones })"
       />
       <gl-form-radio-group
         v-if="isShowingMilestones"

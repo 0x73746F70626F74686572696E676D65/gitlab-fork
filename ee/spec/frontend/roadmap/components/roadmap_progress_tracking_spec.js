@@ -1,28 +1,24 @@
-import { GlFormGroup, GlFormRadioGroup } from '@gitlab/ui';
+import { GlFormGroup, GlFormRadioGroup, GlToggle } from '@gitlab/ui';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import createStore from 'ee/roadmap/store';
 import RoadmapProgressTracking from 'ee/roadmap/components/roadmap_progress_tracking.vue';
-import { PROGRESS_WEIGHT, PROGRESS_TRACKING_OPTIONS } from 'ee/roadmap/constants';
+import { PROGRESS_WEIGHT, PROGRESS_COUNT, PROGRESS_TRACKING_OPTIONS } from 'ee/roadmap/constants';
 
 describe('RoadmapProgressTracking', () => {
   let wrapper;
 
   const createComponent = ({ isProgressTrackingActive = true } = {}) => {
-    const store = createStore();
-
-    store.dispatch('setInitialData', {
-      progressTracking: PROGRESS_WEIGHT,
-      isProgressTrackingActive,
-    });
-
     wrapper = shallowMountExtended(RoadmapProgressTracking, {
-      store,
+      propsData: {
+        progressTracking: PROGRESS_WEIGHT,
+        isProgressTrackingActive,
+      },
     });
   };
 
   const findFormGroup = () => wrapper.findComponent(GlFormGroup);
   const findFormRadioGroup = () => wrapper.findComponent(GlFormRadioGroup);
+  const findToggle = () => wrapper.findComponent(GlToggle);
 
   beforeEach(() => {
     createComponent();
@@ -49,5 +45,21 @@ describe('RoadmapProgressTracking', () => {
         }
       },
     );
+  });
+
+  it('emits `setProgressTracking` event when radio button is clicked', () => {
+    createComponent();
+    findFormRadioGroup().vm.$emit('change', PROGRESS_COUNT);
+
+    expect(wrapper.emitted('setProgressTracking')).toEqual([
+      [{ progressTracking: PROGRESS_COUNT }],
+    ]);
+  });
+
+  it('emits `setProgressTracking` event when progress tracking visibility is toggled', () => {
+    createComponent();
+    findToggle().vm.$emit('change');
+
+    expect(wrapper.emitted('setProgressTracking')).toEqual([[{ isProgressTrackingActive: false }]]);
   });
 });

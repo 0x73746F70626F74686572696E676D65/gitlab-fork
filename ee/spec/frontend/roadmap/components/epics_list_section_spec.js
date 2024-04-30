@@ -1,6 +1,11 @@
 import { GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
 
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
+
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import createMockApollo from 'helpers/mock_apollo_helper';
+
 import EpicItem from 'ee/roadmap/components/epic_item.vue';
 import EpicsListSection from 'ee/roadmap/components/epics_list_section.vue';
 import {
@@ -9,7 +14,6 @@ import {
   EPIC_DETAILS_CELL_WIDTH,
   TIMELINE_CELL_MIN_WIDTH,
 } from 'ee/roadmap/constants';
-import createStore from 'ee/roadmap/store';
 import { scrollToCurrentDay } from 'ee/roadmap/utils/epic_utils';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import {
@@ -18,26 +22,20 @@ import {
   rawEpics,
   mockEpicsWithParents,
   mockEpicsWithSkippedParents,
-  mockSortedBy,
-  basePath,
 } from 'ee_jest/roadmap/mock_data';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import eventHub from 'ee/roadmap/event_hub';
 
+import { expectPayload } from '../local_cache_helpers';
+
+Vue.use(VueApollo);
 jest.mock('ee/roadmap/utils/epic_utils');
+
+const updateLocalRoadmapSettingsMutationMock = jest.fn();
 
 const mockTimeframeMonths = getTimeframeForRangeType({
   timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
   presetType: PRESET_TYPES.MONTHS,
   initialDate: mockTimeframeInitialDate,
-});
-const store = createStore();
-store.dispatch('setInitialData', {
-  sortedBy: mockSortedBy,
-  presetType: PRESET_TYPES.MONTHS,
-  timeframe: mockTimeframeMonths,
-  filterQueryString: '',
-  basePath,
 });
 
 describe('EpicsListSectionComponent', () => {
@@ -53,20 +51,26 @@ describe('EpicsListSectionComponent', () => {
     epicsFetchNextPageInProgress = false,
     hasNextPage = false,
     epicIid = null,
+    bufferSize = rawEpics.length + 1,
   } = {}) => {
     wrapper = shallowMountExtended(EpicsListSection, {
-      store,
       propsData: {
         presetType: PRESET_TYPES.MONTHS,
         timeframe: mockTimeframeMonths,
         epics,
         epicsFetchNextPageInProgress,
         hasNextPage,
+        bufferSize,
       },
       provide: {
         currentGroupId: mockGroupId,
         epicIid,
       },
+      apolloProvider: createMockApollo([], {
+        Mutation: {
+          updateLocalRoadmapSettings: updateLocalRoadmapSettingsMutationMock,
+        },
+      }),
     });
   };
 
@@ -82,7 +86,6 @@ describe('EpicsListSectionComponent', () => {
 
   it('renders empty row container when number of epics is smaller than buffer size', async () => {
     createComponent();
-    store.dispatch('setBufferSize', rawEpics.length + 1);
 
     await nextTick();
 
@@ -140,8 +143,10 @@ describe('EpicsListSectionComponent', () => {
       createComponent();
     });
 
-    it('calls action `setBufferSize` with value based on window.innerHeight and component element position', () => {
-      expect(store.state.bufferSize).toBe(16);
+    it('calls `setBufferSize` mutation with value based on window.innerHeight and component element position', () => {
+      expect(updateLocalRoadmapSettingsMutationMock).toHaveBeenCalledWith(
+        ...expectPayload({ bufferSize: 16 }),
+      );
     });
 
     it('calls `scrollToCurrentDay` following the component render', () => {

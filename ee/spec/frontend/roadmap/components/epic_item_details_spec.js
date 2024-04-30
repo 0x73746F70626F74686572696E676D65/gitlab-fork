@@ -1,4 +1,4 @@
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
 import { GlButton, GlLabel } from '@gitlab/ui';
@@ -7,33 +7,22 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 
 import { updateHistory } from '~/lib/utils/url_utility';
 import EpicItemDetails from 'ee/roadmap/components/epic_item_details.vue';
-import createStore from 'ee/roadmap/store';
 import {
   mockGroupId,
   mockFormattedEpic,
   mockFormattedChildEpic2,
   mockFormattedChildEpic1,
 } from 'ee_jest/roadmap/mock_data';
+import { expectPayload } from '../local_cache_helpers';
 
 jest.mock('~/lib/utils/url_utility');
 
 Vue.use(VueApollo);
 
-const setLocalSettingsMutationMock = jest.fn();
-
-const resolvers = {
-  Mutation: {
-    setLocalRoadmapSettings: setLocalSettingsMutationMock,
-  },
-};
+const updateLocalSettingsMutationMock = jest.fn();
 
 describe('EpicItemDetails', () => {
   let wrapper;
-  let store;
-
-  beforeEach(() => {
-    store = createStore();
-  });
 
   const createWrapper = ({
     currentGroupId = mockGroupId,
@@ -45,10 +34,10 @@ describe('EpicItemDetails', () => {
     isChildrenEmpty = false,
     isExpanded = false,
     isFetchingChildren = false,
+    isShowingLabels = false,
     filterParams = {},
   } = {}) => {
     wrapper = shallowMountExtended(EpicItemDetails, {
-      store,
       propsData: {
         epic,
         currentGroupId,
@@ -59,13 +48,18 @@ describe('EpicItemDetails', () => {
         isExpanded,
         isFetchingChildren,
         filterParams,
+        isShowingLabels,
       },
       provide: {
         allowSubEpics,
         allowScopedLabels,
         currentGroupId,
       },
-      apolloProvider: createMockApollo([], resolvers),
+      apolloProvider: createMockApollo([], {
+        Mutation: {
+          updateLocalRoadmapSettings: updateLocalSettingsMutationMock,
+        },
+      }),
     });
   };
 
@@ -161,10 +155,6 @@ describe('EpicItemDetails', () => {
   });
 
   describe('epic', () => {
-    beforeEach(() => {
-      store.state.allowSubEpics = true;
-    });
-
     describe('expand icon', () => {
       it('is hidden when it is child epic', () => {
         const epic = createMockEpic({
@@ -235,7 +225,7 @@ describe('EpicItemDetails', () => {
             beforeEach(() => {
               createWrapper({
                 epic,
-                hasFiltersApplied: true,
+                filterParams: { authorUsername: 'root' },
                 isChildrenEmpty: true,
                 isExpanded: true,
               });
@@ -274,7 +264,7 @@ describe('EpicItemDetails', () => {
           });
 
           it('has a tooltip with the count and explanation if search is being performed', () => {
-            createWrapper({ epic, hasFiltersApplied: true });
+            createWrapper({ epic, filterParams: { search: 'foo' } });
             expect(getChildEpicsCountTooltip().text()).toBe(
               '1 child epic Some child epics may be hidden due to applied filters',
             );
@@ -331,13 +321,8 @@ describe('EpicItemDetails', () => {
       expect(findLabelsContainer().exists()).toBe(false);
     });
 
-    it('display labels with correct props when isShowingLabels setting is set to true', async () => {
-      createWrapper({ allowScopedLabels: true });
-      expect(findLabelsContainer().exists()).toBe(false);
-
-      store.dispatch('toggleLabels');
-
-      await nextTick();
+    it('display labels with correct props when isShowingLabels setting is set to true', () => {
+      createWrapper({ allowScopedLabels: true, isShowingLabels: true });
 
       expect(findLabelsContainer().exists()).toBe(true);
 
@@ -362,13 +347,8 @@ describe('EpicItemDetails', () => {
       ${'display'}        | ${true}           | ${true}
     `(
       '$assertionName scoped labels when allowScopedLabels is $allowScopedLabels',
-      async ({ allowScopedLabels, scopedLabel }) => {
-        createWrapper({ allowScopedLabels });
-
-        store.dispatch('toggleLabels');
-        store.state.allowScopedLabels = allowScopedLabels;
-
-        await nextTick();
+      ({ allowScopedLabels, scopedLabel }) => {
+        createWrapper({ allowScopedLabels, isShowingLabels: true });
 
         expect(findScopedLabel().props('scoped')).toBe(scopedLabel);
       },
@@ -376,9 +356,7 @@ describe('EpicItemDetails', () => {
 
     describe('click on label', () => {
       beforeEach(() => {
-        createWrapper();
-        store.dispatch('toggleLabels');
-        jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
+        createWrapper({ isShowingLabels: true });
       });
 
       describe('when selected label is not in the filter', () => {
@@ -393,12 +371,9 @@ describe('EpicItemDetails', () => {
           expect(updateHistory).toHaveBeenCalledTimes(1);
         });
 
-        it('calls setLocalRoadmapSettings mutation', () => {
-          expect(setLocalSettingsMutationMock).toHaveBeenCalledWith(
-            {},
-            expect.objectContaining({ input: { filterParams: {} } }),
-            expect.any(Object),
-            expect.any(Object),
+        it('calls updateLocalRoadmapSettings mutation', () => {
+          expect(updateLocalSettingsMutationMock).toHaveBeenCalledWith(
+            ...expectPayload({ filterParams: {} }),
           );
         });
       });
@@ -410,6 +385,7 @@ describe('EpicItemDetails', () => {
             filterParams: {
               labelName: ['Aquanix'],
             },
+            isShowingLabels: true,
           });
 
           wrapper.findComponent(GlLabel).vm.$emit('click', {
@@ -421,8 +397,8 @@ describe('EpicItemDetails', () => {
           expect(updateHistory).not.toHaveBeenCalled();
         });
 
-        it('does not dispatch setFilterParams or fetchEpics vuex action', () => {
-          expect(store.dispatch).not.toHaveBeenCalled();
+        it('does not call `updateLocalRoadmapSettings` mutation', () => {
+          expect(updateLocalSettingsMutationMock).not.toHaveBeenCalled();
         });
       });
     });

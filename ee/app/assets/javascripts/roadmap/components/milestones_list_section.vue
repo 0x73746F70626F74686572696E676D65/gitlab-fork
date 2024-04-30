@@ -1,11 +1,11 @@
 <script>
 import { GlButton, GlIcon, GlTooltipDirective } from '@gitlab/ui';
-// eslint-disable-next-line no-restricted-imports
-import { mapState, mapActions } from 'vuex';
 import { __, n__ } from '~/locale';
 import { EPIC_DETAILS_CELL_WIDTH, EPIC_ITEM_HEIGHT, TIMELINE_CELL_MIN_WIDTH } from '../constants';
 import eventHub from '../event_hub';
 import { scrollToCurrentDay } from '../utils/epic_utils';
+import updateLocalRoadmapSettingsMutation from '../queries/update_local_roadmap_settings.mutation.graphql';
+
 import MilestoneTimeline from './milestone_timeline.vue';
 
 const EXPAND_BUTTON_EXPANDED = {
@@ -30,16 +30,16 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   props: {
-    presetType: {
-      type: String,
-      required: true,
-    },
     milestones: {
       type: Array,
       required: true,
     },
     timeframe: {
       type: Array,
+      required: true,
+    },
+    bufferSize: {
+      type: Number,
       required: true,
     },
   },
@@ -52,7 +52,6 @@ export default {
     };
   },
   computed: {
-    ...mapState(['bufferSize']),
     sectionContainerStyles() {
       return {
         width: `${EPIC_DETAILS_CELL_WIDTH + TIMELINE_CELL_MIN_WIDTH * this.timeframe.length}px`,
@@ -84,10 +83,16 @@ export default {
     eventHub.$off('epicsListScrolled', this.handleEpicsListScroll);
   },
   methods: {
-    ...mapActions(['setBufferSize']),
     initMounted() {
       this.roadmapShellEl = this.$root.$el && this.$root.$el.firstChild;
-      this.setBufferSize(Math.ceil((window.innerHeight - this.$el.offsetTop) / EPIC_ITEM_HEIGHT));
+      this.$apollo.mutate({
+        mutation: updateLocalRoadmapSettingsMutation,
+        variables: {
+          input: {
+            bufferSize: Math.ceil((window.innerHeight - this.$el.offsetTop) / EPIC_ITEM_HEIGHT),
+          },
+        },
+      });
 
       this.$nextTick(() => {
         this.offsetLeft = (this.$el.parentElement && this.$el.parentElement.offsetLeft) || 0;
@@ -148,7 +153,6 @@ export default {
     </div>
     <div class="milestones-list-items gl-display-table-cell">
       <milestone-timeline
-        :preset-type="presetType"
         :timeframe="timeframe"
         :milestones="milestones"
         :milestones-expanded="milestonesExpanded"
