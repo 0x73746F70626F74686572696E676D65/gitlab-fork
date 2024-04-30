@@ -247,7 +247,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
 
     it 'allows you to change the maven_forwarding setting' do
-      page.within('#js-package-settings') do
+      within_testid('forward-package-requests-form') do
         check 'Forward Maven package requests'
         click_button 'Save'
       end
@@ -256,7 +256,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
 
     it 'allows you to change the maven_lock setting' do
-      page.within('#js-package-settings') do
+      within_testid('forward-package-requests-form') do
         check 'Enforce Maven setting for all subgroups'
         click_button 'Save'
       end
@@ -265,7 +265,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
 
     it 'allows you to change the npm_forwarding setting' do
-      page.within('#js-package-settings') do
+      within_testid('forward-package-requests-form') do
         check 'Forward npm package requests'
         click_button 'Save'
       end
@@ -274,7 +274,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
 
     it 'allows you to change the npm_lock setting' do
-      page.within('#js-package-settings') do
+      within_testid('forward-package-requests-form') do
         check 'Enforce npm setting for all subgroups'
         click_button 'Save'
       end
@@ -283,7 +283,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
 
     it 'allows you to change the pypi_forwarding setting' do
-      page.within('#js-package-settings') do
+      within_testid('forward-package-requests-form') do
         check 'Forward PyPI package requests'
         click_button 'Save'
       end
@@ -292,7 +292,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
 
     it 'allows you to change the pypi_lock setting' do
-      page.within('#js-package-settings') do
+      within_testid('forward-package-requests-form') do
         check 'Enforce PyPI setting for all subgroups'
         click_button 'Save'
       end
