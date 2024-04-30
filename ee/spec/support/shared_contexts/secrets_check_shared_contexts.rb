@@ -119,14 +119,28 @@ RSpec.shared_context 'secret detection error and log messages context' do
   let(:finding_path) { '.env' }
   let(:finding_line_number) { 1 }
   let(:finding_description) { 'GitLab Personal Access Token' }
+  let(:finding_path2) { 'test.txt' }
+  let(:finding_line_number2) { 2 }
+  let(:finding_description2) { 'GitLab Runner Authentication Token' }
   let(:finding_message_header) { format(log_messages[:finding_message_occurrence_header], { sha: new_commit }) }
   let(:finding_message_path) { format(log_messages[:finding_message_occurrence_path], { path: finding_path }) }
+  let(:finding_message_path2) { format(log_messages[:finding_message_occurrence_path], { path: finding_path2 }) }
   let(:finding_message_occurrence_line) do
     format(
       log_messages[:finding_message_occurrence_line],
       {
         line_number: finding_line_number,
         description: finding_description
+      }
+    )
+  end
+
+  let(:finding_message_occurrence_line2) do
+    format(
+      log_messages[:finding_message_occurrence_line],
+      {
+        line_number: finding_line_number,
+        description: finding_description2
       }
     )
   end
@@ -149,6 +163,15 @@ RSpec.shared_context 'secret detection error and log messages context' do
     message += format(log_messages[:finding_message_occurrence_header], { sha: commit_with_same_blob })
     message += finding_message_path
     message += finding_message_occurrence_line
+    message
+  end
+
+  let(:finding_message_multiple_files_occurrence_lines) do
+    message = finding_message_header
+    message += finding_message_path
+    message += finding_message_occurrence_line
+    message += finding_message_path2
+    message += finding_message_occurrence_line2
     message
   end
 
