@@ -74,14 +74,15 @@ export default {
         return addOnPurchase;
       },
       error(error) {
-        this.handleAddOnPurchaseFetchError(error);
+        const errorWithCause = Object.assign(error, { cause: ADD_ON_PURCHASE_FETCH_ERROR_CODE });
+        this.handleAddOnPurchaseFetchError(errorWithCause);
+        this.reportError(error);
       },
     },
   },
   methods: {
     handleAddOnPurchaseFetchError(error) {
-      this.addOnPurchaseFetchError = ADD_ON_PURCHASE_FETCH_ERROR_CODE;
-      this.reportError(error);
+      this.addOnPurchaseFetchError = error;
     },
     reportError(error) {
       Sentry.captureException(error, {
@@ -134,7 +135,7 @@ export default {
           class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5 gl-bg-gray-10 gl-p-5"
         >
           <code-suggestions-statistics-card :total-value="totalValue" :usage-value="usageValue" />
-          <code-suggestions-info-card :group-id="groupId" />
+          <code-suggestions-info-card :group-id="groupId" @error="handleAddOnPurchaseFetchError" />
         </section>
         <saas-add-on-eligible-user-list v-if="isSaaS" :add-on-purchase-id="addOnPurchase.id" />
         <self-managed-add-on-eligible-user-list v-else :add-on-purchase-id="addOnPurchase.id" />

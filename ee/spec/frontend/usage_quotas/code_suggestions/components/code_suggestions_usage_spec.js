@@ -232,17 +232,17 @@ describe('GitLab Duo Pro Usage', () => {
         expect(findCodeSuggestionsIntro().exists()).toBe(false);
       });
 
-      it('captures the error', () => {
+      it('captures the original error', () => {
+        expect(Sentry.captureException).toHaveBeenCalledTimes(1);
         expect(Sentry.captureException).toHaveBeenCalledWith(error, {
           tags: { vue_component: 'CodeSuggestionsUsage' },
         });
       });
 
-      it('shows an error alert', () => {
-        expect(findErrorAlert().props()).toMatchObject({
-          error: ADD_ON_PURCHASE_FETCH_ERROR_CODE,
-          errorDictionary: ADD_ON_ERROR_DICTIONARY,
-        });
+      it('shows an error alert with cause', () => {
+        expect(findErrorAlert().props('errorDictionary')).toMatchObject(ADD_ON_ERROR_DICTIONARY);
+        const caughtError = findErrorAlert().props('error');
+        expect(caughtError.cause).toBe(ADD_ON_PURCHASE_FETCH_ERROR_CODE);
       });
     });
 
@@ -268,17 +268,17 @@ describe('GitLab Duo Pro Usage', () => {
         expect(findCodeSuggestionsIntro().exists()).toBe(false);
       });
 
-      it('captures the error', () => {
+      it('captures the original error', () => {
+        expect(Sentry.captureException).toHaveBeenCalledTimes(1);
         expect(Sentry.captureException).toHaveBeenCalledWith(error, {
           tags: { vue_component: 'CodeSuggestionsUsage' },
         });
       });
 
-      it('shows an error alert', () => {
-        expect(findErrorAlert().props()).toMatchObject({
-          error: ADD_ON_PURCHASE_FETCH_ERROR_CODE,
-          errorDictionary: ADD_ON_ERROR_DICTIONARY,
-        });
+      it('shows an error alert with cause', () => {
+        expect(findErrorAlert().props('errorDictionary')).toMatchObject(ADD_ON_ERROR_DICTIONARY);
+        const caughtError = findErrorAlert().props('error');
+        expect(caughtError.cause).toBe(ADD_ON_PURCHASE_FETCH_ERROR_CODE);
       });
     });
   });

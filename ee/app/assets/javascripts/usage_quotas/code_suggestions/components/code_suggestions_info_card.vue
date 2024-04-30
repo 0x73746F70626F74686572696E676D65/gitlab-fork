@@ -7,6 +7,7 @@ import {
   GlSkeletonLoader,
   GlModalDirective,
 } from '@gitlab/ui';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__ } from '~/locale';
 import UsageStatistics from 'ee/usage_quotas/components/usage_statistics.vue';
 import { codeSuggestionsLearnMoreLink } from 'ee/usage_quotas/code_suggestions/constants';
@@ -16,6 +17,7 @@ import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/su
 import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { LIMITED_ACCESS_KEYS } from 'ee/usage_quotas/components/constants';
+import { ADD_ON_PURCHASE_FETCH_ERROR_CODE } from 'ee/usage_quotas/error_constants';
 
 export default {
   name: 'CodeSuggestionsUsageInfoCard',
@@ -65,6 +67,9 @@ export default {
       }
       return true;
     },
+    hasNoRequestInformation() {
+      return !(this.groupId || this.subscriptionName);
+    },
     isLoading() {
       return this.$apollo.queries.subscriptionPermissions.loading;
     },
@@ -91,12 +96,21 @@ export default {
           : { subscriptionName: this.subscriptionName };
       },
       skip() {
-        return !(this.groupId || this.subscriptionName);
+        return this.hasNoRequestInformation;
       },
       update: (data) => ({
-        canAddDuoProSeats: data.subscription.canAddDuoProSeats,
+        canAddDuoProSeats: data.subscription?.canAddDuoProSeats,
         reason: data.userActionAccess?.limitedAccessReason,
       }),
+      error(error) {
+        const errorWithCause = Object.assign(error, { cause: ADD_ON_PURCHASE_FETCH_ERROR_CODE });
+        this.$emit('error', errorWithCause);
+        Sentry.captureException(error, {
+          tags: {
+            vue_component: this.$options.name,
+          },
+        });
+      },
     },
   },
   methods: {

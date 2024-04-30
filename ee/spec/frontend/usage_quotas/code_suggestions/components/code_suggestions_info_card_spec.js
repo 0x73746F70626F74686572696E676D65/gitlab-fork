@@ -1,6 +1,7 @@
 import { GlLink, GlSprintf, GlButton, GlSkeletonLoader } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
+import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import Tracking from '~/tracking';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { PROMO_URL, visitUrl } from 'jh_else_ce/lib/utils/url_utility';
@@ -9,9 +10,11 @@ import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/su
 import { createMockClient } from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
+import { ADD_ON_PURCHASE_FETCH_ERROR_CODE } from 'ee/usage_quotas/error_constants';
 
 Vue.use(VueApollo);
 
+jest.mock('~/sentry/sentry_browser_wrapper');
 jest.mock('~/lib/utils/url_utility', () => ({
   ...jest.requireActual('~/lib/utils/url_utility'),
   visitUrl: jest.fn().mockName('visitUrlMock'),
@@ -25,6 +28,7 @@ const defaultProvide = {
 
 describe('CodeSuggestionsInfoCard', () => {
   let wrapper;
+
   const defaultProps = { groupId: '4321' };
   const defaultApolloData = {
     subscription: {
@@ -36,6 +40,10 @@ describe('CodeSuggestionsInfoCard', () => {
     userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
   };
 
+  let queryHandlerMock = jest.fn().mockResolvedValue({
+    data: defaultApolloData,
+  });
+
   const findCodeSuggestionsDescription = () => wrapper.findByTestId('description');
   const findCodeSuggestionsLearnMoreLink = () => wrapper.findComponent(GlLink);
   const findCodeSuggestionsInfoTitle = () => wrapper.findByTestId('title');
@@ -43,11 +51,8 @@ describe('CodeSuggestionsInfoCard', () => {
   const findLimitedAccessModal = () => wrapper.findComponent(LimitedAccessModal);
 
   const createComponent = (options = {}) => {
-    const { props = {}, provide = {}, apolloData = defaultApolloData } = options;
+    const { props = {}, provide = {} } = options;
 
-    const queryHandlerMock = jest.fn().mockResolvedValue({
-      data: apolloData,
-    });
     const mockCustomersDotClient = createMockClient([
       [getSubscriptionPermissionsData, queryHandlerMock],
     ]);
@@ -85,6 +90,12 @@ describe('CodeSuggestionsInfoCard', () => {
     it('renders `GlSkeletonLoader`', () => {
       expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
     });
+
+    it('Add Seats button is not shown while loading', () => {
+      createComponent();
+
+      expect(findAddSeatsButton().exists()).toBe(false);
+    });
   });
 
   describe('general rendering', () => {
@@ -117,27 +128,38 @@ describe('CodeSuggestionsInfoCard', () => {
   });
 
   describe('add seats button', () => {
-    describe('with self-managed', () => {
-      it('renders button if addDuoProHref link is passed', async () => {
-        createComponent({ provide: { isSaas: false } });
-        // wait for apollo to load
-        await waitForPromises();
-        expect(findAddSeatsButton().exists()).toBe(true);
-      });
+    it('is rendered after apollo is loaded', async () => {
+      createComponent();
+
+      // wait for apollo to load
+      await waitForPromises();
+      expect(findAddSeatsButton().exists()).toBe(true);
     });
 
-    describe('with saas', () => {
-      describe('when link is present', () => {
-        beforeEach(async () => {
-          createComponent();
+    describe('when subscriptionPermissions returns error', () => {
+      const mockError = new Error('Woops, error in permissions call');
+      beforeEach(async () => {
+        queryHandlerMock = jest.fn().mockRejectedValueOnce(mockError);
+        createComponent();
 
-          // wait for apollo to load
-          await waitForPromises();
-        });
+        await waitForPromises();
+      });
 
-        it('renders button if addDuoProHref link is passed', () => {
-          expect(findAddSeatsButton().exists()).toBe(true);
+      it('captures the ooriginal error in subscriptionPermissions call', () => {
+        expect(Sentry.captureException).toHaveBeenCalledWith(mockError, {
+          tags: { vue_component: 'CodeSuggestionsUsageInfoCard' },
         });
+      });
+
+      it('emits the error', () => {
+        expect(wrapper.emitted('error')).toHaveLength(1);
+        const caughtError = wrapper.emitted('error')[0][0];
+        expect(caughtError.cause).toBe(ADD_ON_PURCHASE_FETCH_ERROR_CODE);
+      });
+
+      it('shows the button', () => {
+        // When clicked the button will redirect a customer and we will handle the error on CustomersPortal side
+        expect(findAddSeatsButton().exists()).toBe(true);
       });
     });
 
@@ -174,8 +196,8 @@ describe('CodeSuggestionsInfoCard', () => {
         'when canAddDuoProSeats=$canAddDuoProSeats and limitedAccessReason=$limitedAccessReason',
         ({ canAddDuoProSeats, limitedAccessReason }) => {
           beforeEach(async () => {
-            createComponent({
-              apolloData: {
+            queryHandlerMock = jest.fn().mockResolvedValue({
+              data: {
                 subscription: {
                   canAddSeats: false,
                   canRenew: false,
@@ -185,6 +207,7 @@ describe('CodeSuggestionsInfoCard', () => {
                 userActionAccess: { limitedAccessReason },
               },
             });
+            createComponent();
             await waitForPromises();
 
             findAddSeatsButton().vm.$emit('click');
@@ -214,8 +237,8 @@ describe('CodeSuggestionsInfoCard', () => {
         'when canAddDuoProSeats=$canAddDuoProSeats and limitedAccessReason=$limitedAccessReason',
         ({ canAddDuoProSeats, limitedAccessReason }) => {
           beforeEach(async () => {
-            createComponent({
-              apolloData: {
+            queryHandlerMock = jest.fn().mockResolvedValue({
+              data: {
                 subscription: {
                   canAddSeats: false,
                   canRenew: false,
@@ -225,6 +248,7 @@ describe('CodeSuggestionsInfoCard', () => {
                 userActionAccess: { limitedAccessReason },
               },
             });
+            createComponent();
             await waitForPromises();
 
             findAddSeatsButton().vm.$emit('click');
