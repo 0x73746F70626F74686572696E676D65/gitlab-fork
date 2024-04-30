@@ -5,10 +5,10 @@ require 'spec_helper'
 RSpec.describe AlertManagement::HttpIntegrationsFinder, feature_category: :incident_management do
   describe '#execute' do
     let_it_be(:project) { create(:project) }
-    let_it_be(:active_integration) { create(:alert_management_http_integration, project: project, endpoint_identifier: 'abc123' ) }
+    let_it_be(:active_integration) { create(:alert_management_http_integration, project: project, endpoint_identifier: 'abc123') }
     let_it_be(:inactive_integration) { create(:alert_management_http_integration, :inactive, project: project) }
-    let_it_be(:prometheus_integration) { create(:alert_management_prometheus_integration, :inactive, project: project ) }
-    let_it_be(:extra_prometheus_integration) { create(:alert_management_prometheus_integration, project: project ) }
+    let_it_be(:prometheus_integration) { create(:alert_management_prometheus_integration, :inactive, project: project) }
+    let_it_be(:extra_prometheus_integration) { create(:alert_management_prometheus_integration, project: project) }
     let_it_be(:alt_identifier_integration) { create(:alert_management_http_integration, project: project) }
     let_it_be(:alt_project_integration) { create(:alert_management_http_integration, endpoint_identifier: 'abc123') }
 

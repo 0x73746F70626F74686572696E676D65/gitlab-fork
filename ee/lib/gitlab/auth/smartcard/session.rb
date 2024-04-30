@@ -9,7 +9,7 @@ module Gitlab
         def active?(user)
           sessions = ActiveSession.list_sessions(user)
           sessions.any? do |session|
-            Gitlab::NamespacedSessionStore.new(SESSION_STORE_KEY, session.with_indifferent_access )['last_signin_at']
+            Gitlab::NamespacedSessionStore.new(SESSION_STORE_KEY, session.with_indifferent_access)['last_signin_at']
           end
         end
 

@@ -95,8 +95,8 @@ RSpec.describe EpicsFinder, feature_category: :team_planning do
 
         context 'by user reaction emoji' do
           it 'returns epics reacted to by user' do
-            create(:award_emoji, name: 'thumbsup', awardable: epic1, user: search_user )
-            create(:award_emoji, name: 'star', awardable: epic3, user: search_user )
+            create(:award_emoji, name: 'thumbsup', awardable: epic1, user: search_user)
+            create(:award_emoji, name: 'star', awardable: epic3, user: search_user)
 
             expect(epics(my_reaction_emoji: 'star')).to contain_exactly(epic3)
           end
@@ -635,7 +635,7 @@ RSpec.describe EpicsFinder, feature_category: :team_planning do
 
                 it 'does not return epics if user can not access project issues' do
                   subgroup_project
-                    .project_feature.update!( issues_access_level: ProjectFeature::DISABLED)
+                    .project_feature.update!(issues_access_level: ProjectFeature::DISABLED)
 
                   expect(epics(params)).to be_empty
                 end

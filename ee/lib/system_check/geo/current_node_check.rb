@@ -29,7 +29,7 @@ module SystemCheck
         )
 
         for_more_information(
-          format(_('See the Geo troubleshooting documentation to learn more: %{docs_url}'), docs_url: docs_url )
+          format(_('See the Geo troubleshooting documentation to learn more: %{docs_url}'), docs_url: docs_url)
         )
       end
     end
