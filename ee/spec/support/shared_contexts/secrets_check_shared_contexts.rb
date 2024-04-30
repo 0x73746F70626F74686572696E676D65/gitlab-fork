@@ -137,8 +137,9 @@ RSpec.shared_context 'secret detection error and log messages context' do
       description: finding_description
     }
 
-    format(log_messages[:finding_message_occurrence_line], variables) +
-      format(log_messages[:finding_message_occurrence_line], variables.merge(line_number: finding_line_number + 1))
+    finding_message_path + format(log_messages[:finding_message_occurrence_line], variables) +
+      finding_message_path + format(log_messages[:finding_message_occurrence_line],
+        variables.merge(line_number: finding_line_number + 1))
   end
 
   let(:finding_message_same_blob_in_multiple_commits_header_path_and_lines) do
@@ -157,8 +158,9 @@ RSpec.shared_context 'secret detection error and log messages context' do
       description: finding_description
     }
 
-    format(log_messages[:finding_message_occurrence_line], variables) +
-      format(log_messages[:finding_message_occurrence_line], variables.merge(description: second_finding_description))
+    finding_message_path + format(log_messages[:finding_message_occurrence_line], variables) +
+      finding_message_path + format(log_messages[:finding_message_occurrence_line],
+        variables.merge(description: second_finding_description))
   end
 
   let(:finding_message_with_blob) do

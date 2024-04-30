@@ -16,18 +16,23 @@ module Gitlab
       LOG_MESSAGES = {
         secrets_check: 'Detecting secrets...',
         secrets_not_found: 'Secret detection scan completed with no findings.',
-        skip_secret_detection: "\n\nIf you wish to skip secret detection, please include [skip secret detection] " \
-                               "in one of the commit messages for your changes.",
-        found_secrets: 'Secret detection scan completed with one or more findings.',
-        found_secrets_post_message: "\n\nPlease remove the identified secrets in your commits and try again.",
-        found_secrets_docs_link: "\nFor help with this, please refer to our documentation: %{path}",
+        skip_secret_detection: "\n\nTo skip pre-receive secret detection, include the text " \
+                               "\"[skip secret detection]\" in a commit message for one of your changes, " \
+                               'then push again.',
+        found_secrets: "\n\n--------------------------------------------------" \
+                       "\nPUSH BLOCKED: Secrets detected in code changes" \
+                       "\n--------------------------------------------------",
+        found_secrets_post_message: "\n\nTo push your changes you must remove the identified secrets.",
+        found_secrets_docs_link: "\nFor guidance, see %{path}",
         found_secrets_with_errors: 'Secret detection scan completed with one or more findings ' \
                                    'but some errors occured during the scan.',
-        finding_message_occurrence_header: "\n\nSecrets leaked in commit: %{sha}",
-        finding_message_occurrence_path: "\n  - path: %{path}",
-        finding_message_occurrence_line: "\n    - line:%{line_number} | %{description}",
+        finding_message_occurrence_header: "\nPre-receive secret detection " \
+                                           "found the following secrets in commit: %{sha}\n",
+        finding_message_occurrence_path: "\n-- %{path}:",
+        finding_message_occurrence_line: "%{line_number} | %{description}",
         finding_message: "\n\nSecret leaked in blob: %{blob_id}" \
-                         "\n  -- line:%{line_number} | %{description}"
+                         "\n  -- line:%{line_number} | %{description}",
+        found_secrets_footer: "\n--------------------------------------------------\n\n"
       }.freeze
 
       BLOB_BYTES_LIMIT = 1.megabyte # Limit is 1MiB to start with.
@@ -158,9 +163,8 @@ module Gitlab
           message += format(LOG_MESSAGES[:finding_message_occurrence_header], { sha: sha })
 
           paths.each do |path, findings|
-            message += format(LOG_MESSAGES[:finding_message_occurrence_path], { path: path })
-
             findings.each do |finding|
+              message += format(LOG_MESSAGES[:finding_message_occurrence_path], { path: path })
               message += build_finding_message(finding, :commit)
             end
           end
@@ -172,7 +176,6 @@ module Gitlab
           end
         end
 
-        message += LOG_MESSAGES[:skip_secret_detection]
         message += LOG_MESSAGES[:found_secrets_post_message]
         message += format(
           LOG_MESSAGES[:found_secrets_docs_link],
@@ -183,6 +186,8 @@ module Gitlab
             )
           }
         )
+        message += LOG_MESSAGES[:skip_secret_detection]
+        message += LOG_MESSAGES[:found_secrets_footer]
 
         message
       end
