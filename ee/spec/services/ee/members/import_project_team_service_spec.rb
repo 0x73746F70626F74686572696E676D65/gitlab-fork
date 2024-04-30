@@ -32,7 +32,7 @@ RSpec.describe Members::ImportProjectTeamService, feature_category: :groups_and_
             expect(result).to be_a(ServiceResponse)
             expect(result.error?).to be(true)
             expect(result.message).to eq('Forbidden')
-            expect(result.reason).to eq(:unprocessable_entity)
+            expect(result.reason).to eq(:import_project_team_forbidden_error)
           end
         end
 
@@ -47,7 +47,7 @@ RSpec.describe Members::ImportProjectTeamService, feature_category: :groups_and_
             expect(result).to be_a(ServiceResponse)
             expect(result.error?).to be(true)
             expect(result.message).to eq('Forbidden')
-            expect(result.reason).to eq(:unprocessable_entity)
+            expect(result.reason).to eq(:import_project_team_forbidden_error)
           end
         end
       end
@@ -76,7 +76,7 @@ RSpec.describe Members::ImportProjectTeamService, feature_category: :groups_and_
 
           expect(result.error?).to be(true)
           expect(result.message).to eq(maintainer_message)
-          expect(result.reason).to eq(:unprocessable_entity)
+          expect(result.reason).to eq(:seat_limit_exceeded_error)
           expect(target_project.reload.members.map(&:user_id)).to contain_exactly(user.id)
         end
 
@@ -90,7 +90,7 @@ RSpec.describe Members::ImportProjectTeamService, feature_category: :groups_and_
 
             expect(result.error?).to be(true)
             expect(result.message).to eq(owner_message)
-            expect(result.reason).to eq(:unprocessable_entity)
+            expect(result.reason).to eq(:seat_limit_exceeded_error)
             expect(target_project.reload.members.map(&:user_id)).to contain_exactly(user.id)
           end
         end
@@ -115,7 +115,7 @@ RSpec.describe Members::ImportProjectTeamService, feature_category: :groups_and_
 
             expect(result.error?).to be(true)
             expect(result.message).to eq(maintainer_message)
-            expect(result.reason).to eq(:unprocessable_entity)
+            expect(result.reason).to eq(:seat_limit_exceeded_error)
             expect(target_project.reload.members.map(&:user_id)).to contain_exactly(user.id)
           end
         end
@@ -138,7 +138,7 @@ RSpec.describe Members::ImportProjectTeamService, feature_category: :groups_and_
 
           expect(result.error?).to be(true)
           expect(result.message).to eq(maintainer_message)
-          expect(result.reason).to eq(:unprocessable_entity)
+          expect(result.reason).to eq(:seat_limit_exceeded_error)
           expect(subgroup_project.reload.members.map(&:user_id)).to contain_exactly(user.id)
         end
       end

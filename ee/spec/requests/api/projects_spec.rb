@@ -1953,8 +1953,9 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
   end
 
   describe 'POST /projects/:id/import_project_members/:project_id' do
+    let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project) }
-    let_it_be(:target_project) { create(:project, group: create(:group)) }
+    let_it_be(:target_project) { create(:project, group: group) }
 
     before_all do
       project.add_maintainer(another_user)
@@ -1964,7 +1965,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
     context 'when the target project has locked their membership' do
       context 'via the parent group' do
         before do
-          target_project.group.update!(membership_lock: true)
+          group.update!(membership_lock: true)
         end
 
         it 'returns 403' do
@@ -1974,6 +1975,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
 
           expect(response).to have_gitlab_http_status(:unprocessable_entity)
           expect(json_response['message']).to eq('Forbidden')
+          expect(json_response['reason']).to eq('import_project_team_forbidden_error')
         end
       end
 
@@ -1989,6 +1991,37 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
 
           expect(response).to have_gitlab_http_status(:unprocessable_entity)
           expect(json_response['message']).to eq('Forbidden')
+          expect(json_response['reason']).to eq('import_project_team_forbidden_error')
+        end
+      end
+    end
+
+    context 'block seat overages', :saas do
+      let_it_be(:subscription) { create(:gitlab_subscription, :premium, namespace: group, seats: 1) }
+
+      context 'when block seat overages is enabled' do
+        it 'rejects adding more members than there are available seats' do
+          post api("/projects/#{target_project.id}/import_project_members/#{project.id}", another_user)
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+          expect(json_response).to eq({
+            'message' => 'There are not enough available seats to invite this many users. ' \
+                         'Ask a user with the Owner role to purchase more seats.',
+            'reason' => 'seat_limit_exceeded_error'
+          })
+        end
+      end
+
+      context 'when block seat overages is disabled' do
+        before do
+          stub_feature_flags(block_seat_overages: false)
+        end
+
+        it 'accepts adding more members than there are available seats' do
+          post api("/projects/#{target_project.id}/import_project_members/#{project.id}", another_user)
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response).to eq({ 'status' => 'success' })
         end
       end
     end
