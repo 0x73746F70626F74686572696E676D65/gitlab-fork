@@ -5,7 +5,7 @@ FactoryBot.define do
     class: 'AuditEvents::Group::ExternalStreamingDestination' do
     group
     category { 'http' }
-    config { { url: 'https://www.example.com' } }
-    secret_token { 'hello' }
+    config { { url: FFaker::Internet.http_url } }
+    secret_token { 'a' * 20 }
   end
 end

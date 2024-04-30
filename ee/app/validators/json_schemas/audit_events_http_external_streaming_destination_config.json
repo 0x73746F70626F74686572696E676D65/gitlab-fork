@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Config for http external audit event streaming destinations",
+  "type": "object",
+  "properties": {
+    "url": {
+      "description": "URL of the destination",
+      "type": "string",
+      "format": "uri",
+      "pattern": "^(https?://.+|\\$[A-Za-z]+)",
+      "maxLength": 255
+    },
+    "headers": {
+      "description": "Array of headers for the destination",
+      "type": [
+        "object",
+        "null"
+      ],
+      "patternProperties": {
+        "^.{1,255}$": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "maxLength": 255
+            },
+            "active": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        }
+      },
+      "minProperties": 1,
+      "maxProperties": 20
+    }
+  },
+  "required": [
+    "url"
+  ],
+  "additionalProperties": false
+}

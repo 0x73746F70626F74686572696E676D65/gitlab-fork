@@ -25947,6 +25947,9 @@ msgstr ""
 msgid "How to track time"
 msgstr ""
 
+msgid "HttpDestinationValidator validates only http external audit event destinations."
+msgstr ""
+
 msgid "I am sorry, I am unable to find what you are looking for."
 msgstr ""
 
@@ -62289,6 +62292,9 @@ msgstr ""
 msgid "should be greater than or equal to %{access} inherited membership from group %{group_name}"
 msgstr ""
 
+msgid "should have length between 16 to 24 characters."
+msgstr ""
+
 msgid "show %{count} more"
 msgstr ""
 
@@ -62443,6 +62449,9 @@ msgid "updated %{time_ago}"
 msgstr ""
 
 msgid "uploads"
+msgstr ""
+
+msgid "url is already taken."
 msgstr ""
 
 msgid "user"

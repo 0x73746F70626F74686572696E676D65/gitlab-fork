@@ -49,5 +49,51 @@ RSpec.shared_examples 'includes ExternallyStreamable concern' do
         expect(destination.name).to eq('Destination_12345678')
       end
     end
+
+    context 'when type is http' do
+      context 'for config schema validation' do
+        using RSpec::Parameterized::TableSyntax
+
+        subject(:destination) do
+          build(:audit_events_group_external_streaming_destination, config: { url: http_url, headers: http_headers })
+        end
+
+        let(:more_than_allowed_headers) { {} }
+
+        let(:large_string) { "a" * 256 }
+        let(:large_url) { "http://#{large_string}.com" }
+        let(:header_hash1) { { key1: { value: 'value1', active: true }, key2: { value: 'value2', active: false } } }
+        let(:header_hash2) { { key1: { value: 'value1', active: true }, key2: { value: 'value2', active: false } } }
+
+        before do
+          21.times do |i|
+            more_than_allowed_headers["Key#{i}"] = { value: "Value#{i}", active: true }
+          end
+        end
+
+        where(:http_url, :http_headers, :is_valid) do
+          nil                   | nil                                                   | false
+          'http://example.com'  | nil                                                   | true
+          ref(:large_url)       | nil                                                   | false
+          'https://example.com' | nil                                                   | true
+          'ftp://example.com'   | nil                                                   | false
+          nil                   | { key1: 'value1' }                                    | false
+          'http://example.com'  | { key1: { value: 'value1', active: true } }           | true
+          'http://example.com'  | { key1: { value: ref(:large_string), active: true } } | false
+          'http://example.com'  | { key1: { value: 'value1', active: false } }          | true
+          'http://example.com'  | {}                                                    | false
+          'http://example.com'  | ref(:header_hash1)                                    | true
+          'http://example.com'  | { key1: 'value1' }                                    | false
+          'http://example.com'  | ref(:header_hash2)                                    | true
+          'http://example.com'  | ref(:more_than_allowed_headers)                       | false
+        end
+
+        with_them do
+          it do
+            expect(destination.valid?).to eq(is_valid)
+          end
+        end
+      end
+    end
   end
 end
