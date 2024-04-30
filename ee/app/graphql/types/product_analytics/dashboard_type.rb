@@ -27,6 +27,12 @@ module Types
             null: true,
             description: 'Description of the dashboard.'
 
+      field :status,
+            type: GraphQL::Types::String,
+            null: true,
+            description: 'Status of the dashboard.',
+            alpha: { milestone: '17.0' }
+
       field :panels,
             type: Types::ProductAnalytics::PanelType.connection_type,
             null: false,

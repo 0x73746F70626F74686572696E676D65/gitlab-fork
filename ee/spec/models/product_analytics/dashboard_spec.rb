@@ -291,6 +291,7 @@ description: with missing properties
       it 'returns the dashboard' do
         expect(subject.title).to eq('AI impact analytics')
         expect(subject.slug).to eq('ai_impact')
+        expect(subject.status).to eq('beta')
         expect(subject.schema_version).to eq(nil)
       end
 
@@ -309,6 +310,7 @@ description: with missing properties
       it 'returns the dashboard' do
         expect(subject.title).to eq('AI impact analytics')
         expect(subject.slug).to eq('ai_impact')
+        expect(subject.status).to eq('beta')
         expect(subject.schema_version).to eq(nil)
       end
 

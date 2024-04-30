@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['CustomizableDashboard'], feature_category: :product_analytics_data_management do
   let(:expected_fields) do
-    %i[title slug description panels user_defined configuration_project category errors]
+    %i[title slug description status panels user_defined configuration_project category errors]
   end
 
   subject { described_class }
