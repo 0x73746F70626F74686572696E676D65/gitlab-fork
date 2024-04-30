@@ -6,35 +6,6 @@ module EE
       extend ::Gitlab::Utils::Override
       extend ActiveSupport::Concern
 
-      override :update
-      def update
-        result = ::Projects::UpdateService.new(project, current_user, safe_mirror_params).execute
-
-        if result[:status] == :success
-          flash[:notice] =
-            if project.mirror?
-              _('Mirroring settings were successfully updated. The project is being updated.')
-            elsif project.previous_changes.key?('mirror')
-              _('Mirroring was successfully disabled.')
-            else
-              _('Mirroring settings were successfully updated.')
-            end
-        else
-          flash[:alert] = project.errors.full_messages.join(', ').html_safe
-        end
-
-        respond_to do |format|
-          format.html { redirect_to_repository_settings(project, anchor: 'js-push-remote-settings') }
-          format.json do
-            if project.errors.present?
-              render json: project.errors, status: :unprocessable_entity
-            else
-              render json: ProjectMirrorSerializer.new.represent(project)
-            end
-          end
-        end
-      end
-
       override :update_now
       def update_now
         if params[:sync_remote]
@@ -60,6 +31,17 @@ module EE
 
       private
 
+      override :notice_message
+      def notice_message
+        if project.mirror?
+          _('Mirroring settings were successfully updated. The project is being updated.')
+        elsif project.previous_changes.key?('mirror')
+          _('Mirroring was successfully disabled.')
+        else
+          super
+        end
+      end
+
       def mirror_params_attributes_ee
         attrs = Projects::UpdateService::PULL_MIRROR_ATTRIBUTES.dup
         attrs.delete(:mirror_user_id) # Cannot be set by the frontend
@@ -76,8 +58,9 @@ module EE
         )
       end
 
+      override :safe_mirror_params
       def safe_mirror_params
-        params = mirror_params
+        params = super
 
         import_data = params[:import_data_attributes]
 
