@@ -3104,7 +3104,6 @@ Input type: `CreateDiffNoteInput`
 | ---- | ---- | ----------- |
 | <a id="mutationcreatediffnotebody"></a>`body` | [`String!`](#string) | Content of the note. |
 | <a id="mutationcreatediffnoteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationcreatediffnoteconfidential"></a>`confidential` **{warning-solid}** | [`Boolean`](#boolean) | **Deprecated:** This was renamed. Please use `internal`. Deprecated in GitLab 15.3. |
 | <a id="mutationcreatediffnoteinternal"></a>`internal` | [`Boolean`](#boolean) | Internal flag for a note. Default is false. |
 | <a id="mutationcreatediffnotenoteableid"></a>`noteableId` | [`NoteableID!`](#noteableid) | Global ID of the resource to add a note to. |
 | <a id="mutationcreatediffnoteposition"></a>`position` | [`DiffPositionInput!`](#diffpositioninput) | Position of the note on a diff. |
@@ -3127,7 +3126,6 @@ Input type: `CreateDiscussionInput`
 | ---- | ---- | ----------- |
 | <a id="mutationcreatediscussionbody"></a>`body` | [`String!`](#string) | Content of the note. |
 | <a id="mutationcreatediscussionclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationcreatediscussionconfidential"></a>`confidential` **{warning-solid}** | [`Boolean`](#boolean) | **Deprecated:** This was renamed. Please use `internal`. Deprecated in GitLab 15.3. |
 | <a id="mutationcreatediscussioninternal"></a>`internal` | [`Boolean`](#boolean) | Internal flag for a note. Default is false. |
 | <a id="mutationcreatediscussionnoteableid"></a>`noteableId` | [`NoteableID!`](#noteableid) | Global ID of the resource to add a note to. |
 
@@ -3179,7 +3177,6 @@ Input type: `CreateImageDiffNoteInput`
 | ---- | ---- | ----------- |
 | <a id="mutationcreateimagediffnotebody"></a>`body` | [`String!`](#string) | Content of the note. |
 | <a id="mutationcreateimagediffnoteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationcreateimagediffnoteconfidential"></a>`confidential` **{warning-solid}** | [`Boolean`](#boolean) | **Deprecated:** This was renamed. Please use `internal`. Deprecated in GitLab 15.3. |
 | <a id="mutationcreateimagediffnoteinternal"></a>`internal` | [`Boolean`](#boolean) | Internal flag for a note. Default is false. |
 | <a id="mutationcreateimagediffnotenoteableid"></a>`noteableId` | [`NoteableID!`](#noteableid) | Global ID of the resource to add a note to. |
 | <a id="mutationcreateimagediffnoteposition"></a>`position` | [`DiffImagePositionInput!`](#diffimagepositioninput) | Position of the note on a diff. |
@@ -3277,7 +3274,6 @@ Input type: `CreateNoteInput`
 | ---- | ---- | ----------- |
 | <a id="mutationcreatenotebody"></a>`body` | [`String!`](#string) | Content of the note. |
 | <a id="mutationcreatenoteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationcreatenoteconfidential"></a>`confidential` **{warning-solid}** | [`Boolean`](#boolean) | **Deprecated:** This was renamed. Please use `internal`. Deprecated in GitLab 15.3. |
 | <a id="mutationcreatenotediscussionid"></a>`discussionId` | [`DiscussionID`](#discussionid) | Global ID of the discussion the note is in reply to. |
 | <a id="mutationcreatenoteinternal"></a>`internal` | [`Boolean`](#boolean) | Internal flag for a note. Default is false. |
 | <a id="mutationcreatenotemergerequestdiffheadsha"></a>`mergeRequestDiffHeadSha` | [`String`](#string) | SHA of the head commit which is used to ensure that the merge request has not been updated since the request was sent. |
@@ -25494,7 +25490,6 @@ Describes where code is deployed for a project organized by folder.
 | <a id="noteawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of emoji reactions associated with the note. (see [Connections](#connections)) |
 | <a id="notebody"></a>`body` | [`String!`](#string) | Content of the note. |
 | <a id="notebodyhtml"></a>`bodyHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of the content of the note. |
-| <a id="noteconfidential"></a>`confidential` **{warning-solid}** | [`Boolean`](#boolean) | **Deprecated** in GitLab 15.5. This was renamed. Use: `internal`. |
 | <a id="notecreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of the note creation. |
 | <a id="notediscussion"></a>`discussion` | [`Discussion`](#discussion) | Discussion the note is a part of. |
 | <a id="noteid"></a>`id` | [`NoteID!`](#noteid) | ID of the note. |
