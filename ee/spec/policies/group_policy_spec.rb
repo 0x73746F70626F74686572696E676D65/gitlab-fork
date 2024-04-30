@@ -14,7 +14,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
   include_context 'GroupPolicy context'
   # Can't move to GroupPolicy context because auditor trait is not present
-  # outside of EE context and foss-impact will fail on this
+  # outside of EE context and FOSS will fail on this
   let_it_be(:auditor) { create(:user, :auditor) }
 
   let(:epic_rules) do
