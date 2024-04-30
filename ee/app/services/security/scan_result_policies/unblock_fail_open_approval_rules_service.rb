@@ -32,7 +32,7 @@ module Security
       attr_reader :merge_request, :report_types
 
       def fail_open_approval_rules
-        approval_rules.select { |rule| rule.scan_result_policy_read.fail_open? }
+        approval_rules.select { |rule| rule.scan_result_policy_read&.fail_open? }
       end
       strong_memoize_attr :fail_open_approval_rules
 

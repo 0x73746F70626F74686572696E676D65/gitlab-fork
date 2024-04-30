@@ -175,4 +175,16 @@ RSpec.describe Security::ScanResultPolicies::UnblockFailOpenApprovalRulesService
 
     it_behaves_like "unblocks all report types"
   end
+
+  context "without persisted policy" do
+    let(:report_types) { %i[scan_finding] }
+
+    before do
+      scan_finding_fail_closed_rule.scan_result_policy_read.delete
+    end
+
+    it "doesn't raise" do
+      expect { execute }.not_to raise_error
+    end
+  end
 end
