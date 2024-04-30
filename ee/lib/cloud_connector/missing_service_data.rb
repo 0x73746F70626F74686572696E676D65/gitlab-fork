@@ -12,11 +12,11 @@ module CloudConnector
       false
     end
 
-    def allowed_for?(_user)
+    def allowed_for?(_resource)
       false
     end
 
-    def access_token
+    def access_token(_resource = nil, **)
       nil
     end
   end

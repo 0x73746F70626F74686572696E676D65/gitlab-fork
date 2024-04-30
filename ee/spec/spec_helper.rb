@@ -47,11 +47,7 @@ RSpec.configure do |config|
   end
 
   config.before(:context, :with_cloud_connector) do
-    create(:cloud_connector_access, data:
-      { available_services: [
-        { "name" => "code_suggestions", "serviceStartTime" => "2024-02-15T00:00:00Z" },
-        { "name" => "duo_chat", "serviceStartTime" => nil }
-      ] })
+    create(:cloud_connector_access)
   end
 
   config.around(:each, :geo_tracking_db) do |example|

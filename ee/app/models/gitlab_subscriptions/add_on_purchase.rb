@@ -43,6 +43,10 @@ module GitlabSubscriptions
         .first
     end
 
+    def self.uniq_add_on_names
+      joins(:add_on).pluck(:name).uniq
+    end
+
     def already_assigned?(user)
       assigned_users.where(user: user).exists?
     end

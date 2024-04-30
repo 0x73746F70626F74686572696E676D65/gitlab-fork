@@ -3,10 +3,28 @@
 require 'spec_helper'
 
 RSpec.describe CloudConnector::AvailableServices, feature_category: :cloud_connector do
+  before do
+    described_class.clear_memoization(:access_data_reader)
+  end
+
+  context 'when .com', :saas do
+    it 'includes GitlabCom::AccessDataReader' do
+      expect(described_class.access_data_reader)
+        .to be_a_kind_of(CloudConnector::GitlabCom::AccessDataReader)
+    end
+  end
+
+  context 'when self_managed' do
+    it 'includes SelfManaged::AccessDataReader' do
+      expect(described_class.access_data_reader)
+        .to be_a_kind_of(CloudConnector::SelfManaged::AccessDataReader)
+    end
+  end
+
   describe '.find_by_name', :redis do
     it 'reads available service' do
-      available_services = { duo_chat: CloudConnector::AvailableServiceData.new(:duo_chat, nil, nil) }
-      expect(described_class.instance).to receive(:read_available_services).and_return(available_services)
+      available_services = { duo_chat: CloudConnector::BaseAvailableServiceData.new(:duo_chat, nil, nil) }
+      expect(described_class.access_data_reader).to receive(:read_available_services).and_return(available_services)
 
       service = described_class.find_by_name(:duo_chat)
 
@@ -15,7 +33,7 @@ RSpec.describe CloudConnector::AvailableServices, feature_category: :cloud_conne
 
     context 'when available_services is empty' do
       it 'returns null service data' do
-        expect(described_class.instance).to receive(:read_available_services).and_return([])
+        expect(described_class.access_data_reader).to receive(:read_available_services).and_return([])
 
         service = described_class.find_by_name(:duo_chat)
 
@@ -26,10 +44,10 @@ RSpec.describe CloudConnector::AvailableServices, feature_category: :cloud_conne
   end
 
   describe '#available_services', :redis do
-    subject(:available_services) { described_class.instance.available_services }
+    subject(:available_services) { described_class.available_services }
 
     it 'caches the available services' do
-      expect(described_class.instance).to receive(:read_available_services).and_call_original.once
+      expect(described_class.access_data_reader).to receive(:read_available_services).and_call_original.once
 
       2.times do
         available_services

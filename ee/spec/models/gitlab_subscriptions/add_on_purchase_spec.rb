@@ -321,6 +321,19 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
     end
   end
 
+  describe '.uniq_add_on_names' do
+    let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
+
+    before do
+      create(:gitlab_subscription_add_on_purchase, add_on: add_on)
+      create(:gitlab_subscription_add_on_purchase, add_on: add_on)
+    end
+
+    subject(:add_on_names) { described_class.uniq_add_on_names }
+
+    it { is_expected.to match_array('code_suggestions') }
+  end
+
   describe '.next_candidate_requiring_assigned_users_refresh' do
     let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
     let_it_be(:add_on_purchase_fresh) do
