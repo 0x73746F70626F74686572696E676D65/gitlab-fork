@@ -76,7 +76,7 @@ export default {
   <gl-card
     v-if="shouldShowRelatedFeatureFlags"
     id="related-feature-flags"
-    class="gl-new-card gl-overflow-hidden"
+    class="gl-new-card"
     header-class="gl-new-card-header"
     body-class="gl-new-card-body gl-mx-3"
   >
