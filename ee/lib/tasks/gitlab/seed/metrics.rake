@@ -35,19 +35,19 @@ namespace :gitlab do
       file_attributes = [
         project.creator,
         '.gitlab/dashboards/development_metrics.yml',
-        content,
-        {
-          message: 'Seeded development metrics',
-          branch_name: 'master'
-        }
+        content
       ]
+      options = {
+        message: 'Seeded development metrics',
+        branch_name: 'master'
+      }
 
       begin
-        project.repository.create_file(*file_attributes)
+        project.repository.create_file(*file_attributes, **options)
       rescue Gitlab::Git::Index::IndexError => error
         raise error unless error.message == 'A file with this name already exists'
 
-        project.repository.update_file(*file_attributes)
+        project.repository.update_file(*file_attributes, **options)
       end
     end
   end
