@@ -1,4 +1,4 @@
-import { GlModal } from '@gitlab/ui';
+import { GlModal, GlForm } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
@@ -54,6 +54,7 @@ describe('BoardForm', () => {
   const findFormWrapper = () => wrapper.findByTestId('board-form-wrapper');
   const findDeleteConfirmation = () => wrapper.findByTestId('delete-confirmation-message');
   const findInput = () => wrapper.find('#board-new-name');
+  const findInputFormWrapper = () => wrapper.findComponent(GlForm);
 
   const defaultHandlers = {
     create: jest.fn().mockResolvedValue({}),
@@ -95,6 +96,9 @@ describe('BoardForm', () => {
         isProjectBoard: false,
       },
       attachTo: document.body,
+      stubs: {
+        GlForm,
+      },
     });
   };
 
@@ -134,7 +138,7 @@ describe('BoardForm', () => {
       const fillForm = () => {
         findInput().value = 'Test name';
         findInput().trigger('input');
-        findInput().trigger('keyup.enter', { metaKey: true });
+        findInputFormWrapper().trigger('submit');
       };
 
       it('does not call API if board name is empty', async () => {
@@ -151,7 +155,7 @@ describe('BoardForm', () => {
             }),
           },
         });
-        findInput().trigger('keyup.enter', { metaKey: true });
+        findInputFormWrapper().trigger('submit');
 
         await waitForPromises();
 
@@ -241,7 +245,7 @@ describe('BoardForm', () => {
         },
       });
 
-      findInput().trigger('keyup.enter', { metaKey: true });
+      findInputFormWrapper().trigger('submit');
 
       await waitForPromises();
 
@@ -296,7 +300,7 @@ describe('BoardForm', () => {
         },
       });
 
-      findInput().trigger('keyup.enter', { metaKey: true });
+      findInputFormWrapper().trigger('submit');
 
       await waitForPromises();
 
@@ -337,7 +341,7 @@ describe('BoardForm', () => {
         },
       });
 
-      findInput().trigger('keyup.enter', { metaKey: true });
+      findInputFormWrapper().trigger('submit');
 
       await waitForPromises();
 
@@ -363,7 +367,7 @@ describe('BoardForm', () => {
           update: jest.fn().mockRejectedValue({}),
         },
       });
-      findInput().trigger('keyup.enter', { metaKey: true });
+      findInputFormWrapper().trigger('submit');
 
       await waitForPromises();
 
