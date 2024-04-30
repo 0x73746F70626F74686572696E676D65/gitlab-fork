@@ -93,14 +93,6 @@ module EE
         prevent :update_merge_request
       end
 
-      rule { merge_request_discussion_locked | merge_request_project_archived }.policy do
-        prevent :create_visual_review_note
-      end
-
-      rule { ~merge_request_discussion_locked & ~merge_request_project_archived }.policy do
-        enable :create_visual_review_note
-      end
-
       rule { approval_rules_licence_enabled }.enable :create_merge_request_approval_rules
 
       rule do

@@ -424,8 +424,7 @@ module EE
       condition(:duo_features_enabled, scope: :subject) { @subject.duo_features_enabled }
 
       rule { visual_review_bot }.policy do
-        prevent :read_note
-        enable :create_note
+        prevent_all
       end
 
       rule { license_block }.policy do
@@ -1007,7 +1006,6 @@ module EE
     override :lookup_access_level!
     def lookup_access_level!
       return ::Gitlab::Access::NO_ACCESS if needs_new_sso_session?
-      return ::Gitlab::Access::NO_ACCESS if visual_review_bot?
       return ::Gitlab::Access::REPORTER if security_bot?
 
       super

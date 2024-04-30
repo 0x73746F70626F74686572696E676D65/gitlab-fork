@@ -26,10 +26,8 @@ module EE
           end
         end
 
-        # This is mainly used finding the target MR of the Visual Review note.
-        # If current_user is nil (PAT is not passed), only public merge requests can be found
-        # If current_user is present (PAT is passed), private projects can be found as long as user is a project member.
-        # If current_user is present (PAT is passed), internal projects can be found by any authenticated user.
+        # private projects can be found as long as user is a project member.
+        # internal projects can be found by any authenticated user.
         def find_merge_request(merge_request_iid)
           params = finder_params_by_noteable_type_and_id(::MergeRequest, merge_request_iid)
 

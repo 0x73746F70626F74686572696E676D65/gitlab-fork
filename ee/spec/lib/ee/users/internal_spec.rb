@@ -25,6 +25,5 @@ RSpec.describe Users::Internal, feature_category: :user_profile do
     end
   end
 
-  it_behaves_like 'bot users', :visual_review_bot
   it_behaves_like 'bot users', :suggested_reviewers_bot
 end
