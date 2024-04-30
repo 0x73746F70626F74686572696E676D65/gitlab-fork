@@ -4,7 +4,7 @@
 import allRunnersUpgradeStatusData from 'test_fixtures/graphql/ci/runner/list/all_runners.query.graphql.upgrade_status.json';
 
 // Dashboard queries
-import mostActiveRunnersData from 'test_fixtures/graphql/ci/runner/performance/most_active_runners.graphql.json';
+import mostActiveRunnersData from 'test_fixtures/graphql/ci/runner/performance/most_active_runners.query.graphql.json';
 import runnerFailedJobsData from 'test_fixtures/graphql/ci/runner/performance/runner_failed_jobs.graphql.json';
 
 export const runnersWaitTimes = {

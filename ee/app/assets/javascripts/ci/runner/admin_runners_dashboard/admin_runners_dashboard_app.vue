@@ -5,18 +5,19 @@ import RunnerDashboardStatOnline from '../components/runner_dashboard_stat_onlin
 import RunnerDashboardStatOffline from '../components/runner_dashboard_stat_offline.vue';
 import RunnerUsage from '../components/runner_usage.vue';
 import RunnerJobFailures from '../components/runner_job_failures.vue';
-import RunnerActiveList from '../components/runner_active_list.vue';
 import RunnerWaitTimes from '../components/runner_wait_times.vue';
+
+import AdminRunnerActiveList from './admin_runners_active_list.vue';
 
 export default {
   components: {
     GlButton,
+    AdminRunnerActiveList,
     RunnerListHeader,
     RunnerDashboardStatOnline,
     RunnerDashboardStatOffline,
     RunnerUsage,
     RunnerJobFailures,
-    RunnerActiveList,
     RunnerWaitTimes,
   },
   inject: {
@@ -67,7 +68,7 @@ export default {
           <runner-job-failures v-else class="gl-flex-basis-full" />
         </div>
 
-        <runner-active-list class="runners-dashboard-third-gap-4 gl-mb-4" />
+        <admin-runner-active-list class="runners-dashboard-third-gap-4 gl-mb-4" />
       </div>
     </div>
     <runner-wait-times class="gl-mb-4" />
