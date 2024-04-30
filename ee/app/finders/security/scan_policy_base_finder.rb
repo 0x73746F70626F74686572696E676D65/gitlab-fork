@@ -35,9 +35,9 @@ module Security
     def fetch_policy_configurations
       case params[:relationship]
       when :inherited
-        object.all_security_orchestration_policy_configurations
+        object.all_security_orchestration_policy_configurations(include_invalid: true)
       when :inherited_only
-        object.all_inherited_security_orchestration_policy_configurations
+        object.all_inherited_security_orchestration_policy_configurations(include_invalid: true)
       when :descendant
         descendant_policy_configurations
       else
@@ -52,6 +52,8 @@ module Security
     end
 
     def default_policy_configurations
+      return Array.wrap(policy_configuration) if params[:include_invalid]
+
       Array.wrap(policy_configuration).select { |config| config&.policy_configuration_valid? }
     end
 

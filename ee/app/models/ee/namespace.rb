@@ -577,10 +577,10 @@ module EE
       security_orchestration_policies_for_namespaces(self_and_descendant_ids)
     end
 
-    def all_inherited_security_orchestration_policy_configurations
+    def all_inherited_security_orchestration_policy_configurations(include_invalid: false)
       return [] if ancestor_ids.blank?
 
-      security_orchestration_policies_for_namespaces(ancestor_ids)
+      security_orchestration_policies_for_namespaces(ancestor_ids, include_invalid: include_invalid)
     end
 
     def all_projects_pages_domains(only_verified: false)

@@ -101,8 +101,6 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver, featu
 
       let(:deprecated_properties) { ['newly_detected'] }
 
-      let(:expected_resolved) { [] }
-
       it_behaves_like 'as an orchestration policy'
     end
   end
