@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__, __ } from '~/locale';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
@@ -45,19 +44,18 @@ export default {
   [types.SET_MODAL_DATA](state, payload) {
     const { vulnerability } = payload;
 
-    Vue.set(state.modal, 'title', vulnerability.name);
+    state.modal.title = vulnerability.name;
+    state.modal.project.value = vulnerability.project?.full_name;
+    state.modal.project.url = vulnerability.project?.full_path;
 
-    Vue.set(state.modal.project, 'value', vulnerability.project?.full_name);
-    Vue.set(state.modal.project, 'url', vulnerability.project?.full_path);
-
-    Vue.set(state.modal, 'vulnerability', vulnerability);
-    Vue.set(state.modal.vulnerability, 'isDismissed', Boolean(vulnerability.dismissal_feedback));
-    Vue.set(state.modal, 'error', null);
-    Vue.set(state.modal, 'isCommentingOnDismissal', false);
+    state.modal.vulnerability = vulnerability;
+    state.modal.vulnerability.isDismissed = Boolean(vulnerability.dismissal_feedback);
+    state.modal.error = null;
+    state.modal.isCommentingOnDismissal = false;
   },
   [types.REQUEST_CREATE_ISSUE](state) {
     state.isCreatingIssue = true;
-    Vue.set(state.modal, 'error', null);
+    state.modal.error = null;
   },
   [types.RECEIVE_CREATE_ISSUE_SUCCESS](state, payload) {
     // We don't cancel the loading state here because we're navigating away from the page
@@ -65,11 +63,11 @@ export default {
   },
   [types.RECEIVE_CREATE_ISSUE_ERROR](state) {
     state.isCreatingIssue = false;
-    Vue.set(state.modal, 'error', __('There was an error creating the issue'));
+    state.modal.error = __('There was an error creating the issue');
   },
   [types.REQUEST_DISMISS_VULNERABILITY](state) {
     state.isDismissingVulnerability = true;
-    Vue.set(state.modal, 'error', null);
+    state.modal.error = null;
   },
   [types.RECEIVE_DISMISS_VULNERABILITY_SUCCESS](state, payload) {
     const vulnerability = state.vulnerabilities.find((vuln) =>
@@ -79,15 +77,11 @@ export default {
     updateFindingFromGraphqlResponse(vulnerability, updated);
 
     state.isDismissingVulnerability = false;
-    Vue.set(state.modal.vulnerability, 'isDismissed', true);
+    state.modal.vulnerability.isDismissed = true;
   },
   [types.RECEIVE_DISMISS_VULNERABILITY_ERROR](state) {
     state.isDismissingVulnerability = false;
-    Vue.set(
-      state.modal,
-      'error',
-      s__('SecurityReports|There was an error dismissing the vulnerability.'),
-    );
+    state.modal.error = s__('SecurityReports|There was an error dismissing the vulnerability.');
   },
   [types.REQUEST_DISMISS_SELECTED_VULNERABILITIES](state) {
     state.isDismissingVulnerabilities = true;
@@ -104,7 +98,10 @@ export default {
       return;
     }
 
-    Vue.set(state.selectedVulnerabilities, id, true);
+    state.selectedVulnerabilities = {
+      ...state.selectedVulnerabilities,
+      [id]: true,
+    };
   },
   [types.DESELECT_VULNERABILITY](state, id) {
     const selectedVulnerabilitiesCopy = { ...state.selectedVulnerabilities };
@@ -123,7 +120,7 @@ export default {
   },
   [types.REQUEST_ADD_DISMISSAL_COMMENT](state) {
     state.isDismissingVulnerability = true;
-    Vue.set(state.modal, 'error', null);
+    state.modal.error = null;
   },
   [types.RECEIVE_ADD_DISMISSAL_COMMENT_SUCCESS](state, payload) {
     const vulnerability = state.vulnerabilities.find((vuln) =>
@@ -134,16 +131,16 @@ export default {
       updateFindingFromGraphqlResponse(vulnerability, updated);
 
       state.isDismissingVulnerability = false;
-      Vue.set(state.modal.vulnerability, 'isDismissed', true);
+      state.modal.vulnerability.isDismissed = true;
     }
   },
   [types.RECEIVE_ADD_DISMISSAL_COMMENT_ERROR](state) {
     state.isDismissingVulnerability = false;
-    Vue.set(state.modal, 'error', s__('SecurityReports|There was an error adding the comment.'));
+    state.modal.error = s__('SecurityReports|There was an error adding the comment.');
   },
   [types.REQUEST_DELETE_DISMISSAL_COMMENT](state) {
     state.isDismissingVulnerability = true;
-    Vue.set(state.modal, 'error', null);
+    state.modal.error = null;
   },
   [types.RECEIVE_DELETE_DISMISSAL_COMMENT_SUCCESS](state, payload) {
     const vulnerability = state.vulnerabilities.find((vuln) => vuln.id === payload.id);
@@ -152,16 +149,16 @@ export default {
       updateFindingFromGraphqlResponse(vulnerability, updated);
 
       state.isDismissingVulnerability = false;
-      Vue.set(state.modal.vulnerability, 'isDismissed', true);
+      state.modal.vulnerability.isDismissed = true;
     }
   },
   [types.RECEIVE_DELETE_DISMISSAL_COMMENT_ERROR](state) {
     state.isDismissingVulnerability = false;
-    Vue.set(state.modal, 'error', s__('SecurityReports|There was an error deleting the comment.'));
+    state.modal.error = s__('SecurityReports|There was an error deleting the comment.');
   },
   [types.REQUEST_REVERT_DISMISSAL](state) {
     state.isDismissingVulnerability = true;
-    Vue.set(state.modal, 'error', null);
+    state.modal.error = null;
   },
   [types.RECEIVE_REVERT_DISMISSAL_SUCCESS](state, payload) {
     const vulnerability = state.vulnerabilities.find((vuln) =>
@@ -171,25 +168,21 @@ export default {
     updateFindingFromGraphqlResponse(vulnerability, updated);
 
     state.isDismissingVulnerability = false;
-    Vue.set(state.modal.vulnerability, 'isDismissed', false);
+    state.modal.vulnerability.isDismissed = false;
   },
   [types.RECEIVE_REVERT_DISMISSAL_ERROR](state) {
     state.isDismissingVulnerability = false;
-    Vue.set(
-      state.modal,
-      'error',
-      s__('SecurityReports|There was an error reverting the dismissal.'),
-    );
+    state.modal.error = s__('SecurityReports|There was an error reverting the dismissal.');
   },
   [types.SHOW_DISMISSAL_DELETE_BUTTONS](state) {
-    Vue.set(state.modal, 'isShowingDeleteButtons', true);
+    state.modal.isShowingDeleteButtons = true;
   },
   [types.HIDE_DISMISSAL_DELETE_BUTTONS](state) {
-    Vue.set(state.modal, 'isShowingDeleteButtons', false);
+    state.modal.isShowingDeleteButtons = false;
   },
   [types.REQUEST_CREATE_MERGE_REQUEST](state) {
     state.isCreatingMergeRequest = true;
-    Vue.set(state.modal, 'error', null);
+    state.modal.error = null;
   },
   [types.RECEIVE_CREATE_MERGE_REQUEST_SUCCESS](state, payload) {
     const url = payload.merge_request_links.at(-1).merge_request_path;
@@ -199,19 +192,15 @@ export default {
   [types.RECEIVE_CREATE_MERGE_REQUEST_ERROR](state) {
     state.isCreatingIssue = false;
     state.isCreatingMergeRequest = false;
-    Vue.set(
-      state.modal,
-      'error',
-      s__('security Reports|There was an error creating the merge request'),
-    );
+    state.modal.error = s__('SecurityReports|There was an error creating the merge request');
   },
   [types.OPEN_DISMISSAL_COMMENT_BOX](state) {
-    Vue.set(state.modal, 'isCommentingOnDismissal', true);
+    state.modal.isCommentingOnDismissal = true;
   },
   [types.CLOSE_DISMISSAL_COMMENT_BOX](state) {
-    Vue.set(state.modal, 'isShowingDeleteButtons', false);
-    Vue.set(state.modal, 'isCommentingOnDismissal', false);
-    Vue.set(state.modal, 'isShowingDeleteButtons', false);
+    state.modal.isShowingDeleteButtons = false;
+    state.modal.isCommentingOnDismissal = false;
+    state.modal.isShowingDeleteButtons = false;
   },
   [types.SET_IS_CREATING_ISSUE](state, isCreatingIssue) {
     state.isCreatingIssue = isCreatingIssue;
