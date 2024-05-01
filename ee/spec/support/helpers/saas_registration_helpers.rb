@@ -7,7 +7,6 @@ module SaasRegistrationHelpers
   include IdentityVerificationHelpers
   include SubscriptionPortalHelpers
   include EmailHelpers
-  include IdentityVerificationHelpers
 
   def user
     User.find_by(email: user_email)

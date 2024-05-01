@@ -4,10 +4,30 @@ require 'spec_helper'
 
 RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sidekiq_inline, feature_category: :onboarding do
   it 'registers the user and sends them to the group page' do
-    new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
-    registers_from_invite(user: new_user, group: group)
+    registers_from_invite(group: group)
+
+    ensure_onboarding { expect_to_see_welcome_form_for_invites }
+    expect_to_send_iterable_request(invite: true)
+
+    fill_in_welcome_form
+    click_on 'Get started!'
+
+    expect_to_be_on_page_for(group)
+    ensure_onboarding_is_finished
+  end
+
+  it 'registers the user with identity verification and sends them to the group page' do
+    group = create(:group, name: 'Test Group')
+
+    registers_from_invite_with_arkose(group: group)
+
+    expect_to_see_identity_verification_page
+
+    verify_phone_number
+
+    expect_verification_completed
 
     ensure_onboarding { expect_to_see_welcome_form_for_invites }
     expect_to_send_iterable_request(invite: true)
@@ -20,18 +40,17 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
   end
 
   it 'registers the user with multiple invites and sends them to the last group page' do
-    new_user = build(:user, name: 'Registering User', email: user_email)
     group = create(:group, name: 'Test Group')
 
     create(
       :group_member,
       :invited,
       :developer,
-      invite_email: new_user.email,
+      invite_email: user_email,
       source: create(:group, name: 'Another Test Group')
     )
 
-    registers_from_invite(user: new_user, group: group)
+    registers_from_invite(group: group)
 
     ensure_onboarding { expect_to_see_welcome_form_for_invites }
     expect_to_send_iterable_request(invite: true)
@@ -43,12 +62,26 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     ensure_onboarding_is_finished
   end
 
-  def registers_from_invite(user:, group:)
+  def registers_from_invite_with_arkose(group:)
+    # SaaS has identity verification enabled and this is needed for all that go through identity verification
+    # which is anything higher than low risk bands
+    stub_application_setting(
+      arkose_labs_public_api_key: 'public_key',
+      arkose_labs_private_api_key: 'private_key'
+    )
+
+    registers_from_invite(group: group) do
+      solve_arkose_verify_challenge(risk: :medium, response: {})
+    end
+  end
+
+  def registers_from_invite(group:)
+    new_user = build(:user, name: 'Registering User', email: user_email)
     invitation = create(
       :group_member,
       :invited,
       :developer,
-      invite_email: user.email,
+      invite_email: user_email,
       source: group
     )
 
@@ -57,7 +90,9 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/438017
     allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(110)
 
-    fill_in_sign_up_form(user, invite: true)
+    fill_in_sign_up_form(new_user, invite: true) do
+      yield if block_given? # rubocop:disable RSpec/AvoidConditionalStatements -- Not applicable here due to controlling the yield
+    end
   end
 
   def fill_in_welcome_form

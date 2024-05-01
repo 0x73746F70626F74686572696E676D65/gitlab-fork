@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
+require 'support/helpers/listbox_helpers'
+
 module IdentityVerificationHelpers
+  include ListboxHelpers
+
   def stub_arkose_token_verification(risk: :low, response: {})
     stub_request(:post, 'https://verify-api.arkoselabs.com/api/v4/verify/')
     .to_return(
@@ -68,12 +72,12 @@ module IdentityVerificationHelpers
     fill_in 'phone_number', with: phone_number
     click_button s_('IdentityVerification|Send code')
 
-    expect(page).to have_content(
-      format(
-        s_("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
-        phoneNumber: '61400000000'
-      )
+    content = format(
+      s_("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
+      phoneNumber: '61400000000'
     )
+
+    expect(page).to have_content(content)
 
     fill_in 'verification_code', with: verification_code
     click_button s_('IdentityVerification|Verify phone number')
