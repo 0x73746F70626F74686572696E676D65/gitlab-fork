@@ -9,9 +9,31 @@ module EE
       def handle!
         super
         geo_handle_after_update!
+        publish_internal_event
       end
 
       private
+
+      def publish_internal_event
+        return unless ::Feature.enabled?(:container_scanning_for_registry, project)
+        return unless action_push?
+        return unless project
+
+        user_originator = originator.is_a?(User) ? originator : project.owner
+
+        return unless user_originator
+
+        push_event = ::ContainerRegistry::ImagePushedEvent.new(
+          data: { project_id: project.id, user_id: user_originator.id, image: image_path }).tap do |event|
+          event.project = project
+        end
+
+        ::Gitlab::EventStore.publish(push_event)
+      end
+
+      def image_path
+        "#{::Gitlab.config.registry.host_port}/#{event.dig('target', 'repository')}:#{event.dig('target', 'tag')}"
+      end
 
       def geo_handle_after_update!
         return unless media_type_manifest? || target_tag?

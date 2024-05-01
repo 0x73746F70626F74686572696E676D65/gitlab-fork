@@ -7,7 +7,7 @@ RSpec.describe Gitlab::EventStore, feature_category: :shared do
     it 'returns a store with CE and EE subscriptions' do
       instance = described_class.instance
 
-      expect(instance.subscriptions.keys).to include(
+      expect(instance.subscriptions.keys).to match_array([
         ::Ci::JobArtifactsDeletedEvent,
         ::Ci::PipelineCreatedEvent,
         ::Repositories::KeepAroundRefsCreatedEvent,
@@ -22,8 +22,24 @@ RSpec.describe Gitlab::EventStore, feature_category: :shared do
         ::ProjectAuthorizations::AuthorizationsChangedEvent,
         ::ProjectAuthorizations::AuthorizationsRemovedEvent,
         ::ProjectAuthorizations::AuthorizationsAddedEvent,
-        ::Projects::ComplianceFrameworkChangedEvent
-      )
+        ::Projects::ComplianceFrameworkChangedEvent,
+        ::ContainerRegistry::ImagePushedEvent,
+        Projects::ProjectTransferedEvent,
+        Groups::GroupTransferedEvent,
+        Projects::ProjectArchivedEvent,
+        Epics::EpicCreatedEvent,
+        Epics::EpicUpdatedEvent,
+        Vulnerabilities::LinkToExternalIssueTrackerCreated,
+        Vulnerabilities::LinkToExternalIssueTrackerRemoved,
+        WorkItems::WorkItemCreatedEvent,
+        WorkItems::WorkItemDeletedEvent,
+        WorkItems::WorkItemUpdatedEvent,
+        PackageMetadata::IngestedAdvisoryEvent,
+        MergeRequests::ExternalStatusCheckPassedEvent,
+        Packages::PackageCreatedEvent,
+        Projects::ProjectCreatedEvent,
+        Projects::ProjectDeletedEvent
+      ])
     end
   end
 
