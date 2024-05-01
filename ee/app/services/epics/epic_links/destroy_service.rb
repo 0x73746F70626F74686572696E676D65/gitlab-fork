@@ -3,13 +3,14 @@
 module Epics
   module EpicLinks
     class DestroyService < IssuableLinks::DestroyService
-      attr_reader :child_epic, :parent_epic
+      attr_reader :child_epic, :parent_epic, :synced_epic
       private :child_epic, :parent_epic
 
-      def initialize(child_epic, user)
+      def initialize(child_epic, user, synced_epic: false)
         @child_epic = child_epic
         @parent_epic = child_epic&.parent
         @current_user = user
+        @synced_epic = synced_epic
       end
 
       private
@@ -22,12 +23,14 @@ module Epics
       end
 
       def create_notes
-        return unless parent_epic
+        return unless parent_epic && !synced_epic
 
         SystemNoteService.change_epics_relation(parent_epic, child_epic, current_user, 'unrelate_epic')
       end
 
       def permission_to_remove_relation?
+        return true if synced_epic
+
         child_epic.present? &&
           parent_epic.present? &&
           can?(current_user, :read_epic_relation, parent_epic) &&
@@ -39,7 +42,7 @@ module Epics
       end
 
       def destroy_work_item_parent_link!
-        return unless child_epic.work_item.present?
+        return if synced_epic || child_epic.work_item.blank?
 
         parent_link = child_epic.work_item.parent_link
         return unless parent_link.present?

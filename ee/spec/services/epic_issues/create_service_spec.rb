@@ -348,6 +348,24 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
                   expect(epic.work_item.child_links).to be_empty
                 end
               end
+
+              context 'when synced_epic parameter is true' do
+                let(:params) { { issuable_references: [valid_reference], synced_epic: true } }
+
+                subject(:create_link) { described_class.new(epic, user, params).execute }
+
+                it 'does not try to create a synced work item link' do
+                  expect(::WorkItems::ParentLinks::CreateService).not_to receive(:new)
+
+                  create_link
+                end
+
+                it 'does not call NewEpicIssueWorker' do
+                  expect(Epics::NewEpicIssueWorker).not_to receive(:perform_async)
+
+                  create_link
+                end
+              end
             end
           end
 

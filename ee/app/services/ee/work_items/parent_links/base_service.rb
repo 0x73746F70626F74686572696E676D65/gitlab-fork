@@ -3,18 +3,19 @@
 module EE
   module WorkItems
     module ParentLinks
-      module ReorderService
+      module BaseService
         extend ActiveSupport::Concern
         extend ::Gitlab::Utils::Override
 
-        private
-
-        override :can_admin_link?
-        def can_admin_link?(work_item)
-          return true if synced_work_item
+        def initialize(issuable, user, params)
+          @synced_work_item = params.delete(:synced_work_item)
 
           super
         end
+
+        private
+
+        attr_reader :synced_work_item
       end
     end
   end

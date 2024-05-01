@@ -4,11 +4,14 @@ module EpicIssues
   class DestroyService < IssuableLinks::DestroyService
     extend ::Gitlab::Utils::Override
 
-    def initialize(link, user)
+    attr_reader :synced_epic
+
+    def initialize(link, user, synced_epic: false)
       @link = link
       @current_user = user
       @source = link.epic
       @target = link.issue
+      @synced_epic = synced_epic
     end
 
     def execute
@@ -47,16 +50,20 @@ module EpicIssues
     end
 
     def permission_to_remove_relation?
+      return true if synced_epic
+
       can?(current_user, :admin_issue_relation, target) && can?(current_user, :read_epic, source)
     end
 
     def create_notes
+      return if synced_epic
+
       SystemNoteService.epic_issue(source, target, current_user, :removed)
       SystemNoteService.issue_on_epic(target, source, current_user, :removed)
     end
 
     def sync_to_work_item!
-      return unless source.issue_id.present?
+      return unless source.issue_id.present? && !synced_epic
 
       parent_link = WorkItems::ParentLink.for_children(link.issue_id).first
       return unless parent_link.present?
