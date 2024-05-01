@@ -34,7 +34,7 @@ RSpec.describe Boards::EpicBoardPosition, feature_category: :portfolio_managemen
   describe 'scopes' do
     describe '.order_relative_position' do
       let(:first) { epic_board_position }
-      let!(:second) { create(:epic_board_position, epic_board: epic_board, relative_position: RelativePositioning::START_POSITION + 7 ) }
+      let!(:second) { create(:epic_board_position, epic_board: epic_board, relative_position: RelativePositioning::START_POSITION + 7) }
 
       it 'returns epic_board_positions in order' do
         expect(described_class.order_relative_position).to eq([first, second])

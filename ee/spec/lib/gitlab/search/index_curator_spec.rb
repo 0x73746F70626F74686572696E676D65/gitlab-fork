@@ -173,7 +173,7 @@ RSpec.describe Gitlab::Search::IndexCurator, feature_category: :global_search do
     let(:new_index_name) { "foo-index-0002" }
     let(:alias_name) { "foo-index" }
     let(:index_info) { get_index_info(index: index_name) }
-    let(:rollover_info ) do
+    let(:rollover_info) do
       {
         from: index_name,
         to: new_index_name,

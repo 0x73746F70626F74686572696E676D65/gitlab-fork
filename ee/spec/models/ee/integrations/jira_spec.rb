@@ -205,7 +205,7 @@ RSpec.describe Integrations::Jira, feature_category: :integrations do
             end
 
             before do
-              WebMock.stub_request(:get, %r{api/2/project/GL}).with(basic_auth: %w[gitlab_jira_username gitlab_jira_password]).to_return(body: project_info_result.to_json )
+              WebMock.stub_request(:get, %r{api/2/project/GL}).with(basic_auth: %w[gitlab_jira_username gitlab_jira_password]).to_return(body: project_info_result.to_json)
             end
 
             it { is_expected.to eq(success: true, result: { jira: true }, data: { issuetypes: [{ id: '10001', name: 'Bug', description: 'Jira Bug' }] }) }

@@ -7,7 +7,7 @@ RSpec.describe Key do
     describe 'expiration' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:key, :valid ) do
+      where(:key, :valid) do
         build(:personal_key, expires_at: 2.days.ago) | false
         build(:personal_key, expires_at: 2.days.from_now) | true
         build(:personal_key) | true

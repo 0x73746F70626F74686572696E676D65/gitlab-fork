@@ -68,7 +68,7 @@ RSpec.describe AllowedEmailDomain, feature_category: :team_planning do
     end
 
     describe '#allow_root_group_only' do
-      subject { described_class.new(group: group, domain: 'gitlab.com' ) }
+      subject { described_class.new(group: group, domain: 'gitlab.com') }
 
       context 'top-level group' do
         let(:group) { create(:group) }

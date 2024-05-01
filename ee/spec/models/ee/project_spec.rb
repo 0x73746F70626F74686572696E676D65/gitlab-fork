@@ -1615,7 +1615,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     end
 
     with_them do
-      let(:project) { build(:project, :mirror, import_url: import_url, import_data_attributes: { auth_method: auth_method } ) }
+      let(:project) { build(:project, :mirror, import_url: import_url, import_data_attributes: { auth_method: auth_method }) }
 
       specify do
         expect(project.repository).to receive(:fetch_upstream).with(expected, forced: false, check_tags_changed: false)

@@ -59,7 +59,7 @@ RSpec.describe 'DevOps Adoption (GraphQL fixtures)' do
       query = get_graphql_query_as_string(query_path, ee: true)
 
       travel_to(DateTime.parse('2021-02-02')) do
-        post_graphql(query, current_user: current_user, variables: { displayNamespaceId: group.to_gid.to_s, startDate: '2020-06-31', endDate: '2021-03-31' } )
+        post_graphql(query, current_user: current_user, variables: { displayNamespaceId: group.to_gid.to_s, startDate: '2020-06-31', endDate: '2021-03-31' })
       end
 
       expect_graphql_errors_to_be_empty
