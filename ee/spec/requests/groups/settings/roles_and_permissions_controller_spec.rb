@@ -6,7 +6,7 @@ RSpec.describe Groups::Settings::RolesAndPermissionsController, feature_category
   include AdminModeHelper
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be_with_reload(:group) { create(:group) }
 
   before do
     stub_saas_features(gitlab_com_subscriptions: true)
@@ -92,6 +92,18 @@ RSpec.describe Groups::Settings::RolesAndPermissionsController, feature_category
     context 'with group owners' do
       before do
         group.add_member(user, :owner)
+        sign_in(user)
+      end
+
+      it_behaves_like 'page is found under proper conditions'
+    end
+
+    context 'with ldap synced group owner' do
+      let_it_be(:group_link) { create(:ldap_group_link, group: group, group_access: Gitlab::Access::OWNER) }
+      let_it_be(:group_member) { create(:group_member, :owner, :ldap, :active, user: user, source: group) }
+
+      before do
+        stub_application_setting(lock_memberships_to_ldap: true)
         sign_in(user)
       end
 

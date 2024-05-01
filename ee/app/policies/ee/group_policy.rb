@@ -609,8 +609,10 @@ module EE
         enable :admin_member_role
       end
 
+      rule { can?(:admin_member_role) }.enable :read_member_role
+
       rule { custom_roles_allowed & can?(:admin_group_member) }.policy do
-        enable :read_member_role
+        enable :admin_member_role
       end
 
       rule { custom_roles_allowed & role_enables_admin_cicd_variables }.policy do
