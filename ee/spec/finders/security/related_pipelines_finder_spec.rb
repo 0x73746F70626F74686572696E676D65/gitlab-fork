@@ -160,5 +160,19 @@ RSpec.describe Security::RelatedPipelinesFinder, feature_category: :security_pol
 
       it { is_expected.to match_array([pipeline.id, mr_pipeline.id, security_policy_pipeline.id, child_pipeline_1.id]) }
     end
+
+    context 'with tag pipeline' do
+      let_it_be(:sha) { 'tag_sha' }
+      let_it_be(:pipeline) do
+        create(:ci_pipeline, :success,
+          tag: true,
+          sha: sha,
+          project: project,
+          source: Enums::Ci::Pipeline.sources[:push]
+        )
+      end
+
+      it { is_expected.to be_empty }
+    end
   end
 end
