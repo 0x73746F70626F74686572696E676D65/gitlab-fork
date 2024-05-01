@@ -86,5 +86,143 @@ RSpec.describe ContainerRegistry::Event do
         end
       end
     end
+
+    context 'publish internal event' do
+      let(:repository) { project.full_path }
+      let(:target) do
+        {
+          'mediaType' => ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_V2_TYPE,
+          'tag' => 'latest',
+          'repository' => repository
+        }
+      end
+
+      let(:raw_event) { { 'action' => action, 'target' => target } }
+
+      subject(:handle!) { described_class.new(raw_event).handle! }
+
+      context 'when action is push' do
+        let(:action) { 'push' }
+
+        shared_context 'with project present' do
+          let_it_be(:rsa_key) { OpenSSL::PKey::RSA.generate(3072) }
+
+          let(:image_path) { "#{Gitlab.config.registry.host_port}/#{repository}:latest" }
+          let(:key_file) { Tempfile.new('keypath') }
+
+          before do
+            allow(Gitlab.config.registry).to receive_messages(enabled: true, issuer: 'rspec', key: key_file.path)
+            allow(OpenSSL::PKey::RSA).to receive(:new).and_return(rsa_key)
+
+            allow_next_instance_of(JSONWebToken::RSAToken) do |instance|
+              allow(instance).to receive(:key).and_return(rsa_key)
+            end
+          end
+        end
+
+        shared_examples 'publishing event' do
+          it 'publishes an event' do
+            expect { handle! }
+                .to publish_event(::ContainerRegistry::ImagePushedEvent)
+                .with(event_data)
+          end
+        end
+
+        context 'when project is present' do
+          include_context 'with project present'
+
+          context 'when originator is a user' do
+            let(:event_data) { { project_id: project.id, user_id: originator.id, image: image_path } }
+
+            where(:user_type) do
+              %w[
+                personal_access_token
+                build
+                gitlab_or_ldap
+              ]
+            end
+
+            with_them do
+              let_it_be(:originator) { create(:user, username: 'username') }
+
+              let(:user_info) do
+                {
+                  token_type: user_type,
+                  username: originator.username,
+                  user_id: originator.id
+                }
+              end
+
+              let(:token) do
+                JSONWebToken::RSAToken.new(rsa_key).tap do |token|
+                  token[:user_info] = user_info
+                end
+              end
+
+              let(:raw_event) do
+                {
+                  'action' => action,
+                  'target' => target,
+                  'actor' => { 'user_type' => user_type, 'name' => originator.username, 'user' => token.encoded }
+                }
+              end
+
+              include_examples 'publishing event'
+            end
+          end
+
+          context 'when originator is not a user' do
+            let(:event_data) { { project_id: project.id, user_id: project.owner.id, image: image_path } }
+            let_it_be(:originator) { create(:deploy_token, username: 'username', id: 3) }
+            let(:raw_event) do
+              {
+                'action' => action,
+                'target' => target,
+                'actor' => { 'user_type' => 'deploy_token', 'name' => originator.username }
+              }
+            end
+
+            include_examples 'publishing event'
+          end
+        end
+
+        context 'when project is not present' do
+          let(:repository) { 'does/not/exist' }
+          let_it_be(:originator) { create(:deploy_token, username: 'username', id: 3) }
+          let(:raw_event) do
+            {
+              'action' => action,
+              'target' => target,
+              'actor' => { 'user_type' => 'deploy_token', 'name' => originator.username }
+            }
+          end
+
+          it 'does not publish an event' do
+            expect { handle! }
+              .not_to publish_event(::ContainerRegistry::ImagePushedEvent)
+          end
+        end
+
+        context 'when feature flag `container_scanning_for_registry` is disabled' do
+          before do
+            stub_feature_flags(container_scanning_for_registry: false)
+          end
+
+          it 'does not publish an event' do
+            expect { handle! }
+              .not_to publish_event(::ContainerRegistry::ImagePushedEvent)
+          end
+        end
+      end
+
+      context 'when action is not push' do
+        let(:action) { 'pull' }
+
+        it 'does not publish an event' do
+          expect { handle! }
+            .not_to publish_event(::ContainerRegistry::ImagePushedEvent)
+        end
+      end
+    end
   end
 end

@@ -51,6 +51,10 @@ module EE
             to: ::ProjectAuthorizations::AuthorizationsAddedEvent
           store.subscribe ::Security::RefreshComplianceFrameworkSecurityPoliciesWorker,
             to: ::Projects::ComplianceFrameworkChangedEvent
+          store.subscribe ::AppSec::ContainerScanning::ScanImageWorker,
+            to: ::ContainerRegistry::ImagePushedEvent,
+            delay: 1.minute,
+            if: ->(event) { ::AppSec::ContainerScanning::ScanImageWorker.dispatch?(event) }
 
           register_threat_insights_subscribers(store)
 
