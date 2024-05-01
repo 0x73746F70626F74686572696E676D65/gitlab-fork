@@ -8,6 +8,54 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
     let_it_be(:group) { create(:group) }
     let_it_be_with_reload(:work_item) { create(:work_item, :epic, namespace: group) }
 
+    shared_examples 'work item with synced epic' do
+      let_it_be_with_reload(:epic) { create(:epic, work_item: work_item) }
+
+      let(:synced_attributes) do
+        [
+          :start_date,
+          :start_date_fixed,
+          :start_date_is_fixed,
+          :start_date_sourcing_milestone_id,
+          :due_date,
+          :due_date_fixed,
+          :due_date_is_fixed,
+          :due_date_sourcing_milestone_id
+        ]
+      end
+
+      it 'syncs date fields with epic', :aggregate_failures do
+        expect { described_class.new(work_item).execute }
+          .to change { work_item.reload.dates_source&.attributes }
+          .and change { epic.reload.attributes.except('color') }
+          .and not_change { epic.reload.updated_at }
+
+        synced_attributes.each do |attribute|
+          expect(work_item.dates_source[attribute]).to eq(epic.public_send(attribute))
+        end
+
+        dates_source = work_item.reload.dates_source
+
+        expect(dates_source).to be_present
+        expect(dates_source.start_date_sourcing_work_item&.synced_epic&.id)
+          .to eq(epic.start_date_sourcing_epic_id)
+        expect(dates_source.due_date_sourcing_work_item&.synced_epic&.id)
+          .to eq(epic.due_date_sourcing_epic_id)
+      end
+
+      context 'when sync_work_item_to_epic feature flag is disabled' do
+        before do
+          stub_feature_flags(sync_work_item_to_epic: false)
+        end
+
+        it 'updates work item dates source but not synced epic' do
+          expect { described_class.new(work_item).execute }
+            .to change { work_item.reload.dates_source&.attributes }
+            .and not_change { epic.reload.attributes.except('color') }
+        end
+      end
+    end
+
     shared_examples "does not update work_item's date_source" do
       specify do
         expect { described_class.new(work_item).execute }
@@ -82,6 +130,8 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
             .and not_change { work_item.reload.dates_source&.due_date }
             .and change { work_item.reload.dates_source&.start_date }.from(nil).to(start_date)
         end
+
+        it_behaves_like 'work item with synced epic'
       end
 
       context "when start date is fixed" do
@@ -95,16 +145,22 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
             .and not_change { work_item.reload.dates_source&.start_date }
             .and change { work_item.reload.dates_source&.due_date }.from(nil).to(due_date)
         end
+
+        it_behaves_like 'work item with synced epic'
       end
+
+      it_behaves_like 'work item with synced epic'
     end
 
     shared_examples "when work item does not have an associated dates_source" do
       it "updates work_item dates_source with the child start/due date" do
         expect { described_class.new(work_item).execute }
-          .to change { WorkItems::DatesSource.count }
+          .to change { WorkItems::DatesSource.count }.by(1)
           .and change { work_item.reload.dates_source&.start_date }.from(nil).to(start_date)
           .and change { work_item.reload.dates_source&.due_date }.from(nil).to(due_date)
       end
+
+      it_behaves_like 'work item with synced epic'
     end
 
     context "when not rolling up dates" do
@@ -135,7 +191,8 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
 
       context "when rolling up from child work_item dates fields" do
         before_all do
-          create(:work_item, :issue, namespace: group, start_date: start_date, due_date: due_date).tap do |child|
+          create(:work_item, :epic, namespace: group, start_date: start_date, due_date: due_date).tap do |child|
+            create(:epic, work_item: child)
             create(:parent_link, work_item: child, work_item_parent: work_item)
           end
         end
@@ -145,9 +202,10 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
         it_behaves_like "when work item does not have an associated dates_source"
       end
 
-      context "when rolling up from from a child work_item dates_source fields" do
+      context "when rolling up from a child work_item dates_source fields" do
         before_all do
-          create(:work_item, :issue, namespace: group).tap do |child|
+          create(:work_item, :epic, namespace: group).tap do |child|
+            create(:epic, work_item: child)
             create(:parent_link, work_item: child, work_item_parent: work_item)
             create(:work_items_dates_source, :fixed, work_item: child, start_date: start_date, due_date: due_date)
           end
@@ -202,6 +260,8 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
             .to change { work_item.reload.dates_source&.due_date }.from(due_date).to(nil)
             .and change { work_item.reload.dates_source&.start_date }.from(start_date).to(nil)
         end
+
+        it_behaves_like 'work item with synced epic'
       end
     end
   end
