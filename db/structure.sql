@@ -720,6 +720,22 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_174b23fa3dfb() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "approval_project_rules"
+  WHERE "approval_project_rules"."id" = NEW."approval_project_rule_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_2428b5519042() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -4865,7 +4881,8 @@ CREATE TABLE approval_project_rules_protected_branches (
 CREATE TABLE approval_project_rules_users (
     id bigint NOT NULL,
     approval_project_rule_id bigint NOT NULL,
-    user_id integer NOT NULL
+    user_id integer NOT NULL,
+    project_id bigint
 );
 
 CREATE SEQUENCE approval_project_rules_users_id_seq
@@ -24483,6 +24500,8 @@ CREATE UNIQUE INDEX index_approval_project_rules_users_1 ON approval_project_rul
 
 CREATE INDEX index_approval_project_rules_users_2 ON approval_project_rules_users USING btree (user_id);
 
+CREATE INDEX index_approval_project_rules_users_on_project_id ON approval_project_rules_users USING btree (project_id);
+
 CREATE UNIQUE INDEX index_approval_rule_name_for_code_owners_rule_type ON approval_merge_request_rules USING btree (merge_request_id, name) WHERE ((rule_type = 2) AND (section IS NULL));
 
 CREATE UNIQUE INDEX index_approval_rule_name_for_sectional_code_owners_rule_type ON approval_merge_request_rules USING btree (merge_request_id, name, section) WHERE (rule_type = 2);
@@ -29811,6 +29830,8 @@ CREATE TRIGGER tags_loose_fk_trigger AFTER DELETE ON tags REFERENCING OLD TABLE 
 
 CREATE TRIGGER trigger_10ee1357e825 BEFORE INSERT OR UPDATE ON p_ci_builds FOR EACH ROW EXECUTE FUNCTION trigger_10ee1357e825();
 
+CREATE TRIGGER trigger_174b23fa3dfb BEFORE INSERT OR UPDATE ON approval_project_rules_users FOR EACH ROW EXECUTE FUNCTION trigger_174b23fa3dfb();
+
 CREATE TRIGGER trigger_2428b5519042 BEFORE INSERT OR UPDATE ON vulnerability_feedback FOR EACH ROW EXECUTE FUNCTION trigger_2428b5519042();
 
 CREATE TRIGGER trigger_25c44c30884f BEFORE INSERT OR UPDATE ON work_item_parent_links FOR EACH ROW EXECUTE FUNCTION trigger_25c44c30884f();
@@ -29955,6 +29976,9 @@ ALTER TABLE ONLY lists
 
 ALTER TABLE ONLY subscription_user_add_on_assignments
     ADD CONSTRAINT fk_0d89020c49 FOREIGN KEY (add_on_purchase_id) REFERENCES subscription_add_on_purchases(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY approval_project_rules_users
+    ADD CONSTRAINT fk_0dfcd9e339 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY deployment_approvals
     ADD CONSTRAINT fk_0f58311058 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
