@@ -52,7 +52,7 @@ module Search
     end
 
     def zoekt_search_results
-      ::Gitlab::Zoekt::SearchResults.new(
+      ::Search::Zoekt::SearchResults.new(
         current_user,
         params[:search],
         zoekt_projects,

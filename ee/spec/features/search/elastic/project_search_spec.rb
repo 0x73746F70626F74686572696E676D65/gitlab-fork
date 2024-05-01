@@ -162,7 +162,7 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
 
     let_it_be(:zoekt_node) { create(:zoekt_node) }
 
-    let(:results) { Gitlab::Zoekt::SearchResults.new(user, query, ::Project.id_in(project.id), node_id: zoekt_node.id) }
+    let(:results) { Search::Zoekt::SearchResults.new(user, query, ::Project.id_in(project.id), node_id: zoekt_node.id) }
 
     before do
       sign_in(user)

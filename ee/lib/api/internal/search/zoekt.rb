@@ -15,7 +15,7 @@ module API
               helpers do
                 include Gitlab::Loggable
                 def logger
-                  @logger ||= ::Zoekt::Logger.build
+                  @logger ||= ::Search::Zoekt::Logger.build
                 end
               end
               route_param :uuid, type: String, desc: 'Indexer node identifier' do

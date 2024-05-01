@@ -21,7 +21,7 @@ RSpec.describe Peek::Views::Zoekt, :zoekt, :request_store, feature_category: :gl
     it 'includes performance details' do
       ::Gitlab::SafeRequestStore.clear!
 
-      search_results = Gitlab::Zoekt::SearchResults.new(nil, 'query', Project.all, node_id: node_id)
+      search_results = Search::Zoekt::SearchResults.new(nil, 'query', Project.all, node_id: node_id)
       search_results.objects('blobs')
 
       expect(results[:calls]).to be > 0

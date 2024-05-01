@@ -105,10 +105,10 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
       allow(circuit_breaker).to receive(:operational?).and_return(circuit_breaker_operational)
     end
 
-    it 'returns a Gitlab::Zoekt::SearchResults' do
+    it 'returns a Search::Zoekt::SearchResults' do
       expect(service.use_zoekt?).to eq(true)
       expect(service.zoekt_searchable_scope).to eq(group)
-      expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      expect(service.execute).to be_kind_of(::Search::Zoekt::SearchResults)
     end
 
     context 'when advanced search is disabled' do
@@ -116,10 +116,10 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
         stub_ee_application_setting(elasticsearch_search: false, elasticsearch_indexing: false)
       end
 
-      it 'returns a Gitlab::Zoekt::SearchResults' do
+      it 'returns a Search::Zoekt::SearchResults' do
         expect(service.use_zoekt?).to eq(true)
         expect(service.zoekt_searchable_scope).to eq(group)
-        expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        expect(service.execute).to be_kind_of(::Search::Zoekt::SearchResults)
       end
     end
 
@@ -128,7 +128,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
       it 'does not search with Zoekt' do
         expect(service.use_zoekt?).to eq(false)
-        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        expect(service.execute).not_to be_kind_of(::Search::Zoekt::SearchResults)
       end
     end
 
@@ -137,7 +137,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
       it 'does not search with Zoekt' do
         expect(service.use_zoekt?).to eq(false)
-        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        expect(service.execute).not_to be_kind_of(::Search::Zoekt::SearchResults)
       end
     end
 
@@ -146,7 +146,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
       it 'does not search with Zoekt' do
         expect(service.use_zoekt?).to eq(false)
-        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        expect(service.execute).not_to be_kind_of(::Search::Zoekt::SearchResults)
       end
     end
 
@@ -157,7 +157,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
       it 'does not search with Zoekt' do
         expect(service.use_zoekt?).to eq(false)
-        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        expect(service.execute).not_to be_kind_of(::Search::Zoekt::SearchResults)
       end
     end
 
@@ -166,7 +166,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
       it 'searches with Zoekt' do
         expect(service.use_zoekt?).to eq(true)
-        expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        expect(service.execute).to be_kind_of(::Search::Zoekt::SearchResults)
       end
     end
 
@@ -175,7 +175,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
       it 'does not search with Zoekt' do
         expect(service.use_zoekt?).to eq(true)
-        expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        expect(service.execute).to be_kind_of(::Search::Zoekt::SearchResults)
       end
     end
 
@@ -186,7 +186,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
       it 'does not search with Zoekt' do
         expect(service.use_zoekt?).to eq(false)
-        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        expect(service.execute).not_to be_kind_of(::Search::Zoekt::SearchResults)
       end
     end
 
@@ -195,7 +195,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
       it 'does not search with Zoekt' do
         expect(service).not_to be_use_zoekt
-        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        expect(service.execute).not_to be_kind_of(::Search::Zoekt::SearchResults)
       end
     end
 
@@ -204,7 +204,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
       it 'searches with Zoekt' do
         expect(service.use_zoekt?).to eq(true)
-        expect(service.execute).to be_kind_of(::Gitlab::Zoekt::SearchResults)
+        expect(service.execute).to be_kind_of(::Search::Zoekt::SearchResults)
       end
 
       context 'when zoekt_search_api is disabled' do
@@ -214,7 +214,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
 
         it 'does not search with Zoekt' do
           expect(service.use_zoekt?).to eq(false)
-          expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+          expect(service.execute).not_to be_kind_of(::Search::Zoekt::SearchResults)
         end
       end
     end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global_search do
+RSpec.describe ::Search::Zoekt::SearchResults, :zoekt, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
   let_it_be(:project_1) { create(:project, :public, :repository) }
   let_it_be(:project_2) { create(:project, :public, :repository) }

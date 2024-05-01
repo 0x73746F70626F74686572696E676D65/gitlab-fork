@@ -244,14 +244,14 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
     let_it_be(:namespace_with_statistics) { create(:group, root_storage_statistics: namespace_statistics) }
 
     context 'when some zoekt enabled namespaces missing zoekt index' do
-      let(:logger) { instance_double(::Zoekt::Logger) }
+      let(:logger) { instance_double(::Search::Zoekt::Logger) }
       let_it_be(:zkt_enabled_namespace) { create(:zoekt_enabled_namespace, namespace: namespace.root_ancestor) }
       let_it_be(:zkt_enabled_namespace2) do
         create(:zoekt_enabled_namespace, namespace: namespace_with_statistics.root_ancestor)
       end
 
       before do
-        allow(::Zoekt::Logger).to receive(:build).and_return(logger)
+        allow(Search::Zoekt::Logger).to receive(:build).and_return(logger)
       end
 
       context 'when there are no online nodes' do
@@ -366,7 +366,7 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
   end
 
   describe '#mark_indices_as_ready' do
-    let(:logger) { instance_double(::Zoekt::Logger) }
+    let(:logger) { instance_double(::Search::Zoekt::Logger) }
     let(:task) { :mark_indices_as_ready }
     let_it_be(:idx) { create(:zoekt_index, state: :initializing) } # It has some pending zoekt_repositories
     let_it_be(:idx2) { create(:zoekt_index, state: :initializing) } # It has all ready zoekt_repositories
@@ -378,7 +378,7 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
     let_it_be(:idx4_project) { create(:project, namespace_id: idx4.namespace_id) }
 
     before do
-      allow(::Zoekt::Logger).to receive(:build).and_return(logger)
+      allow(Search::Zoekt::Logger).to receive(:build).and_return(logger)
     end
 
     context 'when indices can not be moved to ready' do

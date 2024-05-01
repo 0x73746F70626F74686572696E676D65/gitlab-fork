@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Gitlab
+module Search
   module Zoekt
     class SearchResults
       include ActionView::Helpers::NumberHelper
@@ -104,7 +104,6 @@ module Gitlab
             Repository,
             page: (page || 1).to_i,
             per_page: per_page,
-            options: base_options.merge(count_only: count_only).merge(filters.slice(:language)),
             preload_method: preload_method
           )
         end
@@ -120,10 +119,9 @@ module Gitlab
         end
       end
 
-      def search_as_found_blob(query, _repositories, page:, per_page:, options:, preload_method:)
+      def search_as_found_blob(query, _repositories, page:, per_page:, preload_method:)
         zoekt_search_and_wrap(query, page: page,
           per_page: per_page,
-          options: options,
           preload_method: preload_method) do |result, project|
           parse_zoekt_search_result(result, project)
         end
@@ -136,7 +134,7 @@ module Gitlab
       # @param options [Hash] additional options
       # @param page_limit [Integer] maximum number of pages we parse
       # @return [Array<Hash, Integer>] the results and total count
-      def zoekt_search(query, per_page:, options:, page_limit:)
+      def zoekt_search(query, per_page:, page_limit:)
         response = if node_id
                      ::Gitlab::Search::Zoekt::Client.search(
                        query,
@@ -190,7 +188,9 @@ module Gitlab
             results[current_page] ||= []
             results[current_page] << {
               project_id: project_id,
-              content: [match[:Before], match[:Line], match[:After]].compact.map { |l| Base64.decode64(l) }.join("\n"),
+              content: [match[:Before], match[:Line], match[:After]].compact.map do |l|
+                         Base64.decode64(l)
+                       end.join("\n"),
               line: match[:LineNumber],
               path: file[:FileName]
             }
@@ -204,7 +204,7 @@ module Gitlab
         results
       end
 
-      def zoekt_search_and_wrap(query, per_page:, page: 1, options: {}, preload_method: nil, &blk)
+      def zoekt_search_and_wrap(query, per_page:, page: 1, preload_method: nil, &blk)
         zoekt_cache = ::Search::Zoekt::Cache.new(
           query,
           current_user: current_user,
@@ -216,7 +216,7 @@ module Gitlab
         )
 
         search_results, total_count = zoekt_cache.fetch do |page_limit|
-          zoekt_search(query, per_page: per_page, page_limit: page_limit, options: options)
+          zoekt_search(query, per_page: per_page, page_limit: page_limit)
         end
 
         items, total_count = yield_each_zoekt_search_result(
@@ -233,9 +233,9 @@ module Gitlab
       def yield_each_zoekt_search_result(response, preload_method, total_count)
         return [[], total_count] if total_count == 0 || response.blank?
 
-        project_ids = response.pluck(:project_id).uniq # rubocop:disable CodeReuse/ActiveRecord
+        project_ids = response.pluck(:project_id).uniq # rubocop:disable CodeReuse/ActiveRecord -- Array#pluck
         projects = Project.with_route.id_in(project_ids)
-        projects = projects.public_send(preload_method) if preload_method # rubocop:disable GitlabSecurity/PublicSend
+        projects = projects.public_send(preload_method) if preload_method # rubocop:disable GitlabSecurity/PublicSend -- Method calls are forwarded
         projects = projects.index_by(&:id)
 
         items = response.map do |result|

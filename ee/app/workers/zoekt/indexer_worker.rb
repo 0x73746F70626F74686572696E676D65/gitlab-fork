@@ -12,7 +12,7 @@ module Zoekt
     include ApplicationWorker
     prepend ::Geo::SkipSecondary
 
-    data_consistency :always
+    data_consistency :always # rubocop:disable SidekiqLoadBalancing/WorkerDataConsistency -- This worker updates data
     include Gitlab::ExclusiveLeaseHelpers
 
     feature_category :global_search

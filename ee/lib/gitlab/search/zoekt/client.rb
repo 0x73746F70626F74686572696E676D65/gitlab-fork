@@ -257,7 +257,7 @@ module Gitlab
         end
 
         def logger
-          @logger ||= ::Zoekt::Logger.build
+          @logger ||= ::Search::Zoekt::Logger.build
         end
 
         def log_error(message, payload = {})

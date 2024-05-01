@@ -43,7 +43,7 @@ module Search
       private
 
       def logger
-        @logger ||= ::Zoekt::Logger.build
+        @logger ||= ::Search::Zoekt::Logger.build
       end
 
       def info(task, **payload)

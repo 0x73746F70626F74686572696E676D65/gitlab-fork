@@ -27,7 +27,7 @@ RSpec.describe Gitlab::InstrumentationHelper do
       let(:node_id) { ::Search::Zoekt::Node.last.id }
 
       it 'adds Zoekt data' do
-        search_results = Gitlab::Zoekt::SearchResults.new(nil, 'query', Project.all, node_id: node_id)
+        search_results = Search::Zoekt::SearchResults.new(nil, 'query', Project.all, node_id: node_id)
         search_results.objects('blobs')
 
         subject

@@ -91,8 +91,11 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
       let(:options) { { "force" => true } }
 
       it 'skips index and schedules a job' do
-        expect(subject).to receive(:in_lock)
-          .with("Zoekt::IndexerWorker/#{project.id}", ttl: (Zoekt::IndexerWorker::TIMEOUT + 1.minute), retries: 0)
+        expect(worker).to receive(:in_lock)
+          .with(
+            "Zoekt::IndexerWorker/#{project.id}",
+            ttl: (Zoekt::IndexerWorker::TIMEOUT + 1.minute),
+            retries: 0)
           .and_raise(Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError)
 
         expect(project.repository).not_to receive(:update_zoekt_index!)
@@ -110,7 +113,8 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
         expect(project.repository).to receive(:update_zoekt_index!)
           .and_raise(Gitlab::Search::Zoekt::Client::TooManyRequestsError)
         expect(described_class).to receive(:perform_in)
-          .with(a_value_between(0, Zoekt::IndexerWorker::RETRY_IN_PERIOD_IF_TOO_MANY_REQUESTS), project.id, options)
+          .with(a_value_between(0,
+            Zoekt::IndexerWorker::RETRY_IN_PERIOD_IF_TOO_MANY_REQUESTS), project.id, options)
 
         worker.perform(project.id, options)
       end
