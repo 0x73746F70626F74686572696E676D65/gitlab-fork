@@ -155,13 +155,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Template,
 
         let(:expected_jobs_with_excluded_variable_rules) do
           [
-            :"brakeman-sast-0",
-            :"flawfinder-sast-0",
             :"kubesec-sast-0",
-            :"mobsf-android-sast-0",
-            :"mobsf-ios-sast-0",
-            :"nodejs-scan-sast-0",
-            :"phpcs-security-audit-sast-0",
             :"pmd-apex-sast-0",
             :"semgrep-sast-0",
             :"sobelow-sast-0",
