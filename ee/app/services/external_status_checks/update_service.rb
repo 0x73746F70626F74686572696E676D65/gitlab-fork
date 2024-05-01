@@ -4,13 +4,14 @@ module ExternalStatusChecks
   class UpdateService < BaseService
     ERROR_MESSAGE = 'Failed to update external status check'
 
-    def execute
-      return unauthorized_error_response unless current_user.can?(:admin_project, container)
+    def execute(skip_authorization: false)
+      return unauthorized_error_response unless skip_authorization || can_update_external_status_check?
 
       if with_audit_logged(external_status_check, 'update_status_check') do
         external_status_check.update(resource_params)
       end
         log_audit_event
+
         ServiceResponse.success(payload: { external_status_check: external_status_check })
       else
         ServiceResponse.error(message: ERROR_MESSAGE,
@@ -20,6 +21,10 @@ module ExternalStatusChecks
     end
 
     private
+
+    def can_update_external_status_check?
+      current_user.can?(:admin_project, container)
+    end
 
     def resource_params
       params.slice(:name, :external_url, :protected_branch_ids)
