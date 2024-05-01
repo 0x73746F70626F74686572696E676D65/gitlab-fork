@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'admin/users/show.html.haml' do
-  let_it_be(:user) { create(:user, email: 'user@example.com') }
+RSpec.describe 'admin/users/show.html.haml', feature_category: :system_access do
+  let_it_be_with_reload(:user) { create(:user, email: 'user@example.com') }
 
   let(:page) { Nokogiri::HTML.parse(rendered) }
   let(:credit_card_status) { page.at('#credit-card-status')&.text }
@@ -84,6 +84,30 @@ RSpec.describe 'admin/users/show.html.haml' do
 
         expect(phone_number).to include 'Last attempted number:'
         expect(phone_number).to include "+1 123456789 (US)"
+      end
+    end
+  end
+
+  describe 'email verification last sent at' do
+    let(:verification_last_sent_at) { page.at('[data-testid="email-verification-last-sent-at"]') }
+
+    context 'when confirmation sent at is set' do
+      before do
+        user.update!(confirmation_sent_at: Time.zone.parse('2024-04-16 20:15:32 UTC'))
+      end
+
+      it 'shows the correct date and time' do
+        render
+
+        expect(verification_last_sent_at).to have_content('Email verification last sent at: Apr 16, 2024 8:15pm')
+      end
+    end
+
+    context 'when confirmation sent at is not set' do
+      it 'shows "never"' do
+        render
+
+        expect(verification_last_sent_at).to have_content('Email verification last sent at: never')
       end
     end
   end
