@@ -134,13 +134,6 @@ export default {
             'Analytics|Something went wrong while connecting to your data source. See %{linkStart}troubleshooting documentation%{linkEnd}.',
           );
     },
-    rootNamespace() {
-      return {
-        name: this.rootNamespaceName,
-        requestPath: this.rootNamespaceFullPath,
-        isProject: false,
-      };
-    },
     namespace() {
       return this.namespaceFullPath;
     },
@@ -179,7 +172,6 @@ export default {
           title: this.title,
           projectId: this.namespaceId,
           namespace: this.namespace,
-          rootNamespace: this.rootNamespace,
           query,
           queryOverrides,
           visualizationType: this.visualization.type,
