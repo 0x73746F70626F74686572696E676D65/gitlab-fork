@@ -93,6 +93,11 @@ export default {
       required: false,
       default: false,
     },
+    isLoading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     isProject: {
       type: Boolean,
       required: false,
@@ -134,7 +139,7 @@ export default {
       subscriptionSeats: 0,
       namespaceId: parseInt(this.rootGroupId, 10),
       eligibleForSeatReconciliation: false,
-      isLoading: false,
+      currentlyLoading: false,
       isVisible: false,
       actualFeedbackMessage: this.invalidFeedbackMessage,
       billableUsersDetails: null,
@@ -199,6 +204,9 @@ export default {
         customRoles: this.memberRoles,
       };
     },
+    computedIsLoading() {
+      return this.isLoading || this.currentlyLoading;
+    },
   },
   watch: {
     invalidFeedbackMessage(newValue) {
@@ -233,7 +241,7 @@ export default {
       }
     },
     checkEligibility(args) {
-      this.isLoading = true;
+      this.currentlyLoading = true;
       this.$apollo.addSmartQuery('eligibleForSeatReconciliation', {
         client: 'customersDotClient',
         query: getReconciliationStatus,
@@ -252,10 +260,10 @@ export default {
           }
           // we don't want to block the flow if API response has unexpected data
           this.emitSubmit(args);
-          this.isLoading = false;
+          this.currentlyLoading = false;
         },
         error(er) {
-          this.isLoading = false;
+          this.currentlyLoading = false;
           Sentry.captureException(er);
         },
       });
@@ -264,7 +272,7 @@ export default {
       const variables = this.overageVariables(args);
 
       try {
-        this.isLoading = true;
+        this.currentlyLoading = true;
         const { data } = await this.$apollo.query({
           query: getBillableUserCountChanges,
           client: 'gitlabClient',
@@ -289,7 +297,7 @@ export default {
         this.emitSubmit(args);
         Sentry.captureException(error);
       } finally {
-        this.isLoading = false;
+        this.currentlyLoading = false;
       }
     },
     emitSubmit({ accessLevel, expiresAt, memberRoleId } = {}) {
@@ -350,7 +358,7 @@ export default {
     :submit-disabled="submitDisabledEE"
     :prevent-cancel-default="showOverageModal"
     :reached-limit="reachedLimit"
-    :is-loading="isLoading"
+    :is-loading="computedIsLoading"
     :is-loading-roles="isLoadingRoles"
     :invalid-feedback-message="actualFeedbackMessage"
     @reset="onReset"

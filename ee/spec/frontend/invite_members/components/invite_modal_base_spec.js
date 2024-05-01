@@ -200,7 +200,7 @@ describe('EEInviteModalBase', () => {
 
   describe('default', () => {
     beforeEach(() => {
-      createComponent({ props: { invalidFeedbackMessage: 'error appeared' } });
+      createComponent({ props: { invalidFeedbackMessage: 'error appeared', isLoading: true } });
     });
 
     it('passes attrs to CE base', () => {
@@ -210,6 +210,7 @@ describe('EEInviteModalBase', () => {
         currentSlot: 'default',
         extraSlots: EEInviteModalBase.EXTRA_SLOTS,
         invalidFeedbackMessage: 'error appeared',
+        isLoading: true,
       });
     });
 
