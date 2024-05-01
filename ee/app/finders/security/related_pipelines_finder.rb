@@ -10,7 +10,8 @@
 # Arguments:
 #   pipeline - pipeline for which the related pipelines should be returned
 #   params:
-#     sources:    Array<String>
+#     sources:     Array<String>
+#     ref:         String
 module Security
   class RelatedPipelinesFinder
     attr_reader :pipeline, :params
@@ -23,7 +24,7 @@ module Security
     end
 
     def execute
-      pipelines = all_pipelines
+      pipelines = all_pipelines.no_tag
       pipelines = pipelines.for_branch(params[:ref]) if params[:ref].present?
       pipelines = latest_completed_pipelines_matching_sha(pipelines)
       pipelines = pipelines.with_pipeline_source(params[:sources]) if params[:sources].present?
