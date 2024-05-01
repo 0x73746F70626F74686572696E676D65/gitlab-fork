@@ -86,7 +86,7 @@ module API
             ).execute
 
             if service.success?
-              present service.payload[:rule], with: ::API::Entities::ExternalStatusCheck
+              present service.payload[:external_status_check], with: ::API::Entities::ExternalStatusCheck
             else
               render_api_error!(service.payload[:errors], service.http_status)
             end

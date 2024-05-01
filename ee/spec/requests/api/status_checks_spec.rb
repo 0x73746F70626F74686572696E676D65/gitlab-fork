@@ -8,17 +8,17 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
 
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:another_project) { create(:project, :repository, :public) }
-  let_it_be(:rule) { create(:external_status_check, project: project, external_url: 'https://mock.api.test/status?token=123456789') }
-  let_it_be(:rule_2) { create(:external_status_check, project: project) }
+  let_it_be(:external_status_check) { create(:external_status_check, project: project, external_url: 'https://mock.api.test/status?token=123456789') }
+  let_it_be(:external_status_check_2) { create(:external_status_check, project: project) }
   let_it_be(:user) { create(:user) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project, author: user) }
 
-  let(:single_object_url) { "/projects/#{project.id}/external_status_checks/#{rule.id}" }
+  let(:single_object_url) { "/projects/#{project.id}/external_status_checks/#{external_status_check.id}" }
   let(:collection_url) { "/projects/#{project.id}/external_status_checks" }
   let(:sha) { merge_request.diff_head_sha }
   let(:status) { '' }
 
-  subject { get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_checks", user), params: { external_status_check_id: rule.id, sha: sha } }
+  subject { get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_checks", user), params: { external_status_check_id: external_status_check.id, sha: sha } }
 
   describe 'GET :id/merge_requests/:merge_request_iid/status_checks' do
     before do
@@ -48,7 +48,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
           subject
 
           expect(json_response[0]["external_url"]).to eq('https://mock.api.test/status')
-          expect(json_response[1]["external_url"]).to eq(rule_2.external_url)
+          expect(json_response[1]["external_url"]).to eq(external_status_check_2.external_url)
         end
       end
     end
@@ -61,7 +61,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
       context 'when merge request has received status check responses' do
         let!(:non_applicable_check) { create(:external_status_check, project: project, protected_branches: [create(:protected_branch, name: 'different-branch', project: project)]) }
         let!(:branch_specific_check) { create(:external_status_check, project: project, protected_branches: [create(:protected_branch, name: merge_request.target_branch, project: project)]) }
-        let!(:status_check_response) { create(:status_check_response, external_status_check: rule, merge_request: merge_request, sha: sha) }
+        let!(:status_check_response) { create(:status_check_response, external_status_check: external_status_check, merge_request: merge_request, sha: sha) }
 
         it 'returns a 200' do
           subject
@@ -87,7 +87,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
   end
 
   describe 'POST :id/:merge_requests/:merge_request_iid/status_check_responses' do
-    subject { post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_check_responses", user), params: { external_status_check_id: rule.id, sha: sha, status: status } }
+    subject { post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_check_responses", user), params: { external_status_check_id: external_status_check.id, sha: sha, status: status } }
 
     let(:status) { 'passed' }
 
@@ -129,7 +129,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
       end
 
       context 'when external status check ID does not belong to the requested project' do
-        let_it_be(:rule) { create(:external_status_check) }
+        let_it_be(:external_status_check) { create(:external_status_check) }
 
         it 'returns a not found status' do
           subject
@@ -169,7 +169,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
       stub_licensed_features(external_status_checks: true)
     end
 
-    it 'deletes the specified rule' do
+    it 'deletes the specified external status check' do
       expect do
         delete api(single_object_url, project.first_owner)
       end.to change { MergeRequests::ExternalStatusCheck.count }.by(-1)
@@ -198,7 +198,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
   end
 
   describe 'POST projects/:id/external_status_checks' do
-    context 'successfully creating new external approval rule' do
+    context 'successfully creates an external status check' do
       before do
         stub_licensed_features(external_status_checks: true)
       end
@@ -207,7 +207,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
         post api("/projects/#{project.id}/external_status_checks", project.first_owner), params: attributes_for(:external_status_check)
       end
 
-      it 'creates a new external approval rule' do
+      it 'creates a new external status check' do
         expect { subject }.to change { MergeRequests::ExternalStatusCheck.count }.by(1)
       end
 
@@ -271,7 +271,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
     let_it_be(:protected_branches) { create_list(:protected_branch, 3, project: project) }
 
     before_all do
-      create(:external_status_check) # Creating an orphaned rule to make sure project scoping works as expected
+      create(:external_status_check) # Creating an orphaned external_status_check to make sure project scoping works as expected
     end
 
     before do
@@ -288,7 +288,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
     it 'paginates correctly' do
       get api(collection_url, project.first_owner), params: { per_page: 1 }
 
-      expect_paginated_array_response([rule.id])
+      expect_paginated_array_response([external_status_check.id])
     end
 
     context 'when feature is disabled, unlicensed or user has permission' do
@@ -315,7 +315,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
 
   describe 'POST projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry' do
     subject(:retry_failed_status_check) do
-      post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_checks/#{rule.id}/retry", user)
+      post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_checks/#{external_status_check.id}/retry", user)
     end
 
     context 'when unlicensed' do
@@ -359,7 +359,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
             create(
               :status_check_response,
               merge_request: merge_request,
-              external_status_check: rule,
+              external_status_check: external_status_check,
               sha: merge_request.diff_head_sha,
               status: 'failed'
             )
@@ -386,7 +386,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
             create(
               :status_check_response,
               merge_request: merge_request,
-              external_status_check: rule,
+              external_status_check: external_status_check,
               sha: merge_request.diff_head_sha,
               status: 'failed'
             )
@@ -419,7 +419,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
             create(
               :status_check_response,
               merge_request: merge_request,
-              external_status_check: rule,
+              external_status_check: external_status_check,
               sha: merge_request.diff_head_sha,
               status: 'passed'
             )
@@ -439,7 +439,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
   describe 'PUT projects/:id/external_status_checks/:check_id' do
     let(:params) { { external_url: 'http://newvalue.com', name: 'new name' } }
 
-    context 'successfully updating external approval rule' do
+    context 'successfully updates an external status check' do
       before do
         stub_licensed_features(external_status_checks: true)
       end
@@ -448,8 +448,8 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
         put api(single_object_url, project.first_owner), params: params
       end
 
-      it 'updates an approval rule' do
-        expect { subject }.to change { rule.reload.external_url }.to eq('http://newvalue.com')
+      it 'updates an external status check' do
+        expect { subject }.to change { external_status_check.reload.external_url }.to eq('http://newvalue.com')
       end
 
       it 'responds with correct http status' do
