@@ -1092,7 +1092,6 @@ Style/InlineDisableAnnotation:
     - 'config/initializers/fix_local_cache_middleware.rb'
     - 'config/initializers/fog_core_patch.rb'
     - 'config/initializers/grape_validators.rb'
-    - 'config/initializers/grpc_patch.rb'
     - 'config/initializers/kaminari_active_record_relation_methods_with_limit.rb'
     - 'config/initializers/mail_starttls_patch.rb'
     - 'config/initializers/postgres_cte_as_materialized.rb'
