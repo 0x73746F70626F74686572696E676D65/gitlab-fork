@@ -173,6 +173,14 @@ describe('packages_list_row', () => {
       });
     });
 
+    it('does not show the publish method', () => {
+      expect(findPublishMethod().exists()).toBe(false);
+    });
+
+    it('does not show the published time', () => {
+      expect(findRightSecondary().exists()).toBe(false);
+    });
+
     it('does not have a link to navigate to the details page', () => {
       expect(findPackageLink().exists()).toBe(false);
     });
