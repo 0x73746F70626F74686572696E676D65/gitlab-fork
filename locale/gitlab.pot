@@ -56201,6 +56201,9 @@ msgstr ""
 msgid "UserProfile|Edit profile"
 msgstr ""
 
+msgid "UserProfile|Email verification last sent at:"
+msgstr ""
+
 msgid "UserProfile|Explore public groups to find projects to contribute to"
 msgstr ""
 
