@@ -128,7 +128,7 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
     let_it_be(:project) { create(:project) }
     let(:endpoint) { "/internal/search/zoekt/#{uuid}/callback" }
     let(:uuid) { ::Search::Zoekt::Node.last.uuid }
-    let(:logger) { instance_double(::Zoekt::Logger) }
+    let(:logger) { instance_double(::Search::Zoekt::Logger) }
     let(:params) do
       {
         name: 'index',
@@ -159,7 +159,7 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
     context 'with valid auth' do
       context 'when node is found' do
         before do
-          allow(::Zoekt::Logger).to receive(:build).and_return(logger)
+          allow(::Search::Zoekt::Logger).to receive(:build).and_return(logger)
         end
 
         context 'and parms success is true' do
@@ -197,7 +197,7 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
         let(:uuid) { 'non_existing' }
 
         it 'logs the info and returns unprocessable_entity!' do
-          allow(::Zoekt::Logger).to receive(:build).and_return(logger)
+          allow(::Search::Zoekt::Logger).to receive(:build).and_return(logger)
           expect(logger).to receive(:info).with(log_data.merge(node_id: nil).as_json)
           post api(endpoint), params: params, headers: gitlab_shell_internal_api_request_header
           expect(response).to have_gitlab_http_status(:unprocessable_entity)

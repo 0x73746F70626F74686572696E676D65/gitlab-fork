@@ -104,7 +104,7 @@ module Search
       end
 
       def logger
-        @logger ||= ::Zoekt::Logger.build
+        @logger ||= ::Search::Zoekt::Logger.build
       end
     end
   end

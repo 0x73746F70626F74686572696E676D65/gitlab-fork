@@ -188,7 +188,7 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
     let(:args) { [project.id, { foo: :bar }] }
 
     it 'calls perform_async on the worker' do
-      expect(::Zoekt::IndexerWorker).to receive(:perform_async).with(*args)
+      expect(Zoekt::IndexerWorker).to receive(:perform_async).with(*args)
 
       index_async
     end
@@ -199,7 +199,7 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
       end
 
       it 'does not call perform_async on the worker' do
-        expect(::Zoekt::IndexerWorker).not_to receive(:perform_async)
+        expect(Zoekt::IndexerWorker).not_to receive(:perform_async)
 
         index_async
       end
@@ -212,7 +212,7 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
     let(:args) { [1.minute, project.id, { foo: :bar }] }
 
     it 'calls perform_async on the worker' do
-      expect(::Zoekt::IndexerWorker).to receive(:perform_in).with(*args)
+      expect(Zoekt::IndexerWorker).to receive(:perform_in).with(*args)
 
       index_in
     end
@@ -223,7 +223,7 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
       end
 
       it 'does not call perform_async on the worker' do
-        expect(::Zoekt::IndexerWorker).not_to receive(:perform_in)
+        expect(Zoekt::IndexerWorker).not_to receive(:perform_in)
 
         index_in
       end

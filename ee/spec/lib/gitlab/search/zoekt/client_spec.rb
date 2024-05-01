@@ -206,8 +206,8 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       let(:query) { '(invalid search(' }
 
       it 'logs an error and returns an empty array for results', :aggregate_failures do
-        logger = instance_double(::Zoekt::Logger)
-        expect(::Zoekt::Logger).to receive(:build).and_return(logger)
+        logger = instance_double(::Search::Zoekt::Logger)
+        expect(::Search::Zoekt::Logger).to receive(:build).and_return(logger)
         expect(logger).to receive(:error).with(hash_including('status' => 400))
 
         expect(search.error_message).to include('error parsing regexp')

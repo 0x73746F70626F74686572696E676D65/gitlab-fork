@@ -35,11 +35,17 @@ module Search
       end
 
       def index_async(project_id, options = {})
-        ::Zoekt::IndexerWorker.perform_async(project_id, options) if Feature.enabled?(:zoekt_legacy_indexer_worker)
+        return unless Feature.enabled?(:zoekt_legacy_indexer_worker)
+
+        ::Zoekt::IndexerWorker.perform_async(project_id,
+          options)
       end
 
       def index_in(delay, project_id, options = {})
-        ::Zoekt::IndexerWorker.perform_in(delay, project_id, options) if Feature.enabled?(:zoekt_legacy_indexer_worker)
+        return unless Feature.enabled?(:zoekt_legacy_indexer_worker)
+
+        ::Zoekt::IndexerWorker.perform_in(delay, project_id,
+          options)
       end
 
       def delete_async(project_id, root_namespace_id:, node_id: nil)

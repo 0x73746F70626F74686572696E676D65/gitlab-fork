@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_search do
+RSpec.describe ::Search::Zoekt::SearchableRepository, :zoekt, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
 
   let_it_be(:project) { create(:project, :public, :repository) }
@@ -31,7 +31,7 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
   end
 
   def search_for(term, node_id)
-    ::Gitlab::Zoekt::SearchResults.new(user, term, Project.all, node_id: node_id).objects('blobs').map(&:path)
+    ::Search::Zoekt::SearchResults.new(user, term, Project.all, node_id: node_id).objects('blobs').map(&:path)
   end
 
   describe '#update_zoekt_index!' do
