@@ -506,7 +506,8 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
         let_it_be(:parent_epic) { create(:epic, group: group, issue_id: parent_work_item.id) }
         let_it_be(:child_epic) { create(:epic, group: group, issue_id: child_work_item.id, title: 'The child epic') }
 
-        let(:params) { { issuable_references: [child_epic.to_reference] } }
+        let(:synced_epic_param) { false }
+        let(:params) { { issuable_references: [child_epic.to_reference], synced_epic: synced_epic_param } }
 
         subject(:create_link) { described_class.new(parent_epic, user, params).execute }
 
@@ -647,6 +648,23 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
 
             expect(parent_epic.reload.children).to include(child_epic)
             expect(parent_work_item.reload.work_item_children).to be_empty
+          end
+        end
+
+        context 'when synced_epic parameter is true' do
+          let(:synced_epic_param) { true }
+
+          it 'does not try to create a synced work item parent link' do
+            expect(::WorkItems::ParentLinks::CreateService).not_to receive(:new)
+
+            create_link
+          end
+
+          it 'does not create system notes' do
+            expect(SystemNoteService).not_to receive(:change_epics_relation)
+            expect(SystemNoteService).not_to receive(:move_child_epic_to_new_parent)
+
+            create_link
           end
         end
       end

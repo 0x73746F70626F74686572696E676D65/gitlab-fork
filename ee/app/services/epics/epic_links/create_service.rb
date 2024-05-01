@@ -4,9 +4,7 @@ module Epics
   module EpicLinks
     class CreateService < IssuableLinks::CreateService
       def execute
-        unless can?(current_user, :create_epic_tree_relation, issuable)
-          return error(issuables_not_found_message, 404)
-        end
+        return error(issuables_not_found_message, 404) unless can_access_epic_link?
 
         if issuable.max_hierarchy_depth_achieved?
           return error("This epic cannot be added. One or more epics would "\
@@ -23,12 +21,15 @@ module Epics
 
       private
 
+      def can_access_epic_link?(epic = issuable, action: :create)
+        return true if params[:synced_epic]
+
+        can?(current_user, :"#{action}_epic_tree_relation", epic)
+      end
+
       def create_single_link
         child_epic = referenced_issuables.first
-
-        unless can?(current_user, :admin_epic_tree_relation, child_epic)
-          return error(issuables_not_found_message, 404)
-        end
+        return error(issuables_not_found_message, 404) unless can_access_epic_link?(child_epic, action: :admin)
 
         previous_parent_epic = child_epic.parent
 
@@ -58,7 +59,7 @@ module Epics
       end
 
       def create_notes(referenced_epic, previous_parent_epic)
-        return if importing?(referenced_epic, issuable)
+        return if importing?(referenced_epic, issuable) || params[:synced_epic]
 
         SystemNoteService.change_epics_relation(issuable, referenced_epic, current_user, 'relate_epic')
 
@@ -114,7 +115,7 @@ module Epics
       end
 
       def can_link_epic?(epic)
-        return true if can?(current_user, :admin_epic_tree_relation, epic)
+        return true if can_access_epic_link?(epic, action: :admin)
 
         epic.errors.add(:parent, _("This epic cannot be added. You don't have access to perform this action."))
 
@@ -122,7 +123,7 @@ module Epics
       end
 
       def create_synced_work_item_link!(child_epic)
-        return true unless issuable.group.epic_sync_to_work_item_enabled?
+        return true unless !params[:synced_epic] && issuable.group.epic_sync_to_work_item_enabled?
         return true unless issuable.work_item && child_epic.work_item
 
         response = ::WorkItems::ParentLinks::CreateService

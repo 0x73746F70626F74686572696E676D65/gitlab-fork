@@ -4,22 +4,20 @@ module EE
   module WorkItems
     module ParentLink
       extend ActiveSupport::Concern
-      extend ::Gitlab::Utils::Override
 
-      override :validate_hierarchy_restrictions
-      def validate_hierarchy_restrictions
-        super
+      prepended do
+        attr_accessor :work_item_syncing
+        alias_method :work_item_syncing?, :work_item_syncing
+        validate :validate_legacy_hierarchy, unless: :work_item_syncing?
 
-        validate_legacy_hierarchy
-      end
+        private
 
-      private
+        def validate_legacy_hierarchy
+          return unless work_item_parent&.work_item_type&.base_type == 'epic' && work_item&.has_epic?
+          return if work_item.epic_issue.epic.issue_id == work_item_parent.id
 
-      def validate_legacy_hierarchy
-        return unless work_item_parent&.work_item_type&.base_type == 'epic' && work_item&.has_epic?
-        return if work_item.epic.issue_id == work_item_parent.id
-
-        errors.add :work_item, _('already assigned to an epic')
+          errors.add :work_item, _('already assigned to an epic')
+        end
       end
     end
   end

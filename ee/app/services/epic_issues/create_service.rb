@@ -2,7 +2,15 @@
 
 module EpicIssues
   class CreateService < IssuableLinks::CreateService
+    def initialize(issuable, user, params)
+      @synced_epic = params.delete(:synced_epic)
+
+      super
+    end
+
     private
+
+    attr_reader :synced_epic
 
     # rubocop: disable CodeReuse/ActiveRecord
     def relate_issuables(referenced_issue)
@@ -44,6 +52,7 @@ module EpicIssues
 
     def linkable_issuables(issues)
       @linkable_issues ||= begin
+        return issues if synced_epic
         return [] unless can?(current_user, :read_epic, issuable.group)
 
         projects = issues.map(&:project)
@@ -57,6 +66,8 @@ module EpicIssues
     end
 
     def linkable_issue?(issue)
+      return true if synced_epic
+
       issue.supports_epic? &&
         can?(current_user, :admin_issue_relation, issue) &&
         !previous_related_issuables.include?(issue)
@@ -67,6 +78,8 @@ module EpicIssues
     end
 
     def schedule_new_link_worker(link, referenced_issue, params)
+      return if synced_epic
+
       link.run_after_commit do
         params.merge!(epic_id: link.epic.id, issue_id: referenced_issue.id)
         Epics::NewEpicIssueWorker.perform_async(params)
@@ -74,6 +87,8 @@ module EpicIssues
     end
 
     def sync_work_item_link!(epic_issue_link)
+      return if synced_epic
+
       if issuable.group.epic_sync_to_work_item_enabled? && issuable.work_item
         create_synced_work_item_link!(epic_issue_link)
       else
