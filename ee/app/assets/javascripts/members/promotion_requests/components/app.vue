@@ -1,11 +1,17 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
+import MembersPagination from '~/members/components/table/members_pagination.vue';
 
 export default {
   name: 'PromotionRequestsTabApp',
+  components: { MembersPagination },
   props: {
     namespace: {
+      type: String,
+      required: true,
+    },
+    tabQueryParamValue: {
       type: String,
       required: true,
     },
@@ -14,6 +20,9 @@ export default {
     ...mapState({
       data(state) {
         return state[this.namespace].data;
+      },
+      pagination(state) {
+        return state[this.namespace].pagination;
       },
     }),
   },
@@ -26,5 +35,6 @@ export default {
         {{ request.user.name }}
       </li>
     </ul>
+    <members-pagination :pagination="pagination" :tab-query-param-value="tabQueryParamValue" />
   </div>
 </template>
