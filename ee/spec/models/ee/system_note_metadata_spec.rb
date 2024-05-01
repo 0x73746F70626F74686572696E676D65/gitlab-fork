@@ -9,7 +9,7 @@ RSpec.describe EE::SystemNoteMetadata do
   ].each do |action|
     context 'when action type is valid' do
       subject do
-        build(:system_note_metadata, note: build(:note), action: action )
+        build(:system_note_metadata, note: build(:note), action: action)
       end
 
       it { is_expected.to be_valid }

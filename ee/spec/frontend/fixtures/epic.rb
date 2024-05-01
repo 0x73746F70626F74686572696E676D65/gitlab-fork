@@ -7,7 +7,7 @@ RSpec.describe 'Epics (JavaScript fixtures)' do
   include JavaScriptFixturesHelpers
 
   let(:user) { create(:user) }
-  let(:group) { create(:group, name: 'frontend-fixtures-group' ) }
+  let(:group) { create(:group, name: 'frontend-fixtures-group') }
   let(:label) { create(:group_label, group: group, title: 'bug') }
   let(:public_project) { create(:project, :public, group: group) }
   let(:milestone1) { create(:milestone, group: group, title: 'Decade A', start_date: '2010-01-01', due_date: '2019-12-31') }

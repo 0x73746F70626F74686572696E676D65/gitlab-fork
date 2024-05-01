@@ -376,7 +376,7 @@ RSpec.describe ::Iterations::Cadence, :freeze_time, feature_category: :team_plan
     end
 
     context 'when past iteration exists' do
-      let!(:past_iteration) { create(:iteration, iterations_cadence: cadence, start_date: cadence_start_date, due_date: today - 7.days ) }
+      let!(:past_iteration) { create(:iteration, iterations_cadence: cadence, start_date: cadence_start_date, due_date: today - 7.days) }
 
       context 'when past iteration is the cadence start day from the previous week' do
         it "returns the cadence start day for the current week" do
@@ -386,7 +386,7 @@ RSpec.describe ::Iterations::Cadence, :freeze_time, feature_category: :team_plan
       end
 
       context 'when many iterations can fit in-between the current date and the previous iteration due date' do
-        let!(:past_iteration) { create(:iteration, iterations_cadence: cadence, start_date: cadence_start_date, due_date: cadence_start_date + 1.day ) }
+        let!(:past_iteration) { create(:iteration, iterations_cadence: cadence, start_date: cadence_start_date, due_date: cadence_start_date + 1.day) }
 
         it "returns the date for the cadence start day nearest to the current date from the last iteration's due date" do
           expect(cadence.next_open_iteration_start_date.wday).to eq(cadence.start_date.wday)
@@ -395,7 +395,7 @@ RSpec.describe ::Iterations::Cadence, :freeze_time, feature_category: :team_plan
       end
 
       context 'when past iteration is yesterday' do
-        let!(:past_iteration) { create(:iteration, iterations_cadence: cadence, start_date: cadence_start_date, due_date: today - 1.day ) }
+        let!(:past_iteration) { create(:iteration, iterations_cadence: cadence, start_date: cadence_start_date, due_date: today - 1.day) }
 
         it "returns the date for the cadence start day nearest to the current date from the last iteration's due date" do
           expect(cadence.next_open_iteration_start_date.wday).to eq(cadence.start_date.wday)

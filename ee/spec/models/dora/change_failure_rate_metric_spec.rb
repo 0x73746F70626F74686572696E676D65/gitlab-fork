@@ -34,7 +34,7 @@ RSpec.describe Dora::ChangeFailureRateMetric do
 
       it 'inherits data queries from DeploymentFrequency metric' do
         allow_next_instance_of(Dora::DeploymentFrequencyMetric) do |instance|
-          allow(instance).to receive(:data_queries).and_return({ deployment_frequency: 12345 } )
+          allow(instance).to receive(:data_queries).and_return({ deployment_frequency: 12345 })
         end
 
         expect(subject[:deployment_frequency]).to eq 12345
