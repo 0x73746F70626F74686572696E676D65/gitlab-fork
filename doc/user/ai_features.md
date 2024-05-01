@@ -10,9 +10,9 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 > - [Removed third-party AI setting](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/136144) in GitLab 16.6.
 > - [Removed support for OpenAI from all GitLab Duo features](https://gitlab.com/groups/gitlab-org/-/epics/10964) in GitLab 16.6.
 
-GitLab is creating AI-assisted features across our DevSecOps platform. These features aim to help increase velocity and solve key pain points across the software development lifecycle. GitLab Duo features are accessible through the [IDE extension](../editor_extensions/index.md) and the GitLab UI. Some of the features are accessible through [GitLab Duo Chat](gitlab_duo_chat.md), which is available in both interfaces.
+GitLab Duo is a set of AI-assisted features across the GitLab DevSecOps platform. These features aim to help increase velocity and solve key pain points across the software development lifecycle. GitLab Duo features are accessible through the [IDE extension](../editor_extensions/index.md) and the GitLab UI. Some of the features are also accessible through [GitLab Duo Chat](gitlab_duo_chat.md), which is available in both interfaces.
 
-Some features are still in development. View details about [support for each status](../policy/experiment-beta-support.md#experiment) (Experiment, Beta, Generally Available).
+Some features are still in development. View details about [support for each status](../policy/experiment-beta-support.md#experiment) (Experiment, Beta, Generally Available). Learn more about how to [enable GitLab Duo features](ai_features_enable.md).
 
 GitLab is [transparent](https://handbook.gitlab.com/handbook/values/#transparency). As GitLab Duo features mature, the documentation will be updated to clearly state how and where you can access these capabilities.
 
@@ -35,123 +35,14 @@ GitLab is [transparent](https://handbook.gitlab.com/handbook/values/#transparenc
 | Assists you with predicting productivity metrics and identifying anomalies across your software development lifecycle. | [Value stream forecasting](#forecast-deployment-frequency-with-value-stream-forecasting) | **Tier:** Freely available for Ultimate for a limited time<br>In the future, will require Ultimate with [GitLab Duo Enterprise](../subscriptions/subscription-add-ons.md) <br>**Offering:** GitLab.com, Self-managed, GitLab Dedicated <br>**Status:** Experiment |
 | Processes and responds to your questions about your application's usage data. | [Product Analytics](analytics/analytics_dashboards.md#generate-a-custom-visualization-with-gitlab-duo)             | **Tier:** Freely available for Ultimate for a limited time<br>In the future, will require Ultimate with [GitLab Duo Enterprise](../subscriptions/subscription-add-ons.md) <br>**Offering:** GitLab.com <br>**Status:** Experiment |
 
-## Controlling GitLab Duo features
+## Disable GitLab Duo features for specific groups or projects or an entire instance
 
-There are two different levels at which GitLab Duo features can be controlled. The user level and the content level.
-
-GitLab Duo features that are generally available are always enabled for all users that have access to these features. Whether they have access depends on the tier or the add-on as stated in the previous table. [Experimental](../policy/experiment-beta-support.md#experiment) and [Beta](../policy/experiment-beta-support.md#beta) GitLab Duo features need to be enabled as follows.
-
-Owners of projects and groups as well as administrators of self-managed instances can control if GitLab Duo features can be used with their content such as code files.
-
-### Giving access to users
-
-If a feature is dependent on an add-on seat such as [Code Suggestions](project/repository/code_suggestions/index.md), access to the feature can be controlled through [GitLab Duo seat assignment](../subscriptions/subscription-add-ons.md#assign-gitlab-duo-pro-seats).
-
-### Enabling Beta and Experimental AI-powered features
-
-Features listed as Experiment and Beta are disabled by default. These features are subject to the [Testing Agreement](https://handbook.gitlab.com/handbook/legal/testing-agreement/).
-
-#### GitLab.com
-
-Prerequisites
-
-- You must have the Owner role in the top-level group.
-
-To enable Beta and Experimental AI-powered features, use the [Experiment and Beta features checkbox](group/manage.md#enable-experiment-and-beta-features).
-
-#### GitLab self-managed
-
-To enable Beta and Experimental AI-powered features for GitLab versions where GitLab Duo Chat is not yet generally available, see the [GitLab Duo Chat documentation](gitlab_duo_chat.md#for-self-managed).
-
-### Network Requirements to enable GitLab Duo features for self-managed GitLab
-
-#### Enable outbound connections from GitLab instances
-
-- Your firewalls and HTTP/S proxy servers must allow outbound connections
-  to `cloud.gitlab.com` and `customers.gitlab.com` on port `443` both with `https://`.
-- To use an HTTP/S proxy, both `gitLab_workhorse` and `gitLab_rails` must have the necessary
-  [web proxy environment variables](https://docs.gitlab.com/omnibus/settings/environment-variables.html) set.
-
-#### Enable inbound connections from Clients to GitLab instances
-
-- GitLab instances must allow inbound connections from Duo clients (IDEs, Code Editors, and GitLab Web Frontend)
-  on port 443 with `https://` and `wss://`.
-- Both `HTTP2` and the `'upgrade'` header must be allowed, because GitLab Duo
-  uses both REST and WebSockets.
-- Check for restrictions on WebSocket (`wss://`) traffic to `wss://gitlab.example.com/-/cable` and other `.com` domains.
-  Network policy restrictions on `wss://` traffic can cause issues with some GitLab Duo Chat
-  services. Consider policy updates to allow these services.
-
-### Disable GitLab Duo features for specific groups or projects or an entire instance
-
-DETAILS:
-**Tier:** Premium, Ultimate
-**Offering:** GitLab.com, Self-managed, GitLab Dedicated
-
-> - [Settings to disable AI features introduced](https://gitlab.com/groups/gitlab-org/-/epics/12404) in GitLab 16.10.
-> - [Settings to disable AI features added to the UI](https://gitlab.com/gitlab-org/gitlab/-/issues/441489) in GitLab 16.11.
-
-You can disable GitLab Duo AI features for a group, project, or instance.
-When it's disabled, any attempt to use GitLab Duo features on the group, project, or instance is blocked and an error is displayed.
-GitLab Duo features are also blocked for resources in the group or project, like epics,
-issues, and vulnerabilities.
-
-#### For the group or project
-
-Prerequisites:
-
-- You must have the Owner role for the group or project.
-- You must have a Premium or Ultimate subscription.
-
-To disable GitLab Duo for a group:
-
-<!-- vale gitlab.Substitutions = NO -->
-1. On the left sidebar, select **Search or go to** and find your group.
-1. Select **Settings > General**.
-1. Expand **Permissions and group features**.
-1. Clear the **Use Duo features** checkbox.
-1. Optional. Select the **Enforce for all subgroups** checkbox to cascade the setting to
-   all subgroups.
-
-   ![Cascading setting](img/disable_duo_features_v17_0.png)
-<!-- vale gitlab.Substitutions = YES -->
-
-To disable GitLab Duo for a project:
-
-1. Use the [GitLab GraphQL API](../api/graphql/getting_started.md)
-   `projectSettingsUpdate` mutation.
-1. Disable GitLab Duo for the project by setting the `duo_features_enabled` setting to `false`.
-   (The default is `true`.)
-
-#### For an instance
-
-Prerequisites:
-
-- You must be an administrator.
-
-To disable GitLab Duo for an instance:
-
-<!-- vale gitlab.Substitutions = NO -->
-1. On the left sidebar, at the bottom, select **Admin Area**.
-1. Select **Settings > General**
-1. Expand **AI-powered features**.
-1. Clear the **Use Duo features** checkbox.
-1. Optional. Select the **Enforce for all subgroups** checkbox to cascade
-   the setting to all groups in the instance.
-<!-- vale gitlab.Substitutions = YES -->
-
-#### Future plans
-
-- An [issue exists](https://gitlab.com/gitlab-org/gitlab/-/issues/448709) for making the setting
-  cascade to all groups and projects. Right now the projects and groups do not
-  display the setting of the top-level group. To ensure the setting cascades,
-  ensure `lock_duo_features_enabled` is set to `true`.
-- An [issue exists](https://gitlab.com/gitlab-org/gitlab/-/issues/441532) to allow administrators
-  to override the setting for specific groups or projects.
+Disable GitLab Duo features by [following these instructions](ai_features_enable.md).
 
 ## Experimental AI features and how to use them
 
-The following subsections describe the experimental AI features in more detail.
+The following subsections describe GitLab Duo features that are in the
+Experiment phase.
 
 ### Explain code in the Web UI with Code explanation
 
