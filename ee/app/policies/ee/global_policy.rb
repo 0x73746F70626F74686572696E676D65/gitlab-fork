@@ -62,7 +62,7 @@ module EE
       condition(:code_suggestions_enabled_for_user) do
         next false unless @user
 
-        @user.duo_pro_add_on_available?
+        CloudConnector::AvailableServices.find_by_name(:code_suggestions).allowed_for?(@user)
       end
 
       condition(:duo_chat_enabled) do

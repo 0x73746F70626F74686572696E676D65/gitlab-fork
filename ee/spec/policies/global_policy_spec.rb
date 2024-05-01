@@ -574,7 +574,11 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     with_them do
       before do
         stub_licensed_features(code_suggestions: code_suggestions_licensed)
-        allow(current_user).to receive(:duo_pro_add_on_available?).and_return(duo_pro_seat_assigned)
+        code_suggestions_service_data = instance_double(CloudConnector::BaseAvailableServiceData)
+        allow(CloudConnector::AvailableServices).to receive(:find_by_name).with(:code_suggestions)
+          .and_return(code_suggestions_service_data)
+        allow(code_suggestions_service_data).to receive(:allowed_for?).with(current_user)
+          .and_return(duo_pro_seat_assigned)
       end
 
       it { is_expected.to code_suggestions_enabled_for_user }

@@ -8,7 +8,8 @@ module Resolvers
       def resolve
         return false unless current_user
 
-        Feature.enabled?(:ai_duo_code_suggestions_switch, type: :ops) && current_user.duo_pro_add_on_available?
+        Feature.enabled?(:ai_duo_code_suggestions_switch, type: :ops) &&
+          CloudConnector::AvailableServices.find_by_name(:code_suggestions).allowed_for?(current_user)
       end
     end
   end
