@@ -100,7 +100,7 @@ module Subscriptions
             'add-on for team members on this page by turning on the toggle for each team member. ' \
             "The subscription may take a minute to sync, so refresh the page if it's not visible yet."
           ),
-          exp_date: 30.days.from_now.strftime('%Y-%m-%d'),
+          exp_date: GitlabSubscriptions::Trials::DuoPro::DURATION.from_now.strftime('%Y-%m-%d'),
           new_line: helpers.tag.br
         )
       end

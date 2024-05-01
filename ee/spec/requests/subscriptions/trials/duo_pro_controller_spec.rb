@@ -142,12 +142,12 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
           expect(post_create).to redirect_to(group_usage_quotas_path(group, anchor: 'code-suggestions-usage-tab'))
         end
 
-        it 'shows valid flash message' do
+        it 'shows valid flash message', :freeze_time do
           post_create
 
-          expect(flash[:success]).to include(
-            'You have successfully created a trial subscription for GitLab Duo Pro. It will expire on'
-          )
+          expires_on = 60.days.from_now.strftime('%Y-%m-%d')
+          msg = "You have successfully created a trial subscription for GitLab Duo Pro. It will expire on #{expires_on}"
+          expect(flash[:success]).to include(msg)
 
           expect(flash[:success]).to include(
             'To get started, enable the GitLab Duo Pro add-on for team members on this page by ' \
