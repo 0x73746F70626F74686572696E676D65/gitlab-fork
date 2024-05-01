@@ -217,14 +217,12 @@ module EE
           description: 'Customizable dashboards for the group.',
           null: true,
           calls_gitaly: true,
-          alpha: { milestone: '16.4' },
           resolver: ::Resolvers::ProductAnalytics::DashboardsResolver
 
         field :customizable_dashboard_visualizations, ::Types::ProductAnalytics::VisualizationType.connection_type,
           description: 'Visualizations of the group or associated configuration project.',
           null: true,
           calls_gitaly: true,
-          alpha: { milestone: '16.4' },
           resolver: ::Resolvers::ProductAnalytics::VisualizationsResolver
 
         field :amazon_s3_configurations,
