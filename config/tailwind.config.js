@@ -132,6 +132,10 @@ module.exports = {
         200: '200',
         9999: '9999',
       },
+      transitionProperty: {
+        stroke: 'stroke',
+        'stroke-opacity': 'stroke-opacity',
+      },
     },
   },
   plugins: [
