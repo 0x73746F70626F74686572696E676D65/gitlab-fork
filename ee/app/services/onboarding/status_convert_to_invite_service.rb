@@ -2,14 +2,15 @@
 
 module Onboarding
   class StatusConvertToInviteService
-    def initialize(user)
+    def initialize(user, initial_registration: false)
       @user = user
+      @initial_registration = initial_registration
     end
 
     def execute
       return unless Onboarding.user_onboarding_in_progress?(user)
 
-      if user.update(onboarding_status_registration_type: StatusCreateService::REGISTRATION_TYPE[:invite])
+      if user.update(attributes)
         ServiceResponse.success(payload: payload)
       else
         ServiceResponse.error(message: user.errors.full_messages, payload: payload)
@@ -18,10 +19,20 @@ module Onboarding
 
     private
 
-    attr_reader :user, :registration_type
+    attr_reader :user, :registration_type, :initial_registration
 
     def payload
-      { registration_type: user.onboarding_status_registration_type }
+      { user: user }
+    end
+
+    def attributes
+      attrs = { onboarding_status_registration_type: StatusCreateService::REGISTRATION_TYPE[:invite] }
+
+      if initial_registration
+        attrs[:onboarding_status_initial_registration_type] = StatusCreateService::REGISTRATION_TYPE[:invite]
+      end
+
+      attrs
     end
   end
 end

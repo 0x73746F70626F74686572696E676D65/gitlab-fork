@@ -4,6 +4,7 @@ module Users
   class RegistrationsIdentityVerificationController < BaseIdentityVerificationController
     include AcceptsPendingInvitations
     include ::Gitlab::Utils::StrongMemoize
+    extend ::Gitlab::Utils::Override
 
     helper_method :onboarding_status
 
@@ -21,6 +22,7 @@ module Users
       # signed cookie exist with the info we need for migration.
       experiment(:signup_intent_step_one, actor: @user).run
 
+      # Invite registration will never be provided here as a value for label since invites aren't accepted yet.
       experiment(:signup_intent_step_one, actor: @user)
         .track(:render_identity_verification, label: onboarding_status.tracking_label)
     end
@@ -67,6 +69,7 @@ module Users
       return redirect_to signup_identity_verification_path unless @user.identity_verified?
 
       accept_pending_invitations(user: @user)
+
       sign_in(@user)
       session.delete(:verification_user_id)
 
@@ -78,6 +81,11 @@ module Users
     end
 
     private
+
+    override :after_pending_invitations_hook
+    def after_pending_invitations_hook
+      ::Onboarding::StatusConvertToInviteService.new(@user, initial_registration: true).execute
+    end
 
     def require_unverified_user!
       redirect_to success_signup_identity_verification_path if @user.identity_verified?

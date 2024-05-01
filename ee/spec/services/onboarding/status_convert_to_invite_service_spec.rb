@@ -23,7 +23,19 @@ RSpec.describe Onboarding::StatusConvertToInviteService, feature_category: :onbo
           expect { execute }.to change { user.onboarding_status_registration_type }.to(updated_registration_type)
           expect(execute).to be_a(ServiceResponse)
           expect(execute).to be_success
-          expect(execute[:registration_type]).to eq(updated_registration_type)
+          expect(execute[:user].onboarding_status_registration_type).to eq(updated_registration_type)
+          expect(execute[:user].onboarding_status_initial_registration_type).to eq(nil)
+        end
+
+        context 'when initial registration type is changed also' do
+          subject(:execute) { described_class.new(user, initial_registration: true).execute }
+
+          it 'updates both onboarding_status registration types' do
+            expect(execute).to be_a(ServiceResponse)
+            expect(execute).to be_success
+            expect(execute[:user].onboarding_status_registration_type).to eq(updated_registration_type)
+            expect(execute[:user].onboarding_status_initial_registration_type).to eq(updated_registration_type)
+          end
         end
       end
 
@@ -33,7 +45,7 @@ RSpec.describe Onboarding::StatusConvertToInviteService, feature_category: :onbo
         end
 
         it 'does not update the onboarding_status_registration_type' do
-          expect(execute[:registration_type]).to eq(original_registration_type)
+          expect(execute[:user].onboarding_status_registration_type).to eq(original_registration_type)
           expect(execute).to be_a(ServiceResponse)
           expect(execute).to be_error
         end

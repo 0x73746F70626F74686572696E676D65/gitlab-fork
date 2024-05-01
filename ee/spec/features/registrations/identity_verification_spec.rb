@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe 'Identity Verification', :js, feature_category: :instance_resiliency do
   include IdentityVerificationHelpers
-  include ListboxHelpers
 
   before do
     stub_saas_features(identity_verification: true)

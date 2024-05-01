@@ -552,52 +552,79 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     context 'for an invite' do
       let!(:member_invite) { create(:project_member, :invited, invite_email: user.email) }
 
-      before do
-        get success_signup_identity_verification_path
-      end
+      context 'when onboarding is not available' do
+        before do
+          get success_signup_identity_verification_path
+        end
 
-      context 'when not yet verified' do
-        let(:user) { unconfirmed_user }
+        context 'when not yet verified' do
+          let(:user) { unconfirmed_user }
 
-        it 'redirects back to signup_identity_verification_path' do
-          expect(response).to redirect_to(signup_identity_verification_path)
+          it 'redirects back to signup_identity_verification_path' do
+            expect(response).to redirect_to(signup_identity_verification_path)
+          end
+        end
+
+        context 'when verified' do
+          it 'accepts pending invitations' do
+            expect(member_invite.reload).not_to be_invite
+          end
+
+          it 'signs in the user' do
+            expect(request.env['warden']).to be_authenticated
+          end
+
+          it 'deletes the verification_user_id from the session' do
+            expect(request.session.has_key?(:verification_user_id)).to eq(false)
+          end
+
+          it 'does not update onboarding_status' do
+            expect(user.onboarding_status).to eq({})
+          end
+        end
+
+        it 'renders the template with the after_sign_in_path_for variable', :aggregate_failures do
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(assigns(:redirect_url)).to eq(stored_user_return_to_path)
+        end
+
+        it 'tracks phone_verification_for_low_risk_users registration_completed event', :experiment do
+          expect(experiment(:phone_verification_for_low_risk_users))
+            .to track(:registration_completed).on_next_instance.with_context(user: user)
+
+          get success_signup_identity_verification_path
         end
       end
 
-      context 'when verified' do
-        it 'accepts pending invitations' do
-          expect(member_invite.reload).not_to be_invite
+      context 'when onboarding is available' do
+        before do
+          stub_saas_features(onboarding: true)
+          user.update!(onboarding_in_progress: true)
         end
 
-        it 'signs in the user' do
-          expect(request.env['warden']).to be_authenticated
+        it 'updates the registration types' do
+          get success_signup_identity_verification_path
+
+          expect(user.onboarding_status_registration_type).to eq('invite')
+          expect(user.onboarding_status_initial_registration_type).to eq('invite')
         end
 
-        it 'deletes the verification_user_id from the session' do
-          expect(request.session.has_key?(:verification_user_id)).to eq(false)
+        it 'sets the tracking_label to invite registration' do
+          get success_signup_identity_verification_path
+
+          expect(assigns(:tracking_label)).to eq(::Onboarding::Status::TRACKING_LABEL[:invite])
         end
-      end
-
-      it 'renders the template with the after_sign_in_path_for variable', :aggregate_failures do
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(assigns(:redirect_url)).to eq(stored_user_return_to_path)
-      end
-
-      it 'tracks phone_verification_for_low_risk_users registration_completed event', :experiment do
-        expect(experiment(:phone_verification_for_low_risk_users))
-          .to track(:registration_completed).on_next_instance.with_context(user: user)
-
-        get success_signup_identity_verification_path
       end
     end
 
     context 'for trial registration' do
       before do
         stub_saas_features(onboarding: true)
+        user.update!(onboarding_in_progress: true)
       end
 
       it 'detects a trial' do
-        confirmed_user.update!(onboarding_status_registration_type: 'trial')
+        user.update!(onboarding_status_registration_type: 'trial')
 
         get success_signup_identity_verification_path
 
@@ -633,7 +660,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
         context 'when a trial is detected from onboarding_status' do
           before do
-            confirmed_user.update!(onboarding_status_registration_type: 'trial')
+            user.update!(onboarding_status_registration_type: 'trial')
 
             get success_signup_identity_verification_path
           end
