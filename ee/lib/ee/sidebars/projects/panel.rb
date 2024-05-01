@@ -10,13 +10,6 @@ module EE
         def configure_menus
           super
 
-          unless context.is_super_sidebar
-            insert_menu_before(
-              ::Sidebars::Projects::Menus::ProjectInformationMenu,
-              ::Sidebars::Projects::Menus::TrialWidgetMenu.new(context)
-            )
-          end
-
           insert_menu_after(
             ::Sidebars::Projects::Menus::ProjectInformationMenu,
             ::Sidebars::Projects::Menus::LearnGitlabMenu.new(context)
