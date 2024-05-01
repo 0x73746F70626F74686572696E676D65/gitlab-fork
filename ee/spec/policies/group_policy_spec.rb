@@ -2457,6 +2457,16 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
           end
 
           it { is_expected.to(allowed ? be_allowed(*permissions) : be_disallowed(*permissions)) }
+
+          context 'when memberships are locked to LDAP' do
+            before do
+              allow(group).to receive(:ldap_synced?).and_return(true)
+              stub_application_setting(allow_group_owners_to_manage_ldap: true)
+              stub_application_setting(lock_memberships_to_ldap: true)
+            end
+
+            it { is_expected.to(allowed ? be_allowed(*permissions) : be_disallowed(*permissions)) }
+          end
         end
 
         context 'when custom_roles feature is disabled' do
@@ -3392,7 +3402,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
     context 'for a member role with admin_group_member true' do
       let(:member_role_abilities) { { admin_group_member: true } }
-      let(:allowed_abilities) { [:admin_group_member] }
+      let(:allowed_abilities) { [:admin_group_member, :admin_member_role, :read_member_role] }
 
       it_behaves_like 'custom roles abilities'
 
