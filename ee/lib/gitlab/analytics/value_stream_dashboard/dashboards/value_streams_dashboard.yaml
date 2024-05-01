@@ -13,7 +13,7 @@ panels:
     options: {}
   - id: 2
     visualization: usage_overview
-    title: Usage overview for %{rootNamespaceName} group
+    title: Usage overview for %{namespaceName} %{namespaceType}
     gridAttributes:
       yPos: 0
       xPos: 0

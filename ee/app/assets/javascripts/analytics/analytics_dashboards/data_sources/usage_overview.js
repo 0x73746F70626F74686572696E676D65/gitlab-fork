@@ -101,11 +101,10 @@ export const prepareQuery = (queryKeysToInclude = []) => {
 };
 
 /**
- * Fetch usage overview metrics, making sure to only query
- * the top most group from the namespace.
+ * Fetch usage overview metrics for a given namespace
  */
 export const fetch = async ({
-  rootNamespace: { requestPath: fullPath },
+  namespace: fullPath,
   queryOverrides: { filters: { include = USAGE_OVERVIEW_IDENTIFIERS } = {} } = {},
 }) => {
   const variableOverrides = prepareQuery(include);

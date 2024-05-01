@@ -77,7 +77,6 @@ RSpec.describe 'Analytics Dashboard - Value Streams Dashboard', :js, feature_cat
       it_behaves_like 'has value streams dashboard link'
       context 'for Value streams dashboard' do
         before do
-          create_mock_usage_overview_metrics(project)
           create_mock_dora_chart_metrics(environment)
 
           visit_project_value_streams_dashboard(project)
@@ -85,7 +84,11 @@ RSpec.describe 'Analytics Dashboard - Value Streams Dashboard', :js, feature_cat
 
         it_behaves_like 'VSD renders as an analytics dashboard'
         it_behaves_like 'renders link to the feedback survey'
-        it_behaves_like 'renders usage overview metrics'
+        # No usage overview data at the project level until
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/456893 is completed
+        it_behaves_like 'renders usage overview metrics', has_data: false do
+          let(:panel_title) { "#{project.name} project" }
+        end
 
         it_behaves_like 'renders metrics comparison table' do
           let(:panel_title) { "#{project.name} project" }

@@ -59,7 +59,7 @@ export default {
   },
   i18n: {
     tooltip: s__(
-      'Analytics|Statistics on top-level namespace usage. Usage data is a cumulative count, and updated monthly.',
+      'Analytics|Statistics on namespace usage. Usage data is a cumulative count, and updated monthly.',
     ),
     lastUpdated: s__('Analytics| Last updated: %{recordedAt}'),
   },

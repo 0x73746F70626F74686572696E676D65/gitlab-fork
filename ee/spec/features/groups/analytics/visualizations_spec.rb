@@ -65,7 +65,9 @@ RSpec.describe 'Analytics Dashboard Visualizations', :js, feature_category: :val
       visit_group_value_streams_dashboard(group)
     end
 
-    it_behaves_like 'renders usage overview metrics'
+    it_behaves_like 'renders usage overview metrics' do
+      let(:panel_title) { "#{group.name} group" }
+    end
   end
 
   context 'for dora_performers_score visualization' do
