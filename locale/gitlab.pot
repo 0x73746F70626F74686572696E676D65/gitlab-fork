@@ -13874,9 +13874,6 @@ msgstr ""
 msgid "ContainerRegistry|Add rule"
 msgstr ""
 
-msgid "ContainerRegistry|Are you sure you want to delete the container protection rule?"
-msgstr ""
-
 msgid "ContainerRegistry|Build an image"
 msgstr ""
 
@@ -13952,13 +13949,16 @@ msgstr ""
 msgid "ContainerRegistry|Created %{time}"
 msgstr ""
 
+msgid "ContainerRegistry|Delete container protection rule"
+msgstr ""
+
+msgid "ContainerRegistry|Delete container protection rule?"
+msgstr ""
+
 msgid "ContainerRegistry|Delete image repository"
 msgstr ""
 
 msgid "ContainerRegistry|Delete image repository?"
-msgstr ""
-
-msgid "ContainerRegistry|Delete rule"
 msgstr ""
 
 msgid "ContainerRegistry|Delete selected tags"
@@ -14209,7 +14209,7 @@ msgstr ""
 msgid "ContainerRegistry|To widen your search, change or remove the filters above."
 msgstr ""
 
-msgid "ContainerRegistry|Users with at least the Developer role for this project will be able to push and delete container images."
+msgid "ContainerRegistry|Users with at least the Developer role for this project will be able to push and delete container images to this repository path."
 msgstr ""
 
 msgid "ContainerRegistry|We are having trouble connecting to the Container Registry. Please try refreshing the page. If this error persists, please review  %{docLinkStart}the troubleshooting documentation%{docLinkEnd}."
@@ -14225,6 +14225,9 @@ msgid "ContainerRegistry|With the Container Registry, every project can have its
 msgstr ""
 
 msgid "ContainerRegistry|With the Container Registry, every project can have its own space to store its Docker images. Push at least one Docker image in one of this group's projects in order to show up here. %{docLinkStart}More Information%{docLinkEnd}"
+msgstr ""
+
+msgid "ContainerRegistry|You are about to delete the container protection rule for %{repositoryPathPattern}."
 msgstr ""
 
 msgid "ContainerRegistry|You are about to remove %{item} tags. Are you sure?"
