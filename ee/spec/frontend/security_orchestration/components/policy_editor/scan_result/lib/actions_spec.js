@@ -4,6 +4,7 @@ import {
   actionHasType,
   BOT_MESSAGE_TYPE,
   buildAction,
+  createActionFromApprovers,
   REQUIRE_APPROVAL_TYPE,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/actions';
 import { GROUP_TYPE, USER_TYPE, ROLE_TYPE } from 'ee/security_orchestration/constants';
@@ -237,6 +238,23 @@ describe('buildAction', () => {
       enabled: true,
       id: actionId,
       type: BOT_MESSAGE_TYPE,
+    });
+  });
+});
+
+describe('createActionFromApprovers', () => {
+  it('creates an action with all approvers', () => {
+    const action = buildAction(REQUIRE_APPROVAL_TYPE);
+    const approvers = {
+      [USER_TYPE]: [{ type: USER_TYPE, id: 1 }],
+      [ROLE_TYPE]: ['owner'],
+      [GROUP_TYPE]: [{ type: GROUP_TYPE, id: 2 }],
+    };
+    expect(createActionFromApprovers(action, approvers)).toEqual({
+      ...action,
+      group_approvers_ids: [2],
+      role_approvers: ['owner'],
+      user_approvers_ids: [1],
     });
   });
 });

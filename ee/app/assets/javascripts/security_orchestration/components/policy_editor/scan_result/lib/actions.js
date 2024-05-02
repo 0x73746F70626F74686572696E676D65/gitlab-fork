@@ -33,8 +33,8 @@ export const removeAvailableApproverType = (array, type) =>
 /*
   Convert approvers into yaml fields (user_approvers, users_approvers_ids) in relation to action.
 */
-export const createActionFromApprovers = ({ type, approvals_required }, approvers) => {
-  const newAction = { type, approvals_required };
+export const createActionFromApprovers = ({ id, type, approvals_required }, approvers) => {
+  const newAction = { id, type, approvals_required };
 
   if (approvers[USER_TYPE]) {
     newAction.user_approvers_ids = userIds(approvers[USER_TYPE]);
@@ -137,3 +137,5 @@ export const ACTION_LISTBOX_ITEMS = Object.entries(ACTION_OPTIONS).map(([value, 
   value,
   text,
 }));
+
+export const DISABLED_BOT_MESSAGE_ACTION = { ...buildAction(BOT_MESSAGE_TYPE), enabled: false };

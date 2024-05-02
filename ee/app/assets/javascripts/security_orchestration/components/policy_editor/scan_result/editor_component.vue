@@ -1,6 +1,6 @@
 <script>
 import Vue from 'vue';
-import { isEmpty } from 'lodash';
+import { isEmpty, uniqBy } from 'lodash';
 import { GlAlert, GlEmptyState, GlButton } from '@gitlab/ui';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
@@ -48,6 +48,8 @@ import {
   invalidVulnerabilityAttributes,
   humanizeInvalidBranchesError,
   invalidBranchType,
+  BOT_MESSAGE_TYPE,
+  REQUIRE_APPROVAL_TYPE,
 } from './lib';
 
 export default {
@@ -151,8 +153,22 @@ export default {
     };
   },
   computed: {
+    actionsForRuleMode() {
+      const actions = this.policy.actions || [];
+      // If the yaml does not have a bot message action, then the bot message will be created as if
+      // the bot message action exists and is enabled. Thus, we add it into the actions for rule
+      // mode so the user can remove it
+      const policiesWithBotMessageAction = uniqBy(
+        [...actions, buildAction(BOT_MESSAGE_TYPE)],
+        'type',
+      );
+      // If the bot message action is disabled, it should not appear in rule mode
+      return policiesWithBotMessageAction.filter(
+        (action) => action.type !== BOT_MESSAGE_TYPE || action.enabled,
+      );
+    },
     availableActionListboxItems() {
-      const usedActionTypes = (this.policy.actions || []).map((action) => action.type);
+      const usedActionTypes = this.actionsForRuleMode.map((action) => action.type);
       return ACTION_LISTBOX_ITEMS.filter((item) => !usedActionTypes.includes(item.value));
     },
     disableUpdate() {
@@ -193,6 +209,11 @@ export default {
           }
           return true;
         })
+      );
+    },
+    hasDisabledBotMessageAction() {
+      return this.policy.actions?.some(
+        ({ type, enabled }) => type === BOT_MESSAGE_TYPE && !enabled,
       );
     },
     hasMergeRequestRule() {
@@ -238,7 +259,8 @@ export default {
     ruleHasBranchesProperty(rule) {
       return BRANCHES_KEY in rule;
     },
-    addAction(type) {
+    oldAddAction(type) {
+      // TODO: Remove with the approvalPolicyDisableBotComment feature flag
       const newAction = buildAction(type);
       this.policy = {
         ...this.policy,
@@ -246,16 +268,54 @@ export default {
       };
       this.updateYamlEditorValue(this.policy);
     },
-    removeAction(index) {
+    oldRemoveAction(index) {
+      // TODO: Remove with the approvalPolicyDisableBotComment feature flag
       const { actions, ...newPolicy } = this.policy;
       actions.splice(index, 1);
       this.policy = { ...newPolicy, ...(actions.length ? { actions } : {}) };
       this.updateYamlEditorValue(this.policy);
       this.updatePolicyApprovers({});
     },
-    updateAction(actionIndex, values) {
+    oldUpdateAction(actionIndex, values) {
+      // TODO: Remove with the approvalPolicyDisableBotComment feature flag
       this.policy.actions.splice(actionIndex, 1, values);
       this.$set(this.errors, 'action', []);
+      this.updateYamlEditorValue(this.policy);
+    },
+    addAction(type) {
+      if (type === BOT_MESSAGE_TYPE && this.hasDisabledBotMessageAction) {
+        // If the bot message action is in the yaml and is disabled, then we do not want to add
+        // a new bot message action, but instead enable the existing one
+        this.updateAction(buildAction(BOT_MESSAGE_TYPE));
+      } else {
+        const newAction = buildAction(type);
+        this.policy = {
+          ...this.policy,
+          actions: this.policy.actions ? [...this.policy.actions, newAction] : [newAction],
+        };
+        this.updateYamlEditorValue(this.policy);
+      }
+    },
+    removeApproverAction() {
+      const { actions, ...newPolicy } = this.policy;
+      const updatedActions = actions.filter((action) => action.type !== REQUIRE_APPROVAL_TYPE);
+      this.policy = { ...newPolicy, ...(updatedActions.length ? { actions: updatedActions } : {}) };
+      this.updateYamlEditorValue(this.policy);
+      this.updatePolicyApprovers({});
+    },
+    updateAction(values) {
+      const actionType = values.type;
+      const actions = this.policy.actions || [];
+      const indexOfActionToUpdate = actions.findIndex((a) => a.type === actionType);
+
+      if (indexOfActionToUpdate >= 0) {
+        actions.splice(indexOfActionToUpdate, 1, values);
+      } else {
+        actions.push(values);
+      }
+
+      this.policy.actions = actions;
+      this.errors.action = [];
       this.updateYamlEditorValue(this.policy);
     },
     updateSettings(values) {
@@ -462,7 +522,7 @@ export default {
 
         <div v-if="showBotMessageAction">
           <action-section
-            v-for="(action, index) in policy.actions"
+            v-for="(action, index) in actionsForRuleMode"
             :key="action.id"
             :data-testid="`action-${index}`"
             class="gl-mb-4"
@@ -472,8 +532,8 @@ export default {
             :existing-approvers="existingApprovers"
             @error="handleParsingError"
             @updateApprovers="updatePolicyApprovers"
-            @changed="updateAction(index, $event)"
-            @remove="removeAction(index)"
+            @changed="updateAction"
+            @remove="removeApproverAction"
           />
 
           <scan-filter-selector
@@ -496,12 +556,12 @@ export default {
             :existing-approvers="existingApprovers"
             @error="handleParsingError"
             @updateApprovers="updatePolicyApprovers"
-            @changed="updateAction(index, $event)"
-            @remove="removeAction(index)"
+            @changed="oldUpdateAction(index, $event)"
+            @remove="oldRemoveAction(index)"
           />
         </div>
         <div v-else class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
-          <gl-button variant="link" data-testid="add-action" icon="plus" @click="addAction">
+          <gl-button variant="link" data-testid="add-action" icon="plus" @click="oldAddAction">
             {{ $options.i18n.ADD_ACTION_LABEL }}
           </gl-button>
         </div>
