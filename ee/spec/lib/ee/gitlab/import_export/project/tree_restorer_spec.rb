@@ -65,23 +65,20 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer, feature_category: :i
           expect(diff.attributes).to be_empty
         end
 
-        context 'when sync_epic_to_work_item disabled' do
-          before do
-            stub_feature_flags(sync_epic_to_work_item: false)
-          end
+        it 'imports group epics into destination group and creates work items' do
+          group = project.group
+          group.epics.delete_all
 
-          it 'imports group epics into destination group' do
-            group = project.group
-            group.epics.delete_all
+          expect { restored_project_json }
+            .to change { Epic.count }.from(0).to(1)
+            .and change { WorkItem.with_issue_type(:epic).count }.from(0).to(1)
+            .and change { WorkItem.with_issue_type(:issue).count }.from(0).to(3)
 
-            expect { restored_project_json }.to change { Epic.count }.from(0).to(1)
+          expect(group.epics.count).to eq(1)
+          expect(group.work_items.count).to eq(1)
 
-            expect(group.epics.count).to eq(1)
-            expect(group.work_items.count).to eq(0)
-
-            group.epics.each do |epic|
-              expect(epic.work_item).to be_nil
-            end
+          group.epics.each do |epic|
+            expect(epic.work_item).to be_present
           end
         end
       end

@@ -23,7 +23,7 @@ module Epics
     def transaction_create(epic)
       return super unless epic.valid?
 
-      work_item = create_work_item_for!(epic) if epic.group.epic_sync_to_work_item_enabled?
+      work_item = create_work_item_for!(epic)
       if work_item
         epic.issue_id = work_item.id
         epic.iid = work_item.iid

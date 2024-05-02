@@ -27,22 +27,16 @@ module BulkImports
       private
 
       def create_epic(epic_object)
-        if epic_object.group.epic_sync_to_work_item_enabled?
-          # we need to handle epics slightly differently because Epics::CreateService accounts for creating the
-          # respective epic work item as well as some other associations.
-          epic = ::Epics::CreateService.new(
-            group: epic_object.group, current_user: current_user,
-            params: epic_work_item_params_from_epic(epic_object)
-          ).send(:create, epic_object) # rubocop: disable GitlabSecurity/PublicSend -- using the service to create the epic
+        # we need to handle epics slightly differently because Epics::CreateService accounts for creating the
+        # respective epic work item as well as some other associations.
+        epic = ::Epics::CreateService.new(
+          group: epic_object.group, current_user: current_user,
+          params: epic_work_item_params_from_epic(epic_object)
+        ).send(:create, epic_object) # rubocop: disable GitlabSecurity/PublicSend -- using the service to create the epic
 
-          raise(ActiveRecord::RecordInvalid, epic) if epic.invalid?
+        raise(ActiveRecord::RecordInvalid, epic) if epic.invalid?
 
-          epic
-        else
-          epic_object.save!
-
-          epic_object
-        end
+        epic
       end
 
       def handle_epic_issue(relation_object)

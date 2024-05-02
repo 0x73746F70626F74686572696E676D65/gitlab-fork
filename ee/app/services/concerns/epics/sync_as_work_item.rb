@@ -14,9 +14,10 @@ module Epics
     ].freeze
 
     def create_work_item_for!(epic)
-      return unless group.epic_sync_to_work_item_enabled?
-
       work_item = WorkItem.create!(create_params(epic))
+
+      return work_item unless group.epic_sync_to_work_item_enabled?
+
       sync_color!(work_item)
       sync_dates!(epic, work_item)
 
