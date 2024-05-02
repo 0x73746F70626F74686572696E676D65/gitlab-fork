@@ -1546,7 +1546,7 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
 
         it 'includes the value' do
           _, explanations = service.explain(content, key_result)
-          expect(explanations).to eq(['Promotes work item to objective.'])
+          expect(explanations).to eq(['Promotes item to objective.'])
         end
       end
 
