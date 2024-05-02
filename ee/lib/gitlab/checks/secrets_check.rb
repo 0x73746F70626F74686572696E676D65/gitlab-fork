@@ -41,14 +41,13 @@ module Gitlab
       DOCUMENTATION_PATH_ANCHOR = 'resolve-a-blocked-push'
 
       def validate!
-        # Return early and not perform the check if:
+        # Return early and do not perform the check:
         #   1. unless application setting is enabled (regardless of whether it's a gitlab dedicated instance or not)
-        #   2. feature flag is disabled for this project (when instance type is not gitlab dedicated)
-        #   3. license is not ultimate
-        return unless ::Gitlab::CurrentSettings.pre_receive_secret_detection_enabled
+        #   2. unless we are on GitLab.com or a Dedicated instance
+        #   3. unless feature flag is enabled for this project (when instance type is GitLab.com)
+        #   4. unless license is ultimate
 
-        return unless ::Gitlab::CurrentSettings.gitlab_dedicated_instance ||
-          ::Feature.enabled?(:pre_receive_secret_detection_push_check, project)
+        return unless run_pre_receive_secret_detection?
 
         return unless project.licensed_feature_available?(:pre_receive_secret_detection)
 
@@ -82,6 +81,26 @@ module Gitlab
       end
 
       private
+
+      # As the pre-receive feature moves to Beta,
+      # we are restricting to Dedicated and select
+      # GitLab.com projects. For progress, follow
+      # https://gitlab.com/groups/gitlab-org/-/epics/12729
+      def run_pre_receive_secret_detection?
+        Gitlab::CurrentSettings.current_application_settings.pre_receive_secret_detection_enabled &&
+          (enabled_for_gitlabcom_project? || enabled_for_dedicated_project?)
+      end
+
+      def enabled_for_gitlabcom_project?
+        ::Gitlab::Saas.feature_available?(:beta_rollout_pre_receive_secret_detection) &&
+          ::Feature.enabled?(:pre_receive_secret_detection_push_check, project) &&
+          project.security_setting.pre_receive_secret_detection_enabled
+      end
+
+      def enabled_for_dedicated_project?
+        ::Gitlab::CurrentSettings.gitlab_dedicated_instance &&
+          project.security_setting.pre_receive_secret_detection_enabled
+      end
 
       def skip_secret_detection?
         changes_access.commits.any? { |commit| commit.safe_message =~ SPECIAL_COMMIT_FLAG }

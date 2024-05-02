@@ -6,7 +6,7 @@ RSpec.describe Gitlab::Checks::SecretsCheck, feature_category: :secret_detection
   include_context 'secrets check context'
 
   describe '#validate!' do
-    context 'when application settings is disabled' do
+    context 'when application setting is disabled' do
       before do
         Gitlab::CurrentSettings.update!(pre_receive_secret_detection_enabled: false)
       end
@@ -16,9 +16,10 @@ RSpec.describe Gitlab::Checks::SecretsCheck, feature_category: :secret_detection
       end
     end
 
-    context 'when application settings is enabled' do
+    context 'when application and project settings are enabled' do
       before do
         Gitlab::CurrentSettings.update!(pre_receive_secret_detection_enabled: true)
+        project.security_setting.update!(pre_receive_secret_detection_enabled: true)
       end
 
       context 'when instance is dedicated' do
@@ -48,9 +49,11 @@ RSpec.describe Gitlab::Checks::SecretsCheck, feature_category: :secret_detection
         end
       end
 
-      context 'when instance is not dedicated' do
+      context 'when instance is GitLab.com' do
         before do
           Gitlab::CurrentSettings.update!(gitlab_dedicated_instance: false)
+          stub_saas_features(beta_rollout_pre_receive_secret_detection: true)
+          project.security_setting.update!(pre_receive_secret_detection_enabled: true)
         end
 
         context 'when license is not ultimate' do
@@ -81,6 +84,86 @@ RSpec.describe Gitlab::Checks::SecretsCheck, feature_category: :secret_detection
 
           it 'skips the check' do
             expect(secrets_check.validate!).to be_nil
+          end
+        end
+
+        context 'when project setting is disabled' do
+          before do
+            project.security_setting.update!(pre_receive_secret_detection_enabled: false)
+          end
+
+          it 'skips the check' do
+            expect(secrets_check.validate!).to be_nil
+          end
+        end
+      end
+
+      context 'when instance is not dedicated or GitLab.com' do
+        before do
+          Gitlab::CurrentSettings.update!(gitlab_dedicated_instance: false)
+          stub_saas_features(beta_rollout_pre_receive_secret_detection: false)
+          project.security_setting.update!(pre_receive_secret_detection_enabled: true)
+        end
+
+        context 'when license is not ultimate' do
+          it 'skips the check' do
+            expect(secrets_check.validate!).to be_nil
+          end
+        end
+
+        context 'when license is ultimate' do
+          before do
+            stub_licensed_features(pre_receive_secret_detection: true)
+          end
+
+          it 'skips the check' do
+            expect(secrets_check.validate!).to be_nil
+          end
+        end
+      end
+    end
+
+    context 'when application setting is enabled' do
+      before do
+        Gitlab::CurrentSettings.update!(pre_receive_secret_detection_enabled: true)
+      end
+
+      context 'when project setting is disabled' do
+        before do
+          project.security_setting.update!(pre_receive_secret_detection_enabled: false)
+        end
+
+        context 'when instance is dedicated' do
+          before do
+            Gitlab::CurrentSettings.update!(gitlab_dedicated_instance: true)
+            stub_saas_features(beta_rollout_pre_receive_secret_detection: false)
+          end
+
+          context 'when license is ultimate' do
+            before do
+              stub_licensed_features(pre_receive_secret_detection: true)
+            end
+
+            it 'skips the check' do
+              expect(secrets_check.validate!).to be_nil
+            end
+          end
+        end
+
+        context 'when instance is GitLab.com' do
+          before do
+            Gitlab::CurrentSettings.update!(gitlab_dedicated_instance: false)
+            stub_saas_features(beta_rollout_pre_receive_secret_detection: true)
+          end
+
+          context 'when license is ultimate' do
+            before do
+              stub_licensed_features(pre_receive_secret_detection: true)
+            end
+
+            it 'skips the check' do
+              expect(secrets_check.validate!).to be_nil
+            end
           end
         end
       end
