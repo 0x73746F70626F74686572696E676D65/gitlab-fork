@@ -63,6 +63,9 @@ RSpec.describe Projects::Integrations::Jira::IssuesController, feature_category:
         .to receive(:track_event)
         .with('i_ecosystem_jira_service_list_issues', values: user.id)
 
+      # allow other events to also get triggered
+      allow(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
+
       get :index, params: { namespace_id: project.namespace, project_id: project }
     end
 
