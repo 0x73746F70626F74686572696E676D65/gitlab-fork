@@ -46,11 +46,14 @@ module Gitlab
       def create_watcher!
         job(CONFIG_WATCHER)&.destroy
 
-        Sidekiq::Cron::Job.create(
-          name: CONFIG_WATCHER,
-          cron: '*/1 * * * *',
-          class: CONFIG_WATCHER_CLASS
-        )
+        # TODO: make shard-aware. See https://gitlab.com/gitlab-com/gl-infra/scalability/-/issues/3430
+        SidekiqSharding::Validator.allow_unrouted_sidekiq_calls do
+          Sidekiq::Cron::Job.create(
+            name: CONFIG_WATCHER,
+            cron: '*/1 * * * *',
+            class: CONFIG_WATCHER_CLASS
+          )
+        end
       end
 
       private
@@ -76,7 +79,9 @@ module Gitlab
       end
 
       def all_jobs(except: [])
-        Sidekiq::Cron::Job.all.reject { |job| except.include?(job.name) }
+        SidekiqSharding::Validator.allow_unrouted_sidekiq_calls do
+          Sidekiq::Cron::Job.all.reject { |job| except.include?(job.name) }
+        end
       end
 
       def jobs(names)
@@ -84,7 +89,9 @@ module Gitlab
       end
 
       def job(name)
-        Sidekiq::Cron::Job.find(name)
+        SidekiqSharding::Validator.allow_unrouted_sidekiq_calls do
+          Sidekiq::Cron::Job.find(name)
+        end
       end
     end
   end
