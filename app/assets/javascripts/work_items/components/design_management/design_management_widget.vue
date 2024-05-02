@@ -30,6 +30,9 @@ export default {
       },
       update(data) {
         const designWidget = findDesignWidget(data.workItem.widgets);
+        if (designWidget.designCollection === null) {
+          return null;
+        }
         const { copyState } = designWidget.designCollection;
         const designNodes = designWidget.designCollection.designs.nodes;
         const versionNodes = designWidget.designCollection.versions.nodes;
