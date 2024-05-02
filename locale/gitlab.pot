@@ -19818,6 +19818,9 @@ msgstr ""
 msgid "Enter a number"
 msgstr ""
 
+msgid "Enter a number from 0 to 100."
+msgstr ""
+
 msgid "Enter admin mode"
 msgstr ""
 

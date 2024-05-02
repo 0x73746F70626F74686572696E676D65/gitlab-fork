@@ -149,14 +149,17 @@ describe('WorkItemProgress component', () => {
         expect(findForm().exists()).toBe(false);
       });
 
-      it('does not call the mutation and closes the form when the progress value is not valid', async () => {
-        findInput().vm.$emit('input', '101');
-        findForm().vm.$emit('submit', new Event('submit'));
-        await nextTick();
+      it.each(['-1', '101', 'abc', '--70'])(
+        'does not call the mutation and closes the form when the progress value is not valid, e.g %s',
+        async (value) => {
+          findInput().vm.$emit('input', value);
+          findForm().vm.$emit('submit', new Event('submit'));
+          await nextTick();
 
-        expect(updateWorkItemMutationHandler).not.toHaveBeenCalled();
-        expect(findForm().exists()).toBe(false);
-      });
+          expect(updateWorkItemMutationHandler).not.toHaveBeenCalled();
+          expect(findForm().exists()).toBe(false);
+        },
+      );
 
       describe('when the progress value is valid', () => {
         it('calls the mutation with the correct variables on `Apply` button click', () => {
