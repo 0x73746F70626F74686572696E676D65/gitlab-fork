@@ -37,9 +37,9 @@ module EE
         when 'failed'
           self.drop!
         when 'canceling'
-          self.canceling!
+          self.start_cancel!
         when 'canceled'
-          self.cancel!
+          self.finish_cancel!
         when 'skipped'
           self.skip!
         when 'manual'
