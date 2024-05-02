@@ -216,7 +216,7 @@ flowchart LR
 
 For the sake of completeness we are also describing a potential future scenario where the legacy infrastructure is decommissioned and all of our users are migrated to a new cell.
 
-This is subject to change as the project evolves, as an example, the future of our staging environment will likely be affected by the development of Cells, but here we leave it in pleace to reduce the scope of this document.
+This is subject to change as the project evolves, as an example, the future of our staging environment will likely be affected by the development of Cells, but here we leave it in place to reduce the scope of this document.
 
 ```mermaid
 flowchart LR
