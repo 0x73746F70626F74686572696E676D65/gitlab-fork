@@ -35952,12 +35952,6 @@ msgstr ""
 msgid "Organization|Current organization"
 msgstr ""
 
-msgid "Organization|Frequently visited groups"
-msgstr ""
-
-msgid "Organization|Frequently visited projects"
-msgstr ""
-
 msgid "Organization|Get started with organizations"
 msgstr ""
 
@@ -36037,6 +36031,18 @@ msgid "Organization|Projects are hosted/created in groups. Before creating a pro
 msgstr ""
 
 msgid "Organization|Public - The organization can be accessed without any authentication."
+msgstr ""
+
+msgid "Organization|Recently created groups"
+msgstr ""
+
+msgid "Organization|Recently created projects"
+msgstr ""
+
+msgid "Organization|Recently updated groups"
+msgstr ""
+
+msgid "Organization|Recently updated projects"
 msgstr ""
 
 msgid "Organization|Search for an organization"
