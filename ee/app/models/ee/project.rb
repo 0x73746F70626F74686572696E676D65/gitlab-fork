@@ -291,15 +291,13 @@ module EE
             ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
               attribute_name: 'excess_repo_storage_size',
               order_expression: excess_repo_storage_size_arel.desc,
-              add_to_projections: true,
-              distinct: false
+              add_to_projections: true
             ),
             ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
               attribute_name: 'projects_id',
               order_expression: arel_table[:id].desc,
               add_to_projections: true,
-              nullable: :not_nullable,
-              distinct: true
+              nullable: :not_nullable
             )
           ])
 

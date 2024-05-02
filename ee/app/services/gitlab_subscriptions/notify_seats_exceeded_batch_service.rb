@@ -24,14 +24,12 @@ module GitlabSubscriptions
             [
               Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
                 attribute_name: 'max_seats_used_changed_at',
-                order_expression: GitlabSubscription.arel_table[:max_seats_used_changed_at].asc,
-                distinct: false
+                order_expression: GitlabSubscription.arel_table[:max_seats_used_changed_at].asc
               ),
               Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
                 attribute_name: 'namespace_id',
                 order_expression: GitlabSubscription.arel_table[:namespace_id].asc,
-                nullable: :not_nullable,
-                distinct: true
+                nullable: :not_nullable
               )
             ])
 

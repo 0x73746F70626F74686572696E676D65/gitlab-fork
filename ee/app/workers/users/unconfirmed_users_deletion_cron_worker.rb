@@ -25,8 +25,7 @@ module Users
           Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
             attribute_name: 'created_at',
             order_expression: User.arel_table[:created_at].desc,
-            nullable: :not_nullable,
-            distinct: false
+            nullable: :not_nullable
           ),
           Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
             attribute_name: 'id',

@@ -19,7 +19,6 @@ class Analytics::DevopsAdoption::EnabledNamespace < ApplicationRecord
         ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
           attribute_name: 'namespaces_name',
           order_expression: Namespace.arel_table[:name].asc,
-          distinct: false,
           add_to_projections: true
         ),
         ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
