@@ -1,5 +1,13 @@
 <script>
-import { GlForm, GlFormInput, GlIcon, GlPopover, GlButton, GlLoadingIcon } from '@gitlab/ui';
+import {
+  GlForm,
+  GlFormInput,
+  GlFormGroup,
+  GlIcon,
+  GlPopover,
+  GlButton,
+  GlLoadingIcon,
+} from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { __ } from '~/locale';
@@ -19,6 +27,7 @@ export default {
   components: {
     GlForm,
     GlFormInput,
+    GlFormGroup,
     GlIcon,
     GlPopover,
     GlButton,
@@ -31,6 +40,7 @@ export default {
       'This field is auto-calculated based on the progress score of its direct children. You can overwrite this value but it will be replaced by the auto-calculation anytime the progress score of its direct children are updated.',
     ),
     progressTitle: __('Progress'),
+    invalidMessage: __('Enter a number from 0 to 100.'),
   },
   props: {
     canUpdate: {
@@ -75,6 +85,15 @@ export default {
         this.glFeatures.okrAutomaticRollups && this.workItemType === WORK_ITEM_TYPE_VALUE_OBJECTIVE
       );
     },
+    isValidProgress() {
+      if (this.localProgress === '') {
+        return false;
+      }
+
+      const valueAsNumber = Number(this.localProgress);
+
+      return this.checkValidProgress(valueAsNumber);
+    },
   },
   watch: {
     progress(newValue) {
@@ -82,7 +101,7 @@ export default {
     },
   },
   methods: {
-    isValidProgress(progress) {
+    checkValidProgress(progress) {
       return (
         Number.isInteger(progress) &&
         progress >= this.$options.minValue &&
@@ -91,9 +110,15 @@ export default {
     },
     updateProgress() {
       if (!this.canUpdate) return;
+
+      if (this.localProgress === '') {
+        this.cancelEditing();
+        return;
+      }
+
       const valueAsNumber = Number(this.localProgress);
 
-      if (valueAsNumber === this.progress || !this.isValidProgress(valueAsNumber)) {
+      if (valueAsNumber === this.progress || !this.checkValidProgress(valueAsNumber)) {
         this.cancelEditing();
         return;
       }
@@ -188,21 +213,24 @@ export default {
           {{ __('Apply') }}
         </gl-button>
       </div>
-      <gl-form-input
-        id="progress-widget-input"
-        ref="input"
-        v-model="localProgress"
-        autofocus
-        :min="$options.minValue"
-        :max="$options.maxValue"
-        data-testid="work-item-progress-input"
-        class="gl-hover-border-gray-200! gl-border-solid! hide-unfocused-input-decoration work-item-field-value gl-max-w-full!"
-        :placeholder="placeholder"
-        width="sm"
-        type="number"
-        @blur="updateProgress"
-        @keyup.escape="cancelEditing"
-      />
+      <gl-form-group :invalid-feedback="$options.i18n.invalidMessage">
+        <gl-form-input
+          id="progress-widget-input"
+          ref="input"
+          v-model="localProgress"
+          autofocus
+          :min="$options.minValue"
+          :max="$options.maxValue"
+          data-testid="work-item-progress-input"
+          class="gl-hover-border-gray-200! gl-border-solid! hide-unfocused-input-decoration work-item-field-value gl-max-w-full!"
+          :placeholder="placeholder"
+          :state="isValidProgress"
+          width="sm"
+          type="number"
+          @blur="updateProgress"
+          @keyup.escape="cancelEditing"
+        />
+      </gl-form-group>
     </gl-form>
     <span v-else class="gl-my-3" data-testid="progress-displayed-value">
       {{ localProgress }}%
