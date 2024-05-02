@@ -243,7 +243,7 @@ export default {
 <template>
   <div
     ref="scrollableContainer"
-    class="board-swimlanes gl-white-space-nowrap gl-pb-5 gl-px-3 gl-display-flex gl-flex-grow-1"
+    class="board-swimlanes gl-white-space-nowrap gl-pb-5 xl:gl-pl-3 gl-pr-5 xl:gl-pr-6 gl-display-flex gl-flex-grow-1"
     data-testid="board-swimlanes"
   >
     <swimlanes-loading-skeleton v-if="isLoading" />
