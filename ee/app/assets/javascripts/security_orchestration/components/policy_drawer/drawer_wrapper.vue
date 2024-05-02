@@ -16,12 +16,14 @@ import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { removeUnnecessaryDashes } from '../../utils';
 import { POLICIES_LIST_CONTAINER_CLASS, POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import { isPolicyInherited, policyHasNamespace } from '../utils';
+import PipelineExecutionDrawer from './pipeline_execution/details_drawer.vue';
 import ScanExecutionDrawer from './scan_execution/details_drawer.vue';
 import ScanResultDrawer from './scan_result/details_drawer.vue';
 
 const policyComponent = {
   [POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value]: ScanExecutionDrawer,
   [POLICY_TYPE_COMPONENT_OPTIONS.approval.value]: ScanResultDrawer,
+  [POLICY_TYPE_COMPONENT_OPTIONS.pipelineExecution.value]: PipelineExecutionDrawer,
 };
 
 export default {
@@ -35,6 +37,7 @@ export default {
     GlTooltip,
     GlTruncate,
     YamlEditor: () => import(/* webpackChunkName: 'policy_yaml_editor' */ '../yaml_editor.vue'),
+    PipelineExecutionDrawer,
     ScanExecutionDrawer,
     ScanResultDrawer,
   },

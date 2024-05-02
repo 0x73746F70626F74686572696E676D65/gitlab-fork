@@ -1,4 +1,5 @@
 import { s__ } from '~/locale';
+import { PIPELINE_EXECUTION_POLICY_TYPE_HEADER } from 'ee/security_orchestration/components/constants';
 
 export const POLICY_SOURCE_OPTIONS = {
   ALL: {
@@ -33,7 +34,7 @@ export const POLICY_TYPE_FILTER_OPTIONS = {
 export const PIPELINE_EXECUTION_FILTER_OPTION = {
   PIPELINE_EXECUTION: {
     value: 'PIPELINE_EXECUTION',
-    text: s__('SecurityOrchestration|Pipeline execution'),
+    text: PIPELINE_EXECUTION_POLICY_TYPE_HEADER,
   },
 };
 

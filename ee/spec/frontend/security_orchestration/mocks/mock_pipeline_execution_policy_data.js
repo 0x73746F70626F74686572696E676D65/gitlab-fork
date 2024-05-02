@@ -4,15 +4,11 @@ export const mockPipelineExecutionManifest = `type: pipeline_execution_policy
 name: Include external file
 description: This policy enforces pipeline execution with configuration from external file
 enabled: false
-rules: []
-actions:
-  - scan: custom
-    ci_configuration: |
-      include:
-        project: gitlab-policies/js6
-        id: 1
-        ref: main
-        file: test_path
+content:
+   include:
+     project: gitlab-policies/js6
+     ref: main
+     file: test_path
 `;
 
 export const mockPipelineScanExecutionObject = {
@@ -23,14 +19,7 @@ export const mockPipelineScanExecutionObject = {
   rules: [],
   actions: [
     {
-      scan: 'custom',
-      ci_configuration: {
-        include: {
-          id: 1,
-          ref: 'main',
-          file: 'test_path',
-        },
-      },
+      content: 'include:\n project: gitlab-policies/js9 id: 27 ref: main file: README.md',
     },
   ],
 };
@@ -64,7 +53,6 @@ export const mockGroupPipelineExecutionPolicy = {
     inherited: true,
     namespace: {
       __typename: 'Namespace',
-      id: '1',
       fullPath: 'parent-group-path',
       name: 'parent-group-name',
     },
