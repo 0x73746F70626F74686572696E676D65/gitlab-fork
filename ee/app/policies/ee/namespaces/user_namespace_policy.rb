@@ -15,6 +15,7 @@ module EE
 
         rule { owner | admin }.policy do
           enable :read_billable_member
+          enable :admin_ci_minutes
         end
 
         rule { can?(:owner_access) & compliance_framework_available }.enable :admin_compliance_framework
