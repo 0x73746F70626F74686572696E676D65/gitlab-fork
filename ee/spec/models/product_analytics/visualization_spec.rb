@@ -182,7 +182,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
       subject { described_class.load_visualization_data("not-existing-file") }
 
       it 'initializes visualization with errors' do
-        expect(subject.slug).to eq('not_existing_file')
+        expect(subject.slug).to eq('not-existing-file')
         expect(subject.errors).to match_array(["Visualization file not-existing-file.yaml not found"])
       end
     end
@@ -278,6 +278,25 @@ other: okay1111
 
     it 'captures the init_error' do
       expect(subject.errors).to match_array(['Some init error'])
+    end
+  end
+
+  describe 'handling slugs correctly' do
+    subject do
+      described_class.new(config: nil, slug: slug,
+        init_error: "Some init error").slug
+    end
+
+    context 'when slug contains a hyphen' do
+      let(:slug) { 'hello-world' }
+
+      it { is_expected.to eq 'hello-world' }
+    end
+
+    context 'when slug contains a underscore' do
+      let(:slug) { 'hello_world' }
+
+      it { is_expected.to eq 'hello_world' }
     end
   end
 end

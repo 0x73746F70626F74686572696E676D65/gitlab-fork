@@ -104,7 +104,7 @@ module ProductAnalytics
       @type = 'unknown'
       @data = {}
       @errors = [init_error]
-      @slug = slug&.parameterize&.underscore
+      @slug = slug&.parameterize
     end
 
     def initialize(config:, slug:, init_error: nil)
@@ -121,7 +121,7 @@ module ProductAnalytics
       rescue Psych::Exception => e
         @errors = [e.message]
       end
-      @slug = slug&.parameterize&.underscore
+      @slug = slug&.parameterize
       @errors = schema_errors_for(@config)
     end
 
