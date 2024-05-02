@@ -1,6 +1,6 @@
 ---
 key_path: counts.users_with_analytics_dashboard_created_monthly
-description: "Counts number of users who have created a dashboard this month"
+description: Counts number of users who have created a dashboard this month. Originally wrong time-frame. Fixed in 17.0
 product_section: analytics
 product_stage: analytics
 product_group: product_analytics
@@ -8,7 +8,7 @@ value_type: number
 status: active
 milestone: "16.0"
 introduced_by_url:
-time_frame: 7d
+time_frame: 28d
 data_source: redis_hll
 data_category: optional
 instrumentation_class: RedisHLLMetric
