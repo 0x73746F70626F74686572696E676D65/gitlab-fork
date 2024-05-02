@@ -6,7 +6,15 @@ RSpec.describe Namespaces::UserNamespacePolicy do
   let(:owner) { build_stubbed(:user) }
   let(:namespace) { build_stubbed(:namespace, owner: owner) }
   let(:admin) { build_stubbed(:admin) }
-  let(:owner_permissions) { [:create_projects, :admin_namespace, :read_namespace, :read_billable_member] }
+  let(:owner_permissions) do
+    [
+      :create_projects,
+      :admin_namespace,
+      :read_namespace,
+      :read_billable_member,
+      :admin_ci_minutes
+    ]
+  end
 
   subject { described_class.new(current_user, namespace) }
 
