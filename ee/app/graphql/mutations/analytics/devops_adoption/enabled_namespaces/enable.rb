@@ -11,17 +11,17 @@ module Mutations
           include Mixins::CommonMethods
 
           argument :namespace_id, ::Types::GlobalIDType[::Namespace],
-                   required: true,
-                   description: 'Namespace ID.'
+            required: true,
+            description: 'Namespace ID.'
 
           argument :display_namespace_id, ::Types::GlobalIDType[::Namespace],
-                   required: false,
-                   description: 'Display namespace ID.'
+            required: false,
+            description: 'Display namespace ID.'
 
           field :enabled_namespace,
-                Types::Analytics::DevopsAdoption::EnabledNamespaceType,
-                null: true,
-                description: 'Enabled namespace after mutation.'
+            Types::Analytics::DevopsAdoption::EnabledNamespaceType,
+            null: true,
+            description: 'Enabled namespace after mutation.'
 
           def resolve(namespace_id:, display_namespace_id: nil, **)
             namespace = Gitlab::Graphql::Lazy.force(GitlabSchema.find_by_gid(namespace_id))

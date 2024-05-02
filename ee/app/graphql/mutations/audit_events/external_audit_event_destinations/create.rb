@@ -9,31 +9,31 @@ module Mutations
         authorize :admin_external_audit_events
 
         argument :destination_url, GraphQL::Types::String,
-                 required: true,
-                 description: 'Destination URL.'
+          required: true,
+          description: 'Destination URL.'
 
         argument :name, GraphQL::Types::String,
-                 required: false,
-                 description: 'Destination name.'
+          required: false,
+          description: 'Destination name.'
 
         argument :group_path, GraphQL::Types::ID,
-                 required: true,
-                 description: 'Group path.'
+          required: true,
+          description: 'Group path.'
 
         argument :verification_token, GraphQL::Types::String,
-                 required: false,
-                 description: 'Verification token.'
+          required: false,
+          description: 'Verification token.'
 
         field :external_audit_event_destination, ::Types::AuditEvents::ExternalAuditEventDestinationType,
-              null: true,
-              description: 'Destination created.'
+          null: true,
+          description: 'Destination created.'
 
         def resolve(destination_url:, group_path:, verification_token: nil, name: nil)
           group = authorized_find!(group_path)
           destination = ::AuditEvents::ExternalAuditEventDestination.new(group: group,
-                                                                         destination_url: destination_url,
-                                                                         verification_token: verification_token,
-                                                                         name: name)
+            destination_url: destination_url,
+            verification_token: verification_token,
+            name: name)
 
           audit(destination, action: :create) if destination.save
 

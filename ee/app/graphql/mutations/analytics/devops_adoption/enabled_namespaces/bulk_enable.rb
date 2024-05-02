@@ -11,17 +11,17 @@ module Mutations
           include Mixins::CommonMethods
 
           argument :namespace_ids, [::Types::GlobalIDType[::Namespace]],
-                   required: true,
-                   description: 'List of Namespace IDs.'
+            required: true,
+            description: 'List of Namespace IDs.'
 
           argument :display_namespace_id, ::Types::GlobalIDType[::Namespace],
-                   required: false,
-                   description: 'Display namespace ID.'
+            required: false,
+            description: 'Display namespace ID.'
 
           field :enabled_namespaces,
-                [::Types::Analytics::DevopsAdoption::EnabledNamespaceType],
-                null: true,
-                description: 'Enabled namespaces after mutation.'
+            [::Types::Analytics::DevopsAdoption::EnabledNamespaceType],
+            null: true,
+            description: 'Enabled namespaces after mutation.'
 
           def resolve(namespace_ids:, display_namespace_id: nil, **)
             namespaces = GlobalID::Locator.locate_many(namespace_ids)

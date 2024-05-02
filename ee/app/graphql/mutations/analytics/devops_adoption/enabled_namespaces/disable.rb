@@ -11,8 +11,8 @@ module Mutations
           include Mixins::CommonMethods
 
           argument :id, [::Types::GlobalIDType[::Analytics::DevopsAdoption::EnabledNamespace]],
-                   required: true,
-                   description: 'One or many IDs of the enabled namespaces to disable.'
+            required: true,
+            description: 'One or many IDs of the enabled namespaces to disable.'
 
           def resolve(id:, **)
             enabled_namespaces = GlobalID::Locator.locate_many(id)

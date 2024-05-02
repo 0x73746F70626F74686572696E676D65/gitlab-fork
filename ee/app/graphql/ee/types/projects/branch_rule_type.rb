@@ -8,15 +8,15 @@ module EE
 
         prepended do
           field :approval_rules,
-                type: ::Types::BranchRules::ApprovalProjectRuleType.connection_type,
-                method: :approval_project_rules,
-                null: true,
-                description: 'Merge request approval rules configured for this branch rule.'
+            type: ::Types::BranchRules::ApprovalProjectRuleType.connection_type,
+            method: :approval_project_rules,
+            null: true,
+            description: 'Merge request approval rules configured for this branch rule.'
 
           field :external_status_checks,
-                type: ::Types::BranchRules::ExternalStatusCheckType.connection_type,
-                null: true,
-                description: 'External status checks configured for this branch rule.'
+            type: ::Types::BranchRules::ExternalStatusCheckType.connection_type,
+            null: true,
+            description: 'External status checks configured for this branch rule.'
         end
       end
     end

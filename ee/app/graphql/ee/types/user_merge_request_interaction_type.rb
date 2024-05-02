@@ -7,9 +7,9 @@ module EE
 
       prepended do
         field :applicable_approval_rules,
-              [::Types::ApprovalRuleType],
-              null: true,
-              description: 'Approval rules that apply to this user for this merge request.'
+          [::Types::ApprovalRuleType],
+          null: true,
+          description: 'Approval rules that apply to this user for this merge request.'
       end
     end
   end

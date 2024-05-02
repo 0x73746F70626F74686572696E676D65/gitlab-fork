@@ -11,12 +11,12 @@ module Mutations
         authorize :create_coverage_fuzzing_corpus
 
         argument :package_id, Types::GlobalIDType[::Packages::Package],
-              required: true,
-              description: 'ID of the corpus package.'
+          required: true,
+          description: 'ID of the corpus package.'
 
         argument :full_path, GraphQL::Types::ID,
-                 required: true,
-                 description: 'Project the corpus belongs to.'
+          required: true,
+          description: 'Project the corpus belongs to.'
 
         def resolve(full_path:, package_id:)
           project = authorized_find!(full_path)

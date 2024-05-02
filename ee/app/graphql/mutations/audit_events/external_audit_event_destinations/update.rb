@@ -13,20 +13,20 @@ module Mutations
         authorize :admin_external_audit_events
 
         argument :id, ::Types::GlobalIDType[::AuditEvents::ExternalAuditEventDestination],
-                 required: true,
-                 description: 'ID of external audit event destination to update.'
+          required: true,
+          description: 'ID of external audit event destination to update.'
 
         argument :destination_url, GraphQL::Types::String,
-                 required: false,
-                 description: 'Destination URL to change.'
+          required: false,
+          description: 'Destination URL to change.'
 
         argument :name, GraphQL::Types::String,
-                 required: false,
-                 description: 'Destination name.'
+          required: false,
+          description: 'Destination name.'
 
         field :external_audit_event_destination, ::Types::AuditEvents::ExternalAuditEventDestinationType,
-              null: true,
-              description: 'Updated destination.'
+          null: true,
+          description: 'Updated destination.'
 
         def resolve(id:, destination_url: nil, name: nil)
           destination = authorized_find!(id)
