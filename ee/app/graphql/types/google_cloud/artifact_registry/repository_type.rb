@@ -10,7 +10,7 @@ module Types
         include Gitlab::Graphql::Authorize::AuthorizeResource
 
         GOOGLE_ARTIFACT_MANAGEMENT_INTEGRATION_ERROR =
-          "#{Integrations::GoogleCloudPlatform::ArtifactRegistry.title} integration does not exist or inactive".freeze
+          "#{::Integrations::GoogleCloudPlatform::ArtifactRegistry.title} integration does not exist or inactive".freeze
 
         authorize :read_google_cloud_artifact_registry
 
