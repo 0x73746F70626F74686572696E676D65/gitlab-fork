@@ -21322,10 +21322,6 @@ four standard [pagination arguments](#pagination-arguments):
 
 Visualizations of the group or associated configuration project.
 
-DETAILS:
-**Introduced** in GitLab 16.4.
-**Status**: Experiment.
-
 Returns [`CustomizableDashboardVisualizationConnection`](#customizabledashboardvisualizationconnection).
 
 This field returns a [connection](#connections). It accepts the
@@ -21341,10 +21337,6 @@ four standard [pagination arguments](#pagination-arguments):
 ##### `Group.customizableDashboards`
 
 Customizable dashboards for the group.
-
-DETAILS:
-**Introduced** in GitLab 16.4.
-**Status**: Experiment.
 
 Returns [`CustomizableDashboardConnection`](#customizabledashboardconnection).
 
