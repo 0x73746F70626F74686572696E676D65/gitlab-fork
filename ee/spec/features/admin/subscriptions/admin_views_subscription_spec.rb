@@ -147,15 +147,13 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
         end
       end
 
-      it 'shows the activation modal',
-        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/391275' do
+      it 'shows the activation modal' do
         within_modal do
           expect(page).to have_content('Activate subscription')
         end
       end
 
-      it 'displays an error when the activation fails',
-        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/390580' do
+      it 'displays an error when the activation fails' do
         stub_request(:post, graphql_url).to_return(status: 422, body: '', headers: {})
 
         within_modal do
@@ -165,7 +163,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
         end
       end
 
-      it 'displays a connectivity error', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/391244' do
+      it 'displays a connectivity error' do
         stub_request(:post, graphql_url)
           .to_return(status: 500, body: '', headers: {})
 
