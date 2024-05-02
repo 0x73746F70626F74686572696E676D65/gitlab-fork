@@ -387,25 +387,12 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
         context 'for synced work items' do
           subject { described_class.new(container: issue.project, current_user: user).execute(issue) }
 
-          context 'when feature flag is enabled' do
-            before do
-              stub_feature_flags(sync_epic_to_work_item: group)
-            end
-
-            it_behaves_like 'syncs all data from an epic to a work item' do
-              let(:epic) { Epic.last }
-            end
+          it_behaves_like 'syncs all data from an epic to a work item' do
+            let(:epic) { Epic.last }
           end
 
-          context 'when feature flag is disabled' do
-            before do
-              stub_feature_flags(sync_epic_to_work_item: false)
-            end
-
-            it 'does not create a synced work item for the epic' do
-              expect { subject }.to not_change { WorkItem.count }
-              expect(epic.reload.work_item).to be_nil
-            end
+          it 'creates a work item' do
+            expect { subject }.to change { issue.project.group.work_items.count }.by(1)
           end
         end
       end

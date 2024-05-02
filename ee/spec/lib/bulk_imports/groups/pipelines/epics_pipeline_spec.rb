@@ -41,23 +41,6 @@ RSpec.describe BulkImports::Groups::Pipelines::EpicsPipeline, feature_category: 
       allow(subject).to receive(:set_source_objects_counter)
     end
 
-    context 'when sync_epic_to_work_item disabled' do
-      before do
-        stub_feature_flags(sync_epic_to_work_item: false)
-
-        subject.run
-      end
-
-      it 'imports group epics into destination group' do
-        expect(group.epics.count).to eq(6)
-        expect(group.work_items.count).to eq(0)
-
-        group.epics.each do |epic|
-          expect(epic.work_item).to be_nil
-        end
-      end
-    end
-
     context 'when epic work item is created along epic object' do
       before do
         subject.run

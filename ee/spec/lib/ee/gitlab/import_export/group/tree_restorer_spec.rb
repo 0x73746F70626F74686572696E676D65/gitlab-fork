@@ -17,23 +17,6 @@ RSpec.describe Gitlab::ImportExport::Group::TreeRestorer, feature_category: :imp
     group.add_owner(user)
   end
 
-  context 'when sync_epic_to_work_item disabled' do
-    before do
-      stub_feature_flags(sync_epic_to_work_item: false)
-
-      group_tree_restorer.restore
-    end
-
-    it 'imports group epics into destination group' do
-      expect(group.epics.count).to eq(3)
-      expect(group.work_items.count).to eq(0)
-
-      group.epics.each do |epic|
-        expect(epic.work_item).to be_nil
-      end
-    end
-  end
-
   describe 'restore group tree' do
     before do
       group_tree_restorer.restore

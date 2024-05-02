@@ -94,25 +94,6 @@ RSpec.describe BulkImports::Projects::Pipelines::IssuesPipeline, feature_categor
           expect(diff.attributes).to be_empty
         end
       end
-
-      context 'when sync_epic_to_work_item disabled' do
-        before do
-          stub_feature_flags(sync_epic_to_work_item: false)
-        end
-
-        it 'imports group epics into destination group' do
-          group.epics.delete_all
-
-          expect { pipeline.run }.to change { Epic.count }.from(0).to(1)
-
-          expect(group.epics.count).to eq(1)
-          expect(group.work_items.count).to eq(0)
-
-          group.epics.each do |epic|
-            expect(epic.work_item).to be_nil
-          end
-        end
-      end
     end
   end
 end

@@ -173,16 +173,6 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
           expect { subject }.to not_change { Epic.count }.and(not_change { WorkItem.count })
         end
       end
-
-      context 'when sync_epic_to_work_item feature flag is disabled' do
-        before do
-          stub_feature_flags(sync_epic_to_work_item: false)
-        end
-
-        it 'does not create epic work item' do
-          expect { subject }.to change { Epic.count }.by(1).and(not_change { WorkItem.count })
-        end
-      end
     end
 
     context 'handling parent change' do
