@@ -43,29 +43,56 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
   end
 
   describe '#reallocation' do
+    let(:logger) { instance_double(::Search::Zoekt::Logger) }
     let(:task) { :reallocation }
+
+    before do
+      allow(Search::Zoekt::Logger).to receive(:build).and_return(logger)
+    end
 
     it 'returns false unless saas' do
       expect(execute_task).to eq(false)
     end
 
     context 'when on .com', :saas do
-      let_it_be(:namespace) { create(:group) }
-      let_it_be(:namespace_statistics) { create(:namespace_root_storage_statistics, repository_size: 1000) }
-      let_it_be(:namespace_with_statistics) { create(:group, root_storage_statistics: namespace_statistics) }
       let_it_be(:zoekt_index) { create(:zoekt_index) }
 
       context 'when nodes have enough storage' do
         it 'returns false' do
+          expect(logger).not_to receive(:info)
           expect { execute_task }.not_to change { Search::Zoekt::Index.count }.from(1)
         end
       end
 
       context 'when nodes are over the watermark high limit' do
         let_it_be(:node_out_of_storage) { create(:zoekt_node, :not_enough_free_space) }
-        let_it_be(:zoekt_index2) { create(:zoekt_index, node: node_out_of_storage) }
+        let_it_be(:namespace_statistics) { create(:namespace_root_storage_statistics, repository_size: 1000) }
+        let_it_be(:ns) { create(:group, root_storage_statistics: namespace_statistics) }
+        let_it_be(:enabled_ns) { create(:zoekt_enabled_namespace, namespace: ns) }
+        let_it_be(:zoekt_index2) do
+          create(:zoekt_index, node: node_out_of_storage, zoekt_enabled_namespace: enabled_ns)
+        end
 
-        it 'removes extra indices' do
+        it 'removes extra indices and logs' do
+          expect(logger).to receive(:info).with({ 'class' => described_class.to_s, 'task' => task,
+            'message' => 'Detected nodes over watermark',
+            'watermark_limit_high' => described_class::WATERMARK_LIMIT_HIGH,
+            'count' => 1 }
+          )
+
+          expect(logger).to receive(:info).with({ 'class' => described_class.to_s, 'task' => task,
+            'message' => 'Unassigning namespaces from node',
+            'watermark_limit_high' => described_class::WATERMARK_LIMIT_HIGH,
+            'count' => 1,
+            'node_used_bytes' => 90000000,
+            'node_expected_used_bytes' => 89999000,
+            'total_repository_size' => 1000,
+            'meta' => {
+              "zoekt.node_name" => node_out_of_storage.metadata['name'],
+              "zoekt.node_id" => node_out_of_storage.id
+            } }
+          )
+
           expect { execute_task }.to change { Search::Zoekt::Index.count }.from(2).to(1)
           expect(zoekt_index2.zoekt_enabled_namespace.reload.search).to eq(false)
         end
@@ -283,9 +310,9 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
           expect(logger).to receive(:error).with({ 'class' => described_class.to_s, 'task' => task,
                                                           'message' => 'Space is not available in Node',
                                                           'zoekt_enabled_namespace_id' => zkt_enabled_namespace2.id,
-                                                          'metadata' => {
-                                                            "meta.zoekt.node_name" => node.metadata['name'],
-                                                            "meta.zoekt.node_id" => node.id
+                                                          'meta' => {
+                                                            "zoekt.node_name" => node.metadata['name'],
+                                                            "zoekt.node_id" => node.id
                                                           } }
           )
           expect { execute_task }.not_to change { Search::Zoekt::Index.count }
@@ -313,9 +340,9 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
             expect(logger).to receive(:error).with({ 'class' => described_class.to_s, 'task' => task,
                                                     'message' => 'Space is not available in Node',
                                                     'zoekt_enabled_namespace_id' => zkt_enabled_namespace2.id,
-                                                    'metadata' => {
-                                                      "meta.zoekt.node_name" => node.metadata['name'],
-                                                      "meta.zoekt.node_id" => node.id
+                                                    'meta' => {
+                                                      "zoekt.node_name" => node.metadata['name'],
+                                                      "zoekt.node_id" => node.id
                                                     } }
             )
             expect { execute_task }.not_to change { Search::Zoekt::Index.count }
