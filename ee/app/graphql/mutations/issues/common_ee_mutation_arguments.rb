@@ -7,13 +7,13 @@ module Mutations
 
       included do
         argument :health_status,
-                 ::Types::HealthStatusEnum,
-                 required: false,
-                 description: 'Desired health status.'
+          ::Types::HealthStatusEnum,
+          required: false,
+          description: 'Desired health status.'
 
         argument :weight, GraphQL::Types::Int,
-                 required: false,
-                 description: 'Weight of the issue.'
+          required: false,
+          description: 'Weight of the issue.'
       end
     end
   end

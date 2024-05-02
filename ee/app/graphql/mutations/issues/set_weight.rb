@@ -6,10 +6,10 @@ module Mutations
       graphql_name 'IssueSetWeight'
 
       argument :weight,
-               GraphQL::Types::Int,
-               required: :nullable,
-               description: 'The desired weight for the issue. ' \
-               'If set to null, weight is removed.'
+        GraphQL::Types::Int,
+        required: :nullable,
+        description: 'The desired weight for the issue. ' \
+        'If set to null, weight is removed.'
 
       def resolve(project_path:, iid:, weight:)
         issue = authorized_find!(project_path: project_path, iid: iid)

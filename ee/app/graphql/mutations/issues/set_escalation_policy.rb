@@ -6,11 +6,11 @@ module Mutations
       graphql_name 'IssueSetEscalationPolicy'
 
       argument :escalation_policy_id,
-               ::Types::GlobalIDType[::IncidentManagement::EscalationPolicy],
-               required: false,
-               loads: Types::IncidentManagement::EscalationPolicyType,
-               description: 'Global ID of the escalation policy to assign to the issue. ' \
-               'Policy will be removed if absent or set to null.'
+        ::Types::GlobalIDType[::IncidentManagement::EscalationPolicy],
+        required: false,
+        loads: Types::IncidentManagement::EscalationPolicyType,
+        description: 'Global ID of the escalation policy to assign to the issue. ' \
+        'Policy will be removed if absent or set to null.'
 
       def resolve(project_path:, iid:, escalation_policy:)
         issue = authorized_find!(project_path: project_path, iid: iid)

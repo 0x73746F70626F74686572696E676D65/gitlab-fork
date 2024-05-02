@@ -6,12 +6,12 @@ module Mutations
       graphql_name 'IssueSetIteration'
 
       argument :iteration_id,
-               ::Types::GlobalIDType[::Iteration],
-               required: false,
-               loads: Types::IterationType,
-               description: <<~DESC
+        ::Types::GlobalIDType[::Iteration],
+        required: false,
+        loads: Types::IterationType,
+        description: <<~DESC
                  Iteration to assign to the issue.
-               DESC
+        DESC
 
       def resolve(project_path:, iid:, iteration: nil)
         issue = authorized_find!(project_path: project_path, iid: iid)

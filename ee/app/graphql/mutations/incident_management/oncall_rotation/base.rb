@@ -8,9 +8,9 @@ module Mutations
         TIME_FORMAT = /^(0\d|1\d|2[0-3]):[0-5]\d$/
 
         field :oncall_rotation,
-              ::Types::IncidentManagement::OncallRotationType,
-              null: true,
-              description: 'On-call rotation.'
+          ::Types::IncidentManagement::OncallRotationType,
+          null: true,
+          description: 'On-call rotation.'
 
         authorize :admin_incident_management_oncall_schedule
 

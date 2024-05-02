@@ -8,12 +8,12 @@ module Mutations
       authorize :add_project_to_instance_security_dashboard
 
       field :project, Types::ProjectType,
-            null: true,
-            description: 'Project that was added to the Instance Security Dashboard.'
+        null: true,
+        description: 'Project that was added to the Instance Security Dashboard.'
 
       argument :id, ::Types::GlobalIDType[::Project],
-               required: true,
-               description: 'ID of the project to be added to Instance Security Dashboard.'
+        required: true,
+        description: 'ID of the project to be added to Instance Security Dashboard.'
 
       def resolve(id:)
         project = authorized_find!(id: id)
