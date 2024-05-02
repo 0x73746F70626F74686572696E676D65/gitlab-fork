@@ -73,7 +73,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicReader::Executor, feature_category
 
       let(:tool) { described_class.new(context: context, options: input_variables) }
       let(:input_variables) do
-        { input: "user input", suggestions: "Action: EpicIdentifier\nActionInput: #{epic1.iid}" }
+        { input: "user input", suggestions: "Action: EpicReader\nActionInput: #{epic1.iid}" }
       end
 
       context 'when user does not have permission to read resource' do

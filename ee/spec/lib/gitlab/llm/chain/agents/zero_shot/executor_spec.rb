@@ -11,8 +11,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   let(:input) { 'foo' }
   let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
   let(:tool_answer) { instance_double(Gitlab::Llm::Chain::Answer, is_final?: false, content: 'Bar', status: :ok) }
-  let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor) }
-  let(:tools) { [Gitlab::Llm::Chain::Tools::IssueIdentifier] }
+  let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::IssueReader::Executor) }
+  let(:tools) { [Gitlab::Llm::Chain::Tools::IssueReader] }
   let(:extra_resource) { {} }
   let(:response_double) { "I know the final answer\nFinal Answer: Hello World" }
   let(:resource) { user }
@@ -52,9 +52,9 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
       allow(tool_double).to receive(:execute).and_return(tool_answer)
       allow_next_instance_of(Gitlab::Llm::Chain::Answer) do |answer|
-        allow(answer).to receive(:tool).and_return(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor)
+        allow(answer).to receive(:tool).and_return(Gitlab::Llm::Chain::Tools::IssueReader::Executor)
       end
-      allow(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor)
+      allow(Gitlab::Llm::Chain::Tools::IssueReader::Executor)
         .to receive(:new)
               .with(context: context, options: anything, stream_response_handler: stream_response_service_double)
               .and_return(tool_double)
@@ -74,7 +74,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         # just limiting the number of iterations here from 10 to 2
         stub_const("#{described_class.name}::MAX_ITERATIONS", 2)
         allow(agent).to receive(:logger).at_least(:once).and_return(logger)
-        allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+        allow(agent).to receive(:request).and_return("Action: IssueReader\nAction Input: #3")
       end
 
       it 'executes associated tools and adds observations during the execution' do
@@ -89,7 +89,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       it 'returns' do
         stub_const("#{described_class.name}::MAX_ITERATIONS", 2)
 
-        allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+        allow(agent).to receive(:request).and_return("Action: IssueReader\nAction Input: #3")
         expect(agent).to receive(:request).twice.times
         expect(response_service_double).to receive(:execute).at_least(:once)
 
@@ -149,7 +149,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         tool_double = double
 
         allow(Gitlab::Llm::Chain::ToolResponseModifier).to receive(:new)
-          .with(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor)
+          .with(Gitlab::Llm::Chain::Tools::IssueReader::Executor)
           .and_return(tool_double)
 
         expect(response_service_double).to receive(:execute).at_least(:once)
@@ -158,7 +158,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
           options: { role: ::Gitlab::Llm::ChatMessage::ROLE_SYSTEM, type: 'tool' }
         )
 
-        allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+        allow(agent).to receive(:request).and_return("Action: IssueReader\nAction Input: #3")
 
         agent.execute
       end
@@ -168,8 +168,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   describe '#prompt' do
     let(:tools) do
       [
-        Gitlab::Llm::Chain::Tools::IssueIdentifier,
-        Gitlab::Llm::Chain::Tools::EpicIdentifier
+        Gitlab::Llm::Chain::Tools::IssueReader,
+        Gitlab::Llm::Chain::Tools::EpicReader
       ]
     end
 
@@ -450,12 +450,12 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
 
       context 'when tool times out out' do
         it 'returns an error' do
-          allow(ai_request_double).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
+          allow(ai_request_double).to receive(:request).and_return("Action: IssueReader\nAction Input: #3")
           allow_next_instance_of(Gitlab::Llm::Chain::Answer) do |answer|
-            allow(answer).to receive(:tool).and_return(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor)
+            allow(answer).to receive(:tool).and_return(Gitlab::Llm::Chain::Tools::IssueReader::Executor)
           end
 
-          allow_next_instance_of(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor) do |instance|
+          allow_next_instance_of(Gitlab::Llm::Chain::Tools::IssueReader::Executor) do |instance|
             allow(instance).to receive(:execute).and_raise(error)
           end
 

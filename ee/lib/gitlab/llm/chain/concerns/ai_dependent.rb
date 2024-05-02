@@ -6,8 +6,6 @@ module Gitlab
       module Concerns
         module AiDependent
           def prompt
-            return { prompt: base_prompt } unless provider_prompt_class
-
             if claude_3_enabled? && provider_prompt_class.respond_to?(:claude_3_prompt)
               provider_prompt_class.claude_3_prompt(prompt_options)
             else
@@ -53,10 +51,6 @@ module Gitlab
             ai_provider_name = ai_request.class.name.demodulize.underscore.to_sym
 
             self.class::PROVIDER_PROMPT_CLASSES[ai_provider_name]
-          end
-
-          def base_prompt
-            raise NotImplementedError
           end
         end
       end

@@ -9,7 +9,7 @@ module Gitlab
             class VertexAi
               def self.prompt(options)
                 prompt = Utils::Prompt.no_role_text(
-                  ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor::PROMPT_TEMPLATE, options
+                  ::Gitlab::Llm::Chain::Tools::IssueReader::Executor::PROMPT_TEMPLATE, options
                 )
 
                 Requests::VertexAi.prompt(prompt)

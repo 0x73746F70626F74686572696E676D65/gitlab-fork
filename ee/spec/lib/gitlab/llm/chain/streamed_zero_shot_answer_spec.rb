@@ -22,7 +22,7 @@ RSpec.describe Gitlab::Llm::Chain::StreamedZeroShotAnswer, feature_category: :du
     context 'when receiving thoughts and actions' do
       it 'only returns the final answer', :aggregate_failures do
         expect(streamed_answer.next_chunk("Thought: thought\n")).to be_nil
-        expect(streamed_answer.next_chunk("Action: IssueIdentifier\n")).to be_nil
+        expect(streamed_answer.next_chunk("Action: IssueReader\n")).to be_nil
         expect(streamed_answer.next_chunk("Final Answer: Hello")).to eq({ id: 1, content: "Hello" })
       end
     end

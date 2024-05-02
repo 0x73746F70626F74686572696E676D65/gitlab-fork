@@ -76,7 +76,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueReader::Executor, feature_categor
 
       let(:tool) { described_class.new(context: context, options: input_variables, stream_response_handler: nil) }
       let(:input_variables) do
-        { input: "user input", suggestions: "Action: IssueIdentifier\nActionInput: #{issue1.iid}" }
+        { input: "user input", suggestions: "Action: IssueReader\nActionInput: #{issue1.iid}" }
       end
 
       context 'when user has permission to read resource' do

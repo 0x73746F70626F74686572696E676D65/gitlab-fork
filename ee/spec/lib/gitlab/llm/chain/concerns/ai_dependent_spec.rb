@@ -17,7 +17,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
   let(:logger) { instance_double('Gitlab::Llm::Logger') }
 
   describe '#prompt' do
-    context "when claude3 FF is enabled" do
+    context "when claude 3 FF is enabled" do
       it "returns claude 3 prompt" do
         tool = ::Gitlab::Llm::Chain::Tools::IssueReader::Executor.new(context: context, options: options)
 
@@ -41,25 +41,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
       end
     end
 
-    context 'when base_prompt is implemented' do
-      before do
-        stub_const('::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor::PROVIDER_PROMPT_CLASSES', {})
-      end
-
-      it 'returns base_prompt value' do
-        tool = ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor.new(context: context, options: options)
-
-        expect(tool).to receive(:base_prompt).and_call_original
-
-        prompt = tool.prompt[:prompt]
-
-        expect(prompt).to include("You can fetch information about a resource called: an issue.")
-        expect(prompt).not_to include("Human:")
-        expect(prompt).not_to include("Assistant:")
-      end
-    end
-
-    context 'when base_prompt is not implemented' do
+    context 'when there are no provider prompt classes' do
       let(:dummy_tool_class) do
         Class.new(::Gitlab::Llm::Chain::Tools::Tool) do
           include ::Gitlab::Llm::Chain::Concerns::AiDependent
@@ -73,7 +55,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
       it 'raises error' do
         tool = dummy_tool_class.new(context: context, options: {})
 
-        expect { tool.prompt }.to raise_error(NotImplementedError)
+        expect { tool.prompt }.to raise_error(NoMethodError)
       end
     end
   end
@@ -85,7 +67,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
     end
 
     it 'passes prompt to the ai_client' do
-      tool = ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor.new(context: context, options: options)
+      tool = ::Gitlab::Llm::Chain::Tools::IssueReader::Executor.new(context: context, options: options)
 
       expect(ai_request).to receive(:request).with(tool.prompt)
 
@@ -94,7 +76,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
 
     it 'passes blocks forward to the ai_client' do
       b = proc { "something" }
-      tool = ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor.new(context: context, options: options)
+      tool = ::Gitlab::Llm::Chain::Tools::IssueReader::Executor.new(context: context, options: options)
 
       expect(ai_request).to receive(:request).with(tool.prompt, &b)
 
@@ -102,7 +84,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
     end
 
     it 'logs the request' do
-      tool = ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor.new(context: context, options: options)
+      tool = ::Gitlab::Llm::Chain::Tools::IssueReader::Executor.new(context: context, options: options)
       expected_prompt = tool.prompt[:prompt]
 
       tool.request

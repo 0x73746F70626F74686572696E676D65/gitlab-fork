@@ -48,6 +48,6 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicReader::Prompts::Anthropic, featur
   end
 
   def system_prompt
-    ::Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor::SYSTEM_PROMPT[1]
+    ::Gitlab::Llm::Chain::Tools::EpicReader::Executor::SYSTEM_PROMPT[1]
   end
 end
