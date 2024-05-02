@@ -104,7 +104,7 @@ export function filterObjToQuery({ attributes, dateRange }) {
           traceFlags: attributes.traceFlags,
           attribute: attributes.attribute,
           resourceAttribute: attributes.resourceAttribute,
-          [FILTERED_SEARCH_TERM]: attributes.search,
+          [FILTERED_SEARCH_TERM]: attributes.search || [{ value: '' }], // reset the search query param if missing
         },
         {
           filteredSearchTermKey: FILTERED_SEARCH_TERM_QUERY_KEY,
