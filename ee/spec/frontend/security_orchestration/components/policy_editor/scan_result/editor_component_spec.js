@@ -6,6 +6,10 @@ import SettingsSection from 'ee/security_orchestration/components/policy_editor/
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
 import {
+  ACTION_LISTBOX_ITEMS,
+  BOT_MESSAGE_TYPE,
+  buildAction,
+  DISABLED_BOT_MESSAGE_ACTION,
   SCAN_FINDING,
   ANY_MERGE_REQUEST,
   DEFAULT_SCAN_RESULT_POLICY,
@@ -474,7 +478,8 @@ describe('EditorComponent', () => {
       beforeEach(() => {
         uniqueId
           .mockImplementationOnce(jest.fn((prefix) => `${prefix}0`))
-          .mockImplementationOnce(jest.fn((prefix) => `${prefix}1`));
+          .mockImplementationOnce(jest.fn((prefix) => `${prefix}1`))
+          .mockImplementationOnce(jest.fn((prefix) => `${prefix}2`));
       });
 
       afterEach(() => {
@@ -482,15 +487,23 @@ describe('EditorComponent', () => {
       });
 
       describe('rendering', () => {
-        it.each`
-          namespaceType              | policy
-          ${NAMESPACE_TYPES.PROJECT} | ${APPROVAL_POLICY_DEFAULT_POLICY_WITH_BOT_MESSAGE}
-        `('should render default policy for a $namespaceType', ({ namespaceType, policy }) => {
-          factory({
-            glFeatures: { approvalPolicyDisableBotComment: true },
-            provide: { namespaceType },
+        describe('policy', () => {
+          beforeAll(() => {
+            uniqueId
+              .mockImplementationOnce(jest.fn((prefix) => `${prefix}0`))
+              .mockImplementationOnce(jest.fn((prefix) => `${prefix}1`));
           });
-          expect(findPolicyEditorLayout().props('policy')).toEqual(policy);
+
+          it.each`
+            namespaceType              | policy
+            ${NAMESPACE_TYPES.PROJECT} | ${APPROVAL_POLICY_DEFAULT_POLICY_WITH_BOT_MESSAGE}
+          `('should render default policy for a $namespaceType', ({ namespaceType, policy }) => {
+            factory({
+              glFeatures: { approvalPolicyDisableBotComment: true },
+              provide: { namespaceType },
+            });
+            expect(findPolicyEditorLayout().props('policy')).toEqual(policy);
+          });
         });
 
         it.each`
@@ -533,6 +546,29 @@ describe('EditorComponent', () => {
           });
           expect(findAllActionSections()).toHaveLength(2);
         });
+
+        describe('bot message action section', () => {
+          it('does not display a bot message action section if there is a bot message action in the policy with `enabled: false`', () => {
+            factoryWithExistingPolicy({
+              glFeatures: { approvalPolicyDisableBotComment: true },
+              policy: { ...mockBotMessageScanResultObject, actions: [DISABLED_BOT_MESSAGE_ACTION] },
+            });
+            expect(findAllActionSections()).toHaveLength(0);
+            expect(findScanFilterSelector().props('filters')).toEqual(ACTION_LISTBOX_ITEMS);
+          });
+
+          it('displays a bot message action section if there is no bot message action in the policy', () => {
+            factoryWithExistingPolicy({
+              glFeatures: { approvalPolicyDisableBotComment: true },
+              policy: mockDefaultBranchesScanResultObject,
+            });
+            const actionSections = findAllActionSections();
+            expect(actionSections).toHaveLength(2);
+            expect(actionSections.at(1).props('initAction')).toEqual(
+              expect.objectContaining({ type: BOT_MESSAGE_TYPE, enabled: true }),
+            );
+          });
+        });
       });
 
       describe('add', () => {
@@ -555,17 +591,44 @@ describe('EditorComponent', () => {
             { text: 'Require Approvers', value: 'require_approval' },
           ]);
         });
+
+        it('updates an existing bot message action to be `enabled: true` when a bot message action is added', async () => {
+          factoryWithExistingPolicy({
+            glFeatures: { approvalPolicyDisableBotComment: true },
+            policy: { ...mockBotMessageScanResultObject, actions: [DISABLED_BOT_MESSAGE_ACTION] },
+          });
+          const { id: disabledId, ...disabledAction } = DISABLED_BOT_MESSAGE_ACTION;
+          expect(findPolicyEditorLayout().props('policy').actions).toEqual([
+            expect.objectContaining(disabledAction),
+          ]);
+          await findScanFilterSelector().vm.$emit('select', BOT_MESSAGE_TYPE);
+          expect(findAllActionSections()).toHaveLength(1);
+          const { id, ...action } = buildAction(BOT_MESSAGE_TYPE);
+          expect(findPolicyEditorLayout().props('policy').actions).toEqual([
+            expect.objectContaining(action),
+          ]);
+        });
       });
 
       describe('remove', () => {
-        it('removes the initial action', async () => {
+        it('removes the approver action', async () => {
           factory({ glFeatures: { approvalPolicyDisableBotComment: true } });
-          expect(findActionSection().exists()).toBe(true);
-          expect(findPolicyEditorLayout().props('policy')).toHaveProperty('actions');
+          expect(findAllActionSections()).toHaveLength(2);
           await findActionSection().vm.$emit('remove');
-          await findActionSection().vm.$emit('remove');
-          expect(findActionSection().exists()).toBe(false);
-          expect(findPolicyEditorLayout().props('policy')).not.toHaveProperty('actions');
+          expect(findAllActionSections()).toHaveLength(1);
+          expect(findPolicyEditorLayout().props('policy').actions).not.toContainEqual(
+            buildAction(REQUIRE_APPROVAL_TYPE),
+          );
+        });
+
+        it('disables the bot message action', async () => {
+          factory({ glFeatures: { approvalPolicyDisableBotComment: true } });
+          expect(findAllActionSections()).toHaveLength(2);
+          await findActionSection().vm.$emit('changed', DISABLED_BOT_MESSAGE_ACTION);
+          expect(findAllActionSections()).toHaveLength(1);
+          expect(findPolicyEditorLayout().props('policy').actions).toContainEqual(
+            DISABLED_BOT_MESSAGE_ACTION,
+          );
         });
 
         it('removes the action approvers when the action is removed', async () => {
@@ -590,9 +653,13 @@ describe('EditorComponent', () => {
         });
 
         it('updates policy action when edited', async () => {
-          const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
+          const UPDATED_ACTION = {
+            approvals_required: 1,
+            group_approvers_ids: [29],
+            id: 'action_0',
+            type: 'require_approval',
+          };
           await findActionSection().vm.$emit('changed', UPDATED_ACTION);
-
           expect(findActionSection().props('initAction')).toEqual(UPDATED_ACTION);
         });
 

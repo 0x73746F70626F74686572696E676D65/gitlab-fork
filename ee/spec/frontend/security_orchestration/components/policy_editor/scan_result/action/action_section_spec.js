@@ -5,6 +5,7 @@ import BotCommentAction from 'ee/security_orchestration/components/policy_editor
 import {
   BOT_MESSAGE_TYPE,
   REQUIRE_APPROVAL_TYPE,
+  DISABLED_BOT_MESSAGE_ACTION,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib';
 
 describe('ActionSection', () => {
@@ -77,6 +78,14 @@ describe('ActionSection', () => {
       expect(findBotCommentAction().exists()).toBe(true);
       expect(findApproverAction().exists()).toBe(false);
       expect(findActionSeperator().exists()).toBe(false);
+    });
+
+    it('emits "changed" on removal', () => {
+      factory({ props: { initAction: { type: BOT_MESSAGE_TYPE } } });
+      findBotCommentAction().vm.$emit('remove');
+      expect(wrapper.emitted('changed')).toEqual([
+        [expect.objectContaining(DISABLED_BOT_MESSAGE_ACTION)],
+      ]);
     });
   });
 });

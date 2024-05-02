@@ -1,11 +1,12 @@
 <script>
 import { ACTION_AND_LABEL } from '../../constants';
-import { REQUIRE_APPROVAL_TYPE } from '../lib';
+import { REQUIRE_APPROVAL_TYPE, DISABLED_BOT_MESSAGE_ACTION } from '../lib';
 import ApproverAction from './approver_action.vue';
 import BotMessageAction from './bot_message_action.vue';
 
 export default {
   ACTION_AND_LABEL,
+  DISABLED_BOT_MESSAGE_ACTION,
   name: 'ActionSection',
   components: {
     ApproverAction,
@@ -53,13 +54,17 @@ export default {
     <approver-action
       v-if="isApproverAction"
       :init-action="initAction"
-      :errors="errors.action"
+      :errors="errors"
       :existing-approvers="existingApprovers"
       @error="$emit('error')"
       @updateApprovers="$emit('updateApprovers', $event)"
       @changed="$emit('changed', $event)"
       @remove="$emit('remove')"
     />
-    <bot-message-action v-else :init-action="initAction" @remove="$emit('remove')" />
+    <bot-message-action
+      v-else
+      :init-action="initAction"
+      @remove="$emit('changed', $options.DISABLED_BOT_MESSAGE_ACTION)"
+    />
   </div>
 </template>
