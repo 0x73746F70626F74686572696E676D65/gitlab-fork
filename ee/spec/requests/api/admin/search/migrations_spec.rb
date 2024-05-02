@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe API::Admin::Search::Migrations, :elastic, feature_category: :global_search do
+  let(:last_migration) { Elastic::DataMigrationService.migrations.last }
+
   let_it_be(:admin) { create(:admin) }
 
   before do
@@ -50,12 +52,12 @@ RSpec.describe API::Admin::Search::Migrations, :elastic, feature_category: :glob
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response.count).to eq(Elastic::DataMigrationService.migrations.count)
-      expect(json_response.first['version']).to eq(20230209195404)
+      expect(json_response.first['version']).to eq(Elastic::DataMigrationService.migrations.first.version)
     end
   end
 
   describe 'GET /admin/search/migrations/:migration_id' do
-    let(:migration_id) { 20230426195404 }
+    let(:migration_id) { last_migration.version }
     let(:path) { "/admin/search/migrations/#{migration_id}" }
 
     it_behaves_like 'GET request permissions for admin mode'
@@ -67,19 +69,19 @@ RSpec.describe API::Admin::Search::Migrations, :elastic, feature_category: :glob
         get api(path, admin, admin_mode: true)
 
         expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to match(hash_including('version' => 20230426195404,
-          'name' => 'AddHiddenToMergeRequests'))
+        expect(json_response).to match(hash_including('version' => last_migration.version,
+          'name' => last_migration.name))
       end
     end
 
     context 'when requested by version' do
-      let(:migration_id) { 20230426195404 }
+      let(:migration_id) { last_migration.version }
 
       it_behaves_like 'an API that returns a migration'
     end
 
     context 'when requested by name' do
-      let(:migration_id) { 'AddHiddenToMergeRequests' }
+      let(:migration_id) { last_migration.name }
 
       it_behaves_like 'an API that returns a migration'
     end
