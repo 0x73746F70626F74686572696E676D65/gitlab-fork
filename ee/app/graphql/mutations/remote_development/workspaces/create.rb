@@ -66,22 +66,46 @@ module Mutations
           # on the agent's project.
           agent = authorized_find!(id: cluster_agent_id)
 
-          # NOTE: We only do the common-root-namespace check in the create mutation, because if we did it in the
-          # update mutation too, and the projects got moved to different namespaces, there would be no way to
-          # terminate the workspace via setting the desired state to `Terminated`. However, since the project
-          # and agent associations are immutable (cannot be updated via GraphQL, which is the only update path),
-          # there's no way that a direct update to the workspace associations could cause this to become invalid -
-          # only if the projects or their namespace hierarchies are changed.
-          #
-          # It is only possible to violate this check by directly calling the GraphQL API - the UI will only
-          # present agents for workspace creation which are under the same common root namespace as the
-          # workspace project.
-          #
-          # Also, this check will be removed when we implement the new authorization scheme for workspaces. See
-          # https://gitlab.com/groups/gitlab-org/-/epics/12193 for more details.
-          unless project.root_namespace == agent.project.root_namespace
-            raise ::Gitlab::Graphql::Errors::ArgumentError,
-              "Workspace's project and agent's project must both be under the same common root group/namespace."
+          root_namespace = project.root_namespace
+
+          if Feature.enabled?(:remote_development_namespace_agent_authorization, root_namespace)
+            relevant_mappings =
+              ::RemoteDevelopment::RemoteDevelopmentNamespaceClusterAgentMapping
+                .for_namespaces(project.project_namespace.traversal_ids)
+                .for_agents([agent.id])
+
+            unless relevant_mappings.present?
+              raise ::Gitlab::Graphql::Errors::ArgumentError,
+                "The provided agent provided must be mapped to an ancestor namespace of the workspace's project."
+            end
+
+            valid_relevant_mappings =
+              ::RemoteDevelopment::NamespaceClusterAgentMappings::Validations
+                .filter_valid_namespace_cluster_agent_mappings(namespace_cluster_agent_mappings: relevant_mappings.to_a)
+
+            unless valid_relevant_mappings.present?
+              # rubocop:disable Layout/LineEndStringConcatenationIndentation -- This is being changed in https://gitlab.com/gitlab-org/ruby/gems/gitlab-styles/-/merge_requests/212
+              raise ::Gitlab::Graphql::Errors::ArgumentError,
+                "#{relevant_mappings.size} mapping(s) exist between the provided agent and the ancestor namespaces " \
+                  "of the workspaces's project, but the agent does not reside within the hierarchy of any of the " \
+                  "mapped ancestor namespaces."
+              # rubocop:enable Layout/LineEndStringConcatenationIndentation
+            end
+          else
+            # NOTE: We only do the common-root-namespace check in the create mutation, because if we did it in the
+            # update mutation too, and the projects got moved to different namespaces, there would be no way to
+            # terminate the workspace via setting the desired state to `Terminated`. However, since the project
+            # and agent associations are immutable (cannot be updated via GraphQL, which is the only update path),
+            # there's no way that a direct update to the workspace associations could cause this to become invalid -
+            # only if the projects or their namespace hierarchies are changed.
+            #
+            # It is only possible to violate this check by directly calling the GraphQL API - the UI will only
+            # present agents for workspace creation which are under the same common root namespace as the
+            # workspace project.
+            unless root_namespace == agent.project.root_namespace
+              raise ::Gitlab::Graphql::Errors::ArgumentError,
+                "Workspace's project and agent's project must both be under the same common root group/namespace."
+            end
           end
 
           # noinspection RubyNilAnalysis
