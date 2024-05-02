@@ -7,6 +7,7 @@ module EE
         module SettingsMenu
           extend ::Gitlab::Utils::Override
           include ::GitlabSubscriptions::SubscriptionHelper
+          include ::Groups::AnalyticsDashboardHelper
 
           override :configure_menu_items
           def configure_menu_items
@@ -15,6 +16,7 @@ module EE
             if can?(context.current_user, :admin_group, context.group)
               insert_item_after(:general, roles_and_permissions_menu_item)
               insert_item_after(:integrations, webhooks_menu_item)
+              insert_item_after(:ci_cd, analytics_menu_item)
               add_item(ldap_sync_menu_item)
               add_item(saml_sso_menu_item)
               add_item(saml_group_links_menu_item)
@@ -164,6 +166,23 @@ module EE
               active_routes: { path: 'reporting#show' },
               item_id: :reporting
             )
+          end
+
+          def analytics_menu_item
+            unless analytics_available?
+              return ::Sidebars::NilMenuItem.new(item_id: :analytics)
+            end
+
+            ::Sidebars::MenuItem.new(
+              title: _('Analytics'),
+              link: group_settings_analytics_path(context.group),
+              active_routes: { path: %w[analytics#index] },
+              item_id: :analytics
+            )
+          end
+
+          def analytics_available?
+            group_analytics_settings_available?(context.current_user, context.group)
           end
         end
       end

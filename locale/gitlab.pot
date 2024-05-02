@@ -5707,6 +5707,9 @@ msgstr ""
 msgid "Analytics|Analytics dashboards"
 msgstr ""
 
+msgid "Analytics|Analytics settings for '%{group_name}' were successfully updated."
+msgstr ""
+
 msgid "Analytics|Analytics settings for '%{project_name}' were successfully updated."
 msgstr ""
 
@@ -5966,6 +5969,9 @@ msgid "Analytics|To create your own dashboards, first configure a project to sto
 msgstr ""
 
 msgid "Analytics|URL"
+msgstr ""
+
+msgid "Analytics|Unable to update analytics settings. Please try again."
 msgstr ""
 
 msgid "Analytics|Updating dashboard %{dashboardSlug}"

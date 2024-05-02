@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Settings User configures VSD aggregation', :js, feature_category: :value_stream_management do
+RSpec.describe 'Groups > Settings > Analytics > User configures VSD aggregation', :js, feature_category: :value_stream_management do
   include ListboxHelpers
 
   let_it_be(:group) { create(:group) }
@@ -19,7 +19,7 @@ RSpec.describe 'Groups > Settings User configures VSD aggregation', :js, feature
     before do
       stub_licensed_features(group_level_analytics_dashboard: false)
 
-      visit edit_group_path(group)
+      visit group_settings_analytics_path(group)
     end
 
     it 'does not show the VSD config' do
@@ -34,7 +34,7 @@ RSpec.describe 'Groups > Settings User configures VSD aggregation', :js, feature
 
     context 'when visiting top-level group settings page' do
       before do
-        visit edit_group_path(group)
+        visit group_settings_analytics_path(group)
       end
 
       it 'allows to enable the aggregation' do
@@ -61,7 +61,7 @@ RSpec.describe 'Groups > Settings User configures VSD aggregation', :js, feature
       end
 
       it 'renders 404 not found' do
-        visit edit_group_path(group)
+        visit group_settings_analytics_path(group)
 
         expect(page).to have_content('Page Not Found')
       end
@@ -69,7 +69,7 @@ RSpec.describe 'Groups > Settings User configures VSD aggregation', :js, feature
 
     context 'when visiting subgroup settings page' do
       before do
-        visit edit_group_path(subgroup)
+        visit group_settings_analytics_path(subgroup)
       end
 
       it 'does not show the VSD config' do

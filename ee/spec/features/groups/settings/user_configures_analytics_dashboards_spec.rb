@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Settings > Analytics Dashboards', :js, feature_category: :value_stream_management do
+RSpec.describe 'Groups > Settings > Analytics > Analytics Dashboards', :js, feature_category: :value_stream_management do
   include ListboxHelpers
 
   let_it_be(:user) { create(:user) }
@@ -18,7 +18,7 @@ RSpec.describe 'Groups > Settings > Analytics Dashboards', :js, feature_category
     before do
       stub_licensed_features(group_level_analytics_dashboard: false)
 
-      visit edit_group_path(group)
+      visit group_settings_analytics_path(group)
     end
 
     it 'does not show the Analytics Dashboards config' do
@@ -30,7 +30,7 @@ RSpec.describe 'Groups > Settings > Analytics Dashboards', :js, feature_category
     before do
       stub_licensed_features(group_level_analytics_dashboard: true)
 
-      visit edit_group_path(group)
+      visit group_settings_analytics_path(group)
     end
 
     it 'allows to select a project in a subgroup for the Analytics Dashboards config' do
