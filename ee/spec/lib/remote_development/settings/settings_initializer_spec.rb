@@ -2,8 +2,9 @@
 
 require_relative '../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Settings::DefaultsInitializer, :rd_fast, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Settings::SettingsInitializer, :rd_fast, feature_category: :remote_development do
   let(:value) { {} }
+  let(:default_settings_class) { RemoteDevelopment::Settings::DefaultSettings }
 
   subject(:returned_value) do
     described_class.init(value)
@@ -22,7 +23,7 @@ RSpec.describe RemoteDevelopment::Settings::DefaultsInitializer, :rd_fast, featu
 
   context "when a setting value has a type mismatch" do
     before do
-      allow(described_class).to receive(:default_settings).and_return(
+      allow(default_settings_class).to receive(:default_settings).and_return(
         {
           setting: ["not an integer", Integer]
         }
@@ -38,7 +39,7 @@ RSpec.describe RemoteDevelopment::Settings::DefaultsInitializer, :rd_fast, featu
 
   context "when a default_settings entry is not an array" do
     before do
-      allow(described_class).to receive(:default_settings).and_return(
+      allow(default_settings_class).to receive(:default_settings).and_return(
         {
           setting: "Just a value"
         }
@@ -54,7 +55,7 @@ RSpec.describe RemoteDevelopment::Settings::DefaultsInitializer, :rd_fast, featu
 
   context "when settings type is not specified as a Class" do
     before do
-      allow(described_class).to receive(:default_settings).and_return(
+      allow(default_settings_class).to receive(:default_settings).and_return(
         {
           setting: ["value", 1]
         }

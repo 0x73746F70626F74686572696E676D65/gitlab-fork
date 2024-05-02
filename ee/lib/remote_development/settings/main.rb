@@ -18,7 +18,7 @@ module RemoteDevelopment
         # overridden by env vars, and any subsequent steps override env vars.
         result =
           initial_result
-            .map(DefaultsInitializer.method(:init))
+            .map(SettingsInitializer.method(:init))
             .and_then(CurrentSettingsReader.method(:read))
             .map(ExtensionsGalleryMetadataGenerator.method(:generate))
             # NOTE: EnvVarReader is kept as last step, so it can always be used to easily override any settings for

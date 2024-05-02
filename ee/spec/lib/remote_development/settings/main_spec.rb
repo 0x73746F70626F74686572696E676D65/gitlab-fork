@@ -14,7 +14,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
   # rubocop:disable Layout/LineLength -- keep all the class and method fixtures as single-liners easier scanning/editing
   # Classes
 
-  let(:defaults_initializer_class) { RemoteDevelopment::Settings::DefaultsInitializer }
+  let(:settings_initializer_class) { RemoteDevelopment::Settings::SettingsInitializer }
   let(:current_settings_reader_class) { RemoteDevelopment::Settings::CurrentSettingsReader }
   let(:extensions_gallery_metadata_generator_class) { RemoteDevelopment::Settings::ExtensionsGalleryMetadataGenerator }
   let(:env_var_reader_class) { RemoteDevelopment::Settings::EnvVarReader }
@@ -23,7 +23,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
 
   # Methods
 
-  let(:defaults_initializer_method) { defaults_initializer_class.singleton_method(:init) }
+  let(:settings_initializer_method) { settings_initializer_class.singleton_method(:init) }
   let(:current_settings_reader_method) { current_settings_reader_class.singleton_method(:read) }
   let(:extensions_gallery_metadata_generator_method) { extensions_gallery_metadata_generator_class.singleton_method(:generate) }
   let(:env_var_reader_method) { env_var_reader_class.singleton_method(:read) }
@@ -35,14 +35,14 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
   subject(:response) { described_class.get_settings(input_value) }
 
   before do
-    allow(defaults_initializer_class).to receive(:method).with(:init) { defaults_initializer_method }
+    allow(settings_initializer_class).to receive(:method).with(:init) { settings_initializer_method }
     allow(current_settings_reader_class).to receive(:method).with(:read) { current_settings_reader_method }
     allow(extensions_gallery_metadata_generator_class).to(receive(:method).with(:generate)) { extensions_gallery_metadata_generator_method }
     allow(env_var_reader_class).to receive(:method).with(:read) { env_var_reader_method }
     allow(extensions_gallery_validator_class).to(receive(:method).with(:validate)) { extensions_gallery_validator_method }
     allow(extensions_gallery_metadata_validator_class).to(receive(:method).with(:validate)) { extensions_gallery_metadata_validator_method }
 
-    stub_method_to_modify_and_return_value(defaults_initializer_method, expected_value: input_value, returned_value: value)
+    stub_method_to_modify_and_return_value(settings_initializer_method, expected_value: input_value, returned_value: value)
     stub_methods_to_return_value(extensions_gallery_metadata_generator_method)
   end
   # rubocop:enable Layout/LineLength
