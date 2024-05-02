@@ -6,7 +6,7 @@ module QA
       module Workspace
         class New < QA::Page::Base
           include QA::Page::Component::Dropdown
-          view 'ee/app/assets/javascripts/remote_development/pages/create.vue' do
+          view 'ee/app/assets/javascripts/workspaces/user/pages/create.vue' do
             element 'workspace-devfile-project-id-field'
             element 'workspace-cluster-agent-id-field'
             element 'create-workspace'

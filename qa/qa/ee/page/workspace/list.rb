@@ -5,15 +5,15 @@ module QA
     module Page
       module Workspace
         class List < QA::Page::Base
-          view 'ee/app/assets/javascripts/remote_development/pages/list.vue' do
+          view 'ee/app/assets/javascripts/workspaces/user/pages/list.vue' do
             element 'list-new-workspace-button'
           end
 
-          view 'ee/app/assets/javascripts/remote_development/components/common/workspaces_list.vue' do
+          view 'ee/app/assets/javascripts/workspaces/common/components/workspaces_list/workspaces_list.vue' do
             element 'workspace-list-item'
           end
 
-          view 'ee/app/assets/javascripts/remote_development/components/common/workspace_state_indicator.vue' do
+          view 'ee/app/assets/javascripts/workspaces/common/components/workspace_state_indicator.vue' do
             element 'workspace-state-indicator'
           end
 

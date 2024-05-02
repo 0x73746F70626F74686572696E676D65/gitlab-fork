@@ -1,3 +1,3 @@
-import { initWorkspacesApp } from 'ee/remote_development/init_workspaces_app';
+import { initUserWorkspacesApp } from 'ee/workspaces/user/init_user_workspaces_app';
 
-initWorkspacesApp();
+initUserWorkspacesApp();

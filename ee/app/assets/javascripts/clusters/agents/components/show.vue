@@ -5,7 +5,7 @@ import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import AgentShowPage from '~/clusters/agents/components/show.vue';
 import AgentVulnerabilityReport from 'ee/security_dashboard/components/agent/agent_vulnerability_report.vue';
-import AgentWorkspacesList from 'ee/remote_development/components/agent_admin_ui/agent_workspaces_list.vue';
+import AgentWorkspacesList from 'ee/workspaces/agent/components/agent_workspaces_list.vue';
 
 export default {
   i18n: {

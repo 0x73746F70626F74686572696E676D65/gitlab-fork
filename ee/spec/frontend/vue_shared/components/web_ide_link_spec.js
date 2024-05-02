@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
 import { GlLoadingIcon } from '@gitlab/ui';
-import GetProjectDetailsQuery from 'ee_component/remote_development/components/common/get_project_details_query.vue';
-import WorkspacesDropdownGroup from 'ee_component/remote_development/components/workspaces_dropdown_group/workspaces_dropdown_group.vue';
+import GetProjectDetailsQuery from 'ee_component/workspaces/common/components/get_project_details_query.vue';
+import WorkspacesDropdownGroup from 'ee_component/workspaces/dropdown_group/components/workspaces_dropdown_group.vue';
 import CeWebIdeLink from '~/vue_shared/components/web_ide_link.vue';
 import WebIdeLink from 'ee_component/vue_shared/components/web_ide_link.vue';
 import { stubComponent } from 'helpers/stub_component';
