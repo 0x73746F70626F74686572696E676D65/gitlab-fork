@@ -134,6 +134,14 @@ describe('utils', () => {
     it('handles empty values', () => {
       expect(filterObjToQuery({})).toEqual({});
     });
+
+    it('sets an empty search query if missing', () => {
+      expect(filterObjToQuery({ attributes: { 'filtered-search-term': undefined } })).toMatchObject(
+        {
+          search: '',
+        },
+      );
+    });
   });
 
   describe('queryToFilterObj', () => {
