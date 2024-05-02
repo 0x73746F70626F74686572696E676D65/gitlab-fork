@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::CronManager, :geo, feature_category: :geo_replication do
+# Only Sidekiq.redis interacts with cron jobs so unrouted calls are allowed.
+RSpec.describe Gitlab::Geo::CronManager, :geo, :allow_unrouted_sidekiq_calls, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   jobs = %w[

@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Mirror do
+# Only Sidekiq.redis interacts with cron jobs so unrouted calls are allowed.
+RSpec.describe Gitlab::Mirror, :allow_unrouted_sidekiq_calls do
   describe '#configure_cron_job!' do
     let(:cron) { Gitlab::Mirror::SCHEDULER_CRON }
 
