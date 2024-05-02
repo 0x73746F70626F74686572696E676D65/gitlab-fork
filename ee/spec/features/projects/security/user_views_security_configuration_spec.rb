@@ -22,7 +22,8 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
         container_scanning: true,
         coverage_fuzzing: true,
         api_fuzzing: true,
-        security_configuration_in_ui: true
+        security_configuration_in_ui: true,
+        pre_receive_secret_detection: true
       )
     end
 
@@ -136,12 +137,52 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
       end
     end
 
-    context 'with no Secret Detection report' do
-      it 'shows Secret Detection is disabled' do
+    context 'without Pre receive Secret Detection' do
+      it 'shows pre-receive Secret Detection disabled' do
         visit_configuration_page
 
-        within_secret_detection_card do
-          expect(page).to have_text('Secret Detection')
+        within_pre_receive_secret_detection_card do
+          expect(page).to have_text('Pre-receive Secret Detection')
+          expect(page).to have_text('Not enabled')
+
+          toggle = find_by_testid('toggle-wrapper')
+          expect(toggle).to have_css("button:not(.is-checked)")
+          expect(toggle).to have_css('.is-disabled')
+        end
+      end
+    end
+
+    context 'with Pre receive Secret Detection' do
+      before do
+        stub_application_setting(pre_receive_secret_detection_enabled: true)
+      end
+
+      it 'shows pre-receive Secret Detection' do
+        visit_configuration_page
+
+        within_pre_receive_secret_detection_card do
+          expect(page).to have_text('Pre-receive Secret Detection')
+          expect(page).to have_text('Not enabled')
+
+          toggle = find_by_testid('toggle-wrapper')
+          expect(toggle).to have_css("button:not(.is-checked)")
+          expect(toggle).not_to have_css('.is-disabled')
+
+          toggle.find('button').click
+          wait_for_requests
+
+          expect(page).to have_text('Enabled')
+          expect(toggle).to have_css("button.is-checked")
+        end
+      end
+    end
+
+    context 'with no Pipeline Secret Detection report' do
+      it 'shows Pipeline Secret Detection is disabled' do
+        visit_configuration_page
+
+        within_pipeline_secret_detection_card do
+          expect(page).to have_text('Pipeline Secret Detection')
           expect(page).to have_text('Not enabled')
           expect(page).to have_button('Configure with a merge request')
         end
@@ -207,20 +248,26 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
     end
   end
 
-  def within_secret_detection_card
+  def within_pre_receive_secret_detection_card
     within '[data-testid="security-testing-card"]:nth-of-type(7)' do
       yield
     end
   end
 
+  def within_pipeline_secret_detection_card
+    within '[data-testid="security-testing-card"]:nth-of-type(8)' do
+      yield
+    end
+  end
+
   def within_api_fuzzing_card
-    within '[data-testid="security-testing-card"]:nth-of-type(9)' do
+    within '[data-testid="security-testing-card"]:nth-of-type(10)' do
       yield
     end
   end
 
   def within_coverage_fuzzing_card
-    within '[data-testid="security-testing-card"]:nth-of-type(8)' do
+    within '[data-testid="security-testing-card"]:nth-of-type(9)' do
       yield
     end
   end
