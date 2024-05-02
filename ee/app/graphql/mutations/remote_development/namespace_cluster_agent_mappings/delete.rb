@@ -28,12 +28,6 @@ module Mutations
           namespace_id = args.delete(:namespace_id)
           namespace = authorized_find!(id: namespace_id)
 
-          if Feature.disabled?(:remote_development_namespace_agent_authorization, namespace.root_ancestor)
-            raise_resource_not_available_error!(
-              "'remote_development_namespace_agent_authorization' feature flag is disabled"
-            )
-          end
-
           cluster_agent_id = args.delete(:cluster_agent_id)
           cluster_agent = authorized_find!(id: cluster_agent_id)
 

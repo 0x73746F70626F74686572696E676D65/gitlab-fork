@@ -116,16 +116,6 @@ RSpec.describe 'Map a cluster agent to a group', feature_category: :remote_devel
     end
   end
 
-  context 'when the feature flag is disabled' do
-    before do
-      stub_feature_flags(remote_development_namespace_agent_authorization: false)
-    end
-
-    it_behaves_like 'a mutation that returns top-level errors' do
-      let(:match_errors) { include(/feature flag is disabled/) }
-    end
-  end
-
   context "when the cluster agent doesn't exist" do
     let(:agent) { build_stubbed(:cluster_agent) }
 
