@@ -133,7 +133,7 @@ module EE
 
     override :identity_verification_enabled?
     def identity_verification_enabled?
-      resource.identity_verification_enabled?
+      resource.signup_identity_verification_enabled?
     end
 
     override :identity_verification_redirect_path

@@ -69,8 +69,8 @@ module EE
     override :sign_in_and_redirect_or_verify_identity
     def sign_in_and_redirect_or_verify_identity(user, auth_user, new_user)
       return super if user.blocked? # When `block_auto_created_users` is set to true
-      return super unless auth_user.identity_verification_enabled?(user)
-      return super if !new_user && user.identity_verified?
+      return super unless auth_user.signup_identity_verification_enabled?(user)
+      return super if !new_user && user.signup_identity_verified?
 
       service_class = ::Users::EmailVerification::SendCustomConfirmationInstructionsService
       service_class.new(user).execute if new_user

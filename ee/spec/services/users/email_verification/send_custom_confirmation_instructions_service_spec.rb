@@ -80,7 +80,7 @@ feature_category: :system_access do
       before do
         user.restore_confirmation_token!
         allow(user).to receive(:confirmed?).and_return(confirmed?)
-        allow(user).to receive(:identity_verification_enabled?).and_return(identity_verification_enabled?)
+        allow(user).to receive(:signup_identity_verification_enabled?).and_return(identity_verification_enabled?)
         allow(service).to receive(:token).and_return('xxx') if token_present?
         user.confirmation_token = 'yyy' unless token_saved?
       end

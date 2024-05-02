@@ -229,7 +229,7 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
     context 'on sign up' do
       before do
         allow_next_instance_of(User) do |user|
-          allow(user).to receive(:identity_verification_enabled?).and_return(true)
+          allow(user).to receive(:signup_identity_verification_enabled?).and_return(true)
         end
       end
 
@@ -249,7 +249,7 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
     context 'on sign in' do
       before do
         allow_next_found_instance_of(User) do |user|
-          allow(user).to receive(:identity_verification_enabled?).and_return(true)
+          allow(user).to receive(:signup_identity_verification_enabled?).and_return(true)
         end
       end
 

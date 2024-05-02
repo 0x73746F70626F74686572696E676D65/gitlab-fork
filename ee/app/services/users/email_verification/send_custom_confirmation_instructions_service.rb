@@ -43,7 +43,7 @@ module Users
       private
 
       def enabled?
-        !user.confirmed? && user.identity_verification_enabled?
+        !user.confirmed? && user.signup_identity_verification_enabled?
       end
       strong_memoize_attr :enabled?
 

@@ -144,7 +144,7 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
         subject
         created_user = User.find_by(email: new_user_email)
 
-        expect(created_user.identity_verification_enabled?).to eq(true)
+        expect(created_user.signup_identity_verification_enabled?).to eq(true)
         expect(identity_verification_exempt_for_user?).to eq(false)
       end
     end
@@ -252,7 +252,7 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
 
       before do
         allow_next_instance_of(User) do |instance|
-          allow(instance).to receive(:identity_verification_enabled?).and_return(true)
+          allow(instance).to receive(:signup_identity_verification_enabled?).and_return(true)
         end
         session[:originating_member_id] = member.id
       end
@@ -280,7 +280,7 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
 
       before do
         allow_next_instance_of(User) do |instance|
-          allow(instance).to receive(:identity_verification_enabled?).and_return(false)
+          allow(instance).to receive(:signup_identity_verification_enabled?).and_return(false)
         end
         session[:originating_member_id] = member.id
       end

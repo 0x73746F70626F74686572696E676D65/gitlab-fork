@@ -79,7 +79,7 @@ module EE
 
       return if !user || !user.valid_password?(user_params[:password]) || user.access_locked?
       return if ::Gitlab::Qa.request?(request.user_agent)
-      return if !user.identity_verification_enabled? || user.identity_verified?
+      return if !user.signup_identity_verification_enabled? || user.signup_identity_verified?
 
       # When identity verification is enabled, store the user id in the session and redirect to the
       # identity verification page instead of displaying a Devise flash alert on the sign in page.

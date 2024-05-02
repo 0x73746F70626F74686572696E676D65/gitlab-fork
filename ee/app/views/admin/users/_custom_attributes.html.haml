@@ -12,7 +12,7 @@
         = ff.label :value, ff.object.key.humanize, class: 'gl-display-block col-form-label'
         = ff.select :value, Arkose::VerifyResponse::ARKOSE_RISK_BANDS, { allow_blank: false }, class: 'form-control'
 
-  - if @user.persisted? && @user.identity_verification_enabled?
+  - if @user.persisted? && @user.signup_identity_verification_enabled?
     .gl-form-group{ role: 'group' }
       = render Pajamas::AlertComponent.new(variant: :info, dismissible: false, alert_options: { class: 'gl-mb-5' }, title: _('Identity verification exemption')) do |c|
         - c.with_body do
