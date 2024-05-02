@@ -147,6 +147,7 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
             'Code Suggestions and GitLab Duo Chat (Beta)'
           )
 
+          expect(rendered).to have_content(_('You can now try GitLab Duo Pro for free for 60 days'))
           expect(rendered).to have_link('GitLab Duo Pro', href: 'https://about.gitlab.com/gitlab-duo/')
           expect(rendered).to have_selector(hand_raise_selector)
         end
