@@ -11,7 +11,7 @@ module Gitlab
 
               def self.claude_3_prompt(options)
                 conversation = Utils::Prompt.role_conversation([
-                  ::Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor::SYSTEM_PROMPT,
+                  ::Gitlab::Llm::Chain::Tools::EpicReader::Executor::SYSTEM_PROMPT,
                   Utils::Prompt.as_user(options[:input]),
                   Utils::Prompt.as_assistant(options[:suggestions], "```json
                     \{
@@ -26,7 +26,7 @@ module Gitlab
 
               def self.prompt(options)
                 base_prompt = Utils::Prompt.no_role_text(
-                  ::Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor::PROMPT_TEMPLATE,
+                  ::Gitlab::Llm::Chain::Tools::EpicReader::Executor::PROMPT_TEMPLATE,
                   options
                 )
 

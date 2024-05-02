@@ -100,7 +100,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :duo_chat do
 
       expect_snowplow_event(
         category: described_class.to_s,
-        label: "IssueIdentifier",
+        label: "IssueReader",
         action: 'process_gitlab_duo_question',
         property: 'uuid',
         namespace: container,
@@ -171,7 +171,7 @@ client_subscription_id: 'someid' }
 
         expect_snowplow_event(
           category: described_class.to_s,
-          label: "IssueIdentifier",
+          label: "IssueReader",
           action: 'process_gitlab_duo_question',
           property: 'uuid',
           namespace: container,
@@ -185,7 +185,7 @@ client_subscription_id: 'someid' }
   describe '#execute' do
     before do
       allow(Gitlab::Llm::Chain::Requests::AiGateway).to receive(:new).and_return(ai_request)
-      allow(context).to receive(:tools_used).and_return([Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor])
+      allow(context).to receive(:tools_used).and_return([Gitlab::Llm::Chain::Tools::IssueReader::Executor])
       stub_saas_features(duo_chat_categorize_question: true)
     end
 

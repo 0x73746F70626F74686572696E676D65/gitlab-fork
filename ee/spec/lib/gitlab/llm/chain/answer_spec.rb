@@ -6,8 +6,8 @@ RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :duo_chat do
   let_it_be(:user) { build_stubbed(:user) }
   let_it_be(:project) { build_stubbed(:project) }
 
-  let(:tools) { [Gitlab::Llm::Chain::Tools::IssueIdentifier] }
-  let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor) }
+  let(:tools) { [Gitlab::Llm::Chain::Tools::IssueReader] }
+  let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::IssueReader::Executor) }
   let(:request_id) { 'uuid' }
   let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
   let(:context) do
@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :duo_chat do
   let(:input) do
     <<-INPUT
       Thought: thought
-      Action: IssueIdentifier
+      Action: IssueReader
       Action Input: Bar
     INPUT
   end
@@ -32,12 +32,12 @@ RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :duo_chat do
     subject(:answer) { described_class.from_response(response_body: input, tools: tools, context: context) }
 
     before do
-      allow(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor).to receive(:new).and_return(tool_double)
+      allow(Gitlab::Llm::Chain::Tools::IssueReader::Executor).to receive(:new).and_return(tool_double)
     end
 
     it 'returns intermediate answer with parsed values and a tool' do
       expect(answer.is_final?).to eq(false)
-      expect(answer.tool::NAME).to eq('IssueIdentifier')
+      expect(answer.tool::NAME).to eq('IssueReader')
     end
 
     context 'when parsed response is final' do

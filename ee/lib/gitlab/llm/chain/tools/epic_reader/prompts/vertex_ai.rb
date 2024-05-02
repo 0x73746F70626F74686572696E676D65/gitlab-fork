@@ -11,7 +11,7 @@ module Gitlab
 
               def self.prompt(options)
                 prompt = Utils::Prompt.no_role_text(
-                  ::Gitlab::Llm::Chain::Tools::EpicIdentifier::Executor::PROMPT_TEMPLATE, options
+                  ::Gitlab::Llm::Chain::Tools::EpicReader::Executor::PROMPT_TEMPLATE, options
                 )
 
                 {

@@ -62,10 +62,6 @@ module Gitlab
             raise NotImplementedError
           end
 
-          def prompt_template
-            raise NotImplementedError
-          end
-
           def by_iid
             raise NotImplementedError
           end
@@ -111,20 +107,11 @@ module Gitlab
             )
           end
 
-          # This method should not be memoized because the options change each iteration, e.g options[:suggestions]
-          def base_prompt
-            Utils::Prompt.no_role_text(prompt_template, options)
-          end
-
           def extract_project(text, type)
             return projects_from_context.first unless projects_from_context.blank?
 
             project_path = text.match(reference_pattern_by_type[type])&.values_at(:namespace, :project)
             context.current_user.authorized_projects.find_by_full_path(project_path.join('/')) if project_path
-          end
-
-          def passed_content(json)
-            "I identified the #{resource_name} #{json[:ResourceIdentifier]}. For more information use ResourceReader."
           end
         end
       end
