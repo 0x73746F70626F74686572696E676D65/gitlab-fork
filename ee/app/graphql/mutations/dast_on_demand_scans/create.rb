@@ -10,20 +10,20 @@ module Mutations
       InvalidGlobalID = Class.new(StandardError)
 
       field :pipeline_url, GraphQL::Types::String,
-            null: true,
-            description: 'URL of the pipeline that was created.'
+        null: true,
+        description: 'URL of the pipeline that was created.'
 
       argument :full_path, GraphQL::Types::ID,
-               required: true,
-               description: 'Project the site profile belongs to.'
+        required: true,
+        description: 'Project the site profile belongs to.'
 
       argument :dast_site_profile_id, ::Types::GlobalIDType[::DastSiteProfile],
-               required: true,
-               description: 'ID of the site profile to be used for the scan.'
+        required: true,
+        description: 'ID of the site profile to be used for the scan.'
 
       argument :dast_scanner_profile_id, ::Types::GlobalIDType[::DastScannerProfile],
-               required: false,
-               description: 'ID of the scanner profile to be used for the scan.'
+        required: false,
+        description: 'ID of the scanner profile to be used for the scan.'
 
       authorize :create_on_demand_dast_scan
 

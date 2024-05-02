@@ -11,57 +11,57 @@ module Mutations
         ScannerProfileID = ::Types::GlobalIDType[::DastScannerProfile]
 
         field :dast_profile, ::Types::Dast::ProfileType,
-              null: true,
-              description: 'Updated profile.'
+          null: true,
+          description: 'Updated profile.'
 
         field :pipeline_url, GraphQL::Types::String,
-              null: true,
-              description: 'The URL of the pipeline that was created. Requires the input ' \
-                           'argument `runAfterUpdate` to be set to `true` when calling the ' \
-                           'mutation, otherwise no pipeline will be created.'
+          null: true,
+          description: 'The URL of the pipeline that was created. Requires the input ' \
+                       'argument `runAfterUpdate` to be set to `true` when calling the ' \
+                       'mutation, otherwise no pipeline will be created.'
 
         argument :id, ProfileID,
-                 required: true,
-                 description: 'ID of the profile to be deleted.'
+          required: true,
+          description: 'ID of the profile to be deleted.'
 
         argument :full_path, GraphQL::Types::ID,
-                 required: false,
-                 deprecated: { reason: 'Full path not required to qualify Global ID', milestone: '14.5' },
-                 description: 'Project the profile belongs to.'
+          required: false,
+          deprecated: { reason: 'Full path not required to qualify Global ID', milestone: '14.5' },
+          description: 'Project the profile belongs to.'
 
         argument :dast_profile_schedule, ::Types::Dast::ProfileScheduleInputType,
-                 required: false,
-                 description: 'Represents a DAST profile schedule.'
+          required: false,
+          description: 'Represents a DAST profile schedule.'
 
         argument :name, GraphQL::Types::String,
-                 required: false,
-                 description: 'Name of the profile.'
+          required: false,
+          description: 'Name of the profile.'
 
         argument :description, GraphQL::Types::String,
-                 required: false,
-                 description: 'Description of the profile. Defaults to an empty string.',
-                 default_value: ''
+          required: false,
+          description: 'Description of the profile. Defaults to an empty string.',
+          default_value: ''
 
         argument :branch_name, GraphQL::Types::String,
-                 required: false,
-                 description: 'Associated branch.'
+          required: false,
+          description: 'Associated branch.'
 
         argument :dast_site_profile_id, SiteProfileID,
-                 required: false,
-                 description: 'ID of the site profile to be associated.'
+          required: false,
+          description: 'ID of the site profile to be associated.'
 
         argument :dast_scanner_profile_id, ScannerProfileID,
-                 required: false,
-                 description: 'ID of the scanner profile to be associated.'
+          required: false,
+          description: 'ID of the scanner profile to be associated.'
 
         argument :run_after_update, GraphQL::Types::Boolean,
-                 required: false,
-                 description: 'Run scan using profile after update. Defaults to false.',
-                 default_value: false
+          required: false,
+          description: 'Run scan using profile after update. Defaults to false.',
+          default_value: false
 
         argument :tag_list, [GraphQL::Types::String],
-                 required: false,
-                 description: 'Indicates the runner tags associated with the profile.'
+          required: false,
+          description: 'Indicates the runner tags associated with the profile.'
 
         authorize :create_on_demand_dast_scan
 

@@ -9,7 +9,7 @@ module Mutations
 
       if full_path.blank?
         raise Gitlab::Graphql::Errors::ArgumentError,
-              'At least one of the arguments fullPath or projectPath is required'
+          'At least one of the arguments fullPath or projectPath is required'
       end
 
       project = find_project(full_path)

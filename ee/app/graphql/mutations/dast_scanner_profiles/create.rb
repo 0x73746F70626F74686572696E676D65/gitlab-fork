@@ -8,52 +8,52 @@ module Mutations
       include FindsProject
 
       field :id, ::Types::GlobalIDType[::DastScannerProfile],
-            null: true,
-            description: 'ID of the scanner profile.',
-            deprecated: { reason: 'use `dastScannerProfile` field', milestone: '14.10' }
+        null: true,
+        description: 'ID of the scanner profile.',
+        deprecated: { reason: 'use `dastScannerProfile` field', milestone: '14.10' }
 
       field :dast_scanner_profile, ::Types::DastScannerProfileType,
-            null: true,
-            description: 'Created scanner profile.'
+        null: true,
+        description: 'Created scanner profile.'
 
       argument :full_path, GraphQL::Types::ID,
-               required: true,
-               description: 'Project the scanner profile belongs to.'
+        required: true,
+        description: 'Project the scanner profile belongs to.'
 
       argument :profile_name, GraphQL::Types::String,
-                required: true,
-                description: 'Name of the scanner profile.'
+        required: true,
+        description: 'Name of the scanner profile.'
 
       argument :spider_timeout, GraphQL::Types::Int,
-                required: false,
-                description: 'Maximum number of minutes allowed for the spider to traverse the site.'
+        required: false,
+        description: 'Maximum number of minutes allowed for the spider to traverse the site.'
 
       argument :target_timeout, GraphQL::Types::Int,
-                required: false,
-                description: 'Maximum number of seconds allowed for the site under test to respond to a request.'
+        required: false,
+        description: 'Maximum number of seconds allowed for the site under test to respond to a request.'
 
       argument :scan_type, Types::DastScanTypeEnum,
-                required: false,
-                description: 'Indicates the type of DAST scan that will run. ' \
-                'Either a Passive Scan or an Active Scan.',
-                default_value: 'passive'
+        required: false,
+        description: 'Indicates the type of DAST scan that will run. ' \
+        'Either a Passive Scan or an Active Scan.',
+        default_value: 'passive'
 
       argument :use_ajax_spider, GraphQL::Types::Boolean,
-                required: false,
-                description: 'Indicates if the AJAX spider should be used to crawl the target site. ' \
-                'True to run the AJAX spider in addition to the traditional spider, and false to run only the traditional spider.',
-                default_value: false
+        required: false,
+        description: 'Indicates if the AJAX spider should be used to crawl the target site. ' \
+        'True to run the AJAX spider in addition to the traditional spider, and false to run only the traditional spider.',
+        default_value: false
 
       argument :show_debug_messages, GraphQL::Types::Boolean,
-                required: false,
-                description: 'Indicates if debug messages should be included in DAST console output. ' \
-                'True to include the debug messages.',
-                default_value: false
+        required: false,
+        description: 'Indicates if debug messages should be included in DAST console output. ' \
+        'True to include the debug messages.',
+        default_value: false
 
       argument :tag_list, [GraphQL::Types::String],
-               required: false,
-               description: 'Indicates the runner tags associated with the scanner profile.',
-               deprecated: { reason: 'Moved to DastProfile', milestone: '15.8' }
+        required: false,
+        description: 'Indicates the runner tags associated with the scanner profile.',
+        deprecated: { reason: 'Moved to DastProfile', milestone: '15.8' }
 
       authorize :create_on_demand_dast_scan
 
