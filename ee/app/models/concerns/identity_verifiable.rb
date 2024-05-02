@@ -19,7 +19,7 @@ module IdentityVerifiable
   LOW_RISK_USER_METHODS = %w[email].freeze
   ACTIVE_USER_METHODS = %w[phone].freeze
 
-  def identity_verification_enabled?
+  def signup_identity_verification_enabled?
     return false unless ::Gitlab::Saas.feature_available?(:identity_verification)
     return false unless ::Gitlab::CurrentSettings.email_confirmation_setting_hard?
     return false if ::Gitlab::CurrentSettings.require_admin_approval_after_user_signup
@@ -30,11 +30,11 @@ module IdentityVerifiable
   def active_for_authentication?
     return false unless super
 
-    !identity_verification_enabled? || identity_verified?
+    !signup_identity_verification_enabled? || signup_identity_verified?
   end
 
-  def identity_verified?
-    return email_verified? unless identity_verification_enabled?
+  def signup_identity_verified?
+    return email_verified? unless signup_identity_verification_enabled?
 
     # Treat users that have already signed in before as verified if their email
     # is already verified.
@@ -50,6 +50,24 @@ module IdentityVerifiable
     # 5. User is redirected to Identity Verification which requires them to
     # verify their credit card
     return email_verified? if active_user?
+
+    identity_verification_state.values.all?
+  end
+
+  def identity_verification_enabled?
+    return false unless ::Gitlab::Saas.feature_available?(:identity_verification)
+    return false unless ::Feature.enabled?(:opt_in_identity_verification, self, type: :wip)
+
+    # When no verification methods are available i.e. both phone number and
+    # credit card verifications are disabled
+    return false if required_identity_verification_methods.empty?
+
+    true
+  end
+
+  def identity_verified?
+    return false unless active_user?
+    return true unless identity_verification_enabled?
 
     identity_verification_state.values.all?
   end

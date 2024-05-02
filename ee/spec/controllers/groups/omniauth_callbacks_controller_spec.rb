@@ -443,7 +443,7 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
     describe 'identity verification', feature_category: :insider_threat do
       before do
         allow_next_instance_of(User) do |user|
-          allow(user).to receive(:identity_verification_enabled?).and_return(true)
+          allow(user).to receive(:signup_identity_verification_enabled?).and_return(true)
         end
       end
 

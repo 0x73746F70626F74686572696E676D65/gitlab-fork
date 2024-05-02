@@ -13,7 +13,7 @@ RSpec.describe SessionsController, feature_category: :system_access do
     context 'when identity verification is turned off' do
       before do
         allow_next_found_instance_of(User) do |user|
-          allow(user).to receive(:identity_verification_enabled?).and_return(false)
+          allow(user).to receive(:signup_identity_verification_enabled?).and_return(false)
         end
       end
 
@@ -29,7 +29,7 @@ RSpec.describe SessionsController, feature_category: :system_access do
     context 'when identity verification is turned on' do
       before do
         allow_next_found_instance_of(User) do |user|
-          allow(user).to receive(:identity_verification_enabled?).and_return(true)
+          allow(user).to receive(:signup_identity_verification_enabled?).and_return(true)
         end
       end
 
@@ -44,7 +44,7 @@ RSpec.describe SessionsController, feature_category: :system_access do
       context 'when the user is verified' do
         before do
           allow_next_found_instance_of(User) do |user|
-            allow(user).to receive(:identity_verified?).and_return(true)
+            allow(user).to receive(:signup_identity_verified?).and_return(true)
           end
         end
 

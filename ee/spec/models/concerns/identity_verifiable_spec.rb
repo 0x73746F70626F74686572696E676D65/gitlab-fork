@@ -24,7 +24,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     create(:user_custom_attribute, :assumed_high_risk_reason, user: user)
   end
 
-  describe('#identity_verification_enabled?') do
+  describe('#signup_identity_verification_enabled?') do
     where(
       identity_verification: [true, false],
       require_admin_approval_after_user_signup: [true, false],
@@ -43,8 +43,89 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
           !require_admin_approval_after_user_signup &&
           email_confirmation_setting == 'hard'
 
-        expect(user.identity_verification_enabled?).to eq(result)
+        expect(user.signup_identity_verification_enabled?).to eq(result)
       end
+    end
+  end
+
+  describe('#identity_verification_enabled?') do
+    let_it_be(:user) { create(:user, :with_sign_ins) }
+
+    subject { user.identity_verification_enabled? }
+
+    context 'when verification methods are available' do
+      where(:feature_available, :feature_flag_enabled, :result) do
+        false | false | false
+        true  | false | false
+        false | true  | false
+        true  | true  | true
+      end
+
+      with_them do
+        before do
+          stub_saas_features(identity_verification: feature_available)
+          stub_feature_flags(opt_in_identity_verification: feature_flag_enabled)
+        end
+
+        it { is_expected.to eq(result) }
+      end
+    end
+
+    context 'when verification methods are unavailable' do
+      before do
+        stub_feature_flags(
+          identity_verification_phone_number: false,
+          identity_verification_credit_card: false
+        )
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
+  describe('#identity_verified?') do
+    let_it_be(:user) { create(:user, :with_sign_ins) }
+
+    subject(:identity_verified?) { user.identity_verified? }
+
+    where(:phone_verified, :credit_card_verified, :result) do
+      true  | true  | true
+      true  | false | false
+      false | true  | false
+      false | false | false
+    end
+
+    with_them do
+      before do
+        allow(user).to receive(:identity_verification_enabled?).and_return(true)
+        allow(user).to receive(:identity_verification_state).and_return(
+          {
+            phone: phone_verified,
+            credit_card: credit_card_verified
+          }
+        )
+      end
+
+      it { is_expected.to eq(result) }
+    end
+
+    context 'when user is not active' do
+      let_it_be(:user) { create(:user) }
+
+      before do
+        allow(user).to receive(:identity_verification_enabled?).and_return(true)
+        allow(user).to receive(:identity_verification_state).and_return({ phone: true, credit_card: true })
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when identity verification is not enabled' do
+      before do
+        allow(user).to receive(:identity_verification_enabled?).and_return(false)
+      end
+
+      it { is_expected.to eq(true) }
     end
   end
 
@@ -63,8 +144,8 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
 
     before do
-      allow(user).to receive(:identity_verification_enabled?).and_return(identity_verification_enabled?)
-      allow(user).to receive(:identity_verified?).and_return(identity_verified?)
+      allow(user).to receive(:signup_identity_verification_enabled?).and_return(identity_verification_enabled?)
+      allow(user).to receive(:signup_identity_verified?).and_return(identity_verified?)
       stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
     end
 
@@ -87,8 +168,8 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
   end
 
-  describe('#identity_verified?') do
-    subject { user.identity_verified? }
+  describe('#signup_identity_verified?') do
+    subject { user.signup_identity_verified? }
 
     where(:phone_verified, :email_verified, :result) do
       true  | true  | true
@@ -99,7 +180,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
     with_them do
       before do
-        allow(user).to receive(:identity_verification_enabled?).and_return(true)
+        allow(user).to receive(:signup_identity_verification_enabled?).and_return(true)
         allow(user).to receive(:identity_verification_state).and_return(
           {
             phone: phone_verified,
@@ -113,7 +194,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
     context 'when identity verification is not enabled' do
       before do
-        allow(user).to receive(:identity_verification_enabled?).and_return(false)
+        allow(user).to receive(:signup_identity_verification_enabled?).and_return(false)
       end
 
       context 'and their email is already verified' do

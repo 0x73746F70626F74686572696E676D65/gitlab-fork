@@ -119,7 +119,7 @@ RSpec.describe Gitlab::Auth::OAuth::User do
     context 'when identity verification is enabled' do
       before do
         allow_next_instance_of(User) do |user|
-          allow(user).to receive(:identity_verification_enabled?).and_return(true)
+          allow(user).to receive(:signup_identity_verification_enabled?).and_return(true)
         end
       end
 
@@ -129,30 +129,30 @@ RSpec.describe Gitlab::Auth::OAuth::User do
     end
   end
 
-  describe '#identity_verification_enabled?', feature_category: :insider_threat do
+  describe '#signup_identity_verification_enabled?', feature_category: :insider_threat do
     subject(:oauth_user) { described_class.new(OmniAuth::AuthHash.new(info: {})) }
 
     context 'when identity verification is not enabled' do
       before do
         allow_next_instance_of(User) do |user|
-          allow(user).to receive(:identity_verification_enabled?).and_return(false)
+          allow(user).to receive(:signup_identity_verification_enabled?).and_return(false)
         end
       end
 
       it 'is false' do
-        expect(subject.identity_verification_enabled?(oauth_user.gl_user)).to eq(false)
+        expect(subject.signup_identity_verification_enabled?(oauth_user.gl_user)).to eq(false)
       end
     end
 
     context 'when identity verification is enabled' do
       before do
         allow_next_instance_of(User) do |user|
-          allow(user).to receive(:identity_verification_enabled?).and_return(true)
+          allow(user).to receive(:signup_identity_verification_enabled?).and_return(true)
         end
       end
 
       it 'is true' do
-        expect(subject.identity_verification_enabled?(oauth_user.gl_user)).to eq(true)
+        expect(subject.signup_identity_verification_enabled?(oauth_user.gl_user)).to eq(true)
       end
     end
   end

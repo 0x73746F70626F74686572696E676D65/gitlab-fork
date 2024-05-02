@@ -66,7 +66,7 @@ module Users
     end
 
     def success
-      return redirect_to signup_identity_verification_path unless @user.identity_verified?
+      return redirect_to signup_identity_verification_path unless @user.signup_identity_verified?
 
       accept_pending_invitations(user: @user)
 
@@ -88,7 +88,7 @@ module Users
     end
 
     def require_unverified_user!
-      redirect_to success_signup_identity_verification_path if @user.identity_verified?
+      redirect_to success_signup_identity_verification_path if @user.signup_identity_verified?
     end
 
     def find_verification_user
