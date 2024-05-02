@@ -20,7 +20,7 @@ RSpec.shared_examples 'value stream controller actions' do
     [
       { start_event_identifier: :issue_created, end_event_identifier: :issue_closed, name: 'issue time', custom: true },
       { start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_closed, name: 'mr time',
-custom: true }
+        custom: true }
     ]
   end
 
