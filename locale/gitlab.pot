@@ -46461,6 +46461,9 @@ msgstr ""
 msgid "SecurityOrchestration|Enforce policy on all groups, subgroups, and projects linked to the security policy project. %{linkStart}How does scoping work?%{linkEnd}"
 msgstr ""
 
+msgid "SecurityOrchestration|Enforce the following pipeline execution policy:"
+msgstr ""
+
 msgid "SecurityOrchestration|Every time a pipeline runs for %{branches}%{branchExceptionsString}"
 msgstr ""
 

@@ -8,6 +8,7 @@ const KEY_LABEL_MAP = {
   file: __('Path'),
   project: __('Project'),
   ref: __('Reference'),
+  id: __('Id'),
   template: __('Template'),
   [LOCAL]: __('Local'),
   [REMOTE]: __('Remote'),

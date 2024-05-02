@@ -1,6 +1,9 @@
 import { s__ } from '~/locale';
 
 export const NEW_POLICY_BUTTON_TEXT = s__('SecurityOrchestration|New policy');
+export const PIPELINE_EXECUTION_POLICY_TYPE_HEADER = s__(
+  'SecurityOrchestration|Pipeline execution',
+);
 
 export const POLICY_TYPE_COMPONENT_OPTIONS = {
   scanExecution: {
@@ -19,7 +22,7 @@ export const POLICY_TYPE_COMPONENT_OPTIONS = {
   },
   pipelineExecution: {
     component: 'pipeline-execution-policy-editor',
-    text: s__('SecurityOrchestration|Pipeline execution'),
+    text: PIPELINE_EXECUTION_POLICY_TYPE_HEADER,
     typeName: 'PipelineExecutionPolicy',
     urlParameter: 'pipeline_execution_policy',
     value: 'pipeline',
