@@ -303,7 +303,7 @@ export default {
             @setFilters="$emit('setFilters', $event)"
           />
         </virtual-list>
-        <div v-if="hasMoreEpicsToLoad" class="swimlanes-button gl-pb-3 gl-pl-3 gl-sticky gl-left-0">
+        <div v-if="hasMoreEpicsToLoad" class="swimlanes-button gl-pb-3 gl-pl-3 gl-sticky">
           <gl-button
             category="tertiary"
             variant="confirm"
@@ -336,7 +336,7 @@ export default {
             data-testid="board-lane-unassigned-issues-title"
           >
             <div class="gl-py-3 gl-px-3 gl-display-flex gl-align-items-center">
-              <div class="gl-sticky gl-left-0">
+              <div class="gl-sticky gl-left-4">
                 <gl-button
                   v-gl-tooltip.hover.right
                   :aria-label="chevronTooltip"
