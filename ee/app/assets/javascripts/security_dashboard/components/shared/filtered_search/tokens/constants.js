@@ -4,6 +4,7 @@ import ActivityToken from './activity_token.vue';
 import SeverityToken from './severity_token.vue';
 import ToolToken from './tool_token.vue';
 import ImageToken from './image_token.vue';
+import ClusterToken from './cluster_token.vue';
 
 export const STATUS_TOKEN_DEFINITION = {
   type: 'state',
@@ -47,5 +48,14 @@ export const IMAGE_TOKEN_DEFINITION = {
   multiSelect: true,
   unique: true,
   token: ImageToken,
+  operators: OPERATORS_OR,
+};
+
+export const CLUSTER_TOKEN_DEFINITION = {
+  type: 'cluster',
+  title: ClusterToken.i18n.label,
+  multiSelect: true,
+  unique: true,
+  token: ClusterToken,
   operators: OPERATORS_OR,
 };

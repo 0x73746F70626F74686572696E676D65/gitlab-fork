@@ -4,15 +4,13 @@ import {
   GlFilteredSearchToken,
   GlFilteredSearchSuggestion,
   GlLoadingIcon,
-  GlTruncate,
 } from '@gitlab/ui';
 import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
-import agentImagesQuery from 'ee/security_dashboard/graphql/queries/agent_images.query.graphql';
-import projectImagesQuery from 'ee/security_dashboard/graphql/queries/project_images.query.graphql';
+import getClusterAgentsQuery from 'ee/security_dashboard/graphql/queries/cluster_agents.query.graphql';
 import QuerystringSync from '../../filters/querystring_sync.vue';
-import { ALL_ID as ALL_IMAGES_VALUE } from '../../filters/constants';
+import { ALL_ID as ALL_CLUSTER_VALUE } from '../../filters/constants';
 import eventHub from '../event_hub';
 
 export default {
@@ -21,14 +19,9 @@ export default {
     GlFilteredSearchToken,
     GlFilteredSearchSuggestion,
     GlLoadingIcon,
-    GlTruncate,
     QuerystringSync,
   },
-  inject: {
-    agentName: { default: '' },
-    fullPath: { default: '' },
-    projectFullPath: { default: '' },
-  },
+  inject: ['projectFullPath'],
   props: {
     config: {
       type: Object,
@@ -45,22 +38,23 @@ export default {
     },
   },
   apollo: {
-    images: {
-      query() {
-        return this.isAgentDashboard ? agentImagesQuery : projectImagesQuery;
-      },
+    clusterAgents: {
+      query: getClusterAgentsQuery,
       variables() {
         return {
-          agentName: this.agentName,
-          projectPath: this.projectFullPath || this.fullPath,
+          projectPath: this.projectFullPath,
         };
       },
-      update(data) {
-        const vulnerabilityImages = this.isAgentDashboard
-          ? data.project?.clusterAgent?.vulnerabilityImages
-          : data.project?.vulnerabilityImages;
-
-        return vulnerabilityImages.nodes.map(({ name }) => ({ text: name, value: name, id: name }));
+      update: (data) =>
+        data.project?.clusterAgents?.nodes.map((c) => ({
+          value: c.name,
+          text: c.name,
+          gid: c.id,
+        })) || [],
+      result() {
+        // The gids of the cluster agents are required to filter, so in case the querystring contains cluster agents
+        // on initialisation, the filters-changed event is emitted once we have the result of the cluster agents query.
+        this.emitFiltersChanged();
       },
       error() {
         createAlert({ message: this.$options.i18n.loadingError });
@@ -69,8 +63,8 @@ export default {
   },
   data() {
     return {
-      selectedImages: this.value.data || [ALL_IMAGES_VALUE],
-      images: [],
+      selected: this.value.data || [ALL_CLUSTER_VALUE],
+      clusterAgents: [],
     };
   },
   computed: {
@@ -80,16 +74,19 @@ export default {
         // when the token is active (dropdown is open), we set the value to null to prevent an UX issue
         // in which only the last selected item is being displayed.
         // more information: https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2381
-        data: this.active ? null : this.selectedImages,
+        data: this.active ? null : this.selected,
       };
     },
     items() {
-      return [{ value: ALL_IMAGES_VALUE, text: s__('SecurityReports|All images') }, ...this.images];
+      return [
+        { value: ALL_CLUSTER_VALUE, text: s__('SecurityReports|All clusters') },
+        ...this.clusterAgents,
+      ];
     },
     toggleText() {
       return getSelectedOptionsText({
         options: this.items,
-        selected: this.selectedImages,
+        selected: this.selected,
         maxOptionsShown: 2,
       });
     },
@@ -97,61 +94,65 @@ export default {
       return Boolean(this.agentName);
     },
     isLoading() {
-      return this.$apollo.queries.images.loading;
+      return this.$apollo.queries.clusterAgents.loading;
+    },
+    clusterAgentIds() {
+      return this.clusterAgents.flatMap(({ value, gid }) =>
+        this.selected.includes(value) ? [gid] : [],
+      );
     },
   },
   methods: {
     emitFiltersChanged() {
       eventHub.$emit('filters-changed', {
-        image: this.selectedImages.filter((value) => value !== ALL_IMAGES_VALUE),
+        clusterAgentId: this.clusterAgentIds,
       });
     },
     resetSelected() {
-      this.selectedImages = [ALL_IMAGES_VALUE];
+      this.selected = [ALL_CLUSTER_VALUE];
       this.emitFiltersChanged();
     },
     updateSelectedFromQS(values) {
-      // This happens when we clear the token and re-select `Images`
+      // This happens when we clear the token and re-select `Cluster`
       // to open the dropdown. At that stage we simply want to wait
-      // for the user to select new images.
+      // for the user to select new clusters.
       if (!values.length) {
         return;
       }
 
-      this.selectedImages = values;
-      this.emitFiltersChanged();
+      this.selected = values;
     },
     toggleSelected(selectedValue) {
-      const allImagesSelected = selectedValue === ALL_IMAGES_VALUE;
+      const allClustersSelected = selectedValue === ALL_CLUSTER_VALUE;
 
-      if (this.selectedImages.includes(selectedValue)) {
-        this.selectedImages = this.selectedImages.filter((s) => s !== selectedValue);
+      if (this.selected.includes(selectedValue)) {
+        this.selected = this.selected.filter((s) => s !== selectedValue);
       } else {
-        this.selectedImages = this.selectedImages.filter((s) => s !== ALL_IMAGES_VALUE);
-        this.selectedImages.push(selectedValue);
+        this.selected = this.selected.filter((s) => s !== ALL_CLUSTER_VALUE);
+        this.selected.push(selectedValue);
       }
 
-      if (!this.selectedImages.length || allImagesSelected) {
-        this.selectedImages = [ALL_IMAGES_VALUE];
+      if (!this.selected.length || allClustersSelected) {
+        this.selected = [ALL_CLUSTER_VALUE];
       }
     },
-    isImageSelected(name) {
-      return this.selectedImages.includes(name);
+    isClusterSelected(name) {
+      return this.selected.includes(name);
     },
   },
   i18n: {
-    label: s__('SecurityReports|Image'),
-    loadingError: s__('SecurityOrchestration|Failed to load images.'),
+    label: s__('SecurityReports|Cluster'),
+    loadingError: s__('SecurityOrchestration|Failed to load cluster agents.'),
   },
 };
 </script>
 
 <template>
-  <querystring-sync querystring-key="image" :value="selectedImages" @input="updateSelectedFromQS">
+  <querystring-sync querystring-key="cluster" :value="selected" @input="updateSelectedFromQS">
     <gl-filtered-search-token
       :config="config"
       v-bind="{ ...$props, ...$attrs }"
-      :multi-select-values="selectedImages"
+      :multi-select-values="selected"
       :value="tokenValue"
       v-on="$listeners"
       @select="toggleSelected"
@@ -164,19 +165,19 @@ export default {
       <template #suggestions>
         <gl-loading-icon v-if="isLoading" size="sm" />
         <gl-filtered-search-suggestion
-          v-for="image in items"
+          v-for="cluster in items"
           v-else
-          :key="image.value"
-          :value="image.value"
+          :key="cluster.value"
+          :value="cluster.value"
         >
           <div class="gl-display-flex gl-align-items-center">
             <gl-icon
               name="check"
               class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
-              :class="{ 'gl-invisible': !isImageSelected(image.value) }"
-              :data-testid="`image-icon-${image.value}`"
+              :class="{ 'gl-invisible': !isClusterSelected(cluster.value) }"
+              :data-testid="`cluster-icon-${cluster.value}`"
             />
-            <gl-truncate position="middle" :text="image.text" data-testid="truncate-image" />
+            {{ cluster.text }}
           </div>
         </gl-filtered-search-suggestion>
       </template>
