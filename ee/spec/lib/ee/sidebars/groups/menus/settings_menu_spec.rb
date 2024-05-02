@@ -243,6 +243,24 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
           it { is_expected.not_to be_present }
         end
       end
+
+      describe 'Analytics menu' do
+        let(:item_id) { :analytics }
+        let(:feature_enabled) { true }
+
+        before do
+          allow(menu).to receive(:group_analytics_settings_available?).with(user, group).and_return(feature_enabled)
+          menu.configure_menu_items
+        end
+
+        it { is_expected.to be_present }
+
+        context 'when feature is not enabled' do
+          let(:feature_enabled) { false }
+
+          it { is_expected.not_to be_present }
+        end
+      end
     end
 
     context 'for auditor user' do

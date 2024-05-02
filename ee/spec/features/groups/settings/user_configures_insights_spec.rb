@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Settings > User configures Insights', :js, feature_category: :value_stream_management do
+RSpec.describe 'Groups > Settings > Analytics > User configures Insights', :js, feature_category: :value_stream_management do
   include ListboxHelpers
 
   let_it_be(:group) { create(:group) }
@@ -18,7 +18,7 @@ RSpec.describe 'Groups > Settings > User configures Insights', :js, feature_cate
     before do
       stub_licensed_features(insights: false)
 
-      visit edit_group_path(group)
+      visit group_settings_analytics_path(group)
     end
 
     it 'does not show the Insight config' do
@@ -30,7 +30,7 @@ RSpec.describe 'Groups > Settings > User configures Insights', :js, feature_cate
     before do
       stub_licensed_features(insights: true)
 
-      visit edit_group_path(group)
+      visit group_settings_analytics_path(group)
     end
 
     it 'allows to select a project in a subgroup for the Insights config' do

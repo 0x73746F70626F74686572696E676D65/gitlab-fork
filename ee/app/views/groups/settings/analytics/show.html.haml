@@ -1,0 +1,16 @@
+- page_title _('Analytics settings')
+- expanded = true
+- @force_desktop_expanded_sidebar = true
+
+%section.settings.no-animate{ class: ('expanded' if expanded) }
+  .settings-header
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only{ role: 'button' }
+      = s_('GroupSettings|Analytics')
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded ? _('Collapse') : _('Expand')
+    %p.gl-text-secondary
+      = s_('GroupSettings|Configure analytics features for this group.')
+  .settings-content
+    = render 'analytics_dashboards' if group_analytics_dashboard_available?(current_user, @group)
+    = render 'value_stream_dashboard' if can?(current_user, :modify_value_stream_dashboard_settings, @group)
+    = render 'insights' if @group.insights_available?

@@ -20,6 +20,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       end
       resource :merge_requests, only: [:update]
       resources :roles_and_permissions, only: [:index, :new, :edit]
+      resource :analytics, only: [:show, :update]
 
       scope module: 'remote_development' do
         get 'workspaces', action: :show, controller: 'workspaces'
