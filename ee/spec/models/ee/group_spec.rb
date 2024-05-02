@@ -3827,13 +3827,13 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it 'returns true when namespace_settings.enable_auto_assign_gitlab_duo_pro_seats is enabled' do
         root_group.namespace_settings.update!(enable_auto_assign_gitlab_duo_pro_seats: true)
 
-        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to eq(true)
+        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to be_truthy
       end
 
       it 'returns false when namespace_settings.enable_auto_assign_gitlab_duo_pro_seats is disabled' do
         root_group.namespace_settings.update!(enable_auto_assign_gitlab_duo_pro_seats: false)
 
-        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to eq(false)
+        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsey
       end
     end
 
@@ -3865,7 +3865,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it 'returns true when namespace_settings.enable_auto_assign_gitlab_duo_pro_seats is enabled' do
         root_group.namespace_settings.update!(enable_auto_assign_gitlab_duo_pro_seats: true)
 
-        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to eq(true)
+        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to be_truthy
       end
 
       it 'returns false for non-root namespace' do
@@ -3875,7 +3875,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it 'returns false when namespace_settings.enable_auto_assign_gitlab_duo_pro_seats is disabled' do
         root_group.namespace_settings.update!(enable_auto_assign_gitlab_duo_pro_seats: false)
 
-        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to eq(false)
+        expect(root_group.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsey
       end
     end
   end
