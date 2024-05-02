@@ -11307,9 +11307,6 @@ msgstr ""
 msgid "ClassificationLabelUnavailable|is unavailable: %{reason}"
 msgstr ""
 
-msgid "Clean up after running %{link_start}git filter-repo%{link_end} on the repository."
-msgstr ""
-
 msgid "Cleanup policies are executed by background workers. This setting defines the maximum number of workers that can run concurrently. Set it to 0 to remove all workers and not execute the cleanup policies."
 msgstr ""
 
@@ -40048,6 +40045,12 @@ msgstr ""
 msgid "ProjectList|Yours"
 msgstr ""
 
+msgid "ProjectMaintenance| To ensure that a full backup is available in case changes need to be restored, you should make an %{docs_link_start}export of the project%{docs_link_end}."
+msgstr ""
+
+msgid "ProjectMaintenance|Manage repository storage and cleanup."
+msgstr ""
+
 msgid "ProjectOverview|Create new fork"
 msgstr ""
 
@@ -55367,6 +55370,12 @@ msgstr ""
 msgid "Upload a private key for your certificate"
 msgstr ""
 
+msgid "Upload a text file of objects, and then GitLab removes internal Git references to these objects. Use %{git_filter_link_start}git filter-repo%{git_filter_link_end} on the repository to generate the list of objects to remove as a commit-map file."
+msgstr ""
+
+msgid "Upload commit-map file"
+msgstr ""
+
 msgid "Upload could not be deleted."
 msgstr ""
 
@@ -55374,9 +55383,6 @@ msgid "Upload file"
 msgstr ""
 
 msgid "Upload new file"
-msgstr ""
-
-msgid "Upload object map"
 msgstr ""
 
 msgid "Uploaded date"
@@ -57919,6 +57925,9 @@ msgid "What does the setting affect?"
 msgstr ""
 
 msgid "What does this command do?"
+msgstr ""
+
+msgid "What happens during repository cleanup?"
 msgstr ""
 
 msgid "What is GitLab Runner?"
