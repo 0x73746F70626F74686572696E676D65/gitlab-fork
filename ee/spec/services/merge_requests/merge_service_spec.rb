@@ -212,7 +212,6 @@ RSpec.describe MergeRequests::MergeService, feature_category: :source_code_manag
       context 'with merge_trains_skip_merge_train_allowed ProjectCiCdSetting enabled' do
         before do
           stub_licensed_features(merge_pipelines: true, merge_trains: true)
-          stub_feature_flags(disable_merge_trains: false)
 
           project.update!(approvals_before_merge: 0)
           project.ci_cd_settings.update!(
