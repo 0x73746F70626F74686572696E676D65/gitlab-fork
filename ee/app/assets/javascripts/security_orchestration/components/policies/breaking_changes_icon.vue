@@ -9,7 +9,7 @@ export default {
   }),
   i18n: {
     description: s__(
-      "SecurityOrchestration|You must edit the policy and replace the deprecated syntax%{deprecatedProperties}. For details on it's replacement, see the %{linkStart}policy documentation%{linkEnd}.",
+      'SecurityOrchestration|You must edit the policy and replace the deprecated syntax%{deprecatedProperties}. For details on its replacement, see the %{linkStart}policy documentation%{linkEnd}.',
     ),
     title: s__('SecurityOrchestration|Policy is invalid'),
   },
