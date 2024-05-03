@@ -594,7 +594,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
         true  | false  | false | be_allowed(policy)
         true  | true   | false | be_allowed(policy)
 
-        # When Group actor is enabled on `duo_chat_requires_licensed_seat` feature flag.
+        # When Group actor belongs to a group which requires licensed seat for chat
         true  | false  | true | be_disallowed(policy)
         true  | true   | true | be_allowed(policy)
       end
