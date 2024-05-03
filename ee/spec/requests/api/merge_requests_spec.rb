@@ -371,7 +371,6 @@ RSpec.describe API::MergeRequests, feature_category: :source_code_management do
 
       before do
         stub_licensed_features(merge_pipelines: true, merge_trains: true)
-        stub_feature_flags(disable_merge_trains: false)
 
         project.update!(approvals_before_merge: 0)
         project.ci_cd_settings.update!(
