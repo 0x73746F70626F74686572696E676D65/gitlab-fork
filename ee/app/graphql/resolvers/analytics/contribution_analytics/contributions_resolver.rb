@@ -11,10 +11,10 @@ module Resolvers
 
         # rubocop:disable Layout/LineLength
         argument :from, GraphQL::Types::ISO8601Date, required: true,
-                                                     description: 'Start date of the reporting time range.'
+          description: 'Start date of the reporting time range.'
         argument :to, GraphQL::Types::ISO8601Date, required: true,
-                                                   description: 'End date of the reporting time range. ' \
-                                                   "The end date must be within #{NUMBER_OF_DAYS} days after the start date."
+          description: 'End date of the reporting time range. ' \
+          "The end date must be within #{NUMBER_OF_DAYS} days after the start date."
         # rubocop:enable Layout/LineLength
 
         max_page_size 500

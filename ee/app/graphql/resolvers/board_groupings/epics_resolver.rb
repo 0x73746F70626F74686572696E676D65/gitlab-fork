@@ -8,8 +8,8 @@ module Resolvers
       alias_method :board, :object
 
       argument :issue_filters, Types::Boards::BoardIssueInputType,
-               required: false,
-               description: 'Filters applied when selecting issues on the board.'
+        required: false,
+        description: 'Filters applied when selecting issues on the board.'
 
       type Types::Boards::BoardEpicType, null: true
 

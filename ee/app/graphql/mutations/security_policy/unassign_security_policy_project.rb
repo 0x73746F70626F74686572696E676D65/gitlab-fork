@@ -11,13 +11,13 @@ module Mutations
       authorize :update_security_orchestration_policy_project
 
       argument :full_path, GraphQL::Types::String,
-               required: false,
-               description: 'Full path of the project or group.'
+        required: false,
+        description: 'Full path of the project or group.'
 
       argument :project_path, GraphQL::Types::ID,
-               required: false,
-               deprecated: { reason: 'Use `fullPath`', milestone: '14.10' },
-               description: 'Full path of the project.'
+        required: false,
+        deprecated: { reason: 'Use `fullPath`', milestone: '14.10' },
+        description: 'Full path of the project.'
 
       def resolve(args)
         project_or_group = authorized_find!(**args)

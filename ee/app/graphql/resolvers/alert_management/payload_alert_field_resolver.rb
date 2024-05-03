@@ -4,8 +4,8 @@ module Resolvers
   module AlertManagement
     class PayloadAlertFieldResolver < BaseResolver
       argument :payload_example, GraphQL::Types::String,
-               required: true,
-               description: 'Sample payload for extracting alert fields for custom mappings.'
+        required: true,
+        description: 'Sample payload for extracting alert fields for custom mappings.'
 
       type ::Types::AlertManagement::PayloadAlertFieldType, null: true
 

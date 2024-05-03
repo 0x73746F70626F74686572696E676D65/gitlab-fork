@@ -12,9 +12,9 @@ module Mutations
       prepend Mutations::VulnerabilityStateTransitions
 
       argument :dismissal_reason,
-               Types::Vulnerabilities::DismissalReasonEnum,
-               required: false,
-               description: 'Reason why vulnerability should be dismissed.'
+        Types::Vulnerabilities::DismissalReasonEnum,
+        required: false,
+        description: 'Reason why vulnerability should be dismissed.'
 
       def resolve(id:, comment: nil, dismissal_reason: nil)
         vulnerability = authorized_find!(id: id)

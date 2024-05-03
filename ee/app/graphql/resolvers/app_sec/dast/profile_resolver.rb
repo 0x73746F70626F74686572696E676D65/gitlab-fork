@@ -11,13 +11,13 @@ module Resolvers
         type ::Types::Dast::ProfileType.connection_type, null: true
 
         argument :has_dast_profile_schedule, ::GraphQL::Types::Boolean,
-                 required: false,
-                 description: 'Filter DAST Profiles by whether or not they have a schedule.'
+          required: false,
+          description: 'Filter DAST Profiles by whether or not they have a schedule.'
 
         when_single do
           argument :id, ::Types::GlobalIDType[::Dast::Profile],
-                   required: true,
-                   description: 'ID of the DAST Profile.'
+            required: true,
+            description: 'ID of the DAST Profile.'
         end
 
         def resolve_with_lookahead(**args)
