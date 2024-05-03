@@ -58450,6 +58450,9 @@ msgstr ""
 msgid "WorkItem|%{usersLength} assignees"
 msgstr ""
 
+msgid "WorkItem|%{workItemType} created"
+msgstr ""
+
 msgid "WorkItem|%{workItemType} deleted"
 msgstr ""
 
@@ -58856,6 +58859,9 @@ msgid "WorkItem|The current task"
 msgstr ""
 
 msgid "WorkItem|This %{workItemType} is confidential and should only be visible to team members with at least Reporter access"
+msgstr ""
+
+msgid "WorkItem|This %{workItemType} is confidential and should only be visible to users having at least Reporter access."
 msgstr ""
 
 msgid "WorkItem|This %{workItemType} is currently blocked by the following items:"
