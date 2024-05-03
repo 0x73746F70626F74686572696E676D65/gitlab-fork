@@ -246,5 +246,11 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
     end
 
     resource :discover, only: [:show]
+
+    resources :runners, only: [] do
+      collection do
+        get :dashboard
+      end
+    end
   end
 end

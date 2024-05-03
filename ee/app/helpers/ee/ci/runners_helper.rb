@@ -19,6 +19,18 @@ module EE
         attributes
       end
 
+      override :group_runners_data_attributes
+      def group_runners_data_attributes(group)
+        dashboard_available = ::Feature.enabled?(:runners_dashboard_for_groups, group) &&
+          group.licensed_feature_available?(:runner_performance_insights_for_namespace)
+
+        if dashboard_available
+          super.merge(runner_dashboard_path: dashboard_group_runners_path(group))
+        else
+          super
+        end
+      end
+
       override :toggle_shared_runners_settings_data
       def toggle_shared_runners_settings_data(project)
         super.merge(is_credit_card_validation_required: validate_credit_card?(project).to_s)

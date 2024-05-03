@@ -12,19 +12,53 @@ RSpec.describe EE::Ci::RunnersHelper, feature_category: :fleet_visibility do
   end
 
   describe '#admin_runners_data_attributes' do
-    subject { helper.admin_runners_data_attributes }
+    subject(:data_attributes) { helper.admin_runners_data_attributes }
 
     it 'has no runner_dashboard_path if runner_performance_insights feature is not licensed' do
-      expect(subject[:runner_dashboard_path]).to eq(nil)
+      expect(data_attributes[:runner_dashboard_path]).to be_nil
     end
 
     context 'when runner_performance_insights feature is licensed' do
+      let(:expected_path) { ::Gitlab::Routing.url_helpers.dashboard_admin_runners_path }
+
       before do
         stub_licensed_features(runner_performance_insights: true)
       end
 
       it 'returns dashboard path' do
-        expect(subject[:runner_dashboard_path]).to eq(::Gitlab::Routing.url_helpers.dashboard_admin_runners_path)
+        expect(data_attributes[:runner_dashboard_path]).to eq expected_path
+      end
+    end
+  end
+
+  describe '#group_runners_data_attributes' do
+    let_it_be(:group) { create(:group) }
+
+    subject(:data_attributes) { helper.group_runners_data_attributes(group) }
+
+    it 'has no runner_dashboard_path if runner_performance_insights_for_namespace feature is not licensed' do
+      expect(data_attributes[:runner_dashboard_path]).to be_nil
+    end
+
+    context 'when runner_performance_insights_for_namespace feature is licensed' do
+      let(:expected_path) { ::Gitlab::Routing.url_helpers.dashboard_group_runners_path(group) }
+
+      before do
+        stub_licensed_features(runner_performance_insights_for_namespace: [group])
+      end
+
+      it 'returns dashboard path' do
+        expect(data_attributes[:runner_dashboard_path]).to eq expected_path
+      end
+
+      context 'when runners_dashboard_for_groups FF is disabled for group' do
+        before do
+          stub_feature_flags(runners_dashboard_for_groups: [create(:group)])
+        end
+
+        it 'has no runner_dashboard_path' do
+          expect(data_attributes[:runner_dashboard_path]).to be_nil
+        end
       end
     end
   end

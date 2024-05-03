@@ -1,7 +1,7 @@
-import { provide as ceProvide } from '~/ci/runner/admin_runners/provide';
+import { runnersAppProvide as ceRunnersAppProvide } from '~/ci/runner/provide';
 
 /**
- * Provides global values to the admin runners app.
+ * Provides global values to the runners app.
  *
  * Includes a runnerDashboardPath, which is to be shown when the dashboard is
  * enabled.
@@ -9,11 +9,11 @@ import { provide as ceProvide } from '~/ci/runner/admin_runners/provide';
  * @param {Object} `data-` HTML attributes of the mounting point
  * @returns An object with properties to use provide/inject of the EE root app.
  */
-export const provide = (elDataset) => {
+export const runnersAppProvide = (elDataset) => {
   const { runnerDashboardPath } = elDataset;
 
   return {
-    ...ceProvide(elDataset),
+    ...ceRunnersAppProvide(elDataset),
     runnerDashboardPath,
   };
 };
