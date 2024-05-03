@@ -13,7 +13,7 @@ module EE
         attribute :wiki_access_level, default: -> { Featurable::ENABLED }
 
         after_update_commit :maintain_group_wiki_permissions_in_elastic, if: -> {
-          group.use_elasticsearch? && ::Wiki.use_separate_indices?
+          group.use_elasticsearch?
         }
 
         def wiki_access_level=(value)

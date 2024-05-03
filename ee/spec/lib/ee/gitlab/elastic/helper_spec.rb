@@ -808,35 +808,23 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
     include ElasticsearchHelpers
     before do
       set_elasticsearch_migration_to :reindex_wikis_to_fix_routing, including: true
-      allow(Wiki).to receive(:use_separate_indices?).and_return true
     end
 
-    context 'container_type is other than Group or Project' do
+    context 'when container_type is other than Group or Project' do
       it 'not calls delete_by_query' do
         expect(helper.client).not_to receive(:delete_by_query)
         helper.remove_wikis_from_the_standalone_index(1, 'Random')
       end
     end
 
-    context 'Wiki does not use separate indices' do
-      before do
-        allow(Wiki).to receive(:use_separate_indices?).and_return false
-      end
-
-      it 'not calls delete_by_query' do
-        expect(helper.client).not_to receive(:delete_by_query)
-        helper.remove_wikis_from_the_standalone_index(1, 'Project')
-      end
-    end
-
-    context 'Wiki uses separate indices and container_type is either Project or Group' do
+    context 'when container_type is either Project or Group' do
       let(:body) do
         { query: { bool: { filter: { term: { rid: rid } } } } }
       end
 
       let(:index) { Elastic::Latest::WikiConfig.index_name }
 
-      context 'namespace_routing_id is passed' do
+      context 'when namespace_routing_id is passed' do
         let(:container_id) { 1 }
         let(:container_type) { 'Group' }
         let(:namespace_routing_id) { 0 }
@@ -847,7 +835,7 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
           helper.remove_wikis_from_the_standalone_index(container_id, container_type, namespace_routing_id)
         end
 
-        context 'migration reindex_wikis_to_fix_routing is not finished' do
+        context 'when migration reindex_wikis_to_fix_routing is not finished' do
           before do
             set_elasticsearch_migration_to :reindex_wikis_to_fix_routing, including: false
           end
@@ -859,7 +847,7 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
         end
       end
 
-      context 'namespace_routing_id is not passed' do
+      context 'when namespace_routing_id is not passed' do
         let(:container_id) { 1 }
         let(:container_type) { 'Project' }
         let(:rid) { "wiki_#{container_type.downcase}_#{container_id}" }

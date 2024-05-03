@@ -63,12 +63,13 @@ RSpec.describe ElasticDeleteProjectWorker, :elastic, feature_category: :global_s
   end
 
   it 'does not include indexes which do not exist' do
-    allow(Wiki).to receive(:use_separate_indices?).and_return(false)
     allow(::Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
     allow(helper).to receive(:index_exists?).and_return(false)
 
     expect(helper.client).to receive(:delete_by_query).with(a_hash_including(index: Project.index_name))
     expect(helper.client).to receive(:delete_by_query).with(a_hash_including(index: [helper.target_name]))
+    expect(helper.client).to receive(:delete_by_query)
+      .with(a_hash_including(index: ::Elastic::Latest::WikiConfig.index_name))
 
     worker.perform(1, 2)
   end

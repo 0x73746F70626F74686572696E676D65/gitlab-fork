@@ -32,15 +32,14 @@ module Elastic
         self.class.blob_aggregations(query, repository_specific_options(options))
       end
 
-      # If is_wiki is true and migrate_wikis_to_separate_index is finished then set
-      # index as (#{env}-wikis)
+      # If is_wiki is true then set index as (#{env}-wikis)
       # rid as (wiki_project_#{id}) for ProjectWiki and (wiki_group_#{id}) for GroupWiki
       # If add_suffix_project_in_wiki_rid has not finished then rid might not have prefix(project/group) then
       # run delete_query_by_rid with sending rid as 'wiki_#{project_id}'
       def delete_index_for_commits_and_blobs(is_wiki: false)
         types = is_wiki ? %w[wiki_blob] : %w[commit blob]
 
-        if (is_wiki && ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)) || types.include?('commit')
+        if is_wiki || types.include?('commit')
           index, rid = if is_wiki
                          [::Elastic::Latest::WikiConfig.index_name, wiki_rid]
                        else

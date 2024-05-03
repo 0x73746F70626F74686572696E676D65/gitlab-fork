@@ -252,12 +252,9 @@ module Gitlab
       def elasticsearch_config(target)
         config = Gitlab::CurrentSettings.elasticsearch_config.merge(
           index_name: target.index_name,
-          index_name_commits: ::Elastic::Latest::CommitConfig.index_name
+          index_name_commits: ::Elastic::Latest::CommitConfig.index_name,
+          index_name_wikis: ::Elastic::Latest::WikiConfig.index_name
         )
-
-        if migration_finished?(:migrate_wikis_to_separate_index)
-          config[:index_name_wikis] = ::Elastic::Latest::WikiConfig.index_name
-        end
 
         # We need to pass a percent encoded URL string instead of a hash
         # to the go indexer because it passes authentication credentials

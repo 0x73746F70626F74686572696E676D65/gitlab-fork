@@ -111,3 +111,5 @@ class MigrateWikisToSeparateIndex < Elastic::Migration
     )
   end
 end
+
+MigrateWikisToSeparateIndex.prepend ::Elastic::MigrationObsolete

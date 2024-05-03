@@ -30,7 +30,7 @@ class RemoveWikisFromMainIndex < Elastic::Migration
     helper.target_name
   end
 
-  # rubocop: disable CodeReuse/ActiveRecord
+  # rubocop: disable CodeReuse/ActiveRecord -- Obsolete migration, this code will eventually be removed
   def enqueue_tasks_for_projects(projects_in_progress)
     project_ids_to_work = search_projects(exclude_project_ids: projects_in_progress.pluck(:project_id))
     project_ids_to_work.each do |project_id|
@@ -115,7 +115,7 @@ class RemoveWikisFromMainIndex < Elastic::Migration
       }
     )
     project_ids_hist = results.dig('aggregations', 'project_ids', 'buckets') || []
-    project_ids_hist.pluck('key') # rubocop: disable CodeReuse/ActiveRecord
+    project_ids_hist.pluck('key') # rubocop: disable CodeReuse/ActiveRecord -- Obsolete migration, code will be eventually removed
   end
 
   def query_filter_wiki_blobs(exclude_project_ids = nil)
@@ -132,3 +132,5 @@ class RemoveWikisFromMainIndex < Elastic::Migration
     [get_number_of_shards(index_name: index_name), MAX_PROJECTS_TO_PROCESS].min
   end
 end
+
+RemoveWikisFromMainIndex.prepend ::Elastic::MigrationObsolete

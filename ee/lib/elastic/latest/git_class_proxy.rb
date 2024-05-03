@@ -240,7 +240,7 @@ module Elastic
       end
 
       def group_ids_from_wiki_response(type, response)
-        return unless type.eql?('wiki_blob') && use_separate_wiki_index?
+        return unless type.eql?('wiki_blob')
 
         response.map { |result| group_id_for_wiki_blob(result) }
       end
@@ -256,8 +256,6 @@ module Elastic
       end
 
       def group_level_wiki_result?(result)
-        return false unless use_separate_wiki_index?
-
         result['_source']['type'].eql?('wiki_blob') && result['_source']['rid'].match(/wiki_group_\d+/)
       end
 
@@ -381,10 +379,6 @@ module Elastic
       def archived_filter_applicable_for_blob_search?(options)
         !options[:include_archived] && options[:search_scope] != 'project' &&
           ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_field_in_blob)
-      end
-
-      def use_separate_wiki_index?
-        Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)
       end
 
       def disable_project_joins_for_blob?
