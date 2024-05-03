@@ -7,6 +7,7 @@ module EE
     include PreventForkingHelper
     include ServiceAccessTokenExpirationHelper
     include GroupInviteMembers
+    include GitlabSubscriptions::SubscriptionHelper
 
     prepended do
       include GeoInstrumentation
@@ -81,6 +82,7 @@ module EE
       end
     end
 
+    # rubocop:disable Metrics/AbcSize -- Reason: The .tap block requires many necessary checks for each parameter.
     def group_params_ee
       [
         :membership_lock,
@@ -102,8 +104,10 @@ module EE
         params_ee << :experiment_features_enabled if experiment_settings_allowed?
         params_ee.push(%i[duo_features_enabled lock_duo_features_enabled]) if licensed_ai_features_available?
         params_ee << :disable_personal_access_tokens
+        params_ee << :enable_auto_assign_gitlab_duo_pro_seats if allow_update_enable_auto_assign_gitlab_duo_pro_seats?
       end + security_policies_toggle_params
     end
+    # rubocop:enable Metrics/AbcSize
 
     def security_policies_toggle_params
       security_policy_custom_ci_toggle_params
@@ -116,6 +120,11 @@ module EE
         :toggle_security_policy_custom_ci,
         :lock_toggle_security_policy_custom_ci
       ]
+    end
+
+    def allow_update_enable_auto_assign_gitlab_duo_pro_seats?
+      ::Feature.enabled?(:auto_assign_gitlab_duo_pro_seats, current_group) && gitlab_com_subscription? && current_group&.root? &&
+        can?(current_user, :admin_group, current_group) && current_group&.code_suggestions_purchased?
     end
 
     def experiment_settings_allowed?
