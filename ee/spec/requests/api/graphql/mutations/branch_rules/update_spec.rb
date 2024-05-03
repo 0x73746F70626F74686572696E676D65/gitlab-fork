@@ -6,11 +6,12 @@ RSpec.describe 'BranchRuleUpdate', feature_category: :source_code_management do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :public) }
-  let_it_be(:user) { create(:user) }
-  let_it_be(:protected_branch) do
-    create(:protected_branch, project: project)
+  let_it_be(:user) { create(:user, maintainer_of: project) }
+  let_it_be(:protected_branch, reload: true) do
+    create(:protected_branch, project: project, default_merge_level: false, default_push_level: false)
   end
 
+  let!(:code_owner_approval_required) { !protected_branch.code_owner_approval_required }
   let!(:allow_force_push) { !protected_branch.allow_force_push }
 
   let(:current_user) { user }
@@ -26,6 +27,7 @@ RSpec.describe 'BranchRuleUpdate', feature_category: :source_code_management do
       id: global_id,
       name: name,
       branch_protection: {
+        code_owner_approval_required: code_owner_approval_required,
         allow_force_push: allow_force_push,
         merge_access_levels: merge_access_levels,
         push_access_levels: push_access_levels
@@ -35,29 +37,20 @@ RSpec.describe 'BranchRuleUpdate', feature_category: :source_code_management do
 
   subject(:post_mutation) { post_graphql_mutation(mutation, current_user: user) }
 
-  context 'when the user does not have permission' do
-    before_all do
-      project.add_developer(user)
-    end
-
-    it_behaves_like 'a mutation that returns top-level errors', errors: [<<~ERROR.chomp]
-      The resource that you are attempting to access does not exist or you don't have permission to perform this action
-    ERROR
-
-    it 'does not update the branch rule' do
-      expect { post_mutation }.not_to change { protected_branch.reload.attributes }
-    end
-  end
-
   context 'when the user can update a branch rules' do
     before_all do
       project.add_maintainer(user)
+    end
+
+    before do
+      stub_licensed_features(code_owner_approval_required: true)
     end
 
     it 'updates the branch rule' do
       post_mutation
 
       expect(protected_branch.reload.name).to eq(name)
+      expect(protected_branch.code_owner_approval_required).to eq(code_owner_approval_required)
       expect(protected_branch.allow_force_push).to eq(allow_force_push)
 
       merge_access_level = an_object_having_attributes(**merge_access_levels.first)
@@ -66,37 +59,22 @@ RSpec.describe 'BranchRuleUpdate', feature_category: :source_code_management do
       push_access_level = an_object_having_attributes(**push_access_levels.first)
       expect(protected_branch.push_access_levels).to contain_exactly(push_access_level)
     end
+  end
 
-    it 'returns the updated branch rule' do
-      post_mutation
-
-      expect(mutation_response).to have_key('branchRule')
-      expect(mutation_response['branchRule']['name']).to eq(name)
-      expect(mutation_response['errors']).to be_empty
+  context 'with blocking scan result policy' do
+    let(:branch_name) { branch_rule.name }
+    let(:policy_configuration) do
+      create(:security_orchestration_policy_configuration, project: project)
     end
 
-    context 'when name already exists for the project' do
-      before do
-        create(:protected_branch, project: project, name: name)
-      end
+    include_context 'with scan result policy blocking protected branches'
 
-      it 'returns an error' do
-        post_mutation
-
-        expect(mutation_response['errors'].first).to eq('Name has already been taken')
-      end
+    before do
+      create(:scan_result_policy_read, :blocking_protected_branches, project: project,
+        security_orchestration_policy_configuration: policy_configuration)
     end
 
-    context 'when branch rule cannot be found' do
-      let(:global_id) { project.to_gid.to_s }
-      let(:error_message) { %("#{global_id}" does not represent an instance of Projects::BranchRule) }
-      let(:global_id_error) { a_hash_including('message' => a_string_including(error_message)) }
-
-      it 'returns an error' do
-        post_mutation
-
-        expect(graphql_errors).to include(global_id_error)
-      end
-    end
+    it_behaves_like 'a mutation that returns top-level errors',
+      errors: ["Internal server error: Gitlab::Access::AccessDeniedError"]
   end
 end
