@@ -238,6 +238,7 @@ module GitlabSubscriptions
       requirements
       runner_maintenance_note
       runner_performance_insights
+      runner_performance_insights_for_namespace
       runner_upgrade_management
       runner_upgrade_management_for_namespace
       sast

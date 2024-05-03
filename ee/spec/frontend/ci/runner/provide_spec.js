@@ -1,4 +1,4 @@
-import { provide } from 'ee/ci/runner/admin_runners/provide';
+import { runnersAppProvide } from 'ee/ci/runner/provide';
 
 import { runnerInstallHelpPage } from 'jest/ci/runner/mock_data';
 import { runnerDashboardPath } from 'ee_jest/ci/runner/mock_data';
@@ -13,7 +13,7 @@ const mockDataset = {
 
 describe('ee admin runners provide', () => {
   it('returns runnerDashboardPath', () => {
-    expect(provide(mockDataset)).toMatchObject({
+    expect(runnersAppProvide(mockDataset)).toMatchObject({
       runnerDashboardPath,
     });
   });

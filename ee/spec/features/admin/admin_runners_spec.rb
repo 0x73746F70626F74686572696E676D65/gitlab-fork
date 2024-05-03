@@ -133,6 +133,14 @@ RSpec.describe "Admin Runners", feature_category: :fleet_visibility do
         it 'shows dashboard link' do
           expect(page).to have_link s_('Runners|Fleet dashboard'), href: dashboard_admin_runners_path
         end
+
+        it 'shows dashboard' do
+          visit dashboard_admin_runners_path
+
+          within_testid('breadcrumb-links') do
+            expect(page).to have_link('Fleet dashboard')
+          end
+        end
       end
 
       context 'without runner_performance_insights licensed feature' do

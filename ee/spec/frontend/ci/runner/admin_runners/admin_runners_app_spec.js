@@ -8,7 +8,8 @@ import { createLocalState } from '~/ci/runner/graphql/list/local_state';
 import AdminRunnersApp from '~/ci/runner/admin_runners/admin_runners_app.vue';
 import RunnerList from '~/ci/runner/components/runner_list.vue';
 
-import RunnerUpgradeStatusIcon from 'ee_component/ci/runner/components/runner_upgrade_status_icon.vue';
+import RunnerUpgradeStatusIcon from 'ee/ci/runner/components/runner_upgrade_status_icon.vue';
+import RunnerDashboardLink from 'ee/ci/runner/components/runner_dashboard_link.vue';
 
 import allRunnersQuery from 'ee_else_ce/ci/runner/graphql/list/all_runners.query.graphql';
 import allRunnersCountQuery from '~/ci/runner/graphql/list/all_runners_count.query.graphql';
@@ -32,6 +33,7 @@ describe('AdminRunnersApp', () => {
   let cacheConfig;
   let localMutations;
 
+  const findRunnerDashboardLink = () => wrapper.findComponent(RunnerDashboardLink);
   const findRunnerRows = () => wrapper.findComponent(RunnerList).findAll('tr');
 
   const createComponent = ({ props = {}, provide, ...options } = {}) => {
@@ -70,6 +72,16 @@ describe('AdminRunnersApp', () => {
     mockRunnersHandler.mockReset();
     mockRunnersCountHandler.mockReset();
     mockRunnerJobCountHandler.mockReset();
+  });
+
+  describe('dashboard link', () => {
+    it('shows link', async () => {
+      await createComponent({
+        provide: { runnerDashboardPath: '/dashboard-path' },
+      });
+
+      expect(findRunnerDashboardLink().attributes('href')).toBe('/dashboard-path');
+    });
   });
 
   describe('upgrade icons', () => {

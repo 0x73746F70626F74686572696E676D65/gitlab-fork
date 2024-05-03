@@ -5,16 +5,19 @@ require 'spec_helper'
 RSpec.describe Groups::RunnersController, feature_category: :fleet_visibility do
   let_it_be(:group) { create(:group) }
   let_it_be(:owner) { create(:user, owner_of: group) }
+  let_it_be(:developer) { create(:user, developer_of: group) }
+
+  let(:user) { owner }
 
   before do
-    sign_in(owner)
+    sign_in(user)
   end
 
-  describe '#index' do
+  shared_examples 'controller pushing runner upgrade management features' do
     it 'enables runner_upgrade_management_for_namespace licensed feature' do
       is_expected.to receive(:push_licensed_feature).with(:runner_upgrade_management_for_namespace, group)
 
-      get :index, params: { group_id: group }
+      make_request
     end
 
     context 'when fetching runner releases is disabled' do
@@ -25,29 +28,93 @@ RSpec.describe Groups::RunnersController, feature_category: :fleet_visibility do
       it 'does not enable runner_upgrade_management_for_namespace licensed feature' do
         is_expected.not_to receive(:push_licensed_feature).with(:runner_upgrade_management_for_namespace)
 
-        get :index, params: { group_id: group }
+        make_request
+      end
+    end
+  end
+
+  describe '#index' do
+    let(:make_request) do
+      get :index, params: { group_id: group }
+    end
+
+    it_behaves_like 'controller pushing runner upgrade management features'
+
+    context 'when user is developer' do
+      let(:user) { developer }
+
+      it 'returns not found' do
+        make_request
+
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
   end
 
   describe '#show' do
-    let(:runner) { create(:ci_runner, :group, groups: [group]) }
-
-    it 'enables runner_upgrade_management_for_namespace licensed feature' do
-      is_expected.to receive(:push_licensed_feature).with(:runner_upgrade_management_for_namespace, group)
-
+    let(:make_request) do
       get :show, params: { group_id: group, id: runner }
     end
 
-    context 'when fetching runner releases is disabled' do
-      before do
-        stub_application_setting(update_runner_versions_enabled: false)
+    let(:runner) { create(:ci_runner, :group, groups: [group]) }
+
+    it_behaves_like 'controller pushing runner upgrade management features'
+
+    context 'when user is developer' do
+      let(:user) { developer }
+
+      it 'returns not found' do
+        make_request
+
+        expect(response).to have_gitlab_http_status(:not_found)
       end
+    end
+  end
 
-      it 'does not enable runner_upgrade_management_for_namespace licensed feature' do
-        is_expected.not_to receive(:push_licensed_feature).with(:runner_upgrade_management_for_namespace)
+  describe '#dashboard' do
+    let(:make_request) do
+      get :dashboard, params: { group_id: group }
+    end
 
-        get :show, params: { group_id: group, id: runner }
+    let(:runner) { create(:ci_runner, :group, groups: [group]) }
+    let(:groups_with_dashboard_available) { [group] }
+    let(:feature_available) { true }
+
+    before do
+      stub_feature_flags(runners_dashboard_for_groups: groups_with_dashboard_available)
+      stub_licensed_features(runner_performance_insights_for_namespace: feature_available)
+    end
+
+    it_behaves_like 'controller pushing runner upgrade management features'
+
+    context 'when user is developer' do
+      let(:user) { developer }
+
+      it 'returns not found' do
+        make_request
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when feature is not available' do
+      let(:feature_available) { false }
+
+      it 'returns not found' do
+        make_request
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when feature flag is disabled for group' do
+      let(:other_group) { create(:group) }
+      let(:groups_with_dashboard_available) { [other_group] }
+
+      it 'returns not found' do
+        make_request
+
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
   end
