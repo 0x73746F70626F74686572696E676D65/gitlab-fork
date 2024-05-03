@@ -13,18 +13,18 @@ module Elastic
     private
 
     def maintain_group_associations_on_create
-      sync_group_wiki_in_elastic if should_index_group_wiki?
+      sync_group_wiki_in_elastic if use_elasticsearch?
     end
 
     def maintain_group_associations_on_update
       return unless visibility_level_previously_changed?
 
-      sync_group_wiki_in_elastic if should_index_group_wiki?
+      sync_group_wiki_in_elastic if use_elasticsearch?
       maintain_indexed_associations
     end
 
     def maintain_group_associations_on_destroy
-      delete_group_wiki_in_elastic if should_index_group_wiki?
+      delete_group_wiki_in_elastic if use_elasticsearch?
       delete_group_associations
     end
 
@@ -42,10 +42,6 @@ module Elastic
 
     def delete_group_associations
       Search::ElasticGroupAssociationDeletionWorker.perform_async(id, root_ancestor.id)
-    end
-
-    def should_index_group_wiki?
-      use_elasticsearch? && ::Wiki.use_separate_indices?
     end
   end
 end

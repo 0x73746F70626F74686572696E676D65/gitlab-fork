@@ -282,10 +282,6 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
     end
 
     context 'when blob is a group level result' do
-      before do
-        set_elasticsearch_migration_to(:migrate_wikis_to_separate_index, including: true)
-      end
-
       let_it_be(:group) { create(:group) }
       let_it_be(:source) do
         {
@@ -1197,7 +1193,6 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
       let_it_be(:group_project_wiki) { create(:project_wiki, project: group_project, user: user) }
 
       before do
-        set_elasticsearch_migration_to(:migrate_wikis_to_separate_index, including: true)
         [parent_group_wiki, sub_group_wiki, group_project_wiki].each do |wiki|
           wiki.create_page('index_page', 'term')
           wiki.index_wiki_blobs

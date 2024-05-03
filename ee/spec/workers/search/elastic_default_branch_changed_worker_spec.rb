@@ -100,18 +100,6 @@ RSpec.describe Search::ElasticDefaultBranchChangedWorker, feature_category: :glo
         consume_event(subscriber: described_class, event: default_branch_changed_event)
       end
     end
-
-    context 'when Wiki.use_separate_indices? is false' do
-      before do
-        allow(::Wiki).to receive(:use_separate_indices?).and_return(false)
-      end
-
-      it 'does not schedule ElasticWikiIndexerWorker' do
-        expect(ElasticWikiIndexerWorker).not_to receive(:perform_async)
-
-        consume_event(subscriber: described_class, event: default_branch_changed_event)
-      end
-    end
   end
 
   context 'when passed a project wiki' do

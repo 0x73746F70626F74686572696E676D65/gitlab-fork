@@ -7,31 +7,14 @@ RSpec.describe Elastic::MaintainElasticsearchOnGroupUpdate, feature_category: :g
     let_it_be_with_reload(:group) { create(:group) }
 
     describe '.after_create_commit' do
-      context 'when elastic is enabled and Wiki uses separate indices' do
+      context 'when elastic is enabled' do
         before do
           stub_ee_application_setting(elasticsearch_indexing: true)
         end
 
-        context 'when Wiki uses separate indices' do
-          before do
-            allow(Wiki).to receive(:use_separate_indices?).and_return true
-          end
-
-          it 'calls ElasticWikiIndexerWorker' do
-            expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(anything, 'Group', force: true)
-            create(:group, :wiki_repo)
-          end
-        end
-
-        context 'when Wiki does not use separate indices' do
-          before do
-            allow(Wiki).to receive(:use_separate_indices?).and_return false
-          end
-
-          it 'does not call ElasticWikiIndexerWorker' do
-            expect(ElasticWikiIndexerWorker).not_to receive(:perform_async).with(anything, 'Group', force: true)
-            create(:group, :wiki_repo)
-          end
+        it 'calls ElasticWikiIndexerWorker' do
+          expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(anything, 'Group', force: true)
+          create(:group, :wiki_repo)
         end
       end
 
@@ -46,9 +29,9 @@ RSpec.describe Elastic::MaintainElasticsearchOnGroupUpdate, feature_category: :g
     describe '.after_update_commit' do
       let(:new_visibility_level) { Gitlab::VisibilityLevel::PRIVATE }
 
-      context 'when should_index_group_wiki? is true' do
+      context 'when use_elasticsearch? is true' do
         before do
-          allow(group).to receive(:should_index_group_wiki?).and_return true
+          allow(group).to receive(:use_elasticsearch?).and_return true
         end
 
         it 'calls ElasticWikiIndexerWorker when group visibility_level is changed' do
@@ -62,9 +45,9 @@ RSpec.describe Elastic::MaintainElasticsearchOnGroupUpdate, feature_category: :g
         end
       end
 
-      context 'when should_index_group_wiki? is false' do
+      context 'when use_elasticsearch?? is false' do
         before do
-          allow(group).to receive(:should_index_group_wiki?).and_return false
+          allow(group).to receive(:use_elasticsearch?).and_return false
         end
 
         it 'does not call ElasticWikiIndexerWorker' do
@@ -91,9 +74,9 @@ RSpec.describe Elastic::MaintainElasticsearchOnGroupUpdate, feature_category: :g
     end
 
     describe '.after_destroy_commit' do
-      context 'when should_index_group_wiki? is true' do
+      context 'when use_elasticsearch? is true' do
         before do
-          allow(group).to receive(:should_index_group_wiki?).and_return true
+          allow(group).to receive(:use_elasticsearch?).and_return true
         end
 
         it 'calls Search::Wiki::ElasticDeleteGroupWikiWorker' do
@@ -103,9 +86,9 @@ RSpec.describe Elastic::MaintainElasticsearchOnGroupUpdate, feature_category: :g
         end
       end
 
-      context 'when should_index_group_wiki? is false' do
+      context 'when use_elasticsearch? is false' do
         before do
-          allow(group).to receive(:should_index_group_wiki?).and_return false
+          allow(group).to receive(:use_elasticsearch?).and_return false
         end
 
         it 'does not call Search::Wiki::ElasticDeleteGroupWikiWorker' do

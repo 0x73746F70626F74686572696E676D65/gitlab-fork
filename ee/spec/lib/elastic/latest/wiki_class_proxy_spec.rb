@@ -22,22 +22,9 @@ RSpec.describe Elastic::Latest::WikiClassProxy, feature_category: :global_search
       }
     end
 
-    context 'when wiki is not using separate index, migrate_wikis_to_separate_index is not finished' do
-      before do
-        set_elasticsearch_migration_to(:migrate_wikis_to_separate_index, including: false)
-      end
-
-      it 'returns the result from the main index' do
-        subject.elastic_search_as_wiki_page('*', options: options)
-        assert_named_queries('wiki_blob:match:search_terms:main_index')
-      end
-    end
-
-    context 'when wiki is using separate index' do
-      it 'returns the result from the separate index' do
-        subject.elastic_search_as_wiki_page('*', options: options)
-        assert_named_queries('wiki_blob:match:search_terms:separate_index')
-      end
+    it 'returns the result from the separate index' do
+      subject.elastic_search_as_wiki_page('*', options: options)
+      assert_named_queries('wiki_blob:match:search_terms:separate_index')
     end
   end
 

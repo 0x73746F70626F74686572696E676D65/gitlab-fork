@@ -72,6 +72,6 @@ class ElasticNamespaceIndexerWorker # rubocop:disable Scalability/IdempotentWork
   end
 
   def should_maintain_group_wiki_index?(namespace)
-    namespace.group_namespace? && Wiki.use_separate_indices?
+    namespace.group_namespace?
   end
 end

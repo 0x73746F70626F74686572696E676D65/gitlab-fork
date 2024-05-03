@@ -15,12 +15,14 @@ module EE
 
     class_methods do
       extend ::Gitlab::Utils::Override
+
       def base_class
         ::Wiki
       end
 
+      override :use_separate_indices?
       def use_separate_indices?
-        ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)
+        true
       end
     end
   end

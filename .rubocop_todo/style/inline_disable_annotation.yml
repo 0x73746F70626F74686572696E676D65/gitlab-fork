@@ -1705,7 +1705,6 @@ Style/InlineDisableAnnotation:
     - 'ee/elastic/migrate/20230720000000_reindex_wikis_to_fix_routing.rb'
     - 'ee/elastic/migrate/20230724070100_backfill_epics.rb'
     - 'ee/elastic/migrate/20230724151612_backfill_archived_field_in_commits.rb'
-    - 'ee/elastic/migrate/20230724221548_remove_wikis_from_main_index.rb'
     - 'ee/elastic/migrate/20230821123542_backfill_archived_field_in_blob.rb'
     - 'ee/elastic/migrate/20230901120542_force_reindex_commits_from_main_index.rb'
     - 'ee/elastic/migrate/20231019223356_reindex_wikis_to_fix_routing_and_backfill_archived.rb'

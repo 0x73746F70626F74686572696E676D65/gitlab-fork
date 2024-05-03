@@ -15,8 +15,7 @@ RSpec.describe 'Epic index', feature_category: :global_search do
   let(:client) { helper.client }
 
   before do
-    allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
-      .with(:migrate_wikis_to_separate_index).and_return(false)
+    allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?).and_return(true)
     allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
       .with(:create_epic_index).and_return(true)
     stub_ee_application_setting(elasticsearch_indexing: true)
@@ -131,6 +130,7 @@ RSpec.describe 'Epic index', feature_category: :global_search do
 
     context 'when visibility_level changes for the group', :sidekiq_inline do
       it 'tracks the epic via ElasticAssociationIndexerWorker' do
+        allow(ElasticWikiIndexerWorker).to receive(:perform_async)
         expect(ElasticAssociationIndexerWorker).to receive(:perform_async)
           .with(anything, group.id, [:epics])
           .and_call_original
@@ -172,6 +172,7 @@ RSpec.describe 'Epic index', feature_category: :global_search do
 
     context 'when the group is transferred', :sidekiq_inline do
       it 'tracks the epic via Elastic::NamespaceUpdateWorker' do
+        allow(ElasticWikiIndexerWorker).to receive(:perform_in)
         expect(Elastic::NamespaceUpdateWorker).to receive(:perform_async).with(group.id).and_call_original
         expect(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_async)
           .with(group.id, parent_group.id, { include_descendants: true }).once
@@ -243,6 +244,7 @@ RSpec.describe 'Epic index', feature_category: :global_search do
     context 'when the group is transferred', :sidekiq_inline do
       it 'does not track the epic' do
         allow(Elastic::NamespaceUpdateWorker).to receive(:perform_async).with(group.id).and_call_original
+        allow(ElasticWikiIndexerWorker).to receive(:perform_in)
 
         expect(::Elastic::ProcessBookkeepingService).not_to receive(:track!).with(epic)
         Groups::TransferService.new(group, user).execute(nil)
@@ -265,9 +267,8 @@ RSpec.describe 'Epic index', feature_category: :global_search do
 
       context 'if the parent group is removed from the list' do
         it 'deletes the epic from elasticsearch', :elastic_clean, :sidekiq_inline do
-          expect(ElasticNamespaceIndexerWorker).to receive(:perform_async)
-            .with(parent_group.id, :delete)
-            .and_call_original
+          # parent group and sub group
+          allow(Search::Wiki::ElasticDeleteGroupWikiWorker).to receive(:perform_in).twice
 
           expect(Search::ElasticGroupAssociationDeletionWorker).to receive(:perform_in)
             .with(elastic_group_association_deletion_worker_random_delay_range, group.id, parent_group.id)
@@ -296,6 +297,7 @@ RSpec.describe 'Epic index', feature_category: :global_search do
 
       context 'if the group is added to limited index list', :sidekiq_inline do
         it 'tracks the epic via ElasticNamespaceIndexerWorker' do
+          allow(ElasticWikiIndexerWorker).to receive(:perform_in)
           expect(ElasticNamespaceIndexerWorker).to receive(:perform_async)
             .with(group.id, :index)
             .and_call_original

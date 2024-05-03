@@ -42,10 +42,6 @@ module Elastic
       private
 
       def search_query(query, options)
-        Wiki.use_separate_indices? ? query_for_separate_index(query, options) : query_for_main_index(query, options)
-      end
-
-      def query_for_separate_index(query, options)
         search_scope = options[:search_scope]
         return match_none if search_scope == 'group' && options[:group_ids].blank?
 
@@ -163,81 +159,6 @@ module Elastic
           end
         end
       end
-
-      # rubocop:disable Metrics/AbcSize -- This method is copied from GitClassProxy. Once the migration migrate_wikis_to_separate_index gets obsolete, we can completely remove this method
-      # rubocop:disable Metrics/PerceivedComplexity -- Same as above
-      # rubocop:disable Metrics/CyclomaticComplexity -- Same as above
-      def query_for_main_index(query, options)
-        options = options.merge(features: 'wiki', scope: es_type, no_join_project: true)
-        bool_expr = ::Gitlab::Elastic::BoolExpr.new
-        query_hash = { query: { bool: bool_expr } }
-        fields = %w[blob.content blob.file_name blob.path]
-        bool_expr = apply_simple_query_string(
-          name: context.name(:wiki_blob, :match, :search_terms, :main_index),
-          query: query,
-          fields: fields,
-          bool_expr: bool_expr,
-          count_only: options[:count_only]
-        )
-
-        if options.key?(:current_user)
-          query_hash = context.name(:blob, :authorized) do
-            authorization_filter(query_hash, options.merge(traversal_ids_prefix: :traversal_ids))
-          end
-        end
-
-        bool_expr[:filter] << {
-          term: {
-            type: {
-              _name: context.name(:doc, :is_a, es_type),
-              value: 'wiki_blob'
-            }
-          }
-        }
-        options[:project_id_field] = 'blob.rid'
-        repository_ids = [options[:repository_id]].flatten
-        filters = []
-        if repository_ids.any?
-          unless ::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
-            repository_ids = repository_ids.flat_map do |rid|
-              /wiki_project_\d+/.match?(rid) ? [rid, rid.gsub(/wiki_project/, 'wiki')] : rid
-            end.uniq
-          end
-
-          filters << {
-            terms: {
-              _name: context.name(es_type, :related, :repositories),
-              (options[:project_id_field] || "#{es_type}.rid") => repository_ids
-            }
-          }
-        end
-
-        filters << options[:additional_filter] if options[:additional_filter]
-        bool_expr[:filter] += filters if filters.any?
-        options[:order] = :default if options[:order].blank?
-        if options[:highlight] && !options[:count_only]
-          # Highlighted text fragments do not work well for code as we want to show a few whole lines of code.
-          # Set number_of_fragments to 0 to get the whole content to determine the exact line number that was
-          # highlighted.
-          query_hash[:highlight] = {
-            pre_tags: [HIGHLIGHT_START_TAG],
-            post_tags: [HIGHLIGHT_END_TAG],
-            number_of_fragments: 0,
-            fields: {
-              "blob.content" => {},
-              "blob.file_name" => {}
-            }
-          }
-        end
-
-        query_hash = archived_filter(query_hash) if archived_filter_applicable_on_wiki?(options)
-        repository_ids = [options[:repository_id]].flatten
-        options[:project_ids] = repository_ids.map { |id| id.to_s[/\d+/].to_i } if repository_ids.any?
-        query_hash
-      end
-      # rubocop:enable Metrics/AbcSize
-      # rubocop:enable Metrics/PerceivedComplexity
-      # rubocop:enable Metrics/CyclomaticComplexity
 
       def archived_filter_applicable_on_wiki?(options)
         !options[:include_archived] && options[:search_scope] != 'project' &&

@@ -106,7 +106,7 @@ module EE
       end
 
       def process_wikis(group)
-        return unless ::Wiki.use_separate_indices?
+        return unless group.use_elasticsearch?
 
         group.self_and_descendants.find_each.with_index do |grp, idx|
           interval = idx % ElasticWikiIndexerWorker::MAX_JOBS_PER_HOUR

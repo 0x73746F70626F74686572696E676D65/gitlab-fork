@@ -444,20 +444,16 @@ module Gitlab
         Ability.allowed?(current_user, :read_users_list)
       end
 
-      def self.use_separate_wiki_index?(type)
-        type.eql?('wiki_blob') && ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)
-      end
-
       def self.extract_ref_from_result(source)
-        use_separate_wiki_index?(source['type']) ? source['commit_sha'] : source['blob']['commit_sha']
+        source['type'].eql?('wiki_blob') ? source['commit_sha'] : source['blob']['commit_sha']
       end
 
       def self.extract_path_from_result(source)
-        (use_separate_wiki_index?(source['type']) ? source['path'] : source['blob']['path']) || ''
+        source['type'].eql?('wiki_blob') ? source['path'] : source['blob']['path'] || ''
       end
 
       def self.extract_content_from_result(source)
-        use_separate_wiki_index?(source['type']) ? source['content'] : source['blob']['content']
+        source['type'].eql?('wiki_blob') ? source['content'] : source['blob']['content']
       end
 
       def self.group_level_result?(source)
@@ -465,7 +461,7 @@ module Gitlab
       end
 
       def self.get_highlight_content(result)
-        content_key = use_separate_wiki_index?(result['_source']['type']) ? 'content' : 'blob.content'
+        content_key = result['_source']['type'].eql?('wiki_blob') ? 'content' : 'blob.content'
         result.dig('highlight', content_key)&.first || ''
       end
 
