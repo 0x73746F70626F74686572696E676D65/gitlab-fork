@@ -31081,7 +31081,7 @@ ALTER TABLE ONLY emails
     ADD CONSTRAINT fk_emails_user_id FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY epics
-    ADD CONSTRAINT fk_epics_issue_id_with_on_delete_nullify FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE SET NULL;
+    ADD CONSTRAINT fk_epics_issue_id_with_on_delete_cascade FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY epics
     ADD CONSTRAINT fk_epics_on_parent_id_with_on_delete_nullify FOREIGN KEY (parent_id) REFERENCES epics(id) ON DELETE SET NULL;
