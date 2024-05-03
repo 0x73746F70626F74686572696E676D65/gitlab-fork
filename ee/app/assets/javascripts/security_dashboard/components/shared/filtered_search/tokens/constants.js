@@ -5,6 +5,7 @@ import SeverityToken from './severity_token.vue';
 import ToolToken from './tool_token.vue';
 import ImageToken from './image_token.vue';
 import ClusterToken from './cluster_token.vue';
+import ProjectToken from './project_token.vue';
 
 export const STATUS_TOKEN_DEFINITION = {
   type: 'state',
@@ -57,5 +58,14 @@ export const CLUSTER_TOKEN_DEFINITION = {
   multiSelect: true,
   unique: true,
   token: ClusterToken,
+  operators: OPERATORS_OR,
+};
+
+export const PROJECT_TOKEN_DEFINITION = {
+  type: 'projectId',
+  title: ProjectToken.i18n.label,
+  multiSelect: true,
+  unique: true,
+  token: ProjectToken,
   operators: OPERATORS_OR,
 };
