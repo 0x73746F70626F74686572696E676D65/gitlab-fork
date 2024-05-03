@@ -24,7 +24,8 @@ module Projects
           container_scanning_for_registry_enabled: container_scanning_for_registry_enabled,
           pre_receive_secret_detection_available:
             Gitlab::CurrentSettings.current_application_settings.pre_receive_secret_detection_enabled,
-          pre_receive_secret_detection_enabled: pre_receive_secret_detection_enabled
+          pre_receive_secret_detection_enabled: pre_receive_secret_detection_enabled,
+          user_is_project_admin: user_is_project_admin?
         }
       end
 
@@ -39,8 +40,12 @@ module Projects
 
       def can_enable_auto_devops?
         feature_available?(:builds, current_user) &&
-          can?(current_user, :admin_project, self) &&
+          user_is_project_admin? &&
           !archived?
+      end
+
+      def user_is_project_admin?
+        can?(current_user, :admin_project, self)
       end
 
       def gitlab_ci_history_path
