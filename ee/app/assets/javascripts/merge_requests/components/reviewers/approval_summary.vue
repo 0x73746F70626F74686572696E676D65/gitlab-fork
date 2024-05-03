@@ -48,7 +48,7 @@ export default {
   },
   computed: {
     isLoading() {
-      return this.$apollo?.queries?.mergeRequest?.loading;
+      return this.$apollo?.queries?.mergeRequest?.loading || !this.mergeRequest;
     },
     approvalsOptional() {
       return (
