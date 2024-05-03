@@ -72,7 +72,7 @@ export default {
       :tooltip="$options.i18n.dateRangeTooltip"
       start-picker-class="gl-mb-5 gl-md-pr-3 gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row gl-lg-align-items-flex-end"
       end-picker-class="gl-mb-5 gl-md-mr-3 gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row gl-lg-align-items-flex-end"
-      date-range-indicator-class="gl-mb-5 gl-white-space-nowrap"
+      date-range-indicator-class="gl-mb-5 gl-whitespace-nowrap"
       @input="onInput"
     >
       <template #default="{ daysSelected }">

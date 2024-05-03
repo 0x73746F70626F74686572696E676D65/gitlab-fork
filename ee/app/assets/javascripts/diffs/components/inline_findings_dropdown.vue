@@ -72,8 +72,7 @@ export default {
           :class="item.class"
           class="inline-findings-severity-icon gl-mr-4"
         />
-        <span
-          class="gl-white-space-nowrap! gl-text-truncate gl-display-flex findings-dropdown-width"
+        <span class="!gl-whitespace-nowrap gl-text-truncate gl-display-flex findings-dropdown-width"
           ><span
             class="gl-font-weight-bold gl-text-transform-capitalize gl-text-black-normal gl-align-self-center"
             >{{ item.severity }}: </span

@@ -223,7 +223,7 @@ export default {
               is-check-item
               @click="$emit('update-rotation-form', { type: 'startsAt.time', value: time })"
             >
-              <span class="gl-white-space-nowrap"> {{ format24HourTimeStringFromInt(time) }}</span>
+              <span class="gl-whitespace-nowrap"> {{ format24HourTimeStringFromInt(time) }}</span>
             </gl-dropdown-item>
           </gl-dropdown>
           <span> {{ schedule.timezone }} </span>
@@ -280,9 +280,7 @@ export default {
                 is-check-item
                 @click="$emit('update-rotation-form', { type: 'endsAt.time', value: time })"
               >
-                <span class="gl-white-space-nowrap">
-                  {{ format24HourTimeStringFromInt(time) }}</span
-                >
+                <span class="gl-whitespace-nowrap"> {{ format24HourTimeStringFromInt(time) }}</span>
               </gl-dropdown-item>
             </gl-dropdown>
             <span>{{ schedule.timezone }}</span>
@@ -331,9 +329,7 @@ export default {
                   $emit('update-rotation-form', { type: 'restrictedTo.startTime', value: time })
                 "
               >
-                <span class="gl-white-space-nowrap">
-                  {{ format24HourTimeStringFromInt(time) }}</span
-                >
+                <span class="gl-whitespace-nowrap"> {{ format24HourTimeStringFromInt(time) }}</span>
               </gl-dropdown-item>
             </gl-dropdown>
             <span> {{ __('To') }} </span>
@@ -351,9 +347,7 @@ export default {
                   $emit('update-rotation-form', { type: 'restrictedTo.endTime', value: time })
                 "
               >
-                <span class="gl-white-space-nowrap">
-                  {{ format24HourTimeStringFromInt(time) }}</span
-                >
+                <span class="gl-whitespace-nowrap"> {{ format24HourTimeStringFromInt(time) }}</span>
               </gl-dropdown-item>
             </gl-dropdown>
             <span>{{ schedule.timezone }} </span>

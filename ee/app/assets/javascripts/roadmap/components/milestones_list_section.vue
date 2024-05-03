@@ -143,7 +143,7 @@ export default {
         </div>
         <div
           v-gl-tooltip="milestonesCountText"
-          class="gl-display-flex gl-align-items-center gl-justify-content-center text-secondary gl-white-space-nowrap"
+          class="gl-display-flex gl-align-items-center gl-justify-content-center text-secondary gl-whitespace-nowrap"
           data-testid="count"
         >
           <gl-icon name="milestone" class="gl-mr-2" />

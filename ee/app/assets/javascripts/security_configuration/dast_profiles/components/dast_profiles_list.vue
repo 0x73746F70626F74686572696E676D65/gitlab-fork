@@ -205,7 +205,7 @@ export default {
         </template>
 
         <template #cell(profileName)="{ value }">
-          <div class="gl-overflow-hidden gl-white-space-nowrap gl-text-overflow-ellipsis">
+          <div class="gl-overflow-hidden gl-whitespace-nowrap gl-text-overflow-ellipsis">
             {{ value }}
           </div>
         </template>

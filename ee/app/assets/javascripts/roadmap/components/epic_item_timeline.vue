@@ -155,7 +155,7 @@ export default {
             :value="epicPercentage"
             aria-hidden="true"
           />
-          <div class="gl-font-sm gl-display-flex gl-align-items-center gl-white-space-nowrap">
+          <div class="gl-font-sm gl-display-flex gl-align-items-center gl-whitespace-nowrap">
             <gl-icon class="gl-mr-1" :size="12" :name="progressIcon" />
             <p class="gl-m-0" :aria-label="epicPercentageText">{{ epicPercentage }}%</p>
           </div>

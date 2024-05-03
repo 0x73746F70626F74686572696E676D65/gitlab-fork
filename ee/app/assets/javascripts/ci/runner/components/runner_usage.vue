@@ -159,7 +159,7 @@ export default {
           <div
             v-if="value"
             v-tooltip-on-truncate="value.nameWithNamespace"
-            class="gl-white-space-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
+            class="gl-whitespace-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
           >
             <gl-avatar
               :label="value.name"
@@ -186,7 +186,7 @@ export default {
         <template #cell(runner)="{ value }">
           <div
             v-tooltip-on-truncate
-            class="gl-white-space-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
+            class="gl-whitespace-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
           >
             <gl-link v-if="value" :href="value.adminUrl" class="gl-text-body!">
               {{ runnerName(value) }}

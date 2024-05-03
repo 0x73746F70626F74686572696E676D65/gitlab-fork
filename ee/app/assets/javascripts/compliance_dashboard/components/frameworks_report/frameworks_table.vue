@@ -84,14 +84,14 @@ export default {
     {
       key: 'associatedProjects',
       label: __('Associated projects'),
-      thClass: 'gl-md-max-w-26 gl-white-space-nowrap !gl-align-middle',
+      thClass: 'gl-md-max-w-26 gl-whitespace-nowrap !gl-align-middle',
       tdClass: 'gl-md-max-w-26 !gl-align-middle gl-cursor-pointer',
       sortable: false,
     },
     {
       key: 'policies',
       label: __('Policies'),
-      thClass: 'gl-md-max-w-26 gl-white-space-nowrap !gl-align-middle',
+      thClass: 'gl-md-max-w-26 gl-whitespace-nowrap !gl-align-middle',
       tdClass: 'gl-md-max-w-26 !gl-align-middle gl-cursor-pointer',
       sortable: false,
     },

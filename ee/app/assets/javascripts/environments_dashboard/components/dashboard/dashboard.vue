@@ -167,7 +167,7 @@ export default {
     <template v-if="showDashboard">
       <div class="page-title-holder gl-display-flex gl-align-items-center">
         <h1
-          class="page-title gl-font-size-h-display gl-white-space-nowrap gl-flex-grow-1"
+          class="page-title gl-font-size-h-display gl-whitespace-nowrap gl-flex-grow-1"
           data-testid="dashboard-title"
         >
           {{ $options.dashboardHeader }}

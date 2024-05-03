@@ -71,7 +71,7 @@ export default {
         <div class="gl-display-flex gl-align-items-center gl-mb-3">
           <gl-link
             :href="authorWebUrl"
-            class="gl-text-black-normal gl-font-weight-bold gl-white-space-nowrap gl-mr-2"
+            class="gl-text-black-normal gl-font-weight-bold gl-whitespace-nowrap gl-mr-2"
           >
             {{ authorName }}
           </gl-link>
@@ -79,7 +79,7 @@ export default {
           <gl-link
             v-if="authorUsername"
             :href="authorWebUrl"
-            class="gl-text-gray-500 gl-mr-2 gl-white-space-nowrap"
+            class="gl-text-gray-500 gl-mr-2 gl-whitespace-nowrap"
             data-testid="author-username"
           >
             @{{ authorUsername }}

@@ -282,7 +282,7 @@ export default {
               class="gl-display-flex gl-flex-wrap gl-row-gap-2"
             />
           </td>
-          <td class="d-md-table-cell w-0 d-none gl-white-space-nowrap js-pending">
+          <td class="d-md-table-cell w-0 d-none gl-whitespace-nowrap js-pending">
             <number-of-approvals :rule="rule" />
           </td>
           <td class="d-md-table-cell d-none js-commented-by">

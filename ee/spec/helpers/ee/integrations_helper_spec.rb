@@ -150,7 +150,7 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
   end
 
   describe '#jira_issue_breadcrumb_link' do
-    let(:expected_html) { '<img width="15" height="15" class="gl-mr-2 lazy" data-src="/assets/illustrations/logos/jira-d90a9462f8323a5a2d9aef3c3bbb5c8a40275419aabf3cfbe6826113162b18a1.svg" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><a rel="noopener noreferrer" class="gl-display-flex gl-align-items-center gl-white-space-nowrap" href="">my-ref</a>' }
+    let(:expected_html) { '<img width="15" height="15" class="gl-mr-2 lazy" data-src="/assets/illustrations/logos/jira-d90a9462f8323a5a2d9aef3c3bbb5c8a40275419aabf3cfbe6826113162b18a1.svg" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><a rel="noopener noreferrer" class="gl-display-flex gl-align-items-center gl-whitespace-nowrap" href="">my-ref</a>' }
 
     subject { helper.jira_issue_breadcrumb_link(issue_reference) }
 
@@ -178,7 +178,7 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
       let(:issue_json) { { id: "my-ref", web_url: "https://example.com" } }
 
       it 'returns the correct HTML' do
-        is_expected.to eq('<img width="15" height="15" class="gl-mr-2 lazy" data-src="/assets/logos/zentao-91a4a40cfe1a1640cb4fcf645db75e0ce23fbb9984f649c0675e616d6ff8c632.svg" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><a target="_blank" rel="noopener noreferrer" class="gl-display-flex gl-align-items-center gl-white-space-nowrap" href="https://example.com">my-ref</a>')
+        is_expected.to eq('<img width="15" height="15" class="gl-mr-2 lazy" data-src="/assets/logos/zentao-91a4a40cfe1a1640cb4fcf645db75e0ce23fbb9984f649c0675e616d6ff8c632.svg" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><a target="_blank" rel="noopener noreferrer" class="gl-display-flex gl-align-items-center gl-whitespace-nowrap" href="https://example.com">my-ref</a>')
       end
     end
 
@@ -186,7 +186,7 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
       let(:issue_json) { { id: "<script>alert('XSS')</script>my-ref", web_url: "javascript:alert('XSS')" } }
 
       it 'strips all tags and sanitizes' do
-        is_expected.to eq('<img width="15" height="15" class="gl-mr-2 lazy" data-src="/assets/logos/zentao-91a4a40cfe1a1640cb4fcf645db75e0ce23fbb9984f649c0675e616d6ff8c632.svg" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><a target="_blank" rel="noopener noreferrer" class="gl-display-flex gl-align-items-center gl-white-space-nowrap">my-ref</a>')
+        is_expected.to eq('<img width="15" height="15" class="gl-mr-2 lazy" data-src="/assets/logos/zentao-91a4a40cfe1a1640cb4fcf645db75e0ce23fbb9984f649c0675e616d6ff8c632.svg" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><a target="_blank" rel="noopener noreferrer" class="gl-display-flex gl-align-items-center gl-whitespace-nowrap">my-ref</a>')
       end
     end
   end
