@@ -26,9 +26,9 @@ RSpec.describe Mutations::RequirementsManagement::ExportRequirements do
       it 'raises exception when invalid fields are given' do
         expect { mutation.ready?(**args) }
           .to raise_error(Gitlab::Graphql::Errors::ArgumentError,
-            "The following fields are incorrect: created at, username."\
-            " See https://docs.gitlab.com/ee/user/project/requirements/#exported-csv-file-format"\
-            " for permitted fields.")
+            "The following fields are incorrect: created at, username. "\
+            "See https://docs.gitlab.com/ee/user/project/requirements/#exported-csv-file-format "\
+            "for permitted fields.")
       end
     end
   end

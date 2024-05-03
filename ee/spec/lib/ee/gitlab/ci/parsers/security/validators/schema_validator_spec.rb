@@ -72,9 +72,9 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator, featu
     end
 
     let(:expected_unsupported_message) do
-      "Version #{report_data['version']} for report type #{report_type} is unsupported, supported versions for"\
-      " this report type are: #{supported_versions}. GitLab will attempt to validate this report against the earliest"\
-      " supported versions of this report type, to show all the errors but will not ingest the report"
+      "Version #{report_data['version']} for report type #{report_type} is unsupported, supported versions for "\
+      "this report type are: #{supported_versions}. GitLab will attempt to validate this report against the earliest "\
+      "supported versions of this report type, to show all the errors but will not ingest the report"
     end
 
     let(:expected_error_messages) do

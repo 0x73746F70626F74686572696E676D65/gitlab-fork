@@ -29,8 +29,8 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas, feature_category:
       visit group_group_members_path(group)
       invite_group(group_to_add.name, role: 'Maintainer')
 
-      expect(page).to have_content('Invited group allowed email domains must contain a subset of the'\
-        ' allowed email domains of the root ancestor group')
+      expect(page).to have_content('Invited group allowed email domains must contain a subset of the '\
+        'allowed email domains of the root ancestor group')
     end
   end
 
@@ -230,7 +230,7 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas, feature_category:
     visit group_group_members_path(group)
     invite_group(group_to_add.name, role: role)
 
-    expect(page).to have_content("Your subscription includes 1 seat. If you continue, the #{group.name} group will"\
-      " have 2 seats in use and will be billed for the overage. Learn more.")
+    expect(page).to have_content("Your subscription includes 1 seat. If you continue, the #{group.name} group will "\
+      "have 2 seats in use and will be billed for the overage. Learn more.")
   end
 end

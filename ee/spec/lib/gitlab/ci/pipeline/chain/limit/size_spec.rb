@@ -64,9 +64,9 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::Size, :saas do
         subject
 
         expect(pipeline.errors.to_a)
-          .to include "The number of jobs has exceeded the limit of 1."\
-          " Try splitting the configuration with parent-child-pipelines"\
-          " https://docs.gitlab.com/ee/ci/troubleshooting.html#pipeline-with-many-jobs-fails-to-start"
+          .to include "The number of jobs has exceeded the limit of 1. "\
+          "Try splitting the configuration with parent-child-pipelines "\
+          "https://docs.gitlab.com/ee/ci/troubleshooting.html#pipeline-with-many-jobs-fails-to-start"
       end
 
       it 'logs the error' do

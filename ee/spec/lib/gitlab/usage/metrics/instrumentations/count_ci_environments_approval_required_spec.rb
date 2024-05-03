@@ -10,8 +10,8 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountCiEnvironmentsAppr
 
     let(:expected_value) { 2 }
     let(:expected_query) do
-      'SELECT COUNT(DISTINCT "protected_environment_approval_rules"."protected_environment_id")' \
-        ' FROM "protected_environment_approval_rules"'
+      'SELECT COUNT(DISTINCT "protected_environment_approval_rules"."protected_environment_id") ' \
+        'FROM "protected_environment_approval_rules"'
     end
 
     it_behaves_like 'a correct instrumented metric value and query', time_frame: 'all'
@@ -30,8 +30,8 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountCiEnvironmentsAppr
 
     let(:expected_value) { 1 }
     let(:expected_query) do
-      'SELECT COUNT(DISTINCT "protected_environment_approval_rules"."protected_environment_id")' \
-        ' FROM "protected_environment_approval_rules"'
+      'SELECT COUNT(DISTINCT "protected_environment_approval_rules"."protected_environment_id") ' \
+        'FROM "protected_environment_approval_rules"'
     end
 
     it_behaves_like 'a correct instrumented metric value and query', time_frame: 'all'
@@ -51,9 +51,9 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountCiEnvironmentsAppr
 
     let(:expected_value) { 2 }
     let(:expected_query) do
-      'SELECT COUNT(DISTINCT "protected_environment_approval_rules"."protected_environment_id")' \
-        ' FROM "protected_environment_approval_rules" WHERE' \
-        " \"protected_environment_approval_rules\".\"created_at\" BETWEEN '#{start}' AND '#{finish}'"
+      'SELECT COUNT(DISTINCT "protected_environment_approval_rules"."protected_environment_id") ' \
+        'FROM "protected_environment_approval_rules" WHERE ' \
+        "\"protected_environment_approval_rules\".\"created_at\" BETWEEN '#{start}' AND '#{finish}'"
     end
 
     it_behaves_like 'a correct instrumented metric value and query', time_frame: '28d'

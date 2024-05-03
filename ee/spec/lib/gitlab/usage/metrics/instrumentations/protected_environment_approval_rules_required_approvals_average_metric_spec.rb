@@ -14,10 +14,10 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::ProtectedEnvironmentApp
 
   let(:expected_value) { 1.5 }
   let(:expected_query) do
-    "SELECT AVG(\"protected_environment_approval_rules\".\"required_approvals\")" \
-    " FROM \"protected_environment_approval_rules\"" \
-    " WHERE \"protected_environment_approval_rules\".\"required_approvals\" >= 1" \
-    " AND \"protected_environment_approval_rules\".\"created_at\" BETWEEN '#{start}' AND '#{finish}'"
+    "SELECT AVG(\"protected_environment_approval_rules\".\"required_approvals\") " \
+    "FROM \"protected_environment_approval_rules\" " \
+    "WHERE \"protected_environment_approval_rules\".\"required_approvals\" >= 1 " \
+    "AND \"protected_environment_approval_rules\".\"created_at\" BETWEEN '#{start}' AND '#{finish}'"
   end
 
   it_behaves_like 'a correct instrumented metric value and query', time_frame: '28d'
