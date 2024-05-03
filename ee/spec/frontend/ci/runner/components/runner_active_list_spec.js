@@ -1,37 +1,24 @@
 import { GlLink, GlTable, GlSkeletonLoader } from '@gitlab/ui';
-import Vue from 'vue';
-import VueApollo from 'vue-apollo';
-import {
-  extendedWrapper,
-  shallowMountExtended,
-  mountExtended,
-} from 'helpers/vue_test_utils_helper';
-import { stubComponent } from 'helpers/stub_component';
+import { extendedWrapper, mountExtended } from 'helpers/vue_test_utils_helper';
 
 import RunnerActiveList from 'ee/ci/runner/components/runner_active_list.vue';
-import mostActiveRunnersQuery from 'ee/ci/runner/graphql/performance/most_active_runners.graphql';
-
-import createMockApollo from 'helpers/mock_apollo_helper';
-import waitForPromises from 'helpers/wait_for_promises';
-import { s__ } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { createAlert } from '~/alert';
-import { captureException } from '~/ci/runner/sentry_utils';
 import { JOBS_ROUTE_PATH } from '~/ci/runner/constants';
-
 import { mostActiveRunnersData } from '../mock_data';
 
 jest.mock('~/alert');
 jest.mock('~/ci/runner/sentry_utils');
 
 const mostActiveRunners = mostActiveRunnersData.data.runners.nodes;
-const [mockRunner, mockRunner2] = mostActiveRunners;
+const [{ adminUrl, ...mockRunner }, { adminUrl2, ...mockRunner2 }] = mostActiveRunners;
 
-Vue.use(VueApollo);
+mockRunner.jobsUrl = `${adminUrl}#${JOBS_ROUTE_PATH}`;
+mockRunner2.jobsUrl = `${adminUrl2}#${JOBS_ROUTE_PATH}`;
+
+// Vue.use(VueApollo);
 
 describe('RunnerActiveList', () => {
   let wrapper;
-  let mostActiveRunnersHandler;
 
   const findTable = () => wrapper.findComponent(GlTable);
   const findHeaders = () => wrapper.findAll('thead th');
@@ -39,41 +26,31 @@ describe('RunnerActiveList', () => {
   const findCell = (row = 0, fieldKey) =>
     extendedWrapper(findRows().at(row).find(`[data-testid="td-${fieldKey}"]`));
 
-  const createComponent = ({ mountFn = shallowMountExtended, ...options } = {}) => {
-    wrapper = mountFn(RunnerActiveList, {
-      apolloProvider: createMockApollo([[mostActiveRunnersQuery, mostActiveRunnersHandler]]),
+  const createComponent = ({ props = {}, ...options } = {}) => {
+    wrapper = mountExtended(RunnerActiveList, {
+      propsData: {
+        ...props,
+      },
       ...options,
     });
   };
 
-  beforeEach(() => {
-    mostActiveRunnersHandler = jest.fn();
-  });
-
-  it('Requests most active runners', () => {
-    createComponent({
-      stubs: {
-        GlTable: stubComponent(GlTable),
-      },
-    });
-
-    expect(mostActiveRunnersHandler).toHaveBeenCalledTimes(1);
-  });
-
   describe('When loading data', () => {
     it('should show a loading skeleton', () => {
-      createComponent({ mountFn: mountExtended });
+      createComponent({ props: { loading: true }, mountFn: mountExtended });
 
       expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
     });
   });
 
   describe('When there are active runners', () => {
-    beforeEach(async () => {
-      mostActiveRunnersHandler.mockResolvedValue(mostActiveRunnersData);
-
-      createComponent({ mountFn: mountExtended });
-      await waitForPromises();
+    beforeEach(() => {
+      createComponent({
+        props: {
+          activeRunners: [mockRunner, mockRunner2],
+        },
+        mountFn: mountExtended,
+      });
     });
 
     it('shows table', () => {
@@ -82,7 +59,7 @@ describe('RunnerActiveList', () => {
 
     it('shows headers', () => {
       const headers = findHeaders().wrappers.map((w) => w.text());
-      expect(headers).toEqual(['', s__('Runners|Runner'), s__('Runners|Running Jobs')]);
+      expect(headers).toEqual(['', 'Runner', 'Running Jobs']);
     });
 
     it('shows runners', () => {
@@ -105,90 +82,21 @@ describe('RunnerActiveList', () => {
       expect(findCell(1, 'runningJobCount').text()).toBe('1');
     });
 
-    it('shows jobs link', async () => {
-      createComponent({ mountFn: mountExtended });
-      await waitForPromises();
-
+    it('shows jobs link', () => {
       const url = findCell(0, 'runningJobCount').findComponent(GlLink).attributes('href');
-      expect(url).toBe(`${mockRunner.adminUrl}#${JOBS_ROUTE_PATH}`);
-    });
-  });
-
-  describe('When there are active runners with no active jobs', () => {
-    beforeEach(async () => {
-      mostActiveRunnersHandler.mockResolvedValue({
-        data: {
-          runners: {
-            nodes: [
-              mockRunner,
-              {
-                ...mockRunner2,
-                runningJobCount: 0,
-              },
-            ],
-          },
-        },
-      });
-
-      createComponent({ mountFn: mountExtended });
-      await waitForPromises();
-    });
-
-    it('ignores runners with no active jobs', () => {
-      expect(findRows()).toHaveLength(1);
-
-      // Row 1
-      const runner = `#${getIdFromGraphQLId(mockRunner.id)} (${mockRunner.shortSha}) - ${
-        mockRunner.description
-      }`;
-      expect(findCell(0, 'index').text()).toBe('1');
-      expect(findCell(0, 'runner').text()).toBe(runner);
-      expect(findCell(0, 'runningJobCount').text()).toBe('2');
+      expect(url).toBe(mockRunner.jobsUrl);
     });
   });
 
   describe('When there are no runners', () => {
-    beforeEach(async () => {
-      mostActiveRunnersHandler.mockResolvedValueOnce({
-        data: {
-          runners: {
-            nodes: [],
-          },
-        },
-      });
-
+    beforeEach(() => {
       createComponent({ mountFn: mountExtended });
-      await waitForPromises();
     });
 
     it('should render no runners', () => {
       expect(findTable().exists()).toBe(false);
 
       expect(wrapper.text()).toContain('no runners');
-    });
-  });
-
-  describe('When an error occurs', () => {
-    beforeEach(async () => {
-      mostActiveRunnersHandler.mockRejectedValue(new Error('Error!'));
-
-      createComponent({
-        stubs: {
-          GlTable: stubComponent(GlTable),
-        },
-      });
-      await waitForPromises();
-    });
-
-    it('shows an error', () => {
-      expect(createAlert).toHaveBeenCalled();
-    });
-
-    it('reports an error', () => {
-      expect(captureException).toHaveBeenCalledWith({
-        component: 'RunnerActiveList',
-        error: expect.any(Error),
-      });
     });
   });
 });

@@ -50,7 +50,7 @@ RSpec.describe 'Runner EE (JavaScript fixtures)', feature_category: :fleet_visib
     end
 
     describe 'most_active_runners.query.graphql', type: :request do
-      runner_jobs_query = 'performance/most_active_runners.graphql'
+      runner_jobs_query = 'performance/most_active_runners.query.graphql'
       let_it_be(:query) do
         get_graphql_query_as_string("#{query_path}#{runner_jobs_query}", ee: true)
       end

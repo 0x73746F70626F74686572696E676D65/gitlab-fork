@@ -1,14 +1,7 @@
 <script>
-import EMPTY_STATE_SVG_URL from '@gitlab/svgs/dist/illustrations/empty-state/empty-pipeline-md.svg?url';
 import { GlLink, GlTable, GlSkeletonLoader } from '@gitlab/ui';
 import { formatNumber, s__ } from '~/locale';
 
-import mostActiveRunnersQuery from 'ee/ci/runner/graphql/performance/most_active_runners.graphql';
-
-import { captureException } from '~/ci/runner/sentry_utils';
-import { fetchPolicies } from '~/lib/graphql';
-import { createAlert } from '~/alert';
-import { I18N_FETCH_ERROR, JOBS_ROUTE_PATH } from '~/ci/runner/constants';
 import { tableField } from '~/ci/runner/utils';
 import CiIcon from '~/vue_shared/components/ci_icon/ci_icon.vue';
 
@@ -23,41 +16,19 @@ export default {
     GlSkeletonLoader,
     RunnerFullName,
   },
-  data() {
-    return {
-      activeRunners: [],
-    };
-  },
-  apollo: {
+  props: {
     activeRunners: {
-      query: mostActiveRunnersQuery,
-      fetchPolicy: fetchPolicies.NETWORK_ONLY,
-      update({ runners }) {
-        // The backend does not filter out inactive runners, but
-        // showing them can be confusing for users. Ignore runners
-        // with no active jobs.
-        const items = runners?.nodes || [];
-        return items.filter((item) => item.runningJobCount > 0);
-      },
-      error(error) {
-        createAlert({ message: I18N_FETCH_ERROR });
-
-        captureException({ error, component: this.$options.name });
-      },
+      type: Array,
+      default: () => [],
+      required: false,
     },
-  },
-  computed: {
-    loading() {
-      return this.$apollo.queries.activeRunners.loading;
+    loading: {
+      type: Boolean,
+      default: false,
+      required: false,
     },
   },
   methods: {
-    jobsUrl({ adminUrl }) {
-      const url = new URL(adminUrl);
-      url.hash = JOBS_ROUTE_PATH;
-
-      return url.href;
-    },
     formatNumber,
   },
   fields: [
@@ -70,7 +41,6 @@ export default {
     }),
   ],
   CI_ICON_STATUS: { group: 'running', icon: 'status_running' },
-  EMPTY_STATE_SVG_URL,
 };
 </script>
 <template>
@@ -94,7 +64,7 @@ export default {
         <runner-full-name :runner="item" />
       </template>
       <template #cell(runningJobCount)="{ item = {}, value }">
-        <gl-link :href="jobsUrl(item)">
+        <gl-link :href="item.jobsUrl">
           <ci-icon :status="$options.CI_ICON_STATUS" />
           {{ formatNumber(value) }}
         </gl-link>
