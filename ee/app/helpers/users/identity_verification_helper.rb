@@ -8,6 +8,11 @@ module Users
 
     def signup_identity_verification_data(user)
       overrides = {
+        phone_challenge_on_verify: true,
+        phone_challenge_on_send: true,
+        phone_enable_arkose_challenge: enable_arkose_challenge?(:phone),
+        phone_show_arkose_challenge: show_arkose_challenge?(user, :phone),
+        phone_show_recaptcha_challenge: show_recaptcha_challenge?,
         credit_card_challenge_on_verify: show_recaptcha_challenge?,
         credit_card_verify_captcha_path: signup_iv_action_path(:verify_credit_card_captcha)
       }
@@ -16,7 +21,16 @@ module Users
     end
 
     def identity_verification_data(user)
-      overrides = { credit_card_challenge_on_verify: false }
+      overrides = {
+        phone_challenge_on_send: true,
+        phone_challenge_on_verify: false,
+        phone_enable_arkose_challenge: true,
+        phone_show_arkose_challenge: true,
+        phone_show_recaptcha_challenge: false,
+        credit_card_challenge_on_verify: false,
+        arkose_data_exchange_payload: arkose_data_exchange_payload
+      }
+
       build_data(user, path_helper: method(:iv_action_path), overrides: overrides)
     end
 
@@ -97,23 +111,15 @@ module Users
     end
 
     def phone_number_verification_data(user)
-      data = {
-        enable_arkose_challenge: enable_arkose_challenge?(:phone).to_s,
-        show_arkose_challenge: show_arkose_challenge?(user, :phone).to_s,
-        show_recaptcha_challenge: show_recaptcha_challenge?.to_s
-      }
-
       record = user.phone_number_validation
-      return data unless record
+      return {} unless record
 
-      data.merge(
-        {
-          country: record.country,
-          international_dial_code: record.international_dial_code,
-          number: record.phone_number,
-          send_allowed_after: record.sms_send_allowed_after
-        }
-      )
+      {
+        country: record.country,
+        international_dial_code: record.international_dial_code,
+        number: record.phone_number,
+        send_allowed_after: record.sms_send_allowed_after
+      }
     end
 
     def credit_card_verification_data(user)
@@ -137,6 +143,14 @@ module Users
       route_helper_prefix = signup ? 'signup' : ''
       route_helper_name = [action.to_s, route_helper_prefix, 'identity_verification_path'].reject(&:blank?).join('_')
       public_send(route_helper_name) # rubocop:disable GitlabSecurity/PublicSend -- Call either *signup_identity_verification_path and *identity_verification_path route helpers
+    end
+
+    def arkose_data_exchange_payload
+      Arkose::DataExchangePayload.new(
+        request,
+        use_case: Arkose::DataExchangePayload::USE_CASE_ACTIVE_USER,
+        require_challenge: true
+      ).build
     end
   end
 end

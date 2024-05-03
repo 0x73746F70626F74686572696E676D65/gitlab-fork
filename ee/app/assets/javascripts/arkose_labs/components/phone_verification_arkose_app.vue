@@ -31,9 +31,13 @@ export default {
       arkoseLabsIframeShown: false,
       arkoseLabsContainerClass: uniqueId(CHALLENGE_CONTAINER_CLASS),
       arkoseObject: null,
+      arkoseToken: '',
     };
   },
   watch: {
+    arkoseToken(token) {
+      this.$emit('challenge-solved', token);
+    },
     resetSession: {
       immediate: true,
       handler(reset) {
@@ -64,9 +68,7 @@ export default {
       this.arkoseLabsIframeShown = true;
     },
     passArkoseLabsChallenge(response) {
-      const arkoseToken = response.token;
-
-      this.$emit('challenge-solved', arkoseToken);
+      this.arkoseToken = response.token;
     },
     resetArkoseSession() {
       this.arkoseObject?.reset();
@@ -76,10 +78,17 @@ export default {
 </script>
 
 <template>
-  <div
-    v-show="arkoseLabsIframeShown"
-    class="gl-display-flex gl-justify-content-center"
-    :class="arkoseLabsContainerClass"
-    data-testid="arkose-labs-challenge"
-  ></div>
+  <div>
+    <!-- We use a hidden input here to simulate 'user solved the challenge' and
+    trigger `challenge-solved` event in feature tests. See
+    https://gitlab.com/gitlab-org/gitlab/-/issues/459947 -->
+    <input v-model="arkoseToken" type="hidden" data-testid="arkose-labs-token-input" />
+
+    <div
+      v-show="arkoseLabsIframeShown"
+      class="gl-display-flex gl-justify-content-center"
+      :class="arkoseLabsContainerClass"
+      data-testid="arkose-labs-challenge"
+    ></div>
+  </div>
 </template>

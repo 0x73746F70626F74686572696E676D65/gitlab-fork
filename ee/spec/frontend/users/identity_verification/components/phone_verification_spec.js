@@ -30,11 +30,12 @@ describe('Phone Verification component', () => {
   const DEFAULT_PROVIDE = {
     verificationStatePath: '/users/identity_verification/verification_state',
     offerPhoneNumberExemption: true,
-    phoneNumber: {
-      enableArkoseChallenge: true,
-      showArkoseChallenge: true,
-      showRecaptchaChallenge: true,
-    },
+    phoneChallengeOnSend: true,
+    phoneChallengeOnVerify: true,
+    phoneEnableArkoseChallenge: true,
+    phoneShowArkoseChallenge: true,
+    phoneShowRecaptchaChallenge: true,
+    phoneNumber: undefined,
     glFeatures: { autoRequestPhoneNumberVerificationExemption: true },
   };
 
@@ -43,7 +44,8 @@ describe('Phone Verification component', () => {
   const findPhoneExemptionLink = () =>
     wrapper.findByText(s__('IdentityVerification|Verify with a credit card instead?'));
 
-  const findCaptcha = () => wrapper.findComponent(Captcha);
+  const findSendCodeCaptcha = () => findInternationalPhoneInput().findComponent(Captcha);
+  const findVerifyCodeCaptcha = () => findVerifyCodeInput().findComponent(Captcha);
 
   const createComponent = (provide = {}, props = {}) => {
     wrapper = shallowMountExtended(PhoneVerification, {
@@ -194,6 +196,17 @@ describe('Phone Verification component', () => {
         expect(findVerifyCodeInput().exists()).toBe(false);
       });
     });
+
+    it('does not render captcha component for verifying code when phoneChallengeOnVerify is false', async () => {
+      createComponent({ phoneChallengeOnVerify: false });
+
+      await findInternationalPhoneInput().vm.$emit('next', {
+        ...PHONE_NUMBER,
+        sendAllowedAfter: '2000-01-01T01:02:03Z',
+      });
+
+      expect(findVerifyCodeCaptcha().exists()).toBe(false);
+    });
   });
 
   describe('On verified', () => {
@@ -245,9 +258,9 @@ describe('Phone Verification component', () => {
 
   describe('Captcha', () => {
     it('renders the phone verification captcha component', () => {
-      expect(findCaptcha().exists()).toBe(true);
+      expect(findSendCodeCaptcha().exists()).toBe(true);
 
-      expect(findCaptcha().props()).toMatchObject({
+      expect(findSendCodeCaptcha().props()).toMatchObject({
         enableArkoseChallenge: true,
         showArkoseChallenge: true,
         showRecaptchaChallenge: true,
@@ -260,7 +273,7 @@ describe('Phone Verification component', () => {
         findInternationalPhoneInput().vm.$emit('verification-attempt');
         await nextTick();
 
-        expect(findCaptcha().props()).toMatchObject({
+        expect(findSendCodeCaptcha().props()).toMatchObject({
           verificationAttempts: 1,
         });
       });
@@ -268,7 +281,7 @@ describe('Phone Verification component', () => {
 
     describe('when `captcha-shown` event is emitted', () => {
       it('passes disableSubmitButton prop as true', async () => {
-        findCaptcha().vm.$emit('captcha-shown');
+        findSendCodeCaptcha().vm.$emit('captcha-shown');
         await nextTick();
 
         expect(findInternationalPhoneInput().props()).toMatchObject({
@@ -279,7 +292,7 @@ describe('Phone Verification component', () => {
 
     describe('when `captcha-solved` event is emitted', () => {
       it('passes correct props', async () => {
-        findCaptcha().vm.$emit('captcha-solved', { captcha_token: '1234' });
+        findSendCodeCaptcha().vm.$emit('captcha-solved', { captcha_token: '1234' });
         await nextTick();
 
         expect(findInternationalPhoneInput().props()).toMatchObject({
@@ -291,7 +304,7 @@ describe('Phone Verification component', () => {
 
     describe('when `captcha-reset` event is emitted', () => {
       it('passes correct props', async () => {
-        findCaptcha().vm.$emit('captcha-reset');
+        findSendCodeCaptcha().vm.$emit('captcha-reset');
         await nextTick();
 
         expect(findInternationalPhoneInput().props()).toMatchObject({
@@ -299,6 +312,12 @@ describe('Phone Verification component', () => {
           additionalRequestParams: {},
         });
       });
+    });
+
+    it('does not render captcha component for sending code when phoneChallengeOnSend is false', () => {
+      createComponent({ phoneChallengeOnSend: false });
+
+      expect(findSendCodeCaptcha().exists()).toBe(false);
     });
   });
 

@@ -21,7 +21,16 @@ export default {
     Captcha,
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['verificationStatePath', 'phoneNumber', 'offerPhoneNumberExemption'],
+  inject: [
+    'verificationStatePath',
+    'phoneNumber',
+    'offerPhoneNumberExemption',
+    'phoneChallengeOnSend',
+    'phoneChallengeOnVerify',
+    'phoneEnableArkoseChallenge',
+    'phoneShowArkoseChallenge',
+    'phoneShowRecaptchaChallenge',
+  ],
   data() {
     return {
       stepIndex: 1,
@@ -139,10 +148,11 @@ export default {
     >
       <template #captcha>
         <captcha
+          v-if="phoneChallengeOnSend"
           :verification-attempts="verificationAttempts"
-          :enable-arkose-challenge="phoneNumber.enableArkoseChallenge"
-          :show-arkose-challenge="phoneNumber.showArkoseChallenge"
-          :show-recaptcha-challenge="phoneNumber.showRecaptchaChallenge"
+          :enable-arkose-challenge="phoneEnableArkoseChallenge"
+          :show-arkose-challenge="phoneShowArkoseChallenge"
+          :show-recaptcha-challenge="phoneShowRecaptchaChallenge"
           @captcha-shown="onCaptchaShown"
           @captcha-solved="onCaptchaSolved"
           @captcha-reset="onCaptchaReset"
@@ -165,10 +175,11 @@ export default {
     >
       <template #captcha>
         <captcha
+          v-if="phoneChallengeOnVerify"
           :verification-attempts="verificationAttempts"
-          :enable-arkose-challenge="phoneNumber.enableArkoseChallenge"
-          :show-arkose-challenge="phoneNumber.showArkoseChallenge"
-          :show-recaptcha-challenge="phoneNumber.showRecaptchaChallenge"
+          :enable-arkose-challenge="phoneEnableArkoseChallenge"
+          :show-arkose-challenge="phoneShowArkoseChallenge"
+          :show-recaptcha-challenge="phoneShowRecaptchaChallenge"
           @captcha-shown="onCaptchaShown"
           @captcha-solved="onCaptchaSolved"
           @captcha-reset="onCaptchaReset"

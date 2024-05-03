@@ -94,8 +94,30 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
       end
 
       it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
-      it_behaves_like 'it verifies arkose token before phone verification'
-      it_behaves_like 'it verifies reCAPTCHA response'
+
+      describe 'Arkose session token verification' do
+        context 'when verification fails' do
+          it 'returns a 400 with an error message', :aggregate_failures do
+            mock_arkose_token_verification(success: false)
+
+            do_request
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(response.body).to eq(
+              { message: s_('IdentityVerification|Complete verification to proceed.') }.to_json)
+          end
+        end
+
+        context 'when verification succeeds' do
+          it 'returns a 200' do
+            mock_arkose_token_verification(success: true)
+
+            do_request
+
+            expect(response).to have_gitlab_http_status(:ok)
+          end
+        end
+      end
 
       it_behaves_like 'it ensures verification attempt is allowed', 'phone' do
         let(:target_user) { user }
@@ -108,7 +130,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
   describe 'POST verify_phone_verification_code' do
     let_it_be(:params) do
-      { arkose_labs_token: 'verification-token', identity_verification: { verification_code: '999' } }
+      { identity_verification: { verification_code: '999' } }
     end
 
     subject(:do_request) { post verify_phone_verification_code_identity_verification_path(params) }
@@ -123,8 +145,6 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
       end
 
       it_behaves_like 'it returns 404 when opt_in_identity_verification feature flag is disabled'
-      it_behaves_like 'it verifies arkose token before phone verification'
-      it_behaves_like 'it verifies reCAPTCHA response'
     end
 
     it_behaves_like 'it successfully verifies a phone number verification code'
