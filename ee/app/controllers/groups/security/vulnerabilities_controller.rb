@@ -16,6 +16,7 @@ module Groups
         push_frontend_feature_flag(:group_level_vulnerability_report_grouping, @group)
         push_frontend_feature_flag(:container_scanning_for_registry)
         push_frontend_feature_flag(:vulnerability_owasp_top_10_group, @group)
+        push_frontend_feature_flag(:vulnerability_report_advanced_filtering, @group, type: :beta)
       end
 
       def index
