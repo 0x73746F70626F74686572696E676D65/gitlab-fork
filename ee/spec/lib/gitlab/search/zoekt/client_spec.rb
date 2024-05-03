@@ -119,8 +119,11 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     end
 
     context 'when an exception is raised during json parsing' do
+      let(:invalid_json_body) { '' }
+      let(:response) { instance_double(HTTParty::Response, code: 200, success?: true, body: invalid_json_body) }
+
       before do
-        allow(::Gitlab::Json).to receive(:parse).and_raise(Gitlab::Json.parser_error)
+        allow(::Gitlab::HTTP).to receive(method).and_return response
       end
 
       it { expect { subject }.to raise_error(::Search::Zoekt::Errors::ClientConnectionError) }
@@ -373,42 +376,28 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
       let(:expected_path) { '/indexer/index' }
     end
 
-    it_behaves_like 'without node backoffs', :post do
-      let(:make_request) { index }
-    end
-
     it_behaves_like 'with connection errors', :post
   end
 
   describe '#delete' do
-    let(:node) { zoekt_node }
+    let(:node) { create(:zoekt_node) }
     let(:node_id) { node.id }
 
     subject(:delete) { described_class.delete(node_id: node_id, project_id: project_1.id) }
 
-    context 'when project is indexed' do
-      before do
-        zoekt_ensure_project_indexed!(project_1)
+    context 'when request is success' do
+      let(:response_body) do
+        { message: 'Deleted' }.to_json
       end
 
-      it 'removes project data from the Zoekt node' do
-        search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id],
-          node_id: node_id, search_mode: :regex)
-        expect(search_results.result[:Files].to_a.size).to eq(2)
+      before do
+        stub_request(:delete, "#{node.index_base_url}/indexer/index/#{project_1.id}")
+          .to_return(status: 200, body: response_body, headers: {})
+      end
 
-        delete
-
-        # Add delay to allow Zoekt wbeserver to finish the deletion
-        10.times do
-          results = client.search('.*', num: 1, project_ids: [project_1.id], node_id: node_id, search_mode: :regex)
-          break if results.result[:FileCount] == 0
-
-          sleep 0.01
-        end
-
-        search_results = described_class.new.search('use.*egex', num: 10, project_ids: [project_1.id],
-          node_id: node_id, search_mode: :regex)
-        expect(search_results.result[:Files].to_a).to be_empty
+      it 'returns the response body' do
+        expect(::Gitlab::HTTP).to receive(:delete).and_call_original
+        expect(delete.body).to eq response_body
       end
     end
 
@@ -429,10 +418,6 @@ RSpec.describe ::Gitlab::Search::Zoekt::Client, :zoekt, :clean_gitlab_redis_cach
     it_behaves_like 'with relative base_url', :delete do
       let(:make_request) { client.delete(node_id: custom_node.id, project_id: project_1.id) }
       let(:expected_path) { "/indexer/index/#{project_1.id}" }
-    end
-
-    it_behaves_like 'without node backoffs', :delete do
-      let(:make_request) { delete }
     end
 
     it_behaves_like 'with connection errors', :delete
