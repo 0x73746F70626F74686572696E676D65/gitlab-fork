@@ -28,10 +28,6 @@ class Groups::EpicsController < Groups::ApplicationController
     push_frontend_feature_flag(:namespace_level_work_items, @group)
   end
 
-  before_action only: :show do
-    push_frontend_feature_flag(:mention_autocomplete_backend_filtering, @group)
-  end
-
   feature_category :portfolio_management
   urgency :default, [:show, :new, :realtime_changes]
   urgency :low, [:discussions]
