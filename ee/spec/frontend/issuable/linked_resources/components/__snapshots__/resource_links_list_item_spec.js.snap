@@ -8,7 +8,7 @@ exports[`ResourceLinkItem template matches the snapshot 1`] = `
     class="flex-xl-nowrap gl-align-items-center gl-display-flex gl-flex-grow-1 gl-flex-wrap gl-min-h-7 item-contents"
   >
     <div
-      class="align-items-xl-center d-flex gl-min-w-0 item-title mb-xl-0"
+      class="align-items-xl-center gl-min-w-0 gl-sm-display-flex item-title mb-xl-0"
     >
       <svg
         aria-hidden="true"
