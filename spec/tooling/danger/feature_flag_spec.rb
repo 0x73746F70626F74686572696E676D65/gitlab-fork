@@ -33,14 +33,14 @@ RSpec.describe Tooling::Danger::FeatureFlag, feature_category: :tooling do
 
     shared_examples 'an array of Found objects' do |change_type|
       it 'returns an array of Found objects' do
-        expect(feature_flag.feature_flag_files(change_type: change_type)).to contain_exactly(an_instance_of(described_class::Found), an_instance_of(described_class::Found))
-        expect(feature_flag.feature_flag_files(change_type: change_type).map(&:path)).to eq(feature_flag_files)
+        expect(feature_flag.feature_flag_files(danger_helper: fake_helper, change_type: change_type)).to contain_exactly(an_instance_of(described_class::Found), an_instance_of(described_class::Found))
+        expect(feature_flag.feature_flag_files(danger_helper: fake_helper, change_type: change_type).map(&:path)).to eq(feature_flag_files)
       end
     end
 
     shared_examples 'an empty array' do |change_type|
       it 'returns an array of Found objects' do
-        expect(feature_flag.feature_flag_files(change_type: change_type)).to be_empty
+        expect(feature_flag.feature_flag_files(danger_helper: fake_helper, change_type: change_type)).to be_empty
       end
     end
 

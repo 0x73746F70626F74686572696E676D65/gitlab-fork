@@ -27,30 +27,21 @@ module Tooling
     For guidance on when to use a feature flag, please see the [documentation](https://about.gitlab.com/handbook/product-development-flow/feature-flag-lifecycle/#when-to-use-feature-flags).
     WARNING_MESSAGE
 
-    def initialize(context:, feature_flag_helper:, helper:)
+    def initialize(context:, added_files:, modified_files:, helper:)
       @context = context
-      @feature_flag_helper = feature_flag_helper
+      @added_files = added_files
+      @modified_files = modified_files
       @helper = helper
-    end
-
-    def check_feature_flag_yaml(feature_flag)
-      unless feature_flag.valid?
-        context.failure("#{helper.html_link(feature_flag.path)} isn't valid YAML! #{SEE_DOC}")
-        return
-      end
-
-      check_group(feature_flag)
-      check_feature_issue_url(feature_flag)
-      # Note: we don't check introduced_by_url as it's already done by danger/config_files/Dangerfile
-      check_rollout_issue_url(feature_flag)
-      check_milestone(feature_flag)
-      check_default_enabled(feature_flag)
     end
 
     def check_touched_feature_flag_files
       touched_feature_flag_files.each do |feature_flag|
         check_feature_flag_yaml(feature_flag)
       end
+    end
+
+    def feature_flag_file_touched?
+      touched_feature_flag_files.any?
     end
 
     def mr_has_backend_or_frontend_changes?
@@ -68,22 +59,24 @@ module Tooling
 
     private
 
-    attr_reader :context, :feature_flag_helper, :helper
+    attr_reader :context, :added_files, :modified_files, :helper
+
+    def check_feature_flag_yaml(feature_flag)
+      unless feature_flag.valid?
+        context.failure("#{helper.html_link(feature_flag.path)} isn't valid YAML! #{SEE_DOC}")
+        return
+      end
+
+      check_group(feature_flag)
+      check_feature_issue_url(feature_flag)
+      # Note: we don't check introduced_by_url as it's already done by danger/config_files/Dangerfile
+      check_rollout_issue_url(feature_flag)
+      check_milestone(feature_flag)
+      check_default_enabled(feature_flag)
+    end
 
     def touched_feature_flag_files
-      added_feature_flag_files + modified_feature_flag_files
-    end
-
-    def added_feature_flag_files
-      feature_flag_helper.feature_flag_files(change_type: :added)
-    end
-
-    def modified_feature_flag_files
-      feature_flag_helper.feature_flag_files(change_type: :modified)
-    end
-
-    def feature_flag_file_touched?
-      added_feature_flag_files.any? || modified_feature_flag_files.any?
+      added_files + modified_files
     end
 
     def check_group(feature_flag)
@@ -102,13 +95,13 @@ module Tooling
         return
       end
 
-      mr_line = feature_flag.find_line_index("group:")
-
-      if mr_line
-        context.failure(format(SUGGEST_MR_COMMENT, group: mr_group_label), file: feature_flag.path, line: mr_line.succ)
-      else
-        context.failure(%(Please add `group: "#{mr_group_label}"` in #{helper.html_link(feature_flag.path)}. #{SEE_DOC}))
-      end
+      add_message_on_line(
+        feature_flag: feature_flag,
+        needle: "group:",
+        note: format(SUGGEST_MR_COMMENT, group: mr_group_label),
+        fallback_note: %(Please add `group: "#{mr_group_label}"` in #{helper.html_link(feature_flag.path)}. #{SEE_DOC}),
+        message_method: :failure
+      )
     end
 
     def message_for_feature_flag_with_group!(feature_flag:, mr_group_label:)
@@ -121,27 +114,36 @@ module Tooling
         `group` is set to ~"#{feature_flag.group}" in #{helper.html_link(feature_flag.path)},
         which does not match ~"#{mr_group_label}" set on the MR!
         FAILURE_MESSAGE
-        mr_line = feature_flag.find_line_index("group:")
 
-        if mr_line
-          context.failure(note, file: feature_flag.path, line: mr_line.succ)
-        else
-          context.failure(note)
-        end
+        add_message_on_line(
+          feature_flag: feature_flag,
+          needle: "group:",
+          note: note,
+          message_method: :failure
+        )
       end
     end
 
     def check_feature_issue_url(feature_flag)
       return unless feature_flag.missing_feature_issue_url?
 
-      note = "Consider filling `feature_issue_url:`"
-      mr_line = feature_flag.find_line_index("feature_issue_url:")
+      add_message_on_line(
+        feature_flag: feature_flag,
+        needle: "feature_issue_url:",
+        note: "Consider filling `feature_issue_url:`"
+      )
+    end
 
+    def add_message_on_line(feature_flag:, needle:, note:, fallback_note: note, message_method: :message)
+      mr_line = feature_flag.find_line_index(needle)
+
+      # rubocop:disable GitlabSecurity/PublicSend -- we allow calling context.message, context.warning & context.failure
       if mr_line
-        context.message(note, file: feature_flag.path, line: mr_line.succ)
+        context.public_send(message_method, note, file: feature_flag.path, line: mr_line.succ)
       else
-        context.message(note)
+        context.public_send(message_method, fallback_note)
       end
+      # rubocop:enable GitlabSecurity/PublicSend
     end
 
     def check_rollout_issue_url(feature_flag)
@@ -160,7 +162,7 @@ module Tooling
     def check_default_enabled(feature_flag)
       return unless feature_flag.default_enabled?
 
-      if ::Feature::Shared::TYPES.dig(feature_flag.type.to_sym, :can_be_default_enabled)
+      if ::Feature::Shared.can_be_default_enabled?(feature_flag.type)
         note = <<~SUGGEST_COMMENT
           You're about to [release the feature with the feature flag](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/issue_templates/Feature%20Flag%20Roll%20Out.md#optional-release-the-feature-with-the-feature-flag).
           This process can only be done **after** the [global rollout on production](https://gitlab.com/gitlab-org/gitlab/-/blob/master/.gitlab/issue_templates/Feature%20Flag%20Roll%20Out.md#global-rollout-on-production).
@@ -192,7 +194,12 @@ module Tooling
   end
 end
 
-feature_flag_dangerfile = Tooling::FeatureFlagDangerfile.new(context: self, feature_flag_helper: feature_flag, helper: helper)
+feature_flag_dangerfile = Tooling::FeatureFlagDangerfile.new(
+  context: self,
+  added_files: feature_flag.feature_flag_files(danger_helper: helper, change_type: :added),
+  modified_files: feature_flag.feature_flag_files(danger_helper: helper, change_type: :modified),
+  helper: helper
+)
 
 feature_flag_dangerfile.check_touched_feature_flag_files
 

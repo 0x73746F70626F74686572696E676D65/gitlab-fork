@@ -10,8 +10,8 @@ module Tooling
       #   - :added
       #   - :modified
       #   - :deleted
-      def feature_flag_files(change_type:)
-        files = helper.public_send("#{change_type}_files") # rubocop:disable GitlabSecurity/PublicSend
+      def feature_flag_files(danger_helper:, change_type:)
+        files = danger_helper.public_send("#{change_type}_files") # rubocop:disable GitlabSecurity/PublicSend -- we allow calling danger_helper.added_files & danger_helper.modified_files
 
         files.select { |path| path =~ %r{\A(ee/)?config/feature_flags/} }.map { |path| Found.build(path) }
       end
