@@ -28,7 +28,7 @@ RSpec.describe 'User creates On-demand Scan', feature_category: :dynamic_applica
       expect(page).to have_button('Save and run scan', wait: 1.minute)
       expect(page).to have_button('Save scan', wait: 1.minute)
 
-      page.within '.breadcrumbs' do
+      within_testid('breadcrumb-links') do
         expect(page).to have_link('On-demand Scans',
           href: project_on_demand_scans_path(project, anchor: 'saved'),
           wait: 1.minute)

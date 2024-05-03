@@ -19,7 +19,7 @@ RSpec.describe 'User edits On-demand Scan', feature_category: :dynamic_applicati
   it 'shows edit scan page', :aggregate_failures, :js do
     expect(page).to have_content 'Edit on-demand DAST scan'
 
-    page.within '.breadcrumbs' do
+    within_testid('breadcrumb-links') do
       expect(page).to have_link('On-demand Scans', href: project_on_demand_scans_path(project, anchor: 'saved'))
       expect(page).to have_link('Edit on-demand DAST scan', href: edit_on_demand_scan_path)
     end
