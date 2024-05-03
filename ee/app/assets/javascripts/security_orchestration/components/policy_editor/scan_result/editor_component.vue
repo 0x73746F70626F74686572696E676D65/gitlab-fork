@@ -72,8 +72,14 @@ export default {
     settingsTitle: s__('ScanResultPolicy|Override project approval settings'),
     yamlPreview: s__('SecurityOrchestration|.yaml preview'),
     ACTIONS_LABEL,
-    settingWarningTitle: s__('SecurityOrchestration|Only overriding settings will take effect'),
+    settingWarningTitle: s__(
+      'SecurityOrchestration|Only overriding settings and bot message will take effect',
+    ),
     settingWarningDescription: s__(
+      "SecurityOrchestration|For any MR that matches this policy's rules, only the override project approval settings apply and bot message enabled. No additional approvals are required.",
+    ),
+    oldSettingWarningTitle: s__('SecurityOrchestration|Only overriding settings will take effect'),
+    oldSettingWarningDescription: s__(
       "SecurityOrchestration|For any MR that matches this policy's rules, only the override project approval settings apply. No additional approvals are required.",
     ),
     settingErrorTitle: s__('SecurityOrchestration|Cannot create an empty policy'),
@@ -194,8 +200,13 @@ export default {
     isWithinLimit() {
       return this.policy.rules?.length < MAX_ALLOWED_RULES_LENGTH;
     },
+    hasRequireApprovalAction() {
+      return this.policy.actions?.some(({ type }) => type === REQUIRE_APPROVAL_TYPE);
+    },
     hasEmptyActions() {
-      return !this.policy.actions?.length;
+      return this.glFeatures.approvalPolicyDisableBotComment
+        ? this.policy.actions?.every(({ type, enabled }) => type === BOT_MESSAGE_TYPE && !enabled)
+        : !this.policy.actions?.length;
     },
     hasEmptyRules() {
       return this.policy.rules?.length === 0 || this.policy.rules?.at(0)?.type === '';
@@ -229,17 +240,26 @@ export default {
       return this.policy.rules.some(this.ruleHasBranchesProperty);
     },
     settingAlert() {
-      if (this.hasEmptySettings) {
+      if (this.hasEmptySettings && this.hasEmptyActions) {
         return {
           variant: 'danger',
           title: this.$options.i18n.settingErrorTitle,
           description: this.$options.i18n.settingErrorDescription,
         };
       }
+
+      if (this.glFeatures.approvalPolicyDisableBotComment) {
+        return {
+          variant: 'warning',
+          title: this.$options.i18n.settingWarningTitle,
+          description: this.$options.i18n.settingWarningDescription,
+        };
+      }
+
       return {
         variant: 'warning',
-        title: this.$options.i18n.settingWarningTitle,
-        description: this.$options.i18n.settingWarningDescription,
+        title: this.$options.i18n.oldSettingWarningTitle,
+        description: this.$options.i18n.oldSettingWarningDescription,
       };
     },
     showBotMessageAction() {
@@ -580,7 +600,7 @@ export default {
         <settings-section :rules="policy.rules" :settings="settings" @changed="updateSettings" />
       </dim-disable-container>
       <gl-alert
-        v-if="!hasParsingError && hasEmptyActions"
+        v-if="!hasParsingError && !hasRequireApprovalAction"
         data-testid="empty-actions-alert"
         class="gl-mb-5"
         :title="settingAlert.title"

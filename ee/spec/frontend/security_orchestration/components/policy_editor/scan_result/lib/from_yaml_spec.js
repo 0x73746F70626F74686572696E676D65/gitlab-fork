@@ -12,6 +12,10 @@ import {
   mockApprovalSettingsPermittedInvalidScanResultObject,
   mockPolicyScopeScanResultManifest,
   mockPolicyScopeScanResultObject,
+  tooManyActionsScanResultManifest,
+  duplicateActionsScanResultManifest,
+  zeroActionsScanResultManifest,
+  zeroActionsScanResultObject,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
 import {
   unsupportedManifest,
@@ -26,12 +30,15 @@ jest.mock('lodash/uniqueId', () => jest.fn((prefix) => `${prefix}0`));
 
 describe('fromYaml', () => {
   it.each`
-    title                                                                                                | input                                                                    | output
-    ${'returns the policy object for a supported manifest without approval_settings'}                    | ${{ manifest: mockDefaultBranchesScanResultManifest }}                   | ${mockDefaultBranchesScanResultObject}
-    ${'returns the policy object for a supported manifest with approval_settings'}                       | ${{ manifest: mockApprovalSettingsScanResultManifest }}                  | ${mockApprovalSettingsScanResultObject}
-    ${'returns the error object for a policy with an unsupported attribute'}                             | ${{ manifest: unsupportedManifest, validateRuleMode: true }}             | ${{ error: true }}
-    ${'returns the error object for a policy with colliding self excluded keys'}                         | ${{ manifest: collidingKeysScanResultManifest, validateRuleMode: true }} | ${{ error: true }}
-    ${'returns the policy object for a policy with an unsupported attribute when validation is skipped'} | ${{ manifest: unsupportedManifest }}                                     | ${unsupportedManifestObject}
+    title                                                                                                | input                                                                       | output
+    ${'returns the policy object for a supported manifest without approval_settings'}                    | ${{ manifest: mockDefaultBranchesScanResultManifest }}                      | ${mockDefaultBranchesScanResultObject}
+    ${'returns the policy object for a supported manifest with approval_settings'}                       | ${{ manifest: mockApprovalSettingsScanResultManifest }}                     | ${mockApprovalSettingsScanResultObject}
+    ${'returns the error object for a policy with an unsupported attribute'}                             | ${{ manifest: unsupportedManifest, validateRuleMode: true }}                | ${{ error: true }}
+    ${'returns the error object for a policy with colliding self excluded keys'}                         | ${{ manifest: collidingKeysScanResultManifest, validateRuleMode: true }}    | ${{ error: true }}
+    ${'returns the policy object for a policy without actions'}                                          | ${{ manifest: zeroActionsScanResultManifest, validateRuleMode: true }}      | ${zeroActionsScanResultObject}
+    ${'returns the error object for a policy with more than two actions'}                                | ${{ manifest: tooManyActionsScanResultManifest, validateRuleMode: true }}   | ${{ error: true }}
+    ${'returns the error object for a policy with duplicate action types'}                               | ${{ manifest: duplicateActionsScanResultManifest, validateRuleMode: true }} | ${{ error: true }}
+    ${'returns the policy object for a policy with an unsupported attribute when validation is skipped'} | ${{ manifest: unsupportedManifest }}                                        | ${unsupportedManifestObject}
   `('$title', ({ input, output }) => {
     expect(fromYaml(input)).toStrictEqual(output);
   });

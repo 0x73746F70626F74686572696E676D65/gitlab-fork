@@ -494,6 +494,10 @@ describe('EditorComponent', () => {
               .mockImplementationOnce(jest.fn((prefix) => `${prefix}1`));
           });
 
+          afterAll(() => {
+            uniqueId.mockRestore();
+          });
+
           it.each`
             namespaceType              | policy
             ${NAMESPACE_TYPES.PROJECT} | ${APPROVAL_POLICY_DEFAULT_POLICY_WITH_BOT_MESSAGE}
@@ -989,7 +993,56 @@ describe('EditorComponent', () => {
       });
     });
 
-    describe('empty policy alert', () => {
+    describe('empty policy alert when the "approvalPolicyDisableBotComment" feature is on', () => {
+      const settingsPolicy = { approval_settings: { [BLOCK_BRANCH_MODIFICATION]: true } };
+      const disabledBotPolicy = { actions: [{ type: 'send_bot_message', enabled: false }] };
+      const disabledBotPolicyWithSettings = {
+        approval_settings: { [BLOCK_BRANCH_MODIFICATION]: true },
+        actions: [{ type: 'send_bot_message', enabled: false }],
+      };
+
+      beforeEach(() => {
+        uniqueId
+          .mockImplementationOnce(jest.fn((prefix) => `${prefix}0`))
+          .mockImplementationOnce(jest.fn((prefix) => `${prefix}1`))
+          .mockImplementationOnce(jest.fn((prefix) => `${prefix}2`));
+      });
+
+      afterEach(() => {
+        uniqueId.mockRestore();
+      });
+
+      describe.each`
+        title                                                       | policy                           | hasActions | hasAlert | alertVariant | disableUpdate
+        ${'has require approval action and settings'}               | ${settingsPolicy}                | ${true}    | ${false} | ${''}        | ${false}
+        ${'has require approval action but does not have settings'} | ${{}}                            | ${true}    | ${false} | ${''}        | ${false}
+        ${'has settings but does not have actions'}                 | ${settingsPolicy}                | ${false}   | ${true}  | ${'warning'} | ${false}
+        ${'does not have actions or settings'}                      | ${{}}                            | ${false}   | ${true}  | ${'warning'} | ${false}
+        ${'has disabled bot action and has settings'}               | ${disabledBotPolicyWithSettings} | ${true}    | ${true}  | ${'warning'} | ${false}
+        ${'has disabled bot action but does not have settings'}     | ${disabledBotPolicy}             | ${true}    | ${true}  | ${'danger'}  | ${true}
+      `('$title', ({ policy, hasActions, hasAlert, alertVariant, disableUpdate }) => {
+        beforeEach(() => {
+          factoryWithExistingPolicy({
+            glFeatures: { approvalPolicyDisableBotComment: true },
+            policy,
+            hasActions,
+          });
+        });
+
+        it('renders the alert appropriately', () => {
+          expect(findEmptyActionsAlert().exists()).toBe(hasAlert);
+          if (hasAlert) {
+            expect(findEmptyActionsAlert().props('variant')).toBe(alertVariant);
+          }
+        });
+
+        it('renders the save button appropriately', () => {
+          expect(findPolicyEditorLayout().props('disableUpdate')).toBe(disableUpdate);
+        });
+      });
+    });
+
+    describe('empty policy alert when the "approvalPolicyDisableBotComment" feature is off', () => {
       const policy = { approval_settings: { [BLOCK_BRANCH_MODIFICATION]: true } };
       describe('when there are actions and settings', () => {
         beforeEach(() => {
