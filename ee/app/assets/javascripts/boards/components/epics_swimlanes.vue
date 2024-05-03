@@ -251,7 +251,7 @@ export default {
       <component
         :is="treeRootWrapper"
         v-bind="treeRootOptions"
-        class="board-swimlanes-headers gl-bg-white gl-display-table gl-sticky gl-pt-5 gl-mb-5 gl-top-0 gl-z-3"
+        class="board-swimlanes-headers gl-display-table gl-sticky gl-pt-5 gl-mb-5 gl-top-0 gl-z-3"
         data-testid="board-swimlanes-headers"
         @end="$emit('move-list', $event)"
       >
