@@ -13,30 +13,6 @@ participating-stages: []
 
 # Cell Architecture and Tooling
 
-- [Cell Architecture and Tooling](#cell-architecture-and-tooling)
-  - [Summary](#summary)
-  - [Motivation](#motivation)
-    - [Goals](#goals)
-    - [Non-Goals](#non-goals)
-  - [Proposal](#proposal)
-  - [Design and implementation details](#design-and-implementation-details)
-    - [Architecture](#architecture)
-      - [Components](#components)
-      - [Naming conventions for cells](#naming-conventions-for-cells)
-      - [Relationship to GCP projects](#relationship-to-gcp-projects)
-      - [Networking](#networking)
-      - [GCP organization](#gcp-organization)
-      - [Cloud resource hierarchy](#cloud-resource-hierarchy)
-      - [Number of GKE clusters serving a cell](#number-of-gke-clusters-serving-a-cell)
-      - [Secrets management for cells](#secrets-management-for-cells)
-      - [Access to cells](#access-to-cells)
-      - [Observability](#observability)
-    - [Tooling](#tooling)
-      - [Cells 1.0](#cells-10)
-      - [Cell tenant model](#cell-tenant-model)
-      - [Beyond Cells 1.0](#beyond-cells-10)
-        - [Where should something be implemented for cells?](#where-should-something-be-implemented-for-cells)
-
 ## Summary
 
 This blueprint lays out how cells will be architected, which components will be managed as cell-local or globally, and how a mix of existing and new tooling will be used to provision new cells.
