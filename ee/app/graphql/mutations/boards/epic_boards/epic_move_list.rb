@@ -9,38 +9,38 @@ module Mutations
         authorize :admin_epic_board
 
         argument :board_id, ::Types::GlobalIDType[::Boards::EpicBoard],
-                  required: true,
-                  description: 'Global ID of the board that the epic is in.'
+          required: true,
+          description: 'Global ID of the board that the epic is in.'
 
         argument :epic_id, ::Types::GlobalIDType[::Epic],
-                  required: true,
-                  description: 'ID of the epic to mutate.'
+          required: true,
+          description: 'ID of the epic to mutate.'
 
         argument :from_list_id, ::Types::GlobalIDType[::Boards::EpicList],
-                  required: false,
-                  description: 'ID of the board list that the epic will be moved from. Required if moving between lists.'
+          required: false,
+          description: 'ID of the board list that the epic will be moved from. Required if moving between lists.'
 
         argument :to_list_id, ::Types::GlobalIDType[::Boards::EpicList],
-                  required: true,
-                  description: 'ID of the list the epic will be in after mutation.'
+          required: true,
+          description: 'ID of the list the epic will be in after mutation.'
 
         argument :move_before_id, ::Types::GlobalIDType[::Epic],
-                 required: false,
-                 description: 'ID of epic that should be placed before the current epic.'
+          required: false,
+          description: 'ID of epic that should be placed before the current epic.'
 
         argument :move_after_id, ::Types::GlobalIDType[::Epic],
-                 required: false,
-                 description: 'ID of epic that should be placed after the current epic.'
+          required: false,
+          description: 'ID of epic that should be placed after the current epic.'
 
         argument :position_in_list, GraphQL::Types::Int,
-                 required: false,
-                 description: "Position of epics within the board list. Positions start at 0. " \
-                              "Use #{::Boards::Epics::MoveService::LIST_END_POSITION} to move to the end of the list."
+          required: false,
+          description: "Position of epics within the board list. Positions start at 0. " \
+                       "Use #{::Boards::Epics::MoveService::LIST_END_POSITION} to move to the end of the list."
 
         field :epic,
-            Types::EpicType,
-            null: true,
-            description: 'Epic after mutation.'
+          Types::EpicType,
+          null: true,
+          description: 'Epic after mutation.'
 
         def ready?(**args)
           move_list_keys = [:from_list_id, :move_after_id, :move_before_id, :position_in_list]
@@ -49,7 +49,7 @@ module Mutations
             camelized_keys = move_list_keys.map { |k| k.to_s.camelize(:lower) }.join(', ')
 
             raise Gitlab::Graphql::Errors::ArgumentError,
-                  "At least one of the following parameters is required: #{camelized_keys}."
+              "At least one of the following parameters is required: #{camelized_keys}."
           end
 
           if args[:position_in_list].present?
@@ -60,7 +60,7 @@ module Mutations
 
             if args[:position_in_list] != ::Boards::Epics::MoveService::LIST_END_POSITION && args[:position_in_list] < 0
               raise Gitlab::Graphql::Errors::ArgumentError,
-                    "positionInList must be >= 0 or #{::Boards::Epics::MoveService::LIST_END_POSITION}"
+                "positionInList must be >= 0 or #{::Boards::Epics::MoveService::LIST_END_POSITION}"
             end
           end
 

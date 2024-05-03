@@ -9,27 +9,27 @@ module Mutations
           authorize :admin_external_audit_events
 
           argument :header_id, ::Types::GlobalIDType[::AuditEvents::Streaming::Header],
-                   required: true,
-                   description: 'Header to update.'
+            required: true,
+            description: 'Header to update.'
 
           argument :key, GraphQL::Types::String,
-                   required: false,
-                   default_value: nil,
-                   description: 'Header key.'
+            required: false,
+            default_value: nil,
+            description: 'Header key.'
 
           argument :value, GraphQL::Types::String,
-                   required: false,
-                   default_value: nil,
-                   description: 'Header value.'
+            required: false,
+            default_value: nil,
+            description: 'Header value.'
 
           argument :active, GraphQL::Types::Boolean,
-                   required: false,
-                   default_value: nil,
-                   description: 'Boolean option determining whether header is active or not.'
+            required: false,
+            default_value: nil,
+            description: 'Boolean option determining whether header is active or not.'
 
           field :header, ::Types::AuditEvents::Streaming::HeaderType,
-                null: true,
-                description: 'Updates header.'
+            null: true,
+            description: 'Updates header.'
 
           def resolve(header_id:, key:, value:, active:)
             header = authorized_find!(id: header_id)

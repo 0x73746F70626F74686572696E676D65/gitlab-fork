@@ -7,34 +7,34 @@ module Mutations
         graphql_name 'BoardListUpdateLimitMetrics'
 
         argument :list_id,
-                 ::Types::GlobalIDType[::List],
-                 required: true,
-                 description: 'Global ID of the list.'
+          ::Types::GlobalIDType[::List],
+          required: true,
+          description: 'Global ID of the list.'
 
         argument :limit_metric,
-                 EE::Types::ListLimitMetricEnum,
-                 required: false,
-                 description: 'New limit metric type for the list.'
+          EE::Types::ListLimitMetricEnum,
+          required: false,
+          description: 'New limit metric type for the list.'
 
         argument :max_issue_count,
-                 GraphQL::Types::Int,
-                 required: false,
-                 description: 'New maximum issue count limit.'
+          GraphQL::Types::Int,
+          required: false,
+          description: 'New maximum issue count limit.'
 
         argument :max_issue_weight,
-                 GraphQL::Types::Int,
-                 required: false,
-                 description: 'New maximum issue weight limit.'
+          GraphQL::Types::Int,
+          required: false,
+          description: 'New maximum issue weight limit.'
 
         field :list,
-              ::Types::BoardListType,
-              null: true,
-              description: 'Updated list.'
+          ::Types::BoardListType,
+          null: true,
+          description: 'Updated list.'
 
         def ready?(**args)
           if limit_metric_settings_of(args).blank?
             raise Gitlab::Graphql::Errors::ArgumentError,
-                  'At least one of the arguments limitMetric, maxIssueCount or maxIssueWeight is required'
+              'At least one of the arguments limitMetric, maxIssueCount or maxIssueWeight is required'
           end
 
           super

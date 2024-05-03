@@ -7,13 +7,13 @@ module Mutations
         graphql_name 'EpicBoardListCreate'
 
         argument :board_id, ::Types::GlobalIDType[::Boards::EpicBoard],
-                 required: true,
-                 description: 'Global ID of the issue board to mutate.'
+          required: true,
+          description: 'Global ID of the issue board to mutate.'
 
         field :list,
-              Types::Boards::EpicListType,
-              null: true,
-              description: 'Epic list in the epic board.'
+          Types::Boards::EpicListType,
+          null: true,
+          description: 'Epic list in the epic board.'
 
         authorize :admin_epic_board_list
 

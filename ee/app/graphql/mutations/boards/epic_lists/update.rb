@@ -7,14 +7,14 @@ module Mutations
         graphql_name 'UpdateEpicBoardList'
 
         argument :list_id, Types::GlobalIDType[::Boards::EpicList],
-                  required: true,
-                  loads: Types::Boards::EpicListType,
-                  description: 'Global ID of the epic list.'
+          required: true,
+          loads: Types::Boards::EpicListType,
+          description: 'Global ID of the epic list.'
 
         field :list,
-              Types::Boards::EpicListType,
-              null: true,
-              description: 'Mutated epic list.'
+          Types::Boards::EpicListType,
+          null: true,
+          description: 'Mutated epic list.'
 
         private
 

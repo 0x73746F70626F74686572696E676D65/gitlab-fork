@@ -6,24 +6,24 @@ module Mutations
       graphql_name 'UpdateBoardEpicUserPreferences'
 
       argument :board_id,
-               ::Types::GlobalIDType[::Board],
-               required: true,
-               description: 'Board global ID.'
+        ::Types::GlobalIDType[::Board],
+        required: true,
+        description: 'Board global ID.'
 
       argument :epic_id,
-               ::Types::GlobalIDType[::Epic],
-               required: true,
-               description: 'ID of an epic to set preferences for.'
+        ::Types::GlobalIDType[::Epic],
+        required: true,
+        description: 'ID of an epic to set preferences for.'
 
       argument :collapsed,
-               GraphQL::Types::Boolean,
-               required: true,
-               description: 'Whether the epic should be collapsed in the board.'
+        GraphQL::Types::Boolean,
+        required: true,
+        description: 'Whether the epic should be collapsed in the board.'
 
       field :epic_user_preferences,
-            Types::Boards::EpicUserPreferencesType,
-            null: true,
-            description: 'User preferences for the epic in the board after mutation.'
+        Types::Boards::EpicUserPreferencesType,
+        null: true,
+        description: 'User preferences for the epic in the board after mutation.'
 
       authorize :read_issue_board
 
