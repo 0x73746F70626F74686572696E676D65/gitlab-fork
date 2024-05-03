@@ -124,7 +124,8 @@ class CustomAbilityOptionParser
         end
 
         opts.on('-a', '--available_from [number]', Integer,
-          "The access level from which this ability is available, one of: #{LEVELS.values}, if applicable.") do |value|
+          "The access level of the predefined role from which this ability is available, " \
+          "one of: #{LEVELS.values}, if applicable.") do |value|
           options.available_from_access_level = value
         end
 
