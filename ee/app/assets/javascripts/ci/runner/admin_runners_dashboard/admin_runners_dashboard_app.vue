@@ -55,8 +55,8 @@ export default {
       {{ s__('Runners|Use the dashboard to view performance statistics of your runner fleet.') }}
     </p>
 
-    <div class="gl-sm-display-flex gl-column-gap-4 gl-justify-content-space-between">
-      <div class="gl-sm-display-flex gl-column-gap-4 gl-justify-content-space-between gl-w-full">
+    <div class="gl-sm-display-flex gl-gap-x-4 gl-justify-content-space-between">
+      <div class="gl-sm-display-flex gl-gap-x-4 gl-justify-content-space-between gl-w-full">
         <div
           class="runners-dashboard-two-thirds-gap-4 gl-display-flex gl-gap-4 gl-justify-content-space-between gl-mb-4 gl-flex-wrap"
         >

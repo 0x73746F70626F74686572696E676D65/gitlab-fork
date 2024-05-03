@@ -16,7 +16,7 @@ exports[`DastProfileSummaryCard renders properly 1`] = `
         />
       </div>
       <div
-        class="gl-column-gap-3 gl-display-flex"
+        class="gl-display-flex gl-gap-x-3"
       >
         <gl-button-stub
           buttontextclasses=""
