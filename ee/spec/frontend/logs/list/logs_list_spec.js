@@ -98,18 +98,21 @@ describe('LogsList', () => {
       expect(getDrawerSelectedLog()).toBe(null);
     });
 
-    const selectLog = (logIndex) =>
+    const selectLogByIndex = (logIndex) =>
       findLogsTable().vm.$emit('log-selected', { fingerprint: mockLogs[logIndex].fingerprint });
 
+    const selectLog = (log) =>
+      findLogsTable().vm.$emit('log-selected', { fingerprint: log.fingerprint });
+
     it('opens the drawer and set the selected log, upond selection', async () => {
-      await selectLog(1);
+      await selectLogByIndex(1);
 
       expect(isDrawerOpen()).toBe(true);
       expect(getDrawerSelectedLog()).toEqual(mockLogs[1]);
     });
 
     it('closes the drawer upon receiving the close event', async () => {
-      await selectLog(1);
+      await selectLogByIndex(1);
 
       await findDrawer().vm.$emit('close');
 
@@ -118,21 +121,21 @@ describe('LogsList', () => {
     });
 
     it('closes the drawer if the same log is selected', async () => {
-      await selectLog(1);
+      await selectLogByIndex(1);
 
       expect(isDrawerOpen()).toBe(true);
 
-      await selectLog(1);
+      await selectLogByIndex(1);
 
       expect(isDrawerOpen()).toBe(false);
     });
 
     it('changes the selected log and keeps the drawer open, upon selecting a different log', async () => {
-      await selectLog(1);
+      await selectLogByIndex(1);
 
       expect(isDrawerOpen()).toBe(true);
 
-      await selectLog(2);
+      await selectLogByIndex(2);
 
       expect(isDrawerOpen()).toBe(true);
       expect(getDrawerSelectedLog()).toEqual(mockLogs[2]);
@@ -143,6 +146,56 @@ describe('LogsList', () => {
 
       expect(isDrawerOpen()).toBe(false);
       expect(getDrawerSelectedLog()).toBe(null);
+    });
+
+    it('updates the URL query params based on the selected log', async () => {
+      const selectedLog = mockLogs[2];
+      await selectLog(selectedLog);
+
+      expect(findUrlSync().props('query')).toEqual({
+        attribute: null,
+        fingerprint: [selectedLog.fingerprint],
+        'not[fingerprint]': null,
+        'not[resourceAttribute]': null,
+        'not[service]': null,
+        'not[severityName]': null,
+        'not[severityNumber]': null,
+        'not[spanId]': null,
+        'not[traceFlags]': null,
+        'not[traceId]': null,
+        'not[attribute]': null,
+        resourceAttribute: null,
+        search: '',
+        service: [selectedLog.service_name],
+        severityName: null,
+        severityNumber: [selectedLog.severity_number],
+        spanId: null,
+        traceFlags: null,
+        traceId: [selectedLog.trace_id],
+        timestamp: selectedLog.timestamp,
+      });
+    });
+
+    it('restore the query param to the old value after closing the panel', async () => {
+      setWindowLocation('?fingerprint[]=fingerprint');
+
+      await mountComponent();
+
+      expect(findUrlSync().props('query')).toMatchObject({
+        fingerprint: ['fingerprint'],
+      });
+
+      await selectLogByIndex(1);
+
+      expect(findUrlSync().props('query')).not.toMatchObject({
+        fingerprint: ['fingerprint'],
+      });
+
+      await selectLogByIndex(1); // close
+
+      expect(findUrlSync().props('query')).toMatchObject({
+        fingerprint: ['fingerprint'],
+      });
     });
   });
 
@@ -250,6 +303,10 @@ describe('LogsList', () => {
         { operator: '=', value: 'info' },
         { operator: '!=', value: 'warning' },
       ],
+      severityNumber: [
+        { operator: '=', value: '9' },
+        { operator: '!=', value: '10' },
+      ],
       traceId: [{ operator: '=', value: 'traceId' }],
       spanId: [{ operator: '=', value: 'spanId' }],
       fingerprint: [{ operator: '=', value: 'fingerprint' }],
@@ -272,6 +329,8 @@ describe('LogsList', () => {
           '&search[]=some-search' +
           '&severityName[]=info' +
           '&not%5BseverityName%5D[]=warning' +
+          '&severityNumber[]=9' +
+          '&not%5BseverityNumber%5D[]=10' +
           '&spanId[]=spanId' +
           '&traceFlags[]=1' +
           '&not%5BtraceFlags%5D[]=2' +
@@ -307,6 +366,7 @@ describe('LogsList', () => {
         'not[resourceAttribute]': null,
         'not[service]': ['serviceName2'],
         'not[severityName]': ['warning'],
+        'not[severityNumber]': ['10'],
         'not[spanId]': null,
         'not[traceFlags]': ['2'],
         'not[traceId]': null,
@@ -315,6 +375,7 @@ describe('LogsList', () => {
         search: 'some-search',
         service: ['serviceName'],
         severityName: ['info'],
+        severityNumber: ['9'],
         spanId: ['spanId'],
         traceFlags: ['1'],
         traceId: ['traceId'],
@@ -364,6 +425,72 @@ describe('LogsList', () => {
       });
     });
 
+    describe('when a timestamp is provided', () => {
+      beforeEach(async () => {
+        setWindowLocation('?timestamp=2024-02-19T16%3A10%3A15.4433398Z&service[]=testservice');
+
+        await mountComponent();
+      });
+      it('fetches logs with the proper filters', () => {
+        expect(observabilityClientMock.fetchLogs).toHaveBeenCalledWith({
+          filters: {
+            dateRange: {
+              value: 'custom',
+              endDate: new Date('2024-02-19T16:10:15.443Z'),
+              startDate: new Date('2024-02-19T16:10:15.443Z'),
+              timestamp: '2024-02-19T16:10:15.4433398Z',
+            },
+            attributes: {
+              service: [{ operator: '=', value: 'testservice' }],
+            },
+          },
+          pageSize: 100,
+          pageToken: null,
+        });
+      });
+
+      it('initialises filtered-search props', () => {
+        expect(findFilteredSearch().props('dateRangeFilter')).toEqual({
+          value: 'custom',
+          endDate: new Date('2024-02-19T16:10:15.443Z'),
+          startDate: new Date('2024-02-19T16:10:15.443Z'),
+          timestamp: '2024-02-19T16:10:15.4433398Z',
+        });
+
+        expect(findFilteredSearch().props('attributesFilters')).toEqual({
+          service: [{ operator: '=', value: 'testservice' }],
+        });
+      });
+
+      it('sets query prop', () => {
+        expect(findUrlSync().props('query')).toEqual({
+          attribute: null,
+          fingerprint: null,
+          'not[fingerprint]': null,
+          'not[resourceAttribute]': null,
+          'not[service]': null,
+          'not[severityName]': null,
+          'not[severityNumber]': null,
+          'not[spanId]': null,
+          'not[traceFlags]': null,
+          'not[traceId]': null,
+          'not[attribute]': null,
+          resourceAttribute: null,
+          search: '',
+          service: ['testservice'],
+          severityName: null,
+          severityNumber: null,
+          spanId: null,
+          traceFlags: null,
+          traceId: null,
+          timestamp: '2024-02-19T16:10:15.4433398Z',
+          date_end: '2024-02-19T16:10:15.443Z',
+          date_range: 'custom',
+          date_start: '2024-02-19T16:10:15.443Z',
+        });
+      });
+    });
+
     describe('when filter changes', () => {
       beforeEach(async () => {
         observabilityClientMock.fetchLogs.mockReset();
@@ -408,6 +535,7 @@ describe('LogsList', () => {
           'not[resourceAttribute]': null,
           'not[service]': null,
           'not[severityName]': null,
+          'not[severityNumber]': null,
           'not[spanId]': null,
           'not[traceFlags]': null,
           'not[traceId]': null,
@@ -415,6 +543,7 @@ describe('LogsList', () => {
           search: 'some-log',
           service: null,
           severityName: null,
+          severityNumber: null,
           spanId: null,
           traceFlags: null,
           traceId: null,
