@@ -26,28 +26,32 @@ export default {
       key: 'timestamp',
       label: s__('ObservabilityLogs|Date'),
       tdAttr: { 'data-testid': 'log-timestamp' },
-      thClass: `${thClass} gl-w-10p`,
+      // eslint-disable-next-line @gitlab/require-i18n-strings
+      thClass: `${thClass} gl-w-2/20`,
       tdClass,
     },
     {
       key: 'severity_number',
       label: s__('ObservabilityLogs|Level'),
       tdAttr: { 'data-testid': 'log-level' },
-      thClass: `${thClass} gl-w-5p`,
+      // eslint-disable-next-line @gitlab/require-i18n-strings
+      thClass: `${thClass} gl-w-1/20`,
       tdClass,
     },
     {
       key: 'service_name',
       label: s__('ObservabilityLogs|Service'),
       tdAttr: { 'data-testid': 'log-service' },
-      thClass: `${thClass} gl-w-5p`,
+      // eslint-disable-next-line @gitlab/require-i18n-strings
+      thClass: `${thClass} gl-w-1/20`,
       tdClass: `${tdClass} gl-word-break-word`,
     },
     {
       key: 'body',
       label: s__('ObservabilityLogs|Message'),
       tdAttr: { 'data-testid': 'log-message' },
-      thClass: `${thClass} gl-w-80p`,
+      // eslint-disable-next-line @gitlab/require-i18n-strings
+      thClass: `${thClass} gl-w-16/20`,
       tdClass,
     },
   ],

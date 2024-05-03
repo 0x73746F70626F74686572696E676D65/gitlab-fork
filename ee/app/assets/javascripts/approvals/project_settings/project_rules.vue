@@ -50,7 +50,7 @@ export default {
       return this.hasNamedRule ? '1' : '2';
     },
     firstColumnWidth() {
-      return this.hasNamedRule ? 'gl-w-half' : 'gl-w-full';
+      return this.hasNamedRule ? 'gl-w-1/2' : 'gl-w-full';
     },
     hasAnyRule() {
       return (
@@ -125,7 +125,7 @@ export default {
           <th :colspan="firstColumnSpan" :class="firstColumnWidth">
             {{ hasNamedRule ? name : members }}
           </th>
-          <th v-if="hasNamedRule" class="gl-w-half d-none d-sm-table-cell">
+          <th v-if="hasNamedRule" class="gl-w-1/2 d-none d-sm-table-cell">
             <span>{{ members }}</span>
           </th>
           <th v-if="settings.allowMultiRule && !isBranchRulesEdit">{{ branches }}</th>

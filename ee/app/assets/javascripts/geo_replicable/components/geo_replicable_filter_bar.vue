@@ -116,7 +116,7 @@ export default {
         class="gl-display-flex gl-align-items-center gl-flex-direction-column gl-sm-flex-direction-row"
       >
         <gl-collapsible-listbox
-          class="gl-w-half"
+          class="gl-w-1/2"
           :items="dropdownItems"
           :selected="statusFilter"
           block

@@ -212,7 +212,7 @@ export default {
       <gl-form-group
         :label="s__('Secrets|Select environment')"
         label-for="secret-environment"
-        class="gl-w-half gl-pr-2"
+        class="gl-w-1/2 gl-pr-2"
       >
         <ci-environments-dropdown
           :are-environments-loading="areEnvironmentsLoading"

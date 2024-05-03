@@ -90,7 +90,7 @@ export default {
     {
       key: 'image',
       label: s__('GoogleArtifactRegistry|Name'),
-      thClass: 'gl-w-40p',
+      thClass: 'gl-w-2/5',
       tdClass: 'gl-pt-3!',
     },
     {

@@ -100,7 +100,7 @@ export default {
         <h5 class="gl-my-3 gl-mr-3">
           {{ $options.i18n.POPOVER_LABEL }}
         </h5>
-        <p class="gl-m-0 gl-w-70p" data-testid="duo-chat-callout-description">
+        <p class="gl-m-0 gl-w-7/10" data-testid="duo-chat-callout-description">
           {{ $options.i18n.POPOVER_DESCRIPTION }}
         </p>
         <ul class="gl-pt-3 gl-pl-5">

@@ -51,7 +51,7 @@ export default {
         <gl-form-input
           id="scanner-profile"
           v-model="scannerProfile"
-          class="gl-w-30p"
+          class="gl-w-3/10"
           :placeholder="$options.i18n.selectedScannerProfilePlaceholder"
           data-testid="scan-profile-selection"
         />
@@ -67,7 +67,7 @@ export default {
         <gl-form-input
           id="site-profile"
           v-model="siteProfile"
-          class="gl-w-30p"
+          class="gl-w-3/10"
           :placeholder="$options.i18n.selectedSiteProfilePlaceholder"
           data-testid="site-profile-selection"
         />

@@ -34,7 +34,7 @@ export default {
       key: 'status',
       label: __('Status'),
       class: 'gl-bg-transparent! gl-text-truncate',
-      thClass: 'gl-w-eighth',
+      thClass: 'gl-w-1/8',
     },
     {
       key: 'weight',
@@ -46,7 +46,7 @@ export default {
       key: 'assignees',
       label: __('Assignees'),
       class: 'gl-bg-transparent! gl-text-right',
-      thClass: 'gl-w-eighth',
+      thClass: 'gl-w-1/8',
     },
   ],
   components: {

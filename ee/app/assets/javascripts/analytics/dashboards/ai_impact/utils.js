@@ -24,7 +24,7 @@ export const generateDateRanges = (now) => {
     label: monthInWords(now, true),
     start: getStartOfMonth(now),
     end: now,
-    thClass: 'gl-w-10p',
+    thClass: 'gl-w-1/10',
   };
 
   return [1, 2, 3, 4, 5].reduce(
@@ -38,7 +38,7 @@ export const generateDateRanges = (now) => {
           label: monthInWords(start, true),
           start,
           end,
-          thClass: 'gl-w-10p',
+          thClass: 'gl-w-1/10',
         },
         ...acc,
       ];
@@ -57,14 +57,14 @@ export const generateTableColumns = (now) => [
   {
     key: 'metric',
     label: __('Metric'),
-    thClass: 'gl-w-20p',
+    thClass: 'gl-w-2/10',
   },
   ...generateDateRanges(now),
   {
     key: 'change',
     label: sprintf(__('Change (%%)')),
     description: __('Past 6 Months'),
-    thClass: 'gl-w-20p',
+    thClass: 'gl-w-2/10',
   },
 ];
 

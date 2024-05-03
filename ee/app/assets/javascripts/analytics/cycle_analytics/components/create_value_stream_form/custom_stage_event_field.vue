@@ -74,7 +74,7 @@ export default {
 </script>
 <template>
   <gl-form-group
-    class="gl-w-half gl-mr-2"
+    class="gl-w-1/2 gl-mr-2"
     :data-testid="fieldName"
     :label="fieldLabel"
     :state="hasIdentifierError"

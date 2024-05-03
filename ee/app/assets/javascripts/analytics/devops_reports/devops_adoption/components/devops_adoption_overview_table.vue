@@ -209,7 +209,7 @@ export default {
           <gl-progress-bar
             :value="item.adoption[col.key].adopted"
             :max="item.adoption[col.key].total"
-            class="gl-w-half"
+            class="gl-w-1/2"
           />
         </div>
       </template>

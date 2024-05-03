@@ -246,7 +246,7 @@ export const generateDateRanges = (now) => {
     label: s__('DORA4Metrics|Month to date'),
     start: thisMonthStart,
     end: now,
-    thClass: 'gl-w-20p',
+    thClass: 'gl-w-1/5',
   });
 
   const lastMonthStart = nMonthsBefore(thisMonthStart, 1);
@@ -256,7 +256,7 @@ export const generateDateRanges = (now) => {
     label: monthInWords(lastMonthStart),
     start: lastMonthStart,
     end: lastMonthEnd,
-    thClass: 'gl-w-20p',
+    thClass: 'gl-w-1/5',
   });
 
   const twoMonthsAgoStart = nMonthsBefore(lastMonthStart, 1);
@@ -266,7 +266,7 @@ export const generateDateRanges = (now) => {
     label: monthInWords(twoMonthsAgoStart),
     start: twoMonthsAgoStart,
     end: twoMonthsAgoEnd,
-    thClass: 'gl-w-20p',
+    thClass: 'gl-w-1/5',
   });
 
   const threeMonthsAgoStart = nMonthsBefore(twoMonthsAgoStart, 1);
@@ -305,7 +305,7 @@ export const generateDashboardTableFields = (now) => {
     {
       key: 'metric',
       label: __('Metric'),
-      thClass: 'gl-w-25p',
+      thClass: 'gl-w-1/4',
     },
     ...generateDateRanges(now).slice(0, -1),
     {
@@ -313,7 +313,7 @@ export const generateDashboardTableFields = (now) => {
       label: s__('DORA4Metrics|Past 6 Months'),
       start: nMonthsBefore(now, 6),
       end: now,
-      thClass: 'gl-w-15p',
+      thClass: 'gl-w-3/20',
       tdClass: 'gl-py-2!',
     },
   ];

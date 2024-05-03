@@ -17,32 +17,32 @@ export const FIELDS = [
   {
     key: 'user',
     label: __('User'),
-    thClass: `gl-w-30p gl-pl-2!`,
+    thClass: `gl-w-6/20 gl-pl-2!`,
     // eslint-disable-next-line @gitlab/require-i18n-strings
     tdClass: '!gl-align-middle gl-pl-2!',
   },
   {
     key: 'email',
     label: __('Email'),
-    thClass: 'gl-w-20p',
+    thClass: 'gl-w-4/20',
     tdClass: '!gl-align-middle',
   },
   {
     key: 'lastActivityTime',
     label: __('Last GitLab activity'),
-    thClass: 'gl-w-20p',
+    thClass: 'gl-w-4/20',
     tdClass: '!gl-align-middle',
   },
   {
     key: 'lastLoginAt',
     label: __('Last login'),
-    thClass: 'gl-w-20p',
+    thClass: 'gl-w-4/20',
     tdClass: '!gl-align-middle',
   },
   {
     key: 'actions',
     label: '',
-    thClass: 'gl-w-10p',
+    thClass: 'gl-w-2/20',
     tdClass: '!gl-align-middle text-right',
   },
 ];

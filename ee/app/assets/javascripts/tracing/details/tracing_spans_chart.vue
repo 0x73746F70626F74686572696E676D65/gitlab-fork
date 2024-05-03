@@ -135,7 +135,7 @@ export default {
       >
         <div
           data-testid="span-details"
-          class="gl-w-30p gl-min-w-20 gl-display-flex gl-flex-direction-row gl-p-3 gl-border-r"
+          class="gl-w-3/10 gl-min-w-20 gl-display-flex gl-flex-direction-row gl-p-3 gl-border-r"
           :style="spanDetailsStyle"
         >
           <div>

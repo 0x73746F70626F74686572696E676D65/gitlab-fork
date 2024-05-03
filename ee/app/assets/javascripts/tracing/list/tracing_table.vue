@@ -32,7 +32,7 @@ export default {
     {
       key: 'duration',
       label: s__('Tracing|Duration'),
-      thClass: 'gl-w-15p',
+      thClass: 'gl-w-3/20',
       tdAttr: { 'data-testid': 'trace-duration' },
     },
   ],

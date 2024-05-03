@@ -75,32 +75,32 @@ export default {
        * in mobile views.
        */
       label: '\u200b',
-      thClass: 'gl-w-5p',
+      thClass: 'gl-w-1/20',
     },
     {
       key: 'name',
       label: i18n.tableColumnHeaders.name,
-      thClass: 'gl-w-20p',
+      thClass: 'gl-w-4/20',
     },
     {
       key: 'created',
       label: i18n.tableColumnHeaders.created,
-      thClass: 'gl-w-15p',
+      thClass: 'gl-w-3/20',
     },
     {
       key: 'devfile',
       label: i18n.tableColumnHeaders.devfile,
-      thClass: 'gl-w-20p',
+      thClass: 'gl-w-4/20',
     },
     {
       key: 'preview',
       label: i18n.tableColumnHeaders.preview,
-      thClass: 'gl-w-20p',
+      thClass: 'gl-w-4/20',
     },
     {
       key: 'actions',
       label: '\u200b',
-      thClass: 'gl-w-20p',
+      thClass: 'gl-w-4/20',
     },
   ],
   i18n,

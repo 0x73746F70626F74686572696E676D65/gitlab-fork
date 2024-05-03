@@ -118,7 +118,7 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-w-half gl-ml-2">
+  <div class="gl-w-1/2 gl-ml-2">
     <transition name="fade">
       <gl-form-group
         v-if="requiresLabel"
