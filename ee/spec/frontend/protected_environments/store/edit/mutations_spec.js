@@ -179,4 +179,29 @@ describe('ee/protected_environments/store/edit/mutations', () => {
       });
     });
   });
+
+  describe(types.EDIT_RULE, () => {
+    const rule = { id: '1', name: 'staging' };
+
+    beforeEach(() => {
+      mutations[types.EDIT_RULE](mockedState, rule);
+    });
+
+    it('updates the saved environment', () => {
+      expect(mockedState.editingRules).toEqual({ 1: { name: 'staging', id: '1' } });
+    });
+  });
+
+  describe(types.RECEIVE_RULE_UPDATED, () => {
+    const rule = { id: '1', name: 'staging' };
+
+    beforeEach(() => {
+      mockedState.editingRules = [];
+      mutations[types.RECEIVE_RULE_UPDATED](mockedState, rule);
+    });
+
+    it('updates the saved environment', () => {
+      expect(mockedState.editingRules).toEqual({ 1: null });
+    });
+  });
 });
