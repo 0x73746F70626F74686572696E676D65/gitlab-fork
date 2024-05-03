@@ -1,7 +1,7 @@
 import { GlForm, GlFormInput, GlPopover, GlLoadingIcon } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import WorkItemProgressWithEdit from 'ee/work_items/components/work_item_progress_with_edit.vue';
+import WorkItemProgress from 'ee/work_items/components/work_item_progress.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -37,7 +37,7 @@ describe('WorkItemProgress component', () => {
     workItemType = 'Objective',
     progress = 0,
   } = {}) => {
-    wrapper = shallowMountExtended(WorkItemProgressWithEdit, {
+    wrapper = shallowMountExtended(WorkItemProgress, {
       apolloProvider: createMockApollo([[updateWorkItemMutation, updateWorkItemMutationHandler]]),
       propsData: {
         canUpdate,

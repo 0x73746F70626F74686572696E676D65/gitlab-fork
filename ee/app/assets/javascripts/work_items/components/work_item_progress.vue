@@ -162,7 +162,7 @@ export default {
 </script>
 
 <template>
-  <div data-testid="work-item-progress-with-edit">
+  <div data-testid="work-item-progress-wrapper">
     <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
       <h3 :class="{ 'gl-sr-only': isEditing }" class="gl-mb-0! gl-heading-5">
         {{ $options.i18n.progressTitle }}

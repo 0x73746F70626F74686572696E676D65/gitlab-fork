@@ -1,12 +1,12 @@
 import { GlBadge } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status_with_edit.vue';
+import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import WorkItemSidebarDropdownWidgetWithEdit from '~/work_items/components/shared/work_item_sidebar_dropdown_widget_with_edit.vue';
+import WorkItemSidebarDropdownWidget from '~/work_items/components/shared/work_item_sidebar_dropdown_widget.vue';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
@@ -34,8 +34,7 @@ describe('WorkItemHealthStatus component', () => {
   const workItemQueryHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
 
   const findHeader = () => wrapper.find('h3');
-  const findSidebarDropdownWidget = () =>
-    wrapper.findComponent(WorkItemSidebarDropdownWidgetWithEdit);
+  const findSidebarDropdownWidget = () => wrapper.findComponent(WorkItemSidebarDropdownWidget);
   const findBadge = () => wrapper.findComponent(GlBadge);
 
   const showDropdown = () => {

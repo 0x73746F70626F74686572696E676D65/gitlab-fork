@@ -10,7 +10,7 @@ import {
   updateWorkItemMutationErrorResponse,
   epicType,
 } from 'jest/work_items/mock_data';
-import WorkItemColorWithEdit from 'ee/work_items/components/work_item_color_with_edit.vue';
+import WorkItemColor from 'ee/work_items/components/work_item_color.vue';
 import SidebarColorView from '~/sidebar/components/sidebar_color_view.vue';
 import SidebarColorPicker from '~/sidebar/components/sidebar_color_picker.vue';
 import { DEFAULT_COLOR } from '~/vue_shared/components/color_select_dropdown/constants';
@@ -46,7 +46,7 @@ describe('WorkItemColor component', () => {
     mountFn = shallowMountExtended,
     stubs = {},
   } = {}) => {
-    wrapper = mountFn(WorkItemColorWithEdit, {
+    wrapper = mountFn(WorkItemColor, {
       apolloProvider: createMockApollo([[updateWorkItemMutation, mutationHandler]]),
       propsData: {
         canUpdate,
