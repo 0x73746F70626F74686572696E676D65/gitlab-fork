@@ -170,7 +170,7 @@ export default {
           :key="cluster.value"
           :value="cluster.value"
         >
-          <div class="gl-display-flex gl-align-items-center">
+          <div class="gl-flex gl-items-center">
             <gl-icon
               name="check"
               class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
