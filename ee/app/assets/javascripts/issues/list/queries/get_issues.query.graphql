@@ -88,6 +88,9 @@ query getIssuesEE(
         blockingCount
         healthStatus
         weight
+        epic {
+          id
+        }
       }
     }
   }
@@ -139,6 +142,9 @@ query getIssuesEE(
         blockingCount
         healthStatus
         weight
+        epic {
+          id
+        }
       }
     }
   }

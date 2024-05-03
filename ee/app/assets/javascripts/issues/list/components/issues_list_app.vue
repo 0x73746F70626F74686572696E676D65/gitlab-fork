@@ -27,6 +27,8 @@ import {
   WORK_ITEM_TYPE_VALUE_OBJECTIVE,
 } from '~/work_items/constants';
 import CreateWorkItemForm from 'ee/work_items/components/create_work_item_form.vue';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_EPIC } from '~/graphql_shared/constants';
 import searchIterationsQuery from '../queries/search_iterations.query.graphql';
 
 import NewIssueDropdown from './new_issue_dropdown.vue';
@@ -39,6 +41,8 @@ const WeightToken = () =>
   import('ee/vue_shared/components/filtered_search_bar/tokens/weight_token.vue');
 const HealthToken = () =>
   import('ee/vue_shared/components/filtered_search_bar/tokens/health_token.vue');
+const ChildEpicIssueIndicator = () =>
+  import('ee/issuable/child_epic_issue_indicator/components/child_epic_issue_indicator.vue');
 
 export default {
   WORK_ITEM_TYPE_VALUE_OBJECTIVE,
@@ -47,6 +51,7 @@ export default {
     CreateWorkItemForm,
     IssuesListApp,
     NewIssueDropdown,
+    ChildEpicIssueIndicator,
   },
   mixins: [glFeatureFlagMixin()],
   inject: [
@@ -174,6 +179,18 @@ export default {
     hideForm() {
       this.showObjectiveCreationForm = false;
     },
+    hasFilteredEpicId(apiFilterParams) {
+      return Boolean(apiFilterParams.epicId);
+    },
+    getFilteredEpicId(apiFilterParams) {
+      const { epicId } = apiFilterParams;
+
+      if (!epicId) {
+        return '';
+      }
+
+      return convertToGraphQLId(TYPENAME_EPIC, parseInt(epicId, 10));
+    },
   },
 };
 </script>
@@ -196,6 +213,14 @@ export default {
         :work-item-type="$options.WORK_ITEM_TYPE_VALUE_OBJECTIVE"
         @created="handleObjectiveCreationSuccess"
         @hide="hideForm"
+      />
+    </template>
+    <template #title-icons="{ issuable, apiFilterParams }">
+      <child-epic-issue-indicator
+        v-if="hasFilteredEpicId(apiFilterParams)"
+        class="gl-ml-2"
+        :filtered-epic-id="getFilteredEpicId(apiFilterParams)"
+        :issuable="issuable"
       />
     </template>
   </issues-list-app>
