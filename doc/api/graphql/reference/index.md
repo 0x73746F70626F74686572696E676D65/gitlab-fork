@@ -18147,7 +18147,7 @@ A container repository.
 | <a id="containerrepositoryid"></a>`id` | [`ID!`](#id) | ID of the container repository. |
 | <a id="containerrepositorylastcleanupdeletedtagscount"></a>`lastCleanupDeletedTagsCount` | [`Int`](#int) | Number of deleted tags from the last cleanup. |
 | <a id="containerrepositorylocation"></a>`location` | [`String!`](#string) | URL of the container repository. |
-| <a id="containerrepositorymigrationstate"></a>`migrationState` | [`String!`](#string) | Migration state of the container repository. |
+| <a id="containerrepositorymigrationstate"></a>`migrationState` **{warning-solid}** | [`String!`](#string) | **Deprecated** in GitLab 17.0. Returns an empty string. This was used for the migration of GitLab.com, which is now complete. Not used by Self-managed instances. |
 | <a id="containerrepositoryname"></a>`name` | [`String!`](#string) | Name of the container repository. |
 | <a id="containerrepositorypath"></a>`path` | [`String!`](#string) | Path of the container repository. |
 | <a id="containerrepositoryproject"></a>`project` | [`Project!`](#project) | Project of the container registry. |
@@ -18171,7 +18171,7 @@ Details of a container repository.
 | <a id="containerrepositorydetailsid"></a>`id` | [`ID!`](#id) | ID of the container repository. |
 | <a id="containerrepositorydetailslastcleanupdeletedtagscount"></a>`lastCleanupDeletedTagsCount` | [`Int`](#int) | Number of deleted tags from the last cleanup. |
 | <a id="containerrepositorydetailslocation"></a>`location` | [`String!`](#string) | URL of the container repository. |
-| <a id="containerrepositorydetailsmigrationstate"></a>`migrationState` | [`String!`](#string) | Migration state of the container repository. |
+| <a id="containerrepositorydetailsmigrationstate"></a>`migrationState` **{warning-solid}** | [`String!`](#string) | **Deprecated** in GitLab 17.0. Returns an empty string. This was used for the migration of GitLab.com, which is now complete. Not used by Self-managed instances. |
 | <a id="containerrepositorydetailsname"></a>`name` | [`String!`](#string) | Name of the container repository. |
 | <a id="containerrepositorydetailspath"></a>`path` | [`String!`](#string) | Path of the container repository. |
 | <a id="containerrepositorydetailsproject"></a>`project` | [`Project!`](#project) | Project of the container registry. |
