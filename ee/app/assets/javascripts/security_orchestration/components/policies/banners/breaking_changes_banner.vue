@@ -11,21 +11,30 @@ export default {
   SCAN_FINDING_TYPE_PATH: helpPagePath('user/application_security/policies/scan-result-policies', {
     anchor: 'scan_finding-rule-type',
   }),
+  MERGE_REQUEST_APPROVAL_PATH: helpPagePath(
+    'user/application_security/policies/scan-result-policies',
+    {
+      anchor: 'merge-request-approval-policies-schema',
+    },
+  ),
   BANNER_STORAGE_KEY: 'security_policies_breaking_changes',
   i18n: {
-    bannerTitle: s__('SecurityOrchestration|Merge result policy syntax changes'),
+    bannerTitle: s__('SecurityOrchestration|Merge request approval policy syntax changes'),
     bannerDescription: s__(
-      'SecurityOrchestration|Several merge result policy criteria have been deprecated. Policies using these elements will not work after GitLab 17.0 (May 10, 2024). You must edit these policies to remove the deprecated criteria.',
+      'SecurityOrchestration|Several merge request approval policy criteria have been deprecated. Policies using these criteria will not work after GitLab 17.0 (May 10, 2024). You must edit these policies to replace or remove the deprecated criteria.',
     ),
     bannerSubheader: s__('SecurityOrchestration|Summary of syntax changes:'),
     matchOnInclusionChange: s__(
       'SecurityOrchestration|match_on_inclusion is replaced by %{linkStart}match_on_inclusion_license%{linkEnd}',
     ),
     newlyDeprecatedChange: s__(
-      'SecurityOrchestration|newly_detected is replaced by %{firstLinkStart}New::Needs Triage%{firstLinkEnd} and %{secondLinkStart}New::Dismissed%{secondLinkEnd}',
+      'SecurityOrchestration|newly_detected is replaced by %{firstLinkStart}new_needs_triage%{firstLinkEnd} and %{secondLinkStart}new_dismissed%{secondLinkEnd}',
     ),
     graphqlChange: s__(
       'SecurityOrchestration|project.networkpolicies will be removed (GraphQL API associated with the network policies)',
+    ),
+    policyNameChange: s__(
+      'SecurityOrchestration|type: scan_result_policy is replaced with %{linkStart}type: approval_policy%{linkEnd}',
     ),
   },
   name: 'BreakingChangesBanner',
@@ -85,6 +94,15 @@ export default {
             </template>
             <template #secondLink="{ content }">
               <gl-link :href="$options.SCAN_FINDING_TYPE_PATH" target="_blank">{{
+                content
+              }}</gl-link>
+            </template>
+          </gl-sprintf>
+        </li>
+        <li>
+          <gl-sprintf :message="$options.i18n.policyNameChange">
+            <template #link="{ content }">
+              <gl-link :href="$options.MERGE_REQUEST_APPROVAL_PATH" target="_blank">{{
                 content
               }}</gl-link>
             </template>

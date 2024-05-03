@@ -28,11 +28,14 @@ describe('ApprovalPolicyNameUpdateBanner', () => {
   it('renders alert info with message', () => {
     expect(findLocalStorageSync().exists()).toBe(true);
     expect(findAlert().exists()).toBe(true);
-    expect(findAlert().props('title')).toContain('Merge result policy syntax changes');
+    expect(findAlert().props('title')).toContain('Merge request approval policy syntax changes');
 
     expect(findAllLinks().at(0).attributes('href')).toBe(`${HELP_PATH}license_finding-rule-type`);
     expect(findAllLinks().at(1).attributes('href')).toBe(`${HELP_PATH}scan_finding-rule-type`);
     expect(findAllLinks().at(2).attributes('href')).toBe(`${HELP_PATH}scan_finding-rule-type`);
+    expect(findAllLinks().at(3).attributes('href')).toBe(
+      `${HELP_PATH}merge-request-approval-policies-schema`,
+    );
 
     expect(wrapper.emitted('dismiss')).toEqual([[false]]);
   });

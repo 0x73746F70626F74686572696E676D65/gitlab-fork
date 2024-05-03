@@ -32,7 +32,7 @@ describe('BreakingChangesIcon', () => {
       '/help/user/application_security/policies/scan-result-policies#merge-request-approval-policy-schema',
     );
     expect(findPopover().text()).toBe(
-      "You must edit the policy and replace the deprecated syntax. For details on it's replacement, see the policy documentation.",
+      'You must edit the policy and replace the deprecated syntax. For details on its replacement, see the policy documentation.',
     );
   });
 
@@ -44,7 +44,7 @@ describe('BreakingChangesIcon', () => {
     });
 
     expect(findPopover().text()).toBe(
-      "You must edit the policy and replace the deprecated syntax (test, test1). For details on it's replacement, see the policy documentation.",
+      'You must edit the policy and replace the deprecated syntax (test, test1). For details on its replacement, see the policy documentation.',
     );
   });
 });

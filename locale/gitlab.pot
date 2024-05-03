@@ -46653,7 +46653,7 @@ msgstr ""
 msgid "SecurityOrchestration|Merge request approval policy"
 msgstr ""
 
-msgid "SecurityOrchestration|Merge result policy syntax changes"
+msgid "SecurityOrchestration|Merge request approval policy syntax changes"
 msgstr ""
 
 msgid "SecurityOrchestration|New merge request approval policy"
@@ -46853,7 +46853,7 @@ msgstr ""
 msgid "SecurityOrchestration|Send bot message"
 msgstr ""
 
-msgid "SecurityOrchestration|Several merge result policy criteria have been deprecated. Policies using these elements will not work after GitLab 17.0 (May 10, 2024). You must edit these policies to remove the deprecated criteria."
+msgid "SecurityOrchestration|Several merge request approval policy criteria have been deprecated. Policies using these criteria will not work after GitLab 17.0 (May 10, 2024). You must edit these policies to replace or remove the deprecated criteria."
 msgstr ""
 
 msgid "SecurityOrchestration|Severity is %{severity}."
@@ -47033,7 +47033,7 @@ msgstr ""
 msgid "SecurityOrchestration|You don't have any security policies yet"
 msgstr ""
 
-msgid "SecurityOrchestration|You must edit the policy and replace the deprecated syntax%{deprecatedProperties}. For details on it's replacement, see the %{linkStart}policy documentation%{linkEnd}."
+msgid "SecurityOrchestration|You must edit the policy and replace the deprecated syntax%{deprecatedProperties}. For details on its replacement, see the %{linkStart}policy documentation%{linkEnd}."
 msgstr ""
 
 msgid "SecurityOrchestration|You must select one or more compliance frameworks to which this policy should apply."
@@ -47123,7 +47123,7 @@ msgstr ""
 msgid "SecurityOrchestration|more than %{allowed}"
 msgstr ""
 
-msgid "SecurityOrchestration|newly_detected is replaced by %{firstLinkStart}New::Needs Triage%{firstLinkEnd} and %{secondLinkStart}New::Dismissed%{secondLinkEnd}"
+msgid "SecurityOrchestration|newly_detected is replaced by %{firstLinkStart}new_needs_triage%{firstLinkEnd} and %{secondLinkStart}new_dismissed%{secondLinkEnd}"
 msgstr ""
 
 msgid "SecurityOrchestration|or from:"
@@ -47163,6 +47163,9 @@ msgid "SecurityOrchestration|the %{namespaces} namespace"
 msgstr ""
 
 msgid "SecurityOrchestration|the default branch"
+msgstr ""
+
+msgid "SecurityOrchestration|type: scan_result_policy is replaced with %{linkStart}type: approval_policy%{linkEnd}"
 msgstr ""
 
 msgid "SecurityOrchestration|with %{exceptionType}"
