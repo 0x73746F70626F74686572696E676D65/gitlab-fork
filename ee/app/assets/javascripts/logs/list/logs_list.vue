@@ -7,7 +7,7 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 import LogsTable from './logs_table.vue';
 import LogsDrawer from './logs_drawer.vue';
 import LogsFilteredSearch from './filter_bar/logs_filtered_search.vue';
-import { queryToFilterObj, filterObjToQuery } from './filter_bar/filters';
+import { queryToFilterObj, filterObjToQuery, selectedLogQueryObject } from './filter_bar/filters';
 
 const LIST_V_PADDING = 100;
 const PAGE_SIZE = 100;
@@ -46,6 +46,9 @@ export default {
       return window.innerHeight - contentTop() - LIST_V_PADDING;
     },
     query() {
+      if (this.selectedLog) {
+        return selectedLogQueryObject(this.selectedLog);
+      }
       return filterObjToQuery(this.filters);
     },
   },

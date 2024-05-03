@@ -3,6 +3,7 @@ import {
   filterTokensToFilterObj,
   filterObjToQuery,
   queryToFilterObj,
+  selectedLogQueryObject,
 } from 'ee/logs/list/filter_bar/filters';
 
 describe('utils', () => {
@@ -15,6 +16,10 @@ describe('utils', () => {
       severityName: [
         { operator: '=', value: 'info' },
         { operator: '!=', value: 'warning' },
+      ],
+      severityNumber: [
+        { operator: '=', value: '9' },
+        { operator: '!=', value: '10' },
       ],
       traceId: [{ operator: '=', value: 'traceId' }],
       spanId: [{ operator: '=', value: 'spanId' }],
@@ -41,6 +46,7 @@ describe('utils', () => {
     'not[resourceAttribute]': null,
     'not[service]': ['serviceName2'],
     'not[severityName]': ['warning'],
+    'not[severityNumber]': ['10'],
     'not[spanId]': null,
     'not[traceFlags]': ['2'],
     'not[traceId]': null,
@@ -49,6 +55,7 @@ describe('utils', () => {
     search: 'some-search',
     service: ['serviceName'],
     severityName: ['info'],
+    severityNumber: ['9'],
     spanId: ['spanId'],
     traceFlags: ['1'],
     traceId: ['traceId'],
@@ -66,6 +73,8 @@ describe('utils', () => {
     '&search[]=some-search' +
     '&severityName[]=info' +
     '&not%5BseverityName%5D[]=warning' +
+    '&severityNumber[]=9' +
+    '&not%5BseverityNumber%5D[]=10' +
     '&spanId[]=spanId' +
     '&traceFlags[]=1' +
     '&not%5BtraceFlags%5D[]=2' +
@@ -85,6 +94,8 @@ describe('utils', () => {
     },
     { type: 'severity-name', value: { data: 'info', operator: '=' } },
     { type: 'severity-name', value: { data: 'warning', operator: '!=' } },
+    { type: 'severity-number', value: { data: '9', operator: '=' } },
+    { type: 'severity-number', value: { data: '10', operator: '!=' } },
     { type: 'trace-id', value: { data: 'traceId', operator: '=' } },
     { type: 'span-id', value: { data: 'spanId', operator: '=' } },
     {
@@ -147,6 +158,41 @@ describe('utils', () => {
   describe('queryToFilterObj', () => {
     it('should build a filter obj', () => {
       expect(queryToFilterObj(query)).toEqual(filterObj);
+    });
+  });
+
+  describe('selectedLogQueryObject', () => {
+    it('sets the required query params', () => {
+      expect(
+        selectedLogQueryObject({
+          service_name: 'service1',
+          severity_number: '9',
+          trace_id: 'test-trace-id',
+          fingerprint: 'log-id',
+          timestamp: '2024-02-19T16:10:15.4433398Z',
+        }),
+      ).toEqual({
+        attribute: null,
+        fingerprint: ['log-id'],
+        'not[fingerprint]': null,
+        'not[resourceAttribute]': null,
+        'not[service]': null,
+        'not[severityName]': null,
+        'not[severityNumber]': null,
+        'not[spanId]': null,
+        'not[traceFlags]': null,
+        'not[traceId]': null,
+        'not[attribute]': null,
+        resourceAttribute: null,
+        search: '',
+        service: ['service1'],
+        severityName: null,
+        severityNumber: ['9'],
+        spanId: null,
+        traceFlags: null,
+        traceId: ['test-trace-id'],
+        timestamp: '2024-02-19T16:10:15.4433398Z',
+      });
     });
   });
 });

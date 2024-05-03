@@ -35097,6 +35097,9 @@ msgstr ""
 msgid "ObservabilityLogs|Severity"
 msgstr ""
 
+msgid "ObservabilityLogs|Severity Number"
+msgstr ""
+
 msgid "ObservabilityLogs|Showing %{count} logs"
 msgstr ""
 

@@ -10,6 +10,7 @@ import {
 import {
   SERVICE_NAME_FILTER_TOKEN_TYPE,
   SEVERITY_NAME_FILTER_TOKEN_TYPE,
+  SEVERITY_NUMBER_FILTER_TOKEN_TYPE,
   TRACE_ID_FILTER_TOKEN_TYPE,
   SPAN_ID_FILTER_TOKEN_TYPE,
   FINGERPRINT_FILTER_TOKEN_TYPE,
@@ -67,6 +68,12 @@ export default {
             value: level,
             title: level,
           })),
+        },
+        {
+          title: s__('ObservabilityLogs|Severity Number'),
+          type: SEVERITY_NUMBER_FILTER_TOKEN_TYPE,
+          token: GlFilteredSearchToken,
+          operators: OPERATORS_IS_NOT,
         },
         {
           title: s__('ObservabilityLogs|Trace ID'),

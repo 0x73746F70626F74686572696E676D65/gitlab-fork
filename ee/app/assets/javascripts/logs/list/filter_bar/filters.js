@@ -11,6 +11,7 @@ import { FILTERED_SEARCH_TERM_QUERY_KEY } from '~/observability/constants';
 
 export const SERVICE_NAME_FILTER_TOKEN_TYPE = 'service-name';
 export const SEVERITY_NAME_FILTER_TOKEN_TYPE = 'severity-name';
+export const SEVERITY_NUMBER_FILTER_TOKEN_TYPE = 'severity-number';
 export const TRACE_ID_FILTER_TOKEN_TYPE = 'trace-id';
 export const SPAN_ID_FILTER_TOKEN_TYPE = 'span-id';
 export const FINGERPRINT_FILTER_TOKEN_TYPE = 'fingerprint';
@@ -22,6 +23,7 @@ export function filterObjToFilterToken(filters) {
   return prepareTokens({
     [SERVICE_NAME_FILTER_TOKEN_TYPE]: filters.service,
     [SEVERITY_NAME_FILTER_TOKEN_TYPE]: filters.severityName,
+    [SEVERITY_NUMBER_FILTER_TOKEN_TYPE]: filters.severityNumber,
     [TRACE_ID_FILTER_TOKEN_TYPE]: filters.traceId,
     [SPAN_ID_FILTER_TOKEN_TYPE]: filters.spanId,
     [FINGERPRINT_FILTER_TOKEN_TYPE]: filters.fingerprint,
@@ -37,6 +39,7 @@ export function filterTokensToFilterObj(tokens) {
     [FILTERED_SEARCH_TERM]: search,
     [SERVICE_NAME_FILTER_TOKEN_TYPE]: service,
     [SEVERITY_NAME_FILTER_TOKEN_TYPE]: severityName,
+    [SEVERITY_NUMBER_FILTER_TOKEN_TYPE]: severityNumber,
     [TRACE_ID_FILTER_TOKEN_TYPE]: traceId,
     [SPAN_ID_FILTER_TOKEN_TYPE]: spanId,
     [FINGERPRINT_FILTER_TOKEN_TYPE]: fingerprint,
@@ -49,6 +52,7 @@ export function filterTokensToFilterObj(tokens) {
     search,
     service,
     severityName,
+    severityNumber,
     traceId,
     spanId,
     fingerprint,
@@ -67,6 +71,7 @@ export function queryToFilterObj(queryString) {
   const {
     service,
     severityName,
+    severityNumber,
     traceId,
     spanId,
     fingerprint,
@@ -81,6 +86,7 @@ export function queryToFilterObj(queryString) {
       search,
       service,
       severityName,
+      severityNumber,
       traceId,
       spanId,
       fingerprint,
@@ -98,6 +104,7 @@ export function filterObjToQuery({ attributes, dateRange }) {
         {
           service: attributes.service,
           severityName: attributes.severityName,
+          severityNumber: attributes.severityNumber,
           traceId: attributes.traceId,
           spanId: attributes.spanId,
           fingerprint: attributes.fingerprint,
@@ -115,4 +122,19 @@ export function filterObjToQuery({ attributes, dateRange }) {
     ...attributesFilters,
     ...dateFilterObjToQuery(dateRange),
   };
+}
+
+export function selectedLogQueryObject(selectedLog) {
+  const attributes = {
+    service: [{ value: selectedLog.service_name, operator: '=' }],
+    severityNumber: [{ value: selectedLog.severity_number, operator: '=' }],
+    traceId: [{ value: selectedLog.trace_id, operator: '=' }],
+    fingerprint: [{ value: selectedLog.fingerprint, operator: '=' }],
+  };
+
+  const dateRange = {
+    timestamp: selectedLog.timestamp,
+  };
+
+  return filterObjToQuery({ attributes, dateRange });
 }
