@@ -91,6 +91,56 @@ actions:
       - the.one
 `;
 
+export const zeroActionsScanResultManifest = `type: approval_policy
+name: critical vulnerability CS approvals
+description: This policy enforces critical vulnerability CS approvals
+enabled: true
+rules:
+  - type: scan_finding
+    branches: []
+    scanners:
+      - container_scanning
+    vulnerabilities_allowed: 1
+    severity_levels:
+      - critical
+    vulnerability_states:
+      - newly_detected
+`;
+
+export const zeroActionsScanResultObject = {
+  type: 'approval_policy',
+  name: 'critical vulnerability CS approvals',
+  description: 'This policy enforces critical vulnerability CS approvals',
+  enabled: true,
+  rules: [
+    {
+      type: 'scan_finding',
+      branches: [],
+      scanners: ['container_scanning'],
+      vulnerabilities_allowed: 1,
+      severity_levels: ['critical'],
+      vulnerability_states: ['newly_detected'],
+      id: ruleId,
+    },
+  ],
+};
+
+export const tooManyActionsScanResultManifest = zeroActionsScanResultManifest.concat(`
+actions:
+  - type: require_approval
+    approvals_required: 1
+  - type: send_bot_message
+    enabled: true
+  - type: other_type
+`);
+
+export const duplicateActionsScanResultManifest = zeroActionsScanResultManifest.concat(`actions:
+  - type: require_approval
+    approvals_required: 1
+  - type: require_approval
+    approvals_required: 1
+`);
+
 export const mockDeprecatedScanResultObject = {
   type: 'scan_result_policy',
   name: 'critical vulnerability CS approvals',

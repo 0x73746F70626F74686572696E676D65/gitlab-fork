@@ -1,5 +1,5 @@
 import { safeLoad } from 'js-yaml';
-import { isBoolean, isEqual } from 'lodash';
+import { isBoolean, isEqual, uniqBy } from 'lodash';
 import { addIdsToPolicy, hasInvalidKey, isValidPolicy } from '../../utils';
 import {
   MATCH_ON_INCLUSION,
@@ -63,7 +63,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'enabled',
       ];
 
-      const { approval_settings: settings = {} } = policy;
+      const { actions, approval_settings: settings = {} } = policy;
 
       // Temporary workaround to allow the rule builder to load with wrongly persisted settings
       const hasInvalidApprovalSettings = hasInvalidKey(settings, [
@@ -75,9 +75,14 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         ? !Object.values(settings).every((setting) => isBoolean(setting))
         : false;
 
+      const hasInvalidActions =
+        actions?.length > 2 ||
+        (actions?.length && actions.length !== uniqBy(actions, 'type').length);
+
       return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
         !hasInvalidApprovalSettings &&
-        !hasInvalidSettingStructure
+        !hasInvalidSettingStructure &&
+        !hasInvalidActions
         ? policy
         : { error: true };
     }
