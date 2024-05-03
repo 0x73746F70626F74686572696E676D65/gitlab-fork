@@ -5,7 +5,11 @@ import {
   policyToYaml,
   toYaml,
 } from 'ee/security_orchestration/components/policy_editor/pipeline_execution/utils';
-import { customYaml, customYamlObject, nonBooleanOverrideTypeManifest } from './mock_data';
+import {
+  customYaml,
+  customYamlObject,
+  nonBooleanOverrideTypeManifest,
+} from 'ee_jest/security_orchestration/mocks/mock_pipeline_execution_policy_data';
 
 describe('fromYaml', () => {
   it.each`
