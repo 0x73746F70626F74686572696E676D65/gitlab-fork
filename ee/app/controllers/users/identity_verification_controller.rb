@@ -3,6 +3,7 @@
 module Users
   class IdentityVerificationController < BaseIdentityVerificationController
     before_action :ensure_feature_enabled
+    before_action :ensure_challenge_completed!, only: [:send_phone_verification_code]
 
     def show
       session[:identity_verification_referer] = request.referer
@@ -19,6 +20,13 @@ module Users
       return not_found unless ::Feature.enabled?(:opt_in_identity_verification, @user, type: :wip)
 
       not_found unless ::Gitlab::Saas.feature_available?(:identity_verification)
+    end
+
+    def ensure_challenge_completed!
+      return if verify_arkose_labs_token
+
+      message = s_('IdentityVerification|Complete verification to proceed.')
+      render status: :bad_request, json: { message: message }
     end
 
     def required_params

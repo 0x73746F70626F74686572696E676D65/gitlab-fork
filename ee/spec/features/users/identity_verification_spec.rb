@@ -25,6 +25,8 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   it 'verifies the user' do
     expect_to_see_identity_verification_page
 
+    solve_arkose_verify_challenge
+
     verify_phone_number
 
     expect(page).to have_content(_('Completed'))

@@ -11,6 +11,10 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
     let(:signup_identity_verification_data) do
       {
         credit_card_challenge_on_verify: true,
+        phone_challenge_on_verify: true,
+        phone_show_arkose_challenge: false,
+        phone_enable_arkose_challenge: false,
+        phone_show_recaptcha_challenge: true,
         successful_verification_path: success_signup_identity_verification_path,
         verification_state_path: verification_state_signup_identity_verification_path,
         phone_exemption_path: toggle_phone_exemption_signup_identity_verification_path,
@@ -24,26 +28,28 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
     let(:identity_verification_data) do
       {
         credit_card_challenge_on_verify: false,
+        phone_challenge_on_verify: false,
+        phone_enable_arkose_challenge: true,
+        phone_show_arkose_challenge: true,
+        phone_show_recaptcha_challenge: false,
         successful_verification_path: success_identity_verification_path,
         verification_state_path: verification_state_identity_verification_path,
         phone_exemption_path: toggle_phone_exemption_identity_verification_path,
         phone_send_code_path: send_phone_verification_code_identity_verification_path,
         phone_verify_code_path: verify_phone_verification_code_identity_verification_path,
-        credit_card_verify_path: verify_credit_card_identity_verification_path
+        credit_card_verify_path: verify_credit_card_identity_verification_path,
+        arkose_data_exchange_payload: nil
       }
     end
 
     let(:common_data) do
       {
         offer_phone_number_exemption: mock_offer_phone_number_exemption,
+        phone_challenge_on_send: true,
+        phone_number: {},
         credit_card: {
           user_id: user.id,
           form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID
-        },
-        phone_number: {
-          enable_arkose_challenge: 'false',
-          show_arkose_challenge: 'false',
-          show_recaptcha_challenge: 'true'
         },
         email: {
           obfuscated: helper.obfuscated_email(user.email),
@@ -103,12 +109,12 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
         let_it_be(:record) { create(:phone_number_validation, user: user) }
 
         it 'returns the expected data' do
-          phone_number_data = expected_data[:phone_number].merge({
+          phone_number_data = {
             country: record.country,
             international_dial_code: record.international_dial_code,
             number: record.phone_number,
             send_allowed_after: record.sms_send_allowed_after
-          })
+          }
 
           json_result = Gitlab::Json.parse(data[:data])
           expect(json_result).to eq(expected_data.merge({ phone_number: phone_number_data }).deep_stringify_keys)
@@ -253,10 +259,26 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
   describe '#identity_verification_data' do
     subject(:data) { helper.identity_verification_data(user) }
 
-    it 'returns the expected data' do
+    let(:request_double) { instance_double(ActionDispatch::Request) }
+    let(:data_exchange_payload) { 'data_exchange_payload' }
+
+    before do
+      allow(helper).to receive(:request).and_return(request_double)
+
+      signup_options = { use_case: 'SIGN_UP', require_challenge: false }
+      allow_next_instance_of(::Arkose::DataExchangePayload, request_double, signup_options) do |instance|
+        allow(instance).to receive(:build).and_call_original
+      end
+
+      expected_options = { use_case: 'ACTIVE_USER', require_challenge: true }
+      allow_next_instance_of(::Arkose::DataExchangePayload, request_double, expected_options) do |instance|
+        allow(instance).to receive(:build).and_return(data_exchange_payload)
+      end
+    end
+
+    it 'includes Arkose data exchange payload' do
       expect(Gitlab::Json.parse(data[:data])).to include(
-        "verification_state_path" => verification_state_identity_verification_path,
-        "offer_phone_number_exemption" => false
+        "arkose_data_exchange_payload" => data_exchange_payload
       )
     end
   end

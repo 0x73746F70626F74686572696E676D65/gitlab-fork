@@ -16,6 +16,7 @@ describe('Identity Verification Captcha component', () => {
   const createComponent = (provide = {}, props = {}) => {
     wrapper = shallowMount(IdentityVerificationCaptcha, {
       provide: {
+        arkoseDataExchangePayload: undefined,
         arkoseConfiguration: {
           apiKey: MOCK_ARKOSE_PUBLIC_KEY,
           domain: MOCK_ARKOSE_DOMAIN,
@@ -45,11 +46,8 @@ describe('Identity Verification Captcha component', () => {
   describe('When arkose is enabled and shown', () => {
     beforeEach(() => {
       createComponent(
-        {},
-        {
-          enableArkoseChallenge: true,
-          showArkoseChallenge: true,
-        },
+        { arkoseDataExchangePayload: 'payload' },
+        { enableArkoseChallenge: true, showArkoseChallenge: true },
       );
     });
 
@@ -60,6 +58,7 @@ describe('Identity Verification Captcha component', () => {
         publicKey: MOCK_ARKOSE_PUBLIC_KEY,
         domain: MOCK_ARKOSE_DOMAIN,
         resetSession: false,
+        dataExchangePayload: 'payload',
       });
     });
 
@@ -93,13 +92,7 @@ describe('Identity Verification Captcha component', () => {
 
   describe('when arkose is enabled but not shown', () => {
     beforeEach(() => {
-      createComponent(
-        {},
-        {
-          enableArkoseChallenge: true,
-          showArkoseChallenge: false,
-        },
-      );
+      createComponent({}, { enableArkoseChallenge: true, showArkoseChallenge: false });
     });
 
     it('does not renders arkose', () => {

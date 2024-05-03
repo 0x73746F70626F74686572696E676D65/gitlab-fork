@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-import { getParsedDataset } from '~/pages/admin/application_settings/utils';
 import IdentityVerificationWizard from './components/wizard.vue';
 
 export const initIdentityVerification = () => {
@@ -18,17 +17,18 @@ export const initIdentityVerification = () => {
     phoneSendCodePath,
     phoneVerifyCodePath,
     phoneExemptionPath,
+    phoneChallengeOnSend,
+    phoneChallengeOnVerify,
+    phoneEnableArkoseChallenge,
+    phoneShowArkoseChallenge,
+    phoneShowRecaptchaChallenge,
     creditCardChallengeOnVerify,
     creditCardVerifyPath,
     creditCardVerifyCaptchaPath,
     arkose,
+    arkoseDataExchangePayload,
     successfulVerificationPath,
   } = convertObjectPropsToCamelCase(JSON.parse(el.dataset.data), { deep: true });
-
-  const phoneNumberParsedData = getParsedDataset({
-    dataset: phoneNumber,
-    booleanAttributes: ['enableArkoseChallenge', 'showArkoseChallenge', 'showRecaptchaChallenge'],
-  });
 
   return new Vue({
     el,
@@ -37,16 +37,22 @@ export const initIdentityVerification = () => {
     provide: {
       email,
       creditCard,
-      phoneNumber: phoneNumberParsedData,
+      phoneNumber,
       offerPhoneNumberExemption,
       verificationStatePath,
       phoneSendCodePath,
       phoneVerifyCodePath,
       phoneExemptionPath,
+      phoneChallengeOnSend,
+      phoneChallengeOnVerify,
+      phoneEnableArkoseChallenge,
+      phoneShowArkoseChallenge,
+      phoneShowRecaptchaChallenge,
       creditCardChallengeOnVerify,
       creditCardVerifyPath,
       creditCardVerifyCaptchaPath,
       arkoseConfiguration: arkose,
+      arkoseDataExchangePayload,
       successfulVerificationPath,
     },
     render: (createElement) => createElement(IdentityVerificationWizard),
