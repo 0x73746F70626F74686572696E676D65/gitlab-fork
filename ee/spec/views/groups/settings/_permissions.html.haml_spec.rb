@@ -39,6 +39,75 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
     end
   end
 
+  context 'for auto assign duo pro seats' do
+    context 'when on SM' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: false)
+      end
+
+      it 'renders nothing' do
+        render
+
+        expect(rendered).to render_template('groups/settings/_auto_assign_duo_pro')
+        expect(rendered).not_to have_content('Auto Assign GitLab Duo Pro')
+      end
+    end
+
+    context 'when on .com' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
+      end
+
+      context 'when the feature flag is disabled' do
+        before do
+          stub_feature_flags(auto_assign_gitlab_duo_pro_seats: false, thing: group)
+        end
+
+        it 'renders nothing' do
+          render
+
+          expect(rendered).to render_template('groups/settings/_auto_assign_duo_pro')
+          expect(rendered).not_to have_content('Auto Assign GitLab Duo Pro')
+        end
+      end
+
+      context 'when group is not a root' do
+        before do
+          allow(group).to receive(:root?).and_return(false)
+        end
+
+        it 'renders nothing' do
+          render
+
+          expect(rendered).to render_template('groups/settings/_auto_assign_duo_pro')
+          expect(rendered).not_to have_content('Auto Assign GitLab Duo Pro')
+        end
+      end
+
+      context 'when group does not have the add-on purchased' do
+        it 'renders nothing' do
+          render
+
+          expect(rendered).to render_template('groups/settings/_auto_assign_duo_pro')
+          expect(rendered).not_to have_content('Auto Assign GitLab Duo Pro')
+        end
+      end
+
+      context 'when all conditions are met' do
+        before do
+          allow(group).to receive(:code_suggestions_purchased?).and_return(true)
+        end
+
+        it 'renders the option' do
+          render
+
+          expect(rendered).to render_template('groups/settings/_auto_assign_duo_pro')
+          expect(rendered).to have_content('Auto Assign GitLab Duo Pro')
+        end
+      end
+    end
+  end
+
   context 'for experimental settings' do
     context 'when settings are disabled' do
       it 'renders nothing' do

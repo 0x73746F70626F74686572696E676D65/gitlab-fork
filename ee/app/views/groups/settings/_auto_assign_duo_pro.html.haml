@@ -1,0 +1,12 @@
+- return unless gitlab_com_subscription? && ::Feature.enabled?(:auto_assign_gitlab_duo_pro_seats, group)
+- return unless group.root?
+- return unless group.code_suggestions_purchased?
+
+%h5= _('Auto Assign GitLab Duo Pro Seats')
+
+.form-group.gl-mb-3
+  = f.gitlab_ui_checkbox_component :enable_auto_assign_gitlab_duo_pro_seats, checkbox_options: { checked: group.enable_auto_assign_gitlab_duo_pro_seats? } do |c|
+    - c.with_label do
+      = s_('GroupSettings|Enable Auto Assign GitLab Duo Pro Seats')
+    - c.with_help_text do
+      = s_('GroupSettings|If enabled, newly added eligible members will automatically receive Duo Pro seats.')

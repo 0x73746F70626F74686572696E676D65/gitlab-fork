@@ -100,6 +100,7 @@ module EE
       delegate :disable_personal_access_tokens=, to: :namespace_settings
 
       delegate :wiki_access_level, :wiki_access_level=, to: :group_feature, allow_nil: true
+      delegate :enable_auto_assign_gitlab_duo_pro_seats, :enable_auto_assign_gitlab_duo_pro_seats=, :enable_auto_assign_gitlab_duo_pro_seats_human_readable, :enable_auto_assign_gitlab_duo_pro_seats_human_readable=, to: :namespace_settings, allow_nil: true
 
       # Use +checked_file_template_project+ instead, which implements important
       # visibility checks

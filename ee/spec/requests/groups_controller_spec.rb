@@ -362,6 +362,110 @@ RSpec.describe GroupsController, type: :request, feature_category: :groups_and_p
         end
       end
     end
+
+    context 'setting enable_auto_assign_gitlab_duo_pro_seats' do
+      let(:params) { { group: { enable_auto_assign_gitlab_duo_pro_seats: true } } }
+
+      context 'when on SM' do
+        before do
+          stub_saas_features(gitlab_com_subscriptions: false)
+        end
+
+        it 'does not change the column' do
+          expect(group.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+
+          subject
+
+          expect(response).to have_gitlab_http_status(:found)
+          expect(group.reload.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+        end
+      end
+
+      context 'when on .com' do
+        before do
+          stub_saas_features(gitlab_com_subscriptions: true)
+        end
+
+        context 'when group is not a root' do
+          before do
+            allow(group).to receive(:root?).and_return(false)
+          end
+
+          it 'does not change the column' do
+            expect(group.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:found)
+            expect(group.reload.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+          end
+        end
+
+        context 'when feature flag is disabled' do
+          before do
+            stub_feature_flags(auto_assign_gitlab_duo_pro_seats: false, thing: group)
+          end
+
+          it 'does not change the column' do
+            expect(group.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:found)
+            expect(group.reload.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+          end
+        end
+
+        context 'when user is not an owner' do
+          let(:user) { create(:user) }
+
+          before do
+            group.add_developer(user)
+            login_as(user)
+          end
+
+          it 'does not change the column and returns not_found' do
+            expect(group.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:not_found)
+            expect(group.reload.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+          end
+        end
+
+        context 'when no add-on purchase' do
+          before do
+            allow(group).to receive(:code_suggestions_purchased?).and_return(false)
+          end
+
+          it 'does not change the column' do
+            expect(group.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:found)
+            expect(group.reload.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+          end
+        end
+
+        context 'when all conditions are met' do
+          before do
+            add_on = create(:gitlab_subscription_add_on)
+            create(:gitlab_subscription_add_on_purchase, quantity: 50, namespace: group, add_on: add_on)
+          end
+
+          it 'successfully updates the column' do
+            expect(group.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:found)
+            expect(group.reload.enable_auto_assign_gitlab_duo_pro_seats?).to be_truthy
+          end
+        end
+      end
+    end
   end
 
   describe 'PUT #transfer', :saas do
