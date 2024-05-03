@@ -38612,6 +38612,9 @@ msgstr ""
 msgid "PolicyRuleMultiSelect|%{firstLabel} +%{numberOfAdditionalLabels} more"
 msgstr ""
 
+msgid "PolicyRuleMultiSelect|%{firstLabel}, %{secondLabel} %{moreLabel}"
+msgstr ""
+
 msgid "PolicyRuleMultiSelect|All %{itemTypeName}"
 msgstr ""
 
@@ -46342,6 +46345,9 @@ msgid "SecurityOrchestration|%{scanners}"
 msgstr ""
 
 msgid "SecurityOrchestration|%{state} and %{statuses}"
+msgstr ""
+
+msgid "SecurityOrchestration|+%{numberOfAdditionalLabels} more"
 msgstr ""
 
 msgid "SecurityOrchestration|, and %{count} more"

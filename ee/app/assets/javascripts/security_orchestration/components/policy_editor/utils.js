@@ -18,6 +18,7 @@ import {
   ALL_SELECTED_LABEL,
   SELECTED_ITEMS_LABEL,
   MULTIPLE_SELECTED_LABEL,
+  MORE_LABEL,
 } from './constants';
 
 /**
@@ -271,10 +272,15 @@ export const renderMultiSelectText = ({ selected, items, itemTypeName, useAllSel
     return defaultPlaceholder;
   }
 
+  const moreLabel = sprintf(MORE_LABEL, {
+    numberOfAdditionalLabels: commonItems.length - 2,
+  });
+
   const multiSelectLabel = sprintf(MULTIPLE_SELECTED_LABEL, {
     firstLabel: items[commonItems[0]],
-    numberOfAdditionalLabels: commonItems.length - 1,
-  });
+    secondLabel: items[commonItems[1]],
+    moreLabel: commonItems.length > 2 ? moreLabel : undefined,
+  }).trim();
 
   const oneItemLabel = items[commonItems[0]] || defaultPlaceholder;
 
