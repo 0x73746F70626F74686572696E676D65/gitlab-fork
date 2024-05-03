@@ -6,6 +6,7 @@ import getIssuesQuery from 'ee_else_ce/issues/list/queries/get_issues.query.grap
 import getIssuesCountsQuery from 'ee_else_ce/issues/list/queries/get_issues_counts.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import setWindowLocation from 'helpers/set_window_location_helper';
 import { getIssuesCountsQueryResponse, getIssuesQueryResponse } from 'jest/issues/list/mock_data';
 import { TYPENAME_USER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
@@ -45,6 +46,9 @@ import BlockingIssuesCount from 'ee/issues/components/blocking_issues_count.vue'
 import IssuesListApp from 'ee/issues/list/components/issues_list_app.vue';
 import NewIssueDropdown from 'ee/issues/list/components/new_issue_dropdown.vue';
 import CreateWorkItemForm from 'ee/work_items/components/create_work_item_form.vue';
+import searchEpicsQuery from 'ee/vue_shared/components/filtered_search_bar/queries/search_epics.query.graphql';
+import ChildEpicIssueIndicator from 'ee/issuable/child_epic_issue_indicator/components/child_epic_issue_indicator.vue';
+import { mockGroupEpicsQueryResponse } from 'ee_jest/vue_shared/components/filtered_search_bar/mock_data';
 
 describe('EE IssuesListApp component', () => {
   let wrapper;
@@ -93,11 +97,15 @@ describe('EE IssuesListApp component', () => {
   defaultQueryResponse.data.project.issues.nodes[0].blockingCount = 1;
   defaultQueryResponse.data.project.issues.nodes[0].healthStatus = null;
   defaultQueryResponse.data.project.issues.nodes[0].weight = 5;
+  defaultQueryResponse.data.project.issues.nodes[0].epic = {
+    id: 'gid://gitlab/Epic/1',
+  };
 
   const findIssuableList = () => wrapper.findComponent(IssuableList);
   const findIssueListApp = () => wrapper.findComponent(CEIssuesListApp);
   const findCreateWorkItemForm = () => wrapper.findComponent(CreateWorkItemForm);
   const findNewIssueDropdown = () => wrapper.findComponent(NewIssueDropdown);
+  const findChildEpicIssueIndicator = () => wrapper.findComponent(ChildEpicIssueIndicator);
 
   const mountComponent = ({
     provide = {},
@@ -110,6 +118,7 @@ describe('EE IssuesListApp component', () => {
       apolloProvider: createMockApollo([
         [getIssuesQuery, issuesQueryResponse],
         [getIssuesCountsQuery, issuesCountsQueryResponse],
+        [searchEpicsQuery, jest.fn().mockResolvedValue(mockGroupEpicsQueryResponse)],
       ]),
       provide: {
         glFeatures: {
@@ -372,6 +381,28 @@ describe('EE IssuesListApp component', () => {
       it('does not render', () => {
         expect(findCreateWorkItemForm().exists()).toBe(false);
       });
+    });
+  });
+
+  describe('ChildEpicIssueIndicator component', () => {
+    it('renders ChildEpicIssueIndicator when there is filtered epic id', async () => {
+      setWindowLocation('http://127.0.0.1:3000/gitlab-org/gitlab-test/-/issues/?&epic_id=1');
+
+      wrapper = await mountComponent();
+
+      await waitForPromises();
+
+      expect(findChildEpicIssueIndicator().exists()).toBe(true);
+    });
+
+    it('does not render ChildEpicIssueIndicator when the filtered epic id is not present', async () => {
+      setWindowLocation('http://127.0.0.1:3000/gitlab-org/gitlab-test/-/issues/');
+
+      wrapper = await mountComponent();
+
+      await waitForPromises();
+
+      expect(findChildEpicIssueIndicator().exists()).toBe(false);
     });
   });
 });
