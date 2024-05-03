@@ -20,7 +20,8 @@ RSpec.describe 'Groups > Discovers > Hand Raise Lead', :js, :saas, feature_categ
   end
 
   context 'when user interacts with hand raise lead and submits' do
-    it 'renders and submits the top of the page instance' do
+    it 'renders and submits the top of the page instance',
+      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/457839' do
       all_by_testid('trial-discover-hand-raise-lead-button').first.click
 
       fill_in_and_submit_hand_raise_lead(user, group, glm_content: 'trial_discover_page')
