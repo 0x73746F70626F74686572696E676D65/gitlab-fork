@@ -39,7 +39,7 @@ module QA
           end
 
           def go_to_create_from_template_instance_tab
-            click_element(:'instance-templates-tab')
+            click_element('instance-templates-tab')
           end
 
           def group_template_tab_badge_text

@@ -93,19 +93,19 @@ module QA
           QA::Flow::Project.go_to_create_project_from_template
         end
 
-        it 'successfully imports the project using template',
-          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347875',
-          quarantine: {
-            only: { job: 'airgapped' },
-            issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/414247',
-            type: :investigating
-          } do
+        # Importing requires external_api_calls for setting application settings, this means this test
+        # cannot currently run in the airgapped job
+        # Failure issue: https://gitlab.com/gitlab-org/gitlab/-/issues/414247
+        # Bug: https://gitlab.com/gitlab-org/gitlab/-/issues/421143
+        # TODO: enable in airgapped job when bug is resolved
+        it 'successfully imports the project using template', :external_api_calls,
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347875' do
           Page::Project::New.perform do |new_page|
-            # TODO: Remove `reload true` once this bug is fixed: https://gitlab.com/gitlab-org/gitlab/-/issues/247874
-            new_page.retry_until(reload: true) do
+            # Reload page in case template isn't available immediately
+            new_page.retry_until(reload: true,
+              message: "Expected #{template_project.name} to be present on page with a tab count of 1.") do
               new_page.go_to_create_from_template_instance_tab
-              expect(new_page.instance_template_tab_badge_text).to eq "1"
-              new_page.has_text?(template_project.name)
+              new_page.instance_template_tab_badge_text == "1" && new_page.has_text?(template_project.name)
             end
           end
 
