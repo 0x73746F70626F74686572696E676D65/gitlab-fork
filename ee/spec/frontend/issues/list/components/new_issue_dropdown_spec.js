@@ -29,12 +29,12 @@ describe('NewIssueDropdown component', () => {
   });
 
   it('renders a split dropdown with newIssue label', () => {
-    expect(findButton().text()).toBe(NewIssueDropdown.i18n.newIssueLabel);
-    expect(findButton().props('href')).toBe(NewIssueDropdown.i18n.newIssuePath);
+    expect(findButton().text()).toBe('New issue');
+    expect(findButton().attributes('href')).toBe(NEW_ISSUE_PATH);
   });
 
   it('renders dropdown with New Issue item', () => {
-    expect(findDropdownItem(0).props('item').text).toBe(NewIssueDropdown.i18n.newIssueLabel);
+    expect(findDropdownItem(0).props('item').text).toBe('New issue');
     expect(findDropdownItem(0).props('item').href).toBe(NEW_ISSUE_PATH);
   });
 
