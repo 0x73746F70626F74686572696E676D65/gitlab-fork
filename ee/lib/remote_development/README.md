@@ -32,10 +32,11 @@
 - [Benefits](#benefits)
 - [Differences from standard GitLab patterns](#differences-from-standard-gitlab-patterns)
 - [Remote Development Settings](#remote-development-settings)
-    - [Overview of Remote Development Settings module](#overview-of-remote-development-settings-module)
+  - [Overview of Remote Development Settings module](#overview-of-remote-development-settings-module)
   - [Adding a new setting](#adding-a-new-setting)
   - [Reading settings](#reading-settings)
   - [Precedence of settings](#precedence-of-settings)
+  - [Usage of ENV vars to override settings at the instance level](#usage-of-env-vars-to-override-settings-at-the-instance-level)
 - [FAQ](#faq)
 
 ## TL;DR and Quickstart
@@ -465,7 +466,7 @@ We also tend to group all base `let` fixture declarations in the top-level globa
 
 ## Remote Development Settings
 
-### Overview of Remote Development Settings module
+### Overview of Remote Development settings module
 
 Remote Development has a dedicated module in the domain logic for handling settings. It is
 `RemoteDevelopment::Settings`. The goals of this module are:
@@ -536,6 +537,22 @@ allow them to be specified as a new field in the defaults declaration:
         }
       end
 ```
+
+### Usage of ENV vars to override settings at the instance level
+
+**All settings should eventually be configurable via the Web UI (and optionally GraphQL API)**
+
+This means that the usage of environment variables with the prefix `GITLAB_REMOTE_DEVELOPMENT_` to control settings
+is _only intended to be used for the following purposes_:
+
+1. To support initial proof-of-concept of "early adopter" iterations, where we want to quickly make a new setting
+   available for use, but have not yet done the planning or design work to create an appropriate
+   UI for the setting.
+1. To easily perform a global override of any setting for local or temporary testing, either in
+   local development or in a test/self-managed installation.
+
+This is why ENV vars intentionally always have the highest precedence over all other methods of providing
+settings values.
 
 ## FAQ
 
