@@ -231,7 +231,7 @@ export default {
     <div class="gl-display-flex gl-w-full gl-gap-3 gl-align-items-baseline gl-flex-nowrap">
       <gl-sprintf :message="$options.i18n.filePathInputCopy">
         <template #label="{ content }">
-          <span class="gl-white-space-nowrap">{{ content }}</span>
+          <span class="gl-whitespace-nowrap">{{ content }}</span>
         </template>
 
         <template #filePath>

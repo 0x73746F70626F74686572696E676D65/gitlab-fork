@@ -220,7 +220,7 @@ export default {
       </template>
 
       <template #cell(name)="{ item }">
-        <span :class="{ 'gl-text-red-500': !isValid }" class="gl-white-space-nowrap">
+        <span :class="{ 'gl-text-red-500': !isValid }" class="gl-whitespace-nowrap">
           {{ item.name }}
         </span>
       </template>

@@ -58,7 +58,7 @@ export default {
       </template>
       <template #created>
         <time-ago-tooltip
-          class="gl-white-space-nowrap gl-font-sm gl-text-gray-600"
+          class="gl-whitespace-nowrap gl-font-sm gl-text-gray-600"
           :time="summary.createdAt"
         />
       </template>

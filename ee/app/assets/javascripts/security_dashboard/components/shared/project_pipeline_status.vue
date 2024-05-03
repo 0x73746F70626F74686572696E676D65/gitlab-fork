@@ -60,7 +60,7 @@ export default {
     <div class="gl-display-flex gl-align-items-center" data-testid="pipeline">
       <div class="gl-mr-3">
         <span class="gl-font-weight-bold gl-mr-3">{{ $options.i18n.lastUpdated }}</span
-        ><span class="gl-white-space-nowrap">
+        ><span class="gl-whitespace-nowrap">
           <time-ago-tooltip class="gl-pr-3" :time="pipeline.createdAt" /><gl-link
             :href="pipeline.path"
             >#{{ pipeline.id }}</gl-link
@@ -88,7 +88,7 @@ export default {
       >
         <div>
           <span class="gl-font-weight-bold gl-mr-3">{{ $options.i18n.sbomLastUpdated }}</span
-          ><span class="gl-white-space-nowrap">
+          ><span class="gl-whitespace-nowrap">
             <time-ago-tooltip class="gl-pr-3" :time="sbomPipeline.createdAt" /><gl-link
               :href="sbomPipeline.path"
               >#{{ sbomPipeline.id }}</gl-link

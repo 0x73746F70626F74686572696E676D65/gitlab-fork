@@ -101,7 +101,7 @@ export default {
     @shown="onShown"
   >
     <template #toggle>
-      <span class="gl-md-white-space-nowrap gl-text-blue-500">
+      <span class="md:gl-whitespace-nowrap gl-text-blue-500">
         <gl-icon name="doc-text" />
         <gl-truncate
           class="gl-display-none gl-md-display-inline-flex"
@@ -113,7 +113,7 @@ export default {
     </template>
     <template #list-item="{ item }">
       <div v-if="item">
-        <div class="gl-md-white-space-nowrap gl-text-blue-500">
+        <div class="md:gl-whitespace-nowrap gl-text-blue-500">
           <gl-link
             v-if="hasLocationPath(item)"
             :href="item.location.blob_path"

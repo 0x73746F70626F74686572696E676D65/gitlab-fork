@@ -31,8 +31,8 @@ export default {
     {
       key: 'dataUsed',
       label: s__('UsageQuota|Transfer data used'),
-      tdClass: ['gl-white-space-nowrap !gl-align-middle'],
-      thClass: ['gl-white-space-nowrap'],
+      tdClass: ['gl-whitespace-nowrap !gl-align-middle'],
+      thClass: ['gl-whitespace-nowrap'],
     },
   ],
   components: { GlSkeletonLoader, GlTableLite, GlIcon, GlLink, SectionedPercentageBar },
@@ -153,7 +153,7 @@ export default {
           <p>{{ $options.i18n.description }}</p>
         </div>
         <p
-          class="gl-m-0 gl-font-size-h-display gl-font-weight-bold gl-white-space-nowrap"
+          class="gl-m-0 gl-font-size-h-display gl-font-weight-bold gl-whitespace-nowrap"
           data-testid="total-egress"
         >
           {{ totalEgressCombinedHumanSize }}

@@ -73,7 +73,7 @@ export default {
       <component
         :is="locationComponent"
         v-if="hasPaths"
-        class="gl-md-white-space-nowrap"
+        class="md:gl-whitespace-nowrap"
         data-testid="dependency-path"
         :href="location.blobPath"
       >
@@ -95,7 +95,7 @@ export default {
 
     <!-- We need to put an extra span to avoid separator between link & popover -->
     <span v-if="showMoreLink">
-      <gl-link ref="moreLink" class="gl-white-space-nowrap">{{ nMoreMessage }}</gl-link>
+      <gl-link ref="moreLink" class="gl-whitespace-nowrap">{{ nMoreMessage }}</gl-link>
 
       <gl-popover
         :target="() => $refs.moreLink.$el"

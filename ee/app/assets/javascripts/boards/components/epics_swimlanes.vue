@@ -243,7 +243,7 @@ export default {
 <template>
   <div
     ref="scrollableContainer"
-    class="board-swimlanes gl-white-space-nowrap gl-pb-5 xl:gl-pl-3 gl-pr-5 xl:gl-pr-6 gl-display-flex gl-flex-grow-1"
+    class="board-swimlanes gl-whitespace-nowrap gl-pb-5 xl:gl-pl-3 gl-pr-5 xl:gl-pr-6 gl-display-flex gl-flex-grow-1"
     data-testid="board-swimlanes"
   >
     <swimlanes-loading-skeleton v-if="isLoading" />
@@ -349,7 +349,7 @@ export default {
                   @click="toggleUnassignedLane"
                 />
                 <span
-                  class="gl-mr-3 gl-font-weight-bold gl-white-space-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
+                  class="gl-mr-3 gl-font-weight-bold gl-whitespace-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
                 >
                   {{ __('Issues with no epic assigned') }}
                 </span>

@@ -118,7 +118,7 @@ export default {
             "
           >
             <template #zone>
-              <code class="gl-white-space-nowrap">{{ $options.zone }}</code>
+              <code class="gl-whitespace-nowrap">{{ $options.zone }}</code>
             </template>
           </gl-sprintf>
         </li>

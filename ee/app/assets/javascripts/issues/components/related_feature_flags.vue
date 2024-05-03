@@ -118,7 +118,7 @@ export default {
         <span
           v-gl-tooltip
           :title="flag.reference"
-          class="text-secondary gl-mt-3 gl-lg-mt-0 gl-lg-ml-3 gl-white-space-nowrap"
+          class="text-secondary gl-mt-3 gl-lg-mt-0 gl-lg-ml-3 gl-whitespace-nowrap"
           data-testid="feature-flag-details-reference"
         >
           <gl-truncate :text="flag.reference" />

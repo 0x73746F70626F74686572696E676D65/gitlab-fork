@@ -134,7 +134,7 @@ export default {
       return parseInt(this.$route.query.perPage || GRAPHQL_PAGE_SIZE, 10);
     },
     fields() {
-      const columnWidth = 'gl-md-max-w-10 gl-white-space-nowrap';
+      const columnWidth = 'gl-md-max-w-10 gl-whitespace-nowrap';
 
       return [
         {

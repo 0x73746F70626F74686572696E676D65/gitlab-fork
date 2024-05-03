@@ -130,7 +130,7 @@ export default {
         </template>
         <template #cell(created)="{ item }">
           <time-ago-tooltip
-            class="gl-white-space-nowrap gl-font-sm-600 gl-text-secondary"
+            class="gl-whitespace-nowrap gl-font-sm-600 gl-text-secondary"
             :time="item.createdAt"
           />
         </template>

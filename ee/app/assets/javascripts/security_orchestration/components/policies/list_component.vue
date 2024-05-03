@@ -471,7 +471,7 @@ export default {
       <template #cell(source)="{ value: source }">
         <span
           v-if="isPolicyInherited(source) && policyHasNamespace(source)"
-          class="gl-white-space-nowrap"
+          class="gl-whitespace-nowrap"
         >
           <gl-sprintf :message="$options.i18n.inheritedLabel">
             <template #namespace>
@@ -484,7 +484,7 @@ export default {
         <span v-else-if="isPolicyInherited(source) && !policyHasNamespace(source)">{{
           $options.i18n.inheritedShortLabel
         }}</span>
-        <span v-else class="gl-white-space-nowrap">{{ typeLabel }}</span>
+        <span v-else class="gl-whitespace-nowrap">{{ typeLabel }}</span>
       </template>
 
       <template v-if="showPolicyScope" #cell(scope)="{ item: { policyScope } }">

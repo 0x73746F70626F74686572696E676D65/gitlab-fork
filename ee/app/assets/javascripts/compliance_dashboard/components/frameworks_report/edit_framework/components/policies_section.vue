@@ -214,7 +214,7 @@ export default {
     {
       key: 'linked',
       label: i18n.policiesTableFields.linked,
-      thClass: 'gl-white-space-nowrap gl-w-1/20',
+      thClass: 'gl-whitespace-nowrap gl-w-1/20',
       tdClass: 'gl-text-center',
     },
     {

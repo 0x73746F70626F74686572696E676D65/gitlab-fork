@@ -8,12 +8,12 @@ export const TABLE_FIELDS = [
   {
     key: 'permissions',
     label: s__('MemberRole|Custom permissions'),
-    tdClass: 'gl-white-space-nowrap',
+    tdClass: 'gl-whitespace-nowrap',
   },
   {
     key: 'membersCount',
     label: s__('MemberRole|Member count'),
-    thClass: 'gl-w-12 gl-white-space-nowrap',
+    thClass: 'gl-w-12 gl-whitespace-nowrap',
     tdClass: 'gl-text-right',
   },
   {

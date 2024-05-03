@@ -59,7 +59,7 @@ export default {
     >
       <div class="gl-w-80p">{{ planStorageDescription }}</div>
       <div v-if="loading" class="gl-animate-skeleton-loader gl-w-8 gl-h-5 gl-rounded-base"></div>
-      <number-to-human-size v-else class="gl-white-space-nowrap" :value="namespaceStorageLimit" />
+      <number-to-human-size v-else class="gl-whitespace-nowrap" :value="namespaceStorageLimit" />
     </div>
     <div class="gl-display-flex gl-justify-content-space-between">
       <div class="gl-w-80p">
@@ -76,7 +76,7 @@ export default {
       <div v-if="loading" class="gl-animate-skeleton-loader gl-w-8 gl-h-5 gl-rounded-base"></div>
       <number-to-human-size
         v-else
-        class="gl-white-space-nowrap"
+        class="gl-whitespace-nowrap"
         :value="purchasedStorage"
         data-testid="storage-purchased"
       />
@@ -87,7 +87,7 @@ export default {
       <div v-if="loading" class="gl-animate-skeleton-loader gl-w-8 gl-h-5 gl-rounded-base"></div>
       <number-to-human-size
         v-else
-        class="gl-white-space-nowrap"
+        class="gl-whitespace-nowrap"
         :value="totalStorageAvailable"
         data-testid="total-storage"
       />

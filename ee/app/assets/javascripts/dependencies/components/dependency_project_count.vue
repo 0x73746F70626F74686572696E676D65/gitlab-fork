@@ -131,7 +131,7 @@ export default {
       @shown="onShown"
     >
       <template #toggle>
-        <span class="gl-md-white-space-nowrap gl-text-blue-500">
+        <span class="md:gl-whitespace-nowrap gl-text-blue-500">
           <gl-truncate
             class="gl-display-none gl-md-display-inline-flex"
             position="start"
@@ -162,7 +162,7 @@ export default {
       :target-id="targetId"
       :target-text="projectText"
     />
-    <gl-link v-else class="gl-md-white-space-nowrap" :href="projectPath">
+    <gl-link v-else class="md:gl-whitespace-nowrap" :href="projectPath">
       <gl-truncate
         class="gl-display-none gl-md-display-inline-flex"
         position="start"

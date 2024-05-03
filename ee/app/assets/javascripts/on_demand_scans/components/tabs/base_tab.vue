@@ -161,7 +161,7 @@ export default {
       return [...this.fields, ACTION_COLUMN].map((field) => ({
         ...field,
         class: ['gl-text-primary'],
-        thClass: ['gl-bg-transparent!', 'gl-white-space-nowrap'],
+        thClass: ['gl-bg-transparent!', 'gl-whitespace-nowrap'],
       }));
     },
   },
@@ -221,7 +221,7 @@ export default {
 <template>
   <gl-tab v-bind="$attrs">
     <template #title>
-      <span class="gl-white-space-nowrap">
+      <span class="gl-whitespace-nowrap">
         {{ title }}
         <gl-badge size="sm" class="gl-tab-counter-badge">{{ formattedCount }}</gl-badge>
       </span>
@@ -282,7 +282,7 @@ export default {
         <template #cell(createdAt)="{ item }">
           <time-ago-tooltip
             v-if="item.createdAt"
-            class="gl-white-space-nowrap"
+            class="gl-whitespace-nowrap"
             :time="item.createdAt"
           />
         </template>

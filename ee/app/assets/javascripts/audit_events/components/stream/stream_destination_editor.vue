@@ -60,7 +60,7 @@ const { CREATING_ERROR, UPDATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
 
 const thClasses = `gl-p-0! gl-border-0!`;
 const tdClasses = `gl-p-3! gl-pr-4! gl-pl-0! gl-border-0!`;
-const activeTdClasses = `gl-white-space-nowrap gl-w-2 ${tdClasses}`;
+const activeTdClasses = `gl-whitespace-nowrap gl-w-2 ${tdClasses}`;
 const actionsTdClasses = `gl-w-2 gl-py-3! gl-px-0! gl-border-0!`;
 
 export default {

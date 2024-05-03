@@ -231,7 +231,7 @@ export default {
         <gl-button
           v-show="startDateFixed"
           category="tertiary"
-          class="gl-white-space-nowrap"
+          class="gl-whitespace-nowrap"
           data-testid="clear-start-date"
           @click="updateStartDate(null)"
           >{{ __('Clear start date') }}</gl-button
@@ -249,7 +249,7 @@ export default {
         <gl-button
           v-show="dueDateFixed"
           category="tertiary"
-          class="gl-white-space-nowrap"
+          class="gl-whitespace-nowrap"
           data-testid="clear-due-date"
           @click="updateDueDate(null)"
           >{{ __('Clear due date') }}</gl-button

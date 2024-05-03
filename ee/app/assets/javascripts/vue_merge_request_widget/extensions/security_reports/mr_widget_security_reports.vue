@@ -434,7 +434,7 @@ export default {
                       {{ $options.SEVERITY_LEVELS[vuln.severity] }}
                       <gl-button
                         variant="link"
-                        class="gl-ml-2 gl-overflow-hidden gl-white-space-nowrap gl-text-overflow-ellipsis"
+                        class="gl-ml-2 gl-overflow-hidden gl-whitespace-nowrap gl-text-overflow-ellipsis"
                         @click="setModalData(vuln)"
                         >{{ vuln.name }}</gl-button
                       >

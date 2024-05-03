@@ -156,7 +156,7 @@ export default {
           v-if="shouldShowFilterByLabel"
           class="gl-display-flex gl-align-items-center gl-flex-basis-half gl-my-3"
         >
-          <label class="gl-white-space-nowrap gl-mb-0 gl-mr-2">{{ __('Filter by label') }}</label>
+          <label class="gl-whitespace-nowrap gl-mb-0 gl-mr-2">{{ __('Filter by label') }}</label>
           <labels-select
             :allow-label-create="false"
             allow-label-edit

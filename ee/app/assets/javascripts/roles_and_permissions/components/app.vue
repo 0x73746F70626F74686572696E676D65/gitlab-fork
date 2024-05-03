@@ -142,7 +142,7 @@ export default {
       <div
         class="gl-display-flex gl-align-items-flex-start gl-flex-wrap page-title gl-mb-2 gl-gap-2"
       >
-        <h1 class="gl-font-size-h-display gl-m-0 gl-mr-auto gl-white-space-nowrap">
+        <h1 class="gl-font-size-h-display gl-m-0 gl-mr-auto gl-whitespace-nowrap">
           {{ $options.i18n.title }}
         </h1>
         <gl-button :href="newRolePath" variant="confirm">
