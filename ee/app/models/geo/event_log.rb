@@ -14,7 +14,7 @@ module Geo
       repository_deleted_event_id
       repository_renamed_event_id
       reset_checksum_event_id
-    ], remove_with: '17.0', remove_after: '2024-05-16'
+    ], remove_with: '17.1', remove_after: '2024-05-16'
 
     include Geo::Model
     include ::EachBatch
