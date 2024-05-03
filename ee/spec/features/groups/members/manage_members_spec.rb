@@ -38,7 +38,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
 
         page.refresh
 
-        expect(page).to have_content(_('Invited'))
+        expect(page).to have_content(_('Pending invitations'))
       end
     end
 
@@ -101,7 +101,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
 
         page.refresh
 
-        expect(page).to have_content(_('Invited'))
+        expect(page).to have_content(_('Pending invitations'))
       end
     end
 
