@@ -8,7 +8,7 @@ RSpec.describe Groups::CreateEventWorker, feature_category: :onboarding do
 
   subject(:worker) { described_class.new }
 
-  it 'creats an event' do
+  it 'creates an event' do
     expect do
       worker.perform(group.id, user.id, :created)
     end.to change(Event, :count).by(1)

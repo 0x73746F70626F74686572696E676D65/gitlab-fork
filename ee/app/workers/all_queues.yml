@@ -1488,6 +1488,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: groups_reset_seat_callouts
+  :worker_name: Groups::ResetSeatCalloutsWorker
+  :feature_category: :seat_cost_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: groups_schedule_bulk_repository_shard_moves
   :worker_name: Groups::ScheduleBulkRepositoryShardMovesWorker
   :feature_category: :gitaly
