@@ -8,6 +8,7 @@ describe('SecretPreviewModal component', () => {
   const defaultProps = {
     createdAt: 1708902979844,
     description: 'This is a secret.',
+    environment: 'staging/*',
     expiration: new Date('2024-03-01'),
     isEditing: false,
     isVisible: true,
@@ -17,6 +18,7 @@ describe('SecretPreviewModal component', () => {
 
   const findCreatedAt = () => wrapper.findByTestId('secret-preview-created-at');
   const findDescription = () => wrapper.findByTestId('secret-preview-description');
+  const findEnvironment = () => wrapper.findByTestId('secret-preview-environment');
   const findExpiration = () => wrapper.findByTestId('secret-preview-expiration');
   const findModal = () => wrapper.findComponent(GlModal);
   const findRotationPeriod = () => wrapper.findByTestId('secret-preview-rotation-period');
@@ -39,6 +41,7 @@ describe('SecretPreviewModal component', () => {
       expect(findModal().props('title')).toBe('Preview for SECRET_KEY');
       expect(findCreatedAt().text()).toBe('February 25, 2024 at 11:16:19 PM GMT');
       expect(findDescription().text()).toBe(defaultProps.description);
+      expect(findEnvironment().text()).toBe(defaultProps.environment);
       expect(findExpiration().text()).toBe('March 1, 2024 at 12:00:00 AM GMT');
       expect(findRotationPeriod().text()).toBe(defaultProps.rotationPeriod);
     });

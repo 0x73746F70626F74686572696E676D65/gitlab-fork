@@ -18,28 +18,33 @@ export default {
       required: false,
       default: '',
     },
+    environment: {
+      type: String,
+      required: false,
+      default: '',
+    },
     expiration: {
       type: Date,
       required: false,
-      default: null,
+      default: undefined,
+    },
+    isEditing: {
+      type: Boolean,
+      required: true,
     },
     isVisible: {
       type: Boolean,
       required: true,
-    },
-    secretKey: {
-      type: String,
-      required: false,
-      default: '',
     },
     rotationPeriod: {
       type: String,
       required: false,
       default: '',
     },
-    isEditing: {
-      type: Boolean,
-      required: true,
+    secretKey: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   computed: {
@@ -62,7 +67,7 @@ export default {
       };
     },
     title() {
-      return sprintf(s__('Secrets|Preview for %{secretKey}'), { secretKey: this.secretKey });
+      return sprintf(s__('Secrets|Preview for %{secretKey}'), { secretKey: this.secretKey }, false);
     },
   },
   actionSecondary: {
@@ -89,14 +94,11 @@ export default {
     <p data-testid="secret-preview-created-at">{{ formattedCreatedAt }}</p>
     <p class="gl-font-weight-bold">{{ __('Description') }}</p>
     <p data-testid="secret-preview-description">{{ description }}</p>
+    <p class="gl-font-weight-bold">{{ __('Environment') }}</p>
+    <p data-testid="secret-preview-environment">{{ environment }}</p>
     <p class="gl-font-weight-bold">{{ __('Expiration date') }}</p>
     <p data-testid="secret-preview-expiration">{{ formattedExpiration }}</p>
     <p class="gl-font-weight-bold">{{ __('Rotation schedule') }}</p>
     <p data-testid="secret-preview-rotation-period">{{ rotationPeriod }}</p>
-    <p class="gl-font-weight-bold">{{ __('Access permission') }}</p>
-    <!-- eslint-disable @gitlab/vue-require-i18n-strings -->
-    <!-- TODO: Replace dummy text with access permission data -->
-    <p>Maintainers can read and edit</p>
-    <!-- eslint-enable @gitlab/vue-require-i18n-strings -->
   </gl-modal>
 </template>

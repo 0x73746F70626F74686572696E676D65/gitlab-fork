@@ -1,4 +1,5 @@
 import getSecretsQuery from './queries/client/get_secrets.query.graphql';
+import getSecretDetails from './queries/client/get_secret_details.query.graphql';
 
 export const cacheConfig = {
   typePolicies: {
@@ -51,6 +52,37 @@ export const resolvers = {
       }).project.secrets;
 
       return clientSidePaginate(sourceData, offset, limit);
+    },
+  },
+  Mutation: {
+    createSecret: async (_, { fullPath, secret }, { cache }) => {
+      cache.writeQuery({
+        query: getSecretDetails,
+        data: {
+          fullPath,
+          secret: {
+            ...secret,
+          },
+        },
+      });
+
+      const mockGraphQLResponse = {
+        project: {
+          secret: {
+            errors: [],
+            nodes: {
+              ...secret,
+            },
+          },
+        },
+      };
+
+      // simulate mock fetch to test loading icon behavior
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(mockGraphQLResponse);
+        }, 2000);
+      });
     },
   },
 };

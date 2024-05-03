@@ -1,3 +1,5 @@
+import { ROTATION_PERIOD_TWO_WEEKS } from 'ee/ci/secrets/constants';
+
 export const mockProjectEnvironments = {
   data: {
     project: {
@@ -52,3 +54,20 @@ export const mockGroupEnvironments = {
     },
   },
 };
+
+export const mockProjectSecret = ({ customSecret, errors = [] } = {}) => ({
+  project: {
+    secret: {
+      errors,
+      nodes: {
+        id: 'gid://gitlab/Secret/44',
+        environment: '*',
+        createdAt: '2029-01-22T08:04:26.024Z',
+        description: 'This is a secret',
+        key: 'APP_PWD',
+        rotationPeriod: ROTATION_PERIOD_TWO_WEEKS.value,
+        ...customSecret,
+      },
+    },
+  },
+});
