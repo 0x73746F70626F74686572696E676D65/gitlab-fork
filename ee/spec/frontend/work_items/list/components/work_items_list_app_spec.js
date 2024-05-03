@@ -19,7 +19,7 @@ describe('WorkItemsListApp EE component', () => {
     mountComponent({ hasEpicsFeature: true });
 
     expect(findCreateWorkItemModal().props()).toEqual({
-      workItemType: 'EPIC',
+      workItemTypeName: 'EPIC',
       asDropdownItem: false,
     });
   });

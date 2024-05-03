@@ -32,7 +32,7 @@ export default {
     <template v-if="hasEpicsFeature" #nav-actions>
       <create-work-item-modal
         class="gl-flex-grow-1"
-        :work-item-type="$options.WORK_ITEM_TYPE_ENUM_EPIC"
+        :work-item-type-name="$options.WORK_ITEM_TYPE_ENUM_EPIC"
       />
     </template>
   </work-items-list-app>
