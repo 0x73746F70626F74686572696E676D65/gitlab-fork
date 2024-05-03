@@ -16,6 +16,7 @@ class GitlabSubscription < ApplicationRecord
   before_update :reset_seat_statistics
   before_update :publish_subscription_renewed_event
 
+  after_commit :reset_seats_usage_callouts, on: :update
   after_commit :index_namespace, on: [:create, :update]
   after_destroy_commit :log_previous_state_for_destroy
 
@@ -244,5 +245,11 @@ class GitlabSubscription < ApplicationRecord
 
   def tracked_attributes_changed?
     changed.intersection(GitlabSubscriptionHistory::TRACKED_ATTRIBUTES).any?
+  end
+
+  def reset_seats_usage_callouts
+    return unless saved_change_to_seats?
+
+    Groups::ResetSeatCalloutsWorker.perform_async(namespace_id)
   end
 end

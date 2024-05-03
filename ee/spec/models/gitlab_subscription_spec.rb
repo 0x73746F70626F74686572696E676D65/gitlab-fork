@@ -600,6 +600,21 @@ RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_manage
           end
         end
       end
+
+      describe '#reset_seats_usage_callouts' do
+        let_it_be(:namespace) { create(:namespace) }
+
+        let(:gitlab_subscription) { create(:gitlab_subscription, plan, namespace: namespace, seats: 10) }
+        let(:plan) { :premium }
+
+        context 'when changing seats' do
+          it 'resets the callouts' do
+            expect(Groups::ResetSeatCalloutsWorker).to receive(:perform_async).with(gitlab_subscription.namespace_id)
+
+            gitlab_subscription.update!(seats: 11)
+          end
+        end
+      end
     end
 
     it 'has all attributes listed in the subscription history table' do
