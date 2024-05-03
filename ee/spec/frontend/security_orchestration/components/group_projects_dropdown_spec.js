@@ -203,7 +203,7 @@ describe('GroupProjectsDropdown', () => {
 
       it.each`
         hasNextPage | expectedText
-        ${true}     | ${'1 +1 more'}
+        ${true}     | ${'1, 2'}
         ${false}    | ${'All projects'}
       `(
         'selects all projects only when all projects loaded',

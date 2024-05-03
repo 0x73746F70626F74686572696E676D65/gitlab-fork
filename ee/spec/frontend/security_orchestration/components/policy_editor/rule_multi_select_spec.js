@@ -74,7 +74,7 @@ describe('Rule Multi Select', () => {
     describe('With multiple selected items', () => {
       const expectedKeys = ['start', 'middle'];
       const expectedLength = expectedKeys.length;
-      const expectedValue = 'Start now +1 more';
+      const expectedValue = 'Start now, Almost there';
 
       beforeEach(() => {
         createComponent({ value: expectedKeys });
