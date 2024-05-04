@@ -16,6 +16,10 @@ module QA
                 all_elements('grid-stack-panel', minimum: 1)
               end
 
+              def panel(panel_index:)
+                panels[panel_index]
+              end
+
               def audience_dashboard_panels
                 all_elements('grid-stack-panel', minimum: 9)
               end
