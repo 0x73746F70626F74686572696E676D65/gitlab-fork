@@ -7,12 +7,14 @@ import { slugify } from '~/lib/utils/text_utility';
 import { s__, __ } from '~/locale';
 import { InternalEvents } from '~/tracking';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
+import BetaBadge from '~/vue_shared/components/badges/beta_badge.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
 import UsageOverviewBackgroundAggregationWarning from 'ee/analytics/dashboards/components/usage_overview_background_aggregation_warning.vue';
 import {
   EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
   EVENT_LABEL_EXCLUDE_ANONYMISED_USERS,
+  DASHBOARD_STATUS_BETA,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import PanelsBase from './panels_base.vue';
@@ -38,6 +40,7 @@ export default {
     GlSprintf,
     PanelsBase,
     UrlSync,
+    BetaBadge,
     AvailableVisualizationsDrawer,
     GridstackWrapper,
     UsageOverviewBackgroundAggregationWarning,
@@ -141,6 +144,9 @@ export default {
     },
     showEnableAggregationWarning() {
       return this.dashboardHasUsageOverviewPanel && !this.overviewCountsAggregationEnabled;
+    },
+    showBetaBadge() {
+      return this.dashboard.status === DASHBOARD_STATUS_BETA;
     },
     dashboardDescription() {
       return this.dashboard.description;
@@ -358,7 +364,10 @@ export default {
               : s__('Analytics|Edit your dashboard')
           }}
         </h2>
-        <h2 v-else data-testid="dashboard-title" class="gl-my-0">{{ dashboard.title }}</h2>
+        <div v-else class="gl-display-flex gl-align-items-center">
+          <h2 data-testid="dashboard-title" class="gl-my-0">{{ dashboard.title }}</h2>
+          <beta-badge v-if="showBetaBadge" class="gl-ml-3" />
+        </div>
         <div
           v-if="showDashboardDescription"
           class="gl-display-flex gl-mt-3"

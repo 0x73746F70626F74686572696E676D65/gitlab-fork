@@ -196,6 +196,8 @@ export const DASHBOARD_REFRESH_MESSAGE = s__(
   'Analytics|Refresh the page to try again or see %{linkStart}troubleshooting documentation%{linkEnd}.',
 );
 
+export const DASHBOARD_STATUS_BETA = 'beta';
+
 export const EVENT_LABEL_CREATED_DASHBOARD = 'user_created_custom_dashboard';
 export const EVENT_LABEL_EDITED_DASHBOARD = 'user_edited_custom_dashboard';
 export const EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER = 'user_viewed_dashboard_designer';

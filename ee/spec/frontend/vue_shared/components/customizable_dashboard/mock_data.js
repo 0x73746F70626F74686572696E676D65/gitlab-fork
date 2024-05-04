@@ -85,6 +85,21 @@ export const builtinDashboard = {
   ],
 };
 
+export const betaDashboard = {
+  title: 'Test Dashboard',
+  description: 'This dashboard is a work-in-progress',
+  status: 'beta',
+  panels: [
+    {
+      title: __('Test A'),
+      gridAttributes: { width: 3, height: 3 },
+      visualization: cubeLineChart,
+      queryOverrides: {},
+      id: getUniquePanelId(),
+    },
+  ],
+};
+
 export const mockDateRangeFilterChangePayload = {
   startDate: new Date('2016-01-01'),
   endDate: new Date('2016-02-01'),
