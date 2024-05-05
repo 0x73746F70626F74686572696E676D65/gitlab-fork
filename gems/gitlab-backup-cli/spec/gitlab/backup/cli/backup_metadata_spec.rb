@@ -37,6 +37,100 @@ RSpec.describe Gitlab::Backup::Cli::BackupMetadata do
     end
   end
 
+  describe '.read(json_metadata_path)' do
+    let(:json_file) { tmp_dir.join(described_class::METADATA_FILENAME) }
+
+    before do
+      json_file.write(<<~JSON)
+        {
+          "metadata_version": 2,
+          "backup_id": "1714868860_2024_05_05_17.0.0-pre",
+          "created_at": "2024-05-05T00:00:00Z",
+          "gitlab_version": "17.0.0-pre"
+        }
+      JSON
+    end
+
+    it 'loads the JSON attributes into a metadata instance' do
+      metadata = described_class.read(json_file)
+      timestamp = Time.parse("2024-05-05T00:00:00Z")
+
+      expect(metadata.metadata_version).to eq(2)
+      expect(metadata.backup_id).to eq("1714868860_2024_05_05_17.0.0-pre")
+      expect(metadata.created_at).to eq(timestamp)
+      expect(metadata.gitlab_version).to eq("17.0.0-pre")
+    end
+
+    context "when json_metadata_path does not exist", :silence_output do
+      before do
+        # delete the json_file we setup in surrounding blocks
+        json_file.unlink
+      end
+
+      it "does not raise an error and returns nil" do
+        metadata = described_class.read(json_file)
+        expect(metadata).to be_nil
+      end
+
+      it "outputs an error message to stderr" do
+        expect {
+          described_class.read(json_file)
+        }.to output(/Failed to write backup information/).to_stderr
+      end
+
+    end
+  end
+
+  describe '.read_from_backup_directory(backup_directory)' do
+    let(:json_file) { tmp_dir.join(described_class::METADATA_FILENAME) }
+
+    before do
+      json_file.write(<<~JSON)
+        {
+          "metadata_version": 2,
+          "backup_id": "1714868860_2024_05_05_17.0.0-pre",
+          "created_at": "2024-05-05T00:00:00Z",
+          "gitlab_version": "17.0.0-pre"
+        }
+      JSON
+    end
+
+    it 'loads the JSON attributes into a metadata instance' do
+      metadata = described_class.read_from_backup_directory(tmp_dir)
+      timestamp = Time.parse("2024-05-05T00:00:00Z")
+
+      expect(metadata.metadata_version).to eq(2)
+      expect(metadata.backup_id).to eq("1714868860_2024_05_05_17.0.0-pre")
+      expect(metadata.created_at).to eq(timestamp)
+      expect(metadata.gitlab_version).to eq("17.0.0-pre")
+    end
+
+    context "when json_metadata_path does not exist", :silence_output do
+      before do
+        # delete the json_file we setup in surrounding blocks
+        json_file.unlink
+      end
+
+      it "does not raise an error and returns nil" do
+        metadata = described_class.read_from_backup_directory(tmp_dir)
+        expect(metadata).to be_nil
+      end
+
+      it "outputs an error message to stderr" do
+        expect {
+          described_class.read_from_backup_directory(tmp_dir)
+        }.to output(/Failed to write backup information/).to_stderr
+      end
+    end
+  end
+
+  describe '.path_in_backup_directory(backup_directory)' do
+    it 'returns the expected metadata file path inside the given directory' do
+      metadata_path = described_class.path_in_backup_directory(tmp_dir)
+      expect(metadata_path).to eq(tmp_dir.join('backup_information.json'))
+    end
+  end
+
   describe '#write!' do
     let(:json_file) { tmp_dir.join(described_class::METADATA_FILENAME) }
 
