@@ -851,7 +851,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
           create(:import_state, :mirror, :finished, project: another_project)
         end
 
-        it 'returns project if next_execution_timestamp is not in the future' do
+        it 'returns project if next_execution_timestamp is not in the future', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444921' do
           expect(described_class.mirrors_to_sync(timestamp, limit: 1)).to match_array(project)
         end
       end
