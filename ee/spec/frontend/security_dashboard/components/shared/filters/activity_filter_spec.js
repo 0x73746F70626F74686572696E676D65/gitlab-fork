@@ -3,7 +3,6 @@ import QuerystringSync from 'ee/security_dashboard/components/shared/filters/que
 import ActivityFilter, {
   ITEMS,
   GROUPS,
-  GROUPS_MR,
 } from 'ee/security_dashboard/components/shared/filters/activity_filter.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
@@ -37,7 +36,6 @@ describe('Activity Filter component', () => {
       },
       provide: {
         glFeatures: {
-          activityFilterHasMr: true,
           ...glFeatures,
         },
       },
@@ -68,7 +66,7 @@ describe('Activity Filter component', () => {
   });
 
   it('passes GROUPS with MR to listbox items', () => {
-    expect(findListbox().props('items')).toEqual([...GROUPS, GROUPS_MR]);
+    expect(findListbox().props('items')).toEqual([...GROUPS]);
   });
 
   it('selects and unselects an item when clicked on', async () => {
@@ -222,48 +220,6 @@ describe('Activity Filter component', () => {
           hasMergeRequest,
           hasResolution,
           hasRemediations,
-        });
-      },
-    );
-  });
-
-  describe('when feature flags are disabled', () => {
-    beforeEach(() => {
-      createWrapper({
-        glFeatures: { activityFilterHasMr: false },
-      });
-    });
-
-    it('passes GROUPS to listbox items', () => {
-      expect(findListbox().props('items')).toEqual(GROUPS);
-    });
-
-    it('emits the expected data for the all option', async () => {
-      await clickItem(ALL_ID);
-
-      expect(wrapper.emitted('filter-changed')[1][0]).toStrictEqual({
-        hasIssues: undefined,
-        hasResolution: undefined,
-      });
-    });
-
-    it.each`
-      selectedItems                                                        | hasIssues | hasResolution
-      ${[ITEMS.STILL_DETECTED.value, ITEMS.HAS_ISSUE.value]}               | ${true}   | ${false}
-      ${[ITEMS.NO_LONGER_DETECTED.value, ITEMS.DOES_NOT_HAVE_ISSUE.value]} | ${false}  | ${true}
-    `(
-      'emits the expected data for $selectedItems',
-      async ({ selectedItems, hasIssues, hasResolution }) => {
-        await unselectDefaultValue();
-
-        for await (const value of selectedItems) {
-          await clickItem(value);
-        }
-
-        expectSelectedItems(selectedItems);
-        expect(wrapper.emitted('filter-changed').at(-1)[0]).toEqual({
-          hasIssues,
-          hasResolution,
         });
       },
     );
