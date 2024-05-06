@@ -77,6 +77,37 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
 
       it_behaves_like 'creates an audit event'
 
+      context 'when category is aws' do
+        let(:config) do
+          {
+            "accessKeyXid" => SecureRandom.hex(8),
+            "bucketName" => SecureRandom.hex(8),
+            "awsRegion" => "ap-south-2"
+          }
+        end
+
+        let(:input) do
+          {
+            groupPath: group.full_path,
+            config: config,
+            category: 'aws',
+            secret_token: 'some_secret_token'
+          }
+        end
+
+        it 'creates the destination' do
+          expect { mutate }
+            .to change { AuditEvents::Group::ExternalStreamingDestination.count }.by(1)
+
+          destination = AuditEvents::Group::ExternalStreamingDestination.last
+          expect(destination.group).to eq(group)
+          expect(destination.config).to eq(config)
+          expect(destination.name).not_to be_empty
+          expect(destination.category).to eq('aws')
+          expect(destination.secret_token).to eq('some_secret_token')
+        end
+      end
+
       context 'for category' do
         context 'when category is invalid' do
           let(:input) do

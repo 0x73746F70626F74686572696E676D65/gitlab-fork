@@ -6,5 +6,17 @@ FactoryBot.define do
     category { 'http' }
     config { { url: FFaker::Internet.http_url } }
     secret_token { 'a' * 20 }
+
+    trait :aws do
+      category { 'aws' }
+      config do
+        {
+          accessKeyXid: SecureRandom.hex(8),
+          bucketName: SecureRandom.hex(8),
+          awsRegion: "ap-south-2"
+        }
+      end
+      secret_token { SecureRandom.hex(8) }
+    end
   end
 end

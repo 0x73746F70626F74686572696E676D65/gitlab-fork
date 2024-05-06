@@ -159,7 +159,7 @@ RSpec.describe AuditEvents::HttpDestinationValidator, feature_category: :audit_e
     end
 
     context 'when category of record is not http' do
-      let(:aws_destination) { create(:audit_events_instance_external_streaming_destination, category: 'aws') }
+      let(:aws_destination) { create(:audit_events_instance_external_streaming_destination, :aws) }
 
       it 'raises error' do
         validator.validate(aws_destination)

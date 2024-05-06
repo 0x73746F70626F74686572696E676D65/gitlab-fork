@@ -50,7 +50,7 @@ RSpec.shared_examples 'includes ExternallyStreamable concern' do
       end
     end
 
-    context 'when type is http' do
+    context 'when category is http' do
       context 'for config schema validation' do
         using RSpec::Parameterized::TableSyntax
 
@@ -86,6 +86,36 @@ RSpec.shared_examples 'includes ExternallyStreamable concern' do
           'http://example.com'  | { key1: 'value1' }                                    | false
           'http://example.com'  | ref(:header_hash2)                                    | true
           'http://example.com'  | ref(:more_than_allowed_headers)                       | false
+        end
+
+        with_them do
+          it do
+            expect(destination.valid?).to eq(is_valid)
+          end
+        end
+      end
+    end
+
+    context 'when category is aws' do
+      context 'for config schema validation' do
+        using RSpec::Parameterized::TableSyntax
+
+        subject(:destination) do
+          build(:audit_events_group_external_streaming_destination, :aws,
+            config: { accessKeyXid: access_key, bucketName: bucket, awsRegion: region })
+        end
+
+        where(:access_key, :bucket, :region, :is_valid) do
+          SecureRandom.hex(8)   | SecureRandom.hex(8)   | SecureRandom.hex(8)    | true
+          nil                   | nil                   | nil                    | false
+          SecureRandom.hex(8)   | SecureRandom.hex(8)   | nil                    | false
+          SecureRandom.hex(8)   | nil                   | SecureRandom.hex(8)    | false
+          nil                   | SecureRandom.hex(8)   | SecureRandom.hex(8)    | false
+          SecureRandom.hex(7)   | SecureRandom.hex(8)   | SecureRandom.hex(8)    | false
+          SecureRandom.hex(8)   | SecureRandom.hex(35) | SecureRandom.hex(8)    | false
+          SecureRandom.hex(8)   | SecureRandom.hex(8) | SecureRandom.hex(26)    | false
+          "access-id-with-hyphen" | SecureRandom.hex(8) | SecureRandom.hex(8) | false
+          SecureRandom.hex(8) | "bucket/logs/test" | SecureRandom.hex(8) | false
         end
 
         with_them do

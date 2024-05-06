@@ -74,7 +74,7 @@ RSpec.describe AuditEvents::Group::ExternalStreamingDestination, feature_categor
 
     let!(:other_group_destination) { create(:audit_events_group_external_streaming_destination) }
     let!(:non_http_destination) do
-      create(:audit_events_group_external_streaming_destination, group: destination.group, category: 'aws')
+      create(:audit_events_group_external_streaming_destination, :aws, group: destination.group)
     end
 
     it 'returns configs of other destinations of same category for same group' do
