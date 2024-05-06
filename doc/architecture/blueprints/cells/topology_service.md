@@ -71,7 +71,7 @@ Those Goals are outside of the Topology Service scope as they heavily inflate th
   to merge the information from all Cells.
 - The Topology Service has no knowledge of the business logic of GitLab.
   In theory it can work with any other web application that has the same authentication/access
-  tokens as GitLab.
+  tokens as GitLab. However, this is subject to change as part of implementation.
 
 ## Architecture
 
@@ -214,7 +214,8 @@ endpoints for Claims within a transaction.
 
 ```proto
 enum ClassifyType {
-    Route = 0;
+    Route = 1;
+    Login = 2;
 }
 
 message ClassifyRequest {
@@ -247,7 +248,7 @@ sequenceDiagram
 
     User1->> HTTP Router :GET "/gitlab-org/gitlab/-/issues"
     Note over HTTP Router: Extract "gitlab-org/gitlab" from Path Rules
-    HTTP Router->> TS / Classify Service: Classify "gitlab-org/gitlab"
+    HTTP Router->> TS / Classify Service: Classify(Route) "gitlab-org/gitlab"
     TS / Classify Service->>HTTP Router: gitlab-org/gitlab => Cell 2
     HTTP Router->> Cell 2: GET "/gitlab-org/gitlab/-/issues"
     Cell 2->> HTTP Router: Issues Page Response
@@ -266,7 +267,7 @@ sequenceDiagram
     User->>HTTP Router: Sign in with Username: john, password: test123
     HTTP Router->>+Cell 1: Sign in with Username: john, password: test123
     Note over Cell 1: User not found
-    Cell 1->>+TS / Classify Service: Classify "john"
+    Cell 1->>+TS / Classify Service: Classify(Login) "john"
     TS / Classify Service-->>- Cell 1: "john": Cell 2
     Cell 1 ->>- HTTP Router: "Cell 2". <br /> 307 Temporary Redirect 
     HTTP Router ->> User: Set Header Cell "Cell 2". <br /> 307 Temporary Redirect
@@ -275,6 +276,9 @@ sequenceDiagram
     Cell 2-->>-HTTP Router: Success
     HTTP Router-->>User: Success
 ```
+
+The sign-in request going to Cell 1 might at some point later be round-rubin routed to all Cells,
+as each Cell should be able to classify user and redirect it to correct Cell.
 
 ### Metadata Service (**future**, implemented for Cells 1.5)
 
