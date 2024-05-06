@@ -89,8 +89,17 @@ module EE
       redirect_to = sanitize_redirect redirect_to
 
       return unless redirect_to
+      return unless valid_gitlab_initiated_saml_request?
 
       store_location_for :redirect, redirect_to
+    end
+
+    def saml_response
+      oauth.fetch(:extra, {}).fetch(:response_object, {})
+    end
+
+    def valid_gitlab_initiated_saml_request?
+      ::Gitlab::Auth::Saml::OriginValidator.new(session).gitlab_initiated?(saml_response)
     end
   end
 end

@@ -7,12 +7,9 @@ module Projects
 
       def create
         return render_404 unless merge_request
+        return render_404 unless approval_requires_saml_auth?
 
-        result = ::MergeRequests::ApprovalService
-          .new(project: project, current_user: current_user)
-          .execute(merge_request)
-
-        if result
+        if approval_service.execute(merge_request)
           flash[:notice] = _("Approved")
         else
           flash[:alert] = _("Approval rejected.")
@@ -28,6 +25,15 @@ module Projects
       end
 
       private
+
+      def approval_service
+        @approval_service ||= ::MergeRequests::ApprovalService
+          .new(project: project, current_user: current_user)
+      end
+
+      def approval_requires_saml_auth?
+        approval_service.approval_requires_saml_auth?
+      end
 
       def project_id
         project.id
