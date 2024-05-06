@@ -6,7 +6,7 @@ export default {
   components: { GlAlert },
   i18n: {
     title: s__(
-      'IdentityVerification|Before you can run concurrent pipelines, we need to verify your account.',
+      'IdentityVerification|Before you can run pipelines, we need to verify your account.',
     ),
     description: s__(
       `IdentityVerification|We won't ask you for this information again. It will never be used for marketing purposes.`,
@@ -33,7 +33,7 @@ export default {
     :title="$options.i18n.title"
     :primary-button-text="$options.i18n.buttonText"
     :primary-button-link="identityVerificationPath"
-    variant="warning"
+    variant="danger"
     @dismiss="dismissAlert"
   >
     {{ $options.i18n.description }}

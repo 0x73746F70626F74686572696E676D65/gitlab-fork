@@ -1,13 +1,13 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlAlert } from '@gitlab/ui';
 import { nextTick } from 'vue';
-import ConcurrentPipelinesVerificationAlert from 'ee/vue_shared/components/identity_verification/concurrent_pipelines_verification_alert.vue';
+import PipelineAccountVerificationAlert from 'ee/vue_shared/components/pipeline_account_verification_alert.vue';
 
-describe('Concurrent pipelines verification alert', () => {
+describe('Identity verification needed to run pipelines alert', () => {
   let wrapper;
 
   const createWrapper = () => {
-    wrapper = shallowMount(ConcurrentPipelinesVerificationAlert, {
+    wrapper = shallowMount(PipelineAccountVerificationAlert, {
       provide: {
         identityVerificationPath: 'identity/verification/path',
       },
@@ -22,10 +22,10 @@ describe('Concurrent pipelines verification alert', () => {
 
   it('shows alert with expected props', () => {
     expect(findAlert().props()).toMatchObject({
-      title: 'Before you can run concurrent pipelines, we need to verify your account.',
+      title: 'Before you can run pipelines, we need to verify your account.',
       primaryButtonText: 'Verify my account',
       primaryButtonLink: 'identity/verification/path',
-      variant: 'warning',
+      variant: 'danger',
     });
   });
 
