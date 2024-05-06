@@ -182,6 +182,125 @@ RSpec.describe '(Project|Group).value_streams', feature_category: :value_stream_
                 expect(graphql_data_at(resource_type.to_sym, :value_streams, :nodes, 0, :stages)).to be_empty
               end
             end
+
+            context 'when requesting aggregated metrics' do
+              let_it_be(:assignee) { create(:user) }
+              let_it_be(:current_time) { Time.current }
+              let_it_be(:milestone) { create(:milestone, group: resource.root_ancestor) }
+              let_it_be(:filter_label) { create(:group_label, group: resource.root_ancestor) }
+
+              let_it_be(:merge_request1) do
+                create(:merge_request, :unique_branches, source_project: project, created_at: current_time,
+                  assignees: [assignee]).tap do |mr|
+                  mr.metrics.update!(merged_at: current_time + 2.hours)
+                end
+              end
+
+              let_it_be(:merge_request2) do
+                create(:merge_request, :unique_branches, source_project: project,
+                  labels: [filter_label],
+                  milestone: milestone,
+                  created_at: current_time).tap do |mr|
+                  mr.metrics.update!(merged_at: current_time + 2.hours)
+                end
+              end
+
+              let_it_be(:merge_request3) do
+                create(:merge_request, :unique_branches, source_project: project, milestone: milestone,
+                  created_at: current_time).tap do |mr|
+                  mr.metrics.update!(merged_at: current_time + 2.hours)
+                end
+              end
+
+              let(:query) do
+                <<~QUERY
+                  query($fullPath: ID!, $valueStreamId: ID, $stageId: ID, $from: Date!, $to: Date!, $assigneeUsernames: [String!], $milestoneTitle: String, $labelNames: [String!]) {
+                    #{resource_type}(fullPath: $fullPath) {
+                      valueStreams(id: $valueStreamId) {
+                        nodes {
+                          stages(id: $stageId) {
+                            metrics(timeframe: { start: $from, end: $to }, assigneeUsernames: $assigneeUsernames, milestoneTitle: $milestoneTitle, labelNames: $labelNames) {
+                              count {
+                                value
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                QUERY
+              end
+
+              before do
+                variables.merge!({
+                  from: (current_time - 10.days).to_date,
+                  to: (current_time + 10.days).to_date
+                })
+
+                Analytics::CycleAnalytics::DataLoaderService.new(group: resource.root_ancestor,
+                  model: MergeRequest).execute
+              end
+
+              subject(:record_count) do
+                graphql_data_at(resource_type.to_sym, :value_streams, :nodes, 0, :stages,
+                  0)['metrics']['count']['value']
+              end
+
+              it 'returns the correct count' do
+                perform_request
+
+                expect(record_count).to eq(3)
+              end
+
+              context 'when filtering for assignee' do
+                before do
+                  variables[:assigneeUsernames] = [assignee.username]
+                end
+
+                it 'returns the correct count' do
+                  perform_request
+
+                  expect(record_count).to eq(1)
+                end
+
+                context 'when assigneeUsernames is null' do
+                  before do
+                    variables[:assigneeUsernames] = nil
+                  end
+
+                  it 'returns the correct count' do
+                    perform_request
+
+                    expect(record_count).to eq(3)
+                  end
+                end
+              end
+
+              context 'when filtering for label' do
+                before do
+                  variables[:labelNames] = [filter_label.name]
+                end
+
+                it 'returns the correct count' do
+                  perform_request
+
+                  expect(record_count).to eq(1)
+                end
+              end
+
+              context 'when filtering for milestone title' do
+                before do
+                  variables[:milestoneTitle] = milestone.title
+                end
+
+                it 'returns the correct count' do
+                  perform_request
+
+                  expect(record_count).to eq(2)
+                end
+              end
+            end
           end
         end
       end
@@ -192,6 +311,7 @@ RSpec.describe '(Project|Group).value_streams', feature_category: :value_stream_
     let(:resource_type) { 'project' }
 
     let_it_be(:resource) { create(:project, group: create(:group)) }
+    let_it_be(:project) { resource }
     let_it_be(:namespace) { resource.project_namespace }
     let_it_be(:start_label) { create(:label, project: resource, title: 'Start Label') }
     let_it_be(:end_label) { create(:label, project: resource, title: 'End Label') }
@@ -216,6 +336,7 @@ RSpec.describe '(Project|Group).value_streams', feature_category: :value_stream_
     let(:resource_type) { 'group' }
 
     let_it_be(:resource) { create(:group) }
+    let_it_be(:project) { create(:project, group: resource) }
     let_it_be(:namespace) { resource }
     let_it_be(:start_label) { create(:group_label, group: resource, title: 'Start Label') }
     let_it_be(:end_label) { create(:group_label, group: resource, title: 'End Label') }

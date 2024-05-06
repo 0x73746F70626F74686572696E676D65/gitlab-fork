@@ -15879,6 +15879,9 @@ msgstr[1] ""
 msgid "CycleAnalytics|'%{name}' is collecting the data. This can take a few minutes."
 msgstr ""
 
+msgid "CycleAnalytics|Average duration"
+msgstr ""
+
 msgid "CycleAnalytics|Average time to completion"
 msgstr ""
 
@@ -15903,7 +15906,13 @@ msgstr ""
 msgid "CycleAnalytics|If you have recently upgraded your GitLab license from a tier without this feature, it can take up to 30 minutes for data to collect and display."
 msgstr ""
 
+msgid "CycleAnalytics|Item count"
+msgstr ""
+
 msgid "CycleAnalytics|Lead time for changes"
+msgstr ""
+
+msgid "CycleAnalytics|Median duration"
 msgstr ""
 
 msgid "CycleAnalytics|New value stream…"
@@ -15957,6 +15966,9 @@ msgid "CycleAnalytics|not allowed for the given start event"
 msgstr ""
 
 msgid "CycleAnalytics|project dropdown filter"
+msgstr ""
+
+msgid "CycleAnalytics|seconds"
 msgstr ""
 
 msgid "DAG visualization requires at least 3 dependent jobs."
