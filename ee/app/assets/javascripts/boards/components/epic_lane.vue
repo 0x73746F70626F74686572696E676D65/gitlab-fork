@@ -191,7 +191,7 @@ export default {
   <div v-if="shouldDisplay" class="board-epic-lane-container">
     <div
       ref="header"
-      class="board-epic-lane gl-w-full gl-max-w-full gl-sticky gl-left-0 gl-display-inline-block"
+      class="board-epic-lane gl-w-full gl-max-w-full gl-sticky gl-display-inline-block"
       :class="{
         'board-epic-lane-shadow': !isCollapsed,
         show: showShadow,
@@ -199,7 +199,7 @@ export default {
       data-testid="board-epic-lane"
     >
       <div class="gl-py-3 gl-px-3 gl-display-flex gl-align-items-center">
-        <div class="gl-display-flex gl-align-items-center gl-sticky gl-left-0">
+        <div class="gl-display-flex gl-align-items-center gl-sticky gl-left-4">
           <gl-button
             v-gl-tooltip.hover.right
             :aria-label="chevronTooltip"
