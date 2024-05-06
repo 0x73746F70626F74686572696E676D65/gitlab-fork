@@ -181,9 +181,9 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
           group.update!(experiment_features_enabled: false)
         end
 
-        context 'when enabled_namespace record created before the DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER' do
+        context 'when enabled_namespace record created before the DOT_COM_ROLLOUT_CUTOFF_DATE' do
           it 'enables search for the enabled namespaces' do
-            rollout_cutoff = described_class::DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER.ago - 1.week
+            rollout_cutoff = described_class::DOT_COM_ROLLOUT_CUTOFF_DATE - 1.week
             ns = create(:zoekt_enabled_namespace, namespace: group, search: false,
               created_at: rollout_cutoff, updated_at: rollout_cutoff)
             create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
