@@ -13,6 +13,11 @@ RSpec.describe 'Groups > Discovers > Hand Raise Lead', :js, :saas, feature_categ
   before do
     stub_saas_features(subscriptions_trials: true)
     stub_experiments(trial_discover_page: :candidate)
+    # TODO: The below can be removed once trial_discover_page experiment is cleaned up
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/439391
+    allow_next_instance_of(::Groups::DiscoversController) do |instance|
+      allow(instance).to receive(:authorize_discover_page).and_return(true)
+    end
 
     sign_in(user)
 
@@ -20,8 +25,7 @@ RSpec.describe 'Groups > Discovers > Hand Raise Lead', :js, :saas, feature_categ
   end
 
   context 'when user interacts with hand raise lead and submits' do
-    it 'renders and submits the top of the page instance',
-      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/457839' do
+    it 'renders and submits the top of the page instance' do
       all_by_testid('trial-discover-hand-raise-lead-button').first.click
 
       fill_in_and_submit_hand_raise_lead(user, group, glm_content: 'trial_discover_page')
