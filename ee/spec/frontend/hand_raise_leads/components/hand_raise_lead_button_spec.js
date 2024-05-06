@@ -21,7 +21,6 @@ describe('HandRaiseLeadButton', () => {
       propsData: {
         modalId: MODAL_ID,
         buttonText: BUTTON_TEXT,
-        isLoading: false,
         buttonAttributes: BUTTON_ATTRIBUTES,
         ctaTracking,
         glmContent: GLM_CONTENT,
@@ -37,10 +36,6 @@ describe('HandRaiseLeadButton', () => {
     beforeEach(() => {
       wrapper = createComponent();
       trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-    });
-
-    it('does not have loading icon', () => {
-      expect(findButton().props('loading')).toBe(false);
     });
 
     it('has default medium button', () => {
@@ -159,18 +154,6 @@ describe('HandRaiseLeadButton', () => {
         glmContent: GLM_CONTENT,
         modalIdToOpen: MODAL_ID,
       });
-    });
-  });
-
-  describe('loading', () => {
-    it('changes the state of loading', () => {
-      wrapper = createComponent();
-
-      expect(findButton().props('loading')).toBe(false);
-
-      wrapper = createComponent({ isLoading: true });
-
-      expect(findButton().props('loading')).toBe(true);
     });
   });
 });

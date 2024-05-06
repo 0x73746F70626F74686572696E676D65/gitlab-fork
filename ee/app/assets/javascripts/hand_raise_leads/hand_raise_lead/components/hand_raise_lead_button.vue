@@ -24,10 +24,6 @@ export default {
       type: String,
       required: true,
     },
-    isLoading: {
-      type: Boolean,
-      required: true,
-    },
     buttonAttributes: {
       type: Object,
       required: true,
@@ -71,7 +67,7 @@ export default {
 </script>
 
 <template>
-  <gl-button v-bind="buttonAttributes" :loading="isLoading" @click="openModal">
+  <gl-button v-bind="buttonAttributes" @click="openModal">
     {{ buttonText }}
   </gl-button>
 </template>

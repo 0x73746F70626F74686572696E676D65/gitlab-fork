@@ -190,8 +190,6 @@ export default {
       this.stateRequired = false;
     },
     async submit() {
-      this.$emit('loading', true);
-
       await SubscriptionsApi.sendHandRaiseLead(this.submitPath, this.formParams)
         .then(() => {
           createAlert({
@@ -208,9 +206,6 @@ export default {
             error,
           });
           this.track('hand_raise_submit_form_failed');
-        })
-        .finally(() => {
-          this.$emit('loading', false);
         });
     },
     onChange({ country, state, stateRequired }) {
