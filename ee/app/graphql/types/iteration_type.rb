@@ -13,7 +13,7 @@ module Types
 
     field :id, GraphQL::Types::ID, null: false, description: 'ID of the iteration.'
 
-    field :iid, GraphQL::Types::ID, null: false, description: 'Internal ID of the iteration.'
+    field :iid, GraphQL::Types::String, null: false, description: 'Internal ID of the iteration.'
 
     field :sequence, GraphQL::Types::Int,
       null: false,
