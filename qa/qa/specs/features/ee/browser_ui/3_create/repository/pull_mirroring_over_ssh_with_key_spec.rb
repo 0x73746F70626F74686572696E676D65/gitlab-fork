@@ -21,7 +21,7 @@ module QA
         target_project.visit!
       end
 
-      it 'configures and syncs a (pull) mirrored repository', :aggregate_failures,
+      it 'configures and syncs a (pull) mirrored repository', :blocking, :aggregate_failures,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347736' do
         # Configure the target project to pull from the source project
         # And get the public key to be used as a deploy key
