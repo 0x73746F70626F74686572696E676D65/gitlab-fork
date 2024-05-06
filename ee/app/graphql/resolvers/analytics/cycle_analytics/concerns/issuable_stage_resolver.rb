@@ -39,7 +39,7 @@ module Resolvers
           end
 
           def normalize_params(params)
-            params[:assignee_username] = params.delete(:assignee_usernames) if params[:assignee_usernames]
+            params[:assignee_username] = params.delete(:assignee_usernames) if params[:assignee_usernames].present?
             params[:label_name] = params.delete(:label_names) if params[:label_names]
             params
           end
