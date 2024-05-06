@@ -79,7 +79,7 @@ module Gitlab
         attr_reader :user, :logger, :tracking_context
 
         def perform_completion_request(prompt:, options:)
-          logger.info(message: "Performing request to AI Gateway", options: options)
+          logger.info_or_debug(user, message: "Performing request to AI Gateway", prompt: prompt, options: options)
           timeout = options.delete(:timeout) || DEFAULT_TIMEOUT
 
           Gitlab::HTTP.post(
