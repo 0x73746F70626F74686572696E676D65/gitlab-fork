@@ -107,4 +107,113 @@ RSpec.describe WorkItems::CreateService, feature_category: :team_planning do
   it_behaves_like 'creates work item in container', :project
   it_behaves_like 'creates work item in container', :project_namespace
   it_behaves_like 'creates work item in container', :group
+
+  context 'for legacy epics' do
+    include_context 'with container for work items service', :group
+
+    let(:epic) { Epic.last }
+    let(:type) { WorkItems::Type.default_by_type(:epic) }
+
+    let(:start_date) { (Time.current + 1.day).to_date }
+    let(:due_date) { (Time.current + 2.days).to_date }
+
+    let(:widget_params) do
+      {
+        description_widget: {
+          description: 'new description'
+        },
+        color_widget: {
+          color: '#FF0000'
+        },
+        start_and_due_date_widget: { start_date: start_date, due_date: due_date }
+      }
+    end
+
+    let(:opts) { { title: 'new title', external_key: 'external_key', confidential: true, work_item_type: type } }
+    let(:current_user) { reporter }
+
+    before do
+      stub_licensed_features(epics: true, epic_colors: true)
+      stub_feature_flags(make_synced_work_item_read_only: false)
+    end
+
+    subject(:service_result) { service.execute }
+
+    it_behaves_like 'syncs all data from a work_item to an epic'
+
+    context 'when not creating an epic work item' do
+      let(:type) { WorkItems::Type.default_by_type(:task) }
+
+      it 'only creates a work item' do
+        expect { service_result }
+          .to not_change { Epic.count }
+          .and change { WorkItem.count }
+      end
+    end
+
+    context 'when creating the work item fails' do
+      before do
+        allow_next_instance_of(WorkItem) do |work_item|
+          allow(work_item).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new)
+        end
+      end
+
+      it 'does not update the epic or work item' do
+        expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
+          .with({
+            message: "Not able to create epic",
+            error_message: "Record invalid",
+            group_id: group.id,
+            work_item_id: an_instance_of(Integer)
+          })
+
+        expect { service_result }
+          .to not_change { Epic.count }
+          .and not_change { WorkItem.count }
+          .and raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
+
+    context 'when creating the epic fails' do
+      it 'does not create an epic or work item' do
+        allow(Epic).to receive(:create!).and_raise(ActiveRecord::RecordInvalid.new)
+
+        expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
+          .with({
+            message: "Not able to create epic",
+            error_message: "Record invalid",
+            group_id: group.id,
+            work_item_id: an_instance_of(Integer)
+          })
+
+        expect { service_result }
+          .to not_change { WorkItem.count }
+          .and not_change { Epic.count }
+          .and raise_error(ActiveRecord::RecordInvalid)
+      end
+    end
+
+    context 'when changes are invalid' do
+      let(:widget_params) { {} }
+      let(:opts) { { title: '' } }
+
+      it 'does not create an epic or work item' do
+        expect { service_result }
+          .to not_change { WorkItem.count }
+          .and not_change { Epic.count }
+      end
+    end
+
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(make_synced_work_item_read_only: false, sync_work_item_to_epic: false)
+      end
+
+      it 'only creates a work item but not the epic' do
+        expect { service_result }
+          .to change { WorkItem.count }
+          .and not_change { Epic.count }
+      end
+    end
+  end
 end

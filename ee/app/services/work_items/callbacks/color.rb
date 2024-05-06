@@ -5,10 +5,14 @@ module WorkItems
     class Color < Base
       ALLOWED_PARAMS = %i[color skip_system_notes].freeze
 
-      def after_initialize
+      def before_create
+        handle_color_change unless excluded_in_new_type?
+      end
+
+      def before_update
         return work_item.color.destroy! if work_item.color.present? && excluded_in_new_type?
 
-        handle_color_change if params.key?(:color) && can_set_color?
+        handle_color_change
       end
 
       def after_save_commit
@@ -18,13 +22,17 @@ module WorkItems
       private
 
       def handle_color_change
+        return unless params.key?(:color)
+        return unless can_set_color?
+
         @previous_color = work_item&.color&.color&.to_s
         color = work_item.color || work_item.build_color
         return if params[:color] == color.color.to_s
 
         color.color = params[:color]
 
-        if color.save
+        if color.valid?
+          work_item.color = color
           synced_epic_params[:color] = ::Gitlab::Color.of(params[:color])
         else
           raise_error(color.errors.full_messages.join(', '))
