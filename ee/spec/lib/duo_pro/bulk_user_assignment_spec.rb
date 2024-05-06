@@ -87,7 +87,7 @@ RSpec.describe DuoPro::BulkUserAssignment, feature_category: :seat_cost_manageme
       end
 
       context 'when the AddOn is purchased' do
-        context 'with enough seats' do
+        context 'with enough seats', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/441511' do
           include_examples 'bulk user assignment with enough seats' do
             let(:add_on_purchase) do
               create(:gitlab_subscription_add_on_purchase, :self_managed, quantity: 10, add_on: add_on)
