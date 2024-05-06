@@ -9,7 +9,7 @@ module Gitlab
       # temporary environment necessary for a restoration to happen
       #
       class RestoreExecutor
-        attr_reader :context, :backup_id, :metadata, :workdir, :archive_directory
+        attr_reader :context, :backup_id, :workdir, :archive_directory
 
         # @param [Gitlab::Backup::Cli::SourceContext] context
         # @param [String] backup_id
@@ -40,7 +40,7 @@ module Gitlab
 
         # At the end of a successful restore, call this to release temporary resources
         def release!
-          FileUtils.rm_rf(workdir) if File.exist?(workdir)
+          FileUtils.rm_rf(workdir)
         end
 
         private

@@ -28,7 +28,9 @@ module Gitlab
 
               restore_executor.release!
             end
-            Gitlab::Backup::Cli::Output.success("GitLab restoration of backup #{backup_id} finished (#{duration.in_seconds}s)")
+            Gitlab::Backup::Cli::Output.success(
+              "GitLab restoration of backup #{backup_id} finished (#{duration.in_seconds}s)"
+            )
           rescue Gitlab::Backup::Cli::Error => e
             Gitlab::Backup::Cli::Output.error("GitLab Backup failed: #{e.message} (#{restore_executor.workdir})")
 

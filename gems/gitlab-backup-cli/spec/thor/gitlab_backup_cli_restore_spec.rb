@@ -47,7 +47,12 @@ RSpec.describe 'gitlab-backup-cli restore subcommand', type: :thor do
         expect(instance).to receive(:execute)
       end
 
-      expected_backup_output = /.*Restoring GitLab backup #{backup_id}.*GitLab restoration of backup #{backup_id} finished.*/m
+      expected_backup_output = /
+        .* Restoring\ GitLab\ backup\ #{Regexp.escape(backup_id)}
+        .* GitLab\ restoration\ of\ backup\ #{Regexp.escape(backup_id)}\ finished
+        .*
+      /mx
+
       expect { cli.start(%W[restore all #{backup_id}]) }.to output(expected_backup_output).to_stdout
     end
 
