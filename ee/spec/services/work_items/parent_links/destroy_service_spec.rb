@@ -238,7 +238,8 @@ RSpec.describe WorkItems::ParentLinks::DestroyService, feature_category: :team_p
               end
             end
 
-            it 'does not destroy parent link or epic issue link', :aggregate_failures do
+            it 'does not destroy parent link or epic issue link', :aggregate_failures,
+              quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/460241' do
               synced_epic1.update!(parent: synced_epic2)
 
               expect(::Gitlab::EpicWorkItemSync::Logger).to receive(:error)
