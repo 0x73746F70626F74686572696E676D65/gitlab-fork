@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Backup::Cli::BackupMetadata do
+RSpec.describe Gitlab::Backup::Cli::Metadata::BackupMetadata do
   subject(:metadata) { build(:backup_metadata) }
 
   let(:expected_keys) { %i[metadata_version created_at backup_id gitlab_version] }
