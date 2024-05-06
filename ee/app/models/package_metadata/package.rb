@@ -87,13 +87,23 @@ module PackageMetadata
     end
 
     def version_in_default_licenses_range?(input_version)
+      type =
+        case purl_type
+        when 'golang'
+          'go'
+        when 'composer'
+          'packagist'
+        else
+          purl_type
+        end
+
       # Remove 'v' from version string(if present) before comparison.
-      interval = VersionParser.parse("=#{input_version.delete_prefix('v')}")
+      interval = SemverDialects::IntervalParser.parse(type, "=#{input_version.delete_prefix('v')}")
 
-      range = VersionRange.new
-      range.add(VersionParser.parse("<#{lowest_version.delete_prefix('v')}")) if lowest_version
+      range = SemverDialects::IntervalSet.new
+      range.add(SemverDialects::IntervalParser.parse(type, "<#{lowest_version.delete_prefix('v')}")) if lowest_version
 
-      range.add(VersionParser.parse(">#{highest_version.delete_prefix('v')}")) if highest_version
+      range.add(SemverDialects::IntervalParser.parse(type, ">#{highest_version.delete_prefix('v')}")) if highest_version
 
       !range.overlaps_with?(interval)
     rescue SemverDialects::InvalidConstraintError => err
