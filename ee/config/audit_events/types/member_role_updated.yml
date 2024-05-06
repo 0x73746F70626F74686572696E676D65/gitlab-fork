@@ -7,4 +7,4 @@ feature_category: permissions
 milestone: '16.9'
 saved_to_database: true
 streamed: true
-scope: [Group]
+scope: [Group, Instance]
