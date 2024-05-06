@@ -15,7 +15,15 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
     let(:policy_name) { policy_hash[:name] }
 
     let(:operation) { :append }
-    let(:params) { { policy_yaml: input_policy_yaml, name: policy_name, operation: operation } }
+    let(:branch_name) { "update-policy-#{SecureRandom.hex(10)}" }
+    let(:params) do
+      {
+        policy_yaml: input_policy_yaml,
+        name: policy_name,
+        operation: operation,
+        branch_name: branch_name
+      }
+    end
 
     subject(:service) do
       described_class.new(container: container, current_user: current_user, params: params)
@@ -102,6 +110,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
             response = service.execute
 
             expect(response[:status]).to eq(:success)
+            expect(response[:message]).to be_nil
             expect(response[:branch]).not_to be_nil
 
             updated_policy_blob = policy_management_project.repository.blob_data_at(response[:branch], Security::OrchestrationPolicyConfiguration::POLICY_PATH)
@@ -117,6 +126,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
             response = service.execute
 
             expect(response[:status]).to eq(:success)
+            expect(response[:message]).to be_nil
             expect(response[:branch]).not_to be_nil
 
             updated_policy_blob = policy_management_project.repository.blob_data_at(response[:branch], Security::OrchestrationPolicyConfiguration::POLICY_PATH)
@@ -146,6 +156,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService, fea
           it 'returns success', :aggregate_failures do
             response = service.execute
             expect(response[:status]).to eq(:success)
+            expect(response[:message]).to be_nil
             expect(response[:branch]).to eq(branch_name)
           end
         end
