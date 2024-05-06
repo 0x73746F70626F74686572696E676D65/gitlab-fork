@@ -7,25 +7,25 @@ module Resolvers
     alias_method :pipeline, :object
 
     argument :report_type, [GraphQL::Types::String],
-             required: false,
-             description: 'Filter vulnerability findings by report type.'
+      required: false,
+      description: 'Filter vulnerability findings by report type.'
 
     argument :severity, [GraphQL::Types::String],
-             required: false,
-             description: 'Filter vulnerability findings by severity.'
+      required: false,
+      description: 'Filter vulnerability findings by severity.'
 
     argument :scanner, [GraphQL::Types::String],
-             required: false,
-             description: 'Filter vulnerability findings by Scanner.externalId.'
+      required: false,
+      description: 'Filter vulnerability findings by Scanner.externalId.'
 
     argument :state, [Types::VulnerabilityStateEnum],
-             required: false,
-             description: 'Filter vulnerability findings by state.'
+      required: false,
+      description: 'Filter vulnerability findings by state.'
 
     argument :sort, Types::Security::PipelineSecurityReportFindingSortEnum,
-             required: false,
-             default_value: 'severity_desc',
-             description: 'List vulnerability findings by sort order.'
+      required: false,
+      default_value: 'severity_desc',
+      description: 'List vulnerability findings by sort order.'
 
     def resolve(**args)
       pure_finder = ::Security::PureFindingsFinder.new(

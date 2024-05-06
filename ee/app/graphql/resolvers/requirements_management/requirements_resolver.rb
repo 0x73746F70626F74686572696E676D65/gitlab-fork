@@ -9,26 +9,26 @@ module Resolvers
       type ::Types::RequirementsManagement::RequirementType.connection_type, null: true
 
       argument :iid, GraphQL::Types::ID,
-               required: false,
-               deprecated: { reason: 'Use work_item_iid instead', milestone: '15.8' },
-               description: 'IID of the requirement, for example, "1".'
+        required: false,
+        deprecated: { reason: 'Use work_item_iid instead', milestone: '15.8' },
+        description: 'IID of the requirement, for example, "1".'
 
       argument :iids, [GraphQL::Types::ID],
-               required: false,
-               deprecated: { reason: 'Use work_item_iids instead', milestone: '15.8' },
-               description: 'List of IIDs of requirements, for example, `[1, 2]`.'
+        required: false,
+        deprecated: { reason: 'Use work_item_iids instead', milestone: '15.8' },
+        description: 'List of IIDs of requirements, for example, `[1, 2]`.'
 
       argument :work_item_iid, GraphQL::Types::ID, # rubocop:disable Graphql/IDType
-               required: false,
-               description: 'IID of the requirement work item, for example, "1".'
+        required: false,
+        description: 'IID of the requirement work item, for example, "1".'
 
       argument :work_item_iids, [GraphQL::Types::ID],
-               required: false,
-               description: 'List of IIDs of requirement work items, for example, `[1, 2]`.'
+        required: false,
+        description: 'List of IIDs of requirement work items, for example, `[1, 2]`.'
 
       argument :last_test_report_state, ::Types::RequirementsManagement::RequirementStatusFilterEnum,
-               required: false,
-               description: 'State of latest requirement test report.'
+        required: false,
+        description: 'State of latest requirement test report.'
 
       def resolve_with_lookahead(**args)
         # The project could have been loaded in batch by `BatchLoader`.

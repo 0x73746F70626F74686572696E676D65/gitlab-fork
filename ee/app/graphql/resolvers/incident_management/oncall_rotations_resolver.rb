@@ -9,10 +9,10 @@ module Resolvers
 
       when_single do
         argument :id,
-                 ::Types::GlobalIDType[::IncidentManagement::OncallRotation],
-                 required: true,
-                 description: 'ID of the on-call rotation.',
-                 prepare: ->(id, ctx) { id.model_id }
+          ::Types::GlobalIDType[::IncidentManagement::OncallRotation],
+          required: true,
+          description: 'ID of the on-call rotation.',
+          prepare: ->(id, ctx) { id.model_id }
       end
 
       def resolve(**args)

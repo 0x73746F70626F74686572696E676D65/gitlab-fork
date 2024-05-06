@@ -11,8 +11,8 @@ module Resolvers
       type Types::IncidentManagement::OncallScheduleType.connection_type, null: true
 
       argument :iids, [GraphQL::Types::ID],
-               required: false,
-               description: 'IIDs of on-call schedules.'
+        required: false,
+        description: 'IIDs of on-call schedules.'
 
       def resolve_with_lookahead(**args)
         apply_lookahead(::IncidentManagement::OncallSchedulesFinder.new(context[:current_user], project, iid: args[:iids]).execute)

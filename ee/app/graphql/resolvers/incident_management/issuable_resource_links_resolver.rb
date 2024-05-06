@@ -8,9 +8,9 @@ module Resolvers
       type ::Types::IncidentManagement::IssuableResourceLinkType.connection_type, null: true
 
       argument :incident_id,
-               ::Types::GlobalIDType[::Issue],
-               required: true,
-               description: 'ID of the incident.'
+        ::Types::GlobalIDType[::Issue],
+        required: true,
+        description: 'ID of the incident.'
 
       def resolve(**args)
         incident = args[:incident_id].find

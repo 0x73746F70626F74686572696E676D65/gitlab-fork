@@ -8,14 +8,14 @@ module Resolvers
       type Types::IncidentManagement::OncallShiftType.connection_type, null: true
 
       argument :start_time,
-               ::Types::TimeType,
-               required: true,
-               description: 'Start of timeframe to include shifts for.'
+        ::Types::TimeType,
+        required: true,
+        description: 'Start of timeframe to include shifts for.'
 
       argument :end_time,
-               ::Types::TimeType,
-               required: true,
-               description: 'End of timeframe to include shifts for. Cannot exceed one month after start.'
+        ::Types::TimeType,
+        required: true,
+        description: 'End of timeframe to include shifts for. Cannot exceed one month after start.'
 
       def resolve(start_time:, end_time:)
         result = ::IncidentManagement::OncallShifts::ReadService.new(
