@@ -1422,12 +1422,12 @@ RSpec.describe Gitlab::GitAccess, feature_category: :system_access do
         # Project with a namespace
         ref(:root_group) | false | nil   | nil   | nil   | nil   | nil   | nil   | 'Git access allowed'
         ref(:root_group) | true  | false | nil   | false | nil   | nil   | nil   | 'Git access not allowed'
-        ref(:root_group) | true  | true  | nil   | false | nil   | nil   | nil   | 'Git access allowed' # bug
+        ref(:root_group) | true  | true  | nil   | false | nil   | nil   | nil   | 'Git access not allowed'
         ref(:root_group) | true  | false | nil   | true  | nil   | nil   | nil   | 'Git access allowed'
 
         ref(:subgroup)   | false | nil   | nil   | nil   | nil   | nil   | nil   | 'Git access allowed'
         ref(:subgroup)   | true  | false | false | false | nil   | nil   | nil   | 'Git access not allowed'
-        ref(:subgroup)   | true  | true  | false | false | nil   | nil   | nil   | 'Git access allowed' # bug
+        ref(:subgroup)   | true  | true  | false | false | nil   | nil   | nil   | 'Git access not allowed'
         ref(:subgroup)   | true  | true  | false | true  | nil   | nil   | nil   | 'Git access allowed'
         ref(:subgroup)   | true  | false | true  | false | nil   | nil   | nil   | 'Git access not allowed'
         ref(:subgroup)   | true  | false | true  | true  | nil   | nil   | nil   | 'Git access allowed'
