@@ -936,7 +936,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                 context 'when saving to the work item fails' do
                   before do
                     allow_next_found_instance_of(::WorkItem) do |instance|
-                      allow(instance).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new)
+                      allow(instance).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new)
                     end
                   end
 
@@ -1015,7 +1015,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
 
         it 'does not propagate the update to the work item and resets the epic updates on an error' do
           allow_next_found_instance_of(::WorkItem) do |instance|
-            allow(instance).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new)
+            allow(instance).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new)
           end
 
           expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)

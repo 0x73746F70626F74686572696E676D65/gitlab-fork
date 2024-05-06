@@ -18,8 +18,10 @@ module Epics
 
       return work_item unless group.epic_sync_to_work_item_enabled?
 
-      sync_color!(work_item)
-      sync_dates!(epic, work_item)
+      sync_color(epic, work_item)
+      sync_dates(epic, work_item)
+
+      work_item.save!(touch: false)
 
       work_item
     rescue StandardError => error
@@ -30,9 +32,11 @@ module Epics
       return true unless group.epic_sync_to_work_item_enabled?
       return true unless epic.work_item
 
-      sync_color!(epic.work_item)
-      sync_dates!(epic, epic.work_item)
-      epic.work_item.update!(update_params(epic))
+      sync_color(epic, epic.work_item)
+      sync_dates(epic, epic.work_item)
+      epic.work_item.assign_attributes(update_params(epic))
+
+      epic.work_item.save!(touch: false)
     rescue StandardError => error
       handle_error!(:update, error, epic)
     end
@@ -61,24 +65,25 @@ module Epics
         update_params[:last_edited_by] = epic.last_edited_by
       end
 
-      update_params[:title_html] = epic.title_html if params[:title].present?
-      update_params[:description_html] = epic.description_html if params[:description].present?
+      update_params[:title_html] = epic.title_html
+      update_params[:description_html] = epic.description_html
 
       update_params
     end
 
-    def sync_color!(work_item)
-      return unless params[:color]
+    def sync_color(epic, work_item)
+      work_item_color = work_item.color || work_item.build_color
 
-      color = work_item.color || work_item.build_color
-
-      color.color = params[:color]
-      color.save!
+      # only set non default color or remove the color if default color is set to epic
+      if epic.color.to_s == ::Epic::DEFAULT_COLOR.to_s
+        work_item.color = nil
+      else
+        work_item_color.color = epic.color
+        work_item.color = work_item_color
+      end
     end
 
-    def sync_dates!(epic, work_item)
-      return unless params.keys.map(&:to_s).intersect?(%w[start_date due_date start_date_is_fixed due_date_is_fixed])
-
+    def sync_dates(epic, work_item)
       dates_source = work_item.dates_source || work_item.build_dates_source
 
       dates_source.start_date = epic.start_date
@@ -93,7 +98,7 @@ module Epics
       dates_source.due_date_sourcing_milestone_id = epic.due_date_sourcing_milestone_id
       dates_source.due_date_sourcing_work_item_id = epic.due_date_sourcing_epic&.issue_id
 
-      dates_source.save!
+      work_item.dates_source = dates_source
     end
 
     def handle_error!(action, error, epic = nil)
