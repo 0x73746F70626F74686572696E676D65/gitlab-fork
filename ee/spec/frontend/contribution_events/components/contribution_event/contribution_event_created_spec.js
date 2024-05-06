@@ -28,7 +28,6 @@ describe('ContributionEventCreated', () => {
         event,
         message: 'Opened Epic %{targetLink} in %{resourceParentLink}.',
         iconName: 'status_open',
-        iconClass: 'gl-text-green-500',
       });
     });
   });
@@ -48,7 +47,6 @@ describe('ContributionEventCreated', () => {
           event,
           message: expectedMessage,
           iconName: 'status_open',
-          iconClass: 'gl-text-green-500',
         });
       });
     });
