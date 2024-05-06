@@ -9,12 +9,12 @@ module EE
 
           prepended do
             argument :payload_example, ::Types::JsonStringType,
-                     required: false,
-                     description: 'Example of an alert payload.'
+              required: false,
+              description: 'Example of an alert payload.'
 
             argument :payload_attribute_mappings, [::Types::AlertManagement::PayloadAlertFieldInputType],
-                     required: false,
-                     description: 'Custom mapping of GitLab alert attributes to fields from the payload example.'
+              required: false,
+              description: 'Custom mapping of GitLab alert attributes to fields from the payload example.'
           end
         end
       end
