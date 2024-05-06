@@ -5,9 +5,6 @@ module Gitlab
     module Cli
       # Backup Metadata includes information about the Backup
       class BackupMetadata
-        extend Utils::MetadataSerialization
-        include Utils::MetadataSerialization
-
         # Metadata version number should always increase when:
         # - field is added
         # - field is removed
@@ -88,11 +85,12 @@ module Gitlab
 
           json_file = basepath.join(METADATA_FILENAME)
           json = JSON.parse(File.read(json_file), JSON_PARSE_OPTIONS)
+          deserializer = Gitlab::Backup::Cli::Metadata::Deserializer
 
           parsed_fields = {}
           METADATA_SCHEMA.each do |key, data_type|
             stored_value = json[key]
-            parsed_value = parse_value(type: data_type, value: stored_value)
+            parsed_value = deserializer.parse_value(type: data_type, value: stored_value)
             parsed_fields[key] = parsed_value
           end
 
@@ -107,10 +105,12 @@ module Gitlab
 
         # Expose the information that will be part of the Metadata JSON file
         def to_hash
+          serializer = Gitlab::Backup::Cli::Metadata::Serializer
+
           METADATA_SCHEMA.each_with_object({}) do |(key, type), hash|
             # fetch attribute value dynamically
             value = public_send(key)
-            serialized_value = serialize_value(type: type, value: value)
+            serialized_value = serializer.serialize_value(type: type, value: value)
             hash[key] = serialized_value
           end
         end
