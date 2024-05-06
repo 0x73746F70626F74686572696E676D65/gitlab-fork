@@ -32,6 +32,7 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
 
   let(:model) { described_class::DEFAULT_MODEL }
   let(:provider) { 'anthropic' }
+  let(:prompt) { 'anything' }
 
   let(:default_body_params) do
     {
@@ -42,7 +43,7 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
           version: Gitlab.version_info.to_s
         },
         payload: {
-          content: "anything",
+          content: prompt,
           provider: provider,
           model: model
         }
@@ -51,9 +52,10 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
     }
   end
 
+  let(:response_text) { "Completion Response" }
   let(:expected_response) do
     {
-      "response" => "Completion Response",
+      "response" => response_text,
       "metadata" => {
         "provider" => "anthropic",
         "model" => model,
@@ -67,9 +69,13 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
   let(:response_body) { expected_response.to_json }
   let(:http_status) { 200 }
   let(:response_headers) { { 'Content-Type' => 'application/json' } }
+  let(:logger) { instance_double('Gitlab::Llm::Logger') }
 
   before do
     stub_feature_flags(ai_claude_3_sonnet: false)
+    allow(Gitlab::Llm::Logger).to receive(:build).and_return(logger)
+    allow(logger).to receive(:info_or_debug)
+    allow(logger).to receive(:info)
 
     stub_request(:post, request_url)
       .with(
@@ -131,6 +137,18 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
         .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
         .and_call_original
       expect(complete.parsed_response).to eq(expected_response)
+    end
+
+    it 'logs request and response' do
+      expect(Gitlab::HTTP).to receive(:post)
+                                .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
+                                .and_call_original
+      complete
+
+      expect(logger).to have_received(:info_or_debug)
+        .with(user, message: "Performing request to AI Gateway", options: options, prompt: prompt)
+      expect(logger).to have_received(:info_or_debug)
+        .with(user, message: "Received response from AI Gateway", response: response_text)
     end
 
     context 'when ai_claude_3_sonnet feature flag is enabled' do
@@ -375,11 +393,14 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
 
         before do
           allow(Gitlab::HTTP).to receive(:post).and_return(failure)
+          allow(logger).to receive(:error)
         end
 
         it 'raises error' do
           expect { described_class.new(user).stream(prompt: 'anything', **options) }
             .to raise_error(Gitlab::Llm::AiGateway::Client::ConnectionError)
+
+          expect(logger).to have_received(:error).with(message: "Received error from AI gateway", response: "")
         end
       end
     end

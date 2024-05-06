@@ -3086,7 +3086,7 @@ msgstr ""
 msgid "Add deploy keys to grant read/write access to this repository. %{link_start}What are deploy keys?%{link_end}"
 msgstr ""
 
-msgid "Add email participant(s)"
+msgid "Add email participant(s) that don't have a GitLab account."
 msgstr ""
 
 msgid "Add environment"
@@ -3341,7 +3341,7 @@ msgstr ""
 msgid "Adds an issue to an epic."
 msgstr ""
 
-msgid "Adds email participant(s)."
+msgid "Adds email participant(s) that don't have a GitLab account."
 msgstr ""
 
 msgid "Adds this %{issuable_type} as related to the %{issuable_type} it was created from"

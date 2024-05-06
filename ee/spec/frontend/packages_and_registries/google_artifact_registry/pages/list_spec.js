@@ -92,6 +92,7 @@ describe('List', () => {
         data: headerData,
         isLoading: false,
         showError: false,
+        showExternalLink: true,
       });
     });
 
@@ -104,6 +105,20 @@ describe('List', () => {
         data: {},
         isLoading: false,
         showError: true,
+        showExternalLink: true,
+      });
+    });
+
+    it('renders the list header with showExternalLink false', async () => {
+      const resolver = jest.fn().mockRejectedValue(new Error('error'));
+      createComponent({ resolver });
+      await waitForPromises();
+
+      expect(findListHeader().props()).toMatchObject({
+        data: {},
+        isLoading: false,
+        showError: false,
+        showExternalLink: false,
       });
     });
   });
