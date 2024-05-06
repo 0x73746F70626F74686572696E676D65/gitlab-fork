@@ -128,7 +128,11 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
   end
 
   def saml_redirect_path
-    safe_redirect_path(params['RelayState']) || group_path(@unauthenticated_group)
+    safe_relay_state || group_path(@unauthenticated_group)
+  end
+
+  def safe_relay_state
+    valid_gitlab_initiated_saml_request? && safe_redirect_path(params['RelayState'])
   end
 
   override :find_message

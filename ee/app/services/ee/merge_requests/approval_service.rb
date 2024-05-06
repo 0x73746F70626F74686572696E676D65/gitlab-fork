@@ -28,6 +28,13 @@ module EE
         super
       end
 
+      def approval_requires_saml_auth?
+        return true if ::AuthHelper.group_saml_enabled? && group_requires_saml_auth?
+        return true if instance_requires_saml_auth?
+
+        false
+      end
+
       private
 
       def feature_flag_for_saml_auth_to_approve_enabled?
@@ -37,13 +44,6 @@ module EE
       def incorrect_approval_password?(merge_request)
         merge_request.require_password_to_approve? &&
           !::Gitlab::Auth.find_with_user_password(current_user.username, params[:approval_password])
-      end
-
-      def approval_requires_saml_auth?
-        return true if ::AuthHelper.group_saml_enabled? && group_requires_saml_auth?
-        return true if instance_requires_saml_auth?
-
-        false
       end
 
       def instance_requires_saml_auth?
