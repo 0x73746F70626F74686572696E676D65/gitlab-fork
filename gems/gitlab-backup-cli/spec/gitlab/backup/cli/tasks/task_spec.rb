@@ -54,4 +54,16 @@ RSpec.describe Gitlab::Backup::Cli::Tasks::Task do
       task.backup!(tmpdir, metadata.backup_id)
     end
   end
+
+  describe '#restore!' do
+    let(:backup_id) { "1715018771_2024_05_06_17.0.0-pre" }
+    let(:archive_directory) { context.backup_basedir.join(backup_id) }
+
+    it 'delegates to target' do
+      expect(task).to receive(:destination_path).and_return(tmpdir.join('test_task'))
+      expect(task).to receive_message_chain(:target, :restore)
+
+      task.restore!(archive_directory)
+    end
+  end
 end

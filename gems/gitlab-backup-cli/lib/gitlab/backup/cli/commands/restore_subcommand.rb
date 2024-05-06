@@ -7,7 +7,7 @@ module Gitlab
         class RestoreSubcommand < Command
           package_name 'Restore'
 
-          desc 'all BACKUP_ID', 'Restores a previously captured backup including repositories, database and local files'
+          desc 'all BACKUP_ID', 'Restores a backup including repositories, database and local files'
           def all(backup_id)
             duration = measure_duration do
               Gitlab::Backup::Cli::Output.info("Initializing environment...")
@@ -30,7 +30,7 @@ module Gitlab
             end
             Gitlab::Backup::Cli::Output.success("GitLab restoration of backup #{backup_id} finished (#{duration.in_seconds}s)")
           rescue Gitlab::Backup::Cli::Error => e
-            Gitlab::Backup::Cli::Output.error("GitLab Backup failed: #{e.message} (#{backup_executor.workdir})")
+            Gitlab::Backup::Cli::Output.error("GitLab Backup failed: #{e.message} (#{restore_executor.workdir})")
 
             exit 1
           end
