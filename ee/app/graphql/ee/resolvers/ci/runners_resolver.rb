@@ -34,9 +34,17 @@ module EE
               'MOST_ACTIVE_DESC sorting is only available for groups or when type is INSTANCE_TYPE'
           end
 
-          if parent.is_a?(::Group) && membership != :direct
-            raise ::Gitlab::Graphql::Errors::ArgumentError,
-              'MOST_ACTIVE_DESC sorting is only supported on groups when membership is DIRECT'
+          if parent.is_a?(::Group)
+            if membership != :direct
+              raise ::Gitlab::Graphql::Errors::ArgumentError,
+                'MOST_ACTIVE_DESC sorting is only supported on groups when membership is DIRECT'
+            end
+
+            return if parent.licensed_feature_available?(:runner_performance_insights_for_namespace)
+
+            raise_resource_not_available_error!(
+              'runner_performance_insights_for_namespace feature is required for MOST_ACTIVE_DESC sorting'
+            )
           end
 
           return if License.feature_available?(:runner_performance_insights)

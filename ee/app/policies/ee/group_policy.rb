@@ -326,8 +326,8 @@ module EE
 
       condition(:duo_features_enabled, scope: :subject) { @subject.namespace_settings&.duo_features_enabled }
 
-      condition(:runner_performance_insights_available, scope: :global) do
-        License.feature_available?(:runner_performance_insights)
+      condition(:runner_performance_insights_available, scope: :subject) do
+        @subject.licensed_feature_available?(:runner_performance_insights_for_namespace)
       end
 
       rule { user_banned_from_namespace }.prevent_all

@@ -3681,7 +3681,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
     context 'when runner performance insights feature is available' do
       before do
-        stub_licensed_features(runner_performance_insights: true)
+        stub_licensed_features(runner_performance_insights_for_namespace: [group])
       end
 
       it { is_expected.to be_disallowed(:read_jobs_statistics) }
