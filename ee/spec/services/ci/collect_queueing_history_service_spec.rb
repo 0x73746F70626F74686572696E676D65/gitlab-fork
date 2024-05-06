@@ -29,7 +29,10 @@ RSpec.describe ::Ci::CollectQueueingHistoryService, :click_house, :enable_admin_
   let(:licensed_feature_available) { true }
 
   before do
-    stub_licensed_features(runner_performance_insights: licensed_feature_available)
+    stub_licensed_features(
+      runner_performance_insights: licensed_feature_available,
+      runner_performance_insights_for_namespace: licensed_feature_available ? owner_namespace : false
+    )
   end
 
   subject(:result) { service.execute }

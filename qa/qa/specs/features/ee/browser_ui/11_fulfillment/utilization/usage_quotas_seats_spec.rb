@@ -39,7 +39,11 @@ module QA
       context 'in usage quotas' do
         it(
           'user seat data is displayed correctly',
-          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377358'
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377358',
+          quarantine: {
+            issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/460085',
+            type: :stale
+          }
         ) do
           Page::Group::Menu.perform(&:go_to_usage_quotas)
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|

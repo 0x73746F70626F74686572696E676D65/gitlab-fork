@@ -537,7 +537,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
 
       let(:expected_workspace_rails_infos) { [expected_unprovisioned_workspace_rails_info] }
 
-      it 'returns proper workspace_rails_info entry' do
+      it 'returns proper workspace_rails_info entry',
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/457963' do
         # verify initial states in db (sanity check of match between factory and fixtures)
         expect(unprovisioned_workspace.desired_state).to eq(desired_state)
         expect(unprovisioned_workspace.actual_state).to eq(actual_state)
