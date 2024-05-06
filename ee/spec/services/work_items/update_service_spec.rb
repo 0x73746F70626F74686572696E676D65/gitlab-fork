@@ -394,6 +394,15 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
       let(:start_date) { (Time.current + 1.day).to_date }
       let(:due_date) { (Time.current + 2.days).to_date }
 
+      let(:service) do
+        described_class.new(
+          container: group,
+          current_user: current_user,
+          params: params,
+          widget_params: widget_params
+        )
+      end
+
       let(:widget_params) do
         {
           description_widget: {
