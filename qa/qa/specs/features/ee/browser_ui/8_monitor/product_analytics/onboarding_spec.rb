@@ -22,21 +22,7 @@ module QA
       it 'can be onboarded', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/432598' do
         sdk_app_id = 0
 
-        project.visit!
-        Page::Project::Menu.perform(&:go_to_analytics_settings)
-        EE::Page::Project::Settings::Analytics.perform do |analytics_settings|
-          analytics_settings.expand_data_sources do |data_sources|
-            data_sources.fill_snowplow_configurator(Runtime::Env.pa_configurator_url)
-            data_sources.fill_collector_host(Runtime::Env.pa_collector_host)
-            data_sources.fill_cube_api_url(Runtime::Env.pa_cube_api_url)
-            data_sources.fill_cube_api_key(Runtime::Env.pa_cube_api_key)
-            data_sources.save_changes
-          end
-        end
-
-        Page::Project::Menu.perform(&:go_to_analytics_dashboards)
-        EE::Page::Project::Analyze::AnalyticsDashboards::Initial.perform(&:click_set_up)
-        EE::Page::Project::Analyze::AnalyticsDashboards::Setup.perform(&:connect_your_own_provider)
+        EE::Flow::ProductAnalytics.activate(project)
 
         EE::Page::Project::Analyze::AnalyticsDashboards::Setup.perform do |analytics_dashboards_setup|
           analytics_dashboards_setup.wait_for_sdk_containers
