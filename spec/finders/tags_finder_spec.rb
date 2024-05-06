@@ -159,6 +159,20 @@ RSpec.describe TagsFinder, feature_category: :source_code_management do
 
           expect(result.map(&:name)).to eq(%w[v1.0.0 v1.1.0])
         end
+
+        context 'when per_page is over the limit' do
+          let(:params) { { per_page: 3 } }
+
+          before do
+            stub_const('Gitlab::PaginationDelegate::MAX_PER_PAGE', 2)
+          end
+
+          it 'limits the maximum number of elements' do
+            result = subject
+
+            expect(result.map(&:name)).to eq(%w[v1.0.0 v1.1.0])
+          end
+        end
       end
 
       context 'by page_token only' do

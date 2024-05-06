@@ -288,6 +288,20 @@ RSpec.describe BranchesFinder, feature_category: :source_code_management do
 
           expect(result.map(&:name)).to eq(["'test'", '2-mb-file'])
         end
+
+        context 'when per_page is over the limit' do
+          let(:params) { { per_page: 3 } }
+
+          before do
+            stub_const('Gitlab::PaginationDelegate::MAX_PER_PAGE', 2)
+          end
+
+          it 'limits the maximum number of elements' do
+            result = subject
+
+            expect(result.map(&:name)).to match_array(["'test'", '2-mb-file'])
+          end
+        end
       end
 
       context 'by page_token only' do
