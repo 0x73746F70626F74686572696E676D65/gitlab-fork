@@ -38,35 +38,26 @@ RSpec.describe Gitlab::Backup::Cli::Metadata::BackupMetadata do
   end
 
   describe '.load!' do
+    let(:fixture) { fixtures_path.join('backup_information.json') }
     let(:json_file) { basedir.join(described_class::METADATA_FILENAME) }
 
-    before do
-      json_file.write(<<~JSON)
-        {
-          "metadata_version": 2,
-          "backup_id": "1714868860_2024_05_05_17.0.0-pre",
-          "created_at": "2024-05-05T00:00:00Z",
-          "gitlab_version": "17.0.0-pre"
-        }
-      JSON
-    end
+    context "when metadata file exists" do
+      before do
+        FileUtils.cp(fixture, basedir)
+      end
 
-    it 'loads the JSON attributes into a metadata instance' do
-      metadata = described_class.load!(basedir)
-      timestamp = Time.parse("2024-05-05T00:00:00Z")
+      it 'loads the JSON attributes into a metadata instance' do
+        metadata = described_class.load!(basedir)
+        timestamp = Time.parse("2024-05-05T00:00:00Z")
 
-      expect(metadata.metadata_version).to eq(2)
-      expect(metadata.backup_id).to eq("1714868860_2024_05_05_17.0.0-pre")
-      expect(metadata.created_at).to eq(timestamp)
-      expect(metadata.gitlab_version).to eq("17.0.0-pre")
+        expect(metadata.metadata_version).to eq(2)
+        expect(metadata.backup_id).to eq("1714868860_2024_05_05_17.0.0-pre")
+        expect(metadata.created_at).to eq(timestamp)
+        expect(metadata.gitlab_version).to eq("17.0.0-pre")
+      end
     end
 
     context "when metadata file does not exist", :silence_output do
-      before do
-        # delete the json_file we setup in surrounding blocks
-        json_file.unlink
-      end
-
       it "does not raise an error and returns nil" do
         metadata = described_class.load!(basedir)
 

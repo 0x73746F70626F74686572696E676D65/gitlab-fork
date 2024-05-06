@@ -77,10 +77,10 @@ module Gitlab
             )
           end
 
-          # Load the metadata stored in the given JSON file path
+          # Load the metadata from the JSON file stored in the given basepath
           #
-          # @param [String] basepath
-          # @return [Gitlab::Backup::Cli::BackupMetadata]
+          # @param [String|Pathname] basepath
+          # @return [Gitlab::Backup::Cli::Metadata::BackupMetadata, nil]
           def self.load!(basepath)
             basepath = Pathname(basepath) unless basepath.is_a? Pathname
 
@@ -89,10 +89,11 @@ module Gitlab
             deserializer = Gitlab::Backup::Cli::Metadata::Deserializer
 
             parsed_fields = {}
-            METADATA_SCHEMA.each do |key, data_type|
-              stored_value = json[key]
-              parsed_value = deserializer.parse_value(type: data_type, value: stored_value)
-              parsed_fields[key] = parsed_value
+            METADATA_SCHEMA.each do |attribute_name, type|
+              stored_value = json[attribute_name]
+              parsed_value = deserializer.parse_value(type: type, value: stored_value)
+
+              parsed_fields[attribute_name] = parsed_value
             end
 
             new(**parsed_fields)
@@ -108,14 +109,21 @@ module Gitlab
           def to_hash
             serializer = Gitlab::Backup::Cli::Metadata::Serializer
 
-            METADATA_SCHEMA.each_with_object({}) do |(key, type), output|
+            METADATA_SCHEMA.each_with_object({}) do |(attribute_name, type), output|
               # fetch attribute value dynamically
-              value = public_send(key)
+              # rubocop:disable GitlabSecurity/PublicSend - we cant use read_attribute here, methods are already limited
+              value = public_send(attribute_name)
+              # rubocop:enable GitlabSecurity/PublicSend
               serialized_value = serializer.serialize_value(type: type, value: value)
-              output[key] = serialized_value
+
+              output[attribute_name] = serialized_value
             end
           end
 
+          # Write the metadata to a JSON file in the given basepath
+          #
+          # @param [String|Pathname] basepath
+          # @return [Boolean] whether successfully wrote to the disk
           def write!(basepath)
             basepath = Pathname(basepath) unless basepath.is_a? Pathname
 
