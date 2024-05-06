@@ -74,11 +74,8 @@ module Resolvers
       description: 'Negated epic arguments.'
 
     argument :or, Types::Epics::UnionedEpicFilterInputType,
-      # remove alpha with or_issuable_queries feature flag
-      alpha: { milestone: '15.9' },
       required: false,
-      description: 'List of arguments with inclusive OR. ' \
-                   'Ignored unless `or_issuable_queries` flag is enabled.'
+      description: 'List of arguments with inclusive OR.'
 
     argument :top_level_hierarchy_only, GraphQL::Types::Boolean,
       required: false,

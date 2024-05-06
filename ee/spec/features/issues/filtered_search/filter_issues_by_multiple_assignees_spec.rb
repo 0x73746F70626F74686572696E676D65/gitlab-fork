@@ -12,7 +12,6 @@ RSpec.describe 'Filter issues by multiple assignees', :js, feature_category: :te
   let_it_be(:issue2) { create(:issue, project: project, assignees: [user]) }
 
   before_all do
-    stub_feature_flags(or_issuable_queries: false)
     project.add_maintainer(user)
     project.add_developer(user2)
   end

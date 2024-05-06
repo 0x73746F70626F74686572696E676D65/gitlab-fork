@@ -40,9 +40,6 @@ export default {
   mixins: [glFeatureFlagMixin()],
   inject: ['groupFullPath', 'groupMilestonesPath'],
   computed: {
-    hasOrFeature() {
-      return this.glFeatures.orIssuableQueries;
-    },
     urlParams() {
       const {
         in: searchWithin,
@@ -113,10 +110,10 @@ export default {
           type: TOKEN_TYPE_AUTHOR,
           icon: 'user',
           title: TOKEN_TITLE_AUTHOR,
-          unique: !this.hasOrFeature,
+          unique: false,
           symbol: '@',
           token: UserToken,
-          operators: this.hasOrFeature ? OPERATORS_IS_NOT_OR : OPERATORS_IS_NOT,
+          operators: OPERATORS_IS_NOT_OR,
           recentSuggestionsStorageKey: `${this.groupFullPath}-epics-recent-tokens-author_username`,
           fetchUsers: Api.users.bind(Api),
           defaultUsers: [],
@@ -129,7 +126,7 @@ export default {
           unique: false,
           symbol: '~',
           token: LabelToken,
-          operators: this.hasOrFeature ? OPERATORS_IS_NOT_OR : OPERATORS_IS_NOT,
+          operators: OPERATORS_IS_NOT_OR,
           recentSuggestionsStorageKey: `${this.groupFullPath}-epics-recent-tokens-label_name`,
           fetchLabels: (search = '') => {
             const params = {
@@ -275,7 +272,7 @@ export default {
         });
       }
 
-      if (orAuthorUsername?.length && this.hasOrFeature) {
+      if (orAuthorUsername?.length) {
         filteredSearchValue.push({
           type: TOKEN_TYPE_AUTHOR,
           value: { data: orAuthorUsername, operator: OPERATOR_OR },
@@ -298,7 +295,7 @@ export default {
           })),
         );
       }
-      if (orLabelName?.length && this.hasOrFeature) {
+      if (orLabelName?.length) {
         filteredSearchValue.push(
           ...orLabelName.map((label) => ({
             type: TOKEN_TYPE_LABEL,

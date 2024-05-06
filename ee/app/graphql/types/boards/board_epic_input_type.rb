@@ -14,8 +14,7 @@ module Types
 
       argument :or, Types::Epics::UnionedEpicFilterInputType,
         required: false,
-        description: 'List of arguments with inclusive OR. ' \
-                     'Ignored unless `or_issuable_queries` flag is enabled.'
+        description: 'List of arguments with inclusive OR.'
 
       argument :search, GraphQL::Types::String,
         required: false,

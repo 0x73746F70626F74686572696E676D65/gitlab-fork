@@ -272,19 +272,6 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
                                    epic2.to_global_id.to_s, epic.to_global_id.to_s])
           end
         end
-
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(or_issuable_queries: false)
-          end
-
-          it 'does not add any filter' do
-            post_graphql(query(params), current_user: user)
-
-            expect_array_response([label_epic2.to_global_id.to_s, label_epic1.to_global_id.to_s,
-                                   epic2.to_global_id.to_s, epic.to_global_id.to_s])
-          end
-        end
       end
 
       context 'using OR author filter' do
@@ -319,19 +306,6 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
           let(:params) { { or: { author_usernames: [] } } }
 
           it 'returns all items' do
-            post_graphql(query(params), current_user: user)
-
-            expect_array_response([epic4.to_global_id.to_s, epic3.to_global_id.to_s,
-                                   epic2.to_global_id.to_s, epic.to_global_id.to_s])
-          end
-        end
-
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(or_issuable_queries: false)
-          end
-
-          it 'does not add any filter' do
             post_graphql(query(params), current_user: user)
 
             expect_array_response([epic4.to_global_id.to_s, epic3.to_global_id.to_s,
