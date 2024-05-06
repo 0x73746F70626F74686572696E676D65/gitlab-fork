@@ -8,44 +8,44 @@ module Resolvers
     DEFAULT_IN_FIELD = :title
 
     argument :state, Types::IterationStateEnum,
-             required: false,
-             description: 'Filter iterations by state.'
+      required: false,
+      description: 'Filter iterations by state.'
     argument :title, GraphQL::Types::String,
-             required: false,
-             description: 'Fuzzy search by title.',
-             deprecated: { reason: 'The argument will be removed in 15.4. Please use `search` and `in` fields instead', milestone: '15.4' }
+      required: false,
+      description: 'Fuzzy search by title.',
+      deprecated: { reason: 'The argument will be removed in 15.4. Please use `search` and `in` fields instead', milestone: '15.4' }
 
     argument :search, GraphQL::Types::String,
-             required: false,
-             description: 'Query used for fuzzy-searching in the fields selected in the argument `in`. Returns all iterations if empty.'
+      required: false,
+      description: 'Query used for fuzzy-searching in the fields selected in the argument `in`. Returns all iterations if empty.'
 
     argument :in, [Types::IterationSearchableFieldEnum],
-             required: false,
-             description: "Fields in which the fuzzy-search should be performed with the query given in the argument `search`. Defaults to `[#{DEFAULT_IN_FIELD}]`."
+      required: false,
+      description: "Fields in which the fuzzy-search should be performed with the query given in the argument `search`. Defaults to `[#{DEFAULT_IN_FIELD}]`."
 
     # rubocop:disable Graphql/IDType
     argument :id, GraphQL::Types::ID,
-             required: false,
-             description: 'Global ID of the Iteration to look up.'
+      required: false,
+      description: 'Global ID of the Iteration to look up.'
     # rubocop:enable Graphql/IDType
 
     argument :iid, GraphQL::Types::ID,
-             required: false,
-             description: 'Internal ID of the Iteration to look up.'
+      required: false,
+      description: 'Internal ID of the Iteration to look up.'
     argument :include_ancestors, GraphQL::Types::Boolean,
-             required: false,
-             description: 'Whether to include ancestor iterations. Defaults to true.'
+      required: false,
+      description: 'Whether to include ancestor iterations. Defaults to true.'
     argument :include_descendants, GraphQL::Types::Boolean,
-             required: false,
-             description: 'Whether to include descendant iterations.'
+      required: false,
+      description: 'Whether to include descendant iterations.'
 
     argument :iteration_cadence_ids, [::Types::GlobalIDType[::Iterations::Cadence]],
-              required: false,
-              description: 'Global iteration cadence IDs by which to look up the iterations.'
+      required: false,
+      description: 'Global iteration cadence IDs by which to look up the iterations.'
 
     argument :sort, Types::IterationSortEnum,
-              required: false,
-              description: 'List iterations by sort order. If unspecified, an arbitrary order (subject to change) is used.'
+      required: false,
+      description: 'List iterations by sort order. If unspecified, an arbitrary order (subject to change) is used.'
 
     type Types::IterationType.connection_type, null: true
 
