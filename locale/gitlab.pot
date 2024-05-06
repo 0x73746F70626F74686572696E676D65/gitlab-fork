@@ -35976,6 +35976,9 @@ msgstr ""
 msgid "Organization|An error occurred loading organizations. Please refresh the page to try again."
 msgstr ""
 
+msgid "Organization|An error occurred loading the activity. Please refresh the page to try again."
+msgstr ""
+
 msgid "Organization|An error occurred loading the groups. Please refresh the page to try again."
 msgstr ""
 

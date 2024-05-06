@@ -16,7 +16,9 @@ module Projects
     feature_category :onboarding
     urgency :low, [:show]
 
-    def show; end
+    def show
+      @hide_importing_alert = true
+    end
 
     def onboarding
       cookies[:confetti_post_signup] = true

@@ -11,6 +11,13 @@ module Registrations
     before_action :verify_onboarding_enabled!
     before_action :authorize_create_group!, only: :new
 
+    before_action do
+      experiment(:project_templates_during_registration,
+        type: :experiment,
+        user: current_user
+      ).publish
+    end
+
     layout 'minimal'
 
     feature_category :onboarding
@@ -20,6 +27,7 @@ module Registrations
     def new
       @group = Group.new(visibility_level: Gitlab::CurrentSettings.default_group_visibility)
       @project = Project.new(namespace: @group)
+      @template_name = ''
       @initialize_with_readme = true
 
       track_event('view_new_group_action')
@@ -39,6 +47,7 @@ module Registrations
       else
         @group = result.payload[:group]
         @project = result.payload[:project]
+        @template_name = params.dig(:project, :template_name)
         @initialize_with_readme = params.dig(:project, :initialize_with_readme)
 
         render :new

@@ -37,7 +37,13 @@ module Registrations
     end
 
     def create_project_params
-      project_params(:initialize_with_readme)
+      extra = if params.dig(:project, :template_name)
+                :template_name
+              else
+                :initialize_with_readme
+              end
+
+      project_params(extra)
     end
 
     def project_params(*extra)

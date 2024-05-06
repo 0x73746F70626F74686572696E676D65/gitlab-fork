@@ -28,7 +28,6 @@ describe('ContributionEventClosed', () => {
         event,
         message: 'Closed Epic %{targetLink} in %{resourceParentLink}.',
         iconName: 'epic-closed',
-        iconClass: 'gl-text-blue-500',
       });
     });
   });
@@ -48,7 +47,6 @@ describe('ContributionEventClosed', () => {
           event,
           message: expectedMessage,
           iconName: 'status_closed',
-          iconClass: 'gl-text-blue-500',
         });
       });
     });
