@@ -134,6 +134,13 @@ describe('Edit Framework Form', () => {
       expect(invalidFeedback(descriptionInput.element)).toContain('is required');
     });
 
+    it('validates length of name field', async () => {
+      const nameInput = wrapper.findByLabelText('Name');
+
+      await nameInput.setValue('a'.repeat(256));
+      expect(invalidFeedback(nameInput.element)).toContain('less than 255');
+    });
+
     it.each`
       pipelineConfigurationFullPath | message
       ${'foo.yml@bar/baz'}          | ${'Configuration not found'}

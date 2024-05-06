@@ -9,7 +9,7 @@ import {
   validatePipelineConfirmationFormat,
   fetchPipelineConfigurationFileExists,
 } from 'ee/groups/settings/compliance_frameworks/utils';
-import { i18n } from '../constants';
+import { maxNameLength, i18n } from '../constants';
 import EditSection from './edit_section.vue';
 
 export default {
@@ -67,6 +67,10 @@ export default {
     isValidName() {
       if (this.formData.name === null) {
         return null;
+      }
+
+      if (this.formData.name.length > maxNameLength) {
+        return false;
       }
 
       return Boolean(this.formData.name);

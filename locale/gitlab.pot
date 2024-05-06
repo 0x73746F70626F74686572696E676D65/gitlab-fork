@@ -13195,6 +13195,9 @@ msgstr ""
 msgid "ComplianceFrameworks|Name is required"
 msgstr ""
 
+msgid "ComplianceFrameworks|Name is required, and must be less than 255 characters"
+msgstr ""
+
 msgid "ComplianceFrameworks|Name, description"
 msgstr ""
 
