@@ -9,7 +9,7 @@ module Types
       value 'RUNNING', value: 'running', description: 'Pre Scan Verification in execution.'
       value 'COMPLETE', value: 'complete', description: 'Pre Scan Verification complete without errors.'
       value 'COMPLETE_WITH_ERRORS', value: 'complete_with_errors',
-      description: 'Pre Scan Verification finished with one or more errors.'
+        description: 'Pre Scan Verification finished with one or more errors.'
       value 'FAILED', value: 'failed', description: 'Pre Scan Validation unable to finish.'
     end
   end

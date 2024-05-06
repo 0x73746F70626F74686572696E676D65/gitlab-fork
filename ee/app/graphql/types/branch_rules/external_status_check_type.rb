@@ -9,19 +9,19 @@ module Types
       accepts ::MergeRequests::ExternalStatusCheck
 
       field :id,
-            type: ::Types::GlobalIDType,
-            null: false,
-            description: 'ID of the rule.'
+        type: ::Types::GlobalIDType,
+        null: false,
+        description: 'ID of the rule.'
 
       field :name,
-            type: GraphQL::Types::String,
-            null: false,
-            description: 'Name of the rule.'
+        type: GraphQL::Types::String,
+        null: false,
+        description: 'Name of the rule.'
 
       field :external_url,
-            type: GraphQL::Types::String,
-            null: false,
-            description: 'External URL for the status check.'
+        type: GraphQL::Types::String,
+        null: false,
+        description: 'External URL for the status check.'
     end
   end
 end

@@ -15,15 +15,16 @@ module QA
 
       let(:sdk_host) { Runtime::Env.pa_collector_host }
       let(:custom_dashboard_title) { 'My New Custom Dashboard' }
-      let(:custom_dashboard_description) { 'My dashboard description' }
+
+      let(:new_custom_dashboard_title) { 'Edited Dashboard' }
 
       before do
         Flow::Login.sign_in
         EE::Flow::ProductAnalytics.activate(project)
       end
 
-      it 'custom dashboard can be created',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/451299' do
+      it 'custom dashboard can be edited',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/458782' do
         sdk_app_id = 0
 
         EE::Page::Project::Analyze::AnalyticsDashboards::Setup.perform do |analytics_dashboards_setup|
@@ -48,29 +49,40 @@ module QA
         Page::Project::Menu.perform(&:go_to_analytics_dashboards)
         EE::Page::Project::Analyze::AnalyticsDashboards::Home.perform(&:click_new_dashboard_button)
 
-        EE::Page::Project::Analyze::DashboardSetup.perform do |your_dashboard|
-          your_dashboard.set_dashboard_title(custom_dashboard_title)
-          your_dashboard.set_dashboard_description(custom_dashboard_description)
-          your_dashboard.click_add_visualisation
-          your_dashboard.check_total_events
-          your_dashboard.click_add_to_dashboard
-          your_dashboard.click_save_your_dashboard
+        EE::Page::Project::Analyze::DashboardSetup.perform do |dashboard|
+          dashboard.set_dashboard_title(custom_dashboard_title)
+          dashboard.click_add_visualisation
+          dashboard.check_total_events
+          dashboard.click_add_to_dashboard
+          dashboard.click_save_your_dashboard
+        end
+
+        EE::Page::Project::Analyze::AnalyticsDashboards::Dashboard.perform(&:edit_dashboard)
+
+        EE::Page::Project::Analyze::DashboardSetup.perform do |dashboard|
+          dashboard.delete_panel(panel_index: 0)
+          dashboard.click_add_visualisation
+          dashboard.check_events_over_time
+          dashboard.click_add_to_dashboard
+          dashboard.set_dashboard_title(new_custom_dashboard_title)
+          dashboard.click_save_your_dashboard
         end
 
         Page::Project::Menu.perform(&:go_to_analytics_dashboards)
 
         EE::Page::Project::Analyze::AnalyticsDashboards::Home.perform do |analytics_dashboards|
-          expect(analytics_dashboards.dashboards_list[2].text).to eq(custom_dashboard_title)
+          expect(analytics_dashboards.dashboards_list[2].text).to eq(new_custom_dashboard_title)
 
           analytics_dashboards.dashboards_list[2].click
         end
 
         EE::Page::Project::Analyze::AnalyticsDashboards::Dashboard.perform do |dashboard|
           panels = dashboard.panels
-          aggregate_failures 'test custom dashboard' do
+          aggregate_failures 'test edited dashboard' do
             expect(panels.count).to equal(1)
-            expect(panels[0]).to have_content('Total events')
-            expect(dashboard.panel_value_content(panel_index: 0)).to eq(1)
+            expect(panels[0]).to have_content('Events over time')
+            expect(dashboard.panel_has_chart?(panel_index: 0)).to be(true)
+            expect(dashboard.panel_chart_legend(panel_index: 0)).to have_content('Max: 1')
           end
         end
       end
