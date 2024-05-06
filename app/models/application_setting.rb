@@ -621,7 +621,12 @@ class ApplicationSetting < MainClusterwide::ApplicationRecord
     throttle_unauthenticated_git_http_requests_per_period: [:integer, { default: 3600 }],
     throttle_unauthenticated_git_http_period_in_seconds: [:integer, { default: 3600 }]
 
+  jsonb_accessor :importers,
+    silent_admin_exports_enabled: [:boolean, { default: false }]
+
   validates :rate_limits, json_schema: { filename: "application_setting_rate_limits" }
+
+  validates :importers, json_schema: { filename: "application_setting_importers" }
 
   jsonb_accessor :package_registry, nuget_skip_metadata_url_validation: [:boolean, { default: false }]
 
