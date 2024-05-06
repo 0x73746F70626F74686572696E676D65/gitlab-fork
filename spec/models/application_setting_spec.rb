@@ -35,6 +35,7 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
     it { expect(setting.concurrent_bitbucket_import_jobs_limit).to eq(100) }
     it { expect(setting.concurrent_bitbucket_server_import_jobs_limit).to eq(100) }
     it { expect(setting.nuget_skip_metadata_url_validation).to eq(false) }
+    it { expect(setting.silent_admin_exports_enabled).to eq(false) }
   end
 
   describe 'validations' do
@@ -200,6 +201,8 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
     it { is_expected.to allow_value(https).for(:jira_connect_proxy_url) }
 
     it { is_expected.to validate_inclusion_of(:bulk_import_enabled).in_array([true, false]) }
+
+    it { is_expected.to validate_inclusion_of(:silent_admin_exports_enabled).in_array([true, false]) }
 
     it { is_expected.to validate_inclusion_of(:allow_runner_registration_token).in_array([true, false]) }
 
