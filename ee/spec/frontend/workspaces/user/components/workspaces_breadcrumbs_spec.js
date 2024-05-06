@@ -76,5 +76,9 @@ describe('workspaces/user/components/workspaces_breadcrumbs', () => {
         },
       ]);
     });
+
+    it('should disable auto-resize behavior', () => {
+      expect(findBreadcrumbs().props('autoResize')).toEqual(false);
+    });
   });
 });

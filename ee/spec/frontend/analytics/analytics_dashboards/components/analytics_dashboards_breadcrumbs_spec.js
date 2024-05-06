@@ -95,5 +95,9 @@ describe('AnalyticsDashboardsBreadcrumbs', () => {
         },
       ]);
     });
+
+    it('should disable auto-resize behavior', () => {
+      expect(findBreadcrumbs().props('autoResize')).toEqual(false);
+    });
   });
 });
