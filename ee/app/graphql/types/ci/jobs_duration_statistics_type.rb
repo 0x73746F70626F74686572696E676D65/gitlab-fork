@@ -12,8 +12,8 @@ module Types
 
       PERCENTILES.each do |p|
         field "p#{p}", Types::DurationType,
-              null: true, description: "#{p}th percentile. #{p}% of the durations are lower than this value.",
-              alpha: { milestone: '15.8' }
+          null: true, description: "#{p}th percentile. #{p}% of the durations are lower than this value.",
+          alpha: { milestone: '15.8' }
 
         define_method("p#{p}") do
           object["p#{p}".to_sym]
