@@ -315,6 +315,44 @@ describe('PanelsBase', () => {
     });
   });
 
+  describe('when multiple requests are made', () => {
+    let requests;
+
+    beforeEach(() => {
+      requests = [];
+      jest.spyOn(dataSources.cube_analytics(), 'fetch').mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            requests.push(resolve);
+          }),
+      );
+      createWrapper();
+    });
+
+    it('only assigns data for the most recent request', async () => {
+      const initialRequestData = [{ name: 'initial' }];
+      const firstRequestData = [{ name: 'first' }];
+      const secondRequestData = [{ name: 'second' }];
+
+      requests[0](initialRequestData);
+      await waitForPromises();
+
+      // trigger 2x subsequent requests by filtering
+      wrapper.setProps({ filters: { startDate: new Date() } });
+      await nextTick();
+      wrapper.setProps({ filters: { startDate: new Date() } });
+      await nextTick();
+
+      // resolve the requests out of order
+      requests[2](secondRequestData);
+      await nextTick();
+      requests[1](firstRequestData);
+      await nextTick();
+
+      expect(findVisualization().props('data')).toBe(secondRequestData);
+    });
+  });
+
   describe('when provided with filters', () => {
     const filters = {
       dateRange: {

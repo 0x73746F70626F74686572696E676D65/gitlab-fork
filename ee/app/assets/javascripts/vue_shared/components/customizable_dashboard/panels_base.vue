@@ -105,6 +105,7 @@ export default {
           icon: 'remove',
         },
       ],
+      currentRequestNumber: 0,
     };
   },
   computed: {
@@ -165,10 +166,12 @@ export default {
       const { type: dataType, query } = this.visualization.data;
       this.loading = true;
       this.clearErrors();
+      const requestNumber = this.currentRequestNumber + 1;
+      this.currentRequestNumber = requestNumber;
 
       try {
         const { fetch } = await dataSources[dataType]();
-        this.data = await fetch({
+        const data = await fetch({
           title: this.title,
           projectId: this.namespaceId,
           namespace: this.namespace,
@@ -178,6 +181,10 @@ export default {
           visualizationOptions: this.visualization.options,
           filters,
         });
+
+        if (this.currentRequestNumber === requestNumber) {
+          this.data = data;
+        }
       } catch (error) {
         this.setErrors({
           errors: [error],
