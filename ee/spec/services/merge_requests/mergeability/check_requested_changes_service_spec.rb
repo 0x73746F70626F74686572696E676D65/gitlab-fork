@@ -7,13 +7,26 @@ RSpec.describe MergeRequests::Mergeability::CheckRequestedChangesService, featur
 
   let_it_be(:project) { build(:project) }
   let_it_be(:merge_request) { build(:merge_request, source_project: project, reviewers: [build(:user)]) }
-  let(:params) { {} }
+  let(:params) { { skip_requested_changes_check: skip_check } }
+  let(:skip_check) { false }
 
   let(:result) { service.execute }
 
-  describe '#skip?' do
-    it 'returns false' do
-      expect(service.skip?).to eq false
+  describe "#skip?" do
+    context 'when skip check param is true' do
+      let(:skip_check) { true }
+
+      it 'returns true' do
+        expect(service.skip?).to eq true
+      end
+    end
+
+    context 'when skip check param is false' do
+      let(:skip_check) { false }
+
+      it 'returns false' do
+        expect(service.skip?).to eq false
+      end
     end
   end
 
