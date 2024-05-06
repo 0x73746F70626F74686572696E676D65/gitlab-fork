@@ -8,8 +8,8 @@ module Resolvers
       alias_method :pipeline, :object
 
       argument :uuid, GraphQL::Types::String,
-               required: true,
-               description: 'UUID of the security report finding.'
+        required: true,
+        description: 'UUID of the security report finding.'
 
       def resolve(**args)
         if Feature.enabled?(:finding_resolver_use_pure_finder, pipeline.project)

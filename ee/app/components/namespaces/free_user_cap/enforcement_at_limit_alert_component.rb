@@ -29,10 +29,10 @@ module Namespaces
                "top-level group to %{free_limit} user or less. You can also upgrade to " \
                "a paid tier which do not have user limits. If you need additional " \
                "time, you can start a free 30-day trial which includes unlimited users.", \
-               "To invite more users, you can reduce the number of users in your " \
-               "top-level group to %{free_limit} users or less. You can also upgrade to " \
-               "a paid tier which do not have user limits. If you need additional " \
-               "time, you can start a free 30-day trial which includes unlimited users.",
+              "To invite more users, you can reduce the number of users in your " \
+              "top-level group to %{free_limit} users or less. You can also upgrade to " \
+              "a paid tier which do not have user limits. If you need additional " \
+              "time, you can start a free 30-day trial which includes unlimited users.",
               free_user_limit
             ),
             free_limit: free_user_limit,

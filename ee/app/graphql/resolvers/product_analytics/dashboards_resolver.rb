@@ -11,13 +11,13 @@ module Resolvers
       type [::Types::ProductAnalytics::DashboardType], null: true
 
       argument :slug, GraphQL::Types::String,
-               required: false,
-               description: 'Find by dashboard slug.'
+        required: false,
+        description: 'Find by dashboard slug.'
 
       argument :category, ::Types::ProductAnalytics::CategoryEnum,
-               required: false,
-               description: 'Find by dashboard type.',
-               default_value: ::Types::ProductAnalytics::StateEnum.values['ANALYTICS']
+        required: false,
+        description: 'Find by dashboard type.',
+        default_value: ::Types::ProductAnalytics::StateEnum.values['ANALYTICS']
 
       def resolve(slug: nil, category: 'analytics')
         return object.product_analytics_dashboards(current_user) unless slug.present?

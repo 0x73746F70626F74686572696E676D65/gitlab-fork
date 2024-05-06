@@ -12,8 +12,8 @@ module EE
 
           prepended do
             argument :epic_id, EpicID,
-                      required: false,
-                      description: 'ID of the parent epic. NULL when removing the association.'
+              required: false,
+              description: 'ID of the parent epic. NULL when removing the association.'
           end
 
           override :move_issue
