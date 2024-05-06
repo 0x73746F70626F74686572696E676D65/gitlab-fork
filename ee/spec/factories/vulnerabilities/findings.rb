@@ -526,42 +526,42 @@ FactoryBot.define do
         finding.name = "Vulnerabilities in libxml2"
         finding.metadata_version = "2.1"
         finding.raw_metadata = {
-          "category": "dependency_scanning",
-          "name": "Vulnerabilities in libxml2",
-          "description": "  The version of libxml2 packaged with Nokogiri contains several vulnerabilities.",
-          "cve": "rails/Gemfile.lock:nokogiri:gemnasium:06565b64-486d-4326-b906-890d9915804d",
-          "severity": evaluator.raw_severity,
-          "solution": "Upgrade to latest version.",
-          "scanner": {
-            "id": "gemnasium",
-            "name": "Gemnasium"
+          category: "dependency_scanning",
+          name: "Vulnerabilities in libxml2",
+          description: "  The version of libxml2 packaged with Nokogiri contains several vulnerabilities.",
+          cve: "rails/Gemfile.lock:nokogiri:gemnasium:06565b64-486d-4326-b906-890d9915804d",
+          severity: evaluator.raw_severity,
+          solution: "Upgrade to latest version.",
+          scanner: {
+            id: "gemnasium",
+            name: "Gemnasium"
           },
-          "location": {
-            "file": evaluator.file,
-            "dependency": {
-              "package": {
-                "name": evaluator.package
+          location: {
+            file: evaluator.file,
+            dependency: {
+              package: {
+                name: evaluator.package
               },
-              "version": evaluator.version
+              version: evaluator.version
             }
           },
-          "identifiers": [
+          identifiers: [
             {
-              "type": "gemnasium",
-              "name": evaluator.id,
-              "value": "06565b64-486d-4326-b906-890d9915804d",
-              "url": "https://deps.sec.gitlab.com/packages/gem/nokogiri/versions/1.8.0/advisories"
+              type: "gemnasium",
+              name: evaluator.id,
+              value: "06565b64-486d-4326-b906-890d9915804d",
+              url: "https://deps.sec.gitlab.com/packages/gem/nokogiri/versions/1.8.0/advisories"
             },
             {
-              "type": "usn",
-              "name": "USN-3424-1",
-              "value": "USN-3424-1",
-              "url": "https://usn.ubuntu.com/3424-1/"
+              type: "usn",
+              name: "USN-3424-1",
+              value: "USN-3424-1",
+              url: "https://usn.ubuntu.com/3424-1/"
             }
           ],
-          "links": [
+          links: [
             {
-              "url": "https://github.com/sparklemotion/nokogiri/issues/1673"
+              url: "https://github.com/sparklemotion/nokogiri/issues/1673"
             }
           ]
         }.to_json
@@ -582,45 +582,45 @@ FactoryBot.define do
         finding.name = "CVE-2021-44228 in org.apache.logging.log4j:log4j-api-2.14.1"
         finding.metadata_version = "2.1"
         finding.location = {
-          "image": evaluator.image,
-          "dependency": {
-            "package": {
-              "name": evaluator.package
+          image: evaluator.image,
+          dependency: {
+            package: {
+              name: evaluator.package
             },
-            "operating_system": "Unknown",
-            "version": evaluator.version
+            operating_system: "Unknown",
+            version: evaluator.version
           }
         }
         finding.raw_metadata = {
-          "category": "container_scanning",
-          "name": "CVE-2021-44228 in org.apache.logging.log4j:log4j-api-2.14.1",
-          "description": "Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints.",
-          "severity": evaluator.raw_severity,
-          "scanner": {
-            "id": "trivy",
-            "name": "Trivy"
+          category: "container_scanning",
+          name: "CVE-2021-44228 in org.apache.logging.log4j:log4j-api-2.14.1",
+          description: "Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints.",
+          severity: evaluator.raw_severity,
+          scanner: {
+            id: "trivy",
+            name: "Trivy"
           },
-          "location": {
-            "image": evaluator.image,
-            "dependency": {
-              "package": {
-                "name": evaluator.package
+          location: {
+            image: evaluator.image,
+            dependency: {
+              package: {
+                name: evaluator.package
               },
-              "operating_system": "Unknown",
-              "version": evaluator.version
+              operating_system: "Unknown",
+              version: evaluator.version
             }
           },
-          "identifiers": [
+          identifiers: [
             {
-              "type": "cve",
-              "name": evaluator.id,
-              "value": "CVE-2021-44228",
-              "url": "http://packetstormsecurity.com/files/165225/Apache-Log4j2-2.14.1-Remote-Code-Execution.html"
+              type: "cve",
+              name: evaluator.id,
+              value: "CVE-2021-44228",
+              url: "http://packetstormsecurity.com/files/165225/Apache-Log4j2-2.14.1-Remote-Code-Execution.html"
             }
           ],
-          "links": [
+          links: [
             {
-              "url": "http://packetstormsecurity.com/files/165225/Apache-Log4j2-2.14.1-Remote-Code-Execution.html"
+              url: "http://packetstormsecurity.com/files/165225/Apache-Log4j2-2.14.1-Remote-Code-Execution.html"
             }
           ]
         }.to_json
@@ -638,51 +638,51 @@ FactoryBot.define do
         finding.name = "CVE-2017-16997 in libc"
         finding.metadata_version = "2.3"
         finding.location = {
-          "dependency": {
-            "package": {
-              "name": "glibc"
+          dependency: {
+            package: {
+              name: "glibc"
             },
-            "version": "2.24-11+deb9u3"
+            version: "2.24-11+deb9u3"
           },
-          "operating_system": "alpine 3.7",
-          "image": evaluator.location_image,
-          "kubernetes_resource": {
-            "cluster_id": "1",
-            "agent_id": evaluator.agent_id
+          operating_system: "alpine 3.7",
+          image: evaluator.location_image,
+          kubernetes_resource: {
+            cluster_id: "1",
+            agent_id: evaluator.agent_id
           }
         }
         finding.raw_metadata = {
-          "category": "cluster_image_scanning",
-          "name": "CVE-2017-16997 in libc",
-          "severity": "high",
-          "solution": "Upgrade glibc from 2.24-11+deb9u3 to 2.24-11+deb9u4",
-          "scanner": {
-            "id": "starboard",
-            "name": "Starboard"
+          category: "cluster_image_scanning",
+          name: "CVE-2017-16997 in libc",
+          severity: "high",
+          solution: "Upgrade glibc from 2.24-11+deb9u3 to 2.24-11+deb9u4",
+          scanner: {
+            id: "starboard",
+            name: "Starboard"
           },
-          "location": {
-            "dependency": {
-              "package": {
-                "name": "glibc"
+          location: {
+            dependency: {
+              package: {
+                name: "glibc"
               },
-              "version": "2.24-11+deb9u3"
+              version: "2.24-11+deb9u3"
             },
-            "operating_system": "alpine 3.7",
-            "image": "alpine:3.7",
-            "kubernetes_resource": {
-              "cluster_id": "1",
-              "agent_id": evaluator.agent_id
+            operating_system: "alpine 3.7",
+            image: "alpine:3.7",
+            kubernetes_resource: {
+              cluster_id: "1",
+              agent_id: evaluator.agent_id
             }
           },
-          "identifiers": [{
-            "type": "cve",
-            "name": "CVE-2017-16997",
-            "value": "CVE-2017-16997",
-            "url": "https://security-tracker.debian.org/tracker/CVE-2017-16997"
+          identifiers: [{
+            type: "cve",
+            name: "CVE-2017-16997",
+            value: "CVE-2017-16997",
+            url: "https://security-tracker.debian.org/tracker/CVE-2017-16997"
           }],
-          "links": [
+          links: [
             {
-              "url": "https://security-tracker.debian.org/tracker/CVE-2017-16997"
+              url: "https://security-tracker.debian.org/tracker/CVE-2017-16997"
             }
           ]
         }.to_json

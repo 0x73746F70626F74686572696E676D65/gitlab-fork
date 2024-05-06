@@ -51,8 +51,8 @@ RSpec.describe Gitlab::Search::AggregationParser do
             { key: 'C++', count: 1 }
           ]
           expected_buckets_2 = [
-            { key: { 'composite_agg': 'JavaScript' }, count: 1000 },
-            { key: { 'composite_agg': 'Java' }, count: 3 }
+            { key: { composite_agg: 'JavaScript' }, count: 1000 },
+            { key: { composite_agg: 'Java' }, count: 3 }
           ]
 
           expect(subject.length).to eq(2)
