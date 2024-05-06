@@ -61,7 +61,7 @@ RSpec.describe 'Manually create a todo item from epic', :js, feature_category: :
       visit group_epic_path(group, epic)
     end
 
-    it 'creates todo when clicking button' do
+    it 'creates todo when clicking button', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444882' do
       page.within '.issuable-sidebar' do
         click_button 'Add a to do'
         wait_for_requests
