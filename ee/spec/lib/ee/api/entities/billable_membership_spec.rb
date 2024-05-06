@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ::EE::API::Entities::BillableMembership, feature_category: :seat_cost_management do
-  let_it_be(:membership) { create(:group_member, :developer) }
+  let_it_be_with_reload(:membership) { create(:group_member, :developer) }
   let(:entity) do
     {
       id: membership.id,
