@@ -169,6 +169,54 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
 
       it_behaves_like 'seat count alert'
     end
+
+    context 'adjourned deletion' do
+      before do
+        stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+      end
+
+      let(:notice_regex) do
+        /This project will be deleted on .* since its parent group .* has been scheduled for deletion/
+      end
+
+      context 'when the parent group has not been scheduled for deletion' do
+        it 'does not show the notice' do
+          subject
+
+          expect(response.body).not_to match(notice_regex)
+        end
+      end
+
+      context 'when the parent group has been scheduled for deletion' do
+        before do
+          create(:group_deletion_schedule,
+            group: public_project.group,
+            marked_for_deletion_on: Date.current,
+            deleting_user: user
+          )
+        end
+
+        it 'shows the notice that the parent group has been scheduled for deletion' do
+          subject
+
+          expect(response.body).to match(notice_regex)
+        end
+
+        context 'when the project itself has also been scheduled for deletion' do
+          it 'does not show the notice that the parent group has been scheduled for deletion' do
+            public_project.update!(marked_for_deletion_at: Date.current)
+
+            subject
+
+            expect(response.body).not_to match(notice_regex)
+            # However, shows the notice that the project has been marked for deletion.
+            expect(response.body).to match(
+              /Deletion pending. This project will be deleted on .*. Repository and other project resources are read-only./
+            )
+          end
+        end
+      end
+    end
   end
 
   describe 'POST create', feature_category: :groups_and_projects do
