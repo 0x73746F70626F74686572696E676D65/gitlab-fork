@@ -22,12 +22,24 @@ module Gitlab
 
         # List all of the current top level fields along with their expected data
         # type name to specify how to parse and serialize values
-        CURRENT_FIELD_DEFINITIONS = {
+        METADATA_SCHEMA = {
+          metadata_version: :integer,
           backup_id: :string,
           created_at: :time,
-          gitlab_version: :string,
-          metadata_version: :integer
+          gitlab_version: :string
         }.freeze
+
+        # Options used by the JSON parser
+        JSON_PARSE_OPTIONS = {
+          max_nesting: 1,
+          allow_nan: false,
+          symbolize_names: true
+        }.freeze
+
+        # Integer representing the increment of metadata version
+        # this data was saved with
+        # @return [Integer]
+        attr_reader :metadata_version
 
         # Unique ID for a backup
         # @return [String]
@@ -41,29 +53,16 @@ module Gitlab
         # @return [String]
         attr_reader :gitlab_version
 
-        # Integer representing the increment of metadata version
-        # this data was saved with
-        # @return [Integer]
-        attr_reader :metadata_version
-
         def initialize(
           created_at:,
           backup_id:,
           gitlab_version:,
           metadata_version: METADATA_VERSION
         )
-          @created_at = created_at
-          @backup_id = backup_id
-          @gitlab_version = gitlab_version
           @metadata_version = metadata_version
-        end
-
-        # Returns the expected metadata file path inside directory +backup_directory+
-        #
-        # @param [String|Pathname] backup_directory
-        # @return [Pathname]
-        def self.path_in_backup_directory(backup_directory)
-          Pathname(backup_directory).join(METADATA_FILENAME)
+          @backup_id = backup_id
+          @created_at = created_at
+          @gitlab_version = gitlab_version
         end
 
         # Build a new BackupMetadata with defaults
@@ -76,44 +75,41 @@ module Gitlab
           new(
             backup_id: backup_id,
             created_at: created_at,
-            gitlab_version: gitlab_version,
-            metadata_version: METADATA_VERSION
+            gitlab_version: gitlab_version
           )
         end
 
         # Load the metadata stored in the given JSON file path
         #
-        # @param [String] metadata_json_file
+        # @param [String] basepath
         # @return [Gitlab::Backup::Cli::BackupMetadata]
-        def self.read(metadata_json_file)
-          # should be a hash of string keys mapped to various JSON primitives
-          saved_data_hash = JSON.parse(File.read(metadata_json_file.to_path))
+        def self.load!(basepath)
+          basepath = Pathname(basepath) unless basepath.is_a? Pathname
+
+          json_file = basepath.join(METADATA_FILENAME)
+          json = JSON.parse(File.read(json_file), JSON_PARSE_OPTIONS)
 
           parsed_fields = {}
-          CURRENT_FIELD_DEFINITIONS.each do |key, data_type|
-            stored_value = saved_data_hash[key.to_s]
+          METADATA_SCHEMA.each do |key, data_type|
+            stored_value = json[key]
             parsed_value = parse_value(type: data_type, value: stored_value)
             parsed_fields[key] = parsed_value
           end
 
           new(**parsed_fields)
-        rescue IOError, Errno::ENOENT => error
+        rescue IOError, Errno::ENOENT => e
           Gitlab::Backup::Cli::Output.error(
-            "Failed to write backup information to: #{metadata_json_file} (#{error.message})"
+            "Failed to load backup information from: #{json_file} (#{e.message})"
           )
 
           nil
         end
 
-        def self.read_from_backup_directory(backup_directory)
-          read(path_in_backup_directory(backup_directory))
-        end
-
         # Expose the information that will be part of the Metadata JSON file
         def to_hash
-          CURRENT_FIELD_DEFINITIONS.each_with_object({}) do |(key, type), hash|
+          METADATA_SCHEMA.each_with_object({}) do |(key, type), hash|
             # fetch attribute value dynamically
-            value = self.send(key)
+            value = public_send(key)
             serialized_value = serialize_value(type: type, value: value)
             hash[key] = serialized_value
           end
@@ -122,7 +118,7 @@ module Gitlab
         def write!(basepath)
           basepath = Pathname(basepath) unless basepath.is_a? Pathname
 
-          json_file = self.class.path_in_backup_directory(basepath)
+          json_file = basepath.join(METADATA_FILENAME)
           json = JSON.pretty_generate(to_hash)
 
           json_file.open(File::RDWR | File::CREAT, METADATA_FILE_MODE) do |file|
