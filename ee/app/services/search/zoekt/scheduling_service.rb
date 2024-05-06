@@ -69,9 +69,11 @@ module Search
         nodes = ::Search::Zoekt::Node.online.find_each.to_a
         over_watermark_nodes = nodes.select { |n| (n.used_bytes / n.total_bytes.to_f) >= WATERMARK_LIMIT_HIGH }
 
-        info :reallocation, message: 'Detected nodes over watermark',
+        return if over_watermark_nodes.empty?
+
+        info(:reallocation, message: 'Detected nodes over watermark',
           watermark_limit_high: WATERMARK_LIMIT_HIGH,
-          count: over_watermark_nodes.count
+          count: over_watermark_nodes.count)
 
         over_watermark_nodes.each do |node|
           sizes = {}
@@ -89,6 +91,7 @@ module Search
           sorted = sizes.to_a.sort_by { |_k, v| v }
 
           namespaces_to_move = []
+          total_repository_size = 0
           node_original_used_bytes = node.used_bytes
           sorted.each do |namespace_id, repository_size|
             node.used_bytes -= repository_size
@@ -96,23 +99,35 @@ module Search
             break if (node.used_bytes / node.total_bytes.to_f) < WATERMARK_LIMIT_HIGH
 
             namespaces_to_move << namespace_id
+            total_repository_size += repository_size
           end
 
-          info :reallocation, message: 'Unassigning namespaces from node',
-            node_id: node.id,
-            watermark_limit_high: WATERMARK_LIMIT_HIGH,
-            count: namespaces_to_move.count,
-            node_used_bytes: node_original_used_bytes,
-            node_expected_used_bytes: node.used_bytes
+          unassign_namespaces_from_node(node, namespaces_to_move, node_original_used_bytes, total_repository_size)
+        end
+      end
 
-          namespaces_to_move.each_slice(100) do |namespace_ids|
-            scope = node.indices.for_root_namespace_id(namespace_ids)
+      def unassign_namespaces_from_node(node, namespaces_to_move, node_original_used_bytes, total_repository_size)
+        return if namespaces_to_move.empty?
 
-            # Mark namespaces as not searchable so that it has enough time to re-index these
-            Search::Zoekt::EnabledNamespace.id_in(scope.select(:zoekt_enabled_namespace_id))
-                                            .update_all(search: false, updated_at: Time.zone.now)
-            scope.destroy_all # rubocop:disable Cop/DestroyAll -- we need to execute the on_destroy callbacks
-          end
+        info(:reallocation, message: 'Unassigning namespaces from node',
+          watermark_limit_high: WATERMARK_LIMIT_HIGH,
+          count: namespaces_to_move.count,
+          node_used_bytes: node_original_used_bytes,
+          node_expected_used_bytes: node.used_bytes,
+          total_repository_size: total_repository_size,
+          meta: {
+            "zoekt.node_name" => node.metadata['name'],
+            "zoekt.node_id" => node.id
+          }
+        )
+
+        namespaces_to_move.each_slice(100) do |namespace_ids|
+          scope = node.indices.for_root_namespace_id(namespace_ids)
+
+          # Mark namespaces as not searchable so that it has enough time to re-index these
+          Search::Zoekt::EnabledNamespace.id_in(scope.select(:zoekt_enabled_namespace_id))
+                                         .update_all(search: false, updated_at: Time.zone.now)
+          scope.destroy_all # rubocop:disable Cop/DestroyAll -- we need to execute the on_destroy callbacks
         end
       end
 
@@ -216,9 +231,9 @@ module Search
             logger.error(build_structured_payload(
               task: :node_assignment,
               message: 'Space is not available in Node', zoekt_enabled_namespace_id: zoekt_enabled_namespace.id,
-              metadata: {
-                "meta.zoekt.node_name" => node.metadata['name'],
-                "meta.zoekt.node_id" => node.id
+              meta: {
+                "zoekt.node_name" => node.metadata['name'],
+                "zoekt.node_id" => node.id
               }
             ))
           end
