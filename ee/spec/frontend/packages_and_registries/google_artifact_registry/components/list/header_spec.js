@@ -1,4 +1,4 @@
-import { GlAlert, GlButton } from '@gitlab/ui';
+import { GlAlert } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import ArtifactRegistryListHeader from 'ee_component/packages_and_registries/google_artifact_registry/components/list/header.vue';
@@ -11,7 +11,7 @@ describe('Google Artifact Registry list page header', () => {
   const findTitleArea = () => wrapper.findComponent(TitleArea);
   const findRepositoryNameSubHeader = () => wrapper.findByTestId('repository-name');
   const findProjectIDSubHeader = () => wrapper.findByTestId('project-id');
-  const findOpenInGoogleCloudLink = () => wrapper.findComponent(GlButton);
+  const findOpenInGoogleCloudLink = () => wrapper.findByTestId('external-link');
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findSettingsLink = () => wrapper.findByTestId('settings-link');
 
@@ -32,7 +32,7 @@ describe('Google Artifact Registry list page header', () => {
   };
 
   describe('header', () => {
-    it('has a title', () => {
+    it('renders title while loading', () => {
       createComponent({ propsData: { data: {}, isLoading: true } });
 
       expect(findTitleArea().props()).toMatchObject({
@@ -42,8 +42,14 @@ describe('Google Artifact Registry list page header', () => {
       expect(findAlert().exists()).toBe(false);
     });
 
-    it('has external link to google cloud', () => {
+    it('hides external link to google cloud', () => {
       createComponent();
+
+      expect(findOpenInGoogleCloudLink().exists()).toBe(false);
+    });
+
+    it('has external link to google cloud', () => {
+      createComponent({ propsData: { ...defaultProps, showExternalLink: true } });
 
       expect(findOpenInGoogleCloudLink().text()).toBe('Open in Google Cloud');
       expect(findOpenInGoogleCloudLink().attributes('href')).toBe(

@@ -32,6 +32,11 @@ export default {
       required: false,
       default: false,
     },
+    showExternalLink: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
     showMetadata() {
@@ -61,8 +66,10 @@ export default {
   <title-area :title="__('Google Artifact Registry')" :metadata-loading="isLoading">
     <template v-if="showActions" #right-actions>
       <gl-button
+        v-if="showExternalLink"
         :href="data.artifactRegistryRepositoryUrl"
         icon="external-link"
+        data-testid="external-link"
         target="_blank"
         category="primary"
         variant="default"

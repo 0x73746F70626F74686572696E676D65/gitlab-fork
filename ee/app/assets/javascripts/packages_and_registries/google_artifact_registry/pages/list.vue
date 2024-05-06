@@ -40,6 +40,7 @@ export default {
       },
       error(error) {
         this.errorMessage = error.message;
+        this.failedToLoadArtifacts = true;
         Sentry.captureException(error);
       },
     },
@@ -55,6 +56,7 @@ export default {
       pageParams: {},
       cursors: [],
       failedToLoad: false,
+      failedToLoadArtifacts: false,
       errorMessage: '',
     };
   },
@@ -72,6 +74,9 @@ export default {
         sort: this.sortString,
         ...this.pageParams,
       };
+    },
+    showExternalLink() {
+      return !this.isArtifactsLoading && !this.failedToLoadArtifacts;
     },
     sortString() {
       return this.sort.sortDesc ? 'UPDATE_TIME_DESC' : 'UPDATE_TIME_ASC';
@@ -105,6 +110,7 @@ export default {
       :data="artifactRepository"
       :is-loading="isArtifactRepositoryLoading"
       :show-error="failedToLoad"
+      :show-external-link="showExternalLink"
     />
     <list-table
       v-if="!failedToLoad"
