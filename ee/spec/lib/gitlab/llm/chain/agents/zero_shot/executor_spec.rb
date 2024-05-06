@@ -309,6 +309,8 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
           CONTEXT
         end
 
+        let(:short_description) { 'short description' }
+
         context "with claude 2" do
           before do
             stub_feature_flags(ai_claude_3_sonnet: false)
@@ -321,9 +323,14 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
         end
 
         context "with claude 3" do
-          it 'includes the current resource metadata' do
-            expect(context).to receive(:resource_serialized).and_return(metadata)
-            expect(claude_3_system_prompt(agent)).to include(prompt_resource)
+          it 'does not include the current resource metadata' do
+            expect(context).not_to receive(:resource_serialized)
+            expect(claude_3_system_prompt(agent)).not_to include(prompt_resource)
+          end
+
+          it 'includes the shortened resource description' do
+            expect(context).to receive(:current_page_short_description).and_return(short_description)
+            expect(claude_3_system_prompt(agent)).to include(short_description)
           end
         end
       end

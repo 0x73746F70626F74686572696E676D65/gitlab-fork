@@ -28,4 +28,10 @@ RSpec.describe Ai::AiResource::Epic, feature_category: :duo_chat do
       expect(wrapped_epic.current_page_sentence).to include("utilize it instead of using the 'EpicReader' tool")
     end
   end
+
+  describe '#current_page_short_description' do
+    it 'returns prompt' do
+      expect(wrapped_epic.current_page_short_description).to include("The title of the epic is '#{epic.title}'.")
+    end
+  end
 end
