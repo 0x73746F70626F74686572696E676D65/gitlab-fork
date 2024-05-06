@@ -57,7 +57,7 @@ RSpec.describe Resolvers::SecurityReportSummaryResolver do
         selection_info = {
           dast: [:scanned_resources_count, :vulnerabilities_count, :scans, :__typename],
           sast: [:scanned_resources_count, :vulnerabilities_count, :__typename],
-          '__typename': []
+          __typename: []
         }
         build_mock_lookahead(selection_info)
       end

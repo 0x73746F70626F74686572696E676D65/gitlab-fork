@@ -36,7 +36,7 @@ RSpec.describe Arkose::Logger, feature_category: :instance_resiliency do
     before do
       allow(Gitlab::AppLogger).to receive(:info)
       allow(Gitlab::ApplicationContext).to receive(:current).and_return(
-        { 'correlation_id': mock_correlation_id }
+        { correlation_id: mock_correlation_id }
       )
     end
 

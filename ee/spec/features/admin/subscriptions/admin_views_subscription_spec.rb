@@ -106,9 +106,9 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
         before do
           stub_request(:post, graphql_url)
             .to_return(status: 200, body: {
-              "data": {
-                "cloudActivationActivate": {
-                  "licenseKey": license_to_be_created.data
+              data: {
+                cloudActivationActivate: {
+                  licenseKey: license_to_be_created.data
                 }
               }
             }.to_json, headers: { 'Content-Type' => 'application/json' })
@@ -195,12 +195,12 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
       before do
         stub_request(:post, graphql_url)
           .to_return(status: 200, body: {
-            "data": {
-              "cloudActivationActivate": {
-                "errors": ["invalid activation code"],
-                "license": license_to_be_created
+            data: {
+              cloudActivationActivate: {
+                errors: ["invalid activation code"],
+                license: license_to_be_created
               },
-              "success": "true"
+              success: "true"
             }
           }.to_json, headers: { 'Content-Type' => 'application/json' })
 
@@ -220,9 +220,9 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
       before do
         stub_request(:post, graphql_url)
           .to_return(status: 200, body: {
-            "data": {
-              "cloudActivationActivate": {
-                "licenseKey": license_to_be_created.data
+            data: {
+              cloudActivationActivate: {
+                licenseKey: license_to_be_created.data
               }
             }
           }.to_json, headers: { 'Content-Type' => 'application/json' })
@@ -243,9 +243,9 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
       before do
         stub_request(:post, graphql_url)
           .to_return(status: 200, body: {
-            "data": {
-              "cloudActivationActivate": {
-                "licenseKey": license_to_be_created.data
+            data: {
+              cloudActivationActivate: {
+                licenseKey: license_to_be_created.data
               }
             }
           }.to_json, headers: { 'Content-Type' => 'application/json' })
@@ -268,9 +268,9 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
       before do
         stub_request(:post, graphql_url)
           .to_return(status: 200, body: {
-            "data": {
-              "cloudActivationActivate": {
-                "licenseKey": license_to_be_created.data
+            data: {
+              cloudActivationActivate: {
+                licenseKey: license_to_be_created.data
               }
             }
           }.to_json, headers: { 'Content-Type' => 'application/json' })

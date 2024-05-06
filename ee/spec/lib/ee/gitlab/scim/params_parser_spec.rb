@@ -52,35 +52,35 @@ RSpec.describe EE::Gitlab::Scim::ParamsParser, feature_category: :system_access 
 
     context 'when path key is present' do
       it_behaves_like 'scim operation active false' do
-        let(:operations) { [{ 'op': 'replace', 'path': 'active', 'value': 'False' }] }
+        let(:operations) { [{ op: 'replace', path: 'active', value: 'False' }] }
       end
 
       it_behaves_like 'scim operation empty' do
-        let(:operations) { [{ 'op': 'replace', 'path': 'test', 'value': 'False' }] }
+        let(:operations) { [{ op: 'replace', path: 'test', value: 'False' }] }
       end
 
       it_behaves_like 'scim operation update name' do
-        let(:operations) { [{ 'op': 'replace', 'path': 'displayName', 'value': 'My Name Is' }] }
+        let(:operations) { [{ op: 'replace', path: 'displayName', value: 'My Name Is' }] }
       end
     end
 
     context 'when path key is not present' do
       it_behaves_like 'scim operation active false' do
-        let(:operations) { [{ 'op': 'replace', 'value': { 'active': false } }] }
+        let(:operations) { [{ op: 'replace', value: { active: false } }] }
       end
 
       it_behaves_like 'scim operation empty' do
-        let(:operations) { [{ 'op': 'replace', 'value': { 'test': false } }] }
+        let(:operations) { [{ op: 'replace', value: { test: false } }] }
       end
 
       it_behaves_like 'scim operation update name' do
-        let(:operations) { [{ 'op': 'replace', 'value': { 'displayName': 'My Name Is' } }] }
+        let(:operations) { [{ op: 'replace', value: { displayName: 'My Name Is' } }] }
       end
     end
 
     context 'with capitalized op values for Azure' do
       it_behaves_like 'scim operation active false' do
-        let(:operations) { [{ 'op': 'Replace', 'path': 'active', 'value': 'False' }] }
+        let(:operations) { [{ op: 'Replace', path: 'active', value: 'False' }] }
       end
     end
   end
@@ -121,19 +121,19 @@ RSpec.describe EE::Gitlab::Scim::ParamsParser, feature_category: :system_access 
 
   describe '#deprovision_user?' do
     it 'returns true when deprovisioning' do
-      operations = [{ 'op': 'replace', 'path': 'active', 'value': 'False' }]
+      operations = [{ op: 'replace', path: 'active', value: 'False' }]
 
       expect(described_class.new(Operations: operations).deprovision_user?).to be true
     end
 
     it 'returns false when not deprovisioning' do
-      operations = [{ 'op': 'replace', 'path': 'active', 'value': 'True' }]
+      operations = [{ op: 'replace', path: 'active', value: 'True' }]
 
       expect(described_class.new(Operations: operations).deprovision_user?).to be false
     end
 
     it 'returns true when deprovisioning without a path key' do
-      operations = [{ 'op': 'replace', 'value': { 'active': false } }]
+      operations = [{ op: 'replace', value: { active: false } }]
 
       expect(described_class.new(Operations: operations).deprovision_user?).to be true
     end
@@ -141,13 +141,13 @@ RSpec.describe EE::Gitlab::Scim::ParamsParser, feature_category: :system_access 
 
   describe '#reprovision_user?' do
     it 'returns true when reprovisioning' do
-      operations = [{ 'op': 'replace', 'path': 'active', 'value': 'True' }]
+      operations = [{ op: 'replace', path: 'active', value: 'True' }]
 
       expect(described_class.new(Operations: operations).reprovision_user?).to be true
     end
 
     it 'returns false when not reprovisioning' do
-      operations = [{ 'op': 'replace', 'path': 'active', 'value': 'False' }]
+      operations = [{ op: 'replace', path: 'active', value: 'False' }]
 
       expect(described_class.new(Operations: operations).reprovision_user?).to be false
     end
