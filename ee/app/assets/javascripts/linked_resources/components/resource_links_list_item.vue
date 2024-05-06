@@ -76,7 +76,7 @@ export default {
     <div
       class="item-contents gl-display-flex gl-align-items-center gl-flex-wrap gl-flex-grow-1 flex-xl-nowrap gl-min-h-7"
     >
-      <div class="item-title d-flex align-items-xl-center mb-xl-0 gl-min-w-0">
+      <div class="item-title gl-sm-display-flex align-items-xl-center mb-xl-0 gl-min-w-0">
         <gl-icon
           class="gl-mr-3 gl-text-gray-500"
           :name="getLinkIcon(iconName)"
