@@ -3,14 +3,14 @@
 mutation securityDashboardCreateNote(
   $noteableId: NoteableID!
   $discussionId: DiscussionID
-  $confidential: Boolean
+  $internal: Boolean
   $body: String!
 ) {
   createNote(
     input: {
       noteableId: $noteableId
       body: $body
-      confidential: $confidential
+      internal: $internal
       discussionId: $discussionId
     }
   ) {
