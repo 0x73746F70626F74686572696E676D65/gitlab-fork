@@ -22,12 +22,18 @@ module WorkItems
           epic_id: epic.id,
           work_item_id: epic.issue_id
         )
-      else
+      elsif Epic.find_by_id(epic.id)
         Gitlab::EpicWorkItemSync::Logger.warn(
           message: "Epic and work item attributes are not in sync after #{action(event)}",
           epic_id: epic.id,
           work_item_id: epic.issue_id,
           mismatching_attributes: mismatching_attributes
+        )
+      else
+        Gitlab::EpicWorkItemSync::Logger.info(
+          message: "Epic and WorkItem got deleted while finding mismatching attributes",
+          epic_id: epic.id,
+          work_item_id: epic.issue_id
         )
       end
     end

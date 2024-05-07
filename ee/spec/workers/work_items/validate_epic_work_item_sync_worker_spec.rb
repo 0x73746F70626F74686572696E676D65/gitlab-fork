@@ -95,6 +95,24 @@ RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :tea
           consume_event(subscriber: described_class, event: epic_updated_event)
         end
       end
+
+      context 'when epic gets deleted on the database during the check' do
+        it 'does not report a mismatch' do
+          expect_next_instance_of(Gitlab::EpicWorkItemSync::Diff) do |instance|
+            expect(instance).to receive(:attributes).and_call_original
+            epic.destroy!
+          end
+
+          expect(Gitlab::EpicWorkItemSync::Logger).not_to receive(:warn)
+          expect(Gitlab::EpicWorkItemSync::Logger).to receive(:info).with(
+            message: "Epic and WorkItem got deleted while finding mismatching attributes",
+            epic_id: epic.id,
+            work_item_id: work_item.id
+          )
+
+          consume_event(subscriber: described_class, event: epic_updated_event)
+        end
+      end
     end
   end
 end
