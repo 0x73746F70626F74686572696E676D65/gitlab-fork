@@ -29,9 +29,9 @@ module WorkItems
           attributes = attributes_for(:due_date).merge(attributes_for(:start_date))
 
           ApplicationRecord.transaction do
-            next if attributes.blank?
-
-            work_item.dates_source.update!(attributes.except('issue_id'))
+            work_item.dates_source.update!(attributes.except('issue_id')) unless attributes.blank?
+            # Still syncs associated legacy epic fields in case work item
+            # toggles both start_date and due_date to fixed
             update_synced_epic!
           end
 

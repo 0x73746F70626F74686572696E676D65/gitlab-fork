@@ -7,22 +7,21 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
   feature_category: :portfolio_management do
     let_it_be(:group) { create(:group) }
     let_it_be_with_reload(:work_item) { create(:work_item, :epic, namespace: group) }
+    let(:synced_attributes) do
+      [
+        :start_date,
+        :start_date_fixed,
+        :start_date_is_fixed,
+        :start_date_sourcing_milestone_id,
+        :due_date,
+        :due_date_fixed,
+        :due_date_is_fixed,
+        :due_date_sourcing_milestone_id
+      ]
+    end
 
     shared_examples 'work item with synced epic' do
       let_it_be_with_reload(:epic) { create(:epic, work_item: work_item) }
-
-      let(:synced_attributes) do
-        [
-          :start_date,
-          :start_date_fixed,
-          :start_date_is_fixed,
-          :start_date_sourcing_milestone_id,
-          :due_date,
-          :due_date_fixed,
-          :due_date_is_fixed,
-          :due_date_sourcing_milestone_id
-        ]
-      end
 
       it 'syncs date fields with epic', :aggregate_failures do
         expect { described_class.new(work_item).execute }
@@ -147,6 +146,25 @@ RSpec.describe ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateServic
         end
 
         it_behaves_like 'work item with synced epic'
+      end
+
+      context 'when start date and due date are fixed' do
+        let_it_be_with_reload(:epic) { create(:epic, work_item: work_item) }
+
+        before do
+          create(:work_items_dates_source, work_item: work_item, due_date_is_fixed: true, start_date_is_fixed: true)
+        end
+
+        it 'syncs associated epic dates' do
+          expect { described_class.new(work_item).execute }
+            .to not_change { work_item.reload.dates_source&.attributes }
+            .and change { epic.reload.attributes.except('color') }
+            .and not_change { epic.reload.updated_at }
+
+          synced_attributes.each do |attribute|
+            expect(work_item.dates_source[attribute]).to eq(epic.public_send(attribute))
+          end
+        end
       end
 
       it_behaves_like 'work item with synced epic'
