@@ -3,6 +3,7 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { GlLink, GlIcon, GlButton } from '@gitlab/ui';
 import api from '~/api';
+import { InternalEvents } from '~/tracking';
 import { componentNames, iconComponentNames } from 'ee/ci/reports/components/issue_body';
 import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_compliance/store/constants';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
@@ -23,7 +24,7 @@ export default {
     SmartVirtualList,
     GlIcon,
   },
-  mixins: [reportsMixin],
+  mixins: [reportsMixin, InternalEvents.mixin()],
   props: {
     fullReportPath: {
       type: String,
@@ -115,7 +116,10 @@ export default {
   methods: {
     trackVisitedPath(trackAction) {
       api.trackRedisHllUserEvent(trackAction);
-      api.trackRedisCounterEvent(trackAction);
+    },
+    trackFullReportClick() {
+      api.trackRedisHllUserEvent('users_visiting_testing_license_compliance_full_report');
+      this.trackEvent('click_full_report_license_compliance');
     },
     ...mapActions(LICENSE_MANAGEMENT, [
       'setAPISettings',
@@ -193,7 +197,7 @@ export default {
           icon="external-link"
           target="_blank"
           data-testid="full-report-button"
-          @click="trackVisitedPath('users_visiting_testing_license_compliance_full_report')"
+          @click="trackFullReportClick"
         >
           {{ s__('ciReport|View full report') }}
         </gl-button>

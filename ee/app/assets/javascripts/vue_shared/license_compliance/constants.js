@@ -36,3 +36,5 @@ export const REPORT_GROUPS = [
 
 export const LICENSE_LINK_TELEMETRY_EVENT =
   'users_clicking_license_testing_visiting_external_website';
+
+export const CLICK_EXTERNAL_LINK_LICENSE_COMPLIANCE = 'click_external_link_license_compliance';

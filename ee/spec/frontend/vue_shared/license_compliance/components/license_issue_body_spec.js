@@ -1,10 +1,14 @@
 import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import { LICENSE_LINK_TELEMETRY_EVENT } from 'ee/vue_shared/license_compliance/constants';
+import {
+  LICENSE_LINK_TELEMETRY_EVENT,
+  CLICK_EXTERNAL_LINK_LICENSE_COMPLIANCE,
+} from 'ee/vue_shared/license_compliance/constants';
 import api from '~/api';
 import LicenseIssueBody from 'ee/vue_shared/license_compliance/components/license_issue_body.vue';
 import LicensePackages from 'ee/vue_shared/license_compliance/components/license_packages.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 import { licenseReport } from '../mock_data';
 
 describe('LicenseIssueBody', () => {
@@ -80,23 +84,27 @@ describe('LicenseIssueBody', () => {
 
   describe('event tracking', () => {
     let trackUserEventSpy;
-    let trackCounterEventSpy;
+    const { bindInternalEventDocument } = useMockInternalEventsTracking();
 
     beforeEach(() => {
       trackUserEventSpy = jest.spyOn(api, 'trackRedisHllUserEvent').mockImplementation(() => {});
-      trackCounterEventSpy = jest.spyOn(api, 'trackRedisCounterEvent').mockImplementation(() => {});
     });
 
     afterEach(() => {
       trackUserEventSpy.mockRestore();
-      trackCounterEventSpy.mockRestore();
     });
 
-    it('tracks users_visiting_testing_license_compliance_full_report', () => {
+    it('tracks users_clicking_license_testing_visiting_external_website', () => {
+      const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
       findGlLink().vm.$emit('click');
 
       expect(trackUserEventSpy).toHaveBeenCalledWith(LICENSE_LINK_TELEMETRY_EVENT);
-      expect(trackCounterEventSpy).toHaveBeenCalledWith(LICENSE_LINK_TELEMETRY_EVENT);
+      expect(trackEventSpy).toHaveBeenCalledWith(
+        CLICK_EXTERNAL_LINK_LICENSE_COMPLIANCE,
+        {},
+        undefined,
+      );
     });
   });
 });

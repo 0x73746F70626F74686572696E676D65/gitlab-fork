@@ -3,14 +3,16 @@
 import { mapActions } from 'vuex';
 import { GlLink } from '@gitlab/ui';
 import api from '~/api';
+import { InternalEvents } from '~/tracking';
 
 import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_compliance/store/constants';
-import { LICENSE_LINK_TELEMETRY_EVENT } from '../constants';
+import { LICENSE_LINK_TELEMETRY_EVENT, CLICK_EXTERNAL_LINK_LICENSE_COMPLIANCE } from '../constants';
 import LicensePackages from './license_packages.vue';
 
 export default {
   name: 'LicenseIssueBody',
   components: { LicensePackages, GlLink },
+  mixins: [InternalEvents.mixin()],
   props: {
     issue: {
       type: Object,
@@ -26,7 +28,7 @@ export default {
     ...mapActions(LICENSE_MANAGEMENT, ['setLicenseInModal']),
     trackLinkClick() {
       api.trackRedisHllUserEvent(LICENSE_LINK_TELEMETRY_EVENT);
-      api.trackRedisCounterEvent(LICENSE_LINK_TELEMETRY_EVENT);
+      this.trackEvent(CLICK_EXTERNAL_LINK_LICENSE_COMPLIANCE);
     },
   },
 };
