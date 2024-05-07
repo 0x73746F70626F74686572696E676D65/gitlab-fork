@@ -1,3 +1,13 @@
+const putPolicyScopeComplianceFrameworksToEndOfYaml = (yaml) =>
+  yaml
+    .replace('\npolicy_scope:\n  compliance_frameworks:\n    - id: 1\n    - id: 2', '')
+    .concat('policy_scope:\n  compliance_frameworks:\n    - id: 1\n    - id: 2\n');
+
+const putPolicyScopeProjectsToEndOfYaml = (yaml) =>
+  yaml
+    .replace('\npolicy_scope:\n  projects:\n    excluding:\n      - id: 1\n      - id: 2', '')
+    .concat('policy_scope:\n  projects:\n    excluding:\n      - id: 1\n      - id: 2\n');
+
 export const mockScanExecutionActionManifest = `type: scan_execution_policy
 name: ''
 description: ''
@@ -14,21 +24,9 @@ actions:
   - scan: secret_detection
 `;
 
-export const mockScanExecutionActionProjectManifest = `type: scan_execution_policy
-name: ''
-description: ''
-enabled: true
-rules:
-  - type: pipeline
-    branches:
-      - '*'
-actions:
-  - scan: secret_detection
-policy_scope:
-  compliance_frameworks:
-    - id: 1
-    - id: 2
-`;
+export const mockScanExecutionActionProjectManifest = putPolicyScopeComplianceFrameworksToEndOfYaml(
+  mockScanExecutionActionManifest,
+);
 
 export const mockPipelineExecutionActionManifest = `type: pipeline_execution_policy
 name: ''
@@ -62,23 +60,9 @@ approval_settings:
   prevent_pushing_and_force_pushing: true
 `;
 
-export const mockApprovalActionProjectManifest = `type: approval_policy
-name: ''
-description: ''
-enabled: true
-rules:
-  - type: ''
-actions:
-  - type: require_approval
-    approvals_required: 1
-approval_settings:
-  block_branch_modification: true
-  prevent_pushing_and_force_pushing: true
-policy_scope:
-  compliance_frameworks:
-    - id: 1
-    - id: 2
-`;
+export const mockApprovalActionProjectManifest = putPolicyScopeComplianceFrameworksToEndOfYaml(
+  mockApprovalActionManifest,
+);
 
 export const EXCLUDING_PROJECTS_MOCKS = {
   SCAN_EXECUTION: `type: scan_execution_policy
@@ -132,52 +116,23 @@ approval_settings:
 };
 
 export const EXCLUDING_PROJECTS_PROJECTS_LEVEL_MOCKS = {
-  SCAN_EXECUTION: `type: scan_execution_policy
-name: ''
-description: ''
-enabled: true
-rules:
-  - type: pipeline
-    branches:
-      - '*'
-actions:
-  - scan: secret_detection
-policy_scope:
-  projects:
-    excluding:
-      - id: 1
-      - id: 2
-`,
-  PIPELINE_EXECUTION: `type: pipeline_execution_policy
-name: ''
-description: ''
-enabled: true
-override_project_ci: false
-content:
-  include:
-    project: ''
-policy_scope:
-  projects:
-    excluding:
-      - id: 1
-      - id: 2
-`,
-  APPROVAL_POLICY: `type: approval_policy
-name: ''
-description: ''
-enabled: true
-rules:
-  - type: ''
-actions:
-  - type: require_approval
-    approvals_required: 1
-approval_settings:
-  block_branch_modification: true
-  prevent_pushing_and_force_pushing: true
-policy_scope:
-  projects:
-    excluding:
-      - id: 1
-      - id: 2
-`,
+  SCAN_EXECUTION: putPolicyScopeProjectsToEndOfYaml(EXCLUDING_PROJECTS_MOCKS.SCAN_EXECUTION),
+  PIPELINE_EXECUTION: putPolicyScopeProjectsToEndOfYaml(
+    EXCLUDING_PROJECTS_MOCKS.PIPELINE_EXECUTION,
+  ),
+  APPROVAL_POLICY: putPolicyScopeProjectsToEndOfYaml(EXCLUDING_PROJECTS_MOCKS.APPROVAL_POLICY),
+};
+
+const replaceProjectKey = (value) => value.replace('excluding', 'including');
+
+export const INCLUDING_PROJECTS_MOCKS = {
+  SCAN_EXECUTION: replaceProjectKey(EXCLUDING_PROJECTS_MOCKS.SCAN_EXECUTION),
+  PIPELINE_EXECUTION: replaceProjectKey(EXCLUDING_PROJECTS_MOCKS.PIPELINE_EXECUTION),
+  APPROVAL_POLICY: replaceProjectKey(EXCLUDING_PROJECTS_MOCKS.APPROVAL_POLICY),
+};
+
+export const INCLUDING_PROJECTS_PROJECTS_LEVEL_MOCKS = {
+  SCAN_EXECUTION: replaceProjectKey(EXCLUDING_PROJECTS_PROJECTS_LEVEL_MOCKS.SCAN_EXECUTION),
+  PIPELINE_EXECUTION: replaceProjectKey(EXCLUDING_PROJECTS_PROJECTS_LEVEL_MOCKS.PIPELINE_EXECUTION),
+  APPROVAL_POLICY: replaceProjectKey(EXCLUDING_PROJECTS_PROJECTS_LEVEL_MOCKS.APPROVAL_POLICY),
 };
