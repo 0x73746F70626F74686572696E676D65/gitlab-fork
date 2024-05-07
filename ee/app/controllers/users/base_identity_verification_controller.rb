@@ -22,9 +22,7 @@ module Users
 
     layout 'minimal'
 
-    def show
-      push_frontend_feature_flag(:auto_request_phone_number_verification_exemption, @user, type: :gitlab_com_derisk)
-    end
+    def show; end
 
     def restricted
       not_found unless Feature.enabled?(:prevent_registration_from_china)

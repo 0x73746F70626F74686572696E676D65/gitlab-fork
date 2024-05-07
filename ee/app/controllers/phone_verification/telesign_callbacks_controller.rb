@@ -31,11 +31,6 @@ module PhoneVerification
       user = callback.user
 
       return unless user
-
-      return unless ::Feature.enabled?(
-        :auto_request_phone_number_verification_exemption, user, type: :gitlab_com_derisk
-      )
-
       return unless user.offer_phone_number_exemption?
 
       user.create_phone_number_exemption!
