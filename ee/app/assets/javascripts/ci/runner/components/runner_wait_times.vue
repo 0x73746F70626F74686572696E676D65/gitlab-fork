@@ -1,7 +1,7 @@
 <script>
 import { GlEmptyState, GlLink, GlLoadingIcon, GlSkeletonLoader, GlSprintf } from '@gitlab/ui';
 import { GlSingleStat, GlLineChart } from '@gitlab/ui/dist/charts';
-import CHART_EMPTY_STATE_SVG_URL from '@gitlab/svgs/dist/illustrations/chart-empty-state.svg?url';
+import CHART_EMPTY_STATE_SVG_URL from '@gitlab/svgs/dist/illustrations/empty-state/empty-pipeline-md.svg?url';
 import HelpPopover from '~/vue_shared/components/help_popover.vue';
 
 import { s__ } from '~/locale';
