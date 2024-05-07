@@ -83,7 +83,6 @@ module EE
         mount_mutation ::Mutations::DastScannerProfiles::Update
         mount_mutation ::Mutations::DastScannerProfiles::Delete
         mount_mutation ::Mutations::DastSiteTokens::Create
-        mount_mutation ::Mutations::Namespaces::IncreaseStorageTemporarily
         mount_mutation ::Mutations::QualityManagement::TestCases::Create
         mount_mutation ::Mutations::Analytics::DevopsAdoption::EnabledNamespaces::Enable
         mount_mutation ::Mutations::Analytics::DevopsAdoption::EnabledNamespaces::BulkEnable

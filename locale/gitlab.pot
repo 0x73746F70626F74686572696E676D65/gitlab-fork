@@ -51220,12 +51220,6 @@ msgstr ""
 msgid "Templates"
 msgstr ""
 
-msgid "TemporaryStorageIncrease|can only be set once"
-msgstr ""
-
-msgid "TemporaryStorageIncrease|can only be set with more than %{percentage}%% usage"
-msgstr ""
-
 msgid "Terminal"
 msgstr ""
 

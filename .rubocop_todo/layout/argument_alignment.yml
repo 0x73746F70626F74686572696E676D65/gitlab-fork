@@ -448,7 +448,6 @@ Layout/ArgumentAlignment:
     - 'ee/app/graphql/mutations/iterations/cadences/destroy.rb'
     - 'ee/app/graphql/mutations/iterations/create.rb'
     - 'ee/app/graphql/mutations/iterations/update.rb'
-    - 'ee/app/graphql/mutations/namespaces/base.rb'
     - 'ee/app/graphql/mutations/projects/initialize_product_analytics.rb'
     - 'ee/app/graphql/mutations/projects/set_compliance_framework.rb'
     - 'ee/app/graphql/mutations/quality_management/test_cases/create.rb'

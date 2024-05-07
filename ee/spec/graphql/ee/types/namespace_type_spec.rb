@@ -15,8 +15,6 @@ RSpec.describe GitlabSchema.types['Namespace'], feature_category: :groups_and_pr
       actual_repository_size_limit
       actual_size_limit
       storage_size_limit
-      is_temporary_storage_increase_enabled
-      temporary_storage_increase_ends_on
       compliance_frameworks
       pipeline_execution_policies
       scan_execution_policies

@@ -24,7 +24,6 @@ module EE
     }.freeze
 
     LICENSE_PLANS_TO_NAMESPACE_PLANS = NAMESPACE_PLANS_TO_LICENSE_PLANS.invert.freeze
-    TEMPORARY_STORAGE_INCREASE_DAYS = 30
 
     prepended do
       include EachBatch
@@ -134,7 +133,6 @@ module EE
 
       delegate :eligible_additional_purchased_storage_size, :additional_purchased_storage_size=,
         :additional_purchased_storage_ends_on, :additional_purchased_storage_ends_on=,
-        :temporary_storage_increase_ends_on, :temporary_storage_increase_ends_on=,
         to: :namespace_limit, allow_nil: true
       delegate :enforce_ssh_certificates=, to: :namespace_settings
       delegate :duo_features_enabled, :lock_duo_features_enabled, to: :namespace_settings, allow_nil: true
@@ -179,14 +177,6 @@ module EE
 
       before_update :mark_skip_sync_with_customers_dot, if: -> { name_changed? && !project_namespace? }
       after_commit :sync_name_with_customers_dot, on: :update, if: -> { name_previously_changed? && !project_namespace? }
-
-      def temporary_storage_increase_enabled?
-        !!namespace_limit&.temporary_storage_increase_enabled?
-      end
-
-      def eligible_for_temporary_storage_increase?
-        !!namespace_limit&.eligible_for_temporary_storage_increase?
-      end
 
       def trial?
         !!gitlab_subscription&.trial?
@@ -523,10 +513,6 @@ module EE
 
     def hashed_root_namespace_id
       ::Search.hash_namespace_id(root_ancestor.id)
-    end
-
-    def enable_temporary_storage_increase!
-      update(temporary_storage_increase_ends_on: TEMPORARY_STORAGE_INCREASE_DAYS.days.from_now)
     end
 
     def root_storage_size

@@ -54,9 +54,7 @@ module Namespaces
       end
 
       def valid_enforcement?
-        return false unless enforce_limit?
-
-        !root_namespace.temporary_storage_increase_enabled?
+        enforce_limit?
       end
 
       def enforce_limit?
