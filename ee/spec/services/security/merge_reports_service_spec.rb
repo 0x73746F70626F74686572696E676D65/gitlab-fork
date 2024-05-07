@@ -55,7 +55,7 @@ RSpec.describe Security::MergeReportsService, '#execute', feature_category: :vul
     end
 
     let(:gemnasium_report) do
-      build( :ci_reports_security_report,
+      build(:ci_reports_security_report,
         type: :dependency_scanning,
         scanners: [gemnasium_scanner],
         findings: [finding_id_1],
@@ -117,7 +117,7 @@ RSpec.describe Security::MergeReportsService, '#execute', feature_category: :vul
       let(:pre_merged_report) { described_class.new(bundler_audit_report, gemnasium_report).execute }
 
       let(:gemnasium_report) do
-        build( :ci_reports_security_report,
+        build(:ci_reports_security_report,
           type: :dependency_scanning,
           scanners: [gemnasium_scanner],
           findings: [finding_id_1, finding_id_4],
