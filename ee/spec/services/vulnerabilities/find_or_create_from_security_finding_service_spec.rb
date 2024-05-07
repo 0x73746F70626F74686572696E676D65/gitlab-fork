@@ -6,7 +6,7 @@ RSpec.describe Vulnerabilities::FindOrCreateFromSecurityFindingService, '#execut
 feature_category: :vulnerability_management do
   before do
     stub_licensed_features(security_dashboard: true)
-    project.add_maintainer(user)
+    project.add_developer(user)
   end
 
   let(:security_finding_uuid) { security_findings.first.uuid }

@@ -12,7 +12,7 @@ module Vulnerabilities
     end
 
     def execute
-      if !@skip_permission_check && !can?(@current_user, :admin_vulnerability, @project)
+      if !@skip_permission_check && !can?(@current_user, :read_security_resource, @project)
         raise Gitlab::Access::AccessDeniedError
       end
 

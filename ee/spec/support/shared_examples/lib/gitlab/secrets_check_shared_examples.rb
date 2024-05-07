@@ -1075,3 +1075,45 @@ RSpec.shared_examples 'scan skipped when a commit has special bypass flag' do
     expect(AuditEvent.last.details[:custom_message]).to eq("Pre-receive secret detection skipped via commit message")
   end
 end
+
+RSpec.shared_examples 'scan skipped when secret_detection.skip_all push option is passed' do
+  include_context 'secrets check context'
+
+  let(:changes_access) do
+    Gitlab::Checks::ChangesAccess.new(
+      changes,
+      project: project,
+      user_access: user_access,
+      protocol: protocol,
+      logger: logger,
+      push_options: Gitlab::PushOptions.new(["secret_detection.skip_all"])
+    )
+  end
+
+  let_it_be(:new_commit) do
+    create_commit(
+      { '.env' => 'SECRET=glpat-JUST20LETTERSANDNUMB' } # gitleaks:allow
+    )
+  end
+
+  it 'skips the scanning process' do
+    expect { subject.validate! }.not_to raise_error
+  end
+
+  context 'when other commits have secrets in the same push' do
+    let_it_be(:second_commit_with_secret) do
+      create_commit('.test.env' => 'TOKEN=glpat-JUST20LETTERSANDNUMB') # gitleaks:allow
+    end
+
+    let(:changes) do
+      [
+        { oldrev: initial_commit, newrev: new_commit, ref: 'refs/heads/master' },
+        { oldrev: initial_commit, newrev: second_commit_with_secret, ref: 'refs/heads/master' }
+      ]
+    end
+
+    it 'skips the scanning process still' do
+      expect { subject.validate! }.not_to raise_error
+    end
+  end
+end

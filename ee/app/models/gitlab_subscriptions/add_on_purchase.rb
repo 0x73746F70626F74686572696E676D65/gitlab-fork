@@ -17,6 +17,7 @@ module GitlabSubscriptions
       length: { maximum: 255 }
 
     scope :active, -> { where('expires_on >= ?', Date.current) }
+    scope :trial, -> { where(trial: true) }
     scope :by_add_on_name, ->(name) { joins(:add_on).where(add_on: { name: name }) }
     scope :by_namespace_id, ->(namespace_id) { where(namespace_id: namespace_id) }
     scope :for_gitlab_duo_pro, -> { where(subscription_add_on_id: AddOn.code_suggestions.pick(:id)) }

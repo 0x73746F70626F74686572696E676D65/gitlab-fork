@@ -44,13 +44,16 @@ RSpec.shared_context 'secrets check context' do
   let(:timeout) { Gitlab::GitAccess::INTERNAL_TIMEOUT }
   let(:logger) { Gitlab::Checks::TimedLogger.new(timeout: timeout) }
   let(:user_access) { Gitlab::UserAccess.new(user, container: project) }
+  let(:push_options) { nil }
+
   let(:changes_access) do
     Gitlab::Checks::ChangesAccess.new(
       changes,
       project: project,
       user_access: user_access,
       protocol: protocol,
-      logger: logger
+      logger: logger,
+      push_options: push_options
     )
   end
 

@@ -19158,6 +19158,12 @@ msgstr ""
 msgid "DuoProTrial|Code refactorization"
 msgstr ""
 
+msgid "DuoProTrial|Day %{daysUsed}/%{duration}"
+msgstr ""
+
+msgid "DuoProTrial|GitLab Duo Pro Trial"
+msgstr ""
+
 msgid "DuoProTrial|GitLab Duo Pro is designed to make teams more efficient throughout the software development lifecycle with:"
 msgstr ""
 
@@ -35103,25 +35109,16 @@ msgstr ""
 msgid "ObservabilityLogs|Check again"
 msgstr ""
 
+msgid "ObservabilityLogs|Count"
+msgstr ""
+
 msgid "ObservabilityLogs|Date"
-msgstr ""
-
-msgid "ObservabilityLogs|Debug"
-msgstr ""
-
-msgid "ObservabilityLogs|Error"
 msgstr ""
 
 msgid "ObservabilityLogs|Failed to load logs."
 msgstr ""
 
-msgid "ObservabilityLogs|Fatal"
-msgstr ""
-
 msgid "ObservabilityLogs|Fingerprint"
-msgstr ""
-
-msgid "ObservabilityLogs|Info"
 msgstr ""
 
 msgid "ObservabilityLogs|Level"
@@ -35163,16 +35160,10 @@ msgstr ""
 msgid "ObservabilityLogs|Span ID"
 msgstr ""
 
-msgid "ObservabilityLogs|Trace"
-msgstr ""
-
 msgid "ObservabilityLogs|Trace Flags"
 msgstr ""
 
 msgid "ObservabilityLogs|Trace ID"
-msgstr ""
-
-msgid "ObservabilityLogs|Warning"
 msgstr ""
 
 msgid "ObservabilityLogs|name"

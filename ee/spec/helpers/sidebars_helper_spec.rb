@@ -34,8 +34,8 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
 
     shared_examples 'pipeline minutes attributes' do
       it 'returns sidebar values from user', :use_clean_rails_memory_store_caching do
-        expect(subject).to have_key(:pipeline_minutes)
-        expect(subject[:pipeline_minutes]).to include({
+        expect(super_sidebar_context).to have_key(:pipeline_minutes)
+        expect(super_sidebar_context[:pipeline_minutes]).to include({
           show_buy_pipeline_minutes: true,
           show_notification_dot: false,
           show_with_subtext: true,
@@ -89,7 +89,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
           end
 
           it 'returns trial status widget data' do
-            expect(subject[:trial_status_widget_data_attrs]).to match({
+            expect(super_sidebar_context[:trial_status_widget_data_attrs]).to match({
               container_id: "trial-status-sidebar-widget",
               nav_icon_image_path: match_asset_path("/assets/illustrations/gitlab_logo.svg"),
               percentage_complete: 50.0,
@@ -99,7 +99,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
               trial_days_used: 15,
               trial_duration: 30
             })
-            expect(subject[:trial_status_popover_data_attrs]).to eq({
+            expect(super_sidebar_context[:trial_status_popover_data_attrs]).to eq({
               company_name: "",
               container_id: "trial-status-sidebar-widget",
               create_hand_raise_lead_path: "/-/subscriptions/hand_raise_leads",
@@ -121,8 +121,33 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
       end
     end
 
+    shared_examples 'duo pro trial status widget data' do
+      describe 'duo pro trial status' do
+        describe 'does not return trial status widget data' do
+          before do
+            allow_next_instance_of(GitlabSubscriptions::Trials::DuoProStatusWidgetBuilder) do |instance|
+              allow(instance).to receive(:show?).and_return(false)
+            end
+          end
+
+          it { is_expected.not_to include(:duo_pro_trial_status_widget_data_attrs) }
+        end
+
+        context 'when a namespace is qualified for duo pro trial status widget' do
+          before do
+            allow_next_instance_of(GitlabSubscriptions::Trials::DuoProStatusWidgetBuilder) do |instance|
+              allow(instance).to receive(:show?).and_return(true)
+              allow(instance).to receive(:widget_data_attributes).and_return({})
+            end
+          end
+
+          it { is_expected.to include(:duo_pro_trial_status_widget_data_attrs) }
+        end
+      end
+    end
+
     context 'with global concerns' do
-      subject do
+      subject(:super_sidebar_context) do
         helper.super_sidebar_context(user, group: nil, project: nil, panel: panel, panel_type: nil)
       end
 
@@ -132,7 +157,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
           url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'top-right-dropdown')
         }
 
-        expect(subject).to include(trial: trial)
+        expect(super_sidebar_context).to include(trial: trial)
       end
     end
 
@@ -145,15 +170,16 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
       let_it_be(:namespace) { project }
       let_it_be(:group) { nil }
 
-      let(:subject) do
+      subject(:super_sidebar_context) do
         helper.super_sidebar_context(user, group: group, project: project, panel: panel, panel_type: panel_type)
       end
 
       include_examples 'pipeline minutes attributes'
       include_examples 'trial status widget data'
+      include_examples 'duo pro trial status widget data'
 
       it 'returns correct usage quotes path', :use_clean_rails_memory_store_caching do
-        expect(subject[:pipeline_minutes]).to include({
+        expect(super_sidebar_context[:pipeline_minutes]).to include({
           buy_pipeline_minutes_path: "/-/profile/usage_quotas"
         })
       end
@@ -168,15 +194,16 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
       let_it_be(:namespace) { group }
       let_it_be(:project) { nil }
 
-      let(:subject) do
+      subject(:super_sidebar_context) do
         helper.super_sidebar_context(user, group: group, project: project, panel: panel, panel_type: panel_type)
       end
 
       include_examples 'pipeline minutes attributes'
       include_examples 'trial status widget data'
+      include_examples 'duo pro trial status widget data'
 
       it 'returns correct usage quotes path', :use_clean_rails_memory_store_caching do
-        expect(subject[:pipeline_minutes]).to include({
+        expect(super_sidebar_context[:pipeline_minutes]).to include({
           buy_pipeline_minutes_path: "/groups/#{group.path}/-/usage_quotas"
         })
       end
@@ -190,12 +217,12 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
       let_it_be(:project) { nil }
       let_it_be(:group) { nil }
 
-      let(:subject) do
+      subject(:super_sidebar_context) do
         helper.super_sidebar_context(user, group: group, project: project, panel: panel, panel_type: panel_type)
       end
 
       it 'does not have pipeline minutes attributes' do
-        expect(subject).not_to have_key('pipeline_minutes')
+        expect(super_sidebar_context).not_to have_key('pipeline_minutes')
       end
     end
   end

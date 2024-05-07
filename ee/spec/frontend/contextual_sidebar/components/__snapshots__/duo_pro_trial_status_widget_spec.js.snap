@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DuoProTrialStatusWidget component without the optional containerId prop matches the snapshot for namespace in active trial 1`] = `
+<gl-link-stub
+  href="some/widget/path"
+  title="GitLab Duo Pro Trial"
+>
+  <div
+    class="gl-align-items-stretch gl-display-flex gl-flex-direction-column gl-w-full"
+    data-testid="duo-pro-trial-widget-menu"
+  >
+    <div
+      class="gl-display-flex gl-w-full"
+    >
+      <span
+        class="gl-mr-3 nav-icon-container svg-container"
+      >
+        <img
+          alt=""
+          class="svg"
+          src="file-mock"
+          width="16"
+        />
+      </span>
+      <span
+        class="gl-flex-grow-1 nav-item-name"
+      >
+        GitLab Duo Pro Trial
+      </span>
+      <span
+        class="collapse-text gl-font-sm gl-mr-auto"
+      >
+        Day 10/30
+      </span>
+    </div>
+    <div
+      class="gl-align-items-stretch gl-display-flex gl-mt-2"
+    >
+      <gl-progress-bar-stub
+        aria-hidden="true"
+        class="gl-flex-grow-1"
+        value="10"
+      />
+    </div>
+  </div>
+</gl-link-stub>
+`;

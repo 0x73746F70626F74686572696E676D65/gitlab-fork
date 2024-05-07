@@ -6,7 +6,7 @@ RSpec.describe Vulnerabilities::SecurityFinding::CreateIssueService, '#execute',
 feature_category: :vulnerability_management do
   before do
     stub_licensed_features(security_dashboard: true)
-    project.add_maintainer(user)
+    project.add_developer(user)
   end
 
   let_it_be(:project) { create(:project, :repository) }

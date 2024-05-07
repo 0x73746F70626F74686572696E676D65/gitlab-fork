@@ -39,6 +39,7 @@ module EE
 
       context.merge!(
         trial_data(root_namespace),
+        duo_pro_trial_data(root_namespace),
         show_tanuki_bot: ::Gitlab::Llm::TanukiBot.enabled_for?(user: current_user, container: nil)
       )
       context[:trial] = {
@@ -92,6 +93,16 @@ module EE
       end
 
       {}
+    end
+
+    def duo_pro_trial_data(root_namespace)
+      widget = GitlabSubscriptions::Trials::DuoProStatusWidgetBuilder.new(current_user, root_namespace)
+
+      return {} unless widget.show?
+
+      {
+        duo_pro_trial_status_widget_data_attrs: widget.widget_data_attributes
+      }
     end
 
     def trial_status(group)
