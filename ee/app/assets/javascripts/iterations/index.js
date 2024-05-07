@@ -4,6 +4,7 @@ import VueApollo from 'vue-apollo';
 import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
+import { injectVueAppBreadcrumbs } from '~/lib/utils/breadcrumbs';
 import App from './components/app.vue';
 import IterationBreadcrumb from './components/iteration_breadcrumb.vue';
 import createRouter from './router';
@@ -20,29 +21,6 @@ const apolloProvider = new VueApollo({
   ),
 });
 
-function injectVueRouterIntoBreadcrumbs(router, groupPath) {
-  const breadCrumbEls = document.querySelectorAll('nav .js-breadcrumbs-list li');
-  const breadCrumbEl = breadCrumbEls[breadCrumbEls.length - 1];
-  const crumbs = [breadCrumbEl.querySelector('a')];
-  const nestedBreadcrumbEl = document.createElement('div');
-  breadCrumbEl.replaceChild(nestedBreadcrumbEl, crumbs[0]);
-  return new Vue({
-    el: nestedBreadcrumbEl,
-    name: 'IterationBreadcrumbRoot',
-    router,
-    apolloProvider,
-    components: {
-      IterationBreadcrumb,
-    },
-    provide: {
-      groupPath,
-    },
-    render(createElement) {
-      return createElement('iteration-breadcrumb');
-    },
-  });
-}
-
 export function initCadenceApp({ namespaceType }) {
   const el = document.querySelector('.js-iteration-cadence-app');
 
@@ -52,7 +30,6 @@ export function initCadenceApp({ namespaceType }) {
 
   const {
     fullPath,
-    groupPath,
     cadencesListPath,
     canCreateCadence,
     canEditCadence,
@@ -74,7 +51,7 @@ export function initCadenceApp({ namespaceType }) {
     },
   });
 
-  injectVueRouterIntoBreadcrumbs(router, groupPath);
+  injectVueAppBreadcrumbs(router, IterationBreadcrumb, apolloProvider);
 
   return new Vue({
     el,
