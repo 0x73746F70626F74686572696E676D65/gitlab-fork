@@ -2,22 +2,6 @@
 # Cop supports --autocorrect.
 Layout/ArgumentAlignment:
   Exclude:
-    - 'app/graphql/mutations/ci/job/base.rb'
-    - 'app/graphql/mutations/ci/job/cancel.rb'
-    - 'app/graphql/mutations/ci/job/play.rb'
-    - 'app/graphql/mutations/ci/job/retry.rb'
-    - 'app/graphql/mutations/ci/job/unschedule.rb'
-    - 'app/graphql/mutations/ci/job_artifact/destroy.rb'
-    - 'app/graphql/mutations/ci/job_token_scope/add_project.rb'
-    - 'app/graphql/mutations/ci/job_token_scope/remove_project.rb'
-    - 'app/graphql/mutations/ci/pipeline/base.rb'
-    - 'app/graphql/mutations/ci/pipeline/retry.rb'
-    - 'app/graphql/mutations/ci/pipeline_schedule/base.rb'
-    - 'app/graphql/mutations/ci/pipeline_schedule/create.rb'
-    - 'app/graphql/mutations/ci/pipeline_schedule/play.rb'
-    - 'app/graphql/mutations/ci/pipeline_schedule/take_ownership.rb'
-    - 'app/graphql/mutations/ci/pipeline_schedule/update.rb'
-    - 'app/graphql/mutations/ci/runner/bulk_delete.rb'
     - 'app/graphql/mutations/customer_relations/contacts/base.rb'
     - 'app/graphql/mutations/customer_relations/contacts/create.rb'
     - 'app/graphql/mutations/customer_relations/contacts/update.rb'
