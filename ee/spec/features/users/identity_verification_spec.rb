@@ -47,12 +47,9 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       verify_credit_card
 
-      expect(page).to have_content(_('Completed'))
-      expect(page).to have_content(_('Next'))
-
-      click_link 'Next'
-
-      wait_for_requests
+      # verify_credit_card creates a credit_card verification record & refreshes
+      # the page. This causes an automatic redirect to the root_path because the
+      # user is already identity verified
 
       expect_to_see_dashboard_page
     end

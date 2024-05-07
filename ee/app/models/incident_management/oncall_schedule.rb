@@ -20,8 +20,8 @@ module IncidentManagement
     validates :description, length: { maximum: DESCRIPTION_LENGTH }
     validates :timezone, presence: true, inclusion: { in: :timezones }
 
-    scope :for_iid, -> (iid) { where(iid: iid) }
-    scope :for_project, -> (project) { where(project: project) }
+    scope :for_iid, ->(iid) { where(iid: iid) }
+    scope :for_project, ->(project) { where(project: project) }
 
     delegate :name, to: :project, prefix: true
 

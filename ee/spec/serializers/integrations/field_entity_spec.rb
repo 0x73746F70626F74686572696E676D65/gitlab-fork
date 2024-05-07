@@ -55,10 +55,12 @@ RSpec.describe Integrations::FieldEntity, feature_category: :integrations do
             title: 'Google Cloud project ID',
             placeholder: nil,
             label_description: 'Project with the Artifact Registry repository.',
-            help: 'To improve security, use a dedicated project for resources, separate from CI/CD and identity ' \
-                  'management projects. <a target="_blank" rel="noopener noreferrer" href="' \
-                  'https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects">' \
-                  'Where’s my project ID? <svg></svg></a>',
+            help: '<a target="_blank" rel="noopener noreferrer" ' \
+                  'href="https://cloud.google.com/resource-manager/docs/creating-managing-projects' \
+                  '#identifying_projects">Where’s my project ID? <svg></svg></a> ' \
+                  'Can be 6 to 30 lowercase letters, numbers, or hyphens. ' \
+                  'Must start with a letter and end with a letter or number. ' \
+                  'Example: <code>my-sample-project-191923</code>.',
             required: true,
             choices: nil,
             value: 'dev-gcp-9abafed1',

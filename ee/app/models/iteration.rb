@@ -71,7 +71,7 @@ class Iteration < ApplicationRecord
   scope :by_iteration_cadence_ids, ->(cadence_ids) { where(iterations_cadence_id: cadence_ids) }
   scope :with_start_date_after, ->(date) { where('start_date > :date', date: date) }
 
-  scope :within_timeframe, -> (start_date, end_date) do
+  scope :within_timeframe, ->(start_date, end_date) do
     where('sprints.start_date <= ?', end_date).where('sprints.due_date >= ?', start_date)
   end
 

@@ -2,24 +2,25 @@
 
 module Users
   class IdentityVerificationController < BaseIdentityVerificationController
-    before_action :ensure_feature_enabled
     before_action :ensure_challenge_completed!, only: [:send_phone_verification_code]
+    before_action :require_unverified_user!, except: [:success]
 
     def show
       session[:identity_verification_referer] = request.referer
     end
 
     def success
-      redirect_url = session.delete(:identity_verification_referer) || root_path
-      redirect_to redirect_url
+      redirect_to redirect_path
     end
 
     private
 
-    def ensure_feature_enabled
-      return not_found unless ::Feature.enabled?(:opt_in_identity_verification, @user, type: :wip)
+    def redirect_path
+      @redirect_path ||= session.delete(:identity_verification_referer) || root_path
+    end
 
-      not_found unless ::Gitlab::Saas.feature_available?(:identity_verification)
+    def require_unverified_user!
+      redirect_to redirect_path if @user.identity_verified?
     end
 
     def ensure_challenge_completed!
