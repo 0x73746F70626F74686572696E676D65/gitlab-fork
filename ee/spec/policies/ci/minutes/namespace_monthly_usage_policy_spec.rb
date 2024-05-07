@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::NamespaceMonthlyUsagePolicy do
+RSpec.describe Ci::Minutes::NamespaceMonthlyUsagePolicy, feature_category: :hosted_runners do
   let(:group) { create(:group, :private, name: 'test') }
   let(:current_user) { create(:user) }
 

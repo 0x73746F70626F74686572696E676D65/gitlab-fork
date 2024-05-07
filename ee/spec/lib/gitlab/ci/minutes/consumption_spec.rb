@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Minutes::Consumption, feature_category: :continuous_integration do
+RSpec.describe Gitlab::Ci::Minutes::Consumption, feature_category: :hosted_runners do
   using RSpec::Parameterized::TableSyntax
 
   let(:consumption) do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::CostSetting, feature_category: :continuous_integration do
+RSpec.describe Ci::Minutes::CostSetting, feature_category: :hosted_runners do
   let_it_be(:runner) { create_default(:ci_runner, :instance) }
 
   subject { described_class.new(runner: runner) }

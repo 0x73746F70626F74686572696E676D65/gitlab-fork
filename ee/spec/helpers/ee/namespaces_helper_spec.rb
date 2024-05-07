@@ -21,7 +21,7 @@ RSpec.describe EE::NamespacesHelper, feature_category: :groups_and_projects do
   let(:ci_minutes_used) { 100 }
   let(:more_storage_url) { ::Gitlab::Routing.url_helpers.subscription_portal_more_storage_url }
 
-  describe '#ci_minutes_report', feature_category: :continuous_integration do
+  describe '#ci_minutes_report', feature_category: :hosted_runners do
     let(:usage) { Ci::Minutes::Usage.new(user_group) }
     let(:usage_presenter) { Ci::Minutes::UsagePresenter.new(usage) }
 

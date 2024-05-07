@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService, feature_category: :continuous_integration do
+RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService, feature_category: :hosted_runners do
   include ::Ci::MinutesHelpers
 
   let(:project) { create(:project, :private) }

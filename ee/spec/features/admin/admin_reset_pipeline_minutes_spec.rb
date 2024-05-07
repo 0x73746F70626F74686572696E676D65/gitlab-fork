@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Reset namespace compute usage', :js, feature_category: :continuous_integration do
+RSpec.describe 'Reset namespace compute usage', :js, feature_category: :hosted_runners do
   include ::Ci::MinutesHelpers
 
   let(:admin) { create(:admin) }

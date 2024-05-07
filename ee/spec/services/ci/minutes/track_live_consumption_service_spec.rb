@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas, feature_category: :continuous_integration do
+RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas, feature_category: :hosted_runners do
   let(:project) { create(:project, :private, shared_runners_enabled: true, namespace: namespace) }
   let(:pipeline) { create(:ci_pipeline, project: project) }
   let(:namespace) { create(:namespace_with_plan, plan: :default_plan, shared_runners_minutes_limit: 100) }

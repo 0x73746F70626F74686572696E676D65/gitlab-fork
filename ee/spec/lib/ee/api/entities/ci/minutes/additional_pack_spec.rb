@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::EE::API::Entities::Ci::Minutes::AdditionalPack do
+RSpec.describe ::EE::API::Entities::Ci::Minutes::AdditionalPack, feature_category: :hosted_runners do
   it 'contains the correct attributes', :aggregate_failures do
     pack = build(:ci_minutes_additional_pack)
 
