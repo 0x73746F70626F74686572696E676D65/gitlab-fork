@@ -61,7 +61,7 @@ RSpec.describe Groups::UpdateService, '#execute', feature_category: :groups_and_
           end
 
           def operation
-            update_group(group, user, ip_restriction_ranges: '192.168.0.0/24,10.0.0.0/8' )
+            update_group(group, user, ip_restriction_ranges: '192.168.0.0/24,10.0.0.0/8')
           end
 
           let(:attributes) do

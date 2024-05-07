@@ -295,7 +295,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
         let!(:confidential_note) do
           note_author_and_assignee = user || project.creator
           issue = create(:issue, project: project, assignees: [note_author_and_assignee])
-          create(:note, confidential: true, project: project, noteable: issue, author: note_author_and_assignee )
+          create(:note, confidential: true, project: project, noteable: issue, author: note_author_and_assignee)
         end
 
         where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
@@ -321,7 +321,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
       end
 
       context 'on commits' do
-        let_it_be_with_reload(:project) { create(:project, :repository, namespace: group ) }
+        let_it_be_with_reload(:project) { create(:project, :repository, namespace: group) }
         let_it_be_with_reload(:project2) { create(:project, :repository) }
 
         let!(:note) { create :note_on_commit, project: project }

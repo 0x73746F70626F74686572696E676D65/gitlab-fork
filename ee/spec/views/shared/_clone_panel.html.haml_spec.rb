@@ -13,7 +13,7 @@ RSpec.describe 'shared/_clone_panel' do
     it 'has no geo-specific instructions' do
       render 'shared/clone_panel', container: project
 
-      expect(rendered).not_to match /See Geo-specific instructions/
+      expect(rendered).not_to match(/See Geo-specific instructions/)
     end
   end
 

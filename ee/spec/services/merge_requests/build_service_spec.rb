@@ -74,7 +74,7 @@ RSpec.describe MergeRequests::BuildService, feature_category: :code_review_workf
 
       context 'a Default.md file exists in the repository' do
         let(:files) { { '.gitlab/merge_request_templates/Default.md' => 'Default template contents' } }
-        let(:project) { create(:project, :repository, :custom_repo, merge_requests_template: template, files: files ) }
+        let(:project) { create(:project, :repository, :custom_repo, merge_requests_template: template, files: files) }
 
         it 'prefers the project default template' do
           expect(merge_request.description).to eq(template)

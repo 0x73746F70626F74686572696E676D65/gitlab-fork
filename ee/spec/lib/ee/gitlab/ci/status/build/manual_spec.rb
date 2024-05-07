@@ -34,7 +34,7 @@ RSpec.describe Gitlab::Ci::Status::Build::Manual do
           job.project.add_developer(user)
         end
 
-        it { expect(illustration[:content]).to match /This deployment job does not run automatically and must be started manually, but you do not have access to this job's protected environment/ }
+        it { expect(illustration[:content]).to match(/This deployment job does not run automatically and must be started manually, but you do not have access to this job's protected environment/) }
       end
 
       context 'when user has access' do
@@ -58,7 +58,7 @@ RSpec.describe Gitlab::Ci::Status::Build::Manual do
         allow(job).to receive(:has_outdated_deployment?).and_return(true)
       end
 
-      it { expect(illustration[:content]).to match /This deployment job does not run automatically and must be started manually, but it's older than the latest deployment, and therefore can't run./ }
+      it { expect(illustration[:content]).to match(/This deployment job does not run automatically and must be started manually, but it's older than the latest deployment, and therefore can't run./) }
     end
   end
 end

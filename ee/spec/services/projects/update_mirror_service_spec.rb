@@ -500,7 +500,7 @@ RSpec.describe Projects::UpdateMirrorService do
     end
   end
 
-  def stub_fetch_mirror(project, repository: project.repository, tags_changed: true )
+  def stub_fetch_mirror(project, repository: project.repository, tags_changed: true)
     allow(project).to receive(:fetch_mirror) { fetch_mirror(repository, tags_changed: tags_changed) }
   end
 

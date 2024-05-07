@@ -93,7 +93,7 @@ RSpec.describe GroupSaml::SamlGroupLinks::CreateService, feature_category: :syst
           it "throws bad request error" do
             response = service.execute
             expect(response).not_to be_success
-            expect(response[:error]).to match /Access level is invalid/
+            expect(response[:error]).to match(/Access level is invalid/)
           end
         end
       end

@@ -48,7 +48,7 @@ RSpec.describe PushRule, :saas, feature_category: :source_code_management do
       push_rule = build(:push_rule, branch_name_regex: '(ee|ce).*\1')
 
       expect(push_rule).not_to be_valid
-      expect(push_rule.errors.full_messages.join).to match /invalid escape sequence/
+      expect(push_rule.errors.full_messages.join).to match(/invalid escape sequence/)
     end
   end
 

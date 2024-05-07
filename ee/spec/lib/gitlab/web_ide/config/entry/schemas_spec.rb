@@ -25,7 +25,7 @@ RSpec.describe Gitlab::WebIde::Config::Entry::Schemas do
         expect(entry).not_to be_valid
 
         expect(entry.errors.first)
-          .to match /schema/
+          .to match(/schema/)
       end
 
       describe '#errors' do
