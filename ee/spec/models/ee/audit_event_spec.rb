@@ -32,7 +32,7 @@ RSpec.describe AuditEvent, type: :model, feature_category: :audit_events do
               {
                 long: 'a' * (field_limit + 1),
                 short: 'a' * field_limit,
-                truncated: 'a' * (field_limit - 3) + '...'
+                truncated: ('a' * (field_limit - 3)) + '...'
               }
             end
 

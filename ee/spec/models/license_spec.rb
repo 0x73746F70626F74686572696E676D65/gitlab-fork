@@ -1695,9 +1695,9 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
   describe '#started?' do
     where(:starts_at, :result) do
-      Date.current - 1.month | true
-      Date.current           | true
-      Date.current + 1.month | false
+      (Date.current - 1.month) | true
+      Date.current | true
+      (Date.current + 1.month) | false
     end
 
     with_them do
@@ -1713,9 +1713,9 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
   describe '#future_dated?' do
     where(:starts_at, :result) do
-      Date.current - 1.month | false
-      Date.current           | false
-      Date.current + 1.month | true
+      (Date.current - 1.month) | false
+      Date.current | false
+      (Date.current + 1.month) | true
     end
 
     with_them do

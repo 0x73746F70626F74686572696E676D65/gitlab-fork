@@ -20,9 +20,9 @@ RSpec.describe SubscriptionPresenter, :saas do
     where(:remaining_days_count, :expected_result) do
       nil  | false
       0    | true
-      described_class::RENEWAL_ALLOWED_PERIOD_DAYS - 1.day   | true
-      described_class::RENEWAL_ALLOWED_PERIOD_DAYS           | true
-      described_class::RENEWAL_ALLOWED_PERIOD_DAYS + 1.day   | false
+      (described_class::RENEWAL_ALLOWED_PERIOD_DAYS - 1.day) | true
+      described_class::RENEWAL_ALLOWED_PERIOD_DAYS | true
+      (described_class::RENEWAL_ALLOWED_PERIOD_DAYS + 1.day) | false
     end
 
     with_them do
