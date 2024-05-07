@@ -35,7 +35,7 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
       end
 
       it_behaves_like 'returning an error service response',
-        message: 'Google Cloud Identity and Access Management (IAM) project integration not set'
+        message: "#{Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.title} integration not set"
     end
 
     context 'with disabled integration' do
@@ -44,7 +44,7 @@ RSpec.shared_examples 'a compute service handling validation errors' do |client_
       end
 
       it_behaves_like 'returning an error service response',
-        message: 'Google Cloud Identity and Access Management (IAM) project integration not active'
+        message: "#{Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.title} integration not active"
     end
 
     context 'when client raises AuthenticationError' do
