@@ -65,7 +65,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     it { is_expected.to have_one(:dast_scanner_profile).class_name('DastScannerProfile').through(:dast_scanner_profiles_build) }
   end
 
-  describe '#cost_factor_enabled?' do
+  describe '#cost_factor_enabled?', feature_category: :hosted_runners do
     subject { job.cost_factor_enabled? }
 
     before do
@@ -93,7 +93,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     end
   end
 
-  describe 'updates pipeline minutes' do
+  describe 'updates pipeline minutes', feature_category: :hosted_runners do
     let(:job) { create(:ci_build, :running, pipeline: pipeline) }
 
     context 'when ci_canceling_status is disabled' do

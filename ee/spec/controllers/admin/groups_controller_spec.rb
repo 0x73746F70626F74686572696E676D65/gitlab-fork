@@ -10,7 +10,7 @@ RSpec.describe Admin::GroupsController, feature_category: :continuous_integratio
     sign_in(admin)
   end
 
-  describe 'POST #reset_runner_minutes' do
+  describe 'POST #reset_runner_minutes', feature_category: :hosted_runners do
     subject { post :reset_runners_minutes, params: { id: group } }
 
     before do

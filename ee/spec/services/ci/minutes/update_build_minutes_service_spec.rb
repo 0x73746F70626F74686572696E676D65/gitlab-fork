@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::UpdateBuildMinutesService, feature_category: :continuous_integration do
+RSpec.describe Ci::Minutes::UpdateBuildMinutesService, feature_category: :hosted_runners do
   include ::Ci::MinutesHelpers
 
   let(:namespace) { create(:group, shared_runners_minutes_limit: 100) }

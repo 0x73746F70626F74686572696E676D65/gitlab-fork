@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::NamespaceMonthlyUsage, feature_category: :continuous_integration do
+RSpec.describe Ci::Minutes::NamespaceMonthlyUsage, feature_category: :hosted_runners do
   let_it_be_with_refind(:namespace) do
     create(:namespace,
       shared_runners_minutes_limit: 1_000,

@@ -1211,7 +1211,7 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     end
   end
 
-  describe '#total_ci_minutes_consumed' do
+  describe '#total_ci_minutes_consumed', feature_category: :hosted_runners do
     let(:pipeline_consumption) do
       instance_double(::Gitlab::Ci::Minutes::PipelineConsumption, amount: 26)
     end
