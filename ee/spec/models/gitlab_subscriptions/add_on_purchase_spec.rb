@@ -151,6 +151,20 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
       end
     end
 
+    describe '.trial' do
+      include_context 'with add-on purchases'
+
+      let_it_be(:gitlab_duo_pro_purchase_trial) do
+        create(:gitlab_subscription_add_on_purchase, :trial, add_on: gitlab_duo_pro_add_on)
+      end
+
+      subject(:trials) { described_class.trial }
+
+      it 'returns all the purchases that are not expired' do
+        expect(trials).to match_array([gitlab_duo_pro_purchase_trial])
+      end
+    end
+
     describe '.by_add_on_name' do
       subject(:by_name_purchases) { described_class.by_add_on_name(name) }
 

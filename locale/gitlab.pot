@@ -19134,6 +19134,12 @@ msgstr ""
 msgid "DuoProTrial|Code refactorization"
 msgstr ""
 
+msgid "DuoProTrial|Day %{daysUsed}/%{duration}"
+msgstr ""
+
+msgid "DuoProTrial|GitLab Duo Pro Trial"
+msgstr ""
+
 msgid "DuoProTrial|GitLab Duo Pro is designed to make teams more efficient throughout the software development lifecycle with:"
 msgstr ""
 
