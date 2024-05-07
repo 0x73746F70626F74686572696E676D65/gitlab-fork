@@ -7,7 +7,7 @@
   .js-global-protection-levels-protected.gl-ml-7
     %legend.h6.gl-my-3.gl-border-none.gl-font-weight-normal= s_('ProtectedBranch|Allowed to push')
     - allowed_to_push_access_level = f.object.default_branch_protection_defaults['allowed_to_push'][0]['access_level']
-    - ProtectedRef::AccessLevel.human_access_levels.each do |id, text|
+    - ProtectedBranch::PushAccessLevel.human_access_levels.each do |id, text|
       = render Pajamas::RadioTagComponent.new(name: "#{field}[default_branch_protection_defaults][allowed_to_push][][access_level]",
         label: text,
         value: id,
@@ -15,7 +15,7 @@
 
     %legend.h6.gl-my-3.gl-border-none.gl-font-weight-normal= s_('ProtectedBranch|Allowed to merge')
     - allowed_to_merge_access_level = f.object.default_branch_protection_defaults['allowed_to_merge'][0]['access_level']
-    - ProtectedRef::AccessLevel.human_access_levels.each do |id, text|
+    - ProtectedBranch::MergeAccessLevel.human_access_levels.each do |id, text|
       = render Pajamas::RadioTagComponent.new(name: "#{field}[default_branch_protection_defaults][allowed_to_merge][][access_level]",
         label: text,
         value: id,
