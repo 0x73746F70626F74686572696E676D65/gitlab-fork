@@ -32728,6 +32728,8 @@ Values for sorting tags.
 | ----- | ----------- |
 | <a id="containerrepositorytagsortname_asc"></a>`NAME_ASC` | Ordered by name in ascending order. |
 | <a id="containerrepositorytagsortname_desc"></a>`NAME_DESC` | Ordered by name in descending order. |
+| <a id="containerrepositorytagsortpublished_at_asc"></a>`PUBLISHED_AT_ASC` | Ordered by published_at in ascending order. Only available for GitLab.com. |
+| <a id="containerrepositorytagsortpublished_at_desc"></a>`PUBLISHED_AT_DESC` | Ordered by published_at in descending order. Only available for GitLab.com. |
 
 ### `CustomerRelationsContactState`
 
