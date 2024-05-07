@@ -34,7 +34,7 @@ RSpec.describe BackfillEpics, feature_category: :global_search do
       helper.delete_migration_record(migration)
     end
 
-    it 'tracks all epic documents' do
+    it 'tracks all epic documents', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/455446' do
       expect(migration).not_to be_completed
 
       expect(::Elastic::ProcessBookkeepingService).to receive(:track!)
