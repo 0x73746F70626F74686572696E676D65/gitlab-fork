@@ -21,19 +21,23 @@ module Gitlab
             when :time then parse_time(value)
             when :integer then parse_integer(value)
             else
-              raise NameError, "Unknown data type key #{type.inspect} provided when parsing backup metadata"
+              raise ArgumentError, "Unknown data type key #{type.inspect} provided when parsing backup metadata"
             end
           end
 
-          # @param [Object] value
+          # @param [String|Integer|Object] value
           def parse_string(value)
             value.to_s
           end
 
           def parse_time(value)
-            return value if value.is_a?(Time) || value.nil?
+            return value if value.nil?
 
-            Time.parse(value.to_s)
+            begin
+              Time.parse(value.to_s)
+            rescue ArgumentError
+              nil
+            end
           end
 
           def parse_integer(value)
