@@ -35073,25 +35073,16 @@ msgstr ""
 msgid "ObservabilityLogs|Check again"
 msgstr ""
 
+msgid "ObservabilityLogs|Count"
+msgstr ""
+
 msgid "ObservabilityLogs|Date"
-msgstr ""
-
-msgid "ObservabilityLogs|Debug"
-msgstr ""
-
-msgid "ObservabilityLogs|Error"
 msgstr ""
 
 msgid "ObservabilityLogs|Failed to load logs."
 msgstr ""
 
-msgid "ObservabilityLogs|Fatal"
-msgstr ""
-
 msgid "ObservabilityLogs|Fingerprint"
-msgstr ""
-
-msgid "ObservabilityLogs|Info"
 msgstr ""
 
 msgid "ObservabilityLogs|Level"
@@ -35133,16 +35124,10 @@ msgstr ""
 msgid "ObservabilityLogs|Span ID"
 msgstr ""
 
-msgid "ObservabilityLogs|Trace"
-msgstr ""
-
 msgid "ObservabilityLogs|Trace Flags"
 msgstr ""
 
 msgid "ObservabilityLogs|Trace ID"
-msgstr ""
-
-msgid "ObservabilityLogs|Warning"
 msgstr ""
 
 msgid "ObservabilityLogs|name"

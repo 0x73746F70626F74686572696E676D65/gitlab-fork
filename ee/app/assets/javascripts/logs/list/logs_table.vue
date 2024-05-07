@@ -2,16 +2,7 @@
 import { GlTable, GlLink, GlLabel } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
-
-const severityConfig = [
-  { range: [1, 4], title: s__('ObservabilityLogs|Trace'), color: '#a4a3a8' },
-  { range: [5, 8], title: s__('ObservabilityLogs|Debug'), color: '#a4a3a8' },
-  { range: [9, 12], title: s__('ObservabilityLogs|Info'), color: '#428fdc' },
-  { range: [13, 16], title: s__('ObservabilityLogs|Warning'), color: '#e9be74' },
-  { range: [17, 20], title: s__('ObservabilityLogs|Error'), color: '#dd2b0e' },
-  { range: [21, 24], title: s__('ObservabilityLogs|Fatal'), color: '#dd2b0e' },
-];
-const defaultSeverity = severityConfig[1]; // default: Debug
+import { severityNumberToConfig } from '../utils';
 
 const tdClass = 'gl-px-2! gl-py-3! gl-mx-0';
 const thClass = 'gl-px-2!';
@@ -75,11 +66,8 @@ export default {
     },
   },
   methods: {
-    severityLabel(severityNumber) {
-      const severity = severityConfig.find(
-        ({ range }) => severityNumber >= range[0] && severityNumber <= range[1],
-      );
-      return severity || defaultSeverity;
+    severityConfig(severityNumber) {
+      return severityNumberToConfig(severityNumber);
     },
     onRowClicked(item) {
       this.$emit('log-selected', { fingerprint: item.fingerprint });
@@ -106,8 +94,8 @@ export default {
     >
       <template #cell(severity_number)="{ item }">
         <gl-label
-          :background-color="severityLabel(item.severity_number).color"
-          :title="severityLabel(item.severity_number).title"
+          :background-color="severityConfig(item.severity_number).color"
+          :title="severityConfig(item.severity_number).name"
         />
       </template>
 
