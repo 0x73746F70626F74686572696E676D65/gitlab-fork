@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe EE::Gitlab::Checks::PushRules::FileSizeCheck, feature_category: :source_code_management do
   include_context 'push rules checks context'
 
+  let(:push_options) { nil }
   let(:changes) do
     [
       # Update of existing branch
@@ -22,7 +23,8 @@ RSpec.describe EE::Gitlab::Checks::PushRules::FileSizeCheck, feature_category: :
       project: project,
       user_access: user_access,
       protocol: protocol,
-      logger: logger
+      logger: logger,
+      push_options: push_options
     )
   end
 

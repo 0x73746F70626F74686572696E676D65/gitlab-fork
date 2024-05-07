@@ -16,9 +16,8 @@ module Gitlab
       LOG_MESSAGES = {
         secrets_check: 'Detecting secrets...',
         secrets_not_found: 'Secret detection scan completed with no findings.',
-        skip_secret_detection: "\n\nTo skip pre-receive secret detection, include the text " \
-                               "\"[skip secret detection]\" in a commit message for one of your changes, " \
-                               'then push again.',
+        skip_secret_detection: "\n\nTo skip pre-receive secret detection, add the following git push option: " \
+                               "`--push-option secret_detection.skip_all` to your push command.",
         found_secrets: "\n\n--------------------------------------------------" \
                        "\nPUSH BLOCKED: Secrets detected in code changes" \
                        "\n--------------------------------------------------",
@@ -37,7 +36,7 @@ module Gitlab
 
       BLOB_BYTES_LIMIT = 1.megabyte # Limit is 1MiB to start with.
       SPECIAL_COMMIT_FLAG = /\[skip secret detection\]/i
-      DOCUMENTATION_PATH = 'user/application_security/secret_detection/pre_receive.html'
+      DOCUMENTATION_PATH = 'user/application_security/secret_detection/pre_receive/index.html'
       DOCUMENTATION_PATH_ANCHOR = 'resolve-a-blocked-push'
 
       def validate!
@@ -52,10 +51,12 @@ module Gitlab
         return unless project.licensed_feature_available?(:pre_receive_secret_detection)
 
         # Skip if any commit has the special bypass flag `[skip secret detection]`
-        if skip_secret_detection?
+        if skip_secret_detection_commit_message?
           log_audit_event(_("commit message"))
           return
         end
+
+        return if skip_secret_detection_push_option?
 
         logger.log_timed(LOG_MESSAGES[:secrets_check]) do
           blobs = ::Gitlab::Checks::ChangedBlobs.new(
@@ -102,8 +103,12 @@ module Gitlab
           project.security_setting.pre_receive_secret_detection_enabled
       end
 
-      def skip_secret_detection?
+      def skip_secret_detection_commit_message?
         changes_access.commits.any? { |commit| commit.safe_message =~ SPECIAL_COMMIT_FLAG }
+      end
+
+      def skip_secret_detection_push_option?
+        changes_access.push_options&.get(:secret_detection, :skip_all)
       end
 
       def secret_detection_logger
