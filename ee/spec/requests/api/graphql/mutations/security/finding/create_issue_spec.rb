@@ -62,7 +62,7 @@ RSpec.describe 'Creating an Issue from a Security::Finding', feature_category: :
 
   context 'when the user has permission' do
     before do
-      project.add_maintainer(current_user)
+      project.add_developer(current_user)
     end
 
     context 'with valid parameters' do

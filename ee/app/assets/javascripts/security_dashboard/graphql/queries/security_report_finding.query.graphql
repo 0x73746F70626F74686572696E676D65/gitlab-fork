@@ -181,6 +181,7 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
         }
         userPermissions {
           adminVulnerability
+          createIssue
         }
       }
     }

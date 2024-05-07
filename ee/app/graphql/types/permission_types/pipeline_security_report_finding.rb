@@ -6,7 +6,7 @@ module Types
       graphql_name 'PipelineSecurityReportFindingPermissions'
       description 'Check permissions for the current user on a vulnerability finding.'
 
-      abilities :admin_vulnerability
+      abilities :admin_vulnerability, :create_issue
     end
   end
 end
