@@ -3,6 +3,7 @@ import Vue, { nextTick } from 'vue';
 import VueRouter from 'vue-router';
 import ToolToken from 'ee/security_dashboard/components/shared/filtered_search/tokens/tool_token.vue';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
+import SearchSuggestion from 'ee/security_dashboard/components/shared/filtered_search/components/search_suggestion.vue';
 import eventHub from 'ee/security_dashboard/components/shared/filtered_search/event_hub';
 import { OPERATORS_OR } from '~/vue_shared/components/filtered_search_bar/constants';
 import { stubComponent } from 'helpers/stub_component';
@@ -25,6 +26,7 @@ describe('ToolToken', () => {
     value = { data: ['ALL'], operator: '||' },
     active = false,
     scanners = MOCK_SCANNERS,
+    toolFilterType = 'scanner',
     stubs,
     mountFn = shallowMountExtended,
   } = {}) => {
@@ -38,6 +40,7 @@ describe('ToolToken', () => {
         active,
       },
       provide: {
+        toolFilterType,
         portalName: 'fake target',
         alignSuggestions: jest.fn(),
         termsAsTokens: () => false,
@@ -45,6 +48,7 @@ describe('ToolToken', () => {
       },
       stubs: {
         QuerystringSync: true,
+        SearchSuggestion,
         ...stubs,
       },
     });
@@ -70,7 +74,11 @@ describe('ToolToken', () => {
   const allOptionsExcept = (value) => {
     const exempt = Array.isArray(value) ? value : [value];
 
-    return wrapper.vm.flatItems.map((i) => i.value).filter((i) => !exempt.includes(i));
+    if (wrapper.vm.toolFilterType === 'scanner') {
+      return wrapper.vm.flatItems.map((i) => i.value).filter((i) => !exempt.includes(i));
+    }
+
+    return wrapper.vm.items.map((i) => i.value).filter((i) => !exempt.includes(i));
   };
 
   describe('default view', () => {
@@ -132,7 +140,7 @@ describe('ToolToken', () => {
     });
   });
 
-  describe('item selection', () => {
+  describe('item selection - toolFilterType: scanner', () => {
     beforeEach(async () => {
       createWrapper({});
       await clickDropdownItem('ALL');
@@ -182,6 +190,51 @@ describe('ToolToken', () => {
       await clickDropdownItem('ALL');
       expect(spy).toHaveBeenCalledWith({
         scanner: [],
+      });
+    });
+  });
+
+  describe('item selection - toolFilterType: reportType', () => {
+    beforeEach(async () => {
+      createWrapper({ toolFilterType: 'reportType' });
+      await clickDropdownItem('ALL');
+    });
+
+    it('allows multiple selection of items across groups', async () => {
+      await clickDropdownItem('SAST', 'DAST');
+
+      expect(isOptionChecked('SAST')).toBe(true);
+      expect(isOptionChecked('DAST')).toBe(true);
+      expect(isOptionChecked('ALL')).toBe(false);
+    });
+
+    it('selects only "All tool" when that item is selected', async () => {
+      await clickDropdownItem('SAST', 'DAST', 'ALL');
+
+      allOptionsExcept('ALL').forEach((value) => {
+        expect(isOptionChecked(value)).toBe(false);
+      });
+
+      expect(isOptionChecked('ALL')).toBe(true);
+    });
+
+    it('emits filters-changed event when a filter is selected', async () => {
+      const spy = jest.fn();
+      eventHub.$on('filters-changed', spy);
+
+      await clickDropdownItem('SAST', 'DAST');
+      expect(spy).toHaveBeenCalledWith({
+        reportType: ['SAST', 'DAST'],
+      });
+    });
+
+    it('emits an empty filters-changed event when a all tools is selected', async () => {
+      const spy = jest.fn();
+      eventHub.$on('filters-changed', spy);
+
+      await clickDropdownItem('ALL');
+      expect(spy).toHaveBeenCalledWith({
+        reportType: [],
       });
     });
   });
@@ -239,7 +292,7 @@ describe('ToolToken', () => {
     });
   });
 
-  describe('QuerystringSync component', () => {
+  describe('QuerystringSync component - toolFilterType: scanners', () => {
     beforeEach(() => {
       createWrapper({});
     });
@@ -274,6 +327,36 @@ describe('ToolToken', () => {
       emitted                              | expected
       ${['zaproxy', 'gemnasium', 'trivy']} | ${['zaproxy', 'gemnasium', 'trivy']}
       ${['ALL']}                           | ${['ALL']}
+    `('restores selected items - $emitted', async ({ emitted, expected }) => {
+      findQuerystringSync().vm.$emit('input', emitted);
+      await nextTick();
+
+      expected.forEach((item) => {
+        expect(isOptionChecked(item)).toBe(true);
+      });
+
+      allOptionsExcept(expected).forEach((item) => {
+        expect(isOptionChecked(item)).toBe(false);
+      });
+    });
+  });
+
+  describe('QuerystringSync component - toolFilterType: reportType', () => {
+    beforeEach(() => {
+      createWrapper({ toolFilterType: 'reportType' });
+    });
+
+    it('has expected props', () => {
+      expect(findQuerystringSync().props()).toMatchObject({
+        querystringKey: 'reportType',
+        value: ['ALL'],
+      });
+    });
+
+    it.each`
+      emitted             | expected
+      ${['SAST', 'DAST']} | ${['SAST', 'DAST']}
+      ${['ALL']}          | ${['ALL']}
     `('restores selected items - $emitted', async ({ emitted, expected }) => {
       findQuerystringSync().vm.$emit('input', emitted);
       await nextTick();
