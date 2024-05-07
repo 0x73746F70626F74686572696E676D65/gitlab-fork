@@ -35,8 +35,8 @@ RSpec.shared_examples 'epics hierarchy finder with filtering' do
 
     context 'with user reaction emoji' do
       it 'returns epics reacted to by user' do
-        create(:award_emoji, name: 'thumbsup', awardable: epic1, user: search_user )
-        create(:award_emoji, name: 'star', awardable: epic3, user: search_user )
+        create(:award_emoji, name: 'thumbsup', awardable: epic1, user: search_user)
+        create(:award_emoji, name: 'star', awardable: epic3, user: search_user)
 
         expect(epics(my_reaction_emoji: 'star')).to contain_exactly(epic3)
       end

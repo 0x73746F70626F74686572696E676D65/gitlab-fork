@@ -186,7 +186,7 @@ RSpec.shared_examples 'a blob replicator' do
     let!(:blob_path) { replicator.carrierwave_uploader.relative_path.to_s }
     let!(:uploader_class) { replicator.carrierwave_uploader.class.to_s }
     let!(:deleted_params) { { model_record_id: model_record_id, uploader_class: uploader_class, blob_path: blob_path } }
-    let!(:secondary_blob_path ) { File.join(uploader_class.constantize.root, blob_path) }
+    let!(:secondary_blob_path) { File.join(uploader_class.constantize.root, blob_path) }
 
     context 'when model_record was deleted from the DB and the replicator only has its ID' do
       before do
@@ -226,7 +226,7 @@ RSpec.shared_examples 'a blob replicator' do
 
       context 'when object storage is enabled' do
         let(:config) { uploader_class.constantize.options.object_store }
-        let(:connection ) { Fog::Storage.new(config.connection.to_hash.deep_symbolize_keys) }
+        let(:connection) { Fog::Storage.new(config.connection.to_hash.deep_symbolize_keys) }
         let(:directory) { connection.directories.new(key: config.remote_directory) }
 
         before do
