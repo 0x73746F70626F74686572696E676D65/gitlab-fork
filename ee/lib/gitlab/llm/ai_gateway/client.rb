@@ -4,6 +4,8 @@ module Gitlab
   module Llm
     module AiGateway
       class Client
+        extend ::Gitlab::Utils::Override
+
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
         include ::Gitlab::Llm::Concerns::EventTracking
         include ::Gitlab::Llm::Concerns::AvailableModels
@@ -42,8 +44,8 @@ module Gitlab
 
           logger.info_or_debug(user, message: "Received response from AI Gateway", response: response["response"])
 
-          track_prompt_size(token_size(prompt))
-          track_response_size(token_size(response["response"]))
+          track_prompt_size(token_size(prompt), provider(options))
+          track_response_size(token_size(response["response"]), provider(options))
 
           response
         end
@@ -62,8 +64,8 @@ module Gitlab
           if response.success?
             logger.info_or_debug(user, message: "Received response from AI Gateway", response: response_body)
 
-            track_prompt_size(token_size(prompt))
-            track_response_size(token_size(response_body))
+            track_prompt_size(token_size(prompt), provider(options))
+            track_response_size(token_size(response_body), provider(options))
 
             response_body
           else
@@ -169,6 +171,11 @@ module Gitlab
           AVAILABLE_MODELS.find do |_, models|
             models.include?(model(options))
           end&.first
+        end
+
+        override :tracking_class_name
+        def tracking_class_name(provider)
+          TRACKING_CLASS_NAMES.fetch(provider)
         end
       end
     end

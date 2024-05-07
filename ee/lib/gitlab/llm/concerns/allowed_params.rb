@@ -11,6 +11,11 @@ module Gitlab
           anthropic: ANTHROPIC_PARAMS,
           vertex: VERTEX_PARAMS
         }.freeze
+
+        TRACKING_CLASS_NAMES = {
+          anthropic: 'Gitlab::Llm::Anthropic::Client',
+          vertex: 'Gitlab::Llm::VertexAi::Client'
+        }.freeze
       end
     end
   end

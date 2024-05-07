@@ -83,6 +83,30 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
       )
   end
 
+  shared_examples 'tracks events with provider for AI requests' do |prompt_size, response_size, klass|
+    it 'tracks a snowplow event' do
+      subject
+
+      expect_snowplow_event(
+        category: klass.to_s,
+        action: 'tokens_per_user_request_prompt',
+        property: 'uuid',
+        label: 'chat',
+        user: user,
+        value: prompt_size
+      )
+
+      expect_snowplow_event(
+        category: klass.to_s,
+        action: 'tokens_per_user_request_response',
+        property: 'uuid',
+        label: 'chat',
+        user: user,
+        value: response_size
+      )
+    end
+  end
+
   describe '#complete' do
     subject(:complete) do
       described_class.new(user, tracking_context: tracking_context).complete(prompt: 'anything', **options)
@@ -120,11 +144,11 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
           stub_const("Gitlab::Llm::Concerns::ExponentialBackoff::INITIAL_DELAY", 0.0)
         end
 
-        it_behaves_like 'tracks events for AI requests', 2, 4
+        it_behaves_like 'tracks events with provider for AI requests', 2, 4, 'Gitlab::Llm::Anthropic::Client'
       end
     end
 
-    it_behaves_like 'tracks events for AI requests', 2, 4
+    it_behaves_like 'tracks events with provider for AI requests', 2, 4, 'Gitlab::Llm::Anthropic::Client'
 
     it 'returns response' do
       expect(Gitlab::HTTP).to receive(:post)
@@ -198,6 +222,8 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
                                   .and_call_original
         expect(complete.parsed_response).to eq(expected_response)
       end
+
+      it_behaves_like 'tracks events with provider for AI requests', 2, 4, 'Gitlab::Llm::VertexAi::Client'
     end
 
     context 'when invalid model is passed' do
@@ -248,7 +274,7 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
           end
         end
 
-        it_behaves_like 'tracks events for AI requests', 2, 1
+        it_behaves_like 'tracks events with provider for AI requests', 2, 1, 'Gitlab::Llm::Anthropic::Client'
       end
 
       context 'when response contains multiple events' do
@@ -358,6 +384,8 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
                 )
               )
             end
+
+            it_behaves_like 'tracks events with provider for AI requests', 2, 2, 'Gitlab::Llm::VertexAi::Client'
           end
         end
       end
