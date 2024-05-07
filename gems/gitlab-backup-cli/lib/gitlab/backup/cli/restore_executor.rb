@@ -52,7 +52,6 @@ module Gitlab
             Gitlab::Backup::Cli::Output.info("Executing restoration of #{task.human_name}...")
 
             duration = measure_duration do
-              # TODO: make this work
               task.restore!(archive_directory)
             end
 
