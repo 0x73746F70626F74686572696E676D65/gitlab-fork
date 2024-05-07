@@ -125,7 +125,7 @@ RSpec.shared_examples 'a Geo framework registry' do
     it 'truncates a long last_sync_failure' do
       registry.failed!(message: 'a' * 256)
 
-      expect(registry.last_sync_failure).to eq('a' * 252 + '...')
+      expect(registry.last_sync_failure).to eq(('a' * 252) + '...')
     end
 
     it 'increments retry_count' do

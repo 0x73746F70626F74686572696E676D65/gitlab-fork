@@ -37,9 +37,9 @@ RSpec.describe ::Iterations::Cadence, :freeze_time, feature_category: :team_plan
 
     shared_examples 'updating the start date is valid' do
       where(:prev_start_date, :new_start_date) do
-        Date.current + 1.day  | Date.current
-        Date.current + 7.days | Date.current + 3.days
-        Date.current + 7.days | Date.current + 14.days
+        (Date.current + 1.day)  | Date.current
+        (Date.current + 7.days) | (Date.current + 3.days)
+        (Date.current + 7.days) | (Date.current + 14.days)
       end
 
       with_them do
