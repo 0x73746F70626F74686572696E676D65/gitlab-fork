@@ -28,21 +28,12 @@ RSpec.describe Mutations::Vulnerabilities::BulkDismiss, feature_category: :vulne
 
   describe '#resolve' do
     it 'does not introduce N+1 errors' do
-      queries = ActiveRecord::QueryRecorder.new do
-        subject
-      end
+      control = ActiveRecord::QueryRecorder.new { subject }
 
-      expect(
-        queries.occurrences_starting_with('INSERT INTO "vulnerability_state_transitions"').values.sum
-      ).to eq(1)
-      expect(queries.occurrences_starting_with('INSERT INTO "notes"').values.sum).to eq(1)
-      expect(queries.occurrences_starting_with('SELECT "namespaces"').values.sum).to eq(2)
-      expect(queries.occurrences_starting_with('SELECT "project_features"').values.sum).to eq(1)
-      expect(queries.occurrences_starting_with('SELECT "vulnerabilities"').values.sum).to eq(1)
-      expect(queries.occurrences_starting_with('SELECT "projects"').values.sum).to eq(1)
-      expect(queries.occurrences_starting_with('UPDATE "vulnerabilities"').values.sum).to eq(1)
-      expect(queries.occurrences_starting_with('UPDATE "vulnerability_reads"').values.sum).to eq(1)
-      expect(queries.count).to be <= 15
+      # Add more vulnerabilities to the project to ensure the query count is stable
+      create(:vulnerability, :with_findings, project: project)
+
+      expect { subject }.not_to exceed_query_limit(control)
     end
   end
 end
