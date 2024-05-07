@@ -30,5 +30,5 @@
     window.gl.mrWidgetData.new_coverage_fuzzing_comparison_path = '#{security_reports_project_merge_request_path(@project, @merge_request, type: :coverage_fuzzing) if @project.feature_available?(:coverage_fuzzing)}'
     window.gl.mrWidgetData.new_api_fuzzing_comparison_path = '#{security_reports_project_merge_request_path(@project, @merge_request, type: :api_fuzzing) if @project.feature_available?(:api_fuzzing)}'
     window.gl.mrWidgetData.aiCommitMessageEnabled = #{::Llm::GenerateCommitMessageService.new(current_user, @merge_request).valid?.to_s}
-    window.gl.mrWidgetData.dismissal_descriptions = '#{dismissal_descriptions.to_json}';
+    window.gl.mrWidgetData.dismissal_descriptions = '#{escape_javascript(dismissal_descriptions.to_json)}';
     window.gl.mrWidgetData.commit_path_template = '#{commit_path_template(@project)}';
