@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Minutes::CostFactor do
+RSpec.describe Gitlab::Ci::Minutes::CostFactor, feature_category: :hosted_runners do
   using RSpec::Parameterized::TableSyntax
 
   let(:runner_type) {}

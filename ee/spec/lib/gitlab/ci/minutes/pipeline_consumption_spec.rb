@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Minutes::PipelineConsumption, feature_category: :continuous_integration do
+RSpec.describe Gitlab::Ci::Minutes::PipelineConsumption, feature_category: :hosted_runners do
   let_it_be(:project) { create(:project) }
   let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
   let(:runner_1) { create(:ci_runner, :instance) }

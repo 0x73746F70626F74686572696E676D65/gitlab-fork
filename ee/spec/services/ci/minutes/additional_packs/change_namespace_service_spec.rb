@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::AdditionalPacks::ChangeNamespaceService, feature_category: :continuous_integration do
+RSpec.describe Ci::Minutes::AdditionalPacks::ChangeNamespaceService, feature_category: :hosted_runners do
   describe '#execute' do
     let_it_be(:namespace) { create(:group) }
     let_it_be(:target, reload: true) { create(:group) }

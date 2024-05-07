@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::RefreshCachedDataService, feature_category: :continuous_integration do
+RSpec.describe Ci::Minutes::RefreshCachedDataService, feature_category: :hosted_runners do
   include AfterNextHelpers
 
   let_it_be(:group) { create(:group) }

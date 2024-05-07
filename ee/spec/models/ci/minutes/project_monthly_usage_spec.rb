@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::ProjectMonthlyUsage, feature_category: :continuous_integration do
+RSpec.describe Ci::Minutes::ProjectMonthlyUsage, feature_category: :hosted_runners do
   let_it_be(:project) { create(:project) }
 
   describe 'unique index' do

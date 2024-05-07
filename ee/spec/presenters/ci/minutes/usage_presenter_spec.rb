@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::UsagePresenter do
+RSpec.describe Ci::Minutes::UsagePresenter, feature_category: :hosted_runners do
   include ::Ci::MinutesHelpers
 
   using RSpec::Parameterized::TableSyntax

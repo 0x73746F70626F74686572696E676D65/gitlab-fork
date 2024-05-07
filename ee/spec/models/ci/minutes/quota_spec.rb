@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Ci::Minutes::Quota, feature_category: :continuous_integration do
+RSpec.describe Ci::Minutes::Quota, feature_category: :hosted_runners do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_reload(:namespace) { create(:namespace) }
