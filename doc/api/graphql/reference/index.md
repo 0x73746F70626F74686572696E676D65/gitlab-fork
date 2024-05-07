@@ -18199,6 +18199,7 @@ Details of a container repository.
 | <a id="containerrepositorydetailsexpirationpolicystartedat"></a>`expirationPolicyStartedAt` | [`Time`](#time) | Timestamp when the cleanup done by the expiration policy was started on the container repository. |
 | <a id="containerrepositorydetailsid"></a>`id` | [`ID!`](#id) | ID of the container repository. |
 | <a id="containerrepositorydetailslastcleanupdeletedtagscount"></a>`lastCleanupDeletedTagsCount` | [`Int`](#int) | Number of deleted tags from the last cleanup. |
+| <a id="containerrepositorydetailslastpublishedat"></a>`lastPublishedAt` | [`Time`](#time) | Timestamp when a repository tag was last created or updated. Only present for repositories that had tags created or updated after GitLab 16.11. |
 | <a id="containerrepositorydetailslocation"></a>`location` | [`String!`](#string) | URL of the container repository. |
 | <a id="containerrepositorydetailsmigrationstate"></a>`migrationState` **{warning-solid}** | [`String!`](#string) | **Deprecated** in GitLab 17.0. Returns an empty string. This was used for the migration of GitLab.com, which is now complete. Not used by Self-managed instances. |
 | <a id="containerrepositorydetailsname"></a>`name` | [`String!`](#string) | Name of the container repository. |
