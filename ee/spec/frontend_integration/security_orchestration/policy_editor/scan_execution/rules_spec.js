@@ -6,11 +6,8 @@ import BaseRuleComponent from 'ee/security_orchestration/components/policy_edito
 import ScheduleRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution/rule/schedule_rule_component.vue';
 import { SCAN_EXECUTION_SCHEDULE_RULE } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
 import { DEFAULT_PROVIDE } from '../mocks/mocks';
-import {
-  mockPipelineScanExecutionManifest,
-  mockScheduleScanExecutionManifest,
-} from '../mocks/rule_mocks';
 import { verify } from '../utils';
+import { mockPipelineScanExecutionManifest, mockScheduleScanExecutionManifest } from './mocks';
 
 describe('Scan execution policy actions', () => {
   let wrapper;

@@ -1,0 +1,74 @@
+import { mountExtended } from 'helpers/vue_test_utils_helper';
+import * as urlUtils from '~/lib/utils/url_utility';
+import App from 'ee/security_orchestration/components/policy_editor/app.vue';
+import CodeBlockFileFilePath from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_file_path.vue';
+import { OVERRIDE } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
+import ActionSection from 'ee/security_orchestration/components/policy_editor/pipeline_execution/action/action_section.vue';
+import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
+import { DEFAULT_PROVIDE } from '../mocks/mocks';
+import { findYamlPreview, verify } from '../utils';
+import { mockPipelineExecutionActionManifest } from './mocks';
+import { createMockApolloProvider } from './apollo_util';
+
+describe('Pipeline execution policy actions', () => {
+  let wrapper;
+
+  const createWrapper = ({ propsData = {}, provide = {} } = {}) => {
+    wrapper = mountExtended(App, {
+      apolloProvider: createMockApolloProvider(),
+      propsData: {
+        assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
+        ...propsData,
+      },
+      provide: {
+        ...DEFAULT_PROVIDE,
+        existingPolicy: null,
+        ...provide,
+      },
+      stubs: {
+        SourceEditor: true,
+      },
+    });
+  };
+
+  const findActionSection = () => wrapper.findComponent(ActionSection);
+  const findCodeBlockFileFilePath = () => wrapper.findComponent(CodeBlockFileFilePath);
+
+  beforeEach(() => {
+    jest.spyOn(urlUtils, 'getParameterByName').mockReturnValue('pipeline_execution_policy');
+  });
+
+  afterEach(() => {
+    window.gon = {};
+  });
+
+  beforeEach(() => {
+    createWrapper();
+  });
+
+  describe('initial state', () => {
+    it('should render initial state', () => {
+      expect(findActionSection().exists()).toBe(true);
+      expect(findYamlPreview(wrapper).text()).toContain(mockPipelineExecutionActionManifest.trim());
+    });
+  });
+
+  describe('Project CI', () => {
+    it('should override project CI', async () => {
+      const verifyRuleMode = () => {
+        expect(findActionSection().exists()).toBe(true);
+      };
+
+      await findCodeBlockFileFilePath().vm.$emit('select-override', OVERRIDE);
+
+      await verify({
+        manifest: mockPipelineExecutionActionManifest.replace(
+          'override_project_ci: false',
+          'override_project_ci: true',
+        ),
+        verifyRuleMode,
+        wrapper,
+      });
+    });
+  });
+});
