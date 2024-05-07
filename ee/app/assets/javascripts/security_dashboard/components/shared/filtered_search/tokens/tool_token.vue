@@ -1,11 +1,5 @@
 <script>
-import {
-  GlFilteredSearchToken,
-  GlFilteredSearchSuggestion,
-  GlDropdownDivider,
-  GlDropdownSectionHeader,
-  GlIcon,
-} from '@gitlab/ui';
+import { GlFilteredSearchToken, GlDropdownDivider, GlDropdownSectionHeader } from '@gitlab/ui';
 import { groupBy } from 'lodash';
 import {
   REPORT_TYPES_DEFAULT,
@@ -13,6 +7,7 @@ import {
 } from 'ee/security_dashboard/store/constants';
 import { s__ } from '~/locale';
 import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
+import SearchSuggestion from '../components/search_suggestion.vue';
 import QuerystringSync from '../../filters/querystring_sync.vue';
 import { ALL_ID as ALL_TOOLS_ID } from '../../filters/constants';
 import eventHub from '../event_hub';
@@ -23,12 +18,11 @@ export default {
   components: {
     QuerystringSync,
     GlFilteredSearchToken,
-    GlFilteredSearchSuggestion,
     GlDropdownDivider,
     GlDropdownSectionHeader,
-    GlIcon,
+    SearchSuggestion,
   },
-  inject: ['scanners'],
+  inject: ['scanners', 'toolFilterType'],
   props: {
     config: {
       type: Object,
@@ -53,6 +47,9 @@ export default {
     };
   },
   computed: {
+    isSimpleTool() {
+      return this.toolFilterType === 'reportType';
+    },
     tokenValue() {
       return {
         ...this.value,
@@ -63,6 +60,24 @@ export default {
       };
     },
     items() {
+      if (this.isSimpleTool) {
+        return this.itemsFromConfig;
+      }
+
+      return this.itemsFromScanners;
+    },
+    itemsFromConfig() {
+      const allOption = { value: ALL_TOOLS_ID, text: this.$options.i18n.allItemsText };
+      const reportTypes = REPORT_TYPES_WITH_MANUALLY_ADDED;
+
+      const options = Object.entries(reportTypes).map(([id, text]) => ({
+        value: id.toUpperCase(),
+        text,
+      }));
+
+      return [allOption, ...options];
+    },
+    itemsFromScanners() {
       const groupedByReport = groupBy(this.scanners, 'report_type');
       const items = [
         {
@@ -106,11 +121,15 @@ export default {
       return this.items.flatMap((i) => i.options);
     },
     validValues() {
+      if (this.isSimpleTool) {
+        return this.items.map((i) => i.value);
+      }
+
       return this.flatItems.map((i) => i.value);
     },
     toggleText() {
       return getSelectedOptionsText({
-        options: this.flatItems,
+        options: this.isSimpleTool ? this.items : this.flatItems,
         selected: this.selectedTools,
         placeholder: this.$options.i18n.allItemsText,
         maxOptionsShown: 2,
@@ -126,7 +145,7 @@ export default {
       this.querySyncValues = this.selectedTools;
 
       eventHub.$emit('filters-changed', {
-        scanner: this.selectedTools.filter((i) => i !== ALL_TOOLS_ID),
+        [this.toolFilterType]: this.selectedTools.filter((i) => i !== ALL_TOOLS_ID),
       });
     },
     updateSelected(selectedValue) {
@@ -179,50 +198,51 @@ export default {
 </script>
 
 <template>
-  <div>
-    <querystring-sync
-      querystring-key="scanner"
-      :value="querySyncValues"
-      :valid-values="validValues"
-      @input="updateSelectedFromQS"
+  <querystring-sync
+    :querystring-key="toolFilterType"
+    :value="querySyncValues"
+    :valid-values="validValues"
+    @input="updateSelectedFromQS"
+  >
+    <gl-filtered-search-token
+      :config="config"
+      v-bind="{ ...$props, ...$attrs }"
+      :multi-select-values="selectedTools"
+      :value="tokenValue"
+      v-on="$listeners"
+      @select="updateSelected"
+      @destroy="resetSelected"
+      @complete="emitFiltersChanged"
     >
-      <gl-filtered-search-token
-        :config="config"
-        v-bind="{ ...$props, ...$attrs }"
-        :multi-select-values="selectedTools"
-        :value="tokenValue"
-        v-on="$listeners"
-        @select="updateSelected"
-        @destroy="resetSelected"
-        @complete="emitFiltersChanged"
-      >
-        <template #view>
-          {{ toggleText }}
+      <template #view>
+        {{ toggleText }}
+      </template>
+      <template #suggestions>
+        <template v-if="isSimpleTool">
+          <search-suggestion
+            v-for="tool in items"
+            :key="tool.value"
+            :text="tool.text"
+            :value="tool.value"
+            :selected="isToolSelected(tool.value)"
+            name="tool"
+          />
         </template>
-        <template #suggestions>
-          <template v-for="(group, index) in items">
-            <gl-dropdown-section-header v-if="group.text" :key="group.value">
-              {{ group.text }}
-            </gl-dropdown-section-header>
-            <gl-dropdown-divider v-if="index === 0" :key="group.value" />
-            <gl-filtered-search-suggestion
-              v-for="tool in group.options"
-              :key="tool.value"
-              :value="tool.value"
-            >
-              <div class="gl-display-flex gl-align-items-center">
-                <gl-icon
-                  name="check"
-                  class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"
-                  :class="{ 'gl-invisible': !isToolSelected(tool.value) }"
-                  :data-testid="`tool-icon-${tool.value}`"
-                />
-                {{ tool.text }}
-              </div>
-            </gl-filtered-search-suggestion>
-          </template>
+        <template v-for="(group, index) in items" v-else>
+          <gl-dropdown-section-header v-if="group.text" :key="group.value">
+            {{ group.text }}
+          </gl-dropdown-section-header>
+          <gl-dropdown-divider v-if="index === 0" :key="group.value" />
+          <search-suggestion
+            v-for="tool in group.options"
+            :key="tool.value"
+            :text="tool.text"
+            :value="tool.value"
+            :selected="isToolSelected(tool.value)"
+            name="tool"
+          />
         </template>
-      </gl-filtered-search-token>
-    </querystring-sync>
-  </div>
+      </template>
+    </gl-filtered-search-token>
+  </querystring-sync>
 </template>
