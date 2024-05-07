@@ -36,8 +36,8 @@ module IncidentManagement
 
     scope :not_removed, -> { where(is_removed: false) }
     scope :removed, -> { where(is_removed: true) }
-    scope :for_user, -> (user) { where(user: user) }
-    scope :for_project, -> (project) { where(policy: { project: project }).joins(:policy).references(:policy) }
+    scope :for_user, ->(user) { where(user: user) }
+    scope :for_project, ->(project) { where(policy: { project: project }).joins(:policy).references(:policy) }
     scope :load_project_with_routes, -> { preload(project: [:route, { namespace: :route }]) }
     scope :load_policy, -> { includes(:policy) }
 

@@ -15,8 +15,8 @@ module IncidentManagement
     validates :description, length: { maximum: 160 }
 
     scope :by_exact_name, ->(name) { where('LOWER(name) = ?', name&.downcase) }
-    scope :for_project, -> (project) { where(project: project) }
-    scope :search_by_name, -> (query) { fuzzy_search(query, [:name]) }
+    scope :for_project, ->(project) { where(project: project) }
+    scope :search_by_name, ->(query) { fuzzy_search(query, [:name]) }
 
     accepts_nested_attributes_for :rules
 

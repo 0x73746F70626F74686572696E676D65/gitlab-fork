@@ -50,7 +50,7 @@ class GeoNode < ApplicationRecord
 
   scope :with_url_prefix, ->(prefix) { where('url LIKE ?', "#{prefix}%") }
   scope :secondary_nodes, -> { where(primary: false) }
-  scope :name_in, -> (names) { where(name: names) }
+  scope :name_in, ->(names) { where(name: names) }
   scope :ordered, -> { order(:id) }
   scope :enabled, -> { where(enabled: true) }
 

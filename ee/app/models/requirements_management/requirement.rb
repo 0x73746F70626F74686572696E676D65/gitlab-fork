@@ -53,8 +53,8 @@ module RequirementsManagement
       allow_nil: true
 
     scope :with_issue, -> { joins(:requirement_issue) }
-    scope :for_iid, -> (iid) { where(iid: iid) }
-    scope :with_author, -> (user) { with_issue.where('issues.author': user) }
+    scope :for_iid, ->(iid) { where(iid: iid) }
+    scope :with_author, ->(user) { with_issue.where('issues.author': user) }
 
     # overrides default sortable scopes
     scope :order_created_desc, -> { with_issue.reorder('issues.created_at desc') }
@@ -65,7 +65,7 @@ module RequirementsManagement
     scope :opened, -> { with_issue.where(issues: { state_id: Issue.available_states[:opened] }) }
     scope :archived, -> { with_issue.where(issues: { state_id: Issue.available_states[:closed] }) }
 
-    scope :for_state, -> (state) { with_issue.where('issues.state_id': to_issue_state_id(state)) }
+    scope :for_state, ->(state) { with_issue.where('issues.state_id': to_issue_state_id(state)) }
 
     scope :counts_by_state, -> do
       counts = with_issue.group('issues.state_id').count
