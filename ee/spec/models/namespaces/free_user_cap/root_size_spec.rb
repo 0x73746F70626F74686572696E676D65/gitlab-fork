@@ -31,7 +31,6 @@ RSpec.describe Namespaces::FreeUserCap::RootSize, :saas, feature_category: :seat
 
       before do
         # proves local class override method takes effect
-        allow(namespace).to receive(:temporary_storage_increase_enabled?).and_return(true)
         allow(model).to receive(:enforce_limit?).and_return(false)
       end
 

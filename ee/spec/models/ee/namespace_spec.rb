@@ -36,10 +36,6 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
   it { is_expected.to delegate_method(:additional_purchased_storage_size=).to(:namespace_limit).with_arguments(:args) }
   it { is_expected.to delegate_method(:additional_purchased_storage_ends_on).to(:namespace_limit) }
   it { is_expected.to delegate_method(:additional_purchased_storage_ends_on=).to(:namespace_limit).with_arguments(:args) }
-  it { is_expected.to delegate_method(:temporary_storage_increase_ends_on).to(:namespace_limit) }
-  it { is_expected.to delegate_method(:temporary_storage_increase_ends_on=).to(:namespace_limit).with_arguments(:args) }
-  it { is_expected.to delegate_method(:temporary_storage_increase_enabled?).to(:namespace_limit) }
-  it { is_expected.to delegate_method(:eligible_for_temporary_storage_increase?).to(:namespace_limit) }
   it { is_expected.to delegate_method(:experiment_features_enabled).to(:namespace_settings).allow_nil }
   it { is_expected.to delegate_method(:experiment_features_enabled=).to(:namespace_settings).with_arguments(:args).allow_nil }
   it { is_expected.to delegate_method(:duo_features_enabled).to(:namespace_settings) }
@@ -1709,26 +1705,6 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
           end
         end
       end
-    end
-  end
-
-  describe '#enable_temporary_storage_increase!' do
-    it 'sets a date', :freeze_time do
-      namespace = build(:namespace)
-
-      namespace.enable_temporary_storage_increase!
-
-      expect(namespace.temporary_storage_increase_ends_on).to eq(30.days.from_now.to_date)
-    end
-
-    it 'is invalid when set twice' do
-      namespace = create(:namespace)
-
-      namespace.enable_temporary_storage_increase!
-      namespace.enable_temporary_storage_increase!
-
-      expect(namespace).to be_invalid
-      expect(namespace.errors[:"namespace_limit.temporary_storage_increase_ends_on"]).to be_present
     end
   end
 

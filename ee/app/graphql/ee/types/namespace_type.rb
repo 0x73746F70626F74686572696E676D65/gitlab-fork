@@ -76,27 +76,6 @@ module EE
                        'This limit only applies to namespaces under namespace limit enforcement.',
           authorize: :read_namespace_via_membership
 
-        field :is_temporary_storage_increase_enabled,
-          GraphQL::Types::Boolean,
-          null: true,
-          description: 'Status of the temporary storage increase.',
-          deprecated: {
-            reason: 'Feature removal, will be completely removed in 17.0',
-            milestone: '16.7'
-          },
-          method: :temporary_storage_increase_enabled?,
-          authorize: :read_namespace_via_membership
-
-        field :temporary_storage_increase_ends_on,
-          ::Types::TimeType,
-          null: true,
-          description: 'Date until the temporary storage increase is active.',
-          deprecated: {
-            reason: 'Feature removal, will be completely removed in 17.0',
-            milestone: '16.7'
-          },
-          authorize: :read_namespace_via_membership
-
         field :compliance_frameworks,
           ::Types::ComplianceManagement::ComplianceFrameworkType.connection_type,
           null: true,
