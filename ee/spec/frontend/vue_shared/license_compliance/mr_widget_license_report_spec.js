@@ -9,6 +9,7 @@ import { TEST_HOST } from 'spec/test_constants';
 import ReportItem from '~/ci/reports/components/report_item.vue';
 import ReportSection from '~/ci/reports/components/report_section.vue';
 import { LOADING, ERROR, SUCCESS } from '~/ci/reports/constants';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 import {
   allowedLicense,
   deniedLicense,
@@ -115,30 +116,30 @@ describe('License Report MR Widget', () => {
 
     describe('snowplow', () => {
       let trackUserEventSpy;
-      let trackCounterEventSpy;
+      const { bindInternalEventDocument } = useMockInternalEventsTracking();
 
       beforeEach(() => {
         mountComponent();
         trackUserEventSpy = jest.spyOn(api, 'trackRedisHllUserEvent').mockImplementation(() => {});
-        trackCounterEventSpy = jest
-          .spyOn(api, 'trackRedisCounterEvent')
-          .mockImplementation(() => {});
       });
 
       afterEach(() => {
         trackUserEventSpy.mockRestore();
-        trackCounterEventSpy.mockRestore();
       });
 
       it('tracks users_visiting_testing_license_compliance_full_report', () => {
+        const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+
         wrapper.find('[data-testid="full-report-button"]').vm.$emit('click');
 
         expect(trackUserEventSpy).toHaveBeenCalledWith(
           'users_visiting_testing_license_compliance_full_report',
         );
 
-        expect(trackCounterEventSpy).toHaveBeenCalledWith(
-          'users_visiting_testing_license_compliance_full_report',
+        expect(trackEventSpy).toHaveBeenCalledWith(
+          'click_full_report_license_compliance',
+          {},
+          undefined,
         );
       });
 
@@ -146,10 +147,6 @@ describe('License Report MR Widget', () => {
         wrapper.find('[data-testid="manage-licenses-button"]').vm.$emit('click');
 
         expect(trackUserEventSpy).toHaveBeenCalledWith(
-          'users_visiting_testing_manage_license_compliance',
-        );
-
-        expect(trackCounterEventSpy).toHaveBeenCalledWith(
           'users_visiting_testing_manage_license_compliance',
         );
       });
