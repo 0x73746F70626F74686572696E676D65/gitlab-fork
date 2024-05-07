@@ -15,6 +15,7 @@ module Groups
       before_action do
         push_frontend_feature_flag(:group_analytics_dashboard_dynamic_vsd, @group)
         push_frontend_feature_flag(:ai_impact_analytics_dashboard, @group)
+        push_frontend_feature_flag(:enable_vsd_visual_editor, @group)
 
         load_visualizations
 

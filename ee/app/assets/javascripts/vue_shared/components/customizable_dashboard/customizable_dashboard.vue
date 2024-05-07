@@ -11,6 +11,7 @@ import BetaBadge from '~/vue_shared/components/badges/beta_badge.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
 import UsageOverviewBackgroundAggregationWarning from 'ee/analytics/dashboards/components/usage_overview_background_aggregation_warning.vue';
+import { CUSTOM_VALUE_STREAM_DASHBOARD } from 'ee/analytics/dashboards/constants';
 import {
   EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
   EVENT_LABEL_EXCLUDE_ANONYMISED_USERS,
@@ -126,7 +127,11 @@ export default {
       return this.showFilters ? filtersToQueryParams(this.filters) : {};
     },
     editingEnabled() {
-      return this.dashboard.userDefined;
+      return (
+        this.dashboard.userDefined &&
+        (this.dashboard.slug !== CUSTOM_VALUE_STREAM_DASHBOARD ||
+          this.glFeatures.enableVsdVisualEditor)
+      );
     },
     showEditControls() {
       return this.editingEnabled && this.editing;
