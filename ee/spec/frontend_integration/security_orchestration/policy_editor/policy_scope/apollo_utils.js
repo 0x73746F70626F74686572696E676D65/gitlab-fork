@@ -10,6 +10,7 @@ import {
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import createComplianceFrameworkMutation from 'ee/groups/settings/compliance_frameworks/graphql/queries/create_compliance_framework.mutation.graphql';
 import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
+import getGroupProjects from 'ee/security_orchestration/graphql/queries/get_group_projects.query.graphql';
 
 const defaultNodes = [
   {
@@ -95,12 +96,34 @@ export const mockApolloHandlers = (nodes = defaultNodes) => {
   };
 };
 
-export const createMockApolloProvider = (handlers) => {
+const mockApolloProjectHandlers = () => {
+  return {
+    getGroupProjects: jest.fn().mockResolvedValue({
+      data: {
+        id: 1,
+        group: {
+          id: 2,
+          projects: {
+            nodes: [],
+          },
+        },
+      },
+    }),
+  };
+};
+
+export const defaultHandlers = {
+  ...mockApolloHandlers(),
+  sppLinkedItemsHandler: createSppLinkedItemsHandler(),
+};
+
+export const createMockApolloProvider = (handlers = defaultHandlers) => {
   Vue.use(VueApollo);
 
   return createMockApollo([
     [getComplianceFrameworkQuery, handlers.complianceFrameworks],
     [createComplianceFrameworkMutation, handlers.createFrameworkHandler],
     [getSppLinkedProjectsNamespaces, handlers.sppLinkedItemsHandler],
+    [getGroupProjects, mockApolloProjectHandlers],
   ]);
 };

@@ -79,3 +79,105 @@ policy_scope:
     - id: 1
     - id: 2
 `;
+
+export const EXCLUDING_PROJECTS_MOCKS = {
+  SCAN_EXECUTION: `type: scan_execution_policy
+name: ''
+description: ''
+enabled: true
+policy_scope:
+  projects:
+    excluding:
+      - id: 1
+      - id: 2
+rules:
+  - type: pipeline
+    branches:
+      - '*'
+actions:
+  - scan: secret_detection
+`,
+  PIPELINE_EXECUTION: `type: pipeline_execution_policy
+name: ''
+description: ''
+enabled: true
+override_project_ci: false
+content:
+  include:
+    project: ''
+policy_scope:
+  projects:
+    excluding:
+      - id: 1
+      - id: 2
+`,
+  APPROVAL_POLICY: `type: approval_policy
+name: ''
+description: ''
+enabled: true
+policy_scope:
+  projects:
+    excluding:
+      - id: 1
+      - id: 2
+rules:
+  - type: ''
+actions:
+  - type: require_approval
+    approvals_required: 1
+approval_settings:
+  block_branch_modification: true
+  prevent_pushing_and_force_pushing: true
+`,
+};
+
+export const EXCLUDING_PROJECTS_PROJECTS_LEVEL_MOCKS = {
+  SCAN_EXECUTION: `type: scan_execution_policy
+name: ''
+description: ''
+enabled: true
+rules:
+  - type: pipeline
+    branches:
+      - '*'
+actions:
+  - scan: secret_detection
+policy_scope:
+  projects:
+    excluding:
+      - id: 1
+      - id: 2
+`,
+  PIPELINE_EXECUTION: `type: pipeline_execution_policy
+name: ''
+description: ''
+enabled: true
+override_project_ci: false
+content:
+  include:
+    project: ''
+policy_scope:
+  projects:
+    excluding:
+      - id: 1
+      - id: 2
+`,
+  APPROVAL_POLICY: `type: approval_policy
+name: ''
+description: ''
+enabled: true
+rules:
+  - type: ''
+actions:
+  - type: require_approval
+    approvals_required: 1
+approval_settings:
+  block_branch_modification: true
+  prevent_pushing_and_force_pushing: true
+policy_scope:
+  projects:
+    excluding:
+      - id: 1
+      - id: 2
+`,
+};
