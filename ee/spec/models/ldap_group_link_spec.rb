@@ -55,11 +55,11 @@ RSpec.describe LdapGroupLink do
     describe 'provider' do
       it 'shows the set value' do
         ldap_group_link.provider = '1235'
-        expect( ldap_group_link.provider ).to eql '1235'
+        expect(ldap_group_link.provider).to eql '1235'
       end
 
       it 'defaults to the first ldap server if empty' do
-        expect( klass.new.provider ).to eql Gitlab::Auth::Ldap::Config.providers.first
+        expect(klass.new.provider).to eql Gitlab::Auth::Ldap::Config.providers.first
       end
     end
   end

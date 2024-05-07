@@ -67,7 +67,7 @@ RSpec.describe ReleaseHighlight, :clean_gitlab_redis_cache, feature_category: :r
           items = described_class.load_items(page: 2)
 
           expect(items.count).to eq(2)
-          expect(items.map { |item| item['available_in'] }).to all( include('Premium') )
+          expect(items.map { |item| item['available_in'] }).to all(include('Premium'))
         end
       end
 
@@ -80,7 +80,7 @@ RSpec.describe ReleaseHighlight, :clean_gitlab_redis_cache, feature_category: :r
           items = described_class.load_items(page: 2)
 
           expect(items.count).to eq(3)
-          expect(items.map { |item| item['available_in'] }).to all( include('Ultimate') )
+          expect(items.map { |item| item['available_in'] }).to all(include('Ultimate'))
         end
       end
     end

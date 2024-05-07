@@ -1497,7 +1497,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
     end
 
     it 'returns the highest historical data since the license started for a 1 year license' do
-      license = build(:license, starts_at: now - 4.months, expires_at: now + 8.months )
+      license = build(:license, starts_at: now - 4.months, expires_at: now + 8.months)
       create(:historical_data, recorded_at: license.starts_at - 1.day, active_user_count: 100)
       create(:historical_data, recorded_at: now, active_user_count: 40)
 
@@ -1505,7 +1505,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
     end
 
     it 'returns the highest historical data since the license started for a license that lasts 6 months' do
-      license = build(:license, starts_at: now - 4.months, expires_at: now + 2.months )
+      license = build(:license, starts_at: now - 4.months, expires_at: now + 2.months)
       create(:historical_data, recorded_at: license.starts_at - 1.day, active_user_count: 80)
       create(:historical_data, recorded_at: now, active_user_count: 30)
 
@@ -1513,7 +1513,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
     end
 
     it 'returns the highest historical data since the license started for a license that lasts two years' do
-      license = build(:license, starts_at: now - 6.months, expires_at: now + 18.months )
+      license = build(:license, starts_at: now - 6.months, expires_at: now + 18.months)
       create(:historical_data, recorded_at: license.starts_at - 1.day, active_user_count: 400)
       create(:historical_data, recorded_at: now, active_user_count: 300)
 
@@ -1521,7 +1521,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
     end
 
     it 'returns the highest historical data during the license period for an expired license' do
-      license = build(:license, starts_at: now - 14.months, expires_at: now - 2.months )
+      license = build(:license, starts_at: now - 14.months, expires_at: now - 2.months)
       create(:historical_data, recorded_at: license.expires_at - 1.month, active_user_count: 400)
       create(:historical_data, recorded_at: now, active_user_count: 500)
 
@@ -1972,7 +1972,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
     subject { license.grace_period_expired? }
 
     let(:now) { Time.current }
-    let(:license) { build(:license, starts_at: now - 2.months, expires_at: expires_at ) }
+    let(:license) { build(:license, starts_at: now - 2.months, expires_at: expires_at) }
 
     context 'when license has not expired' do
       let(:expires_at) { now + 2.months }

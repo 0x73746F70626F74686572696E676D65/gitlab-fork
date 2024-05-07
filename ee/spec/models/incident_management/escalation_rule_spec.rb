@@ -17,13 +17,13 @@ RSpec.describe IncidentManagement::EscalationRule do
     it { is_expected.to validate_presence_of(:status) }
     it { is_expected.to validate_presence_of(:elapsed_time_seconds) }
     it { is_expected.to validate_numericality_of(:elapsed_time_seconds).is_greater_than_or_equal_to(0).is_less_than_or_equal_to(24.hours) }
-    it { is_expected.to validate_uniqueness_of(:oncall_schedule_id).scoped_to([:policy_id, :status, :elapsed_time_seconds] ).with_message('must be unique by status and elapsed time within a policy') }
+    it { is_expected.to validate_uniqueness_of(:oncall_schedule_id).scoped_to([:policy_id, :status, :elapsed_time_seconds]).with_message('must be unique by status and elapsed time within a policy') }
 
     context 'user-based rules' do
       subject { build(:incident_management_escalation_rule, :with_user) }
 
       it { is_expected.to be_valid }
-      it { is_expected.to validate_uniqueness_of(:user_id).scoped_to([:policy_id, :status, :elapsed_time_seconds] ).with_message('must be unique by status and elapsed time within a policy') }
+      it { is_expected.to validate_uniqueness_of(:user_id).scoped_to([:policy_id, :status, :elapsed_time_seconds]).with_message('must be unique by status and elapsed time within a policy') }
     end
 
     context 'mutually exclusive attributes' do
