@@ -3,7 +3,7 @@
 require 'spec_helper'
 require File.expand_path('ee/elastic/migrate/20230724070100_backfill_epics.rb')
 
-RSpec.describe BackfillEpics, feature_category: :global_search do
+RSpec.describe BackfillEpics, feature_category: :global_search, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/455446' do
   let(:version) { 20230724070100 }
   let(:helper) { Gitlab::Elastic::Helper.new }
   let(:index_name) { Epic.__elasticsearch__.index_name }
@@ -34,7 +34,7 @@ RSpec.describe BackfillEpics, feature_category: :global_search do
       helper.delete_migration_record(migration)
     end
 
-    it 'tracks all epic documents', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/455446' do
+    it 'tracks all epic documents' do
       expect(migration).not_to be_completed
 
       expect(::Elastic::ProcessBookkeepingService).to receive(:track!)
