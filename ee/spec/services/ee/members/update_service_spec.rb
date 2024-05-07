@@ -68,9 +68,15 @@ RSpec.describe Members::UpdateService, feature_category: :groups_and_projects do
     end
 
     context 'when current_user is not an admin' do
+      before do
+        source.add_guest(member_users.first)
+
+        source.add_developer(member_users.second)
+        create(:user_highest_role, :developer, user: member_users.second)
+      end
+
       context 'when ActiveRecord::RecordInvalid is raised' do
         it 'returns an error' do
-          allow(members.first).to receive(:member_promotion_management_required?).and_return(true)
           allow(members.first).to receive(:queue_for_approval).and_raise(ActiveRecord::RecordInvalid)
 
           result = update_service.execute(members, permission: permission)
@@ -82,9 +88,6 @@ RSpec.describe Members::UpdateService, feature_category: :groups_and_projects do
 
       context 'when current_user can update the given members' do
         it 'queues members requiring promotion management for approval and updates others' do
-          allow(members.first).to receive(:member_promotion_management_required?).and_return(true)
-          allow(members.second).to receive(:member_promotion_management_required?).and_return(false)
-
           result = update_service.execute(members, permission: permission)
 
           expect(result[:status]).to eq(:success)
@@ -107,8 +110,6 @@ RSpec.describe Members::UpdateService, feature_category: :groups_and_projects do
       member_users.each do |member_user|
         source.add_guest(member_user)
       end
-
-      allow(members.first).to receive(:member_promotion_management_required?).and_return(true)
     end
 
     it 'when permission denied it raises ::Gitlab::Access::AccessDeniedError' do
@@ -118,7 +119,10 @@ RSpec.describe Members::UpdateService, feature_category: :groups_and_projects do
   end
 
   context 'when member_promotion_management feature is enabled' do
+    let_it_be(:ultimate_license) { create(:license, plan: License::ULTIMATE_PLAN) }
+
     before do
+      allow(License).to receive(:current).and_return(ultimate_license)
       stub_feature_flags(member_promotion_management: true)
       stub_application_setting(enable_member_promotion_management: true)
     end
@@ -136,10 +140,6 @@ RSpec.describe Members::UpdateService, feature_category: :groups_and_projects do
     context 'when user have permission to update' do
       before do
         source.add_owner(current_user)
-
-        member_users.each do |member_user|
-          source.add_guest(member_user)
-        end
       end
 
       it_behaves_like 'member_promotion_management scenarios' do
