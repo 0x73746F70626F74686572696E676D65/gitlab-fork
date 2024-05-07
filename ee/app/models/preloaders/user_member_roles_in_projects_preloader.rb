@@ -33,7 +33,7 @@ module Preloaders
       sql_values_array = projects.filter_map do |project|
         next unless custom_roles_enabled_on?(project)
 
-        [project.id, Arel.sql("ARRAY[#{project.namespace.traversal_ids.join(',')}]::integer[]")]
+        [project.id, Arel.sql("ARRAY[#{project.namespace.traversal_ids.join(',')}]")]
       end
 
       return {} if sql_values_array.empty?
