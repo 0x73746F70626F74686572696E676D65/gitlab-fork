@@ -7,7 +7,7 @@ RSpec.describe Deployments::ApprovalWorker, feature_category: :continuous_delive
     let_it_be(:project) { create(:project, :repository, :allow_pipeline_trigger_approve_deployment) }
     let(:environment) { create(:environment, project: project) }
     let(:deployment) { create(:deployment, status: :blocked, project: project, environment: environment) }
-    let(:job_args) { [deployment.id, { 'user_id': deployment.user.id, 'status': 'approved' }] }
+    let(:job_args) { [deployment.id, { user_id: deployment.user.id, status: 'approved' }] }
 
     before do
       stub_licensed_features(protected_environments: true)
