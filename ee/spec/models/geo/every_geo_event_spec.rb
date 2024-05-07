@@ -6,7 +6,7 @@ RSpec.describe 'Every Geo event', feature_category: :geo_replication do
   subject { events }
 
   it 'includes Geo::Eventable' do
-    is_expected.to all( satisfy { |klass| klass.ancestors.include?(Geo::Eventable) })
+    is_expected.to all(satisfy { |klass| klass.ancestors.include?(Geo::Eventable) })
   end
 
   it 'has its class in Geo::EventLog::EVENT_CLASSES' do

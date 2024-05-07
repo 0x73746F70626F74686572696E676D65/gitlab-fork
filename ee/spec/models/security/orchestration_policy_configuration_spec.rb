@@ -1535,7 +1535,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
     before do
       allow(security_policy_management_project).to receive(:repository).and_return(repository)
-      allow(repository).to receive(:blob_data_at).with( default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
+      allow(repository).to receive(:blob_data_at).with(default_branch, Security::OrchestrationPolicyConfiguration::POLICY_PATH).and_return(policy_yaml)
     end
 
     it 'returns only enabled policies' do
@@ -1578,7 +1578,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
 
     it 'returns list of policy names where site profile is referenced' do
-      expect( security_orchestration_policy_configuration.active_policy_names_with_dast_site_profile('Site Profile')).to contain_exactly('Run DAST in every pipeline')
+      expect(security_orchestration_policy_configuration.active_policy_names_with_dast_site_profile('Site Profile')).to contain_exactly('Run DAST in every pipeline')
     end
   end
 
