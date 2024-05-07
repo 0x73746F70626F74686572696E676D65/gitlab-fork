@@ -18,15 +18,15 @@ RSpec.describe EE::Emails::Profile do
     end
 
     it 'has the correct subject' do
-      is_expected.to have_subject /^One or more of you personal access tokens were revoked$/i
+      is_expected.to have_subject(/^One or more of you personal access tokens were revoked$/i)
     end
 
     it 'mentions the access tokens were revoke' do
-      is_expected.to have_body_text /The following personal access tokens: name1 and name2 were revoked/
+      is_expected.to have_body_text(/The following personal access tokens: name1 and name2 were revoked/)
     end
 
     it 'includes a link to personal access tokens page' do
-      is_expected.to have_body_text /#{user_settings_personal_access_tokens_path}/
+      is_expected.to have_body_text(/#{user_settings_personal_access_tokens_path}/)
     end
 
     it 'includes the email reason' do

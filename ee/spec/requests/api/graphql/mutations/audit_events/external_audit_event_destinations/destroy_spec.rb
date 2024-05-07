@@ -72,7 +72,7 @@ RSpec.describe 'Destroy an external audit event destination', feature_category: 
         expect { post_graphql_mutation(mutation, current_user: owner) }
           .to change { AuditEvent.count }.by(1)
 
-        expect(AuditEvent.last.details[:custom_message]).to match /Destroy event streaming destination/
+        expect(AuditEvent.last.details[:custom_message]).to match(/Destroy event streaming destination/)
       end
     end
 

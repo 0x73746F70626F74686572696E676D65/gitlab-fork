@@ -47,7 +47,7 @@ RSpec.describe PipelineSerializer do
         create(:ci_build, :scheduled, pipeline: pipeline, environment: staging.name)
 
         expect { serializer.represent(Ci::Pipeline.all, preload: true) }
-          .not_to exceed_query_limit(2).for_query /SELECT "protected_environments".*/
+          .not_to exceed_query_limit(2).for_query(/SELECT "protected_environments".*/)
       end
     end
   end

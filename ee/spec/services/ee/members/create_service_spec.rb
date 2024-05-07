@@ -156,7 +156,7 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
       context 'when seat is not available' do
         it 'does not add members' do
           expect(execute_service[:status]).to eq(:error)
-          expect(execute_service[:message]).to match /: cannot be added since you've reached your /
+          expect(execute_service[:message]).to match(/: cannot be added since you've reached your /)
           expect(project.users).not_to include(*project_users)
         end
       end

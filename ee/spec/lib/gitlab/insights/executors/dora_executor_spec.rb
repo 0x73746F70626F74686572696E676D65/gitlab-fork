@@ -154,7 +154,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, time_travel_to: '2021-
       it 'raises error' do
         expect do
           serialized_data
-        end.to raise_error /Unknown group_by value is given/
+        end.to raise_error(/Unknown group_by value is given/)
       end
     end
 
@@ -164,7 +164,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, time_travel_to: '2021-
       it 'raises error' do
         expect do
           serialized_data
-        end.to raise_error /Unsupported chart type is given/
+        end.to raise_error(/Unsupported chart type is given/)
       end
     end
   end
