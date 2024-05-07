@@ -10,7 +10,15 @@ RSpec.describe Gitlab::EpicWorkItemSync::Diff, feature_category: :team_planning 
 
     let_it_be(:group) { create(:group) }
     let_it_be_with_reload(:epic) { create(:epic, :with_synced_work_item, group: group) }
-    let(:work_item) { epic.work_item }
+    let_it_be(:original_updated_at) { epic.updated_at }
+    # Using find will work as doing reload in each test run
+    let(:work_item) { WorkItem.find(epic.issue_id) }
+
+    # Necessary as some examples update the epic and work item and that changes `updated_at` which might cause flakyness
+    # since updated_at is one of the params we compare between instances
+    around do |example|
+      travel_to(original_updated_at) { example.run }
+    end
 
     context 'when epic and work item are equal' do
       it { is_expected.to be_empty }
