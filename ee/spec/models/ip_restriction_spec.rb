@@ -33,7 +33,7 @@ RSpec.describe IpRestriction do
     end
 
     describe '#allow_root_group_only' do
-      subject { described_class.new(group: group, range: '192.168.0.0/24' ) }
+      subject { described_class.new(group: group, range: '192.168.0.0/24') }
 
       context 'top-level group' do
         let(:group) { create(:group) }

@@ -72,7 +72,7 @@ RSpec.describe Vulnerabilities::Feedback, feature_category: :vulnerability_manag
     end
 
     context 'comment is set' do
-      let(:feedback) { build(:vulnerability_feedback, project: project, comment: 'a comment' ) }
+      let(:feedback) { build(:vulnerability_feedback, project: project, comment: 'a comment') }
 
       it 'validates presence of comment_timestamp' do
         expect(feedback).to validate_presence_of(:comment_timestamp)

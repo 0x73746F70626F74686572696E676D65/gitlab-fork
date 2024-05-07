@@ -470,7 +470,7 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
       end
 
       context 'when project is nested in a personal namespace' do
-        let(:project) { create(:project, namespace: create(:user).namespace ) }
+        let_it_be(:project) { create(:project, namespace: create(:user).namespace) }
         let(:member) { create :project_member, source: project }
 
         it 'returns nothing' do

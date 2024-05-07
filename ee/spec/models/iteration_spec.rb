@@ -450,7 +450,7 @@ RSpec.describe Iteration, feature_category: :team_planning do
         let_it_be(:iteration2) { create(:iteration, :with_due_date, iterations_cadence: iteration_cadence, start_date: 3.weeks.from_now) }
 
         context 'creating' do
-          let(:new_iteration) { build(:iteration, :with_due_date, iterations_cadence: iteration_cadence, start_date: new_start_date ) }
+          let(:new_iteration) { build(:iteration, :with_due_date, iterations_cadence: iteration_cadence, start_date: new_start_date) }
 
           before do
             new_iteration.save!
@@ -469,7 +469,7 @@ RSpec.describe Iteration, feature_category: :team_planning do
         end
 
         context 'updating' do
-          let!(:target_iteration) { create(:iteration, :with_due_date, iterations_cadence: iteration_cadence, start_date: start_date ) }
+          let!(:target_iteration) { create(:iteration, :with_due_date, iterations_cadence: iteration_cadence, start_date: start_date) }
 
           before do
             target_iteration.update!(start_date: new_start_date, due_date: new_start_date + 4.days)
