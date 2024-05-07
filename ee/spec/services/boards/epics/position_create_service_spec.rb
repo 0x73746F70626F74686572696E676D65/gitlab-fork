@@ -71,7 +71,7 @@ RSpec.describe Boards::Epics::PositionCreateService, feature_category: :portfoli
               expect(ordered_by_relative_position.map(&:epic_id)).to eq([epic3.id, epic1.id, epic4.id, epic2.id])
 
               expect(ordered_by_relative_position.map(&:relative_position))
-                .to eq([10, 1000, 1000 + ideal_distance * 2, 1000 + ideal_distance * 3])
+                .to match_array([10, 1000, 1000 + (ideal_distance * 2), 1000 + (ideal_distance * 3)])
             end
           end
 

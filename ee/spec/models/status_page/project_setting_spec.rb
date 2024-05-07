@@ -20,7 +20,7 @@ RSpec.describe StatusPage::ProjectSetting do
         unsafe_url = %{https://replaceme.com/'><script>alert(document.cookie)</script>}
         non_ascii_url = 'http://status€.gitlab.com'
         blank_url = ''
-        excessively_long_url = 'https://statu' + 's' * 1024 + '.com'
+        excessively_long_url = 'https://statu' + ('s' * 1024) + '.com'
 
         is_expected.not_to allow_values(
           unsafe_url,
