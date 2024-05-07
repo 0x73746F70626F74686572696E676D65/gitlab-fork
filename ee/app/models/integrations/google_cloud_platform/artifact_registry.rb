@@ -38,7 +38,11 @@ module Integrations
         required: true,
         section: SECTION_TYPE_CONFIGURATION,
         title: -> { s_('GoogleCloud|Repository name') },
-        help: -> { s_('GoogleCloud|Repository must be Docker format and Standard mode.') }
+        help: -> {
+          s_('GoogleCloud|Can be up to 63 lowercase letters, numbers, or hyphens. ' \
+             'Must start with a letter and end with a letter or number. ' \
+             'Repository must be Docker format and Standard mode.')
+        }
 
       field :artifact_registry_location,
         required: true,
@@ -105,10 +109,14 @@ module Integrations
         url = 'https://cloud.google.com/resource-manager/docs/creating-managing-projects#identifying_projects'
 
         format(
-          s_('GoogleCloud|To improve security, use a dedicated project for resources, separate from ' \
-             'CI/CD and identity management projects. %{link_start}Where’s my project ID? %{icon}%{link_end}'),
+          s_('GoogleCloud|%{link_start}Where’s my project ID? %{icon}%{link_end} ' \
+             'Can be 6 to 30 lowercase letters, numbers, or hyphens. ' \
+             'Must start with a letter and end with a letter or number. ' \
+             'Example: %{code_start}my-sample-project-191923%{code_end}.'),
           link_start: format('<a target="_blank" rel="noopener noreferrer" href="%{url}">', url: url).html_safe, # rubocop:disable Rails/OutputSafety -- It is fine to call html_safe here
           link_end: '</a>'.html_safe,
+          code_start: '<code>'.html_safe,
+          code_end: '</code>'.html_safe,
           icon: ApplicationController.helpers.sprite_icon('external-link', aria_label: _('(external link)')).html_safe # rubocop:disable Rails/OutputSafety -- It is fine to call html_safe here
         )
       end

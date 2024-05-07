@@ -86,7 +86,7 @@ describe('IntegrationSectionGoogleArtifactManagement', () => {
   it('renders form title', () => {
     createComponent();
 
-    expect(findTitle().text()).toBe('Repository');
+    expect(findTitle().text()).toBe('1. Repository');
   });
 
   it('renders configuration component', () => {
