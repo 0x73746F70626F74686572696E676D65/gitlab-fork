@@ -13,9 +13,9 @@ module GoogleCloud
         feature_flag_disabled: ServiceResponse.error(message: 'Feature flag not enabled'),
         access_denied: ServiceResponse.error(message: 'Access denied'),
         no_integration: ServiceResponse.error(
-          message: 'Google Cloud Identity and Access Management (IAM) project integration not set'),
+          message: "#{Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.title} integration not set"),
         integration_not_active: ServiceResponse.error(
-          message: 'Google Cloud Identity and Access Management (IAM) project integration not active'),
+          message: "#{Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.title} integration not active"),
         google_cloud_authentication_error:
           ServiceResponse.error(message: 'Unable to authenticate against Google Cloud'),
         invalid_order_by: ServiceResponse.error(message: 'Invalid order_by value'),

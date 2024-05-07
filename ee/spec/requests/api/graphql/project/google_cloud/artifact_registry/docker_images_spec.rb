@@ -129,6 +129,14 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
     end
   end
 
+  shared_examples 'returns the error' do |message|
+    it do
+      request
+
+      expect_graphql_errors_to_include(message)
+    end
+  end
+
   it_behaves_like 'a working graphql query' do
     before do
       request
@@ -202,25 +210,43 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
     it { is_expected.to be_nil }
   end
 
-  %i[wlif artifact_registry].each do |integration_type|
-    context "with the #{integration_type} integration" do
-      let(:integration) { public_send("#{integration_type}_integration") }
-
-      context 'when not present' do
-        before do
-          integration.destroy!
-        end
-
-        it { is_expected.to be_nil }
+  context 'with the Google Cloud Identity and Access Management (IAM) project integration' do
+    context 'when does not exist' do
+      before do
+        wlif_integration.destroy!
       end
 
-      context 'when inactive' do
-        before do
-          integration.update_column(:active, false)
-        end
+      it_behaves_like 'returns the error',
+        "#{Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.title} integration not set"
+    end
 
-        it { is_expected.to be_nil }
+    context 'when inactive' do
+      before do
+        wlif_integration.update_column(:active, false)
       end
+
+      it_behaves_like 'returns the error',
+        "#{Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.title} integration not active"
+    end
+  end
+
+  context 'with the Google Artifact Management integration' do
+    context 'when does not exist' do
+      before do
+        artifact_registry_integration.destroy!
+      end
+
+      it_behaves_like 'returns the error',
+        "#{Integrations::GoogleCloudPlatform::ArtifactRegistry.title} integration does not exist or inactive"
+    end
+
+    context 'when inactive' do
+      before do
+        artifact_registry_integration.update_column(:active, false)
+      end
+
+      it_behaves_like 'returns the error',
+        "#{Integrations::GoogleCloudPlatform::ArtifactRegistry.title} integration does not exist or inactive"
     end
   end
 

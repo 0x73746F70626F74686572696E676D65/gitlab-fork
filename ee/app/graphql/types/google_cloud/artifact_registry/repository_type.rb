@@ -7,6 +7,11 @@ module Types
         graphql_name 'GoogleCloudArtifactRegistryRepository'
         description 'Represents a repository of Google Artifact Registry'
 
+        include Gitlab::Graphql::Authorize::AuthorizeResource
+
+        GOOGLE_ARTIFACT_MANAGEMENT_INTEGRATION_ERROR =
+          "#{Integrations::GoogleCloudPlatform::ArtifactRegistry.title} integration does not exist or inactive".freeze
+
         authorize :read_google_cloud_artifact_registry
 
         field :project_id,
@@ -51,7 +56,13 @@ module Types
         private
 
         def integration
-          project.google_cloud_platform_artifact_registry_integration
+          integration = project.google_cloud_platform_artifact_registry_integration
+
+          unless integration&.operating?
+            raise_resource_not_available_error!(GOOGLE_ARTIFACT_MANAGEMENT_INTEGRATION_ERROR)
+          end
+
+          integration
         end
       end
     end

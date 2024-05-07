@@ -371,7 +371,8 @@ module EE
           null: true,
           alpha: { milestone: '16.10' },
           description: 'Google Artifact Registry repository. ' \
-                       'Returns `null` if `google_cloud_support_feature_flag` feature flag is disabled'
+                       'Returns `null` if `google_cloud_support_feature_flag` feature flag is disabled, ' \
+                       'or the GitLab instance is not a SaaS instance.'
 
         field :ai_agent, ::Types::Ai::Agents::AgentType,
           null: true,
@@ -469,11 +470,9 @@ module EE
       end
 
       def google_cloud_artifact_registry_repository
-        integrations_available = project.google_cloud_support_enabled? &&
-          project.google_cloud_platform_workload_identity_federation_integration&.operating? &&
-          project.google_cloud_platform_artifact_registry_integration&.operating?
+        return unless project.google_cloud_support_enabled?
 
-        project if integrations_available
+        project
       end
 
       def marked_for_deletion_on

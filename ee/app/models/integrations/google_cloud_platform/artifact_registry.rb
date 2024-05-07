@@ -87,14 +87,6 @@ module Integrations
           "repositories/#{artifact_registry_repository}"
       end
 
-      def required_integration_activated?
-        !!project.google_cloud_platform_workload_identity_federation_integration&.activated?
-      end
-
-      def required_integration_class
-        ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation
-      end
-
       def ci_variables
         return [] unless project.google_cloud_support_enabled? && activated?
 
