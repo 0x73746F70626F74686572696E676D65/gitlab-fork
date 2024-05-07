@@ -84,11 +84,17 @@ export default {
       <hr />
     </template>
     <connection @toggle-integration-active="$emit('toggle-integration-active', $event)" />
-    <h3 class="gl-mt-0">{{ s__('GoogleArtifactRegistry|Repository') }}</h3>
+    <h3 class="gl-mt-0">{{ s__('GoogleArtifactRegistry|1. Repository') }}</h3>
+    <p>
+      {{
+        s__(
+          'GoogleArtifactRegistry|To improve security, use a Google Cloud project for resources only, separate from CI/CD and identity management projects.',
+        )
+      }}
+    </p>
     <configuration
       :fields="dynamicFields"
       :is-validated="isValidated"
-      class="gl-form-input-xl"
       @update="updateGoogleCloudProjectId"
     />
     <hr />

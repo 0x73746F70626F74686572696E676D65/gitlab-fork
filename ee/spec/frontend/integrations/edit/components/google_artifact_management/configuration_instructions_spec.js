@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlAccordion, GlAccordionItem, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlLink, GlSprintf } from '@gitlab/ui';
 import ConfigurationInstructions from 'ee/integrations/edit/components/google_artifact_management/configuration_instructions.vue';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
@@ -10,9 +10,6 @@ describe('ConfigurationInstructions', () => {
   let wrapper;
 
   const findHeader = () => wrapper.find('h3');
-  const findDescription = () => wrapper.find('p');
-  const findAccordion = () => wrapper.findComponent(GlAccordion);
-  const findAccordionItem = () => wrapper.findComponent(GlAccordionItem);
   const findCodeBlockHighlighted = () => wrapper.findComponent(CodeBlockHighlighted);
   const findClipboardButton = () => wrapper.findComponent(ClipboardButton);
   const findLinks = () => wrapper.findAllComponents(GlLink);
@@ -36,50 +33,23 @@ describe('ConfigurationInstructions', () => {
   it('renders header', () => {
     createComponent();
 
-    expect(findHeader().text()).toBe('Configure Google Cloud IAM policies');
+    expect(findHeader().text()).toBe('2. Set up permissions');
   });
 
-  it('renders description', () => {
-    createComponent();
-
-    expect(findDescription().text()).toBe(
-      'Your Google Cloud project must have specific Identity and Access Management (IAM) policies to use the Artifact Registry repository in this GitLab project.',
-    );
-  });
-
-  it('renders accordion', () => {
-    createComponent();
-
-    expect(findAccordion().props('headerLevel')).toBe(4);
-  });
-
-  it('renders collapsed accordion item', () => {
-    createComponent();
-
-    expect(findAccordionItem().props('visible')).toBe(false);
-  });
-
-  it('passes right props to accordion item', () => {
-    createComponent();
-
-    expect(findAccordionItem().props()).toMatchObject({
-      title: 'Configuration instructions',
-      headerLevel: 3,
-    });
-  });
-
-  it('renders expanded accordion item when `operating=false`', () => {
-    createComponent({ customState: { operating: false } });
-
-    expect(findAccordionItem().props('visible')).toBe(true);
-  });
-
-  it('renders link to Google Cloud IAM permissions', () => {
+  it('renders link to OIDC custom claims', () => {
     createComponent();
 
     expect(findLinks().at(0).attributes()).toMatchObject({
-      href:
-        'https://cloud.google.com/iam/docs/granting-changing-revoking-access#required-permissions',
+      href: '/help/integration/google_cloud_iam#oidc-custom-claims',
+      target: '_blank',
+    });
+  });
+
+  it('renders link to Google Artifact Registry roles', () => {
+    createComponent();
+
+    expect(findLinks().at(1).attributes()).toMatchObject({
+      href: 'https://cloud.google.com/artifact-registry/docs/access-control#roles',
       target: '_blank',
     });
   });
@@ -87,8 +57,18 @@ describe('ConfigurationInstructions', () => {
   it('renders link to Google Cloud CLI installation', () => {
     createComponent();
 
-    expect(findLinks().at(1).attributes()).toMatchObject({
+    expect(findLinks().at(2).attributes()).toMatchObject({
       href: 'https://cloud.google.com/sdk/docs/install',
+      target: '_blank',
+    });
+  });
+
+  it('renders link to Google Cloud IAM permissions', () => {
+    createComponent();
+
+    expect(findLinks().at(3).attributes()).toMatchObject({
+      href:
+        'https://cloud.google.com/iam/docs/granting-changing-revoking-access#required-permissions',
       target: '_blank',
     });
   });
@@ -96,7 +76,7 @@ describe('ConfigurationInstructions', () => {
   it('renders link to personal access tokens path', () => {
     createComponent();
 
-    expect(findLinks().at(2).attributes()).toMatchObject({
+    expect(findLinks().at(4).attributes()).toMatchObject({
       href: '/path/to/personal/access/tokens',
       target: '_blank',
     });
