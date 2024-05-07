@@ -20,13 +20,13 @@ import {
   REPORT_TYPE_CONTAINER_SCANNING,
 } from '~/vue_shared/security_reports/constants';
 import { DEFAULT_PROVIDE } from '../mocks/mocks';
+import { verify } from '../utils';
 import {
   createScanActionScanExecutionManifest,
   mockDastActionScanExecutionManifest,
   mockGroupDastActionScanExecutionManifest,
   mockActionsVariablesScanExecutionManifest,
-} from '../mocks/action_mocks';
-import { verify } from '../utils';
+} from './mocks';
 
 describe('Scan execution policy actions', () => {
   let wrapper;
