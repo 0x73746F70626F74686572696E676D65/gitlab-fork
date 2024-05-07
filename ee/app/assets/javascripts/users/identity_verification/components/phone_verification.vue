@@ -6,7 +6,6 @@ import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
 import { isValidDateString } from '~/lib/utils/datetime_range';
 import { calculateRemainingMilliseconds } from '~/lib/utils/datetime_utility';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { I18N_PHONE_NUMBER_VERIFICATION_UNAVAILABLE } from '../constants';
 import InternationalPhoneInput from './international_phone_input.vue';
 import VerifyPhoneVerificationCode from './verify_phone_verification_code.vue';
@@ -20,7 +19,6 @@ export default {
     VerifyPhoneVerificationCode,
     Captcha,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: [
     'verificationStatePath',
     'phoneNumber',
@@ -92,8 +90,6 @@ export default {
       this.setSendAllowedOn(null);
     },
     startPolling() {
-      if (!this.glFeatures.autoRequestPhoneNumberVerificationExemption) return;
-
       // Poll for possible change in required verification methods for the user.
       // Specifically, if the user is from a country blocked by Telesign, we
       // auto-request a phone number verification exemption for them. When this

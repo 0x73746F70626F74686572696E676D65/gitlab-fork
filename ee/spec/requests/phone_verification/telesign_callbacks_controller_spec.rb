@@ -49,12 +49,6 @@ RSpec.describe PhoneVerification::TelesignCallbacksController, feature_category:
         end
       end
 
-      shared_examples 'does not exempt the user' do
-        it 'does not exempt the user' do
-          expect { do_request }.not_to change { user.exempt_from_phone_number_verification? }
-        end
-      end
-
       shared_examples 'does not log the event' do
         it 'does not log the event' do
           expect(Gitlab::AppLogger).not_to receive(:info)
@@ -90,7 +84,6 @@ RSpec.describe PhoneVerification::TelesignCallbacksController, feature_category:
 
         before do
           allow(user).to receive(:offer_phone_number_exemption?).and_return(true)
-          stub_feature_flags(auto_request_phone_number_verification_exemption: user)
         end
 
         it 'exempts the user' do
@@ -123,17 +116,10 @@ RSpec.describe PhoneVerification::TelesignCallbacksController, feature_category:
             allow(user).to receive(:offer_phone_number_exemption?).and_return(false)
           end
 
-          it_behaves_like 'does not exempt the user'
-          it_behaves_like 'does not invalidate verification_state_signup_identity_verification_path cache'
-          it_behaves_like 'does not log the event'
-        end
-
-        context 'when auto_request_phone_number_verification_exemption feature flag is disabled for user' do
-          before do
-            stub_feature_flags(auto_request_phone_number_verification_exemption: create(:user))
+          it 'does not exempt the user' do
+            expect { do_request }.not_to change { user.exempt_from_phone_number_verification? }
           end
 
-          it_behaves_like 'does not exempt the user'
           it_behaves_like 'does not invalidate verification_state_signup_identity_verification_path cache'
           it_behaves_like 'does not log the event'
         end

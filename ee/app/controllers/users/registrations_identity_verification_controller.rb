@@ -17,8 +17,6 @@ module Users
       [:send_phone_verification_code, :verify_phone_verification_code]
 
     def show
-      super
-
       # We need to perform cookie migration for tracking from logged out to log in
       # calling this before tracking gives us access to request where the
       # signed cookie exist with the info we need for migration.
