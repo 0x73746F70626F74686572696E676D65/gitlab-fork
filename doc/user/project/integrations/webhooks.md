@@ -59,6 +59,8 @@ To create a webhook for a project or group:
 1. Select **Add new webhook**.
 1. In **URL**, enter the URL of the webhook endpoint.
    The URL must be percent-encoded if it contains one or more special characters.
+1. Optional. In **Name**, enter the name of the webhook.
+1. Optional. In **Description**, enter the description of the webhook.
 1. Optional. In **Secret token**, enter the secret token to validate requests.
 
    The token is sent with the webhook request in the `X-Gitlab-Token` HTTP header.
