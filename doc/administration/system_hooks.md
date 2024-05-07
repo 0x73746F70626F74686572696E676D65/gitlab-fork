@@ -60,6 +60,8 @@ To create a system hook:
 1. Select **System Hooks**.
 1. Select **Add new webhook**.
 1. Enter the **URL**.
+1. Optional. In **Name**, enter the name of the webhook.
+1. Optional. In **Description**, enter the description of the webhook.
 1. Optional. In **Secret token**, enter the secret token to validate requests.
 
    The token is sent with the webhook request in the `X-Gitlab-Token` HTTP header.
