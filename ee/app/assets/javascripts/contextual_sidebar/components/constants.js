@@ -7,6 +7,9 @@ const RESIZE_EVENT_DEBOUNCE_MS = 150;
 
 export const RESIZE_EVENT = 'resize';
 
+export const DUO_PRO_TRIAL_WIDGET_TITLE = s__('DuoProTrial|GitLab Duo Pro Trial');
+export const DUO_PRO_TRIAL_WIDGET_DAYS_TEXT = s__('DuoProTrial|Day %{daysUsed}/%{duration}');
+
 export const WIDGET = {
   i18n: {
     widgetTitle: s__('Trials|%{planName} Trial'),

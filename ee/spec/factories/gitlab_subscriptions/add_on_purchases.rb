@@ -13,6 +13,11 @@ FactoryBot.define do
       expires_on { 1.year.from_now.to_date }
     end
 
+    trait :trial do
+      trial { true }
+      expires_on { GitlabSubscriptions::Trials::DuoPro::DURATION.from_now }
+    end
+
     trait :expired do
       expires_on { 2.days.ago }
     end
