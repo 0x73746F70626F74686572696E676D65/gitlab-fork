@@ -97,34 +97,6 @@ RSpec.describe Integrations::GoogleCloudPlatform::ArtifactRegistry, feature_cate
     it { is_expected.to be_truthy }
   end
 
-  describe '#required_integration_activated?' do
-    subject { integration.required_integration_activated? }
-
-    it { is_expected.to be_falsey }
-
-    context 'with the required integration' do
-      let_it_be_with_refind(:wlif_integration) do
-        create(:google_cloud_platform_workload_identity_federation_integration, project: project)
-      end
-
-      it { is_expected.to be_truthy }
-
-      context 'when it is disabled' do
-        before do
-          wlif_integration.update_column(:active, false)
-        end
-
-        it { is_expected.to be_falsey }
-      end
-    end
-  end
-
-  describe '#required_integration_class' do
-    subject { integration.required_integration_class }
-
-    it { is_expected.to eq(::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation) }
-  end
-
   describe '#ci_variables' do
     subject { integration.ci_variables }
 

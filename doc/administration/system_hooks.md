@@ -60,7 +60,13 @@ To create a system hook:
 1. Select **System Hooks**.
 1. Select **Add new webhook**.
 1. Enter the **URL**.
-1. Optional. Enter a [**Secret Token**](../user/project/integrations/webhooks.md#validate-requests-with-a-secret-token).
+1. Optional. In **Name**, enter the name of the webhook.
+1. Optional. In **Description**, enter the description of the webhook.
+1. Optional. In **Secret token**, enter the secret token to validate requests.
+
+   The token is sent with the webhook request in the `X-Gitlab-Token` HTTP header.
+   Your webhook endpoint can check the token to verify the request is legitimate.
+
 1. Select the checkbox next to each optional **Trigger** you want to enable.
 1. Select **Enable SSL verification**, if desired.
 1. Select **Add system hook**.

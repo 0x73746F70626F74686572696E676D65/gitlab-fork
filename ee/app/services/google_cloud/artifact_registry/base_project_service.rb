@@ -8,14 +8,16 @@ module GoogleCloud
         feature_flag_disabled: ServiceResponse.error(message: 'Feature flag not enabled'),
         access_denied: ServiceResponse.error(message: 'Access denied'),
         no_wlif_integration: ServiceResponse.error(
-          message: 'Google Cloud Identity and Access Management (IAM) project integration not set'
+          message: "#{Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.title} integration not set"
         ),
         wlif_integration_disabled: ServiceResponse.error(
-          message: 'Google Cloud Identity and Access Management (IAM) project integration not active'
+          message: "#{Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.title} integration not active"
         ),
-        no_artifact_registry_integration: ServiceResponse.error(message: 'Artifact registry integration not set'),
+        no_artifact_registry_integration: ServiceResponse.error(
+          message: "#{Integrations::GoogleCloudPlatform::ArtifactRegistry.title} integration not set"
+        ),
         artifact_registry_integration_disabled: ServiceResponse.error(
-          message: 'Artifact registry integration not active'
+          message: "#{Integrations::GoogleCloudPlatform::ArtifactRegistry.title} integration not active"
         ),
         authentication_error: ServiceResponse.error(message: 'Unable to authenticate against Google Cloud'),
         api_error: ServiceResponse.error(message: 'Unsuccessful Google Cloud API request')

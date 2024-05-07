@@ -261,7 +261,6 @@ RSpec/NamedSubject:
     - 'ee/spec/lib/bulk_imports/groups/pipelines/iterations_cadences_pipeline_spec.rb'
     - 'ee/spec/lib/bulk_imports/groups/pipelines/iterations_pipeline_spec.rb'
     - 'ee/spec/lib/code_suggestions/prompts/code_completion/vertex_ai_spec.rb'
-    - 'ee/spec/lib/code_suggestions/prompts/code_generation/anthropic_spec.rb'
     - 'ee/spec/lib/code_suggestions/task_factory_spec.rb'
     - 'ee/spec/lib/code_suggestions/tasks/base_spec.rb'
     - 'ee/spec/lib/ee/api/entities/dependency_list_export_spec.rb'

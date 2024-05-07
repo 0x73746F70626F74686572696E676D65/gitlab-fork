@@ -26605,7 +26605,7 @@ Represents generic policy violation information.
 | <a id="projectforkingaccesslevel"></a>`forkingAccessLevel` | [`ProjectFeatureAccess`](#projectfeatureaccess) | Access level required for forking access. |
 | <a id="projectforkscount"></a>`forksCount` | [`Int!`](#int) | Number of times the project has been forked. |
 | <a id="projectfullpath"></a>`fullPath` | [`ID!`](#id) | Full path of the project. |
-| <a id="projectgooglecloudartifactregistryrepository"></a>`googleCloudArtifactRegistryRepository` **{warning-solid}** | [`GoogleCloudArtifactRegistryRepository`](#googlecloudartifactregistryrepository) | **Introduced** in GitLab 16.10. **Status**: Experiment. Google Artifact Registry repository. Returns `null` if `google_cloud_support_feature_flag` feature flag is disabled. |
+| <a id="projectgooglecloudartifactregistryrepository"></a>`googleCloudArtifactRegistryRepository` **{warning-solid}** | [`GoogleCloudArtifactRegistryRepository`](#googlecloudartifactregistryrepository) | **Introduced** in GitLab 16.10. **Status**: Experiment. Google Artifact Registry repository. Returns `null` if `google_cloud_support_feature_flag` feature flag is disabled, or the GitLab instance is not a SaaS instance. |
 | <a id="projectgrafanaintegration"></a>`grafanaIntegration` | [`GrafanaIntegration`](#grafanaintegration) | Grafana integration details for the project. |
 | <a id="projectgroup"></a>`group` | [`Group`](#group) | Group of the project. |
 | <a id="projecthasjiravulnerabilityissuecreationenabled"></a>`hasJiraVulnerabilityIssueCreationEnabled` | [`Boolean!`](#boolean) | Indicates whether Jira issue creation from vulnerabilities is enabled. |
@@ -33924,6 +33924,7 @@ Values for package manager.
 
 | Value | Description |
 | ----- | ----------- |
+| <a id="packagemanagerapk"></a>`APK` | Package manager: apk. |
 | <a id="packagemanagerbundler"></a>`BUNDLER` | Package manager: bundler. |
 | <a id="packagemanagercomposer"></a>`COMPOSER` | Package manager: composer. |
 | <a id="packagemanagerconan"></a>`CONAN` | Package manager: conan. |

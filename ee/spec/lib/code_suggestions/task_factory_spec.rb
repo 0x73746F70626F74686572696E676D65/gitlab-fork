@@ -83,10 +83,6 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
         allow_next_instance_of(CodeSuggestions::InstructionsExtractor) do |instance|
           allow(instance).to receive(:extract).and_return(instruction)
         end
-
-        stub_feature_flags(claude_3_code_generation_opus: false)
-        stub_feature_flags(claude_3_code_generation_sonnet: false)
-        stub_feature_flags(claude_3_code_generation_haiku: false)
       end
 
       it_behaves_like 'correct task initializer'
@@ -118,27 +114,6 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
                                           current_user: current_user,
                                           params: { full_paths: [expected_project.full_path] }
                                         )
-        end
-      end
-    end
-
-    describe '#anthropic_model' do
-      subject(:anthropic_model) { described_class.new(current_user, params: params).anthropic_model }
-
-      where(:opus, :sonnet, :haiku, :model) do
-        false | false | false | 'claude-2.1'
-        true  | false | false | 'claude-3-opus-20240229'
-        false | true  | false | 'claude-3-sonnet-20240229'
-        false | false | true  | 'claude-3-haiku-20240307'
-      end
-
-      with_them do
-        it 'will return the appropriate model' do
-          stub_feature_flags(claude_3_code_generation_opus: opus)
-          stub_feature_flags(claude_3_code_generation_sonnet: sonnet)
-          stub_feature_flags(claude_3_code_generation_haiku: haiku)
-
-          expect(anthropic_model).to eq(model)
         end
       end
     end
