@@ -515,12 +515,11 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           sha_for_reset = nil
 
           change_wiki_and_index(project) do
-            sha_for_reset = project.wiki.repository.create_file(user, '12', '', message: '12', branch_name: 'master')
-            project.wiki.repository.create_file(user, '23', '', message: '23', branch_name: 'master')
+            sha_for_reset = project.wiki.repository.create_file(user, '12.md', '', message: '12', branch_name: 'master')
+            project.wiki.repository.create_file(user, '23.md', '', message: '23', branch_name: 'master')
           end
-
-          expect(indexed_wiki_paths_for('12')).to include('12')
-          expect(indexed_wiki_paths_for('23')).to include('23')
+          expect(indexed_wiki_paths_for('12')).to include('12.md')
+          expect(indexed_wiki_paths_for('23')).to include('23.md')
 
           project.index_status.update!(last_wiki_commit: '____________')
 
@@ -528,8 +527,8 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
             project.wiki.repository.write_ref('master', sha_for_reset)
           end
 
-          expect(indexed_wiki_paths_for('12')).to include('12')
-          expect(indexed_wiki_paths_for('23')).not_to include('23')
+          expect(indexed_wiki_paths_for('12')).to include('12.md')
+          expect(indexed_wiki_paths_for('23')).not_to include('23.md')
         end
       end
 

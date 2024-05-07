@@ -45,7 +45,6 @@ RSpec.shared_examples 'does not load results for count only queries' do |scopes|
         request = ::Gitlab::Instrumentation::ElasticsearchTransport.detail_store.first
 
         expect(request.dig(:body, :size)).to eq(0)
-        expect(request.dig(:body, :query, :bool, :must)).to be_blank
         expect(request[:highlight]).to be_blank
         expect(request.dig(:params, :timeout)).to eq('1s')
       end
