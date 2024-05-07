@@ -23,6 +23,8 @@ module EE
             required: false,
             description: 'Health status not applied to the issue.
                     Includes issues where health status is not set.'
+
+          validates mutually_exclusive: [:iteration_id, :iteration_wildcard_id]
         end
       end
     end
