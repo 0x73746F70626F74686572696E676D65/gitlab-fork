@@ -331,7 +331,7 @@ RSpec.shared_examples 'anthropic prompt' do
           end
 
           before do
-            stub_const("CodeSuggestions::Prompts::CodeGeneration::Anthropic::MAX_LIBS_COUNT", 1)
+            stub_const("CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages::MAX_LIBS_COUNT", 1)
           end
 
           it 'trims libs content' do
@@ -423,7 +423,7 @@ RSpec.shared_examples 'anthropic prompt' do
       end
 
       before do
-        stub_const("CodeSuggestions::Prompts::CodeGeneration::Anthropic::MAX_INPUT_CHARS", 9)
+        stub_const("CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages::MAX_INPUT_CHARS", 9)
       end
 
       it 'returns expected request params' do

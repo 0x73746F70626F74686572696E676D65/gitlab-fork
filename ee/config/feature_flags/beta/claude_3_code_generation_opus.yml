@@ -1,9 +1,0 @@
----
-name: claude_3_code_generation_opus
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/444405
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/147600
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/451265
-milestone: '16.11'
-group: group::code creation
-type: beta
-default_enabled: false

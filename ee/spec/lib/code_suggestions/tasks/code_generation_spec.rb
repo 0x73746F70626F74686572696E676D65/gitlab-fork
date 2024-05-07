@@ -23,7 +23,7 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration, feature_category: :code_s
     }.with_indifferent_access
   end
 
-  let(:model_name) { 'claude-2.1' }
+  let(:model_name) { 'claude-3-sonnet-20240229' }
 
   let(:params) do
     {
@@ -41,10 +41,6 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration, feature_category: :code_s
 
   let(:anthropic_request_params) { { prompt_version: 2, prompt: 'Anthropic prompt' } }
 
-  let(:anthropic_prompt) do
-    instance_double(CodeSuggestions::Prompts::CodeGeneration::Anthropic, request_params: anthropic_request_params)
-  end
-
   let(:anthropic_messages_prompt) do
     instance_double(CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages,
       request_params: anthropic_request_params)
@@ -54,7 +50,8 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration, feature_category: :code_s
 
   describe '#body' do
     before do
-      allow(CodeSuggestions::Prompts::CodeGeneration::Anthropic).to receive(:new).and_return(anthropic_prompt)
+      allow(CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages)
+        .to receive(:new).and_return(anthropic_messages_prompt)
       stub_const('CodeSuggestions::Tasks::Base::AI_GATEWAY_CONTENT_SIZE', 3)
     end
 
@@ -67,32 +64,22 @@ RSpec.describe CodeSuggestions::Tasks::CodeGeneration, feature_category: :code_s
       it 'calls code creation Anthropic' do
         task.body
 
-        expect(CodeSuggestions::Prompts::CodeGeneration::Anthropic).to have_received(:new).with(params)
+        expect(CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages).to have_received(:new).with(params)
       end
     end
   end
 
   describe '#prompt' do
     before do
-      allow(CodeSuggestions::Prompts::CodeGeneration::Anthropic).to receive(:new).and_return(anthropic_prompt)
-      allow(CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages).to receive(:new).and_return(anthropic_prompt)
+      allow(CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages)
+        .to receive(:new).and_return(anthropic_messages_prompt)
       stub_const('CodeSuggestions::Tasks::Base::AI_GATEWAY_CONTENT_SIZE', 3)
     end
 
-    it 'uses old anthropic prompt format' do
+    it 'returns message based prompt' do
       task.body
 
-      expect(CodeSuggestions::Prompts::CodeGeneration::Anthropic).to have_received(:new).with(params)
-    end
-
-    context 'with claude 3' do
-      let(:model_name) { 'claude-3-opus-20240229' }
-
-      it 'returns message based prompt' do
-        task.body
-
-        expect(CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages).to have_received(:new).with(params)
-      end
+      expect(CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages).to have_received(:new).with(params)
     end
   end
 end

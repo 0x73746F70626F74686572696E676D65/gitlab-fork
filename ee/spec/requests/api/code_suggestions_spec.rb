@@ -35,10 +35,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     allow(Gitlab::InternalEvents).to receive(:track_event)
     allow(Gitlab::Tracking::AiTracking).to receive(:track_event)
 
-    stub_feature_flags(claude_3_code_generation_opus: false)
-    stub_feature_flags(claude_3_code_generation_sonnet: false)
-    stub_feature_flags(claude_3_code_generation_haiku: false)
-
     allow_next_instance_of(API::Helpers::GlobalIds::Generator) do |generator|
       allow(generator).to receive(:generate).with(authorized_user).and_return([global_instance_id, global_user_id])
     end
@@ -413,9 +409,9 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               PREFIX
             end
 
-            let(:prompt) do
+            let(:system_prompt) do
               <<~PROMPT.chomp
-                Human: You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Python code inside the
+                You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Python code inside the
                 file 'test.py' based on instructions from the user.
                 Here are a few examples of successfully generated code:
 
@@ -478,24 +474,28 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
                 Return new code enclosed in <new_code></new_code> tags. We will then insert this at the {{cursor}} position.
                 If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-
-                Generate the best possible code based on instructions.
-
-                Assistant: <new_code>
               PROMPT
+            end
+
+            let(:prompt) do
+              [
+                { role: :system, content: system_prompt },
+                { role: :user, content: 'Generate the best possible code based on instructions.' },
+                { role: :assistant, content: '<new_code>' }
+              ]
             end
 
             it 'sends requests to the code generation endpoint' do
               expected_body = body.merge(
                 model_provider: 'anthropic',
-                prompt_version: 2,
+                prompt_version: 3,
                 prompt: prompt,
                 current_file: {
                   file_name: file_name,
                   content_above_cursor: prefix,
                   content_below_cursor: ''
                 },
-                model_name: 'claude-2.1'
+                model_name: 'claude-3-sonnet-20240229'
               )
               expect(Gitlab::Workhorse)
                 .to receive(:send_url)
@@ -570,9 +570,9 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               PREFIX
             end
 
-            let(:prompt) do
+            let(:system_prompt) do
               <<~PROMPT.chomp
-                Human: You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Python code inside the
+                You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Python code inside the
                 file 'test.py' based on instructions from the user.
                 Here are a few examples of successfully generated code:
 
@@ -635,24 +635,28 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
                 Return new code enclosed in <new_code></new_code> tags. We will then insert this at the {{cursor}} position.
                 If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
-
-                Generate the best possible code based on instructions.
-
-                Assistant: <new_code>
               PROMPT
+            end
+
+            let(:prompt) do
+              [
+                { role: :system, content: system_prompt },
+                { role: :user, content: 'Generate the best possible code based on instructions.' },
+                { role: :assistant, content: '<new_code>' }
+              ]
             end
 
             it 'sends requests to the code generation endpoint' do
               expected_body = body.merge(
                 model_provider: 'anthropic',
-                prompt_version: 2,
+                prompt_version: 3,
                 prompt: prompt,
                 current_file: {
                   file_name: file_name,
                   content_above_cursor: prefix,
                   content_below_cursor: ""
                 },
-                model_name: 'claude-2.1'
+                model_name: 'claude-3-sonnet-20240229'
               )
 
               expect(Gitlab::Workhorse)
