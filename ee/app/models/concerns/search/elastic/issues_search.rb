@@ -12,24 +12,18 @@ module Search
 
         override :maintain_elasticsearch_create
         def maintain_elasticsearch_create
-          super unless skip_indexing_for_group_work_items?
+          super unless project.nil?
         end
 
         override :maintain_elasticsearch_update
         def maintain_elasticsearch_update(updated_attributes: previous_changes.keys)
-          super unless skip_indexing_for_group_work_items?
+          super unless project.nil?
         end
 
         override :maintain_elasticsearch_destroy
         def maintain_elasticsearch_destroy
-          super unless skip_indexing_for_group_work_items?
+          super unless project.nil?
         end
-      end
-
-      private
-
-      def skip_indexing_for_group_work_items?
-        is_a?(WorkItem) && project.nil?
       end
     end
   end
