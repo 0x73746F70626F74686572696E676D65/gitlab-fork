@@ -42,7 +42,7 @@ module Namespaces
       def can_create_service_account?
         return false unless namespace
 
-        can?(current_user, :admin_service_accounts, namespace)
+        can?(current_user, :create_service_account, namespace)
       end
 
       override :ultimate?

@@ -19,23 +19,54 @@ RSpec.describe Namespaces::ServiceAccounts::CreateService, feature_category: :us
 
   subject(:service) { described_class.new(current_user, { organization_id: organization.id, namespace_id: group.id }) }
 
-  context 'when current user is an owner' do
-    let_it_be(:current_user) { create(:user, owner_of: group) }
+  context 'when self-managed' do
+    before do
+      stub_licensed_features(service_accounts: true)
+      allow(License).to receive(:current).and_return(license)
+    end
 
-    it_behaves_like 'service account creation failure'
+    context 'when current user is an admin', :enable_admin_mode do
+      let_it_be(:current_user) { create(:admin) }
 
-    context 'when the feature is available' do
-      before do
-        stub_licensed_features(service_accounts: true)
+      context 'when subscription is of starter plan' do
+        let(:license) { create(:license, plan: License::STARTER_PLAN) }
+
+        it 'raises error' do
+          result = service.execute
+
+          expect(result.status).to eq(:error)
+          expect(result.message).to include('No more seats are available to create Service Account User')
+        end
       end
 
-      context 'when self managed' do
-        before do
-          allow(License).to receive(:current).and_return(license)
+      context 'when subscription is ultimate tier' do
+        let(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
+
+        it_behaves_like 'service account creation success' do
+          let(:username_prefix) { "service_account_group_#{group.id}" }
         end
 
-        context 'when subscription is of starter plan' do
-          let(:license) { create(:license, plan: License::STARTER_PLAN) }
+        it 'sets provisioned by group' do
+          result = service.execute
+          expect(result.payload.provisioned_by_group_id).to eq(group.id)
+        end
+
+        context 'when the group is invalid' do
+          subject(:service) { described_class.new(current_user, { namespace_id: non_existing_record_id }) }
+
+          it_behaves_like 'service account creation failure'
+        end
+      end
+
+      context 'when subscription is of premium tier' do
+        let(:license) { create(:license, plan: License::PREMIUM_PLAN) }
+        let_it_be(:service_account1) { create(:user, :service_account, provisioned_by_group_id: group.id) }
+        let_it_be(:service_account2) { create(:user, :service_account, provisioned_by_group_id: group.id) }
+
+        context 'when premium seats are not available' do
+          before do
+            allow(license).to receive(:restricted_user_count).and_return(1)
+          end
 
           it 'raises error' do
             result = service.execute
@@ -45,8 +76,10 @@ RSpec.describe Namespaces::ServiceAccounts::CreateService, feature_category: :us
           end
         end
 
-        context 'when subscription is ultimate tier' do
-          let(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
+        context 'when premium seats are available' do
+          before do
+            allow(license).to receive(:restricted_user_count).and_return(User.service_account.count + 2)
+          end
 
           it_behaves_like 'service account creation success' do
             let(:username_prefix) { "service_account_group_#{group.id}" }
@@ -54,6 +87,7 @@ RSpec.describe Namespaces::ServiceAccounts::CreateService, feature_category: :us
 
           it 'sets provisioned by group' do
             result = service.execute
+
             expect(result.payload.provisioned_by_group_id).to eq(group.id)
           end
 
@@ -61,137 +95,125 @@ RSpec.describe Namespaces::ServiceAccounts::CreateService, feature_category: :us
             subject(:service) { described_class.new(current_user, { namespace_id: non_existing_record_id }) }
 
             it_behaves_like 'service account creation failure'
-          end
-        end
-
-        context 'when subscription is of premium tier' do
-          let(:license) { create(:license, plan: License::PREMIUM_PLAN) }
-          let_it_be(:service_account1) { create(:user, :service_account, provisioned_by_group_id: group.id) }
-          let_it_be(:service_account2) { create(:user, :service_account, provisioned_by_group_id: group.id) }
-
-          context 'when premium seats are not available' do
-            before do
-              allow(license).to receive(:restricted_user_count).and_return(1)
-            end
-
-            it 'raises error' do
-              result = service.execute
-
-              expect(result.status).to eq(:error)
-              expect(result.message).to include('No more seats are available to create Service Account User')
-            end
-          end
-
-          context 'when premium seats are available' do
-            before do
-              allow(license).to receive(:restricted_user_count).and_return(User.service_account.count + 2)
-            end
-
-            it_behaves_like 'service account creation success' do
-              let(:username_prefix) { "service_account_group_#{group.id}" }
-            end
-
-            it 'sets provisioned by group' do
-              result = service.execute
-
-              expect(result.payload.provisioned_by_group_id).to eq(group.id)
-            end
-
-            context 'when the group is invalid' do
-              subject(:service) { described_class.new(current_user, { namespace_id: non_existing_record_id }) }
-
-              it_behaves_like 'service account creation failure'
-            end
           end
         end
       end
+    end
 
-      context 'when saas', :saas do
-        before do
-          create(:gitlab_subscription, namespace: group, hosted_plan: hosted_plan)
-          stub_application_setting(check_namespace_plan: true)
-        end
+    context 'when current user is not an admin' do
+      let(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
 
-        context 'when subscription is of free plan' do
-          let(:hosted_plan) { create(:free_plan) }
+      context "when not a group owner" do
+        let_it_be(:current_user) { create(:user, maintainer_of: group) }
 
-          it_behaves_like 'service account creation failure'
-        end
+        it_behaves_like 'service account creation failure'
+      end
 
-        context 'when subscription is ultimate tier' do
-          let(:hosted_plan) { create(:ultimate_plan) }
+      context 'when group owner' do
+        let_it_be(:current_user) { create(:user, owner_of: group) }
 
-          it_behaves_like 'service account creation success' do
-            let(:username_prefix) { "service_account_group_#{group.id}" }
-          end
-
-          it 'sets provisioned by group' do
-            result = service.execute
-            expect(result.payload.provisioned_by_group_id).to eq(group.id)
-          end
-
-          context 'when the group is invalid' do
-            subject(:service) { described_class.new(current_user, { namespace_id: non_existing_record_id }) }
-
-            it_behaves_like 'service account creation failure'
-          end
-        end
-
-        context 'when subscription is of premium tier' do
-          let_it_be(:hosted_plan) { create(:premium_plan) }
-          let_it_be(:service_account1) { create(:user, :service_account, provisioned_by_group_id: group.id) }
-          let_it_be(:service_account2) { create(:user, :service_account, provisioned_by_group_id: group.id) }
-
-          context 'when premium seats are not available' do
-            before do
-              group.gitlab_subscription.update!(seats: 1)
-            end
-
-            it 'raises error' do
-              result = service.execute
-
-              expect(result.status).to eq(:error)
-              expect(result.message).to include(
-                s_('ServiceAccount|No more seats are available to create Service Account User')
-              )
-            end
-          end
-
-          context 'when premium seats are available' do
-            before do
-              group.gitlab_subscription.update!(seats: 4)
-            end
-
-            it_behaves_like 'service account creation success' do
-              let(:username_prefix) { "service_account_group_#{group.id}" }
-            end
-
-            it 'sets provisioned by group' do
-              result = service.execute
-
-              expect(result.payload.provisioned_by_group_id).to eq(group.id)
-            end
-
-            context 'when the group is invalid' do
-              subject(:service) { described_class.new(current_user, { namespace_id: non_existing_record_id }) }
-
-              it_behaves_like 'service account creation failure'
-            end
-          end
-        end
+        it_behaves_like 'service account creation failure'
       end
     end
   end
 
-  context 'when the current user is not an owner', :saas do
-    let_it_be(:current_user) { create(:user, maintainer_of: group) }
-    let(:hosted_plan) { create(:ultimate_plan) }
-
+  context 'when saas', :saas do
     before do
       stub_licensed_features(service_accounts: true)
       create(:gitlab_subscription, namespace: group, hosted_plan: hosted_plan)
+      stub_application_setting(check_namespace_plan: true)
     end
 
-    it_behaves_like 'service account creation failure'
+    shared_examples 'creates service accounts as per subscription' do
+      context 'when subscription is of free plan' do
+        let(:hosted_plan) { create(:free_plan) }
+
+        it_behaves_like 'service account creation failure'
+      end
+
+      context 'when subscription is ultimate tier' do
+        let(:hosted_plan) { create(:ultimate_plan) }
+
+        it_behaves_like 'service account creation success' do
+          let(:username_prefix) { "service_account_group_#{group.id}" }
+        end
+
+        it 'sets provisioned by group' do
+          result = service.execute
+          expect(result.payload.provisioned_by_group_id).to eq(group.id)
+        end
+
+        context 'when the group is invalid' do
+          subject(:service) { described_class.new(current_user, { namespace_id: non_existing_record_id }) }
+
+          it_behaves_like 'service account creation failure'
+        end
+      end
+
+      context 'when subscription is of premium tier' do
+        let_it_be(:hosted_plan) { create(:premium_plan) }
+        let_it_be(:service_account1) { create(:user, :service_account, provisioned_by_group_id: group.id) }
+        let_it_be(:service_account2) { create(:user, :service_account, provisioned_by_group_id: group.id) }
+
+        context 'when premium seats are not available' do
+          before do
+            group.gitlab_subscription.update!(seats: 1)
+          end
+
+          it 'raises error' do
+            result = service.execute
+
+            expect(result.status).to eq(:error)
+            expect(result.message).to include(
+              s_('ServiceAccount|No more seats are available to create Service Account User')
+            )
+          end
+        end
+
+        context 'when premium seats are available' do
+          before do
+            group.gitlab_subscription.update!(seats: 4)
+          end
+
+          it_behaves_like 'service account creation success' do
+            let(:username_prefix) { "service_account_group_#{group.id}" }
+          end
+
+          it 'sets provisioned by group' do
+            result = service.execute
+
+            expect(result.payload.provisioned_by_group_id).to eq(group.id)
+          end
+
+          context 'when the group is invalid' do
+            subject(:service) { described_class.new(current_user, { namespace_id: non_existing_record_id }) }
+
+            it_behaves_like 'service account creation failure'
+          end
+        end
+      end
+    end
+
+    context 'when current user is an admin', :enable_admin_mode do
+      let_it_be(:current_user) { create(:admin) }
+
+      it_behaves_like "creates service accounts as per subscription"
+    end
+
+    context 'when current user is not an admin' do
+      let(:hosted_plan) { create(:ultimate_plan) }
+
+      context 'when not a group owner' do
+        let_it_be(:current_user) { create(:user, maintainer_of: group) }
+
+        it_behaves_like 'service account creation failure'
+      end
+
+      context 'when group owner' do
+        let_it_be(:current_user) { create(:user, owner_of: group) }
+
+        it_behaves_like "creates service accounts as per subscription"
+      end
+    end
   end
 end

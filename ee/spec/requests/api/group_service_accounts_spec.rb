@@ -18,91 +18,120 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
 
     let_it_be(:params) { {} }
 
-    context 'when the feature is licensed' do
-      let(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
-
+    context 'when on GitLab.com', :saas do
       before do
-        allow(License).to receive(:current).and_return(license)
         stub_licensed_features(service_accounts: true)
+        create(:gitlab_subscription, namespace: group, hosted_plan: hosted_plan)
+        stub_application_setting(check_namespace_plan: true)
       end
 
-      context 'when current user is an owner' do
-        before do
-          group.add_owner(user)
-        end
+      context 'when the feature is licensed' do
+        let(:hosted_plan) { create(:ultimate_plan) }
 
-        context 'when the group exists' do
-          let(:group_id) { group.id }
-
-          it "creates user with user type service_account_user" do
-            perform_request
-
-            expect(response).to have_gitlab_http_status(:created)
-            expect(json_response['username']).to start_with("service_account_group_#{group_id}")
-            expect(json_response.keys).to match_array(%w[id name username])
-            expect(User.find(json_response['id']).namespace.organization).to eq(organization)
+        context 'when current user is an owner' do
+          before do
+            group.add_owner(user)
           end
 
-          context 'when params are provided' do
-            let_it_be(:params) do
-              {
-                name: 'John Doe',
-                username: 'test'
-              }
-            end
+          context 'when the group exists' do
+            let(:group_id) { group.id }
 
-            it "creates user with provided details" do
+            it "creates user with user type service_account_user" do
               perform_request
 
               expect(response).to have_gitlab_http_status(:created)
-              expect(json_response['username']).to eq(params[:username])
-              expect(json_response['name']).to eq(params[:name])
+              expect(json_response['username']).to start_with("service_account_group_#{group_id}")
               expect(json_response.keys).to match_array(%w[id name username])
+              expect(User.find(json_response['id']).namespace.organization).to eq(organization)
             end
 
-            context 'when user with the username already exists' do
-              before do
-                post api("/groups/#{group_id}/service_accounts", user), params: params
+            context 'when params are provided' do
+              let_it_be(:params) do
+                {
+                  name: 'John Doe',
+                  username: 'test'
+                }
               end
 
-              it 'returns error' do
+              it "creates user with provided details" do
                 perform_request
 
-                expect(response).to have_gitlab_http_status(:bad_request)
-                expect(json_response['message']).to include('Username has already been taken')
+                expect(response).to have_gitlab_http_status(:created)
+                expect(json_response['username']).to eq(params[:username])
+                expect(json_response['name']).to eq(params[:name])
+                expect(json_response.keys).to match_array(%w[id name username])
               end
+
+              context 'when user with the username already exists' do
+                before do
+                  post api("/groups/#{group_id}/service_accounts", user), params: params
+                end
+
+                it 'returns error' do
+                  perform_request
+
+                  expect(response).to have_gitlab_http_status(:bad_request)
+                  expect(json_response['message']).to include('Username has already been taken')
+                end
+              end
+            end
+
+            it "returns bad request when service returns bad request" do
+              allow_next_instance_of(::Namespaces::ServiceAccounts::CreateService) do |service|
+                allow(service).to receive(:execute).and_return(
+                  ServiceResponse.error(message: message, reason: :bad_request)
+                )
+              end
+
+              perform_request
+
+              expect(response).to have_gitlab_http_status(:bad_request)
             end
           end
 
-          it "returns bad request when service returns bad request" do
-            allow_next_instance_of(::Namespaces::ServiceAccounts::CreateService) do |service|
-              allow(service).to receive(:execute).and_return(
-                ServiceResponse.error(message: message, reason: :bad_request)
-              )
+          context 'when the group does not exist' do
+            let(:group_id) { non_existing_record_id }
+
+            it "returns error" do
+              perform_request
+
+              expect(response).to have_gitlab_http_status(:not_found)
             end
-
-            perform_request
-
-            expect(response).to have_gitlab_http_status(:bad_request)
           end
         end
 
-        context 'when the group does not exist' do
-          let(:group_id) { non_existing_record_id }
+        context 'when user is not an owner' do
+          let(:group_id) { group.id }
+
+          before do
+            group.add_maintainer(user)
+          end
 
           it "returns error" do
             perform_request
 
-            expect(response).to have_gitlab_http_status(:not_found)
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+
+        context 'without authentication' do
+          let(:group_id) { group.id }
+
+          it "returns error" do
+            post api("/groups/#{group_id}/service_accounts")
+
+            expect(response).to have_gitlab_http_status(:unauthorized)
           end
         end
       end
 
-      context 'when user is not an owner' do
+      context 'when the feature is not licensed' do
+        let(:hosted_plan) { create(:free_plan) }
+
         let(:group_id) { group.id }
 
         before do
-          group.add_maintainer(user)
+          group.add_owner(user)
         end
 
         it "returns error" do
@@ -110,31 +139,6 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
 
           expect(response).to have_gitlab_http_status(:forbidden)
         end
-      end
-
-      context 'without authentication' do
-        let(:group_id) { group.id }
-
-        it "returns error" do
-          post api("/groups/#{group_id}/service_accounts")
-
-          expect(response).to have_gitlab_http_status(:unauthorized)
-        end
-      end
-    end
-
-    context 'when the feature is not licensed' do
-      let(:group_id) { group.id }
-
-      before do
-        stub_licensed_features(service_accounts: false)
-        group.add_owner(user)
-      end
-
-      it "returns error" do
-        perform_request
-
-        expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
   end

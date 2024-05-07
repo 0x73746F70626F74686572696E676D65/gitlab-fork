@@ -442,6 +442,10 @@ module EE
         prevent :admin_group_member
       end
 
+      rule { service_accounts_available & (admin | (is_gitlab_com & owner)) }.policy do
+        enable :create_service_account
+      end
+
       rule { developer }.policy do
         enable :create_wiki
         enable :admin_merge_request
