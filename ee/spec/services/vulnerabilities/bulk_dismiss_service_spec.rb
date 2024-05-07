@@ -125,11 +125,12 @@ RSpec.describe Vulnerabilities::BulkDismissService, feature_category: :vulnerabi
         let_it_be(:vulnerability_ids) { vulnerabilities.map(&:id) }
 
         it 'does not introduce N+1 queries' do
-          queries = ActiveRecord::QueryRecorder.new do
-            service.execute
-          end
+          control = ActiveRecord::QueryRecorder.new { service.execute }
 
-          expect(queries.count).to eq(14)
+          new_vulnerability = create(:vulnerability, :with_findings, project: project)
+          vulnerability_ids << new_vulnerability.id
+
+          expect { service.execute }.not_to exceed_query_limit(control)
         end
       end
 

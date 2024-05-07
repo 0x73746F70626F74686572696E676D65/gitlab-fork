@@ -15,3 +15,5 @@ class AddHashedRootNamespaceIdToIssues < Elastic::Migration
     }
   end
 end
+
+AddHashedRootNamespaceIdToIssues.prepend ::Elastic::MigrationObsolete

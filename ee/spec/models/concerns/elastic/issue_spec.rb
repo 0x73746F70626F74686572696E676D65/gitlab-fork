@@ -132,13 +132,6 @@ RSpec.describe Issue, :elastic_delete_by_query, feature_category: :global_search
       end
     end
 
-    context 'when add_hashed_root_namespace_id_to_issues migration is not finished' do
-      it 'does not include hashed_root_namespace_id' do
-        set_elasticsearch_migration_to :add_hashed_root_namespace_id_to_issues, including: false
-        expect(issue.__elasticsearch__.as_indexed_json).not_to include('hashed_root_namespace_id')
-      end
-    end
-
     it 'handles a project missing project_feature', :aggregate_failures do
       allow(issue.project).to receive(:project_feature).and_return(nil)
 
