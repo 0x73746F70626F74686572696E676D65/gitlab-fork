@@ -29,7 +29,7 @@ module Preloaders
       sql_values_array = groups.filter_map do |group|
         next unless group.custom_roles_enabled?
 
-        [group.id, Arel.sql("ARRAY[#{group.traversal_ids.join(',')}]::integer[]")]
+        [group.id, Arel.sql("ARRAY[#{group.traversal_ids.join(',')}]")]
       end
 
       return {} if sql_values_array.empty?
