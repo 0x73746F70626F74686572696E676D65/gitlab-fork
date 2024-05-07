@@ -31,9 +31,7 @@ module Elastic
         data['namespace_ancestry_ids'] = target.namespace_ancestry
         data['label_ids'] = target.label_ids.map(&:to_s)
 
-        if ::Elastic::DataMigrationService.migration_has_finished?(:add_hashed_root_namespace_id_to_issues)
-          data['hashed_root_namespace_id'] = target.project.namespace.hashed_root_namespace_id
-        end
+        data['hashed_root_namespace_id'] = target.project.namespace.hashed_root_namespace_id
 
         if ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_issues)
           data['archived'] = target.project.archived?
