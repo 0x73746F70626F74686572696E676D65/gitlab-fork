@@ -66,14 +66,15 @@ To create a webhook for a project or group:
    The token is sent with the webhook request in the `X-Gitlab-Token` HTTP header.
    Your webhook endpoint can check the token to verify the request is legitimate.
 
-1. In the **Trigger** section, select the [events](webhook_events.md) to trigger the webhook.
-1. Optional. Clear the **Enable SSL verification** checkbox to disable [SSL verification](index.md#ssl-verification).
+1. In the **Trigger** section, select the checkbox for each GitLab
+   [event](webhook_events.md) you want to trigger the webhook.
+1. Optional. Clear the **Enable SSL verification** checkbox
+   to disable [SSL verification](index.md#ssl-verification).
 1. Select **Add webhook**.
 
 ### Mask sensitive portions of webhook URLs
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/99995) in GitLab 15.5 [with a flag](../../../administration/feature_flags.md) named `webhook_form_mask_url`. Disabled by default.
-> - [Enabled on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/issues/376106) in GitLab 15.6.
 > - [Generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/376106) in GitLab 15.7. Feature flag `webhook_form_mask_url` removed.
 
 You can define and mask sensitive portions of webhook URLs and replace them
