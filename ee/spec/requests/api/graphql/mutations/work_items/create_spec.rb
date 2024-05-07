@@ -11,6 +11,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
 
   let(:mutation_response) { graphql_mutation_response(:work_item_create) }
   let(:widgets_response) { mutation_response['workItem']['widgets'] }
+  let(:type_response) { mutation_response['workItem']['workItemType'] }
 
   context 'when user has permissions to create a work item' do
     let(:current_user) { developer }
@@ -19,6 +20,9 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
       let(:fields) do
         <<~FIELDS
           workItem {
+            workItemType {
+              name
+            }
             widgets {
               type
               ... on WorkItemWidgetIteration {
@@ -54,6 +58,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
           end.to change { WorkItem.count }.by(1)
 
           expect(response).to have_gitlab_http_status(:success)
+          expect(type_response).to include({ 'name' => 'Task' })
           expect(widgets_response).to include(
             {
               'type' => 'ITERATION',
@@ -90,7 +95,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
             workItem {
               id
               workItemType {
-                id
+                name
               }
               widgets {
                 type
@@ -113,8 +118,6 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
           }
         end
 
-        let(:widgets_response) { mutation_response['workItem']['widgets'] }
-
         context 'when okrs are available' do
           before do
             stub_licensed_features(okrs: true)
@@ -126,6 +129,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
             end.to change { WorkItem.count }.by(1)
 
             expect(response).to have_gitlab_http_status(:success)
+            expect(type_response).to include({ 'name' => 'Key Result' })
             expect(widgets_response).to include(
               {
                 'parent' => { 'id' => parent.to_global_id.to_s },
@@ -208,6 +212,9 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
         let(:fields) do
           <<~FIELDS
           workItem {
+            workItemType {
+              name
+            }
             widgets {
               type
                 ... on WorkItemWidgetRolledupDates {
@@ -247,7 +254,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
           let(:input) do
             {
               title: "some WI",
-              workItemTypeId: WorkItems::Type.default_by_type(:epic).to_gid.to_s,
+              workItemTypeId: WorkItems::Type.default_by_type(work_item_type).to_gid.to_s,
               rolledupDatesWidget: {
                 startDateFixed: start_date.to_s,
                 dueDateFixed: due_date.to_s
@@ -260,6 +267,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
               .to change { WorkItem.count }.by(1)
 
             expect(response).to have_gitlab_http_status(:success)
+            expect(type_response).to include({ 'name' => work_item_type.to_s.capitalize })
             expect(widgets_response).to include(
               "type" => "ROLLEDUP_DATES",
               "dueDate" => nil,
@@ -282,7 +290,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
           let(:input) do
             {
               title: "some WI",
-              workItemTypeId: WorkItems::Type.default_by_type(:epic).to_gid.to_s,
+              workItemTypeId: WorkItems::Type.default_by_type(work_item_type).to_gid.to_s,
               rolledupDatesWidget: {
                 startDateIsFixed: true,
                 startDateFixed: start_date.to_s,
@@ -298,6 +306,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
               .by(1)
 
             expect(response).to have_gitlab_http_status(:success)
+            expect(type_response).to include({ 'name' => work_item_type.to_s.capitalize })
             expect(widgets_response).to include(
               "type" => "ROLLEDUP_DATES",
               "dueDate" => due_date.to_s,
@@ -319,7 +328,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
         let(:input) do
           {
             title: "some WI",
-            workItemTypeId: WorkItems::Type.default_by_type(:epic).to_gid.to_s,
+            workItemTypeId: WorkItems::Type.default_by_type(work_item_type).to_gid.to_s,
             healthStatusWidget: { healthStatus: new_status }
           }
         end
@@ -327,6 +336,9 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
         let(:fields) do
           <<~FIELDS
             workItem {
+              workItemType {
+                name
+              }
               widgets {
                 type
                 ... on WorkItemWidgetHealthStatus {
@@ -347,6 +359,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
             expect { post_graphql_mutation(mutation, current_user: current_user) }.to change { WorkItem.count }.by(1)
 
             expect(response).to have_gitlab_http_status(:success)
+            expect(type_response).to include({ 'name' => work_item_type.to_s.capitalize })
             expect(mutation_response['workItem']['widgets']).to include(
               {
                 'healthStatus' => 'onTrack',
@@ -379,7 +392,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
         let(:input) do
           {
             title: "some WI",
-            workItemTypeId: WorkItems::Type.default_by_type(:epic).to_gid.to_s,
+            workItemTypeId: WorkItems::Type.default_by_type(work_item_type).to_gid.to_s,
             colorWidget: { color: new_color }
           }
         end
@@ -387,6 +400,9 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
         let(:fields) do
           <<~FIELDS
             workItem {
+              workItemType {
+                name
+              }
               widgets {
                 type
                 ... on WorkItemWidgetColor {
@@ -407,6 +423,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
             expect { post_graphql_mutation(mutation, current_user: current_user) }.to change { WorkItem.count }.by(1)
 
             expect(response).to have_gitlab_http_status(:success)
+            expect(type_response).to include({ 'name' => work_item_type.to_s.capitalize })
             expect(mutation_response['workItem']['widgets']).to include(
               {
                 'color' => new_color,
@@ -430,6 +447,87 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
             expect(graphql_errors).to include(a_hash_including(
               'message' => "Following widget keys are not supported by Epic type: [:color_widget]"
             ))
+          end
+        end
+      end
+
+      context 'with assignees widget input containing multiple assignees' do
+        let_it_be(:assignees) { create_list(:user, 2, developer_of: project) }
+
+        let(:fields) do
+          <<~FIELDS
+            workItem {
+              workItemType {
+                name
+              }
+              widgets {
+                type
+                ... on WorkItemWidgetAssignees {
+                  assignees {
+                    nodes {
+                      id
+                      username
+                    }
+                  }
+                }
+              }
+            }
+            errors
+          FIELDS
+        end
+
+        let(:input) do
+          {
+            title: 'some WI',
+            workItemTypeId: WorkItems::Type.default_by_type(work_item_type).to_gid.to_s,
+            assigneesWidget: { 'assigneeIds' => assignees.map(&:to_gid).map(&:to_s) }
+          }
+        end
+
+        context 'when multiple_issue_assignees is licensed' do
+          before do
+            stub_licensed_features(epics: true, multiple_issue_assignees: true)
+          end
+
+          it "sets the work item's assignees" do
+            expect do
+              post_graphql_mutation(mutation, current_user: current_user)
+            end.to change { WorkItem.count }.by(1)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(type_response).to include({ 'name' => work_item_type.to_s.capitalize })
+            expect(widgets_response).to include(
+              {
+                'assignees' => { 'nodes' => [
+                  { 'id' => assignees[0].to_gid.to_s, 'username' => assignees[0].username },
+                  { 'id' => assignees[1].to_gid.to_s, 'username' => assignees[1].username }
+                ] },
+                'type' => 'ASSIGNEES'
+              }
+            )
+          end
+        end
+
+        context 'when multiple_issue_assignees is unlicensed' do
+          before do
+            stub_licensed_features(epics: true, multiple_issue_assignees: false)
+          end
+
+          it 'assigns only the first assignee' do
+            expect do
+              post_graphql_mutation(mutation, current_user: current_user)
+            end.to change { WorkItem.count }.by(1)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(type_response).to include({ 'name' => work_item_type.to_s.capitalize })
+            expect(widgets_response).to include(
+              {
+                'assignees' => { 'nodes' => [
+                  { 'id' => assignees[0].to_gid.to_s, 'username' => assignees[0].username }
+                ] },
+                'type' => 'ASSIGNEES'
+              }
+            )
           end
         end
       end
