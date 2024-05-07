@@ -46,6 +46,7 @@ RSpec.describe Gitlab::Checks::SecretsCheck, feature_category: :secret_detection
           it_behaves_like 'scan failed with invalid input'
           it_behaves_like 'scan skipped due to invalid status'
           it_behaves_like 'scan skipped when a commit has special bypass flag'
+          it_behaves_like 'scan skipped when secret_detection.skip_all push option is passed'
         end
       end
 
@@ -75,6 +76,7 @@ RSpec.describe Gitlab::Checks::SecretsCheck, feature_category: :secret_detection
           it_behaves_like 'scan failed with invalid input'
           it_behaves_like 'scan skipped due to invalid status'
           it_behaves_like 'scan skipped when a commit has special bypass flag'
+          it_behaves_like 'scan skipped when secret_detection.skip_all push option is passed'
         end
 
         context 'when feature flag is disabled' do
