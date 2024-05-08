@@ -14,8 +14,6 @@ module API
 
     helpers do
       def has_deprecated_approval_rules_params?
-        return false unless Feature.enabled?(:deprecate_unified_approval_rules)
-
         params[:required_approval_count].present? && params[:required_approval_count] > 0
       end
 
