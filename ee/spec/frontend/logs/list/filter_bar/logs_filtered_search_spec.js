@@ -35,6 +35,83 @@ describe('LogsFilteredSeach', () => {
   const findDateRangeFilter = () => wrapper.findComponent(DateRangeFilter);
   const findFilteredSearch = () => wrapper.findComponent(FilteredSearch);
 
+  describe('search hints', () => {
+    const findToken = (type) =>
+      findFilteredSearch()
+        .props('tokens')
+        .find((t) => t.type === type);
+
+    describe.each([undefined, {}])('when no metadata is provided', (metadata) => {
+      beforeEach(() => {
+        mount({ ...defaultProps, searchMetadata: metadata });
+      });
+      it('set default severity options', () => {
+        expect(findToken('severity-name').options.map((o) => o.value)).toEqual([
+          'trace',
+          'trace2',
+          'trace3',
+          'trace4',
+          'debug',
+          'debug2',
+          'debug3',
+          'debug4',
+          'info',
+          'info2',
+          'info3',
+          'info4',
+          'warn',
+          'warn2',
+          'warn3',
+          'warn4',
+          'error',
+          'error2',
+          'error3',
+          'error4',
+          'fatal',
+          'fatal2',
+          'fatal3',
+          'fatal4',
+        ]);
+      });
+
+      it('sets no suggestions for the service token', () => {
+        expect(findToken('service-name').options).toEqual([]);
+      });
+
+      it('sets no suggestions for the trace-flags token', () => {
+        expect(findToken('trace-flags').options).toEqual([]);
+      });
+    });
+
+    describe('when search metadata is provided', () => {
+      beforeEach(() => {
+        mount({
+          ...defaultProps,
+          searchMetadata: {
+            severity_names: ['info', 'warn'],
+            service_names: ['service1', 'service2'],
+            trace_flags: ['trace1', 'trace2'],
+          },
+        });
+      });
+
+      it('set default severity options', () => {
+        expect(findToken('severity-name').options.map((o) => o.value)).toEqual(['info', 'warn']);
+      });
+
+      it('sets no suggestions for the service token', () => {
+        expect(findToken('service-name').options.map((o) => o.value)).toEqual([
+          'service1',
+          'service2',
+        ]);
+      });
+
+      it('sets no suggestions for the trace-flags token', () => {
+        expect(findToken('trace-flags').options.map((o) => o.value)).toEqual(['trace1', 'trace2']);
+      });
+    });
+  });
+
   describe('date range filter', () => {
     it('renders the date range filter', () => {
       expect(findDateRangeFilter().exists()).toBe(true);

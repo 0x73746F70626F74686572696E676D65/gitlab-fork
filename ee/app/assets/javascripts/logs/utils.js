@@ -36,6 +36,8 @@ const severityConfig = [
   { name: 'fatal4', color: COLORS_MAP.fatal },
 ];
 
+export const DEFAULT_SEVERITY_LEVELS = severityConfig.filter(Boolean).map(({ name }) => name);
+
 export function severityNumberToConfig(severityNumber) {
   return severityConfig[severityNumber] || severityConfig[5]; // default to Debug;
 }
