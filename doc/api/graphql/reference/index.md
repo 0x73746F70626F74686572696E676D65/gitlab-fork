@@ -19152,7 +19152,7 @@ The deployment of an environment.
 | <a id="deploymenttriggerer"></a>`triggerer` | [`UserCore`](#usercore) | User who executed the deployment. |
 | <a id="deploymentupdatedat"></a>`updatedAt` | [`Time`](#time) | When the deployment record was updated. |
 | <a id="deploymentuserpermissions"></a>`userPermissions` | [`DeploymentPermissions!`](#deploymentpermissions) | Permissions for the current user on the resource. |
-| <a id="deploymentwebpath"></a>`webPath` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 16.11. **Status**: Experiment. Web path to the deployment page, returns `null` if the `deployment_details_page` feature flag is disabled. |
+| <a id="deploymentwebpath"></a>`webPath` | [`String`](#string) | Web path to the deployment page. |
 
 ### `DeploymentApproval`
 
