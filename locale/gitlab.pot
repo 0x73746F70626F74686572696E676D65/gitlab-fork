@@ -37928,6 +37928,9 @@ msgstr ""
 msgid "Pipelines|\"Hello world\" with GitLab CI"
 msgstr ""
 
+msgid "Pipelines|Active train"
+msgstr ""
+
 msgid "Pipelines|Are you sure you want to run this pipeline?"
 msgstr ""
 
@@ -38013,6 +38016,12 @@ msgid "Pipelines|Loading Pipelines"
 msgstr ""
 
 msgid "Pipelines|Loading pipelines"
+msgstr ""
+
+msgid "Pipelines|Merge train"
+msgstr ""
+
+msgid "Pipelines|Merged"
 msgstr ""
 
 msgid "Pipelines|Migrate to GitLab CI/CD from Jenkins"
