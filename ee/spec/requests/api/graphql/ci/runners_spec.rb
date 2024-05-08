@@ -36,8 +36,10 @@ RSpec.describe 'Query', feature_category: :fleet_visibility do
       let(:upgrade_statuses) { runners_graphql_data['nodes'].map { |n| n.fetch('upgradeStatus') } }
       let(:query) { "{ #{query_nodes(:runners, %i[id upgrade_status])} }" }
 
-      let_it_be(:instance_runner) { create(:ci_runner, :instance, version: '14.0.0') }
-      let_it_be(:project_runner) { create(:ci_runner, :project, version: '14.0.1', projects: [project]) }
+      let_it_be(:instance_runner) { create(:ci_runner, :instance) }
+      let_it_be(:project_runner) { create(:ci_runner, :project, projects: [project]) }
+      let_it_be(:instance_runner_manager) { create(:ci_runner_machine, version: '14.0.0') }
+      let_it_be(:project_runner_manager) { create(:ci_runner_machine, version: '14.0.1') }
 
       before do
         stub_runner_releases(%w[14.0.0 14.0.1])
