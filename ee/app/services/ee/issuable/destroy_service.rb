@@ -22,13 +22,6 @@ module EE
         super
       end
 
-      override :group_for
-      def group_for(issuable)
-        return issuable.resource_parent if issuable.is_a?(Epic)
-
-        super
-      end
-
       def track_usage_ping_epic_destroyed(epic)
         ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_destroyed(
           author: current_user,
