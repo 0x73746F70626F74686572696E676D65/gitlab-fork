@@ -18,9 +18,7 @@ module Gitlab
         secrets_not_found: 'Secret detection scan completed with no findings.',
         skip_secret_detection: "\n\nTo skip pre-receive secret detection, add the following Git push option" \
                                "to your push command: `-o secret_detection.skip_all`",
-        found_secrets: "\n\n--------------------------------------------------" \
-                       "\nPUSH BLOCKED: Secrets detected in code changes" \
-                       "\n--------------------------------------------------",
+        found_secrets: "\nPUSH BLOCKED: Secrets detected in code changes",
         found_secrets_post_message: "\n\nTo push your changes you must remove the identified secrets.",
         found_secrets_docs_link: "\nFor guidance, see %{path}",
         found_secrets_with_errors: 'Secret detection scan completed with one or more findings ' \
@@ -213,8 +211,11 @@ module Gitlab
             )
           }
         )
-        message += LOG_MESSAGES[:skip_secret_detection]
-        message += LOG_MESSAGES[:found_secrets_footer]
+
+        # Commenting these out as the WebIDE is failing on displaying this message due to length.
+        # message += LOG_MESSAGES[:skip_secret_detection]
+        # message += LOG_MESSAGES[:found_secrets_footer]
+        # Also shortened up the found_secrets: message
 
         message
       end
