@@ -71,6 +71,10 @@ module ProductAnalyticsHelpers
     is_a?(Project) ? self : nil
   end
 
+  def product_analytics_initialized?
+    has_tracking_key? && !initializing?
+  end
+
   def product_analytics_onboarded?(user)
     return false unless has_tracking_key?
     return false if initializing?
@@ -114,6 +118,12 @@ module ProductAnalyticsHelpers
 
   def has_self_managed_collector?(collector_host)
     collector_host.present? && collector_host.exclude?(GITLAB_PRODUCT_ANALYTICS_DOMAIN)
+  end
+
+  def custom_dashboard_project?
+    return false unless is_a?(Project)
+
+    targeting_dashboards_pointer_projects.where.not(id: id).any?
   end
 
   private
