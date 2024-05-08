@@ -14,7 +14,19 @@ exports[`Metric table for the code_suggestions_usage_rate table row when the dat
     Monthly user engagement with AI Code Suggestions. Percentage ratio calculated as monthly unique Code Suggestions users / total monthly unique code contributors.
     
       Go to docs
-       5.0%  10.0%  25.0%  5.0%  10.0%  25.0% 
+      
+      5.0%
+    
+      10.0%
+    
+      25.0%
+    
+      5.0%
+    
+      10.0%
+    
+      25.0%
+    
   100.0%"
 `;
 

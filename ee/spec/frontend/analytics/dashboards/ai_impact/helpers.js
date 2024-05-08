@@ -95,13 +95,17 @@ export const mockVulnerabilityMetricsResponse = (values = []) =>
 
 export const mockAiMetricsResponse = (values = []) =>
   values.reduce(
-    (acc, { codeSuggestionsUsageRate }) =>
+    (acc, { codeContributorsCount, codeSuggestionsContributorsCount }) =>
       acc.mockResolvedValueOnce({
         data: {
           project: null,
           group: {
             id: 'fake-ai-metrics-request',
-            aiMetrics: { codeSuggestionsUsageRate },
+            aiMetrics: {
+              codeContributorsCount,
+              codeSuggestionsContributorsCount,
+              __typename: 'AiMetrics',
+            },
           },
         },
       }),

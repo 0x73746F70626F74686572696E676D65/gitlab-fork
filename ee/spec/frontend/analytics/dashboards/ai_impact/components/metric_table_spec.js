@@ -9,6 +9,7 @@ import {
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import FlowMetricsQuery from 'ee/analytics/dashboards/ai_impact/graphql/flow_metrics.query.graphql';
 import DoraMetricsQuery from 'ee/analytics/dashboards/ai_impact/graphql/dora_metrics.query.graphql';
 import VulnerabilitiesQuery from 'ee/analytics/dashboards/ai_impact/graphql/vulnerabilities.query.graphql';
@@ -23,7 +24,7 @@ import {
   mockVulnerabilityMetricsResponse,
   mockAiMetricsResponse,
 } from '../helpers';
-import { mockTableValues, mockTableLargeValues } from '../mock_data';
+import { mockTableValues, mockTableLargeValues, mockAiMetricsValues } from '../mock_data';
 
 const mockTypePolicy = {
   Query: { fields: { project: { merge: false }, group: { merge: false } } },
@@ -41,7 +42,7 @@ describe('Metric table', () => {
     flowMetricsRequest = mockFlowMetricsResponse(mockTableValues),
     doraMetricsRequest = mockDoraMetricsResponse(mockTableValues),
     vulnerabilityMetricsRequest = mockVulnerabilityMetricsResponse(mockTableValues),
-    aiMetricsRequest = mockAiMetricsResponse(mockTableValues),
+    aiMetricsRequest = mockAiMetricsResponse(mockAiMetricsValues),
   } = {}) => {
     return createMockApollo(
       [
@@ -85,6 +86,9 @@ describe('Metric table', () => {
         isProject,
         ...props,
       },
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
     });
 
     return waitForPromises();
@@ -108,19 +112,21 @@ describe('Metric table', () => {
 
   const findTableRow = (rowTestId) => wrapper.findByTestId(rowTestId);
   const findMetricTableCell = (rowTestId) => findTableRow(rowTestId).findComponent(MetricTableCell);
+  const findValueTableCells = (rowTestId) =>
+    findTableRow(rowTestId).findAll(`[data-testid="ai-impact-table-value-cell"]`);
   const findTrendIndicator = (rowTestId) => findTableRow(rowTestId).findComponent(TrendIndicator);
   const findSkeletonLoaders = (rowTestId) =>
     wrapper.findAll(`[data-testid="${rowTestId}"] [data-testid="metric-skeleton-loader"]`);
 
   describe.each`
-    identifier                                | name                                    | testId                                            | change
-    ${DORA_METRICS.DEPLOYMENT_FREQUENCY}      | ${'Deployment frequency'}               | ${'ai-impact-metric-deployment-frequency'}        | ${1}
-    ${DORA_METRICS.CHANGE_FAILURE_RATE}       | ${'Change failure rate'}                | ${'ai-impact-metric-change-failure-rate'}         | ${1}
-    ${FLOW_METRICS.CYCLE_TIME}                | ${'Cycle time'}                         | ${'ai-impact-metric-cycle-time'}                  | ${-0.5}
-    ${FLOW_METRICS.LEAD_TIME}                 | ${'Lead time'}                          | ${'ai-impact-metric-lead-time'}                   | ${0}
-    ${VULNERABILITY_METRICS.CRITICAL}         | ${'Critical vulnerabilities over time'} | ${'ai-impact-metric-vulnerability-critical'}      | ${-0.5}
-    ${AI_METRICS.CODE_SUGGESTIONS_USAGE_RATE} | ${'Code Suggestions usage'}             | ${'ai-impact-metric-code-suggestions-usage-rate'} | ${1}
-  `('for the $identifier table row', ({ identifier, name, testId, change }) => {
+    identifier                                | name                                    | testId                                            | change  | hasValueTooltips
+    ${DORA_METRICS.DEPLOYMENT_FREQUENCY}      | ${'Deployment frequency'}               | ${'ai-impact-metric-deployment-frequency'}        | ${1}    | ${false}
+    ${DORA_METRICS.CHANGE_FAILURE_RATE}       | ${'Change failure rate'}                | ${'ai-impact-metric-change-failure-rate'}         | ${1}    | ${false}
+    ${FLOW_METRICS.CYCLE_TIME}                | ${'Cycle time'}                         | ${'ai-impact-metric-cycle-time'}                  | ${-0.5} | ${false}
+    ${FLOW_METRICS.LEAD_TIME}                 | ${'Lead time'}                          | ${'ai-impact-metric-lead-time'}                   | ${0}    | ${false}
+    ${VULNERABILITY_METRICS.CRITICAL}         | ${'Critical vulnerabilities over time'} | ${'ai-impact-metric-vulnerability-critical'}      | ${-0.5} | ${false}
+    ${AI_METRICS.CODE_SUGGESTIONS_USAGE_RATE} | ${'Code Suggestions usage'}             | ${'ai-impact-metric-code-suggestions-usage-rate'} | ${1}    | ${true}
+  `('for the $identifier table row', ({ identifier, name, testId, change, hasValueTooltips }) => {
     describe('when loading data', () => {
       beforeEach(() => {
         createWrapper();
@@ -182,6 +188,34 @@ describe('Metric table', () => {
       } else {
         it('renders the trend indicator', () => {
           expect(findTrendIndicator(testId).props().change).toBe(change);
+        });
+      }
+
+      if (hasValueTooltips) {
+        it('adds tooltip to value cells', () => {
+          const tooltip = getBinding(findValueTableCells(testId).at(0).element, 'gl-tooltip');
+
+          expect(tooltip).toBeDefined();
+        });
+
+        it('adds hover classes to value cells', () => {
+          expect(findValueTableCells(testId).at(0).classes()).toContain(
+            'gl-cursor-pointer',
+            'hover:gl-underline',
+          );
+        });
+      } else {
+        it('does not add tooltip to value cells', () => {
+          const tooltip = getBinding(findValueTableCells(testId).at(0).element, 'gl-tooltip');
+
+          expect(tooltip).toBeUndefined();
+        });
+
+        it('does not add hover classes to value cells', () => {
+          expect(findValueTableCells(testId).at(0).classes()).not.toContain(
+            'gl-cursor-pointer',
+            'hover:gl-underline',
+          );
         });
       }
     });

@@ -3,8 +3,9 @@ import {
   generateTableColumns,
   generateSkeletonTableData,
   generateTableRows,
+  calculateCodeSuggestionsUsageRate,
 } from 'ee/analytics/dashboards/ai_impact/utils';
-import { mockDoraTimePeriods } from './mock_data';
+import { mockTimePeriods } from './mock_data';
 
 describe('AI impact Dashboard utils', () => {
   describe('generateDateRanges', () => {
@@ -37,7 +38,31 @@ describe('AI impact Dashboard utils', () => {
 
   describe('generateTableRows', () => {
     it('returns the data formatted as a table row', () => {
-      expect(generateTableRows(mockDoraTimePeriods)).toMatchSnapshot();
+      expect(generateTableRows(mockTimePeriods)).toMatchSnapshot();
+    });
+  });
+
+  describe('calculateCodeSuggestionsUsageRate', () => {
+    it('returns null when counts are undefined', () => {
+      expect(calculateCodeSuggestionsUsageRate()).toBeNull();
+    });
+
+    it('returns null when there is no code suggestions usage data', () => {
+      expect(
+        calculateCodeSuggestionsUsageRate({
+          codeSuggestionsContributorsCount: 0,
+          codeContributorsCount: 0,
+        }),
+      ).toBeNull();
+    });
+
+    it('returns the code suggestions usage rate as expected', () => {
+      expect(
+        calculateCodeSuggestionsUsageRate({
+          codeSuggestionsContributorsCount: 3,
+          codeContributorsCount: 4,
+        }),
+      ).toEqual(75);
     });
   });
 });
