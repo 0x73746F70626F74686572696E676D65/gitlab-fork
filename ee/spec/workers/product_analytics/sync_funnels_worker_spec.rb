@@ -5,60 +5,21 @@
 require 'spec_helper'
 
 RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_analytics_data_management do
-  include RepoHelpers
-
-  let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:user) { create(:user) }
-
-  let(:commit) { project.repository.commit }
-
-  subject(:worker) { described_class.new.perform(project.id, commit.sha, user.id) }
-
-  before do
-    allow_next_instance_of(ProductAnalytics::Settings) do |settings|
-      allow(settings).to receive(:product_analytics_configurator_connection_string).and_return('http://test:test@localhost:4567')
-    end
-  end
-
-  before_all do
-    create_valid_funnel
-  end
-
-  describe '#perform' do
-    let(:expected_added) do
-      {
-        project_ids: [project.id],
-        funnels: [
-          {
-            name: "completed_purchase",
-            schema: an_instance_of(String),
-            state: "added"
-          }
-        ]
-      }
-    end
-
-    let(:expected_updated) do
-      {
-        project_ids: [project.id],
-        funnels: [
-          {
-            name: "completed_purchase",
-            schema: an_instance_of(String),
-            state: "updated"
-          }
-        ]
-      }
-    end
-
+  RSpec.shared_examples 'sends data to configurator' do
     context 'when a new funnel is in the commit' do
+      before do
+        create_valid_funnel
+      end
+
       it 'is successful' do
-        expect(Gitlab::HTTP).to receive(:post)
-                .with('http://test:test@localhost:4567/funnel-schemas', {
-                  allow_local_requests: true,
-                  body: /\"state\":\"created\"/
-                }).once
-                .and_return(instance_double("HTTParty::Response", body: { result: 'success' }))
+        url_to_projects_regex.each do |url, projects_regex|
+          expect(Gitlab::HTTP).to receive(:post)
+                                    .with(url.to_s, {
+                                      allow_local_requests: true,
+                                      body: Regexp.new(projects_regex.source + /.*\"state\":\"created\"/.source)
+                                    }).once
+                                    .and_return(instance_double("HTTParty::Response", body: { result: 'success' }))
+        end
 
         worker
       end
@@ -70,14 +31,14 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
       end
 
       it 'is successful' do
-        expect(Gitlab::HTTP)
-          .to receive(:post)
-                .with('http://test:test@localhost:4567/funnel-schemas', {
-                  allow_local_requests: true,
-                  body: /\"state\":\"updated\"/
-                })
-                .once
-                .and_return(instance_double("HTTParty::Response", body: { result: 'success' }))
+        url_to_projects_regex.each do |url, projects_regex|
+          expect(Gitlab::HTTP).to receive(:post)
+                                    .with(url.to_s, {
+                                      allow_local_requests: true,
+                                      body: Regexp.new(projects_regex.source + /.*\"state\":\"updated\"/.source)
+                                    }).once.and_return(instance_double("HTTParty::Response",
+                                      body: { result: 'success' }))
+        end
 
         worker
       end
@@ -89,33 +50,33 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
       end
 
       it 'is successful' do
-        expect(Gitlab::HTTP)
-          .to receive(:post)
-                .with('http://test:test@localhost:4567/funnel-schemas', {
-                  allow_local_requests: true,
-                  body: /\"previous_name\":\"completed_purchase\"/
-                })
-                .once
-                .and_return(instance_double("HTTParty::Response", body: { result: 'success' }))
+        url_to_projects_regex.each do |url, _projects_regex|
+          expect(Gitlab::HTTP).to receive(:post)
+                                    .with(url.to_s, {
+                                      allow_local_requests: true,
+                                      body: /\"previous_name\":\"completed_purchase\"/
+                                    }).once
+                                    .and_return(instance_double("HTTParty::Response", body: { result: 'success' }))
+        end
 
         worker
       end
     end
 
-    context 'when an deleted funnel is in the commit' do
+    context 'when a deleted funnel is in the commit' do
       before do
         delete_funnel
       end
 
       it 'is successful' do
-        expect(Gitlab::HTTP)
-          .to receive(:post)
-                .with('http://test:test@localhost:4567/funnel-schemas', {
-                  allow_local_requests: true,
-                  body: /\"state\":\"deleted\"/
-                })
-                .once
-                .and_return(instance_double("HTTParty::Response", body: { result: 'success' }))
+        url_to_projects_regex.each do |url, projects_regex|
+          expect(Gitlab::HTTP).to receive(:post)
+                                    .with(url.to_s, {
+                                      allow_local_requests: true,
+                                      body: Regexp.new(projects_regex.source + /.*\"state\":\"deleted\"/.source)
+                                    }).once
+                                    .and_return(instance_double("HTTParty::Response", body: { result: 'success' }))
+        end
 
         worker
       end
@@ -126,10 +87,112 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
         commit_with_no_funnel
       end
 
+      after do
+        project.repository.delete_file(
+          project.creator,
+          'readme.md',
+          message: 'delete readme',
+          branch_name: 'master'
+        )
+      end
+
       it 'does not attempt to post to the API' do
         expect(Gitlab::HTTP).not_to receive(:post)
 
         worker
+      end
+    end
+  end
+
+  include RepoHelpers
+
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, :repository, namespace: group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:other_project_1) { create(:project, namespace: group) }
+  let_it_be(:other_project_2) { create(:project, namespace: group) }
+
+  let(:commit) { project.repository.commit }
+
+  subject(:worker) { described_class.new.perform(project.id, commit.sha, user.id) }
+
+  describe '#perform' do
+    context 'without pointer projects' do
+      before do
+        allow_next_instance_of(ProductAnalytics::Settings) do |settings|
+          allow(settings).to receive(:product_analytics_configurator_connection_string).and_return('http://test:test@localhost:4567')
+        end
+        project.project_setting.update!(product_analytics_instrumentation_key: 'some_key')
+        project.reload
+      end
+
+      it_behaves_like 'sends data to configurator' do
+        let(:url_to_projects_regex) do
+          { "http://test:test@localhost:4567/funnel-schemas": /["gitlab_projec#{project.id}]/ }
+        end
+      end
+    end
+
+    context 'with pointer projects' do
+      before do
+        other_project_1.project_setting.update!(product_analytics_instrumentation_key: 'some_key')
+        other_project_2.project_setting.update!(product_analytics_instrumentation_key: 'some_key')
+        other_project_1.reload
+        other_project_2.reload
+      end
+
+      context 'with single pointer project' do
+        before do
+          Analytics::DashboardsPointer.create!(project: other_project_1, target_project: project)
+          other_project_1.project_setting.update!(product_analytics_configurator_connection_string: "http://test:test@localhost:4567")
+          other_project_1.reload
+        end
+
+        it_behaves_like 'sends data to configurator' do
+          let(:url_to_projects_regex) do
+            { "http://test:test@localhost:4567/funnel-schemas": /["gitlab_projec#{other_project_1.id}]/ }
+          end
+        end
+      end
+
+      context 'with multiple pointer projects' do
+        before do
+          Analytics::DashboardsPointer.create!(project: other_project_1, target_project: project)
+          Analytics::DashboardsPointer.create!(project: other_project_2, target_project: project)
+        end
+
+        context "when projects are using the same configurator" do
+          before do
+            other_project_1.project_setting.update!(product_analytics_configurator_connection_string: "http://test:test@localhost:4567")
+            other_project_1.reload
+            other_project_2.project_setting.update!(product_analytics_configurator_connection_string: "http://test:test@localhost:4567")
+            other_project_2.reload
+          end
+
+          it_behaves_like 'sends data to configurator' do
+            let(:url_to_projects_regex) do
+              { "http://test:test@localhost:4567/funnel-schemas": /["gitlab_projec#{other_project_1.id},\"#{other_project_2.id}]/ }
+            end
+          end
+        end
+
+        context "when projects are using different configurators" do
+          before do
+            other_project_1.project_setting.update!(product_analytics_configurator_connection_string: "http://test:test@localhost:4567")
+            other_project_2.project_setting.update!(product_analytics_configurator_connection_string: "http://test:test@anotherhost:4567")
+            other_project_1.reload
+            other_project_2.reload
+          end
+
+          it_behaves_like 'sends data to configurator' do
+            let(:url_to_projects_regex) do
+              {
+                "http://test:test@localhost:4567/funnel-schemas": /"gitlab_project_#{other_project_1.id}\"/,
+                "http://test:test@anotherhost:4567/funnel-schemas": /"gitlab_project_#{other_project_2.id}\"/
+              }
+            end
+          end
+        end
       end
     end
   end

@@ -12,25 +12,20 @@ module ProductAnalytics
       @project = Project.find_by_id(project_id)
       @commit = @project.repository.commit(newrev)
       @user_id = user_id
-      @payload = build_payload
+      @payload = configurator_url_project_map
 
-      return if @payload[:funnels].empty?
+      return if funnels.empty?
 
-      response = Gitlab::HTTP.post(
-        "#{ ::ProductAnalytics::Settings.for_project(@project)
-                                       .product_analytics_configurator_connection_string }/funnel-schemas",
-        body: build_payload.to_json,
-        allow_local_requests: true
-      )
-
-      response.body
-    end
-
-    def build_payload
-      {
-        project_ids: ["gitlab_project_#{@project.id}"],
-        funnels: funnels
-      }
+      @payload.each do |url, project_ids|
+        Gitlab::HTTP.post(
+          url,
+          body: {
+            project_ids: project_ids.map { |id| "gitlab_project_#{id}" },
+            funnels: funnels
+          }.to_json,
+          allow_local_requests: true
+        )
+      end
     end
 
     private
@@ -78,6 +73,33 @@ module ProductAnalytics
           name: funnel.name
         }
       end
+    end
+
+    def configurator_url_project_map
+      map = {}
+
+      project_ids_to_send.each do |project_id|
+        url = "#{::ProductAnalytics::Settings.for_project(Project.find_by_id(project_id))
+                                             .product_analytics_configurator_connection_string}/funnel-schemas"
+
+        if map.has_key?(url)
+          map[url] << project_id
+        else
+          map[url] = [project_id]
+        end
+      end
+
+      map
+    end
+
+    def project_ids_to_send
+      project_ids = [@project.id]
+
+      project_ids += @project.targeting_dashboards_pointer_project_ids if @project.custom_dashboard_project?
+
+      # if product analytics is not initialized for a project, there won't be a clickhouse database to write funnels
+      # also there might be a pointer project pointing to self, thus we remove duplicates
+      project_ids.select { |id| Project.find_by_id(id).product_analytics_initialized? }.uniq
     end
   end
 end
