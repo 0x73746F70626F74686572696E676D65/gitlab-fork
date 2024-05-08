@@ -907,6 +907,18 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
               end
             end
 
+            context 'with epic color' do
+              let_it_be_with_reload(:epic) { create(:epic, group: group, color: '#ffffff') }
+
+              let(:opts) { { color: ::Epic::DEFAULT_COLOR } }
+
+              before do
+                create(:color, work_item: epic.work_item, color: epic.color)
+              end
+
+              it_behaves_like 'syncs all data from an epic to a work item'
+            end
+
             context 'description tasks' do
               context 'when marking a task as done' do
                 let_it_be(:description) { '- [ ] Task' }
@@ -935,9 +947,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
 
                 context 'when saving to the work item fails' do
                   before do
-                    allow_next_found_instance_of(::WorkItem) do |instance|
-                      allow(instance).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new)
-                    end
+                    allow(work_item).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new)
                   end
 
                   it 'does not update the epic or the work item' do
