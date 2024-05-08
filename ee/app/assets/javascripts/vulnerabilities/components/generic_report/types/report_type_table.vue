@@ -27,7 +27,7 @@ export default {
     borderless
     class="gl-m-0!"
     thead-class="gl-border-t-0 gl-border-b-solid gl-border-b-1 gl-border-b-gray-100"
-    tbody-tr-class="gl-word-break-all"
+    tbody-tr-class="gl-break-all"
   >
     <template #head()="data">
       <report-item :item="data.field" />

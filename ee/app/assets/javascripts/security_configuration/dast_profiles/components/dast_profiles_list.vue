@@ -103,7 +103,7 @@ export default {
       return `dast-profiles-list-${uniqueId()}`;
     },
     tableFields() {
-      const defaultClasses = ['gl-word-break-all'];
+      const defaultClasses = ['gl-break-all'];
       const defaultThClasses = ['gl-bg-transparent!', 'gl-text-black-normal'];
 
       const dataFields = this.fields.map(({ key, label }) => ({
