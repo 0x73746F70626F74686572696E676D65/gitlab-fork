@@ -7,6 +7,7 @@ import {
   OPERATORS_IS_NOT,
   OPERATORS_IS,
 } from '~/vue_shared/components/filtered_search_bar/constants';
+import { DEFAULT_SEVERITY_LEVELS } from '../../utils';
 import {
   SERVICE_NAME_FILTER_TOKEN_TYPE,
   SEVERITY_NAME_FILTER_TOKEN_TYPE,
@@ -22,8 +23,11 @@ import {
 } from './filters';
 import AttributeSearchToken from './attribute_search_token.vue';
 
-// TODO get levels from API https://gitlab.com/gitlab-org/opstrace/opstrace/-/issues/2782
-const SEVERITY_LEVEL_OPTIONS = ['trace', 'debug', 'info', 'warn', 'error', 'fatal'];
+const toOptions = (values) =>
+  values.map((value) => ({
+    value,
+    title: value,
+  }));
 
 export default {
   components: {
@@ -40,6 +44,11 @@ export default {
       required: false,
       default: () => {},
     },
+    searchMetadata: {
+      type: Object,
+      required: false,
+      default: () => {},
+    },
   },
   i18n: {
     searchInputPlaceholder: s__('ObservabilityLogs|Search logs...'),
@@ -52,22 +61,23 @@ export default {
   },
   computed: {
     availableTokens() {
+      const severityNameOptions = this.searchMetadata?.severity_names || DEFAULT_SEVERITY_LEVELS;
+      const traceFlagOptions = this.searchMetadata?.trace_flags || [];
+      const serviceNameOptions = this.searchMetadata?.service_names || [];
       return [
         {
           title: s__('ObservabilityLogs|Service'),
           type: SERVICE_NAME_FILTER_TOKEN_TYPE,
           token: GlFilteredSearchToken,
           operators: OPERATORS_IS_NOT,
+          options: toOptions(serviceNameOptions),
         },
         {
           title: s__('ObservabilityLogs|Severity'),
           type: SEVERITY_NAME_FILTER_TOKEN_TYPE,
           token: GlFilteredSearchToken,
           operators: OPERATORS_IS_NOT,
-          options: SEVERITY_LEVEL_OPTIONS.map((level) => ({
-            value: level,
-            title: level,
-          })),
+          options: toOptions(severityNameOptions),
         },
         {
           title: s__('ObservabilityLogs|Severity Number'),
@@ -98,6 +108,7 @@ export default {
           type: TRACE_FLAGS_FILTER_TOKEN_TYPE,
           token: GlFilteredSearchToken,
           operators: OPERATORS_IS_NOT,
+          options: toOptions(traceFlagOptions),
         },
         {
           title: s__('ObservabilityLogs|Attribute'),
