@@ -40526,7 +40526,7 @@ msgstr ""
 msgid "ProjectSettings|Branches created from issues follow this pattern."
 msgstr ""
 
-msgid "ProjectSettings|Build, test, and deploy your changes."
+msgid "ProjectSettings|Build, test, and deploy your changes. Does not apply to project integrations."
 msgstr ""
 
 msgid "ProjectSettings|Checkbox is visible and selected by default."
