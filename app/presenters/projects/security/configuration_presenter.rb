@@ -90,11 +90,22 @@ module Projects
         job_types = ::Security::SecurityJobsFinder.allowed_job_types +
           ::Security::LicenseComplianceJobsFinder.allowed_job_types
 
-        unless Feature.enabled?(:pre_receive_secret_detection_beta_release)
+        unless dedicated_instance? || pre_receive_secret_detection_feature_flag_enabled?
           job_types.delete(:pre_receive_secret_detection)
         end
 
         job_types
+      end
+
+      def dedicated_instance?
+        ::Gitlab::CurrentSettings.gitlab_dedicated_instance?
+      end
+
+      def pre_receive_secret_detection_feature_flag_enabled?
+        return false unless project.licensed_feature_available?(:pre_receive_secret_detection)
+
+        Feature.enabled?(:pre_receive_secret_detection_beta_release) && Feature.enabled?(
+          :pre_receive_secret_detection_push_check, project)
       end
 
       def project_settings
