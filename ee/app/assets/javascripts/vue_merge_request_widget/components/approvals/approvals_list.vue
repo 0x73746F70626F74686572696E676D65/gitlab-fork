@@ -109,7 +109,7 @@ export default {
           rules: orderBy(
             approvalRules
               .filter((rule) => rule.type.toLowerCase() === RULE_TYPE_CODE_OWNER)
-              .map((rule) => ({ ...rule, nameClass: 'gl-font-monospace gl-word-break-all' })),
+              .map((rule) => ({ ...rule, nameClass: 'gl-font-monospace gl-break-all' })),
             [(o) => o.section === 'codeowners', 'name', 'section'],
             ['desc', 'asc', 'asc'],
           ),
