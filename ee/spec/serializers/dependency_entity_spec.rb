@@ -4,13 +4,13 @@ require 'spec_helper'
 
 RSpec.describe DependencyEntity, feature_category: :dependency_management do
   describe '#as_json' do
-    subject { described_class.represent(dependency, request: request).as_json }
-
     let_it_be(:user) { create(:user) }
-
     let(:project) { create(:project, :repository, :private) }
     let(:request) { double('request') }
     let(:dependency) { build(:dependency, :with_vulnerabilities, :with_licenses, :indirect) }
+    let(:params) { { request: request } }
+
+    subject { described_class.represent(dependency, params).as_json }
 
     before do
       allow(request).to receive(:project).and_return(project)
@@ -45,6 +45,20 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
 
           it 'includes occurrence_id and vulnerability_count' do
             is_expected.to match(hash_including(:occurrence_id, :vulnerability_count))
+          end
+
+          it 'does not include vulnerabilities' do
+            is_expected.not_to match(hash_including(:vulnerabilities))
+          end
+
+          context 'when include_vulnerabilities is set to true' do
+            before do
+              params.merge!({ include_vulnerabilities: true })
+            end
+
+            it 'does include vulnerabilities' do
+              is_expected.to match(hash_including(:vulnerabilities))
+            end
           end
         end
       end
