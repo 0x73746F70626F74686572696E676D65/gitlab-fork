@@ -39860,6 +39860,9 @@ msgstr ""
 msgid "Profiles|Type your %{confirmationValue} to confirm:"
 msgstr ""
 
+msgid "Profiles|Unverified secondary email addresses are automatically deleted after three days"
+msgstr ""
+
 msgid "Profiles|Update profile settings"
 msgstr ""
 
