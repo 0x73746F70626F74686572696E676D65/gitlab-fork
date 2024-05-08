@@ -23,10 +23,11 @@ describe('Permissions Selector component', () => {
     mountFn = shallowMountExtended,
     permissions = [],
     isValid = true,
+    baseRoleAccessLevel = 30,
     availablePermissionsHandler = defaultAvailablePermissionsHandler,
   } = {}) => {
     wrapper = mountFn(PermissionsSelector, {
-      propsData: { permissions, isValid },
+      propsData: { permissions, isValid, baseRoleAccessLevel },
       apolloProvider: createMockApollo([[memberRolePermissionsQuery, availablePermissionsHandler]]),
       stubs: {
         GlSprintf,
@@ -46,7 +47,7 @@ describe('Permissions Selector component', () => {
   };
 
   const expectSelectedPermissions = (expected) => {
-    const permissions = wrapper.emitted('change')[0][0];
+    const permissions = wrapper.emitted('change') == null ? [] : wrapper.emitted('change')[0][0];
 
     expect(permissions.sort()).toEqual(expected.sort());
   };
@@ -75,24 +76,46 @@ describe('Permissions Selector component', () => {
     });
 
     describe('after data is loaded', () => {
-      beforeEach(() => {
-        return createComponent();
-      });
+      describe('before a base role is selected', () => {
+        beforeEach(() => {
+          return createComponent({ baseRoleAccessLevel: null });
+        });
 
-      it('shows the table with the expected permissions', () => {
-        expect(findTable().props('busy')).toBe(false);
-        expect(findTable().props()).toMatchObject({
-          fields: FIELDS,
-          items: mockDefaultPermissions,
+        it('does not show the table with the expected permissions', () => {
+          expect(findTable().exists()).toBe(false);
+        });
+
+        it('does not show the permissions selected message', () => {
+          expect(findPermissionsSelectedMessage().exists()).toBe(false);
+        });
+
+        it('does not show the error message', () => {
+          expect(findAlert().exists()).toBe(false);
         });
       });
 
-      it('shows the permissions selected message', () => {
-        expect(findPermissionsSelectedMessage().text()).toBe('0 of 7 permissions selected');
-      });
+      describe('after a base role is selected', () => {
+        beforeEach(() => {
+          return createComponent();
+        });
 
-      it('does not show the error message', () => {
-        expect(findAlert().exists()).toBe(false);
+        it('shows the table with the expected permissions', () => {
+          expect(findTable().props('busy')).toBe(false);
+          expect(findTable().props()).toMatchObject({
+            fields: FIELDS,
+            items: mockDefaultPermissions,
+          });
+        });
+
+        it('shows the permissions selected message', () => {
+          expect(findPermissionsSelectedMessage().text()).toBe(
+            `1 of ${mockDefaultPermissions.length} permissions selected`,
+          );
+        });
+
+        it('does not show the error message', () => {
+          expect(findAlert().exists()).toBe(false);
+        });
       });
     });
 
@@ -126,6 +149,7 @@ describe('Permissions Selector component', () => {
       ${'E'}     | ${['E', 'F']}
       ${'F'}     | ${['E', 'F']}
       ${'G'}     | ${['A', 'B', 'C', 'G']}
+      ${'H'}     | ${[]}
     `('selects $expected when $permission is selected', async ({ permission, expected }) => {
       await createComponent();
       checkPermission(permission);
@@ -135,13 +159,13 @@ describe('Permissions Selector component', () => {
 
     it.each`
       permission | expected
-      ${'A'}     | ${['E', 'F']}
-      ${'B'}     | ${['A', 'E', 'F']}
-      ${'C'}     | ${['A', 'B', 'E', 'F']}
-      ${'D'}     | ${['A', 'B', 'C', 'E', 'F', 'G']}
-      ${'E'}     | ${['A', 'B', 'C', 'D', 'G']}
-      ${'F'}     | ${['A', 'B', 'C', 'D', 'G']}
-      ${'G'}     | ${['A', 'B', 'C', 'D', 'E', 'F']}
+      ${'A'}     | ${['E', 'F', 'H']}
+      ${'B'}     | ${['A', 'E', 'F', 'H']}
+      ${'C'}     | ${['A', 'B', 'E', 'F', 'H']}
+      ${'D'}     | ${['A', 'B', 'C', 'E', 'F', 'G', 'H']}
+      ${'E'}     | ${['A', 'B', 'C', 'D', 'G', 'H']}
+      ${'F'}     | ${['A', 'B', 'C', 'D', 'G', 'H']}
+      ${'G'}     | ${['A', 'B', 'C', 'D', 'E', 'F', 'H']}
     `(
       'selects $expected when all permissions start off selected and $permission is unselected',
       async ({ permission, expected }) => {
