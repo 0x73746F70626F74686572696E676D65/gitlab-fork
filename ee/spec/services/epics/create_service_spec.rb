@@ -101,6 +101,14 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
         end
       end
 
+      context 'when epic color is set to default' do
+        let(:params) { { title: 'some epic', color: ::Epic::DEFAULT_COLOR } }
+
+        it_behaves_like 'syncs all data from an epic to a work item' do
+          let(:epic) { Epic.last }
+        end
+      end
+
       context 'when date params are not set and is_fixed is false' do
         let!(:params) do
           {

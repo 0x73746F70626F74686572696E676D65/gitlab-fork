@@ -43,10 +43,10 @@ RSpec.shared_examples 'syncs all data from an epic to a work item' do
     epic.reload
     work_item = epic.work_item
 
-    if epic.color == Epic::DEFAULT_COLOR
-      expect(work_item.color).to be_nil
-    else
+    if work_item.color.present?
       expect(work_item.color.color).to eq(epic.color)
+    else
+      expect(epic.color).to eq(Epic::DEFAULT_COLOR)
     end
 
     if epic.parent

@@ -75,7 +75,7 @@ module Epics
       work_item_color = work_item.color || work_item.build_color
 
       # only set non default color or remove the color if default color is set to epic
-      if epic.color.to_s == ::Epic::DEFAULT_COLOR.to_s
+      if epic.color.to_s == ::Epic::DEFAULT_COLOR.to_s && work_item.color.new_record?
         work_item.color = nil
       else
         work_item_color.color = epic.color
