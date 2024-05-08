@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', product_group: :static_analysis, quarantine: {
-    type: :investigating,
-    issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/460900",
-    only: { pipeline: :main }
-  } do
+  RSpec.describe 'Secure', product_group: :static_analysis do
     context 'Enable Scanning from UI' do
       let(:test_data_sast_string_fields_array) do
         [
@@ -136,7 +132,7 @@ module QA
           Flow::Pipeline.visit_latest_pipeline
 
           Page::Project::Pipeline::Show.perform do |pipeline|
-            expect(pipeline).to have_job('brakeman-sast')
+            expect(pipeline).to have_job('semgrep-sast')
           end
 
           Page::Project::Menu.perform(&:go_to_security_configuration)
