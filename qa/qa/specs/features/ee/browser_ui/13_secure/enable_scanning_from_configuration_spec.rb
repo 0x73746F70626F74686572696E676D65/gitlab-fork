@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', product_group: :static_analysis do
+  RSpec.describe 'Secure', product_group: :static_analysis, quarantine: {
+    type: :investigating,
+    issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/460900",
+    only: { pipeline: :main }
+  } do
     context 'Enable Scanning from UI' do
       let(:test_data_sast_string_fields_array) do
         [

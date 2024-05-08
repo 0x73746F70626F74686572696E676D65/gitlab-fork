@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :skip_live_env, :runner, product_group: :dynamic_analysis do
+  RSpec.describe 'Secure', :skip_live_env, :runner, product_group: :dynamic_analysis, quarantine: {
+    type: :investigating,
+    issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/460685"
+  } do
     describe 'On Demand DAST' do
       let!(:test_project) do
         create(:project, :with_readme, name: 'on-demand-dast-project', description: 'On Demand DAST Project')
