@@ -102,9 +102,21 @@ RSpec.describe Gitlab::Checks::Integrations::GitGuardianCheck, feature_category:
 
           context 'when a commit contains a special flag' do
             it 'does not raise an error' do
+              expect(::Gitlab::GitGuardian::Client).not_to receive(:new)
+
               allow(changes_access.commits.first).to receive(:safe_message).and_return(
                 "#{changes_access.commits.first.safe_message}\n[skip secret detection]"
               )
+
+              expect { git_guardian_check.validate! }.not_to raise_error
+            end
+          end
+
+          context 'when secret_detection.skip_all push option is passed' do
+            let(:push_options) { Gitlab::PushOptions.new(["secret_detection.skip_all"]) }
+
+            it 'does not raise an error' do
+              expect(::Gitlab::GitGuardian::Client).not_to receive(:new)
 
               expect { git_guardian_check.validate! }.not_to raise_error
             end

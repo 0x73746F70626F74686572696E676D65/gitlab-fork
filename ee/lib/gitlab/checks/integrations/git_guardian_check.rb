@@ -19,7 +19,7 @@ module Gitlab
 
           [To apply with caution] If you want to bypass the secrets check:
 
-          1. Add [skip secret detection] flag to the commit message.
+          1. Add [skip secret detection] flag to the commit message or add the following Git push option: `-o secret_detection.skip_all`.
           2. Commit and try pushing again.
         MESSAGE
 
@@ -56,7 +56,13 @@ module Gitlab
         end
 
         def skip_secret_detection?
-          changes_access.commits.any? { |commit| commit.safe_message =~ SPECIAL_COMMIT_FLAG }
+          return true if changes_access.commits.any? do |commit|
+            commit.safe_message =~ ::Gitlab::Checks::SecretsCheck::SPECIAL_COMMIT_FLAG
+          end
+
+          return true if changes_access.push_options&.get(:secret_detection, :skip_all)
+
+          false
         end
 
         def revisions
