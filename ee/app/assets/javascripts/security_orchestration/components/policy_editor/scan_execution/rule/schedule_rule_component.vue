@@ -40,7 +40,7 @@ export default {
   DAYS,
   i18n: {
     schedulePeriod: s__(
-      'ScanExecutionPolicy|%{period} %{days} at %{time} %{timezoneLabel} %{timezone}',
+      'ScanExecutionPolicy|%{period} %{days} around %{time} %{timezoneLabel} %{timezone}',
     ),
     selectedAgentsPlaceholder: s__('ScanExecutionPolicy|Select agent'),
     selectedNamespacesPlaceholder: s__('ScanExecutionPolicy|Select namespaces'),
