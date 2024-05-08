@@ -39,7 +39,12 @@ module QA
           end
 
           def go_to_create_from_template_instance_tab
-            click_element('instance-templates-tab')
+            # Must retry if click does not register
+            # https://gitlab.com/gitlab-org/gitlab/-/issues/460321
+            retry_until(sleep_interval: 1, message: "Retry until instance tab selected") do
+              click_element('instance-templates-tab')
+              find_element('instance-templates-tab')['aria-selected'] == 'true'
+            end
           end
 
           def group_template_tab_badge_text
