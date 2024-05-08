@@ -67,6 +67,7 @@ module EE
         mount_mutation ::Mutations::Boards::Lists::UpdateLimitMetrics
         mount_mutation ::Mutations::BranchRules::ExternalStatusChecks::Create, alpha: { milestone: '16.11' }
         mount_mutation ::Mutations::BranchRules::ExternalStatusChecks::Update, alpha: { milestone: '17.0' }
+        mount_mutation ::Mutations::BranchRules::ExternalStatusChecks::Destroy, alpha: { milestone: '17.0' }
         mount_mutation ::Mutations::InstanceSecurityDashboard::AddProject
         mount_mutation ::Mutations::InstanceSecurityDashboard::RemoveProject
         mount_mutation ::Mutations::DastOnDemandScans::Create
