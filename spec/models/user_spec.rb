@@ -5686,7 +5686,7 @@ RSpec.describe User, feature_category: :user_profile do
 
     subject { user.owns_organization?(organization_param) }
 
-    context 'when passed organization object' do
+    context 'when passed organization object', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/460622' do
       let(:organization_param) { organization }
 
       it_behaves_like 'organization owner'
