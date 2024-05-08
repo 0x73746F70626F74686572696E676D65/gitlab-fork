@@ -56,7 +56,10 @@ module Gitlab
           return
         end
 
-        return if skip_secret_detection_push_option?
+        if skip_secret_detection_push_option?
+          log_audit_event(_("push option"))
+          return
+        end
 
         logger.log_timed(LOG_MESSAGES[:secrets_check]) do
           blobs = ::Gitlab::Checks::ChangedBlobs.new(
