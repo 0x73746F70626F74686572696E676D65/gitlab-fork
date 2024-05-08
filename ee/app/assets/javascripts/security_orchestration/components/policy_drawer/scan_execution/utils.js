@@ -1,5 +1,5 @@
 import cronstrue from 'cronstrue/i18n';
-import { getPreferredLocales, sprintf, n__, s__ } from '~/locale';
+import { getPreferredLocales, sprintf, n__, s__, __ } from '~/locale';
 import {
   ACTIONS,
   BRANCH_TYPE_KEY,
@@ -123,7 +123,8 @@ const humanizeBranchType = (branchType) => {
 const humanizeCadence = (cadence) => {
   return cronstrue
     .toString(cadence, { locale: getPreferredLocales()[0], verbose: true })
-    .toLowerCase();
+    .toLowerCase()
+    .replace('at', __('around'));
 };
 
 const hasBranchType = (rule) => BRANCH_TYPE_KEY in rule;

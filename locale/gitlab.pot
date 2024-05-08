@@ -45336,7 +45336,7 @@ msgstr ""
 msgid "ScanExecutionPolicy|%{overrideSelector}into the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector} And run with reference (Optional) %{refSelector}"
 msgstr ""
 
-msgid "ScanExecutionPolicy|%{period} %{days} at %{time} %{timezoneLabel} %{timezone}"
+msgid "ScanExecutionPolicy|%{period} %{days} around %{time} %{timezoneLabel} %{timezone}"
 msgstr ""
 
 msgid "ScanExecutionPolicy|%{rules} actions for %{scopes} %{branches} %{agents} %{branchExceptions} %{namespaces} %{period}"
@@ -60527,6 +60527,9 @@ msgid "archived:"
 msgstr ""
 
 msgid "are limited to %{max_count} per destination"
+msgstr ""
+
+msgid "around"
 msgstr ""
 
 msgid "artifacts"
