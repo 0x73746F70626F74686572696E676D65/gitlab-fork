@@ -51,7 +51,7 @@ RSpec.describe 'Query.runner(id)', feature_category: :fleet_visibility do
   end
 
   describe 'upgradeStatus', :saas do
-    let_it_be(:runner) { create(:ci_runner, description: 'Runner 1', version: '14.1.0', revision: 'b') }
+    let_it_be(:runner) { create(:ci_runner, description: 'Runner 1') }
 
     context 'with runner with 2 runner managers' do
       let_it_be(:runner_manager2) do
@@ -156,7 +156,7 @@ RSpec.describe 'Query.runner(id)', feature_category: :fleet_visibility do
                 post_graphql(query, **args)
               end
 
-              create(:ci_runner, version: runner_manager1.version)
+              create(:ci_runner)
 
               expect { post_graphql(query, **args2) }.not_to exceed_all_query_limit(control)
             end
