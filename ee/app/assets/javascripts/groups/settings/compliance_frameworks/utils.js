@@ -62,19 +62,3 @@ export const fetchPipelineConfigurationFileExists = async (path) => {
     return false;
   }
 };
-
-export const parseFormProps = ({
-  canAddEdit,
-  emptyStateSvgPath,
-  graphqlFieldName = null,
-  groupPath,
-  pipelineConfigurationFullPathEnabled,
-  pipelineConfigurationEnabled,
-}) => ({
-  canAddEdit: parseBoolean(canAddEdit),
-  emptyStateSvgPath,
-  graphqlFieldName,
-  groupPath,
-  pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
-  pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
-});
