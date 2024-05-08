@@ -6,7 +6,8 @@ module Sbom
 
     enum source_type: {
       dependency_scanning: 0,
-      container_scanning: 1
+      container_scanning: 1,
+      container_scanning_for_registry: 2
     }
 
     validates :source_type, presence: true
