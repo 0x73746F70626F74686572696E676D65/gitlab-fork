@@ -71,7 +71,7 @@ class DependencyEntity < Grape::Entity
 
   expose :name, :packager, :version
   expose :location, using: LocationEntity
-  expose :vulnerabilities, using: VulnerabilityEntity, if: ->(_) { can_read_vulnerabilities? }
+  expose :vulnerabilities, using: VulnerabilityEntity, if: ->(_) { render_vulnerabilities? }
   expose :licenses, using: LicenseEntity, if: ->(_) { can_read_licenses? } do |object|
     object[:licenses].presence || [::Gitlab::LicenseScanning::PackageLicenses::UNKNOWN_LICENSE]
   end
@@ -89,8 +89,14 @@ class DependencyEntity < Grape::Entity
 
   private
 
+  def render_vulnerabilities?
+    return false if should_not_render_vulnerabilities?
+
+    can_read_vulnerabilities?
+  end
+
   def can_read_vulnerabilities?
-    can?(request.user, :read_security_resource, request.try(:project)) && !project_level_sbom_occurrences_enabled?
+    can?(request.user, :read_security_resource, request.try(:project))
   end
 
   def can_read_licenses?
@@ -103,6 +109,16 @@ class DependencyEntity < Grape::Entity
 
   def subject
     request.try(:project) || request.try(:group) || request.try(:organization)
+  end
+
+  def should_not_render_vulnerabilities?
+    # When using `Sbom::Occurrence` records for the project level dependency list,
+    # we load vulnerabilities asychronously for performance. So, we don't want to render
+    # vulnerabilities in that case. For the dependency list export, we do want to render them
+    # so we bypass the feature flag check via the :include_vulnerabilities option.
+    return false if options[:include_vulnerabilities]
+
+    project_level_sbom_occurrences_enabled?
   end
 
   def project_level_sbom_occurrences_enabled?

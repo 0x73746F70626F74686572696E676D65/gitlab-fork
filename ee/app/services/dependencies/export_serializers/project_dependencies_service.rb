@@ -22,9 +22,16 @@ module Dependencies
       delegate :project, :author, to: :dependency_list_export, private: true
 
       def dependencies_list
-        return [] unless report_fetch_service.able_to_fetch?
+        if ::Feature.enabled?(:use_database_for_dependency_export, project)
+          ::Sbom::DependenciesFinder.new(project).execute
+            .with_component
+            .with_version
+            .with_vulnerabilities
+        else
+          return [] unless report_fetch_service.able_to_fetch?
 
-        ::Security::DependencyListService.new(pipeline: report_fetch_service.pipeline).execute(skip_pagination: true)
+          ::Security::DependencyListService.new(pipeline: report_fetch_service.pipeline).execute(skip_pagination: true)
+        end
       end
 
       def report_fetch_service
@@ -38,7 +45,9 @@ module Dependencies
       def serializer_parameters
         {
           request: EntityRequest.new({ project: project, user: author }),
-          build: report_fetch_service.build
+          build: report_fetch_service.build,
+          project: project,
+          include_vulnerabilities: true
         }
       end
     end
