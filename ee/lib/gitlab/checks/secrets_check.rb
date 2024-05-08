@@ -16,8 +16,8 @@ module Gitlab
       LOG_MESSAGES = {
         secrets_check: 'Detecting secrets...',
         secrets_not_found: 'Secret detection scan completed with no findings.',
-        skip_secret_detection: "\n\nTo skip pre-receive secret detection, add the following git push option: " \
-                               "`--push-option secret_detection.skip_all` to your push command.",
+        skip_secret_detection: "\n\nTo skip pre-receive secret detection, add the following Git push option" \
+                               "to your push command: `-o secret_detection.skip_all`",
         found_secrets: "\n\n--------------------------------------------------" \
                        "\nPUSH BLOCKED: Secrets detected in code changes" \
                        "\n--------------------------------------------------",
