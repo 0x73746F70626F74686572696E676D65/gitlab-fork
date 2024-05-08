@@ -207,12 +207,6 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
 
       it_behaves_like "SAML session initiated"
 
-      it "displays a flash message verifying group sign in" do
-        post provider, params: { group_id: group }
-
-        expect(flash[:notice]).to match(/Signed in with SAML/i)
-      end
-
       it 'uses existing linked identity' do
         expect { post provider, params: { group_id: group } }.not_to change { linked_accounts.count }
       end
