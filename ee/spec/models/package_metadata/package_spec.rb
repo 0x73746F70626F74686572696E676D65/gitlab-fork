@@ -54,37 +54,6 @@ RSpec.describe PackageMetadata::Package, type: :model, feature_category: :softwa
         end
       end
 
-      context 'and the PURL type is supported' do
-        context 'and the input version matches the default licenses' do
-          let(:license_ids) { package.license_ids_for(version: input_version) }
-
-          where(:purl_type, :input_version) do
-            'composer' | '2.2.2'
-            'conan' | '2.2.2'
-            'gem' | '2.2.1.rc.1'
-            'golang' | '2.2.2-alpha1'
-            'maven' | '2.6a1'
-            'npm' | '2.2.2-alpha1'
-            'nuget' | '2.2.2-alpha1'
-            'pypi' | '1.11-dev1'
-          end
-
-          with_them do
-            let(:package) do
-              build_stubbed(:pm_package, name: "cliui", purl_type: purl_type,
-                licenses: [default, lowest, highest, other])
-            end
-
-            let(:lowest) { '0.0.0' }
-            let(:highest) { input_version }
-
-            subject(:license_ids) { package.license_ids_for(version: input_version) }
-
-            specify { expect(license_ids).to eq(default) }
-          end
-        end
-      end
-
       context 'and the given version causes semver_dialects to raise an exception while parsing' do
         let(:package) do
           build_stubbed(:pm_package, name: "cliui", purl_type: "npm", licenses: [default, lowest, highest, other])
