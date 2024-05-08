@@ -102,7 +102,11 @@ module Security
       end
 
       def scan_result_policies
-        policy_by_type(SCAN_RESULT_POLICY_TYPES)
+        SCAN_RESULT_POLICY_TYPES.flat_map do |type|
+          policy_by_type(type).map do |policy|
+            policy.tap { |p| p[:type] = type.to_s }
+          end
+        end
       end
 
       def delete_in_batches(relation)

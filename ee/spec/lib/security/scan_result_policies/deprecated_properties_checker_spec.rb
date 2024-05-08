@@ -12,11 +12,11 @@ RSpec.describe Security::ScanResultPolicies::DeprecatedPropertiesChecker, featur
   describe '#deprecated_properties' do
     subject { deprecated_properties_checker.deprecated_properties(policy) }
 
-    shared_examples 'approval policies' do
+    shared_examples 'approval policies' do |type_deprecation: nil|
       context 'when the policy has no rules' do
         let(:rules) { nil }
 
-        it { is_expected.to be_empty }
+        it { is_expected.to match_array([type_deprecation].compact) }
       end
 
       context 'when the policy has rules' do
@@ -33,7 +33,7 @@ RSpec.describe Security::ScanResultPolicies::DeprecatedPropertiesChecker, featur
             }
           end
 
-          it { is_expected.to be_empty }
+          it { is_expected.to match_array([type_deprecation].compact) }
         end
 
         context 'when the policy contains deprecated properties' do
@@ -61,7 +61,7 @@ RSpec.describe Security::ScanResultPolicies::DeprecatedPropertiesChecker, featur
           context 'when the policy contains multiple deprecated properties' do
             let(:rules) { [rule, rule_2] }
 
-            it { is_expected.to match_array(%w[match_on_inclusion newly_detected]) }
+            it { is_expected.to match_array((%w[match_on_inclusion newly_detected] << type_deprecation).compact) }
           end
 
           context 'when the policy contains the match_on_inclusion property' do
@@ -75,26 +75,26 @@ RSpec.describe Security::ScanResultPolicies::DeprecatedPropertiesChecker, featur
               }
             end
 
-            it { is_expected.to match_array(['match_on_inclusion']) }
+            it { is_expected.to match_array((['match_on_inclusion'] << type_deprecation).compact) }
           end
 
           context 'when the policy contains the vulnerability_state newly_detected' do
             let(:rules) { [rule_2] }
 
-            it { is_expected.to match_array(['newly_detected']) }
+            it { is_expected.to match_array((['newly_detected'] << type_deprecation).compact) }
           end
         end
       end
     end
 
     context 'when the policy is a scan_result_policy' do
-      let(:policy) { build(:scan_result_policy, rules: rules) }
+      let(:policy) { build(:scan_result_policy, rules: rules).merge({ type: 'scan_result_policy' }) }
 
-      it_behaves_like 'approval policies'
+      it_behaves_like 'approval policies', type_deprecation: 'scan_result_policy'
     end
 
     context 'when the policy is a approval_policy' do
-      let(:policy) { build(:approval_policy, rules: rules) }
+      let(:policy) { build(:approval_policy, rules: rules).merge({ type: 'approval_policy' }) }
 
       it_behaves_like 'approval policies'
     end

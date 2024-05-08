@@ -13,6 +13,8 @@ module Security
           deprecated_properties.add('newly_detected') if rule[:vulnerability_states]&.include?('newly_detected')
         end
 
+        deprecated_properties.add('scan_result_policy') if policy[:type] == 'scan_result_policy'
+
         deprecated_properties.to_a
       end
     end

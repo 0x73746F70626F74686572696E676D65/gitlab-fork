@@ -42,6 +42,7 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
 
   let(:active_scan_result_policies) do
     policies[:scan_result_policy].select { |policy| policy[:enabled] }
+                                 .map { |policy| policy.merge({ type: 'scan_result_policy' }) }
   end
 
   it_behaves_like 'an idempotent worker' do

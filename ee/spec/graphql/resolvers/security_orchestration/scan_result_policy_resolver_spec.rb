@@ -50,7 +50,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver, featu
       stub_feature_flags(security_policies_breaking_changes: true)
     end
 
-    let(:deprecated_properties) { [] }
+    let(:deprecated_properties) { ['scan_result_policy'] }
 
     let(:expected_resolved) do
       [
@@ -97,7 +97,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver, featu
         }
       end
 
-      let(:deprecated_properties) { ['newly_detected'] }
+      let(:deprecated_properties) { %w[newly_detected scan_result_policy] }
 
       it_behaves_like 'as an orchestration policy'
     end
