@@ -67,8 +67,7 @@ describe('EpicHeaderActions component', () => {
   const findNotificationToggle = () => wrapper.findComponent(SidebarSubscriptionsWidget);
   const findReopenEpicButton = () => wrapper.findByRole('button', { name: 'Reopen epic' });
 
-  const findReportAbuseButton = () =>
-    wrapper.findByRole('button', { name: 'Report abuse to administrator' });
+  const findReportAbuseButton = () => wrapper.findByRole('button', { name: 'Report abuse' });
   const findAbuseCategorySelector = () => wrapper.findComponent(AbuseCategorySelector);
 
   describe('edit button', () => {

@@ -43218,7 +43218,7 @@ msgstr ""
 msgid "ReportAbuse|Link to spam"
 msgstr ""
 
-msgid "ReportAbuse|Report abuse to administrator"
+msgid "ReportAbuse|Report abuse"
 msgstr ""
 
 msgid "ReportAbuse|Screenshot"

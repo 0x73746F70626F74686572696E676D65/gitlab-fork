@@ -32,7 +32,7 @@ export default {
     edit: __('Edit'),
     editTitleAndDescription: __('Edit title and description'),
     newEpicText: __('New epic'),
-    reportAbuse: __('Report abuse to administrator'),
+    reportAbuse: __('Report abuse'),
   },
   directives: {
     GlModal: GlModalDirective,
