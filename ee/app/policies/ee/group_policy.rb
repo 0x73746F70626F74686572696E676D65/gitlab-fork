@@ -789,7 +789,7 @@ module EE
       end
 
       condition(:pre_receive_secret_detection_available) do
-        ::Feature.enabled?(:pre_receive_secret_detection_push_check, @subject)
+        ::Gitlab::CurrentSettings.gitlab_dedicated_instance? || ::Feature.enabled?(:pre_receive_secret_detection_push_check, @subject)
       end
 
       # At present, the security_setting feature is exclusively accessible for projects.
