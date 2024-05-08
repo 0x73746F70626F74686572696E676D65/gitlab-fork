@@ -28,12 +28,7 @@ export default {
     productInteraction: {},
   },
   data() {
-    return { isLoading: false, modalId: uniqueId('hand-raise-lead-modal-') };
-  },
-  methods: {
-    updateLoading(value) {
-      this.isLoading = value;
-    },
+    return { modalId: uniqueId('hand-raise-lead-modal-') };
   },
 };
 </script>
@@ -47,14 +42,12 @@ export default {
       :glm-content="glmContent"
       :product-interaction="productInteraction"
       :cta-tracking="ctaTracking"
-      :is-loading="isLoading"
     />
 
     <hand-raise-lead-modal
       :user="user"
       :submit-path="createHandRaiseLeadPath"
       :modal-id="modalId"
-      @loading="updateLoading"
     />
   </div>
 </template>

@@ -6,7 +6,6 @@ import { createWrapper } from '@vue/test-utils';
 import { sprintf } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockTracking } from 'helpers/tracking_helper';
-import waitForPromises from 'helpers/wait_for_promises';
 import HandRaiseLeadModal from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_modal.vue';
 import CountryOrRegionSelector from 'ee/trials/components/country_or_region_selector.vue';
 import {
@@ -190,22 +189,6 @@ describe('HandRaiseLeadModal', () => {
       wrapper = createComponent();
       trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
       await fillForm({ stateRequired: true, comment: 'comment' });
-    });
-
-    describe('emits loading status change', () => {
-      beforeEach(() => {
-        jest.spyOn(SubscriptionsApi, 'sendHandRaiseLead').mockResolvedValue();
-      });
-
-      it('emits loading status change', async () => {
-        await submitForm();
-
-        expect(wrapper.emitted('loading')).toEqual([[true]]);
-
-        await waitForPromises();
-
-        expect(wrapper.emitted('loading')[1]).toEqual([false]);
-      });
     });
 
     describe('successful submission', () => {
