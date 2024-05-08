@@ -15,6 +15,8 @@ module EE
         expose :parent_iid, documentation: { type: "integer", example: 19 } do |epic|
           epic.parent.iid if epic.has_parent?
         end
+        expose :imported?, as: :imported, documentation: { type: "boolean", example: false }
+        expose :imported_from, documentation: { type: "string", example: "github" }
         expose :title, documentation: { type: "string", example: "My Epic" }
         expose :description, documentation: { type: "string", example: "Epic description" }
         expose :confidential, documentation: { type: "boolean", example: false }
