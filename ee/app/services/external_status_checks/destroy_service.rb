@@ -2,23 +2,29 @@
 
 module ExternalStatusChecks
   class DestroyService < BaseService
-    def execute(rule)
-      return unauthorized_error_response unless current_user.can?(:admin_project, container)
+    ERROR_MESSAGE = 'Failed to destroy external status check'
 
-      if with_audit_logged(rule, 'delete_status_check') { rule.destroy }
+    def execute(external_status_check, skip_authorization: false)
+      return unauthorized_error_response unless skip_authorization || can_destroy_external_status_check?
+
+      if with_audit_logged(external_status_check, 'delete_status_check') { external_status_check.destroy }
         ServiceResponse.success
       else
-        ServiceResponse.error(message: 'Failed to destroy rule',
-                              payload: { errors: rule.errors.full_messages },
+        ServiceResponse.error(message: ERROR_MESSAGE,
+                              payload: { errors: external_status_check.errors.full_messages },
                               http_status: :unprocessable_entity)
       end
     end
 
     private
 
+    def can_destroy_external_status_check?
+      current_user.can?(:admin_project, container)
+    end
+
     def unauthorized_error_response
       ServiceResponse.error(
-        message: 'Failed to destroy rule',
+        message: ERROR_MESSAGE,
         payload: { errors: ['Not allowed'] },
         http_status: :unauthorized
       )

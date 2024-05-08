@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Create a external status check', feature_category: :source_code_management do
+RSpec.describe 'Create an external status check', feature_category: :source_code_management do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
@@ -75,7 +75,7 @@ RSpec.describe 'Create a external status check', feature_category: :source_code_
         project.add_maintainer(current_user)
       end
 
-      it 'create the external status check' do
+      it 'creates the external status check' do
         expect { mutation_request }.to change { MergeRequests::ExternalStatusCheck.count }.by(1)
 
         expect(mutation_response['externalStatusCheck']['name']).to eq(status_check_name)
@@ -90,7 +90,7 @@ RSpec.describe 'Create a external status check', feature_category: :source_code_
           end
         end
 
-        it 'create the external status check' do
+        it 'creates the external status check' do
           expect { mutation_request }.to change { MergeRequests::ExternalStatusCheck.count }.by(0)
 
           expect(graphql_errors).to include(a_hash_including('message' => a_string_including('Error!')))
