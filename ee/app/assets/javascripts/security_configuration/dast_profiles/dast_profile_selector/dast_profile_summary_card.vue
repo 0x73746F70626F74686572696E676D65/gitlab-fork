@@ -78,7 +78,7 @@ export default {
             {{ $options.i18n.selectedProfileLabel }}
           </span>
         </div>
-        <div v-if="allowSelection || isEditable" class="gl-display-flex gl-column-gap-3">
+        <div v-if="allowSelection || isEditable" class="gl-display-flex gl-gap-x-3">
           <gl-button
             v-if="allowSelection"
             v-gl-tooltip
