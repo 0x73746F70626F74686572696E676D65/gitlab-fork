@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_management do
-  let(:source_types) { { dependency_scanning: 0, container_scanning: 1 } }
+  let(:source_types) { { dependency_scanning: 0, container_scanning: 1, container_scanning_for_registry: 2 } }
 
   describe 'enums' do
     it { is_expected.to define_enum_for(:source_type).with_values(source_types) }
@@ -70,9 +70,7 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
       end
     end
 
-    context 'with container scanning source' do
-      let(:source_type) { :container_scanning }
-
+    shared_examples 'valid source' do
       context 'when source is valid' do
         let(:source_attributes) do
           {
@@ -120,6 +118,18 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
         it { is_expected.to be_invalid }
       end
     end
+
+    context 'with container scanning source' do
+      let(:source_type) { :container_scanning }
+
+      include_examples 'valid source'
+    end
+
+    context 'with container scanning for registry source' do
+      let(:source_type) { :container_scanning_for_registry }
+
+      include_examples 'valid source'
+    end
   end
 
   describe 'readers' do
@@ -156,15 +166,7 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
       end
     end
 
-    context "for container scanning" do
-      let(:source_type) { :container_scanning }
-      let(:source_attributes) do
-        {
-          "image" => { "name" => "rhel", "tag" => "7.1" },
-          "operating_system" => { "name" => "Red Hat Enterprise Linux", "version" => "7" }
-        }
-      end
-
+    shared_examples 'common container readers' do
       describe "#image_name" do
         subject { source.image_name }
 
@@ -188,6 +190,30 @@ RSpec.describe Sbom::Source, type: :model, feature_category: :dependency_managem
 
         it { is_expected.to eq("7") }
       end
+    end
+
+    context 'for container scanning' do
+      let(:source_type) { :container_scanning }
+      let(:source_attributes) do
+        {
+          "image" => { "name" => "rhel", "tag" => "7.1" },
+          "operating_system" => { "name" => "Red Hat Enterprise Linux", "version" => "7" }
+        }
+      end
+
+      include_examples 'common container readers'
+    end
+
+    context 'for container scanning for registry' do
+      let(:source_type) { :container_scanning_for_registry }
+      let(:source_attributes) do
+        {
+          "image" => { "name" => "rhel", "tag" => "7.1" },
+          "operating_system" => { "name" => "Red Hat Enterprise Linux", "version" => "7" }
+        }
+      end
+
+      include_examples 'common container readers'
     end
   end
 end
