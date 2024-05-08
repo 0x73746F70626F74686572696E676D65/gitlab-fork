@@ -313,7 +313,7 @@ export default {
         data-testid="edit-button"
         category="tertiary"
         size="small"
-        class="gl-ml-auto gl-mr-2"
+        class="gl-ml-auto"
         :disabled="isUpdating"
         @click="expandWidget"
         >{{ __('Edit') }}</gl-button
