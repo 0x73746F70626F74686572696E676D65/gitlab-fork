@@ -79,6 +79,11 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
         expect(response).to have_gitlab_http_status(:ok)
       end
 
+      it 'includes the correct imported state' do
+        expect(json_response.first['imported']).to eq(false)
+        expect(json_response.first['imported_from']).to eq('none')
+      end
+
       it 'matches the response schema' do
         expect(response).to match_response_schema('public_api/v4/epics', dir: 'ee')
       end
