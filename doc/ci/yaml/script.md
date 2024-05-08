@@ -101,7 +101,7 @@ job2:
 DETAILS:
 **Offering:** GitLab.com, Self-managed
 
-> - [Introduced on self-managed](https://gitlab.com/groups/gitlab-org/-/epics/10158) in GitLab 17.0 [with a flag](../../administration/feature_flags.md) named `ci_canceling_status`. Disabled by default.
+> - [Introduced on self-managed](https://gitlab.com/groups/gitlab-org/-/epics/10158) in GitLab 17.0 [with a flag](../../administration/feature_flags.md) named `ci_canceling_status`. Enabled by default.
 > - [Enabled on GitLab.com](https://gitlab.com/gitlab-com/gl-infra/production/-/issues/17520) in GitLab 17.0.
 
 FLAG:
@@ -117,7 +117,7 @@ The jobs status will be `canceling` while the `after_script` commands are proces
 - You can opt-out of running `after_script` on cancel when the `$CI_JOB_STATUS` predefined variable is `canceled`.
 - GitLab Runner 16.11.1 and above are recommended to support this feature:
   - In the GitLab Runner 16.11.1 patch release, [`canceled` is supported for `$CI_JOB_STATUS`](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/37485). Before the patch release, the status will be `failed` while `canceling`.
-  - In the GitLab Runner 16.11.1 patch release, a bug fix caused the `after_script` work to close pre-maturely.
+  - Prior to the GitLab Runner 16.11.1 patch release, a bug caused the `after_script` work to close pre-maturely.
 - For shared runners on GitLab.com, the `ci_canceling_status` flag will be turned on during the last breaking change window on May 8th while runner is on patch version 16.11.1 or above.
 - For self-managed, the `ci_canceling_status` flag will be enabled by default in 17.0 and left on, in case administrators need to turn off the behavior. This flag could be removed in the next milestone and should not be relied on for long-term use.
 
