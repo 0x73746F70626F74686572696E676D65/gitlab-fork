@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { shallowMount } from '@vue/test-utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import GroupRunnersApp from '~/ci/runner/group_runners/group_runners_app.vue';
@@ -18,7 +18,7 @@ describe('GroupRunnersApp', () => {
   const findRunnerDashboardLink = () => wrapper.findComponent(RunnerDashboardLink);
 
   const createComponent = ({ provide, ...options } = {}) => {
-    wrapper = mountExtended(GroupRunnersApp, {
+    wrapper = shallowMount(GroupRunnersApp, {
       apolloProvider: createMockApollo(),
       propsData: {
         registrationToken: mockRegistrationToken,
