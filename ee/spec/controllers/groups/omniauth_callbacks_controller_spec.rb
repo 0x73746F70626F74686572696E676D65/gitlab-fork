@@ -91,14 +91,32 @@ RSpec.describe Groups::OmniauthCallbacksController, :aggregate_failures, feature
   end
 
   context "valid credentials" do
+    let(:stub_last_request_id_active) { true }
+
     before do
       @original_env_config_omniauth_auth = mock_auth_hash(provider, uid, user.email, response_object: saml_response, groups: saml_groups)
       stub_omniauth_provider(provider, context: request)
-      stub_last_request_id(last_request_id)
+      stub_last_request_id(last_request_id) if stub_last_request_id_active
     end
 
     after do
       Rails.application.env_config['omniauth.auth'] = @original_env_config_omniauth_auth
+    end
+
+    context 'when not GitLab initiated' do
+      let(:last_request_id) { 'other' }
+      let(:stub_last_request_id_active) { false }
+      let!(:user) { create_linked_user }
+
+      before do
+        sign_in(user)
+      end
+
+      it "ignores RelayState" do
+        post provider, params: { group_id: group, RelayState: '/explore' }
+
+        expect(response).to redirect_to(group_path(group))
+      end
     end
 
     shared_examples 'works with session enforcement' do
