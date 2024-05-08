@@ -67,6 +67,18 @@ RSpec.describe Gitlab::Checks::Integrations::GitGuardianCheck, feature_category:
           expect { git_guardian_check.validate! }.not_to raise_error
         end
 
+        it 'propagates the API error' do
+          expect_next_instance_of(::Gitlab::GitGuardian::Client) do |client|
+            expect(client).to receive(:execute).and_raise(
+              Gitlab::GitGuardian::Client::RequestError, '401 Unauthorized'
+            )
+          end
+
+          expect { git_guardian_check.validate! }.to raise_error(
+            ::Gitlab::GitAccess::ForbiddenError, 'GitGuardian API error: 401 Unauthorized'
+          )
+        end
+
         context 'when policies were broken' do
           let(:policy_breaks) do
             [
