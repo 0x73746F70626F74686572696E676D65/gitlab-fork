@@ -1,5 +1,5 @@
 <script>
-import { GlTableLite, GlSkeletonLoader } from '@gitlab/ui';
+import { GlTableLite, GlSkeletonLoader, GlTooltipDirective } from '@gitlab/ui';
 import { toYmd } from '~/analytics/shared/utils';
 import { dasherize } from '~/lib/utils/text_utility';
 import { formatNumber } from '~/locale';
@@ -44,6 +44,9 @@ export default {
     GlSkeletonLoader,
     MetricTableCell,
     TrendIndicator,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     namespace: {
@@ -219,11 +222,19 @@ export default {
       />
     </template>
 
-    <template #cell()="{ value: { value } }">
+    <template #cell()="{ value: { value, tooltip } }">
       <span v-if="value === undefined" data-testid="metric-skeleton-loader">
         <gl-skeleton-loader :lines="1" :width="50" />
       </span>
-      <template v-else> {{ formatNumber(value) }} </template>
+      <span
+        v-else-if="tooltip"
+        v-gl-tooltip.hover="tooltip"
+        data-testid="ai-impact-table-value-cell"
+        class="gl-cursor-pointer hover:gl-underline"
+      >
+        {{ formatNumber(value) }}
+      </span>
+      <span v-else data-testid="ai-impact-table-value-cell"> {{ formatNumber(value) }} </span>
     </template>
 
     <template #cell(change)="{ value: { value }, item: { invertTrendColor } }">

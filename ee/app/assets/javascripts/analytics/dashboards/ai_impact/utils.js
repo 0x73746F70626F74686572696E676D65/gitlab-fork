@@ -6,6 +6,7 @@ import {
   monthInWords,
   nSecondsBefore,
 } from '~/lib/utils/datetime_utility';
+import { isPositiveInteger } from '~/lib/utils/number_utils';
 import { formatMetric, percentChange, isMetricInTimePeriods } from '../utils';
 import { AI_IMPACT_TABLE_METRICS } from './constants';
 
@@ -94,6 +95,7 @@ const buildTableRow = ({ identifier, units, timePeriods }) => {
     return Object.assign(acc, {
       [timePeriod.key]: {
         value: metric?.value !== '-' ? formatMetric(metric.value, units) : '-',
+        tooltip: metric?.tooltip,
       },
     });
   }, {});
@@ -128,3 +130,22 @@ export const generateTableRows = (timePeriods) =>
       }),
     });
   }, {});
+
+/**
+ * Calculates the percentage of code contributors that used the GitLab Duo Code Suggestions features.
+ *
+ * @param {number} codeSuggestionsContributorsCount - Number of code contributors that used GitLab Duo Code Suggestions features.
+ * @param {number} codeContributorsCount - Number of code contributors
+ * @returns {number|null} - Percentage of code contributors that used the GitLab Duo Code Suggestions features or null if either count is invalid
+ */
+export const calculateCodeSuggestionsUsageRate = ({
+  codeSuggestionsContributorsCount,
+  codeContributorsCount,
+} = {}) => {
+  const hasValidCounts =
+    isPositiveInteger(codeSuggestionsContributorsCount) && codeContributorsCount > 0;
+
+  if (!hasValidCounts) return null;
+
+  return (codeSuggestionsContributorsCount / codeContributorsCount) * 100;
+};

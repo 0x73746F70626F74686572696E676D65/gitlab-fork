@@ -1,0 +1,4 @@
+fragment AiMetricItem on AiMetrics {
+  codeContributorsCount
+  codeSuggestionsContributorsCount
+}

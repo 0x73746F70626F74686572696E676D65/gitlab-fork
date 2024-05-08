@@ -1,4 +1,4 @@
-export const mockDoraTimePeriods = [
+export const mockTimePeriods = [
   {
     key: '5-months-ago',
     label: 'Oct',
@@ -12,6 +12,11 @@ export const mockDoraTimePeriods = [
     change_failure_rate: {
       identifier: 'change_failure_rate',
       value: '8.9',
+    },
+    code_suggestions_usage_rate: {
+      identifier: 'code_suggestions_usage_rate',
+      value: 0,
+      tooltip: '0/0',
     },
   },
   {
@@ -28,6 +33,11 @@ export const mockDoraTimePeriods = [
       identifier: 'change_failure_rate',
       value: '5.6',
     },
+    code_suggestions_usage_rate: {
+      identifier: 'code_suggestions_usage_rate',
+      value: 100,
+      tooltip: '10/10',
+    },
   },
   {
     key: '3-months-ago',
@@ -42,6 +52,11 @@ export const mockDoraTimePeriods = [
     change_failure_rate: {
       identifier: 'change_failure_rate',
       value: '0.0',
+    },
+    code_suggestions_usage_rate: {
+      identifier: 'code_suggestions_usage_rate',
+      value: 20,
+      tooltip: '2/10',
     },
   },
   {
@@ -58,6 +73,11 @@ export const mockDoraTimePeriods = [
       identifier: 'change_failure_rate',
       value: null,
     },
+    code_suggestions_usage_rate: {
+      identifier: 'code_suggestions_usage_rate',
+      value: 90.9090909090909,
+      tooltip: '10/11',
+    },
   },
   {
     key: '1-months-ago',
@@ -72,6 +92,11 @@ export const mockDoraTimePeriods = [
     change_failure_rate: {
       identifier: 'change_failure_rate',
       value: '7.5',
+    },
+    code_suggestions_usage_rate: {
+      identifier: 'code_suggestions_usage_rate',
+      value: 50,
+      tooltip: '5/10',
     },
   },
   {
@@ -88,6 +113,38 @@ export const mockDoraTimePeriods = [
       identifier: 'change_failure_rate',
       value: '4.0',
     },
+    code_suggestions_usage_rate: {
+      identifier: 'code_suggestions_usage_rate',
+      value: 88.88888888888889,
+      tooltip: '8/9',
+    },
+  },
+];
+
+export const mockAiMetricsValues = [
+  {
+    codeSuggestionsContributorsCount: 1,
+    codeContributorsCount: 20,
+  },
+  {
+    codeSuggestionsContributorsCount: 1,
+    codeContributorsCount: 10,
+  },
+  {
+    codeSuggestionsContributorsCount: 1,
+    codeContributorsCount: 4,
+  },
+  {
+    codeSuggestionsContributorsCount: 1,
+    codeContributorsCount: 20,
+  },
+  {
+    codeSuggestionsContributorsCount: 1,
+    codeContributorsCount: 10,
+  },
+  {
+    codeSuggestionsContributorsCount: 1,
+    codeContributorsCount: 4,
   },
 ];
 
