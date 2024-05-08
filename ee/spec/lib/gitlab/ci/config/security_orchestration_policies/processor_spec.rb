@@ -352,7 +352,31 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
               script: ['/analyzer run'],
               image: { name: '$SAST_ANALYZER_IMAGE' },
               rules: [
-                { if: '$CI_COMMIT_BRANCH', exists: ['**/*.rb', '**/Gemfile'] }
+                { if: '$CI_COMMIT_BRANCH', exists:
+                  [
+                    '**/*.py',
+                    '**/*.js',
+                    '**/*.jsx',
+                    '**/*.ts',
+                    '**/*.tsx',
+                    '**/*.c',
+                    '**/*.cc',
+                    '**/*.cpp',
+                    '**/*.c++',
+                    '**/*.cp',
+                    '**/*.cxx',
+                    '**/*.go',
+                    '**/*.java',
+                    '**/*.html',
+                    '**/*.cs',
+                    '**/*.scala',
+                    '**/*.sc',
+                    '**/*.php',
+                    '**/*.swift',
+                    '**/*.m',
+                    '**/*.rb',
+                    '**/*.kt'
+                  ] }
               ]
             )
           end
