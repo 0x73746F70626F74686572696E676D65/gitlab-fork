@@ -19,7 +19,10 @@ import {
   ASSIGNED_POLICY_PROJECT,
   NEW_POLICY_PROJECT,
 } from 'ee_jest/security_orchestration/mocks/mock_data';
-import { withoutRefManifest, withoutRefObject } from './mock_data';
+import {
+  mockWithoutRefPipelineExecutionManifest,
+  mockWithoutRefPipelineExecutionObject,
+} from 'ee_jest/security_orchestration/mocks/mock_pipeline_execution_policy_data';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   ...jest.requireActual('~/lib/utils/url_utility'),
@@ -61,7 +64,7 @@ describe('EditorComponent', () => {
     return factory({
       propsData: {
         assignedPolicyProject: ASSIGNED_POLICY_PROJECT,
-        existingPolicy: { ...withoutRefObject, ...policy },
+        existingPolicy: { ...mockWithoutRefPipelineExecutionObject, ...policy },
         isEditing: true,
       },
       glFeatures,
@@ -110,9 +113,16 @@ describe('EditorComponent', () => {
   describe('yaml mode', () => {
     it('updates the policy', async () => {
       factory();
-      await findPolicyEditorLayout().vm.$emit('update-yaml', withoutRefManifest);
-      expect(findPolicyEditorLayout().props('policy')).toEqual(withoutRefObject);
-      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(withoutRefManifest);
+      await findPolicyEditorLayout().vm.$emit(
+        'update-yaml',
+        mockWithoutRefPipelineExecutionManifest,
+      );
+      expect(findPolicyEditorLayout().props('policy')).toEqual(
+        mockWithoutRefPipelineExecutionObject,
+      );
+      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
+        mockWithoutRefPipelineExecutionManifest,
+      );
     });
   });
 
@@ -133,10 +143,10 @@ describe('EditorComponent', () => {
 
   describe('saving a policy', () => {
     it.each`
-      status                            | action                             | event              | factoryFn                    | yamlEditorValue                      | currentlyAssignedPolicyProject
-      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_PIPELINE_EXECUTION_POLICY} | ${NEW_POLICY_PROJECT}
-      ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${factoryWithExistingPolicy} | ${withoutRefManifest}                | ${ASSIGNED_POLICY_PROJECT}
-      ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${factoryWithExistingPolicy} | ${withoutRefManifest}                | ${ASSIGNED_POLICY_PROJECT}
+      status                            | action                             | event              | factoryFn                    | yamlEditorValue                            | currentlyAssignedPolicyProject
+      ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_PIPELINE_EXECUTION_POLICY}       | ${NEW_POLICY_PROJECT}
+      ${'to update an existing policy'} | ${SECURITY_POLICY_ACTIONS.REPLACE} | ${'save-policy'}   | ${factoryWithExistingPolicy} | ${mockWithoutRefPipelineExecutionManifest} | ${ASSIGNED_POLICY_PROJECT}
+      ${'to delete an existing policy'} | ${SECURITY_POLICY_ACTIONS.REMOVE}  | ${'remove-policy'} | ${factoryWithExistingPolicy} | ${mockWithoutRefPipelineExecutionManifest} | ${ASSIGNED_POLICY_PROJECT}
     `(
       'navigates to the new merge request when "modifyPolicy" is emitted $status',
       async ({ action, event, factoryFn, yamlEditorValue, currentlyAssignedPolicyProject }) => {
@@ -150,7 +160,7 @@ describe('EditorComponent', () => {
           name:
             action === SECURITY_POLICY_ACTIONS.APPEND
               ? fromYaml({ manifest: yamlEditorValue }).name
-              : withoutRefObject.name,
+              : mockWithoutRefPipelineExecutionObject.name,
           namespacePath: defaultProjectPath,
           yamlEditorValue,
         });
