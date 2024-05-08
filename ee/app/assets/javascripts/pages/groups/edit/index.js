@@ -25,21 +25,6 @@ initAccessRestrictionField({
   customValidator: validateRestrictedIpAddress,
 });
 
-const complianceFrameworksTable = document.querySelector('#js-compliance-frameworks-list');
-
-if (complianceFrameworksTable) {
-  (async () => {
-    try {
-      const { createComplianceFrameworksTableApp } = await import(
-        /* webpackChunkName: 'createComplianceFrameworksTableApp' */ 'ee/groups/settings/compliance_frameworks/init_table'
-      );
-      createComplianceFrameworksTableApp(complianceFrameworksTable);
-    } catch {
-      createAlert({ message: __('An error occurred while loading a section of this page.') });
-    }
-  })();
-}
-
 const mergeRequestApprovalSetting = document.querySelector('#js-merge-request-approval-settings');
 
 if (mergeRequestApprovalSetting) {
