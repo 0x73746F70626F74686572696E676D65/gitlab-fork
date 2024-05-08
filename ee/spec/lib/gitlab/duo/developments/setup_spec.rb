@@ -33,6 +33,7 @@ RSpec.describe Gitlab::Duo::Developments::Setup, :real_ai_request, :saas, :gitla
     response = chat(user, user, { content: question, cache_response: false, request_id: SecureRandom.uuid })
 
     expect(response[:response_modifier].ai_response.content).to be_present
+    expect(response[:response_modifier].errors).to be_empty
   end
 
   context 'when embedding database already exists' do

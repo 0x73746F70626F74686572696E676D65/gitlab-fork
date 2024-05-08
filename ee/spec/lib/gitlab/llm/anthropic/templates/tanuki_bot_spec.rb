@@ -17,7 +17,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Templates::TanukiBot, feature_category: :
 
       it "returns prompt" do
         expect(final_prompt[:prompt]).to include('Human:')
-        expect(final_prompt.dig(:options, :model)).to eq(::Gitlab::Llm::AiGateway::Client::CLAUDE_2_1)
+        expect(final_prompt.dig(:options, :model)).to eq(::Gitlab::Llm::Anthropic::Client::CLAUDE_2_1)
       end
     end
 
@@ -31,7 +31,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Templates::TanukiBot, feature_category: :
         expect(prompt[1][:role]).to eq(:assistant)
         expect(prompt[1][:content]).to include('FINAL ANSWER:')
 
-        expect(final_prompt.dig(:options, :model)).to eq(::Gitlab::Llm::AiGateway::Client::CLAUDE_3_SONNET)
+        expect(final_prompt.dig(:options, :model)).to eq(::Gitlab::Llm::Anthropic::Client::CLAUDE_3_SONNET)
       end
     end
   end

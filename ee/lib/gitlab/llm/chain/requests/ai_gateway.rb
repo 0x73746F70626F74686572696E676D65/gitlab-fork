@@ -5,25 +5,46 @@ module Gitlab
     module Chain
       module Requests
         class AiGateway < Base
-          attr_reader :ai_client
+          extend ::Gitlab::Utils::Override
 
+          include ::Gitlab::Llm::Concerns::AvailableModels
+          include ::Gitlab::Llm::Concerns::AllowedParams
+          include ::Gitlab::Llm::Concerns::EventTracking
+
+          attr_reader :ai_client, :tracking_context
+
+          ENDPOINT = '/v1/chat/agent'
+          DEFAULT_TYPE = 'prompt'
+          DEFAULT_SOURCE = 'GitLab EE'
           TEMPERATURE = 0.1
           STOP_WORDS = ["\n\nHuman", "Observation:"].freeze
           DEFAULT_MAX_TOKENS = 2048
 
           def initialize(user, tracking_context: {})
             @user = user
-            @ai_client = ::Gitlab::Llm::AiGateway::Client.new(user, tracking_context: tracking_context)
+            @tracking_context = tracking_context
+            @ai_client = ::Gitlab::Llm::AiGateway::Client.new(user, service_name: :duo_chat,
+              tracking_context: tracking_context)
             @logger = Gitlab::Llm::Logger.build
           end
 
           def request(prompt)
-            ai_client.stream(
-              prompt: prompt[:prompt],
-              **default_options.merge(prompt.fetch(:options, {}))
+            options = default_options.merge(prompt.fetch(:options, {}))
+            return unless model_provider_valid?(options)
+
+            body = request_body(prompt: prompt[:prompt], options: options)
+
+            response = ai_client.stream(
+              endpoint: ENDPOINT,
+              body: body
             ) do |data|
               yield data if block_given?
             end
+
+            track_prompt_size(token_size(prompt[:prompt]), provider(options))
+            track_response_size(token_size(response), provider(options))
+
+            response
           end
 
           private
@@ -36,6 +57,59 @@ module Gitlab
               stop_sequences: STOP_WORDS,
               max_tokens_to_sample: DEFAULT_MAX_TOKENS
             }
+          end
+
+          def model(options)
+            return options[:model] if options[:model].present?
+
+            CLAUDE_3_SONNET
+          end
+
+          def provider(options)
+            AVAILABLE_MODELS.find do |_, models|
+              models.include?(model(options))
+            end&.first
+          end
+
+          def model_provider_valid?(options)
+            provider(options)
+          end
+
+          def request_body(prompt:, options: {})
+            {
+              prompt_components: [{
+                type: DEFAULT_TYPE,
+                metadata: {
+                  source: DEFAULT_SOURCE,
+                  version: Gitlab.version_info.to_s
+                },
+                payload: {
+                  content: prompt,
+                  provider: provider(options),
+                  model: model(options)
+                }.merge(payload_params(options))
+              }],
+              stream: true
+            }
+          end
+
+          def payload_params(options)
+            allowed_params = ALLOWED_PARAMS.fetch(provider(options))
+            params = options.slice(*allowed_params)
+
+            { params: params }.compact_blank
+          end
+
+          def token_size(content)
+            # Anthropic's APIs don't send used tokens as part of the response, so
+            # instead we estimate the number of tokens based on typical token size
+            # one token is roughly 4 chars.
+            content.to_s.size / 4
+          end
+
+          override :tracking_class_name
+          def tracking_class_name(provider)
+            TRACKING_CLASS_NAMES.fetch(provider)
           end
         end
       end

@@ -41,7 +41,7 @@ module Gitlab
             {
               method: :completions,
               prompt: prompt,
-              options: { model: ::Gitlab::Llm::AiGateway::Client::CLAUDE_2_1 }.merge(OPTIONS)
+              options: { model: ::Gitlab::Llm::Anthropic::Client::CLAUDE_2_1 }.merge(OPTIONS)
             }
           end
 
@@ -56,7 +56,7 @@ module Gitlab
 
             {
               prompt: conversation,
-              options: { model: ::Gitlab::Llm::AiGateway::Client::CLAUDE_3_SONNET }.merge(OPTIONS)
+              options: { model: ::Gitlab::Llm::Anthropic::Client::CLAUDE_3_SONNET }.merge(OPTIONS)
             }
           end
 
