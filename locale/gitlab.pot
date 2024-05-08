@@ -46042,6 +46042,12 @@ msgstr ""
 msgid "Secret token."
 msgstr ""
 
+msgid "SecretDetection|Feature not available"
+msgstr ""
+
+msgid "SecretDetection|Only a project maintainer or owner can toggle this feature."
+msgstr ""
+
 msgid "SecretDetection|Pre-receive Secret Detection is disabled"
 msgstr ""
 
@@ -46055,9 +46061,6 @@ msgid "SecretDetection|This description appears to have a token in it. Are you s
 msgstr ""
 
 msgid "SecretDetection|This feature has been disabled at the instance level. Please reach out to your instance administrator to request activation."
-msgstr ""
-
-msgid "SecretDetection||Feature not available"
 msgstr ""
 
 msgid "Secrets"
