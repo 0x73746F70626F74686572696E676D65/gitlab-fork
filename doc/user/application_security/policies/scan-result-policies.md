@@ -528,6 +528,8 @@ GitLab SaaS users may submit a [support ticket](https://about.gitlab.com/support
 - Current behavior
 - Expected behavior
 
+### GitLab SaaS
+
 Support teams will investigate [logs](https://log.gprd.gitlab.net/) (`pubsub-sidekiq-inf-gprd*`) to identify the failure `reason`. Below is an example response snippet from logs. You can use this query to find logs related to approvals: `json.event.keyword: "update_approvals"` and `json.project_path: "group-path/project-path"`. Optionally, you can further filter by the merge request identifier using `json.merge_request_iid`:
 
 ```json
@@ -541,6 +543,14 @@ Support teams will investigate [logs](https://log.gprd.gitlab.net/) (`pubsub-sid
   "event": "update_approvals",
 }
 ```
+
+### GitLab self-managed
+
+Search for keywords such as the `project-path`, `api_fuzzing`, and `merge_request`. Example: `grep group-path/project-path`, and `grep merge_request`. If you know the correlation ID you can search by correlation ID. For example, if the value of `correlation_id` is 01HWN2NFABCEDFG, search for `01HWN2NFABCEDFG`.
+Search in the following files:
+
+- `/gitlab/gitlab-rails/production_json.log`
+- `/gitlab/sidekiq/current`
 
 Common failure reasons:
 
