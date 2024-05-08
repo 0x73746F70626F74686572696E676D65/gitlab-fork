@@ -5,6 +5,7 @@ import allRunnersUpgradeStatusData from 'test_fixtures/graphql/ci/runner/list/al
 
 // Dashboard queries
 import mostActiveRunnersData from 'test_fixtures/graphql/ci/runner/performance/most_active_runners.query.graphql.json';
+import groupMostActiveRunnersData from 'test_fixtures/graphql/ci/runner/performance/group_most_active_runners.query.graphql.json';
 import runnerFailedJobsData from 'test_fixtures/graphql/ci/runner/performance/runner_failed_jobs.graphql.json';
 
 export const runnersWaitTimes = {
@@ -52,4 +53,9 @@ export const runnerWaitTimeHistory = {
 
 export const runnerDashboardPath = '/admin/runners/dashboard';
 
-export { allRunnersUpgradeStatusData, mostActiveRunnersData, runnerFailedJobsData };
+export {
+  allRunnersUpgradeStatusData,
+  mostActiveRunnersData,
+  groupMostActiveRunnersData,
+  runnerFailedJobsData,
+};

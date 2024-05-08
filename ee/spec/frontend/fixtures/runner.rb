@@ -49,27 +49,51 @@ RSpec.describe 'Runner EE (JavaScript fixtures)', feature_category: :fleet_visib
       end
     end
 
-    describe 'most_active_runners.query.graphql', type: :request do
-      runner_jobs_query = 'performance/most_active_runners.query.graphql'
-      let_it_be(:query) do
-        get_graphql_query_as_string("#{query_path}#{runner_jobs_query}", ee: true)
-      end
-
-      let_it_be(:runner) { create(:ci_runner, :instance, description: 'Runner 1') }
-      let_it_be(:runner2) { create(:ci_runner, :instance, description: 'Runner 2') }
-
+    describe 'most active runner', type: :request do
       let!(:build) { create(:ci_build, :picked, runner: runner) }
       let!(:build2) { create(:ci_build, :picked, runner: runner) }
       let!(:build3) { create(:ci_build, :picked, runner: runner2) }
 
-      before do
-        stub_licensed_features(runner_performance_insights: true)
+      describe 'admin dashboard' do
+        query_name = 'performance/most_active_runners.query.graphql'
+        let_it_be(:query) do
+          get_graphql_query_as_string("#{query_path}#{query_name}", ee: true)
+        end
+
+        let_it_be(:runner) { create(:ci_runner, :instance, description: 'Runner 1') }
+        let_it_be(:runner2) { create(:ci_runner, :instance, description: 'Runner 2') }
+
+        before do
+          stub_licensed_features(runner_performance_insights: true)
+        end
+
+        it "#{fixtures_path}#{query_name}.json" do
+          post_graphql(query, current_user: admin)
+
+          expect_graphql_errors_to_be_empty
+        end
       end
 
-      it "#{fixtures_path}#{runner_jobs_query}.json" do
-        post_graphql(query, current_user: admin)
+      describe 'group dashboard' do
+        query_name = 'performance/group_most_active_runners.query.graphql'
+        let_it_be(:query) do
+          get_graphql_query_as_string("#{query_path}#{query_name}", ee: true)
+        end
 
-        expect_graphql_errors_to_be_empty
+        let_it_be(:owner) { create(:user) }
+        let_it_be(:group) { create(:group, owners: owner) }
+        let_it_be(:runner) { create(:ci_runner, :group, groups: [group], description: 'Runner 1') }
+        let_it_be(:runner2) { create(:ci_runner, :group, groups: [group], description: 'Runner 2') }
+
+        before do
+          stub_licensed_features(runner_performance_insights_for_namespace: [group])
+        end
+
+        it "#{fixtures_path}#{query_name}.json" do
+          post_graphql(query, current_user: owner, variables: { fullPath: group.full_path })
+
+          expect_graphql_errors_to_be_empty
+        end
       end
     end
 
