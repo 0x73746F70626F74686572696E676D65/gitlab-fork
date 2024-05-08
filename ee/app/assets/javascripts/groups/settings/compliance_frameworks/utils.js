@@ -1,7 +1,6 @@
 import Api from '~/api';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { isNumeric } from '~/lib/utils/number_utils';
-import { parseBoolean } from '~/lib/utils/common_utils';
 import { EDIT_PATH_ID_FORMAT, PIPELINE_CONFIGURATION_PATH_FORMAT } from './constants';
 
 export const injectIdIntoEditPath = (path, id) => {

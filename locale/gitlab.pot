@@ -13162,9 +13162,6 @@ msgstr ""
 msgid "ComplianceFrameworks|Edit compliance framework"
 msgstr ""
 
-msgid "ComplianceFrameworks|Edit framework"
-msgstr ""
-
 msgid "ComplianceFrameworks|Error fetching compliance frameworks data. Please refresh the page or try a different framework"
 msgstr ""
 
@@ -13201,9 +13198,6 @@ msgstr ""
 msgid "ComplianceFrameworks|Policy name"
 msgstr ""
 
-msgid "ComplianceFrameworks|Remove default"
-msgstr ""
-
 msgid "ComplianceFrameworks|Required format: %{codeStart}path/file.y[a]ml@group-name/project-name%{codeEnd}. %{linkStart}See some examples%{linkEnd}."
 msgstr ""
 
@@ -13217,9 +13211,6 @@ msgid "ComplianceFrameworks|Set as default"
 msgstr ""
 
 msgid "ComplianceFrameworks|Set compliance pipeline configuration for projects that use this framework. %{linkStart}How do I create the configuration?%{linkEnd}"
-msgstr ""
-
-msgid "ComplianceFrameworks|Set default"
 msgstr ""
 
 msgid "ComplianceFrameworks|Summary"

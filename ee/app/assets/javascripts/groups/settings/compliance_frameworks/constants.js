@@ -1,5 +1,5 @@
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
-import { __, s__ } from '~/locale';
+import { s__ } from '~/locale';
 
 export const DANGER = 'danger';
 export const INFO = 'info';
