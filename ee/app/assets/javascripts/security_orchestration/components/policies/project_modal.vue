@@ -233,7 +233,7 @@ export default {
         </gl-sprintf>
         <gl-toggle
           v-model="searchOnlyPolicyProjects"
-          class="gl-my-3"
+          class="gl-py-3"
           :label="$options.i18n.modal.showOption"
           label-position="left"
         />
