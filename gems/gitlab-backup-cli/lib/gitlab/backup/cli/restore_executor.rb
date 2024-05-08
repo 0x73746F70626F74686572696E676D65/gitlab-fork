@@ -24,7 +24,6 @@ module Gitlab
         end
 
         def execute
-          unpack_archive!
           read_metadata!
 
           execute_all_tasks
@@ -60,18 +59,7 @@ module Gitlab
         end
 
         def read_metadata!
-          Gitlab::Backup::Cli::BackupMetadata.read_from_backup_directory(archive_directory).tap do |metadata|
-            @metadata = metadata
-          end
-        end
-
-        def unpack_archive!
-          # TODO: right now, this is already an unpacked archive. But we will
-          #       update this to make an archive file and this code should handle
-          #       unrolling the archive into a directory
-          # https://gitlab.com/gitlab-org/gitlab/-/issues/454832
-          Output.warning("simulating unpacking archive")
-          nil
+          @metadata = Gitlab::Backup::Cli::Metadata::BackupMetadata.load!(archive_directory)
         end
 
         def build_backup_options!
@@ -86,7 +74,7 @@ module Gitlab
           # KYLE - does this need to exist? Maybe for tests?
           FileUtils.mkdir_p(context.backup_basedir)
 
-          Pathname(Dir.mktmpdir('backup', context.backup_basedir))
+          Pathname(Dir.mktmpdir('restore', context.backup_basedir))
         end
 
         def measure_duration
