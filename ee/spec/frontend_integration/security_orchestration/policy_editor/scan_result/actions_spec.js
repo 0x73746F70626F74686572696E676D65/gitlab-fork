@@ -12,15 +12,15 @@ import {
   DEFAULT_ASSIGNED_POLICY_PROJECT,
 } from 'ee/security_orchestration/constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
+import { DEFAULT_PROVIDE } from '../mocks/mocks';
+import { verify, findYamlPreview } from '../utils';
 import {
   mockGroupApproversApprovalManifest,
   mockRoleApproversApprovalManifest,
   mockUserApproversApprovalManifest,
   USER,
   GROUP,
-} from '../mocks/action_mocks';
-import { DEFAULT_PROVIDE } from '../mocks/mocks';
-import { verify, findYamlPreview } from '../utils';
+} from './mocks';
 
 describe('Scan result policy actions', () => {
   let wrapper;

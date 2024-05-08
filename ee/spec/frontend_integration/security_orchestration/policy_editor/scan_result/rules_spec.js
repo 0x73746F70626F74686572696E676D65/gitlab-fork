@@ -16,12 +16,12 @@ import {
   LICENSE_FINDING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib';
 import { DEFAULT_PROVIDE } from '../mocks/mocks';
+import { verify } from '../utils';
 import {
   mockSecurityApprovalManifest,
   mockLicenseApprovalManifest,
   mockAnyMergeRequestApprovalManifest,
-} from '../mocks/rule_mocks';
-import { verify } from '../utils';
+} from './mocks';
 
 describe('Scan result policy rules', () => {
   let wrapper;
