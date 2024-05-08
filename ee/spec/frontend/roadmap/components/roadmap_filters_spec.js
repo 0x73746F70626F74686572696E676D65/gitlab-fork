@@ -93,7 +93,7 @@ describe('RoadmapFilters', () => {
         await waitForPromises();
 
         expect(global.window.location.href).toBe(
-          `${TEST_HOST}/?state=${STATUS_ALL}&sort=start_date_asc&layout=MONTHS&timeframe_range_type=THREE_YEARS&progress=WEIGHT&show_progress=true&show_milestones=true&milestones_type=ALL&show_labels=false`,
+          `${TEST_HOST}/?state=${STATUS_ALL}&sort=START_DATE_ASC&layout=MONTHS&timeframe_range_type=THREE_YEARS&progress=WEIGHT&show_progress=true&show_milestones=true&milestones_type=ALL&show_labels=false`,
         );
 
         setLocalSettingsInCache(apolloProvider, {
@@ -190,7 +190,7 @@ describe('RoadmapFilters', () => {
         ]);
       });
 
-      it('includes "Start date" and "Due date" sort options', () => {
+      it('includes correct sort options', () => {
         createComponent();
 
         expect(findFilteredSearchBar().props('sortOptions')).toEqual([
@@ -198,16 +198,40 @@ describe('RoadmapFilters', () => {
             id: 1,
             title: 'Start date',
             sortDirection: {
-              descending: 'start_date_desc',
-              ascending: 'start_date_asc',
+              descending: 'START_DATE_DESC',
+              ascending: 'START_DATE_ASC',
             },
           },
           {
             id: 2,
             title: 'Due date',
             sortDirection: {
-              descending: 'end_date_desc',
-              ascending: 'end_date_asc',
+              descending: 'END_DATE_DESC',
+              ascending: 'END_DATE_ASC',
+            },
+          },
+          {
+            id: 3,
+            title: 'Title',
+            sortDirection: {
+              descending: 'TITLE_DESC',
+              ascending: 'TITLE_ASC',
+            },
+          },
+          {
+            id: 4,
+            title: 'Created date',
+            sortDirection: {
+              descending: 'CREATED_AT_DESC',
+              ascending: 'CREATED_AT_ASC',
+            },
+          },
+          {
+            id: 5,
+            title: 'Last updated date',
+            sortDirection: {
+              descending: 'UPDATED_AT_DESC',
+              ascending: 'UPDATED_AT_ASC',
             },
           },
         ]);
