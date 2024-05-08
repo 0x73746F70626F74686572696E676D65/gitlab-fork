@@ -46,7 +46,7 @@ RSpec.describe Projects::MirrorsController, feature_category: :source_code_manag
       it 'do not allow invalid regex' do
         do_put(project, remote_mirrors_attributes: { '0' => { enabled: 1, url: url, mirror_branch_regex: '\\' } })
         expect(response).to redirect_to(project_settings_repository_path(project, anchor: 'js-push-remote-settings'))
-        expect(flash[:alert]).to match(/Remote mirrors mirror branch regex not valid RE2 syntax: trailing/)
+        expect(flash[:alert]).to match(/Mirror branch regex not valid RE2 syntax: trailing/)
       end
     end
 
