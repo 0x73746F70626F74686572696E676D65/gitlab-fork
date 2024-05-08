@@ -53,7 +53,7 @@ export const mockShellWidth = 2000;
 
 export const mockItemWidth = 180;
 
-export const mockSortedBy = 'start_date_asc';
+export const mockSortedBy = 'START_DATE_ASC';
 
 export const basePath = '/groups/gitlab-org/-/epics.json';
 
@@ -1132,7 +1132,7 @@ export const mockGroupTokenConfig = {
 
 export const mockLocalRoadmapSettings = {
   filterParams: {},
-  sortedBy: 'start_date_asc',
+  sortedBy: 'START_DATE_ASC',
   bufferSize: 0,
   epicsState: 'all',
   timeframe: mockTimeframeWeeks,

@@ -16,16 +16,40 @@ export default {
       id: 1,
       title: __('Start date'),
       sortDirection: {
-        descending: 'start_date_desc',
-        ascending: 'start_date_asc',
+        descending: 'START_DATE_DESC',
+        ascending: 'START_DATE_ASC',
       },
     },
     {
       id: 2,
       title: __('Due date'),
       sortDirection: {
-        descending: 'end_date_desc',
-        ascending: 'end_date_asc',
+        descending: 'END_DATE_DESC',
+        ascending: 'END_DATE_ASC',
+      },
+    },
+    {
+      id: 3,
+      title: __('Title'),
+      sortDirection: {
+        descending: 'TITLE_DESC',
+        ascending: 'TITLE_ASC',
+      },
+    },
+    {
+      id: 4,
+      title: __('Created date'),
+      sortDirection: {
+        descending: 'CREATED_AT_DESC',
+        ascending: 'CREATED_AT_ASC',
+      },
+    },
+    {
+      id: 5,
+      title: __('Last updated date'),
+      sortDirection: {
+        descending: 'UPDATED_AT_DESC',
+        ascending: 'UPDATED_AT_ASC',
       },
     },
   ],

@@ -30118,6 +30118,9 @@ msgstr ""
 msgid "Last updated %{time} ago"
 msgstr ""
 
+msgid "Last updated date"
+msgstr ""
+
 msgid "Last used"
 msgstr ""
 

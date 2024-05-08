@@ -192,7 +192,7 @@ describe('EpicItemComponent', () => {
           iid: 1,
           labelName: [],
           search: '',
-          sort: 'start_date_asc',
+          sort: 'START_DATE_ASC',
           state: 'all',
           withColor: false,
         });
