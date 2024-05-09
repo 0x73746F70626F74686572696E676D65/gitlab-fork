@@ -125,6 +125,14 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       end
     end
 
+    context 'without persisted policy' do
+      let!(:report_approver_rule) { create(:report_approver_rule, :scan_finding, merge_request: merge_request) }
+
+      it 'does not raise' do
+        expect { execute }.not_to raise_error
+      end
+    end
+
     context 'when approval rules are empty' do
       let!(:report_approver_rule) { nil }
 
