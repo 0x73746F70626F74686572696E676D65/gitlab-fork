@@ -342,7 +342,7 @@ export default {
   },
   methods: {
     showBreakingChangesIcon(deprecatedProperties) {
-      return this.glFeatures.securityPoliciesBreakingChanges && deprecatedProperties?.length > 0;
+      return deprecatedProperties?.length > 0;
     },
     policyListUrlArgs(source) {
       return { namespacePath: source?.namespace?.fullPath || '' };

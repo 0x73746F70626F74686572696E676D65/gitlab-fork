@@ -548,14 +548,8 @@ describe('List component', () => {
       expect(icons.at(0).props('name')).toBe('check-circle-filled');
     });
 
-    it('does not render breaking changes icon when flag is enabled but there are no deprecated properties', async () => {
-      mountWrapper({
-        provide: {
-          glFeatures: {
-            securityPoliciesBreakingChanges: true,
-          },
-        },
-      });
+    it('does not render breaking changes icon when there are no deprecated properties', async () => {
+      mountWrapper();
 
       await waitForPromises();
 
@@ -565,13 +559,8 @@ describe('List component', () => {
       expect(icons.at(0).props('name')).toBe('check-circle-filled');
     });
 
-    it('renders breaking changes icon when flag is enabled but there are deprecated properties', async () => {
+    it('renders breaking changes icon when there are deprecated properties', async () => {
       mountWrapper({
-        provide: {
-          glFeatures: {
-            securityPoliciesBreakingChanges: true,
-          },
-        },
         handlers: {
           projectScanResultPolicies: projectScanResultPolicies([
             {

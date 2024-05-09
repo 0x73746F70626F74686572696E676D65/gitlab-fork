@@ -1,8 +1,0 @@
----
-name: security_policies_breaking_changes
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/146709
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/446180
-milestone: '16.10'
-type: development
-group: group::security policies
-default_enabled: false

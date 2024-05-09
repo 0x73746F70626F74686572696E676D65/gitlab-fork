@@ -46,7 +46,9 @@ describe('LicenseFilter', () => {
     it('emits a "changed" event when the matchType is updated', async () => {
       const matchType = false;
       await findMatchTypeListBox().vm.$emit('select', matchType);
-      expect(wrapper.emitted('changed')).toStrictEqual([[{ match_on_inclusion: matchType }]]);
+      expect(wrapper.emitted('changed')).toStrictEqual([
+        [{ match_on_inclusion_license: matchType }],
+      ]);
     });
 
     describe('license type list box', () => {
@@ -116,24 +118,6 @@ describe('LicenseFilter', () => {
           expect.objectContaining({ license_types: [] }),
         ]);
       });
-    });
-  });
-
-  describe('new filter value match_on_inclusion_license', () => {
-    it('selects updated status value when feature flag is enabled', () => {
-      createComponent({
-        provide: {
-          glFeatures: {
-            securityPoliciesBreakingChanges: true,
-          },
-        },
-      });
-
-      const matchType = true;
-      findMatchTypeListBox().vm.$emit('select', matchType);
-      expect(wrapper.emitted('changed')).toStrictEqual([
-        [{ match_on_inclusion_license: matchType }],
-      ]);
     });
   });
 });

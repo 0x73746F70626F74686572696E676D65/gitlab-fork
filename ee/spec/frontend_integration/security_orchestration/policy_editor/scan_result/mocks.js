@@ -74,7 +74,7 @@ description: ''
 enabled: true
 rules:
   - type: license_finding
-    match_on_inclusion: true
+    match_on_inclusion_license: true
     license_types: []
     license_states: []
     branch_type: protected

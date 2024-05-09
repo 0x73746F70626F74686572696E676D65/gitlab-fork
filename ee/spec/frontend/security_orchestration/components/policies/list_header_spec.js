@@ -138,13 +138,7 @@ describe('List Header Component', () => {
 
   describe('breaking changes alert', () => {
     beforeEach(() => {
-      createWrapper({
-        provide: {
-          glFeatures: {
-            securityPoliciesBreakingChanges: true,
-          },
-        },
-      });
+      createWrapper();
     });
 
     it('hides shows breaking change alert by default', () => {
