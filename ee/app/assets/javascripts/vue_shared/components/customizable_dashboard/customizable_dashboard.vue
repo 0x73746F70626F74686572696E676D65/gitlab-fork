@@ -17,7 +17,7 @@ import {
   DASHBOARD_STATUS_BETA,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
-import PanelsBase from './panels_base.vue';
+import AnalyticsPanel from 'ee/analytics/analytics_dashboards/components/analytics_panel.vue';
 import GridstackWrapper from './gridstack_wrapper.vue';
 import { DASHBOARD_DOCUMENTATION_LINKS } from './constants';
 import AvailableVisualizationsDrawer from './dashboard_editor/available_visualizations_drawer.vue';
@@ -30,6 +30,7 @@ import {
 export default {
   name: 'CustomizableDashboard',
   components: {
+    AnalyticsPanel,
     DateRangeFilter: () => import('./filters/date_range_filter.vue'),
     AnonUsersFilter: () => import('./filters/anon_users_filter.vue'),
     GlButton,
@@ -38,7 +39,6 @@ export default {
     GlLink,
     GlFormGroup,
     GlSprintf,
-    PanelsBase,
     UrlSync,
     BetaBadge,
     AvailableVisualizationsDrawer,
@@ -489,7 +489,7 @@ export default {
           </div>
           <gridstack-wrapper v-model="dashboard" :editing="editing">
             <template #panel="{ panel }">
-              <panels-base
+              <analytics-panel
                 :title="panel.title"
                 :visualization="panel.visualization"
                 :query-overrides="panel.queryOverrides || undefined"
