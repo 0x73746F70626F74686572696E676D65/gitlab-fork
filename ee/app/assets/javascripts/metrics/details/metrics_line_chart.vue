@@ -38,10 +38,10 @@ export default {
   computed: {
     chartData() {
       return this.metricData.map((metric) => {
-        // note date timestamps are in nano, so converting them to ms here
         const data = metric.values.map((value) => [
+          // note date timestamps are in nano, so converting them to ms here
           value[0] / 1e6,
-          value[1],
+          parseFloat(value[1]),
           { ...metric.attributes },
         ]);
         return {

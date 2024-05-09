@@ -11,9 +11,9 @@ describe('MetricsLineChart', () => {
       unit: 's',
       attributes: { foo: 'bar', baz: 'abc' },
       values: [
-        [1700118610000 * 1e6, 0.25595267476015443],
-        [1700118660000 * 1e6, 0.1881374588830907],
-        [1700118720000 * 1e6, 0.28915416028993485],
+        [`${1700118610000 * 1e6}`, '0.25595267476015443'],
+        [`${1700118660000 * 1e6}`, '0.1881374588830907'],
+        [`${1700118720000 * 1e6}`, '0.28915416028993485'],
       ],
     },
     {
@@ -22,9 +22,9 @@ describe('MetricsLineChart', () => {
       unit: 's',
       attributes: { foo: 'bar', baz: 'def' },
       values: [
-        [1700119020000 * 1e6, 1.2658100987444416],
-        [1700119080000 * 1e6, 3.0604918827864345],
-        [1700119140000 * 1e6, 3.0205790879854124],
+        [`${1700119020000 * 1e6}`, '1.2658100987444416'],
+        [`${1700119080000 * 1e6}`, '3.0604918827864345'],
+        [`${1700119140000 * 1e6}`, '3.0205790879854124'],
       ],
     },
   ];
@@ -58,17 +58,17 @@ describe('MetricsLineChart', () => {
           data: [
             [
               mockData[0].values[0][0] / 1e6,
-              mockData[0].values[0][1],
+              parseFloat(mockData[0].values[0][1]),
               { ...mockData[0].attributes },
             ],
             [
               mockData[0].values[1][0] / 1e6,
-              mockData[0].values[1][1],
+              parseFloat(mockData[0].values[1][1]),
               { ...mockData[0].attributes },
             ],
             [
               mockData[0].values[2][0] / 1e6,
-              mockData[0].values[2][1],
+              parseFloat(mockData[0].values[2][1]),
               { ...mockData[0].attributes },
             ],
           ],
@@ -78,17 +78,17 @@ describe('MetricsLineChart', () => {
           data: [
             [
               mockData[1].values[0][0] / 1e6,
-              mockData[1].values[0][1],
+              parseFloat(mockData[1].values[0][1]),
               { ...mockData[1].attributes },
             ],
             [
               mockData[1].values[1][0] / 1e6,
-              mockData[1].values[1][1],
+              parseFloat(mockData[1].values[1][1]),
               { ...mockData[1].attributes },
             ],
             [
               mockData[1].values[2][0] / 1e6,
-              mockData[1].values[2][1],
+              parseFloat(mockData[1].values[2][1]),
               { ...mockData[1].attributes },
             ],
           ],
@@ -170,7 +170,7 @@ describe('MetricsLineChart', () => {
           const timeseries = mockTooltipData[i];
 
           expect(w.find(`[data-testid="metric-tooltip-value"]`).text()).toBe(
-            timeseries.data[1].toFixed(3),
+            parseFloat(timeseries.data[1]).toFixed(3),
           );
 
           const label = w.findComponent(GlChartSeriesLabel);
