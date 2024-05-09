@@ -421,34 +421,21 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
 
   describe '#show_code_suggestions_card?' do
     let(:namespace) { build(:namespace) }
-    let(:cs_connect_with_sales) { true }
 
     subject { helper.show_code_suggestions_card?(namespace) }
 
-    before do
-      stub_feature_flags(cs_connect_with_sales: cs_connect_with_sales)
-    end
+    it { is_expected.to eq(true) }
 
-    context 'with cs_connect_with_sales enabled' do
-      it { is_expected.to eq(true) }
-
-      context 'when namespace has an active code suggestions add_on' do
-        let(:namespace) { create(:gitlab_subscription_add_on_purchase, :active, :gitlab_duo_pro).namespace }
-
-        it { is_expected.to eq(false) }
-      end
-
-      context 'when namespace has an expired code suggestions add_on' do
-        let(:namespace) { create(:gitlab_subscription_add_on_purchase, :expired, :gitlab_duo_pro).namespace }
-
-        it { is_expected.to eq(true) }
-      end
-    end
-
-    context 'with cs_connect_with_sales disabled' do
-      let(:cs_connect_with_sales) { false }
+    context 'when namespace has an active code suggestions add_on' do
+      let(:namespace) { create(:gitlab_subscription_add_on_purchase, :active, :gitlab_duo_pro).namespace }
 
       it { is_expected.to eq(false) }
+    end
+
+    context 'when namespace has an expired code suggestions add_on' do
+      let(:namespace) { create(:gitlab_subscription_add_on_purchase, :expired, :gitlab_duo_pro).namespace }
+
+      it { is_expected.to eq(true) }
     end
   end
 

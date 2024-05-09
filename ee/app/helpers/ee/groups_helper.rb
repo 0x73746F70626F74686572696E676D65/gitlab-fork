@@ -107,16 +107,12 @@ module EE
     end
 
     def code_suggestions_usage_app_data(group)
-      data = {
+      {
         full_path: group.full_path,
         group_id: group.id,
         add_duo_pro_href: duo_pro_url(group),
         duo_pro_bulk_user_assignment_available: duo_pro_bulk_user_assignment_available?(group).to_s
-      }
-
-      return data unless ::Feature.enabled?(:cs_connect_with_sales, group)
-
-      data.merge(code_suggestions_hand_raise_props(group))
+      }.merge(code_suggestions_hand_raise_props(group))
     end
 
     def product_analytics_usage_quota_app_data(group)
