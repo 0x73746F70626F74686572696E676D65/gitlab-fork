@@ -463,8 +463,9 @@ export default {
       this.existingApprovers = values;
     },
     invalidForRuleMode() {
-      const invalidApprovers = approversOutOfSync(this.policy.actions?.[0], this.existingApprovers);
-      const { rules } = this.policy;
+      const { actions, rules } = this.policy;
+      const approvalAction = actions?.find((action) => action.type === REQUIRE_APPROVAL_TYPE);
+      const invalidApprovers = approversOutOfSync(approvalAction, this.existingApprovers);
 
       return (
         invalidApprovers ||

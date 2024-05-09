@@ -8,7 +8,8 @@ import EditorLayout from 'ee/security_orchestration/components/policy_editor/edi
 import {
   ACTION_LISTBOX_ITEMS,
   BOT_MESSAGE_TYPE,
-  buildAction,
+  buildApprovalAction,
+  buildBotMessageAction,
   DISABLED_BOT_MESSAGE_ACTION,
   SCAN_FINDING,
   ANY_MERGE_REQUEST,
@@ -434,7 +435,7 @@ describe('EditorComponent', () => {
           expect(findPolicyEditorLayout().props('policy').actions).toEqual([
             {
               approvals_required: 1,
-              type: 'require_approval',
+              type: REQUIRE_APPROVAL_TYPE,
               id: 'action_0',
             },
           ]);
@@ -592,7 +593,7 @@ describe('EditorComponent', () => {
           await findAllActionSections().at(0).vm.$emit('remove');
           expect(findScanFilterSelector().exists()).toBe(true);
           expect(findScanFilterSelector().props('filters')).toEqual([
-            { text: 'Require Approvers', value: 'require_approval' },
+            { text: 'Require Approvers', value: REQUIRE_APPROVAL_TYPE },
           ]);
         });
 
@@ -607,7 +608,7 @@ describe('EditorComponent', () => {
           ]);
           await findScanFilterSelector().vm.$emit('select', BOT_MESSAGE_TYPE);
           expect(findAllActionSections()).toHaveLength(1);
-          const { id, ...action } = buildAction(BOT_MESSAGE_TYPE);
+          const { id, ...action } = buildBotMessageAction();
           expect(findPolicyEditorLayout().props('policy').actions).toEqual([
             expect.objectContaining(action),
           ]);
@@ -621,7 +622,7 @@ describe('EditorComponent', () => {
           await findActionSection().vm.$emit('remove');
           expect(findAllActionSections()).toHaveLength(1);
           expect(findPolicyEditorLayout().props('policy').actions).not.toContainEqual(
-            buildAction(REQUIRE_APPROVAL_TYPE),
+            buildApprovalAction(),
           );
         });
 
@@ -644,8 +645,8 @@ describe('EditorComponent', () => {
           await findAllActionSections().at(0).vm.$emit('remove');
           await findScanFilterSelector().vm.$emit('select', REQUIRE_APPROVAL_TYPE);
           expect(findPolicyEditorLayout().props('policy').actions).toEqual([
-            { type: 'send_bot_message', enabled: true, id: 'action_1' },
-            { approvals_required: 1, type: 'require_approval', id: 'action_0' },
+            { type: BOT_MESSAGE_TYPE, enabled: true, id: 'action_1' },
+            { approvals_required: 1, type: REQUIRE_APPROVAL_TYPE, id: 'action_0' },
           ]);
           expect(findActionSection().props('existingApprovers')).toEqual({});
         });
@@ -661,7 +662,7 @@ describe('EditorComponent', () => {
             approvals_required: 1,
             group_approvers_ids: [29],
             id: 'action_0',
-            type: 'require_approval',
+            type: REQUIRE_APPROVAL_TYPE,
           };
           await findActionSection().vm.$emit('changed', UPDATED_ACTION);
           expect(findActionSection().props('initAction')).toEqual(UPDATED_ACTION);
@@ -863,7 +864,10 @@ describe('EditorComponent', () => {
 
     describe('existing approvers', () => {
       const existingPolicyWithUserId = {
-        actions: [{ type: 'require_approval', approvals_required: 1, user_approvers_ids: [1] }],
+        actions: [
+          buildBotMessageAction(),
+          { type: REQUIRE_APPROVAL_TYPE, approvals_required: 1, user_approvers_ids: [1] },
+        ],
       };
 
       const existingUserApprover = {
@@ -872,6 +876,16 @@ describe('EditorComponent', () => {
       const nonExistingUserApprover = {
         user: [{ id: 2, username: 'the.two', state: 'active', type: USER_TYPE }],
       };
+
+      beforeEach(() => {
+        uniqueId
+          .mockImplementationOnce(jest.fn((prefix) => `${prefix}0`))
+          .mockImplementationOnce(jest.fn((prefix) => `${prefix}1`));
+      });
+
+      afterEach(() => {
+        uniqueId.mockRestore();
+      });
 
       it.each`
         title         | policy                      | approver                   | output
@@ -909,7 +923,7 @@ describe('EditorComponent', () => {
 
         factoryWithExistingPolicy({ policy: { rules: [rule] } });
 
-        await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
+        await changesToRuleMode();
         await waitForPromises();
         const errors = wrapper.emitted('error');
 
@@ -920,7 +934,7 @@ describe('EditorComponent', () => {
     it('does not query protected branches when namespaceType is other than project', async () => {
       factoryWithExistingPolicy({ provide: { namespaceType: NAMESPACE_TYPES.GROUP } });
 
-      await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
+      await changesToRuleMode();
       await waitForPromises();
 
       expect(getInvalidBranches).not.toHaveBeenCalled();
@@ -995,10 +1009,10 @@ describe('EditorComponent', () => {
 
     describe('empty policy alert when the "approvalPolicyDisableBotComment" feature is on', () => {
       const settingsPolicy = { approval_settings: { [BLOCK_BRANCH_MODIFICATION]: true } };
-      const disabledBotPolicy = { actions: [{ type: 'send_bot_message', enabled: false }] };
+      const disabledBotPolicy = { actions: [{ type: BOT_MESSAGE_TYPE, enabled: false }] };
       const disabledBotPolicyWithSettings = {
         approval_settings: { [BLOCK_BRANCH_MODIFICATION]: true },
-        actions: [{ type: 'send_bot_message', enabled: false }],
+        actions: [{ type: BOT_MESSAGE_TYPE, enabled: false }],
       };
 
       beforeEach(() => {
