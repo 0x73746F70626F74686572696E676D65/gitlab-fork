@@ -203,94 +203,11 @@ module EE
         ::Gitlab::Saas.feature_available?(:google_cloud_support)
       end
 
-      desc "Custom role on group that enables read dependency"
-      condition(:role_enables_read_dependency) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :read_dependency
-        ).has_ability?
-      end
-
-      desc "Custom role on group that enables read vulnerability"
-      condition(:role_enables_read_vulnerability) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :read_vulnerability
-        ).has_ability?
-      end
-
-      desc "Custom role on group that enables admin vulnerability"
-      condition(:role_enables_admin_vulnerability) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :admin_vulnerability
-        ).has_ability?
-      end
-
-      desc "Custom role on group that enables admin group members"
-      condition(:role_enables_admin_group_member) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :admin_group_member
-        ).has_ability?
-      end
-
-      desc "Custom role on group that enables manage group access tokens"
-      condition(:role_enables_manage_group_access_tokens) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :manage_group_access_tokens
-        ).has_ability?
-      end
-
-      desc 'Custom role on group that enables admin CI/CD variables'
-      condition(:role_enables_admin_cicd_variables) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :admin_cicd_variables
-        ).has_ability?
-      end
-
-      desc "Custom role on group that enables removing groups"
-      condition(:role_enables_remove_group) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :remove_group
-        ).has_ability?
-      end
-
-      desc 'Custom role on group that enables admin push rules for repositories'
-      condition(:role_enables_admin_push_rules) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :admin_push_rules
-        ).has_ability?
-      end
-
-      desc "Custom role on group that enables managing security policy links"
-      condition(:custom_roles_enables_manage_security_policy_link) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :manage_security_policy_link
-        ).has_ability?
-      end
-
-      desc "Custom role on group that enables managing compliance framework"
-      condition(:role_enables_admin_compliance_framework) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :admin_compliance_framework
-        ).has_ability?
+      MemberRole.all_customizable_group_permissions.each do |ability|
+        desc "Custom role on group that enables #{ability.to_s.tr('_', ' ')}"
+        condition("custom_role_enables_#{ability}".to_sym) do
+          ::Auth::MemberRoleAbilityLoader.allowed?(@user, @subject, ability)
+        end
       end
 
       rule { owner & unique_project_download_limit_enabled }.policy do
@@ -557,7 +474,7 @@ module EE
         enable :modify_security_policy
       end
 
-      rule { custom_roles_allowed & security_orchestration_policies_enabled & custom_roles_enables_manage_security_policy_link }.policy do
+      rule { security_orchestration_policies_enabled & custom_role_enables_manage_security_policy_link }.policy do
         enable :read_security_orchestration_policies
         enable :read_security_orchestration_policy_project
         enable :update_security_orchestration_policy_project
@@ -572,35 +489,35 @@ module EE
         enable :admin_vulnerability
       end
 
-      rule { custom_roles_allowed & role_enables_read_dependency }.policy do
+      rule { custom_role_enables_read_dependency }.policy do
         enable :read_dependency
       end
 
-      rule { custom_roles_allowed & role_enables_read_vulnerability }.policy do
+      rule { custom_role_enables_read_vulnerability }.policy do
         enable :read_vulnerability
       end
 
-      rule { custom_roles_allowed & role_enables_admin_vulnerability }.policy do
+      rule { custom_role_enables_admin_vulnerability }.policy do
         enable :admin_vulnerability
       end
 
-      rule { custom_roles_allowed & role_enables_admin_group_member }.policy do
+      rule { custom_role_enables_admin_group_member }.policy do
         enable :admin_group_member
         enable :update_group_member
         enable :destroy_group_member
         enable :read_billable_member
       end
 
-      rule { custom_roles_allowed & role_enables_admin_group_member & service_accounts_available }.policy do
+      rule { custom_role_enables_admin_group_member & service_accounts_available }.policy do
         enable :admin_service_account_member
       end
 
-      rule { custom_roles_allowed & role_enables_manage_group_access_tokens & resource_access_token_feature_available }.policy do
+      rule { custom_role_enables_manage_group_access_tokens & resource_access_token_feature_available }.policy do
         enable :read_resource_access_tokens
         enable :destroy_resource_access_tokens
       end
 
-      rule { custom_roles_allowed & role_enables_manage_group_access_tokens & resource_access_token_creation_allowed }.policy do
+      rule { custom_role_enables_manage_group_access_tokens & resource_access_token_creation_allowed }.policy do
         enable :create_resource_access_tokens
         enable :manage_resource_access_tokens
       end
@@ -615,21 +532,21 @@ module EE
         enable :admin_member_role
       end
 
-      rule { custom_roles_allowed & role_enables_admin_cicd_variables }.policy do
+      rule { custom_role_enables_admin_cicd_variables }.policy do
         enable :admin_cicd_variables
       end
 
-      rule { custom_roles_allowed & role_enables_admin_compliance_framework & compliance_framework_available }.policy do
+      rule { custom_role_enables_admin_compliance_framework & compliance_framework_available }.policy do
         enable :admin_compliance_framework
         enable :admin_compliance_pipeline_configuration
         enable :read_group_compliance_dashboard
       end
 
-      rule { custom_roles_allowed & role_enables_remove_group & has_parent }.policy do
+      rule { custom_role_enables_remove_group & has_parent }.policy do
         enable :remove_group
       end
 
-      rule { custom_roles_allowed & role_enables_admin_push_rules }.policy do
+      rule { custom_role_enables_admin_push_rules }.policy do
         enable :admin_push_rules
       end
 

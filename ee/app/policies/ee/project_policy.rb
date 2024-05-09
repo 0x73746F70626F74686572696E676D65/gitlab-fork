@@ -241,85 +241,11 @@ module EE
         @subject.custom_roles_enabled?
       end
 
-      desc "Custom role on project that enables read code"
-      condition(:role_enables_read_code) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :read_code
-        ).has_ability?
-      end
-
-      desc "Custom role on project that enables read vulnerability"
-      condition(:role_enables_read_vulnerability) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :read_vulnerability
-        ).has_ability?
-      end
-
-      desc "Custom role on project that enables admin merge request"
-      condition(:role_enables_admin_merge_request) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :admin_merge_request
-        ).has_ability?
-      end
-
-      desc "Custom role on project that enables admin terraform state"
-      condition(:role_enables_admin_terraform_state) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :admin_terraform_state
-        ).has_ability?
-      end
-
-      desc "Custom role on project that enables admin vulnerability"
-      condition(:role_enables_admin_vulnerability) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :admin_vulnerability
-        ).has_ability?
-      end
-
-      desc "Custom role on project that enables read dependency"
-      condition(:role_enables_read_dependency) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :read_dependency
-        ).has_ability?
-      end
-
-      desc 'Custom role on project that enables admin CI/CD variables'
-      condition(:role_enables_admin_cicd_variables) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :admin_cicd_variables
-        ).has_ability?
-      end
-
-      desc 'Custom role on project that enables admin push rules for repositories'
-      condition(:role_enables_admin_push_rules) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :admin_push_rules
-        ).has_ability?
-      end
-
-      desc "Custom role on project that enables managing compliance framework"
-      condition(:role_enables_admin_compliance_framework) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :admin_compliance_framework
-        ).has_ability?
+      MemberRole.all_customizable_project_permissions.each do |ability|
+        desc "Custom role on project that enables #{ability.to_s.tr('_', ' ')}"
+        condition("custom_role_enables_#{ability}".to_sym) do
+          ::Auth::MemberRoleAbilityLoader.allowed?(@user, @subject, ability)
+        end
       end
 
       condition(:developer_access_to_admin_vulnerability) do
@@ -392,14 +318,14 @@ module EE
       # to allow Guest users with member roles to access the merge requests.
       condition(:merge_requests_disabled) do
         !(access_allowed_to?(:merge_requests) ||
-          (custom_roles_allowed? && merge_requests_is_a_private_feature? && role_enables_admin_merge_request?))
+          (merge_requests_is_a_private_feature? && custom_role_enables_admin_merge_request?))
       end
 
-      rule { custom_roles_allowed & role_enables_admin_cicd_variables }.policy do
+      rule { custom_role_enables_admin_cicd_variables }.policy do
         enable :admin_cicd_variables
       end
 
-      rule { custom_roles_allowed & role_enables_admin_push_rules }.policy do
+      rule { custom_role_enables_admin_push_rules }.policy do
         enable :admin_push_rules
       end
 
@@ -504,7 +430,7 @@ module EE
         enable :modify_security_policy
       end
 
-      rule { custom_roles_allowed & security_orchestration_policies_enabled & custom_roles_enables_manage_security_policy_link }.policy do
+      rule { security_orchestration_policies_enabled & custom_role_enables_manage_security_policy_link }.policy do
         enable :read_security_orchestration_policies
         enable :read_security_orchestration_policy_project
         enable :update_security_orchestration_policy_project
@@ -725,47 +651,11 @@ module EE
           .default_project_deletion_protection
       end
 
-      desc "Custom role on project that enables manage project access tokens"
-      condition(:role_enables_manage_project_access_tokens) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: project,
-          ability: :manage_project_access_tokens
-        ).has_ability?
-      end
-
-      desc "Custom role on project that enables archiving projects"
-      condition(:custom_role_enables_archive_projects) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :archive_project
-        ).has_ability?
-      end
-
-      rule { custom_roles_allowed & custom_role_enables_archive_projects }.policy do
+      rule { custom_role_enables_archive_project }.policy do
         enable :archive_project
       end
 
-      desc "Custom role on project that enables deleting projects"
-      condition(:custom_role_enables_remove_projects) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :remove_project
-        ).has_ability?
-      end
-
-      desc "Custom role on project that enables managing security policy links"
-      condition(:custom_roles_enables_manage_security_policy_link) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :manage_security_policy_link
-        ).has_ability?
-      end
-
-      rule { custom_roles_allowed & custom_role_enables_remove_projects }.policy do
+      rule { custom_role_enables_remove_project }.policy do
         enable :remove_project
       end
 
@@ -853,37 +743,37 @@ module EE
         enable :admin_merge_request_approval_settings
       end
 
-      rule { custom_roles_allowed & role_enables_read_code }.enable :read_code
+      rule { custom_role_enables_read_code }.enable :read_code
 
-      rule { custom_roles_allowed & role_enables_read_vulnerability }.policy do
+      rule { custom_role_enables_read_vulnerability }.policy do
         enable :access_security_and_compliance
         enable :read_vulnerability
         enable :read_security_resource
         enable :create_vulnerability_export
       end
 
-      rule { custom_roles_allowed & role_enables_admin_merge_request }.policy do
+      rule { custom_role_enables_admin_merge_request }.policy do
         enable :create_merge_request_from
         enable :read_merge_request
         enable :admin_merge_request
         enable :download_code # required to negate https://gitlab.com/gitlab-org/gitlab/-/blob/3061d30d9b3d6d4c4dd5abe68bc1e4a8a93c7966/app/policies/project_policy.rb#L603-607
       end
 
-      rule { custom_roles_allowed & role_enables_admin_terraform_state }.policy do
+      rule { custom_role_enables_admin_terraform_state }.policy do
         enable :read_terraform_state
         enable :admin_terraform_state
       end
 
-      rule { custom_roles_allowed & role_enables_admin_vulnerability }.policy do
+      rule { custom_role_enables_admin_vulnerability }.policy do
         enable :admin_vulnerability
       end
 
-      rule { custom_roles_allowed & role_enables_read_dependency & dependency_scanning_enabled }.policy do
+      rule { custom_role_enables_read_dependency & dependency_scanning_enabled }.policy do
         enable :access_security_and_compliance
         enable :read_dependency
       end
 
-      rule { custom_roles_allowed & role_enables_admin_compliance_framework & compliance_framework_available }.policy do
+      rule { custom_role_enables_admin_compliance_framework & compliance_framework_available }.policy do
         enable :admin_compliance_framework
       end
 
@@ -897,7 +787,7 @@ module EE
         enable :create_resource_access_tokens
       end
 
-      rule { role_enables_manage_project_access_tokens & resource_access_token_feature_available & resource_access_token_creation_allowed }.policy do
+      rule { custom_role_enables_manage_project_access_tokens & resource_access_token_feature_available & resource_access_token_creation_allowed }.policy do
         enable :read_resource_access_tokens
         enable :create_resource_access_tokens
         enable :destroy_resource_access_tokens
