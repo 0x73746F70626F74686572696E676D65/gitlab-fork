@@ -401,7 +401,7 @@ export default {
           </gl-form-group>
 
           <gl-form-group class="gl-mb-3" :label="__('Branch')">
-            <small class="form-text text-gl-muted gl-mt-0 gl-mb-5">
+            <small class="form-text gl-text-secondary gl-mt-0 gl-mb-5">
               {{ $options.i18n.branchSelectorHelpText }}
             </small>
             <ref-selector
