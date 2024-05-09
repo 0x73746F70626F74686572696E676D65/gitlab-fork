@@ -13,11 +13,9 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
 
     let(:params) { {} }
     let(:snowplow_standard_context_params) { { user: user, project: project, namespace: project.namespace } }
-    let(:use_database_for_dependencies_api) { true }
 
     before do
       stub_licensed_features(dependency_scanning: true, license_scanning: true, security_dashboard: true)
-      stub_feature_flags(use_database_for_dependencies_api: use_database_for_dependencies_api)
     end
 
     it_behaves_like 'a gitlab tracking event', described_class.name, 'view_dependencies'
@@ -72,69 +70,6 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
         expected_dependencies = occurrences.map { |occurrence| json_dependency(occurrence) }
 
         expect(json_response).to match(expected_dependencies)
-      end
-
-      context 'when use_database_for_dependencies_api is off' do
-        let(:use_database_for_dependencies_api) { false }
-
-        context 'when a pipeline does not exist' do
-          it 'returns an empty array response' do
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to eq([])
-          end
-        end
-
-        context 'when a pipeline exists' do
-          let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report, project: project) }
-          let_it_be(:finding) do
-            create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata, pipeline: pipeline)
-          end
-
-          it 'returns paginated dependencies' do
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(response).to match_response_schema('public_api/v4/dependencies', dir: 'ee')
-            expect(response).to include_pagination_headers
-
-            expect(json_response.length).to eq(20)
-          end
-
-          it 'returns vulnerabilities info' do
-            vulnerability = json_response.find { |dep| dep['name'] == 'nokogiri' }['vulnerabilities'][0]
-            path = "/security/vulnerabilities/#{finding.vulnerability_id}"
-
-            expect(vulnerability['name']).to eq('Vulnerabilities in libxml2')
-            expect(vulnerability['severity']).to eq('high')
-            expect(vulnerability['id']).to eq(finding.vulnerability_id)
-            expect(vulnerability['url']).to end_with(path)
-          end
-
-          context 'without cyclonedx report' do
-            before_all do
-              create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline)
-            end
-
-            it 'does not include license information to response' do
-              licenses = json_response.find { |dep| dep['name'] == 'nokogiri' }['licenses']
-
-              expect(licenses).to be_empty
-            end
-          end
-
-          context 'with cyclonedx report' do
-            before_all do
-              create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline)
-              create(:pm_package, name: "nokogiri", purl_type: "gem",
-                other_licenses: [{ license_names: ["MIT"], versions: ["1.8.0"] }])
-            end
-
-            it 'include license information to response' do
-              license = json_response.find { |dep| dep['name'] == 'nokogiri' }['licenses'][0]
-
-              expect(license['name']).to eq('MIT')
-              expect(license['url']).to eq('https://spdx.org/licenses/MIT.html')
-            end
-          end
-        end
       end
 
       context 'with nil package_manager' do
