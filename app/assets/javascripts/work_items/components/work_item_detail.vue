@@ -78,7 +78,7 @@ export default {
     WorkItemLoading,
   },
   mixins: [glFeatureFlagMixin()],
-  inject: ['fullPath', 'isGroup', 'reportAbusePath'],
+  inject: ['fullPath', 'isGroup', 'reportAbusePath', 'groupPath'],
   props: {
     isModal: {
       type: Boolean,
@@ -608,6 +608,7 @@ export default {
               <work-item-attributes-wrapper
                 :full-path="workItemFullPath"
                 :work-item="workItem"
+                :group-path="groupPath"
                 @error="updateError = $event"
               />
             </aside>

@@ -6,6 +6,7 @@ module WorkItemsHelper
 
     {
       full_path: resource_parent.full_path,
+      group_path: group&.full_path,
       issues_list_path:
         resource_parent.is_a?(Group) ? issues_group_path(resource_parent) : project_issues_path(resource_parent),
       register_path: new_user_registration_path(redirect_to_referer: 'yes'),
