@@ -36384,6 +36384,9 @@ msgstr ""
 msgid "Package type must be Terraform Module"
 msgstr ""
 
+msgid "PackageRegistry|%{count} packages were not published to the registry. Remove these packages and try again."
+msgstr ""
+
 msgid "PackageRegistry|%{name} version %{version} was first created %{datetime}"
 msgstr ""
 
@@ -36827,6 +36830,9 @@ msgstr ""
 msgid "PackageRegistry|Show Yarn commands"
 msgstr ""
 
+msgid "PackageRegistry|Show packages with errors"
+msgstr ""
+
 msgid "PackageRegistry|Skip metadata URL validation for the NuGet package"
 msgstr ""
 
@@ -36888,6 +36894,9 @@ msgid "PackageRegistry|There was a problem fetching the details for this package
 msgstr ""
 
 msgid "PackageRegistry|There was a timeout and the package was not published. Delete this package and try again."
+msgstr ""
+
+msgid "PackageRegistry|There was an error publishing %{count} packages"
 msgstr ""
 
 msgid "PackageRegistry|There was an error publishing a %{packageName} package"
