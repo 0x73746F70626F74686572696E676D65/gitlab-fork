@@ -245,7 +245,7 @@ module Security
       def fail_open?(approval_rule)
         return false unless fallback_behavior_enabled?
 
-        approval_rule.scan_result_policy_read.fail_open?
+        approval_rule.scan_result_policy_read&.fail_open?
       end
 
       def fallback_behavior_enabled?
