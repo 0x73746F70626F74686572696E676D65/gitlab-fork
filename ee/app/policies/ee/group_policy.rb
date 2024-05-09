@@ -811,6 +811,19 @@ module EE
         enable :read_web_hook
         enable :admin_web_hook
       end
+
+      condition(:role_enables_admin_web_hook) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :admin_web_hook
+        ).has_ability?
+      end
+
+      rule { custom_roles_allowed & role_enables_admin_web_hook }.policy do
+        enable :read_web_hook
+        enable :admin_web_hook
+      end
     end
 
     override :lookup_access_level!

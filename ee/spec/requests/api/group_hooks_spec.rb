@@ -65,4 +65,26 @@ RSpec.describe API::GroupHooks, :aggregate_failures, feature_category: :webhooks
 
     it_behaves_like 'web-hook API endpoints with branch-filter', '/projects/:id'
   end
+
+  describe 'with admin_web_hook custom role' do
+    before do
+      stub_licensed_features(custom_roles: true)
+      sign_in(user)
+    end
+
+    let_it_be(:user) { create(:user) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:role) { create(:member_role, :guest, :admin_web_hook, namespace: group) }
+    let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, group: group) }
+    let_it_be(:group_hook) { create(:group_hook, group: group, url: 'http://example.test/') }
+
+    let(:hook) { create(:group_hook, group: group) }
+    let(:list_url) { "/groups/#{group.id}/hooks" }
+    let(:get_url) { "/groups/#{group.id}/hooks/#{group_hook.id}" }
+    let(:add_url) { "/groups/#{group.id}/hooks" }
+    let(:edit_url) { "/groups/#{group.id}/hooks/#{group_hook.id}" }
+    let(:delete_url) { "/groups/#{group.id}/hooks/#{hook.id}" }
+
+    it_behaves_like 'web-hook API endpoints with admin_web_hook custom role'
+  end
 end

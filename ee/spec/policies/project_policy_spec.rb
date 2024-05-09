@@ -2847,6 +2847,13 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
       it_behaves_like 'custom roles abilities'
     end
+
+    context 'for a member role with `admin_web_hook` true' do
+      let(:member_role_abilities) { { admin_web_hook: true } }
+      let(:allowed_abilities) { [:admin_web_hook, :read_web_hook] }
+
+      it_behaves_like 'custom roles abilities'
+    end
   end
 
   describe 'permissions for suggested reviewers bot', :saas do
