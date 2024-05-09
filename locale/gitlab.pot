@@ -50321,6 +50321,9 @@ msgstr ""
 msgid "Step 4."
 msgstr ""
 
+msgid "Still loading..."
+msgstr ""
+
 msgid "Stop Terminal"
 msgstr ""
 

@@ -6,6 +6,7 @@ import {
   mockFilters,
   mockTableWithLinksResultSet,
   mockResultSetWithNullValues,
+  mockContinueWaitProgressResult,
 } from '../../mock_data';
 
 const mockLoad = jest.fn().mockResolvedValue(mockResultSet);
@@ -38,7 +39,7 @@ describe('Cube Analytics Data Source', () => {
   const visualizationType = 'LineChart';
   const query = { measures: ['TrackedEvents.count'] };
   const queryOverrides = { measures: ['TrackedEvents.userLanguage'] };
-  const cubeJsOptions = { castNumerics: true };
+  const cubeJsOptions = { castNumerics: true, progressCallback: expect.any(Function) };
 
   beforeEach(() => {
     __setMockLoad(mockLoad);
@@ -54,6 +55,30 @@ describe('Cube Analytics Data Source', () => {
 
     it('loads the query with the query override', () => {
       expect(mockLoad).toHaveBeenCalledWith(queryOverrides, cubeJsOptions);
+    });
+  });
+
+  describe('when server sends "continue wait" progressResults', () => {
+    beforeEach(() => {
+      mockLoad.mockImplementation((_query, cubeOptions) => {
+        const { progressCallback } = cubeOptions;
+
+        progressCallback(mockContinueWaitProgressResult);
+
+        return Promise.resolve(mockResultSet);
+      });
+    });
+
+    it('calls the "onRequestDelayed" callback', () => {
+      const mockOnRequestDelayed = jest.fn();
+      dataSource.fetch({
+        visualizationType,
+        query,
+        queryOverrides,
+        onRequestDelayed: mockOnRequestDelayed,
+      });
+
+      expect(mockOnRequestDelayed).toHaveBeenCalledTimes(1);
     });
   });
 

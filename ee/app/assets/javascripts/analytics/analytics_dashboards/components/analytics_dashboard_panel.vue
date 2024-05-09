@@ -81,6 +81,7 @@ export default {
       fullPanelError: hasValidationErrors,
       data: null,
       loading: false,
+      loadingDelayed: false,
       tooltip: '',
       dropdownItems: [
         {
@@ -180,6 +181,9 @@ export default {
           visualizationType: this.visualization.type,
           visualizationOptions: this.visualization.options,
           filters,
+          onRequestDelayed: () => {
+            this.loadingDelayed = true;
+          },
         });
 
         if (this.currentRequestNumber === requestNumber) {
@@ -194,6 +198,7 @@ export default {
         });
       } finally {
         this.loading = false;
+        this.loadingDelayed = false;
       }
     },
     clearErrors() {
@@ -224,6 +229,7 @@ export default {
     :title="panelTitle"
     :tooltip="tooltip"
     :loading="loading"
+    :loading-delayed="loadingDelayed"
     :show-error-state="showErrorState"
     :error-popover-title="errorPopoverTitle"
     :actions="dropdownItems"

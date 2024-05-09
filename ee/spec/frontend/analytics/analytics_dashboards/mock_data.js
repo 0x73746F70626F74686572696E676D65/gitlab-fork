@@ -413,6 +413,12 @@ export const mockResultSetWithNullValues = {
   ],
 };
 
+export const mockContinueWaitProgressResult = {
+  progressResponse: {
+    error: 'Continue wait',
+  },
+};
+
 export const mockFilters = {
   startDate: new Date('2015-01-01'),
   endDate: new Date('2016-01-01'),
