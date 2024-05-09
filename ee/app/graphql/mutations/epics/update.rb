@@ -8,14 +8,14 @@ module Mutations
       prepend Mutations::SharedEpicArguments
 
       argument :state_event,
-                Types::EpicStateEventEnum,
-                required: false,
-                description: 'State event for the epic.'
+        Types::EpicStateEventEnum,
+        required: false,
+        description: 'State event for the epic.'
 
       argument :remove_labels,
-                [GraphQL::Types::String],
-                required: false,
-                description: 'Array of labels to be removed from the epic.'
+        [GraphQL::Types::String],
+        required: false,
+        description: 'Array of labels to be removed from the epic.'
 
       authorize :admin_epic
 

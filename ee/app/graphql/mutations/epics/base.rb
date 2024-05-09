@@ -6,17 +6,17 @@ module Mutations
       include Mutations::ResolvesIssuable
 
       argument :iid, GraphQL::Types::ID,
-               required: true,
-               description: "IID of the epic to mutate."
+        required: true,
+        description: "IID of the epic to mutate."
 
       argument :group_path, GraphQL::Types::ID,
-               required: true,
-               description: 'Group the epic to mutate belongs to.'
+        required: true,
+        description: 'Group the epic to mutate belongs to.'
 
       field :epic,
-            Types::EpicType,
-            null: true,
-            description: 'Epic after mutation.'
+        Types::EpicType,
+        null: true,
+        description: 'Epic after mutation.'
 
       private
 

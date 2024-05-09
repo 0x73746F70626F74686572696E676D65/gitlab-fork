@@ -8,14 +8,14 @@ module Mutations
       authorize :admin_epic_relation
 
       argument :base_epic_id,
-               ::Types::GlobalIDType[::Epic],
-               required: true,
-               description: 'ID of the base epic of the tree.'
+        ::Types::GlobalIDType[::Epic],
+        required: true,
+        description: 'ID of the base epic of the tree.'
 
       argument :moved,
-               Types::EpicTree::EpicTreeNodeInputType,
-               required: true,
-               description: 'Parameters for updating the tree positions.'
+        Types::EpicTree::EpicTreeNodeInputType,
+        required: true,
+        description: 'Parameters for updating the tree positions.'
 
       def resolve(args)
         moving_object_id = args[:moved][:id]

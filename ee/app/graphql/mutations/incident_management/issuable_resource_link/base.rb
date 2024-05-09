@@ -5,9 +5,9 @@ module Mutations
     module IssuableResourceLink
       class Base < BaseMutation
         field :issuable_resource_link,
-              ::Types::IncidentManagement::IssuableResourceLinkType,
-              null: true,
-              description: 'Issuable resource link.'
+          ::Types::IncidentManagement::IssuableResourceLinkType,
+          null: true,
+          description: 'Issuable resource link.'
 
         authorize :admin_issuable_resource_link
 

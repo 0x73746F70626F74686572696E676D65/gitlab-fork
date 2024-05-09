@@ -8,24 +8,24 @@ module Mutations
       include FindsProject
 
       field :id, ::Types::GlobalIDType[::DastSiteToken],
-            null: true,
-            description: 'ID of the site token.'
+        null: true,
+        description: 'ID of the site token.'
 
       field :token, GraphQL::Types::String,
-            null: true,
-            description: 'Token string.'
+        null: true,
+        description: 'Token string.'
 
       field :status, Types::DastSiteProfileValidationStatusEnum,
-            null: true,
-            description: 'Current validation status of the target.'
+        null: true,
+        description: 'Current validation status of the target.'
 
       argument :full_path, GraphQL::Types::ID,
-               required: true,
-               description: 'Project the site token belongs to.'
+        required: true,
+        description: 'Project the site token belongs to.'
 
       argument :target_url, GraphQL::Types::String,
-               required: false,
-               description: 'URL of the target to be validated.'
+        required: false,
+        description: 'URL of the target to be validated.'
 
       authorize :create_on_demand_dast_scan
 

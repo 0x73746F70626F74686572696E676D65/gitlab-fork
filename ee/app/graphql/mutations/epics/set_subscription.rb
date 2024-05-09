@@ -8,8 +8,8 @@ module Mutations
       authorize :read_epic
 
       argument :subscribed_state, GraphQL::Types::Boolean,
-               required: true,
-               description: 'Desired state of the subscription.'
+        required: true,
+        description: 'Desired state of the subscription.'
 
       def resolve(args)
         group_path = args.delete(:group_path)

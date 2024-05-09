@@ -11,9 +11,9 @@ module Mutations
       authorize :create_epic
 
       field :epic,
-            Types::EpicType,
-            null: true,
-            description: 'Created epic.'
+        Types::EpicType,
+        null: true,
+        description: 'Created epic.'
 
       def resolve(args)
         group_path = args.delete(:group_path)

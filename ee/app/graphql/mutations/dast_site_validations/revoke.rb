@@ -8,12 +8,12 @@ module Mutations
       include FindsProject
 
       argument :full_path, GraphQL::Types::ID,
-               required: true,
-               description: 'Project the site validation belongs to.'
+        required: true,
+        description: 'Project the site validation belongs to.'
 
       argument :normalized_target_url, GraphQL::Types::String,
-               required: true,
-               description: 'Normalized URL of the target to be revoked.'
+        required: true,
+        description: 'Normalized URL of the target to be revoked.'
 
       authorize :create_on_demand_dast_scan
 

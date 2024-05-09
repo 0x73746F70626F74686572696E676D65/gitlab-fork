@@ -7,8 +7,8 @@ module Mutations
         graphql_name 'IssuableResourceLinkDestroy'
 
         argument :id, Types::GlobalIDType[::IncidentManagement::IssuableResourceLink],
-                required: true,
-                description: 'Issuable resource link ID to remove.'
+          required: true,
+          description: 'Issuable resource link ID to remove.'
 
         def resolve(id:)
           issuable_resource_link = authorized_find!(id: id)
