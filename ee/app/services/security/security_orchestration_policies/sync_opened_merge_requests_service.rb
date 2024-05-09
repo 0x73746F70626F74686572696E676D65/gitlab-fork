@@ -40,7 +40,7 @@ module Security
       end
 
       def sync_preexisting_state_approval_rules(merge_request)
-        return unless merge_request.approval_rules.scan_finding.any?
+        return unless merge_request.approval_rules.by_report_types([:scan_finding, :license_scanning]).any?
 
         ::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker.perform_async(merge_request.id)
       end

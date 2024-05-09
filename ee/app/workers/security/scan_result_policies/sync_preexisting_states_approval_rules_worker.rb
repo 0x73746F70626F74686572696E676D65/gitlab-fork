@@ -16,6 +16,7 @@ module Security
         return unless merge_request
 
         Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesService.new(merge_request).execute
+        Security::ScanResultPolicies::UpdateLicenseApprovalsService.new(merge_request, nil, true).execute
       end
     end
   end
