@@ -118,7 +118,12 @@ export default {
 
 <template>
   <div>
-    <gl-button v-gl-modal="$options.modal.id" size="small" @click="triggerAiMutation">
+    <gl-button
+      v-gl-modal="$options.modal.id"
+      icon="tanuki-ai"
+      size="small"
+      @click="triggerAiMutation"
+    >
       {{ __('Create AI-generated commit message') }}
     </gl-button>
     <gl-badge class="gl-ml-2" size="sm">
