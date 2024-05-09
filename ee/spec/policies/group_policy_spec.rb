@@ -3135,7 +3135,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       let_it_be_with_reload(:group) { create(:group_with_plan, plan: :premium_plan) }
 
       context 'when container is a group with AI enabled' do
-        include_context 'with ai chat enabled for group on SaaS'
+        include_context 'with duo features enabled and ai chat available for group on SaaS'
 
         context 'when user is a member of the group' do
           before do

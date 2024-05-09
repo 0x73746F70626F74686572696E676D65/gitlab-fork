@@ -3,6 +3,18 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo_chat do
+  shared_examples 'chat is authorized' do
+    it 'returns true' do
+      expect(authorizer.context(context: context).allowed?).to be(true)
+    end
+  end
+
+  shared_examples 'chat is not authorized' do
+    it 'returns false' do
+      expect(authorizer.context(context: context).allowed?).to be(false)
+    end
+  end
+
   context 'for saas', :saas do
     let_it_be(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
     let_it_be_with_reload(:project) {  create(:project, group: group) }
@@ -24,46 +36,50 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
       group.add_developer(user)
     end
 
-    before do
-      stub_feature_flags(duo_chat_requires_licensed_seat: false)
-      allow(Gitlab).to receive(:org_or_com?).and_return(true)
-
-      stub_licensed_features(ai_chat: true)
+    shared_examples 'user authorization' do
+      it 'returns true' do
+        expect(authorizer.user(user: user).allowed?).to be(true)
+      end
     end
 
-    shared_examples 'user authorization' do
-      context 'when user has groups with ai available' do
-        include_context 'with ai chat enabled for group on SaaS'
-        it 'returns true' do
-          expect(authorizer.user(user: user).allowed?).to be(true)
-        end
+    shared_examples 'chat authorization' do
+      context 'when ai chat is enabled' do
+        include_context 'with duo features enabled and ai chat available for group on SaaS'
+
+        it_behaves_like 'chat is authorized'
+      end
+
+      context 'when ai chat is disabled' do
+        include_context 'with duo features enabled and ai chat not available for group on SaaS'
+
+        it_behaves_like 'chat is not authorized'
       end
     end
 
     describe '.context.allowed?' do
       context 'when current user is not present' do
-        include_context 'with ai chat enabled for group on SaaS'
         let(:user) { nil }
 
-        it 'returns false' do
-          expect(authorizer.context(context: context).allowed?).to be(false)
-        end
+        it_behaves_like 'chat is not authorized'
       end
 
       context 'when both resource and container are present' do
         context 'when container is authorized' do
-          include_context 'with ai chat enabled for group on SaaS'
-
-          it 'returns true if both resource and container are authorized' do
-            expect(authorizer.context(context: context).allowed?).to be(true)
+          context 'when resource is authorized' do
+            it_behaves_like 'chat authorization'
           end
 
-          it 'returns false if resource is not authorized' do
-            group.members.first.destroy!
+          context 'when resource is not authorized' do
+            before do
+              group.members.first.destroy!
+            end
 
-            expect(authorizer.context(context: context).allowed?).to be(false)
-            expect(authorizer.context(context: context).message)
-              .to include('I am unable to find what you are looking for.')
+            it 'returns not found message' do
+              expect(authorizer.context(context: context).message)
+                .to include('I am unable to find what you are looking for.')
+            end
+
+            it_behaves_like 'chat is not authorized'
           end
         end
 
@@ -72,11 +88,12 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
             project.update!(duo_features_enabled: false)
           end
 
-          it 'returns false if container is not authorized' do
-            expect(authorizer.context(context: context).allowed?).to be(false)
+          it 'returns not allowed message' do
             expect(authorizer.context(context: context).message)
               .to eq('This feature is only allowed in groups or projects that enable this feature.')
           end
+
+          it_behaves_like 'chat is not authorized'
         end
       end
 
@@ -90,29 +107,23 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
           )
         end
 
-        context 'when resource container is authorized' do
-          include_context 'with ai chat enabled for group on SaaS'
-
-          it 'returns true' do
-            expect(authorizer.context(context: context).allowed?).to be(true)
-          end
+        context 'when resource is authorized' do
+          it_behaves_like 'chat authorization'
         end
 
-        context 'when container is not authorized' do
+        context 'when resource is not authorized' do
           before do
             project.update!(duo_features_enabled: false)
           end
 
-          it 'returns false' do
-            expect(authorizer.context(context: context).allowed?).to be(false)
-          end
+          it_behaves_like 'chat is not authorized'
         end
       end
 
       context 'when only container is present' do
         let(:context) do
           Gitlab::Llm::Chain::GitlabContext.new(
-            current_user: nil,
+            current_user: user,
             container: container,
             resource: nil,
             ai_request: nil
@@ -120,19 +131,15 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
         end
 
         context 'when container is authorized' do
-          include_context 'with ai chat enabled for group on SaaS'
-
-          it 'returns true' do
-            expect(authorizer.context(context: context).allowed?).to be(false)
-          end
+          it_behaves_like 'chat authorization'
         end
 
         context 'when container is not authorized' do
-          include_context 'with ai features disabled and licensed chat for group on SaaS'
-
-          it 'returns false' do
-            expect(authorizer.context(context: context).allowed?).to be(false)
+          before do
+            project.update!(duo_features_enabled: false)
           end
+
+          it_behaves_like 'chat is not authorized'
         end
       end
 
@@ -147,11 +154,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
         end
 
         context 'when user is authorized' do
-          include_context 'with ai chat enabled for group on SaaS'
-
-          it 'returns true' do
-            expect(authorizer.context(context: context).allowed?).to be(true)
-          end
+          it_behaves_like 'chat is authorized'
         end
 
         context 'when user is not authorized' do
@@ -164,9 +167,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
             )
           end
 
-          it 'returns false' do
-            expect(authorizer.context(context: context).allowed?).to be(false)
-          end
+          it_behaves_like 'chat is not authorized'
         end
       end
     end
@@ -231,8 +232,6 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
       end
 
       context 'when resource container is authorized' do
-        include_context 'with ai chat enabled for group on SaaS'
-
         it 'calls user.can? with the appropriate arguments' do
           expect(user).to receive(:can?).with('read_issue', resource)
 
@@ -250,9 +249,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
           end
         end
 
-        context 'when user is in any group with ai' do
-          include_context 'with ai chat enabled for group on SaaS'
-
+        context 'when user is in a group with ai' do
           it 'returns true' do
             expect(authorizer.resource(resource: context.current_user, user: context.current_user).allowed?)
               .to be(true)
@@ -298,14 +295,25 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
 
     shared_examples 'user authorization' do
       context 'when ai is enabled for self-managed' do
-        include_context 'with experiment features enabled for self-managed'
-        it 'returns true' do
-          expect(authorizer.user(user: user).allowed?).to be(true)
+        context 'when chat is enabled' do
+          include_context 'with duo features enabled and ai chat available for self-managed'
+
+          it 'returns true' do
+            expect(authorizer.user(user: user).allowed?).to be(true)
+          end
+        end
+
+        context 'when chat is disabled' do
+          include_context 'with duo features enabled and ai chat not available for self-managed'
+
+          it 'returns false' do
+            expect(authorizer.user(user: user).allowed?).to be(false)
+          end
         end
       end
 
       context 'when ai is disabled for self-managed' do
-        include_context 'with experiment features disabled for self-managed'
+        include_context 'with duo features disabled and ai chat available for self-managed'
 
         it 'returns true when user has no groups with ai available' do
           expect(authorizer.user(user: user).allowed?).to be(false)
@@ -314,32 +322,63 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
       end
     end
 
+    shared_examples 'chat authorization' do
+      context 'when ai chat is enabled' do
+        include_context 'with duo features enabled and ai chat available for self-managed'
+
+        it_behaves_like 'chat is authorized'
+      end
+
+      context 'when ai chat is disabled' do
+        include_context 'with duo features enabled and ai chat not available for self-managed'
+
+        it_behaves_like 'chat is not authorized'
+      end
+    end
+
     describe '.context.allowed?' do
       context 'when both resource and container are present' do
         context 'when ai is enabled for self-managed' do
-          include_context 'with experiment features enabled for self-managed'
-
-          it 'returns true if both resource and container are authorized' do
-            expect(authorizer.context(context: context).allowed?).to be(true)
+          context 'when both resource and container is authorized' do
+            it_behaves_like 'chat authorization'
           end
 
-          it 'returns false if resource is not authorized' do
-            group.members.first.destroy!
+          context 'when resource is not authorized' do
+            before do
+              group.members.first.destroy!
+            end
 
-            expect(authorizer.context(context: context).allowed?).to be(false)
-            expect(authorizer.context(context: context).message)
-              .to include('I am unable to find what you are looking for.')
+            it 'returns not found message' do
+              expect(authorizer.context(context: context).message)
+                .to include('I am unable to find what you are looking for.')
+            end
+
+            it_behaves_like 'chat is not authorized'
+          end
+
+          context 'when container is not authorized' do
+            before do
+              project.update!(duo_features_enabled: false)
+            end
+
+            it 'returns not allowed message' do
+              expect(authorizer.context(context: context).message)
+                .to eq('This feature is only allowed in groups or projects that enable this feature.')
+            end
+
+            it_behaves_like 'chat is not authorized'
           end
         end
 
         context 'when ai is disabled for self-managed' do
-          include_context 'with experiment features disabled for self-managed'
+          include_context 'with duo features disabled and ai chat available for self-managed'
 
-          it 'returns false if container is not authorized' do
-            expect(authorizer.context(context: context).allowed?).to be(false)
+          it 'returns no access message' do
             expect(authorizer.context(context: context).message)
               .to eq('You do not have access to chat feature.')
           end
+
+          it_behaves_like 'chat is not authorized'
         end
       end
 
@@ -354,19 +393,13 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
         end
 
         context 'when ai is enabled for self-managed' do
-          include_context 'with experiment features enabled for self-managed'
-
-          it 'returns true' do
-            expect(authorizer.context(context: context).allowed?).to be(true)
-          end
+          it_behaves_like 'chat authorization'
         end
 
         context 'when ai is disabled for self-managed' do
-          include_context 'with experiment features disabled for self-managed'
+          include_context 'with duo features disabled and ai chat available for self-managed'
 
-          it 'returns false' do
-            expect(authorizer.context(context: context).allowed?).to be(false)
-          end
+          it_behaves_like 'chat is not authorized'
         end
       end
 
@@ -381,19 +414,13 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
         end
 
         context 'when ai is enabled for self-managed' do
-          include_context 'with experiment features enabled for self-managed'
-
-          it 'returns true' do
-            expect(authorizer.context(context: context).allowed?).to be(true)
-          end
+          it_behaves_like 'chat authorization'
         end
 
         context 'when ai is disabled for self-managed' do
-          include_context 'with experiment features disabled for self-managed'
+          include_context 'with duo features disabled and ai chat available for self-managed'
 
-          it 'returns false' do
-            expect(authorizer.context(context: context).allowed?).to be(false)
-          end
+          it_behaves_like 'chat is not authorized'
         end
       end
 
@@ -408,19 +435,13 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
         end
 
         context 'when ai is enabled for self-managed' do
-          include_context 'with experiment features enabled for self-managed'
-
-          it 'returns true' do
-            expect(authorizer.context(context: context).allowed?).to be(true)
-          end
+          it_behaves_like 'chat authorization'
         end
 
         context 'when ai is disabled for self-managed' do
-          include_context 'with experiment features disabled for self-managed'
+          include_context 'with duo features disabled and ai chat available for self-managed'
 
-          it 'returns false' do
-            expect(authorizer.context(context: context).allowed?).to be(false)
-          end
+          it_behaves_like 'chat is not authorized'
         end
       end
     end
@@ -436,7 +457,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
       end
 
       context 'when ai is disabled for self-managed' do
-        include_context 'with experiment features disabled for self-managed'
+        include_context 'with duo features disabled and ai chat available for self-managed'
 
         it 'returns false' do
           expect(authorizer.resource(resource: context.resource, user: context.current_user).allowed?)
@@ -445,7 +466,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
       end
 
       context 'when ai is enabled for self-managed' do
-        include_context 'with experiment features enabled for self-managed'
+        include_context 'with duo features enabled and ai chat available for self-managed'
 
         it 'calls user.can? with the appropriate arguments' do
           expect(user).to receive(:can?).with('read_issue', resource)
@@ -456,7 +477,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
 
       context 'when resource is current user' do
         context 'when ai is disabled for self-managed' do
-          include_context 'with experiment features disabled for self-managed'
+          include_context 'with duo features disabled and ai chat available for self-managed'
 
           it 'returns false' do
             expect(authorizer.resource(resource: context.current_user, user: context.current_user).allowed?)
@@ -465,18 +486,29 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
         end
 
         context 'when ai is enabled for self-managed' do
-          include_context 'with experiment features enabled for self-managed'
+          context 'when chat is enabled' do
+            include_context 'with duo features enabled and ai chat available for self-managed'
 
-          it 'returns true' do
-            expect(authorizer.resource(resource: context.current_user, user: context.current_user).allowed?)
-              .to be(true)
+            it 'returns true' do
+              expect(authorizer.resource(resource: context.current_user, user: context.current_user).allowed?)
+                .to be(true)
+            end
+
+            context 'when resource is different user' do
+              let(:resource) { build(:user) }
+
+              it 'returns false' do
+                expect(authorizer.resource(resource: resource, user: context.current_user).allowed?)
+                  .to be(false)
+              end
+            end
           end
 
-          context 'when resource is different user' do
-            let(:resource) { build(:user) }
+          context 'when chat is disabled' do
+            include_context 'with duo features enabled and ai chat not available for self-managed'
 
             it 'returns false' do
-              expect(authorizer.resource(resource: resource, user: context.current_user).allowed?)
+              expect(authorizer.resource(resource: context.current_user, user: context.current_user).allowed?)
                 .to be(false)
             end
           end
