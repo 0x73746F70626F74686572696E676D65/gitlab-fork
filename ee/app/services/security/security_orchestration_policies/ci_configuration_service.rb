@@ -23,7 +23,7 @@ module Security
       private
 
       def allow_restricted_variables_at_policy_level?
-        Feature.enabled?(:allow_restricted_variables_at_policy_level, project, type: :gitlab_com_derisk)
+        Feature.enabled?(:allow_restricted_variables_at_policy_level, project, type: :beta)
       end
     end
   end

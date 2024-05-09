@@ -134,7 +134,7 @@ module Security
       end
 
       def allow_restricted_variables?
-        Feature.enabled?(:allow_restricted_variables_at_policy_level, project, type: :gitlab_com_derisk)
+        Feature.enabled?(:allow_restricted_variables_at_policy_level, project, type: :beta)
       end
 
       def custom_ci_experiment_enabled?
