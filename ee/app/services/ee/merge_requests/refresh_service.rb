@@ -75,7 +75,7 @@ module EE
 
       def sync_preexiting_states_approval_rules
         merge_requests_for_source_branch.each do |merge_request|
-          if merge_request.approval_rules.scan_finding.any?
+          if merge_request.approval_rules.by_report_types([:scan_finding, :license_scanning]).any?
             ::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker.perform_async(merge_request.id)
           end
         end

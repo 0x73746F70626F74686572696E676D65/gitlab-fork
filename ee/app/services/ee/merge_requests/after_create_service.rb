@@ -35,7 +35,7 @@ module EE
           ::Security::ScanResultPolicies::SyncAnyMergeRequestApprovalRulesWorker.perform_async(merge_request.id)
         end
 
-        if merge_request.approval_rules.scan_finding.any?
+        if merge_request.approval_rules.by_report_types([:scan_finding, :license_scanning]).any?
           ::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker.perform_async(merge_request.id)
         end
 

@@ -4,395 +4,57 @@ require 'spec_helper'
 
 RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :security_policy_management do
   let_it_be(:project) { create(:project, :public, :repository) }
-  let(:service) { described_class.new(pipeline) }
 
   let_it_be_with_refind(:merge_request) do
-    create(:merge_request, :with_merge_request_pipeline, source_project: project)
+    create(:merge_request, :opened, source_project: project, source_branch: 'feature', target_branch: 'master')
+  end
+
+  let_it_be(:other_merge_request) do
+    create(:merge_request, :opened, source_project: project, source_branch: 'feature', target_branch: 'merge-test')
+  end
+
+  let_it_be(:closed_merge_request) do
+    create(:merge_request, :closed, source_project: project, source_branch: 'feature', target_branch: 'merged-target')
   end
 
   let_it_be_with_reload(:pipeline) do
-    create(
-      :ee_ci_pipeline,
-      :success,
-      :with_cyclonedx_report,
-      project: project,
-      merge_requests_as_head_pipeline: [merge_request],
-      ref: merge_request.source_branch,
-      sha: merge_request.diff_head_sha)
+    create(:ee_ci_pipeline, :success, project: project, ref: 'feature', sha: merge_request.diff_head_sha)
   end
 
-  let_it_be_with_reload(:target_pipeline) do
-    create(
-      :ee_ci_pipeline,
-      :success,
-      :with_cyclonedx_report,
-      project: project,
-      ref: merge_request.target_branch,
-      sha: merge_request.diff_base_sha)
-  end
+  describe '.execute' do
+    let(:mock_service_object) { instance_double(described_class, execute: true) }
 
-  let(:license_report) { ::Gitlab::LicenseScanning.scanner_for_pipeline(project, pipeline).report }
-  let!(:ee_ci_build) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline, project: project) }
+    subject(:execute) { described_class.execute(pipeline) }
 
-  before do
-    stub_licensed_features(license_scanning: true)
+    before do
+      allow(described_class).to receive(:new).with(pipeline).and_return(mock_service_object)
+    end
+
+    it 'delegates the call to an instance of `Security::SyncLicenseScanningRulesService`' do
+      execute
+
+      expect(described_class).to have_received(:new).with(pipeline)
+      expect(mock_service_object).to have_received(:execute)
+    end
   end
 
   describe '#execute' do
-    subject(:execute) { service.execute }
+    subject(:execute) { described_class.new(pipeline).execute }
 
-    context 'when license_report is empty' do
-      let!(:license_compliance_rule) do
-        create(:report_approver_rule, :license_scanning, merge_request: merge_request, approvals_required: 1)
-      end
-
-      before do
-        pipeline.update_attribute(:status, :pending)
-      end
-
-      it 'does not update approval rules' do
-        expect { execute }.not_to change { license_compliance_rule.reload.approvals_required }
-      end
-
-      it 'does not call report' do
-        allow_any_instance_of(Gitlab::Ci::Reports::LicenseScanning::Report) do |instance|
-          expect(instance).not_to receive(:violates?)
-        end
-
-        execute
-      end
-
-      it 'does not generate policy violation comment' do
-        expect(Security::GeneratePolicyViolationCommentWorker).not_to receive(:perform_async)
-
-        execute
-      end
+    before do
+      allow(Security::ScanResultPolicies::UpdateLicenseApprovalsService).to receive(:new)
+        .and_return(instance_double(Security::ScanResultPolicies::UpdateLicenseApprovalsService, execute: true))
     end
 
-    context 'with license_finding security policy' do
-      let(:license_states) { ['newly_detected'] }
-      let(:match_on_inclusion_license) { true }
-      let(:approvals_required) { 1 }
-      let_it_be(:protected_branch) do
-        create(:protected_branch, name: merge_request.target_branch, project: project)
-      end
+    it 'calls update service for each merge request' do
+      execute
 
-      let(:scan_result_policy_read) do
-        create(:scan_result_policy_read, project: project, license_states: license_states,
-          match_on_inclusion_license: match_on_inclusion_license)
-      end
-
-      let!(:license_finding_project_rule) do
-        create(:approval_project_rule, :license_scanning, project: project,
-          approvals_required: approvals_required, scan_result_policy_read: scan_result_policy_read,
-          protected_branches: [protected_branch])
-      end
-
-      let!(:license_finding_rule) do
-        create(:report_approver_rule, :license_scanning, merge_request: merge_request,
-          approval_project_rule: license_finding_project_rule,
-          approvals_required: approvals_required, scan_result_policy_read: scan_result_policy_read)
-      end
-
-      let(:source_branch_sbom_scanner) do
-        instance_double('Gitlab::LicenseScanning::SbomScanner', report: pipeline_report, results_available?: true)
-      end
-
-      let(:target_branch_sbom_scanner) do
-        instance_double('Gitlab::LicenseScanning::SbomScanner', report: target_branch_report, results_available?: true)
-      end
-
-      let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
-      let(:target_branch_report) { create(:ci_reports_license_scanning_report) }
-
-      let(:case5) do
-        [
-          ['GPL v3', 'GNU 3', 'A'],
-          ['MIT', 'MIT License', 'B'],
-          ['GPL v3', 'GNU 3', 'C'],
-          ['Apache 2', 'Apache License 2', 'D']
-        ]
-      end
-
-      let(:case4) { [['GPL v3', 'GNU 3', 'A'], ['MIT', 'MIT License', 'B'], ['GPL v3', 'GNU 3', 'C']] }
-      let(:case3) { [['GPL v3', 'GNU 3', 'A'], ['MIT', 'MIT License', 'B']] }
-      let(:case2) { [['GPL v3', 'GNU 3', 'A']] }
-      let(:case1) { [] }
-
-      context 'when merge request has multiple pipelines for diff_head_sha' do
-        let_it_be(:pipeline) do
-          create(:ee_ci_pipeline,
-            :success,
-            :with_cyclonedx_report,
-            project: project,
-            ref: merge_request.source_branch,
-            sha: project.commit(merge_request.source_branch).sha
-          )
-        end
-
-        it_behaves_like 'triggers policy bot comment', :license_scanning, false
-        it_behaves_like 'merge request without scan result violations'
-      end
-
-      context 'when target branch pipeline is empty' do
-        it 'does not require approval' do
-          expect { execute }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
-        end
-      end
-
-      it_behaves_like 'triggers policy bot comment', :license_scanning, false
-      it_behaves_like 'merge request without scan result violations'
-
-      context 'with violations' do
-        let(:license) { create(:software_license, name: 'GPL v3') }
-        let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
-
-        before do
-          pipeline_report.add_license(id: nil, name: 'GPL v3').add_dependency(name: 'A')
-
-          create(:software_license_policy, :denied, project: project, software_license: license,
-            scan_result_policy_read: scan_result_policy_read)
-
-          allow(service).to receive(:report).and_return(pipeline_report)
-
-          allow(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline).with(project,
-            pipeline).and_return(source_branch_sbom_scanner)
-
-          allow(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline).with(project,
-            target_pipeline).and_return(target_branch_sbom_scanner)
-        end
-
-        it_behaves_like 'triggers policy bot comment', :license_scanning, true
-        it_behaves_like 'merge request with scan result violations'
-
-        context 'when no approvals are required' do
-          let(:approvals_required) { 0 }
-
-          it_behaves_like 'triggers policy bot comment', :license_scanning, true, requires_approval: false
-        end
-
-        context 'when targeting an unprotected branch' do
-          before do
-            merge_request.update!(target_branch: 'non-protected')
-            target_pipeline.update!(ref: 'non-protected')
-          end
-
-          it_behaves_like 'triggers policy bot comment', :license_scanning, false, requires_approval: false
-        end
-
-        context 'when most recent base pipeline lacks SBOM report' do
-          let(:pipeline_without_sbom) do
-            create(
-              :ee_ci_pipeline,
-              :success,
-              source: :security_orchestration_policy,
-              project: project,
-              ref: merge_request.target_branch,
-              sha: merge_request.diff_base_sha)
-          end
-
-          it_behaves_like 'triggers policy bot comment', :license_scanning, true, requires_approval: true
-        end
-
-        context 'with merge base pipeline and SBOM report present' do
-          it 'uses the merge base pipeline for comparison' do
-            expect(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline)
-              .with(project, target_pipeline).and_return(target_branch_sbom_scanner).ordered
-
-            service.execute
-          end
-
-          describe 'policy bot comment' do
-            before do
-              allow(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline)
-                .with(project, target_pipeline).and_return(target_branch_sbom_scanner)
-            end
-
-            it_behaves_like 'triggers policy bot comment', :license_scanning, true, requires_approval: true
-          end
-        end
-
-        context 'without target branch pipeline' do
-          before do
-            merge_request.latest_comparison_pipeline_with_sbom_reports.delete
-
-            allow(::Gitlab::LicenseScanning).to receive(:scanner_for_pipeline).with(project, nil).and_call_original
-          end
-
-          it_behaves_like 'triggers policy bot comment', :license_scanning, true
-
-          context 'when failing open' do
-            before do
-              license_finding_rule.scan_result_policy_read.update!(fallback_behavior: { fail: 'open' })
-            end
-
-            it_behaves_like 'triggers policy bot comment', :license_scanning, false
-
-            context 'with feature disabled' do
-              before do
-                stub_feature_flags(merge_request_approval_policies_fallback_behavior: false)
-              end
-
-              it_behaves_like 'triggers policy bot comment', :license_scanning, true
-            end
-          end
-        end
-
-        describe 'violation data' do
-          let(:dependencies) { ('A'..'Z').to_a }
-
-          before do
-            dependencies.each { |name| pipeline_report.add_license(id: nil, name: 'GPL v3').add_dependency(name: name) }
-          end
-
-          it 'saves a trimmed list of violated dependencies' do
-            service.execute
-
-            expect(scan_result_policy_read.violations.last.violation_data)
-              .to eq({ 'violations' => { 'license_scanning' =>
-                { 'GPL v3' => dependencies.first(Security::ScanResultPolicyViolation::MAX_VIOLATIONS + 1) } } })
-          end
-        end
-
-        context 'when the approval rules had approvals previously removed and rules are violated' do
-          let_it_be(:approval_project_rule) do
-            create(:approval_project_rule, :license_scanning, project: project, approvals_required: 2)
-          end
-
-          let!(:license_finding_rule) do
-            create(:report_approver_rule, :license_scanning, merge_request: merge_request,
-              approval_project_rule: approval_project_rule, approvals_required: 0,
-              scan_result_policy_read: scan_result_policy_read)
-          end
-
-          it 'resets the required approvals' do
-            expect { execute }.to change { license_finding_rule.reload.approvals_required }.to(2)
-          end
-        end
-      end
-
-      # rubocop:disable RSpec/MultipleMemoizedHelpers -- let variables used to improve readability of table syntax
-      describe 'possible combinations' do
-        using RSpec::Parameterized::TableSyntax
-
-        let(:violation1) { { 'GNU 3' => %w[A] } }
-        let(:violation2) { { 'GNU 3' => %w[A C] } }
-        let(:violation3) { { 'GNU 3' => %w[C] } }
-        let(:violation4) { { 'Apache License 2' => %w[D] } }
-
-        where(:target_branch, :pipeline_branch, :states, :policy_license, :policy_state, :violated_licenses, :result) do
-          ref(:case1) | ref(:case2) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation1) | true
-          ref(:case1) | ref(:case2) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | ref(:violation1) | true
-          ref(:case2) | ref(:case3) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation1) | false
-          ref(:case2) | ref(:case3) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | ref(:violation1) | false
-          ref(:case3) | ref(:case4) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation3) | true
-          ref(:case3) | ref(:case4) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | ref(:violation3) | true
-          ref(:case4) | ref(:case5) | ['newly_detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation1) | false
-          ref(:case4) | ref(:case5) | ['newly_detected'] | [nil, 'GNU 3'] | :denied | ref(:violation1) | false
-          ref(:case1) | ref(:case2) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation1) | false
-          ref(:case1) | ref(:case2) | ['detected'] | [nil, 'GNU 3'] | :denied | ref(:violation1) | false
-          ref(:case2) | ref(:case3) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation1) | true
-          ref(:case2) | ref(:case3) | ['detected'] | [nil, 'GNU 3'] | :denied | ref(:violation1) | true
-          ref(:case3) | ref(:case4) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation2) | true
-          ref(:case3) | ref(:case4) | ['detected'] | [nil, 'GNU 3'] | :denied | ref(:violation2) | true
-          ref(:case4) | ref(:case5) | ['detected'] | ['GPL v3', 'GNU 3'] | :denied | ref(:violation2) | true
-          ref(:case4) | ref(:case5) | ['detected'] | [nil, 'GNU 3'] | :denied | ref(:violation2) | true
-
-          ref(:case1) | ref(:case2) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | ref(:violation1) | true
-          ref(:case1) | ref(:case2) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | ref(:violation1) | true
-          ref(:case2) | ref(:case3) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | nil | false
-          ref(:case3) | ref(:case4) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | ref(:violation3) | true
-          ref(:case3) | ref(:case4) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | ref(:violation3) | true
-          ref(:case4) | ref(:case5) | ['newly_detected'] | ['MIT', 'MIT License'] | :allowed | ref(:violation4) | true
-          ref(:case4) | ref(:case5) | ['newly_detected'] | [nil, 'MIT License'] | :allowed | ref(:violation4) | true
-          ref(:case1) | ref(:case2) | ['detected'] | ['MIT', 'MIT License'] | :allowed | nil | false
-          ref(:case1) | ref(:case2) | ['detected'] | [nil, 'MIT License'] | :allowed | nil | false
-          ref(:case2) | ref(:case3) | ['detected'] | ['MIT', 'MIT License'] | :allowed | ref(:violation1) | true
-          ref(:case2) | ref(:case3) | ['detected'] | [nil, 'MIT License'] | :allowed | ref(:violation1) | true
-          ref(:case3) | ref(:case4) | ['detected'] | ['MIT', 'MIT License'] | :allowed | ref(:violation2) | true
-          ref(:case3) | ref(:case4) | ['detected'] | [nil, 'MIT License'] | :allowed | ref(:violation2) | true
-          ref(:case4) | ref(:case5) | ['detected'] | ['MIT', 'MIT License'] | :allowed | ref(:violation2) | true
-          ref(:case4) | ref(:case5) | ['detected'] | [nil, 'MIT License'] | :allowed | ref(:violation2) | true
-
-          ref(:case2) | ref(:case2) | ['detected'] | [nil, 'GPL v3'] | :allowed | nil | false
-        end
-
-        with_them do
-          let(:match_on_inclusion_license) { policy_state == :denied }
-          let(:target_branch_report) { create(:ci_reports_license_scanning_report) }
-          let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
-          let(:license_states) { states }
-          let(:license) { create(:software_license, spdx_identifier: policy_license[0], name: policy_license[1]) }
-
-          before do
-            target_branch.each do |ld|
-              target_branch_report.add_license(id: ld[0], name: ld[1]).add_dependency(name: ld[2])
-            end
-
-            pipeline_branch.each do |ld|
-              pipeline_report.add_license(id: ld[0], name: ld[1]).add_dependency(name: ld[2])
-            end
-
-            create(:software_license_policy, policy_state,
-              project: project,
-              software_license: license,
-              scan_result_policy_read: scan_result_policy_read
-            )
-
-            allow(service).to receive(:report).and_return(pipeline_report)
-            allow(service).to receive(:target_branch_report).with(target_pipeline).and_return(target_branch_report)
-          end
-
-          it 'syncs approvals_required' do
-            if result
-              expect { execute }.not_to change { license_finding_rule.reload.approvals_required }
-            else
-              expect { execute }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
-            end
-          end
-
-          it 'logs only violated rules' do
-            if result
-              expect(Gitlab::AppJsonLogger).to receive(:info).with(hash_including(message: 'Updating MR approval rule'))
-            else
-              expect(Gitlab::AppJsonLogger).not_to receive(:info)
-            end
-
-            execute
-          end
-
-          describe 'violation data' do
-            it 'persists violation data' do
-              if result
-                expect { execute }.to change { scan_result_policy_read.violations.count }.by(1)
-                last_violation = scan_result_policy_read.violations.last
-
-                expect(last_violation.violation_data)
-                  .to eq({ 'violations' => { 'license_scanning' => violated_licenses } })
-                expect(last_violation).to be_valid
-              else
-                expect { execute }.not_to change { scan_result_policy_read.violations.count }
-              end
-            end
-
-            context 'when feature flag "save_policy_violation_data" is disabled' do
-              before do
-                stub_feature_flags(save_policy_violation_data: false)
-              end
-
-              it 'adds violations without data' do
-                if result
-                  expect { execute }.to change { scan_result_policy_read.violations.count }.by(1)
-                  expect(scan_result_policy_read.violations.last.violation_data).to be_nil
-                else
-                  expect { execute }.not_to change { scan_result_policy_read.violations.count }
-                end
-              end
-            end
-          end
-        end
-      end
-      # rubocop:enable RSpec/MultipleMemoizedHelpers
+      expect(Security::ScanResultPolicies::UpdateLicenseApprovalsService).to have_received(:new)
+        .with(merge_request, pipeline)
+      expect(Security::ScanResultPolicies::UpdateLicenseApprovalsService).to have_received(:new)
+        .with(other_merge_request, pipeline)
+      expect(Security::ScanResultPolicies::UpdateLicenseApprovalsService).not_to have_received(:new)
+        .with(closed_merge_request, pipeline)
     end
   end
 end

@@ -231,10 +231,24 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
         subject
       end
 
+      context 'with license_finding rule' do
+        let!(:license_finding_rule) do
+          create(:report_approver_rule, :license_scanning, merge_request: relevant_merge_request)
+        end
+
+        it 'enqueues SyncPreexistingStatesApprovalRulesWorker' do
+          expect(Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).to(
+            receive(:perform_async).with(relevant_merge_request.id)
+          )
+
+          subject
+        end
+      end
+
       context 'without scan_finding rule' do
         let!(:scan_finding_rule) { nil }
 
-        it 'enqueues SyncPreexistingStatesApprovalRulesWorker' do
+        it 'does not enqueue SyncPreexistingStatesApprovalRulesWorker' do
           expect(Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).not_to receive(:perform_async)
 
           subject

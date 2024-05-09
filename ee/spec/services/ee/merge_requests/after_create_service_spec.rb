@@ -65,23 +65,23 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
                                                                             .with(merge_request.id)
       end
 
-      context 'when security_policies_sync_preexisting_state is disabled' do
+      context 'when merge request has scan_finding rules' do
         before do
-          stub_feature_flags(security_policies_sync_preexisting_state: false)
+          create(:report_approver_rule, :scan_finding, merge_request: merge_request)
         end
 
-        it 'does not schedule SyncPreexistingStatesApprovalRulesWorker' do
+        it 'enqueues SyncPreexistingStatesApprovalRulesWorker worker' do
           execute
 
-          expect(::Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).not_to(
-            have_received(:perform_async)
+          expect(Security::ScanResultPolicies::SyncPreexistingStatesApprovalRulesWorker).to(
+            have_received(:perform_async).with(merge_request.id)
           )
         end
       end
 
-      context 'when merge request has scan_finding rules' do
+      context 'when merge request has license_finding rules' do
         before do
-          create(:report_approver_rule, :scan_finding, merge_request: merge_request)
+          create(:report_approver_rule, :license_scanning, merge_request: merge_request)
         end
 
         it 'enqueues SyncPreexistingStatesApprovalRulesWorker worker' do
