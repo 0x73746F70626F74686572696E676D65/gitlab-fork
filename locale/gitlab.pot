@@ -33055,6 +33055,9 @@ msgstr ""
 msgid "Model registry"
 msgstr ""
 
+msgid "Model version not found"
+msgstr ""
+
 msgid "Model was successfully deleted"
 msgstr ""
 
