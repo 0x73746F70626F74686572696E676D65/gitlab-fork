@@ -152,18 +152,6 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
           expect(rendered).to have_selector(hand_raise_selector)
         end
       end
-
-      context 'without code suggestions' do
-        before do
-          stub_feature_flags(cs_connect_with_sales: false)
-        end
-
-        it 'does not render the code suggestions component' do
-          render
-
-          expect(rendered).not_to have_content(s_('CodeSuggestions|Introducing the GitLab Duo Pro add-on'))
-        end
-      end
     end
 
     context 'when purchasing a plan' do

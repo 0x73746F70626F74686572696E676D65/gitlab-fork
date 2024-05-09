@@ -442,47 +442,23 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       }
     end
 
-    context 'when cs_connect_with_sales ff is disabled' do
+    let(:code_suggestions_hand_raise_props) { helper.code_suggestions_hand_raise_props(group) }
+    let(:expected_data) { data.merge(code_suggestions_hand_raise_props) }
+
+    context 'when duo pro bulk assignment is available' do
       before do
-        stub_feature_flags(cs_connect_with_sales: false)
+        allow(helper).to receive(:duo_pro_bulk_user_assignment_available?).and_return(true)
       end
 
-      context 'when duo pro bulk assignment is available' do
-        before do
-          allow(helper).to receive(:duo_pro_bulk_user_assignment_available?).and_return(true)
-        end
-
-        it { is_expected.to eql(data.merge(duo_pro_bulk_user_assignment_available: 'true')) }
-      end
-
-      context 'when duo pro bulk assignment is not available' do
-        before do
-          allow(helper).to receive(:duo_pro_bulk_user_assignment_available?).and_return(false)
-        end
-
-        it { is_expected.to eql(data.merge(duo_pro_bulk_user_assignment_available: 'false')) }
-      end
+      it { is_expected.to eql(expected_data.merge(duo_pro_bulk_user_assignment_available: 'true')) }
     end
 
-    context 'when cs_connect_with_sales ff is enabled' do
-      let(:code_suggestions_hand_raise_props) { helper.code_suggestions_hand_raise_props(group) }
-      let(:expected_data) { data.merge(code_suggestions_hand_raise_props) }
-
-      context 'when duo pro bulk assignment is available' do
-        before do
-          allow(helper).to receive(:duo_pro_bulk_user_assignment_available?).and_return(true)
-        end
-
-        it { is_expected.to eql(expected_data.merge(duo_pro_bulk_user_assignment_available: 'true')) }
+    context 'when duo pro bulk assignment is not available' do
+      before do
+        allow(helper).to receive(:duo_pro_bulk_user_assignment_available?).and_return(false)
       end
 
-      context 'when duo pro bulk assignment is not available' do
-        before do
-          allow(helper).to receive(:duo_pro_bulk_user_assignment_available?).and_return(false)
-        end
-
-        it { is_expected.to eql(expected_data.merge(duo_pro_bulk_user_assignment_available: 'false')) }
-      end
+      it { is_expected.to eql(expected_data.merge(duo_pro_bulk_user_assignment_available: 'false')) }
     end
   end
 

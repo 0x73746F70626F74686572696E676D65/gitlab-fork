@@ -3,10 +3,7 @@ import { GlEmptyState, GlLink, GlSprintf, GlButton } from '@gitlab/ui';
 import emptyStateSvgUrl from '@gitlab/svgs/dist/illustrations/tanuki-ai-sm.svg?url';
 import { __, s__ } from '~/locale';
 import SafeHtml from '~/vue_shared/directives/safe_html';
-import {
-  codeSuggestionsLearnMoreLink,
-  salesLink,
-} from 'ee/usage_quotas/code_suggestions/constants';
+import { codeSuggestionsLearnMoreLink } from 'ee/usage_quotas/code_suggestions/constants';
 import HandRaiseLead from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead.vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 
@@ -14,7 +11,6 @@ export default {
   name: 'CodeSuggestionsIntro',
   helpLinks: {
     codeSuggestionsLearnMoreLink,
-    salesLink,
   },
   i18n: {
     contactSales: __('Contact sales'),
@@ -36,7 +32,6 @@ export default {
   },
   apolloProvider,
   inject: {
-    createHandRaiseLeadPath: { default: null },
     addDuoProHref: { default: null },
   },
   emptyStateSvgUrl,
@@ -63,16 +58,7 @@ export default {
       <gl-button :href="addDuoProHref" variant="confirm" category="primary">
         {{ $options.i18n.purchaseSeats }}
       </gl-button>
-      <hand-raise-lead v-if="createHandRaiseLeadPath" class="gl-sm-ml-3 gl-ml-3 gl-sm-ml-0" />
-      <gl-button
-        v-else
-        :href="$options.helpLinks.salesLink"
-        class="gl-sm-ml-3 gl-ml-3 gl-sm-ml-0"
-        variant="confirm"
-        category="secondary"
-      >
-        {{ $options.i18n.contactSales }}
-      </gl-button>
+      <hand-raise-lead class="gl-sm-ml-3 gl-ml-0" />
     </template>
   </gl-empty-state>
 </template>
