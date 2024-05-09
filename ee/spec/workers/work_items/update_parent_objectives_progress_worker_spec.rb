@@ -50,7 +50,7 @@ RSpec.describe WorkItems::UpdateParentObjectivesProgressWorker, feature_category
 
         work_item_note = parent_work_item.reload.notes.last
 
-        expect(work_item_note.note).to eq("changed progress to **#{new_value}**")
+        expect(work_item_note.note).to eq("changed progress to **#{new_value}%**")
       end
 
       it 'calls Graphql trigger for workitem updated' do

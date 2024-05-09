@@ -71,7 +71,7 @@ RSpec.describe ::SystemNotes::IssuablesService, feature_category: :team_planning
     end
 
     it 'sets the progress text' do
-      expect(subject.note).to eq "changed progress to **#{progress&.progress}**"
+      expect(subject.note).to eq "changed progress to **#{progress&.progress}%**"
     end
   end
 
