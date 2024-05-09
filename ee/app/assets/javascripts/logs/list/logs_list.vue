@@ -33,8 +33,10 @@ export default {
   },
   data() {
     return {
-      loading: false,
+      loadingLogs: false,
+      loadingMetadata: false,
       logs: [],
+      metadata: {},
       filters: queryToFilterObj(window.location.search),
       isDrawerOpen: false,
       selectedLog: null,
@@ -54,10 +56,11 @@ export default {
   },
   created() {
     this.fetchLogs();
+    this.fetchMetadata();
   },
   methods: {
     async fetchLogs() {
-      this.loading = true;
+      this.loadingLogs = true;
       try {
         const { logs, nextPageToken } = await this.observabilityClient.fetchLogs({
           pageToken: this.nextPageToken,
@@ -73,7 +76,21 @@ export default {
           message: s__('ObservabilityLogs|Failed to load logs.'),
         });
       } finally {
-        this.loading = false;
+        this.loadingLogs = false;
+      }
+    },
+    async fetchMetadata() {
+      this.loadingMetadata = true;
+      try {
+        this.metadata = await this.observabilityClient.fetchLogsSearchMetadata({
+          filters: this.filters,
+        });
+      } catch {
+        createAlert({
+          message: s__('ObservabilityLogs|Failed to load metadata.'),
+        });
+      } finally {
+        this.loadingMetadata = false;
       }
     },
     onToggleDrawer({ fingerprint }) {
@@ -99,6 +116,7 @@ export default {
       };
       this.closeDrawer();
       this.fetchLogs();
+      this.fetchMetadata();
     },
   },
 };
@@ -108,7 +126,7 @@ export default {
   <div>
     <url-sync :query="query" />
 
-    <div v-if="loading && logs.length === 0" class="gl-py-5">
+    <div v-if="loadingLogs && logs.length === 0" class="gl-py-5">
       <gl-loading-icon size="lg" />
     </div>
 
@@ -129,7 +147,7 @@ export default {
         </template>
 
         <template #default>
-          <gl-loading-icon v-if="loading" size="md" />
+          <gl-loading-icon v-if="loadingLogs" size="md" />
           <span v-else data-testid="logs-infinite-scrolling-legend">
             <gl-sprintf v-if="logs.length" :message="$options.i18n.infiniteScrollLegend">
               <template #count>{{ logs.length }}</template>

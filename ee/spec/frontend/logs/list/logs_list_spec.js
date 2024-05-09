@@ -9,6 +9,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
+import { createMockClient } from 'helpers/mock_observability_client';
 import { mockLogs } from './mock_data';
 
 jest.mock('~/alert');
@@ -47,17 +48,20 @@ describe('LogsList', () => {
   };
 
   beforeEach(() => {
-    observabilityClientMock = {
-      fetchLogs: jest.fn().mockResolvedValue({ logs: mockLogs, nextPageToken: 'page-2' }),
-    };
+    observabilityClientMock = createMockClient();
+    observabilityClientMock.fetchLogs.mockResolvedValue({
+      logs: mockLogs,
+      nextPageToken: 'page-2',
+    });
   });
 
-  it('renders the loading indicator while fetching logs', () => {
+  it('renders the loading indicator while fetching logs data', () => {
     mountComponent();
 
     expect(findLoadingIcon().exists()).toBe(true);
     expect(findLogsTable().exists()).toBe(false);
     expect(observabilityClientMock.fetchLogs).toHaveBeenCalled();
+    expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenCalled();
   });
 
   it('renders the LogsTable when fetching logs is done', async () => {
@@ -86,6 +90,14 @@ describe('LogsList', () => {
     expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to load logs.' });
     expect(findLogsTable().exists()).toBe(true);
     expect(findLogsTable().props('logs')).toEqual([]);
+  });
+
+  it('renders an alert when fetchLogsSearchMetadata fails', async () => {
+    observabilityClientMock.fetchLogsSearchMetadata.mockRejectedValue('error');
+
+    await mountComponent();
+
+    expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to load metadata.' });
   });
 
   describe('details drawer', () => {
@@ -276,6 +288,14 @@ describe('LogsList', () => {
         expect(findInfiniteScrolling().findComponent(GlLoadingIcon).exists()).toBe(true);
         expect(findInfiniteScrollingLegend().exists()).toBe(false);
       });
+
+      it('does not reload metadata', async () => {
+        expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenCalledTimes(1);
+
+        await bottomReached();
+
+        expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenCalledTimes(1);
+      });
     });
 
     describe('when no data is returned', () => {
@@ -385,18 +405,23 @@ describe('LogsList', () => {
       });
     });
 
-    it('fetches logs with filters', () => {
-      expect(observabilityClientMock.fetchLogs).toHaveBeenCalledWith({
-        filters: {
-          attributes: attributesFiltersObj,
-          dateRange: {
-            value: 'custom',
-            startDate: new Date('2020-01-01'),
-            endDate: new Date('2020-01-02'),
-          },
+    it('fetches logs and metadata with filters', () => {
+      const filters = {
+        attributes: attributesFiltersObj,
+        dateRange: {
+          value: 'custom',
+          startDate: new Date('2020-01-01'),
+          endDate: new Date('2020-01-02'),
         },
+      };
+      expect(observabilityClientMock.fetchLogs).toHaveBeenCalledWith({
+        filters,
         pageSize: 100,
         pageToken: null,
+      });
+
+      expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenCalledWith({
+        filters,
       });
     });
 
@@ -411,16 +436,20 @@ describe('LogsList', () => {
         expect(findFilteredSearch().props('dateRangeFilter')).toEqual({ value: '1h' });
       });
 
-      it('fetches logs with default time range filter', () => {
-        expect(observabilityClientMock.fetchLogs).toHaveBeenCalledWith({
-          filters: {
-            dateRange: {
-              value: '1h',
-            },
-            attributes: {},
+      it('fetches logs and metadata with default time range filter', () => {
+        const filters = {
+          dateRange: {
+            value: '1h',
           },
+          attributes: {},
+        };
+        expect(observabilityClientMock.fetchLogs).toHaveBeenCalledWith({
+          filters,
           pageSize: 100,
           pageToken: null,
+        });
+        expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenCalledWith({
+          filters,
         });
       });
     });
@@ -431,21 +460,25 @@ describe('LogsList', () => {
 
         await mountComponent();
       });
-      it('fetches logs with the proper filters', () => {
-        expect(observabilityClientMock.fetchLogs).toHaveBeenCalledWith({
-          filters: {
-            dateRange: {
-              value: 'custom',
-              endDate: new Date('2024-02-19T16:10:15.443Z'),
-              startDate: new Date('2024-02-19T16:10:15.443Z'),
-              timestamp: '2024-02-19T16:10:15.4433398Z',
-            },
-            attributes: {
-              service: [{ operator: '=', value: 'testservice' }],
-            },
+      it('fetches logs and metadata with the proper filters', () => {
+        const filters = {
+          dateRange: {
+            value: 'custom',
+            endDate: new Date('2024-02-19T16:10:15.443Z'),
+            startDate: new Date('2024-02-19T16:10:15.443Z'),
+            timestamp: '2024-02-19T16:10:15.4433398Z',
           },
+          attributes: {
+            service: [{ operator: '=', value: 'testservice' }],
+          },
+        };
+        expect(observabilityClientMock.fetchLogs).toHaveBeenCalledWith({
+          filters,
           pageSize: 100,
           pageToken: null,
+        });
+        expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenCalledWith({
+          filters,
         });
       });
 
@@ -494,6 +527,7 @@ describe('LogsList', () => {
     describe('when filter changes', () => {
       beforeEach(async () => {
         observabilityClientMock.fetchLogs.mockReset();
+        observabilityClientMock.fetchLogsSearchMetadata.mockReset();
 
         await findFilteredSearch().vm.$emit('filter', {
           dateRange: { value: '7d' },
@@ -502,17 +536,22 @@ describe('LogsList', () => {
         await waitForPromises();
       });
 
-      it('fetches logs with the updated filters', () => {
+      it('fetches logs and metadata with the updated filters', () => {
+        const filters = {
+          dateRange: {
+            value: '7d',
+          },
+          attributes: { search: [{ value: 'some-log' }] },
+        };
         expect(observabilityClientMock.fetchLogs).toHaveBeenCalledTimes(1);
         expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
-          filters: {
-            dateRange: {
-              value: '7d',
-            },
-            attributes: { search: [{ value: 'some-log' }] },
-          },
+          filters,
           pageSize: 100,
           pageToken: null,
+        });
+        expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenCalledTimes(1);
+        expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenLastCalledWith({
+          filters,
         });
       });
 
