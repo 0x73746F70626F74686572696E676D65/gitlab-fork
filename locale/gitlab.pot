@@ -35079,6 +35079,9 @@ msgstr ""
 msgid "ObservabilityLogs|Failed to load logs."
 msgstr ""
 
+msgid "ObservabilityLogs|Failed to load metadata."
+msgstr ""
+
 msgid "ObservabilityLogs|Fingerprint"
 msgstr ""
 
