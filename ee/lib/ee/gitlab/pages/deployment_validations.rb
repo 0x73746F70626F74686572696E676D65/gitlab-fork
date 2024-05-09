@@ -9,7 +9,10 @@ module EE
         include ::Gitlab::Utils::StrongMemoize
 
         prepended do
-          validate :validate_versioned_deployments_limit
+          with_options unless: -> { errors.any? } do
+            validate :validate_versioned_deployments_limit
+            validate :validate_multiple_deployments_enabled
+          end
         end
 
         override :max_size_from_settings
@@ -38,6 +41,16 @@ module EE
           ::PagesDeployment.count_versioned_deployments_for(project, versioned_deployments_limit + 1)
         end
         strong_memoize_attr :versioned_deployments_count
+
+        def validate_multiple_deployments_enabled
+          return if path_prefix.blank?
+          return if ::Gitlab::Pages.multiple_versions_enabled_for?(project)
+
+          errors.add(:base, _(
+            "Configuring path_prefix is only allowed when using multiple pages deployments per project, " \
+            "which is disabled for your project."
+          ))
+        end
       end
     end
   end

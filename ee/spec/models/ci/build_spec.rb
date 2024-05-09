@@ -1211,21 +1211,19 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
   end
 
   describe '#pages', feature_category: :pages do
-    where(:pages_generator, :multiple_versions_enabled, :options, :result) do
-      false | false | {} | {}
-      false | false | { pages: { path_prefix: 'foo' } } | {}
-      false | true | { pages: { path_prefix: 'foo' } } | {}
-      true | false | { pages: { path_prefix: 'foo' } } | {}
-      true | true | { pages: { path_prefix: nil } } | { path_prefix: '' }
-      true | true | { pages: { path_prefix: 'foo' } } | { path_prefix: 'foo' }
-      true | true | { pages: { path_prefix: '$CI_COMMIT_BRANCH' } } | { path_prefix: 'master' }
+    where(:pages_generator, :options, :result) do
+      false | {} | {}
+      false | { pages: { path_prefix: 'foo' } } | {}
+      true | { pages: { path_prefix: 'foo' } } | { path_prefix: 'foo' }
+      true | { pages: { path_prefix: nil } } | { path_prefix: '' }
+      true | { pages: { path_prefix: 'foo' } } | { path_prefix: 'foo' }
+      true | { pages: { path_prefix: '$CI_COMMIT_BRANCH' } } | { path_prefix: 'master' }
     end
 
     with_them do
       before do
         allow(job).to receive(:pages_generator?).and_return(pages_generator)
         allow(job).to receive(:options).and_return(options)
-        allow(Gitlab::Pages).to receive(:multiple_versions_enabled_for?).and_return(multiple_versions_enabled)
       end
 
       subject(:pages_options) { job.pages }

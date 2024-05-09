@@ -13696,6 +13696,9 @@ msgstr ""
 msgid "Configure your environments to be deployed to specific geographical regions"
 msgstr ""
 
+msgid "Configuring path_prefix is only allowed when using multiple pages deployments per project, which is disabled for your project."
+msgstr ""
+
 msgid "Confirm"
 msgstr ""
 

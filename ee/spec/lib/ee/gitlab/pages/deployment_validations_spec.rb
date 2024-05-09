@@ -19,6 +19,10 @@ RSpec.describe Gitlab::Pages::DeploymentValidations, feature_category: :pages do
 
   subject(:validations) { described_class.new(project, build) }
 
+  before_all do
+    project.actual_limits.update!(active_versioned_pages_deployments_limit_by_namespace: 100)
+  end
+
   before do
     stub_pages_setting(enabled: true)
 
@@ -98,8 +102,7 @@ RSpec.describe Gitlab::Pages::DeploymentValidations, feature_category: :pages do
         .to receive(:multiple_versions_enabled_for?)
         .and_return(true)
 
-      plan_name = project.root_namespace.actual_plan.name
-      create(:plan_limits, :"#{plan_name}_plan", active_versioned_pages_deployments_limit_by_namespace: limit)
+      project.actual_limits.update!(active_versioned_pages_deployments_limit_by_namespace: limit)
     end
 
     include_examples "valid pages deployment"
@@ -128,6 +131,54 @@ RSpec.describe Gitlab::Pages::DeploymentValidations, feature_category: :pages do
 
       include_examples "invalid pages deployment",
         message: "Namespace reached its allowed limit of 2 extra deployments"
+    end
+  end
+
+  context "for multiple deployments is enabled validation" do
+    context "when multiple deployments is enabled" do
+      before do
+        allow(::Gitlab::Pages)
+          .to receive(:multiple_versions_enabled_for?)
+          .with(build.project)
+          .and_return(true)
+      end
+
+      context "and path prefix is empty" do
+        let(:build_options) { { pages: { path_prefix: "" } } }
+
+        include_examples "valid pages deployment"
+      end
+
+      context "and path prefix is not empty" do
+        let(:build_options) { { pages: { path_prefix: "prefix" } } }
+
+        include_examples "valid pages deployment"
+      end
+    end
+
+    context "when multiple deployments is disabled" do
+      before do
+        allow(::Gitlab::Pages)
+          .to receive(:multiple_versions_enabled_for?)
+            .with(build.project)
+            .and_return(false)
+      end
+
+      context "and path prefix is empty" do
+        let(:build_options) { { pages: { path_prefix: "" } } }
+
+        include_examples "valid pages deployment"
+      end
+
+      context "and path prefix is not empty" do
+        let_it_be(:build_options) { { pages: { path_prefix: "prefix" } } }
+
+        include_examples "invalid pages deployment",
+          message: <<~MESSAGE.squish
+          Configuring path_prefix is only allowed when using multiple pages deployments per project,
+          which is disabled for your project.
+          MESSAGE
+      end
     end
   end
 end
