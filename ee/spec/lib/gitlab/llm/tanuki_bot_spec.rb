@@ -26,7 +26,6 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let(:anthropic_client) { ::Gitlab::Llm::Anthropic::Client.new(user) }
     let(:embedding) { Array.new(1536, 0.5) }
     let(:vertex_embedding) { Array.new(768, 0.5) }
-    let(:openai_response) { { "data" => [{ "embedding" => embedding }] } }
     let(:predictions) { [{ "embeddings" => { "values" => vertex_embedding } }] }
     let(:error) { nil }
     let(:vertex_response) { { "predictions" => predictions, "error" => error } }
