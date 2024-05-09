@@ -13,7 +13,7 @@ RSpec.describe Llm::ExtraResourceFinder, :saas, feature_category: :duo_chat do
   let_it_be(:guest) { create(:user, guest_of: project) }
   let_it_be(:issue) { create(:issue, project: project) }
 
-  include_context 'with ai chat enabled for group on SaaS'
+  include_context 'with duo features enabled and ai chat available for group on SaaS'
 
   describe '.execute' do
     subject(:execute) { described_class.new(current_user, referer_url).execute }

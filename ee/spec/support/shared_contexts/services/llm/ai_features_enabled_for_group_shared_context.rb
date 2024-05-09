@@ -28,7 +28,7 @@ RSpec.shared_context 'with experiment features disabled for group' do
   end
 end
 
-RSpec.shared_context 'with experiment features enabled for self-managed' do
+RSpec.shared_context 'with duo features enabled and ai chat available for self-managed' do
   before do
     allow(Gitlab).to receive(:org_or_com?).and_return(false)
     stub_application_setting(duo_features_enabled: true)
@@ -36,7 +36,15 @@ RSpec.shared_context 'with experiment features enabled for self-managed' do
   end
 end
 
-RSpec.shared_context 'with experiment features disabled for self-managed' do
+RSpec.shared_context 'with duo features enabled and ai chat not available for self-managed' do
+  before do
+    allow(Gitlab).to receive(:org_or_com?).and_return(false)
+    stub_application_setting(duo_features_enabled: true)
+    stub_licensed_features(ai_chat: false)
+  end
+end
+
+RSpec.shared_context 'with duo features disabled and ai chat available for self-managed' do
   before do
     allow(Gitlab).to receive(:org_or_com?).and_return(false)
     stub_application_setting(duo_features_enabled: false)
@@ -44,7 +52,7 @@ RSpec.shared_context 'with experiment features disabled for self-managed' do
   end
 end
 
-RSpec.shared_context 'with ai chat enabled for group on SaaS' do
+RSpec.shared_context 'with duo features enabled and ai chat available for group on SaaS' do
   before do
     allow(Gitlab).to receive(:org_or_com?).and_return(true)
     stub_ee_application_setting(should_check_namespace_plan: true)
@@ -53,11 +61,11 @@ RSpec.shared_context 'with ai chat enabled for group on SaaS' do
   end
 end
 
-RSpec.shared_context 'with ai features disabled and licensed chat for group on SaaS' do
+RSpec.shared_context 'with duo features enabled and ai chat not available for group on SaaS' do
   before do
     allow(Gitlab).to receive(:org_or_com?).and_return(true)
     stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_licensed_features(ai_chat: true)
-    group.namespace_settings.reload.update!(duo_features_enabled: false)
+    stub_licensed_features(ai_chat: false)
+    group.namespace_settings.reload.update!(duo_features_enabled: true)
   end
 end

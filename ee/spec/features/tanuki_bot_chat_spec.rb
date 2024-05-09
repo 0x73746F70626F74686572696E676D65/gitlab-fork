@@ -62,7 +62,7 @@ RSpec.describe 'GitLab Duo Chat', :js, feature_category: :global_search do
     end
 
     describe 'Feature enabled and available' do
-      include_context 'with experiment features enabled for self-managed'
+      include_context 'with duo features enabled and ai chat available for self-managed'
 
       before do
         visit root_path

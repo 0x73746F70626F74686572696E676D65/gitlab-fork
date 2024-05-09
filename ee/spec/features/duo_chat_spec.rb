@@ -25,7 +25,7 @@ RSpec.describe 'Duo Chat', :js, :saas, :clean_gitlab_redis_cache, feature_catego
   end
 
   context 'when group has an AI features license', :sidekiq_inline do
-    include_context 'with ai chat enabled for group on SaaS'
+    include_context 'with duo features enabled and ai chat available for group on SaaS'
 
     let_it_be_with_reload(:group) { create(:group_with_plan, plan: :premium_plan) }
 

@@ -30,7 +30,7 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
     subject { described_class.new(user, resource, options) }
 
     context 'when ai features are enabled for instance' do
-      include_context 'with experiment features enabled for self-managed'
+      include_context 'with duo features enabled and ai chat available for self-managed'
 
       before do
         allow(SecureRandom).to receive(:uuid).and_return('uuid')
@@ -122,7 +122,7 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
     end
 
     context 'when ai features are disabled for instance' do
-      include_context 'with experiment features disabled for self-managed'
+      include_context 'with duo features disabled and ai chat available for self-managed'
 
       it 'returns an error' do
         expect(Llm::CompletionWorker).not_to receive(:perform_for)
