@@ -34,6 +34,10 @@ FactoryBot.define do
       read_dependency { true }
     end
 
+    trait :admin_web_hook do
+      admin_web_hook { true }
+    end
+
     # this trait can be used only for self-managed
     trait(:instance) { namespace { nil } }
   end

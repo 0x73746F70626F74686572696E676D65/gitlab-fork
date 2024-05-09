@@ -1001,6 +1001,19 @@ module EE
       rule { container_scanning_for_registry_available & can?(:maintainer_access) }.policy do
         enable :enable_container_scanning_for_registry
       end
+
+      condition(:role_enables_admin_web_hook) do
+        ::Auth::MemberRoleAbilityLoader.new(
+          user: @user,
+          resource: @subject,
+          ability: :admin_web_hook
+        ).has_ability?
+      end
+
+      rule { custom_roles_allowed & role_enables_admin_web_hook }.policy do
+        enable :read_web_hook
+        enable :admin_web_hook
+      end
     end
 
     override :lookup_access_level!

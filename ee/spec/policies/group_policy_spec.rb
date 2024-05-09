@@ -3556,6 +3556,13 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
       it_behaves_like 'custom roles abilities'
     end
+
+    context 'for a member role with admin_web_hook true' do
+      let(:member_role_abilities) { { admin_web_hook: true } }
+      let(:allowed_abilities) { [:admin_web_hook, :read_web_hook] }
+
+      it_behaves_like 'custom roles abilities'
+    end
   end
 
   context 'for :read_limit_alert' do
