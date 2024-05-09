@@ -13,7 +13,6 @@ module Groups
 
       before_action { authorize_view_by_action!(:read_group_analytics_dashboards) }
       before_action do
-        push_frontend_feature_flag(:group_analytics_dashboard_dynamic_vsd, @group)
         push_frontend_feature_flag(:ai_impact_analytics_dashboard, @group)
 
         load_visualizations
@@ -28,39 +27,16 @@ module Groups
       def value_streams_dashboard
         respond_to do |format|
           format.html do
-            # TODO: Render the shared analytics app if `group_analytics_dashboard_dynamic_vsd` is enabled
-            #       the query params approach for specifying namespaces only applies to the legacy VSD page.
-            #       This check handles rendering when we directly
-            #       link to `/-/analytics/dashboards/value_streams_dashboard`
-            if Feature.enabled?(:group_analytics_dashboard_dynamic_vsd, @group)
-              track_value_streams_event
+            track_value_streams_event
 
-              render :index
-            else
-              @pointer_project = find_pointer_project
-
-              @namespaces =
-                if params[:query].present?
-                  paths_array = params[:query].split(",")
-                  sources = Route.inside_path(@group.full_path).where(path: paths_array).map(&:source) # rubocop:disable CodeReuse/ActiveRecord
-
-                  sources.map do |source|
-                    {
-                      name: source.name,
-                      full_path: source.full_path,
-                      is_project: project?(source)
-                    }
-                  end
-                else
-                  []
-                end
-            end
+            render :index
           end
         end
       end
 
       private
 
+      # TODO: we might be able to remove these load methods now and rely on the graphql queries
       def load_visualizations
         @available_visualizations = [load_yaml_dashboard_config(VALUE_STREAM_VISUALIZATIONS_PATH, "dora_chart.yaml")]
       end
@@ -72,15 +48,6 @@ module Groups
 
         visualizations[:slug] = file.gsub(".yaml", "")
         visualizations
-      end
-
-      def find_pointer_project
-        project = @group.all_projects.find_by_id(@group.analytics_dashboards_pointer&.target_project_id)
-        project&.as_json(only: %w[id name], methods: %w[full_path])
-      end
-
-      def project?(source)
-        source.model_name.param_key == "project"
       end
 
       def tracking_namespace_source

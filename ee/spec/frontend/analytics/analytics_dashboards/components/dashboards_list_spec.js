@@ -6,7 +6,6 @@ import ProductAnalyticsOnboarding from 'ee/product_analytics/onboarding/componen
 import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboards_list.vue';
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { VALUE_STREAMS_DASHBOARD_CONFIG } from 'ee/analytics/dashboards/constants';
 import { InternalEvents } from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { createAlert } from '~/alert';
@@ -198,7 +197,7 @@ describe('DashboardsList', () => {
       expect(findNewDashboardButton().exists()).toBe(false);
     });
 
-    describe('when `groupAnalyticsDashboardDynamicVsd` FF is disabled', () => {
+    describe('with successful dashboards query', () => {
       beforeEach(() => {
         mockAnalyticsDashboardsHandler = jest
           .fn()
@@ -207,37 +206,12 @@ describe('DashboardsList', () => {
         createWrapper({ isProject: false, isGroup: true });
       });
 
-      it('should redirect to the legacy VSD page', async () => {
-        await waitForPromises();
-        expect(findListItems()).toHaveLength(1);
-        expect(findListItems().at(0).props('dashboard')).toMatchObject(
-          VALUE_STREAMS_DASHBOARD_CONFIG,
-        );
-      });
-    });
-
-    describe('when `groupAnalyticsDashboardDynamicVsd` FF is enabled', () => {
-      beforeEach(() => {
-        mockAnalyticsDashboardsHandler = jest
-          .fn()
-          .mockResolvedValue(TEST_CUSTOM_GROUP_VSD_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
-
-        createWrapper({
-          isProject: false,
-          isGroup: true,
-          glFeatures: {
-            groupAnalyticsDashboardDynamicVsd: true,
-          },
-        });
-      });
-
       it('should render the Value streams dashboards link', async () => {
         await waitForPromises();
         expect(findListItems()).toHaveLength(1);
 
         const dashboardAttributes = findListItems().at(0).props('dashboard');
 
-        expect(dashboardAttributes).not.toMatchObject(VALUE_STREAMS_DASHBOARD_CONFIG);
         expect(dashboardAttributes).toMatchObject({
           slug: 'value_streams_dashboard',
           title: 'Value Streams Dashboard',

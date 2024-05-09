@@ -1,7 +1,4 @@
 - add_to_breadcrumbs s_('Analytics|Analytics dashboards'), group_analytics_dashboards_path(@group)
 - breadcrumb_title s_('Analytics|Value Streams Dashboard')
 
-- if Feature.enabled?(:group_analytics_dashboard_dynamic_vsd, @group)
-  #js-analytics-dashboards-list-app{ data: analytics_dashboards_list_app_data(@group).merge({ available_visualizations: @available_visualizations&.to_json, data_source_clickhouse: @data_source_clickhouse.to_s, topics_explore_projects_path: topics_explore_projects_path }) }
-- else
-  #js-analytics-dashboards-app{ data: { full_path: @group.full_path, namespaces: @namespaces.to_json, pointer_project: @pointer_project&.to_json, available_visualizations: @available_visualizations&.to_json, topics_explore_projects_path: topics_explore_projects_path, data_source_clickhouse: @data_source_clickhouse.to_s } }
+#js-analytics-dashboards-list-app{ data: analytics_dashboards_list_app_data(@group).merge({ available_visualizations: @available_visualizations&.to_json, data_source_clickhouse: @data_source_clickhouse.to_s, topics_explore_projects_path: topics_explore_projects_path }) }

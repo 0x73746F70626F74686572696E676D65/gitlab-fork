@@ -83,29 +83,4 @@ RSpec.describe 'Analytics Dashboard Visualizations', :js, feature_category: :val
 
     it_behaves_like 'renders dora performers score'
   end
-
-  context 'with legacy value streams dashboard' do
-    before do
-      stub_feature_flags(group_analytics_dashboard_dynamic_vsd: false)
-      stub_licensed_features(group_level_analytics_dashboard: true, dora4_analytics: true, security_dashboard: true,
-        cycle_analytics_for_groups: true)
-
-      allow(Gitlab::ClickHouse).to receive(:enabled_for_analytics?).and_return(true)
-
-      create_mock_dora_chart_metrics(environment)
-      create_mock_dora_performers_score_metrics(group)
-
-      sign_in(user)
-
-      visit_group_value_streams_dashboard(group)
-    end
-
-    it_behaves_like 'renders metrics comparison table' do
-      let(:panel_title) { "#{group.name} group" }
-    end
-
-    it_behaves_like 'renders contributor count'
-    it_behaves_like 'does not render usage overview metrics'
-    it_behaves_like 'renders dora performers score'
-  end
 end

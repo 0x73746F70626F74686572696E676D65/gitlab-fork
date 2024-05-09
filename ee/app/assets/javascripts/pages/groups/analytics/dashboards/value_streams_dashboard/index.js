@@ -3,9 +3,7 @@ import { __ } from '~/locale';
 
 try {
   (async () => {
-    const { default: initApp } = gon.features.groupAnalyticsDashboardDynamicVsd
-      ? await import('ee/analytics/analytics_dashboards')
-      : await import('ee/analytics/dashboards/value_streams_dashboard');
+    const { default: initApp } = await import('ee/analytics/analytics_dashboards');
     return initApp();
   })();
 } catch (error) {

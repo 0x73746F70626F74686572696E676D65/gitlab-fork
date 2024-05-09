@@ -4,11 +4,6 @@ import { InternalEvents } from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { createAlert } from '~/alert';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import {
-  VALUE_STREAMS_DASHBOARD_CONFIG,
-  BUILT_IN_VALUE_STREAM_DASHBOARD,
-  CUSTOM_VALUE_STREAM_DASHBOARD,
-} from 'ee/analytics/dashboards/constants';
 import getAllCustomizableDashboardsQuery from '../graphql/queries/get_all_customizable_dashboards.query.graphql';
 import DashboardListItem from './list/dashboard_list_item.vue';
 
@@ -68,17 +63,7 @@ export default {
       return this.isProject && this.customDashboardsProject;
     },
     dashboards() {
-      if (this.isProject || this.glFeatures.groupAnalyticsDashboardDynamicVsd) {
-        return this.userDashboards;
-      }
-
-      // Filter out the graphql route and use the built-in config instead
-      // This will redirect to the backend route for `/value_streams_dashboard
-      return this.userDashboards
-        .filter(({ slug }) => {
-          return ![BUILT_IN_VALUE_STREAM_DASHBOARD, CUSTOM_VALUE_STREAM_DASHBOARD].includes(slug);
-        })
-        .concat([VALUE_STREAMS_DASHBOARD_CONFIG]);
+      return this.userDashboards;
     },
     isLoading() {
       return this.$apollo.queries.userDashboards.loading;
