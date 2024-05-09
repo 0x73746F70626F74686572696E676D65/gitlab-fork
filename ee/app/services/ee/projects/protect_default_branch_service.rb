@@ -21,7 +21,6 @@ module EE
 
       override :code_owner_approval_required?
       def code_owner_approval_required?
-        return false unless ::Feature.enabled?(:default_branch_protection_defaults, project)
         return false unless ::License.feature_available?(:code_owner_approval_required)
 
         default_branch_protection.code_owner_approval_required?
