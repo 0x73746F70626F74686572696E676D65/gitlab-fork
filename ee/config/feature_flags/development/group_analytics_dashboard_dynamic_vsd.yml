@@ -1,8 +1,0 @@
----
-name: group_analytics_dashboard_dynamic_vsd
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/137091
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/432185
-milestone: '16.7'
-type: development
-group: group::optimize
-default_enabled: false

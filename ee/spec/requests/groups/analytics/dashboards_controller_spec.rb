@@ -200,21 +200,7 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
         end
 
         it_behaves_like 'sets data source instance variable correctly'
-
-        context 'when group_analytics_dashboard_dynamic_vsd feature flag is disabled' do
-          let_it_be(:subgroup) { create(:group, parent: group) }
-          let_it_be(:subgroup_projects) { create_list(:project, 2, :public, group: subgroup) }
-
-          before do
-            stub_feature_flags(group_analytics_dashboard_dynamic_vsd: false)
-          end
-
-          it_behaves_like 'built in value streams dashboard'
-        end
-
-        context 'when group_analytics_dashboard_dynamic_vsd feature flag is enabled' do
-          it_behaves_like 'shared analytics value streams dashboard'
-        end
+        it_behaves_like 'shared analytics value streams dashboard'
       end
     end
   end
@@ -278,72 +264,7 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
         end
 
         it_behaves_like 'sets data source instance variable correctly'
-
-        context 'when group_analytics_dashboard_dynamic_vsd feature flag is enabled' do
-          let_it_be(:subgroup) { create(:group, parent: group) }
-          let_it_be(:subgroup_projects) { create_list(:project, 2, :public, group: subgroup) }
-
-          it_behaves_like 'shared analytics value streams dashboard'
-        end
-
-        context 'when group_analytics_dashboard_dynamic_vsd feature flag is disabled' do
-          before do
-            stub_feature_flags(group_analytics_dashboard_dynamic_vsd: false)
-          end
-
-          it_behaves_like 'built in value streams dashboard'
-
-          it 'passes pointer_project if it has been configured' do
-            analytics_dashboards_pointer
-            request
-
-            expect(response).to be_successful
-
-            expect(js_app_attributes['data-pointer-project'].value).to eq({
-              id: analytics_dashboards_pointer.target_project.id,
-              name: analytics_dashboards_pointer.target_project.name,
-              full_path: analytics_dashboards_pointer.target_project.full_path
-            }.to_json)
-          end
-
-          it 'passes data_source_clickhouse to data attributes' do
-            request
-
-            expect(response).to be_successful
-
-            expect(js_app_attributes).to include('data-data-source-clickhouse')
-          end
-
-          context 'when project_id outside of the group hierarchy was set' do
-            it 'does not pass the project pointer' do
-              project_outside_the_hierarchy = create(:project)
-              analytics_dashboards_pointer.update_column(:target_project_id, project_outside_the_hierarchy.id)
-
-              request
-
-              expect(response).to be_successful
-
-              expect(js_app_attributes).not_to include('data-pointer-project')
-            end
-          end
-
-          it 'does not pass pointer_project if the configured project is missing' do
-            analytics_dashboards_pointer.target_project.destroy!
-            request
-
-            expect(response).to be_successful
-
-            expect(js_app_attributes).not_to include('data-pointer-project')
-          end
-
-          it 'does not pass pointer_project if it was not configured' do
-            request
-
-            expect(response).to be_successful
-
-            expect(js_app_attributes).not_to include('data-pointer-project')
-          end
-        end
+        it_behaves_like 'shared analytics value streams dashboard'
       end
     end
   end

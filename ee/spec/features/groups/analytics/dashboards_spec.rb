@@ -11,8 +11,6 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :value_stream_manag
   let_it_be(:project) { create(:project, :repository, name: "vsd project", group: group) }
   let_it_be(:custom_vsd_fixture_path) { 'ee/spec/fixtures/analytics/valid_value_stream_dashboard_configuration.yaml' }
 
-  gridstack_grid_testid = "[data-testid='gridstack-grid']"
-
   it 'renders a 403 error for a user without permission' do
     sign_in(user)
     visit group_analytics_dashboards_path(group)
@@ -132,30 +130,6 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :value_stream_manag
           expect(page).to have_link(text: 'troubleshooting documentation')
         end
       end
-    end
-
-    context 'with legacy value streams dashboard' do
-      before do
-        stub_licensed_features(group_level_analytics_dashboard: true, dora4_analytics: true, security_dashboard: true,
-          cycle_analytics_for_groups: true)
-        stub_feature_flags(group_analytics_dashboard_dynamic_vsd: false)
-
-        sign_in(user)
-
-        visit_group_value_streams_dashboard(group)
-      end
-
-      it 'renders the legacy VSD page' do
-        expect(page).not_to have_selector gridstack_grid_testid
-        expect(find_by_testid('legacy-vsd')).to be_visible
-
-        expect(page).to have_content _("Value Streams Dashboard")
-        expect(page).to have_content _("The Value Streams Dashboard allows all stakeholders from executives to " \
-                                       "individual contributors to identify trends, patterns, and opportunities " \
-                                       "for software development improvements. Learn more.")
-      end
-
-      it_behaves_like 'renders link to the feedback survey'
     end
   end
 end
