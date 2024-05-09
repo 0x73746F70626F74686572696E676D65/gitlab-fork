@@ -1,4 +1,5 @@
 import { s__ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 export const EVENTS_TYPES = ['pageViews', 'linkClickEvents', 'events'];
 
@@ -211,3 +212,7 @@ export const EVENT_LABEL_USER_SUBMITTED_GITLAB_DUO_QUERY_FROM_VISUALIZATION_DESI
   'user_submitted_gitlab_duo_query_from_visualization_designer';
 
 export const EVENT_LABEL_EXCLUDE_ANONYMISED_USERS = 'exclude_anonymised_users';
+
+export const PANEL_TROUBLESHOOTING_URL = helpPagePath(
+  '/user/analytics/analytics_dashboards#troubleshooting',
+);

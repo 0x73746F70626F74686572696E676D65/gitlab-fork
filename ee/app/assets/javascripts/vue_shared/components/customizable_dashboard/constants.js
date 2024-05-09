@@ -1,5 +1,3 @@
-import { helpPagePath } from '~/helpers/help_page_helper';
-
 export const GRIDSTACK_MARGIN = 8;
 export const GRIDSTACK_CSS_HANDLE = '.grid-stack-item-handle';
 
@@ -9,10 +7,6 @@ export const GRIDSTACK_CSS_HANDLE = '.grid-stack-item-handle';
  */
 export const GRIDSTACK_CELL_HEIGHT = '125px';
 export const GRIDSTACK_MIN_ROW = 1;
-
-export const PANEL_TROUBLESHOOTING_URL = helpPagePath(
-  '/user/analytics/analytics_dashboards#troubleshooting',
-);
 
 export const PANEL_POPOVER_DELAY = {
   hide: 500,

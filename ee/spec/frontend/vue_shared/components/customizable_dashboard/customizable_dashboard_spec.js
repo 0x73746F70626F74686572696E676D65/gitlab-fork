@@ -10,7 +10,7 @@ import GridstackWrapper from 'ee/vue_shared/components/customizable_dashboard/gr
 import AnonUsersFilter from 'ee/vue_shared/components/customizable_dashboard/filters/anon_users_filter.vue';
 import DateRangeFilter from 'ee/vue_shared/components/customizable_dashboard/filters/date_range_filter.vue';
 import waitForPromises from 'helpers/wait_for_promises';
-import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
+import AnalyticsPanel from 'ee/analytics/analytics_dashboards/components/analytics_panel.vue';
 import AvailableVisualizationsDrawer from 'ee/vue_shared/components/customizable_dashboard/dashboard_editor/available_visualizations_drawer.vue';
 import {
   filtersToQueryParams,
@@ -107,7 +107,7 @@ describe('CustomizableDashboard', () => {
     });
   };
 
-  const findPanels = () => wrapper.findAllComponents(PanelsBase);
+  const findPanels = () => wrapper.findAllComponents(AnalyticsPanel);
   const findDashboardTitle = () => wrapper.findByTestId('dashboard-title');
   const findEditModeTitle = () => wrapper.findByTestId('edit-mode-title');
   const findEditButton = () => wrapper.findByTestId('dashboard-edit-btn');

@@ -1,11 +1,11 @@
 <script>
 import { GlButton, GlButtonGroup, GlLoadingIcon } from '@gitlab/ui';
-import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
 import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
 
-import DataTable from 'ee/analytics/analytics_dashboards/components/visualizations/data_table.vue';
 import { convertToTableFormat } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
+import DataTable from '../visualizations/data_table.vue';
+import AnalyticsPanel from '../analytics_panel.vue';
 
 import {
   PANEL_DISPLAY_TYPES,
@@ -21,7 +21,7 @@ export default {
     GlButton,
     GlButtonGroup,
     GlLoadingIcon,
-    PanelsBase,
+    AnalyticsPanel,
     DataTable,
   },
   props: {
@@ -137,7 +137,7 @@ export default {
         v-if="displayType === $options.PANEL_DISPLAY_TYPES.VISUALIZATION"
         class="grid-stack-item gl-m-5"
       >
-        <panels-base
+        <analytics-panel
           v-if="selectedVisualizationType"
           :title="title"
           :visualization="resultVisualization"

@@ -1,4 +1,5 @@
 import { TEST_HOST } from 'spec/test_constants';
+import { getUniquePanelId } from 'ee/vue_shared/components/customizable_dashboard/utils';
 
 export const TEST_TRACKING_KEY = 'gid://gitlab/Project/2';
 
@@ -745,4 +746,29 @@ export const mockUsageMetricsNoData = [
 export const mockUsageOverviewData = {
   namespace: mockUsageNamespaceData,
   metrics: mockUsageMetrics,
+};
+
+export const invalidVisualization = {
+  type: 'LineChart',
+  slug: 'invalid_visualization',
+  version: 23, // bad version
+  titlePropertyTypoOhNo: 'Cube line chart', // bad property name
+  data: {
+    type: 'cube_analytics',
+    query: {
+      users: {
+        measures: ['TrackedEvents.count'],
+        dimensions: ['TrackedEvents.eventType'],
+      },
+    },
+  },
+  errors: [
+    `property '/version' is not: 1`,
+    `property '/titlePropertyTypoOhNo' is invalid: error_type=schema`,
+  ],
+};
+
+export const mockPanel = {
+  ...getGraphQLDashboard({ slug: 'behavior', title: 'Behavior' }, true).panels.nodes[0],
+  id: getUniquePanelId(),
 };

@@ -1,82 +1,50 @@
 <script>
-import {
-  GlDisclosureDropdown,
-  GlIcon,
-  GlLink,
-  GlLoadingIcon,
-  GlPopover,
-  GlSprintf,
-  GlButton,
-  GlDisclosureDropdownItem,
-} from '@gitlab/ui';
+import { GlDisclosureDropdown, GlIcon, GlLoadingIcon, GlPopover } from '@gitlab/ui';
 import uniqueId from 'lodash/uniqueId';
-import isString from 'lodash/isString';
-import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
-import { isEmptyPanelData } from 'ee/vue_shared/components/customizable_dashboard/utils';
+import { isObject } from 'lodash';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
-import { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
-import { __, s__, sprintf } from '~/locale';
-import { PANEL_POPOVER_DELAY, PANEL_TROUBLESHOOTING_URL } from './constants';
+import { PANEL_POPOVER_DELAY } from './constants';
 
 export default {
-  name: 'AnalyticsDashboardPanel',
+  name: 'PanelsBase',
   components: {
-    GlDisclosureDropdownItem,
     GlDisclosureDropdown,
-    GlIcon,
-    GlLink,
     GlLoadingIcon,
+    GlIcon,
     GlPopover,
-    GlSprintf,
-    GlButton,
     TooltipOnTruncate,
-    LineChart: () =>
-      import('ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue'),
-    ColumnChart: () =>
-      import('ee/analytics/analytics_dashboards/components/visualizations/column_chart.vue'),
-    DataTable: () =>
-      import('ee/analytics/analytics_dashboards/components/visualizations/data_table.vue'),
-    SingleStat: () =>
-      import('ee/analytics/analytics_dashboards/components/visualizations/single_stat.vue'),
-    DORAChart: () =>
-      import('ee/analytics/analytics_dashboards/components/visualizations/dora_chart.vue'),
-    UsageOverview: () =>
-      import('ee/analytics/analytics_dashboards/components/visualizations/usage_overview.vue'),
-    DoraPerformersScore: () =>
-      import(
-        'ee/analytics/analytics_dashboards/components/visualizations/dora_performers_score.vue'
-      ),
-    AiImpactTable: () =>
-      import('ee/analytics/analytics_dashboards/components/visualizations/ai_impact_table.vue'),
   },
-  inject: [
-    'namespaceId',
-    'namespaceFullPath',
-    'namespaceName',
-    'isProject',
-    'rootNamespaceName',
-    'rootNamespaceFullPath',
-  ],
   props: {
-    visualization: {
-      type: Object,
-      required: true,
-    },
     title: {
       type: String,
       required: false,
       default: '',
     },
-    queryOverrides: {
-      type: Object,
+    tooltip: {
+      type: String,
       required: false,
-      default: () => ({}),
+      default: '',
     },
-    filters: {
-      type: Object,
+    loading: {
+      type: Boolean,
       required: false,
-      default: () => ({}),
+      default: false,
+    },
+    showErrorState: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    errorPopoverTitle: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    actions: {
+      type: Array,
+      required: false,
+      default: () => [],
+      validator: (actions) => actions.every((a) => isObject(a)),
     },
     editing: {
       type: Boolean,
@@ -85,138 +53,17 @@ export default {
     },
   },
   data() {
-    const validationErrors = this.visualization?.errors;
-    const hasValidationErrors = Boolean(validationErrors);
-
     return {
-      errors: validationErrors || [],
-      hasValidationErrors,
-      canRetryError: !hasValidationErrors,
-      fullPanelError: hasValidationErrors,
-      data: null,
-      loading: false,
-      dropdownOpen: false,
-      panelTitleTooltip: '',
       popoverId: uniqueId('panel-error-popover-'),
-      dropdownItems: [
-        {
-          text: __('Delete'),
-          action: () => this.$emit('delete'),
-          icon: 'remove',
-        },
-      ],
-      currentRequestNumber: 0,
+      dropdownOpen: false,
     };
   },
   computed: {
-    showEmptyState() {
-      return !this.showErrorState && isEmptyPanelData(this.visualization.type, this.data);
-    },
     showErrorPopover() {
       return this.showErrorState && !this.dropdownOpen;
     },
-    showErrorState() {
-      return this.errors.length > 0;
-    },
-    errorMessages() {
-      return this.errors.filter(isString);
-    },
-    errorPopoverTitle() {
-      return this.hasValidationErrors
-        ? s__('Analytics|Invalid visualization configuration')
-        : s__('Analytics|Failed to fetch data');
-    },
-    errorPopoverMessage() {
-      return this.hasValidationErrors
-        ? s__(
-            'Analytics|Something is wrong with your panel visualization configuration. See %{linkStart}troubleshooting documentation%{linkEnd}.',
-          )
-        : s__(
-            'Analytics|Something went wrong while connecting to your data source. See %{linkStart}troubleshooting documentation%{linkEnd}.',
-          );
-    },
-    namespace() {
-      return this.namespaceFullPath;
-    },
-    panelTitle() {
-      return sprintf(this.title, {
-        namespaceName: this.namespaceName,
-        namespaceType: this.isProject ? __('project') : __('group'),
-        namespaceFullPath: this.namespaceFullPath,
-        rootNamespaceName: this.rootNamespaceName,
-        rootNamespaceFullPath: this.rootNamespaceFullPath,
-      });
-    },
-  },
-  watch: {
-    visualization: {
-      handler: 'fetchData',
-      immediate: true,
-    },
-    queryOverrides: 'fetchData',
-    filters: 'fetchData',
-  },
-  methods: {
-    async fetchData() {
-      if (this.hasValidationErrors) {
-        return;
-      }
-
-      const { queryOverrides, filters } = this;
-      const { type: dataType, query } = this.visualization.data;
-      this.loading = true;
-      this.clearErrors();
-      const requestNumber = this.currentRequestNumber + 1;
-      this.currentRequestNumber = requestNumber;
-
-      try {
-        const { fetch } = await dataSources[dataType]();
-        const data = await fetch({
-          title: this.title,
-          projectId: this.namespaceId,
-          namespace: this.namespace,
-          query,
-          queryOverrides,
-          visualizationType: this.visualization.type,
-          visualizationOptions: this.visualization.options,
-          filters,
-        });
-
-        if (this.currentRequestNumber === requestNumber) {
-          this.data = data;
-        }
-      } catch (error) {
-        this.setErrors({
-          errors: [error],
-
-          // bad or malformed CubeJS query, retry won't fix
-          canRetry: !this.isCubeJsBadRequest(error),
-        });
-      } finally {
-        this.loading = false;
-      }
-    },
-    clearErrors() {
-      this.errors = [];
-      this.fullPanelError = false;
-    },
-    setErrors({ errors, canRetry = true, fullPanelError = true }) {
-      if (!canRetry) this.canRetryError = false;
-
-      this.errors = errors;
-      this.fullPanelError = fullPanelError;
-
-      errors.forEach((error) => Sentry.captureException(error));
-    },
-    isCubeJsBadRequest(error) {
-      return Boolean(error.status === HTTP_STATUS_BAD_REQUEST && error.response?.message);
-    },
-    handleShowTooltip(tooltipText) {
-      this.panelTitleTooltip = tooltipText;
-    },
   },
   PANEL_POPOVER_DELAY,
-  PANEL_TROUBLESHOOTING_URL,
 };
 </script>
 
@@ -240,9 +87,14 @@ export default {
           boundary="viewport"
           class="gl-pb-3 gl-text-truncate"
         >
-          <gl-icon v-if="showErrorState" name="warning" class="gl-text-red-500 gl-mr-1" />
-          <strong class="gl-text-gray-700">{{ panelTitle }}</strong>
-          <template v-if="panelTitleTooltip">
+          <gl-icon
+            v-if="showErrorState"
+            name="warning"
+            class="gl-text-red-500 gl-mr-1"
+            data-testid="panel-title-error-icon"
+          />
+          <strong class="gl-text-gray-700">{{ title }}</strong>
+          <template v-if="tooltip">
             <gl-icon
               ref="titleTooltip"
               data-testid="panel-title-tooltip-icon"
@@ -253,14 +105,14 @@ export default {
               boundary="viewport"
               :target="() => $refs.titleTooltip.$el"
             >
-              {{ panelTitleTooltip }}
+              {{ tooltip }}
             </gl-popover>
           </template>
         </tooltip-on-truncate>
 
         <gl-disclosure-dropdown
           v-if="editing"
-          :items="dropdownItems"
+          :items="actions"
           icon="ellipsis_v"
           :toggle-text="__('Actions')"
           text-sr-only
@@ -274,9 +126,7 @@ export default {
           @hidden="dropdownOpen = false"
         >
           <template #list-item="{ item }">
-            <span :data-testId="`panel-action-${item.testId}`">
-              <gl-icon :name="item.icon" /> {{ item.text }}</span
-            >
+            <span> <gl-icon :name="item.icon" /> {{ item.text }}</span>
           </template>
         </gl-disclosure-dropdown>
       </div>
@@ -284,25 +134,9 @@ export default {
         class="gl-overflow-x-hidden gl-overflow-y-auto gl-flex-grow-1"
         :class="{ 'gl--flex-center': loading }"
       >
-        <gl-loading-icon v-if="loading" size="lg" />
-
-        <div v-else-if="showEmptyState" class="gl-text-secondary">
-          {{ s__('Analytics|No results match your query or filter.') }}
-        </div>
-
-        <div v-else-if="showErrorState && fullPanelError" class="gl-text-secondary">
-          {{ s__('Analytics|Something went wrong.') }}
-        </div>
-
-        <component
-          :is="visualization.type"
-          v-else
-          class="gl-overflow-hidden"
-          :data="data"
-          :options="visualization.options"
-          @set-errors="setErrors"
-          @showTooltip="handleShowTooltip"
-        />
+        <gl-loading-icon v-if="loading" size="lg" class="gl-overflow-hidden" />
+        <!-- @slot The panel body to display when not loading. -->
+        <slot v-else name="body"></slot>
       </div>
 
       <gl-popover
@@ -316,21 +150,8 @@ export default {
         :delay="$options.PANEL_POPOVER_DELAY"
         boundary="viewport"
       >
-        <gl-sprintf :message="errorPopoverMessage">
-          <template #link="{ content }">
-            <gl-link :href="$options.PANEL_TROUBLESHOOTING_URL" class="gl-font-sm">{{
-              content
-            }}</gl-link>
-          </template>
-        </gl-sprintf>
-        <ul v-if="errorMessages.length">
-          <li v-for="errorMessage in errorMessages" :key="errorMessage">
-            {{ errorMessage }}
-          </li>
-        </ul>
-        <gl-button v-if="canRetryError" class="gl-display-block gl-mt-3" @click="fetchData">{{
-          __('Retry')
-        }}</gl-button>
+        <!-- @slot The panel error popover body to display when showErrorState is true. -->
+        <slot name="error-popover"></slot>
       </gl-popover>
     </div>
   </div>
