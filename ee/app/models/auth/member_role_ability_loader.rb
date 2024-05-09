@@ -21,6 +21,14 @@ module Auth
       roles&.include?(ability)
     end
 
+    class << self
+      def allowed?(user, resource, ability)
+        return false unless resource.custom_roles_enabled?
+
+        new(user: user, resource: resource, ability: ability).has_ability?
+      end
+    end
+
     private
 
     attr_reader :user, :resource, :ability
