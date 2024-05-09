@@ -37,7 +37,7 @@ module EE
 
       date = permanent_deletion_date_formatted(group, Time.now.utc)
 
-      _("The contents of this group, its subgroups and projects will be permanently removed after %{deletion_adjourned_period} days on %{date}. After this point, your data cannot be recovered.") %
+      _("The contents of this group, its subgroups and projects will be permanently deleted after %{deletion_adjourned_period} days on %{date}. After this point, your data cannot be recovered.") %
         { date: date, deletion_adjourned_period: deletion_adjourned_period }
     end
 
