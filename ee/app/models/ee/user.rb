@@ -454,10 +454,10 @@ module EE
 
     def using_gitlab_com_seat?(namespace)
       ::Gitlab.com? &&
-      namespace.present? &&
-      active? &&
-      !namespace.root_ancestor.free_plan? &&
-      namespace.root_ancestor.billed_user_ids[:user_ids].include?(self.id)
+        namespace.present? &&
+        active? &&
+        !namespace.root_ancestor.free_plan? &&
+        namespace.root_ancestor.billed_user_ids[:user_ids].include?(self.id)
     end
 
     def group_sso?(group)

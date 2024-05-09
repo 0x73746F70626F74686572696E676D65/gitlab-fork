@@ -69,7 +69,7 @@ module Sidebars
 
         def show_ci_cd_analytics?
           context.group.licensed_feature_available?(:group_ci_cd_analytics) &&
-          can?(context.current_user, :view_group_ci_cd_analytics, context.group)
+            can?(context.current_user, :view_group_ci_cd_analytics, context.group)
         end
 
         def contribution_analytics_menu_item

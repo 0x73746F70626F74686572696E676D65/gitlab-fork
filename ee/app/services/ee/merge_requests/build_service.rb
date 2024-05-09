@@ -14,8 +14,8 @@ module EE
       # Set MR description based on project template
       def assign_description_from_template
         return unless target_project.feature_available?(:issuable_default_templates) &&
-                      target_project.merge_requests_template.present? &&
-                      merge_request.description.blank?
+          target_project.merge_requests_template.present? &&
+          merge_request.description.blank?
 
         merge_request.description = target_project.merge_requests_template
       end

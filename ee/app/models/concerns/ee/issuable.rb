@@ -39,7 +39,7 @@ module EE
 
     def issuable_resource_links_available?
       supports_resource_links? &&
-      ::Gitlab::IncidentManagement.issuable_resource_links_available?(project)
+        ::Gitlab::IncidentManagement.issuable_resource_links_available?(project)
     end
 
     def supports_sla?

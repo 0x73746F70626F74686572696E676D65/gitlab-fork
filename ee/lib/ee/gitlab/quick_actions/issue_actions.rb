@@ -183,7 +183,7 @@ module EE
           types Issue
           condition do
             current_user.can?(:update_escalation_status, quick_action_target) &&
-            quick_action_target.escalation_policies_available?
+              quick_action_target.escalation_policies_available?
           end
           command :page do |escalation_policy_name|
             policy = ::IncidentManagement::EscalationPoliciesFinder.new(current_user, quick_action_target.project, name: escalation_policy_name).execute.first
@@ -206,7 +206,7 @@ module EE
           types Issue
           condition do
             quick_action_target.issuable_resource_links_available? &&
-            current_user.can?(:admin_issuable_resource_link, quick_action_target)
+              current_user.can?(:admin_issuable_resource_link, quick_action_target)
           end
           parse_params do |resource_link_params|
             parse_resource_link_params(resource_link_params)

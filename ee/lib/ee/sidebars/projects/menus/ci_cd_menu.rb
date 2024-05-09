@@ -29,7 +29,7 @@ module EE
 
           def test_cases_menu_item
             if !context.project.licensed_feature_available?(:quality_management) ||
-              !can?(context.current_user, :read_issue, context.project)
+                !can?(context.current_user, :read_issue, context.project)
               return ::Sidebars::NilMenuItem.new(item_id: :test_cases)
             end
 

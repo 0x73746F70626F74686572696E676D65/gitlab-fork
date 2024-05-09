@@ -170,10 +170,10 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :dynamic_application
 
       let(:accepted_n_plus_ones) do
         1 + # SELECT "ci_instance_variables"
-        1 + # SELECT "ci_builds".* FROM "ci_builds"
-        1 + # INSERT INTO "ci_builds_metadata"
-        1 + # SELECT "taggings".* FROM "taggings"
-        1   # SELECT "ci_pipelines"."id" FROM
+          1 + # SELECT "ci_builds".* FROM "ci_builds"
+          1 + # INSERT INTO "ci_builds_metadata"
+          1 + # SELECT "taggings".* FROM "taggings"
+          1   # SELECT "ci_pipelines"."id" FROM
       end
 
       def execute_service

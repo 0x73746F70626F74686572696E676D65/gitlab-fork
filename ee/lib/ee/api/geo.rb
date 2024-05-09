@@ -43,7 +43,7 @@ module EE
             return non_proxy_response unless ::Gitlab::Geo.secondary_with_primary?
 
             return non_proxy_response unless ::Gitlab::Geo.secondary_with_unified_url? ||
-                                             ::Feature.enabled?(:geo_secondary_proxy_separate_urls, type: :ops)
+              ::Feature.enabled?(:geo_secondary_proxy_separate_urls, type: :ops)
 
             non_proxy_response.merge({
               geo_proxy_url: ::Gitlab::Geo.primary_node_internal_url,
