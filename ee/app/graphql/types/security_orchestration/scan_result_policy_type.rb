@@ -15,8 +15,7 @@ module Types
             null: true,
             description: 'All potential approvers of the group type, including groups inaccessible to the user.'
       field :deprecated_properties, [::GraphQL::Types::String], null: true,
-            description: 'All deprecated properties in the policy. Returns `null` ' \
-                         'if security_policies_breaking_changes feature flag is disabled.',
+            description: 'All deprecated properties in the policy.',
             alpha: { milestone: '16.10' }
       field :role_approvers, [::Types::MemberAccessLevelNameEnum],
             null: true,

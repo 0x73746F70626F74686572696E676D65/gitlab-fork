@@ -23,7 +23,6 @@ import {
 import {
   ANY_OPERATOR,
   GREATER_THAN_OPERATOR,
-  MATCH_ON_INCLUSION,
   MATCH_ON_INCLUSION_LICENSE,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 
@@ -273,16 +272,10 @@ describe('invalidVulnerabilityAttributes', () => {
   });
 
   describe('licenseScanBuildRule', () => {
-    it.each([false, true])(
-      'creates license rule with different match option based on flag',
-      (securityPoliciesBreakingChanges) => {
-        window.gon = { features: { securityPoliciesBreakingChanges } };
-        const MATCH_KEY = securityPoliciesBreakingChanges
-          ? MATCH_ON_INCLUSION_LICENSE
-          : MATCH_ON_INCLUSION;
-
-        expect(licenseScanBuildRule()).toEqual(expect.objectContaining({ [MATCH_KEY]: true }));
-      },
-    );
+    it('creates license rule', () => {
+      expect(licenseScanBuildRule()).toEqual(
+        expect.objectContaining({ [MATCH_ON_INCLUSION_LICENSE]: true }),
+      );
+    });
   });
 });

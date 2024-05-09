@@ -59,16 +59,13 @@ module ConstructSecurityPolicies
         user_approvers: approvers[:users],
         all_group_approvers: approvers[:all_groups],
         role_approvers: approvers[:roles],
+        deprecated_properties: deprecated_properties(policy),
         source: {
           project: policy[:project],
           namespace: policy[:namespace],
           inherited: policy[:inherited]
         }
       }
-
-      if Feature.enabled?(:security_policies_breaking_changes, object)
-        scan_result_policy[:deprecated_properties] = deprecated_properties(policy)
-      end
 
       scan_result_policy
     end

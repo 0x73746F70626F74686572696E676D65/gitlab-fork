@@ -58,6 +58,7 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPoli
             updated_at: policy_configuration.policy_last_updated_at,
             user_approvers: [],
             all_group_approvers: [],
+            deprecated_properties: deprecated_properties,
             role_approvers: [],
             source: {
               inherited: false,
@@ -75,67 +76,26 @@ RSpec.describe Resolvers::ComplianceManagement::SecurityPolicies::ScanResultPoli
       before do
         stub_licensed_features(security_orchestration_policies: true)
 
-        stub_feature_flags(security_policies_breaking_changes: false)
-
         allow_next_instance_of(Repository) do |repository|
           allow(repository).to receive(:blob_data_at).and_return(policy_content.to_yaml)
         end
       end
 
-      it 'returns the policy' do
-        expect(resolve_policies).to match_array(expected_response)
+      context 'when the policy type is scan_result_policy' do
+        let(:deprecated_properties) { ['scan_result_policy'] }
+
+        it 'returns the policy' do
+          expect(resolve_policies).to match_array(expected_response)
+        end
       end
 
-      context 'when the feature flag security_policies_breaking_changes is enabled' do
-        before do
-          stub_feature_flags(security_policies_breaking_changes: true)
-        end
+      context 'when the policy type is approval_policy' do
+        let(:policy) { build(:approval_policy, name: 'Enforce approvals', policy_scope: policy_scope) }
+        let(:policy_content) { { approval_policy: [policy] } }
+        let(:deprecated_properties) { [] }
 
-        let(:expected_response) do
-          [
-            {
-              name: policy[:name],
-              description: policy[:description],
-              edit_path: Gitlab::Routing.url_helpers.edit_project_security_policy_url(
-                project, id: CGI.escape(policy[:name]), type: 'approval_policy'
-              ),
-              enabled: policy[:enabled],
-              policy_scope: {
-                compliance_frameworks: [framework],
-                including_projects: [],
-                excluding_projects: []
-              },
-              yaml: YAML.dump(policy.deep_stringify_keys),
-              updated_at: policy_configuration.policy_last_updated_at,
-              user_approvers: [],
-              all_group_approvers: [],
-              deprecated_properties: deprecated_properties,
-              role_approvers: [],
-              source: {
-                inherited: false,
-                namespace: nil,
-                project: project
-              }
-            }
-          ]
-        end
-
-        context 'when the policy type is scan_result_policy' do
-          let(:deprecated_properties) { ['scan_result_policy'] }
-
-          it 'returns the policy' do
-            expect(resolve_policies).to match_array(expected_response)
-          end
-        end
-
-        context 'when the policy type is approval_policy' do
-          let(:policy) { build(:approval_policy, name: 'Enforce approvals', policy_scope: policy_scope) }
-          let(:policy_content) { { approval_policy: [policy] } }
-          let(:deprecated_properties) { [] }
-
-          it 'returns the policy' do
-            expect(resolve_policies).to match_array(expected_response)
-          end
+        it 'returns the policy' do
+          expect(resolve_policies).to match_array(expected_response)
         end
       end
     end

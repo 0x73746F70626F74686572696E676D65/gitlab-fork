@@ -59,9 +59,6 @@ export default {
     feedbackBannerEnabled() {
       return this.glFeatures.compliancePipelineInPolicies;
     },
-    breakingChangesBannerEnabled() {
-      return this.glFeatures.securityPoliciesBreakingChanges;
-    },
     hasAssignedPolicyProject() {
       return Boolean(this.assignedPolicyProject?.id);
     },
@@ -169,7 +166,7 @@ export default {
 
     <approval-policy-name-update-banner class="gl-my-3" />
 
-    <breaking-changes-banner v-if="breakingChangesBannerEnabled" class="gl-mt-3 gl-mb-6" />
+    <breaking-changes-banner class="gl-mt-3 gl-mb-6" />
 
     <invalid-policies-banner v-if="hasInvalidPolicies" />
   </div>

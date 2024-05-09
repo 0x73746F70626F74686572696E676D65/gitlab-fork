@@ -100,14 +100,9 @@ describe('Scan result policy rules', () => {
     });
 
     it('should select license rule after breaking changes for match on inclusion license', async () => {
-      window.gon = { features: { securityPoliciesBreakingChanges: true } };
-
       await findScanTypeSelect().vm.$emit('select', LICENSE_FINDING);
       await verify({
-        manifest: mockLicenseApprovalManifest.replace(
-          'match_on_inclusion',
-          'match_on_inclusion_license',
-        ),
+        manifest: mockLicenseApprovalManifest,
         verifyRuleMode,
         wrapper,
       });

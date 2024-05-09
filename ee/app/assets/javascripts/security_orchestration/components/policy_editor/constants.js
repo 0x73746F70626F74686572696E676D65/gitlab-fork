@@ -41,7 +41,6 @@ export const DELETE_MODAL_CONFIG = {
   },
 };
 
-export const MATCH_ON_INCLUSION = 'match_on_inclusion';
 export const MATCH_ON_INCLUSION_LICENSE = 'match_on_inclusion_license';
 
 export const DEFAULT_MR_TITLE = s__('SecurityOrchestration|Update scan policies');

@@ -232,7 +232,7 @@ const multipleValuedLicenseScanRule = {
   rule: {
     ...licenseScanBuildRuleWithoutBranchType,
     branches: ['staging', 'main'],
-    match_on_inclusion: false,
+    match_on_inclusion_license: false,
     license_types: ['CMU License', 'CNRI Jython License', 'CNRI Python License'],
     license_states: ['detected', 'newly_detected'],
   },
@@ -247,7 +247,7 @@ const branchTypeLicenseScanRule = (branchType = PROJECT_DEFAULT_BRANCH.value) =>
   rule: {
     ...licenseScanBuildRule(),
     branch_type: branchType,
-    match_on_inclusion: false,
+    match_on_inclusion_license: false,
     license_types: ['CMU License', 'CNRI Jython License', 'CNRI Python License'],
     license_states: ['detected', 'newly_detected'],
   },
@@ -262,18 +262,12 @@ const branchExceptionLicenseScanRule = (branchExceptions = []) => ({
     ...licenseScanBuildRule(),
     branch_type: PROJECT_DEFAULT_BRANCH.value,
     branch_exceptions: branchExceptions,
-    match_on_inclusion: false,
+    match_on_inclusion_license: false,
     license_types: ['CMU License', 'CNRI Jython License', 'CNRI Python License'],
     license_states: ['detected', 'newly_detected'],
   },
   humanized: {
     summary: `When license scanner finds any license except CMU License, CNRI Jython License and CNRI Python License in an open merge request targeting ${
-      HUMANIZED_BRANCH_TYPE_TEXT_DICT[PROJECT_DEFAULT_BRANCH.value]
-    } except branches:`,
-    branchExceptions: ['test', 'test1'],
-  },
-  humanized_match_on_inclusion_license: {
-    summary: `When license scanner finds any license matching CMU License, CNRI Jython License and CNRI Python License in an open merge request targeting ${
       HUMANIZED_BRANCH_TYPE_TEXT_DICT[PROJECT_DEFAULT_BRANCH.value]
     } except branches:`,
     branchExceptions: ['test', 'test1'],
@@ -371,21 +365,6 @@ describe('humanizeRules', () => {
       expect(
         humanizeRules([branchExceptionLicenseScanRule(['test', 'test1']).rule]),
       ).toStrictEqual([branchExceptionLicenseScanRule(['test', 'test1']).humanized]);
-    });
-
-    it('returns a single rule as a human-readable string when breaking changes flag is enabled', () => {
-      window.gon = { features: { securityPoliciesBreakingChanges: true } };
-
-      expect(
-        humanizeRules([
-          {
-            ...branchExceptionLicenseScanRule(['test', 'test1']).rule,
-            match_on_inclusion_license: true,
-          },
-        ]),
-      ).toStrictEqual([
-        branchExceptionLicenseScanRule(['test', 'test1']).humanized_match_on_inclusion_license,
-      ]);
     });
   });
 
