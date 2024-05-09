@@ -33,16 +33,16 @@ module AuditEvents
         'ID' => 'id',
         'Author ID' => 'author_id',
         'Author Name' => 'author_name',
-        'Author Email' => -> (event) { event.author.try(:email) },
+        'Author Email' => ->(event) { event.author.try(:email) },
         'Entity ID' => 'entity_id',
         'Entity Type' => 'entity_type',
         'Entity Path' => 'entity_path',
         'Target ID' => 'target_id',
         'Target Type' => 'target_type',
         'Target Details' => 'target_details',
-        'Action' => -> (event) { Audit::Details.humanize(event.details) },
+        'Action' => ->(event) { Audit::Details.humanize(event.details) },
         'IP Address' => 'ip_address',
-        'Created At (UTC)' => -> (event) { event.created_at.utc.iso8601 }
+        'Created At (UTC)' => ->(event) { event.created_at.utc.iso8601 }
       }
     end
   end

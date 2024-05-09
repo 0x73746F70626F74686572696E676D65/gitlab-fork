@@ -22,7 +22,7 @@ module HistoricalUserData
 
     def header_to_value_hash
       {
-        'Date' => -> (historical_datum) { historical_datum.recorded_at.utc.to_fs(:csv) },
+        'Date' => ->(historical_datum) { historical_datum.recorded_at.utc.to_fs(:csv) },
         'Billable User Count' => 'active_user_count'
       }
     end

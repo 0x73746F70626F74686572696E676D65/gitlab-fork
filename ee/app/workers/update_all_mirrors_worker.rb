@@ -139,8 +139,8 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
 
     ProjectImportScheduleWorker.bulk_perform_async_with_contexts(
       projects,
-      arguments_proc: -> (project) { project.id },
-      context_proc: -> (project) { { project: project } }
+      arguments_proc: ->(project) { project.id },
+      context_proc: ->(project) { { project: project } }
     )
   end
 
