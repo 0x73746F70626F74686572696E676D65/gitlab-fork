@@ -45,5 +45,5 @@ export default {
 </script>
 
 <template>
-  <gl-breadcrumb :items="allCrumbs" />
+  <gl-breadcrumb :items="allCrumbs" :auto-resize="false" />
 </template>

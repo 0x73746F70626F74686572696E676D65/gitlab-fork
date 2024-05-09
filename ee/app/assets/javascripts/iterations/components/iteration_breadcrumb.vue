@@ -13,7 +13,6 @@ export default {
     GlBreadcrumb,
     GlSkeletonLoader,
   },
-  inject: ['groupPath'],
   apollo: {
     group: {
       skip() {
@@ -22,7 +21,7 @@ export default {
       query: readCadence,
       variables() {
         return {
-          fullPath: this.groupPath,
+          fullPath: this.getGroupPath(),
           id: convertToGraphQLId(TYPENAME_ITERATIONS_CADENCE, this.cadenceId),
         };
       },
@@ -72,6 +71,11 @@ export default {
       return breadcrumbs;
     },
   },
+  methods: {
+    getGroupPath() {
+      return document.body.dataset.groupFullPath;
+    },
+  },
 };
 </script>
 
@@ -82,5 +86,5 @@ export default {
     :lines="1"
     class="gl-mx-3"
   />
-  <gl-breadcrumb v-else :items="allBreadcrumbs" class="gl-p-0 gl-shadow-none" />
+  <gl-breadcrumb v-else :items="allBreadcrumbs" :auto-resize="false" />
 </template>
