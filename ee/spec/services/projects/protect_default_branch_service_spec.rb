@@ -19,6 +19,12 @@ RSpec.describe Projects::ProtectDefaultBranchService do
       stub_feature_flags(default_branch_protection_defaults: false)
     end
 
+    describe '#code_owner_approval_required?' do
+      it 'is falsey' do
+        expect(service.code_owner_approval_required?).to be_falsey
+      end
+    end
+
     describe '#protect_branch?' do
       context 'when project has security_policy_project' do
         include_context 'has security_policy_project'
@@ -79,6 +85,32 @@ RSpec.describe Projects::ProtectDefaultBranchService do
   context 'when feature flag `default_branch_protection_defaults` is enabled' do
     before do
       stub_feature_flags(default_branch_protection_defaults: true)
+    end
+
+    describe '#code_owner_approval_required?' do
+      context 'when licensed feature is not available' do
+        it 'is falsey' do
+          expect(service.code_owner_approval_required?).to be_falsey
+        end
+      end
+
+      context 'when licensed feature is available' do
+        before do
+          stub_licensed_features(code_owner_approval_required: true)
+          allow(project.namespace)
+                      .to receive(:default_branch_protection_settings)
+                            .and_return(Gitlab::Access::BranchProtection.protection_none)
+        end
+
+        it 'calls code_owner_approval_required? of Gitlab::Access::DefaultBranchProtection and returns correct value',
+          :aggregate_failures do
+          expect_next_instance_of(Gitlab::Access::DefaultBranchProtection) do |instance|
+            expect(instance).to receive(:code_owner_approval_required?)
+          end
+
+          expect(service.code_owner_approval_required?).to be_falsey
+        end
+      end
     end
 
     describe '#protect_branch?' do
