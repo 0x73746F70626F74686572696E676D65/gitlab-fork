@@ -178,14 +178,14 @@ RSpec.describe 'groups/edit.html.haml', feature_category: :groups_and_projects d
 
     subject { render }
 
-    it { is_expected.not_to have_text(_('Remove group')) }
+    it { is_expected.not_to have_text(_('Delete group')) }
 
     context 'when the user can remove groups' do
       before do
         allow(view).to receive(:can?).with(user, :remove_group, group).and_return(true)
       end
 
-      it { is_expected.to have_text(_('Remove group')) }
+      it { is_expected.to have_text(_('Delete group')) }
     end
   end
 end

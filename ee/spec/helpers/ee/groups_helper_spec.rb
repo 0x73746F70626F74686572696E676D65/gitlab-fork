@@ -90,14 +90,14 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
 
     shared_examples 'permanent deletion message' do
       it 'returns the message related to permanent deletion' do
-        expect(subject).to include("You are about to remove the group #{group.name}")
-        expect(subject).to include("After you remove a group, you <strong>cannot</strong> restore it or its components.")
+        expect(subject).to include("You are about to delete the group #{group.name}")
+        expect(subject).to include("After you delete a group, you <strong>cannot</strong> restore it or its components.")
       end
     end
 
     shared_examples 'delayed deletion message' do
       it 'returns the message related to delayed deletion' do
-        expect(subject).to include("The contents of this group, its subgroups and projects will be permanently removed after")
+        expect(subject).to include("The contents of this group, its subgroups and projects will be permanently deleted after")
       end
     end
 
@@ -159,7 +159,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       allow(group).to receive_message_chain(:all_projects, :non_archived, :page, :total_count_with_limit).and_return(5)
       allow(group).to receive_message_chain(:all_projects, :archived, :page, :total_count_with_limit).and_return(3)
 
-      group_children = '<span> This action will also remove:</span><ul>' \
+      group_children = '<span> This action will also delete:</span><ul>' \
                        '<li>2 subgroups</li>' \
                        '<li>5 active projects</li>' \
                        '<li>3 archived projects</li>' \
@@ -173,7 +173,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       allow(group).to receive_message_chain(:all_projects, :non_archived, :page, :total_count_with_limit).and_return(101)
       allow(group).to receive_message_chain(:all_projects, :archived, :page, :total_count_with_limit).and_return(101)
 
-      group_children = '<span> This action will also remove:</span><ul>' \
+      group_children = '<span> This action will also delete:</span><ul>' \
                        '<li>100+ subgroups</li>' \
                        '<li>100+ active projects</li>' \
                        '<li>100+ archived projects</li>' \
@@ -187,7 +187,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       allow(group).to receive_message_chain(:all_projects, :non_archived, :page, :total_count_with_limit).and_return(0)
       allow(group).to receive_message_chain(:all_projects, :archived, :page, :total_count_with_limit).and_return(0)
 
-      group_children = '<span> This action will also remove:</span><ul>' \
+      group_children = '<span> This action will also delete:</span><ul>' \
                        '<li>2 subgroups</li>' \
                        '</ul>'
 
@@ -199,7 +199,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       allow(group).to receive_message_chain(:all_projects, :non_archived, :page, :total_count_with_limit).and_return(5)
       allow(group).to receive_message_chain(:all_projects, :archived, :page, :total_count_with_limit).and_return(0)
 
-      group_children = '<span> This action will also remove:</span><ul>' \
+      group_children = '<span> This action will also delete:</span><ul>' \
                        '<li>5 active projects</li>' \
                        '</ul>'
 
@@ -211,7 +211,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       allow(group).to receive_message_chain(:all_projects, :non_archived, :page, :total_count_with_limit).and_return(0)
       allow(group).to receive_message_chain(:all_projects, :archived, :page, :total_count_with_limit).and_return(3)
 
-      group_children = '<span> This action will also remove:</span><ul>' \
+      group_children = '<span> This action will also delete:</span><ul>' \
                        '<li>3 archived projects</li>' \
                        '</ul>'
 

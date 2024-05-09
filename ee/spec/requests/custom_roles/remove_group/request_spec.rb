@@ -23,7 +23,7 @@ RSpec.describe 'User with the `remove_group` custom ability', feature_category: 
         get edit_group_path(subgroup)
 
         expect(response).to have_gitlab_http_status(:ok)
-        expect(response.body).to include(_('Remove group'))
+        expect(response.body).to include(_('Delete group'))
       end
     end
 
