@@ -21,13 +21,13 @@ export default {
       key: 'service_name',
       label: s__('Tracing|Service'),
       tdAttr: { 'data-testid': 'trace-service' },
-      tdClass: 'gl-word-break-word',
+      tdClass: 'gl-break-anywhere',
     },
     {
       key: 'operation',
       label: s__('Tracing|Operation'),
       tdAttr: { 'data-testid': 'trace-operation' },
-      tdClass: 'gl-word-break-word',
+      tdClass: 'gl-break-anywhere',
     },
     {
       key: 'duration',

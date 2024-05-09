@@ -35,7 +35,7 @@ export default {
       tdAttr: { 'data-testid': 'log-service' },
       // eslint-disable-next-line @gitlab/require-i18n-strings
       thClass: `${thClass} gl-w-1/20`,
-      tdClass: `${tdClass} gl-word-break-word`,
+      tdClass: `${tdClass} gl-break-anywhere`,
     },
     {
       key: 'body',

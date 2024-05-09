@@ -20,14 +20,14 @@ export default {
       key: 'name',
       label: s__('ObservabilityMetrics|Name'),
       tdAttr: { 'data-testid': 'metric-name' },
-      tdClass: `gl-word-break-word`,
+      tdClass: `gl-break-anywhere`,
     },
     {
       key: 'description',
       label: s__('ObservabilityMetrics|Description'),
       tdAttr: { 'data-testid': 'metric-description' },
       thClass: 'gl-w-6/20',
-      tdClass: `gl-word-break-word`,
+      tdClass: `gl-break-anywhere`,
     },
     {
       key: 'type',
@@ -40,7 +40,7 @@ export default {
       label: s__('ObservabilityMetrics|Attributes'),
       tdAttr: { 'data-testid': 'metric-attributes' },
       thClass: 'gl-w-6/20',
-      tdClass: `gl-word-break-word`,
+      tdClass: `gl-break-anywhere`,
     },
     {
       key: 'last_ingested_at',
