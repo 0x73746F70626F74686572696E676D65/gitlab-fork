@@ -1258,7 +1258,7 @@ module EE
 
     override :supports_saved_replies?
     def supports_saved_replies?
-      ::Feature.enabled?(:project_saved_replies_flag, self, type: :wip) && licensed_feature_available?(:project_saved_replies)
+      ::Feature.enabled?(:project_saved_replies_flag, self, type: :beta) && licensed_feature_available?(:project_saved_replies)
     end
 
     def google_cloud_support_enabled?
