@@ -45,12 +45,6 @@ RSpec.describe 'Adding a Note to an Epic', feature_category: :portfolio_manageme
       it_behaves_like 'a Note mutation with confidential notes'
     end
 
-    context 'when using deprecated confidential param' do
-      let(:variables_extra) { { confidential: true } }
-
-      it_behaves_like 'a Note mutation with confidential notes'
-    end
-
     context 'when body contains quick actions' do
       let_it_be(:project) { create(:project, group: group) }
       let_it_be(:noteable) { create(:work_item, project: project) }
