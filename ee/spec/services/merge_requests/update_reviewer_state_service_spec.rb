@@ -20,6 +20,14 @@ RSpec.describe MergeRequests::UpdateReviewerStateService, feature_category: :cod
       it 'creates a requested changes record' do
         expect { result }.to change { merge_request.requested_changes.count }.from(0).to(1)
       end
+
+      context 'when user is not a reviewer' do
+        let_it_be(:merge_request) { create(:merge_request) }
+
+        it 'creates a requested changes record' do
+          expect { result }.to change { merge_request.requested_changes.count }.from(0).to(1)
+        end
+      end
     end
 
     context 'when approving' do
@@ -32,6 +40,14 @@ RSpec.describe MergeRequests::UpdateReviewerStateService, feature_category: :cod
 
       it 'removes requested changes' do
         expect { result }.to change { merge_request.requested_changes.count }.from(1).to(0)
+      end
+
+      context 'when user is not a reviewer' do
+        let_it_be(:merge_request) { create(:merge_request) }
+
+        it 'creates a requested changes record' do
+          expect { result }.to change { merge_request.requested_changes.count }.from(1).to(0)
+        end
       end
     end
   end
