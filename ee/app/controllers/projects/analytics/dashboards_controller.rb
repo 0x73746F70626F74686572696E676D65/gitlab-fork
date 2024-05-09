@@ -12,6 +12,7 @@ module Projects
       before_action :authorize_read_combined_project_analytics_dashboards!
       before_action do
         push_frontend_feature_flag(:ai_impact_analytics_dashboard, project.group, type: :gitlab_com_derisk)
+        push_frontend_feature_flag(:enable_vsd_visual_editor, project.group)
       end
 
       before_action :track_usage, only: [:index], if: :viewing_single_dashboard?

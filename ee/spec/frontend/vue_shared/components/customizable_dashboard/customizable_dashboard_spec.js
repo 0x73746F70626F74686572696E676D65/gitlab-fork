@@ -22,6 +22,7 @@ import {
   EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
   EVENT_LABEL_EXCLUDE_ANONYMISED_USERS,
 } from 'ee/analytics/analytics_dashboards/constants';
+import { CUSTOM_VALUE_STREAM_DASHBOARD } from 'ee/analytics/dashboards/constants';
 import UsageOverviewBackgroundAggregationWarning from 'ee/analytics/dashboards/components/usage_overview_background_aggregation_warning.vue';
 import {
   TEST_VISUALIZATION,
@@ -289,6 +290,21 @@ describe('CustomizableDashboard', () => {
 
     it('does not show the "edit" button', () => {
       expect(findEditButton().exists()).toBe(false);
+    });
+  });
+
+  describe('when a dashboard is a custom VSD', () => {
+    const customVsd = { ...dashboard, slug: CUSTOM_VALUE_STREAM_DASHBOARD };
+
+    it('does not show the "edit" button when `enable_vsd_visual_editor` is disabled', () => {
+      createWrapper({}, customVsd);
+      expect(findEditButton().exists()).toBe(false);
+    });
+
+    it('shows the "edit" button when `enable_vsd_visual_editor` is enabled', () => {
+      const provide = { glFeatures: { enableVsdVisualEditor: true } };
+      createWrapper({}, customVsd, provide);
+      expect(findEditButton().exists()).toBe(true);
     });
   });
 

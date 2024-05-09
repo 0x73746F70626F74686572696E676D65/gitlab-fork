@@ -1,0 +1,9 @@
+---
+name: enable_vsd_visual_editor
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/452638
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/152233
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/460718
+milestone: '17.0'
+group: group::optimize
+type: wip
+default_enabled: false

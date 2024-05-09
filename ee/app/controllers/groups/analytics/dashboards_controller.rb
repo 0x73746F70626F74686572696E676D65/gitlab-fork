@@ -14,6 +14,7 @@ module Groups
       before_action { authorize_view_by_action!(:read_group_analytics_dashboards) }
       before_action do
         push_frontend_feature_flag(:ai_impact_analytics_dashboard, @group)
+        push_frontend_feature_flag(:enable_vsd_visual_editor, @group)
 
         load_visualizations
 
