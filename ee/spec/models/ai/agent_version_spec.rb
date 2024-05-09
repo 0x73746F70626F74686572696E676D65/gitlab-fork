@@ -16,6 +16,8 @@ RSpec.describe Ai::AgentVersion, feature_category: :mlops do
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:agent) }
+    it { is_expected.to have_many(:files) }
+    it { is_expected.to have_many(:attachments) }
   end
 
   describe 'validation' do
