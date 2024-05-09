@@ -524,7 +524,7 @@ describe('List component', () => {
   });
 
   describe('invalid policies', () => {
-    it('renders breaking changes icon when flag is enabled but there are deprecated properties in scan result policies', async () => {
+    it('emits that a policy is invalid when there are deprecated properties in scan result policies that are not "type: scan_result_policy"', async () => {
       mountWrapper({
         handlers: {
           projectScanResultPolicies: projectScanResultPolicies([
@@ -534,6 +534,30 @@ describe('List component', () => {
       });
       await waitForPromises();
       expect(wrapper.emitted('has-invalid-policies')).toEqual([[true]]);
+    });
+
+    it('does not emit that a policy is invalid when there are deprecated properties in scan result policies that are "type: scan_result_policy"', async () => {
+      mountWrapper({
+        handlers: {
+          projectScanResultPolicies: projectScanResultPolicies([
+            { ...mockProjectScanResultPolicy, deprecatedProperties: ['scan_result_policy'] },
+          ]),
+        },
+      });
+      await waitForPromises();
+      expect(wrapper.emitted('has-invalid-policies')).toEqual(undefined);
+    });
+
+    it('does not emit that a policy is invalid when there are no deprecated properties', async () => {
+      mountWrapper({
+        handlers: {
+          projectScanResultPolicies: projectScanResultPolicies([
+            { ...mockProjectScanResultPolicy, deprecatedProperties: [] },
+          ]),
+        },
+      });
+      await waitForPromises();
+      expect(wrapper.emitted('has-invalid-policies')).toEqual(undefined);
     });
   });
 
