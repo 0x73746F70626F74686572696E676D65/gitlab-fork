@@ -18,6 +18,10 @@ module Ai
 
     validate :validate_agent
 
+    has_many :attachments, class_name: 'Ai::AgentVersionAttachment',
+      foreign_key: :ai_agent_version_id, inverse_of: :version
+    has_many :files, through: :attachments, source: :file
+
     belongs_to :agent, class_name: 'Ai::Agent'
     belongs_to :project
 
