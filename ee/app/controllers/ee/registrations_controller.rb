@@ -27,7 +27,7 @@ module EE
       ::Gitlab::Tracking.event(
         self.class.name,
         'render_registration_page',
-        label: onboarding_status.preregistration_tracking_label
+        label: preregistration_tracking_label
       )
     end
 
@@ -194,8 +194,8 @@ module EE
       ::Arkose::Settings.enabled?(user: user, user_agent: request.user_agent)
     end
 
-    override :registration_tracking_label
-    def registration_tracking_label
+    override :preregistration_tracking_label
+    def preregistration_tracking_label
       onboarding_status.preregistration_tracking_label
     end
 

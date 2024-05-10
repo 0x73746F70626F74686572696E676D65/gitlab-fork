@@ -10,7 +10,7 @@ RSpec.describe 'trial_registrations/new.html.haml', feature_category: :acquisiti
     allow(view).to receive(:resource).and_return(resource)
     allow(view).to receive(:resource_name).and_return(:user)
     allow(view).to receive(:glm_tracking_params).and_return({})
-    allow(view).to receive(:registration_tracking_label).and_return('trial_registration')
+    allow(view).to receive(:preregistration_tracking_label).and_return('trial_registration')
   end
 
   subject { render && rendered }

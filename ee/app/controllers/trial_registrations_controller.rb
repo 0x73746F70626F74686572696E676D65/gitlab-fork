@@ -27,7 +27,7 @@ class TrialRegistrationsController < RegistrationsController
     ::Gitlab::Tracking.event(
       self.class.name,
       'render_registration_page',
-      label: registration_tracking_label
+      label: preregistration_tracking_label
     )
   end
 
@@ -62,8 +62,8 @@ class TrialRegistrationsController < RegistrationsController
     @resource ||= Users::AuthorizedBuildService.new(current_user, sign_up_params).execute
   end
 
-  override :registration_tracking_label
-  def registration_tracking_label
+  override :preregistration_tracking_label
+  def preregistration_tracking_label
     ::Onboarding::Status::TRACKING_LABEL[:trial]
   end
 end
