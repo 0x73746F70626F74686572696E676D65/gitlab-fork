@@ -155,8 +155,8 @@ export default {
       },
       result({ data }) {
         const policies = data?.namespace?.scanResultPolicies?.nodes ?? [];
-        this.hasInvalidPolicies = policies.some(
-          (policy) => policy.deprecatedProperties?.length > 0,
+        this.hasInvalidPolicies = policies.some((policy) =>
+          policy.deprecatedProperties.some((prop) => prop !== 'scan_result_policy'),
         );
       },
       error: createPolicyFetchError,
