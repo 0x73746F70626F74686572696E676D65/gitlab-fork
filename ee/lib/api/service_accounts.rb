@@ -8,7 +8,7 @@ module API
 
     resource :service_accounts do
       desc 'Create a service account user. Available only for instance admins.' do
-        success Entities::UserBasic
+        success Entities::UserSafe
       end
 
       params do
@@ -22,7 +22,7 @@ module API
         ).execute
 
         if response.status == :success
-          present response.payload, with: ::API::Entities::UserBasic, current_user: current_user
+          present response.payload, with: ::API::Entities::UserSafe, current_user: current_user
         elsif response.reason == :forbidden
           forbidden!(response.message)
         else
