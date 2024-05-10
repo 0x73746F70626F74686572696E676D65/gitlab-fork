@@ -192,7 +192,7 @@ RSpec.describe User, feature_category: :system_access do
       end
     end
 
-    describe '.excluding_guests' do
+    describe '.excluding_guests_and_requests' do
       let!(:user_without_membership) { create(:user).id }
       let!(:project_guest_user)      { create(:project_member, :guest).user_id }
       let!(:project_reporter_user)   { create(:project_member, :reporter).user_id }
@@ -200,7 +200,7 @@ RSpec.describe User, feature_category: :system_access do
       let!(:group_reporter_user)     { create(:group_member, :reporter).user_id }
 
       it 'exclude users with a Guest role in a Project/Group' do
-        user_ids = described_class.excluding_guests.pluck(:id)
+        user_ids = described_class.excluding_guests_and_requests.pluck(:id)
 
         expect(user_ids).to include(project_reporter_user)
         expect(user_ids).to include(group_reporter_user)
@@ -1191,6 +1191,7 @@ RSpec.describe User, feature_category: :system_access do
     let_it_be(:guest_without_elevated_role) { create(:group_member, :guest, source: group, member_role: member_role_basic).user }
     let_it_be(:users_select) { 'SELECT "users".* FROM "users"' }
     let_it_be(:users_select_with_ignored_columns) { 'SELECT ("users"."\w+", )+("users"."\w+") FROM "users"' }
+    let_it_be(:user_with_access_request) { create(:group_member, :access_request, source: group).user }
 
     let(:expected_sql_regexp) do
       Regexp.new(
@@ -1220,6 +1221,7 @@ RSpec.describe User, feature_category: :system_access do
         expect(users).to include(regular_user)
         expect(users).to include(guest_with_elevated_role)
         expect(users).to include(guest_without_elevated_role)
+        expect(users).to include(user_with_access_request)
 
         expect(users).not_to include(bot_user)
         expect(users).not_to include(service_account)
@@ -1239,7 +1241,8 @@ RSpec.describe User, feature_category: :system_access do
            WHERE "members"."user_id" = "users"."id"
              AND \(members.access_level > 10
              OR "members"."access_level" = 10
-             AND "member_roles"."occupies_seat" = TRUE\)\)\)'.squish # allow_cross_joins_across_databases
+             AND "member_roles"."occupies_seat" = TRUE\)
+             AND "members"."requested_at" IS NULL\)\)'.squish # allow_cross_joins_across_databases
       end
 
       before do
@@ -1250,6 +1253,10 @@ RSpec.describe User, feature_category: :system_access do
       it 'validates the sql matches the specific index we have' do
         expect(users.to_sql.squish).to match(expected_sql_regexp),
           "query was changed. Please ensure query is covered with an index and adjust this test case"
+      end
+
+      it 'excludes users requesting access' do
+        expect(users).not_to include(user_with_access_request)
       end
 
       context 'with elevating role' do
