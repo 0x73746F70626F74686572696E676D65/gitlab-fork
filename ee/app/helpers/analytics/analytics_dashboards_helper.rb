@@ -129,7 +129,12 @@ module Analytics
 
       return unless pointer_project
 
-      { id: pointer_project.id, full_path: pointer_project.full_path, name: pointer_project.name }
+      {
+        id: pointer_project.id,
+        full_path: pointer_project.full_path,
+        name: pointer_project.name,
+        default_branch: pointer_project.default_branch
+      }
     end
 
     def router_base(namespace)

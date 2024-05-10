@@ -2,7 +2,6 @@ import { stringify } from 'yaml';
 import service from '~/ide/services/';
 import { s__, sprintf } from '~/locale';
 
-export const DASHBOARD_BRANCH = 'main';
 export const CUSTOM_DASHBOARDS_PATH = '.gitlab/analytics/dashboards/';
 export const PRODUCT_ANALYTICS_VISUALIZATIONS_PATH = '.gitlab/analytics/dashboards/visualizations/';
 
@@ -16,7 +15,7 @@ export async function saveProductAnalyticsVisualization(
   projectInfo,
 ) {
   const payload = {
-    branch: DASHBOARD_BRANCH,
+    branch: projectInfo.defaultBranch,
     commit_message: sprintf(s__('Analytics|Updating visualization %{visualizationName}'), {
       visualizationName,
     }),
@@ -43,7 +42,7 @@ export async function saveCustomDashboard({
     ? s__('Analytics|Create dashboard %{dashboardSlug}')
     : s__('Analytics|Updating dashboard %{dashboardSlug}');
   const payload = {
-    branch: 'main',
+    branch: projectInfo.defaultBranch,
     commit_message: sprintf(commitText, { dashboardSlug }),
     actions: [
       {

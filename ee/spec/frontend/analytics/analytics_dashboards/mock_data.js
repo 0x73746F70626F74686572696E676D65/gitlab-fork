@@ -12,6 +12,7 @@ export const TEST_CUSTOM_DASHBOARDS_PROJECT = {
   fullPath: 'test/test-dashboards',
   id: 123,
   name: 'test-dashboards',
+  defaultBranch: 'some-branch',
 };
 
 export const TEST_CUSTOM_DASHBOARDS_GROUP = {
