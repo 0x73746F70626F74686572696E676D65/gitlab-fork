@@ -47,7 +47,7 @@ RSpec.describe Gitlab::Llm::AiGateway::DocsClient, feature_category: :ai_abstrac
     { "foo" => "bar" }
   end
 
-  let(:request_url) { "#{Gitlab::AiGateway.url}/v1/search/docs" }
+  let(:request_url) { "#{Gitlab::AiGateway.url}/v1/search/gitlab-docs" }
   let(:tracking_context) { { request_id: 'uuid', action: 'chat' } }
   let(:response_body) { expected_response.to_json }
   let(:http_status) { 200 }

@@ -34,7 +34,7 @@ module Gitlab
           timeout = options.delete(:timeout) || DEFAULT_TIMEOUT
 
           response = Gitlab::HTTP.post(
-            "#{Gitlab::AiGateway.url}/v1/search/docs",
+            "#{Gitlab::AiGateway.url}/v1/search/gitlab-docs",
             headers: request_headers,
             body: request_body(query: query).to_json,
             timeout: timeout,
