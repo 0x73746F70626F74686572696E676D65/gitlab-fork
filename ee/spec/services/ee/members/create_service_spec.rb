@@ -116,6 +116,148 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
     include_examples 'sends streaming audit event'
   end
 
+  describe 'when auto assigning a duo pro seat' do
+    subject(:execute_service) { described_class.new(user, params).execute }
+
+    let_it_be(:group) { root_ancestor }
+    let_it_be(:source) { group }
+    let_it_be(:new_user) { create(:user) }
+    let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
+    let_it_be(:add_on_purchase) do
+      create(:gitlab_subscription_add_on_purchase, quantity: 50, namespace: group, add_on: add_on)
+    end
+
+    let(:params) do
+      {
+        user_id: new_user.id,
+        access_level: Gitlab::Access::GUEST,
+        invite_source: '_invite_source_',
+        source: source
+      }
+    end
+
+    before_all do
+      group.add_owner(user)
+    end
+
+    context 'when enable_auto_assign_gitlab_duo_pro_seats setting is disabled' do
+      before do
+        group.namespace_settings.update!(enable_auto_assign_gitlab_duo_pro_seats: false)
+      end
+
+      it 'does not assign a duo pro seat to the new member' do
+        expect(add_on_purchase.assigned_users.count).to eq(0)
+
+        execute_service
+
+        expect(add_on_purchase.assigned_users.count).to eq(0)
+      end
+    end
+
+    context 'when enable_auto_assign_gitlab_duo_pro_seats setting is enabled' do
+      before do
+        group.namespace_settings.update!(enable_auto_assign_gitlab_duo_pro_seats: true)
+      end
+
+      it 'assigns a duo pro seat to the new member' do
+        expect(add_on_purchase.assigned_users.count).to eq(0)
+
+        execute_service
+
+        expect(add_on_purchase.assigned_users.count).to eq(1)
+        expect(add_on_purchase.assigned_users.map(&:user)).to eq([new_user])
+      end
+
+      context 'with multiple members added' do
+        let(:params) do
+          {
+            user_id: invites,
+            access_level: Gitlab::Access::GUEST,
+            invite_source: '_invite_source_',
+            source: source
+          }
+        end
+
+        it 'assigns a duo pro seat to all new members' do
+          expect(add_on_purchase.assigned_users.count).to eq(0)
+
+          execute_service
+
+          expect(add_on_purchase.assigned_users.count).to eq(project_users.count)
+        end
+      end
+
+      context 'when no more duo pro seats are avilable' do
+        let_it_be(:assigned_user) { create(:user) }
+
+        before_all do
+          add_on_purchase.update!(quantity: 1)
+          create(:gitlab_subscription_user_add_on_assignment, add_on_purchase: add_on_purchase, user: assigned_user)
+        end
+
+        it 'does not change the count of assigned users' do
+          expect(add_on_purchase.assigned_users.count).to eq(1)
+
+          expect do
+            execute_service
+          end.not_to change { add_on_purchase.assigned_users.count }
+        end
+      end
+
+      context 'when the feature flag is disabled' do
+        before do
+          stub_feature_flags(auto_assign_gitlab_duo_pro_seats: false, thing: group)
+        end
+
+        it 'does not assign a duo pro seat to the new member' do
+          expect(add_on_purchase.assigned_users.count).to eq(0)
+
+          execute_service
+
+          expect(add_on_purchase.assigned_users.count).to eq(0)
+        end
+      end
+
+      context 'when top level namespace is not a group' do
+        it 'does not assign a duo pro seat to the new member' do
+          expect(add_on_purchase.assigned_users.count).to eq(0)
+
+          allow(root_ancestor).to receive(:group_namespace?).and_return(false)
+
+          execute_service
+
+          expect(add_on_purchase.assigned_users.count).to eq(0)
+        end
+      end
+
+      context 'when user is member of a subgroup' do
+        let_it_be(:source) { create(:group, parent: group) }
+
+        it 'assigns a duo pro seat to the new member' do
+          expect(add_on_purchase.assigned_users.count).to eq(0)
+
+          execute_service
+
+          expect(add_on_purchase.assigned_users.count).to eq(1)
+          expect(add_on_purchase.assigned_users.map(&:user)).to eq([new_user])
+        end
+      end
+
+      context 'when user is member of a project' do
+        let_it_be(:source) { create(:project, namespace: group) }
+
+        it 'assigns a duo pro seat to the new member' do
+          expect(add_on_purchase.assigned_users.count).to eq(0)
+
+          execute_service
+
+          expect(add_on_purchase.assigned_users.count).to eq(1)
+          expect(add_on_purchase.assigned_users.map(&:user)).to eq([new_user])
+        end
+      end
+    end
+  end
+
   context 'with seat availability concerns', :saas do
     let_it_be(:root_ancestor) { create(:group_with_plan, :private, plan: :free_plan) }
     let_it_be(:project) { create(:project, group: root_ancestor) }
