@@ -46,48 +46,4 @@ RSpec.describe Projects::LearnGitlabController, :saas, feature_category: :onboar
       end
     end
   end
-
-  describe 'GET #onboarding' do
-    let(:extra_params) { {} }
-
-    subject(:onboarding) do
-      get :onboarding, params: { namespace_id: namespace.to_param, project_id: project }.merge(extra_params)
-    end
-
-    context 'without a signed in user' do
-      it { is_expected.to redirect_to new_user_session_path }
-    end
-
-    context 'with an owner user signed in' do
-      before do
-        sign_in(user)
-        namespace.add_owner(user)
-      end
-
-      it { is_expected.to render_template(:onboarding) }
-
-      it 'sets the correct session key' do
-        onboarding
-
-        expect(cookies[:confetti_post_signup]).to eq('true')
-      end
-
-      context 'when not on gitlab.com' do
-        before do
-          allow(::Gitlab).to receive(:com?).and_return(false)
-        end
-
-        it { is_expected.to have_gitlab_http_status(:not_found) }
-      end
-    end
-
-    context 'with a non-owner user signed in' do
-      before do
-        sign_in(user)
-        namespace.add_maintainer(user)
-      end
-
-      it { is_expected.to have_gitlab_http_status(:not_found) }
-    end
-  end
 end

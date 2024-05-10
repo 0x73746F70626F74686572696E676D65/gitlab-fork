@@ -32,10 +32,6 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
         expect_to_apply_trial
         click_on 'Create project'
 
-        expect_to_be_in_continuous_onboarding
-
-        click_on 'Ok, let\'s go'
-
         expect_to_be_in_learn_gitlab
       end
     end
@@ -66,10 +62,6 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
 
       fills_in_group_and_project_creation_form
       click_on 'Create project'
-
-      expect_to_be_in_continuous_onboarding
-
-      click_on 'Ok, let\'s go'
 
       expect_to_be_in_learn_gitlab
     end

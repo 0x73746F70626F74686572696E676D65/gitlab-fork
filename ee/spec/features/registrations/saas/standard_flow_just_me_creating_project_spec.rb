@@ -25,10 +25,6 @@ RSpec.describe 'Standard flow for user picking just me and creating a project', 
       fills_in_group_and_project_creation_form
       click_on 'Create project'
 
-      expect_to_be_in_continuous_onboarding
-
-      click_on 'Ok, let\'s go'
-
       expect_to_be_in_learn_gitlab
     end
   end

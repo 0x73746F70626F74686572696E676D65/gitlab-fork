@@ -23,10 +23,6 @@ RSpec.describe 'Single sign on for signing up through sign in flow for user pick
       expect_to_apply_trial(glm: false)
       click_on 'Create project'
 
-      expect_to_be_in_continuous_onboarding
-
-      click_on 'Ok, let\'s go'
-
       expect_to_be_in_learn_gitlab
     end
   end

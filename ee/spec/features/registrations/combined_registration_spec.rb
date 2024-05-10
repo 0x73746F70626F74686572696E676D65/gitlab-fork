@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Registration group and project creation flow', :js, feature_category: :onboarding do
+  include SaasRegistrationHelpers
+
   let_it_be(:user) { create(:user, onboarding_in_progress: true) }
 
   before do
@@ -56,7 +58,7 @@ RSpec.describe 'Registration group and project creation flow', :js, feature_cate
 
     click_on 'Create project'
 
-    expect(page).to have_content('Get started with GitLab Ready to get started with GitLab?')
+    expect_to_be_in_learn_gitlab
   end
 
   it 'a user can create a group and import a project' do

@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Start trial from external site without confirmation', :saas, :js, feature_category: :onboarding do
+  include SaasRegistrationHelpers
+
   let_it_be(:glm_params) do
     { glm_source: 'some_source', glm_content: 'some_content' }
   end
@@ -45,7 +47,6 @@ RSpec.describe 'Start trial from external site without confirmation', :saas, :js
     fill_in 'blank_project_name', with: 'Project name'
     click_button 'Create project'
 
-    expect(page).to have_content('Get started with GitLab')
-    expect(page).to have_content("Ok, let's go")
+    expect_to_be_in_learn_gitlab
   end
 end
