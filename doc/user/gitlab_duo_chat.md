@@ -281,7 +281,7 @@ To use GitLab Duo Chat in the Web IDE on GitLab:
    - On the left sidebar, select **GitLab Duo Chat**.
    - In the file that you have open in the editor, select some code.
      1. Right-click and select **GitLab Duo Chat**.
-     1. Select **Explain selected code** or **Generate Tests**.
+     1. Select **Explain selected code**, **Generate Tests**, or **Refactor**.
    - Use the keyboard shortcut: <kbd>ALT</kbd>+<kbd>d</kbd> (on Windows and Linux) or <kbd>Option</kbd>+<kbd>d</kbd> (on Mac)
 1. In the message box, enter your question and press **Enter** or select **Send**.
 
