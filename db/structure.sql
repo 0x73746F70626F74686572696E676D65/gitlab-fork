@@ -1115,7 +1115,17 @@ CREATE TABLE p_ci_builds (
     trigger_request_id_convert_to_bigint bigint,
     upstream_pipeline_id bigint,
     user_id bigint,
+    execution_config_id bigint,
     CONSTRAINT check_1e2fbd1b39 CHECK ((lock_version IS NOT NULL))
+)
+PARTITION BY LIST (partition_id);
+
+CREATE TABLE p_ci_builds_execution_configs (
+    id bigint NOT NULL,
+    partition_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    pipeline_id bigint NOT NULL,
+    run_steps jsonb DEFAULT '{}'::jsonb NOT NULL
 )
 PARTITION BY LIST (partition_id);
 
@@ -6209,6 +6219,7 @@ CREATE TABLE ci_builds (
     trigger_request_id_convert_to_bigint bigint,
     upstream_pipeline_id bigint,
     user_id bigint,
+    execution_config_id bigint,
     CONSTRAINT check_1e2fbd1b39 CHECK ((lock_version IS NOT NULL))
 );
 
@@ -12494,6 +12505,15 @@ CREATE SEQUENCE p_catalog_resource_sync_events_id_seq
     CACHE 1;
 
 ALTER SEQUENCE p_catalog_resource_sync_events_id_seq OWNED BY p_catalog_resource_sync_events.id;
+
+CREATE SEQUENCE p_ci_builds_execution_configs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE p_ci_builds_execution_configs_id_seq OWNED BY p_ci_builds_execution_configs.id;
 
 CREATE SEQUENCE p_ci_job_annotations_id_seq
     START WITH 1
@@ -19552,6 +19572,8 @@ ALTER TABLE ONLY p_catalog_resource_component_usages ALTER COLUMN id SET DEFAULT
 
 ALTER TABLE ONLY p_catalog_resource_sync_events ALTER COLUMN id SET DEFAULT nextval('p_catalog_resource_sync_events_id_seq'::regclass);
 
+ALTER TABLE ONLY p_ci_builds_execution_configs ALTER COLUMN id SET DEFAULT nextval('p_ci_builds_execution_configs_id_seq'::regclass);
+
 ALTER TABLE ONLY p_ci_builds_metadata ALTER COLUMN id SET DEFAULT nextval('ci_builds_metadata_id_seq'::regclass);
 
 ALTER TABLE ONLY p_ci_job_annotations ALTER COLUMN id SET DEFAULT nextval('p_ci_job_annotations_id_seq'::regclass);
@@ -21874,6 +21896,9 @@ ALTER TABLE ONLY p_catalog_resource_sync_events
 
 ALTER TABLE ONLY p_ci_build_names
     ADD CONSTRAINT p_ci_build_names_pkey PRIMARY KEY (build_id, partition_id);
+
+ALTER TABLE ONLY p_ci_builds_execution_configs
+    ADD CONSTRAINT p_ci_builds_execution_configs_pkey PRIMARY KEY (id, partition_id);
 
 ALTER TABLE ONLY p_ci_finished_build_ch_sync_events
     ADD CONSTRAINT p_ci_finished_build_ch_sync_events_pkey PRIMARY KEY (build_id, partition);
@@ -26451,6 +26476,10 @@ CREATE INDEX index_p_catalog_resource_sync_events_on_id_where_pending ON ONLY p_
 CREATE INDEX index_p_ci_build_names_on_project_id_and_build_id ON ONLY p_ci_build_names USING btree (project_id, build_id);
 
 CREATE INDEX index_p_ci_build_names_on_search_vector ON ONLY p_ci_build_names USING gin (search_vector);
+
+CREATE INDEX index_p_ci_builds_execution_configs_on_pipeline_id ON ONLY p_ci_builds_execution_configs USING btree (pipeline_id);
+
+CREATE INDEX index_p_ci_builds_execution_configs_on_project_id ON ONLY p_ci_builds_execution_configs USING btree (project_id);
 
 CREATE INDEX index_p_ci_finished_build_ch_sync_events_finished_at ON ONLY p_ci_finished_build_ch_sync_events USING btree (partition, build_finished_at);
 
@@ -32384,6 +32413,9 @@ ALTER TABLE ONLY labels
 
 ALTER TABLE ONLY project_feature_usages
     ADD CONSTRAINT fk_rails_c22a50024b FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE p_ci_builds_execution_configs
+    ADD CONSTRAINT fk_rails_c26408d02c FOREIGN KEY (pipeline_id) REFERENCES ci_pipelines(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY user_canonical_emails
     ADD CONSTRAINT fk_rails_c2bd828b51 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
