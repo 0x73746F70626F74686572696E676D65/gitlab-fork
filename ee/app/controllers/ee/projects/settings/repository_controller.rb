@@ -8,7 +8,7 @@ module EE
         extend ::Gitlab::Utils::Override
 
         prepended do
-          before_action :push_rule, only: [:show, :create_deploy_token]
+          before_action :push_rule, only: :show
         end
 
         private

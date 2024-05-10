@@ -115,5 +115,21 @@ RSpec.describe Sidebars::Projects::Menus::SettingsMenu, feature_category: :navig
         end
       end
     end
+
+    describe 'Repository' do
+      let(:item_id) { :repository }
+
+      describe 'when the user is not an admin of the project but has `admin_push_rules` custom ability' do
+        before do
+          allow(Ability).to receive(:allowed?).and_call_original
+          allow(Ability).to receive(:allowed?).with(user, :admin_project, project).and_return(false)
+          allow(Ability).to receive(:allowed?).with(user, :admin_push_rules, project).and_return(true)
+        end
+
+        it 'includes repository menu item' do
+          expect(subject.title).to eql('Repository')
+        end
+      end
+    end
   end
 end

@@ -4,7 +4,7 @@ module API
   class ProjectPushRule < ::API::Base
     feature_category :source_code_management
     before { authenticate! }
-    before { authorize_admin_project }
+    before { authorize! :admin_push_rules, user_project }
     before { check_project_feature_available!(:push_rules) }
     before { authorize_change_param(user_project, :commit_committer_check, :commit_committer_name_check, :reject_unsigned_commits) }
 

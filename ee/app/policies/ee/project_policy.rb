@@ -71,33 +71,23 @@ module EE
         @subject.feature_available?(:project_merge_request_analytics)
       end
 
-      with_scope :subject
-      condition(:group_push_rules_enabled) do
-        @subject.group && @subject.group.licensed_feature_available?(:push_rules)
+      condition(:push_rules_available, scope: :subject) do
+        @subject.feature_available?(:push_rules)
       end
 
-      with_scope :subject
-      condition(:group_push_rule_present) do
-        group_push_rules_enabled? && subject.group.push_rule
-      end
-
-      with_scope :subject
-      condition(:commit_committer_check_available) do
+      condition(:commit_committer_check_available, scope: :subject) do
         @subject.feature_available?(:commit_committer_check)
       end
 
-      with_scope :subject
-      condition(:commit_committer_name_check_available) do
+      condition(:commit_committer_name_check_available, scope: :subject) do
         @subject.feature_available?(:commit_committer_name_check)
       end
 
-      with_scope :subject
-      condition(:reject_unsigned_commits_available) do
+      condition(:reject_unsigned_commits_available, scope: :subject) do
         @subject.feature_available?(:reject_unsigned_commits)
       end
 
-      with_scope :subject
-      condition(:reject_non_dco_commits_available) do
+      condition(:reject_non_dco_commits_available, scope: :subject) do
         @subject.feature_available?(:reject_non_dco_commits)
       end
 
@@ -612,6 +602,7 @@ module EE
         enable :modify_merge_request_author_setting
         enable :modify_merge_request_committer_setting
         enable :modify_product_analytics_settings
+        enable :admin_push_rules
       end
 
       rule { license_scanning_enabled & can?(:maintainer_access) }.enable :admin_software_license_policy
@@ -679,29 +670,39 @@ module EE
 
       rule { ~can?(:push_code) }.prevent :push_code_to_protected_branches
 
-      rule { admin | maintainer }.enable :change_reject_unsigned_commits
+      rule { can?(:admin_push_rules) }.policy do
+        enable :change_push_rules
+        enable :read_commit_committer_check
+        enable :change_commit_committer_check
+        enable :read_commit_committer_name_check
+        enable :change_commit_committer_name_check
+        enable :read_reject_unsigned_commits
+        enable :change_reject_unsigned_commits
+        enable :change_reject_non_dco_commits
+      end
 
-      rule { reject_unsigned_commits_available }.enable :read_reject_unsigned_commits
+      rule { ~push_rules_available }.policy do
+        prevent :change_push_rules
+      end
 
-      rule { ~reject_unsigned_commits_available }.prevent :change_reject_unsigned_commits
+      rule { ~commit_committer_check_available }.policy do
+        prevent :read_commit_committer_check
+        prevent :change_commit_committer_check
+      end
 
-      rule { admin | maintainer }.enable :change_commit_committer_check
+      rule { ~commit_committer_name_check_available }.policy do
+        prevent :read_commit_committer_name_check
+        prevent :change_commit_committer_name_check
+      end
 
-      rule { commit_committer_check_available }.enable :read_commit_committer_check
+      rule { ~reject_unsigned_commits_available }.policy do
+        prevent :read_reject_unsigned_commits
+        prevent :change_reject_unsigned_commits
+      end
 
-      rule { ~commit_committer_check_available }.prevent :change_commit_committer_check
-
-      rule { admin | maintainer }.enable :change_commit_committer_name_check
-
-      rule { commit_committer_name_check_available }.enable :read_commit_committer_name_check
-
-      rule { ~commit_committer_name_check_available }.prevent :change_commit_committer_name_check
-
-      rule { admin | maintainer }.enable :change_reject_non_dco_commits
-
-      rule { reject_non_dco_commits_available }.enable :read_reject_non_dco_commits
-
-      rule { ~reject_non_dco_commits_available }.prevent :change_reject_non_dco_commits
+      rule { ~reject_non_dco_commits_available }.policy do
+        prevent :change_reject_non_dco_commits
+      end
 
       rule { owner | reporter | internal_access | public_project }.enable :build_read_project
 
