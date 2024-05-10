@@ -15,6 +15,7 @@ module QA
                   view 'ee/app/assets/javascripts/integrations/edit/components/' \
                     'jira_issue_creation_vulnerabilities.vue' do
                     element 'jira-enable-vulnerabilities-checkbox'
+                    element 'jira-project-key-field'
                     element 'jira-issue-types-fetch-retry-button'
                     element 'jira-select-issue-type-dropdown'
                     element 'jira-type'
@@ -24,6 +25,10 @@ module QA
 
               def enable_jira_vulnerabilities
                 check_element('jira-enable-vulnerabilities-checkbox', true)
+              end
+
+              def set_jira_project_key(key)
+                fill_element('jira-project-key-field', key)
               end
 
               def select_vulnerability_bug_type(bug_type)

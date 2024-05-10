@@ -1,4 +1,4 @@
-import { GlAlert, GlBadge, GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
+import { GlAlert, GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
 import { nextTick } from 'vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -6,7 +6,6 @@ import JiraIssueCreationVulnerabilities, {
   i18n,
 } from 'ee/integrations/edit/components/jira_issue_creation_vulnerabilities.vue';
 import { createStore } from '~/integrations/edit/store';
-import { billingPlans, billingPlanNames } from '~/integrations/constants';
 
 describe('JiraIssueCreationVulnerabilities', () => {
   let store;
@@ -22,11 +21,7 @@ describe('JiraIssueCreationVulnerabilities', () => {
     { id: '3', name: 'epic', description: 'epic' },
   ];
 
-  const createComponent = (mountFn) => ({
-    isInheriting = false,
-    props = {},
-    provide = {},
-  } = {}) => {
+  const createComponent = (mountFn) => ({ isInheriting = false, props = {} } = {}) => {
     store = createStore({
       defaultState: isInheriting ? {} : undefined,
     });
@@ -34,7 +29,6 @@ describe('JiraIssueCreationVulnerabilities', () => {
     return mountFn(JiraIssueCreationVulnerabilities, {
       store,
       propsData: { ...defaultProps, ...props },
-      provide,
     });
   };
 
@@ -50,7 +44,6 @@ describe('JiraIssueCreationVulnerabilities', () => {
   const findIssueTypeLabel = () => wrapper.findComponent('label');
   const findProjectKey = () => wrapper.findByTestId('jira-project-key');
   const findProjectKeyInput = () => findProjectKey().findComponent(GlFormInput);
-  const findGlBadge = () => wrapper.findComponent(GlBadge);
   const findFetchIssueTypeButton = () =>
     wrapper.findByTestId('jira-issue-types-fetch-retry-button');
   const findFetchErrorAlert = () => wrapper.findComponent(GlAlert);
@@ -64,11 +57,6 @@ describe('JiraIssueCreationVulnerabilities', () => {
 
     it('contains a heading', () => {
       expect(withinComponent().getByText(i18n.checkbox.label)).not.toBe(null);
-    });
-
-    it('contains a GlBadge', () => {
-      expect(findGlBadge().exists()).toBe(true);
-      expect(findGlBadge().text()).toMatchInterpolatedText(billingPlanNames[billingPlans.ULTIMATE]);
     });
 
     it('contains a more detailed description', () => {
@@ -247,62 +235,13 @@ describe('JiraIssueCreationVulnerabilities', () => {
     });
   });
 
-  describe('Jira project key prop', () => {
-    describe('with no Jira project key', () => {
-      beforeEach(async () => {
-        wrapper = createShallowComponent({ props: { projectKey: null } });
-        await setEnableJiraVulnerabilitiesChecked(true);
-      });
-
-      it('shows a warning message telling the user to enter a valid project key', () => {
-        expect(withinComponent().getByText(i18n.projectKeyWarnings.missing)).not.toBe(null);
-      });
-    });
-
-    describe('with fetched issue types and Jira project key changing', () => {
-      beforeEach(async () => {
-        wrapper = createShallowComponent({ props: { projectKey: 'INITIAL' } });
-        await setEnableJiraVulnerabilitiesChecked(true);
-        findFetchIssueTypeButton().vm.$emit('click');
-        wrapper.setProps({ projectKey: 'CHANGED' });
-      });
-
-      it('shows a warning message telling the user to refetch the issues list', () => {
-        expect(withinComponent().getByText(i18n.projectKeyWarnings.changed)).not.toBe(null);
-      });
-    });
-  });
-
-  describe('when jira_multiple_project_keys is not enabled', () => {
+  describe('Jira project key input', () => {
     beforeEach(() => {
       wrapper = createShallowComponent({
         props: {
           initialIsEnabled: true,
         },
       });
-    });
-
-    it('does not render "Jira project key" input', () => {
-      expect(findProjectKey().exists()).toBe(false);
-    });
-  });
-
-  describe('when jira_multiple_project_keys is enabled', () => {
-    beforeEach(() => {
-      wrapper = createShallowComponent({
-        props: {
-          initialIsEnabled: true,
-        },
-        provide: {
-          glFeatures: {
-            jiraMultipleProjectKeys: true,
-          },
-        },
-      });
-    });
-
-    it('does not render GlBadge', () => {
-      expect(findGlBadge().exists()).toBe(false);
     });
 
     it('renders "Jira project key" input', () => {
@@ -322,11 +261,6 @@ describe('JiraIssueCreationVulnerabilities', () => {
           props: {
             initialIsEnabled: true,
             initialProjectKey: 'INITIAL',
-          },
-          provide: {
-            glFeatures: {
-              jiraMultipleProjectKeys: true,
-            },
           },
         });
         findFetchIssueTypeButton().vm.$emit('click');

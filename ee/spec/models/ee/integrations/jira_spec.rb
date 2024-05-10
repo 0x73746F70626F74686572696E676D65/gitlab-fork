@@ -65,46 +65,6 @@ RSpec.describe Integrations::Jira, feature_category: :integrations do
 
       expect(jira_integration).to be_invalid
     end
-
-    context 'when jira_multiple_project_keys feature is disabled' do
-      before do
-        stub_feature_flags(jira_multiple_project_keys: false)
-      end
-
-      context 'when is active and issues_enabled' do
-        before do
-          allow(jira_integration).to receive(:active?).and_return(true)
-          jira_integration.issues_enabled = true
-        end
-
-        it 'validates the presence of project_key' do
-          jira_integration.project_key = ''
-
-          jira_integration.validate
-          expect(jira_integration.errors[:project_key]).to eq ["can't be blank"]
-        end
-
-        it 'does not validate the presence of project_keys' do
-          jira_integration.project_keys = []
-
-          jira_integration.validate
-          expect(jira_integration.errors[:project_keys]).to be_empty
-        end
-      end
-
-      context 'when vulnerabilities are enabled' do
-        before do
-          jira_integration.vulnerabilities_enabled = true
-        end
-
-        it 'validates presence of project_key' do
-          jira_integration.project_key = ''
-
-          jira_integration.validate
-          expect(jira_integration.errors[:project_key]).to eq ["can't be blank"]
-        end
-      end
-    end
   end
 
   describe 'jira_vulnerabilities_integration_enabled?' do
