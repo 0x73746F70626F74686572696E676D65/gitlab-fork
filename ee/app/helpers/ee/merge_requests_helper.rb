@@ -53,7 +53,12 @@ module EE
     end
 
     def show_video_component?(project)
-      experiment(:issues_mrs_empty_state, type: :experiment, user: current_user, project: project) do |e|
+      experiment(:issues_mrs_empty_state,
+        type: :experiment,
+        user: current_user,
+        project: project,
+        namespace: project&.namespace
+      ) do |e|
         e.control { false }
         e.candidate { true }
       end.run

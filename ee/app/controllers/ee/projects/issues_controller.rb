@@ -34,7 +34,13 @@ module EE
         before_action :redirect_if_test_case, only: [:show]
 
         before_action only: :index do
-          experiment(:issues_mrs_empty_state, type: :experiment, user: current_user, project: project).publish
+          experiment(:issues_mrs_empty_state,
+            type: :experiment,
+            user: current_user,
+            project: project,
+            namespace: project&.namespace
+          ).publish
+
           push_force_frontend_feature_flag(:okrs_mvc, project&.okrs_mvc_feature_flag_enabled?)
           push_licensed_feature(:okrs, project)
         end
