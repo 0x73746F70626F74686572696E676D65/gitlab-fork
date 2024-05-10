@@ -192,6 +192,10 @@ module EE
           alpha: { milestone: '17.0' }
         mount_mutation ::Mutations::AuditEvents::Instance::EventTypeFilters::Delete,
           alpha: { milestone: '17.0' }
+        mount_mutation ::Mutations::AuditEvents::Group::NamespaceFilters::Create,
+          alpha: { milestone: '17.0' }
+        mount_mutation ::Mutations::AuditEvents::Group::NamespaceFilters::Delete,
+          alpha: { milestone: '17.0' }
 
         prepend(Types::DeprecatedMutations)
       end
