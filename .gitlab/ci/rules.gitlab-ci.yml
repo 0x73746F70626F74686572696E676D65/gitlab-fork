@@ -2363,6 +2363,9 @@
       changes: *code-backstage-qa-patterns
     - <<: *if-merge-request
       changes: *workhorse-patterns
+    - <<: *if-merge-request
+      changes: *rubocop-patterns
+
 
 .rails:rules:detect-previous-failed-tests:
   rules:
