@@ -5460,7 +5460,7 @@ Input type: `IntegrationExclusionCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationintegrationexclusioncreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationintegrationexclusioncreateintegrationname"></a>`integrationName` | [`IntegrationType!`](#integrationtype) | Type of integration to exclude. |
-| <a id="mutationintegrationexclusioncreateprojectids"></a>`projectIds` | [`[ProjectID!]!`](#projectid) | Ids of projects to exclude. |
+| <a id="mutationintegrationexclusioncreateprojectids"></a>`projectIds` | [`[ProjectID!]!`](#projectid) | IDs of projects to exclude up to a maximum of 100. |
 
 #### Fields
 
@@ -5484,7 +5484,7 @@ Input type: `IntegrationExclusionDeleteInput`
 | ---- | ---- | ----------- |
 | <a id="mutationintegrationexclusiondeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationintegrationexclusiondeleteintegrationname"></a>`integrationName` | [`IntegrationType!`](#integrationtype) | Type of integration. |
-| <a id="mutationintegrationexclusiondeleteprojectids"></a>`projectIds` | [`[ProjectID!]!`](#projectid) | Id of excluded project. |
+| <a id="mutationintegrationexclusiondeleteprojectids"></a>`projectIds` | [`[ProjectID!]!`](#projectid) | IDs of excluded projects. |
 
 #### Fields
 
