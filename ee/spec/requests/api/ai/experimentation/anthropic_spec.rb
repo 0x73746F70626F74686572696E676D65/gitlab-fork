@@ -16,6 +16,7 @@ RSpec.describe API::Ai::Experimentation::Anthropic, feature_category: :ai_abstra
       {
         'Accept' => ['application/json'],
         'Content-Type' => ['application/json'],
+        'anthropic-version' => ['2023-06-01'],
         'X-Api-Key' => [anthropic_api_key]
       }
     end
