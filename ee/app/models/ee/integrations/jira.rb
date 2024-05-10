@@ -83,11 +83,7 @@ module EE
       private
 
       def project_key_required?
-        if ::Feature.enabled?(:jira_multiple_project_keys, group || project&.group)
-          vulnerabilities_enabled
-        else
-          (active? && issues_enabled) || vulnerabilities_enabled
-        end
+        vulnerabilities_enabled
       end
       strong_memoize_attr :project_key_required?
 

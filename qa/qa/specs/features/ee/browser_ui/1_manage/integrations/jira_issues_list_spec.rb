@@ -93,7 +93,7 @@ module QA
         QA::Page::Project::Settings::Services::Jira.perform do |jira|
           jira.setup_service_with(url: url) do |service|
             service.enable_jira_issues
-            service.set_jira_project_key(jira_project_key)
+            service.set_jira_project_keys(jira_project_key)
           end
         end
       end

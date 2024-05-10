@@ -73,9 +73,8 @@ module QA
 
         QA::Page::Project::Settings::Services::Jira.perform do |jira|
           jira.setup_service_with(url: jira_host)
-          jira.enable_jira_issues
-          jira.set_jira_project_key(jira_project_key)
           jira.enable_jira_vulnerabilities
+          jira.set_jira_project_key(jira_project_key)
           jira.select_vulnerability_bug_type("Bug")
           jira.click_save_changes_and_wait
         end

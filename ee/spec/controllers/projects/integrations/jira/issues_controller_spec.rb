@@ -23,6 +23,15 @@ RSpec.describe Projects::Integrations::Jira::IssuesController, feature_category:
       end
     end
 
+    shared_examples 'an action that renders the index template' do
+      it 'renders the index template' do
+        get :index, params: { namespace_id: project.namespace, project_id: project }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to render_template(:index)
+      end
+    end
+
     context 'when jira_issues_integration licensed feature is not available' do
       before do
         stub_licensed_features(jira_issues_integration: false)
@@ -39,6 +48,22 @@ RSpec.describe Projects::Integrations::Jira::IssuesController, feature_category:
       it_behaves_like 'an action that returns a 404'
     end
 
+    context 'when issues and vulnerabilities are disabled' do
+      before do
+        jira.update!(issues_enabled: false, vulnerabilities_enabled: false)
+      end
+
+      it_behaves_like 'an action that returns a 404'
+    end
+
+    context 'when vulnerabilities are enabled' do
+      before do
+        jira.update!(issues_enabled: false, vulnerabilities_enabled: true, vulnerabilities_issuetype: 'bug')
+      end
+
+      it_behaves_like 'an action that renders the index template'
+    end
+
     context 'when jira integration does not exist' do
       before do
         jira.destroy!
@@ -51,12 +76,7 @@ RSpec.describe Projects::Integrations::Jira::IssuesController, feature_category:
       subject { get :index, params: { namespace_id: project.namespace, project_id: project } }
     end
 
-    it 'renders the "index" template' do
-      get :index, params: { namespace_id: project.namespace, project_id: project }
-
-      expect(response).to have_gitlab_http_status(:ok)
-      expect(response).to render_template(:index)
-    end
+    it_behaves_like 'an action that renders the index template'
 
     it 'tracks usage' do
       expect(Gitlab::UsageDataCounters::HLLRedisCounter)

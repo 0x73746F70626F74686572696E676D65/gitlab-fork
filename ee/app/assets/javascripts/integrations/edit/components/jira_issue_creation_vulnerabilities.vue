@@ -1,7 +1,6 @@
 <script>
 import {
   GlAlert,
-  GlBadge,
   GlButton,
   GlButtonGroup,
   GlCollapsibleListbox,
@@ -44,7 +43,6 @@ export default {
   i18n,
   components: {
     GlAlert,
-    GlBadge,
     GlButton,
     GlButtonGroup,
     GlCollapsibleListbox,
@@ -62,11 +60,6 @@ export default {
       type: Boolean,
       required: false,
       default: true,
-    },
-    projectKey: {
-      type: String,
-      required: false,
-      default: '',
     },
     initialIssueTypeId: {
       type: String,
@@ -92,27 +85,23 @@ export default {
   data() {
     return {
       isLoadingErrorAlertDismissed: false,
-      projectKeyForCurrentIssues: '',
+      projectKeyForCurrentIssues: this.initialProjectKey,
       issueCreationProjectKey: this.initialProjectKey,
       isJiraVulnerabilitiesEnabled: this.initialIsEnabled,
       selectedJiraIssueTypeId: null,
     };
   },
   computed: {
-    ...mapGetters(['isInheriting', 'propsSource']),
+    ...mapGetters(['isInheriting']),
     ...mapState(['jiraIssueTypes', 'isLoadingJiraIssueTypes', 'loadingJiraIssueTypesErrorMessage']),
     checkboxDisabled() {
       return !this.showFullFeature || this.isInheriting;
     },
     hasProjectKeyChanged() {
-      if (this.multipleProjectKeys) {
-        return (
-          this.projectKeyForCurrentIssues &&
-          this.issueCreationProjectKey !== this.projectKeyForCurrentIssues
-        );
-      }
-
-      return this.projectKeyForCurrentIssues && this.projectKey !== this.projectKeyForCurrentIssues;
+      return (
+        this.projectKeyForCurrentIssues &&
+        this.issueCreationProjectKey !== this.projectKeyForCurrentIssues
+      );
     },
     shouldShowLoadingErrorAlert() {
       return !this.isLoadingErrorAlertDismissed && this.loadingJiraIssueTypesErrorMessage;
@@ -124,10 +113,7 @@ export default {
         },
       } = this;
 
-      if (
-        (this.multipleProjectKeys && !this.issueCreationProjectKey) ||
-        (!this.multipleProjectKeys && !this.projectKey)
-      ) {
+      if (!this.issueCreationProjectKey) {
         return projectKeyWarnings.missing;
       }
 
@@ -165,9 +151,6 @@ export default {
         !this.isValidated
       );
     },
-    multipleProjectKeys() {
-      return this.glFeatures.jiraMultipleProjectKeys;
-    },
   },
   watch: {
     jiraIssueTypes() {
@@ -187,9 +170,7 @@ export default {
     },
     handleLoadJiraIssueTypesClick() {
       this.requestJiraIssueTypes();
-      this.projectKeyForCurrentIssues = this.multipleProjectKeys
-        ? this.issueCreationProjectKey
-        : this.projectKey;
+      this.projectKeyForCurrentIssues = this.issueCreationProjectKey;
       this.isLoadingErrorAlertDismissed = false;
     },
   },
@@ -203,18 +184,7 @@ export default {
       :disabled="checkboxDisabled"
       data-testid="jira-enable-vulnerabilities-checkbox"
     >
-      <span>{{ $options.i18n.checkbox.label }}</span
-      ><gl-badge
-        v-if="!multipleProjectKeys"
-        :href="propsSource.aboutPricingUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        variant="tier"
-        icon="license"
-        class="gl-align-middle gl-mt-n2 gl-ml-2"
-      >
-        {{ ultimateBadgeText }}
-      </gl-badge>
+      <span>{{ $options.i18n.checkbox.label }}</span>
       <template #help>
         {{ $options.i18n.checkbox.description }}
       </template>
@@ -232,7 +202,6 @@ export default {
         data-testid="issue-type-section"
       >
         <gl-form-group
-          v-if="multipleProjectKeys"
           :label="s__('JiraService|Jira project key')"
           label-for="service_project_key"
           :invalid-feedback="__('This field is required.')"
@@ -244,6 +213,7 @@ export default {
             v-model="issueCreationProjectKey"
             name="service[project_key]"
             width="md"
+            data-testid="jira-project-key-field"
             :placeholder="s__('JiraService|AB')"
             :required="isJiraVulnerabilitiesEnabled"
             :state="validProjectKey"
@@ -289,7 +259,7 @@ export default {
               v-gl-tooltip.hover
               :title="$options.i18n.fetchIssueTypesButtonLabel"
               :aria-label="$options.i18n.fetchIssueTypesButtonLabel"
-              :disabled="!projectKey"
+              :disabled="!issueCreationProjectKey"
               icon="retry"
               data-testid="jira-issue-types-fetch-retry-button"
               @click="handleLoadJiraIssueTypesClick"

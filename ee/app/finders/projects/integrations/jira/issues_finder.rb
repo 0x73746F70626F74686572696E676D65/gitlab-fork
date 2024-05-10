@@ -30,7 +30,7 @@ module Projects
 
           raise IntegrationError, _('Jira service not configured.') unless jira_integration&.active?
 
-          if Feature.disabled?(:jira_multiple_project_keys, project.group) || params[:vulnerability_ids].present?
+          if params[:vulnerability_ids].present?
             project_keys = jira_integration.project_key
 
             raise IntegrationError, _('Jira project key is not configured.') if project_keys.blank?
