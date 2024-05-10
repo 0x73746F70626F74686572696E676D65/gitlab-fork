@@ -86,10 +86,6 @@ module Gitlab
 
             private
 
-            def claude_3_enabled?
-              Feature.enabled?(:ai_claude_3_sonnet, context.current_user)
-            end
-
             def execute_streamed_request
               request(&streamed_request_handler(StreamedZeroShotAnswer.new))
             end
@@ -105,7 +101,7 @@ module Gitlab
               @options ||= {
                 tool_names: tools.map { |tool_class| tool_class::Executor::NAME }.join(', '),
                 tools_definitions: tools.map do |tool_class|
-                  tool_class::Executor.full_definition(claude_3_enabled: claude_3_enabled?)
+                  tool_class::Executor.full_definition
                 end.join("\n"),
                 user_input: user_input,
                 agent_scratchpad: +"",
@@ -115,8 +111,7 @@ module Gitlab
                 system_prompt: context.agent_version&.prompt,
                 current_resource: current_resource,
                 current_code: current_code,
-                resources: available_resources_names,
-                current_user: context.current_user
+                resources: available_resources_names
               }
             end
 
@@ -157,7 +152,7 @@ module Gitlab
             end
 
             def zero_shot_prompt
-              claude_3_enabled? ? CLAUDE_3_ZERO_SHOT_PROMPT : ZERO_SHOT_PROMPT
+              ZERO_SHOT_PROMPT
             end
 
             def last_conversation
@@ -197,60 +192,12 @@ module Gitlab
             end
 
             def current_resource
-              return context.current_page_short_description if claude_3_enabled?
-
-              # We use a content limit of 10% of the total limit because LLMs can be appreciably slower when dealing
-              # with larger prompts. Since we're including the resource by default when possible, we don't want to
-              # slow down every request. This also reduces the possibility that the complete prompt exceeds the maximum.
-              <<~CONTEXT
-                #{context.current_page_sentence}
-                <resource>
-                #{context.resource_serialized(content_limit: provider_prompt_class::MAX_CHARACTERS / 10)}
-                </resource>
-
-              CONTEXT
+              context.current_page_short_description
             rescue ArgumentError
               ""
             end
 
             ZERO_SHOT_PROMPT = <<~PROMPT.freeze
-                  Answer the question as accurate as you can.
-
-                  You have access only to the following tools:
-                  <tool_list>
-                  %<tools_definitions>s
-                  </tool_list>
-                  Consider every tool before making a decision.
-                  Ensure that your answer is accurate and contain only information directly supported by the information retrieved using provided tools.
-
-                  You must always use the following format:
-                  Question: the input question you must answer
-                  Thought: you should always think about what to do
-                  Action: the action to take, should be one tool from this list or a direct answer (then use DirectAnswer as action): [%<tool_names>s]
-                  Action Input: the input to the action needs to be provided for every action that uses a tool
-                  Observation: the result of the actions. If the Action is DirectAnswer never write an Observation, but remember that you're still #{AGENT_NAME}.
-
-                  ... (this Thought/Action/Action Input/Observation sequence can repeat N times)
-
-                  Thought: I know the final answer.
-                  Final Answer: the final answer to the original input question.
-
-                  When concluding your response, provide the final answer as "Final Answer:" as soon as the answer is recognized.
-                  %<current_code>s
-                  If no tool is needed, give a final answer with "Action: DirectAnswer" for the Action parameter and skip writing an Observation.
-
-                  You have access to the following GitLab resources: %<resources>s.
-                  You also have access to all information that can be helpful to someone working in software development of any kind.
-                  At the moment, you do not have access to the following GitLab resources: Merge Requests, Pipelines, Vulnerabilities.
-
-                  Avoid asking for more details if you cannot provide an answer anyway.
-                  Ask user to leave feedback.
-
-                  %<current_resource>s
-                  Begin!
-            PROMPT
-
-            CLAUDE_3_ZERO_SHOT_PROMPT = <<~PROMPT.freeze
                   Answer the question as accurate as you can.
 
                   You have access only to the following tools:

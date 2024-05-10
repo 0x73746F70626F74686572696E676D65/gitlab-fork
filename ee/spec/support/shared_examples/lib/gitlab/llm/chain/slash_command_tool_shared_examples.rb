@@ -14,13 +14,11 @@ RSpec.shared_examples 'slash command tool' do
       selected_text: 'selected text',
       language_info: 'The code is written in Python and stored as test.py',
       file_content: "Here is the content of the file user is working with:\n" \
-                    "<file>\n  code aboveselected textcode below\n</file>\n",
-      claude_3_enabled: false
+                    "<file>\n  code aboveselected textcode below\n</file>\n"
     }.merge(extra_params)
   end
 
   before do
-    stub_feature_flags(ai_claude_3_sonnet: false)
     allow(ai_request_double).to receive(:request).and_return('response')
     allow(tool).to receive(:provider_prompt_class).and_return(prompt_class)
     context.current_file = {

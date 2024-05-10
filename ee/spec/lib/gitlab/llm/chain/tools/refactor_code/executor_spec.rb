@@ -49,10 +49,6 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Executor, feature_catego
 
   describe '#execute' do
     context 'when context is authorized' do
-      before do
-        stub_feature_flags(ai_claude_3_sonnet: false)
-      end
-
       include_context 'with stubbed LLM authorizer', allowed: true
 
       it_behaves_like 'slash command tool' do
@@ -69,13 +65,17 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Executor, feature_catego
         allow(tool).to receive(:provider_prompt_class)
           .and_return(Gitlab::Llm::Chain::Tools::RefactorCode::Prompts::Anthropic)
 
-        expected_prompt = <<~PROMPT.chomp
+        prompt = tool.prompt[:prompt]
 
+        expect(prompt.length).to eq(2)
 
-          Human: You are a software developer.
+        expected_system_prompt = <<~PROMPT
+          You are a software developer.
           You can refactor code.
           The code is written in Python and stored as test.py
+        PROMPT
 
+        expected_user_prompt = <<~PROMPT.chomp
           Here is the content of the file user is working with:
           <file>
             code aboveselected textcode below
@@ -89,11 +89,13 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Executor, feature_catego
           input
           The new code should fit into the existing file, consider reuse of existing code in the file when generating new code.
           Any code blocks in response should be formatted in markdown.
-
-          Assistant:
         PROMPT
 
-        expect(tool.prompt[:prompt]).to eq(expected_prompt)
+        expect(prompt[0][:role]).to eq(:system)
+        expect(prompt[0][:content]).to eq(expected_system_prompt)
+
+        expect(prompt[1][:role]).to eq(:user)
+        expect(prompt[1][:content]).to eq(expected_user_prompt)
       end
 
       context 'when response is successful' do

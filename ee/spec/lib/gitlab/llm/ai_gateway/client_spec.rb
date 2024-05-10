@@ -30,7 +30,7 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
     }
   end
 
-  let(:model) { described_class::DEFAULT_MODEL }
+  let(:model) { described_class::CLAUDE_3_SONNET }
   let(:provider) { 'anthropic' }
   let(:prompt) { 'anything' }
 
@@ -72,7 +72,6 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
   let(:logger) { instance_double('Gitlab::Llm::Logger') }
 
   before do
-    stub_feature_flags(ai_claude_3_sonnet: false)
     allow(Gitlab::Llm::Logger).to receive(:build).and_return(logger)
     allow(logger).to receive(:info_or_debug)
     allow(logger).to receive(:info)
@@ -175,12 +174,9 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
         .with(user, message: "Received response from AI Gateway", response: response_text)
     end
 
-    context 'when ai_claude_3_sonnet feature flag is enabled' do
-      let(:model) { described_class::CLAUDE_3_SONNET }
-
-      before do
-        stub_feature_flags(ai_claude_3_sonnet: true)
-      end
+    context 'when calling AI Gateway with Claude 2.1 model' do
+      let(:model) { Gitlab::Llm::Concerns::AvailableModels::CLAUDE_2_1 }
+      let(:options) { { model: model } }
 
       it 'returns expected response' do
         expect(Gitlab::HTTP).to receive(:post)

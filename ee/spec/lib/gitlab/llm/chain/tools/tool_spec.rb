@@ -144,33 +144,9 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
       stub_const("#{described_class.name}::EXAMPLE", 'EXAMPLE')
     end
 
-    context 'when Claude 3 description is not defined' do
-      it 'returns generic description of the tool when Claude 3 is enabled' do
-        expect(described_class.full_definition(claude_3_enabled: true)).to eq(definition)
-      end
-
-      it 'returns generic description of the tool when Claude 3 is disabled' do
-        expect(described_class.full_definition(claude_3_enabled: false)).to eq(definition)
-      end
-    end
-
-    context 'when Claude 3 description is defined' do
-      let(:expected_description) { 'CLAUDE_TEST' }
-
-      before do
-        stub_const("#{described_class.name}::CLAUDE_3_DESCRIPTION", expected_description)
-      end
-
-      context 'when Claude 3 is disabled' do
-        it 'returns generic description of the tool' do
-          expect(described_class.full_definition(claude_3_enabled: false)).to eq(definition)
-        end
-      end
-
-      context 'when Claude 3 is enabled' do
-        it 'returns Claude 3-specific description of the tool' do
-          expect(described_class.full_definition(claude_3_enabled: true)).to eq(definition)
-        end
+    context 'when description is defined' do
+      it 'returns detailed description of the tool' do
+        expect(described_class.full_definition).to eq(definition)
       end
     end
   end

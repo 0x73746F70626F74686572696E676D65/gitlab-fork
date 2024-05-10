@@ -1,9 +1,0 @@
----
-name: ai_claude_3_sonnet
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/444629
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/148223
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/446302
-milestone: '16.11'
-group: group::duo chat
-type: gitlab_com_derisk
-default_enabled: false

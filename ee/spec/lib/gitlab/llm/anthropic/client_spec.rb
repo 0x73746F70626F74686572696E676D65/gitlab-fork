@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
   let(:default_body_params) do
     {
       prompt: "anything",
-      model: described_class::DEFAULT_MODEL,
+      model: ::Gitlab::Llm::Concerns::AvailableModels::CLAUDE_2_1,
       max_tokens_to_sample: described_class::DEFAULT_MAX_TOKENS,
       temperature: described_class::DEFAULT_TEMPERATURE
     }
@@ -131,7 +131,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
       let(:expected_request_body) do
         {
           prompt: "anything",
-          model: described_class::DEFAULT_MODEL,
+          model: ::Gitlab::Llm::Concerns::AvailableModels::CLAUDE_2_1,
           max_tokens_to_sample: described_class::DEFAULT_MAX_TOKENS,
           temperature: options[:temperature]
         }

@@ -224,37 +224,11 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       agent.prompt
     end
 
-    it 'includes the prompt options' do
+    it 'includes prompt in the options' do
       expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
         .to receive(:prompt).once.with(a_hash_including(prompt_options))
 
       agent.prompt
-    end
-
-    context 'when Claude 3 feature flag is enabled' do
-      let(:prompt_options) { { zero_shot_prompt: described_class::CLAUDE_3_ZERO_SHOT_PROMPT } }
-
-      it 'includes specific prompt for Claude 3 in the options' do
-        expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
-          .to receive(:prompt).once.with(a_hash_including(prompt_options))
-
-        agent.prompt
-      end
-    end
-
-    context 'when Claude 3 feature flag is disabled' do
-      let(:prompt_options) { { zero_shot_prompt: described_class::ZERO_SHOT_PROMPT } }
-
-      before do
-        stub_feature_flags(ai_claude_3_sonnet: false)
-      end
-
-      it 'includes general prompt in the options' do
-        expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
-          .to receive(:prompt).once.with(a_hash_including(prompt_options))
-
-        agent.prompt
-      end
     end
 
     context 'when agent_version is passed' do
@@ -311,27 +285,14 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
 
         let(:short_description) { 'short description' }
 
-        context "with claude 2" do
-          before do
-            stub_feature_flags(ai_claude_3_sonnet: false)
-          end
-
-          it 'includes the current resource metadata' do
-            expect(context).to receive(:resource_serialized).and_return(metadata)
-            expect(agent.prompt[:prompt]).to include(prompt_resource)
-          end
+        it 'does not include the current resource metadata' do
+          expect(context).not_to receive(:resource_serialized)
+          expect(system_prompt(agent)).not_to include(prompt_resource)
         end
 
-        context "with claude 3" do
-          it 'does not include the current resource metadata' do
-            expect(context).not_to receive(:resource_serialized)
-            expect(claude_3_system_prompt(agent)).not_to include(prompt_resource)
-          end
-
-          it 'includes the shortened resource description' do
-            expect(context).to receive(:current_page_short_description).and_return(short_description)
-            expect(claude_3_system_prompt(agent)).to include(short_description)
-          end
+        it 'includes the shortened resource description' do
+          expect(context).to receive(:current_page_short_description).and_return(short_description)
+          expect(system_prompt(agent)).to include(short_description)
         end
       end
 
@@ -351,20 +312,8 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
     context 'with self discover part' do
       let_it_be(:self_discoverability_prompt) { "You have access to the following GitLab resources: issues, epics" }
 
-      context 'with claude 2.1' do
-        before do
-          stub_feature_flags(ai_claude_3_sonnet: false)
-        end
-
-        it 'includes self-discoverability part in the prompt' do
-          expect(agent.prompt[:prompt]).to include self_discoverability_prompt
-        end
-      end
-
-      context 'with claude 3' do
-        it 'includes self-discoverability part in the prompt' do
-          expect(claude_3_system_prompt(agent)).to include(self_discoverability_prompt)
-        end
+      it 'includes self-discoverability part in the prompt' do
+        expect(system_prompt(agent)).to include(self_discoverability_prompt)
       end
     end
 
@@ -379,35 +328,15 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
         }
       end
 
-      context 'with claude 2.1' do
-        before do
-          stub_feature_flags(ai_claude_3_sonnet: false)
-        end
-
-        it 'includes selected code in the prompt' do
-          expect(agent.prompt[:prompt]).to include("code selection")
-        end
-
-        context 'when selected_text is empty' do
-          let(:selected_text) { '' }
-
-          it 'does not include selected code in the prompt' do
-            expect(agent.prompt[:prompt]).not_to include("code selection")
-          end
-        end
-      end
-
-      context 'with claude 3' do
-        it 'includes selected code in the prompt' do
-          expect(claude_3_system_prompt(agent)).to include("code selection")
-        end
+      it 'includes selected code in the prompt' do
+        expect(system_prompt(agent)).to include("code selection")
       end
 
       context 'when selected_text is empty' do
         let(:selected_text) { '' }
 
         it 'does not include selected code in the prompt' do
-          expect(claude_3_system_prompt(agent)).not_to include("code selection")
+          expect(system_prompt(agent)).not_to include("code selection")
         end
       end
     end
@@ -417,22 +346,9 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
       let(:blob) { fake_blob(path: 'foobar.rb', data: 'puts "hello world"') }
       let(:extra_resource) { { blob: blob } }
 
-      context 'with claude 2.1' do
-        before do
-          stub_feature_flags(ai_claude_3_sonnet: false)
-        end
-
-        it 'includes the blob name and data in the prompt' do
-          expect(agent.prompt[:prompt]).to include("foobar.rb")
-          expect(agent.prompt[:prompt]).to include("puts \"hello world\"")
-        end
-      end
-
-      context 'with claude 3' do
-        it 'includes the blob name and data in the prompt' do
-          expect(claude_3_system_prompt(agent)).to include("foobar.rb")
-          expect(claude_3_system_prompt(agent)).to include("puts \"hello world\"")
-        end
+      it 'includes the blob name and data in the prompt' do
+        expect(system_prompt(agent)).to include("foobar.rb")
+        expect(system_prompt(agent)).to include("puts \"hello world\"")
       end
     end
 
@@ -498,7 +414,7 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
     end
   end
 
-  def claude_3_system_prompt(agent)
+  def system_prompt(agent)
     agent.prompt[:prompt].reverse.find { |h| h[:role] == :system }[:content]
   end
 end

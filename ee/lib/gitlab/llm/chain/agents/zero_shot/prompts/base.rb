@@ -9,22 +9,13 @@ module Gitlab
             class Base
               def self.base_prompt(options)
                 system_prompt = options[:system_prompt] || Utils::Prompt.default_system_prompt
+                zero_shot_prompt = format(options[:zero_shot_prompt], options)
 
-                if options[:current_user] && Feature.enabled?(:ai_claude_3_sonnet, options[:current_user])
-                  zero_shot_prompt = format(options[:zero_shot_prompt], options)
-
-                  Utils::Prompt.role_conversation([
-                    Utils::Prompt.as_system(system_prompt, zero_shot_prompt),
-                    Utils::Prompt.as_user(options[:user_input]),
-                    Utils::Prompt.as_assistant(options[:agent_scratchpad], "Thought:")
-                  ])
-                else
-                  base_prompt = Utils::Prompt.no_role_text(options.fetch(:prompt_version),
-                    options
-                  )
-
-                  "#{system_prompt}\n\n#{base_prompt}"
-                end
+                Utils::Prompt.role_conversation([
+                  Utils::Prompt.as_system(system_prompt, zero_shot_prompt),
+                  Utils::Prompt.as_user(options[:user_input]),
+                  Utils::Prompt.as_assistant(options[:agent_scratchpad], "Thought:")
+                ])
               end
 
               def self.current_blob_prompt(blob)
