@@ -134,9 +134,9 @@ RSpec.describe 'Update value stream', feature_category: :value_stream_management
 
       it 'saves project_ids filter' do
         expect { post_graphql_mutation(mutation, current_user: current_user) }
-          .to change { value_stream.setting.reload.project_ids_filter }
+          .to change { value_stream.setting.reload.project_ids_filter.sort }
           .from([project_1.id])
-          .to([project_1.id, project_2.id])
+          .to([project_1.id, project_2.id].sort)
       end
     end
   end
