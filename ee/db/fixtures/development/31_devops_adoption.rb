@@ -32,7 +32,7 @@ class Gitlab::Seeder::DevopsAdoption # rubocop:disable Style/ClassAndModuleChild
 
       if enabled_namespace.invalid?
         puts "Error creating enabled_namespaces"
-        puts enabled_namespaces.map(&:errors).to_s
+        puts enabled_namespaces.map(&:errors)
         next
       end
 

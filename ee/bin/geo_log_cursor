@@ -22,7 +22,7 @@ class GeoLogCursorOptionParser
 
     op.separator 'Common options:'
     op.on('-h', '--help') do
-      puts op.to_s
+      puts op
       exit
     end
     op.on('-v', '--version') do
