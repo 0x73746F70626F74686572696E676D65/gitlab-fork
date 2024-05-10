@@ -294,7 +294,7 @@ In GitLab 16.8, 16.9, and 16.10, GitLab Duo Chat is available in Beta. To enable
 
 NOTE:
 Usage of GitLab Duo Chat Beta is governed by the [GitLab Testing Agreement](https://handbook.gitlab.com/handbook/legal/testing-agreement/).
-Learn about [data usage when using GitLab Duo Chat](ai_features.md#data-usage).
+Learn about [data usage when using GitLab Duo Chat](ai_data_usage.md).
 
 #### Manually synchronize your subscription
 
