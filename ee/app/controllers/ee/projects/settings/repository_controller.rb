@@ -8,6 +8,8 @@ module EE
         extend ::Gitlab::Utils::Override
 
         prepended do
+          skip_before_action :authorize_admin_project!, only: [:show, :create_deploy_token]
+          before_action :authorize_view_repository_settings!, only: [:show, :create_deploy_token]
           before_action :push_rule, only: :show
         end
 
@@ -88,6 +90,13 @@ module EE
         def allow_protected_branches_for_group?(group)
           ::Feature.enabled?(:group_protected_branches, group) ||
             ::Feature.enabled?(:allow_protected_branches_for_group, group)
+        end
+
+        def authorize_view_repository_settings!
+          return if can?(current_user, :admin_push_rules, project) ||
+            can?(current_user, :manage_deploy_tokens, project)
+
+          authorize_admin_project!
         end
       end
     end

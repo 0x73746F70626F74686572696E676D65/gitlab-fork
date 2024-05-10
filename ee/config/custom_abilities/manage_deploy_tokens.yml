@@ -1,0 +1,11 @@
+---
+name: manage_deploy_tokens
+description: Manage deploy tokens at the group or project level.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/448843
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/151677
+feature_category: continuous_delivery
+milestone: "17.0"
+group_ability: true
+project_ability: true
+requirements: []
+available_from_access_level:

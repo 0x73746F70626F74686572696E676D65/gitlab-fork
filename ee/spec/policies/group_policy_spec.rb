@@ -3563,6 +3563,16 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
       it_behaves_like 'custom roles abilities'
     end
+
+    context 'for a custom role with the `manage_deploy_tokens` permission' do
+      let(:member_role_abilities) { { manage_deploy_tokens: true } }
+
+      let(:allowed_abilities) do
+        [:manage_deploy_tokens, :read_deploy_token, :create_deploy_token, :destroy_deploy_token, :view_edit_page]
+      end
+
+      it_behaves_like 'custom roles abilities'
+    end
   end
 
   context 'for :read_limit_alert' do
