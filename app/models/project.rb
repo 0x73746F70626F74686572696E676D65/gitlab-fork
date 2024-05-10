@@ -1587,7 +1587,7 @@ class Project < ApplicationRecord
     # present. Since the validation for that will fail, we can just return
     # early.
     return if !creator || creator.can_create_project? ||
-        namespace.kind == 'group'
+      namespace.kind == 'group'
 
     limit = creator.projects_limit
     error =
@@ -3468,7 +3468,7 @@ class Project < ApplicationRecord
       Gitlab::GitalyClient.allow_n_plus_1_calls do
         merge_requests_allowing_collaboration(branch_name).any? do |merge_request|
           merge_request.author.can?(:push_code, self) &&
-          merge_request.can_be_merged_by?(user, skip_collaboration_check: true)
+            merge_request.can_be_merged_by?(user, skip_collaboration_check: true)
         end
       end
     end
