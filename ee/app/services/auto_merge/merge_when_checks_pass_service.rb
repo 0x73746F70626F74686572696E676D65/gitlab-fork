@@ -15,7 +15,7 @@ module AutoMerge
     def process(merge_request)
       logger.info("Processing Automerge - MWCP")
 
-      return if merge_request.project.has_ci? && !merge_request.diff_head_pipeline_success?
+      return if merge_request.has_ci_enabled? && !merge_request.diff_head_pipeline_success?
 
       logger.info("Pipeline Success - MWCP")
 
