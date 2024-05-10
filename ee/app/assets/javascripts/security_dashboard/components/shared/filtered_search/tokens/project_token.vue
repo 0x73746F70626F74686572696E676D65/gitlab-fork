@@ -5,8 +5,10 @@ import {
   GlFilteredSearchSuggestion,
   GlLoadingIcon,
 } from '@gitlab/ui';
+import { debounce } from 'lodash';
 import { createAlert } from '~/alert';
 import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { s__, __ } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import getProjects from 'ee/dependencies/graphql/projects.query.graphql';
@@ -40,7 +42,8 @@ export default {
     return {
       projects: [],
       selectedProjectIds: [],
-      isLoadingProjects: true,
+      isLoadingProjects: false,
+      searchTerm: '',
     };
   },
   computed: {
@@ -76,11 +79,13 @@ export default {
   methods: {
     async fetchProjects() {
       try {
+        this.isLoadingProjects = true;
+
         const { data } = await this.$apollo.query({
           query: getProjects,
           variables: {
             groupFullPath: this.groupNamespace,
-            search: '',
+            search: this.searchTerm,
             first: 50,
             includeSubgroups: true,
           },
@@ -90,6 +95,8 @@ export default {
           ...p,
           rawId: getIdFromGraphQLId(p.id),
         }));
+
+        this.projects.sort((p1, p2) => p1.name.localeCompare(p2.name));
       } catch {
         createAlert({
           message: this.$options.i18n.fetchErrorMessage,
@@ -123,6 +130,18 @@ export default {
       this.selectedProjectIds = ids.map((id) => Number(id));
       this.emitFiltersChanged();
     },
+    setSearchTerm: debounce(function debouncedSetSearchTerm({ data }) {
+      // when the user is doing a search, we receive a string. If they
+      // click on dropdown items we receive an array. For this reason, we can
+      // safely ignore non-string data.
+      if (typeof data === 'string') {
+        this.searchTerm = data.length >= 3 ? data : '';
+
+        // since apollo caches the results, we can trigger a fetch every time the search term changes
+        // and requests will only be made if there is no existing data for the current term
+        this.fetchProjects();
+      }
+    }, DEFAULT_DEBOUNCE_AND_THROTTLE_MS),
   },
   i18n: {
     label: __('Project'),
@@ -148,6 +167,7 @@ export default {
       @complete="onComplete"
       @destroy="resetSelected"
       @select="toggleSelectedProject"
+      @input="setSearchTerm"
     >
       <template #view>
         {{ toggleText }}
