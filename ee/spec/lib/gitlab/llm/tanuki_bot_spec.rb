@@ -321,15 +321,21 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
       end
 
       it 'executes calls and returns ResponseModifier' do
-        expect(ai_gateway_client).to receive(:stream).once.and_return(completion_response)
+        expect(ai_gateway_client).to receive(:stream)
+          .with(prompt: a_string_including('content'), model: 'claude-2.1')
+          .once.and_return(completion_response)
         expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
 
         expect(execute).to be_an_instance_of(::Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot)
       end
 
       it 'yields the streamed response to the given block' do
+        allow(Banzai).to receive(:render).and_return('absolute_links_content')
+
         expect(ai_gateway_client)
-          .to receive(:stream).once
+          .to receive(:stream)
+          .with(prompt: a_string_including('content'), model: 'claude-2.1')
+          .once
           .and_yield(answer)
           .and_return(completion_response)
 

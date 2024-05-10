@@ -150,7 +150,8 @@ module Gitlab
           .final_prompt(question: question, documents: search_documents)
 
         final_prompt_result = ai_gateway_client.stream(
-          prompt: final_prompt[:prompt]
+          prompt: final_prompt[:prompt],
+          model: 'claude-2.1'
         ) do |data|
           yield data if block_given?
         end
