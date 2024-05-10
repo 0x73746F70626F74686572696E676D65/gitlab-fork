@@ -40,7 +40,7 @@ RSpec.describe API::ServiceAccounts, :aggregate_failures, feature_category: :use
             expect(response).to have_gitlab_http_status(:created)
             expect(json_response['username']).to eq(params[:username])
             expect(json_response['name']).to eq(params[:name])
-            expect(json_response.keys).to match_array(%w[avatar_url id locked name state username web_url])
+            expect(json_response.keys).to match_array(%w[id name username])
           end
 
           context 'when user with the username already exists' do
