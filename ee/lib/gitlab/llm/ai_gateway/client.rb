@@ -159,11 +159,7 @@ module Gitlab
         def model(options)
           return options[:model] if options[:model].present?
 
-          if Feature.enabled?(:ai_claude_3_sonnet, user)
-            CLAUDE_3_SONNET
-          else
-            DEFAULT_MODEL
-          end
+          CLAUDE_3_SONNET
         end
 
         def provider(options)

@@ -23,7 +23,6 @@ module Gitlab
           override :prompt_options
           def prompt_options
             super.merge(command_options).merge(selected_text_options)
-                 .merge(claude_3_enabled: Feature.enabled?(:ai_claude_3_sonnet, context.current_user))
           end
 
           def selected_text_options

@@ -6,10 +6,10 @@ module Gitlab
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
         include ::Gitlab::Llm::Concerns::EventTracking
+        include ::Gitlab::Llm::Concerns::AvailableModels
         include Langsmith::RunHelpers
 
         URL = 'https://api.anthropic.com'
-        DEFAULT_MODEL = 'claude-2.1'
         DEFAULT_TEMPERATURE = 0
         DEFAULT_MAX_TOKENS = 2048
         DEFAULT_TIMEOUT = 30.seconds
@@ -123,7 +123,7 @@ module Gitlab
         end
 
         def model
-          DEFAULT_MODEL
+          CLAUDE_2_1
         end
       end
     end

@@ -17,28 +17,12 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
   let(:logger) { instance_double('Gitlab::Llm::Logger') }
 
   describe '#prompt' do
-    context "when claude 3 FF is enabled" do
-      it "returns claude 3 prompt" do
-        tool = ::Gitlab::Llm::Chain::Tools::IssueReader::Executor.new(context: context, options: options)
+    it "returns prompt" do
+      tool = ::Gitlab::Llm::Chain::Tools::IssueReader::Executor.new(context: context, options: options)
 
-        expect(tool.class::PROVIDER_PROMPT_CLASSES[:anthropic]).to receive(:claude_3_prompt).and_call_original
+      expect(tool.class::PROVIDER_PROMPT_CLASSES[:anthropic]).to receive(:prompt).and_call_original
 
-        tool.prompt
-      end
-    end
-
-    context "when claude 3 FF is disabled" do
-      before do
-        stub_feature_flags(ai_claude_3_sonnet: false)
-      end
-
-      it "returns provider base prompt" do
-        tool = ::Gitlab::Llm::Chain::Tools::IssueReader::Executor.new(context: context, options: options)
-
-        expect(tool.class::PROVIDER_PROMPT_CLASSES[:anthropic]).to receive(:prompt).and_call_original
-
-        tool.prompt
-      end
+      tool.prompt
     end
 
     context 'when there are no provider prompt classes' do

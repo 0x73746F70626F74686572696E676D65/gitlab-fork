@@ -139,7 +139,7 @@ module DuoChatQaEvaluationHelpers
       timeout: ANTHROPIC_TIMEOUT)
 
     {
-      model: Gitlab::Llm::Anthropic::Client::DEFAULT_MODEL,
+      model: Gitlab::Llm::Concerns::AvailableModels::CLAUDE_2_1,
       response: anthropic_response["completion"]
     }
   end
