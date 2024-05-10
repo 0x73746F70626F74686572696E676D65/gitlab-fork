@@ -12645,6 +12645,9 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
+msgid "ColorMode|Auto (Experiment)"
+msgstr ""
+
 msgid "ColorMode|Dark (Experiment)"
 msgstr ""
 
