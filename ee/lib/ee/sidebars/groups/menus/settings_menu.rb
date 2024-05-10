@@ -26,7 +26,7 @@ module EE
             else
               add_menu_item_for_abilities(general_menu_item, [:remove_group, :admin_compliance_framework])
               add_menu_item_for_abilities(access_tokens_menu_item, :read_resource_access_tokens)
-              add_menu_item_for_abilities(repository_menu_item, :change_push_rules)
+              add_menu_item_for_abilities(repository_menu_item, :admin_push_rules)
               add_menu_item_for_abilities(ci_cd_menu_item, :admin_cicd_variables)
               add_menu_item_for_abilities(billing_menu_item, :read_billing)
             end
