@@ -41,6 +41,11 @@ RSpec.describe Search::Wiki::ElasticDeleteGroupWikiWorker, feature_category: :gl
                   term: {
                     rid: "wiki_#{container.class.name.downcase}_#{container.id}"
                   }
+                },
+                must_not: {
+                  term: {
+                    language: 'YAML'
+                  }
                 }
               }
             }
