@@ -34,12 +34,13 @@ RSpec.describe Elastic::ProjectTransferWorker, :elastic, feature_category: :glob
             expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!)
               .with(project, skip_projects: true)
             expect(ElasticDeleteProjectWorker).to receive(:perform_async)
-              .with(project.id, "project_#{project.id}", { namespace_routing_id: 'non-existent-namespace-id' })
+              .with(project.id, "project_#{project.id}",
+                { project_only: true, namespace_routing_id: non_existing_record_id })
             expect(::Gitlab::CurrentSettings)
               .to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
               .with(project.id).and_call_original
 
-            worker.perform(project.id, "non-existent-namespace-id", indexed_namespace.id)
+            worker.perform(project.id, non_existing_record_id, indexed_namespace.id)
           end
         end
 
@@ -53,7 +54,8 @@ RSpec.describe Elastic::ProjectTransferWorker, :elastic, feature_category: :glob
             expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!)
               .with(project, skip_projects: true)
             expect(ElasticDeleteProjectWorker).to receive(:perform_async)
-              .with(project.id, "project_#{project.id}", { namespace_routing_id: non_indexed_namespace.id })
+              .with(project.id, "project_#{project.id}",
+                { project_only: true, namespace_routing_id: non_indexed_namespace.id })
             expect(::Gitlab::CurrentSettings)
               .to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
               .with(project.id).and_call_original
@@ -75,7 +77,7 @@ RSpec.describe Elastic::ProjectTransferWorker, :elastic, feature_category: :glob
             expect(Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(project)
             expect(Elastic::ProcessInitialBookkeepingService).not_to receive(:backfill_projects!)
             expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(project.id, project.es_id,
-              namespace_routing_id: project.root_ancestor.id)
+              { namespace_routing_id: project.root_ancestor.id })
             expect(::Gitlab::CurrentSettings)
               .to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
                 .with(project.id).and_call_original
@@ -118,7 +120,8 @@ RSpec.describe Elastic::ProjectTransferWorker, :elastic, feature_category: :glob
               .with(project, skip_projects: true)
             expect(::Gitlab::CurrentSettings).not_to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
             expect(ElasticDeleteProjectWorker).to receive(:perform_async)
-              .with(project.id, "project_#{project.id}", { namespace_routing_id: another_indexed_namespace.id })
+              .with(project.id, "project_#{project.id}",
+                { project_only: true, namespace_routing_id: another_indexed_namespace.id })
 
             worker.perform(project.id, another_indexed_namespace.id, indexed_namespace.id)
           end
@@ -134,7 +137,7 @@ RSpec.describe Elastic::ProjectTransferWorker, :elastic, feature_category: :glob
                 .with(project, skip_projects: true)
               expect(::Gitlab::CurrentSettings).not_to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
               expect(ElasticDeleteProjectWorker).to receive(:perform_async)
-                .with(project.id, "project_#{project.id}")
+                .with(project.id, "project_#{project.id}", { project_only: true })
 
               worker.perform(project.id, another_indexed_namespace.id, indexed_namespace.id)
             end
@@ -154,7 +157,8 @@ RSpec.describe Elastic::ProjectTransferWorker, :elastic, feature_category: :glob
             .with(project, skip_projects: true)
           expect(::Gitlab::CurrentSettings).not_to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
           expect(ElasticDeleteProjectWorker).to receive(:perform_async)
-            .with(project.id, "project_#{project.id}", { namespace_routing_id: non_indexed_namespace.id })
+            .with(project.id, "project_#{project.id}",
+              { project_only: true, namespace_routing_id: non_indexed_namespace.id })
 
           worker.perform(project.id, non_indexed_namespace.id, indexed_namespace.id)
         end
