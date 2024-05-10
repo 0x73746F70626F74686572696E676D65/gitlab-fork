@@ -64,6 +64,15 @@ RSpec.describe Issues::CloseService, feature_category: :team_planning do
         expect(work_item.closed_at).to eq(epic.closed_at)
       end
 
+      it 'publishes a work item updated event' do
+        expect { execute }
+          .to publish_event(::WorkItems::WorkItemUpdatedEvent)
+          .with({
+            id: work_item.id,
+            namespace_id: work_item.namespace.id
+          })
+      end
+
       context 'when epic and work item was already closed' do
         it 'does not change the state' do
           expect { execute }.to not_change { epic.reload.state }

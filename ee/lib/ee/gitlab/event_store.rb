@@ -111,6 +111,23 @@ module EE
             to: ::WorkItems::WorkItemUpdatedEvent, if: ->(event) {
               ::WorkItems::RolledupDates::UpdateRolledupDatesEventHandler.can_handle_update?(event)
             }
+
+          store.subscribe ::WorkItems::ValidateEpicWorkItemSyncWorker,
+            to: ::WorkItems::WorkItemCreatedEvent,
+            if: ->(event) {
+                  ::Namespace.find_by_id(event.data[:namespace_id])&.group_namespace? &&
+                    ::Feature.enabled?(:validate_epic_work_item_sync,
+                      ::Group.actor_from_id(event.data[:namespace_id])) &&
+                    ::Epic.find_by_issue_id(event.data[:id]).present?
+                }
+          store.subscribe ::WorkItems::ValidateEpicWorkItemSyncWorker,
+            to: ::WorkItems::WorkItemUpdatedEvent,
+            if: ->(event) {
+                  ::Namespace.find_by_id(event.data[:namespace_id])&.group_namespace? &&
+                    ::Feature.enabled?(:validate_epic_work_item_sync,
+                      ::Group.actor_from_id(event.data[:namespace_id])) &&
+                    ::Epic.find_by_issue_id(event.data[:id]).present?
+                }
         end
       end
     end
