@@ -114,6 +114,11 @@ describe('ee/security_dashboard/components/shared/filtered_search/tokens/project
   const findSlotView = () => wrapper.findByTestId('slot-view');
   const findSlotSuggestions = () => wrapper.findByTestId('slot-suggestions');
 
+  const searchForProject = (searchTerm = '') => {
+    findFilteredSearchToken().vm.$emit('input', { data: searchTerm });
+    return waitForPromises();
+  };
+
   const selectProject = (project) => {
     findFilteredSearchToken().vm.$emit('select', project);
     return nextTick();
@@ -173,6 +178,20 @@ describe('ee/security_dashboard/components/shared/filtered_search/tokens/project
       );
       expect(findSlotSuggestions().text()).toContain(TEST_PROJECTS[0].name);
       expect(findSlotSuggestions().text()).toContain(TEST_PROJECTS[1].name);
+    });
+
+    it('fetches projects matching the search term', async () => {
+      const TEST_SEARCH_TERM = 'GitLab Community';
+
+      expect(handlerMocks.getProjectHandler).toHaveBeenCalledWith(
+        expect.objectContaining({ search: '' }),
+      );
+
+      await searchForProject(TEST_SEARCH_TERM);
+
+      expect(handlerMocks.getProjectHandler).toHaveBeenLastCalledWith(
+        expect.objectContaining({ search: TEST_SEARCH_TERM }),
+      );
     });
 
     describe('when a user selects projects to be filtered', () => {
