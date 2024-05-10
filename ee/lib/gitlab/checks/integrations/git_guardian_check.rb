@@ -35,9 +35,9 @@ module Gitlab
             blobs = changed_blobs(timeout: logger.time_left)
             blobs.reject! { |blob| blob.size > BLOB_BYTES_LIMIT || blob.binary }
 
-            response = project.git_guardian_integration.execute(blobs)
-
-            format_git_guardian_response(response)
+            format_git_guardian_response do
+              project.git_guardian_integration.execute(blobs)
+            end
           end
         end
 
@@ -73,12 +73,16 @@ module Gitlab
                            .compact
         end
 
-        def format_git_guardian_response(response)
+        def format_git_guardian_response
+          response = yield
+
           return unless response.present?
 
           message = response.join("\n") << REMEDIATION_MESSAGE
 
           raise ::Gitlab::GitAccess::ForbiddenError, message
+        rescue Gitlab::GitGuardian::Client::RequestError => e
+          raise ::Gitlab::GitAccess::ForbiddenError, "GitGuardian API error: #{e.message}"
         end
       end
     end
