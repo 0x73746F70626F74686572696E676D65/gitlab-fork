@@ -131,11 +131,12 @@ module EE
       scope :auditors, -> { where('auditor IS true') }
       scope :managed_by, ->(group) { where(managing_group: group) }
 
-      scope :excluding_guests, -> do
+      scope :excluding_guests_and_requests, -> do
         subquery = ::Member
           .select(1)
           .where(::Member.arel_table[:user_id].eq(::User.arel_table[:id]))
-          .merge(::Member.with_elevated_guests)
+          .with_elevated_guests
+          .non_request
 
         where('EXISTS (?)', subquery)
           .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422405')
@@ -227,7 +228,10 @@ module EE
 
       def billable
         scope = active.without_bots
-        scope = scope.excluding_guests if License.current&.exclude_guests_from_active_count?
+
+        if License.current&.exclude_guests_from_active_count?
+          scope = scope.excluding_guests_and_requests
+        end
 
         scope
       end
