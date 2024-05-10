@@ -11,6 +11,7 @@ module Epics
     ALLOWED_PARAMS = %i[
       iid title description confidential author_id created_at updated_at updated_by_id
       last_edited_by_id last_edited_at closed_by_id closed_at state_id external_key
+      imported_from
     ].freeze
 
     def create_work_item_for!(epic)
