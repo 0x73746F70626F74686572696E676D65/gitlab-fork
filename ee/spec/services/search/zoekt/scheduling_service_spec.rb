@@ -219,9 +219,9 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
           end
         end
 
-        context 'when enabled_namespace record created after the DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER' do
+        context 'when enabled_namespace record created after the DOT_COM_ROLLOUT_CUTOFF_DATE' do
           it 'skips the enabled namespaces' do
-            travel_to(described_class::DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER.ago + 3.days) do
+            travel_to(described_class::DOT_COM_ROLLOUT_CUTOFF_DATE + 3.days) do
               ns = create(:zoekt_enabled_namespace, namespace: group, search: false)
               create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
 
