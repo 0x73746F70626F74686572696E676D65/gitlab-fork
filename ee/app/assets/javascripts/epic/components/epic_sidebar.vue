@@ -88,9 +88,6 @@ export default {
         this.toggleSidebar({ sidebarCollapsed: false });
       }
     },
-    isEpicColorEnabled() {
-      return this.glFeatures.epicColorHighlight;
-    },
     updateMinDate(value) {
       this.minDate = value ? parsePikadayDate(value) : null;
     },
@@ -171,7 +168,6 @@ export default {
       </labels-select-widget>
 
       <color-select-dropdown
-        v-if="isEpicColorEnabled()"
         class="block colors js-colors-block"
         :allow-edit="canUpdate"
         :iid="String(iid)"

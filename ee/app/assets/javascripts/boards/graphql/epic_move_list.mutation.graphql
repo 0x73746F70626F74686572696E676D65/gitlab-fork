@@ -9,7 +9,6 @@ mutation EpicMoveList(
   $moveAfterId: EpicID
   $moveBeforeId: EpicID
   $positionInList: Int
-  $withColor: Boolean = false
 ) {
   issuableMoveList: epicMoveList(
     input: {
@@ -46,7 +45,7 @@ mutation EpicMoveList(
         closedIssues
         openedIssues
       }
-      color @include(if: $withColor)
+      color
     }
     errors
   }

@@ -75,7 +75,6 @@ export default {
           fullPath: this.epic.group?.fullPath,
           state: this.epicsState,
           sort: this.sortedBy,
-          withColor: this.epicColorHighlightEnabled,
           ...this.filterParams,
         };
       },
@@ -121,9 +120,6 @@ export default {
       'presetType',
       'isShowingLabels',
     ]),
-    epicColorHighlightEnabled() {
-      return Boolean(this.glFeatures.epicColorHighlight);
-    },
     /**
      * In case Epic start date is out of range
      * we need to use original date instead of proxy date

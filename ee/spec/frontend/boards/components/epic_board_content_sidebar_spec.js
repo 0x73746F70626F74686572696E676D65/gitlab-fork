@@ -100,17 +100,9 @@ describe('EpicBoardContentSidebar', () => {
     expect(wrapper.findComponent(LabelsSelectWidget).exists()).toBe(true);
   });
 
-  it('renders ColorDropdownSelect when epic_color_highlight is enabled', () => {
-    createComponent({
-      glFeatures: {
-        epicColorHighlight: true,
-      },
-    });
+  it('renders ColorDropdownSelect in the sidebar', () => {
+    createComponent();
     expect(wrapper.findComponent(ColorSelectDropdown).exists()).toBe(true);
-  });
-
-  it('does not render ColorDropdownSelect when epic_color_highlight is disabled', () => {
-    expect(wrapper.findComponent(ColorSelectDropdown).exists()).toBe(false);
   });
 
   it('renders BoardSidebarTitle', () => {
