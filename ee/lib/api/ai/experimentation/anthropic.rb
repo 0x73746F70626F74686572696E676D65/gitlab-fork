@@ -26,6 +26,7 @@ module API
             headers = {
               "Accept" => ["application/json"],
               "Content-Type" => ["application/json"],
+              "anthropic-version" => "2023-06-01",
               "X-Api-Key" => [anthropic_api_key]
             }
 
