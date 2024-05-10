@@ -67,7 +67,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             dashboard_project: {
               id: pointer.target_project.id,
               full_path: pointer.target_project.full_path,
-              name: pointer.target_project.name
+              name: pointer.target_project.name,
+              default_branch: pointer.target_project.default_branch
             }.to_json,
             can_configure_dashboards_project: user_can_admin_project.to_s,
             can_select_gitlab_managed_provider: 'false',
@@ -193,7 +194,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           dashboard_project: {
             id: group_pointer.target_project.id,
             full_path: group_pointer.target_project.full_path,
-            name: group_pointer.target_project.name
+            name: group_pointer.target_project.name,
+            default_branch: group_pointer.target_project.default_branch
           }.to_json,
           can_configure_dashboards_project: 'false',
           can_select_gitlab_managed_provider: 'false',

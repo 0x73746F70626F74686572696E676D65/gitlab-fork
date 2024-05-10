@@ -72,7 +72,8 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
       expect(js_list_app_attributes['data-dashboard-project'].value).to eq({
         id: analytics_dashboards_pointer.target_project.id,
         full_path: analytics_dashboards_pointer.target_project.full_path,
-        name: analytics_dashboards_pointer.target_project.name
+        name: analytics_dashboards_pointer.target_project.name,
+        default_branch: analytics_dashboards_pointer.target_project.default_branch
       }.to_json)
     end
 

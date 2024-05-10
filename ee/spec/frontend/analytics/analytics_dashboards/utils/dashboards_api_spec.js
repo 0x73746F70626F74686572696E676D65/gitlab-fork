@@ -11,7 +11,6 @@ import {
   CREATE_FILE_ACTION,
   UPDATE_FILE_ACTION,
   CONFIGURATION_FILE_TYPE,
-  DASHBOARD_BRANCH,
 } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { TEST_CUSTOM_DASHBOARDS_PROJECT } from '../mock_data';
 
@@ -53,7 +52,7 @@ describe('AnalyticsDashboard', () => {
       });
 
       const callPayload = {
-        branch: DASHBOARD_BRANCH,
+        branch: TEST_CUSTOM_DASHBOARDS_PROJECT.defaultBranch,
         commit_message: isNewFile ? 'Create dashboard abc' : 'Updating dashboard abc',
         actions: [
           {
@@ -90,7 +89,7 @@ describe('AnalyticsDashboard', () => {
       );
 
       const callPayload = {
-        branch: DASHBOARD_BRANCH,
+        branch: TEST_CUSTOM_DASHBOARDS_PROJECT.defaultBranch,
         commit_message: 'Updating visualization abc',
         actions: [
           {
