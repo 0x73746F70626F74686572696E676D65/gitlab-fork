@@ -163,6 +163,12 @@ RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
         )
       end
 
+      it 'sets the cookie for confetti for learn gitlab' do
+        post_create
+
+        expect(cookies[:confetti_post_signup]).to eq(true)
+      end
+
       context 'when on trial' do
         let(:extra_params) { { trial_onboarding_flow: true } }
 
@@ -250,7 +256,7 @@ RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
       context 'when redirecting' do
         let_it_be(:project) { create(:project) }
 
-        let(:success_path) { onboarding_project_learn_gitlab_path(project) }
+        let(:success_path) { project_learn_gitlab_path(project) }
 
         before do
           allow_next_instance_of(Registrations::StandardNamespaceCreateService) do |service|
@@ -261,13 +267,6 @@ RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
         end
 
         it { is_expected.to redirect_to(success_path) }
-
-        context 'when trial_onboarding_flow' do
-          let(:extra_params) { { trial_onboarding_flow: true } }
-          let(:success_path) { onboarding_project_learn_gitlab_path(project, trial_onboarding_flow: true) }
-
-          it { is_expected.to redirect_to(success_path) }
-        end
       end
 
       context 'with import_url in the params' do

@@ -65,9 +65,9 @@ module Registrations
       else
         track_event('successfully_submitted_form')
 
-        redirect_to onboarding_project_learn_gitlab_path(payload[:project],
-          trial_onboarding_flow: params[:trial_onboarding_flow]
-        )
+        cookies[:confetti_post_signup] = true
+
+        redirect_to project_learn_gitlab_path(payload[:project])
       end
     end
 

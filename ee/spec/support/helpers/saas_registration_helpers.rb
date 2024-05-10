@@ -267,10 +267,6 @@ module SaasRegistrationHelpers
     end
   end
 
-  def expect_to_be_in_continuous_onboarding
-    expect(page).to have_content 'Get started with GitLab'
-  end
-
   def expect_to_see_group_and_project_creation_form
     expect(page).to have_content('Create or import your first project')
     expect(page).to have_content('Projects help you organize your work')

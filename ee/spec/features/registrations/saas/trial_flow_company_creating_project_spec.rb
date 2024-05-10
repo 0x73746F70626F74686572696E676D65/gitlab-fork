@@ -36,10 +36,6 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
       fills_in_group_and_project_creation_form_with_trial
       click_on 'Create project'
 
-      expect_to_be_in_continuous_onboarding
-
-      click_on 'Ok, let\'s go'
-
       expect_to_be_in_learn_gitlab
       expect(tracking_events_key).to have_all_expected_events
     end
@@ -70,10 +66,6 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
 
       fills_in_group_and_project_creation_form_with_trial(glm: false)
       click_on 'Create project'
-
-      expect_to_be_in_continuous_onboarding
-
-      click_on 'Ok, let\'s go'
 
       expect_to_be_in_learn_gitlab
     end

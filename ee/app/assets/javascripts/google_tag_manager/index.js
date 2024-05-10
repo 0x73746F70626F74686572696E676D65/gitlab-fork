@@ -282,15 +282,3 @@ export const saasTrialWelcome = () => {
     pushEvent('saasTrialWelcome');
   });
 };
-
-export const saasTrialContinuousOnboarding = () => {
-  if (!isSupported()) {
-    return;
-  }
-
-  const getStartedButton = document.querySelector('.js-get-started-btn');
-
-  getStartedButton?.addEventListener('click', () => {
-    pushEvent('saasTrialContinuousOnboarding');
-  });
-};
