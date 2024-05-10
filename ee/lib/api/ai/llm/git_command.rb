@@ -15,7 +15,7 @@ module API
         end
 
         namespace 'ai/llm' do
-          desc 'Asks OpenAI to generate Git command from natural text'
+          desc 'Generates Git commands from natural text'
           params do
             requires :prompt, type: String
           end
