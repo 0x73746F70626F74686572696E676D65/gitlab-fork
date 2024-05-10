@@ -13708,6 +13708,9 @@ msgstr ""
 msgid "Confirm password"
 msgstr ""
 
+msgid "Confirm this email address within %{cut_off_days} days, otherwise the email address is removed."
+msgstr ""
+
 msgid "Confirm user"
 msgstr ""
 

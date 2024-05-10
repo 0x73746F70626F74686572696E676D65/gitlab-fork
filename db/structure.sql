@@ -25429,6 +25429,8 @@ CREATE INDEX index_elasticsearch_indexed_namespaces_on_created_at ON elasticsear
 
 CREATE UNIQUE INDEX index_emails_on_confirmation_token ON emails USING btree (confirmation_token);
 
+CREATE INDEX index_emails_on_created_at_where_confirmed_at_is_null ON emails USING btree (created_at) WHERE (confirmed_at IS NULL);
+
 CREATE UNIQUE INDEX index_emails_on_email ON emails USING btree (email);
 
 CREATE INDEX index_emails_on_user_id ON emails USING btree (user_id);
