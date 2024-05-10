@@ -130,6 +130,18 @@ RSpec.describe Sidebars::Projects::Menus::SettingsMenu, feature_category: :navig
           expect(subject.title).to eql('Repository')
         end
       end
+
+      describe 'when the user is not an admin but has the `manage_deploy_tokens` custom permission' do
+        before do
+          allow(Ability).to receive(:allowed?).and_call_original
+          allow(Ability).to receive(:allowed?).with(user, :admin_project, project).and_return(false)
+          allow(Ability).to receive(:allowed?).with(user, :manage_deploy_tokens, project).and_return(true)
+        end
+
+        it 'includes Repository menu item' do
+          expect(subject.title).to eql('Repository')
+        end
+      end
     end
   end
 end

@@ -2989,6 +2989,13 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
       it_behaves_like 'custom roles abilities'
     end
+
+    context 'for a member role with `manage_deploy_tokens` true' do
+      let(:member_role_abilities) { { manage_deploy_tokens: true } }
+      let(:allowed_abilities) { [:manage_deploy_tokens, :read_deploy_token, :create_deploy_token, :destroy_deploy_token] }
+
+      it_behaves_like 'custom roles abilities'
+    end
   end
 
   describe 'permissions for suggested reviewers bot', :saas do

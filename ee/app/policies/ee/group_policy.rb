@@ -550,8 +550,15 @@ module EE
         enable :admin_push_rules
       end
 
-      rule { can?(:admin_group) | can?(:admin_compliance_framework) }.policy do
+      rule { can?(:admin_group) | can?(:admin_compliance_framework) | can?(:manage_deploy_tokens) }.policy do
         enable :view_edit_page
+      end
+
+      rule { custom_role_enables_manage_deploy_tokens }.policy do
+        enable :manage_deploy_tokens
+        enable :read_deploy_token
+        enable :create_deploy_token
+        enable :destroy_deploy_token
       end
 
       rule { can?(:read_vulnerability) }.policy do

@@ -16,7 +16,8 @@ module EE
 
         override :authorize_access!
         def authorize_access!
-          render_404 unless can?(current_user, :admin_group, group) || can?(current_user, :change_push_rules, group)
+          render_404 unless can?(current_user, :admin_group, group) || can?(current_user, :change_push_rules, group) ||
+            can?(current_user, :manage_deploy_tokens, group)
         end
 
         def define_push_rule_variable

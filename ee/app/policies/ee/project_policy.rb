@@ -529,6 +529,7 @@ module EE
         enable :modify_merge_request_committer_setting
         enable :modify_product_analytics_settings
         enable :admin_push_rules
+        enable :manage_deploy_tokens
       end
 
       rule { license_scanning_enabled & can?(:maintainer_access) }.enable :admin_software_license_policy
@@ -776,6 +777,13 @@ module EE
 
       rule { custom_role_enables_admin_compliance_framework & compliance_framework_available }.policy do
         enable :admin_compliance_framework
+      end
+
+      rule { custom_role_enables_manage_deploy_tokens }.policy do
+        enable :manage_deploy_tokens
+        enable :read_deploy_token
+        enable :create_deploy_token
+        enable :destroy_deploy_token
       end
 
       rule { can?(:create_issue) & okrs_enabled }.policy do
