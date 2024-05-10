@@ -38,6 +38,7 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
           initialTitleHtml: epic.title,
           initialTitleText: epic.title,
           issuableRef: "&#{epic.iid}",
+          imported: epic.imported?,
           issuableTemplateNamesPath: '',
           issueLinksEndpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}/issues",
           issuesWebUrl: "/groups/#{@group.full_path}/-/issues",
