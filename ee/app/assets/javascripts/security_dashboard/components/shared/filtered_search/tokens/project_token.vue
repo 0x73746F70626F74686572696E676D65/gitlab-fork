@@ -9,11 +9,18 @@ import { debounce } from 'lodash';
 import { createAlert } from '~/alert';
 import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
+import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import { s__, __ } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import getProjects from 'ee/dependencies/graphql/projects.query.graphql';
+import groupProjectsQuery from 'ee/security_dashboard/graphql/queries/group_projects.query.graphql';
+import instanceProjectsQuery from 'ee/security_dashboard/graphql/queries/instance_projects.query.graphql';
 import QuerystringSync from '../../filters/querystring_sync.vue';
 import eventHub from '../event_hub';
+
+const QUERIES = {
+  [DASHBOARD_TYPES.GROUP]: groupProjectsQuery,
+  [DASHBOARD_TYPES.INSTANCE]: instanceProjectsQuery,
+};
 
 export default {
   components: {
@@ -23,7 +30,7 @@ export default {
     GlLoadingIcon,
     QuerystringSync,
   },
-  inject: ['groupFullPath'],
+  inject: ['groupFullPath', 'dashboardType'],
   props: {
     config: {
       type: Object,
@@ -82,18 +89,17 @@ export default {
         this.isLoadingProjects = true;
 
         const { data } = await this.$apollo.query({
-          query: getProjects,
+          query: QUERIES[this.dashboardType],
           variables: {
-            groupFullPath: this.groupNamespace,
+            fullPath: this.groupNamespace,
             search: this.searchTerm,
-            first: 50,
-            includeSubgroups: true,
+            pageSize: 100,
           },
         });
 
-        this.projects = data.group.projects.nodes.map((p) => ({
-          ...p,
-          rawId: getIdFromGraphQLId(p.id),
+        this.projects = data[this.dashboardType].projects.edges.map(({ node }) => ({
+          ...node,
+          rawId: getIdFromGraphQLId(node.id),
         }));
 
         this.projects.sort((p1, p2) => p1.name.localeCompare(p2.name));
