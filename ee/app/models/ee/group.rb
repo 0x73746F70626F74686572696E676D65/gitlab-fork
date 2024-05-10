@@ -1015,7 +1015,7 @@ module EE
     def enable_auto_assign_gitlab_duo_pro_seats?
       return false unless ::Feature.enabled?(:auto_assign_gitlab_duo_pro_seats, self) && root?
 
-      namespace_settings.enable_auto_assign_gitlab_duo_pro_seats?
+      namespace_settings.enable_auto_assign_gitlab_duo_pro_seats? if namespace_settings
     end
 
     private

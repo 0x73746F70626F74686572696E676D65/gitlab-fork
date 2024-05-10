@@ -2,11 +2,11 @@
 - return unless group.root?
 - return unless group.code_suggestions_purchased?
 
-%h5= _('Auto Assign GitLab Duo Pro Seats')
+%h5= _('GitLab Duo Pro seats')
 
 .form-group.gl-mb-3
   = f.gitlab_ui_checkbox_component :enable_auto_assign_gitlab_duo_pro_seats, checkbox_options: { checked: group.enable_auto_assign_gitlab_duo_pro_seats? } do |c|
     - c.with_label do
-      = s_('GroupSettings|Enable Auto Assign GitLab Duo Pro Seats')
+      = s_('GroupSettings|Automatic assignment of GitLab Duo Pro seats')
     - c.with_help_text do
-      = s_('GroupSettings|If enabled, newly added eligible members will automatically receive Duo Pro seats.')
+      = s_('GroupSettings|Automatically assign newly added billable users to GitLab Duo seats.')

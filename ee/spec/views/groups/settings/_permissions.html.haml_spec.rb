@@ -49,7 +49,7 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
         render
 
         expect(rendered).to render_template('groups/settings/_auto_assign_duo_pro')
-        expect(rendered).not_to have_content('Auto Assign GitLab Duo Pro')
+        expect(rendered).not_to have_content('Automatic assignment of GitLab Duo Pro seats')
       end
     end
 
@@ -67,7 +67,7 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
           render
 
           expect(rendered).to render_template('groups/settings/_auto_assign_duo_pro')
-          expect(rendered).not_to have_content('Auto Assign GitLab Duo Pro')
+          expect(rendered).not_to have_content('Automatic assignment of GitLab Duo Pro seats')
         end
       end
 
@@ -80,7 +80,7 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
           render
 
           expect(rendered).to render_template('groups/settings/_auto_assign_duo_pro')
-          expect(rendered).not_to have_content('Auto Assign GitLab Duo Pro')
+          expect(rendered).not_to have_content('Automatic assignment of GitLab Duo Pro seats')
         end
       end
 
@@ -89,7 +89,7 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
           render
 
           expect(rendered).to render_template('groups/settings/_auto_assign_duo_pro')
-          expect(rendered).not_to have_content('Auto Assign GitLab Duo Pro')
+          expect(rendered).not_to have_content('Automatic assignment of GitLab Duo Pro seats')
         end
       end
 
@@ -102,7 +102,7 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
           render
 
           expect(rendered).to render_template('groups/settings/_auto_assign_duo_pro')
-          expect(rendered).to have_content('Auto Assign GitLab Duo Pro')
+          expect(rendered).to have_content('Automatic assignment of GitLab Duo Pro seats')
         end
       end
     end
