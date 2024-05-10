@@ -26111,7 +26111,7 @@ msgstr ""
 msgid "IdentityVerification|Before you can create additional groups, we need to verify your account."
 msgstr ""
 
-msgid "IdentityVerification|Before you can run concurrent pipelines, we need to verify your account."
+msgid "IdentityVerification|Before you can run pipelines, we need to verify your account."
 msgstr ""
 
 msgid "IdentityVerification|Before you finish creating your account, we need to verify your identity. On the verification page, enter the following code."
