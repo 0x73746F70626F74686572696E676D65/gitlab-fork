@@ -1884,7 +1884,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
   end
 
   describe '#visible_user_defined_inapplicable_rules' do
-    let_it_be(:project) { create(:project) }
+    let_it_be_with_refind(:project) { create(:project) }
 
     let!(:rule) { create(:approval_project_rule, project: project) }
     let!(:another_rule) { create(:approval_project_rule, project: project) }
@@ -1910,7 +1910,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       end
 
       context 'when rules are not scoped' do
-        it 'returns empty array', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444703' do
+        it 'returns empty array' do
           expect(project.visible_user_defined_inapplicable_rules('stable-1')).to be_empty
         end
       end
