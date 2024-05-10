@@ -349,6 +349,13 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
       it { expect(with_owasp_top_10).to contain_exactly(vuln_read_with_owasp_top_10) }
     end
 
+    context 'when owasp_top_10 is nil' do
+      let_it_be(:vuln_read_with_nil_owasp_top_10) { create(:vulnerability_read, owasp_top_10: nil) }
+      let_it_be(:owasp_top_10_value) { nil }
+
+      it { expect(with_owasp_top_10).to contain_exactly(vuln_read_with_nil_owasp_top_10) }
+    end
+
     context 'without owasp_top_10' do
       let_it_be(:vuln_read_without_owasp_top_10) { create(:vulnerability_read) }
 

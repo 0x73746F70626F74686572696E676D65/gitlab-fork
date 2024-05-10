@@ -1,0 +1,9 @@
+---
+name: owasp_top_10_null_filtering
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/442526
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/146344/diffs
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/463783
+milestone: '17.1'
+group: group::threat insights
+type: gitlab_com_derisk
+default_enabled: false

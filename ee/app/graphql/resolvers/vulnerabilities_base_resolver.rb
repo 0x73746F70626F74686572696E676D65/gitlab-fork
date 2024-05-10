@@ -8,6 +8,7 @@
 # rubocop: disable Graphql/ResolverType
 module Resolvers
   class VulnerabilitiesBaseResolver < BaseResolver
+    include VulnerabilityFilterable
     include Gitlab::Utils::StrongMemoize
     include Gitlab::Graphql::Authorize::AuthorizeResource
 
