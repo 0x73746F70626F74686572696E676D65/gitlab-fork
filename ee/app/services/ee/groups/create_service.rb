@@ -10,6 +10,14 @@ module EE
 
       private
 
+      def ensure_runner_registration_token_disabled_on_com
+        return unless group.parent.nil?
+        return if ::Gitlab::CurrentSettings.gitlab_dedicated_instance?
+        return unless ::Gitlab.com? # rubocop: disable Gitlab/AvoidGitlabInstanceChecks -- this is not based on a feature, but indeed on the location of the code
+
+        group.allow_runner_registration_token = false
+      end
+
       override :after_build_hook
       def after_build_hook
         super
@@ -17,6 +25,8 @@ module EE
         # Repository size limit comes as MB from the view
         limit = params.delete(:repository_size_limit)
         group.repository_size_limit = ::Gitlab::Utils.try_megabytes_to_bytes(limit) if limit
+
+        ensure_runner_registration_token_disabled_on_com
       end
 
       override :after_successful_creation_hook

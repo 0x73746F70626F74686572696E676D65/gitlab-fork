@@ -53,6 +53,14 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
     end
 
     include_examples 'sends streaming audit event'
+
+    describe 'handling of allow_runner_registration_token' do
+      context 'when on SaaS', :saas do
+        it 'uses the default value for column' do
+          expect(created_group.allow_runner_registration_token).to eq true
+        end
+      end
+    end
   end
 
   context 'for repository_size_limit assignment as Bytes' do
@@ -147,6 +155,14 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
 
       it 'ignores the group push rule' do
         expect(created_group.push_rule).to be_nil
+      end
+    end
+  end
+
+  describe 'handling of allow_runner_registration_token default' do
+    context 'when on SaaS', :saas do
+      it 'disallows runner registration tokens' do
+        expect(created_group.allow_runner_registration_token?).to eq false
       end
     end
   end
