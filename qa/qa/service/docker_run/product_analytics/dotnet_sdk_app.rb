@@ -15,7 +15,7 @@ module QA
             @image = 'registry.gitlab.com/gitlab-org/analytics-section/product-analytics/' \
                      'gl-application-sdk-dotnet/example-app:main'
             @name = 'dotnet_sdk'
-            @sdk_host = sdk_host
+            @sdk_host = URI(sdk_host)
             @sdk_app_id = sdk_app_id
             @port = '5171'
 
@@ -29,8 +29,8 @@ module QA
               --network #{network}
               --hostname #{host_name}
               -p #{@port}:#{@port}
-              -e PA_COLLECTOR_HOST=#{@sdk_host.split(':')[1].delete('//')}
-              -e PA_COLLECTOR_PORT=#{@sdk_host.split(':')[2] || '80'}
+              -e PA_COLLECTOR_HOST=#{@sdk_host.host}
+              -e PA_COLLECTOR_PORT=#{@sdk_host.port}
               -e PA_APPLICATION_ID=#{@sdk_app_id}
               #{@image}
             CMD
@@ -44,7 +44,7 @@ module QA
             Runtime::Logger.info("Waiting for .NET SDK sample app to become available at http://#{host_name}:#{@port}...")
             Support::Waiter.wait_until(sleep_interval: 1,
               message: "Wait for .NET SDK sample app to become available at http://#{host_name}:#{@port}") { app_available? }
-            Runtime::Logger.info('.NET SDK sample app is up!')
+            Runtime::Logger.info('.NET SDK sample app is up and event is triggered!')
           end
 
           def app_available?
