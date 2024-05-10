@@ -262,7 +262,7 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
           id: 7
         },
         {
-          name: "github.com/google/uuid",
+          name: "github.com/google/UUID",
           package_manager: "analyzer (gobinary)",
           version: "v1.3.0",
           id: 8
@@ -312,7 +312,7 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
           licenses: [{ name: "unknown", url: nil }] },
         { name: "pytz", package_manager: "Python (python-pkg)", version: "2023.3", id: 7,
           licenses: [{ name: "BSD-4-Clause", url: "https://spdx.org/licenses/BSD-4-Clause.html" }] },
-        { name: "github.com/google/uuid", package_manager: "analyzer (gobinary)", version: "v1.3.0", id: 8,
+        { name: "github.com/google/UUID", package_manager: "analyzer (gobinary)", version: "v1.3.0", id: 8,
           licenses: [{ name: "Open LDAP Public License v2.4", url: "https://spdx.org/licenses/OLDAP-2.4.html" }] },
         { name: "adduser", package_manager: "debian:12.1 (apt)", version: "3.134", id: 9,
           licenses: [{ name: "unknown", url: nil }] }
