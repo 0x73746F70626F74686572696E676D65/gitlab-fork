@@ -11,7 +11,8 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
 import ProjectToken from 'ee/security_dashboard/components/shared/filtered_search/tokens/project_token.vue';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
-import getProjects from 'ee/dependencies/graphql/projects.query.graphql';
+import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
+import getProjects from 'ee/security_dashboard/graphql/queries/group_projects.query.graphql';
 import eventHub from 'ee/security_dashboard/components/shared/filtered_search/event_hub';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -24,7 +25,6 @@ jest.mock('~/alert');
 
 const TEST_PROJECTS = [
   {
-    __typename: 'Project',
     id: 'gid://gitlab/Project/1',
     name: 'GitLab Community Edition',
     fullPath: 'gitlab-org/gitlab-ce',
@@ -32,7 +32,6 @@ const TEST_PROJECTS = [
     rawId: 1,
   },
   {
-    __typename: 'Project',
     id: 'gid://gitlab/Project/2',
     name: 'GitLab Enterprise Edition',
     fullPath: 'gitlab-org/gitlab-ee',
@@ -56,7 +55,19 @@ describe('ee/security_dashboard/components/shared/filtered_search/tokens/project
             id: 'gid://gitlab/Group/1',
             __typename: 'Group',
             projects: {
-              nodes: TEST_PROJECTS,
+              edges: TEST_PROJECTS.map((project) => ({
+                __typename: 'ProjectEdge',
+                node: {
+                  ...project,
+                  __typename: 'Project',
+                },
+              })),
+              pageInfo: {
+                endCursor: 'eyJpZCI6IjE0In0',
+                hasNextPage: false,
+                __typename: 'PageInfo',
+              },
+              __typename: 'ProjectConnection',
             },
           },
         },
@@ -89,6 +100,7 @@ describe('ee/security_dashboard/components/shared/filtered_search/tokens/project
       },
       provide: {
         groupFullPath: TEST_GROUP,
+        dashboardType: DASHBOARD_TYPES.GROUP,
       },
       stubs: {
         GlFilteredSearchToken: stubComponent(GlFilteredSearchToken, {
@@ -138,7 +150,7 @@ describe('ee/security_dashboard/components/shared/filtered_search/tokens/project
 
     it('fetches the list of projects', () => {
       expect(handlerMocks.getProjectHandler).toHaveBeenCalledWith(
-        expect.objectContaining({ groupFullPath: TEST_GROUP, search: '', includeSubgroups: true }),
+        expect.objectContaining({ fullPath: TEST_GROUP, search: '', pageSize: 100 }),
       );
     });
 
@@ -214,9 +226,7 @@ describe('ee/security_dashboard/components/shared/filtered_search/tokens/project
         const spy = jest.fn();
         eventHub.$on('filters-changed', spy);
 
-        const expectedIds = TEST_PROJECTS.map((project) =>
-          Number(project.id.replace('gid://gitlab/Project/', '')),
-        );
+        const expectedIds = TEST_PROJECTS.map((project) => project.rawId);
 
         await selectProject(TEST_PROJECTS[0]);
         await selectProject(TEST_PROJECTS[1]);
