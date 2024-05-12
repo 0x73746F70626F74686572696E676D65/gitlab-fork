@@ -87,7 +87,8 @@ RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_
         end
       end
 
-      it 'displays popover upon hovering over `Using ClickHouse` badge' do
+      it 'displays popover upon hovering over `Using ClickHouse` badge',
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/446043' do
         using_clickhouse_badge.hover
 
         page.within('.gl-popover') do
