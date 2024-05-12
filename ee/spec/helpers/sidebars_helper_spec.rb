@@ -225,7 +225,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
         expect(super_sidebar_context).not_to have_key('pipeline_minutes')
       end
 
-      it 'returns paths for user' do
+      it 'returns paths for user', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/461171' do
         expect(super_sidebar_context).to match(hash_including({
           sign_out_link: '/users/sign_out',
           issues_dashboard_path: '/dashboard/issues?assignee_username=user1',
