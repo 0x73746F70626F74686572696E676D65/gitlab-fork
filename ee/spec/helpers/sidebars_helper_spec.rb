@@ -228,7 +228,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
       it 'returns paths for user' do
         expect(super_sidebar_context).to match(hash_including({
           sign_out_link: '/users/sign_out',
-          issues_dashboard_path: '/dashboard/issues?assignee_username=user1',
+          issues_dashboard_path: "/dashboard/issues?assignee_username=#{user.username}",
           merge_request_dashboard_path: nil,
           todos_dashboard_path: '/dashboard/todos',
           projects_path: '/dashboard/projects',
