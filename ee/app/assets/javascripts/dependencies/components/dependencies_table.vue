@@ -191,7 +191,7 @@ export default {
     <template #cell(component)="{ item, toggleDetails, detailsShowing }">
       <gl-button
         v-if="anyDependencyHasVulnerabilities"
-        class="d-none d-md-inline"
+        class="gl-hidden md:gl-inline"
         :class="{ invisible: !vulnerabilitiesCount(item) }"
         category="tertiary"
         size="small"

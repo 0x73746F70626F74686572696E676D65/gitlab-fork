@@ -13,6 +13,6 @@
 
   - if onboarding_status.trial?
     .col-md-4.company-illustration{ data: { testid: 'trial-registration-column' } }
-      = image_tag 'illustrations/saas-trial-illustration.svg', alt: '', class: 'gl-display-none d-md-inline gl-w-full'
+      = image_tag 'illustrations/saas-trial-illustration.svg', alt: '', class: 'gl-hidden md:gl-inline gl-w-full'
   - else
     = render 'shared/trial_reassurances'
