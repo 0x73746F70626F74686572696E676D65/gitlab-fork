@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative 'migration_shared_examples'
 require File.expand_path('ee/elastic/migrate/20240219161432_index_all_projects.rb')
 
 RSpec.describe IndexAllProjects, :elastic, feature_category: :global_search do

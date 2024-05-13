@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative 'migration_shared_examples'
 require File.expand_path('ee/elastic/migrate/20240119130539_reindex_notes_to_update_analyzer.rb')
 
 RSpec.describe ReindexNotesToUpdateAnalyzer, feature_category: :global_search do

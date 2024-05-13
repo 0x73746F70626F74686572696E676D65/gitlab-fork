@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative 'migration_shared_examples'
 require File.expand_path('ee/elastic/migrate/20230731225441_reindex_work_items_to_fix_archived.rb')
 
 RSpec.describe ReindexWorkItemsToFixArchived, :elastic_delete_by_query, :sidekiq_inline, feature_category: :global_search do

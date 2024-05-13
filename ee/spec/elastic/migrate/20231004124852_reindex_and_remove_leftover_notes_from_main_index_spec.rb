@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative 'migration_shared_examples'
 require File.expand_path('ee/elastic/migrate/20231004124852_reindex_and_remove_leftover_notes_from_main_index.rb')
 
 RSpec.describe ReindexAndRemoveLeftoverNotesFromMainIndex, :elastic_delete_by_query, :sidekiq_inline, feature_category: :global_search do

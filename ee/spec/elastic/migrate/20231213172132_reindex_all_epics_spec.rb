@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative 'migration_shared_examples'
 require File.expand_path('ee/elastic/migrate/20231213172132_reindex_all_epics.rb')
 
 RSpec.describe ReindexAllEpics, :elastic, feature_category: :global_search do
