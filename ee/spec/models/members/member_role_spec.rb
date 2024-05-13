@@ -369,9 +369,10 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
   end
 
   describe '.permission_enabled?' do
+    let(:user) { build(:user) }
     let(:ability) { :my_custom_ability }
 
-    subject { described_class.permission_enabled?(ability) }
+    subject { described_class.permission_enabled?(ability, user) }
 
     where(:flag_exists, :flag_enabled, :expected_result) do
       true  | false | false
@@ -383,7 +384,7 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
       before do
         if flag_exists
           stub_feature_flag_definition("custom_ability_#{ability}")
-          stub_feature_flags("custom_ability_#{ability}" => flag_enabled)
+          stub_feature_flags("custom_ability_#{ability}" => flag_enabled ? user : flag_enabled)
         end
       end
 

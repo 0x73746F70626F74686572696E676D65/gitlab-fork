@@ -92,7 +92,7 @@ RSpec.describe Auth::MemberRoleAbilityLoader, feature_category: :system_access d
 
       context 'when the permission is disabled' do
         before do
-          allow(::MemberRole).to receive(:permission_enabled?).with(:read_vulnerability).and_return(false)
+          allow(::MemberRole).to receive(:permission_enabled?).with(:read_vulnerability, user).and_return(false)
         end
 
         it 'returns false' do
