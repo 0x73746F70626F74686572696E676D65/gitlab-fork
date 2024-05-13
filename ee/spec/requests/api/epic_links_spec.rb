@@ -209,6 +209,9 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
       context 'when user is a reporter' do
         before do
           group.add_reporter(user)
+          # TODO: remove threshold after epic-work item sync
+          # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
+          allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(103)
         end
 
         it 'returns 201 status' do

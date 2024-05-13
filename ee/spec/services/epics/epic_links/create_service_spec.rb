@@ -365,6 +365,34 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
 
           include_examples 'returns success'
           include_examples 'system notes created'
+
+          context 'when parent has inherited dates' do
+            let_it_be(:other_parent) do
+              create(
+                :epic, group: group, start_date: 1.day.ago, due_date: 1.day.from_now,
+                start_date_is_fixed: false, due_date_is_fixed: false
+              )
+            end
+
+            let_it_be(:epic_to_add) do
+              create(:epic, group: group, start_date: 1.day.ago, due_date: 1.day.from_now, parent: other_parent)
+            end
+
+            before do
+              epic.update!(start_date: nil, due_date: nil, start_date_is_fixed: false, due_date_is_fixed: false)
+            end
+
+            it 'updates the parent dates' do
+              expect { subject }.to change { epic.reload.children.count }.by(1)
+                                .and change { epic.start_date }.from(nil).to(epic_to_add.start_date)
+                                .and change { epic.due_date }.from(nil).to(epic_to_add.due_date)
+                                .and change { epic.start_date_sourcing_epic_id }.from(nil).to(epic_to_add.id)
+                                .and change { epic.due_date_sourcing_epic_id }.from(nil).to(epic_to_add.id)
+                                .and change { other_parent.reload.children.count }.by(-1)
+                                .and change { other_parent.start_date }.from(epic_to_add.start_date).to(nil)
+                                .and change { other_parent.due_date }.from(epic_to_add.due_date).to(nil)
+            end
+          end
         end
 
         context 'when an epic from a subgroup is given' do
@@ -441,6 +469,28 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
             expect do
               ActiveRecord::QueryRecorder.new { add_epic(new_epics.map { |epic| epic.to_reference(full: true) }) }
             end.not_to exceed_query_limit(control).with_threshold(8)
+          end
+
+          context 'when parent has inherited dates' do
+            let_it_be(:epic_to_add) do
+              create(:epic, group: group, start_date: 5.days.ago, due_date: 3.days.from_now)
+            end
+
+            let_it_be(:another_epic) do
+              create(:epic, group: group, start_date: 3.days.ago, due_date: 5.days.from_now)
+            end
+
+            before do
+              epic.update!(start_date: nil, due_date: nil, start_date_is_fixed: false, due_date_is_fixed: false)
+            end
+
+            it 'updates the parent dates' do
+              expect { subject }.to change { epic.reload.children.count }.by(2)
+                                .and change { epic.start_date }.from(nil).to(epic_to_add.start_date)
+                                .and change { epic.due_date }.from(nil).to(another_epic.due_date)
+                                .and change { epic.start_date_sourcing_epic_id }.from(nil).to(epic_to_add.id)
+                                .and change { epic.due_date_sourcing_epic_id }.from(nil).to(another_epic.id)
+            end
           end
         end
 
@@ -665,6 +715,25 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
             expect(SystemNoteService).not_to receive(:move_child_epic_to_new_parent)
 
             create_link
+          end
+
+          it 'does not call Epics::UpdateDatesService' do
+            expect(Epics::UpdateDatesService).not_to receive(:new)
+
+            create_link
+          end
+
+          context 'when work_items_rolledup_dates feature flag is disabled' do
+            before do
+              allow(::Epics::UpdateDatesService).to receive(:new).and_call_original
+              stub_feature_flags(work_items_rolledup_dates: false)
+            end
+
+            it 'calls Epics::UpdateDatesService' do
+              expect(::Epics::UpdateDatesService).to receive(:new).with([parent_epic, child_epic])
+
+              create_link
+            end
           end
         end
       end

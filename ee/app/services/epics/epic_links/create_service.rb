@@ -3,6 +3,8 @@
 module Epics
   module EpicLinks
     class CreateService < IssuableLinks::CreateService
+      extend ::Gitlab::Utils::Override
+
       def execute
         return error(issuables_not_found_message, 404) unless can_access_epic_link?
 
@@ -35,6 +37,7 @@ module Epics
 
         if linkable_epic?(child_epic) && set_child_epic(child_epic)
           create_notes(child_epic, previous_parent_epic)
+          update_inherited_dates(child_epic, affected_epics([previous_parent_epic, child_epic]))
           success(created_references: [child_epic])
         else
           error(child_epic.errors.map(&:message).to_sentence, 409)
@@ -42,7 +45,7 @@ module Epics
       end
 
       def affected_epics(epics)
-        [issuable, epics].flatten.uniq
+        [issuable, epics].flatten.compact.uniq
       end
 
       def relate_issuables(referenced_epic)
@@ -155,6 +158,25 @@ module Epics
 
       def importing?(epic, issuable)
         epic.importing? || issuable.try(:importing?)
+      end
+
+      def skip_epic_dates_syncing?
+        params[:synced_epic] && Feature.enabled?(:work_items_rolledup_dates, issuable.group)
+      end
+
+      def update_inherited_dates(child_epic, epics)
+        return unless update_epic_dates?(epics)
+
+        child_epic.run_after_commit_or_now do
+          ::Epics::UpdateDatesService.new(epics).execute
+        end
+      end
+
+      override :update_epic_dates?
+      def update_epic_dates?(_affected_epics)
+        return false if skip_epic_dates_syncing?
+
+        super
       end
     end
   end

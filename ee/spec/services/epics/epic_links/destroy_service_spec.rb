@@ -12,33 +12,33 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
 
     shared_examples 'system notes created' do
       it 'creates system notes' do
-        expect { subject }.to change { Note.system.count }.from(0).to(2)
+        expect { destroy_link }.to change { Note.system.count }.from(0).to(2)
       end
     end
 
     shared_examples 'returns success' do
       it 'removes epic relationship' do
-        expect { subject }.to change { parent_epic.children.count }.by(-1)
+        expect { destroy_link }.to change { parent_epic.children.count }.by(-1)
 
         expect(parent_epic.reload.children).not_to include(child_epic)
       end
 
       it 'returns success status' do
-        expect(subject).to eq(message: 'Relation was removed', status: :success)
+        expect(destroy_link).to eq(message: 'Relation was removed', status: :success)
       end
     end
 
     shared_examples 'returns not found error' do
       it 'returns an error' do
-        expect(subject).to eq(message: 'No Epic found for given params', status: :error, http_status: 404)
+        expect(destroy_link).to eq(message: 'No Epic found for given params', status: :error, http_status: 404)
       end
 
       it 'no relationship is created' do
-        expect { subject }.not_to change { parent_epic.children.count }
+        expect { destroy_link }.not_to change { parent_epic.children.count }
       end
 
       it 'does not create system notes' do
-        expect { subject }.not_to change { Note.system.count }
+        expect { destroy_link }.not_to change { Note.system.count }
       end
     end
 
@@ -51,7 +51,7 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
         stub_licensed_features(epics: false)
       end
 
-      subject { remove_epic_relation(child_epic) }
+      subject(:destroy_link) { remove_epic_relation(child_epic) }
 
       include_examples 'returns not found error'
     end
@@ -62,7 +62,7 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
       end
 
       context 'when the user has no access to parent epic' do
-        subject { remove_epic_relation(child_epic) }
+        subject(:destroy_link) { remove_epic_relation(child_epic) }
 
         before_all do
           child_epic_group.add_guest(user)
@@ -82,7 +82,7 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
       end
 
       context 'when the user has no access to child epic' do
-        subject { remove_epic_relation(child_epic) }
+        subject(:destroy_link) { remove_epic_relation(child_epic) }
 
         before_all do
           parent_epic_group.add_guest(user)
@@ -98,20 +98,53 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
         end
 
         context 'when the child epic is nil' do
-          subject { remove_epic_relation(nil) }
+          subject(:destroy_link) { remove_epic_relation(nil) }
 
           include_examples 'returns not found error'
         end
 
         context 'when a correct reference is given' do
-          subject { remove_epic_relation(child_epic) }
+          subject(:destroy_link) { remove_epic_relation(child_epic) }
 
           include_examples 'returns success'
           include_examples 'system notes created'
+
+          context 'when parent dates are inherited' do
+            let_it_be(:other_child) do
+              create(
+                :epic, group: parent_epic_group, parent: parent_epic,
+                start_date: 2.days.ago, due_date: 2.days.from_now
+              )
+            end
+
+            before do
+              allow(::Epics::UpdateDatesService).to receive(:new).and_call_original
+              child_epic.update!(start_date: 5.days.ago, due_date: 5.days.from_now)
+              parent_epic.update!(
+                start_date_is_fixed: false,
+                due_date_is_fixed: false,
+                start_date: child_epic.start_date,
+                due_date: child_epic.due_date,
+                start_date_sourcing_epic_id: child_epic.id,
+                due_date_sourcing_epic_id: child_epic.id
+              )
+            end
+
+            it 'updates parent dates to match existing children' do
+              expect(::Epics::UpdateDatesService).to receive(:new).with([parent_epic, child_epic])
+
+              expect { destroy_link }.to change { parent_epic.reload.children.count }.by(-1)
+
+              expect(parent_epic.start_date).to eq(other_child.start_date)
+              expect(parent_epic.due_date).to eq(other_child.due_date)
+              expect(parent_epic.start_date_sourcing_epic_id).to eq(other_child.id)
+              expect(parent_epic.due_date_sourcing_epic_id).to eq(other_child.id)
+            end
+          end
         end
 
         context 'when epic has no parent' do
-          subject { remove_epic_relation(parent_epic) }
+          subject(:destroy_link) { remove_epic_relation(parent_epic) }
 
           include_examples 'returns not found error'
         end
@@ -206,14 +239,34 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
           end
 
           context 'when synced_epic argument is true' do
+            subject(:destroy_link) { described_class.new(child_epic, user, synced_epic: true).execute }
+
             it 'does not call WorkItems::ParentLinks::DestroyService nor create notes' do
-              allow(::WorkItems::ParentLinks::DestroyService).to receive(:new).and_call_original
               expect(::WorkItems::ParentLinks::DestroyService).not_to receive(:new)
 
-              expect { described_class.new(child_epic, user, synced_epic: true).execute }
+              expect { destroy_link }
                 .to change { parent_epic.children.count }.by(-1)
                 .and(not_change { WorkItems::ParentLink.count })
                 .and(not_change { Note.count })
+            end
+
+            it 'does not call Epics::UpdateDatesService' do
+              expect(::Epics::UpdateDatesService).not_to receive(:new)
+
+              destroy_link
+            end
+
+            context 'when work_items_rolledup_dates feature flag is disabled' do
+              before do
+                allow(::Epics::UpdateDatesService).to receive(:new).and_call_original
+                stub_feature_flags(work_items_rolledup_dates: false)
+              end
+
+              it 'calls Epics::UpdateDatesService' do
+                expect(::Epics::UpdateDatesService).to receive(:new).with([parent_epic, child_epic])
+
+                destroy_link
+              end
             end
           end
         end

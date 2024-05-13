@@ -20,7 +20,6 @@ class EpicIssue < ApplicationRecord
   alias_method :work_item_syncing?, :work_item_syncing
 
   scope :in_epic, ->(epic_id) { where(epic_id: epic_id) }
-  scope :in_issue, ->(issue_id) { where(issue_id: issue_id) }
 
   validate :validate_confidential_epic
   validate :check_existing_parent_link, unless: :work_item_syncing?
