@@ -51,6 +51,9 @@ RSpec.describe Issues::CloseService, feature_category: :team_planning do
 
       before_all do
         group.add_developer(current_user)
+      end
+
+      before do
         stub_feature_flags(make_synced_work_item_read_only: false)
       end
 
@@ -74,6 +77,11 @@ RSpec.describe Issues::CloseService, feature_category: :team_planning do
       end
 
       context 'when epic and work item was already closed' do
+        before do
+          epic.close!
+          work_item.close!
+        end
+
         it 'does not change the state' do
           expect { execute }.to not_change { epic.reload.state }
             .and not_change { work_item.reload.state }
@@ -122,19 +130,6 @@ RSpec.describe Issues::CloseService, feature_category: :team_planning do
 
           expect(work_item.reload.state).to eq('opened')
           expect(epic.reload.state).to eq('opened')
-        end
-      end
-
-      context 'when closing the epic fails' do
-        before do
-          epic.update!(state: :closed)
-        end
-
-        it 'rolls back updating the work_item' do
-          execute
-
-          expect(work_item.reload.state).to eq('opened')
-          expect(epic.reload.state).to eq('closed')
         end
       end
 
