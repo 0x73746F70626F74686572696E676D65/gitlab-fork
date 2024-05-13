@@ -105,15 +105,41 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
     end
   end
 
+  shared_examples 'views and manages workspaces in workspaces dropdown group based on feature flag' do
+    context 'when the remote_development_namespace_agent_authorization feature flag is on' do
+      let_it_be(:cluster_agent_mapping) do
+        create(
+          :remote_development_namespace_cluster_agent_mapping,
+          user: user, agent: agent,
+          namespace: group
+        )
+      end
+
+      before do
+        stub_feature_flags(remote_development_namespace_agent_authorization: true)
+      end
+
+      it_behaves_like 'views and manages workspaces in workspaces dropdown group'
+    end
+
+    context 'when the remote_development_namespace_agent_authorization feature flag is off' do
+      before do
+        stub_feature_flags(remote_development_namespace_agent_authorization: false)
+      end
+
+      it_behaves_like 'views and manages workspaces in workspaces dropdown group'
+    end
+  end
+
   describe 'when viewing project overview page' do
     let(:subject) { project_path(project) }
 
-    it_behaves_like 'views and manages workspaces in workspaces dropdown group'
+    it_behaves_like 'views and manages workspaces in workspaces dropdown group based on feature flag'
   end
 
   describe 'when viewing blob page' do
     let(:subject) { project_blob_path(project, "#{project.default_branch}/#{devfile_path}") }
 
-    it_behaves_like 'views and manages workspaces in workspaces dropdown group'
+    it_behaves_like 'views and manages workspaces in workspaces dropdown group based on feature flag'
   end
 end

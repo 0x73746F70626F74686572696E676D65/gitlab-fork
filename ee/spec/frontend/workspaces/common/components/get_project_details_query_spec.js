@@ -1,7 +1,10 @@
+import MockAdapter from 'axios-mock-adapter';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import { cloneDeep } from 'lodash';
 import { logError } from '~/lib/logger';
+import axios from '~/lib/utils/axios_utils';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import getProjectDetailsQuery from 'ee/workspaces/common/graphql/queries/get_project_details.query.graphql';
 import getGroupClusterAgentsQuery from 'ee/workspaces/common/graphql/queries/get_group_cluster_agents.query.graphql';
 import getRemoteDevelopmentClusterAgentsQuery from 'ee/workspaces/common/graphql/queries/get_remote_development_cluster_agents.query.graphql';
@@ -9,6 +12,7 @@ import GetProjectDetailsQuery from 'ee/workspaces/common/components/get_project_
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+
 import {
   GET_PROJECT_DETAILS_QUERY_RESULT,
   GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT_ROOTGROUP_NO_AGENT,
@@ -30,7 +34,10 @@ describe('workspaces/common/components/get_project_details_query', () => {
   let getRemoteDevelopmentClusterAgentsQueryHandler;
   let glFeatures;
   let wrapper;
+  let mockAxios;
+
   const projectFullPathFixture = 'gitlab-org/gitlab';
+  const WORKSPACES_FEATURE_FLAG_PATH = '/-/remote_development/workspaces_feature_flag';
 
   const setupGroupClusterAgentsQueryHandler = (groupResponses) => {
     getGroupClusterAgentsQueryHandler.mockImplementation(({ groupPath }) => {
@@ -64,6 +71,7 @@ describe('workspaces/common/components/get_project_details_query', () => {
       apolloProvider,
       provide: {
         glFeatures,
+        workspacesFeatureFlagPath: WORKSPACES_FEATURE_FLAG_PATH,
       },
       propsData: {
         projectFullPath,
@@ -90,7 +98,6 @@ describe('workspaces/common/components/get_project_details_query', () => {
     );
 
   beforeEach(() => {
-    glFeatures = { remoteDevelopmentNamespaceAgentAuthorization: false };
     getProjectDetailsQueryHandler = jest.fn();
     getGroupClusterAgentsQueryHandler = jest.fn();
     getRemoteDevelopmentClusterAgentsQueryHandler = jest.fn();
@@ -99,6 +106,15 @@ describe('workspaces/common/components/get_project_details_query', () => {
 
     getProjectDetailsQueryHandler.mockResolvedValueOnce(GET_PROJECT_DETAILS_QUERY_RESULT);
     setupGroupClusterAgentsQueryHandler([]);
+  });
+
+  beforeEach(() => {
+    mockAxios = new MockAdapter(axios);
+    mockAxios.onGet(WORKSPACES_FEATURE_FLAG_PATH).reply(HTTP_STATUS_OK, { enabled: false });
+  });
+
+  afterEach(() => {
+    mockAxios.restore();
   });
 
   describe('when project full path is provided', () => {
@@ -446,7 +462,7 @@ describe('workspaces/common/components/get_project_details_query', () => {
 
   describe('when remote_development_namespace_agent_authorization feature flag is enabled', () => {
     beforeEach(() => {
-      glFeatures.remoteDevelopmentNamespaceAgentAuthorization = true;
+      mockAxios.onGet(WORKSPACES_FEATURE_FLAG_PATH).reply(HTTP_STATUS_OK, { enabled: true });
     });
 
     describe('when the project belongs to a group', () => {
