@@ -64,7 +64,7 @@ RSpec.describe Sidebars::Projects::Menus::SecurityComplianceMenu, feature_catego
       context 'with a public project' do
         let_it_be(:project) { create(:project, :public, :in_group) }
 
-        it { expect(renderable_items).to match_array([:dashboard, :dependency_list, :license_compliance, :vulnerability_report]) }
+        it { expect(renderable_items).to match_array([:dashboard, :dependency_list, :vulnerability_report]) }
       end
 
       context 'with a private project' do
@@ -207,24 +207,6 @@ RSpec.describe Sidebars::Projects::Menus::SecurityComplianceMenu, feature_catego
       end
 
       context 'when user cannot access dependency list' do
-        let(:user) { nil }
-
-        it { is_expected.to be_nil }
-      end
-    end
-
-    describe 'License Compliance' do
-      let(:item_id) { :license_compliance }
-
-      before do
-        stub_licensed_features(license_scanning: true)
-      end
-
-      context 'when user can access license compliance' do
-        it { is_expected.not_to be_nil }
-      end
-
-      context 'when user cannot access license compliance' do
         let(:user) { nil }
 
         it { is_expected.to be_nil }

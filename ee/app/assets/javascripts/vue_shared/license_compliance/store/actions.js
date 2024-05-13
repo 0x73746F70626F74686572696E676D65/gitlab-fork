@@ -1,8 +1,7 @@
 import { LICENSE_CHECK_NAME } from 'ee/approvals/constants';
 import axios from '~/lib/utils/axios_utils';
 import pollUntilComplete from '~/lib/utils/poll_until_complete';
-import { LICENSE_LIST } from 'ee/license_compliance/store/constants';
-import { LICENSE_APPROVAL_STATUS } from '../constants';
+import { LICENSE_APPROVAL_STATUS, LICENSE_LIST } from '../constants';
 import * as types from './mutation_types';
 import { convertToOldReportFormat } from './utils';
 
@@ -120,7 +119,7 @@ export const receiveSetLicenseApprovalError = ({ commit }) => {
 export const fetchLicenseCheckApprovalRule = ({ dispatch, state }) => {
   dispatch('requestLicenseCheckApprovalRule');
 
-  /* 
+  /*
     If we call this action from the "License" tab in the pipeline view,
     then we don't fetch the approvals since we aren't in the Merge request context.
     Pipelines cannot have approval rules.
