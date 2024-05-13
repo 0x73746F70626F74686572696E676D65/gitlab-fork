@@ -54,7 +54,7 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
         subject
 
         work_item_note = work_item.notes.last
-        expect(work_item_note.note).to eq("changed progress to **#{progress}**")
+        expect(work_item_note.note).to eq("changed progress to **#{progress}%**")
       end
     end
 
@@ -117,7 +117,7 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
               expect { subject }.to change { work_item.reload.progress }.from(progress).to(nil)
 
               work_item_note = work_item.notes.last
-              expect(work_item_note.note).to eq("removed the progress **5**")
+              expect(work_item_note.note).to eq("removed the progress **5%**")
             end
           end
         end
