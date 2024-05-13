@@ -22,6 +22,8 @@ module API
       end
 
       params :group_hook_properties do
+        optional :name, type: String, desc: 'Name of the hook'
+        optional :description, type: String, desc: 'Description of the hook'
         optional :push_events, type: Boolean, desc: "Trigger hook on push events"
         optional :push_events_branch_filter, type: String, desc: "Respond to push events only on branches that match this filter"
         optional :issues_events, type: Boolean, desc: "Trigger hook on issues events"
