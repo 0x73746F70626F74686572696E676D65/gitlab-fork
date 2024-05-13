@@ -22,7 +22,7 @@ RSpec.describe AuditEvents::Streaming::Headers::DestroyService, feature_category
     let(:response) { service.execute }
 
     context 'when no header is provided' do
-      let(:params) { super().merge( header: nil) }
+      let(:params) { super().merge(header: nil) }
 
       it 'does not destroy the header' do
         expect { response }.not_to change { destination.headers.count }

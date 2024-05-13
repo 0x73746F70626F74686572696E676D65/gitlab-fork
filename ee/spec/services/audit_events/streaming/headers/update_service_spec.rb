@@ -29,7 +29,7 @@ RSpec.describe AuditEvents::Streaming::Headers::UpdateService, feature_category:
     subject(:response) { service.execute }
 
     context 'when no header is provided' do
-      let(:params) { super().merge( header: nil) }
+      let(:params) { super().merge(header: nil) }
 
       it 'does not update the header' do
         expect { subject }.not_to change { header.reload.key }
