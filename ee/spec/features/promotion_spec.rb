@@ -267,7 +267,7 @@ RSpec.describe 'Promotions', :js do
     it 'appears on the page' do
       visit project_audit_events_path(project)
 
-      expect(find('.user-callout-copy')).to have_content 'Keep track of events in your project'
+      expect(find('.gl-empty-state-content')).to have_content 'Keep track of events in your project'
     end
   end
 
@@ -283,7 +283,7 @@ RSpec.describe 'Promotions', :js do
     it 'appears on the page' do
       visit group_hooks_path(group)
 
-      expect(find('.user-callout-copy')).to have_content 'Add Group Webhooks'
+      expect(find('.gl-empty-state-content')).to have_content 'Add Group Webhooks'
     end
   end
 

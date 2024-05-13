@@ -1,7 +1,9 @@
 - page_title @hook.pluralized_name
 - @force_desktop_expanded_sidebar = true
+- feature_available = @group.licensed_feature_available?(:group_webhooks)
+- @hide_search_settings = !feature_available
 
-- if @group.licensed_feature_available?(:group_webhooks)
+- if feature_available
   .gl-mt-3.js-search-settings-section
     = render 'shared/web_hooks/title_and_docs', hook: @hook
     = render 'shared/web_hooks/index', hooks: @hooks, hook_class: @hook.class, partial: 'shared/web_hooks/form', url: polymorphic_path([@group, :hooks])
