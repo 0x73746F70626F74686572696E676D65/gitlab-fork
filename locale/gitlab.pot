@@ -31896,6 +31896,9 @@ msgstr ""
 msgid "Members|User created"
 msgstr ""
 
+msgid "Members|You can no longer accept access requests because you've reached the %{limit} user limit."
+msgstr ""
+
 msgid "Members|You cannot remove yourself from a personal project."
 msgstr ""
 

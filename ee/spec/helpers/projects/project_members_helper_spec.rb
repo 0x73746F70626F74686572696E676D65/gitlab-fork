@@ -91,6 +91,66 @@ RSpec.describe Projects::ProjectMembersHelper do
 
       it_behaves_like 'adding promotion_request in app data'
     end
+
+    context 'with `can_approve_access_requests`' do
+      subject(:can_approve_access_requests) { helper_app_data[:can_approve_access_requests] }
+
+      let!(:pending_members) { nil }
+
+      context 'when project has an associated group' do
+        let_it_be(:project) { create(:project, group: create(:group)) }
+
+        context 'when namespace has reached the user limit (can not approve accesss requests)' do
+          before do
+            stub_ee_application_setting(dashboard_limit_enabled: true)
+
+            allow_next_instance_of(::Namespaces::FreeUserCap::Enforcement, project.root_ancestor) do |instance|
+              allow(instance).to receive(:enforce_cap?).and_return(true)
+            end
+          end
+
+          it 'sets the value to false' do
+            stub_ee_application_setting(dashboard_limit: 0)
+
+            expect(can_approve_access_requests).to eq(false)
+          end
+        end
+
+        context 'when namespace has not reached the user limit (can approve access requests)' do
+          it 'sets the value to true' do
+            expect(can_approve_access_requests).to eq(true)
+          end
+        end
+      end
+
+      context 'when project is a personal project (no associated group)' do
+        it 'sets the value to true' do
+          expect(can_approve_access_requests).to eq(true)
+        end
+      end
+    end
+
+    context 'with `namespace_user_limit`' do
+      subject(:namespace_user_limit) { helper_app_data[:namespace_user_limit] }
+
+      let!(:pending_members) { nil }
+
+      context 'when dashboard limit is set' do
+        before do
+          stub_ee_application_setting(dashboard_limit: 5)
+        end
+
+        it 'sets the value to false' do
+          expect(namespace_user_limit).to eq(5)
+        end
+      end
+
+      context 'when dashboard limit is not set' do
+        it 'sets the value to false' do
+          expect(namespace_user_limit).to eq(0)
+        end
+      end
+    end
   end
 
   describe '#project_member_header_subtext' do

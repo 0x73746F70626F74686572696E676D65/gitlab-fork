@@ -11,8 +11,16 @@ module EE
       )
         super.merge(
           manage_member_roles_path: manage_member_roles_path(project),
-          promotion_request: pending_members.present? ? promotion_pending_members_list_data(pending_members) : []
+          promotion_request: pending_members.present? ? promotion_pending_members_list_data(pending_members) : [],
+          can_approve_access_requests: can_approve_access_requests(project),
+          namespace_user_limit: ::Namespaces::FreeUserCap.dashboard_limit
         )
+      end
+
+      def can_approve_access_requests(project)
+        return true if project.personal?
+
+        !::Namespaces::FreeUserCap::Enforcement.new(project.root_ancestor).reached_limit?
       end
 
       def project_member_header_subtext(project)

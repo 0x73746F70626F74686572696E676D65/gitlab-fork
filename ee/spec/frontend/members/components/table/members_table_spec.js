@@ -10,7 +10,7 @@ import {
   bannedMember,
 } from 'ee_jest/members/mock_data';
 import MembersTable from '~/members/components/table/members_table.vue';
-import { MEMBER_TYPES } from '~/members/constants';
+import { MEMBER_TYPES, TAB_QUERY_PARAM_VALUES } from '~/members/constants';
 
 Vue.use(Vuex);
 
@@ -36,9 +36,13 @@ describe('MemberList', () => {
     });
   };
 
-  const createComponent = (state) => {
+  const createComponent = (state, props = {}) => {
     wrapper = mount(MembersTable, {
       store: createStore(state),
+      propsData: {
+        tabQueryParamValue: TAB_QUERY_PARAM_VALUES.group,
+        ...props,
+      },
       provide: {
         sourceId: 1,
         currentUserId: 1,
@@ -46,6 +50,7 @@ describe('MemberList', () => {
         canManageMembers: true,
       },
       stubs: [
+        'user-limit-reached-alert',
         'member-avatar',
         'member-source',
         'expires-at',
@@ -127,6 +132,28 @@ describe('MemberList', () => {
           });
         },
       );
+    });
+  });
+
+  describe('User limit reached alert', () => {
+    describe('when on the access request tab', () => {
+      it('shows the alert', () => {
+        createComponent({}, { tabQueryParamValue: TAB_QUERY_PARAM_VALUES.accessRequest });
+
+        expect(wrapper.html()).toContain(
+          '<user-limit-reached-alert-stub></user-limit-reached-alert-stub>',
+        );
+      });
+    });
+
+    describe('when user is not on the acccess request tab', () => {
+      it('does not show the alert', () => {
+        createComponent();
+
+        expect(wrapper.html()).not.toContain(
+          '<user-limit-reached-alert-stub></user-limit-reached-alert-stub>',
+        );
+      });
     });
   });
 });
