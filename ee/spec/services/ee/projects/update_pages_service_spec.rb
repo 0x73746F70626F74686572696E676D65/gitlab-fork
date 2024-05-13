@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Projects::UpdatePagesService, feature_category: :pages do
-  let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:project) { create(:project) }
 
   let(:path_prefix) { nil }
   let(:build_options) { { pages: { path_prefix: path_prefix } } }
@@ -19,37 +19,37 @@ RSpec.describe Projects::UpdatePagesService, feature_category: :pages do
     stub_pages_setting(enabled: true)
   end
 
-  context 'when pages_multiple_versions is not enabled for project' do
-    before do
-      allow(::Gitlab::Pages)
-        .to receive(:multiple_versions_enabled_for?)
-        .with(build.project)
-        .and_return(false)
+  context 'when path_prefix is not blank' do
+    let(:path_prefix) { '/path_prefix/' }
+
+    context 'and pages_multiple_versions is disabled for project' do
+      before do
+        allow(::Gitlab::Pages)
+          .to receive(:multiple_versions_enabled_for?)
+          .with(build.project)
+          .and_return(false)
+      end
+
+      it 'does not create a new pages_deployment' do
+        expect { expect(service.execute).to include(status: :error) }
+          .not_to change { project.pages_deployments.count }
+      end
     end
 
-    it 'does not save the given path prefix' do
-      expect { expect(service.execute).to include(status: :success) }
-        .to change { project.pages_deployments.count }.by(1)
+    context 'and pages_multiple_versions is enabled for project' do
+      before do
+        allow(::Gitlab::Pages)
+          .to receive(:multiple_versions_enabled_for?)
+          .with(build.project)
+          .and_return(true)
+      end
 
-      expect(project.pages_deployments.last.path_prefix).to be_nil
-    end
-  end
+      it 'saves the slugiffied version of the path prefix' do
+        expect { expect(service.execute).to include(status: :success) }
+          .to change { project.pages_deployments.count }.by(1)
 
-  context 'when pages_multiple_versions is enabled for project', :aggregate_failures do
-    let(:path_prefix) { 'path_prefix!' }
-
-    before do
-      allow(::Gitlab::Pages)
-        .to receive(:multiple_versions_enabled_for?)
-        .with(build.project)
-        .and_return(true)
-    end
-
-    it 'succeeds and creates a new PagesDeployment' do
-      expect { expect(service.execute).to include(status: :success) }
-        .to change { project.pages_deployments.count }.by(1)
-
-      expect(project.pages_deployments.last.path_prefix).to eq('path_prefix%21')
+        expect(project.pages_deployments.last.path_prefix).to eq('path-prefix')
+      end
     end
   end
 end
