@@ -54,7 +54,7 @@ module API
           use :pagination
         end
         get do
-          unauthorized! unless current_user.can?(:admin_project, user_project)
+          unauthorized! unless current_user.can?(:manage_merge_request_settings, user_project)
 
           present paginate(user_project.external_status_checks), with: ::API::Entities::ExternalStatusCheck
         end

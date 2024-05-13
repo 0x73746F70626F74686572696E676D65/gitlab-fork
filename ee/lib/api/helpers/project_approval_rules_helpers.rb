@@ -68,13 +68,13 @@ module API
       end
 
       def authorize_read_project_approval_rule!
-        return if can?(current_user, :admin_project, user_project)
+        return if can?(current_user, :manage_merge_request_settings, user_project)
 
         authorize! :create_merge_request_in, user_project
       end
 
       def create_project_approval_rule(present_with:)
-        authorize! :admin_project, user_project
+        authorize! :manage_merge_request_settings, user_project
         authorize! :modify_approvers_rules, user_project
 
         result = ::ApprovalRules::CreateService.new(user_project, current_user, declared_params(include_missing: false)).execute
@@ -87,7 +87,7 @@ module API
       end
 
       def update_project_approval_rule(present_with:)
-        authorize! :admin_project, user_project
+        authorize! :manage_merge_request_settings, user_project
         authorize! :modify_approvers_rules, user_project
 
         params = declared_params(include_missing: false)
@@ -103,7 +103,7 @@ module API
       end
 
       def destroy_project_approval_rule
-        authorize! :admin_project, user_project
+        authorize! :manage_merge_request_settings, user_project
         authorize! :modify_approvers_rules, user_project
 
         approval_rule = user_project.approval_rules.not_from_scan_result_policy.find(params[:approval_rule_id])

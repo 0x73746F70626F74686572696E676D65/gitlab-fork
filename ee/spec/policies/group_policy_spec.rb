@@ -3573,6 +3573,24 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
       it_behaves_like 'custom roles abilities'
     end
+
+    context 'for a custom role with the `manage_merge_request_settings` ability' do
+      let(:member_role_abilities) { { manage_merge_request_settings: true } }
+      let(:allowed_abilities) { [:manage_merge_request_settings, :view_edit_page] }
+
+      it_behaves_like 'custom roles abilities'
+
+      context 'when the group is a top level group and the `merge_request_approvers` feature is available' do
+        before do
+          create_member_role(parent_group_member_guest)
+          stub_licensed_features(custom_roles: true, merge_request_approvers: true)
+        end
+
+        subject { described_class.new(current_user, parent_group) }
+
+        it { is_expected.to be_allowed(:admin_merge_request_approval_settings) }
+      end
+    end
   end
 
   context 'for :read_limit_alert' do

@@ -11,7 +11,8 @@ module EE
             GraphQL::Types::Boolean,
             null: false,
             description: 'Whether merge immediately is allowed for merge trains.',
-            method: :merge_trains_skip_train_allowed?
+            method: :merge_trains_skip_train_allowed?,
+            authorize: :admin_project
           field :merge_trains_enabled,
             GraphQL::Types::Boolean,
             null: true,

@@ -45,6 +45,7 @@ module EE
             items << general_menu_item if custom_roles_general_menu_item?
             items << access_tokens_menu_item if custom_roles_access_token_menu_item?
             items << repository_menu_item if custom_roles_repository_menu_item?
+            items << merge_requests_menu_item if custom_roles_merge_requests_menu_item?
             items << ci_cd_menu_item if custom_roles_ci_cd_menu_item?
 
             items
@@ -61,6 +62,10 @@ module EE
           def custom_roles_repository_menu_item?
             can?(context.current_user, :admin_push_rules, context.project) ||
               can?(context.current_user, :manage_deploy_tokens, context.project)
+          end
+
+          def custom_roles_merge_requests_menu_item?
+            can?(context.current_user, :manage_merge_request_settings, context.project)
           end
 
           def custom_roles_ci_cd_menu_item?

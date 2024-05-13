@@ -1,0 +1,17 @@
+---
+name: manage_merge_request_settings
+description:
+  Configure merge request settings at the group or project level. Group
+  actions include managing merge checks and approval settings. Project actions
+  include managing MR configurations, approval rules and settings,
+  and branch targets. In order to enable Suggested reviewers, the "Manage project access
+  tokens" custom permission needs to be enabled.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/443235
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/151586
+feature_category: code_review_workflow
+milestone: "17.0"
+group_ability: true
+project_ability: true
+requirements:
+  - read_code
+available_from_access_level:

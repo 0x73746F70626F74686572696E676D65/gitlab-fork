@@ -42,6 +42,7 @@ export default function mountProjectSettingsApprovals(el) {
       coverageCheckHelpPagePath,
       fullPath,
       newPolicyPath,
+      canReadSecurityPolicies: parseBoolean(el.dataset.canReadSecurityPolicies),
     },
     render(h) {
       return h(ProjectSettingsApp);

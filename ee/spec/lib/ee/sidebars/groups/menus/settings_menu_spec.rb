@@ -425,5 +425,27 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
         end
       end
     end
+
+    context 'when the user is not an owner but has `manage_merge_request_settings` custom ability', feature_category: :code_review_workflow do
+      let_it_be(:user) { create(:user) }
+
+      subject { menu.renderable_items.find { |e| e.item_id == item_id } }
+
+      before do
+        allow(Ability).to receive(:allowed?).and_call_original
+        allow(Ability).to receive(:allowed?).with(user, :admin_group, group).and_return(false)
+        allow(Ability).to receive(:allowed?).with(user, :manage_merge_request_settings, group).and_return(true)
+      end
+
+      describe 'General menu item' do
+        let(:item_id) { :general }
+
+        it { is_expected.to be_present }
+
+        it 'does not show any other menu items' do
+          expect(menu.renderable_items.length).to equal(1)
+        end
+      end
+    end
   end
 end

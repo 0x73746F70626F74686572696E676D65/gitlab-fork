@@ -62,6 +62,7 @@ module EE
         can_edit: can_modify_approvers.to_s,
         can_modify_author_settings: can_modify_author_settings.to_s,
         can_modify_commiter_settings: can_modify_commiter_settings.to_s,
+        can_read_security_policies: can_read_security_policies.to_s,
         saml_provider_enabled: saml_provider_enabled_for_project?(project).to_s,
         project_path: expose_path(api_v4_projects_path(id: project.id)),
         approvals_path: expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id)),
@@ -102,6 +103,10 @@ module EE
 
     def can_modify_commiter_settings(project = @project)
       can?(current_user, :modify_merge_request_committer_setting, project)
+    end
+
+    def can_read_security_policies(project = @project)
+      can?(current_user, :read_security_orchestration_policies, project)
     end
 
     def permanent_delete_message(project)

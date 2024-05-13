@@ -23,7 +23,7 @@ module ExternalStatusChecks
     private
 
     def can_update_external_status_check?
-      current_user.can?(:admin_project, container)
+      current_user.can?(:manage_merge_request_settings, container)
     end
 
     def resource_params
