@@ -97,6 +97,7 @@ describe('WorkItemDetail component', () => {
   const createComponent = ({
     isGroup = false,
     isModal = false,
+    isDrawer = false,
     updateInProgress = false,
     workItemIid = '1',
     handler = successHandler,
@@ -116,6 +117,7 @@ describe('WorkItemDetail component', () => {
       propsData: {
         isModal,
         workItemIid,
+        isDrawer,
       },
       data() {
         return {
@@ -652,13 +654,18 @@ describe('WorkItemDetail component', () => {
   });
 
   describe('design widget', () => {
-    beforeEach(async () => {
+    it('renders if work item has design widget', async () => {
       createComponent();
       await waitForPromises();
+
+      expect(findWorkItemDesigns().exists()).toBe(true);
     });
 
-    it('renders if work item has design widget', () => {
-      expect(findWorkItemDesigns().exists()).toBe(true);
+    it('does not render if within a drawer', async () => {
+      createComponent({ isDrawer: true });
+      await waitForPromises();
+
+      expect(findWorkItemDesigns().exists()).toBe(false);
     });
   });
 

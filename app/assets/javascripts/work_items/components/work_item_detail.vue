@@ -95,6 +95,11 @@ export default {
       required: false,
       default: '',
     },
+    isDrawer: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -585,7 +590,10 @@ export default {
               @error="updateError = $event"
               @emoji-updated="$emit('work-item-emoji-updated', $event)"
             />
-            <design-widget v-if="!workItemLoading && hasDesignWidget" :work-item-id="workItem.id" />
+            <design-widget
+              v-if="!workItemLoading && !isDrawer && hasDesignWidget"
+              :work-item-id="workItem.id"
+            />
           </section>
           <aside
             data-testid="work-item-overview-right-sidebar"
