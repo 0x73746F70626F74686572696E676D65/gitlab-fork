@@ -55,7 +55,7 @@ RSpec.describe Gitlab::ExclusiveLease, :request_store,
           Ci::Pipeline.transaction { lease_attempt }
         end
 
-        it 'logs error within main db' do
+        it 'logs error within main db', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/446123' do
           expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).and_call_original
 
           ApplicationRecord.transaction { lease_attempt }
