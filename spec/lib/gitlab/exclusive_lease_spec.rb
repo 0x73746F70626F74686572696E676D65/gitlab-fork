@@ -49,7 +49,7 @@ RSpec.describe Gitlab::ExclusiveLease, :request_store,
           stub_rails_env('production')
         end
 
-        it 'logs error within ci db' do
+        it 'logs error within ci db', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/446122' do
           expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).and_call_original
 
           Ci::Pipeline.transaction { lease_attempt }
