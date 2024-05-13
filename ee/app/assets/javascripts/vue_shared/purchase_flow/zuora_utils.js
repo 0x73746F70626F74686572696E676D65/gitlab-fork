@@ -14,6 +14,7 @@ import * as Sentry from '~/sentry/sentry_browser_wrapper';
  * Examples of Stripe errors:
  * [card_error/invalid_cvc]
  * [card_error/authentication_required/authentication_required]
+ * [invalid_request_error/setup_intent_authentication_failure]
  *
  * Stripe documentation:
  * https://docs.stripe.com/api/errors#errors-type
@@ -25,7 +26,7 @@ import * as Sentry from '~/sentry/sentry_browser_wrapper';
  */
 export function extractErrorCode(message) {
   try {
-    const results = message?.match(/\[card_error\/.*\]/);
+    const results = message?.match(/\[\w+_error\/.*\]/);
     const extractedCode = get(results, '[0]');
     if (!extractedCode) {
       return null;

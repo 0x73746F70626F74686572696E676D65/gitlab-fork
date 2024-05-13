@@ -61,13 +61,26 @@ export const UNLINKED_ACCOUNT_ERROR = {
   },
 };
 
-export const AUTHENTICATION_3DS_ERROR = {
+const stripe3dsLink = 'https://docs.stripe.com/payments/3d-secure';
+
+export const AUTHENTICATION_NOT_SUPPORTED_3DS_ERROR_MESSAGE = {
   title: s__('Purchase|Authentication required for this transaction'),
   message: s__(
     'Purchase|%{stripe3dsLinkStart}3D Secure authentication%{stripe3dsLinkEnd} is not supported. Please %{salesLinkStart}contact our sales team%{salesLinkEnd} to purchase, or try a different credit card.',
   ),
   links: {
-    stripe3dsLink: 'https://docs.stripe.com/payments/3d-secure',
+    stripe3dsLink,
+    salesLink,
+  },
+};
+
+const AUTHENTICATION_FAILURE_3DS_ERROR_MESSAGE = {
+  title: s__('Purchase|3D Secure authentication failed'),
+  message: s__(
+    'Purchase|%{stripe3dsLinkStart}3D Secure authentication%{stripe3dsLinkEnd} failed. Please try the credit card again, or %{salesLinkStart}contact our sales team%{salesLinkEnd} to purchase.',
+  ),
+  links: {
+    stripe3dsLink,
     salesLink,
   },
 };
@@ -94,8 +107,10 @@ export const LAST_NAME_BLANK_ERROR_VARIATION_2 = `{${LAST_NAME_BLANK_ERROR}}`;
 /* eslint-enable @gitlab/require-i18n-strings */
 
 // Stripe errors
-const AUTHENTICATION_3DS_STRIPE_ERROR =
+const AUTHENTICATION_NOT_SUPPORTED_3DS_STRIPE_ERROR_TYPE =
   '[card_error/authentication_required/authentication_required]';
+const AUTHENTICATION_FAILURE_3DS_STRIPE_ERROR_TYPE =
+  '[invalid_request_error/setup_intent_authentication_failure]';
 
 export const PURCHASE_ERROR_DICTIONARY = convertObjectPropsToLowerCase({
   [CONTRACT_EFFECTIVE_ERROR]: EXPIRED_SUBSCRIPTION_ERROR,
@@ -108,5 +123,6 @@ export const PURCHASE_ERROR_DICTIONARY = convertObjectPropsToLowerCase({
   [LAST_NAME_BLANK_ERROR]: FULL_NAME_REQUIRED_ERROR,
   [LAST_NAME_BLANK_ERROR_VARIATION_1]: FULL_NAME_REQUIRED_ERROR,
   [LAST_NAME_BLANK_ERROR_VARIATION_2]: FULL_NAME_REQUIRED_ERROR,
-  [AUTHENTICATION_3DS_STRIPE_ERROR]: AUTHENTICATION_3DS_ERROR,
+  [AUTHENTICATION_NOT_SUPPORTED_3DS_STRIPE_ERROR_TYPE]: AUTHENTICATION_NOT_SUPPORTED_3DS_ERROR_MESSAGE,
+  [AUTHENTICATION_FAILURE_3DS_STRIPE_ERROR_TYPE]: AUTHENTICATION_FAILURE_3DS_ERROR_MESSAGE,
 });

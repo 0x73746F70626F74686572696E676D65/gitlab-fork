@@ -42107,7 +42107,13 @@ msgstr ""
 msgid "PurchaseStep|An error occurred in the purchase step. If the problem persists please contact support at https://support.gitlab.com."
 msgstr ""
 
+msgid "Purchase|%{stripe3dsLinkStart}3D Secure authentication%{stripe3dsLinkEnd} failed. Please try the credit card again, or %{salesLinkStart}contact our sales team%{salesLinkEnd} to purchase."
+msgstr ""
+
 msgid "Purchase|%{stripe3dsLinkStart}3D Secure authentication%{stripe3dsLinkEnd} is not supported. Please %{salesLinkStart}contact our sales team%{salesLinkEnd} to purchase, or try a different credit card."
+msgstr ""
+
+msgid "Purchase|3D Secure authentication failed"
 msgstr ""
 
 msgid "Purchase|A full name in your profile is required to make a purchase. Check that the full name field in your %{userProfileLinkStart}user profile%{userProfileLinkEnd} has both a first and last name, then retry the purchase. If the problem persists, %{supportLinkStart}contact support%{supportLinkEnd}."
