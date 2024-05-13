@@ -1,9 +1,0 @@
----
-name: use_database_for_dependencies_api
-feature_issue_url: https://gitlab.com/groups/gitlab-org/-/epics/11591
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/150746
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/458004
-milestone: '17.0'
-group: group::threat insights
-type: gitlab_com_derisk
-default_enabled: false

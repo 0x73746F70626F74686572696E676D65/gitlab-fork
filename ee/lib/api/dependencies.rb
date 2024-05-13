@@ -10,18 +10,10 @@ module API
     helpers do
       def dependencies_by(params)
         project = params[:project]
-        if ::Feature.enabled?(:use_database_for_dependencies_api, project)
-          params[:package_managers] = params.delete(:package_manager)
-          dependencies = ::Sbom::DependenciesFinder.new(project, params: params).execute.with_component.with_version
-          dependencies = dependencies.with_vulnerabilities if params[:preload_vulnerabilities]
-          dependencies
-        else
-          pipeline = ::Security::ReportFetchService.new(user_project, ::Ci::JobArtifact.of_report_type(:dependency_list)).pipeline
-
-          return ::Gitlab::ItemsCollection.new([]) unless pipeline
-
-          ::Security::DependencyListService.new(pipeline: pipeline, params: params).execute
-        end
+        params[:package_managers] = params.delete(:package_manager)
+        dependencies = ::Sbom::DependenciesFinder.new(project, params: params).execute.with_component.with_version
+        dependencies = dependencies.with_vulnerabilities if params[:preload_vulnerabilities]
+        dependencies
       end
     end
 
