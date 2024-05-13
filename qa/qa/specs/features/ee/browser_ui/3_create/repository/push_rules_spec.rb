@@ -29,7 +29,7 @@ module QA
           end
         end
 
-        it 'allows an unrestricted push', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347790' do
+        it 'allows an unrestricted push', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347790' do
           expect_no_error_on_push(file: standard_file)
         end
 
@@ -90,7 +90,7 @@ module QA
             error: Regexp.escape("Commit message contains the forbidden pattern '#{@deny_message_phrase_limitation}'"))
         end
 
-        it 'restricts committing files with secrets', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347779' do
+        it 'restricts committing files with secrets', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347779' do
           secret_file = [{
             name: 'id_rsa',
             content: SecureRandom.hex(100)
@@ -101,7 +101,7 @@ module QA
             error: Regexp.escape('File name id_rsa was prohibited by the pattern "id_rsa$"'))
         end
 
-        it 'restricts removal of tag', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347782' do
+        it 'restricts removal of tag', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347782' do
           tag = create(:tag, project: @project, ref: @project.default_branch, name: "test_tag_#{SecureRandom.hex(8)}")
 
           expect_error_on_push(file: standard_file, tag: tag.name, error: 'You cannot delete a tag')
@@ -146,7 +146,7 @@ module QA
           end
         end
 
-        it 'rejects unverified emails', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347791' do
+        it 'rejects unverified emails', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347791' do
           expect_no_error_on_push(file: standard_file)
           expect_error_on_push(
             file: standard_file,
