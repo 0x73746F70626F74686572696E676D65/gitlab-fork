@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::Trials::CreateService, feature_category: :purchase do
+  include TrialHelpers
+
   let_it_be(:user, reload: true) { create(:user) }
   let(:step) { described_class::LEAD }
 
