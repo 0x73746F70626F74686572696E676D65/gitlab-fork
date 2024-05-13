@@ -43,23 +43,23 @@ describe('TrialCreateLeadForm', () => {
     });
 
     it.each`
-      testid            | value
-      ${'first-name'}   | ${'Joe'}
-      ${'last-name'}    | ${'Doe'}
-      ${'company-name'} | ${'ACME'}
-      ${'phone-number'} | ${'192919'}
-      ${'company-size'} | ${'1-99'}
+      testid                     | value
+      ${'first-name-field'}      | ${'Joe'}
+      ${'last-name-field'}       | ${'Doe'}
+      ${'company-name-field'}    | ${'ACME'}
+      ${'phone-number-field'}    | ${'192919'}
+      ${'company-size-dropdown'} | ${'1-99'}
     `('has the default injected value for $testid', ({ testid, value }) => {
       expect(findFormInput(testid).attributes('value')).toBe(value);
     });
 
     it('has the correct form input in the form content', () => {
       const visibleFields = [
-        'first-name',
-        'last-name',
-        'company-name',
-        'company-size',
-        'phone-number',
+        'first-name-field',
+        'last-name-field',
+        'company-name-field',
+        'company-size-dropdown',
+        'phone-number-field',
       ];
 
       visibleFields.forEach((f) => expect(findFormInput(f).exists()).toBe(true));
@@ -96,13 +96,13 @@ describe('TrialCreateLeadForm', () => {
       ${'11290+12'}            | ${false}
       ${FORM_DATA.phoneNumber} | ${true}
     `('validates the phone number with value of `$value`', ({ value, result }) => {
-      expect(findFormInput('phone-number').exists()).toBe(true);
+      expect(findFormInput('phone-number-field').exists()).toBe(true);
 
-      findFormInput('phone-number').setValue(value);
+      findFormInput('phone-number-field').setValue(value);
 
       findForm().trigger('submit');
 
-      expect(findFormInput('phone-number').element.checkValidity()).toBe(result);
+      expect(findFormInput('phone-number-field').element.checkValidity()).toBe(result);
     });
   });
 });

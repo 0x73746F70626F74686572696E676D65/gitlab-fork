@@ -121,7 +121,7 @@ export default {
         :options="countryOptionsWithDefault"
         value-field="id"
         text-field="name"
-        data-testid="country"
+        data-testid="country-dropdown"
         :required="required"
         @change="selected"
       />
@@ -140,7 +140,7 @@ export default {
         :options="stateOptionsWithDefault"
         value-field="name"
         text-field="name"
-        data-testid="state"
+        data-testid="state-dropdown"
         :required="required"
         @change="selected"
       />

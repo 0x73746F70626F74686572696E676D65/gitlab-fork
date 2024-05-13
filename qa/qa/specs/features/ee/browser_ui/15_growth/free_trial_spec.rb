@@ -25,7 +25,7 @@ module QA
       end
 
       describe 'starts a free trial' do
-        context 'when on about page with multiple eligible namespaces' do
+        context 'when visiting trials page with multiple eligible namespaces' do
           let!(:group) do
             Resource::Sandbox.fabricate! do |sandbox|
               sandbox.path = "test-group-fulfillment#{SecureRandom.hex(4)}"
@@ -34,11 +34,7 @@ module QA
           end
 
           before do
-            Runtime::Browser.visit(:about, Chemlab::Vendor::GitlabHandbook::Page::About)
-
-            Chemlab::Vendor::GitlabHandbook::Page::About.perform(&:get_free_trial)
-
-            Gitlab::Page::Trials::New.perform(&:visit)
+            Runtime::Browser.visit(:gitlab, EE::Page::Trials::New)
           end
 
           after do
@@ -47,17 +43,12 @@ module QA
 
           it(
             'registers for a new trial',
-            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347671',
-            quarantine: {
-              type: :investigating,
-              issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/428262"
-            }
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347671'
           ) do
-            Flow::Trial.register_for_trial(group: group_for_trial)
+            EE::Flow::Trial.register_for_trial(group: group_for_trial)
 
-            Page::Alert::FreeTrial.perform do |free_trial_alert|
-              expect(free_trial_alert.trial_activated_message)
-                .to have_text('Congratulations, your free trial is activated')
+            Page::Group::Show.perform do |group|
+              expect(group).to have_trial_activated_alert
             end
 
             Page::Group::Menu.perform(&:go_to_billing)
@@ -80,11 +71,10 @@ module QA
           it 'registers for a new trial',
             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/349163' do
             Gitlab::Page::Group::Settings::Billing.perform(&:start_your_free_trial)
-            Flow::Trial.register_for_trial
+            EE::Flow::Trial.register_for_trial
 
-            Page::Alert::FreeTrial.perform do |free_trial_alert|
-              expect(free_trial_alert.trial_activated_message)
-                .to have_text('Congratulations, your free trial is activated')
+            Page::Group::Show.perform do |group|
+              expect(group).to have_trial_activated_alert
             end
 
             Page::Group::Menu.perform(&:go_to_billing)

@@ -97,7 +97,7 @@ export default {
           id="first_name"
           :value="firstName"
           name="first_name"
-          data-testid="first-name"
+          data-testid="first-name-field"
           required
         />
       </gl-form-group>
@@ -111,7 +111,7 @@ export default {
           id="last_name"
           :value="lastName"
           name="last_name"
-          data-testid="last-name"
+          data-testid="last-name-field"
           required
         />
       </gl-form-group>
@@ -121,7 +121,7 @@ export default {
         id="company_name"
         :value="companyName"
         name="company_name"
-        data-testid="company-name"
+        data-testid="company-name-field"
         required
       />
     </gl-form-group>
@@ -133,7 +133,7 @@ export default {
         :options="companySizeOptionsWithDefault"
         value-field="id"
         text-field="name"
-        data-testid="company-size"
+        data-testid="company-size-dropdown"
         required
       />
     </gl-form-group>
@@ -149,12 +149,12 @@ export default {
         :value="phoneNumber"
         name="phone_number"
         type="tel"
-        data-testid="phone-number"
+        data-testid="phone-number-field"
         pattern="^(\+)*[0-9\-\s]+$"
         required
       />
     </gl-form-group>
-    <gl-button type="submit" variant="confirm" class="gl-w-20" data-testid="continue">
+    <gl-button type="submit" variant="confirm" class="gl-w-20" data-testid="continue-button">
       {{ $options.i18n.formSubmitText }}
     </gl-button>
 
