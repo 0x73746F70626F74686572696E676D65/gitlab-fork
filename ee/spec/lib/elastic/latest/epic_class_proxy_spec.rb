@@ -18,6 +18,7 @@ RSpec.describe Elastic::Latest::EpicClassProxy, feature_category: :global_search
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
     stub_licensed_features(epics: true)
+    stub_feature_flags(search_uses_match_queries: false)
   end
 
   describe '#elastic_search' do

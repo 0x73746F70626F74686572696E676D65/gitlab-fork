@@ -1,0 +1,8 @@
+---
+name: search_uses_match_queries
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/151520
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/461166
+milestone: '17.1'
+type: development
+group: group::global search
+default_enabled: false

@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feature_category: :global_search do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+    stub_feature_flags(search_uses_match_queries: false)
   end
 
   subject { described_class.new(Issue, use_separate_indices: true) }

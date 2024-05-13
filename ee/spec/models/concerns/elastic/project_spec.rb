@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_search do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+    stub_feature_flags(search_uses_match_queries: false)
   end
 
   let(:schema_version) { 2402 }
@@ -120,6 +121,7 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
         context 'feature flag is enabled' do
           before do
             stub_feature_flags(elasticsearch_use_or_default_operator: true)
+            stub_feature_flags(search_uses_match_queries: false)
           end
 
           include_examples 'use correct default_operator', :or
@@ -128,6 +130,7 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
         context 'feature flag is disabled' do
           before do
             stub_feature_flags(elasticsearch_use_or_default_operator: false)
+            stub_feature_flags(search_uses_match_queries: false)
           end
 
           include_examples 'use correct default_operator', :and

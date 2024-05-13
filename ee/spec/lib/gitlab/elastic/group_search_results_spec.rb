@@ -15,6 +15,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
     stub_licensed_features(epics: true, group_wikis: true)
+    stub_feature_flags(search_uses_match_queries: false)
   end
 
   context 'issues search', :sidekiq_inline do
