@@ -12,6 +12,7 @@ module EE
 
         before_action only: [:show] do
           push_frontend_feature_flag(:merge_trains_skip_train, @project)
+          push_frontend_feature_flag(:merge_trains_viz, @project)
         end
 
         before_action only: [:edit] do

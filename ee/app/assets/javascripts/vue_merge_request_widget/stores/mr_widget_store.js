@@ -40,6 +40,7 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     this.enabledReports = convertObjectPropsToCamelCase(data.enabled_reports);
 
     this.apiApprovalSettingsPath = data.api_approval_settings_path;
+    this.mergeTrainsPath = data.merge_trains_path;
   }
 
   setData(data, isRebased) {
