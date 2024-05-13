@@ -30,3 +30,7 @@ export const DEFAULT_PROVIDE = {
   timezones: [],
   customCiToggleEnabled: true,
 };
+
+export const SCAN_EXECUTION_POLICY = 'scan_execution_policy';
+export const PIPELINE_EXECUTION_POLICY = 'pipeline_execution_policy';
+export const APPROVAL_POLICY = 'approval_policy';
