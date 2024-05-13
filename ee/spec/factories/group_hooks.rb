@@ -3,6 +3,9 @@
 FactoryBot.define do
   factory :group_hook do
     url { generate(:url) }
+    name { generate(:name) }
+    description { "Description of #{name}" }
+
     group
 
     trait :all_events_enabled do
