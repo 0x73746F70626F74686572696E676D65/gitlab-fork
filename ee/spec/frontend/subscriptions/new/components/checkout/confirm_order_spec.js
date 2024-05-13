@@ -328,9 +328,7 @@ describe('Confirm Order', () => {
         });
 
         it('emits error event with appropriate error', () => {
-          expect(wrapper.emitted('error')).toEqual([
-            [new ActiveModelError(null, '"Name: Error_1, Error \' 2"')],
-          ]);
+          expect(wrapper.emitted('error')).toEqual([[new Error("Name: Error_1, Error ' 2")]]);
         });
 
         it('calls tracking event', () => {
@@ -349,7 +347,7 @@ describe('Confirm Order', () => {
         });
 
         it('emits error event with appropriate error', () => {
-          expect(wrapper.emitted('error')).toEqual([[new ActiveModelError(null, `"${errors}"`)]]);
+          expect(wrapper.emitted('error')).toEqual([[new Error(errors)]]);
         });
 
         it('calls tracking event', () => {
@@ -372,9 +370,10 @@ describe('Confirm Order', () => {
         });
 
         it('emits error event with appropriate error', () => {
-          expect(wrapper.emitted('error')).toEqual([
-            [new ActiveModelError(null, '"Promo code is invalid"')],
-          ]);
+          const error = wrapper.emitted('error')[0][0];
+          expect(error).toEqual(new Error('Promo code is invalid'));
+          expect(error.code).toEqual('INVALID');
+          expect(error.attributes).toEqual(['promo_code']);
         });
 
         it('calls tracking event', () => {
@@ -407,7 +406,32 @@ describe('Confirm Order', () => {
         it('calls tracking event', () => {
           expect(trackingSpy).toHaveBeenCalledWith('default', 'click_button', {
             label: 'confirm_purchase',
-            property: errors,
+            property: JSON.stringify(errors),
+          });
+        });
+      });
+
+      describe('when response has error cause', () => {
+        const errors = {
+          message:
+            '[GatewayTransactionError] Transaction declined.402 - [card_error/authentication_required/authentication_required] Your card was declined. This transaction requires authentication.',
+        };
+
+        beforeEach(() => {
+          Api.confirmOrder = jest.fn().mockReturnValue(Promise.resolve({ data: { errors } }));
+          findConfirmButton().vm.$emit('click');
+        });
+
+        it('emits error event with appropriate error and cause', () => {
+          const error = wrapper.emitted('error')[0][0];
+          expect(error).toStrictEqual(new Error(errors.message));
+          expect(error.cause).toBe('[card_error/authentication_required/authentication_required]');
+        });
+
+        it('calls tracking event', () => {
+          expect(trackingSpy).toHaveBeenCalledWith('default', 'click_button', {
+            label: 'confirm_purchase',
+            property: errors.message,
           });
         });
       });

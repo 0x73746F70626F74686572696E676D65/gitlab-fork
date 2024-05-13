@@ -1,15 +1,17 @@
 <script>
 import { v4 as uuidv4 } from 'uuid';
-import { isEqual } from 'lodash';
+import { isEqual, isObject } from 'lodash';
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import Api from 'ee/api';
-import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
-import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
-import { s__ } from '~/locale';
-import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 import PrivacyAndTermsConfirm from 'ee/subscriptions/shared/components/privacy_and_terms_confirm.vue';
+import { ActiveModelError } from '~/lib/utils/error_utils';
+import { extractErrorCode } from 'ee/vue_shared/purchase_flow/zuora_utils';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
+import { PurchaseEvent } from 'ee/subscriptions/new/constants';
+import { STEPS } from 'ee/subscriptions/constants';
 
 export default {
   components: {
@@ -128,20 +130,27 @@ export default {
         .then(({ data }) => {
           if (data?.location) {
             redirectTo(data.location); // eslint-disable-line import/no-deprecated
-            return;
-          }
-          if (data?.errors) {
-            throw new Error(JSON.stringify(data.errors));
+          } else {
+            if (data?.error_attribute_map) {
+              throw new ActiveModelError(data.error_attribute_map, JSON.stringify(data.errors));
+            } else if (isObject(data.errors)) {
+              const { code, attributes, message } = data?.errors || {};
+              throw Object.assign(new Error(message), { code, attributes });
+            }
+
+            throw new Error(data.errors);
           }
         })
-        .catch((error) => {
-          const { status } = error?.response || {};
+        .catch((error = {}) => {
+          const { status } = error.response || {};
           // Regenerate the idempotency key on client-side errors, to ensure the server regards the new request.
           // Context: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129830#note_1522796835.
           if (this.isClientSideError(status)) {
             this.regenerateIdempotencyKey();
           }
-          this.$emit(PurchaseEvent.ERROR, error);
+
+          const cause = extractErrorCode(error.message);
+          this.$emit(PurchaseEvent.ERROR, Object.assign(error, { cause }));
         })
         .finally(() => {
           this.isLoading = false;

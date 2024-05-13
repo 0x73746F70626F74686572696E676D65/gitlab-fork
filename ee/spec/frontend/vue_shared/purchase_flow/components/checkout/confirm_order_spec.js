@@ -3,19 +3,20 @@ import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import waitForPromises from 'helpers/wait_for_promises';
 import Api from 'ee/api';
-import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import ConfirmOrder from 'ee/vue_shared/purchase_flow/components/checkout/confirm_order.vue';
-import { stateData as initialStateData, subscriptionName } from 'ee_jest/subscriptions/mock_data';
-import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { createAlert } from '~/alert';
+import PrivacyAndTermsConfirm from 'ee/subscriptions/shared/components/privacy_and_terms_confirm.vue';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import * as UrlUtility from '~/lib/utils/url_utility';
-import waitForPromises from 'helpers/wait_for_promises';
+import { ActiveModelError } from '~/lib/utils/error_utils';
+import { stateData as initialStateData, subscriptionName } from 'ee_jest/subscriptions/mock_data';
+import { STEPS } from 'ee/subscriptions/constants';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
-import PrivacyAndTermsConfirm from 'ee/subscriptions/shared/components/privacy_and_terms_confirm.vue';
 
 jest.mock('uuid');
 jest.mock('~/lib/utils/url_utility');
@@ -313,6 +314,79 @@ describe('Confirm Order', () => {
           );
         });
       });
+
+      describe('when response has non promo code related errors', () => {
+        const errors = 'Errorororor';
+        beforeEach(() => {
+          Api.confirmOrder = jest.fn().mockReturnValue(Promise.resolve({ data: { errors } }));
+          createComponent({ apolloProvider: mockApolloProvider });
+          findConfirmButton().vm.$emit('click');
+        });
+
+        it('emits error event with appropriate error', () => {
+          expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([[new Error(errors)]]);
+        });
+      });
+
+      describe('when response has error code', () => {
+        const errors = {
+          message: 'Name is invalid',
+          attributes: ['name'],
+          code: 'INVALID',
+        };
+        beforeEach(() => {
+          Api.confirmOrder = jest.fn().mockReturnValue(Promise.resolve({ data: { errors } }));
+          createComponent({ apolloProvider: mockApolloProvider });
+          findConfirmButton().vm.$emit('click');
+        });
+
+        it('emits error event with appropriate error', () => {
+          const error = wrapper.emitted(PurchaseEvent.ERROR)[0][0];
+          expect(error).toEqual(new Error('Name is invalid'));
+          expect(error.code).toEqual('INVALID');
+          expect(error.attributes).toEqual(['name']);
+        });
+      });
+
+      describe('when response has error attribute map', () => {
+        const errors = { email: ["can't be blank"] };
+        const errorAttributeMap = { email: ['taken'] };
+
+        beforeEach(() => {
+          Api.confirmOrder = jest
+            .fn()
+            .mockReturnValue(
+              Promise.resolve({ data: { errors, error_attribute_map: errorAttributeMap } }),
+            );
+          createComponent({ apolloProvider: mockApolloProvider });
+          findConfirmButton().vm.$emit('click');
+        });
+
+        it('emits error event with appropriate error', () => {
+          expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([
+            [new ActiveModelError(errorAttributeMap, JSON.stringify(errors))],
+          ]);
+        });
+      });
+
+      describe('when response has error cause', () => {
+        const errors = {
+          message:
+            '[GatewayTransactionError] Transaction declined.402 - [card_error/authentication_required/authentication_required] Your card was declined. This transaction requires authentication.',
+        };
+
+        beforeEach(() => {
+          Api.confirmOrder = jest.fn().mockReturnValue(Promise.resolve({ data: { errors } }));
+          createComponent({ apolloProvider: mockApolloProvider });
+          findConfirmButton().vm.$emit('click');
+        });
+
+        it('emits error event with appropriate error and cause', () => {
+          const error = wrapper.emitted(PurchaseEvent.ERROR)[0][0];
+          expect(error).toStrictEqual(new Error(errors.message));
+          expect(error.cause).toBe('[card_error/authentication_required/authentication_required]');
+        });
+      });
     });
 
     describe('when confirming the purchase', () => {
@@ -337,7 +411,7 @@ describe('Confirm Order', () => {
 
       describe('when there is a failure', () => {
         const errors = 'an error';
-        const expectedError = new Error(JSON.stringify(errors));
+        const expectedError = new Error(errors);
 
         beforeEach(() => {
           Api.confirmOrder = jest.fn().mockResolvedValueOnce({ data: { errors } });

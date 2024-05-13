@@ -3,7 +3,7 @@ import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapGetters } from 'vuex';
 import { v4 as uuidv4 } from 'uuid';
-import { isEqual } from 'lodash';
+import { isEqual, isObject } from 'lodash';
 import { STEPS } from 'ee/subscriptions/constants';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
@@ -15,6 +15,7 @@ import { addExperimentContext } from '~/tracking/utils';
 import { ActiveModelError } from '~/lib/utils/error_utils';
 import { isInvalidPromoCodeError } from 'ee/subscriptions/new/utils';
 import { visitUrl } from '~/lib/utils/url_utility';
+import { extractErrorCode } from 'ee/vue_shared/purchase_flow/zuora_utils';
 import PrivacyAndTermsConfirm from 'ee/subscriptions/shared/components/privacy_and_terms_confirm.vue';
 
 export default {
@@ -142,34 +143,33 @@ export default {
 
             visitUrl(data.location);
           } else {
-            let errorMessage;
             if (data?.name) {
-              errorMessage = sprintf(
+              const errorMessage = sprintf(
                 s__('Checkout|Name: %{errorMessage}'),
                 { errorMessage: data.name.join(', ') },
                 false,
               );
-            } else if (this.shouldShowErrorMessageOnly(data?.errors)) {
-              errorMessage = data?.errors?.message;
-            } else {
-              errorMessage = data?.errors;
+              throw new Error(errorMessage);
+            } else if (data?.error_attribute_map) {
+              throw new ActiveModelError(data.error_attribute_map, JSON.stringify(data.errors));
+            } else if (isObject(data?.errors)) {
+              const { code, attributes, message } = data?.errors || {};
+              throw Object.assign(new Error(message), { code, attributes });
             }
 
-            this.trackConfirmOrder(errorMessage);
-            this.handleError(
-              new ActiveModelError(data.error_attribute_map, JSON.stringify(errorMessage)),
-            );
+            throw new Error(data?.errors);
           }
         })
-        .catch((error) => {
-          const { status } = error?.response || {};
+        .catch((error = {}) => {
+          const { status } = error.response || {};
           // Regenerate the idempotency key on client-side errors, to ensure the server regards the new request.
           // Context: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/129830#note_1522796835.
           if (this.isClientSideError(status)) {
             this.regenerateIdempotencyKey();
           }
           this.trackConfirmOrder(error.message);
-          this.handleError(error);
+          const cause = extractErrorCode(error.message);
+          this.handleError(Object.assign(error, { cause }));
         })
         .finally(() => {
           this.isConfirmingOrder = false;
