@@ -185,6 +185,7 @@ describe('LogsList', () => {
         traceFlags: null,
         traceId: [selectedLog.trace_id],
         timestamp: selectedLog.timestamp,
+        drawerOpen: true,
       });
     });
 
@@ -207,7 +208,44 @@ describe('LogsList', () => {
 
       expect(findUrlSync().props('query')).toMatchObject({
         fingerprint: ['fingerprint'],
+        drawerOpen: undefined,
       });
+    });
+
+    it('automatically opens the drawer if drawerOpen is true', async () => {
+      setWindowLocation(`?fingerprint[]=${mockLogs[2].fingerprint}&drawerOpen=true`);
+
+      await mountComponent();
+
+      expect(isDrawerOpen()).toBe(true);
+      expect(getDrawerSelectedLog()).toEqual(mockLogs[2]);
+    });
+
+    it('does not automatically open the drawer if drawerOpen is not true', async () => {
+      setWindowLocation(`?fingerprint[]=${mockLogs[2].fingerprint}&drawerOpen=false`);
+
+      await mountComponent();
+
+      expect(isDrawerOpen()).toBe(false);
+      expect(getDrawerSelectedLog()).toBe(null);
+    });
+
+    it('does not automatically open the drawer if fingerprint is not set', async () => {
+      setWindowLocation(`?drawerOpen=true`);
+
+      await mountComponent();
+
+      expect(isDrawerOpen()).toBe(false);
+      expect(getDrawerSelectedLog()).toBe(null);
+    });
+
+    it('does not automatically open the drawer if fingerprint does not exist', async () => {
+      setWindowLocation(`?fingerprint[]=foo&drawerOpen=true`);
+
+      await mountComponent();
+
+      expect(isDrawerOpen()).toBe(false);
+      expect(getDrawerSelectedLog()).toBe(null);
     });
   });
 
