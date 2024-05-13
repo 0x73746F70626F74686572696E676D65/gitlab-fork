@@ -32,3 +32,4 @@
     window.gl.mrWidgetData.aiCommitMessageEnabled = #{::Llm::GenerateCommitMessageService.new(current_user, @merge_request).valid?.to_s}
     window.gl.mrWidgetData.dismissal_descriptions = '#{escape_javascript(dismissal_descriptions.to_json)}';
     window.gl.mrWidgetData.commit_path_template = '#{commit_path_template(@project)}';
+    window.gl.mrWidgetData.merge_trains_path = '#{namespace_project_merge_trains_path}';
