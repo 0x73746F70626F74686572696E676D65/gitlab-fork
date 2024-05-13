@@ -170,6 +170,20 @@ RSpec.shared_examples 'graphql issue list request spec EE' do
           expect(issue_ids).to match_array(issues_with_cadence)
         end
       end
+
+      context 'when both negated iteration_id and iteration_wildcard_id filters are provided' do
+        let(:issue_filter_params) do
+          { not: { iteration_id: [iteration.to_global_id], iteration_wildcard_id: :CURRENT } }
+        end
+
+        it 'returns a mutually exclusive param error' do
+          post_query
+
+          expect_graphql_errors_to_include(
+            'only one of [iterationId, iterationWildcardId] arguments is allowed at the same time.'
+          )
+        end
+      end
     end
 
     context 'when filtering by epic' do

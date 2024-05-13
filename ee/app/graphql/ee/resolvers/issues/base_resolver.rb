@@ -38,15 +38,14 @@ module EE
           argument :health_status_filter, ::Types::HealthStatusFilterEnum,
                    required: false,
                    description: 'Health status of the issue, "none" and "any" values are supported.'
+
+          validates mutually_exclusive: [:weight, :weight_wildcard_id]
+          validates mutually_exclusive: [:epic_id, :epic_wildcard_id]
+          validates mutually_exclusive: [:iteration_id, :iteration_wildcard_id]
         end
 
         def ready?(**args)
           args[:not] = args[:not].to_h if args[:not]
-
-          params_not_mutually_exclusive(args, mutually_exclusive_weight_args)
-          params_not_mutually_exclusive(args, mutually_exclusive_epic_args)
-          params_not_mutually_exclusive(args, mutually_exclusive_iteration_args)
-          params_not_mutually_exclusive(args.fetch(:not, {}), mutually_exclusive_iteration_args)
 
           super
         end
@@ -93,18 +92,6 @@ module EE
         def prepare_health_status_params(args)
           # health_status argument is deprecated, use health_status_filter instead
           args[:health_status] = args.delete(:health_status_filter) if args[:health_status_filter].present?
-        end
-
-        def mutually_exclusive_iteration_args
-          [:iteration_id, :iteration_wildcard_id]
-        end
-
-        def mutually_exclusive_epic_args
-          [:epic_id, :epic_wildcard_id]
-        end
-
-        def mutually_exclusive_weight_args
-          [:weight, :weight_wildcard_id]
         end
       end
     end

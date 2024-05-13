@@ -127,7 +127,7 @@ RSpec.describe Resolvers::ProjectIssuesResolver do
         end
 
         it 'generates mutually exclusive filter error when wildcard and list are provided' do
-          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, 'only one of [iterationId, iterationWildcardId] arguments is allowed at the same time.') do
+          expect_graphql_error_to_be_created(GraphQL::Schema::Validator::ValidationFailedError, 'only one of [iterationId, iterationWildcardId] arguments is allowed at the same time.') do
             resolve_issues(iteration_id: [iteration1.to_global_id], iteration_wildcard_id: 'CURRENT')
           end
         end
@@ -215,12 +215,6 @@ RSpec.describe Resolvers::ProjectIssuesResolver do
 
           it 'works with global IDs' do
             expect(resolve_issues(not: { iteration_id: [iteration1.to_global_id] })).to contain_exactly(issue2, issue3, issue4)
-          end
-
-          it 'generates a mutually exclusive filter error when wildcard and list are provided' do
-            expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, 'only one of [iterationId, iterationWildcardId] arguments is allowed at the same time.') do
-              resolve_issues(not: { iteration_id: [iteration1.to_global_id], iteration_wildcard_id: 'CURRENT' })
-            end
           end
         end
 
