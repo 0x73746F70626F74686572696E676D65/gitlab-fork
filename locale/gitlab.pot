@@ -50396,6 +50396,9 @@ msgstr ""
 msgid "Subscribe to calendar"
 msgstr ""
 
+msgid "Subscribe to releases RSS feed"
+msgstr ""
+
 msgid "Subscribed"
 msgstr ""
 
