@@ -3,6 +3,8 @@
 module Epics
   module EpicLinks
     class DestroyService < IssuableLinks::DestroyService
+      extend ::Gitlab::Utils::Override
+
       attr_reader :child_epic, :parent_epic, :synced_epic
       private :child_epic, :parent_epic
 
@@ -39,6 +41,15 @@ module Epics
 
       def not_found_message
         'No Epic found for given params'
+      end
+
+      override :after_destroy
+      def after_destroy
+        super
+
+        return if synced_epic && Feature.enabled?(:work_items_rolledup_dates, parent_epic.group)
+
+        ::Epics::UpdateDatesService.new([parent_epic, child_epic]).execute
       end
 
       def destroy_work_item_parent_link!

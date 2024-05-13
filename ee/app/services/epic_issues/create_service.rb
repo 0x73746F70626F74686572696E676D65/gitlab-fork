@@ -2,6 +2,8 @@
 
 module EpicIssues
   class CreateService < IssuableLinks::CreateService
+    extend ::Gitlab::Utils::Override
+
     def initialize(issuable, user, params)
       @synced_epic = params.delete(:synced_epic)
 
@@ -135,6 +137,13 @@ module EpicIssues
       )
 
       raise Epics::SyncAsWorkItem::SyncAsWorkItemError, message
+    end
+
+    override :update_epic_dates?
+    def update_epic_dates?(_affected_epics)
+      return false if synced_epic && Feature.enabled?(:work_items_rolledup_dates, issuable.group)
+
+      super
     end
   end
 end

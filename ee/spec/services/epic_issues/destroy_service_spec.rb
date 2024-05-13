@@ -87,6 +87,7 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
     context 'when epics feature is enabled' do
       before do
         stub_licensed_features(epics: true)
+        allow(Epics::UpdateDatesService).to receive(:new).and_call_original
       end
 
       context 'when user has permissions to remove associations' do
@@ -98,6 +99,40 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
 
         it_behaves_like 'removes relationship with the issue'
 
+        context 'when epic has inherited dates' do
+          let_it_be(:milestone) do
+            create(:project_milestone, project: project, start_date: 1.day.ago, due_date: 1.day.from_now)
+          end
+
+          let_it_be(:epic_with_dates) do
+            create(
+              :epic,
+              group: group,
+              start_date: milestone.start_date,
+              due_date: milestone.due_date,
+              title: "lalala",
+              start_date_is_fixed: false,
+              due_date_is_fixed: false,
+              start_date_sourcing_milestone_id: milestone.id,
+              due_date_sourcing_milestone_id: milestone.id
+            )
+          end
+
+          it 'removes relationship and updates epic dates' do
+            epic_issue_link =
+              create(:epic_issue, epic: epic_with_dates, issue: create(:issue, project: project, milestone: milestone))
+
+            expect(Epics::UpdateDatesService).to receive(:new).with([epic_with_dates])
+
+            expect { described_class.new(epic_issue_link, user).execute }
+              .to change { EpicIssue.count }.by(-1)
+              .and change { epic_with_dates.reload.start_date }.from(milestone.start_date).to(nil)
+              .and change { epic_with_dates.due_date }.from(milestone.due_date).to(nil)
+              .and change { epic_with_dates.start_date_sourcing_milestone_id }.from(milestone.id).to(nil)
+              .and change { epic_with_dates.due_date_sourcing_milestone_id }.from(milestone.id).to(nil)
+          end
+        end
+
         context 'when epic has a synced work item' do
           let_it_be(:child_issue, reload: true) { create(:issue, project: project) }
           let_it_be(:epic, reload: true) { create(:epic, :with_synced_work_item, group: group) }
@@ -107,7 +142,6 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
           before do
             create(:parent_link, work_item_parent_id: epic.issue_id, work_item_id: child_issue.id)
             allow(GraphqlTriggers).to receive(:issuable_epic_updated).and_call_original
-            allow(Epics::UpdateDatesService).to receive(:new).and_call_original
           end
 
           it 'removes the epic and work item link and keep epic in sync' do
@@ -146,7 +180,7 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
               expect(epic.reload.issues).to include(child_issue)
               expect(epic.work_item.reload.work_item_children).to include(work_item_issue)
               expect(GraphqlTriggers).not_to have_received(:issuable_epic_updated)
-              expect(Epics::UpdateDatesService).not_to have_received(:new)
+              expect(::Epics::UpdateDatesService).not_to have_received(:new)
             end
 
             it 'logs error' do
@@ -185,7 +219,6 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
             subject(:destroy_link) { described_class.new(epic_issue, user, synced_epic: true).execute }
 
             it 'does not call WorkItems::ParentLinks::DestroyService nor create notes' do
-              allow(::WorkItems::ParentLinks::DestroyService).to receive(:new).and_call_original
               expect(::WorkItems::ParentLinks::DestroyService).not_to receive(:new)
 
               expect { destroy_link }
@@ -195,7 +228,6 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
             end
 
             it 'does not call Epics::UpdateDatesService' do
-              allow(Epics::UpdateDatesService).to receive(:new).and_call_original
               expect(Epics::UpdateDatesService).not_to receive(:new)
 
               destroy_link
@@ -207,7 +239,6 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
               end
 
               it 'calls Epics::UpdateDatesService' do
-                allow(Epics::UpdateDatesService).to receive(:new).and_call_original
                 expect(Epics::UpdateDatesService).to receive(:new).with([epic])
 
                 destroy_link

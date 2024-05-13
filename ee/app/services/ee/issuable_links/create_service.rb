@@ -15,9 +15,7 @@ module EE
         affected_epics = affected_epics(objects)
 
         super.tap do
-          if !params[:skip_epic_dates_update] && affected_epics.present?
-            Epics::UpdateDatesService.new(affected_epics).execute
-          end
+          Epics::UpdateDatesService.new(affected_epics).execute if update_epic_dates?(affected_epics)
         end
       end
 
@@ -46,6 +44,13 @@ module EE
         else
           super
         end
+      end
+
+      def update_epic_dates?(affected_epics)
+        return false if params[:skip_epic_dates_update]
+        return false if affected_epics.empty?
+
+        true
       end
     end
   end

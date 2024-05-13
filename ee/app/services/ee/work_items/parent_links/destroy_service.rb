@@ -18,7 +18,9 @@ module EE
         private
 
         def remove_relation
-          return super unless !synced_work_item? && parent.work_item_type.epic?
+          return super if synced_work_item?
+          return super unless parent.work_item_type.epic?
+          return super unless parent.synced_epic.present?
 
           ::ApplicationRecord.transaction do
             destroy_parent_link = super
@@ -27,8 +29,6 @@ module EE
         end
 
         def sync_to_work_item!
-          return unless parent.synced_epic.present?
-
           service_response = child.work_item_type.epic? ? handle_epic_link : handle_issue_link
           return if service_response[:status] == :success
 
@@ -67,7 +67,7 @@ module EE
         end
 
         def handle_issue_link
-          epic_issue_link = ::EpicIssue.in_issue(child.id).first
+          epic_issue_link = EpicIssue.find_by_issue_id(child.id)
           return { status: :success } unless epic_issue_link
 
           ::EpicIssues::DestroyService.new(epic_issue_link, current_user, synced_epic: true).execute
