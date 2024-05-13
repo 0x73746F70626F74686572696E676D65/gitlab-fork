@@ -32,8 +32,7 @@ RSpec.describe Resolvers::BoardGroupings::EpicsResolver do
   let(:context) do
     GraphQL::Query::Context.new(
       query: query_double(schema: nil),
-      values: { current_user: current_user },
-      object: nil
+      values: { current_user: current_user }
     )
   end
 
