@@ -8416,6 +8416,9 @@ msgid_plural "Billing|Groups in the Free tier are limited to %d seats"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Billing|Invited group"
+msgstr ""
+
 msgid "Billing|Members who were invited via a group invitation cannot be removed. You can either remove the entire group, or ask an Owner of the invited group to remove the member."
 msgstr ""
 

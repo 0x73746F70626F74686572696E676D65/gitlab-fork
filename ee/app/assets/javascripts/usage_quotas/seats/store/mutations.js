@@ -109,10 +109,14 @@ export default {
     });
   },
 
-  [types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS](state, { memberId, memberships }) {
+  [types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS](
+    state,
+    { memberId, memberships, hasIndirectMembership },
+  ) {
     Vue.set(state.userDetails, memberId, {
       isLoading: false,
       items: memberships,
+      hasIndirectMembership,
     });
   },
 

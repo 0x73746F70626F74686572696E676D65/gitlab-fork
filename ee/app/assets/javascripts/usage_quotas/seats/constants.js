@@ -47,16 +47,21 @@ export const FIELDS = [
   },
 ];
 
-export const DETAILS_FIELDS = [
-  { key: 'source_full_name', label: s__('Billing|Direct memberships') },
-  { key: 'created_at', label: __('Access granted') },
-  { key: 'expires_at', label: __('Access expires') },
-  { key: 'role', label: __('Role') },
-].map((field) => ({
-  ...field,
-  thClass: 'gl-border-0!',
-  tdClass: 'gl-border-0!',
-}));
+export const membershipDetailsFields = (indirect) => {
+  return [
+    {
+      key: 'source_full_name',
+      label: indirect ? s__('Billing|Invited group') : s__('Billing|Direct memberships'),
+    },
+    { key: 'created_at', label: __('Access granted') },
+    { key: 'expires_at', label: __('Access expires') },
+    { key: 'role', label: __('Role') },
+  ].map((field) => ({
+    ...field,
+    thClass: 'gl-border-0!',
+    tdClass: 'gl-border-0!',
+  }));
+};
 
 export const CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID = 'cannot-remove-member-modal';
 export const CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE = s__('Billing|Cannot remove user');

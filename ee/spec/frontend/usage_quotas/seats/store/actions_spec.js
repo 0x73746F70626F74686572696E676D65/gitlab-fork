@@ -286,6 +286,9 @@ describe('Usage Quotas Seats actions', () => {
 
     beforeAll(() => {
       GroupsApi.fetchBillableGroupMemberMemberships.mockResolvedValue({ data: mockMemberDetails });
+      GroupsApi.fetchBillableGroupMemberIndirectMemberships.mockResolvedValue({
+        data: mockMemberDetails,
+      });
     });
 
     it('commits fetchBillableMemberDetails', async () => {
@@ -297,13 +300,17 @@ describe('Usage Quotas Seats actions', () => {
           { type: types.FETCH_BILLABLE_MEMBER_DETAILS, payload: { memberId: member.id } },
           {
             type: types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS,
-            payload: { memberId: member.id, memberships: mockMemberDetails },
+            payload: {
+              memberId: member.id,
+              memberships: mockMemberDetails,
+              hasIndirectMembership: false,
+            },
           },
         ],
       });
     });
 
-    it('calls fetchBillableGroupMemberMemberships API', async () => {
+    it('calls fetchBillableGroupMemberMemberships and fetchBillableGroupMemberIndirectMemberships API', async () => {
       await testAction({
         action: actions.fetchBillableMemberDetails,
         payload: member.id,
@@ -312,15 +319,20 @@ describe('Usage Quotas Seats actions', () => {
           { type: types.FETCH_BILLABLE_MEMBER_DETAILS, payload: { memberId: member.id } },
           {
             type: types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS,
-            payload: { memberId: member.id, memberships: mockMemberDetails },
+            payload: {
+              memberId: member.id,
+              memberships: mockMemberDetails,
+              hasIndirectMembership: false,
+            },
           },
         ],
       });
 
       expect(GroupsApi.fetchBillableGroupMemberMemberships).toHaveBeenCalledWith(null, 2);
+      expect(GroupsApi.fetchBillableGroupMemberIndirectMemberships).toHaveBeenCalledWith(null, 2);
     });
 
-    it('calls fetchBillableGroupMemberMemberships API only once', async () => {
+    it('calls fetchBillableGroupMemberMemberships and fetchBillableGroupMemberIndirectMemberships API only once', async () => {
       await testAction({
         action: actions.fetchBillableMemberDetails,
         payload: member.id,
@@ -329,7 +341,11 @@ describe('Usage Quotas Seats actions', () => {
           { type: types.FETCH_BILLABLE_MEMBER_DETAILS, payload: { memberId: member.id } },
           {
             type: types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS,
-            payload: { memberId: member.id, memberships: mockMemberDetails },
+            payload: {
+              memberId: member.id,
+              memberships: mockMemberDetails,
+              hasIndirectMembership: false,
+            },
           },
         ],
       });
@@ -343,12 +359,61 @@ describe('Usage Quotas Seats actions', () => {
         expectedMutations: [
           {
             type: types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS,
-            payload: { memberId: member.id, memberships: mockMemberDetails },
+            payload: {
+              memberId: member.id,
+              memberships: mockMemberDetails,
+            },
           },
         ],
       });
 
       expect(GroupsApi.fetchBillableGroupMemberMemberships).toHaveBeenCalledTimes(1);
+      expect(GroupsApi.fetchBillableGroupMemberIndirectMemberships).toHaveBeenCalledTimes(1);
+    });
+
+    describe('committing members and indirectMembership', () => {
+      const mockIndirectMemberDetails = { ...mockMemberDetails, hasIndirectMembership: true };
+
+      describe.each`
+        membershipApiRes       | indirectMembershipApiRes       | memberships                    | hasIndirectMembership
+        ${[]}                  | ${[]}                          | ${[]}                          | ${false}
+        ${[mockMemberDetails]} | ${[]}                          | ${[mockMemberDetails]}         | ${false}
+        ${[]}                  | ${[mockIndirectMemberDetails]} | ${[mockIndirectMemberDetails]} | ${true}
+        ${[mockMemberDetails]} | ${[mockIndirectMemberDetails]} | ${[mockMemberDetails]}         | ${false}
+      `(
+        'fetchBillableMemberDetails',
+        ({ membershipApiRes, indirectMembershipApiRes, memberships, hasIndirectMembership }) => {
+          it(`commits the correct mutation when response ${
+            membershipApiRes.length ? 'does' : 'does not'
+          } include membership and ${
+            indirectMembershipApiRes.length ? 'does' : 'does not'
+          } include indirect membership`, () => {
+            GroupsApi.fetchBillableGroupMemberMemberships.mockResolvedValue({
+              data: membershipApiRes,
+            });
+            GroupsApi.fetchBillableGroupMemberIndirectMemberships.mockResolvedValue({
+              data: indirectMembershipApiRes,
+            });
+
+            return testAction({
+              action: actions.fetchBillableMemberDetails,
+              payload: member.id,
+              state,
+              expectedMutations: [
+                { type: types.FETCH_BILLABLE_MEMBER_DETAILS, payload: { memberId: member.id } },
+                {
+                  type: types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS,
+                  payload: {
+                    memberId: member.id,
+                    memberships,
+                    hasIndirectMembership,
+                  },
+                },
+              ],
+            });
+          });
+        },
+      );
     });
 
     describe('on API error', () => {
