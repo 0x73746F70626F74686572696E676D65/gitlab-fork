@@ -31,7 +31,7 @@ DETAILS:
 
 - Helps you write code more efficiently by showing code suggestions as you type.
 - Large language model (LLM) for code completion: Vertex AI Codey [`code-gecko`](https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/code-completion)
-- LLM for code generation: Anthropic [`Claude-3-Sonnet`](https://docs.anthropic.com/claude/docs/models-overview)
+- LLM for code generation: Anthropic [`claude-3-sonnet-20240229`](https://docs.anthropic.com/claude/docs/models-overview)
 - <i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=hCAyCTacdAQ)
 - [View documentation](project/repository/code_suggestions/index.md).
 
@@ -43,7 +43,7 @@ DETAILS:
 
 - Processes and generates text and code in a conversational manner.
   Helps you quickly identify useful information in large volumes of text in issues, epics, code, and GitLab documentation.
-- LLM: Anthropic [`Claude-2.1`](https://docs.anthropic.com/claude/docs/models-overview#model-comparison) and Vertex AI Codey [`textembedding-gecko`](https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings)
+- LLM: Anthropic [`claude-3-sonnet-20240229`](https://docs.anthropic.com/en/docs/models-overview#claude-3-a-new-generation-of-ai) and Vertex AI Codey [`textembedding-gecko`](https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings)
 - [View documentation](gitlab_duo_chat.md).
 
 ### Suggested Reviewers
