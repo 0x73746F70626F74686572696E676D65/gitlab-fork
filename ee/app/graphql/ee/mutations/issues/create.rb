@@ -18,9 +18,9 @@ module EE
                    description: 'Global iteration ID. Mutually exlusive argument with `iterationWildcardId`.'
           argument :iteration_wildcard_id, ::Types::IssueCreationIterationWildcardIdEnum,
                    required: false,
-                   description: 'Iteration wildcard ID. Supported values are: `CURRENT`.' \
-                                ' Mutually exclusive argument with `iterationId`.' \
-                                ' iterationCadenceId also required when this argument is provided.'
+                   description: 'Iteration wildcard ID. Supported values are: `CURRENT`. ' \
+                                'Mutually exclusive argument with `iterationId`. ' \
+                                'iterationCadenceId also required when this argument is provided.'
           argument :iteration_cadence_id, ::Types::GlobalIDType[::Iterations::Cadence],
                    required: false,
                    description: 'Global iteration cadence ID. Required when `iterationWildcardId` is provided.'

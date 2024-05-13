@@ -24,9 +24,9 @@ module Mutations
           invalid_fields = export_service.invalid_fields
 
           if invalid_fields.any?
-            message = "The following fields are incorrect: #{invalid_fields.join(', ')}."\
-              " See https://docs.gitlab.com/ee/user/project/requirements/#exported-csv-file-format"\
-              " for permitted fields."
+            message = "The following fields are incorrect: #{invalid_fields.join(', ')}. "\
+              "See https://docs.gitlab.com/ee/user/project/requirements/#exported-csv-file-format "\
+              "for permitted fields."
             raise Gitlab::Graphql::Errors::ArgumentError, message
           end
         end

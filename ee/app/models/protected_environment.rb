@@ -22,9 +22,9 @@ class ProtectedEnvironment < ApplicationRecord
 
   scope :with_environment_id, -> do
     select('protected_environments.*, environments.id AS environment_id')
-      .joins('LEFT OUTER JOIN environments ON' \
-             ' protected_environments.name = environments.name ' \
-             ' AND protected_environments.project_id = environments.project_id')
+      .joins('LEFT OUTER JOIN environments ON ' \
+             'protected_environments.name = environments.name  ' \
+             'AND protected_environments.project_id = environments.project_id')
   end
 
   scope :for_groups, ->(group_ids) do

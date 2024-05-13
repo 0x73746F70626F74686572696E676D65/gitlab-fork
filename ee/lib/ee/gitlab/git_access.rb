@@ -145,8 +145,8 @@ module EE
         return unless user.two_factor_enabled?
 
         if ::Gitlab::Auth::Otp::SessionEnforcer.new(actor).access_restricted?
-          message = "OTP verification is required to access the repository.\n\n"\
-          "   Use: #{build_ssh_otp_verify_command}"
+          message = "OTP verification is required to access the repository.\n\n   "\
+          "Use: #{build_ssh_otp_verify_command}"
 
           raise ::Gitlab::GitAccess::ForbiddenError, message
         end
