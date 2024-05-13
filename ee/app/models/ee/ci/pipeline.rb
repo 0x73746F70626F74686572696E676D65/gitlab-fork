@@ -200,6 +200,11 @@ module EE
         end
       end
 
+      override :retryable?
+      def retryable?
+        super && !merge_train_pipeline?
+      end
+
       override :merge_train_pipeline?
       def merge_train_pipeline?
         merged_result_pipeline? && merge_train_ref?
