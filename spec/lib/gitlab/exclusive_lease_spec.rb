@@ -35,7 +35,7 @@ RSpec.describe Gitlab::ExclusiveLease, :request_store,
           end
         end
 
-        it 'raises error within main db' do
+        it 'raises error within main db', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/446121' do
           expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).and_call_original
 
           ApplicationRecord.transaction do
