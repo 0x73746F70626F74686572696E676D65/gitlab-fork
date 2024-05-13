@@ -35,7 +35,7 @@ RSpec.describe 'Group Workspaces Settings', :js, feature_category: :remote_devel
       end
     end
 
-    context 'when there are available agents' do
+    context 'when there are mapped agents' do
       let_it_be(:cluster_agent_mapping) do
         create(
           :remote_development_namespace_cluster_agent_mapping,
@@ -46,6 +46,30 @@ RSpec.describe 'Group Workspaces Settings', :js, feature_category: :remote_devel
 
       it 'displays agent in the agents table' do
         expect(page).to have_content agent.name
+      end
+    end
+
+    context 'when there are mapped and unmapped agents' do
+      let_it_be(:agent_two) do
+        create(:ee_cluster_agent, :with_remote_development_agent_config, project: project, created_by_user: user)
+      end
+
+      let_it_be(:cluster_agent_mapping) do
+        create(
+          :remote_development_namespace_cluster_agent_mapping,
+          user: user, agent: agent,
+          namespace: group
+        )
+      end
+
+      it 'displays all agents in the All agents tab with availability status' do
+        click_link 'All agents'
+
+        expect(page).to have_content agent.name
+        expect(page).to have_content agent_two.name
+
+        expect(page).to have_content 'Allowed'
+        expect(page).to have_content 'Blocked'
       end
     end
   end

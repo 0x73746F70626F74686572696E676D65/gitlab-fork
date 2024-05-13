@@ -2,27 +2,31 @@ import { shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import { logError } from '~/lib/logger';
-import getRemoteDevelopmentClusterAgentsQuery from 'ee/workspaces/common/graphql/queries/get_remote_development_cluster_agents.query.graphql';
-import GetAvailableAgentsQuery from 'ee/workspaces/agent_mapping/components/get_available_agents_query.vue';
+import getAgentsWithMappingStatusQuery from 'ee/workspaces/agent_mapping/graphql/queries/get_agents_with_mapping_status.query.graphql';
+import GetAgentsWithAuthorizationStatusQuery from 'ee/workspaces/agent_mapping/components/get_agents_with_mapping_status_query.vue';
+import {
+  AGENT_MAPPING_STATUS_MAPPED,
+  AGENT_MAPPING_STATUS_UNMAPPED,
+} from 'ee/workspaces/agent_mapping/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_TWO_AGENTS } from '../../mock_data';
+import { GET_AGENTS_WITH_MAPPING_STATUS_QUERY_RESULT } from '../../mock_data';
 
 Vue.use(VueApollo);
 
 jest.mock('~/lib/logger');
 
-describe('workspaces/agent_mapping/components/get_available_agents_query.vue', () => {
-  let getRemoteDevelopmentClusterAgentsQueryHandler;
+describe('workspaces/agent_mapping/components/get_agents_with_mapping_status_query.vue', () => {
+  let getAgentsWithMappingStatusQueryHandler;
   let wrapper;
   const NAMESPACE = 'gitlab-org/gitlab';
 
   const buildWrapper = async ({ propsData = {}, scopedSlots = {} } = {}) => {
     const apolloProvider = createMockApollo([
-      [getRemoteDevelopmentClusterAgentsQuery, getRemoteDevelopmentClusterAgentsQueryHandler],
+      [getAgentsWithMappingStatusQuery, getAgentsWithMappingStatusQueryHandler],
     ]);
 
-    wrapper = shallowMount(GetAvailableAgentsQuery, {
+    wrapper = shallowMount(GetAgentsWithAuthorizationStatusQuery, {
       apolloProvider,
       propsData: {
         ...propsData,
@@ -36,22 +40,12 @@ describe('workspaces/agent_mapping/components/get_available_agents_query.vue', (
   };
   const buildWrapperWithNamespace = () => buildWrapper({ propsData: { namespace: NAMESPACE } });
 
-  const setupRemoteDevelopmentClusterAgentsQueryHandler = (responses) => {
-    getRemoteDevelopmentClusterAgentsQueryHandler.mockResolvedValueOnce(responses);
+  const setupAgentsWithMappingStatusQueryHandler = (responses) => {
+    getAgentsWithMappingStatusQueryHandler.mockResolvedValueOnce(responses);
   };
 
-  const transformRemoteDevelopmentClusterAgentGraphQLResultToClusterAgents = (
-    clusterAgentsGraphQLResult,
-  ) =>
-    clusterAgentsGraphQLResult.data.namespace.remoteDevelopmentClusterAgents.nodes.map(
-      ({ id, name }) => ({
-        name,
-        id,
-      }),
-    );
-
   beforeEach(() => {
-    getRemoteDevelopmentClusterAgentsQueryHandler = jest.fn();
+    getAgentsWithMappingStatusQueryHandler = jest.fn();
     logError.mockReset();
   });
 
@@ -72,19 +66,17 @@ describe('workspaces/agent_mapping/components/get_available_agents_query.vue', (
   });
 
   describe('when namespace path is provided', () => {
-    it('executes getRemoteDevelopmentClusterAgentsQuery query', async () => {
+    it('executes getAgentsWithAuthorizationStatusQuery query', async () => {
       await buildWrapperWithNamespace();
 
-      expect(getRemoteDevelopmentClusterAgentsQueryHandler).toHaveBeenCalledWith({
+      expect(getAgentsWithMappingStatusQueryHandler).toHaveBeenCalledWith({
         namespace: NAMESPACE,
       });
     });
 
     describe('when the query is successful', () => {
       beforeEach(() => {
-        setupRemoteDevelopmentClusterAgentsQueryHandler(
-          GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_TWO_AGENTS,
-        );
+        setupAgentsWithMappingStatusQueryHandler(GET_AGENTS_WITH_MAPPING_STATUS_QUERY_RESULT);
       });
 
       it('triggers result event with the agents list', async () => {
@@ -93,9 +85,18 @@ describe('workspaces/agent_mapping/components/get_available_agents_query.vue', (
         expect(wrapper.emitted('result')).toEqual([
           [
             {
-              agents: transformRemoteDevelopmentClusterAgentGraphQLResultToClusterAgents(
-                GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_TWO_AGENTS,
-              ),
+              agents: [
+                {
+                  id: 'gid://gitlab/Clusters::Agent/1',
+                  name: 'rootgroup-agent',
+                  mappingStatus: AGENT_MAPPING_STATUS_MAPPED,
+                },
+                {
+                  id: 'gid://gitlab/Clusters::Agent/2',
+                  name: 'rootgroup-agent-2',
+                  mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED,
+                },
+              ],
             },
           ],
         ]);
@@ -106,8 +107,8 @@ describe('workspaces/agent_mapping/components/get_available_agents_query.vue', (
       const error = new Error();
 
       beforeEach(() => {
-        getRemoteDevelopmentClusterAgentsQueryHandler.mockReset();
-        getRemoteDevelopmentClusterAgentsQueryHandler.mockRejectedValueOnce(error);
+        getAgentsWithMappingStatusQueryHandler.mockReset();
+        getAgentsWithMappingStatusQueryHandler.mockRejectedValueOnce(error);
       });
 
       it('logs the error', async () => {
@@ -133,13 +134,11 @@ describe('workspaces/agent_mapping/components/get_available_agents_query.vue', (
   });
 
   describe('when namespace path is not provided', () => {
-    it('does not getRemoteDevelopmentClusterAgentsQuery query', async () => {
-      setupRemoteDevelopmentClusterAgentsQueryHandler(
-        GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_TWO_AGENTS,
-      );
+    it('does not getAgentsWithAuthorizationStatusQuery query', async () => {
+      setupAgentsWithMappingStatusQueryHandler(GET_AGENTS_WITH_MAPPING_STATUS_QUERY_RESULT);
       await buildWrapper();
 
-      expect(getRemoteDevelopmentClusterAgentsQueryHandler).not.toHaveBeenCalled();
+      expect(getAgentsWithMappingStatusQueryHandler).not.toHaveBeenCalled();
     });
   });
 });

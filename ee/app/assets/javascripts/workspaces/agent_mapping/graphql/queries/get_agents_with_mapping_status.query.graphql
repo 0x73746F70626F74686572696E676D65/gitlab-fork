@@ -1,0 +1,17 @@
+query getAgentsWithMappingStatus($namespace: ID!) {
+  group(fullPath: $namespace) {
+    id
+    remoteDevelopmentClusterAgents(filter: AVAILABLE) {
+      nodes {
+        id
+        name
+      }
+    }
+    clusterAgents {
+      nodes {
+        id
+        name
+      }
+    }
+  }
+}

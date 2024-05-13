@@ -1,12 +1,20 @@
 import { GlTable, GlSkeletonLoader } from '@gitlab/ui';
-import { shallowMount, mount } from '@vue/test-utils';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import AgentsTable from 'ee_component/workspaces/agent_mapping/components/agents_table.vue';
+import {
+  AGENT_MAPPING_STATUS_MAPPED,
+  AGENT_MAPPING_STATUS_UNMAPPED,
+} from 'ee_component/workspaces/agent_mapping/constants';
 
 describe('workspaces/agent_mapping/components/agents_table.vue', () => {
   let wrapper;
   const EMPTY_STATE_MESSAGE = 'No agents found';
+  const agents = [
+    { name: 'agent-1', mappingStatus: AGENT_MAPPING_STATUS_MAPPED },
+    { name: 'agent-1', mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED },
+  ];
 
-  const buildWrapper = ({ propsData = {} } = {}, mountFn = shallowMount) => {
+  const buildWrapper = ({ propsData = {} } = {}, mountFn = shallowMountExtended) => {
     wrapper = mountFn(AgentsTable, {
       propsData: {
         agents: [],
@@ -66,7 +74,7 @@ describe('workspaces/agent_mapping/components/agents_table.vue', () => {
               agents: [],
             },
           },
-          mount,
+          mountExtended,
         );
       });
 
@@ -90,10 +98,10 @@ describe('workspaces/agent_mapping/components/agents_table.vue', () => {
         {
           propsData: {
             isLoading: false,
-            agents: [{ name: 'agent-1' }],
+            agents,
           },
         },
-        mount,
+        mountExtended,
       );
     });
 
@@ -107,6 +115,43 @@ describe('workspaces/agent_mapping/components/agents_table.vue', () => {
 
     it('displays agents list', () => {
       expect(findAgentsTable().text()).toContain('agent-1');
+    });
+
+    describe('when displayMappingStatus is true', () => {
+      it('displays agent status using label', () => {
+        buildWrapper(
+          {
+            propsData: {
+              isLoading: false,
+              displayMappingStatus: true,
+              agents,
+            },
+          },
+          mountExtended,
+        );
+        const labels = wrapper
+          .findAllByTestId('agent-mapping-status-label')
+          .wrappers.map((labelWrapper) => labelWrapper.text());
+
+        expect(labels).toEqual(['Allowed', 'Blocked']);
+      });
+    });
+
+    describe('when displayAgentStatus is false', () => {
+      it('does not display agent status using label', () => {
+        buildWrapper(
+          {
+            propsData: {
+              isLoading: false,
+              mappingStatus: false,
+              agents,
+            },
+          },
+          mountExtended,
+        );
+
+        expect(wrapper.findAllByTestId('agent-mapping-status-label').length).toBe(0);
+      });
     });
   });
 });

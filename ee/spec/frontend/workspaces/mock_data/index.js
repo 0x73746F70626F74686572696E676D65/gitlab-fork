@@ -336,6 +336,47 @@ export const GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_TWO_AGENTS = {
   },
 };
 
+export const GET_AGENTS_WITH_MAPPING_STATUS_QUERY_RESULT = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/81',
+      fullPath: 'gitlab-org/subgroup',
+      clusterAgents: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Clusters::Agent/1',
+            name: 'rootgroup-agent',
+            project: {
+              id: 'gid://gitlab/Project/101',
+              nameWithNamespace: 'GitLab Org / GitLab Agent One',
+            },
+          },
+          {
+            id: 'gid://gitlab/Clusters::Agent/2',
+            name: 'rootgroup-agent-2',
+            project: {
+              id: 'gid://gitlab/Project/102',
+              nameWithNamespace: 'GitLab Org / GitLab Agent Two',
+            },
+          },
+        ],
+      },
+      remoteDevelopmentClusterAgents: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Clusters::Agent/1',
+            name: 'rootgroup-agent',
+            project: {
+              id: 'gid://gitlab/Project/101',
+              nameWithNamespace: 'GitLab Org / GitLab Agent One',
+            },
+          },
+        ],
+      },
+    },
+  },
+};
+
 export const WORKSPACE_CREATE_MUTATION_RESULT = {
   data: {
     workspaceCreate: {
