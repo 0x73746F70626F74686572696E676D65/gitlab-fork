@@ -3,7 +3,7 @@ import HandRaiseLead from 'ee/hand_raise_leads/hand_raise_lead/components/hand_r
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 import { PQL_BUTTON_TEXT } from './constants';
 
-export const initHandRaiseLead = (el) => {
+export const initHandRaiseLeadOld = (el) => {
   const {
     namespaceId,
     userName,
