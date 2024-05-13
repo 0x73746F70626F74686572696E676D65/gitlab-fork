@@ -3319,7 +3319,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
           stub_licensed_features(licensed_features.merge(custom_roles: false))
         end
 
-        it { is_expected.to be_disallowed(*allowed_abilities) }
+        it { expect_disallowed(*allowed_abilities) }
       end
 
       context 'with custom_roles license enabled' do
@@ -3333,12 +3333,12 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
               create_member_role(parent_group_member_guest)
             end
 
-            it { is_expected.to be_allowed(*allowed_abilities) }
-            it { is_expected.to be_disallowed(*disallowed_abilities) }
+            it { expect_allowed(*allowed_abilities) }
+            it { expect_disallowed(*disallowed_abilities) }
           end
 
           context 'when a role does not enable the abilities' do
-            it { is_expected.to be_disallowed(*allowed_abilities) }
+            it { expect_disallowed(*allowed_abilities) }
           end
         end
 
@@ -3348,12 +3348,12 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
               create_member_role(group_member_guest)
             end
 
-            it { is_expected.to be_allowed(*allowed_abilities) }
-            it { is_expected.to be_disallowed(*disallowed_abilities) }
+            it { expect_allowed(*allowed_abilities) }
+            it { expect_disallowed(*disallowed_abilities) }
           end
 
           context 'when a role does not enable the abilities' do
-            it { is_expected.to be_disallowed(*allowed_abilities) }
+            it { expect_disallowed(*allowed_abilities) }
           end
         end
       end
