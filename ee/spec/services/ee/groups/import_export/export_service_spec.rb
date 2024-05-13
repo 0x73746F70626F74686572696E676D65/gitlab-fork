@@ -19,7 +19,7 @@ RSpec.describe Groups::ImportExport::ExportService, feature_category: :importers
   let(:shared) { Gitlab::ImportExport::Shared.new(group) }
   let(:archive_path) { shared.archive_path }
 
-  subject(:export_service) { described_class.new(group: group, user: user, params: { shared: shared }) }
+  subject(:export_service) { described_class.new(group: group, user: user, exported_by_admin: false, params: { shared: shared }) }
 
   after do
     FileUtils.rm_rf(archive_path)

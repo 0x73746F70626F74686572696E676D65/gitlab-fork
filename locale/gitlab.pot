@@ -3935,6 +3935,9 @@ msgstr ""
 msgid "AdminSettings|Show a redirect page that warns you about user-generated content in GitLab Pages."
 msgstr ""
 
+msgid "AdminSettings|Silent exports by admins %{silent_admin_exports_link_start}%{icon}%{silent_admin_exports_link_end}"
+msgstr ""
+
 msgid "AdminSettings|Size and domain settings for Pages static sites."
 msgstr ""
 
