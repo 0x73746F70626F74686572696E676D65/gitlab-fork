@@ -100,6 +100,22 @@ RSpec.describe Sidebars::Projects::Menus::SettingsMenu, feature_category: :navig
       end
     end
 
+    describe 'Merge requests' do
+      let(:item_id) { :merge_requests }
+
+      describe 'when the user is not an admin but has `manage_merge_request_settings` custom ability' do
+        before do
+          allow(Ability).to receive(:allowed?).and_call_original
+          allow(Ability).to receive(:allowed?).with(user, :admin_project, project).and_return(false)
+          allow(Ability).to receive(:allowed?).with(user, :manage_merge_request_settings, project).and_return(true)
+        end
+
+        it 'includes Merge Requests menu item' do
+          expect(subject.title).to eql('Merge requests')
+        end
+      end
+    end
+
     describe 'CI/CD' do
       let(:item_id) { :ci_cd }
 

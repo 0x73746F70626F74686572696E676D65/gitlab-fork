@@ -550,7 +550,7 @@ module EE
         enable :admin_push_rules
       end
 
-      rule { can?(:admin_group) | can?(:admin_compliance_framework) | can?(:manage_deploy_tokens) }.policy do
+      rule { can?(:admin_group) | can?(:admin_compliance_framework) | can?(:manage_deploy_tokens) | can?(:manage_merge_request_settings) }.policy do
         enable :view_edit_page
       end
 
@@ -565,6 +565,14 @@ module EE
         enable :read_group_security_dashboard
         enable :create_vulnerability_export
         enable :read_security_resource
+      end
+
+      rule { custom_role_enables_manage_merge_request_settings }.policy do
+        enable :manage_merge_request_settings
+      end
+
+      rule { can?(:manage_merge_request_settings) & group_merge_request_approval_settings_enabled }.policy do
+        enable :admin_merge_request_approval_settings
       end
 
       rule { can?(:admin_vulnerability) }.policy do

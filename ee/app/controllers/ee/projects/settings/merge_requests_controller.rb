@@ -8,6 +8,9 @@ module EE
         extend ::ActiveSupport::Concern
 
         prepended do
+          skip_before_action :authorize_admin_project!
+          before_action :authorize_manage_merge_request_settings!
+
           before_action do
             if @project&.licensed_feature_available?(:security_orchestration_policies)
               push_licensed_feature(:security_orchestration_policies)

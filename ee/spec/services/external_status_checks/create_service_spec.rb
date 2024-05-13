@@ -19,7 +19,7 @@ RSpec.describe ExternalStatusChecks::CreateService do
 
   before do
     allow(Ability)
-      .to receive(:allowed?).with(user, :admin_project, project)
+      .to receive(:allowed?).with(user, :manage_merge_request_settings, project)
                             .and_return(action_allowed)
 
     stub_licensed_features(audit_events: true)

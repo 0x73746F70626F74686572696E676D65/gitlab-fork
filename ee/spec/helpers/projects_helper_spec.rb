@@ -613,6 +613,7 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
         can_edit: 'true',
         can_modify_author_settings: 'true',
         can_modify_commiter_settings: 'true',
+        can_read_security_policies: 'true',
         saml_provider_enabled: 'true',
         approvals_path: expose_path(api_v4_projects_merge_request_approval_setting_path(id: project.id)),
         project_path: expose_path(api_v4_projects_path(id: project.id)),

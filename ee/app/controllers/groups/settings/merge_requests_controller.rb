@@ -5,7 +5,7 @@ module Groups
     class MergeRequestsController < Groups::ApplicationController
       layout 'group_settings'
 
-      before_action :authorize_admin_group!
+      before_action :authorize_manage_merge_request_settings!
 
       feature_category :code_review_workflow
 

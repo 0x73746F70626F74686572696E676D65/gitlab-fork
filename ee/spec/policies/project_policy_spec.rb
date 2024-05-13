@@ -2996,6 +2996,35 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
       it_behaves_like 'custom roles abilities'
     end
+
+    context 'for a custom role with the `manage_merge_request_settings` ability' do
+      let(:member_role_abilities) { { manage_merge_request_settings: true } }
+      let(:allowed_abilities) do
+        [
+          :manage_merge_request_settings,
+          :edit_approval_rule,
+          :modify_approvers_rules,
+          :modify_merge_request_author_setting,
+          :modify_merge_request_committer_setting
+        ]
+      end
+
+      it_behaves_like 'custom roles abilities'
+
+      context 'when `target_branch_rules` feature is available' do
+        let(:licensed_features) { { target_branch_rules: true } }
+        let(:allowed_abilities) { [:admin_target_branch_rule] }
+
+        it_behaves_like 'custom roles abilities'
+      end
+
+      context 'when `merge_request_approvers` feature is available' do
+        let(:licensed_features) { { merge_request_approvers: true } }
+        let(:allowed_abilities) { [:admin_merge_request_approval_settings] }
+
+        it_behaves_like 'custom roles abilities'
+      end
+    end
   end
 
   describe 'permissions for suggested reviewers bot', :saas do

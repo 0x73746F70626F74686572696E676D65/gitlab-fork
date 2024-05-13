@@ -803,6 +803,22 @@ module EE
         enable :manage_resource_access_tokens
       end
 
+      rule { custom_role_enables_manage_merge_request_settings }.policy do
+        enable :manage_merge_request_settings
+        enable :edit_approval_rule
+        enable :modify_approvers_rules
+        enable :modify_merge_request_author_setting
+        enable :modify_merge_request_committer_setting
+      end
+
+      rule { can?(:manage_merge_request_settings) & target_branch_rules_available }.policy do
+        enable :admin_target_branch_rule
+      end
+
+      rule { can?(:manage_merge_request_settings) & group_merge_request_approval_settings_enabled }.policy do
+        enable :admin_merge_request_approval_settings
+      end
+
       rule { security_policy_bot }.policy do
         enable :create_pipeline
         enable :create_bot_pipeline
