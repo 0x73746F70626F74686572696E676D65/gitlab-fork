@@ -88,7 +88,7 @@ module EE
 
         return {
           trial_status_widget_data_attrs: trial_status_widget_data_attrs(root_namespace, trial_status),
-          trial_status_popover_data_attrs: trial_status_popover_data_attrs(root_namespace, trial_status)
+          trial_status_popover_data_attrs: trial_status_popover_data_attrs(trial_status)
         }
       end
 

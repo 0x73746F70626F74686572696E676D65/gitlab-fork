@@ -3,11 +3,12 @@ import { GlButton, GlPopover, GlSprintf } from '@gitlab/ui';
 import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import { debounce } from 'lodash';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
-import { shouldHandRaiseLeadMount } from 'ee/hand_raise_leads/hand_raise_lead';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { n__, sprintf } from '~/locale';
 import Tracking from '~/tracking';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
+import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
+import { PQL_MODAL_ID } from 'ee/hand_raise_leads/hand_raise_lead/constants';
 import { POPOVER, RESIZE_EVENT } from './constants';
 
 const {
@@ -21,6 +22,7 @@ const trackingMixin = Tracking.mixin({ experiment: 'trial_discover_page' });
 
 export default {
   components: {
+    HandRaiseLeadButton,
     GlButton,
     GlPopover,
     GlSprintf,
@@ -33,9 +35,7 @@ export default {
     planName: {},
     plansHref: {},
     targetId: {},
-    createHandRaiseLeadPath: {},
     trialEndDate: {},
-    user: {},
     trialDiscoverPagePath: {},
   },
   data() {
@@ -53,6 +53,7 @@ export default {
     href: '#',
     'data-testid': 'trial-popover-hand-raise-lead-button',
   },
+  modalId: PQL_MODAL_ID,
   computed: {
     isTrialActive() {
       return this.daysRemaining >= 0;
@@ -99,6 +100,7 @@ export default {
         category: this.trialPopoverCategory,
         action,
         label,
+        experiment: 'trial_discover_page',
       };
     },
   },
@@ -124,7 +126,6 @@ export default {
     },
     onShown() {
       this.trackPageAction('popoverShown');
-      shouldHandRaiseLeadMount();
     },
   },
 };
@@ -174,23 +175,12 @@ export default {
         <span class="gl-font-sm">{{ $options.i18n.compareAllButtonTitle }}</span>
       </gl-button>
 
-      <div
-        class="js-hand-raise-lead-button"
-        data-testid="contact-sales-btn"
-        :data-create-hand-raise-lead-path="createHandRaiseLeadPath"
-        :data-button-attributes="JSON.stringify($options.handRaiseLeadAttributes)"
-        :data-namespace-id="user.namespaceId"
-        :data-user-name="user.userName"
-        :data-first-name="user.firstName"
-        :data-last-name="user.lastName"
-        :data-company-name="user.companyName"
-        :data-glm-content="user.glmContent"
-        :data-product-interaction="user.productInteraction"
-        :data-track-category="handRaiseLeadBtnTracking.category"
-        :data-track-action="handRaiseLeadBtnTracking.action"
-        :data-track-label="handRaiseLeadBtnTracking.label"
-        data-track-experiment="trial_discover_page"
-      ></div>
+      <hand-raise-lead-button
+        :button-attributes="$options.handRaiseLeadAttributes"
+        :modal-id="$options.modalId"
+        glm-content="trial-status-show-group"
+        :cta-tracking="handRaiseLeadBtnTracking"
+      />
 
       <gitlab-experiment name="trial_discover_page">
         <template #candidate>

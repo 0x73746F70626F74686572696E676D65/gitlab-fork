@@ -36,31 +36,20 @@ RSpec.describe TrialStatusWidgetHelper, :saas, feature_category: :acquisition do
     describe '#trial_status_popover_data_attrs' do
       let_it_be(:user) { create(:user) }
 
-      let(:expected_attrs) do
-        shared_expected_attrs.merge(days_remaining: trial_days_remaining)
-      end
-
       before do
         allow(helper).to receive(:current_user).and_return(user)
       end
 
-      subject(:data_attrs) { helper.trial_status_popover_data_attrs(group, trial_status) }
+      subject(:data_attrs) { helper.trial_status_popover_data_attrs(trial_status) }
 
       it 'returns the needed data attributes for mounting the popover Vue component' do
-        expect(data_attrs).to match(
-          expected_attrs.merge(
-            namespace_id: group.id,
-            user_name: user.username,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            company_name: user.organization,
-            glm_content: 'trial-status-show-group',
-            product_interaction: 'Hand Raise PQL',
-            create_hand_raise_lead_path: '/-/subscriptions/hand_raise_leads',
-            target_id: expected_attrs[:container_id],
-            trial_end_date: trial_end_date
-          )
-        )
+        result = {
+          days_remaining: trial_days_remaining,
+          target_id: shared_expected_attrs[:container_id],
+          trial_end_date: trial_end_date
+        }
+
+        expect(data_attrs).to match(result)
       end
     end
 

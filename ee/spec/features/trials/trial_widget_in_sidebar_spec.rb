@@ -88,7 +88,11 @@ RSpec.describe 'Trial Widget in Sidebar', :saas, :js, feature_category: :acquisi
 
         within_testid('trial-status-popover') do
           expect(page).to have_content("We hope you’re enjoying the features of GitLab")
+
+          find_by_testid('trial-popover-hand-raise-lead-button').click
         end
+
+        fill_in_and_submit_hand_raise_lead(user, group, glm_content: 'trial-status-show-group')
       end
     end
   end

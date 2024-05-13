@@ -6,16 +6,14 @@
 # the codebase) could trigger the need to extract these patterns into a single,
 # reusable, sharable helper.
 module TrialStatusWidgetHelper
-  def trial_status_popover_data_attrs(group, trial_status)
-    base_attrs = trial_status_common_data_attrs(group).merge(
-      hand_raise_props(group, glm_content: 'trial-status-show-group')
-    )
+  CONTAINER_ID = 'trial-status-sidebar-widget'
 
-    base_attrs.merge(
+  def trial_status_popover_data_attrs(trial_status)
+    {
       days_remaining: trial_status.days_remaining,
-      target_id: base_attrs[:container_id],
+      target_id: CONTAINER_ID,
       trial_end_date: trial_status.ends_on
-    )
+    }
   end
 
   def trial_status_widget_data_attrs(group, trial_status)
@@ -37,7 +35,7 @@ module TrialStatusWidgetHelper
 
   def trial_status_common_data_attrs(group)
     {
-      container_id: 'trial-status-sidebar-widget',
+      container_id: CONTAINER_ID,
       plan_name: group.gitlab_subscription.plan_title,
       plans_href: group_billings_path(group),
       trial_discover_page_path: group_discover_path(group)

@@ -1,7 +1,12 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import Tracking from '~/tracking';
-import { PQL_HAND_RAISE_MODAL_TRACKING_LABEL } from 'ee/hand_raise_leads/hand_raise_lead/constants';
+import {
+  PQL_HAND_RAISE_MODAL_TRACKING_LABEL,
+  PQL_MODAL_ID,
+  PQL_PRODUCT_INTERACTION,
+  PQL_BUTTON_TEXT,
+} from '../constants';
 import eventHub from '../event_hub';
 
 export default {
@@ -18,11 +23,13 @@ export default {
     },
     modalId: {
       type: String,
-      required: true,
+      required: false,
+      default: PQL_MODAL_ID,
     },
     buttonText: {
       type: String,
-      required: true,
+      required: false,
+      default: PQL_BUTTON_TEXT,
     },
     buttonAttributes: {
       type: Object,
@@ -34,7 +41,8 @@ export default {
     },
     productInteraction: {
       type: String,
-      required: true,
+      required: false,
+      default: PQL_PRODUCT_INTERACTION,
     },
   },
   computed: {

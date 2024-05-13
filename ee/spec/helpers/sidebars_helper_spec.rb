@@ -99,22 +99,11 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
               trial_days_used: 15,
               trial_duration: 30
             })
-            expect(super_sidebar_context[:trial_status_popover_data_attrs]).to eq({
-              company_name: "",
-              container_id: "trial-status-sidebar-widget",
-              create_hand_raise_lead_path: "/-/subscriptions/hand_raise_leads",
+
+            expect(subject[:trial_status_popover_data_attrs]).to eq({
               days_remaining: 15,
-              first_name: user.first_name,
-              glm_content: "trial-status-show-group",
-              product_interaction: 'Hand Raise PQL',
-              last_name: user.last_name,
-              namespace_id: nil,
-              plan_name: nil,
-              plans_href: group_billings_path(root_group),
-              trial_discover_page_path: group_discover_path(root_group),
               target_id: "trial-status-sidebar-widget",
-              trial_end_date: root_group.trial_ends_on,
-              user_name: user.username
+              trial_end_date: root_group.trial_ends_on
             })
           end
         end

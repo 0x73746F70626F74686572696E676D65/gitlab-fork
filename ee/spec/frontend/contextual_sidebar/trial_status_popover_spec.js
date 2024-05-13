@@ -5,6 +5,7 @@ import Vue, { nextTick } from 'vue';
 import timezoneMock from 'timezone-mock';
 import { POPOVER } from 'ee/contextual_sidebar/components/constants';
 import TrialStatusPopover from 'ee/contextual_sidebar/components/trial_status_popover.vue';
+import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { __ } from '~/locale';
@@ -18,9 +19,19 @@ describe('TrialStatusPopover component', () => {
 
   const { trackingEvents } = POPOVER;
   const defaultDaysRemaining = 20;
+  const buttonAttributes = {
+    size: 'small',
+    variant: 'confirm',
+    category: 'secondary',
+    class: 'gl-w-full',
+    buttonTextClasses: 'gl-font-sm',
+    href: '#',
+    'data-testid': 'trial-popover-hand-raise-lead-button',
+  };
 
   const findGlPopover = () => wrapper.findComponent(GlPopover);
   const findLearnAboutFeaturesBtn = () => wrapper.findByTestId('learn-about-features-btn');
+  const handRaiseLeadBtn = () => wrapper.findComponent(HandRaiseLeadButton);
 
   const expectTracking = (category, { action, ...options } = {}) => {
     return expect(trackingSpy).toHaveBeenCalledWith(category, action, { category, ...options });
@@ -36,17 +47,7 @@ describe('TrialStatusPopover component', () => {
           plansHref: 'billing/path-for/group',
           trialDiscoverPagePath: 'discover-path',
           targetId: 'target-element-identifier',
-          createHandRaiseLeadPath: '/-/subscriptions/hand_raise_leads',
           trialEndDate: new Date('2021-02-21'),
-          user: {
-            namespaceId: 'namespaceId',
-            userName: 'userName',
-            firstName: 'firstName',
-            lastName: 'lastName',
-            companyName: 'companyName',
-            glmContent: 'glmContent',
-            productInteraction: 'productInteraction',
-          },
           ...providers,
         },
         stubs,
@@ -117,19 +118,10 @@ describe('TrialStatusPopover component', () => {
     });
   });
 
-  it('sets correct attributes to the contact sales button', () => {
-    expect(wrapper.findByTestId('contact-sales-btn').attributes()).toMatchObject({
-      'data-create-hand-raise-lead-path': '/-/subscriptions/hand_raise_leads',
-      'data-namespace-id': 'namespaceId',
-      'data-user-name': 'userName',
-      'data-first-name': 'firstName',
-      'data-last-name': 'lastName',
-      'data-company-name': 'companyName',
-      'data-glm-content': 'glmContent',
-      'data-product-interaction': 'productInteraction',
-      'data-track-category': trackingEvents.activeTrialCategory,
-      'data-track-action': trackingEvents.contactSalesBtnClick.action,
-      'data-track-label': trackingEvents.contactSalesBtnClick.label,
+  it('sets correct props to the hand raise lead button', () => {
+    expect(handRaiseLeadBtn().props()).toMatchObject({
+      buttonAttributes,
+      glmContent: 'trial-status-show-group',
     });
   });
 
@@ -144,19 +136,16 @@ describe('TrialStatusPopover component', () => {
       wrapper = createComponent({ providers: { daysRemaining: -5 } });
     });
 
-    it('sets correct attributes to the contact sales button', () => {
-      expect(wrapper.findByTestId('contact-sales-btn').attributes()).toMatchObject({
-        'data-create-hand-raise-lead-path': '/-/subscriptions/hand_raise_leads',
-        'data-namespace-id': 'namespaceId',
-        'data-user-name': 'userName',
-        'data-first-name': 'firstName',
-        'data-last-name': 'lastName',
-        'data-company-name': 'companyName',
-        'data-glm-content': 'glmContent',
-        'data-track-category': trackingEvents.trialEndedCategory,
-        'data-track-action': trackingEvents.contactSalesBtnClick.action,
-        'data-track-label': trackingEvents.contactSalesBtnClick.label,
-        'data-track-experiment': 'trial_discover_page',
+    it('sets correct props to the hand raise lead button', () => {
+      expect(handRaiseLeadBtn().props()).toMatchObject({
+        buttonAttributes,
+        glmContent: 'trial-status-show-group',
+        ctaTracking: {
+          category: trackingEvents.trialEndedCategory,
+          action: trackingEvents.contactSalesBtnClick.action,
+          label: trackingEvents.contactSalesBtnClick.label,
+          experiment: 'trial_discover_page',
+        },
       });
     });
 
