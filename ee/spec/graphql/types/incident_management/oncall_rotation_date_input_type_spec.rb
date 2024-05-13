@@ -8,8 +8,10 @@ RSpec.describe ::Types::IncidentManagement::OncallRotationDateInputType do
 
   let(:input) { { date: date, time: time } }
 
+  subject(:prepared_input) { described_class.coerce_isolated_input(input).prepare }
+
   it 'accepts date and time' do
-    expect(described_class.coerce_isolated_input(input)).to eq(DateTime.parse('2021-02-17 07:25'))
+    expect(prepared_input).to eq(DateTime.parse('2021-02-17 07:25'))
   end
 
   shared_examples 'invalid date format' do |date|
@@ -17,8 +19,7 @@ RSpec.describe ::Types::IncidentManagement::OncallRotationDateInputType do
       let(:date) { date }
 
       it 'raises an argument error' do
-        expect { described_class.coerce_isolated_input(input) }
-          .to raise_error(Gitlab::Graphql::Errors::ArgumentError, 'Date given is invalid')
+        expect { prepared_input }.to raise_error(Gitlab::Graphql::Errors::ArgumentError, 'Date given is invalid')
       end
     end
   end
@@ -28,8 +29,7 @@ RSpec.describe ::Types::IncidentManagement::OncallRotationDateInputType do
       let(:time) { time }
 
       it 'raises an argument error' do
-        expect { described_class.coerce_isolated_input(input) }
-          .to raise_error(Gitlab::Graphql::Errors::ArgumentError, 'Time given is invalid')
+        expect { prepared_input }.to raise_error(Gitlab::Graphql::Errors::ArgumentError, 'Time given is invalid')
       end
     end
   end
@@ -39,8 +39,7 @@ RSpec.describe ::Types::IncidentManagement::OncallRotationDateInputType do
       let(:date) { date }
 
       it 'raises an argument error' do
-        expect { described_class.coerce_isolated_input(input) }
-          .to raise_error(Gitlab::Graphql::Errors::ArgumentError, 'Date & time is invalid')
+        expect { prepared_input }.to raise_error(Gitlab::Graphql::Errors::ArgumentError, 'Date & time is invalid')
       end
     end
   end

@@ -7,8 +7,7 @@ FactoryBot.define do
     initialize_with do
       context = GraphQL::Query::Context.new(
         query: GraphQL::Query.new(GitlabSchema, document: nil, context: {}, variables: {}),
-        values: {},
-        object: nil
+        values: {}
       )
 
       arguments = {

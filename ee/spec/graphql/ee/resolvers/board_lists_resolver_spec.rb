@@ -51,8 +51,7 @@ RSpec.describe Resolvers::BoardListsResolver do
   def resolve_board_lists(args: {}, current_user: user)
     context = GraphQL::Query::Context.new(
       query: query_double(schema: nil),
-      values: { current_user: current_user },
-      object: nil
+      values: { current_user: current_user }
     )
 
     resolve(described_class, obj: board, args: args, ctx: context)

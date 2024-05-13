@@ -17,7 +17,7 @@ RSpec.describe GitlabSchema.types['EscalationRuleInput'] do
     let(:schedule_iid) {}
     let(:username) {}
 
-    subject { described_class.coerce_isolated_input(input).to_h }
+    subject { described_class.coerce_isolated_input(input).prepare.to_h }
 
     context 'with neither username nor schedule provided' do
       specify { expect { subject }.to raise_error(Gitlab::Graphql::Errors::ArgumentError, 'One of oncall_schedule_iid or username must be provided') }
