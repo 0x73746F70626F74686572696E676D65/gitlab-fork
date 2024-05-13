@@ -15,7 +15,7 @@ GitLab Duo is a suite of AI-powered features that assist you while you work in G
 These features aim to help increase velocity and solve key pain points across the software development lifecycle.
 
 GitLab Duo features are available in [IDE extensions](../editor_extensions/index.md) and the GitLab UI.
-Some features are also available as part of [GitLab Duo Chat](gitlab_duo_chat.md).
+Some features are also available as part of [GitLab Duo Chat](gitlab_duo_chat_examples.md).
 
 GitLab is [transparent](https://handbook.gitlab.com/handbook/values/#transparency).
 As GitLab Duo features mature, the documentation will be updated to clearly state
@@ -68,7 +68,7 @@ DETAILS:
 - Automates repetitive tasks and helps catch bugs early.
 - LLM: Anthropic [`Claude-2.1`](https://docs.anthropic.com/claude/docs/models-overview#model-comparison)
 - <i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=g6MS1JsRWgs)
-- [View documentation](gitlab_duo_chat.md#write-tests-in-the-ide).
+- [View documentation](gitlab_duo_chat_examples.md#write-tests-in-the-ide).
 
 ### Merge request summary
 
