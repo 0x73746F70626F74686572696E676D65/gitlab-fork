@@ -52137,6 +52137,9 @@ msgstr ""
 msgid "The merge conflicts for this merge request have already been resolved. Please return to the merge request."
 msgstr ""
 
+msgid "The merge request approvals are currently syncing."
+msgstr ""
+
 msgid "The metric must be one of %{metrics}."
 msgstr ""
 
