@@ -37,7 +37,7 @@ module QA
           Flow::Login.sign_in_as_admin
         end
 
-        it 'successfully imports the project using template',
+        it 'successfully imports the project using template', :blocking,
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347932' do
           built_in = 'Ruby on Rails'
 
@@ -98,7 +98,7 @@ module QA
         # Failure issue: https://gitlab.com/gitlab-org/gitlab/-/issues/414247
         # Bug: https://gitlab.com/gitlab-org/gitlab/-/issues/421143
         # TODO: enable in airgapped job when bug is resolved
-        it 'successfully imports the project using template', :external_api_calls,
+        it 'successfully imports the project using template', :blocking, :external_api_calls,
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347875' do
           Page::Project::New.perform do |new_page|
             # Reload page in case template isn't available immediately
