@@ -69,7 +69,7 @@ module QA
       end
 
       context 'when populated by a Dependency Scan' do
-        it 'populates licenses in the pipeline, dashboard and merge request',
+        it 'populates licenses in the pipeline and merge request',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/409969' do
           merge_request = create(:merge_request,
             source: source,
@@ -99,11 +99,6 @@ module QA
             licenses.each do |license|
               expect(pipeline).to have_license(license)
             end
-          end
-          test_project.visit!
-          Page::Project::Menu.perform(&:go_to_license_compliance)
-          EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
-            expect(license_compliance).to have_licenses_on_paginated_table(licenses)
           end
         end
       end

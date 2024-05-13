@@ -56,10 +56,6 @@ module EE
       expose_path(api_v4_projects_managed_licenses_path(id: project.id))
     end
 
-    def license_management_settings_path(project)
-      project_licenses_path(project, anchor: 'policies')
-    end
-
     def vulnerability_path(entity, *args)
       project_security_vulnerability_path(entity.project, entity, *args)
     end

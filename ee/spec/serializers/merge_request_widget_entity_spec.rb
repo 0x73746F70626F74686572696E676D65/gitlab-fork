@@ -192,16 +192,6 @@ RSpec.describe MergeRequestWidgetEntity, feature_category: :code_review_workflow
         end
       end
 
-      context 'when user is maintainer' do
-        before do
-          project.add_maintainer(user)
-        end
-
-        it '#settings_path should be included for maintainers' do
-          expect(subject.as_json[:license_scanning]).to include(:settings_path)
-        end
-      end
-
       context "when a report artifact is produced from a forked project" do
         let(:source_project) { fork_project(project, user, repository: true) }
         let(:fork_merge_request) { create(:merge_request, source_project: source_project, target_project: project) }

@@ -16,7 +16,6 @@ module EE
             add_item(vulnerability_report_menu_item)
             add_item(on_demand_scans_menu_item)
             add_item(dependencies_menu_item)
-            add_item(license_compliance_menu_item)
             add_item(scan_policies_menu_item)
             add_item(audit_events_menu_item)
             add_item(configuration_menu_item)
@@ -150,20 +149,6 @@ module EE
               super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::SecureMenu,
               active_routes: { path: 'projects/dependencies#index' },
               item_id: :dependency_list
-            )
-          end
-
-          def license_compliance_menu_item
-            unless can_access_license?
-              return ::Sidebars::NilMenuItem.new(item_id: :license_compliance)
-            end
-
-            ::Sidebars::MenuItem.new(
-              title: _('License compliance'),
-              link: project_licenses_path(context.project),
-              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::SecureMenu,
-              active_routes: { path: 'projects/licenses#index' },
-              item_id: :license_compliance
             )
           end
 

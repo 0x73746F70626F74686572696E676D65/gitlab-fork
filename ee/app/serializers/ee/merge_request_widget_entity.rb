@@ -48,10 +48,6 @@ module EE
           can?(current_user, :admin_software_license_policy, merge_request)
         end
 
-        expose :settings_path, if: -> (mr, _) { can?(current_user, :admin_software_license_policy, mr.target_project) } do |merge_request|
-          license_management_settings_path(merge_request.target_project)
-        end
-
         expose :full_report_path, if: -> (mr, _) { mr.head_pipeline } do |merge_request|
           licenses_project_pipeline_path(merge_request.project, merge_request.head_pipeline)
         end
