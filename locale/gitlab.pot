@@ -33720,9 +33720,6 @@ msgstr ""
 msgid "Needs attention"
 msgstr ""
 
-msgid "Needs your review"
-msgstr ""
-
 msgid "Network"
 msgstr ""
 
@@ -43900,6 +43897,9 @@ msgstr ""
 msgid "Review time is the amount of time since the first comment in a merge request."
 msgstr ""
 
+msgid "Reviewed"
+msgstr ""
+
 msgid "Reviewer"
 msgid_plural "%d Reviewers"
 msgstr[0] ""
@@ -43921,6 +43921,12 @@ msgid "Reviewing"
 msgstr ""
 
 msgid "Reviewing (merge request !%{mergeRequestId})"
+msgstr ""
+
+msgid "Reviews approved"
+msgstr ""
+
+msgid "Reviews requested"
 msgstr ""
 
 msgid "Revoke"
@@ -57652,9 +57658,6 @@ msgstr ""
 msgid "Waiting for approvals"
 msgstr ""
 
-msgid "Waiting for assignees"
-msgstr ""
-
 msgid "Waiting for merge (open and assigned)"
 msgstr ""
 
@@ -60155,9 +60158,6 @@ msgstr ""
 msgid "Your applications"
 msgstr ""
 
-msgid "Your approvals"
-msgstr ""
-
 msgid "Your authorized applications"
 msgstr ""
 
@@ -60352,6 +60352,9 @@ msgid "Your work"
 msgstr ""
 
 msgid "Your work items are being imported. Once finished, you'll receive a confirmation email."
+msgstr ""
+
+msgid "Yours approved"
 msgstr ""
 
 msgid "You’re about to permanently delete the %{issuableType} ‘%{strongOpen}%{issuableTitle}%{strongClose}’. To avoid data loss, consider %{strongOpen}closing this %{issuableType}%{strongClose} instead. Once deleted, it cannot be undone or recovered."
