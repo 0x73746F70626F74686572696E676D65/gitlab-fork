@@ -1,6 +1,6 @@
 import { mount, shallowMount } from '@vue/test-utils';
 import { GlAlert, GlBadge, GlLink } from '@gitlab/ui';
-import { DATA_VIZ_BLUE_500, GRAY_50 } from '@gitlab/ui/dist/tokens/js/tokens';
+import { DATA_VIZ_BLUE_500, GRAY_50 } from '@gitlab/ui/src/tokens/build/js/tokens';
 import MockAdapter from 'axios-mock-adapter';
 import last180DaysData from 'test_fixtures/api/dora/metrics/daily_deployment_frequency_for_last_180_days.json';
 import lastWeekData from 'test_fixtures/api/dora/metrics/daily_deployment_frequency_for_last_week.json';

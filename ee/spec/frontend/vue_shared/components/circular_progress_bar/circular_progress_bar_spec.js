@@ -5,7 +5,7 @@ import {
   BRAND_ORANGE_01,
   BRAND_ORANGE_02,
   BRAND_ORANGE_03,
-} from '@gitlab/ui/dist/tokens/js/tokens';
+} from '@gitlab/ui/src/tokens/build/js/tokens';
 
 import CircularProgressBar from 'ee/vue_shared/components/circular_progress_bar/circular_progress_bar.vue';
 

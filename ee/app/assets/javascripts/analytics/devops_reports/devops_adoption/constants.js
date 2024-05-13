@@ -2,7 +2,7 @@ import {
   DATA_VIZ_ORANGE_600,
   DATA_VIZ_AQUA_500,
   DATA_VIZ_GREEN_600,
-} from '@gitlab/ui/dist/tokens/js/tokens';
+} from '@gitlab/ui/src/tokens/build/js/tokens';
 import { s__, __ } from '~/locale';
 
 export const DEFAULT_POLLING_INTERVAL = 30000;
