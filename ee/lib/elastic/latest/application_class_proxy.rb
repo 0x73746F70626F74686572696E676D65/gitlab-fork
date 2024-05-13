@@ -6,6 +6,9 @@ module Elastic
       include ClassProxyUtil
       include Elastic::Latest::Routing
       include Elastic::Latest::QueryContext::Aware
+      include Gitlab::Utils::StrongMemoize
+
+      ADVANCED_QUERY_SYNTAX_REGEX = /[+*"\-|()~\\]/
 
       def search(query, search_options = {})
         es_options = routing_options(search_options)
@@ -74,6 +77,30 @@ module Elastic
         }
       end
 
+      def build_match_phrase_query(options)
+        {
+          multi_match: {
+            _name: context.name(es_type, :multi_match_phrase, :search_terms),
+            type: :phrase,
+            fields: options[:fields],
+            query: options[:query],
+            lenient: true
+          }
+        }
+      end
+
+      def build_multi_match_query(options, operator)
+        {
+          multi_match: {
+            _name: context.name(es_type, :multi_match, operator, :search_terms),
+            fields: options[:fields],
+            query: options[:query],
+            operator: operator,
+            lenient: true
+          }
+        }
+      end
+
       def basic_query_hash(fields, query, options = {})
         fields = CustomLanguageAnalyzers.add_custom_analyzers_fields(fields)
 
@@ -91,6 +118,8 @@ module Elastic
               }
             }
 
+            options[:fields] = fields
+            options[:query] = query
             build_query_filter(simple_query_string, options)
           else
             {
@@ -113,6 +142,7 @@ module Elastic
       end
 
       def build_query_filter(simple_query_string, options)
+        should = []
         must = []
 
         filter = if options[:no_join_project]
@@ -130,20 +160,39 @@ module Elastic
                    ]
                  end
 
-        if options[:count_only]
+        if use_match_queries?(options)
+          should += [build_multi_match_query(options, :or), build_multi_match_query(options, :and),
+            build_match_phrase_query(options)]
+        elsif options[:count_only]
           filter << simple_query_string
         else
           must << simple_query_string
         end
 
-        {
+        query_hash = {
           query: {
             bool: {
               must: must,
+              should: should,
               filter: filter
             }
           }
         }
+
+        query_hash[:query][:bool][:minimum_should_match] = 1 if use_match_queries?(options)
+
+        query_hash
+      end
+
+      def use_match_queries?(options)
+        strong_memoize :match_queries do
+          Feature.enabled?(:search_uses_match_queries,
+            options[:current_user]) && !query_using_advanced_syntax?(options[:query])
+        end
+      end
+
+      def query_using_advanced_syntax?(query_string)
+        ADVANCED_QUERY_SYNTAX_REGEX.match?(query_string)
       end
 
       def iid_query_hash(iid)

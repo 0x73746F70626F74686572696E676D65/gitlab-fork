@@ -10,6 +10,7 @@ RSpec.describe 'User searches for epics', :elastic, :sidekiq_inline, :js, :disab
 
   before do
     stub_licensed_features(epics: true)
+    stub_feature_flags(search_uses_match_queries: false)
 
     group.add_maintainer(user)
     sign_in(user)

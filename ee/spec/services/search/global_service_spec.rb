@@ -11,6 +11,7 @@ RSpec.describe Search::GlobalService, feature_category: :global_search do
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+    stub_feature_flags(search_uses_match_queries: false)
   end
 
   it_behaves_like 'EE search service shared examples', ::Gitlab::SearchResults, ::Gitlab::Elastic::SearchResults do

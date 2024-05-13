@@ -8,6 +8,7 @@ RSpec.describe Gitlab::Elastic::SnippetSearchResults, :elastic_clean, :clean_git
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+    stub_feature_flags(search_uses_match_queries: false)
 
     perform_enqueued_jobs { snippet }
     ensure_elasticsearch_index!
