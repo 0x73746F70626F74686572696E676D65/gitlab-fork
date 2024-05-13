@@ -180,23 +180,23 @@ describe('Subscription User List', () => {
       );
     });
 
-    describe('members details', () => {
+    describe('members details always shown', () => {
       it.each`
-        membershipType      | shouldShowDetails
-        ${'project_invite'} | ${false}
-        ${'group_invite'}   | ${false}
-        ${'project_member'} | ${true}
-        ${'group_member'}   | ${true}
+        membershipType
+        ${'project_invite'}
+        ${'group_invite'}
+        ${'project_member'}
+        ${'group_member'}
       `(
-        'when membershipType is $membershipType, shouldShowDetails should be $shouldShowDetails',
-        ({ membershipType, shouldShowDetails }) => {
+        'when membershipType is $membershipType, shouldShowDetails will be true',
+        ({ membershipType }) => {
           mockTableItems.forEach((item) => {
             const detailsExpandButtons = findTable().find(
               `[data-testid="toggle-seat-usage-details-${item.user.id}"]`,
             );
 
             if (membershipType === item.user.membership_type) {
-              expect(detailsExpandButtons.exists()).toBe(shouldShowDetails);
+              expect(detailsExpandButtons.exists()).toBe(true);
             }
           });
         },

@@ -74,23 +74,33 @@ export const removeBillableMemberError = ({ commit }) => {
   commit(types.REMOVE_BILLABLE_MEMBER_ERROR);
 };
 
-export const fetchBillableMemberDetails = ({ dispatch, commit, state }, memberId) => {
+export const fetchBillableMemberDetails = async ({ dispatch, commit, state }, memberId) => {
   if (state.userDetails[memberId]) {
     commit(types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS, {
       memberId,
       memberships: state.userDetails[memberId].items,
+      hasIndirectMembership: state.userDetails[memberId].hasIndirectMembership,
     });
 
     return Promise.resolve();
   }
 
   commit(types.FETCH_BILLABLE_MEMBER_DETAILS, { memberId });
+  try {
+    // wait for both promises
+    const [{ data: memberships }, { data: indirectMembership }] = await Promise.all([
+      GroupsApi.fetchBillableGroupMemberMemberships(state.namespaceId, memberId),
+      GroupsApi.fetchBillableGroupMemberIndirectMemberships(state.namespaceId, memberId),
+    ]);
 
-  return GroupsApi.fetchBillableGroupMemberMemberships(state.namespaceId, memberId)
-    .then(({ data }) =>
-      commit(types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS, { memberId, memberships: data }),
-    )
-    .catch(() => dispatch('fetchBillableMemberDetailsError', memberId));
+    return commit(types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS, {
+      memberId,
+      memberships: memberships.length ? memberships : indirectMembership,
+      hasIndirectMembership: Boolean(indirectMembership?.length) && !memberships?.length,
+    });
+  } catch (e) {
+    return dispatch('fetchBillableMemberDetailsError', memberId);
+  }
 };
 
 export const fetchBillableMemberDetailsError = ({ commit }, memberId) => {

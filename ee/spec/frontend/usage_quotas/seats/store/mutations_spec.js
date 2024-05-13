@@ -230,10 +230,12 @@ describe('Usage Quotas Seats mutations', () => {
       mutations[types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS](state, {
         memberId: member.id,
         memberships: mockMemberDetails,
+        hasIndirectMembership: true,
       });
 
       expect(state.userDetails[member.id].isLoading).toBe(false);
       expect(state.userDetails[member.id].items).toEqual(mockMemberDetails);
+      expect(state.userDetails[member.id].hasIndirectMembership).toEqual(true);
     });
 
     it(`${types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR}`, () => {

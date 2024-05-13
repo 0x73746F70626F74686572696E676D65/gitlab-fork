@@ -7,6 +7,8 @@ const GROUPS_BILLABLE_MEMBERS_SINGLE_PATH = '/api/:version/groups/:group_id/bill
 const GROUPS_BILLABLE_MEMBERS_PATH = '/api/:version/groups/:id/billable_members';
 const GROUPS_BILLABLE_MEMBERS_SINGLE_MEMBERSHIPS_PATH =
   '/api/:version/groups/:group_id/billable_members/:member_id/memberships';
+const GROUPS_BILLABLE_MEMBERS_SINGLE_INDIRECT_MEMBERSHIPS_PATH =
+  '/api/:version/groups/:group_id/billable_members/:member_id/indirect';
 
 export const fetchBillableGroupMembersList = (namespaceId, options = {}) => {
   const url = buildApiUrl(GROUPS_BILLABLE_MEMBERS_PATH).replace(':id', namespaceId);
@@ -25,6 +27,14 @@ export const fetchBillableGroupMembersList = (namespaceId, options = {}) => {
 
 export const fetchBillableGroupMemberMemberships = (namespaceId, memberId) => {
   const url = buildApiUrl(GROUPS_BILLABLE_MEMBERS_SINGLE_MEMBERSHIPS_PATH)
+    .replace(':group_id', namespaceId)
+    .replace(':member_id', memberId);
+
+  return axios.get(url);
+};
+
+export const fetchBillableGroupMemberIndirectMemberships = (namespaceId, memberId) => {
+  const url = buildApiUrl(GROUPS_BILLABLE_MEMBERS_SINGLE_INDIRECT_MEMBERSHIPS_PATH)
     .replace(':group_id', namespaceId)
     .replace(':member_id', memberId);
 

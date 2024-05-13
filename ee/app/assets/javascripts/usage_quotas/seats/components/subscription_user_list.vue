@@ -105,12 +105,6 @@ export default {
     isProjectInvite(user) {
       return user.membership_type === 'project_invite';
     },
-    shouldShowDetails(item) {
-      return !this.isProjectOrGroupInvite(item.user);
-    },
-    isProjectOrGroupInvite(user) {
-      return this.isGroupInvite(user) || this.isProjectInvite(user);
-    },
   },
   i18n: {
     emailNotVisibleTooltipText,
@@ -157,7 +151,6 @@ export default {
     >
       <template #cell(disclosure)="{ item, toggleDetails, detailsShowing }">
         <gl-button
-          v-if="shouldShowDetails(item)"
           variant="link"
           class="gl-w-7 gl-h-7"
           :aria-label="s__('Billing|Toggle seat details')"
@@ -170,8 +163,6 @@ export default {
             class="gl-text-gray-900"
           />
         </gl-button>
-
-        <span v-else class="gl-inline-block gl-w-7"></span>
       </template>
 
       <template #cell(user)="{ item }">

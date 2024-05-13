@@ -3,7 +3,7 @@ import { GlTableLite, GlBadge, GlLink } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { formatDate } from '~/lib/utils/datetime_utility';
-import { DETAILS_FIELDS } from '../constants';
+import { membershipDetailsFields } from '../constants';
 import SubscriptionSeatDetailsLoader from './subscription_seat_details_loader.vue';
 
 export default {
@@ -31,6 +31,9 @@ export default {
     isLoaderShown() {
       return this.userDetailsEntry.isLoading || this.userDetailsEntry.hasError;
     },
+    fields() {
+      return membershipDetailsFields(this.userDetailsEntry.hasIndirectMembership);
+    },
   },
   created() {
     this.fetchBillableMemberDetails(this.seatMemberId);
@@ -39,7 +42,6 @@ export default {
     ...mapActions(['fetchBillableMemberDetails']),
     formatDate,
   },
-  fields: DETAILS_FIELDS,
 };
 </script>
 
@@ -47,7 +49,7 @@ export default {
   <div v-if="isLoaderShown">
     <subscription-seat-details-loader />
   </div>
-  <gl-table-lite v-else :fields="$options.fields" :items="items" data-testid="seat-usage-details">
+  <gl-table-lite v-else :fields="fields" :items="items" data-testid="seat-usage-details">
     <template #cell(source_full_name)="{ item }">
       <gl-link :href="item.source_members_url" target="_blank">{{ item.source_full_name }}</gl-link>
     </template>

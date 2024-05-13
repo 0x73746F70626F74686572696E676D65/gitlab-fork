@@ -56,6 +56,23 @@ describe('GroupsApi', () => {
       });
     });
 
+    describe('fetchBillableGroupMemberIndirectMemberships', () => {
+      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/billable_members/${memberId}/indirect`;
+
+      it('fetches indirect memberships for the member', async () => {
+        jest.spyOn(axios, 'get');
+        mock.onGet(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
+
+        const { data } = await GroupsApi.fetchBillableGroupMemberIndirectMemberships(
+          namespaceId,
+          memberId,
+        );
+
+        expect(data).toEqual([]);
+        expect(axios.get).toHaveBeenCalledWith(expectedUrl);
+      });
+    });
+
     describe('removeBillableMemberFromGroup', () => {
       const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/billable_members/${memberId}`;
 
