@@ -8,4 +8,18 @@ feature_categories:
 classes:
 - GitlabSubscriptions::UserAddOnAssignment
 gitlab_schema: gitlab_main_cell
-sharding_key_issue_url: TODO
+allow_cross_joins:
+  - gitlab_main_clusterwide
+allow_cross_transactions:
+  - gitlab_main_clusterwide
+allow_cross_foreign_keys:
+  - gitlab_main_clusterwide
+desired_sharding_key:
+  namespace_id:
+    references: namespaces
+    backfill_via:
+      parent:
+        foreign_key: add_on_purchase_id
+        table: subscription_add_on_purchases
+        sharding_key: namespace_id
+        belongs_to: add_on_purchase
