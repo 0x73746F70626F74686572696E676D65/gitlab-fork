@@ -72,7 +72,7 @@ export default {
       <gl-link
         ref="upstreamStatus"
         :href="upstreamPipeline.details.status.details_path"
-        class="d-inline-block align-middle"
+        class="gl-inline-block align-middle"
       >
         <ci-icon :status="upstreamPipeline.details.status" class="js-upstream-pipeline-status" />
       </gl-link>
@@ -89,7 +89,7 @@ export default {
       ref="status"
       :status="lastPipeline.details.status"
       show-status-text
-      class="gl-display-inline-block align-middle"
+      class="gl-inline-block align-middle"
     />
     <gl-tooltip :target="() => $refs.status">
       <div class="bold">{{ $options.relations.current }}</div>
@@ -108,7 +108,7 @@ export default {
         <gl-link
           ref="downstreamStatus"
           :href="pipeline.details.status.details_path"
-          class="d-inline-block align-middle"
+          class="gl-inline-block align-middle"
         >
           <ci-icon :status="pipeline.details.status" class="js-downstream-pipeline-status" />
         </gl-link>
@@ -122,7 +122,7 @@ export default {
         <gl-link
           ref="extraDownstream"
           :href="lastPipeline.details.status.details_path"
-          class="dashboard-card-footer-extra rounded-circle d-inline-block bold align-middle text-white text-center js-downstream-extra-icon"
+          class="dashboard-card-footer-extra rounded-circle gl-inline-block bold align-middle text-white text-center js-downstream-extra-icon"
         >
           {{ extraDownstreamText }}
         </gl-link>

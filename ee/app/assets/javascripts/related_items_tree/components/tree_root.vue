@@ -105,7 +105,7 @@ export default {
     <li v-if="hasMoreChildren" class="tree-item list-item pt-0 pb-0 d-flex justify-content-center">
       <gl-button
         v-if="!fetchInProgress"
-        class="d-inline-block mb-2"
+        class="gl-inline-block mb-2"
         category="tertiary"
         variant="confirm"
         @click="handleShowMoreClick($event)"

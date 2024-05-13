@@ -118,7 +118,7 @@ export default {
         smallClass,
       ]"
       :style="timelineBarStyles(milestone)"
-      class="milestone-item-details d-inline-block position-absolute"
+      class="milestone-item-details gl-inline-block position-absolute"
       data-testid="milestone-item-wrapper"
     >
       <a :href="milestone.webPath" class="milestone-url d-block">
@@ -138,7 +138,7 @@ export default {
       >
         <div class="milestone-item-type gl-line-height-normal">
           <gl-icon :name="typeIcon" class="gl-align-middle" />
-          <span class="d-inline-block gl-align-middle">{{ milestoneType }}</span>
+          <span class="gl-inline-block gl-align-middle">{{ milestoneType }}</span>
         </div>
         <div class="milestone-item-date">{{ timeframeString(milestone) }}</div>
       </gl-popover>
