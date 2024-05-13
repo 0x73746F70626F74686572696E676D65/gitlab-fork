@@ -7,9 +7,13 @@ module EE
 
       override :pages_deployment_attributes
       def pages_deployment_attributes(file, build)
-        return super unless ::Gitlab::Pages.multiple_versions_enabled_for?(build.project)
+        super.merge(path_prefix: path_prefix)
+      end
 
-        super.merge(path_prefix: CGI.escape(build.pages[:path_prefix]))
+      private
+
+      def path_prefix
+        ::Gitlab::Utils.slugify(build.pages&.fetch(:path_prefix, ''))
       end
     end
   end
