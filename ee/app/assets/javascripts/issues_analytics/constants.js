@@ -1,4 +1,4 @@
-import { BLUE_400, GREEN_400 } from '@gitlab/ui/dist/tokens/js/tokens';
+import { BLUE_400, GREEN_400 } from '@gitlab/ui/src/tokens/build/js/tokens';
 import { s__ } from '~/locale';
 
 export const DEFAULT_MONTHS_BACK = 12;

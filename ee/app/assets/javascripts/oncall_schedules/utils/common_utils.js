@@ -1,4 +1,4 @@
-import * as designTokens from '@gitlab/ui/dist/tokens/js/tokens';
+import * as designTokens from '@gitlab/ui/src/tokens/build/js/tokens';
 import { darkModeEnabled } from '~/lib/utils/color_utils';
 import { newDateAsLocaleTime } from '~/lib/utils/datetime_utility';
 import {

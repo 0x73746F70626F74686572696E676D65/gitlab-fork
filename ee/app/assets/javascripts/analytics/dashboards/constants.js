@@ -1,4 +1,4 @@
-import { GREEN_400, ORANGE_400, RED_400, GRAY_400 } from '@gitlab/ui/dist/tokens/js/tokens';
+import { GREEN_400, ORANGE_400, RED_400, GRAY_400 } from '@gitlab/ui/src/tokens/build/js/tokens';
 import { s__, __, n__, sprintf } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import {

@@ -1,4 +1,4 @@
-import { DATA_VIZ_BLUE_500, GRAY_300, GRAY_50 } from '@gitlab/ui/dist/tokens/js/tokens';
+import { DATA_VIZ_BLUE_500, GRAY_300, GRAY_50 } from '@gitlab/ui/src/tokens/build/js/tokens';
 import { defaultAreaOpacity } from '@gitlab/ui/dist/utils/charts/config';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 

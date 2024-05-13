@@ -7,7 +7,7 @@ import {
   BRAND_ORANGE_01,
   BRAND_ORANGE_02,
   BRAND_ORANGE_03,
-} from '@gitlab/ui/dist/tokens/js/tokens';
+} from '@gitlab/ui/src/tokens/build/js/tokens';
 
 export default {
   props: {

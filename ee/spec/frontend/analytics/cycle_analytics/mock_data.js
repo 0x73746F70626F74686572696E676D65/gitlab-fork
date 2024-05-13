@@ -1,4 +1,4 @@
-import { DATA_VIZ_BLUE_500, DATA_VIZ_ORANGE_600 } from '@gitlab/ui/dist/tokens/js/tokens';
+import { DATA_VIZ_BLUE_500, DATA_VIZ_ORANGE_600 } from '@gitlab/ui/src/tokens/build/js/tokens';
 import { uniq } from 'lodash';
 import valueStreamAnalyticsStages from 'test_fixtures/analytics/value_stream_analytics/stages.json';
 import valueStreamAnalyticsSummary from 'test_fixtures/analytics/metrics/value_stream_analytics/summary.json';
