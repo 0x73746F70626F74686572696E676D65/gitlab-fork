@@ -57,21 +57,25 @@ module QA
           send_private_group_over_limit
           private_group.visit!
 
-          expect { page }
-            .to eventually_have_content(notifications(private_group, :limit_overage_enforcement_msg))
-                  .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
+          Page::Group::Show.perform do |group|
+            expect { group }
+              .to eventually_have_content(notifications(private_group, :limit_overage_enforcement_msg))
+                .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
+          end
 
           # Remove the enforcement by starting a free Ultimate Trial
-          Gitlab::Page::Trials::New.perform(&:visit)
+          Runtime::Browser.visit(:gitlab, EE::Page::Trials::New)
+
           # due to invited group used here we have more than one group so we have to select
           register_for_trial(group: private_group)
           private_group.visit!
 
-          aggregate_failures do
-            expect(page).not_to have_content(notifications(private_group, :limit_overage_enforcement_msg))
-            # total user is 6, but 1 is an invited group member
-            expect { private_group.list_members.count }.to eventually_eq(5)
+          Page::Group::Show.perform do |group|
+            expect(group).not_to have_content(notifications(private_group, :limit_overage_enforcement_msg))
           end
+
+          # total user is 6, but 1 is an invited group member
+          expect { private_group.list_members.count }.to eventually_eq(5)
 
           private_group.add_member(user_7)
 
@@ -85,15 +89,19 @@ module QA
           create_private_group_with_members
           page.refresh
 
-          expect { page }
-            .to eventually_have_content(notifications(private_group, :limit_reached_enforcement_msg))
-                  .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
+          Page::Group::Show.perform do |group|
+            expect { group }
+              .to eventually_have_content(notifications(private_group, :limit_reached_enforcement_msg))
+                .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
+          end
 
-          Gitlab::Page::Trials::New.perform(&:visit)
+          Runtime::Browser.visit(:gitlab, EE::Page::Trials::New)
           register_for_trial
           private_group.visit!
 
-          expect(page).not_to have_content(notifications(private_group, :limit_reached_enforcement_msg))
+          Page::Group::Show.perform do |group|
+            expect(group).not_to have_content(notifications(private_group, :limit_reached_enforcement_msg))
+          end
         end
 
         it(
@@ -121,10 +129,13 @@ module QA
           private_group.invite_group(invitee_group)
           private_group.visit!
 
-          aggregate_failures do
-            expect { page }
+          Page::Group::Show.perform do |group|
+            expect { group }
               .to eventually_have_content(notifications(private_group, :limit_overage_enforcement_msg))
-                    .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
+                .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
+          end
+
+          aggregate_failures do
             expect(private_group.list_all_members.count).to eq(5) # excludes project unique members
             expect(invitee_group.list_members.count).to eq(4)
           end
@@ -134,9 +145,9 @@ module QA
       private
 
       def register_for_trial(group: nil)
-        Flow::Trial.register_for_trial(group: group)
-        Page::Alert::FreeTrial.perform do |free_trial_alert|
-          expect(free_trial_alert.trial_activated_message).to have_text('Congratulations, your free trial is activated')
+        EE::Flow::Trial.register_for_trial(group: group)
+        Page::Group::Show.perform do |group|
+          expect(group).to have_trial_activated_alert
         end
       end
 

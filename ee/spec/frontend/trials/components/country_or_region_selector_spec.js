@@ -45,9 +45,9 @@ describe('CountryOrRegionSelector', () => {
     });
 
     it.each`
-      testid       | value
-      ${'country'} | ${'US'}
-      ${'state'}   | ${'CA'}
+      testid                | value
+      ${'country-dropdown'} | ${'US'}
+      ${'state-dropdown'}   | ${'CA'}
     `('has the default injected value for $testid', ({ testid, value }) => {
       expect(findFormInput(testid).attributes('value')).toBe(value);
     });
@@ -67,7 +67,7 @@ describe('CountryOrRegionSelector', () => {
       it(`should${display ? '' : ' not'} render the state`, async () => {
         await nextTick();
 
-        expect(findFormInput('state').exists()).toBe(display);
+        expect(findFormInput('state-dropdown').exists()).toBe(display);
       });
     });
   });
@@ -76,7 +76,7 @@ describe('CountryOrRegionSelector', () => {
     it('emits the change event properly when country is changed', async () => {
       wrapper = createComponent();
 
-      await findFormInput('country').vm.$emit('change', true);
+      await findFormInput('country-dropdown').vm.$emit('change', true);
 
       expect(wrapper.emitted('change')[0]).toStrictEqual([
         { country: 'US', state: 'CA', stateRequired: true },
@@ -86,7 +86,7 @@ describe('CountryOrRegionSelector', () => {
     it('emits the change event properly when country is changed with no state required', async () => {
       wrapper = createComponent({ country: 'NL' });
 
-      await findFormInput('country').vm.$emit('change', true);
+      await findFormInput('country-dropdown').vm.$emit('change', true);
 
       expect(wrapper.emitted('change')[0]).toStrictEqual([
         { country: 'NL', state: '', stateRequired: false },
@@ -96,7 +96,7 @@ describe('CountryOrRegionSelector', () => {
     it('emits the change event properly when country is changed with state required', async () => {
       wrapper = createComponent({ country: 'US', state: '' });
 
-      await findFormInput('country').vm.$emit('change', true);
+      await findFormInput('country-dropdown').vm.$emit('change', true);
 
       expect(wrapper.emitted('change')[0]).toStrictEqual([
         { country: 'US', state: '', stateRequired: true },
@@ -106,7 +106,7 @@ describe('CountryOrRegionSelector', () => {
     it('emits the change event properly when state is not required but has value', async () => {
       wrapper = createComponent({ country: 'NL', state: 'CA' });
 
-      await findFormInput('country').vm.$emit('change', true);
+      await findFormInput('country-dropdown').vm.$emit('change', true);
 
       expect(wrapper.emitted('change')[0]).toStrictEqual([
         { country: 'NL', state: '', stateRequired: false },
@@ -116,7 +116,7 @@ describe('CountryOrRegionSelector', () => {
     it('emits the change event properly when state is changed', async () => {
       wrapper = createComponent();
 
-      await findFormInput('state').vm.$emit('change', true);
+      await findFormInput('state-dropdown').vm.$emit('change', true);
 
       expect(wrapper.emitted('change')[0]).toStrictEqual([
         { country: 'US', state: 'CA', stateRequired: true },
@@ -126,7 +126,7 @@ describe('CountryOrRegionSelector', () => {
     it('has the proper value field populated with name', () => {
       wrapper = createComponent();
 
-      expect(findFormInput('state').attributes('value-field')).toBe('name');
+      expect(findFormInput('state-dropdown').attributes('value-field')).toBe('name');
     });
   });
 });
