@@ -9,4 +9,4 @@ description: The SHA referencing changes to individual designs made using the De
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/9801
 milestone: '11.10'
 gitlab_schema: gitlab_main
-sharding_key_issue_url: TODO
+sharding_key_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/461330
