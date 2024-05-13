@@ -14361,7 +14361,9 @@ CREATE TABLE project_export_jobs (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     status smallint DEFAULT 0 NOT NULL,
-    jid character varying(100) NOT NULL
+    jid character varying(100) NOT NULL,
+    user_id bigint,
+    exported_by_admin boolean DEFAULT false
 );
 
 CREATE SEQUENCE project_export_jobs_id_seq
@@ -26809,6 +26811,8 @@ CREATE INDEX index_project_export_jobs_on_status ON project_export_jobs USING bt
 
 CREATE INDEX index_project_export_jobs_on_updated_at_and_id ON project_export_jobs USING btree (updated_at, id);
 
+CREATE INDEX index_project_export_jobs_on_user_id ON project_export_jobs USING btree (user_id);
+
 CREATE INDEX index_project_feature_usages_on_project_id ON project_feature_usages USING btree (project_id);
 
 CREATE UNIQUE INDEX index_project_features_on_project_id ON project_features USING btree (project_id);
@@ -30270,6 +30274,9 @@ ALTER TABLE ONLY deploy_keys_projects
 
 ALTER TABLE ONLY packages_tags
     ADD CONSTRAINT fk_5a230894f6 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY project_export_jobs
+    ADD CONSTRAINT fk_5ab0242530 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY dependency_list_exports
     ADD CONSTRAINT fk_5b3d11e1ef FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
