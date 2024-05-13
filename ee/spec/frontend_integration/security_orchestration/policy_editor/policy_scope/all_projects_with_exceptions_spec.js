@@ -1,38 +1,30 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import * as urlUtils from '~/lib/utils/url_utility';
 import App from 'ee/security_orchestration/components/policy_editor/app.vue';
-import ComplianceFrameworkDropdown from 'ee/security_orchestration/components/policy_editor/scope/compliance_framework_dropdown.vue';
+import GroupProjectsDropdown from 'ee/security_orchestration/components/group_projects_dropdown.vue';
+import { EXCEPT_PROJECTS } from 'ee/security_orchestration/components/policy_editor/scope/constants';
+import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import waitForPromises from 'helpers/wait_for_promises';
 import {
   DEFAULT_ASSIGNED_POLICY_PROJECT,
   NAMESPACE_TYPES,
 } from 'ee/security_orchestration/constants';
-import waitForPromises from 'helpers/wait_for_promises';
-import {
-  ALL_PROJECTS_IN_GROUP,
-  PROJECTS_WITH_FRAMEWORK,
-  WITHOUT_EXCEPTIONS,
-} from 'ee/security_orchestration/components/policy_editor/scope/constants';
+import { verify } from '../utils';
 import {
   APPROVAL_POLICY,
   DEFAULT_PROVIDE,
   PIPELINE_EXECUTION_POLICY,
   SCAN_EXECUTION_POLICY,
 } from '../mocks/mocks';
-import { verify } from '../utils';
-import {
-  mockScanExecutionActionManifest,
-  mockPipelineExecutionActionManifest,
-  mockApprovalActionManifest,
-  mockApprovalActionProjectManifest,
-  mockScanExecutionActionProjectManifest,
-} from './mocks';
 import {
   createMockApolloProvider,
   createSppLinkedItemsHandler,
   defaultHandlers,
 } from './apollo_utils';
+import { EXCLUDING_PROJECTS_MOCKS, EXCLUDING_PROJECTS_PROJECTS_LEVEL_MOCKS } from './mocks';
 
-describe('ComplianceFrameworks', () => {
+describe('Policy Scope With Exceptions', () => {
   let wrapper;
 
   const createWrapper = ({
@@ -60,26 +52,28 @@ describe('ComplianceFrameworks', () => {
     });
   };
 
-  const findScopeTypeSelector = () => wrapper.findByTestId('project-scope-type');
   const findExceptionTypeSelector = () => wrapper.findByTestId('exception-type');
+  const findGroupProjectsDropdown = () => wrapper.findComponent(GroupProjectsDropdown);
   const findProjectText = () => wrapper.findByTestId('policy-scope-project-text');
-  const findComplianceFrameworkDropdown = () => wrapper.findComponent(ComplianceFrameworkDropdown);
 
   const verifyRuleMode = () => {
-    expect(findComplianceFrameworkDropdown().exists()).toBe(true);
+    expect(findGroupProjectsDropdown().exists()).toBe(true);
   };
 
-  const selectComplianceFrameworksOption = async () => {
-    await findScopeTypeSelector().vm.$emit('select', PROJECTS_WITH_FRAMEWORK);
-    await findComplianceFrameworkDropdown().vm.$emit('select', [1, 2]);
+  const selectExceptionProjectsOption = async () => {
+    await findExceptionTypeSelector().vm.$emit('select', EXCEPT_PROJECTS);
+    await findGroupProjectsDropdown().vm.$emit('select', [
+      { id: convertToGraphQLId(TYPENAME_PROJECT, 1) },
+      { id: convertToGraphQLId(TYPENAME_PROJECT, 2) },
+    ]);
   };
 
   describe('group level', () => {
     describe.each`
       policyType                   | manifest
-      ${SCAN_EXECUTION_POLICY}     | ${mockScanExecutionActionManifest}
-      ${PIPELINE_EXECUTION_POLICY} | ${mockPipelineExecutionActionManifest}
-      ${APPROVAL_POLICY}           | ${mockApprovalActionManifest}
+      ${SCAN_EXECUTION_POLICY}     | ${EXCLUDING_PROJECTS_MOCKS.SCAN_EXECUTION}
+      ${PIPELINE_EXECUTION_POLICY} | ${EXCLUDING_PROJECTS_MOCKS.PIPELINE_EXECUTION}
+      ${APPROVAL_POLICY}           | ${EXCLUDING_PROJECTS_MOCKS.APPROVAL_POLICY}
     `('$policyType', ({ policyType, manifest }) => {
       beforeEach(() => {
         jest.spyOn(urlUtils, 'getParameterByName').mockReturnValue(policyType);
@@ -91,20 +85,9 @@ describe('ComplianceFrameworks', () => {
         });
       });
 
-      it('renders policy scope default state on group level', () => {
-        expect(findScopeTypeSelector().props('selected')).toBe(ALL_PROJECTS_IN_GROUP);
-        expect(findExceptionTypeSelector().props('selected')).toBe(WITHOUT_EXCEPTIONS);
-      });
+      it('selects project exceptions on group level', async () => {
+        await selectExceptionProjectsOption();
 
-      it('selects compliance frameworks', async () => {
-        await findScopeTypeSelector().vm.$emit('select', PROJECTS_WITH_FRAMEWORK);
-        await waitForPromises();
-
-        expect(findComplianceFrameworkDropdown().exists()).toBe(true);
-      });
-
-      it('selects compliance frameworks ids on group level', async () => {
-        await selectComplianceFrameworksOption();
         await verify({ manifest, verifyRuleMode, wrapper });
       });
     });
@@ -113,15 +96,15 @@ describe('ComplianceFrameworks', () => {
   describe('project level', () => {
     describe.each`
       policyType                   | manifest
-      ${SCAN_EXECUTION_POLICY}     | ${mockScanExecutionActionProjectManifest}
-      ${PIPELINE_EXECUTION_POLICY} | ${mockPipelineExecutionActionManifest}
-      ${APPROVAL_POLICY}           | ${mockApprovalActionProjectManifest}
+      ${SCAN_EXECUTION_POLICY}     | ${EXCLUDING_PROJECTS_PROJECTS_LEVEL_MOCKS.SCAN_EXECUTION}
+      ${PIPELINE_EXECUTION_POLICY} | ${EXCLUDING_PROJECTS_PROJECTS_LEVEL_MOCKS.PIPELINE_EXECUTION}
+      ${APPROVAL_POLICY}           | ${EXCLUDING_PROJECTS_PROJECTS_LEVEL_MOCKS.APPROVAL_POLICY}
     `('$policyType', ({ policyType, manifest }) => {
       beforeEach(() => {
         jest.spyOn(urlUtils, 'getParameterByName').mockReturnValue(policyType);
       });
 
-      it('renders project scope message for a non-SPP', async () => {
+      it('renders project scope message', async () => {
         createWrapper({
           glFeatures: {
             securityPoliciesPolicyScopeProject: true,
@@ -132,7 +115,7 @@ describe('ComplianceFrameworks', () => {
         expect(findProjectText().exists()).toBe(true);
       });
 
-      it('selects compliance frameworks for a SPP', async () => {
+      it('selects project exceptions on project level for SPP', async () => {
         createWrapper({
           glFeatures: {
             securityPoliciesPolicyScopeProject: true,
@@ -153,7 +136,7 @@ describe('ComplianceFrameworks', () => {
         });
 
         await waitForPromises();
-        await selectComplianceFrameworksOption();
+        await selectExceptionProjectsOption();
 
         await verify({ manifest, verifyRuleMode, wrapper });
       });
