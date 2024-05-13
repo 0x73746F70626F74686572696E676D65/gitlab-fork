@@ -561,6 +561,7 @@ export default {
           @toggleWorkItemConfidentiality="toggleConfidentiality"
           @error="updateError = $event"
           @promotedToObjective="$emit('promotedToObjective', workItemIid)"
+          @toggleEditMode="enableEditMode"
         />
         <div data-testid="work-item-overview" class="work-item-overview">
           <section>
