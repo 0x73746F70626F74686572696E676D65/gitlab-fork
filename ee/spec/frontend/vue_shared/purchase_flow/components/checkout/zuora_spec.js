@@ -199,13 +199,9 @@ describe('Zuora', () => {
       });
 
       it('emits an `error` event', () => {
-        expect(wrapper.emitted(PurchaseEvent.ERROR)).toEqual([
-          [
-            new Error(errorMessage, {
-              cause: '[card_error/authentication_required/authentication_required]',
-            }),
-          ],
-        ]);
+        const error = wrapper.emitted(PurchaseEvent.ERROR)[0][0];
+        expect(error).toStrictEqual(new Error(errorMessage));
+        expect(error.cause).toBe('[card_error/authentication_required/authentication_required]');
       });
     });
 

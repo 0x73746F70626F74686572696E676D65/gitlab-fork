@@ -15,7 +15,9 @@ describe('Zuora utilities', () => {
       { message: null, expected: null },
       { message: undefined, expected: null },
       { message: '', expected: null },
+      { message: '[xy z_error/]', expected: null },
       { message: '[card_error/]', expected: '[card_error/]' },
+      { message: '[abc_error/]', expected: '[abc_error/]' },
       {
         message: '[GatewayTransactionError] Error:[card_error/abc/]xyz',
         expected: '[card_error/abc/]',
