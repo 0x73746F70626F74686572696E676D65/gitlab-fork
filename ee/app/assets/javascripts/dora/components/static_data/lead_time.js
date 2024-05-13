@@ -1,6 +1,6 @@
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__ } from '~/locale';
-import { secondsToDays } from '../util';
+import { humanizeTimeInterval } from '~/lib/utils/datetime_utility';
 
 export * from './shared';
 
@@ -11,17 +11,19 @@ export const NO_DATA_MESSAGE = s__(
 export const medianSeriesTitle = s__('DORA4Metrics|Median (last %{days}d)');
 
 export const areaChartOptions = {
+  grid: { containLabel: true },
   xAxis: {
     name: s__('DORA4Metrics|Date'),
     type: 'category',
   },
   yAxis: {
-    name: s__('DORA4Metrics|Days from merge to deploy'),
+    name: s__('DORA4Metrics|Time from merge to deploy'),
+    nameGap: 65,
     type: 'value',
     minInterval: 1,
     axisLabel: {
       formatter(seconds) {
-        return secondsToDays(seconds);
+        return humanizeTimeInterval(seconds, { abbreviated: true });
       },
     },
   },
