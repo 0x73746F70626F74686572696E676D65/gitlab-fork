@@ -54,6 +54,58 @@ RSpec.describe Groups::GroupMembersHelper do
       expect(subject[:manage_member_roles_path]).to eq(admin_application_settings_roles_and_permissions_path)
     end
 
+    context 'adds `can_approve_access_requests`' do
+      before do
+        stub_ee_application_setting(dashboard_limit_enabled: true)
+
+        allow_next_instance_of(::Namespaces::FreeUserCap::Enforcement, group.root_ancestor) do |instance|
+          allow(instance).to receive(:enforce_cap?).and_return(true)
+        end
+      end
+
+      context 'when namespace has reached the user limit (can not approve accesss requests)' do
+        before do
+          stub_ee_application_setting(dashboard_limit: 0)
+        end
+
+        it 'sets the value to false' do
+          expect(subject[:can_approve_access_requests]).to eq(false)
+        end
+      end
+
+      context 'when namespace has not reached the user limit (can approve access requests)' do
+        before do
+          stub_ee_application_setting(dashboard_limit: 5)
+
+          allow_next_instance_of(::Namespaces::FreeUserCap::Enforcement, group.root_ancestor) do |instance|
+            allow(instance).to receive(:enforce_cap?).and_return(true)
+          end
+        end
+
+        it 'sets the value to true' do
+          expect(subject[:can_approve_access_requests]).to eq(true)
+        end
+      end
+    end
+
+    context 'adds `namespace_user_limit`' do
+      context 'when dashboard limit is set' do
+        before do
+          stub_ee_application_setting(dashboard_limit: 5)
+        end
+
+        it 'sets the value to false' do
+          expect(subject[:namespace_user_limit]).to eq(5)
+        end
+      end
+
+      context 'when dashboard limit is not set' do
+        it 'sets the value to false' do
+          expect(subject[:namespace_user_limit]).to eq(0)
+        end
+      end
+    end
+
     describe '`can_filter_by_enterprise`', :saas do
       where(:domain_verification_availabe_for_group, :can_admin_group_member, :expected_value) do
         true  | true  | true
