@@ -102,8 +102,8 @@ module SystemNotes
     def epic_issue_moved_act(subject_epic, issue, object_epic, user, verb:, direction:)
       action = 'epic_issue_moved'
 
-      body = "#{verb} issue #{issue.to_reference(subject_epic.group)} #{direction}" \
-              " epic #{subject_epic.to_reference(object_epic.group)}"
+      body = "#{verb} issue #{issue.to_reference(subject_epic.group)} #{direction} " \
+              "epic #{subject_epic.to_reference(object_epic.group)}"
 
       create_note(NoteSummary.new(object_epic, nil, user, body, action: action))
     end

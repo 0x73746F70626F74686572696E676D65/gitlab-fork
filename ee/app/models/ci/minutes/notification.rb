@@ -99,8 +99,8 @@ module Ci
 
       def threshold_message
         s_(
-          "Pipelines|The %{namespace_name} namespace has %{percentage}%% or less Shared Runner Pipeline" \
-          " minutes remaining. After it runs out, no new jobs or pipelines in its projects will run."
+          "Pipelines|The %{namespace_name} namespace has %{percentage}%% or less Shared Runner Pipeline " \
+          "minutes remaining. After it runs out, no new jobs or pipelines in its projects will run."
         ) % {
           namespace_name: context.namespace_name,
           percentage: PERCENTAGES[stage]
