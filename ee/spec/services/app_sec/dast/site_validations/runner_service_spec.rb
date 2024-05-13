@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AppSec::Dast::SiteValidations::RunnerService do
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:developer) { create(:user, developer_of: project ) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
   let_it_be(:dast_site_token) { create(:dast_site_token, project: project) }
   let_it_be(:dast_site_validation) { create(:dast_site_validation, dast_site_token: dast_site_token) }
 

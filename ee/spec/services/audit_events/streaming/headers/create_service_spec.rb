@@ -23,7 +23,7 @@ RSpec.describe AuditEvents::Streaming::Headers::CreateService, feature_category:
     it_behaves_like 'header creation validation errors'
 
     context 'when the header is created successfully' do
-      let(:params) { super().merge( key: 'a_key', value: 'a_value', active: true) }
+      let(:params) { super().merge(key: 'a_key', value: 'a_value', active: true) }
 
       it_behaves_like 'header creation successful'
 

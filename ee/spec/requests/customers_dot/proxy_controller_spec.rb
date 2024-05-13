@@ -46,7 +46,7 @@ RSpec.describe CustomersDot::ProxyController, type: :request, feature_category: 
       let(:jwt_jti) { 'jwt_jti' }
 
       before do
-        stub_application_setting(customers_dot_jwt_signing_key: rsa_key.to_s )
+        stub_application_setting(customers_dot_jwt_signing_key: rsa_key.to_s)
         allow(SecureRandom).to receive(:uuid).and_return(jwt_jti)
 
         sign_in(user)

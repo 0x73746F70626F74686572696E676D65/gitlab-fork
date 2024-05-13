@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe AppSec::Fuzzing::Coverage::Corpuses::CreateService do
   let_it_be(:project) { create(:project) }
-  let_it_be(:developer) { create(:user, developer_of: project ) }
+  let_it_be(:developer) { create(:user, developer_of: project) }
   let_it_be(:package) { create(:generic_package, :with_zip_file, project: project, creator: developer) }
 
   let_it_be(:default_params) do
