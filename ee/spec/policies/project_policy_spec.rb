@@ -2765,7 +2765,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
           stub_licensed_features(licensed_features.merge(custom_roles: false))
         end
 
-        it { is_expected.to be_disallowed(*allowed_abilities) }
+        it { expect_disallowed(*allowed_abilities) }
       end
 
       context 'with custom_roles license enabled' do
@@ -2779,12 +2779,12 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
               create_member_role(group_member_guest)
             end
 
-            it { is_expected.to be_allowed(*allowed_abilities) }
-            it { is_expected.to be_disallowed(*disallowed_abilities) }
+            it { expect_allowed(*allowed_abilities) }
+            it { expect_disallowed(*disallowed_abilities) }
           end
 
           context 'when a role does not enable the abilities' do
-            it { is_expected.to be_disallowed(*allowed_abilities) }
+            it { expect_disallowed(*allowed_abilities) }
           end
         end
 
@@ -2794,12 +2794,12 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
               create_member_role(project_member_guest)
             end
 
-            it { is_expected.to be_allowed(*allowed_abilities) }
-            it { is_expected.to be_disallowed(*disallowed_abilities) }
+            it { expect_allowed(*allowed_abilities) }
+            it { expect_disallowed(*disallowed_abilities) }
           end
 
           context 'when a role does not enable the abilities' do
-            it { is_expected.to be_disallowed(*allowed_abilities) }
+            it { expect_disallowed(*allowed_abilities) }
           end
         end
       end
@@ -2962,7 +2962,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         end
 
         it do
-          is_expected.to be_allowed(
+          expect_allowed(
             :change_push_rules,
             :read_commit_committer_check,
             :change_commit_committer_check,
