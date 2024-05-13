@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative 'migration_shared_examples'
 require File.expand_path('ee/elastic/migrate/20230928104245_remove_hashed_root_namespace_id_from_users.rb')
 
 RSpec.describe RemoveHashedRootNamespaceIdFromUsers, :elastic_delete_by_query, :sidekiq_inline, feature_category: :global_search do

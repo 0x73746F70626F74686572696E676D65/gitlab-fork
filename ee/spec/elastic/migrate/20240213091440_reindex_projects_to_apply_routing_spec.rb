@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative 'migration_shared_examples'
 require File.expand_path('ee/elastic/migrate/20240213091440_reindex_projects_to_apply_routing.rb')
 
 RSpec.describe ReindexProjectsToApplyRouting, :elastic_delete_by_query, :sidekiq_inline, feature_category: :global_search do

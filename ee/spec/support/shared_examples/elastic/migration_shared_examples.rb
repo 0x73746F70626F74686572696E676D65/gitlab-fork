@@ -33,14 +33,15 @@ RSpec.shared_examples 'migration backfills fields' do
       end
     end
 
-    context 'migration process' do
+    describe 'migration process' do
       before do
         remove_field_from_objects(objects)
       end
 
       it 'updates all documents' do
         # track calls are batched in groups of 100
-        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).once.and_call_original do |*tracked_refs|
+        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!)
+          .once.and_call_original do |*tracked_refs|
           expect(tracked_refs.count).to eq(3)
         end
 
@@ -132,24 +133,24 @@ RSpec.shared_examples 'migration backfills fields' do
 
     client = klass.__elasticsearch__.client
     client.update_by_query({
-                             index: klass.__elasticsearch__.index_name,
-                             wait_for_completion: true, # run synchronously
-                             refresh: true, # make operation visible to search
-                             body: {
-                               script: script,
-                               query: {
-                                 bool: {
-                                   must: [
-                                     {
-                                       terms: {
-                                         id: object_ids
-                                       }
-                                     }
-                                   ]
-                                 }
-                               }
-                             }
-                           })
+      index: klass.__elasticsearch__.index_name,
+      wait_for_completion: true, # run synchronously
+      refresh: true, # make operation visible to search
+      body: {
+        script: script,
+        query: {
+          bool: {
+            must: [
+              {
+                terms: {
+                  id: object_ids
+                }
+              }
+            ]
+          }
+        }
+      }
+    })
   end
 end
 
@@ -187,13 +188,14 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
     context 'when migration is already completed' do
       it 'does not modify data' do
         expect(::Elastic::ProcessInitialBookkeepingService).not_to receive(:track!)
-        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true
+        schema_version = described_class::NEW_SCHEMA_VERSION
+        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= schema_version }).to be true
 
         subject
       end
     end
 
-    context 'migration process' do
+    describe 'migration process' do
       before do
         update_by_query(objects, { source: "ctx._source.schema_version=#{described_class::NEW_SCHEMA_VERSION.pred}" })
       end
@@ -223,7 +225,8 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
       context 'when all documents needs to be updated' do
         it 'updates all documents' do
           # track calls are batched in groups of 100
-          expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).once.and_call_original do |*tracked_refs|
+          expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!)
+            .once.and_call_original do |*tracked_refs|
             expect(tracked_refs.count).to eq(3)
           end
 
@@ -231,7 +234,8 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
 
           ensure_elasticsearch_index!
 
-          expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true
+          schema_ver = described_class::NEW_SCHEMA_VERSION
+          expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= schema_ver }).to be true
           expect(migration.completed?).to be_truthy
         end
       end
@@ -241,18 +245,26 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
 
         before do
           # Set the new schema_version for all the objects except sample_object
-          update_by_query(objects.excluding(sample_object), { source: "ctx._source.schema_version=#{described_class::NEW_SCHEMA_VERSION}" })
+          schema_ver = described_class::NEW_SCHEMA_VERSION
+          update_by_query(objects.excluding(sample_object), { source: "ctx._source.schema_version=#{schema_ver}" })
         end
 
         it 'only updates documents whose schema_version is old', :aggregate_failures do
-          expected = [Gitlab::Elastic::DocumentReference.new(klass, sample_object.id, sample_object.es_id, sample_object.es_parent)]
+          expected = [
+            Gitlab::Elastic::DocumentReference.new(
+              klass,
+              sample_object.id,
+              sample_object.es_id,
+              sample_object.es_parent)
+          ]
           expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(*expected).once.and_call_original
 
           subject
 
           ensure_elasticsearch_index!
 
-          expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true
+          schema_ver = described_class::NEW_SCHEMA_VERSION
+          expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= schema_ver }).to be true
           expect(migration.completed?).to be_truthy
         end
       end
@@ -272,7 +284,8 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
 
         ensure_elasticsearch_index!
 
-        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true
+        schema_version = described_class::NEW_SCHEMA_VERSION
+        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= schema_version }).to be true
         expect(migration.completed?).to be_truthy
       end
     end
@@ -288,24 +301,27 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
         subject
         ensure_elasticsearch_index!
         expect(migration).to be_completed
-        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true
+        schema_version = described_class::NEW_SCHEMA_VERSION
+        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= schema_version }).to be true
       end
     end
   end
 
   describe '.completed?' do
+    let(:schema_ver) { described_class::NEW_SCHEMA_VERSION }
+
     context 'when documents have still old schema_version' do
       before do
-        update_by_query(objects, { source: "ctx._source.schema_version=#{described_class::NEW_SCHEMA_VERSION.pred}" })
+        update_by_query(objects, { source: "ctx._source.schema_version=#{schema_ver.pred}" })
       end
 
       it { expect(migration).not_to be_completed }
-      it { expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true }
+      it { expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= schema_ver }).to be true }
     end
 
     context 'when no documents have old schema_version' do
       it { expect(migration).to be_completed }
-      it { expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= described_class::NEW_SCHEMA_VERSION }).to be true }
+      it { expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= schema_ver }).to be true }
     end
   end
 
@@ -316,24 +332,24 @@ RSpec.shared_examples 'migration reindex based on schema_version' do
 
     client = klass.__elasticsearch__.client
     client.update_by_query({
-                             index: klass.__elasticsearch__.index_name,
-                             wait_for_completion: true, # run synchronously
-                             refresh: true, # make operation visible to search
-                             body: {
-                               script: script,
-                               query: {
-                                 bool: {
-                                   must: [
-                                     {
-                                       terms: {
-                                         id: object_ids
-                                       }
-                                     }
-                                   ]
-                                 }
-                               }
-                             }
-                           })
+      index: klass.__elasticsearch__.index_name,
+      wait_for_completion: true, # run synchronously
+      refresh: true, # make operation visible to search
+      body: {
+        script: script,
+        query: {
+          bool: {
+            must: [
+              {
+                terms: {
+                  id: object_ids
+                }
+              }
+            ]
+          }
+        }
+      }
+    })
   end
 end
 
@@ -356,7 +372,7 @@ RSpec.shared_examples 'migration adds mapping' do
       end
     end
 
-    context 'migration process' do
+    describe 'migration process' do
       before do
         allow(helper).to receive(:get_mapping).and_return({})
       end
@@ -370,11 +386,11 @@ RSpec.shared_examples 'migration adds mapping' do
   end
 
   describe '.completed?' do
-    context 'mapping has been updated' do
+    context 'when mapping has been updated' do
       specify { expect(migration).to be_completed }
     end
 
-    context 'mapping has not been updated' do
+    context 'when mapping has not been updated' do
       before do
         allow(helper).to receive(:get_mapping).and_return({})
       end
@@ -519,7 +535,7 @@ RSpec.shared_examples 'migration reindexes all data' do
       end
     end
 
-    context 'migration process' do
+    describe 'migration process' do
       before do
         stub_ee_application_setting(elasticsearch_limit_indexing?: true)
         migration.set_migration_state(current_id: 0)
@@ -534,7 +550,8 @@ RSpec.shared_examples 'migration reindexes all data' do
           expected_count = objects.size
         end
 
-        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).once.and_call_original do |*tracked_refs|
+        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!)
+          .once.and_call_original do |*tracked_refs|
           expect(tracked_refs.count).to eq(expected_count)
         end
         subject
@@ -545,7 +562,8 @@ RSpec.shared_examples 'migration reindexes all data' do
       end
 
       it 'updates all documents' do
-        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).once.and_call_original do |*tracked_refs|
+        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!)
+          .once.and_call_original do |*tracked_refs|
           expect(tracked_refs.count).to eq(objects.size)
         end
 
@@ -560,7 +578,8 @@ RSpec.shared_examples 'migration reindexes all data' do
         allow(migration).to receive(:batch_size).and_return(1)
         allow(migration).to receive(:limit_per_iteration).and_return(1)
 
-        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).exactly(objects.size).times.and_call_original
+        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!)
+          .exactly(objects.size).times.and_call_original
 
         # cannot use subject in spec because it is memoized
         migration.migrate
@@ -641,8 +660,8 @@ RSpec.shared_examples 'migration deletes documents based on schema version' do
         context 'when a task throws an error' do
           before do
             update_by_query(objects, { source: "ctx._source.schema_version=#{migration.schema_version.pred}" })
-            allow(helper).to receive(:task_status).and_return('error' => ['failed'])
             migration.migrate
+            allow(helper).to receive(:task_status).and_return('error' => ['failed'])
           end
 
           it 'resets task_id' do
@@ -653,8 +672,8 @@ RSpec.shared_examples 'migration deletes documents based on schema version' do
 
         context 'when delete_by_query fails' do
           before do
-            allow(client).to receive(:delete_by_query).and_return('failures' => 'failed')
             update_by_query(objects, { source: "ctx._source.schema_version=#{migration.schema_version.pred}" })
+            allow(client).to receive(:delete_by_query).and_return('failures' => 'failed')
           end
 
           it 'resets task_id' do
@@ -668,13 +687,14 @@ RSpec.shared_examples 'migration deletes documents based on schema version' do
     context 'when migration is already completed' do
       it 'does not modify data' do
         expect(::Elastic::ProcessInitialBookkeepingService).not_to receive(:track!)
-        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= migration.schema_version }).to be true
+        schema_version = migration.schema_version
+        expect(objects.all? { |o| o.__elasticsearch__.as_indexed_json['schema_version'] >= schema_version }).to be true
 
         subject
       end
     end
 
-    context 'migration process' do
+    describe 'migration process' do
       before do
         update_by_query(objects, { source: "ctx._source.schema_version=#{migration.schema_version.pred}" })
       end
@@ -749,23 +769,23 @@ RSpec.shared_examples 'migration deletes documents based on schema version' do
   def update_by_query(objects, script)
     object_ids = objects.map(&:id)
     client.update_by_query({
-                             index: migration.index_name,
-                             wait_for_completion: true, # run synchronously
-                             refresh: true, # make operation visible to search
-                             body: {
-                               script: script,
-                               query: {
-                                 bool: {
-                                   must: [
-                                     {
-                                       terms: {
-                                         id: object_ids
-                                       }
-                                     }
-                                   ]
-                                 }
-                               }
-                             }
-                           })
+      index: migration.index_name,
+      wait_for_completion: true, # run synchronously
+      refresh: true, # make operation visible to search
+      body: {
+        script: script,
+        query: {
+          bool: {
+            must: [
+              {
+                terms: {
+                  id: object_ids
+                }
+              }
+            ]
+          }
+        }
+      }
+    })
   end
 end

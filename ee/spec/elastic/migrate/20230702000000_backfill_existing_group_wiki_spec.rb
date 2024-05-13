@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative 'migration_shared_examples'
 require File.expand_path('ee/elastic/migrate/20230702000000_backfill_existing_group_wiki.rb')
 
 RSpec.describe BackfillExistingGroupWiki, :elastic_clean, :sidekiq_inline, feature_category: :global_search do

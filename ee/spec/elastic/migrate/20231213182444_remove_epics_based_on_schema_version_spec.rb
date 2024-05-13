@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative 'migration_shared_examples'
 require File.expand_path('ee/elastic/migrate/20231213182444_remove_epics_based_on_schema_version.rb')
 
 RSpec.describe RemoveEpicsBasedOnSchemaVersion, :elastic, :sidekiq_inline, feature_category: :global_search do

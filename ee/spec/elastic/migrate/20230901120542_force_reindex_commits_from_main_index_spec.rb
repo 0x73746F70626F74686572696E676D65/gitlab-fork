@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative 'migration_shared_examples'
 require File.expand_path('ee/elastic/migrate/20230901120542_force_reindex_commits_from_main_index.rb')
 
 RSpec.describe ForceReindexCommitsFromMainIndex, :elastic_delete_by_query, :sidekiq_inline, feature_category: :global_search do
