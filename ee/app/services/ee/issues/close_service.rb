@@ -44,6 +44,12 @@ module EE
         super
         # Creating a system note changes `updated_at` for the issue
         issue.synced_epic.update_column(:updated_at, issue.updated_at)
+        ::Gitlab::EventStore.publish(
+          ::WorkItems::WorkItemUpdatedEvent.new(data: {
+            id: issue.id,
+            namespace_id: issue.namespace_id
+          })
+        )
       end
 
       def sync_to_epic?(issue)

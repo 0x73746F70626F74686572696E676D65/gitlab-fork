@@ -10,11 +10,11 @@ module WorkItems
     idempotent!
 
     def handle_event(event)
-      epic = Epic.with_work_item.find_by_id(event.data[:id])
+      epic, work_item = find_epic_and_work_item_from_event(event)
 
-      return unless epic.present? && epic.work_item.present?
+      return unless epic.present? && work_item.present?
 
-      mismatching_attributes = Gitlab::EpicWorkItemSync::Diff.new(epic, epic.work_item).attributes
+      mismatching_attributes = Gitlab::EpicWorkItemSync::Diff.new(epic, work_item).attributes
 
       if mismatching_attributes.empty?
         Gitlab::EpicWorkItemSync::Logger.info(
@@ -41,7 +41,17 @@ module WorkItems
     private
 
     def action(event)
-      event.is_a?(Epics::EpicCreatedEvent) ? 'create' : 'update'
+      event.is_a?(Epics::EpicCreatedEvent) || event.is_a?(WorkItems::WorkItemCreatedEvent) ? 'create' : 'update'
+    end
+
+    def find_epic_and_work_item_from_event(event)
+      if event.is_a?(Epics::EpicCreatedEvent) || event.is_a?(Epics::EpicUpdatedEvent)
+        epic = Epic.with_work_item.find_by_id(event.data[:id])
+        [epic, epic.work_item]
+      else
+        work_item = WorkItem.find_by_id(event.data[:id])
+        [work_item.synced_epic, work_item]
+      end
     end
   end
 end
