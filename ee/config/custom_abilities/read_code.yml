@@ -1,6 +1,6 @@
 ---
 name: read_code
-description: Allows read-only access to the source code.
+description: Allows read-only access to the source code in the user interface. Does not allow users to edit or download files, clone or pull repositories, view source code in an IDE, or view merge requests for private projects.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/20277
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/issues/376180
 feature_category: source_code_management
