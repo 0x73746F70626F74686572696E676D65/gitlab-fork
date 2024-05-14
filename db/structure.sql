@@ -15532,7 +15532,8 @@ CREATE TABLE releases (
     name character varying,
     sha character varying,
     released_at timestamp with time zone NOT NULL,
-    release_published_at timestamp with time zone
+    release_published_at timestamp with time zone,
+    CONSTRAINT check_6bb9ce4925 CHECK ((project_id IS NOT NULL))
 );
 
 CREATE SEQUENCE releases_id_seq
