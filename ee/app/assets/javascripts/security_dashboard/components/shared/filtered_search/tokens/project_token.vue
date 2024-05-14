@@ -48,7 +48,7 @@ export default {
   data() {
     return {
       projects: [],
-      selectedProjectIds: [],
+      selectedProjectIds: this.value.data?.map(Number) || [],
       isLoadingProjects: false,
       searchTerm: '',
     };
@@ -167,7 +167,7 @@ export default {
     <gl-filtered-search-token
       :config="config"
       v-bind="{ ...$props, ...$attrs }"
-      :multi-select-values="selectedProjectNames"
+      :multi-select-values="selectedProjectIds"
       :value="tokenValue"
       v-on="$listeners"
       @complete="onComplete"

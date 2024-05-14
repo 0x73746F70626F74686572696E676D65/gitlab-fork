@@ -260,13 +260,13 @@ describe('ee/security_dashboard/components/shared/filtered_search/tokens/project
 
   describe('QuerystringSync component', () => {
     beforeEach(() => {
-      createComponent();
+      createComponent({ propsData: { value: { data: [1, 2] } } });
     });
 
     it('has expected props', () => {
       expect(findQuerystringSync().props()).toMatchObject({
         querystringKey: 'projectId',
-        value: [],
+        value: [1, 2],
       });
     });
 
