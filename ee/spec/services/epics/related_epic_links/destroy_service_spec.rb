@@ -163,7 +163,7 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
     context 'event tracking' do
       subject { described_class.new(issuable_link, epic, user).execute }
 
-      let(:issuable_link) { create(:related_epic_link, link_type: link_type ) }
+      let(:issuable_link) { create(:related_epic_link, link_type: link_type) }
 
       before do
         issuable_link.source.resource_parent.add_guest(user)
