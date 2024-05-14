@@ -41,7 +41,7 @@ RSpec.shared_examples 'security findings finder' do
     context 'when the pipeline has security findings' do
       let(:finder_result) { service_object.execute }
 
-      before(:all) do
+      before_all do
         ds_content = File.read(artifact_ds.file.path)
         Gitlab::Ci::Parsers::Security::DependencyScanning.parse!(ds_content, report_ds)
         report_ds.merge!(report_ds)
