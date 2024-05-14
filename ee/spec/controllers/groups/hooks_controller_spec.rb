@@ -203,7 +203,7 @@ RSpec.describe Groups::HooksController, feature_category: :webhooks do
 
             expect(response).to have_gitlab_http_status(:found)
             expect(flash[:notice]).to be_nil
-            expect(flash[:alert]).to eq('Hook execution failed: Ensure the project has CI jobs.')
+            expect(flash[:alert]).to eq('Hook execution failed. Ensure the project has CI jobs.')
           end
         end
       end

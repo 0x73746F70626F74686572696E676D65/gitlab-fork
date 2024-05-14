@@ -63,6 +63,21 @@ RSpec.describe API::GroupHooks, :aggregate_failures, feature_category: :webhooks
       { push_events: true, confidential_note_events: nil }
     end
 
+    context 'when group does not have a project' do
+      it 'returns error' do
+        post api("#{hook_uri}/test/push_events", user, admin_mode: user.admin?), params: {}
+
+        expect(response).to have_gitlab_http_status(:unprocessable_entity)
+        expect(json_response['message']).to eq('Ensure the group has a project with commits.')
+      end
+    end
+
+    context 'when group has a project' do
+      let_it_be(:project) { create(:project, :repository, group: group) }
+
+      it_behaves_like 'test web-hook endpoint'
+    end
+
     it_behaves_like 'web-hook API endpoints with branch-filter', '/projects/:id'
   end
 

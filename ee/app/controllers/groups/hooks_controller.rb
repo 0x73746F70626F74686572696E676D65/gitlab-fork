@@ -17,14 +17,12 @@ class Groups::HooksController < Groups::ApplicationController
   urgency :low, [:test]
 
   def test
-    if @group.first_non_empty_project
-      service = TestHooks::ProjectService.new(hook, current_user, params[:trigger] || 'push_events')
-      service.project = @group.first_non_empty_project
-      result = service.execute
+    result = TestHooks::GroupService.new(hook, current_user, params[:trigger]).execute
 
+    if result.success?
       set_hook_execution_notice(result)
     else
-      flash[:alert] = _('Hook execution failed. Ensure the group has a project with commits.')
+      flash[:alert] = format(_('Hook execution failed. %{error}'), error: result.message)
     end
 
     redirect_back_or_default(default: { action: 'index' })

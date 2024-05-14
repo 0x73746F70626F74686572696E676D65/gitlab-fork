@@ -148,6 +148,9 @@ module API
 
       namespace ':id/hooks' do
         mount ::API::Hooks::UrlVariables
+        mount ::API::Hooks::TriggerTest, with: {
+          entity: GroupHook
+        }
       end
     end
   end
