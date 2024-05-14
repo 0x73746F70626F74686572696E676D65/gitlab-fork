@@ -10,12 +10,6 @@ RSpec.describe 'projects/show', feature_category: :groups_and_projects do
     allow(project).to receive(:default_view).and_return('wiki')
   end
 
-  it 'renders the Duo Pro trial alert partial' do
-    render
-
-    expect(rendered).to render_template('projects/_duo_pro_trial_alert')
-  end
-
   it 'renders the Duo Chat GA alert partial' do
     render
 

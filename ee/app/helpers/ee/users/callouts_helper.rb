@@ -15,7 +15,6 @@ module EE
       CL_SUBSCRIPTION_ACTIVATION = 'cloud_licensing_subscription_activation_banner'
       PROFILE_PERSONAL_ACCESS_TOKEN_EXPIRY = 'profile_personal_access_token_expiry'
       JOINING_A_PROJECT_ALERT = 'joining_a_project_alert'
-      DUO_PRO_TRIAL_ALERT = 'duo_pro_trial_alert'
       DUO_CHAT_GA_ALERT = 'duo_chat_ga_alert'
 
       override :render_dashboard_ultimate_trial
@@ -73,15 +72,6 @@ module EE
       override :show_transition_to_jihu_callout?
       def show_transition_to_jihu_callout?
         !gitlab_com_subscription? && !has_active_license? && super
-      end
-
-      def show_duo_pro_trial_alert?(group)
-        return false unless ::Gitlab::Saas.feature_available?(:subscriptions_trials)
-        return false unless ::Feature.enabled?(:duo_pro_trial_alert, group, type: :gitlab_com_derisk)
-        return false unless current_user&.can?(:owner_access, group)
-        return false unless group.paid? && group.subscription_add_on_purchases.for_gitlab_duo_pro.none?
-
-        !user_dismissed?(DUO_PRO_TRIAL_ALERT)
       end
 
       def show_duo_chat_ga_alert?(group)
