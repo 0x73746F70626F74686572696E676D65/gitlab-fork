@@ -80,7 +80,7 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
     end
 
     describe 'provisioningSteps' do
-      let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
+      let_it_be(:runner) { create(:ci_runner, :project, projects: [project], token: 'v__x-zPvFbogsYEgaCq-') }
 
       let(:region) { 'us-central1' }
       let(:zone) { 'us-central1-a' }

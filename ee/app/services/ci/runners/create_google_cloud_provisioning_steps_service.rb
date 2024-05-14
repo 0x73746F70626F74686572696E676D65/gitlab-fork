@@ -74,7 +74,7 @@ module Ci
       def deployment_name
         # Unique in context of Google Cloud project, no longer than DEPLOYMENT_NAME_MAX_LENGTH characters
         unique_id = runner&.short_sha || Devise.friendly_token(Ci::Runner::RUNNER_SHORT_SHA_LENGTH)
-        "grit-#{unique_id}"[0..DEPLOYMENT_NAME_MAX_LENGTH - 1].downcase.sub('_', '-').gsub(/-+$/, '')
+        "grit-#{unique_id}"[0..DEPLOYMENT_NAME_MAX_LENGTH - 1].downcase.tr('_', '-').gsub(/-+$/, '')
       end
       strong_memoize_attr :deployment_name
 
