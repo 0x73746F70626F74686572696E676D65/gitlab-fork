@@ -95,7 +95,7 @@ RSpec.describe 'Create an issue', feature_category: :team_planning do
       end
 
       it_behaves_like 'a mutation that returns top-level errors',
-        errors: ['only one of [labels, labelIds] arguments is allowed at the same time.']
+        errors: ['Only one of [labels, labelIds] arguments is allowed at the same time.']
     end
   end
 end

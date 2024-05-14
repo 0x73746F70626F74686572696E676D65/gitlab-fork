@@ -120,7 +120,7 @@ RSpec.shared_examples 'graphql issue list request spec EE' do
           post_query
 
           expect_graphql_errors_to_include(
-            'only one of [weight, weightWildcardId] arguments is allowed at the same time.'
+            'Only one of [weight, weightWildcardId] arguments is allowed at the same time.'
           )
         end
       end
@@ -180,7 +180,7 @@ RSpec.shared_examples 'graphql issue list request spec EE' do
           post_query
 
           expect_graphql_errors_to_include(
-            'only one of [iterationId, iterationWildcardId] arguments is allowed at the same time.'
+            'Only one of [iterationId, iterationWildcardId] arguments is allowed at the same time.'
           )
         end
       end
@@ -229,7 +229,7 @@ RSpec.shared_examples 'graphql issue list request spec EE' do
           post_query
 
           expect_graphql_errors_to_include(
-            'only one of [epicId, epicWildcardId] arguments is allowed at the same time.'
+            'Only one of [epicId, epicWildcardId] arguments is allowed at the same time.'
           )
         end
       end

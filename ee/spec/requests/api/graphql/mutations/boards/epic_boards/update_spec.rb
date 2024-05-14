@@ -75,7 +75,7 @@ RSpec.describe Mutations::Boards::EpicBoards::Update, feature_category: :portfol
       let(:params) { { id: board.to_global_id.to_s, labels: [label.name], label_ids: [label.to_global_id.to_s] } }
 
       it_behaves_like 'a mutation that returns top-level errors',
-        errors: ['only one of [labels, labelIds] arguments is allowed at the same time.']
+        errors: ['Only one of [labels, labelIds] arguments is allowed at the same time.']
     end
   end
 end
