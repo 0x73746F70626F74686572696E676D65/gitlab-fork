@@ -5,7 +5,7 @@ import LineChart from 'ee/analytics/analytics_dashboards/components/visualizatio
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import waitForPromises from 'helpers/wait_for_promises';
-import AnalyticsPanel from 'ee/analytics/analytics_dashboards/components/analytics_panel.vue';
+import AnalyticsDashboardPanel from 'ee/analytics/analytics_dashboards/components/analytics_dashboard_panel.vue';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
 import { mockPanel, invalidVisualization } from '../mock_data';
 
@@ -15,7 +15,7 @@ jest.mock('ee/analytics/analytics_dashboards/data_sources', () => ({
   }),
 }));
 
-describe('AnalyticsPanel', () => {
+describe('AnalyticsDashboardPanel', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
@@ -27,7 +27,7 @@ describe('AnalyticsPanel', () => {
   const findVisualization = () => wrapper.findComponent(LineChart);
 
   const createWrapper = ({ props = {}, provide = {} } = {}) => {
-    wrapper = shallowMountExtended(AnalyticsPanel, {
+    wrapper = shallowMountExtended(AnalyticsDashboardPanel, {
       provide: {
         namespaceId: '1',
         namespaceName: 'Namespace name',

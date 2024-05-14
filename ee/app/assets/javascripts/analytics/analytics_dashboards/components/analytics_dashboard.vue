@@ -36,6 +36,7 @@ import {
 } from '../constants';
 import getCustomizableDashboardQuery from '../graphql/queries/get_customizable_dashboard.query.graphql';
 import getAvailableVisualizations from '../graphql/queries/get_all_customizable_visualizations.query.graphql';
+import AnalyticsDashboardPanel from './analytics_dashboard_panel.vue';
 
 // Avoid adding new values here, as this will eventually be migrated to the dashboard YAML config.
 // See: https://gitlab.com/gitlab-org/gitlab/-/issues/452228
@@ -48,6 +49,7 @@ const HIDE_DASHBOARD_FILTERS = [
 export default {
   name: 'AnalyticsDashboard',
   components: {
+    AnalyticsDashboardPanel,
     CustomizableDashboard,
     ProductAnalyticsFeedbackBanner,
     ValueStreamFeedbackBanner,
@@ -338,6 +340,9 @@ export default {
         this.titleValidationError = newTitle?.length > 0 ? '' : __('This field is required.');
       }
     },
+    panelTestId({ visualization: { slug = '' } }) {
+      return `panel-${slug.replaceAll('_', '-')}`;
+    },
   },
 };
 </script>
@@ -363,7 +368,19 @@ export default {
         :overview-counts-aggregation-enabled="overviewCountsAggregationEnabled"
         @save="saveDashboard"
         @title-input="validateDashboardTitle"
-      />
+      >
+        <template #panel="{ panel, filters, editing, deletePanel }">
+          <analytics-dashboard-panel
+            :title="panel.title"
+            :visualization="panel.visualization"
+            :query-overrides="panel.queryOverrides || undefined"
+            :filters="filters"
+            :editing="editing"
+            :data-testid="panelTestId(panel)"
+            @delete="deletePanel"
+          />
+        </template>
+      </customizable-dashboard>
     </template>
     <gl-empty-state
       v-else-if="showEmptyState"

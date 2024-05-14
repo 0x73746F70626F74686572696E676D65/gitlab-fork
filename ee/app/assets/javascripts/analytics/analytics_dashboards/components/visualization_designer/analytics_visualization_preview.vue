@@ -5,7 +5,7 @@ import { s__, sprintf } from '~/locale';
 
 import { convertToTableFormat } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import DataTable from '../visualizations/data_table.vue';
-import AnalyticsPanel from '../analytics_panel.vue';
+import AnalyticsDashboardPanel from '../analytics_dashboard_panel.vue';
 
 import {
   PANEL_DISPLAY_TYPES,
@@ -21,7 +21,7 @@ export default {
     GlButton,
     GlButtonGroup,
     GlLoadingIcon,
-    AnalyticsPanel,
+    AnalyticsDashboardPanel,
     DataTable,
   },
   props: {
@@ -137,7 +137,7 @@ export default {
         v-if="displayType === $options.PANEL_DISPLAY_TYPES.VISUALIZATION"
         class="grid-stack-item gl-m-5"
       >
-        <analytics-panel
+        <analytics-dashboard-panel
           v-if="selectedVisualizationType"
           :title="title"
           :visualization="resultVisualization"
