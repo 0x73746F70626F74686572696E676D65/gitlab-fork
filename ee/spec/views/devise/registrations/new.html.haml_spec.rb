@@ -14,7 +14,7 @@ RSpec.describe 'devise/registrations/new', feature_category: :system_access do
 
     allow(view).to receive(:glm_tracking_params).and_return({})
     allow(view).to receive(:arkose_labs_enabled?).and_return(arkose_labs_enabled)
-    allow(view).to receive(:registration_tracking_label).and_return('free_registration')
+    allow(view).to receive(:preregistration_tracking_label).and_return('free_registration')
     allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return(arkose_labs_api_key)
     allow(::Arkose::Settings).to receive(:arkose_labs_domain).and_return(arkose_labs_domain)
   end

@@ -20,7 +20,7 @@
         = render 'devise/shared/signup_omniauth_provider_button',
           href: omniauth_authorize_path(:user, provider, register_omniauth_params(trial: true)),
           provider: provider,
-          tracking_label: registration_tracking_label
+          tracking_label: preregistration_tracking_label
 
   .gl-my-5.gl-font-weight-bold.gl-max-w-75
     = _('Or create your own GitLab account')
@@ -35,13 +35,13 @@
         tag_pair(lower_tag, :lower_start, :lower_end))
 
     .signup-box
-      = render 'signup_box', tracking_label: registration_tracking_label
+      = render 'signup_box', tracking_label: preregistration_tracking_label
 
       .additional-links.gl-mt-6.gl-font-weight-bold
         = render 'devise/shared/sign_in_link',
           wrapper_class: '',
           tracking_action: 'click_sign_in_from_registration_page',
-          tracking_label: registration_tracking_label
+          tracking_label: preregistration_tracking_label
 
         %p
           = s_('InProductMarketing|Want to host GitLab on your servers?')
