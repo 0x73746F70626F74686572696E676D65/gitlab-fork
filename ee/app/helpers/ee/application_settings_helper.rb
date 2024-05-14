@@ -115,27 +115,27 @@ module EE
 
     def self.possible_licensed_attributes
       repository_mirror_attributes +
-      merge_request_appovers_rules_attributes +
-      password_complexity_attributes +
-      git_abuse_rate_limit_attributes +
-      delete_unconfirmed_users_attributes +
-       %i[
-         email_additional_text
-         file_template_project_id
-         git_two_factor_session_expiry
-         group_owners_can_manage_default_branch_protection
-         default_project_deletion_protection
-         disable_personal_access_tokens
-         deletion_adjourned_period
-         updating_name_disabled_for_users
-         maven_package_requests_forwarding
-         npm_package_requests_forwarding
-         pypi_package_requests_forwarding
-         maintenance_mode
-         maintenance_mode_message
-         globally_allowed_ips
-         service_access_tokens_expiration_enforced
-       ]
+        merge_request_appovers_rules_attributes +
+        password_complexity_attributes +
+        git_abuse_rate_limit_attributes +
+        delete_unconfirmed_users_attributes +
+        %i[
+          email_additional_text
+          file_template_project_id
+          git_two_factor_session_expiry
+          group_owners_can_manage_default_branch_protection
+          default_project_deletion_protection
+          disable_personal_access_tokens
+          deletion_adjourned_period
+          updating_name_disabled_for_users
+          maven_package_requests_forwarding
+          npm_package_requests_forwarding
+          pypi_package_requests_forwarding
+          maintenance_mode
+          maintenance_mode_message
+          globally_allowed_ips
+          service_access_tokens_expiration_enforced
+        ]
     end
 
     def self.merge_request_appovers_rules_attributes

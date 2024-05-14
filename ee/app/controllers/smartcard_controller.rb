@@ -121,7 +121,7 @@ class SmartcardController < ApplicationController
 
   def check_certificate_required_host_and_port
     unless request.host == ::Gitlab.config.smartcard.client_certificate_required_host &&
-      request.port == ::Gitlab.config.smartcard.client_certificate_required_port
+        request.port == ::Gitlab.config.smartcard.client_certificate_required_port
       render_404
     end
   end
