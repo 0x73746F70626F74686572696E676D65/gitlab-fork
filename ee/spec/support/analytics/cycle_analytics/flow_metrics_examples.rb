@@ -101,6 +101,21 @@ RSpec.shared_examples 'value stream analytics flow metrics leadTime examples' do
     end
   end
 
+  context 'when assignees is null' do
+    let(:variables) do
+      {
+        path: full_path,
+        assignees: nil,
+        from: 21.days.ago.iso8601,
+        to: 10.days.ago.iso8601
+      }
+    end
+
+    it 'treats as no filter on assignees' do
+      expect(result).to match(a_hash_including({ 'value' => 4.0 }))
+    end
+  end
+
   context 'when outside of the date range' do
     let(:variables) do
       {
