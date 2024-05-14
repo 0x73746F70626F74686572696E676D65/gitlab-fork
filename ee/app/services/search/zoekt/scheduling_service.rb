@@ -13,11 +13,11 @@ module Search
         mark_indices_as_ready
       ].freeze
 
-      BUFFER_FACTOR = 3
+      BUFFER_FACTOR = ::Gitlab::Saas.feature_available?(:exact_code_search) ? 2 : 3
       WATERMARK_LIMIT_LOW = 0.7
       WATERMARK_LIMIT_HIGH = 0.8
 
-      DOT_COM_ROLLOUT_TARGET_BYTES = 200.gigabytes
+      DOT_COM_ROLLOUT_TARGET_BYTES = 300.gigabytes
       DOT_COM_ROLLOUT_LIMIT = 2000
       DOT_COM_ROLLOUT_SEARCH_LIMIT = 100
       DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER = 72.hours
