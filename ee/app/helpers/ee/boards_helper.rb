@@ -8,7 +8,7 @@ module EE
     override :board_data
     def board_data
       show_feature_promotion = @project && show_promotions? &&
-                               !@project.feature_available?(:scoped_issue_board)
+        !@project.feature_available?(:scoped_issue_board)
 
       data = {
         board_milestone_title: board.milestone&.name,

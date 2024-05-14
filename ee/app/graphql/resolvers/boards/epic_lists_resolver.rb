@@ -46,7 +46,7 @@ module Resolvers
 
       def load_preferences?(lookahead)
         lookahead&.selection(:edges)&.selection(:node)&.selects?(:collapsed) ||
-            lookahead&.selection(:nodes)&.selects?(:collapsed)
+          lookahead&.selection(:nodes)&.selects?(:collapsed)
       end
 
       def authorize!
