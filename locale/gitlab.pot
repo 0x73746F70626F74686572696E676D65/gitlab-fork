@@ -648,6 +648,14 @@ msgid_plural "%{count} Participants"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%{count} Reviewer"
+msgid_plural "%{count} Reviewers"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%{count} Reviewers"
+msgstr ""
+
 msgid "%{count} approval required from %{name}"
 msgid_plural "%{count} approvals required from %{name}"
 msgstr[0] ""
@@ -7038,6 +7046,9 @@ msgid "Assign to commenting user"
 msgstr ""
 
 msgid "Assign to me"
+msgstr ""
+
+msgid "Assign yourself"
 msgstr ""
 
 msgid "Assigned"
@@ -34242,6 +34253,9 @@ msgid "No results found"
 msgstr ""
 
 msgid "No results found."
+msgstr ""
+
+msgid "No reviewers assigned"
 msgstr ""
 
 msgid "No runner executable"
