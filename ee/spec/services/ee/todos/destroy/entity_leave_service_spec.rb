@@ -12,7 +12,7 @@ RSpec.describe Todos::Destroy::EntityLeaveService, feature_category: :team_plann
 
   let!(:todo1) { create(:todo, target: epic1, user: user, group: subgroup) }
   let!(:todo2) { create(:todo, target: epic2, user: user, group: subgroup) }
-  let(:internal_note) { create(:note, noteable: epic2, confidential: true ) }
+  let(:internal_note) { create(:note, noteable: epic2, confidential: true) }
   let!(:todo_for_internal_note) do
     create(:todo, user: user, target: epic2, group: subgroup, note: internal_note)
   end

@@ -233,7 +233,7 @@ RSpec.describe Users::UpdateService, feature_category: :user_profile do
           it 'adds two different identities to user' do
             second_provider = create(:saml_provider)
             result_one = update_user_as_self(user, { extern_uid: 'uid', provider: 'group_saml', saml_provider_id: provider.id })
-            result_two = update_user_as_self(user, { extern_uid: 'uid2', provider: 'group_saml', group_id_for_saml: second_provider.group.id } )
+            result_two = update_user_as_self(user, { extern_uid: 'uid2', provider: 'group_saml', group_id_for_saml: second_provider.group.id })
 
             expect(result_one).to be true
             expect(result_two).to be true

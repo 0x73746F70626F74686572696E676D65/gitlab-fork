@@ -818,7 +818,7 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
 
       context 'when the target project has approvers set' do
         let(:project_approvers) { create_list(:user, 3) }
-        let!(:rule) { create(:approval_project_rule, project: project, users: project_approvers, approvals_required: 1 ) }
+        let!(:rule) { create(:approval_project_rule, project: project, users: project_approvers, approvals_required: 1) }
 
         before do
           reset_delivered_emails!
@@ -844,7 +844,7 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
 
         context 'when the merge request has approvers set' do
           let(:mr_approvers) { create_list(:user, 3) }
-          let!(:mr_rule) { create(:approval_merge_request_rule, merge_request: merge_request, users: mr_approvers, approvals_required: 1 ) }
+          let!(:mr_rule) { create(:approval_merge_request_rule, merge_request: merge_request, users: mr_approvers, approvals_required: 1) }
 
           before do
             reset_delivered_emails!

@@ -10,7 +10,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
   let(:primary_api_url) { 'http://primary.registry.gitlab' }
   let(:secondary_api_url) { 'http://secondary.registry.gitlab' }
   let(:primary_repository_url) { "#{primary_api_url}/v2/#{container_repository.path}" }
-  let(:secondary_repository_url ) { "#{secondary_api_url}/v2/#{container_repository.path}" }
+  let(:secondary_repository_url) { "#{secondary_api_url}/v2/#{container_repository.path}" }
 
   # Break symbol will be removed if JSON encode/decode operation happens so we use this
   # to prove that it does not happen and we preserve original human readable JSON
