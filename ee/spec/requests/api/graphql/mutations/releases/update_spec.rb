@@ -62,10 +62,10 @@ RSpec.describe 'Updating an existing release', feature_category: :release_orches
                                                      .map { |m| m[:title] }
 
         expect(returned_milestone_titles).to eq([
-                                                  milestone_12_3.title,
+          milestone_12_3.title,
                                                   milestone_12_4.title,
                                                   group_milestone.title
-                                                ])
+        ])
       end
     end
 

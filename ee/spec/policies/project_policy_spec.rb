@@ -744,11 +744,11 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
 
     where(permission: %i[
-            read_vulnerability_feedback
+      read_vulnerability_feedback
             create_vulnerability_feedback
             update_vulnerability_feedback
             destroy_vulnerability_feedback
-          ])
+    ])
 
     with_them do
       context 'with admin' do
@@ -2215,7 +2215,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
       let(:all_read_analytics_permissions) do
         %i[
-        read_project_merge_request_analytics
+          read_project_merge_request_analytics
         read_code_review_analytics
         read_cycle_analytics
         read_issue_analytics

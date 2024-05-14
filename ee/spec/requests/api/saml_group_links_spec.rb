@@ -35,10 +35,10 @@ RSpec.describe API::SamlGroupLinks, api: true, feature_category: :system_access 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response).to(
         match([
-                { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group1" },
+          { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group1" },
                 { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group2" },
                 { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group3" }
-              ])
+        ])
       )
     end
   end

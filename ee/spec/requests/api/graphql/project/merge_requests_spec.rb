@@ -54,12 +54,12 @@ RSpec.describe 'getting merge request listings (EE) nested in a project', featur
       execute_query
 
       expect(results).to eq([
-                              {
-                                'approved' => false,
-                                'approvalsLeft' => 3,
-                                'approvalsRequired' => 5
-                              }
-                            ])
+        {
+          'approved' => false,
+          'approvalsLeft' => 3,
+          'approvalsRequired' => 5
+        }
+      ])
     end
   end
 end

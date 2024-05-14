@@ -203,9 +203,9 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
 
     it 'gathers data on operations dashboard' do
       expect(subject.keys).to include(*%i[
-                                        operations_dashboard_default_dashboard
+        operations_dashboard_default_dashboard
                                         operations_dashboard_users_with_projects_added
-                                      ])
+      ])
     end
 
     it 'bases counts on active users', :aggregate_failures do
