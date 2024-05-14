@@ -18,6 +18,8 @@ module Search
       belongs_to :node, foreign_key: :zoekt_node_id, inverse_of: :tasks, class_name: '::Search::Zoekt::Node'
       belongs_to :zoekt_repository, inverse_of: :tasks, class_name: '::Search::Zoekt::Repository'
 
+      before_validation :set_project_identifier
+
       scope :for_partition, ->(partition) { where(partition_id: partition) }
       scope :with_project, -> { includes(zoekt_repository: :project) }
       scope :for_processing, -> { where(perform_at: (..Time.zone.now)) }
@@ -80,6 +82,12 @@ module Search
 
           break if count >= limit
         end
+      end
+
+      private
+
+      def set_project_identifier
+        self.project_identifier ||= zoekt_repository&.project_identifier
       end
     end
   end

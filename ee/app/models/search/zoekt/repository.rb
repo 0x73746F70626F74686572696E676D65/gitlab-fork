@@ -29,6 +29,17 @@ module Search
 
       scope :non_ready, -> { where.not(state: :ready) }
 
+      def self.create_tasks(project:, zoekt_index:, task_type:, perform_at:)
+        find_or_initialize_by(project: project, zoekt_index: zoekt_index).tap do |record|
+          record.save! if record.new_record?
+          record.tasks.create!(
+            zoekt_node_id: zoekt_index.zoekt_node_id,
+            task_type: task_type,
+            perform_at: perform_at
+          )
+        end
+      end
+
       private
 
       def project_id_matches_project_identifier
