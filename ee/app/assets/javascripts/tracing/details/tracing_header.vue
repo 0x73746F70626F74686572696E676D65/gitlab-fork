@@ -4,7 +4,7 @@ import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { s__ } from '~/locale';
 import { formatTraceDuration, findRootSpan } from '../trace_utils';
 
-const CARD_CLASS = 'gl-mr-7 gl-w-3/20 gl-min-w-fit-content';
+const CARD_CLASS = 'gl-mr-7 gl-w-3/20 gl-min-w-fit';
 const HEADER_CLASS = 'gl-p-2 gl-font-weight-bold gl--flex-center';
 const BODY_CLASS =
   'gl--flex-center gl-flex-direction-column gl-my-0 gl-p-4 gl-font-weight-bold gl-text-center gl-flex-grow-1 gl-font-lg';

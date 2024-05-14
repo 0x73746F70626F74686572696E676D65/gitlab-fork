@@ -100,7 +100,7 @@ export default {
           key: 'name',
           label: I18N_GROUP_COL_LABEL,
           ...fieldOptions,
-          thClass: ['gl-w-grid-size-30', ...thClass],
+          thClass: ['gl-w-30', ...thClass],
         },
         ...this.cols.map((item) => ({
           ...item,

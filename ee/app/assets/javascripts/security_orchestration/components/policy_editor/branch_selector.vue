@@ -122,7 +122,7 @@ export default {
           <gl-button
             v-if="hasBranches"
             category="tertiary"
-            class="gl-focus-inset-border-2-blue-400! gl-flex-shrink-0 gl-font-sm! gl-px-2! gl-py-0! gl-w-auto! gl-m-0! gl-max-w-50p gl-text-overflow-ellipsis"
+            class="gl-focus-inset-border-2-blue-400! gl-flex-shrink-0 gl-font-sm! gl-px-2! gl-py-0! gl-w-auto! gl-m-0! gl-max-w-1/2 gl-text-overflow-ellipsis"
             data-testid="reset-button"
             @click="onResetButtonClicked"
           >

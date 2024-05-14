@@ -159,7 +159,7 @@ export default {
         :title="errorPopoverTitle"
         :show-close-button="false"
         placement="top"
-        :css-classes="['gl-max-w-50p']"
+        :css-classes="['gl-max-w-1/2']"
         :target="popoverId"
         :delay="$options.PANEL_POPOVER_DELAY"
         boundary="viewport"

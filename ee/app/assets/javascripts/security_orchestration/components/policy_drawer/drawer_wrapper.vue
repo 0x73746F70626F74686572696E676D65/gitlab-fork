@@ -152,7 +152,7 @@ export default {
       </gl-tab>
       <gl-tab v-if="policyComponent" :title="$options.i18n.tabYaml">
         <yaml-editor
-          class="gl-h-100vh"
+          class="gl-h-screen"
           :value="policyYaml"
           data-testid="policy-yaml-editor-tab-content"
         />
