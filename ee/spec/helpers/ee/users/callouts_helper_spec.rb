@@ -278,50 +278,6 @@ RSpec.describe EE::Users::CalloutsHelper do
     end
   end
 
-  describe '.show_duo_pro_trial_alert?', :saas, feature_category: :code_suggestions do
-    using RSpec::Parameterized::TableSyntax
-
-    let_it_be(:user) { create(:user) }
-    let(:group) { create(:group) }
-
-    where(
-      saas_feature_available?: [true, false],
-      feature_flag_enabled?: [true, false],
-      owner_of_group?: [true, false],
-      group_paid?: [true, false],
-      duo_pro_subscription?: [true, false],
-      user_dismissed_callout?: [true, false]
-    )
-
-    with_them do
-      before do
-        stub_saas_features(subscriptions_trials: saas_feature_available?)
-        stub_feature_flags(duo_pro_trial_alert: feature_flag_enabled?)
-
-        allow(helper).to receive(:current_user).and_return(user)
-        group.add_owner(user) if owner_of_group?
-        group.add_developer(user) unless owner_of_group?
-
-        allow(group).to receive(:paid?).and_return(group_paid?)
-        create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, namespace: group) if duo_pro_subscription?
-        allow(helper).to receive(:user_dismissed?).with('duo_pro_trial_alert').and_return(user_dismissed_callout?)
-      end
-
-      let(:expected_result) do
-        saas_feature_available? &&
-          feature_flag_enabled? &&
-          owner_of_group? &&
-          group_paid? &&
-          !duo_pro_subscription? &&
-          !user_dismissed_callout?
-      end
-
-      subject { helper.show_duo_pro_trial_alert?(group) }
-
-      it { is_expected.to eq(expected_result) }
-    end
-  end
-
   describe '.show_duo_chat_ga_alert?', :saas, feature_category: :code_suggestions do
     using RSpec::Parameterized::TableSyntax
 

@@ -9,12 +9,6 @@ RSpec.describe 'groups/show', feature_category: :groups_and_projects do
     assign(:group, group)
   end
 
-  it 'renders the Duo Pro trial alert partial' do
-    render
-
-    expect(rendered).to render_template('shared/_duo_pro_trial_alert')
-  end
-
   it 'renders the Duo Chat GA alert partial' do
     render
 
