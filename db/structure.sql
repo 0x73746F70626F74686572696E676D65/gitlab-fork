@@ -26171,7 +26171,7 @@ CREATE INDEX index_members_on_invite_email ON members USING btree (invite_email)
 
 CREATE UNIQUE INDEX index_members_on_invite_token ON members USING btree (invite_token);
 
-CREATE INDEX index_members_on_lower_invite_email ON members USING btree (lower((invite_email)::text));
+CREATE INDEX index_members_on_lower_invite_email_with_token ON members USING btree (lower((invite_email)::text)) WHERE (invite_token IS NOT NULL);
 
 CREATE INDEX index_members_on_member_namespace_id_compound ON members USING btree (member_namespace_id, type, requested_at, id);
 

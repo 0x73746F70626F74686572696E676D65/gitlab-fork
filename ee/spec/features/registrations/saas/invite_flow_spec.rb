@@ -62,6 +62,23 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     ensure_onboarding_is_finished
   end
 
+  context 'when the invite email is not lowercased' do
+    it 'registers the user and sends them to the group page' do
+      group = create(:group, name: 'Test Group')
+
+      registers_from_invite(group: group, invite_email: user_email.upcase)
+
+      ensure_onboarding { expect_to_see_welcome_form_for_invites }
+      expect_to_send_iterable_request(invite: true)
+
+      fill_in_welcome_form
+      click_on 'Get started!'
+
+      expect_to_be_on_page_for(group)
+      ensure_onboarding_is_finished
+    end
+  end
+
   def registers_from_invite_with_arkose(group:)
     # SaaS has identity verification enabled and this is needed for all that go through identity verification
     # which is anything higher than low risk bands
@@ -75,13 +92,13 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     end
   end
 
-  def registers_from_invite(group:)
+  def registers_from_invite(group:, invite_email: user_email)
     new_user = build(:user, name: 'Registering User', email: user_email)
     invitation = create(
       :group_member,
       :invited,
       :developer,
-      invite_email: user_email,
+      invite_email: invite_email,
       source: group
     )
 
