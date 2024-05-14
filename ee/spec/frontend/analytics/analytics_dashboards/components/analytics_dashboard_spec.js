@@ -14,6 +14,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import getCustomizableDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_customizable_dashboard.query.graphql';
 import getAvailableVisualizations from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_customizable_visualizations.query.graphql';
 import AnalyticsDashboard from 'ee/analytics/analytics_dashboards/components/analytics_dashboard.vue';
+import AnalyticsDashboardPanel from 'ee/analytics/analytics_dashboards/components/analytics_dashboard_panel.vue';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import ProductAnalyticsFeedbackBanner from 'ee/analytics/dashboards/components/product_analytics_feedback_banner.vue';
 import ValueStreamFeedbackBanner from 'ee/analytics/dashboards/components/value_stream_feedback_banner.vue';
@@ -79,6 +80,9 @@ describe('AnalyticsDashboard', () => {
   const namespaceId = '1';
 
   const findDashboard = () => wrapper.findComponent(CustomizableDashboard);
+  const findAllPanels = () => wrapper.findAllComponents(AnalyticsDashboardPanel);
+  const findPanelByTitle = (title) =>
+    findAllPanels().wrappers.find((w) => w.props('title') === title);
   const findLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findProductAnalyticsFeedbackBanner = () =>
@@ -104,6 +108,8 @@ describe('AnalyticsDashboard', () => {
     };
   };
 
+  const mockCustomizableDashboardDeletePanel = jest.fn();
+
   let mockAnalyticsDashboardsHandler = jest.fn();
   let mockAvailableVisualizationsHandler = jest.fn();
 
@@ -121,6 +127,7 @@ describe('AnalyticsDashboard', () => {
   afterEach(() => {
     mockAnalyticsDashboardsHandler = jest.fn();
     mockAvailableVisualizationsHandler = jest.fn();
+    mockCustomizableDashboardDeletePanel.mockRestore();
   });
 
   const breadcrumbState = { updateName: jest.fn() };
@@ -130,7 +137,12 @@ describe('AnalyticsDashboard', () => {
     namespaceFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
   };
 
-  const createWrapper = ({ props = {}, routeSlug = '', stubs = {}, provide = {} } = {}) => {
+  const createWrapper = ({
+    props = {},
+    routeSlug = '',
+    provide = {},
+    stubMockMethods = {},
+  } = {}) => {
     const mocks = {
       $toast: {
         show: showToast,
@@ -160,7 +172,17 @@ describe('AnalyticsDashboard', () => {
       stubs: {
         RouterLink: true,
         RouterView: true,
-        ...stubs,
+        CustomizableDashboard: stubComponent(CustomizableDashboard, {
+          methods: {
+            ...stubMockMethods,
+            deletePanel: mockCustomizableDashboardDeletePanel,
+          },
+          template: `<div>
+            <template v-for="panel in initialDashboard.panels">
+              <slot name="panel" v-bind="{ panel, filters: defaultFilters, deletePanel, editing: false }"></slot>
+            </template>
+          </div>`,
+        }),
       },
       mocks,
       provide: {
@@ -259,6 +281,40 @@ describe('AnalyticsDashboard', () => {
           }),
         ]),
       );
+    });
+
+    it('renders an analytics dashboard panel component for each panel', async () => {
+      createWrapper();
+
+      await waitForPromises();
+
+      const { panels } = getFirstParsedDashboard(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
+      expect(findAllPanels().length).toBe(panels.length);
+
+      panels.forEach((panel) => {
+        expect(findPanelByTitle(panel.title).props()).toMatchObject({
+          title: panel.title,
+          visualization: panel.visualization,
+          queryOverrides: panel.queryOverrides || undefined,
+          filters: buildDefaultDashboardFilters(''),
+          editing: false,
+        });
+      });
+    });
+
+    describe('and a panel emits a "delete" event', () => {
+      beforeEach(async () => {
+        createWrapper();
+
+        await waitForPromises();
+
+        findAllPanels().at(0).vm.$emit('delete');
+      });
+
+      it('calls the delete method on CustomizableDashboard', () => {
+        expect(mockCustomizableDashboardDeletePanel).toHaveBeenCalled();
+      });
     });
   });
 
@@ -822,15 +878,7 @@ describe('AnalyticsDashboard', () => {
     });
 
     const setupWithConfirmation = async (confirmMock) => {
-      createWrapper({
-        stubs: {
-          CustomizableDashboard: stubComponent(CustomizableDashboard, {
-            methods: {
-              confirmDiscardIfChanged: confirmMock,
-            },
-          }),
-        },
-      });
+      createWrapper({ stubMockMethods: { confirmDiscardIfChanged: confirmMock } });
 
       await waitForPromises();
 

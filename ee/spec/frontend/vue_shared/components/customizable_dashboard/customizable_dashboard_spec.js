@@ -10,7 +10,6 @@ import GridstackWrapper from 'ee/vue_shared/components/customizable_dashboard/gr
 import AnonUsersFilter from 'ee/vue_shared/components/customizable_dashboard/filters/anon_users_filter.vue';
 import DateRangeFilter from 'ee/vue_shared/components/customizable_dashboard/filters/date_range_filter.vue';
 import waitForPromises from 'helpers/wait_for_promises';
-import AnalyticsPanel from 'ee/analytics/analytics_dashboards/components/analytics_panel.vue';
 import AvailableVisualizationsDrawer from 'ee/vue_shared/components/customizable_dashboard/dashboard_editor/available_visualizations_drawer.vue';
 import {
   filtersToQueryParams,
@@ -56,8 +55,10 @@ describe('CustomizableDashboard', () => {
     push: jest.fn(),
   };
 
-  const addPanelsMock = jest.fn();
-  const deletePanelMock = jest.fn();
+  const panelSlotSpy = jest.fn();
+  const scopedSlots = {
+    panel: panelSlotSpy,
+  };
 
   const createWrapper = (
     props = {},
@@ -83,15 +84,10 @@ describe('CustomizableDashboard', () => {
         GlSprintf,
         GridstackWrapper: stubComponent(GridstackWrapper, {
           props: ['value', 'editing'],
-          methods: {
-            addPanels: addPanelsMock,
-            deletePanel: deletePanelMock,
-          },
           template: `<div data-testid="gridstack-wrapper">
               <template v-for="panel in value.panels">
-                <slot name="panel" v-bind="{ deletePanel, panel }"></slot>
+                <slot name="panel" v-bind="{ panel }"></slot>
               </template>
-              <slot name="drawer" v-bind="{ addPanels }"></slot>
           </div>`,
         }),
       },
@@ -101,6 +97,7 @@ describe('CustomizableDashboard', () => {
           params: routeParams,
         },
       },
+      scopedSlots,
       provide: {
         dashboardEmptyStateIllustrationPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
         ...provide,
@@ -108,7 +105,6 @@ describe('CustomizableDashboard', () => {
     });
   };
 
-  const findPanels = () => wrapper.findAllComponents(AnalyticsPanel);
   const findDashboardTitle = () => wrapper.findByTestId('dashboard-title');
   const findEditModeTitle = () => wrapper.findByTestId('edit-mode-title');
   const findEditButton = () => wrapper.findByTestId('dashboard-edit-btn');
@@ -148,6 +144,10 @@ describe('CustomizableDashboard', () => {
 
   beforeEach(() => {
     trackingSpy = mockTracking(undefined, window.document, jest.spyOn);
+  });
+
+  afterEach(() => {
+    panelSlotSpy.mockRestore();
   });
 
   describe('when mounted updates', () => {
@@ -360,7 +360,7 @@ describe('CustomizableDashboard', () => {
     });
 
     it('passes the editing state to the panels', () => {
-      expect(findPanels().at(0).props('editing')).toBe(true);
+      expect(panelSlotSpy).toHaveBeenCalledWith(expect.objectContaining({ editing: true }));
     });
 
     it('shows the edit mode page title', () => {
@@ -550,11 +550,14 @@ describe('CustomizableDashboard', () => {
       });
     });
 
-    describe('add a panel is deleted', () => {
+    describe('and a panel is deleted', () => {
       const removePanel = dashboard.panels[0];
 
-      beforeEach(async () => {
-        await findPanels().at(0).vm.$emit('delete', removePanel);
+      beforeEach(() => {
+        const mockPanel = panelSlotSpy.mock.calls[0].find(
+          ({ panel }) => panel.id === removePanel.id,
+        );
+        mockPanel.deletePanel();
       });
 
       it('removes the chosen panel from the dashboard', () => {
@@ -613,14 +616,18 @@ describe('CustomizableDashboard', () => {
         });
 
         it('sets the panel filters to the default date range', () => {
-          expect(findPanels().at(0).props().filters).toStrictEqual(defaultFilters);
+          expect(panelSlotSpy).toHaveBeenCalledWith(
+            expect.objectContaining({ filters: expect.objectContaining(defaultFilters) }),
+          );
         });
 
         it('updates the panel filters when the date range is changed', async () => {
           await findDateRangeFilter().vm.$emit('change', mockDateRangeFilterChangePayload);
 
-          expect(findPanels().at(0).props().filters).toMatchObject(
-            mockDateRangeFilterChangePayload,
+          expect(panelSlotSpy).toHaveBeenCalledWith(
+            expect.objectContaining({
+              filters: expect.objectContaining(mockDateRangeFilterChangePayload),
+            }),
           );
         });
       });
@@ -662,11 +669,15 @@ describe('CustomizableDashboard', () => {
       });
 
       it('updates the panel filters when anon users are filtered out', async () => {
-        expect(findPanels().at(0).props().filters.filterAnonUsers).toBe(false);
+        expect(panelSlotSpy).toHaveBeenCalledWith(
+          expect.objectContaining({ filters: expect.objectContaining({ filterAnonUsers: false }) }),
+        );
 
         await findAnonUsersFilter().vm.$emit('change', true);
 
-        expect(findPanels().at(0).props().filters.filterAnonUsers).toBe(true);
+        expect(panelSlotSpy).toHaveBeenCalledWith(
+          expect.objectContaining({ filters: expect.objectContaining({ filterAnonUsers: true }) }),
+        );
       });
 
       it(`tracks the "${EVENT_LABEL_EXCLUDE_ANONYMISED_USERS}" event when excluding anon users`, async () => {
