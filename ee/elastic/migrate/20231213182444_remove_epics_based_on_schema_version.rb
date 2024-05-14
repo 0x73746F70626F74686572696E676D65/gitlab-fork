@@ -14,3 +14,5 @@ class RemoveEpicsBasedOnSchemaVersion < Elastic::Migration
     24_01
   end
 end
+
+RemoveEpicsBasedOnSchemaVersion.prepend ::Elastic::MigrationObsolete
