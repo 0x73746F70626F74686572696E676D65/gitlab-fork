@@ -5,8 +5,6 @@ class GitlabSubscription < ApplicationRecord
   include Gitlab::Utils::StrongMemoize
   include AfterCommitQueue
 
-  EOA_ROLLOUT_DATE = '2021-01-26'
-
   enum trial_extension_type: { extended: 1, reactivated: 2 }
 
   attribute :start_date, default: -> { Date.today }
@@ -66,10 +64,6 @@ class GitlabSubscription < ApplicationRecord
 
   scope :namespace_id_in, ->(namespace_ids) do
     where(namespace_id: namespace_ids)
-  end
-
-  def legacy?
-    start_date < EOA_ROLLOUT_DATE.to_date
   end
 
   def calculate_seats_in_use

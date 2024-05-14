@@ -1057,7 +1057,7 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
       context 'for personal namespaces' do
         context 'when namespace has a subscription associated' do
           before do
-            create(:gitlab_subscription, namespace: namespace, hosted_plan: ultimate_plan, start_date: GitlabSubscription::EOA_ROLLOUT_DATE.to_date + 3.days)
+            create(:gitlab_subscription, namespace: namespace, hosted_plan: ultimate_plan)
           end
 
           it 'returns the plan from the subscription' do
