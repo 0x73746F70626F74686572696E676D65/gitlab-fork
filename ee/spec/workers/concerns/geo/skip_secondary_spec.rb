@@ -61,7 +61,8 @@ RSpec.describe ::Geo::SkipSecondary, feature_category: :global_search do
       Search::Zoekt::DeleteProjectWorker,
       Search::Zoekt::SchedulingWorker,
       Search::Zoekt::ProjectTransferWorker,
-      Search::Zoekt::NamespaceIndexerWorker
+      Search::Zoekt::NamespaceIndexerWorker,
+      Search::Zoekt::IndexingTaskWorker
     ]
 
     workers = ObjectSpace.each_object(::Class).select do |klass|

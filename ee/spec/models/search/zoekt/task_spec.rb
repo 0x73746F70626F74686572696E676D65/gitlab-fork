@@ -10,6 +10,44 @@ RSpec.describe ::Search::Zoekt::Task, feature_category: :global_search do
     it { is_expected.to belong_to(:zoekt_repository).inverse_of(:tasks) }
   end
 
+  describe 'scopes' do
+    describe '.with_project' do
+      let_it_be(:task) { create(:zoekt_task) }
+
+      it 'eager loads the project and avoids N+1 queries' do
+        task = described_class.with_project.first
+        recorder = ActiveRecord::QueryRecorder.new { task.zoekt_repository.project }
+        expect(recorder.count).to be_zero
+      end
+    end
+
+    describe '.for_processing' do
+      let_it_be(:task) { create(:zoekt_task, perform_at: 1.day.ago) }
+      let_it_be(:task2) { create(:zoekt_task, perform_at: 1.day.from_now) }
+
+      it 'returns tasks where perform_at is older than current time' do
+        results = described_class.for_processing
+        expect(results).to include task
+        expect(results).not_to include task2
+      end
+    end
+  end
+
+  describe 'callbacks' do
+    describe 'before_validation' do
+      before do
+        task.project_identifier = nil
+      end
+
+      it 'sets project_identifier' do
+        expect(task.project_identifier).to be nil
+        task.validate!
+        expect(task.project_identifier).not_to be nil
+        expect(task.project_identifier).to eq(task.zoekt_repository.project_identifier)
+      end
+    end
+  end
+
   describe '.with_project' do
     it 'eager loads the zoekt_repositories and projects' do
       create(:zoekt_task)

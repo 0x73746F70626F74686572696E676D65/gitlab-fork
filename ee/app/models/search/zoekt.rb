@@ -5,25 +5,27 @@ module Search
     EXPIRED_SUBSCRIPTION_GRACE_PERIOD = 30.days
 
     class << self
+      include Gitlab::Utils::StrongMemoize
+
       def fetch_node_id(container)
         root_namespace_id = fetch_root_namespace_id(container)
         return unless root_namespace_id
 
-        ::Search::Zoekt::Index.for_root_namespace_id(root_namespace_id).first&.zoekt_node_id
+        Index.for_root_namespace_id(root_namespace_id).first&.zoekt_node_id
       end
 
       def search?(container)
         root_namespace_id = fetch_root_namespace_id(container)
         return false unless root_namespace_id
 
-        ::Search::Zoekt::Index.for_root_namespace_id_with_search_enabled(root_namespace_id).ready.exists?
+        Index.for_root_namespace_id_with_search_enabled(root_namespace_id).ready.exists?
       end
 
       def index?(container)
         root_namespace_id = fetch_root_namespace_id(container)
         return false unless root_namespace_id
 
-        ::Search::Zoekt::Index.for_root_namespace_id(root_namespace_id).exists?
+        Index.for_root_namespace_id(root_namespace_id).exists?
       end
 
       def enabled_for_user?(user)
@@ -35,32 +37,48 @@ module Search
       end
 
       def index_async(project_id, options = {})
-        return unless Feature.enabled?(:zoekt_legacy_indexer_worker)
+        IndexingTaskWorker.perform_async(project_id, :index_repo) if create_indexing_tasks_enabled?(project_id)
 
-        ::Zoekt::IndexerWorker.perform_async(project_id,
-          options)
+        ::Zoekt::IndexerWorker.perform_async(project_id, options) if Feature.enabled?(:zoekt_legacy_indexer_worker)
       end
 
       def index_in(delay, project_id, options = {})
-        return unless Feature.enabled?(:zoekt_legacy_indexer_worker)
+        if create_indexing_tasks_enabled?(project_id)
+          IndexingTaskWorker.perform_async(project_id, :index_repo, { delay: delay })
+        end
 
-        ::Zoekt::IndexerWorker.perform_in(delay, project_id,
-          options)
+        ::Zoekt::IndexerWorker.perform_in(delay, project_id, options) if Feature.enabled?(:zoekt_legacy_indexer_worker)
       end
 
       def delete_async(project_id, root_namespace_id:, node_id: nil)
-        return if Feature.disabled?(:zoekt_legacy_indexer_worker)
+        if create_indexing_tasks_enabled?(project_id)
+          options = { root_namespace_id: root_namespace_id, node_id: node_id || fetch_node_id(root_namespace_id) }
+          IndexingTaskWorker.perform_async(project_id, :delete_repo, options)
+        end
 
-        ::Search::Zoekt::DeleteProjectWorker.perform_async(root_namespace_id, project_id, node_id)
+        return unless Feature.enabled?(:zoekt_legacy_indexer_worker)
+
+        DeleteProjectWorker.perform_async(root_namespace_id, project_id, node_id)
       end
 
       def delete_in(delay, project_id, root_namespace_id:, node_id: nil)
-        return if Feature.disabled?(:zoekt_legacy_indexer_worker)
+        if create_indexing_tasks_enabled?(project_id)
+          options = {
+            root_namespace_id: root_namespace_id, node_id: node_id || fetch_node_id(root_namespace_id), delay: delay
+          }
+          IndexingTaskWorker.perform_async(project_id, :delete_repo, options)
+        end
 
-        ::Search::Zoekt::DeleteProjectWorker.perform_in(delay, root_namespace_id, project_id, node_id)
+        return unless Feature.enabled?(:zoekt_legacy_indexer_worker)
+
+        DeleteProjectWorker.perform_in(delay, root_namespace_id, project_id, node_id)
       end
 
       private
+
+      def create_indexing_tasks_enabled?(project_id)
+        Feature.enabled?(:zoekt_create_indexing_tasks, Project.actor_from_id(project_id))
+      end
 
       def fetch_root_namespace_id(container)
         case container

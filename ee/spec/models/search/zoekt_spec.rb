@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Search::Zoekt, feature_category: :global_search do
+RSpec.describe Search::Zoekt, feature_category: :global_search do
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:project) { create(:project, namespace: group) }
@@ -187,19 +187,32 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
 
     let(:args) { [project.id, { foo: :bar }] }
 
-    it 'calls perform_async on the worker' do
+    it 'calls perform_async on the IndexerWorker and IndexingTaskWorker worker' do
       expect(Zoekt::IndexerWorker).to receive(:perform_async).with(*args)
+      expect(described_class::IndexingTaskWorker).to receive(:perform_async).with(project.id, :index_repo)
 
       index_async
     end
 
-    context 'when FF is disabled' do
+    context 'when FF zoekt_legacy_indexer_worker is disabled' do
       before do
         stub_feature_flags(zoekt_legacy_indexer_worker: false)
       end
 
       it 'does not call perform_async on the worker' do
         expect(Zoekt::IndexerWorker).not_to receive(:perform_async)
+
+        index_async
+      end
+    end
+
+    context 'when FF zoekt_create_indexing_tasks is disabled' do
+      before do
+        stub_feature_flags(zoekt_create_indexing_tasks: false)
+      end
+
+      it 'does not call perform_async on the IndexingTaskWorker worker' do
+        expect(described_class::IndexingTaskWorker).not_to receive(:perform_async)
 
         index_async
       end
@@ -211,19 +224,32 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
 
     let(:args) { [1.minute, project.id, { foo: :bar }] }
 
-    it 'calls perform_async on the worker' do
+    it 'calls perform_async on IndexingTaskWorker and perform_in on the IndexerWorker worker' do
+      expect(described_class::IndexingTaskWorker).to receive(:perform_async)
+        .with(project.id, :index_repo, { delay: 1.minute })
       expect(Zoekt::IndexerWorker).to receive(:perform_in).with(*args)
-
       index_in
     end
 
-    context 'when FF is disabled' do
+    context 'when FF zoekt_legacy_indexer_worker is disabled' do
       before do
         stub_feature_flags(zoekt_legacy_indexer_worker: false)
       end
 
-      it 'does not call perform_async on the worker' do
+      it 'does not call perform_in on the IndexerWorker worker' do
         expect(Zoekt::IndexerWorker).not_to receive(:perform_in)
+
+        index_in
+      end
+    end
+
+    context 'when FF zoekt_create_indexing_tasks is disabled' do
+      before do
+        stub_feature_flags(zoekt_create_indexing_tasks: false)
+      end
+
+      it 'does not call perform_async on the IndexingTaskWorker worker' do
+        expect(described_class::IndexingTaskWorker).not_to receive(:perform_async)
 
         index_in
       end
@@ -237,19 +263,33 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
     let(:keyword_args) { { root_namespace_id: project.root_ancestor.id, node_id: node.id } }
     let(:worker_args) { [project.root_ancestor.id, project.id, node.id] }
 
-    it 'calls perform_async on the worker' do
-      expect(::Search::Zoekt::DeleteProjectWorker).to receive(:perform_async).with(*worker_args)
+    it 'calls perform_async on the DeleteProjectWorker and IndexingTaskWorker worker' do
+      expect(described_class::IndexingTaskWorker).to receive(:perform_async)
+        .with(project.id, :delete_repo, { node_id: node.id, root_namespace_id: project.root_ancestor.id })
+      expect(described_class::DeleteProjectWorker).to receive(:perform_async).with(*worker_args)
 
       delete_async
     end
 
-    context 'when FF is disabled' do
+    context 'when FF zoekt_legacy_indexer_worker is disabled' do
       before do
         stub_feature_flags(zoekt_legacy_indexer_worker: false)
       end
 
-      it 'does not call perform_async on the worker' do
-        expect(::Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_async)
+      it 'does not call perform_async on the DeleteProjectWorker worker' do
+        expect(described_class::DeleteProjectWorker).not_to receive(:perform_async)
+
+        delete_async
+      end
+    end
+
+    context 'when FF zoekt_create_indexing_tasks is disabled' do
+      before do
+        stub_feature_flags(zoekt_create_indexing_tasks: false)
+      end
+
+      it 'does not call perform_async on the IndexingTaskWorker worker' do
+        expect(described_class::IndexingTaskWorker).not_to receive(:perform_async)
 
         delete_async
       end
@@ -263,19 +303,33 @@ RSpec.describe ::Search::Zoekt, feature_category: :global_search do
     let(:keyword_args) { { root_namespace_id: project.root_ancestor.id, node_id: node.id } }
     let(:worker_args) { [1.minute, project.root_ancestor.id, project.id, node.id] }
 
-    it 'calls perform_async on the worker' do
-      expect(::Search::Zoekt::DeleteProjectWorker).to receive(:perform_in).with(*worker_args)
+    it 'calls perform_async on IndexingTaskWorker worker and perform_in on the DeleteProjectWorker worker' do
+      options = { delay: 1.minute, node_id: node.id, root_namespace_id: project.root_ancestor.id }
+      expect(described_class::IndexingTaskWorker).to receive(:perform_async).with(project.id, :delete_repo, options)
+      expect(described_class::DeleteProjectWorker).to receive(:perform_in).with(*worker_args)
 
       delete_in
     end
 
-    context 'when FF is disabled' do
+    context 'when FF zoekt_legacy_indexer_worker is disabled' do
       before do
         stub_feature_flags(zoekt_legacy_indexer_worker: false)
       end
 
-      it 'does not call perform_async on the worker' do
-        expect(::Search::Zoekt::DeleteProjectWorker).not_to receive(:perform_in)
+      it 'does not call perform_async on the DeleteProjectWorker worker' do
+        expect(described_class::DeleteProjectWorker).not_to receive(:perform_in)
+
+        delete_in
+      end
+    end
+
+    context 'when FF zoekt_create_indexing_tasks is disabled' do
+      before do
+        stub_feature_flags(zoekt_create_indexing_tasks: false)
+      end
+
+      it 'does not call perform_async on the IndexingTaskWorker worker' do
+        expect(described_class::IndexingTaskWorker).not_to receive(:perform_async)
 
         delete_in
       end

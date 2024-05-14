@@ -33,7 +33,7 @@ module Zoekt
       return true if project.empty_repo?
 
       in_lock("#{self.class.name}/#{project_id}", ttl: (TIMEOUT + 1.minute), retries: 0) do
-        force = !!options['force'] || random_force_reindexing?
+        force = !!options['force'] || random_force_reindexing?(project)
 
         project.repository.update_zoekt_index!(force: force)
       end
@@ -47,8 +47,8 @@ module Zoekt
     private
 
     # This is needed as a temporary band-aid solution for https://gitlab.com/gitlab-org/gitlab/-/issues/435765
-    def random_force_reindexing?
-      return false if Feature.disabled?(:zoekt_random_force_reindexing, type: :ops)
+    def random_force_reindexing?(project)
+      return false if Feature.disabled?(:zoekt_random_force_reindexing, project, type: :ops)
 
       rand * 100 <= REINDEXING_CHANCE_PERCENTAGE
     end
