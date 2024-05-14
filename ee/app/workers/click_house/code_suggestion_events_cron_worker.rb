@@ -71,10 +71,8 @@ module ClickHouse
     def build_rows
       # Using LPOP which is not crash-safe. There is a small chance for data loss
       # if ClickHouse is down or the worker crashes before the INSERT.
-      Gitlab::Redis::SharedState.with do |redis|
-        Array.wrap(redis.lpop(ClickHouse::WriteBuffer::BUFFER_KEY, BATCH_SIZE)).filter_map do |hash|
-          build_row(Gitlab::Json.parse(hash, symbolize_names: true))
-        end
+      ClickHouse::WriteBuffer.pop_events(BATCH_SIZE).filter_map do |hash|
+        build_row(hash)
       end
     end
 

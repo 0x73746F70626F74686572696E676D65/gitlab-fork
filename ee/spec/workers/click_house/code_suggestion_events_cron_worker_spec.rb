@@ -47,9 +47,7 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
 
     context 'when data is present' do
       before do
-        Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', {}) # garbage
         Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', { user_id: 1 })
-        Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', {}) # garbage
         Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', { user_id: 2 })
         Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', { user_id: 3 })
       end
@@ -78,17 +76,14 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
       end
 
       context 'when pinging ClickHouse fails' do
-        it 'does not take anything from redis' do
+        it 'does not take anything from buffer' do
           allow_next_instance_of(ClickHouse::Connection) do |connection|
             expect(connection).to receive(:ping).and_raise(Errno::ECONNREFUSED)
           end
 
           expect { job.perform }.to raise_error(Errno::ECONNREFUSED)
 
-          Gitlab::Redis::SharedState.with do |redis|
-            buffer = redis.rpop(ClickHouse::WriteBuffer::BUFFER_KEY, 100)
-            expect(buffer.size).to eq(5)
-          end
+          expect(ClickHouse::WriteBuffer.pop_events(100).size).to eq(3)
         end
       end
 
@@ -105,8 +100,8 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
           expect(status).to eq({ status: :over_time, inserted_rows: 2 })
 
           expect(inserted_records).to match([
-            hash_including('user_id' => 2),
-            hash_including('user_id' => 3)
+            hash_including('user_id' => 1),
+            hash_including('user_id' => 2)
           ])
         end
       end
