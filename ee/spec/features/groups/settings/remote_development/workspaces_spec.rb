@@ -7,6 +7,13 @@ RSpec.describe 'Group Workspaces Settings', :js, feature_category: :remote_devel
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
+  let_it_be(:project) do
+    create(:project, :public, :in_group, :custom_repo, path: 'test-project', namespace: group)
+  end
+
+  let_it_be(:agent) do
+    create(:ee_cluster_agent, :with_remote_development_agent_config, project: project, created_by_user: user)
+  end
 
   before_all do
     group.add_developer(user)
@@ -21,7 +28,25 @@ RSpec.describe 'Group Workspaces Settings', :js, feature_category: :remote_devel
     wait_for_requests
   end
 
-  it 'renders workspaces settings page' do
-    expect(page).to have_content 'Workspaces Settings'
+  describe 'Group agents' do
+    context 'when there are not available agents' do
+      it 'displays available agents table with empty state message' do
+        expect(page).to have_content 'This group has no available agents.'
+      end
+    end
+
+    context 'when there are available agents' do
+      let_it_be(:cluster_agent_mapping) do
+        create(
+          :remote_development_namespace_cluster_agent_mapping,
+          user: user, agent: agent,
+          namespace: group
+        )
+      end
+
+      it 'displays agent in the agents table' do
+        expect(page).to have_content agent.name
+      end
+    end
   end
 end
