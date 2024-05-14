@@ -1,8 +1,5 @@
 ---
 # It maps table_name to {index1: array_of_duplicate_indexes, index2: array_of_duplicate_indexes, ... }
-board_group_recent_visits:
-  index_board_group_recent_visits_on_user_group_and_board:
-    - index_board_group_recent_visits_on_user_id
 board_project_recent_visits:
   index_board_project_recent_visits_on_user_project_and_board:
     - index_board_project_recent_visits_on_user_id
@@ -74,9 +71,6 @@ ml_model_versions:
 ml_models:
   index_ml_models_on_project_id_and_name:
     - index_ml_models_on_project_id
-p_ci_runner_machine_builds:
-  index_p_ci_runner_machine_builds_on_runner_machine_id:
-    - index_ci_runner_machine_builds_on_runner_machine_id
 p_ci_stages:
   p_ci_stages_pipeline_id_name_partition_id_idx:
     - p_ci_stages_pipeline_id_idx
