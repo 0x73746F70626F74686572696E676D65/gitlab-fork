@@ -52,7 +52,9 @@ export const WithProjectTopicsFilters = {
   args: {
     data: {
       ...defaultData,
-      filter_project_topics: filterProjectTopics,
+      filters: {
+        projectTopics: filterProjectTopics,
+      },
     },
   },
 };
