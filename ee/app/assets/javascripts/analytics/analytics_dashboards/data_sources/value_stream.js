@@ -7,14 +7,19 @@ const generatePanelTitle = ({ namespace: { name } }) => {
   return sprintf(I18N_VSD_DORA_METRICS_PANEL_TITLE, { name });
 };
 
-export const fetch = ({ title, namespace, query, queryOverrides = {} }) => {
-  return convertObjectPropsToCamelCase(
-    {
-      namespace,
-      title: title || generatePanelTitle({ namespace }),
-      ...query,
-      ...queryOverrides,
-    },
-    { deep: true },
-  );
-};
+export default class ValueStreamDataSource {
+  // eslint-disable-next-line class-methods-use-this
+  async fetch({ title, namespace, query, queryOverrides = {} }) {
+    const data = convertObjectPropsToCamelCase(
+      {
+        namespace,
+        title: title || generatePanelTitle({ namespace }),
+        ...query,
+        ...queryOverrides,
+      },
+      { deep: true },
+    );
+
+    return Promise.resolve(data);
+  }
+}
