@@ -25893,7 +25893,7 @@ msgstr ""
 msgid "Homepage"
 msgstr ""
 
-msgid "Hook execution failed. Ensure the group has a project with commits."
+msgid "Hook execution failed. %{error}"
 msgstr ""
 
 msgid "Horizontal rule"
