@@ -17,3 +17,5 @@ class AddSchemaVersionToCommits < Elastic::Migration
     }
   end
 end
+
+AddSchemaVersionToCommits.prepend ::Elastic::MigrationObsolete
