@@ -5,7 +5,6 @@ import {
   extractGraphqlFlowData,
   extractGraphqlVulnerabilitiesData,
   extractGraphqlMergeRequestsData,
-  extractDoraPerformanceScoreCounts,
   scaledValueForDisplay,
   extractGraphqlContributorCountData,
   extractQueryResponseFromNamespace,
@@ -16,8 +15,6 @@ import {
   mockLastVulnerabilityCountData,
   mockFlowMetricsResponseData,
   mockMergeRequestsResponseData,
-  mockDoraPerformersScoreResponseData,
-  mockDoraPerformersScoreChartData,
   mockContributorCountResponseData,
 } from './mock_data';
 
@@ -131,21 +128,6 @@ describe('Analytics Dashboards api', () => {
       expect(extractGraphqlMergeRequestsData({ merge_request_throughput: null })).toEqual({
         merge_request_throughput: { identifier: 'merge_request_throughput', value: '-' },
       });
-    });
-  });
-
-  describe('extractDoraPerformanceScoreCounts', () => {
-    it('returns each DORA performance score category', () => {
-      const categories = extractDoraPerformanceScoreCounts(mockDoraPerformersScoreResponseData).map(
-        ({ name }) => name,
-      );
-      expect(categories).toEqual(['High', 'Medium', 'Low', 'Not included']);
-    });
-
-    it('prepares DORA performance score counts for display', () => {
-      expect(extractDoraPerformanceScoreCounts(mockDoraPerformersScoreResponseData)).toEqual(
-        mockDoraPerformersScoreChartData,
-      );
     });
   });
 

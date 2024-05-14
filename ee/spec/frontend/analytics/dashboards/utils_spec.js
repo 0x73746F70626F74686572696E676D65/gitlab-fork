@@ -1,6 +1,6 @@
 import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
-import { UNITS, DORA_PERFORMERS_SCORE_CATEGORY_TYPES } from 'ee/analytics/dashboards/constants';
+import { UNITS } from 'ee/analytics/dashboards/constants';
 import { useFakeDate } from 'helpers/fake_date';
 import {
   percentChange,
@@ -15,8 +15,6 @@ import {
   generateChartTimePeriods,
   generateDashboardTableFields,
   generateValueStreamDashboardStartDate,
-  groupDoraPerformanceScoreCountsByCategory,
-  validateProjectTopics,
 } from 'ee/analytics/dashboards/utils';
 import { LEAD_TIME_METRIC_TYPE, CYCLE_TIME_METRIC_TYPE } from '~/api/analytics_api';
 import {
@@ -32,7 +30,6 @@ import {
   MOCK_TABLE_TIME_PERIODS,
   MOCK_CHART_TIME_PERIODS,
   MOCK_DASHBOARD_TABLE_FIELDS,
-  mockDoraPerformersScoreResponseData,
 } from './mock_data';
 
 describe('Analytics Dashboards utils', () => {
@@ -306,48 +303,6 @@ describe('Analytics Dashboards utils', () => {
           '2023-06-30T00:00:00.000Z',
         );
       });
-    });
-  });
-
-  describe('groupDoraPerformanceScoreCountsByCategory', () => {
-    it('returns an object with all of the DORA performance score counts with the category as key', () => {
-      const grouped = groupDoraPerformanceScoreCountsByCategory(
-        mockDoraPerformersScoreResponseData,
-      );
-
-      expect(grouped).toEqual({
-        [DORA_PERFORMERS_SCORE_CATEGORY_TYPES.HIGH]: [86, 75, 15, 5],
-        [DORA_PERFORMERS_SCORE_CATEGORY_TYPES.MEDIUM]: [24, 30, 55, 70],
-        [DORA_PERFORMERS_SCORE_CATEGORY_TYPES.LOW]: [27, 25, 80, 81],
-        [DORA_PERFORMERS_SCORE_CATEGORY_TYPES.NO_DATA]: [1, 1, 1, 1],
-      });
-    });
-
-    it('returns an object with DORA performance score categories as keys and empty arrays as values when given an empty array', () => {
-      const grouped = groupDoraPerformanceScoreCountsByCategory([]);
-
-      expect(grouped).toEqual({
-        [DORA_PERFORMERS_SCORE_CATEGORY_TYPES.HIGH]: [],
-        [DORA_PERFORMERS_SCORE_CATEGORY_TYPES.MEDIUM]: [],
-        [DORA_PERFORMERS_SCORE_CATEGORY_TYPES.LOW]: [],
-        [DORA_PERFORMERS_SCORE_CATEGORY_TYPES.NO_DATA]: [],
-      });
-    });
-  });
-
-  describe('validateProjectTopics', () => {
-    const goodTopics = ['one', 'two', 'three'];
-    const badChars = ['\n', '\v', '\f', '\r', '\u0085', '\u2028', '\u2029'].map((c) =>
-      encodeURIComponent(c),
-    );
-
-    it.each(badChars)(`removes invalid "%s" character`, (char) => {
-      const allTopics = goodTopics.concat(`test${decodeURIComponent(char)}`);
-      expect(validateProjectTopics(allTopics)).toEqual(goodTopics);
-    });
-
-    it.each([undefined, null, [], 0, 'F'])(`returns empty array for "%s"`, (input) => {
-      expect(validateProjectTopics(input)).toEqual([]);
     });
   });
 });

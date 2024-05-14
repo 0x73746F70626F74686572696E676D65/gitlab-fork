@@ -1,13 +1,13 @@
 import { GlAlert, GlCard, GlSkeletonLoader } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
-import DoraPerformersScoreCard from 'ee/analytics/dashboards/components/dora_performers_score_card.vue';
-import DoraPerformersScoreChart from 'ee/analytics/dashboards/components/dora_performers_score_chart.vue';
+import DoraPerformersScoreCard from 'ee/analytics/dashboards/dora_performers_score/components/dora_performers_score_card.vue';
+import DoraPerformersScoreChart from 'ee/analytics/dashboards/dora_performers_score/components/dora_performers_score_chart.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import getDoraPerformersGroup from 'ee/analytics/dashboards/graphql/get_dora_performers_group.query.graphql';
+import getDoraPerformersGroup from 'ee/analytics/dashboards/dora_performers_score/graphql/get_dora_performers_group.query.graphql';
 
 Vue.use(VueApollo);
 

@@ -1,6 +1,6 @@
 import { GlBadge, GlButton, GlPopover } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import FilterProjectTopicsBadges from 'ee/analytics/dashboards/components/filter_project_topics_badges.vue';
+import FilterProjectTopicsBadges from 'ee/analytics/dashboards/dora_performers_score/components/filter_project_topics_badges.vue';
 
 describe('Filter project topics badges', () => {
   let wrapper;

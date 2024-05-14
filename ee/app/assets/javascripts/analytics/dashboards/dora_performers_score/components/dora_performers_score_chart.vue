@@ -4,8 +4,8 @@ import { GlSkeletonLoader, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { initial } from 'lodash';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import { sprintf, __, n__ } from '~/locale';
-import groupDoraPerformanceScoreCountsQuery from 'ee/analytics/dashboards/graphql/group_dora_performance_score_counts.query.graphql';
-import { extractDoraPerformanceScoreCounts } from 'ee/analytics/dashboards/api';
+import groupDoraPerformanceScoreCountsQuery from '../graphql/group_dora_performance_score_counts.query.graphql';
+import { extractDoraPerformanceScoreCounts } from '../api';
 import {
   DORA_PERFORMERS_SCORE_METRICS,
   DORA_PERFORMERS_SCORE_PANEL_TITLE_WITH_PROJECTS_COUNT,
@@ -14,7 +14,7 @@ import {
   DORA_PERFORMERS_SCORE_LOADING_ERROR,
   DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE,
   DORA_PERFORMERS_SCORE_NO_DATA,
-} from 'ee/analytics/dashboards/constants';
+} from '../constants';
 import { validateProjectTopics } from '../utils';
 import FilterProjectTopicsBadges from './filter_project_topics_badges.vue';
 

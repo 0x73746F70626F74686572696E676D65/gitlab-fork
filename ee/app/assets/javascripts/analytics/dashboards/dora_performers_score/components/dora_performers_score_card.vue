@@ -4,8 +4,8 @@ import { s__, sprintf } from '~/locale';
 import {
   DORA_PERFORMERS_SCORE_DEFAULT_PANEL_TITLE,
   DORA_PERFORMERS_SCORE_GROUP_ERROR,
-} from 'ee/analytics/dashboards/constants';
-import getDoraPerformersGroup from 'ee/analytics/dashboards/graphql/get_dora_performers_group.query.graphql';
+} from '../constants';
+import getDoraPerformersGroup from '../graphql/get_dora_performers_group.query.graphql';
 import DoraPerformersScoreChart from './dora_performers_score_chart.vue';
 
 export default {
