@@ -27,6 +27,8 @@ module EE
                 if issue&.epic == epic
                   _('Issue %{issue_reference} has already been added to epic %{epic_reference}.') %
                     { issue_reference: issue.to_reference, epic_reference: epic.to_reference }
+                elsif epic.confidential? && !issue.confidential?
+                  _("Cannot assign a confidential epic to a non-confidential issue. Make the issue confidential and try again")
                 else
                   @updates[:epic] = epic
                   _('Added an issue to an epic.')

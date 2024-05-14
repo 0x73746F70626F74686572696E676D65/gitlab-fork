@@ -710,6 +710,20 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
             expect(message).to eq('Added an issue to an epic.')
           end
 
+          context 'when it is confidential' do
+            before do
+              epic.update!(confidential: true)
+              group.add_developer(current_user)
+            end
+
+            it 'shows an error' do
+              _, updates, message = service.execute(content, issue)
+
+              expect(updates).to be_empty
+              expect(message).to eq('Cannot assign a confidential epic to a non-confidential issue. Make the issue confidential and try again')
+            end
+          end
+
           context 'when an issue belongs to a project without group' do
             let(:user_project) { create(:project) }
             let(:issue)        { create(:issue, project: user_project) }
