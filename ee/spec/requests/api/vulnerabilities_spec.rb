@@ -177,14 +177,6 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it { expect { create_vulnerability }.to be_denied_for(:reporter).of(project) }
       it { expect { create_vulnerability }.to be_denied_for(:guest).of(project) }
       it { expect { create_vulnerability }.to be_denied_for(:anonymous) }
-
-      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
-        before do
-          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
-        end
-
-        it { expect { create_vulnerability }.to be_allowed_for(:developer).of(project) }
-      end
     end
   end
 
@@ -260,14 +252,6 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it { expect { dismiss_vulnerability }.to be_denied_for(:reporter).of(project) }
       it { expect { dismiss_vulnerability }.to be_denied_for(:guest).of(project) }
       it { expect { dismiss_vulnerability }.to be_denied_for(:anonymous) }
-
-      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
-        before do
-          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
-        end
-
-        it { expect { dismiss_vulnerability }.to be_allowed_for(:developer).of(project) }
-      end
     end
   end
 
@@ -341,14 +325,6 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it { expect { resolve_vulnerability }.to be_denied_for(:reporter).of(project) }
       it { expect { resolve_vulnerability }.to be_denied_for(:guest).of(project) }
       it { expect { resolve_vulnerability }.to be_denied_for(:anonymous) }
-
-      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
-        before do
-          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
-        end
-
-        it { expect { resolve_vulnerability }.to be_allowed_for(:developer).of(project) }
-      end
     end
   end
 
@@ -411,14 +387,6 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it { expect { confirm_vulnerability }.to be_denied_for(:reporter).of(project) }
       it { expect { confirm_vulnerability }.to be_denied_for(:guest).of(project) }
       it { expect { confirm_vulnerability }.to be_denied_for(:anonymous) }
-
-      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
-        before do
-          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
-        end
-
-        it { expect { confirm_vulnerability }.to be_allowed_for(:developer).of(project) }
-      end
     end
   end
 
@@ -511,14 +479,6 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
       it { expect { revert_vulnerability_to_detected }.to be_denied_for(:reporter).of(project) }
       it { expect { revert_vulnerability_to_detected }.to be_denied_for(:guest).of(project) }
       it { expect { revert_vulnerability_to_detected }.to be_denied_for(:anonymous) }
-
-      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
-        before do
-          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
-        end
-
-        it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:developer).of(project) }
-      end
     end
   end
 end

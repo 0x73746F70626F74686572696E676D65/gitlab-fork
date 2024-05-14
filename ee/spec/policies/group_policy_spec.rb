@@ -1640,14 +1640,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       let(:current_user) { developer }
 
       it { is_expected.to be_disallowed(:admin_vulnerability) }
-
-      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
-        before do
-          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
-        end
-
-        it { is_expected.to be_allowed(:admin_vulnerability) }
-      end
     end
 
     context 'with auditor' do
@@ -1671,14 +1663,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         end
 
         it { is_expected.to be_disallowed(:admin_vulnerability) }
-
-        context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
-          before do
-            stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
-          end
-
-          it { is_expected.to be_allowed(:admin_vulnerability) }
-        end
       end
     end
   end

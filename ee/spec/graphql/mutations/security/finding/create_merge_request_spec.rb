@@ -122,18 +122,6 @@ RSpec.describe Mutations::Security::Finding::CreateMergeRequest, feature_categor
       end
 
       it { expect { execute }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable) }
-
-      context 'with `disable_developer_access_to_admin_vulnerability` disabled' do
-        before do
-          stub_feature_flags(disable_developer_access_to_admin_vulnerability: false)
-        end
-
-        it 'returns an error' do
-          response = execute
-          expect(response[:errors]).not_to be_empty
-          expect(response[:merge_request]).to be_blank
-        end
-      end
     end
   end
 end

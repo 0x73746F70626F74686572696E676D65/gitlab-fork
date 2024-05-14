@@ -238,11 +238,6 @@ module EE
         end
       end
 
-      condition(:developer_access_to_admin_vulnerability) do
-        ::Feature.disabled?(:disable_developer_access_to_admin_vulnerability, subject&.root_namespace) &&
-          can?(:developer_access)
-      end
-
       with_scope :subject
       condition(:suggested_reviewers_available) do
         @subject.can_suggest_reviewers?
@@ -471,7 +466,7 @@ module EE
         enable :read_vulnerability
       end
 
-      rule { can?(:read_security_resource) & (can?(:maintainer_access) | developer_access_to_admin_vulnerability) }.policy do
+      rule { can?(:read_security_resource) & can?(:maintainer_access) }.policy do
         enable :admin_vulnerability
       end
 
