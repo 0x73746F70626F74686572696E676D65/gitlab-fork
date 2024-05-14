@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe WebHooks::WebHooksHelper, :clean_gitlab_redis_shared_state, feature_category: :webhooks do
-  let_it_be_with_reload(:group) { create(:group) } # rubocop: disable RSpec/FactoryBot/AvoidCreate
+  let_it_be(:group) { build_stubbed(:group) }
+  let_it_be(:user) { build_stubbed(:user) }
 
   let(:current_user) { nil }
   let(:callout_dismissed) { false }
@@ -24,12 +25,12 @@ RSpec.describe WebHooks::WebHooksHelper, :clean_gitlab_redis_shared_state, featu
 
   shared_context 'when the user has permission' do
     before do
-      group.add_owner(current_user) if current_user
+      allow(Ability).to receive(:allowed?).with(user, :admin_web_hook, group).and_return(true)
     end
   end
 
   shared_context 'when a user is logged in' do
-    let(:current_user) { create(:user) } # rubocop: disable RSpec/FactoryBot/AvoidCreate
+    let(:current_user) { user }
   end
 
   shared_context 'when the user dismissed the callout' do

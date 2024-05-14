@@ -12,14 +12,6 @@ module EE
       def group_hook_page?
         current_controller?('groups/hooks') || current_controller?('groups/hook_logs')
       end
-
-      private
-
-      def can_access_web_hooks?(object)
-        return super if object.is_a?(Project)
-
-        Ability.allowed?(current_user, :admin_group, object)
-      end
     end
   end
 end
