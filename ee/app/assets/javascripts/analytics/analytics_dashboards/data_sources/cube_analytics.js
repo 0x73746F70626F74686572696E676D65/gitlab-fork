@@ -148,16 +148,27 @@ export const createCubeApi = (projectId) =>
     }),
   });
 
-export const fetch = async ({
-  projectId,
-  visualizationType,
-  visualizationOptions,
-  query,
-  queryOverrides = {},
-  filters = {},
-}) => {
-  const userQuery = buildCubeQuery(query, queryOverrides, filters);
-  const resultSet = await createCubeApi(projectId).load(userQuery, { castNumerics: true });
+export default class CubeAnalyticsDataSource {
+  #cubeApi;
 
-  return VISUALIZATION_PARSERS[visualizationType](resultSet, userQuery, visualizationOptions);
-};
+  constructor({ projectId }) {
+    this.#cubeApi = createCubeApi(projectId);
+  }
+
+  async fetch({
+    visualizationType,
+    visualizationOptions,
+    query,
+    queryOverrides = {},
+    filters = {},
+  }) {
+    const userQuery = buildCubeQuery(query, queryOverrides, filters);
+    const request = this.#cubeApi.load(userQuery, {
+      castNumerics: true,
+    });
+
+    return request.then((resultSet) =>
+      VISUALIZATION_PARSERS[visualizationType](resultSet, userQuery, visualizationOptions),
+    );
+  }
+}

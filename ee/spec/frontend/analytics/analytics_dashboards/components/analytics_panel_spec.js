@@ -4,14 +4,23 @@ import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import LineChart from 'ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
+
 import waitForPromises from 'helpers/wait_for_promises';
 import AnalyticsPanel from 'ee/analytics/analytics_dashboards/components/analytics_panel.vue';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
 import { mockPanel, invalidVisualization } from '../mock_data';
 
+const mockFetch = jest.fn().mockResolvedValue([]);
 jest.mock('ee/analytics/analytics_dashboards/data_sources', () => ({
   cube_analytics: jest.fn().mockReturnValue({
-    fetch: jest.fn().mockReturnValue([]),
+    default: jest.fn().mockImplementation(() => ({
+      fetch: mockFetch,
+    })),
+  }),
+  value_stream: jest.fn().mockReturnValue({
+    default: jest.fn().mockImplementation(() => ({
+      fetch: jest.fn(),
+    })),
   }),
 }));
 
@@ -47,6 +56,8 @@ describe('AnalyticsPanel', () => {
     });
   };
 
+  afterEach(() => mockFetch.mockReset());
+
   const expectPanelLoaded = () => {
     expect(findPanelsBase().props()).toMatchObject({
       loading: false,
@@ -71,7 +82,7 @@ describe('AnalyticsPanel', () => {
       expect(findPanelsBase().props()).toMatchObject({
         title: mockPanel.title,
         tooltip: '',
-        loading: false,
+        loading: true,
         showErrorState: false,
         errorPopoverTitle: 'Failed to fetch data',
         actions: [
@@ -87,6 +98,22 @@ describe('AnalyticsPanel', () => {
 
     it('fetches from the data source', () => {
       expect(dataSources.cube_analytics).toHaveBeenCalled();
+    });
+
+    describe('when the visualization changes to a different data type', () => {
+      beforeEach(() => {
+        wrapper.setProps({
+          visualization: {
+            data: {
+              type: 'value_stream',
+            },
+          },
+        });
+      });
+
+      it('should create a new data source', () => {
+        expect(dataSources.value_stream).toHaveBeenCalled();
+      });
     });
   });
 
@@ -139,10 +166,6 @@ describe('AnalyticsPanel', () => {
       );
     });
 
-    it('does not call the data source', () => {
-      expect(dataSources.cube_analytics).not.toHaveBeenCalled();
-    });
-
     it('renders a link to the help docs', () => {
       expect(findErrorLink().attributes('href')).toBe(
         '/help/user/analytics/analytics_dashboards#troubleshooting',
@@ -152,7 +175,7 @@ describe('AnalyticsPanel', () => {
 
   describe('when fetching the data', () => {
     beforeEach(() => {
-      jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(new Promise(() => {}));
+      mockFetch.mockReturnValue(new Promise(() => {}));
       createWrapper();
       return waitForPromises();
     });
@@ -170,7 +193,7 @@ describe('AnalyticsPanel', () => {
       const mockData = [{ name: 'foo' }];
 
       beforeEach(() => {
-        jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(mockData);
+        mockFetch.mockResolvedValue(mockData);
         createWrapper();
         return waitForPromises();
       });
@@ -256,7 +279,7 @@ describe('AnalyticsPanel', () => {
 
     describe('and the result is empty', () => {
       beforeEach(() => {
-        jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(undefined);
+        mockFetch.mockResolvedValue(undefined);
         createWrapper();
         return waitForPromises();
       });
@@ -277,7 +300,7 @@ describe('AnalyticsPanel', () => {
 
       beforeEach(() => {
         captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
-        jest.spyOn(dataSources.cube_analytics(), 'fetch').mockRejectedValue(mockGenericError);
+        mockFetch.mockRejectedValue(mockGenericError);
 
         createWrapper();
 
@@ -305,7 +328,7 @@ describe('AnalyticsPanel', () => {
 
         await waitForPromises();
 
-        expect(dataSources.cube_analytics().fetch).toHaveBeenCalledTimes(2);
+        expect(mockFetch).toHaveBeenCalledTimes(2);
       });
 
       it('renders the data source connection error message', () => {
@@ -323,7 +346,7 @@ describe('AnalyticsPanel', () => {
       };
 
       beforeEach(() => {
-        jest.spyOn(dataSources.cube_analytics(), 'fetch').mockRejectedValue(mockBadRequestError);
+        mockFetch.mockRejectedValue(mockBadRequestError);
 
         createWrapper();
 
@@ -345,7 +368,7 @@ describe('AnalyticsPanel', () => {
 
     beforeEach(() => {
       requests = [];
-      jest.spyOn(dataSources.cube_analytics(), 'fetch').mockImplementation(
+      mockFetch.mockImplementation(
         () =>
           new Promise((resolve) => {
             requests.push(resolve);
@@ -387,15 +410,13 @@ describe('AnalyticsPanel', () => {
     };
 
     beforeEach(() => {
-      jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(new Promise(() => {}));
+      mockFetch.mockReturnValue(new Promise(() => {}));
       createWrapper({ props: { filters } });
       return waitForPromises();
     });
 
     it('fetches from the data source with filters', () => {
-      expect(dataSources.cube_analytics().fetch).toHaveBeenCalledWith(
-        expect.objectContaining({ filters }),
-      );
+      expect(mockFetch).toHaveBeenCalledWith(expect.objectContaining({ filters }));
     });
   });
 

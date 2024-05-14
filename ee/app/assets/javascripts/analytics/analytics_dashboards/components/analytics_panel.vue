@@ -74,6 +74,7 @@ export default {
     const hasValidationErrors = Boolean(validationErrors);
 
     return {
+      dataSource: null,
       errors: validationErrors || [],
       hasValidationErrors,
       canRetryError: !hasValidationErrors,
@@ -133,28 +134,44 @@ export default {
   },
   watch: {
     visualization: {
-      handler: 'fetchData',
+      handler: 'onVisualizationChange',
       immediate: true,
     },
     queryOverrides: 'fetchData',
     filters: 'fetchData',
   },
   methods: {
+    importModule(dataType) {
+      return dataSources[dataType]();
+    },
+    async initDataSource(dataType) {
+      const module = await this.importModule(dataType);
+      const DataSource = module.default;
+      return new DataSource({ projectId: this.namespaceId });
+    },
+    async onVisualizationChange(newViz, oldViz) {
+      const dataSourceChanged = oldViz && newViz.data.type !== oldViz.data.type;
+      if (!this.dataSource || dataSourceChanged) {
+        this.loading = true;
+        this.dataSource = await this.initDataSource(newViz.data.type);
+        this.loading = false;
+      }
+      this.fetchData();
+    },
     async fetchData() {
       if (this.hasValidationErrors) {
         return;
       }
 
       const { queryOverrides, filters } = this;
-      const { type: dataType, query } = this.visualization.data;
+      const { query } = this.visualization.data;
       this.loading = true;
       this.clearErrors();
       const requestNumber = this.currentRequestNumber + 1;
       this.currentRequestNumber = requestNumber;
 
       try {
-        const { fetch } = await dataSources[dataType]();
-        const data = await fetch({
+        const data = await this.dataSource.fetch({
           title: this.title,
           projectId: this.namespaceId,
           namespace: this.namespace,

@@ -100,17 +100,19 @@ export const prepareQuery = (queryKeysToInclude = []) => {
   return Object.fromEntries(queryIncludeVariables);
 };
 
-/**
- * Fetch usage overview metrics for a given namespace
- */
-export const fetch = async ({
-  namespace: fullPath,
-  queryOverrides: { filters: { include = USAGE_OVERVIEW_IDENTIFIERS } = {} } = {},
-}) => {
-  const variableOverrides = prepareQuery(include);
-  const { startDate, endDate } = USAGE_OVERVIEW_DEFAULT_DATE_RANGE;
-  try {
-    const { data = {} } = await defaultClient.query({
+export default class UsageOverviewDataSource {
+  /**
+   * Fetch usage overview metrics for a given namespace
+   */
+  // eslint-disable-next-line class-methods-use-this
+  async fetch({
+    namespace: fullPath,
+    queryOverrides: { filters: { include = USAGE_OVERVIEW_IDENTIFIERS } = {} } = {},
+  }) {
+    const variableOverrides = prepareQuery(include);
+    const { startDate, endDate } = USAGE_OVERVIEW_DEFAULT_DATE_RANGE;
+
+    const request = defaultClient.query({
       query: getUsageOverviewQuery,
       variables: {
         fullPath,
@@ -120,15 +122,19 @@ export const fetch = async ({
       },
     });
 
-    if (!data.group) {
-      return { metrics: usageOverviewNoData };
-    }
+    return request
+      .then(({ data = {} }) => {
+        if (!data.group) {
+          return { metrics: usageOverviewNoData };
+        }
 
-    return {
-      namespace: extractUsageNamespaceData(data.group),
-      metrics: extractUsageMetrics(data.group),
-    };
-  } catch {
-    throw new Error(USAGE_OVERVIEW_NO_DATA_ERROR);
+        return {
+          namespace: extractUsageNamespaceData(data.group),
+          metrics: extractUsageMetrics(data.group),
+        };
+      })
+      .catch(() => {
+        throw new Error(USAGE_OVERVIEW_NO_DATA_ERROR);
+      });
   }
-};
+}

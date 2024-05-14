@@ -1,5 +1,5 @@
 import { CubeApi, HttpTransport, __setMockLoad } from '@cubejs-client/core';
-import { fetch } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
+import CubeAnalyticsDataSource from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
 import {
   mockResultSet,
@@ -8,7 +8,7 @@ import {
   mockResultSetWithNullValues,
 } from '../../mock_data';
 
-const mockLoad = jest.fn().mockImplementation(() => mockResultSet);
+const mockLoad = jest.fn().mockResolvedValue(mockResultSet);
 
 jest.mock('~/lib/utils/csrf', () => ({
   headerKey: 'mock-csrf-header',
@@ -33,18 +33,21 @@ const itSetsUpCube = () => {
 };
 
 describe('Cube Analytics Data Source', () => {
-  beforeEach(() => {
-    __setMockLoad(mockLoad);
-  });
+  let dataSource;
   const projectId = 'TEST_ID';
   const visualizationType = 'LineChart';
   const query = { measures: ['TrackedEvents.count'] };
   const queryOverrides = { measures: ['TrackedEvents.userLanguage'] };
   const cubeJsOptions = { castNumerics: true };
 
+  beforeEach(() => {
+    __setMockLoad(mockLoad);
+    dataSource = new CubeAnalyticsDataSource({ projectId });
+  });
+
   describe('fetch', () => {
     beforeEach(() => {
-      return fetch({ projectId, visualizationType, query, queryOverrides });
+      return dataSource.fetch({ visualizationType, query, queryOverrides });
     });
 
     itSetsUpCube();
@@ -52,148 +55,154 @@ describe('Cube Analytics Data Source', () => {
     it('loads the query with the query override', () => {
       expect(mockLoad).toHaveBeenCalledWith(queryOverrides, cubeJsOptions);
     });
+  });
 
-    describe('formats the data', () => {
-      describe('charts', () => {
-        it('returns the expected data format for line charts', async () => {
-          const result = await fetch({ projectId, visualizationType, query });
+  describe('formats the data', () => {
+    describe('charts', () => {
+      it('returns the expected data format for line charts', async () => {
+        const result = await dataSource.fetch({ visualizationType, query });
 
-          expect(result[0]).toMatchObject({
-            data: [
-              ['2022-11-09T00:00:00.000', 55],
-              ['2022-11-10T00:00:00.000', 14],
-            ],
-            name: 'pageview, TrackedEvents Count',
-          });
-        });
-
-        it('returns the expected data format for column charts', async () => {
-          const result = await fetch({ projectId, visualizationType: 'ColumnChart', query });
-
-          expect(result[0]).toMatchObject({
-            data: [
-              ['2022-11-09T00:00:00.000', 55],
-              ['2022-11-10T00:00:00.000', 14],
-            ],
-            name: 'pageview, TrackedEvents Count',
-          });
+        expect(result[0]).toMatchObject({
+          data: [
+            ['2022-11-09T00:00:00.000', 55],
+            ['2022-11-10T00:00:00.000', 14],
+          ],
+          name: 'pageview, TrackedEvents Count',
         });
       });
 
-      describe('data tables', () => {
-        it('returns the expected data format', async () => {
-          const result = await fetch({ projectId, visualizationType: 'DataTable', query });
-
-          expect(result[0]).toMatchObject({
-            count: '55',
-            event_type: 'pageview',
-            utc_time: '2022-11-09T00:00:00.000',
-          });
+      it('returns the expected data format for column charts', async () => {
+        const result = await dataSource.fetch({
+          visualizationType: 'ColumnChart',
+          query,
         });
 
-        describe('with links config', () => {
-          beforeEach(() => mockLoad.mockImplementationOnce(() => mockTableWithLinksResultSet));
+        expect(result[0]).toMatchObject({
+          data: [
+            ['2022-11-09T00:00:00.000', 55],
+            ['2022-11-10T00:00:00.000', 14],
+          ],
+          name: 'pageview, TrackedEvents Count',
+        });
+      });
+    });
 
-          it('returns the expected data format when href is a single dimension', async () => {
-            const result = await fetch({
-              projectId,
-              visualizationType: 'DataTable',
-              query: {
-                measures: ['TrackedEvents.pageViewsCount'],
-                dimensions: ['TrackedEvents.docPath', 'TrackedEvents.url'],
-              },
-              visualizationOptions: {
-                links: [
-                  {
-                    text: 'TrackedEvents.docPath',
-                    href: 'TrackedEvents.url',
-                  },
-                ],
-              },
-            });
+    describe('data tables', () => {
+      it('returns the expected data format', async () => {
+        const result = await dataSource.fetch({
+          visualizationType: 'DataTable',
+          query,
+        });
 
-            expect(result[0]).toMatchObject({
-              page_views_count: '1',
-              doc_path: {
-                text: '/foo',
-                href: 'https://example.com/foo',
-              },
-            });
-          });
-
-          it('returns the expected data format when href is an array of dimensions', async () => {
-            const result = await fetch({
-              projectId,
-              visualizationType: 'DataTable',
-              query: {
-                measures: ['TrackedEvents.pageViewsCount'],
-                dimensions: ['TrackedEvents.docPath', 'TrackedEvents.url'],
-              },
-              visualizationOptions: {
-                links: [
-                  {
-                    text: 'TrackedEvents.docPath',
-                    href: ['TrackedEvents.url', 'TrackedEvents.docPath'],
-                  },
-                ],
-              },
-            });
-
-            expect(result[0]).toMatchObject({
-              page_views_count: '1',
-              doc_path: {
-                text: '/foo',
-                href: 'https://example.com/foo/foo',
-              },
-            });
-          });
+        expect(result[0]).toMatchObject({
+          count: '55',
+          event_type: 'pageview',
+          utc_time: '2022-11-09T00:00:00.000',
         });
       });
 
-      describe('single stats', () => {
-        it('returns the expected data format', async () => {
-          const result = await fetch({ projectId, visualizationType: 'SingleStat', query });
+      describe('with links config', () => {
+        beforeEach(() => mockLoad.mockResolvedValue(mockTableWithLinksResultSet));
 
-          expect(result).toBe('36');
-        });
-
-        it('returns the expected data format with custom measure', async () => {
-          const override = { measures: ['TrackedEvents.url'] };
-          const result = await fetch({
-            projectId,
-            visualizationType: 'SingleStat',
-            query,
-            queryOverrides: override,
+        it('returns the expected data format when href is a single dimension', async () => {
+          const result = await dataSource.fetch({
+            visualizationType: 'DataTable',
+            query: {
+              measures: ['TrackedEvents.pageViewsCount'],
+              dimensions: ['TrackedEvents.docPath', 'TrackedEvents.url'],
+            },
+            visualizationOptions: {
+              links: [
+                {
+                  text: 'TrackedEvents.docPath',
+                  href: 'TrackedEvents.url',
+                },
+              ],
+            },
           });
 
-          expect(result).toBe('https://example.com/us');
+          expect(result[0]).toMatchObject({
+            page_views_count: '1',
+            doc_path: {
+              text: '/foo',
+              href: 'https://example.com/foo',
+            },
+          });
         });
 
-        it('returns 0 when the measure is null', async () => {
-          mockLoad.mockImplementationOnce(() => mockResultSetWithNullValues);
-
-          const result = await fetch({
-            projectId,
-            visualizationType: 'SingleStat',
-            query,
+        it('returns the expected data format when href is an array of dimensions', async () => {
+          const result = await dataSource.fetch({
+            visualizationType: 'DataTable',
+            query: {
+              measures: ['TrackedEvents.pageViewsCount'],
+              dimensions: ['TrackedEvents.docPath', 'TrackedEvents.url'],
+            },
+            visualizationOptions: {
+              links: [
+                {
+                  text: 'TrackedEvents.docPath',
+                  href: ['TrackedEvents.url', 'TrackedEvents.docPath'],
+                },
+              ],
+            },
           });
 
-          expect(result).toBe(0);
-        });
-
-        it('returns 0 when data is empty', async () => {
-          mockLoad.mockImplementationOnce(() => ({
-            rawData: () => [],
-          }));
-
-          const result = await fetch({
-            projectId,
-            visualizationType: 'SingleStat',
-            query,
+          expect(result[0]).toMatchObject({
+            page_views_count: '1',
+            doc_path: {
+              text: '/foo',
+              href: 'https://example.com/foo/foo',
+            },
           });
-
-          expect(result).toBe(0);
         });
+      });
+    });
+
+    describe('single stats', () => {
+      it('returns the expected data format', async () => {
+        mockLoad.mockResolvedValue(mockResultSet);
+        const result = await dataSource.fetch({
+          visualizationType: 'SingleStat',
+          query,
+        });
+
+        expect(result).toBe('36');
+      });
+
+      it('returns the expected data format with custom measure', async () => {
+        mockLoad.mockResolvedValue(mockResultSet);
+        const override = { measures: ['TrackedEvents.url'] };
+        const result = await dataSource.fetch({
+          visualizationType: 'SingleStat',
+          query,
+          queryOverrides: override,
+        });
+
+        expect(result).toBe('https://example.com/us');
+      });
+
+      it('returns 0 when the measure is null', async () => {
+        mockLoad.mockResolvedValue(mockResultSetWithNullValues);
+
+        const result = await dataSource.fetch({
+          visualizationType: 'SingleStat',
+          query,
+        });
+
+        expect(result).toBe(0);
+      });
+
+      it('returns 0 when data is empty', async () => {
+        mockLoad.mockResolvedValue({
+          rawData: () => [],
+        });
+
+        const result = await dataSource.fetch({
+          visualizationType: 'SingleStat',
+          query,
+        });
+
+        expect(result).toBe(0);
       });
     });
   });
@@ -208,8 +217,7 @@ describe('Cube Analytics Data Source', () => {
     ];
 
     const fetchWithFilters = (measure, filters) =>
-      fetch({
-        projectId,
+      dataSource.fetch({
         visualizationType,
         query: {
           filters: existingFilters,
@@ -218,6 +226,8 @@ describe('Cube Analytics Data Source', () => {
         queryOverrides: {},
         filters,
       });
+
+    beforeEach(() => mockLoad.mockResolvedValue(mockResultSet));
 
     it.each`
       type               | queryMeasurement                 | expectedDimension
