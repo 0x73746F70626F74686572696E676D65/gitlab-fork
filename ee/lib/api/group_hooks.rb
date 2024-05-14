@@ -98,9 +98,14 @@ module API
       end
       post ":id/hooks" do
         hook_params = create_hook_params
-        hook = user_group.hooks.new(hook_params)
 
-        save_hook(hook, EE::API::Entities::GroupHook)
+        result = WebHooks::CreateService.new(current_user).execute(hook_params, hook_scope)
+
+        if result[:status] == :success
+          present result[:hook], with: EE::API::Entities::GroupHook
+        else
+          error!(result.message, result.http_status || 422)
+        end
       end
 
       desc 'Edit group hook' do
