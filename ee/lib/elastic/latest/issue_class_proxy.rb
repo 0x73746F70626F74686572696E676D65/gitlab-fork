@@ -9,19 +9,30 @@ module Elastic
       AGGREGATION_LIMIT = 500
 
       def elastic_search(query, options: {})
-        query_hash = issue_query(query, options: options.merge(features: 'issues', no_join_project: true))
+        query_hash = if Feature.enabled?(:search_query_builder, options[:current_user])
+                       ::Search::Elastic::IssueQueryBuilder.build(query: query, options: options)
+                     else
+                       issue_query(query, options: options.merge(features: 'issues', no_join_project: true))
+                     end
 
         search(query_hash, options)
       end
 
       # rubocop: disable CodeReuse/ActiveRecord
+      override :preload_indexing_data
       def preload_indexing_data(relation)
         relation.includes(:author, :issue_assignees, :labels, project: [:project_feature, :namespace])
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
       def issue_aggregations(query, options)
-        query_hash = issue_query(query, options: options.merge(features: 'issues', no_join_project: true, aggregation: true))
+        query_hash = if Feature.enabled?(:search_query_builder, options[:current_user])
+                       builder_options = options.merge(aggregation: true)
+                       ::Search::Elastic::IssueQueryBuilder.build(query: query, options: builder_options)
+                     else
+                       query_options = options.merge(features: 'issues', no_join_project: true, aggregation: true)
+                       issue_query(query, options: query_options)
+                     end
 
         results = search(query_hash, options)
 
@@ -128,28 +139,28 @@ module Elastic
 
         if current_user
           filter = {
-              bool: {
-                should: [
-                  { term: { confidential: { _name: context.name(:non_confidential), value: false } } },
-                  {
-                    bool: {
-                      must: [
-                        { term: { confidential: true } },
-                        {
-                          bool: {
-                            should: [
-                              { term: { author_id: { _name: context.name(:as_author), value: current_user.id } } },
-                              { term: { assignee_id: { _name: context.name(:as_assignee), value: current_user.id } } },
-                              { terms: { _name: context.name(:project, :membership, :id), project_id: authorized_project_ids } }
-                            ]
-                          }
+            bool: {
+              should: [
+                { term: { confidential: { _name: context.name(:non_confidential), value: false } } },
+                {
+                  bool: {
+                    must: [
+                      { term: { confidential: true } },
+                      {
+                        bool: {
+                          should: [
+                            { term: { author_id: { _name: context.name(:as_author), value: current_user.id } } },
+                            { term: { assignee_id: { _name: context.name(:as_assignee), value: current_user.id } } },
+                            { terms: { _name: context.name(:project, :membership, :id), project_id: authorized_project_ids } }
+                          ]
                         }
-                      ]
-                    }
+                      }
+                    ]
                   }
-                ]
-              }
+                }
+              ]
             }
+          }
         end
 
         query_hash[:query][:bool][:filter] << filter

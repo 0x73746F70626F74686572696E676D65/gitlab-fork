@@ -18,25 +18,37 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     stub_feature_flags(search_uses_match_queries: false)
   end
 
-  context 'issues search', :sidekiq_inline do
-    let!(:project) { create(:project, :public, group: group) }
-    let!(:closed_result) { create(:issue, :closed, project: project, title: 'foo closed') }
-    let!(:opened_result) { create(:issue, :opened, project: project, title: 'foo opened') }
-    let!(:confidential_result) { create(:issue, :confidential, project: project, title: 'foo confidential') }
+  context 'for issues search', :sidekiq_inline do
+    let_it_be_with_reload(:project) { create(:project, :public, group: group, developers: user) }
+    let_it_be_with_reload(:closed_result) { create(:issue, :closed, project: project, title: 'foo closed') }
+    let_it_be_with_reload(:opened_result) { create(:issue, :opened, project: project, title: 'foo opened') }
+    let_it_be_with_reload(:confidential_result) { create(:issue, :confidential, project: project, title: 'foo confidential') }
 
     let(:query) { 'foo' }
     let(:scope) { 'issues' }
 
     before do
-      project.add_developer(user)
-
+      ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project)
       ensure_elasticsearch_index!
+    end
+
+    context 'when search_query_builder feature flag is false' do
+      before do
+        stub_feature_flags(search_query_builder: false)
+      end
+
+      include_examples 'search results filtered by state'
+      include_examples 'search results filtered by confidential'
+      include_examples 'search results filtered by labels'
+      it_behaves_like 'namespace ancestry_filter for aggregations'
     end
 
     include_examples 'search results filtered by state'
     include_examples 'search results filtered by confidential'
     include_examples 'search results filtered by labels'
-    it_behaves_like 'namespace ancestry_filter for aggregations'
+    it_behaves_like 'namespace ancestry_filter for aggregations' do
+      let(:query_name) { 'filters:namespace:ancestry_filter:descendants' }
+    end
   end
 
   context 'merge_requests search', :sidekiq_inline do

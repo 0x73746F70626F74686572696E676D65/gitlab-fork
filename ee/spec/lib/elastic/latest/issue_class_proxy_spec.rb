@@ -10,10 +10,12 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
 
   subject { described_class.new(Issue, use_separate_indices: true) }
 
-  let!(:project) { create(:project, :public) }
+  let!(:group) { create(:group) }
+  let!(:project) { create(:project, :public, group: group) }
+  let!(:user) { create(:user, developer_of: project) }
   let!(:label) { create(:label, project: project) }
   let!(:issue) { create(:labeled_issue, title: 'test', project: project, labels: [label]) }
-  let(:user) { create(:user) }
+
   let(:options) do
     {
       current_user: user,
@@ -26,23 +28,34 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
 
   describe '#issue_aggregations' do
     before do
-      project.add_developer(user)
       ensure_elasticsearch_index!
     end
 
-    it 'returns aggregations' do
-      result = subject.issue_aggregations('test', options)
+    shared_examples 'returns aggregations' do
+      it 'filters by labels' do
+        result = subject.issue_aggregations('test', options)
 
-      expect(result.first.name).to eq('labels')
-      expect(result.first.buckets.first.symbolize_keys).to match(
-        key: label.id.to_s,
-        count: 1,
-        title: label.title,
-        type: label.type,
-        color: label.color.to_s,
-        parent_full_name: label.project.full_name
-      )
+        expect(result.first.name).to eq('labels')
+        expect(result.first.buckets.first.symbolize_keys).to match(
+          key: label.id.to_s,
+          count: 1,
+          title: label.title,
+          type: label.type,
+          color: label.color.to_s,
+          parent_full_name: label.project.full_name
+        )
+      end
     end
+
+    context 'when search_query_builder feature flag is false' do
+      before do
+        stub_feature_flags(search_query_builder: false)
+      end
+
+      it_behaves_like 'returns aggregations'
+    end
+
+    it_behaves_like 'returns aggregations'
   end
 
   describe '#elastic_search' do
@@ -94,10 +107,13 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
     end
 
     describe 'named queries' do
+      let(:project_ids) { [project.id] }
+      let(:group_ids) { [] } # TODO - group.id
       let(:options) do
         {
           current_user: user,
-          project_ids: [project.id],
+          project_ids: project_ids,
+          group_ids: group_ids,
           public_and_internal_projects: false,
           order_by: nil,
           sort: nil,
@@ -105,25 +121,117 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
         }
       end
 
+      describe 'hidden filter' do
+        context 'when user can admin all resources' do
+          before do
+            allow(user).to receive(:can_admin_all_resources?).and_return(true)
+          end
+
+          context 'when search_query_builder feature flag is false' do
+            before do
+              stub_feature_flags(search_query_builder: false)
+            end
+
+            it 'does not filter hidden issues' do
+              result.response
+
+              assert_named_queries(without: ['issue:hidden:non_hidden'])
+            end
+          end
+
+          it 'does not filter hidden issues' do
+            result.response
+
+            assert_named_queries(without: ['filters:non_hidden'])
+          end
+        end
+
+        context 'when user cannot admin all resources' do
+          before do
+            allow(user).to receive(:can_admin_all_resources?).and_return(false)
+          end
+
+          context 'when search_query_builder feature flag is false' do
+            before do
+              stub_feature_flags(search_query_builder: false)
+            end
+
+            it 'filters hidden issues' do
+              result.response
+
+              assert_named_queries('issue:hidden:non_hidden')
+            end
+          end
+
+          it 'filters hidden issues' do
+            result.response
+
+            assert_named_queries('filters:not_hidden')
+          end
+        end
+      end
+
       context 'when label filters are passed' do
-        before do
-          ensure_elasticsearch_index!
+        context 'when search_query_builder feature flag is false' do
+          before do
+            stub_feature_flags(search_query_builder: false)
+          end
+
+          it 'filters the labels in the query' do
+            result.response
+
+            assert_named_queries('issue:match:search_terms', 'issue:filter:label_ids', 'issue:archived:non_archived')
+          end
         end
 
         it 'filters the labels in the query' do
           result.response
 
-          assert_named_queries('issue:match:search_terms', 'issue:filter:label_ids', 'issue:archived:non_archived')
+          assert_named_queries('issue:match:search_terms', 'filters:label_ids', 'filters:non_archived')
         end
       end
 
       context 'when include_archived is set' do
         let(:options) { { include_archived: true } }
 
+        context 'when search_query_builder feature flag is false' do
+          before do
+            stub_feature_flags(search_query_builder: false)
+          end
+
+          it 'does not have a filter for archived' do
+            result.response
+
+            assert_named_queries(without: ['issue:archived:non_archived'])
+          end
+        end
+
         it 'does not have a filter for archived' do
           result.response
 
-          assert_named_queries('issue:match:search_terms')
+          assert_named_queries(without: ['filters:non_archived'])
+        end
+      end
+
+      context 'when include_archived is not set' do
+        let(:options) { {} }
+
+        context 'when search_query_builder feature flag is false' do
+          before do
+            stub_feature_flags(search_query_builder: false)
+          end
+
+          it 'does have a filter for archived' do
+            result.response
+
+            assert_named_queries('issue:match:search_terms', 'issue:archived:non_archived')
+          end
+        end
+
+        it 'does have a filter for archived' do
+          result.response
+
+          assert_named_queries('issue:match:search_terms', 'filters:non_archived')
         end
       end
     end
