@@ -93,9 +93,9 @@ export default {
       <blocking-merge-requests-report :mr="mr" />
 
       <div class="mr-widget-section">
-        <template v-if="mergeBlockedComponentEnabled">
+        <template v-if="mergeBlockedComponentVisible">
           <mr-widget-auto-merge-enabled
-            v-if="mr.autoMergeEnabled"
+            v-if="autoMergeEnabled"
             :mr="mr"
             :service="service"
             class="gl-border-b-1 gl-border-b-solid gl-border-gray-100"
@@ -103,12 +103,7 @@ export default {
           <merge-checks :mr="mr" :service="service" />
         </template>
         <component :is="componentName" v-else :mr="mr" :service="service" />
-        <ready-to-merge
-          v-if="mr.commitsCount"
-          v-show="shouldShowMergeDetails"
-          :mr="mr"
-          :service="service"
-        />
+        <ready-to-merge v-if="mr.commitsCount" :mr="mr" :service="service" />
       </div>
     </div>
     <mr-widget-pipeline-container
