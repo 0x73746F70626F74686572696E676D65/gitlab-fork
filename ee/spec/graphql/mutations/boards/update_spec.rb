@@ -109,17 +109,4 @@ RSpec.describe Mutations::Boards::Update do
       end
     end
   end
-
-  describe '#ready' do
-    context 'when passing both labels & label_ids param' do
-      before do
-        mutation_params.merge!(labels: new_labels)
-      end
-
-      it 'raises exception when mutually exclusive params are given' do
-        expect { mutation.ready?(**mutation_params) }
-          .to raise_error(Gitlab::Graphql::Errors::ArgumentError, /one and only one of/)
-      end
-    end
-  end
 end

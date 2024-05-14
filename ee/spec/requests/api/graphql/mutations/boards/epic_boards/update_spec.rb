@@ -70,5 +70,12 @@ RSpec.describe Mutations::Boards::EpicBoards::Update, feature_category: :portfol
         expect(mutation_response['errors'].first).to eq('Name is too long (maximum is 255 characters)')
       end
     end
+
+    context 'when both labels and labelIds are given' do
+      let(:params) { { id: board.to_global_id.to_s, labels: [label.name], label_ids: [label.to_global_id.to_s] } }
+
+      it_behaves_like 'a mutation that returns top-level errors',
+        errors: ['only one of [labels, labelIds] arguments is allowed at the same time.']
+    end
   end
 end

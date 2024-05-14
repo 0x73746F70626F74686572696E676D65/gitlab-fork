@@ -54,14 +54,4 @@ RSpec.describe ::Mutations::Boards::EpicBoards::Update do
       end
     end
   end
-
-  describe '#ready?' do
-    it 'raises an error when both labels and label_ids arguments are passed' do
-      label = create(:group_label)
-
-      expect do
-        mutation.ready?(id: board.to_global_id, labels: ['foo'], label_ids: [label.to_global_id.to_s])
-      end.to raise_error(Gitlab::Graphql::Errors::ArgumentError, /one and only one of labels or labelIds is required/)
-    end
-  end
 end

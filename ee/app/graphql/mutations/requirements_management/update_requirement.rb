@@ -24,17 +24,14 @@ module Mutations
         required: false,
         description: 'Creates a test report for the requirement with the given state.'
 
+      validates exactly_one_of: [:iid, :work_item_iid]
+
       def ready?(**args)
-        errors = []
-        if args.slice(*mutually_exclusive_iid_args).size != 1
-          iid_args = mutually_exclusive_iid_args.map { |x| x.to_s.camelize(:lower) }.join(' or ')
-          errors << "One and only one of #{iid_args} is required"
-        end
-
         update_args = [:title, :state, :last_test_report_state, :description]
-        errors << "At least one of #{update_args.join(', ')} is required" if args.values_at(*update_args).compact.blank?
 
-        raise Gitlab::Graphql::Errors::ArgumentError, errors.join("; ") if errors.any?
+        if args.values_at(*update_args).compact.blank?
+          raise Gitlab::Graphql::Errors::ArgumentError, "At least one of #{update_args.join(', ')} is required"
+        end
 
         super
       end
@@ -71,10 +68,6 @@ module Mutations
           .single.new(object: project, context: context, field: nil)
 
         resolver.resolve(iid: iid, work_item_iid: work_item_iid)
-      end
-
-      def mutually_exclusive_iid_args
-        [:iid, :work_item_iid]
       end
     end
   end

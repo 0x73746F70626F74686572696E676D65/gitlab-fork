@@ -13,21 +13,14 @@ module Mutations
         argument :label_ids, [::Types::GlobalIDType[::Label]],
           required: false,
           description: 'IDs of labels to be added to the board.'
+
+        validates mutually_exclusive: [:labels, :label_ids]
       end
 
       def resolve(**args)
         parsed_params = parse_arguments(args)
 
         super(**parsed_params)
-      end
-
-      def ready?(**args)
-        if args.slice(*mutually_exclusive_args).size > 1
-          arg_str = mutually_exclusive_args.map { |x| x.to_s.camelize(:lower) }.join(' or ')
-          raise ::Gitlab::Graphql::Errors::ArgumentError, "one and only one of #{arg_str} is required"
-        end
-
-        super
       end
 
       private
@@ -53,10 +46,6 @@ module Mutations
         # as `iteration_id` when we scope board to `Iteration::Predefined::Current` or `Iteration::Predefined::None`
         args[:iteration_id] = args[:iteration_id].model_id if args[:iteration_id]
         args
-      end
-
-      def mutually_exclusive_args
-        [:labels, :label_ids]
       end
     end
   end

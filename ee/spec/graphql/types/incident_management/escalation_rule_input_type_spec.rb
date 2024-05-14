@@ -20,14 +20,14 @@ RSpec.describe GitlabSchema.types['EscalationRuleInput'] do
     subject { described_class.coerce_isolated_input(input).prepare.to_h }
 
     context 'with neither username nor schedule provided' do
-      specify { expect { subject }.to raise_error(Gitlab::Graphql::Errors::ArgumentError, 'One of oncall_schedule_iid or username must be provided') }
+      specify { expect { subject }.to raise_error(GraphQL::Schema::Validator::ValidationFailedError, 'One and only one of [oncallScheduleIid, username] arguments is required.') }
     end
 
     context 'with both username and schedule provided' do
       let(:schedule_iid) { 3 }
       let(:username) { 'username' }
 
-      specify { expect { subject }.to raise_error(Gitlab::Graphql::Errors::ArgumentError, 'One of oncall_schedule_iid or username must be provided') }
+      specify { expect { subject }.to raise_error(GraphQL::Schema::Validator::ValidationFailedError, 'One and only one of [oncallScheduleIid, username] arguments is required.') }
     end
 
     context 'with only on-call schedule provided' do

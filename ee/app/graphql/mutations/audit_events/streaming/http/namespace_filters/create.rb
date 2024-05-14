@@ -24,14 +24,7 @@ module Mutations
               null: true,
               description: 'Namespace filter created.'
 
-            def ready?(**args)
-              if args.slice(*mutually_exclusive_args).size != 1
-                arg_str = mutually_exclusive_args.map { |x| x.to_s.camelize(:lower) }.join(' or ')
-                raise Gitlab::Graphql::Errors::ArgumentError, "one and only one of #{arg_str} is required"
-              end
-
-              super
-            end
+            validates exactly_one_of: [:group_path, :project_path]
 
             def resolve(args)
               destination = authorized_find!(args[:destination_id])
@@ -63,10 +56,6 @@ module Mutations
               namespace = ::Project.find_by_full_path(project_path)
               raise_resource_not_available_error! 'project_path is invalid' if namespace.nil?
               namespace.project_namespace
-            end
-
-            def mutually_exclusive_args
-              [:group_path, :project_path]
             end
           end
         end

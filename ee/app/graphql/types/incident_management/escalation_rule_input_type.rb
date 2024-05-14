@@ -22,17 +22,7 @@ module Types
         description: 'Status required to prevent the rule from activating.',
         required: true
 
-      def prepare
-        unless schedule_iid_or_username
-          raise Gitlab::Graphql::Errors::ArgumentError, 'One of oncall_schedule_iid or username must be provided'
-        end
-
-        super
-      end
-
-      def schedule_iid_or_username
-        oncall_schedule_iid.present? ^ username.present?
-      end
+      validates exactly_one_of: [:oncall_schedule_iid, :username]
     end
   end
 end
