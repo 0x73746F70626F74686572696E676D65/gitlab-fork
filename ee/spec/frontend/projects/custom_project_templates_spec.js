@@ -6,54 +6,86 @@ import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import initCustomProjectTemplates from 'ee/projects/custom_project_templates';
 
-const TAB_LINK_SELECTOR = '.js-custom-group-project-templates-nav-link';
-const TAB_CONTENT_SELECTOR = '.js-custom-group-project-templates-tab-content';
-const ENDPOINT = `${TEST_HOST}/users/root/available_group_templates`;
+const INSTANCE_TEMPLATES_ENDPOINT = `${TEST_HOST}/users/root/available_instance_templates`;
+const INSTANCE_TAB_LINK_SELECTOR = '.js-custom-instance-project-templates-nav-link';
+const INSTANCE_TAB_CONTENT_SELECTOR = '.js-custom-instance-project-templates-tab-content';
+
+const GROUP_TEMPLATES_ENDPOINT = `${TEST_HOST}/users/root/available_group_templates`;
+const GROUP_TAB_LINK_SELECTOR = '.js-custom-group-project-templates-nav-link';
+const GROUP_TAB_CONTENT_SELECTOR = '.js-custom-group-project-templates-tab-content';
+
 const INITIAL_CONTENT = 'initial content';
 const NEXT_PAGE_CONTENT = 'page 2 content';
 
+const generateInstanceTabContent = (content) => {
+  return `
+      <div class="js-custom-instance-project-templates-nav-link">Instance tab</div>
+      <div class="js-custom-instance-project-templates-tab-content active" data-initial-templates="${INSTANCE_TEMPLATES_ENDPOINT}">
+          ${content}
+          <ul class="pagination">
+              <li><a href="/users/root/available_instance_templates">Prev</a></li>
+              <li><a href="/users/root/available_instance_templates">1</a></li>
+              <li><a href="/users/root/available_instance_templates?page=2" class="page-2">2</a></li>
+              <li><a href="#" class="page-link" rel="next">Next</a></li>
+          </ul>
+      </div>
+  `;
+};
+
+const generateGroupTabContent = (content) => {
+  return `
+      <div class="js-custom-group-project-templates-nav-link">Group tab</div>
+      <div class="js-custom-group-project-templates-tab-content active" data-initial-templates="${GROUP_TEMPLATES_ENDPOINT}">
+          ${content}
+          <ul class="pagination">
+              <li><a href="/users/root/available_group_templates">Prev</a></li>
+              <li><a href="/users/root/available_group_templates">1</a></li>
+              <li><a href="/users/root/available_group_templates?page=2" class="page-2">2</a></li>
+              <li><a href="#" class="page-link" rel="next">Next</a></li>
+          </ul>
+      </div>
+  `;
+};
+
 describe('initCustomProjectTemplates', () => {
-  const generateContent = (content) => {
-    return `
-        <div class="js-custom-group-project-templates-nav-link">Group tab</div>
-        <div class="js-custom-group-project-templates-tab-content" data-initial-templates="${ENDPOINT}">
-            ${content}
-            <ul class="pagination">
-                <li><a href="/users/root/available_group_templates">Prev</a></li>
-                <li><a href="/users/root/available_group_templates">1</a></li>
-                <li><a href="/users/root/available_group_templates?page=2" class="page-2">2</a></li>
-                <li><a href="#" class="page-link" rel="next">Next</a></li>
-            </ul>
-        </div>
-    `;
-  };
-
-  const simulateTabNavigation = () => document.querySelector(TAB_LINK_SELECTOR).click();
   const simulatePagination = () => document.querySelector('.page-2').click();
-  const findTabContent = () => document.querySelector(TAB_CONTENT_SELECTOR);
 
-  beforeEach(async () => {
-    const axiosMock = new MockAdapter(axios);
+  describe.each`
+    tabName       | contentGenerator              | navLinkSelector               | contentSelector                  | endpoint
+    ${'Instance'} | ${generateInstanceTabContent} | ${INSTANCE_TAB_LINK_SELECTOR} | ${INSTANCE_TAB_CONTENT_SELECTOR} | ${INSTANCE_TEMPLATES_ENDPOINT}
+    ${'Group'}    | ${generateGroupTabContent}    | ${GROUP_TAB_LINK_SELECTOR}    | ${GROUP_TAB_CONTENT_SELECTOR}    | ${GROUP_TEMPLATES_ENDPOINT}
+  `(
+    '($tabName tab) requests the correct content',
+    ({ contentGenerator, navLinkSelector, contentSelector, endpoint }) => {
+      const simulateTabNavigation = () => document.querySelector(navLinkSelector).click();
+      const findTabContent = () => document.querySelector(contentSelector);
 
-    axiosMock.onGet(ENDPOINT).reply(HTTP_STATUS_OK, generateContent(INITIAL_CONTENT));
-    axiosMock.onGet(`${ENDPOINT}?page=2`).reply(HTTP_STATUS_OK, generateContent(NEXT_PAGE_CONTENT));
+      beforeEach(async () => {
+        const axiosMock = new MockAdapter(axios);
 
-    setHTMLFixture(generateContent());
-    initCustomProjectTemplates();
-    simulateTabNavigation();
-    await waitForPromises();
-  });
+        axiosMock.onGet(endpoint).reply(HTTP_STATUS_OK, contentGenerator(INITIAL_CONTENT));
+        axiosMock
+          .onGet(`${endpoint}?page=2`)
+          .reply(HTTP_STATUS_OK, contentGenerator(NEXT_PAGE_CONTENT));
 
-  afterEach(() => resetHTMLFixture());
+        setHTMLFixture(contentGenerator());
+        initCustomProjectTemplates();
+        simulateTabNavigation();
+        await waitForPromises();
+      });
 
-  it('requests the initial content', () => {
-    expect(findTabContent().innerText).toContain(INITIAL_CONTENT);
-  });
+      afterEach(() => resetHTMLFixture());
 
-  it('requests content for the selected page', async () => {
-    simulatePagination();
-    await waitForPromises();
+      it('requests the initial content', () => {
+        expect(findTabContent().innerText).toContain(INITIAL_CONTENT);
+      });
 
-    expect(findTabContent().innerText).toContain(NEXT_PAGE_CONTENT);
-  });
+      it('requests content for the selected page', async () => {
+        simulatePagination();
+        await waitForPromises();
+
+        expect(findTabContent().innerText).toContain(NEXT_PAGE_CONTENT);
+      });
+    },
+  );
 });
