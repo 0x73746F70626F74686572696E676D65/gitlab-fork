@@ -135,39 +135,27 @@ export default {
         />
       </gl-form-group>
     </div>
-    <div class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row">
-      <gl-form-group
-        :label="$options.i18n.companyNameLabel"
-        label-size="sm"
-        label-for="company_name"
-        class="gl-mr-5 gl-w-full gl-sm-w-half"
-      >
-        <gl-form-input
-          id="company_name"
-          :value="companyName"
-          name="company_name"
-          data-testid="company_name"
-          required
-        />
-      </gl-form-group>
-      <gl-form-group
-        :label="$options.i18n.companySizeLabel"
-        label-size="sm"
-        label-for="company_size"
-        class="gl-w-full gl-sm-w-half"
-      >
-        <gl-form-select
-          id="company_size"
-          :value="companySize"
-          name="company_size"
-          :options="companySizeOptionsWithDefault"
-          value-field="id"
-          text-field="name"
-          data-testid="company_size"
-          required
-        />
-      </gl-form-group>
-    </div>
+    <gl-form-group :label="$options.i18n.companyNameLabel" label-size="sm" label-for="company_name">
+      <gl-form-input
+        id="company_name"
+        :value="companyName"
+        name="company_name"
+        data-testid="company_name"
+        required
+      />
+    </gl-form-group>
+    <gl-form-group :label="$options.i18n.companySizeLabel" label-size="sm" label-for="company_size">
+      <gl-form-select
+        id="company_size"
+        :value="companySize"
+        name="company_size"
+        :options="companySizeOptionsWithDefault"
+        value-field="id"
+        text-field="name"
+        data-testid="company_size"
+        required
+      />
+    </gl-form-group>
     <country-or-region-selector :country="country" :state="state" data-testid="country" required />
     <gl-form-group
       :label="$options.i18n.phoneNumberLabel"
