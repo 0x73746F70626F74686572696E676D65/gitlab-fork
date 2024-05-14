@@ -32015,6 +32015,15 @@ msgstr ""
 msgid "Members|Remove group"
 msgstr ""
 
+msgid "Members|Requested By"
+msgstr ""
+
+msgid "Members|Requested On"
+msgstr ""
+
+msgid "Members|Requested Role"
+msgstr ""
+
 msgid "Members|Revert to LDAP synced settings"
 msgstr ""
 
@@ -32031,6 +32040,9 @@ msgid "Members|Search groups"
 msgstr ""
 
 msgid "Members|Search invited"
+msgstr ""
+
+msgid "Members|User"
 msgstr ""
 
 msgid "Members|User created"
