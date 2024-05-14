@@ -39,6 +39,7 @@ exports[`RelatedItemsTree RelatedItemsTreeActions template renders button group,
   >
     <toggle-labels-stub
       class="gl-ml-0! gl-sm-ml-3!"
+      storagekey="gl-show-board-labels"
     />
   </div>
 </div>
