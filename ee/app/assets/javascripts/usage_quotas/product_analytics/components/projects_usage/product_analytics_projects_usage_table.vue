@@ -68,7 +68,7 @@ export default {
           />
           <gl-link
             :href="webUrl"
-            class="gl-text-gray-900! gl-word-break-word"
+            class="gl-text-gray-900! gl-break-anywhere"
             data-testid="project-link"
           >
             {{ name }}

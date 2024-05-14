@@ -33,7 +33,7 @@ export default {
       key: 'target',
       label: s__('CorpusManagement|Target'),
       thClass: 'gl-w-4/20',
-      tdClass: 'gl-word-break-word',
+      tdClass: 'gl-break-anywhere',
     },
     {
       key: 'lastUpdated',

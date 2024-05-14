@@ -104,7 +104,7 @@ export default {
     >
       <span class="gl-font-weight-bold gl-md-flex-basis-13 gl-flex-shrink-0">{{ row.label }}</span>
       <span>
-        <span class="gl-word-break-word" :data-testid="key">{{ row.value }}</span>
+        <span class="gl-break-anywhere" :data-testid="key">{{ row.value }}</span>
         <clipboard-button
           v-if="isDigest(key)"
           :title="s__('GoogleArtifactRegistry|Copy digest')"
