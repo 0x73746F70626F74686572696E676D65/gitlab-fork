@@ -292,6 +292,8 @@ export default {
           :roles="pushAccessLevels.roles"
           :users="pushAccessLevels.users"
           :groups="pushAccessLevels.groups"
+          :empty-state-copy="$options.i18n.allowedToPushEmptyState"
+          :help-text="$options.i18n.allowedToPushDescription"
           data-testid="allowed-to-push-content"
         />
 
@@ -303,6 +305,7 @@ export default {
           :roles="mergeAccessLevels.roles"
           :users="mergeAccessLevels.users"
           :groups="mergeAccessLevels.groups"
+          :empty-state-copy="$options.i18n.allowedToMergeEmptyState"
           is-edit-available
           data-testid="allowed-to-merge-content"
         />
@@ -376,6 +379,7 @@ export default {
           :header-link-title="$options.i18n.statusChecksLinkTitle"
           :header-link-href="statusChecksPath"
           :status-checks="statusChecks"
+          :empty-state-copy="$options.i18n.statusChecksEmptyState"
         />
       </template>
       <!-- EE end -->
