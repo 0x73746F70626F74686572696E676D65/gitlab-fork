@@ -69,19 +69,27 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, feature_category
       end
     end
 
-    context 'filtering' do
-      let!(:project) { create(:project, :public, :repository) }
+    context 'when filtering' do
       let(:query) { 'foo' }
 
-      context 'issues' do
-        let!(:closed_result) { create(:issue, :closed, project: project, title: 'foo closed') }
-        let!(:opened_result) { create(:issue, :opened, project: project, title: 'foo opened') }
-        let!(:confidential_result) { create(:issue, :confidential, project: project, title: 'foo confidential') }
+      let_it_be(:project) { create(:project, :public, :repository, developers: user) }
+
+      before do
+        ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project)
+        ensure_elasticsearch_index!
+      end
+
+      context 'for issues' do
         let(:scope) { 'issues' }
 
-        before do
-          project.add_developer(user)
+        let_it_be(:closed_result) { create(:issue, :closed, project: project, title: 'foo closed') }
+        let_it_be(:opened_result) { create(:issue, :opened, project: project, title: 'foo opened') }
+        let_it_be(:confidential_result) { create(:issue, :confidential, project: project, title: 'foo confidential') }
 
+        before do
+          ::Elastic::ProcessInitialBookkeepingService.track!(opened_result)
+          ::Elastic::ProcessInitialBookkeepingService.track!(closed_result)
+          ::Elastic::ProcessInitialBookkeepingService.track!(confidential_result)
           ensure_elasticsearch_index!
         end
 
@@ -90,19 +98,22 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, feature_category
         include_examples 'search results filtered by labels'
       end
 
-      context 'merge_requests' do
-        let!(:opened_result) { create(:merge_request, :opened, source_project: project, title: 'foo opened') }
-        let!(:closed_result) { create(:merge_request, :closed, source_project: project, title: 'foo closed') }
+      context 'for merge_requests' do
         let(:scope) { 'merge_requests' }
 
+        let_it_be(:opened_result) { create(:merge_request, :opened, source_project: project, title: 'foo opened') }
+        let_it_be(:closed_result) { create(:merge_request, :closed, source_project: project, title: 'foo closed') }
+
         before do
+          ::Elastic::ProcessInitialBookkeepingService.track!(opened_result)
+          ::Elastic::ProcessInitialBookkeepingService.track!(closed_result)
           ensure_elasticsearch_index!
         end
 
         include_examples 'search results filtered by state'
       end
 
-      context 'blobs' do
+      context 'for blobs' do
         it_behaves_like 'search results filtered by language'
       end
     end

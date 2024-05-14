@@ -372,17 +372,16 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
       expect(count).to eq(2)
     end
 
-    context 'filtering' do
-      let!(:project) { create(:project, :public) }
-      let!(:closed_result) { create(:issue, :closed, project: project, title: 'foo closed') }
-      let!(:opened_result) { create(:issue, :opened, project: project, title: 'foo opened') }
-      let!(:confidential_result) { create(:issue, :confidential, project: project, title: 'foo confidential') }
+    context 'when filtering' do
+      let_it_be(:project) { create(:project, :public, developers: [user]) }
+      let_it_be(:closed_result) { create(:issue, :closed, project: project, title: 'foo closed') }
+      let_it_be(:opened_result) { create(:issue, :opened, project: project, title: 'foo opened') }
+      let_it_be(:confidential_result) { create(:issue, :confidential, project: project, title: 'foo confidential') }
 
       let(:results) { described_class.new(user, 'foo', [project.id], filters: filters) }
 
       before do
-        project.add_developer(user)
-
+        ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project)
         ensure_elasticsearch_index!
       end
 
@@ -392,13 +391,16 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
 
       context 'for projects' do
         let_it_be(:group) { create(:group) }
-        let!(:unarchived_result) { create(:project, :public, group: group) }
-        let!(:archived_result) { create(:project, :archived, :public, group: group) }
+        let_it_be(:unarchived_result) { create(:project, :public, group: group) }
+        let_it_be(:archived_result) { create(:project, :archived, :public, group: group) }
+
         let(:scope) { 'projects' }
         let(:results) { described_class.new(user, '*', [unarchived_result.id, archived_result.id], filters: filters) }
 
         it_behaves_like 'search results filtered by archived' do
           before do
+            ::Elastic::ProcessBookkeepingService.track!(unarchived_result)
+            ::Elastic::ProcessBookkeepingService.track!(archived_result)
             ensure_elasticsearch_index!
           end
         end

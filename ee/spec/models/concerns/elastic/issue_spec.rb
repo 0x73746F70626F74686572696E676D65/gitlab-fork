@@ -33,10 +33,22 @@ RSpec.describe Issue, :elastic_delete_by_query, feature_category: :global_search
       expect(described_class.elastic_search('bla-bla', options: { project_ids: :any, public_and_internal_projects: true }).total_count).to eq(3)
     end
 
+    context 'when search_query_builder feature flag is false' do
+      before do
+        stub_feature_flags(search_query_builder: false)
+      end
+
+      it 'names elasticsearch queries' do
+        described_class.elastic_search('*').total_count
+
+        assert_named_queries('issue:match:search_terms', 'issue:authorized:project')
+      end
+    end
+
     it 'names elasticsearch queries' do
       described_class.elastic_search('*').total_count
 
-      assert_named_queries('issue:match:search_terms', 'issue:authorized:project')
+      assert_named_queries('issue:match:search_terms', 'filters:project')
     end
 
     it 'searches by iid and scopes to type: issue only', :sidekiq_inline do
