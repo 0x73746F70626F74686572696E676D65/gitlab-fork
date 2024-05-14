@@ -4,7 +4,7 @@ import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import DoraPerformersScore from 'ee/analytics/analytics_dashboards/components/visualizations/dora_performers_score.vue';
-import DoraChart from 'ee/analytics/dashboards/components/dora_performers_score_chart.vue';
+import DoraChart from 'ee/analytics/dashboards/dora_performers_score/components/dora_performers_score_chart.vue';
 import GroupOrProjectProvider from 'ee/analytics/dashboards/components/group_or_project_provider.vue';
 import GetGroupOrProjectQuery from 'ee/analytics/dashboards/graphql/get_group_or_project.query.graphql';
 import { mockGroup, mockProject } from 'ee_jest/analytics/dashboards/mock_data';

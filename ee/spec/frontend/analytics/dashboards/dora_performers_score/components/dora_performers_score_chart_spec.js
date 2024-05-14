@@ -3,13 +3,13 @@ import { GlSkeletonLoader, GlIcon } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
-import DoraPerformersScoreChart from 'ee/analytics/dashboards/components/dora_performers_score_chart.vue';
-import FilterProjectTopicsBadges from 'ee/analytics/dashboards/components/filter_project_topics_badges.vue';
+import DoraPerformersScoreChart from 'ee/analytics/dashboards/dora_performers_score/components/dora_performers_score_chart.vue';
+import FilterProjectTopicsBadges from 'ee/analytics/dashboards/dora_performers_score/components/filter_project_topics_badges.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import groupDoraPerformanceScoreCountsQuery from 'ee/analytics/dashboards/graphql/group_dora_performance_score_counts.query.graphql';
+import groupDoraPerformanceScoreCountsQuery from 'ee/analytics/dashboards/dora_performers_score/graphql/group_dora_performance_score_counts.query.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE } from 'ee/analytics/dashboards/constants';
+import { DORA_PERFORMERS_SCORE_CHART_COLOR_PALETTE } from 'ee/analytics/dashboards/dora_performers_score/constants';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { mockGraphqlDoraPerformanceScoreCountsResponse } from '../helpers';
 import {

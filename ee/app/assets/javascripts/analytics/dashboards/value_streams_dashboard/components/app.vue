@@ -2,6 +2,7 @@
 import { isEmpty } from 'lodash';
 import { GlLink, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
+import DoraPerformersScoreCard from 'ee/analytics/dashboards/dora_performers_score/components/dora_performers_score_card.vue';
 import {
   DASHBOARD_TITLE,
   DASHBOARD_DESCRIPTION,
@@ -10,7 +11,6 @@ import {
 } from '../../constants';
 import { fetchYamlConfig } from '../../yaml_utils';
 import DoraVisualization from '../../components/dora_visualization.vue';
-import DoraPerformersScoreCard from '../../components/dora_performers_score_card.vue';
 import FeedbackBanner from '../../components/value_stream_feedback_banner.vue';
 
 const pathsToPanels = (paths) =>

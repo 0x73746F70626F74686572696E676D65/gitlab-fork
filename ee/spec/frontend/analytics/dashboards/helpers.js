@@ -8,7 +8,6 @@ import {
   mockFlowMetricsResponseData,
   mockLastVulnerabilityCountData,
   mockMergeRequestsResponseData,
-  mockDoraPerformersScoreResponseData,
   mockContributorCountResponseData,
 } from './mock_data';
 
@@ -119,21 +118,3 @@ export const expectTimePeriodRequests = ({ requestHandler, timePeriods, paramsFn
     expect(requestHandler).toHaveBeenCalledWith(params);
   });
 };
-
-export const mockGraphqlDoraPerformanceScoreCountsResponse = ({
-  mockDataResponse = mockDoraPerformersScoreResponseData,
-  totalProjectsCount = 0,
-  noDoraDataProjectsCount = 0,
-} = {}) =>
-  jest.fn().mockResolvedValue({
-    data: {
-      group: {
-        id: 'fake-dora-performance-score-counts-request',
-        doraPerformanceScoreCounts: {
-          totalProjectsCount,
-          noDoraDataProjectsCount,
-          nodes: mockDataResponse,
-        },
-      },
-    },
-  });

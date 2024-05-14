@@ -1,6 +1,6 @@
 import createMockApollo from 'helpers/mock_apollo_helper';
-import groupDoraPerformanceScoreCountsQuery from 'ee/analytics/dashboards/graphql/group_dora_performance_score_counts.query.graphql';
-import DoraPerformersScoreChart from 'ee/analytics/dashboards/components/dora_performers_score_chart.vue';
+import groupDoraPerformanceScoreCountsQuery from '../graphql/group_dora_performance_score_counts.query.graphql';
+import DoraPerformersScoreChart from './dora_performers_score_chart.vue';
 import {
   doraPerformanceScoreCountsSuccess,
   excludedProjectsDoraPerformanceScoreCounts,
