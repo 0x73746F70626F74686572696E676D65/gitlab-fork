@@ -13,29 +13,26 @@ FactoryBot.define do
     trait(:guest) { base_access_level { Gitlab::Access::GUEST } }
     trait(:minimal_access) { base_access_level { Gitlab::Access::MINIMAL_ACCESS } }
 
-    trait :admin_merge_request do
-      admin_merge_request { true }
+    [
+      :admin_cicd_variables,
+      :admin_merge_request,
+      :admin_push_rules,
+      :admin_terraform_state,
+      :admin_web_hook,
+      :manage_merge_request_settings,
+      :manage_project_access_tokens,
+      :read_code,
+      :read_dependency,
+      :read_vulnerability
+    ].each do |permission|
+      trait permission do
+        send(permission) { true }
+      end
     end
 
     trait :admin_vulnerability do
       admin_vulnerability { true }
       read_vulnerability { true }
-    end
-
-    trait :admin_terraform_state do
-      admin_terraform_state { true }
-    end
-
-    trait :read_code do
-      read_code { true }
-    end
-
-    trait :read_dependency do
-      read_dependency { true }
-    end
-
-    trait :admin_web_hook do
-      admin_web_hook { true }
     end
 
     # this trait can be used only for self-managed

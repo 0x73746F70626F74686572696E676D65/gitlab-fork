@@ -7,6 +7,25 @@ module EE
         module SettingsMenu
           extend ::Gitlab::Utils::Override
 
+          PERMITTABLE_MENU_ITEMS = {
+            general_menu_item: [
+              :view_edit_page
+            ],
+            access_tokens_menu_item: [
+              :manage_resource_access_tokens
+            ],
+            repository_menu_item: [
+              :admin_push_rules,
+              :manage_deploy_tokens
+            ],
+            merge_requests_menu_item: [
+              :manage_merge_request_settings
+            ],
+            ci_cd_menu_item: [
+              :admin_cicd_variables
+            ]
+          }.freeze
+
           override :configure_menu_items
           def configure_menu_items
             return false unless super
@@ -38,38 +57,24 @@ module EE
             custom_roles_menu_items
           end
 
+          alias_method :build, :send
+
           def custom_roles_menu_items
-            items = []
-            return items unless context.current_user
-
-            items << general_menu_item if custom_roles_general_menu_item?
-            items << access_tokens_menu_item if custom_roles_access_token_menu_item?
-            items << repository_menu_item if custom_roles_repository_menu_item?
-            items << merge_requests_menu_item if custom_roles_merge_requests_menu_item?
-            items << ci_cd_menu_item if custom_roles_ci_cd_menu_item?
-
-            items
+            PERMITTABLE_MENU_ITEMS.filter_map do |(menu_item, permissions)|
+              build(menu_item) if allowed_any?(*permissions)
+            end
           end
 
-          def custom_roles_general_menu_item?
-            can?(context.current_user, :view_edit_page, context.project)
+          def allowed?(ability)
+            return false if context.current_user.blank?
+
+            can?(context.current_user, ability, context.project)
           end
 
-          def custom_roles_access_token_menu_item?
-            can?(context.current_user, :manage_resource_access_tokens, context.project)
-          end
-
-          def custom_roles_repository_menu_item?
-            can?(context.current_user, :admin_push_rules, context.project) ||
-              can?(context.current_user, :manage_deploy_tokens, context.project)
-          end
-
-          def custom_roles_merge_requests_menu_item?
-            can?(context.current_user, :manage_merge_request_settings, context.project)
-          end
-
-          def custom_roles_ci_cd_menu_item?
-            can?(context.current_user, :admin_cicd_variables, context.project)
+          def allowed_any?(*abilities)
+            abilities.any? do |ability|
+              allowed?(ability)
+            end
           end
         end
       end

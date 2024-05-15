@@ -99,64 +99,36 @@ RSpec.describe Sidebars::Projects::Menus::SettingsMenu, feature_category: :navig
         end
       end
     end
+  end
 
-    describe 'Merge requests' do
-      let(:item_id) { :merge_requests }
+  describe 'Custom Roles' do
+    using RSpec::Parameterized::TableSyntax
 
-      describe 'when the user is not an admin but has `manage_merge_request_settings` custom ability' do
-        before do
-          allow(Ability).to receive(:allowed?).and_call_original
-          allow(Ability).to receive(:allowed?).with(user, :admin_project, project).and_return(false)
-          allow(Ability).to receive(:allowed?).with(user, :manage_merge_request_settings, project).and_return(true)
-        end
+    let_it_be_with_reload(:user) { create(:user) }
+    let_it_be_with_reload(:project) { create(:project, :in_group) }
 
-        it 'includes Merge Requests menu item' do
-          expect(subject.title).to eql('Merge requests')
-        end
-      end
+    let(:context) { Sidebars::Projects::Context.new(current_user: user, container: project) }
+    let(:menu) { described_class.new(context) }
+
+    subject(:menu_items) { menu.renderable_items }
+
+    before do
+      stub_licensed_features(custom_roles: true)
     end
 
-    describe 'CI/CD' do
-      let(:item_id) { :ci_cd }
-
-      describe 'when the user is not an admin but has `admin_cicd_variables` custom ability' do
-        before do
-          allow(Ability).to receive(:allowed?).and_call_original
-          allow(Ability).to receive(:allowed?).with(user, :admin_project, project).and_return(false)
-          allow(Ability).to receive(:allowed?).with(user, :admin_cicd_variables, project).and_return(true)
-        end
-
-        it 'includes CI/CD menu item' do
-          expect(subject.title).to eql('CI/CD')
-        end
-      end
+    where(:ability, :menu_item) do
+      :admin_cicd_variables          | 'CI/CD'
+      :admin_push_rules              | 'Repository'
+      :manage_merge_request_settings | 'Merge requests'
+      :manage_project_access_tokens  | 'Access Tokens'
     end
 
-    describe 'Repository' do
-      let(:item_id) { :repository }
+    with_them do
+      describe "when the user has the `#{params[:ability]}` custom ability" do
+        let!(:role) { create(:member_role, :guest, ability, namespace: project.group) }
+        let!(:membership) { create(:project_member, :guest, member_role: role, user: user, project: project) }
 
-      describe 'when the user is not an admin of the project but has `admin_push_rules` custom ability' do
-        before do
-          allow(Ability).to receive(:allowed?).and_call_original
-          allow(Ability).to receive(:allowed?).with(user, :admin_project, project).and_return(false)
-          allow(Ability).to receive(:allowed?).with(user, :admin_push_rules, project).and_return(true)
-        end
-
-        it 'includes repository menu item' do
-          expect(subject.title).to eql('Repository')
-        end
-      end
-
-      describe 'when the user is not an admin but has the `manage_deploy_tokens` custom permission' do
-        before do
-          allow(Ability).to receive(:allowed?).and_call_original
-          allow(Ability).to receive(:allowed?).with(user, :admin_project, project).and_return(false)
-          allow(Ability).to receive(:allowed?).with(user, :manage_deploy_tokens, project).and_return(true)
-        end
-
-        it 'includes Repository menu item' do
-          expect(subject.title).to eql('Repository')
-        end
+        it { is_expected.to include(have_attributes(title: menu_item)) }
       end
     end
   end
