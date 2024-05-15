@@ -1,14 +1,5 @@
 <script>
-import {
-  GlDrawer,
-  GlBadge,
-  GlButton,
-  GlLabel,
-  GlLink,
-  GlAccordion,
-  GlAccordionItem,
-  GlTruncate,
-} from '@gitlab/ui';
+import { GlDrawer, GlBadge, GlButton, GlLabel, GlLink, GlTruncate } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
@@ -22,8 +13,6 @@ export default {
     GlButton,
     GlLabel,
     GlLink,
-    GlAccordion,
-    GlAccordionItem,
     GlTruncate,
   },
   inject: ['groupSecurityPoliciesPath'],
@@ -95,20 +84,16 @@ export default {
   >
     <template v-if="framework" #title>
       <div style="max-width: 350px">
-        <h2 class="gl-mt-0">
+        <h3 class="gl-mt-0">
           <gl-truncate :text="framework.name" with-tooltip />
           <gl-label
             v-if="defaultFramework"
+            class="gl-vertical-align-top gl-mt-2"
             :background-color="framework.color"
             :title="$options.i18n.defaultFramework"
           />
-        </h2>
-        <gl-button
-          class="gl-my-3"
-          category="primary"
-          variant="confirm"
-          @click="$emit('edit', framework)"
-        >
+        </h3>
+        <gl-button category="primary" variant="confirm" @click="$emit('edit', framework)">
           {{ $options.i18n.editFramework }}
         </gl-button>
       </div>
@@ -116,23 +101,37 @@ export default {
 
     <template v-if="framework" #default>
       <div>
-        <gl-accordion :auto-collapse="false" :header-level="3">
-          <gl-accordion-item :title="$options.i18n.frameworkDescription" visible :header-level="2">
+        <div>
+          <h5 data-testid="sidebar-description-title" class="gl-mt-0">
+            {{ $options.i18n.frameworkDescription }}
+          </h5>
+          <span data-testid="sidebar-description">
             {{ framework.description }}
-          </gl-accordion-item>
-          <gl-accordion-item
+          </span>
+        </div>
+        <div class="gl-my-5" data-testid="sidebar-projects">
+          <h5
             v-if="framework.projects.nodes.length"
-            :title="associatedProjectsTitle"
+            data-testid="sidebar-projects-title"
+            class="gl-mt-0"
           >
-            <div
+            {{ associatedProjectsTitle }}
+          </h5>
+          <ul class="gl-pl-6">
+            <li
               v-for="associatedProject in framework.projects.nodes"
               :key="associatedProject.id"
-              class="gl-m-2"
+              class="gl-mt-1"
             >
               <gl-link :href="associatedProject.webUrl">{{ associatedProject.name }}</gl-link>
-            </div>
-          </gl-accordion-item>
-          <gl-accordion-item v-if="policies.length" :title="policiesTitle">
+            </li>
+          </ul>
+        </div>
+        <div class="gl-my-5" data-testid="sidebar-policies">
+          <h5 data-testid="sidebar-policies-title" class="gl-mt-0">
+            {{ policiesTitle }}
+          </h5>
+          <div v-if="policies.length">
             <div
               v-for="(policy, idx) in policies"
               :key="idx"
@@ -147,8 +146,8 @@ export default {
                 {{ policy.source.namespace.name }}
               </gl-badge>
             </div>
-          </gl-accordion-item>
-        </gl-accordion>
+          </div>
+        </div>
       </div>
     </template>
   </gl-drawer>
