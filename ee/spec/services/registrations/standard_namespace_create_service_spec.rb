@@ -22,6 +22,7 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
         name: 'New project',
         path: 'project-path',
         visibility_level: Gitlab::VisibilityLevel::PRIVATE,
+        template_name: '',
         initialize_with_readme: 'true'
       }
     end

@@ -16,7 +16,9 @@ import { getGroupPathAvailability } from '~/rest_api';
 import { __, s__ } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 import { slugify, convertUnicodeToAscii } from '~/lib/utils/text_utility';
+import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import { DEFAULT_GROUP_PATH, DEFAULT_PROJECT_PATH } from '../constants';
+import ProjectTemplateSelector from './project_template_selector.vue';
 
 const DEBOUNCE_TIMEOUT_DURATION = 1000;
 
@@ -26,6 +28,8 @@ export default {
     GlFormInput,
     GlFormCheckbox,
     GlFormText,
+    GitlabExperiment,
+    ProjectTemplateSelector,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -51,6 +55,10 @@ export default {
       type: String,
       required: true,
     },
+    templateName: {
+      type: String,
+      required: true,
+    },
     initializeWithReadme: {
       type: Boolean,
       required: true,
@@ -65,6 +73,7 @@ export default {
       projectPath: DEFAULT_PROJECT_PATH,
       currentApiRequestController: null,
       groupPathWithoutSuggestion: null,
+      selectedTemplateName: this.templateName,
     };
   },
   computed: {
@@ -143,6 +152,9 @@ export default {
     onProjectUpdate(value) {
       this.projectPath = slugify(convertUnicodeToAscii(value)) || DEFAULT_PROJECT_PATH;
     },
+    selectTemplate(value) {
+      this.selectedTemplateName = value;
+    },
   },
   i18n: {
     groupNameLabel: s__('ProjectsNew|Group name'),
@@ -206,6 +218,7 @@ export default {
         />
       </gl-form-group>
     </div>
+
     <div v-if="!importGroup" id="blank-project-name" class="row">
       <gl-form-group
         class="project-name col-sm-12"
@@ -227,6 +240,17 @@ export default {
       </gl-form-group>
     </div>
 
+    <gitlab-experiment name="project_templates_during_registration">
+      <template #candidate>
+        <div v-if="!importGroup" class="row">
+          <project-template-selector
+            :selected-template-name="selectedTemplateName"
+            @select="selectTemplate"
+          />
+        </div>
+      </template>
+    </gitlab-experiment>
+
     <p class="form-text gl-text-center">{{ $options.i18n.urlHeader }}</p>
 
     <p class="form-text gl-text-center monospace gl-overflow-wrap-break">
@@ -239,7 +263,7 @@ export default {
       {{ $options.i18n.urlFooter }}
     </p>
 
-    <gl-form-group v-if="!importGroup">
+    <gl-form-group v-if="!importGroup && !selectedTemplateName">
       <gl-form-checkbox name="project[initialize_with_readme]" :checked="initializeWithReadme">
         {{ $options.i18n.readmeLabel }}
 
