@@ -21,6 +21,6 @@
               - if code_owner_approval_rule.section != Gitlab::CodeOwners::Section::DEFAULT
                 %span.text-muted.small.d-block= code_owner_approval_rule.section
               %span.monospace= code_owner_approval_rule.name
-            %td.gl-display-none.gl-sm-display-flex.gl-row-gap-2.gl-flex-wrap
+            %td.gl-display-none.gl-sm-display-flex.gl-gap-y-2.gl-flex-wrap
               - code_owner_approval_rule.approvers.each do |approver|
                 = user_avatar(user: approver)
