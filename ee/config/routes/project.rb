@@ -46,12 +46,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
         resources :subscriptions, only: [:create, :destroy]
 
-        resource :learn_gitlab, only: :show, controller: :learn_gitlab, param: :project_id do
-          member do
-            # Deprecated route, remove with https://gitlab.com/gitlab-org/gitlab/-/issues/461231
-            get :onboarding, to: redirect('%{namespace_id}/%{project_id}/-/learn_gitlab')
-          end
-        end
+        resource :learn_gitlab, only: :show, controller: :learn_gitlab, param: :project_id
 
         resources :protected_environments, only: [:create, :update, :destroy], constraints: { id: /\d+/ } do
           collection do
