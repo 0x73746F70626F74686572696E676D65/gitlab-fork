@@ -229,7 +229,11 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
         allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(false)
       end
 
-      context 'when on SaaS', :saas do
+      context 'when onboarding feature is available' do
+        before do
+          stub_saas_features(onboarding: true)
+        end
+
         it 'sets onboarding' do
           create_user
 
@@ -238,7 +242,7 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
         end
       end
 
-      context 'when not on SaaS' do
+      context 'when onboarding feature is not available' do
         it 'does not set onboarding' do
           create_user
 
