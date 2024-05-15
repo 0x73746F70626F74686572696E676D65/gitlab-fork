@@ -103,7 +103,7 @@ export default {
         v-for="(pipeline, index) in shownDownstreamPipelines"
         :key="pipeline.id"
         :style="`z-index: ${shownDownstreamPipelines.length + 1 - index}`"
-        class="dashboard-card-footer-downstream position-relative d-inline"
+        class="dashboard-card-footer-downstream position-relative gl-inline"
       >
         <gl-link
           ref="downstreamStatus"
@@ -118,7 +118,7 @@ export default {
           <div class="text-tertiary">{{ pipeline.project.full_name }}</div>
         </gl-tooltip>
       </div>
-      <div v-if="hasExtraDownstream" class="d-inline">
+      <div v-if="hasExtraDownstream" class="gl-inline">
         <gl-link
           ref="extraDownstream"
           :href="lastPipeline.details.status.details_path"

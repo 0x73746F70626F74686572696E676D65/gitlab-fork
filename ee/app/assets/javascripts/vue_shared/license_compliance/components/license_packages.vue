@@ -38,8 +38,8 @@ export default {
 };
 </script>
 <template>
-  <div class="license-packages d-inline gl-font-sm">
-    <div class="js-license-dependencies d-inline">{{ packageString }}</div>
+  <div class="license-packages gl-inline gl-font-sm">
+    <div class="js-license-dependencies gl-inline">{{ packageString }}</div>
     <button
       v-if="!showAllPackages && remainingPackages"
       type="button"
