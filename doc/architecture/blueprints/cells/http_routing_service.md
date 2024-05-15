@@ -506,6 +506,38 @@ The configuration describes all Cells, URLs, zero-trust keys, and weights,
 and how long requests should be cached. The `classify_weight` defines how often
 the Cell should receive classification requests versus other Cells.
 
+### Deployment
+
+There are several phases to fully deploy the HTTP Routing service to GitLab.com.
+
+1. The first phase is to deploy a simple pass-through proxy in front of the webservice (`gitlab.com`).
+   1. First, we will utilize [Cloudflare Routes](https://developers.cloudflare.com/workers/configuration/routing/routes/)
+      to rollout the worker gradually, without the need to change DNS.
+   1. (Maybe optional) The next step is to provision an internal-only DNS for
+      the legacy cell (e.g. `cell-1.gprd.int.gitlab.com`).
+      We then proxy the HTTP router to this new DNS, and secure this connection
+      with a solution like `mTLS`, or Cloudflare Tunnel.
+      In order to do this, the HTTP Router will need to be assigned the
+      `gitlab.com` DNS record, likely with
+      [custom domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/).
+1. The second phase is to deploy a simple pass-through proxy in front of
+   the container registry (`registry.gitlab.com`).
+   This will use the same deployment of the HTTP Router for `gitlab.com`.
+   1. First, we will utilize [Cloudflare Routes](https://developers.cloudflare.com/workers/configuration/routing/routes/)
+      to rollout the worker gradually, without the need to change DNS.
+   1. (Maybe optional) The next step is to provision an internal-only DNS for
+      the legacy cell (e.g. `cell-1-registry.gprd.int.gitlab.com`).
+      We then proxy the HTTP router to this DNS, and secure this connection with
+      a solution like `mTLS`, or Cloudflare Tunnel.
+      In order to do this, the HTTP Router will need to be assigned the
+      `registry.gitlab.com` DNS record, likely with
+      [custom domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/).
+1. The third phase involves multiple cells.
+   1. For any new cell the HTTP Router routes to, the cell will have:
+      1. An internal-only DNS, like `cell-2.gdrd.int.gitlab.com` that is only
+     accesible via the HTTP Router.
+      1. A secure, encrypted connection between the HTTP Router and the cell.
+
 ## Request flows
 
 1. There are two Cells.
