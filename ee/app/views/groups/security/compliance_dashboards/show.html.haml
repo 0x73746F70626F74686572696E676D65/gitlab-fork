@@ -6,8 +6,7 @@
   violations_csv_export_path: group_security_compliance_violation_reports_path(@group, format: :csv),
   project_frameworks_csv_export_path: group_security_compliance_project_framework_reports_path(@group, format: :csv),
   adherences_csv_export_path: group_security_compliance_standards_adherence_reports_path(@group, format: :csv),
-  frameworks_csv_export_path: Feature.enabled?(:compliance_frameworks_report_csv_export, @group) &&
-    group_security_compliance_framework_reports_path(@group, format: :csv),
+  frameworks_csv_export_path: group_security_compliance_framework_reports_path(@group, format: :csv),
   merge_commits_csv_export_path: group_security_merge_commit_reports_path(@group),
   group_path: @group.full_path,
   root_ancestor_path: @group.root_ancestor.full_path,
