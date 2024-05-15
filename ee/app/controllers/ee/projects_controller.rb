@@ -202,6 +202,8 @@ module EE
     end
 
     def log_download_export_audit_event
+      return if current_user.can_admin_all_resources? && ::Gitlab::CurrentSettings.silent_admin_exports_enabled?
+
       log_audit_event(message: 'Export file download started', event_type: 'project_export_file_download_started')
     end
 
