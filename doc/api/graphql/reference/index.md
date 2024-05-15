@@ -17588,6 +17588,7 @@ CI/CD variables for a project.
 | <a id="cirunnercontactedat"></a>`contactedAt` | [`Time`](#time) | Timestamp of last contact from this runner. |
 | <a id="cirunnercreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp of creation of this runner. |
 | <a id="cirunnercreatedby"></a>`createdBy` | [`UserCore`](#usercore) | User that created this runner. |
+| <a id="cirunnercreationmethod"></a>`creationMethod` **{warning-solid}** | [`CiRunnerCreationMethod`](#cirunnercreationmethod) | **Introduced** in GitLab 17.0. **Status**: Experiment. Type of runner registration. |
 | <a id="cirunnerdescription"></a>`description` | [`String`](#string) | Description of the runner. |
 | <a id="cirunnereditadminurl"></a>`editAdminUrl` | [`String`](#string) | Admin form URL of the runner. Only available for administrators. |
 | <a id="cirunnerephemeralauthenticationtoken"></a>`ephemeralAuthenticationToken` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 15.9. **Status**: Experiment. Ephemeral authentication token used for runner manager registration. Only available for the creator of the runner for a limited time during registration. |
@@ -32669,6 +32670,13 @@ Runner cloud provider.
 | Value | Description |
 | ----- | ----------- |
 | <a id="cirunnercloudprovidergoogle_cloud"></a>`GOOGLE_CLOUD` | Google Cloud. |
+
+### `CiRunnerCreationMethod`
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="cirunnercreationmethodauthenticated_user"></a>`AUTHENTICATED_USER` | Applies to a runner that was created by an authenticated user. |
+| <a id="cirunnercreationmethodregistration_token"></a>`REGISTRATION_TOKEN` | Applies to a runner that was created by a runner registration token. |
 
 ### `CiRunnerJobExecutionStatus`
 
