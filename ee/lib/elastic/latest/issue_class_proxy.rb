@@ -66,6 +66,7 @@ module Elastic
 
         return apply_aggregation(query_hash) if options[:aggregation]
 
+        query_hash = remove_source(query_hash)
         apply_sort(query_hash, options)
       end
 
@@ -80,6 +81,10 @@ module Elastic
             }
           }
         )
+      end
+
+      def remove_source(query_hash)
+        query_hash.merge(_source: ['id'])
       end
 
       override :apply_sort
