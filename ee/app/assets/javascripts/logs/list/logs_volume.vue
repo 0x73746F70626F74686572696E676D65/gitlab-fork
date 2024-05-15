@@ -60,6 +60,11 @@ export default {
     },
     chartOption() {
       return {
+        dataZoom: [
+          {
+            type: 'slider',
+          },
+        ],
         xAxis: {
           type: 'time',
           name: '',
@@ -82,7 +87,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="loading" class="gl-mx-7 gl-my-4">
+  <div v-if="loading" class="gl-mx-7 gl-my-6">
     <gl-skeleton-loader :lines="5" />
   </div>
 
