@@ -1,13 +1,12 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
 import CodeSuggestionsIntro from 'ee/usage_quotas/code_suggestions/components/code_suggestions_intro.vue';
-import { salesLink } from 'ee/usage_quotas/code_suggestions/constants';
-import HandRaiseLead from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead.vue';
+import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 
 describe('Code Suggestions Intro', () => {
   let wrapper;
   const emptyState = () => wrapper.findComponent(GlEmptyState);
-  const handRaiseLeadButton = () => wrapper.findComponent(HandRaiseLead);
+  const handRaiseLeadButton = () => wrapper.findComponent(HandRaiseLeadButton);
 
   const createComponent = (provideProps = {}) => {
     wrapper = shallowMount(CodeSuggestionsIntro, {
@@ -24,10 +23,26 @@ describe('Code Suggestions Intro', () => {
     });
 
     it('renders gl-empty-state component with hand raise lead', () => {
-      const defaultButton = wrapper.find(`a[href="${salesLink}"`);
+      const buttonProps = {
+        buttonAttributes: {
+          variant: 'confirm',
+          category: 'tertiary',
+          class: 'gl-sm-w-auto gl-w-full gl-sm-ml-3 gl-sm-mt-0 gl-mt-3',
+          'data-testid': 'code-suggestions-hand-raise-lead-button',
+        },
+        glmContent: 'code-suggestions',
+        buttonText: 'Contact sales',
+        modalId: 'hand-raise-modal',
+        productInteraction: 'Requested Contact-Duo Pro Add-On',
+        ctaTracking: {
+          action: 'click_button',
+          label: 'code_suggestions_hand_raise_lead_form',
+        },
+      };
+
       expect(emptyState().exists()).toBe(true);
       expect(handRaiseLeadButton().exists()).toBe(true);
-      expect(defaultButton.exists()).toBe(false);
+      expect(handRaiseLeadButton().props()).toEqual(buttonProps);
     });
   });
 });

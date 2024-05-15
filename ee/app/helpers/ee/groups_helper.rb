@@ -112,7 +112,7 @@ module EE
         group_id: group.id,
         add_duo_pro_href: duo_pro_url(group),
         duo_pro_bulk_user_assignment_available: duo_pro_bulk_user_assignment_available?(group).to_s
-      }.merge(code_suggestions_hand_raise_props(group))
+      }
     end
 
     def product_analytics_usage_quota_app_data(group)

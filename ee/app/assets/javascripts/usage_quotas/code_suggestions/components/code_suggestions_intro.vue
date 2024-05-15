@@ -4,7 +4,7 @@ import emptyStateSvgUrl from '@gitlab/svgs/dist/illustrations/tanuki-ai-sm.svg?u
 import { __, s__ } from '~/locale';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { codeSuggestionsLearnMoreLink } from 'ee/usage_quotas/code_suggestions/constants';
-import HandRaiseLead from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead.vue';
+import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
 
 export default {
@@ -20,11 +20,21 @@ export default {
     ),
     title: s__('CodeSuggestions|Introducing GitLab Duo Pro'),
   },
+  handRaiseLeadAttributes: {
+    variant: 'confirm',
+    category: 'tertiary',
+    class: 'gl-sm-w-auto gl-w-full gl-sm-ml-3 gl-sm-mt-0 gl-mt-3',
+    'data-testid': 'code-suggestions-hand-raise-lead-button',
+  },
+  ctaTracking: {
+    action: 'click_button',
+    label: 'code_suggestions_hand_raise_lead_form',
+  },
   directives: {
     SafeHtml,
   },
   components: {
-    HandRaiseLead,
+    HandRaiseLeadButton,
     GlEmptyState,
     GlLink,
     GlSprintf,
@@ -55,10 +65,20 @@ export default {
       </gl-sprintf>
     </template>
     <template #actions>
-      <gl-button :href="addDuoProHref" variant="confirm" category="primary">
+      <gl-button
+        :href="addDuoProHref"
+        variant="confirm"
+        category="primary"
+        class="gl-sm-w-auto gl-w-full"
+      >
         {{ $options.i18n.purchaseSeats }}
       </gl-button>
-      <hand-raise-lead class="gl-sm-ml-3 gl-ml-0" />
+      <hand-raise-lead-button
+        :button-attributes="$options.handRaiseLeadAttributes"
+        glm-content="code-suggestions"
+        product-interaction="Requested Contact-Duo Pro Add-On"
+        :cta-tracking="$options.ctaTracking"
+      />
     </template>
   </gl-empty-state>
 </template>

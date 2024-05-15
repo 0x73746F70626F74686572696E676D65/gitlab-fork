@@ -442,15 +442,12 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       }
     end
 
-    let(:code_suggestions_hand_raise_props) { helper.code_suggestions_hand_raise_props(group) }
-    let(:expected_data) { data.merge(code_suggestions_hand_raise_props) }
-
     context 'when duo pro bulk assignment is available' do
       before do
         allow(helper).to receive(:duo_pro_bulk_user_assignment_available?).and_return(true)
       end
 
-      it { is_expected.to eql(expected_data.merge(duo_pro_bulk_user_assignment_available: 'true')) }
+      it { is_expected.to eql(data.merge(duo_pro_bulk_user_assignment_available: 'true')) }
     end
 
     context 'when duo pro bulk assignment is not available' do
@@ -458,7 +455,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
         allow(helper).to receive(:duo_pro_bulk_user_assignment_available?).and_return(false)
       end
 
-      it { is_expected.to eql(expected_data.merge(duo_pro_bulk_user_assignment_available: 'false')) }
+      it { is_expected.to eql(data.merge(duo_pro_bulk_user_assignment_available: 'false')) }
     end
   end
 
