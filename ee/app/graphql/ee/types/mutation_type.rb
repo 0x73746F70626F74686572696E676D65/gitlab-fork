@@ -24,10 +24,10 @@ module EE
         mount_mutation ::Mutations::Geo::Registries::Update, alpha: { milestone: '16.1' }
         mount_mutation ::Mutations::Geo::Registries::BulkUpdate, alpha: { milestone: '16.4' }
         mount_mutation ::Mutations::GitlabSubscriptions::Activate
-        mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::Create, alpha: { milestone: '16.3' }
-        mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::Remove, alpha: { milestone: '16.3' }
-        mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::BulkCreate, alpha: { milestone: '16.11' }
-        mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::BulkRemove, alpha: { milestone: '16.11' }
+        mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::Create
+        mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::Remove
+        mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::BulkCreate
+        mount_mutation ::Mutations::GitlabSubscriptions::UserAddOnAssignments::BulkRemove
         mount_mutation ::Mutations::Projects::SetLocked
         mount_mutation ::Mutations::Iterations::Create
         mount_mutation ::Mutations::Iterations::Update
