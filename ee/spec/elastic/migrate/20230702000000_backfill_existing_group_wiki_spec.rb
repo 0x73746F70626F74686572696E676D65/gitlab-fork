@@ -12,6 +12,7 @@ RSpec.describe BackfillExistingGroupWiki, :elastic_clean, :sidekiq_inline, featu
   let(:group2) { wiki2.container }
 
   before do
+    stub_feature_flags(wiki_redirection: false)
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
     set_elasticsearch_migration_to(version, including: false)
     [wiki, wiki2].each do |w|
