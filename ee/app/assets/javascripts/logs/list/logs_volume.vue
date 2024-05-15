@@ -1,6 +1,7 @@
 <script>
 import { GlLineChart } from '@gitlab/ui/dist/charts';
 import { GlSkeletonLoader } from '@gitlab/ui';
+import { isEmpty } from 'lodash';
 import { s__ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { severityNumberToConfig } from '../utils';
@@ -42,6 +43,9 @@ export default {
       });
 
       return data;
+    },
+    hasData() {
+      return !isEmpty(this.seriesData);
     },
     chartData() {
       return Object.entries(this.seriesData).map(([severityNumber, distribution]) => {
@@ -92,7 +96,7 @@ export default {
   </div>
 
   <gl-line-chart
-    v-else-if="logsCount.length"
+    v-else-if="hasData"
     :data="chartData"
     :height="height"
     :option="chartOption"

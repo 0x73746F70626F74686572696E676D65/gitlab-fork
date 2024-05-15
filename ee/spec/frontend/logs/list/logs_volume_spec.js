@@ -81,6 +81,18 @@ describe('LogsVolume', () => {
     expect(findChart().exists()).toBe(false);
   });
 
+  it('does not diplay a chart if counts are empty', () => {
+    mountComponent({
+      logsCount: [
+        { time: 1715341043520000000, counts: {} },
+        { time: 1715341069440000000, counts: {} },
+        { time: 1715341095360000000, counts: {} },
+        { time: 1715341121280000000, counts: {} },
+      ],
+    });
+    expect(findChart().exists()).toBe(false);
+  });
+
   it('sets the height prop in the chart', () => {
     const height = 123;
     mountComponent({}, height);
