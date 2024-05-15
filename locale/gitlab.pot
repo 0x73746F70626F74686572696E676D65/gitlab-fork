@@ -19469,9 +19469,6 @@ msgstr ""
 msgid "Edit release"
 msgstr ""
 
-msgid "Edit sidebar"
-msgstr ""
-
 msgid "Edit single file"
 msgstr ""
 
@@ -58662,10 +58659,16 @@ msgstr ""
 msgid "WikiPage|Write your content or drag files here…"
 msgstr ""
 
+msgid "Wiki|Create a new page under \"%{page_title}\""
+msgstr ""
+
 msgid "Wiki|Edit page"
 msgstr ""
 
 msgid "Wiki|Edit template"
+msgstr ""
+
+msgid "Wiki|Edit wiki sidebar"
 msgstr ""
 
 msgid "Wiki|New page"
@@ -58698,7 +58701,7 @@ msgstr ""
 msgid "Wiki|The sidebar failed to load. You can reload the page to try again."
 msgstr ""
 
-msgid "Wiki|View All Pages"
+msgid "Wiki|View all"
 msgstr ""
 
 msgid "Wiki|Wiki Pages"
