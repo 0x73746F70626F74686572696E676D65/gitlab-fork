@@ -100,7 +100,7 @@ RSpec.describe 'Project', feature_category: :groups_and_projects do
         expect(Project.last.path).to eq new_path
       end
 
-      it 'has a working pagination', :js do
+      it 'has a working pagination', :js, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444732' do
         last_project = "label[for='#{projects.last.name}']"
 
         click_link 'Create from template'
