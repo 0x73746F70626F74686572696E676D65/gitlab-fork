@@ -7158,6 +7158,32 @@ Input type: `PipelineTriggerUpdateInput`
 | <a id="mutationpipelinetriggerupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationpipelinetriggerupdatepipelinetrigger"></a>`pipelineTrigger` | [`PipelineTrigger`](#pipelinetrigger) | Mutated pipeline trigger token. |
 
+### `Mutation.productAnalyticsProjectSettingsUpdate`
+
+Input type: `ProductAnalyticsProjectSettingsUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationproductanalyticsprojectsettingsupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationproductanalyticsprojectsettingsupdatecubeapibaseurl"></a>`cubeApiBaseUrl` | [`String`](#string) | Base URL for the Cube API. |
+| <a id="mutationproductanalyticsprojectsettingsupdatecubeapikey"></a>`cubeApiKey` | [`String`](#string) | API key for the Cube API. |
+| <a id="mutationproductanalyticsprojectsettingsupdatefullpath"></a>`fullPath` | [`ID!`](#id) | Full path of the project the settings belong to. |
+| <a id="mutationproductanalyticsprojectsettingsupdateproductanalyticsconfiguratorconnectionstring"></a>`productAnalyticsConfiguratorConnectionString` | [`String`](#string) | Connection string for the product analytics configurator. |
+| <a id="mutationproductanalyticsprojectsettingsupdateproductanalyticsdatacollectorhost"></a>`productAnalyticsDataCollectorHost` | [`String`](#string) | Host for the product analytics data collector. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationproductanalyticsprojectsettingsupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationproductanalyticsprojectsettingsupdatecubeapibaseurl"></a>`cubeApiBaseUrl` | [`String`](#string) | Base URL for the Cube API. |
+| <a id="mutationproductanalyticsprojectsettingsupdatecubeapikey"></a>`cubeApiKey` | [`String`](#string) | API key for the Cube API. |
+| <a id="mutationproductanalyticsprojectsettingsupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationproductanalyticsprojectsettingsupdateproductanalyticsconfiguratorconnectionstring"></a>`productAnalyticsConfiguratorConnectionString` | [`String`](#string) | Connection string for the product analytics configurator. |
+| <a id="mutationproductanalyticsprojectsettingsupdateproductanalyticsdatacollectorhost"></a>`productAnalyticsDataCollectorHost` | [`String`](#string) | Host for the product analytics data collector. |
+
 ### `Mutation.projectCiCdSettingsUpdate`
 
 Input type: `ProjectCiCdSettingsUpdateInput`
