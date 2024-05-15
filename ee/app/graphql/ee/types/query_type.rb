@@ -203,7 +203,9 @@ module EE
       end
 
       def member_role_permissions
-        MemberRole.all_customizable_permissions.keys.filter { |perm| ::MemberRole.permission_enabled?(perm) }
+        MemberRole.all_customizable_permissions.keys.filter do |permission|
+          ::MemberRole.permission_enabled?(permission, current_user)
+        end
       end
 
       private

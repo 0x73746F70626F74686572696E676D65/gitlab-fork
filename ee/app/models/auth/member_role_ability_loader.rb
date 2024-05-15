@@ -34,7 +34,7 @@ module Auth
     attr_reader :user, :resource, :ability
 
     def permission_enabled?
-      ::MemberRole.permission_enabled?(ability)
+      ::MemberRole.permission_enabled?(ability, user)
     end
 
     def preloaded_member_roles_for_project

@@ -110,10 +110,10 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
       MemberRole.all_customizable_permissions.select { |_k, v| v[:skip_seat_consumption] }.keys
     end
 
-    def permission_enabled?(permission)
+    def permission_enabled?(permission, user = nil)
       return true unless ::Feature::Definition.get("custom_ability_#{permission}")
 
-      ::Feature.enabled?("custom_ability_#{permission}")
+      ::Feature.enabled?("custom_ability_#{permission}", user)
     end
   end
 
