@@ -23,6 +23,7 @@ RSpec.describe ReindexWikisToFixRoutingAndBackfillArchived, :elastic_clean, :sid
   let_it_be(:project_wiki3) { create(:project_wiki, project: project3) }
 
   before do
+    stub_feature_flags(wiki_redirection: false)
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
     allow(::Gitlab::CurrentSettings).to receive(:elasticsearch_indexes_project?).with(anything).and_return true
     allow(::Gitlab::CurrentSettings).to receive(:elasticsearch_indexes_namespace?).with(anything).and_return true
