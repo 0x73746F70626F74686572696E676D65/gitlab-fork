@@ -10,16 +10,16 @@ module Types
       implements ExternalAuditEventDestinationInterface
 
       field :group, ::Types::GroupType,
-            null: false,
-            description: 'Group the destination belongs to.'
+        null: false,
+        description: 'Group the destination belongs to.'
 
       field :headers, ::Types::AuditEvents::Streaming::HeaderType.connection_type,
-            null: false,
-            description: 'List of additional HTTP headers sent with each event.'
+        null: false,
+        description: 'List of additional HTTP headers sent with each event.'
 
       field :namespace_filter, ::Types::AuditEvents::Streaming::HTTP::NamespaceFilterType,
-            null: true,
-            description: 'List of subgroup or project filters for the destination.'
+        null: true,
+        description: 'List of subgroup or project filters for the destination.'
     end
   end
 end
