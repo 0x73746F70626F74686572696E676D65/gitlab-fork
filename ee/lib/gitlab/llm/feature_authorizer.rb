@@ -10,7 +10,7 @@ module Gitlab
 
       def allowed?
         return false unless Feature.enabled?(:ai_global_switch, type: :ops)
-        return false unless container
+        return false unless container&.duo_features_enabled
 
         ::Gitlab::Llm::StageCheck.available?(container, feature_name)
       end
