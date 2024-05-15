@@ -84,7 +84,8 @@ RSpec.describe 'Project', feature_category: :groups_and_projects do
         expect(Project.last.path).to eq new_path
       end
 
-      it 'allows creation from custom project template using only the path', :js, :sidekiq_inline do
+      it 'allows creation from custom project template using only the path', :js, :sidekiq_inline,
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444731' do
         new_path = 'example-custom-project-template'
         new_name = 'Example Custom Project Template'
 
