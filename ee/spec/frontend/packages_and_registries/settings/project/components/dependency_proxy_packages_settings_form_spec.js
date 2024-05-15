@@ -1,7 +1,7 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlAlert, GlButton, GlToggle } from '@gitlab/ui';
-import Tracking from '~/tracking';
+import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -121,19 +121,30 @@ describe('Dependency proxy packages settings form', () => {
         .fn()
         .mockResolvedValue(dependencyProxyPackagesSettingMutationMock());
       show = jest.fn();
-      jest.spyOn(Tracking, 'event');
     });
 
-    it('tracks the submit event', () => {
-      mountComponentWithApollo();
+    describe('tracking', () => {
+      let trackingSpy;
 
-      findForm().trigger('submit');
+      beforeEach(() => {
+        trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
+      });
 
-      expect(Tracking.event).toHaveBeenCalledWith(
-        undefined,
-        'submit_dependency_proxy_packages_settings',
-        trackingPayload,
-      );
+      afterEach(() => {
+        unmockTracking();
+      });
+
+      it('tracks the submit event', () => {
+        mountComponentWithApollo();
+
+        findForm().trigger('submit');
+
+        expect(trackingSpy).toHaveBeenCalledWith(
+          undefined,
+          'submit_dependency_proxy_packages_settings',
+          trackingPayload,
+        );
+      });
     });
 
     it('sets submit button loading & disabled prop', async () => {
