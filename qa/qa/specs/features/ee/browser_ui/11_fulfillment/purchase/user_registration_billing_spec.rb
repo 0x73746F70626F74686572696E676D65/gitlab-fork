@@ -20,9 +20,10 @@ module QA
           Runtime::ApplicationSettings.set_application_settings(signup_enabled: true)
           Runtime::ApplicationSettings.set_application_settings(require_admin_approval_after_user_signup: true)
 
+          Runtime::Browser.visit(:gitlab, Page::Registration::SignUp)
+
           # Register the new user through the registration page
-          Gitlab::Page::Main::SignUp.perform do |sign_up|
-            sign_up.visit
+          Page::Registration::SignUp.perform do |sign_up|
             sign_up.register_user(user)
           end
 
