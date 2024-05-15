@@ -39119,7 +39119,7 @@ msgstr ""
 msgid "ProductAnalytics|3. Initiate the tracking"
 msgstr ""
 
-msgid "ProductAnalytics|A deployed instance of the analytics-stack project."
+msgid "ProductAnalytics|A deployed instance of the %{linkStart}helm-charts%{linkEnd} project."
 msgstr ""
 
 msgid "ProductAnalytics|Add another dimension"
