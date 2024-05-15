@@ -177,7 +177,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService, fe
             result = service.execute
             policy = result.dig(:policy_hash, :approval_policy).first
 
-            expect(result.dig(:policy_hash, :scan_result_policy)).to eq([])
+            expect(result[:policy_hash]).not_to have_key(:scan_result_policy)
             expect(policy[:name]).to eq('Test Policy')
             expect(policy[:enabled]).to be_falsey
           end
@@ -265,7 +265,26 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService, fe
             it 'removes the policy' do
               result = service.execute
 
-              expect(result.dig(:policy_hash, :scan_result_policy)).to eq([])
+              expect(result[:status]).to eq(:success)
+              expect(result[:policy_hash]).not_to have_key(:scan_result_policy)
+              expect(result[:policy_hash]).to have_key(:approval_policy)
+            end
+          end
+
+          context 'when multiple policies exist as "scan_result_policy" and type specifies "approval_policy"' do
+            let(:type) { :approval_policy }
+            let(:policy) { build(:scan_result_policy, name: 'Test Policy') }
+            let(:other_policy) { build(:scan_result_policy, name: 'Test Policy 2') }
+            let(:policies_yaml) do
+              build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy, name: 'Test Policy'), other_policy])
+            end
+
+            it 'removes only the referenced policy and keeps `scan_result_policy` key' do
+              result = service.execute
+
+              expect(result[:status]).to eq(:success)
+              expect(result.dig(:policy_hash, :scan_result_policy)).to contain_exactly(other_policy)
+              expect(result[:policy_hash]).not_to have_key(:approval_policy)
             end
           end
 

@@ -28,6 +28,8 @@ module Security
         when :remove then remove_from_policy_hash(policy_hash, policy, type)
         end
 
+        delete_empty_deprecated_policy_type(policy_hash)
+
         return error('Invalid policy YAML', :bad_request, pass_back: { details: policy_configuration_validation_errors(policy_hash) }) unless policy_configuration_valid?(policy_hash)
 
         success(policy_hash: policy_hash)
@@ -90,6 +92,13 @@ module Security
 
       def migrate_policy?(new_type, existing_type)
         new_type == :approval_policy && existing_type == :scan_result_policy
+      end
+
+      def delete_empty_deprecated_policy_type(policy_hash)
+        return unless policy_hash[:scan_result_policy].blank?
+
+        policy_hash.delete(:scan_result_policy)
+        policy_hash[:approval_policy] ||= []
       end
 
       attr_reader :policy_configuration, :params
