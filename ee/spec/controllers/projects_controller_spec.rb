@@ -719,6 +719,25 @@ RSpec.describe ProjectsController, feature_category: :groups_and_projects do
         let_it_be(:audit_name) { 'project_export_file_download_started' }
         let_it_be(:custom_message) { 'Export file download started' }
       end
+
+      context 'when user is admin', :enable_admin_mode do
+        let_it_be(:user) { create(:admin) }
+
+        it_behaves_like 'audit events with event type' do
+          let_it_be(:audit_name) { 'project_export_file_download_started' }
+          let_it_be(:custom_message) { 'Export file download started' }
+        end
+
+        context 'when silent exports enabled' do
+          before do
+            stub_application_setting(silent_admin_exports_enabled: true)
+          end
+
+          it 'does not log an audit event' do
+            expect { request }.not_to change { AuditEvent.count }
+          end
+        end
+      end
     end
 
     context 'when project export is disabled' do
