@@ -101,7 +101,8 @@ module EE
       return {} unless widget.show?
 
       {
-        duo_pro_trial_status_widget_data_attrs: widget.widget_data_attributes
+        duo_pro_trial_status_widget_data_attrs: widget.widget_data_attributes,
+        duo_pro_trial_status_popover_data_attrs: widget.popover_data_attributes
       }
     end
 

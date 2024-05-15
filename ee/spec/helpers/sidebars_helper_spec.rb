@@ -120,6 +120,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
           end
 
           it { is_expected.not_to include(:duo_pro_trial_status_widget_data_attrs) }
+          it { is_expected.not_to include(:duo_pro_trial_status_popover_data_attrs) }
         end
 
         context 'when a namespace is qualified for duo pro trial status widget' do
@@ -127,10 +128,12 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
             allow_next_instance_of(GitlabSubscriptions::Trials::DuoProStatusWidgetBuilder) do |instance|
               allow(instance).to receive(:show?).and_return(true)
               allow(instance).to receive(:widget_data_attributes).and_return({})
+              allow(instance).to receive(:popover_data_attributes).and_return({})
             end
           end
 
           it { is_expected.to include(:duo_pro_trial_status_widget_data_attrs) }
+          it { is_expected.to include(:duo_pro_trial_status_popover_data_attrs) }
         end
       end
     end

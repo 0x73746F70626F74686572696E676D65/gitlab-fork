@@ -1,11 +1,13 @@
 import { s__ } from '~/locale';
+import { PROMO_URL } from '~/lib/utils/url_utility';
 
 const ACTIVE_TRIAL_POPOVER = 'trial_status_popover';
 const TRIAL_ENDED_POPOVER = 'trial_ended_popover';
 const CLICK_BUTTON_ACTION = 'click_button';
-const RESIZE_EVENT_DEBOUNCE_MS = 150;
 
+export const RESIZE_EVENT_DEBOUNCE_MS = 150;
 export const RESIZE_EVENT = 'resize';
+export const POPOVER_HIDE_DELAY = 400;
 
 export const DUO_PRO_TRIAL_WIDGET_TITLE = s__('DuoProTrial|GitLab Duo Pro Trial');
 export const DUO_PRO_TRIAL_WIDGET_DAYS_TEXT = s__('DuoProTrial|Day %{daysUsed}/%{duration}');
@@ -67,3 +69,12 @@ export const POPOVER = {
   disabledBreakpoints: ['xs', 'sm'],
   trialEndDateFormatString: 'mmmm d',
 };
+
+export const DUO_PRO_TRIAL_POPOVER_CONTENT = s__(`DuoProTrial|Your trial ends on
+      %{strongStart}%{trialEndDate}%{strongEnd}. We hope you’re enjoying the
+      features of GitLab Duo Pro. To continue using your AI-powered assistant
+      after you trial ends, you'll need to buy an add-on subscription.`);
+export const DUO_PRO_TRIAL_POPOVER_LEARN_TITLE = s__('DuoProTrial|Learn about features');
+export const DUO_PRO_TRIAL_POPOVER_LEARN_URL = `${PROMO_URL}/gitlab-duo/#features`;
+export const DUO_PRO_TRIAL_POPOVER_PURCHASE_TITLE = s__('DuoProTrial|Purchase now');
+export const DUO_PRO_TRIAL_POPOVER_TRACKING_CATEGORY = 'duo_pro_trial_status_popover';

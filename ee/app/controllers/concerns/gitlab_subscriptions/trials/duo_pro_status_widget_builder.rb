@@ -20,6 +20,14 @@ module GitlabSubscriptions
         }
       end
 
+      def popover_data_attributes
+        {
+          days_remaining: trial_status.days_remaining,
+          trial_end_date: trial_status.ends_on,
+          purchase_now_url: widget_url
+        }
+      end
+
       def show?
         namespace.present? &&
           ::Gitlab::Saas.feature_available?(:subscriptions_trials) &&

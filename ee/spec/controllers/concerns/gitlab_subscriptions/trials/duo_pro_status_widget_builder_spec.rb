@@ -5,8 +5,7 @@ require 'spec_helper'
 RSpec.describe GitlabSubscriptions::Trials::DuoProStatusWidgetBuilder, :saas, feature_category: :acquisition do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan, owners: user) }
-
-  before_all do
+  let_it_be(:add_on_purchase) do
     create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :trial, namespace: group)
   end
 
@@ -23,6 +22,25 @@ RSpec.describe GitlabSubscriptions::Trials::DuoProStatusWidgetBuilder, :saas, fe
       }
 
       is_expected.to eq(result)
+    end
+  end
+
+  describe '#popover_data_attributes' do
+    subject { described_class.new(user, group).popover_data_attributes }
+
+    specify do
+      freeze_time do
+        # set here to ensure no date barrier flakiness
+        add_on_purchase.update!(expires_on: 60.days.from_now)
+        result = {
+          purchase_now_url:
+            ::Gitlab::Routing.url_helpers.group_usage_quotas_path(group, anchor: 'code-suggestions-usage-tab'),
+          days_remaining: 60,
+          trial_end_date: 60.days.from_now.to_date
+        }
+
+        is_expected.to eq(result)
+      end
     end
   end
 

@@ -46,9 +46,51 @@ RSpec.describe 'Duo Pro Trial Widget in Sidebar', :saas, :js, feature_category: 
     end
 
     def expect_widget_title_to_be(widget_title)
-      within_testid('duo-pro-trial-widget-menu') do
+      within_testid(widget_menu_selector) do
         expect(page).to have_content(widget_title)
       end
     end
+  end
+
+  context 'for the popover' do
+    context 'when in a group' do
+      before do
+        visit group_path(group)
+      end
+
+      it 'shows the popover for the widget' do
+        expect(page).not_to have_selector('.js-sidebar-collapsed')
+
+        find_by_testid(widget_menu_selector).hover
+
+        expect_popover_content_to_be("We hope you’re enjoying the features of GitLab Duo Pro")
+      end
+    end
+
+    context 'when in a project' do
+      let_it_be(:project) { create(:project, namespace: group) }
+
+      before do
+        visit project_path(project)
+      end
+
+      it 'shows the popover for the widget' do
+        expect(page).not_to have_selector('.js-sidebar-collapsed')
+
+        find_by_testid(widget_menu_selector).hover
+
+        expect_popover_content_to_be("We hope you’re enjoying the features of GitLab Duo Pro")
+      end
+    end
+
+    def expect_popover_content_to_be(content)
+      within_testid('duo-pro-trial-status-popover') do
+        expect(page).to have_content(content)
+      end
+    end
+  end
+
+  def widget_menu_selector
+    'duo-pro-trial-widget-menu'
   end
 end
