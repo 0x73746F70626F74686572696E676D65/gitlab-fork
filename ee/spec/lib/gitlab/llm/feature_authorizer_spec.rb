@@ -28,6 +28,14 @@ RSpec.describe Gitlab::Llm::FeatureAuthorizer, feature_category: :ai_abstraction
           expect(allowed?).to be false
         end
       end
+
+      context 'when duo features are disabled on container' do
+        it 'returns false' do
+          group.namespace_settings.update!(duo_features_enabled: false)
+
+          expect(allowed?).to be false
+        end
+      end
     end
 
     context 'when container does not have correct license' do
