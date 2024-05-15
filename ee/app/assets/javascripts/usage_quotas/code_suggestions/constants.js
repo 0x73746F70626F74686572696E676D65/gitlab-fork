@@ -3,7 +3,6 @@ import { __, s__ } from '~/locale';
 
 export const ADD_ON_CODE_SUGGESTIONS = 'CODE_SUGGESTIONS';
 export const codeSuggestionsLearnMoreLink = `${PROMO_URL}/solutions/code-suggestions/`;
-export const salesLink = `${PROMO_URL}/solutions/code-suggestions/sales/`;
 
 export const addOnEligibleUserListTableFields = {
   codeSuggestionsAddon: {
