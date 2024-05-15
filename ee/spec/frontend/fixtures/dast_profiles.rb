@@ -214,7 +214,7 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
           @site_profile = run_graphql!(
             query: query,
             context: { current_user: current_user },
-            transform: -> (result) { result.dig('data', 'project', 'dastSiteProfile') }
+            transform: ->(result) { result.dig('data', 'project', 'dastSiteProfile') }
           )
         end
       end
