@@ -6,7 +6,7 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        include RemoteDevelopment::AgentPolicy
+        rule { can?(:owner_access) }.enable :admin_remote_development_cluster_agent_mapping
       end
     end
   end

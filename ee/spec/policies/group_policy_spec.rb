@@ -3770,4 +3770,42 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       it { is_expected.to be_disallowed(:admin_licensed_seat) }
     end
   end
+
+  describe "Static Roles" do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:anonymous) { nil }
+    let_it_be(:admin) { create(:admin) }
+    let_it_be(:owner) { create(:user, owner_of: [group]) }
+    let_it_be(:maintainer) { create(:user, maintainer_of: [group]) }
+    let_it_be(:developer) { create(:user, developer_of: [group]) }
+    let_it_be(:reporter) { create(:user, reporter_of: [group]) }
+    let_it_be(:guest) { create(:user, guest_of: [group]) }
+
+    subject(:policy) { described_class.new(user, group) }
+
+    where(:ability, :role, :admin_mode, :allowed) do
+      :admin_remote_development_cluster_agent_mapping | :anonymous  | nil   | false
+      :admin_remote_development_cluster_agent_mapping | :guest      | nil   | false
+      :admin_remote_development_cluster_agent_mapping | :reporter   | nil   | false
+      :admin_remote_development_cluster_agent_mapping | :developer  | nil   | false
+      :admin_remote_development_cluster_agent_mapping | :maintainer | nil   | false
+      :admin_remote_development_cluster_agent_mapping | :owner      | nil   | true
+      :admin_remote_development_cluster_agent_mapping | :admin      | false | true
+      :admin_remote_development_cluster_agent_mapping | :admin      | true  | true
+    end
+
+    with_them do
+      let(:user) { public_send(role) }
+
+      before do
+        enable_admin_mode!(user) if admin_mode
+      end
+
+      if params[:allowed]
+        it { is_expected.to be_allowed(ability) }
+      else
+        it { is_expected.not_to be_allowed(ability) }
+      end
+    end
+  end
 end
