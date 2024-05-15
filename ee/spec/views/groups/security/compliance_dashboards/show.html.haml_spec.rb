@@ -51,24 +51,10 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
   end
 
   context 'for frameworks export', :aggregate_failures do
-    context "when feature `compliance_frameworks_report_csv_export` is enabled" do
-      it 'renders with the correct data attributes' do
-        render
+    it 'renders with the correct data attributes' do
+      render
 
-        expect(rendered).to have_selector("[data-frameworks-csv-export-path='#{frameworks_csv_export_path}']")
-      end
-    end
-
-    context "when feature `compliance_frameworks_report_csv_export` is not enabled" do
-      before do
-        stub_feature_flags(compliance_frameworks_report_csv_export: false)
-      end
-
-      it 'renders with the correct data attributes' do
-        render
-
-        expect(rendered).not_to have_selector("[data-frameworks-csv-export-path='#{frameworks_csv_export_path}']")
-      end
+      expect(rendered).to have_selector("[data-frameworks-csv-export-path='#{frameworks_csv_export_path}']")
     end
   end
 end
