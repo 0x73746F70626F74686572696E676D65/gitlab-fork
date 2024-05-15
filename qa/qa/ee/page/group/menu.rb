@@ -11,7 +11,6 @@ module QA
             super
 
             base.class_eval do
-              include SubMenus::Main
               include SubMenus::Secure
               include SubMenus::Plan
               include SubMenus::Analyze
