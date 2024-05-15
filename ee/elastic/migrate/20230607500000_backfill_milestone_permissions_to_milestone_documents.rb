@@ -15,3 +15,5 @@ class BackfillMilestonePermissionsToMilestoneDocuments < Elastic::Migration
     %w[merge_requests_access_level issues_access_level visibility_level]
   end
 end
+
+BackfillMilestonePermissionsToMilestoneDocuments.prepend ::Elastic::MigrationObsolete
