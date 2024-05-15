@@ -76,7 +76,7 @@ the feature must request to the [AI Gateway](../../architecture/blueprints/ai_ga
     1. Verify AI feature by calling the following in the rails console:
 
 ```ruby
-Gitlab::Llm::AiGateway::Client.new(User.first).stream(prompt: "\n\nHuman: Hi, how are you?\n\nAssistant:")
+Gitlab::Llm::AiGateway::Client.new(User.first).stream(prompt: [{role: "user", content: "Hi, how are you?"}])
 ```
 
 **Additional setup for testing subscriptions** (***not required for DuoChat setup***)
