@@ -24499,7 +24499,7 @@ msgstr ""
 msgid "GpgKeys|Manage GPG keys"
 msgstr ""
 
-msgid "GpgKeys|There is an unverified GPG key associated with your profile. Please review your GPG keys."
+msgid "GpgKeys|There is no valid GPG key issued by Beyond Identity associated with your profile. Please add a valid key to your profile."
 msgstr ""
 
 msgid "Grafana URL"
