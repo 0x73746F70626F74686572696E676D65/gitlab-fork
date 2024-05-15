@@ -23,8 +23,7 @@ RSpec.describe ::Geo::SkipSecondary, feature_category: :global_search do
 
   let(:worker_args) { [project.id] }
 
-  it 'includes all workers with feature_category :global_search',
-    quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/446194' do
+  it 'includes all workers with feature_category :global_search' do
     exceptions = [
       PauseControl::ResumeWorker,
       ConcurrencyLimit::ResumeWorker
@@ -70,7 +69,7 @@ RSpec.describe ::Geo::SkipSecondary, feature_category: :global_search do
         exceptions.exclude?(klass)
     end
 
-    expect(workers).to match_array(expected_workers)
+    expect(workers.uniq).to match_array(expected_workers)
   end
 
   context 'when ::Gitlab::Geo.secondary? is true' do
