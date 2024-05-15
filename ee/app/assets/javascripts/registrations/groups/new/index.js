@@ -34,6 +34,7 @@ const mountGroupProjectFields = (el, store) => {
     groupId,
     groupName,
     projectName,
+    templateName,
     initializeWithReadme,
     rootUrl,
   } = el.dataset;
@@ -49,6 +50,7 @@ const mountGroupProjectFields = (el, store) => {
           groupId: groupId || '',
           groupName: groupName || '',
           projectName: projectName || '',
+          templateName: templateName || '',
           initializeWithReadme: parseBoolean(initializeWithReadme),
           rootUrl,
         },

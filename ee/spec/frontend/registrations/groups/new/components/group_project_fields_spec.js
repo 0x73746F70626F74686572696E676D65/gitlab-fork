@@ -5,13 +5,16 @@ import { GlBreakpointInstance } from '@gitlab/ui/dist/utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import waitForPromises from 'helpers/wait_for_promises';
+import { stubExperiments } from 'helpers/experimentation_helper';
 import GroupProjectFields from 'ee/registrations/groups/new/components/group_project_fields.vue';
+import ProjectTemplateSelector from 'ee/registrations/groups/new/components/project_template_selector.vue';
 import createStore from 'ee/registrations/groups/new/store';
 import { DEFAULT_GROUP_PATH, DEFAULT_PROJECT_PATH } from 'ee/registrations/groups/new/constants';
 import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { s__ } from '~/locale';
+import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 
 jest.mock('~/alert');
 
@@ -22,6 +25,7 @@ describe('GroupProjectFields', () => {
     groupId: '',
     groupName: '',
     projectName: '',
+    templateName: '',
     initializeWithReadme: false,
     rootUrl: 'https://example.com/',
   };
@@ -40,12 +44,14 @@ describe('GroupProjectFields', () => {
         GlTooltip: createMockDirective('gl-tooltip'),
       },
       stubs: {
+        GitlabExperiment,
         GlFormInput,
       },
     });
   };
 
   const findInputByTestId = (testId) => wrapper.findByTestId(testId);
+  const findProjectTemplateSelector = () => wrapper.findComponent(ProjectTemplateSelector);
   const findCheckbox = () => wrapper.findComponent(GlFormCheckbox);
 
   const buildUrl = (groupPath = DEFAULT_GROUP_PATH, projectPath = DEFAULT_PROJECT_PATH) =>
@@ -274,6 +280,48 @@ describe('GroupProjectFields', () => {
     });
   });
 
+  describe('project_templates_during_registration experiment', () => {
+    describe('when control', () => {
+      beforeEach(() => {
+        stubExperiments({ project_templates_during_registration: 'control' });
+      });
+
+      it('does not render ProjectTemplateSelector', () => {
+        createComponent();
+
+        expect(findProjectTemplateSelector().exists()).toBe(false);
+      });
+    });
+
+    describe('when candidate', () => {
+      beforeEach(() => {
+        stubExperiments({ project_templates_during_registration: 'candidate' });
+      });
+
+      it('renders ProjectTemplateSelector', () => {
+        createComponent();
+
+        expect(findProjectTemplateSelector().exists()).toBe(true);
+      });
+
+      it('passes selected template to ProjectTemplateSelector', () => {
+        const templateName = '_template_name_';
+
+        createComponent({ templateName });
+
+        expect(findProjectTemplateSelector().props('selectedTemplateName')).toBe(templateName);
+      });
+
+      describe('when import group', () => {
+        it('does not render ProjectTemplateSelector', () => {
+          createComponent({ importGroup: true });
+
+          expect(findProjectTemplateSelector().exists()).toBe(false);
+        });
+      });
+    });
+  });
+
   describe('readme checkbox', () => {
     describe('when create group', () => {
       describe('when includes readme', () => {
@@ -289,6 +337,14 @@ describe('GroupProjectFields', () => {
           createComponent({ initializeWithReadme: false });
 
           expect(findCheckbox().attributes('checked')).toBe(undefined);
+        });
+      });
+
+      describe('when project template is selected', () => {
+        it('does not render checkbox', () => {
+          createComponent({ initializeWithReadme: true, templateName: '_template_name_' });
+
+          expect(findCheckbox().exists()).toBe(false);
         });
       });
     });
