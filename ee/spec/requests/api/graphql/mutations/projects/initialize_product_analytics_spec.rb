@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Set project compliance framework', feature_category: :product_analytics_data_management do
+RSpec.describe 'Initialize Product Analytics', feature_category: :product_analytics_data_management do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }

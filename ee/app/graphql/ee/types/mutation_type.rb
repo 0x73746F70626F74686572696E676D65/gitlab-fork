@@ -103,6 +103,7 @@ module EE
         mount_mutation ::Mutations::Projects::SetComplianceFramework
         mount_mutation ::Mutations::Projects::ProjectSettingsUpdate, alpha: { milestone: '16.9' }
         mount_mutation ::Mutations::Projects::InitializeProductAnalytics
+        mount_mutation ::Mutations::Projects::ProductAnalyticsProjectSettingsUpdate
         mount_mutation ::Mutations::SecurityPolicy::CommitScanExecutionPolicy
         mount_mutation ::Mutations::SecurityPolicy::AssignSecurityPolicyProject
         mount_mutation ::Mutations::SecurityPolicy::UnassignSecurityPolicyProject
