@@ -11,7 +11,8 @@ module API
         {
           'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
           'X-Gitlab-Instance-Id' => instance_id,
-          'X-Gitlab-Realm' => Gitlab::CloudConnector.gitlab_realm
+          'X-Gitlab-Realm' => Gitlab::CloudConnector.gitlab_realm,
+          'X-Gitlab-Version' => Gitlab.version_info.to_s
         }.tap do |result|
           result['X-Gitlab-Global-User-Id'] = user_id if user
         end
