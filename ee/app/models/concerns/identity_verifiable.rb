@@ -69,6 +69,10 @@ module IdentityVerifiable
     return false unless active_user?
     return true unless identity_verification_enabled?
 
+    # Allow an existing credit card validation to override the identity verification state if
+    # credit_card is not a required verification method.
+    return true if identity_verification_state.exclude?(VERIFICATION_METHODS[:CREDIT_CARD]) && credit_card_verified?
+
     identity_verification_state.values.all?
   end
 

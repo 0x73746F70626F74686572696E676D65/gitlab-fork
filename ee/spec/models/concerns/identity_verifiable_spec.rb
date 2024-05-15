@@ -127,6 +127,34 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
 
       it { is_expected.to eq(true) }
     end
+
+    context 'when the user has a pre-existing credit card validation' do
+      before do
+        allow(user).to receive(:identity_verification_enabled?).and_return(true)
+        allow(user).to receive(:credit_card_verified?).and_return(credit_card_verified)
+        allow(user).to receive(:identity_verification_state) do
+          state = { described_class::VERIFICATION_METHODS[:PHONE_NUMBER] => phone_verified }
+          state[described_class::VERIFICATION_METHODS[:CREDIT_CARD]] = credit_card_verified if credit_card_required
+
+          state
+        end
+      end
+
+      where(:credit_card_required, :credit_card_verified, :phone_verified, :result) do
+        true  | true  | true  | true
+        true  | true  | false | false
+        true  | false | true  | false
+        true  | false | false | false
+        false | true  | true  | true
+        false | true  | false | true
+        false | false | true  | true
+        false | false | false | false
+      end
+
+      with_them do
+        it { is_expected.to eq(result) }
+      end
+    end
   end
 
   describe('#active_for_authentication?') do
