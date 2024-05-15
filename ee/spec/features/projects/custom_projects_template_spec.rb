@@ -46,7 +46,8 @@ RSpec.describe 'Project', feature_category: :groups_and_projects do
         expect(page).to have_link('Preview', href: "/#{projects.first.full_path}")
       end
 
-      it 'allows creation from custom project template', :js, :sidekiq_inline do
+      it 'allows creation from custom project template', :js, :sidekiq_inline,
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444729' do
         new_path = 'example-custom-project-template'
         new_name = 'Example Custom Project Template'
 
