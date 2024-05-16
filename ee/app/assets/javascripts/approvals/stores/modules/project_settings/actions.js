@@ -46,7 +46,7 @@ export const fetchRules = ({ rootState, dispatch }) => {
 
   const { rulesPath } = rootState.settings;
   const { rulesPagination: p, rules: rulesInState, rulesFilter: filter } = rootState.approvals;
-  const params = { page: p.nextPage };
+  const params = { page: p.nextPage || 1 };
 
   return axios
     .get(rulesPath, { params })
@@ -83,7 +83,6 @@ export const updateRules = ({ rootState, dispatch }, updatedRule) => {
 };
 
 export const postRuleSuccess = ({ dispatch }, updatedRule) => {
-  dispatch('createModal/close');
   dispatch('updateRules', updatedRule);
 };
 
@@ -130,7 +129,6 @@ export const deleteRule = ({ rootState, dispatch }, id) => {
 };
 
 export const putFallbackRuleSuccess = ({ dispatch }) => {
-  dispatch('createModal/close');
   dispatch('fetchRules');
 };
 
@@ -143,11 +141,7 @@ export const putFallbackRule = ({ rootState, dispatch }, fallback) => {
 };
 
 export const requestEditRule = ({ dispatch }, rule) => {
-  if (gon.features.approvalRulesDrawer) {
-    dispatch('openCreateDrawer', rule);
-  } else {
-    dispatch('createModal/open', rule);
-  }
+  dispatch('openCreateDrawer', rule);
 };
 
 export const requestDeleteRule = ({ dispatch }, rule) => {
