@@ -58662,16 +58662,10 @@ msgstr ""
 msgid "WikiPage|Write your content or drag files here…"
 msgstr ""
 
-msgid "Wiki|Edit Page"
+msgid "Wiki|Edit page"
 msgstr ""
 
-msgid "Wiki|Edit Template"
-msgstr ""
-
-msgid "Wiki|New Page"
-msgstr ""
-
-msgid "Wiki|New Template"
+msgid "Wiki|Edit template"
 msgstr ""
 
 msgid "Wiki|New page"
@@ -58710,10 +58704,10 @@ msgstr ""
 msgid "Wiki|Wiki Pages"
 msgstr ""
 
-msgid "Wiki|Wiki Templates"
+msgid "Wiki|Wiki actions"
 msgstr ""
 
-msgid "Wiki|Wiki actions"
+msgid "Wiki|Wiki templates"
 msgstr ""
 
 msgid "Will be created"
