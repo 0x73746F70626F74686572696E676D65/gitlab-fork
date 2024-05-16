@@ -8,8 +8,8 @@ class DastScannerProfile < ApplicationRecord
   validates :project_id, presence: true
   validates :name, length: { maximum: 255 }, uniqueness: { scope: :project_id }, presence: true
 
-  scope :project_id_in, -> (project_ids) { where(project_id: project_ids) }
-  scope :with_name, -> (name) { where(name: name) }
+  scope :project_id_in, ->(project_ids) { where(project_id: project_ids) }
+  scope :with_name, ->(name) { where(name: name) }
   scope :with_project, -> { includes(:project) }
 
   enum scan_type: {

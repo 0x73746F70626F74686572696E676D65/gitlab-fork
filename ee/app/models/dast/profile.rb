@@ -27,11 +27,11 @@ module Dast
     validate :branch_name_exists_in_repository
     validate :description_not_nil
 
-    scope :by_project_id, -> (project_id) do
+    scope :by_project_id, ->(project_id) do
       where(project_id: project_id)
     end
 
-    scope :with_schedule, -> (has_dast_profile_schedule) do
+    scope :with_schedule, ->(has_dast_profile_schedule) do
       has_dast_profile_schedule ? joins(:dast_profile_schedule) : where.missing(:dast_profile_schedule)
     end
 

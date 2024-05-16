@@ -303,7 +303,7 @@ module EE
         .order('operations_feature_flags_issues.id ASC')
         .includes(preload)
 
-      cross_project_filter = -> (feature_flags) { feature_flags.where(project: project) }
+      cross_project_filter = ->(feature_flags) { feature_flags.where(project: project) }
       Ability.feature_flags_readable_by_user(feature_flags,
         current_user,
         filters: { read_cross_project: cross_project_filter })

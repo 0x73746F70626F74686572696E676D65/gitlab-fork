@@ -8,7 +8,7 @@ module EE
 
     prepended do
       scope :preload_users, -> { preload(:user) }
-      scope :for_user, -> (user) { where(user: user) }
+      scope :for_user, ->(user) { where(user: user) }
     end
 
     def audit_details

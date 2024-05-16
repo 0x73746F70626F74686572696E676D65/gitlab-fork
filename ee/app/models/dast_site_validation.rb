@@ -9,11 +9,11 @@ class DastSiteValidation < ApplicationRecord
   validates :dast_site_token_id, presence: true
   validates :validation_strategy, presence: true
 
-  scope :by_project_id, -> (project_id) do
+  scope :by_project_id, ->(project_id) do
     joins(:dast_site_token).where(dast_site_tokens: { project_id: project_id })
   end
 
-  scope :by_url_base, -> (url_base) do
+  scope :by_url_base, ->(url_base) do
     where(url_base: url_base)
   end
 

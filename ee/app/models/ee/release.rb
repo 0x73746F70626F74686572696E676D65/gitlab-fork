@@ -11,7 +11,7 @@ module EE
     prepended do
       include UsageStatistics
 
-      scope :by_namespace_id, -> (ns_id) { joins(:project).where(projects: { namespace_id: ns_id }) }
+      scope :by_namespace_id, ->(ns_id) { joins(:project).where(projects: { namespace_id: ns_id }) }
     end
   end
 end

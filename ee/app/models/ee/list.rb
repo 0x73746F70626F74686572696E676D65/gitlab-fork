@@ -39,13 +39,13 @@ module EE
           allow_nil: true
       }
       base.validates :list_type,
-        exclusion: { in: %w[assignee], message: -> (_object, _data) { _('Assignee lists not available with your current license') } },
+        exclusion: { in: %w[assignee], message: ->(_object, _data) { _('Assignee lists not available with your current license') } },
         unless: -> { board&.resource_parent&.feature_available?(:board_assignee_lists) }
       base.validates :list_type,
-        exclusion: { in: %w[milestone], message: -> (_object, _data) { _('Milestone lists not available with your current license') } },
+        exclusion: { in: %w[milestone], message: ->(_object, _data) { _('Milestone lists not available with your current license') } },
         unless: -> { board&.resource_parent&.feature_available?(:board_milestone_lists) }
       base.validates :list_type,
-        exclusion: { in: %w[iteration], message: -> (_object, _data) { _('Iteration lists not available with your current license') } },
+        exclusion: { in: %w[iteration], message: ->(_object, _data) { _('Iteration lists not available with your current license') } },
         unless: -> { board&.resource_parent&.feature_available?(:board_iteration_lists) }
     end
 
