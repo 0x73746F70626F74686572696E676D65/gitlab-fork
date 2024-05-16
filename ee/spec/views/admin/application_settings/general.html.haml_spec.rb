@@ -230,4 +230,12 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
       end
     end
   end
+
+  describe 'private profile restrictions', feature_category: :user_management do
+    it 'renders correct ee partial' do
+      render
+
+      expect(rendered).to render_template('admin/application_settings/_private_profile_restrictions')
+    end
+  end
 end
