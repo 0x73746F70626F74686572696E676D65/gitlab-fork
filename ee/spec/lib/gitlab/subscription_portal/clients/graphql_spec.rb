@@ -888,6 +888,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
                 availableServices {
                   name
                   serviceStartTime
+                  bundledWith
                 }
               }
             }
@@ -909,8 +910,16 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
                   'expiresAt' => expires_at
                 },
                 'availableServices' => [
-                  { "name" => "code_suggestions", "serviceStartTime" => "2024-02-15T00:00:00Z" },
-                  { "name" => "duo_chat", "serviceStartTime" => nil }
+                  {
+                    "name" => "code_suggestions",
+                    "serviceStartTime" => "2024-02-15T00:00:00Z",
+                    "bundledWith" => ['duo_pro']
+                  },
+                  {
+                    "name" => "duo_chat",
+                    "serviceStartTime" => nil,
+                    "bundledWith" => ['duo_pro']
+                  }
                 ]
               }
             }
@@ -920,8 +929,8 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
         expect(client).to receive(:http_post).with('graphql', headers, params).and_return(response)
 
         expect(subject).to eq(success: true, token: token, expires_at: expires_at, available_services: [
-          { "name" => "code_suggestions", "serviceStartTime" => "2024-02-15T00:00:00Z" },
-          { "name" => "duo_chat", "serviceStartTime" => nil }
+          { "name" => "code_suggestions", "serviceStartTime" => "2024-02-15T00:00:00Z", "bundledWith" => ['duo_pro'] },
+          { "name" => "duo_chat", "serviceStartTime" => nil, "bundledWith" => ['duo_pro'] }
         ])
       end
     end
