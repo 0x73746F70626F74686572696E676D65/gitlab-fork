@@ -174,6 +174,16 @@ describe('ee/security_dashboard/components/shared/filtered_search/tokens/project
     );
   });
 
+  describe('when value property is not an array', () => {
+    beforeEach(() => {
+      createComponent({ propsData: { value: { data: '' } } });
+    });
+
+    it('still renders', () => {
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
+    });
+  });
+
   describe('when the projects have been fetched successfully', () => {
     beforeEach(async () => {
       createComponent();
