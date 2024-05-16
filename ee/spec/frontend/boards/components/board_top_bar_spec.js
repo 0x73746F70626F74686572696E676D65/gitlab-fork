@@ -3,12 +3,11 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
-import ToggleEpicsSwimlanes from 'ee/boards/components/toggle_epics_swimlanes.vue';
 import IssueBoardFilteredSearch from 'ee/boards/components/issue_board_filtered_search.vue';
 import EpicBoardFilteredSearch from 'ee/boards/components/epic_filtered_search.vue';
-import ToggleLabels from '~/vue_shared/components/toggle_labels.vue';
 
 import BoardTopBar from '~/boards/components/board_top_bar.vue';
+import BoardOptions from '~/boards/components/board_options.vue';
 import BoardsSelector from '~/boards/components/boards_selector.vue';
 import ConfigToggle from '~/boards/components/config_toggle.vue';
 import NewBoardButton from '~/boards/components/new_board_button.vue';
@@ -61,7 +60,7 @@ describe('BoardTopBar', () => {
         isGroupBoard: true,
         ...provide,
       },
-      stubs: { IssueBoardFilteredSearch, EpicBoardFilteredSearch, ToggleLabels },
+      stubs: { IssueBoardFilteredSearch, EpicBoardFilteredSearch },
     });
   };
 
@@ -90,12 +89,8 @@ describe('BoardTopBar', () => {
       expect(wrapper.findComponent(ToggleFocus).exists()).toBe(true);
     });
 
-    it('renders ToggleLabels component', () => {
-      expect(wrapper.findComponent(ToggleLabels).exists()).toBe(true);
-    });
-
-    it('does not render ToggleEpicsSwimlanes component', () => {
-      expect(wrapper.findComponent(ToggleEpicsSwimlanes).exists()).toBe(false);
+    it('renders BoardOptions component', () => {
+      expect(wrapper.findComponent(BoardOptions).exists()).toBe(true);
     });
   });
 
@@ -125,10 +120,6 @@ describe('BoardTopBar', () => {
           isSignedIn: true,
         },
       });
-    });
-
-    it('renders ToggleEpicsSwimlanes component', () => {
-      expect(wrapper.findComponent(ToggleEpicsSwimlanes).exists()).toBe(true);
     });
   });
 
