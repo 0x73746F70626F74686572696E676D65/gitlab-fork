@@ -16,7 +16,24 @@ module Analytics
     validates :namespace_id, uniqueness: { scope: :project_id }, if: :namespace_id?
     validates :project_id, uniqueness: { scope: :namespace_id }, if: :project_id?
 
+    after_commit :send_new_funnels, on: :create
+    after_commit :move_funnels, on: :update, if: :saved_change_to_target_project_id?
+    after_commit :send_deleted_funnels, on: :destroy
+
     private
+
+    def send_new_funnels
+      ::ProductAnalytics::MoveFunnelsWorker.perform_async(project_id, nil, target_project_id)
+    end
+
+    def move_funnels
+      ::ProductAnalytics::MoveFunnelsWorker.perform_async(project_id, previous_changes["target_project_id"].first,
+        target_project_id)
+    end
+
+    def send_deleted_funnels
+      ::ProductAnalytics::MoveFunnelsWorker.perform_async(project_id, target_project_id, nil)
+    end
 
     def check_namespace_or_project_presence
       if !namespace_id && !project_id
