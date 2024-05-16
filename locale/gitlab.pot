@@ -21622,7 +21622,7 @@ msgstr ""
 msgid "Failed to load branches. Please try again."
 msgstr ""
 
-msgid "Failed to load deploy keys."
+msgid "Failed to load data."
 msgstr ""
 
 msgid "Failed to load error details from Sentry."
@@ -21632,9 +21632,6 @@ msgid "Failed to load errors from Sentry."
 msgstr ""
 
 msgid "Failed to load group activity metrics. Please try again."
-msgstr ""
-
-msgid "Failed to load groups, users and deploy keys."
 msgstr ""
 
 msgid "Failed to load groups."

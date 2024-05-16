@@ -15,32 +15,44 @@ import mountBranchRules from '~/projects/settings/repository/branch_rules/mount_
 import mountDefaultBranchSelector from '~/projects/settings/mount_default_branch_selector';
 import EEMirrorRepos from './ee_mirror_repos';
 
-new UserCallout();
+if (gon.limit_repository_settings?.includes('protected_branches')) {
+  initSettingsPanels();
 
-initDeployKeys();
-initSettingsPanels();
-
-if (document.querySelector('.js-protected-refs-for-users')) {
-  new ProtectedBranchCreate({ hasLicense: true });
-  new ProtectedBranchEditList();
-
-  new ProtectedTagCreate({ hasLicense: true });
-  new ProtectedTagEditList({ hasLicense: true });
+  if (document.querySelector('.js-protected-refs-for-users')) {
+    new ProtectedBranchCreate({ hasLicense: true });
+    new ProtectedBranchEditList();
+  } else {
+    new ProtectedBranchCreate({ hasLicense: false });
+    new CEProtectedBranchEditList();
+  }
 } else {
-  new ProtectedBranchCreate({ hasLicense: false });
-  new CEProtectedBranchEditList();
-  new ProtectedTagCreate({ hasLicense: false });
-  new ProtectedTagEditList({ hasLicense: false });
+  new UserCallout();
+
+  initDeployKeys();
+  initSettingsPanels();
+
+  if (document.querySelector('.js-protected-refs-for-users')) {
+    new ProtectedBranchCreate({ hasLicense: true });
+    new ProtectedBranchEditList();
+
+    new ProtectedTagCreate({ hasLicense: true });
+    new ProtectedTagEditList({ hasLicense: true });
+  } else {
+    new ProtectedBranchCreate({ hasLicense: false });
+    new CEProtectedBranchEditList();
+    new ProtectedTagCreate({ hasLicense: false });
+    new ProtectedTagEditList({ hasLicense: false });
+  }
+
+  const pushPullContainer = document.querySelector('.js-mirror-settings');
+  if (pushPullContainer) new EEMirrorRepos(pushPullContainer).init();
+
+  initDatePicker(); // Used for deploy token "expires at" field
+
+  fileUpload('.js-choose-file', '.js-object-map-input');
+
+  initSearchSettings();
+
+  mountBranchRules(document.getElementById('js-branch-rules'));
+  mountDefaultBranchSelector(document.querySelector('.js-select-default-branch'));
 }
-
-const pushPullContainer = document.querySelector('.js-mirror-settings');
-if (pushPullContainer) new EEMirrorRepos(pushPullContainer).init();
-
-initDatePicker(); // Used for deploy token "expires at" field
-
-fileUpload('.js-choose-file', '.js-object-map-input');
-
-initSearchSettings();
-
-mountBranchRules(document.getElementById('js-branch-rules'));
-mountDefaultBranchSelector(document.querySelector('.js-select-default-branch'));
