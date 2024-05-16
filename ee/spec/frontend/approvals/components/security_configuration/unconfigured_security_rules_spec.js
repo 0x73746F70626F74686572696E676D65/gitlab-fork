@@ -16,10 +16,9 @@ describe('UnconfiguredSecurityRules component', () => {
 
   const TEST_PROJECT_ID = '7';
 
-  const createWrapper = (props = {}, approvalRulesDrawer = false) => {
+  const createWrapper = (props = {}) => {
     wrapper = shallowMount(UnconfiguredSecurityRules, {
       store: new Vuex.Store(store),
-      provide: { glFeatures: { approvalRulesDrawer } },
       propsData: {
         ...props,
       },
@@ -61,12 +60,10 @@ describe('UnconfiguredSecurityRules component', () => {
     });
   });
 
-  describe('approvalRulesDrawer feature flag enabled', () => {
-    it('opens the drawer when a rule is Enabled', () => {
-      createWrapper({}, true);
-      wrapper.findComponent(UnconfiguredSecurityRule).vm.$emit('enable');
+  it('opens the drawer when a rule is Enabled', () => {
+    createWrapper();
+    wrapper.findComponent(UnconfiguredSecurityRule).vm.$emit('enable');
 
-      expect(store.modules.approvals.actions.openCreateDrawer).toHaveBeenCalled();
-    });
+    expect(store.modules.approvals.actions.openCreateDrawer).toHaveBeenCalled();
   });
 });

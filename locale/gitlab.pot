@@ -55541,9 +55541,6 @@ msgstr ""
 msgid "Update appearance settings"
 msgstr ""
 
-msgid "Update approval rule"
-msgstr ""
-
 msgid "Update approvers"
 msgstr ""
 

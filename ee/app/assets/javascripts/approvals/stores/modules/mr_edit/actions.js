@@ -89,12 +89,11 @@ export const fetchRules = (
     .catch(() => dispatch('receiveRulesError'));
 };
 
-export const postRule = ({ commit, dispatch }, rule) =>
+export const postRule = ({ commit }, rule) =>
   seedLocalRule(rule)
     .then(seedNewRule)
     .then((newRule) => {
       commit(types.POST_RULE, newRule);
-      dispatch('createModal/close');
     })
     .catch((e) => {
       createAlert({
@@ -103,11 +102,10 @@ export const postRule = ({ commit, dispatch }, rule) =>
       throw e;
     });
 
-export const putRule = ({ commit, dispatch }, rule) =>
+export const putRule = ({ commit }, rule) =>
   seedLocalRule(rule)
     .then((newRule) => {
       commit(types.PUT_RULE, newRule);
-      dispatch('createModal/close');
     })
     .catch((e) => {
       createAlert({
@@ -121,9 +119,8 @@ export const deleteRule = ({ commit, dispatch }, id) => {
   dispatch('deleteModal/close');
 };
 
-export const putFallbackRule = ({ commit, dispatch }, fallback) => {
+export const putFallbackRule = ({ commit }, fallback) => {
   commit(types.SET_FALLBACK_RULE, fallback);
-  dispatch('createModal/close');
 };
 
 export const openCreateDrawer = ({ commit }, rule) => {
@@ -137,24 +134,19 @@ export const closeCreateDrawer = ({ commit }) => {
 };
 
 export const requestEditRule = ({ dispatch }, rule) => {
-  if (gon.features.approvalRulesDrawer) {
-    dispatch('openCreateDrawer', rule);
-  } else {
-    dispatch('createModal/open', rule);
-  }
+  dispatch('openCreateDrawer', rule);
 };
 
 export const requestDeleteRule = ({ dispatch }, rule) => {
   dispatch('deleteRule', rule.id);
 };
 
-export const postRegularRule = ({ commit, dispatch }, rule) =>
+export const postRegularRule = ({ commit }, rule) =>
   seedLocalRule(rule)
     .then(seedNewRule)
     .then((newRule) => {
       commit(types.POST_REGULAR_RULE, newRule);
       commit(types.DELETE_ANY_RULE);
-      dispatch('createModal/close');
     })
     .catch((e) => {
       createAlert({

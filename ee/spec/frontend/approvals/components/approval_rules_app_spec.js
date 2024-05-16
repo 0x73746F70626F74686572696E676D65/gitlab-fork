@@ -5,7 +5,6 @@ import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ApprovalRulesApp from 'ee/approvals/components/approval_rules_app.vue';
 import DrawerRuleCreate from 'ee/approvals/components/rule_drawer/create_rule.vue';
-import ModalRuleCreate from 'ee/approvals/components/rule_modal/create_rule.vue';
 import ModalRuleRemove from 'ee/approvals/components/rule_modal/remove_rule.vue';
 import { createStoreOptions } from 'ee/approvals/stores';
 import settingsModule from 'ee/approvals/stores/modules/project_settings';
@@ -24,11 +23,10 @@ describe('EE Approvals App', () => {
   let slots;
 
   const targetBranchName = 'development';
-  const factory = (approvalRulesDrawer = false, propsData = {}) => {
+  const factory = (propsData = {}) => {
     wrapper = shallowMountExtended(ApprovalRulesApp, {
       slots,
       store: new Vuex.Store(store),
-      provide: { glFeatures: { approvalRulesDrawer } },
       propsData,
       stubs: {
         GlCard,
@@ -68,7 +66,6 @@ describe('EE Approvals App', () => {
     jest.spyOn(store.modules.approvals.actions, 'fetchRules');
     jest.spyOn(store.modules.approvals.actions, 'openCreateDrawer');
     jest.spyOn(store.modules.approvals.actions, 'closeCreateDrawer');
-    jest.spyOn(store.modules.createModal.actions, 'open');
   });
 
   describe('targetBranch', () => {
@@ -116,13 +113,12 @@ describe('EE Approvals App', () => {
       expect(store.modules.approvals.actions.fetchRules).toHaveBeenCalledTimes(1);
     });
 
-    it('renders create modal', () => {
+    it('renders create drawer', () => {
       factory();
 
-      const modal = wrapper.findComponent(ModalRuleCreate);
+      const drawer = findRuleCreateDrawer();
 
-      expect(modal.exists()).toBe(true);
-      expect(modal.props('modalId')).toBe(`${APP_PREFIX}-approvals-create-modal`);
+      expect(drawer.exists()).toBe(true);
     });
 
     it('renders delete modal', () => {
@@ -199,7 +195,7 @@ describe('EE Approvals App', () => {
         it('when renders on the `Merge requests` project settings page', () => {
           store.modules.approvals.state.rulesPagination.total = 25;
 
-          factory(false, { isMrEdit: false });
+          factory({ isMrEdit: false });
 
           expect(findRulesCount().text()).toBe('25');
         });
@@ -220,36 +216,17 @@ describe('EE Approvals App', () => {
         expect(button.text()).toBe('Add approval rule');
       });
 
-      it('opens create modal when add button is clicked', () => {
+      it('opens create drawer when add button is clicked', () => {
         factory();
 
-        findAddButton().vm.$emit('click');
-
-        expect(store.modules.createModal.actions.open).toHaveBeenCalledWith(
-          expect.anything(),
-          null,
-        );
-      });
-    });
-
-    describe('approvalRulesDrawer feature flag enabled', () => {
-      beforeEach(() => factory(true));
-
-      it('renders a RuleCreateDrawer drawer component with correct props', () => {
-        expect(findRuleCreateDrawer().props()).toEqual({
-          isBranchRulesEdit: false,
-          isMrEdit: true,
-          isOpen: false,
-        });
-      });
-
-      it('opens the drawer when a rule is added', () => {
         findAddButton().vm.$emit('click');
 
         expect(store.modules.approvals.actions.openCreateDrawer).toHaveBeenCalled();
       });
 
       it('closes the drawer when a close event is emitted', () => {
+        factory();
+
         findRuleCreateDrawer().vm.$emit('close');
 
         expect(store.modules.approvals.actions.closeCreateDrawer).toHaveBeenCalled();
@@ -301,7 +278,7 @@ describe('EE Approvals App', () => {
 
   describe('when isBranchRulesEdit is set to `true`', () => {
     it('does not call fetchRules', async () => {
-      factory(false, { isBranchRulesEdit: true });
+      factory({ isBranchRulesEdit: true });
 
       await nextTick();
       expect(store.modules.approvals.actions.fetchRules).not.toHaveBeenCalled();

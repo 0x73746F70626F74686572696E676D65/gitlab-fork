@@ -236,6 +236,14 @@ describe('EE approvals project settings module actions', () => {
       };
     });
 
+    it('defaults to page 1 if pagination information is not available', () => {
+      jest.spyOn(axios, 'get');
+      state.approvals.rulesPagination = {};
+      actions.fetchRules({ rootState: state, dispatch: jest.fn() });
+
+      expect(axios.get).toHaveBeenCalledWith(TEST_RULES_PATH, { params: { page: 1 } });
+    });
+
     it('dispatches request/receive', async () => {
       const data = [TEST_RULE_RESPONSE];
 
@@ -283,7 +291,7 @@ describe('EE approvals project settings module actions', () => {
         null,
         {},
         [],
-        [{ type: 'createModal/close' }, { type: 'updateRules', payload: null }],
+        [{ type: 'updateRules', payload: null }],
       );
     });
   });

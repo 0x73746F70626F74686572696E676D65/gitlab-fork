@@ -49,15 +49,10 @@ export default {
     },
   },
   methods: {
-    ...mapActions({ openCreateModal: 'createModal/open' }),
     ...mapActions({ openCreateDrawer: 'openCreateDrawer' }),
     handleAddRule(ruleName) {
       const rule = { defaultRuleName: ruleName };
-      if (this.glFeatures.approvalRulesDrawer) {
-        this.openCreateDrawer(rule);
-        return;
-      }
-      this.openCreateModal(rule);
+      this.openCreateDrawer(rule);
     },
     hasApprovalRuleDefined(matchRule) {
       return this.rules.some((rule) => {

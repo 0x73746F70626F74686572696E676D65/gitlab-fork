@@ -6,14 +6,12 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { __ } from '~/locale';
 import showToast from '~/vue_shared/plugins/global_toast';
 import DrawerRuleCreate from './rule_drawer/create_rule.vue';
-import ModalRuleCreate from './rule_modal/create_rule.vue';
 import ModalRuleRemove from './rule_modal/remove_rule.vue';
 
 export default {
   name: 'ApprovalRulesApp',
   components: {
     DrawerRuleCreate,
-    ModalRuleCreate,
     ModalRuleRemove,
     GlButton,
     GlCard,
@@ -43,9 +41,6 @@ export default {
       hasLoaded: (state) => state.approvals.hasLoaded,
       targetBranch: (state) => state.approvals.targetBranch,
     }),
-    createModalId() {
-      return `${this.settings.prefix}-approvals-create-modal`;
-    },
     removeModalId() {
       return `${this.settings.prefix}-approvals-remove-modal`;
     },
@@ -63,7 +58,6 @@ export default {
   },
   methods: {
     ...mapActions(['fetchRules', 'undoRulesChange']),
-    ...mapActions({ openCreateModal: 'createModal/open' }),
     ...mapActions({ openCreateDrawer: 'openCreateDrawer' }),
     ...mapActions({ closeCreateDrawer: 'closeCreateDrawer' }),
     resetToProjectDefaults() {
@@ -82,11 +76,7 @@ export default {
       });
     },
     handleAddRule() {
-      if (this.glFeatures.approvalRulesDrawer) {
-        this.openCreateDrawer();
-        return;
-      }
-      this.openCreateModal(null);
+      this.openCreateDrawer();
     },
   },
 };
@@ -145,19 +135,11 @@ export default {
       <slot name="footer"></slot>
     </template>
     <drawer-rule-create
-      v-if="glFeatures.approvalRulesDrawer"
       :is-mr-edit="isMrEdit"
       :is-branch-rules-edit="isBranchRulesEdit"
       :is-open="drawerOpen"
       v-on="$listeners"
       @close="closeCreateDrawer"
-    />
-    <modal-rule-create
-      v-else
-      :modal-id="createModalId"
-      :is-mr-edit="isMrEdit"
-      :is-branch-rules-edit="isBranchRulesEdit"
-      v-on="$listeners"
     />
     <modal-rule-remove :modal-id="removeModalId" />
   </gl-card>

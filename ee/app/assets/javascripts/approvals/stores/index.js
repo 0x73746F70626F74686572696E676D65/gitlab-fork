@@ -7,7 +7,6 @@ export const createStoreOptions = (approvalsModules, settings) => ({
   state: state(settings),
   modules: {
     ...approvalsModules,
-    createModal: modalModule(),
     deleteModal: modalModule(),
   },
 });

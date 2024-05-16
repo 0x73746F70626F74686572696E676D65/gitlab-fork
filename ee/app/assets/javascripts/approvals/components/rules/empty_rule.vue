@@ -59,14 +59,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions({ openCreateModal: 'createModal/open' }),
     ...mapActions({ openCreateDrawer: 'openCreateDrawer' }),
     handleAddRule() {
-      if (this.glFeatures.approvalRulesDrawer) {
-        this.openCreateDrawer();
-        return;
-      }
-      this.openCreateModal(null);
+      this.openCreateDrawer();
     },
   },
 };

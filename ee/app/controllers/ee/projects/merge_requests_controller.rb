@@ -19,8 +19,6 @@ module EE
           if can?(current_user, :fill_in_merge_request_template, project)
             push_frontend_feature_flag(:fill_in_mr_template, project)
           end
-
-          push_frontend_feature_flag(:approval_rules_drawer, @project)
         end
 
         before_action :authorize_read_pipeline!, only: [:metrics_reports]

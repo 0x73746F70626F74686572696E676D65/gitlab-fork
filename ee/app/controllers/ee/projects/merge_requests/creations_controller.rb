@@ -9,10 +9,6 @@ module EE
         prepended do
           before_action :disable_query_limiting, only: [:create]
           before_action :check_for_saml_authorization, only: [:new]
-
-          before_action do
-            push_frontend_feature_flag(:approval_rules_drawer, @project)
-          end
         end
 
         private
