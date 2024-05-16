@@ -19,7 +19,6 @@ class Groups::EpicsController < Groups::ApplicationController
   before_action do
     push_frontend_feature_flag(:epic_color_highlight, @group)
     push_frontend_feature_flag(:preserve_unchanged_markdown, @group)
-    push_frontend_feature_flag(:or_issuable_queries, @group)
     push_frontend_feature_flag(:notifications_todos_buttons, current_user)
     push_frontend_feature_flag(:namespace_level_work_items, @group)
   end

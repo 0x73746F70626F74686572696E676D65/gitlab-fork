@@ -52,17 +52,6 @@ RSpec.shared_examples 'epics hierarchy finder with filtering' do
           expect(epics(or: { author_username: [epic2.author.username, epic3.author.username] }))
             .to eq(result_with_sort([epic3, epic2]))
         end
-
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(or_issuable_queries: false)
-          end
-
-          it 'does not add any filter' do
-            expect(epics(or: { author_username: [epic2.author.username, epic3.author.username] }))
-              .to eq(result_with_sort([epic3, epic2, epic1]))
-          end
-        end
       end
     end
 

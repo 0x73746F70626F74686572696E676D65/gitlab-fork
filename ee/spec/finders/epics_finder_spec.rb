@@ -111,16 +111,6 @@ RSpec.describe EpicsFinder, feature_category: :team_planning do
             it 'returns all epics authored by any of the given users' do
               expect(epics(or: { author_username: [epic2.author.username, epic3.author.username] })).to contain_exactly(epic2, epic3)
             end
-
-            context 'when feature flag is disabled' do
-              before do
-                stub_feature_flags(or_issuable_queries: false)
-              end
-
-              it 'does not add any filter' do
-                expect(epics(or: { author_username: [epic2.author.username, epic3.author.username] })).to contain_exactly(epic1, epic2, epic3, epic5)
-              end
-            end
           end
         end
 

@@ -23,7 +23,7 @@ module Resolvers
         authorize!
 
         lists = board_lists(id)
-        context.scoped_set!(:epic_filters, item_filters(epic_filters, epic_board.resource_parent))
+        context.scoped_set!(:epic_filters, item_filters(epic_filters))
 
         if load_preferences?(lookahead)
           ::Boards::EpicList.preload_preferences_for_user(lists, current_user)

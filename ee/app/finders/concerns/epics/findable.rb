@@ -148,11 +148,6 @@ module Epics
       Project.in_namespace(milestone_groups).with_issues_available_for_user(current_user)
     end
 
-    override :feature_flag_scope
-    def feature_flag_scope
-      params.group
-    end
-
     def top_level_only?
       params.fetch(:top_level_hierarchy_only, false)
     end
