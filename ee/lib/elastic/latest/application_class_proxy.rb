@@ -6,7 +6,6 @@ module Elastic
       include ClassProxyUtil
       include Elastic::Latest::Routing
       include Elastic::Latest::QueryContext::Aware
-      include Gitlab::Utils::StrongMemoize
 
       ADVANCED_QUERY_SYNTAX_REGEX = /[+*"\-|()~\\]/
 
@@ -160,7 +159,8 @@ module Elastic
                    ]
                  end
 
-        if use_match_queries?(options)
+        use_match_queries = use_match_queries?(options)
+        if use_match_queries
           should += [build_multi_match_query(options, :or), build_multi_match_query(options, :and),
             build_match_phrase_query(options)]
         elsif options[:count_only]
@@ -179,16 +179,14 @@ module Elastic
           }
         }
 
-        query_hash[:query][:bool][:minimum_should_match] = 1 if use_match_queries?(options)
+        query_hash[:query][:bool][:minimum_should_match] = 1 if use_match_queries
 
         query_hash
       end
 
       def use_match_queries?(options)
-        strong_memoize :match_queries do
-          Feature.enabled?(:search_uses_match_queries,
-            options[:current_user]) && !query_using_advanced_syntax?(options[:query])
-        end
+        Feature.enabled?(:search_uses_match_queries,
+          options[:current_user]) && !query_using_advanced_syntax?(options[:query])
       end
 
       def query_using_advanced_syntax?(query_string)
