@@ -22,13 +22,24 @@ RSpec.describe 'Match Queries', feature_category: :global_search do
 
       it 'has the multi_match named queries' do
         elastic_search.response
-
         assert_named_queries(
           'doc:is_a:project',
           'project:multi_match_phrase:search_terms',
           'project:multi_match:or:search_terms',
           'project:multi_match:and:search_terms'
         )
+      end
+
+      context 'when we do a count only query' do
+        let(:options) { { count_only: true } }
+
+        it 'has the multi_match filter query present' do
+          elastic_search.response
+          assert_named_queries(
+            'doc:is_a:project',
+            'count:project:using_match_queries'
+          )
+        end
       end
     end
 
@@ -43,6 +54,18 @@ RSpec.describe 'Match Queries', feature_category: :global_search do
           'project:multi_match:or:search_terms',
           'project:multi_match:and:search_terms'
         ])
+      end
+
+      context 'when we do a count only query' do
+        let(:options) { { count_only: true } }
+
+        it 'does not has the multi_match filter query present' do
+          elastic_search.response
+          assert_named_queries(
+            'doc:is_a:project', without: [
+              'count:project:using_match_queries'
+            ])
+        end
       end
     end
   end
@@ -65,6 +88,18 @@ RSpec.describe 'Match Queries', feature_category: :global_search do
           'project:multi_match:and:search_terms'
         ])
       end
+
+      context 'when we do a count only query' do
+        let(:options) { { count_only: true } }
+
+        it 'does not has the multi_match filter query present' do
+          elastic_search.response
+          assert_named_queries(
+            'doc:is_a:project', without: [
+              'count:project:using_match_queries'
+            ])
+        end
+      end
     end
 
     describe 'when use advanced query syntax', :elastic_delete_by_query do
@@ -78,6 +113,18 @@ RSpec.describe 'Match Queries', feature_category: :global_search do
           'project:multi_match:or:search_terms',
           'project:multi_match:and:search_terms'
         ])
+      end
+
+      context 'when we do a count only query' do
+        let(:options) { { count_only: true } }
+
+        it 'does not has the multi_match filter query present' do
+          elastic_search.response
+          assert_named_queries(
+            'doc:is_a:project', without: [
+              'count:project:using_match_queries'
+            ])
+        end
       end
     end
   end
