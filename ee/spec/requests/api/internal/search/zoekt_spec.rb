@@ -137,13 +137,6 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
       }
     end
 
-    let(:log_data) do
-      {
-        class: described_class, node_id: ::Search::Zoekt::Node.last.id, callback_name: params[:name],
-        payload: params[:payload], additional_payload: nil, success: true, error_message: nil
-      }
-    end
-
     before do
       zoekt_ensure_namespace_indexed!(project.root_namespace)
     end
@@ -157,6 +150,13 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
     end
 
     context 'with valid auth' do
+      let(:log_data) do
+        {
+          class: described_class, callback_name: params[:name], payload: params[:payload], additional_payload: nil,
+          success: true, error_message: nil
+        }
+      end
+
       context 'when node is found' do
         before do
           allow(::Search::Zoekt::Logger).to receive(:build).and_return(logger)
@@ -164,7 +164,10 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
 
         context 'and parms success is true' do
           it 'logs the info and returns accepted' do
+            node = Search::Zoekt::Node.find_by_uuid(uuid)
+            log_data[:meta] = { 'zoekt.node_id' => node.id, 'zoekt.node_name' => node.metadata['name'] }
             expect(logger).to receive(:info).with(log_data.as_json)
+            expect(::Search::Zoekt::CallbackService).to receive(:execute).with(node, params)
             post api(endpoint), params: params, headers: gitlab_shell_internal_api_request_header
             expect(response).to have_gitlab_http_status(:accepted)
           end
@@ -172,8 +175,16 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
 
         context 'and params success is false' do
           it 'logs the error and returns accepted' do
-            expect(logger).to receive(:error).with(log_data.merge(success: false, error_message: 'Message').as_json)
             params.merge!({ success: false, error: 'Message' })
+            node = Search::Zoekt::Node.find_by_uuid(uuid)
+            log_data_with_meta = log_data.merge(
+              {
+                success: false, error_message: 'Message',
+                meta: { 'zoekt.node_id' => node.id, 'zoekt.node_name' => node.metadata['name'] }
+              }
+            )
+            expect(logger).to receive(:error).with(log_data_with_meta.as_json)
+            expect(::Search::Zoekt::CallbackService).to receive(:execute).with(node, params)
             post api(endpoint), params: params, headers: gitlab_shell_internal_api_request_header
             expect(response).to have_gitlab_http_status(:accepted)
           end
@@ -185,8 +196,16 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
           end
 
           it 'log the additional_payload attributes' do
-            expect(logger).to receive(:info).with(log_data.merge(additional_payload: additional_payload).as_json)
             params[:additional_payload] = additional_payload
+            node = Search::Zoekt::Node.find_by_uuid(uuid)
+            log_data_with_meta = log_data.merge(
+              {
+                additional_payload: additional_payload,
+                meta: { 'zoekt.node_id' => node.id, 'zoekt.node_name' => node.metadata['name'] }
+              }
+            )
+            expect(logger).to receive(:info).with(log_data_with_meta.as_json)
+            expect(::Search::Zoekt::CallbackService).to receive(:execute).with(node, params)
             post api(endpoint), params: params, headers: gitlab_shell_internal_api_request_header, as: :json
             expect(response).to have_gitlab_http_status(:accepted)
           end
@@ -198,7 +217,8 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
 
         it 'logs the info and returns unprocessable_entity!' do
           allow(::Search::Zoekt::Logger).to receive(:build).and_return(logger)
-          expect(logger).to receive(:info).with(log_data.merge(node_id: nil).as_json)
+          expect(logger).to receive(:info).with(log_data.as_json)
+          expect(::Search::Zoekt::CallbackService).not_to receive(:execute)
           post api(endpoint), params: params, headers: gitlab_shell_internal_api_request_header
           expect(response).to have_gitlab_http_status(:unprocessable_entity)
         end
@@ -206,6 +226,7 @@ RSpec.describe API::Internal::Search::Zoekt, feature_category: :global_search do
 
       context 'when a request is received with invalid params' do
         it 'returns bad_request' do
+          expect(::Search::Zoekt::CallbackService).not_to receive(:execute)
           post api(endpoint), params: { 'foo' => 'bar' }, headers: gitlab_shell_internal_api_request_header
           expect(response).to have_gitlab_http_status(:bad_request)
         end
