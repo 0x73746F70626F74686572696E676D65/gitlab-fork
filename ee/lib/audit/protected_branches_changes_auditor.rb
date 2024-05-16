@@ -26,7 +26,7 @@ module Audit
 
     def audit_access_levels
       access_inputs = [
-        ["allowed to push", @old_push_access_levels, model.push_access_levels],
+        ["allowed to push and merge", @old_push_access_levels, model.push_access_levels],
         ["allowed to merge", @old_merge_access_levels, model.merge_access_levels]
       ]
 

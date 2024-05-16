@@ -82,7 +82,7 @@ RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store, feature_c
     include_examples 'settings', :code_owner_approval_required, 'protected_branch_code_owner_approval_required_updated'
 
     where(:type, :old_access_levels, :new_access_levels, :change_text) do
-      :push  | ref(:old_push_access_levels)  | ref(:new_push_access_levels)  | 'allowed to push'
+      :push  | ref(:old_push_access_levels)  | ref(:new_push_access_levels)  | 'allowed to push and merge'
       :merge | ref(:old_merge_access_levels) | ref(:new_merge_access_levels) | 'allowed to merge'
     end
 
