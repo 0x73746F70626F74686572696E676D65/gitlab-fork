@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlFormCheckbox } from '@gitlab/ui';
+import { GlButton, GlFormCheckbox, GlLink, GlSprintf } from '@gitlab/ui';
 import CloudUserIllustrationPath from '@gitlab/svgs/dist/illustrations/cloud-user-sm.svg';
 
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_action';
@@ -10,7 +10,7 @@ import { getRedirectConfirmationMessage } from './utils';
 
 export default {
   name: 'SelfManagedProviderCard',
-  components: { GlButton, GlFormCheckbox, ProviderSettingsPreview },
+  components: { GlButton, GlFormCheckbox, GlLink, GlSprintf, ProviderSettingsPreview },
   inject: {
     projectLevelAnalyticsProviderSettings: {},
     isInstanceConfiguredWithSelfManagedAnalyticsProvider: {
@@ -136,7 +136,21 @@ export default {
         <h4 class="gl-font-lg gl-mt-0">{{ s__('ProductAnalytics|For this option, you need:') }}</h4>
         <ul class="gl-mb-6">
           <li>
-            {{ s__('ProductAnalytics|A deployed instance of the analytics-stack project.') }}
+            <gl-sprintf
+              :message="
+                s__(
+                  'ProductAnalytics|A deployed instance of the %{linkStart}helm-charts%{linkEnd} project.',
+                )
+              "
+            >
+              <template #link="{ content }">
+                <gl-link
+                  href="https://gitlab.com/gitlab-org/analytics-section/product-analytics/helm-charts"
+                  target="_blank"
+                  >{{ content }}</gl-link
+                >
+              </template>
+            </gl-sprintf>
           </li>
           <li>{{ s__('ProductAnalytics|Valid project settings.') }}</li>
         </ul>

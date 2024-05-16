@@ -1,4 +1,4 @@
-import { GlSprintf } from '@gitlab/ui';
+import { GlSprintf, GlLink } from '@gitlab/ui';
 
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_action';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -23,6 +23,7 @@ describe('SelfManagedProviderCard', () => {
     wrapper.findByTestId('connect-your-own-provider-btn');
   const findUseInstanceConfigurationCheckbox = () =>
     wrapper.findByTestId('use-instance-configuration-checkbox');
+  const findLink = () => wrapper.findComponent(GlLink);
 
   const mockConfirmAction = (confirmed) => confirmAction.mockResolvedValueOnce(confirmed);
 
@@ -143,6 +144,10 @@ describe('SelfManagedProviderCard', () => {
         );
       });
 
+      it('does not render the link to the public helm-charts project', () => {
+        expect(findLink().exists()).toBe(false);
+      });
+
       describe('when selecting provider', () => {
         beforeEach(() => initProvider());
 
@@ -154,6 +159,12 @@ describe('SelfManagedProviderCard', () => {
 
     describe('when "Use instance-level settings" is unchecked', () => {
       beforeEach(() => checkUseInstanceConfiguration(false));
+
+      it('renders the link to the public helm-charts project', () => {
+        expect(findLink().attributes('href')).toBe(
+          'https://gitlab.com/gitlab-org/analytics-section/product-analytics/helm-charts',
+        );
+      });
 
       itShouldRedirectToSettings(`To connect your own provider, you'll be redirected`);
     });
