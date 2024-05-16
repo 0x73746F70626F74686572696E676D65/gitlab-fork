@@ -8,6 +8,10 @@ module QA
           module Plan
             extend QA::Page::PageConcern
 
+            def go_to_epics
+              open_plan_submenu("Epics")
+            end
+
             def go_to_roadmap
               open_plan_submenu("Roadmap")
             end
