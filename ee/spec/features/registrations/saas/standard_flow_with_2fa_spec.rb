@@ -101,7 +101,8 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, feat
 
     return unless with_invite_notification # rubocop:disable RSpec/AvoidConditionalStatements
 
-    expect(page).to have_content('You have been granted Developer access to group Test Group')
+    expect(page)
+      .to have_content('You have been granted access to the Test Group group with the following role: Developer.')
   end
 
   def expect_to_be_on_profile_account_page
