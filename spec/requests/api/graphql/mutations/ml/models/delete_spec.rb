@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Destroying a model', feature_category: :mlops do
+RSpec.describe 'Deleting a model', feature_category: :mlops do
   using RSpec::Parameterized::TableSyntax
 
   include GraphqlHelpers
@@ -15,20 +15,23 @@ RSpec.describe 'Destroying a model', feature_category: :mlops do
 
   let(:query) do
     <<~GQL
-      message
+      model {
+        id
+      }
       errors
     GQL
   end
 
   let(:params) { { project_path: project.full_path, id: id } }
-  let(:mutation) { graphql_mutation(:ml_model_destroy, params, query) }
-  let(:mutation_response) { graphql_mutation_response(:ml_model_destroy) }
+  let(:mutation) { graphql_mutation(:ml_model_delete, params, query) }
+  let(:mutation_response) { graphql_mutation_response(:ml_model_delete) }
 
   shared_examples 'destroying the model' do
     it 'destroys model' do
       expect(::Ml::DestroyModelService).to receive(:new).with(model, user).and_call_original
 
       expect { mutation_request }.to change { ::Ml::Model.count }.by(-1)
+      expect(mutation_response['model']).to eq({ "id" => id })
     end
 
     it_behaves_like 'returning response status', :success
@@ -41,6 +44,8 @@ RSpec.describe 'Destroying a model', feature_category: :mlops do
       expect { mutation_request }.to not_change { ::Ml::Model.count }
 
       expect(mutation_response).to be_nil
+      expect_graphql_errors_to_include("The resource that you are attempting to access does not exist or you don't " \
+                                       "have permission to perform this action")
     end
 
     it_behaves_like 'returning response status', :success
@@ -63,16 +68,13 @@ RSpec.describe 'Destroying a model', feature_category: :mlops do
 
     context 'with valid id' do
       where(:user_role, :mutation_behavior) do
-        :maintainer | 'destroying the model'
-        :developer  | 'destroying the model'
         :reporter   | 'destroying the model'
         :guest      | 'denying the mutation request'
-        :anonymous  | 'denying the mutation request'
       end
 
       with_them do
         before do
-          project.public_send("add_#{user_role}", user) unless user_role == :anonymous
+          project.public_send("add_#{user_role}", user)
         end
 
         it_behaves_like params[:mutation_behavior]
@@ -88,18 +90,6 @@ RSpec.describe 'Destroying a model', feature_category: :mlops do
         let(:params) { { project_path: project.full_path, id: "gid://gitlab/Ml::Model/#{non_existing_record_id}" } }
 
         it_behaves_like 'model was not found'
-      end
-
-      context 'when deleting a model works but has a warning' do
-        it 'adds the warning as message' do
-          service_double = double
-          allow(::Ml::DestroyModelService).to receive(:new).and_return(service_double)
-          allow(service_double).to receive(:execute).and_return(ServiceResponse.success(message: "A message"))
-
-          mutation_request
-
-          expect(mutation_response['message']).to eq("A message")
-        end
       end
 
       context 'when an error occurs' do
