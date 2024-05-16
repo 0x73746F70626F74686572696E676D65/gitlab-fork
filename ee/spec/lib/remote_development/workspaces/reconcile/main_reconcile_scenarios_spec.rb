@@ -221,6 +221,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
             "workspace_agent_infos" => workspace_agent_infos,
             "update_type" => update_type
           },
+          settings: {
+            full_reconciliation_interval_seconds: 3600,
+            partial_reconciliation_interval_seconds: 10
+          },
           logger: logger
         )
 
@@ -243,6 +247,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, 'Partial Update S
         expect(workspace.reload.slice(:desired_state, :actual_state).values)
           .to eq(db_expectations[db_expectation_index].map(&:to_s).map(&:camelize))
         db_expectation_index += 1
+
+        settings = response.fetch(:payload).fetch(:settings)
+        expect(settings.fetch(:full_reconciliation_interval_seconds)).to eq 3600
       end
     end
   end

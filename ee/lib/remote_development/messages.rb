@@ -41,6 +41,8 @@ module RemoteDevelopment
     SettingsEnvironmentVariableReadFailed = Class.new(Message)
     SettingsVscodeExtensionsGalleryValidationFailed = Class.new(Message)
     SettingsVscodeExtensionsGalleryMetadataValidationFailed = Class.new(Message)
+    SettingsFullReconciliationIntervalSecondsValidationFailed = Class.new(Message)
+    SettingsPartialReconciliationIntervalSecondsValidationFailed = Class.new(Message)
 
     # Namespace Cluster Agent Mapping create errors
     NamespaceClusterAgentMappingAlreadyExists = Class.new(Message)

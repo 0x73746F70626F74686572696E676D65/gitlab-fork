@@ -4,16 +4,20 @@ module RemoteDevelopment
   module Workspaces
     module Reconcile
       module Output
-        class WorkspacesToRailsInfosConverter
+        class ResponsePayloadBuilder
           include Messages
           include UpdateTypes
 
           # @param [Hash] value
           # @return [Hash]
-          def self.convert(value)
+          def self.build(value)
             value => {
               update_type: String => update_type,
               workspaces_to_be_returned: Array => workspaces_to_be_returned,
+              settings: {
+                full_reconciliation_interval_seconds: Integer => full_reconciliation_interval_seconds,
+                partial_reconciliation_interval_seconds: Integer => partial_reconciliation_interval_seconds
+              },
               logger: logger
             }
 
@@ -33,7 +37,17 @@ module RemoteDevelopment
               workspace_rails_info
             end
 
-            value.merge(workspace_rails_infos: workspace_rails_infos)
+            settings = {
+              full_reconciliation_interval_seconds: full_reconciliation_interval_seconds,
+              partial_reconciliation_interval_seconds: partial_reconciliation_interval_seconds
+            }
+
+            value.merge(
+              response_payload: {
+                workspace_rails_infos: workspace_rails_infos,
+                settings: settings
+              }
+            )
           end
 
           # @param [RemoteDevelopment::Workspace] workspace

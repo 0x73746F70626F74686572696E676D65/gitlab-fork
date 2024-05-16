@@ -20,6 +20,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
   let(:env_var_reader_class) { RemoteDevelopment::Settings::EnvVarReader }
   let(:extensions_gallery_validator_class) { RemoteDevelopment::Settings::ExtensionsGalleryValidator }
   let(:extensions_gallery_metadata_validator_class) { RemoteDevelopment::Settings::ExtensionsGalleryMetadataValidator }
+  let(:reconciliation_interval_seconds_validator_class) { RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidator }
 
   # Methods
 
@@ -29,6 +30,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
   let(:env_var_reader_method) { env_var_reader_class.singleton_method(:read) }
   let(:extensions_gallery_validator_method) { extensions_gallery_validator_class.singleton_method(:validate) }
   let(:extensions_gallery_metadata_validator_method) { extensions_gallery_metadata_validator_class.singleton_method(:validate) }
+  let(:reconciliation_interval_seconds_validator_method) { reconciliation_interval_seconds_validator_class.singleton_method(:validate) }
 
   # Subject
 
@@ -41,6 +43,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
     allow(env_var_reader_class).to receive(:method).with(:read) { env_var_reader_method }
     allow(extensions_gallery_validator_class).to(receive(:method).with(:validate)) { extensions_gallery_validator_method }
     allow(extensions_gallery_metadata_validator_class).to(receive(:method).with(:validate)) { extensions_gallery_metadata_validator_method }
+    allow(reconciliation_interval_seconds_validator_class).to(receive(:method).with(:validate)) { reconciliation_interval_seconds_validator_method }
 
     stub_method_to_modify_and_return_value(settings_initializer_method, expected_value: input_value, returned_value: value)
     stub_methods_to_return_value(extensions_gallery_metadata_generator_method)
@@ -53,7 +56,8 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
         current_settings_reader_method,
         env_var_reader_method,
         extensions_gallery_validator_method,
-        extensions_gallery_metadata_validator_method
+        extensions_gallery_metadata_validator_method,
+        reconciliation_interval_seconds_validator_method
       )
     end
 
@@ -135,6 +139,53 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
       expect(response).to eq({
         status: :error,
         message: "Settings VSCode extensions gallery metadata validation failed: #{error_details}",
+        reason: :internal_server_error
+      })
+    end
+  end
+
+  context 'when the FullReconciliationIntervalSecondsValidator returns an err Result' do
+    before do
+      stub_methods_to_return_ok_result(
+        current_settings_reader_method,
+        env_var_reader_method,
+        extensions_gallery_validator_method,
+        extensions_gallery_metadata_validator_method
+      )
+      stub_methods_to_return_err_result(
+        method: reconciliation_interval_seconds_validator_method,
+        message_class: RemoteDevelopment::Messages::SettingsFullReconciliationIntervalSecondsValidationFailed
+      )
+    end
+
+    it 'returns an error response' do
+      expect(response).to eq({
+        status: :error,
+        message: "Settings full reconciliation interval seconds validation failed: #{error_details}",
+        reason: :internal_server_error
+      })
+    end
+  end
+
+  context 'when the SettingsPartialReconciliationIntervalSecondsValidationFailed returns an err Result' do
+    before do
+      stub_methods_to_return_ok_result(
+        current_settings_reader_method,
+        env_var_reader_method,
+        extensions_gallery_validator_method,
+        extensions_gallery_metadata_validator_method,
+        reconciliation_interval_seconds_validator_method
+      )
+      stub_methods_to_return_err_result(
+        method: reconciliation_interval_seconds_validator_method,
+        message_class: RemoteDevelopment::Messages::SettingsPartialReconciliationIntervalSecondsValidationFailed
+      )
+    end
+
+    it 'returns an error response' do
+      expect(response).to eq({
+        status: :error,
+        message: "Settings partial reconciliation interval seconds validation failed: #{error_details}",
         reason: :internal_server_error
       })
     end
