@@ -13982,6 +13982,9 @@ msgstr ""
 msgid "ContainerRegistry|Copy push command"
 msgstr ""
 
+msgid "ContainerRegistry|Could not load signature details."
+msgstr ""
+
 msgid "ContainerRegistry|Created %{time}"
 msgstr ""
 
@@ -14138,6 +14141,9 @@ msgid "ContainerRegistry|Set up cleanup"
 msgstr ""
 
 msgid "ContainerRegistry|Show full path"
+msgstr ""
+
+msgid "ContainerRegistry|Signature details"
 msgstr ""
 
 msgid "ContainerRegistry|Signature digest: %{digest}"
