@@ -33,7 +33,8 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
         "X-Gitlab-Host-Name" => [hostname],
         "X-Gitlab-Instance-Id" => [instance_uuid],
         "X-Gitlab-Realm" => [gitlab_realm],
-        "X-Gitlab-Global-User-Id" => [global_user_id]
+        "X-Gitlab-Global-User-Id" => [global_user_id],
+        "X-Gitlab-Version" => [Gitlab.version_info.to_s]
       }
     end
 

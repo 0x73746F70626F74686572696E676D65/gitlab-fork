@@ -14,7 +14,8 @@ RSpec.describe API::Helpers::CloudConnector, feature_category: :cloud_connector 
       {
         'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
         'X-Gitlab-Instance-Id' => an_instance_of(String),
-        'X-Gitlab-Realm' => Gitlab::CloudConnector::GITLAB_REALM_SELF_MANAGED
+        'X-Gitlab-Realm' => Gitlab::CloudConnector::GITLAB_REALM_SELF_MANAGED,
+        'X-Gitlab-Version' => Gitlab.version_info.to_s
       }
     end
 
