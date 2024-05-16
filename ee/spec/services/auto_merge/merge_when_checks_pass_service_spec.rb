@@ -13,256 +13,149 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
   end
 
   describe '#available_for?' do
-    context 'when refactor_auto_merge flag is disabled' do
-      subject { service.available_for?(mr_merge_if_green_enabled) }
+    subject { service.available_for?(mr_merge_if_green_enabled) }
 
-      let_it_be(:approver) { create(:user) }
-      let(:feature_flag) { true }
-      let(:draft_status) { false }
-      let(:blocked_status) { false }
-      let(:discussions_status) { true }
-      let(:additional_merge_checks_ff) { true }
-      let(:pipeline_status) { :running }
-      let(:approvals_required) { 0 }
+    let(:feature_flag) { true }
+    let(:additional_checks_flag) { true }
 
-      before do
-        if pipeline_status
-          create(:ci_pipeline, pipeline_status,
+    before do
+      stub_feature_flags(merge_when_checks_pass: feature_flag,
+        additional_merge_when_checks_ready: additional_checks_flag)
+    end
+
+    context 'when immediately mergeable' do
+      context 'when a non active pipeline' do
+        before do
+          create(:ci_pipeline, :success,
             ref: mr_merge_if_green_enabled.source_branch,
             sha: mr_merge_if_green_enabled.diff_head_sha,
             project: mr_merge_if_green_enabled.source_project)
           mr_merge_if_green_enabled.update_head_pipeline
         end
 
-        approval_rule.users << approver
-        stub_feature_flags(merge_when_checks_pass: feature_flag,
-          additional_merge_when_checks_ready: additional_merge_checks_ff,
-          refactor_auto_merge: false)
-        mr_merge_if_green_enabled.update!(title: 'Draft: check') if draft_status
-        allow(mr_merge_if_green_enabled).to receive(:merge_blocked_by_other_mrs?).and_return(blocked_status)
-        allow(mr_merge_if_green_enabled).to receive(:mergeable_discussions_state?).and_return(discussions_status)
-      end
-
-      where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :discussions_status,
-        :external_checks_pass, :additional_merge_checks_ff, :result) do
-        :running | 0 | false | false | true | true | true | true
-        :running | 0 | true | true | false | false | true | true
-        :running | 0 | false | false | true | true | true | true
-        :success | 0 | false | false | true | true | true | false
-        :success | 0 | true | true | false | false | true | true
-        :success | 0 | true | true | true | false | false | false
-        :running | 1 | true | true | false | false | true | true
-        :success | 1 | true | true | false | false | true | true
-        :success | 1 | false | false | true | true | true | true
-        :running | 1 | false | false | true | true | true | true
-      end
-
-      with_them do
-        it { is_expected.to eq result }
-      end
-
-      context 'when mergeable and no pipeline' do
-        let(:pipeline_status) { nil }
-
         it { is_expected.to eq false }
       end
 
-      context 'when feature flags merge_when_checks_pass and additional_merge_when_checks_ready are disabled"' do
-        let(:additional_merge_checks_ff) { false }
-        let(:feature_flag) { false }
-
-        where(:pipeline_status, :approvals_required, :draft_status, :blocked_status, :discussions_status,
-          :external_checks_pass, :result) do
-          :running | 0 | true | true | false | false | false
-          :success | 0 | false | false | true | true | false
-          :running | 1 | false | false | true | true | false
-          :success | 1 | true | false | true | false | false
-        end
-
-        with_them do
-          it { is_expected.to eq result }
-        end
-      end
-
-      context 'when the user does not have permission to merge' do
-        let(:pipeline_status) { :running }
-        let(:approvals_required) { 0 }
-
-        before do
-          allow(mr_merge_if_green_enabled).to receive(:can_be_merged_by?).and_return(false)
-        end
-
-        it { is_expected.to eq false }
-      end
-
-      context 'when there is an open MR dependency and "additional_merge_when_checks_ready" is disabled' do
-        let(:pipeline_status) { :success }
-        let(:approvals_required) { 0 }
-
-        before do
-          stub_feature_flags(additional_merge_when_checks_ready: false)
-          stub_licensed_features(blocking_merge_requests: true)
-          create(:merge_request_block, blocked_merge_request: mr_merge_if_green_enabled)
-        end
-
-        it { is_expected.to eq false }
-      end
-
-      context 'when merge trains are enabled' do
-        before do
-          allow(mr_merge_if_green_enabled.project).to receive(:merge_trains_enabled?).and_return(true)
-        end
-
-        it { is_expected.to eq false }
-      end
-    end
-
-    context 'when refactor_auto_merge flag is enabled' do
-      subject { service.available_for?(mr_merge_if_green_enabled) }
-
-      let(:feature_flag) { true }
-      let(:additional_checks_flag) { true }
-
-      before do
-        stub_feature_flags(merge_when_checks_pass: feature_flag,
-          additional_merge_when_checks_ready: additional_checks_flag,
-          refactor_auto_merge: true)
-      end
-
-      context 'when immediately mergeable' do
-        context 'when a non active pipeline' do
-          before do
-            create(:ci_pipeline, :success,
-              ref: mr_merge_if_green_enabled.source_branch,
-              sha: mr_merge_if_green_enabled.diff_head_sha,
-              project: mr_merge_if_green_enabled.source_project)
-            mr_merge_if_green_enabled.update_head_pipeline
-          end
-
-          it { is_expected.to eq false }
-        end
-
-        context 'when an active pipeline' do
-          before do
-            create(:ci_pipeline, :running,
-              ref: mr_merge_if_green_enabled.source_branch,
-              sha: mr_merge_if_green_enabled.diff_head_sha,
-              project: mr_merge_if_green_enabled.source_project)
-            mr_merge_if_green_enabled.update_head_pipeline
-          end
-
-          it { is_expected.to eq true }
-        end
-      end
-
-      context 'when merge when checks pass flag is off' do
-        let(:feature_flag) { false }
-
-        it { is_expected.to eq false }
-      end
-
-      context 'when missing approvals' do
-        let(:approval_rule) do
-          create(:approval_merge_request_rule, merge_request: mr_merge_if_green_enabled,
-            approvals_required: approvals_required)
-        end
-
-        let(:approvals_required) { 1 }
-        let_it_be(:approver) { create(:user) }
-
-        before do
-          approval_rule.users << approver
-        end
-
-        it { is_expected.to eq true }
-
-        context 'when additional merge when checks flag is off' do
-          let(:additional_checks_flag) { false }
-
-          it { is_expected.to eq true }
-        end
-      end
-
-      context 'when draft status' do
-        before do
-          mr_merge_if_green_enabled.update!(title: 'Draft: check')
-        end
-
-        it { is_expected.to eq true }
-
-        context 'when additional merge when checks flag is off' do
-          let(:additional_checks_flag) { false }
-
-          it { is_expected.to eq false }
-        end
-      end
-
-      context 'when blocked status' do
-        before do
-          stub_licensed_features(blocking_merge_requests: true)
-          create(:merge_request_block, blocked_merge_request: mr_merge_if_green_enabled)
-          allow(mr_merge_if_green_enabled).to receive(:merge_blocked_by_other_mrs?).and_return(true)
-        end
-
-        it { is_expected.to eq true }
-
-        context 'when additional merge when checks flag is off' do
-          let(:additional_checks_flag) { false }
-
-          it { is_expected.to eq false }
-        end
-      end
-
-      context 'when discussions open' do
-        before do
-          allow(mr_merge_if_green_enabled).to receive(:mergeable_discussions_state?).and_return(false)
-          allow(mr_merge_if_green_enabled)
-            .to receive(:only_allow_merge_if_all_discussions_are_resolved?).and_return(true)
-        end
-
-        it { is_expected.to eq true }
-
-        context 'when additional merge when checks flag is off' do
-          let(:additional_checks_flag) { false }
-
-          it { is_expected.to eq false }
-        end
-      end
-
-      context 'when pipline is active' do
+      context 'when an active pipeline' do
         before do
           create(:ci_pipeline, :running,
             ref: mr_merge_if_green_enabled.source_branch,
             sha: mr_merge_if_green_enabled.diff_head_sha,
             project: mr_merge_if_green_enabled.source_project)
-
           mr_merge_if_green_enabled.update_head_pipeline
         end
 
         it { is_expected.to eq true }
+      end
+    end
 
-        context 'when additional merge when checks flag is off' do
-          let(:additional_checks_flag) { false }
+    context 'when merge when checks pass flag is off' do
+      let(:feature_flag) { false }
 
-          it { is_expected.to eq true }
-        end
+      it { is_expected.to eq false }
+    end
+
+    context 'when missing approvals' do
+      let(:approval_rule) do
+        create(:approval_merge_request_rule, merge_request: mr_merge_if_green_enabled,
+          approvals_required: approvals_required)
       end
 
-      context 'when the user does not have permission to merge' do
-        before do
-          allow(mr_merge_if_green_enabled).to receive(:can_be_merged_by?).and_return(false)
-        end
+      let(:approvals_required) { 1 }
+      let_it_be(:approver) { create(:user) }
+
+      before do
+        approval_rule.users << approver
+      end
+
+      it { is_expected.to eq true }
+
+      context 'when additional merge when checks flag is off' do
+        let(:additional_checks_flag) { false }
+
+        it { is_expected.to eq true }
+      end
+    end
+
+    context 'when draft status' do
+      before do
+        mr_merge_if_green_enabled.update!(title: 'Draft: check')
+      end
+
+      it { is_expected.to eq true }
+
+      context 'when additional merge when checks flag is off' do
+        let(:additional_checks_flag) { false }
 
         it { is_expected.to eq false }
       end
+    end
 
-      context 'when merge trains are enabled' do
-        before do
-          allow(mr_merge_if_green_enabled.project).to receive(:merge_trains_enabled?).and_return(true)
-        end
+    context 'when blocked status' do
+      before do
+        stub_licensed_features(blocking_merge_requests: true)
+        create(:merge_request_block, blocked_merge_request: mr_merge_if_green_enabled)
+        allow(mr_merge_if_green_enabled).to receive(:merge_blocked_by_other_mrs?).and_return(true)
+      end
+
+      it { is_expected.to eq true }
+
+      context 'when additional merge when checks flag is off' do
+        let(:additional_checks_flag) { false }
 
         it { is_expected.to eq false }
       end
+    end
+
+    context 'when discussions open' do
+      before do
+        allow(mr_merge_if_green_enabled).to receive(:mergeable_discussions_state?).and_return(false)
+        allow(mr_merge_if_green_enabled)
+          .to receive(:only_allow_merge_if_all_discussions_are_resolved?).and_return(true)
+      end
+
+      it { is_expected.to eq true }
+
+      context 'when additional merge when checks flag is off' do
+        let(:additional_checks_flag) { false }
+
+        it { is_expected.to eq false }
+      end
+    end
+
+    context 'when pipline is active' do
+      before do
+        create(:ci_pipeline, :running,
+          ref: mr_merge_if_green_enabled.source_branch,
+          sha: mr_merge_if_green_enabled.diff_head_sha,
+          project: mr_merge_if_green_enabled.source_project)
+
+        mr_merge_if_green_enabled.update_head_pipeline
+      end
+
+      it { is_expected.to eq true }
+
+      context 'when additional merge when checks flag is off' do
+        let(:additional_checks_flag) { false }
+
+        it { is_expected.to eq true }
+      end
+    end
+
+    context 'when the user does not have permission to merge' do
+      before do
+        allow(mr_merge_if_green_enabled).to receive(:can_be_merged_by?).and_return(false)
+      end
+
+      it { is_expected.to eq false }
+    end
+
+    context 'when merge trains are enabled' do
+      before do
+        allow(mr_merge_if_green_enabled.project).to receive(:merge_trains_enabled?).and_return(true)
+      end
+
+      it { is_expected.to eq false }
     end
   end
 
