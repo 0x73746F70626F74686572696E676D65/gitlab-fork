@@ -6,13 +6,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
   let_it_be(:user) { create(:user) }
   let_it_be(:root_group) { create(:group, owners: user) }
   let_it_be(:sub_group) { create(:group, parent: root_group) }
-  let_it_be(:sub_group_project) { create(:project, id: 1, group: sub_group) }
-  let_it_be(:root_group_projects) do
-    [
-      create(:project, id: 2, group: root_group),
-      create(:project, id: 3, group: root_group)
-    ]
-  end
+  let_it_be(:sub_group_project) { create(:project, group: sub_group) }
+  let_it_be(:root_group_projects) { Array.new(2) { create(:project, group: root_group) } }
 
   let(:request_params) { described_class.new(params) }
   let(:project_ids) { root_group_projects.collect(&:id) }
@@ -31,7 +26,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
       {
         created_after: '2019-01-01',
         created_before: '2019-03-01',
-        project_ids: [2, 3],
+        project_ids: project_ids,
         namespace: namespace,
         current_user: user,
         weight: 1,
