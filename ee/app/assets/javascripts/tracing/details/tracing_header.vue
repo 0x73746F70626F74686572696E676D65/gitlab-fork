@@ -59,7 +59,7 @@ export default {
       >
     </h1>
 
-    <div class="gl-display-flex gl-flex-wrap gl-justify-content-center gl-my-7 gl-row-gap-6">
+    <div class="gl-display-flex gl-flex-wrap gl-justify-content-center gl-my-7 gl-gap-y-6">
       <gl-card
         data-testid="trace-date-card"
         :class="$options.CARD_CLASS"

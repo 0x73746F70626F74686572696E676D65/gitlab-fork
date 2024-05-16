@@ -140,7 +140,7 @@ export default {
     </template>
     <div
       v-if="isVisible"
-      class="gl-display-grid scan-reports-summary-grid gl-align-items-center gl-row-gap-2 gl-my-3"
+      class="gl-display-grid scan-reports-summary-grid gl-align-items-center gl-gap-y-2 gl-my-3"
     >
       <template v-for="[scanType, scanSummary] in formattedSummary">
         <div :key="scanType" class="gl-line-height-24">
