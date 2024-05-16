@@ -90,8 +90,11 @@ module Search
         estimates[klass.index_name] = { document_count: formatted_doc_count, shards: shards }
       end
 
+      sizing_url = Rails.application.routes.url_helpers
+        .help_page_url('integration/advanced_search/elasticsearch', anchor: 'number-of-elasticsearch-shards')
       puts "Using approximate counts to estimate shard counts for data indexed from database. " \
            "This does not include repository data."
+      puts "For single-node cluster recommendations, see #{sizing_url}"
       puts "The approximate document counts, recommended shard size, and replica size for each index are:"
 
       estimates.each do |index_name, estimate|
