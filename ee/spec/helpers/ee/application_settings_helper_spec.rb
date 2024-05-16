@@ -168,4 +168,24 @@ RSpec.describe EE::ApplicationSettingsHelper, feature_category: :shared do
       end
     end
   end
+
+  describe '#zoekt_settings_checkboxes', feature_category: :global_search do
+    let_it_be(:application_setting) { build(:application_setting) }
+
+    before do
+      application_setting.zoekt_indexing_enabled = true
+      application_setting.zoekt_indexing_paused = false
+      application_setting.zoekt_search_enabled = true
+      helper.instance_variable_set(:@application_setting, application_setting)
+    end
+
+    it 'returns correctly checked checkboxes' do
+      helper.gitlab_ui_form_for(application_setting, url: advanced_search_admin_application_settings_path) do |form|
+        result = helper.zoekt_settings_checkboxes(form)
+        expect(result[0]).to have_checked_field('Enable indexing for exact code search', with: 1)
+        expect(result[1]).not_to have_checked_field('Pause indexing for exact code search', with: 1)
+        expect(result[2]).to have_checked_field('Enable exact code search', with: 1)
+      end
+    end
+  end
 end

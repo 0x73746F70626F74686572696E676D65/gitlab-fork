@@ -226,6 +226,26 @@ module EE
       end
     end
 
+    def zoekt_settings_checkboxes(form)
+      [
+        form.gitlab_ui_checkbox_component(
+          :zoekt_indexing_enabled,
+          'Enable indexing for exact code search',
+          checkbox_options: { checked: @application_setting.zoekt_indexing_enabled, multiple: false }
+        ),
+        form.gitlab_ui_checkbox_component(
+          :zoekt_indexing_paused,
+          'Pause indexing for exact code search',
+          checkbox_options: { checked: @application_setting.zoekt_indexing_paused, multiple: false }
+        ),
+        form.gitlab_ui_checkbox_component(
+          :zoekt_search_enabled,
+          'Enable exact code search',
+          checkbox_options: { checked: @application_setting.zoekt_search_enabled, multiple: false }
+        )
+      ]
+    end
+
     private
 
     def identity_verification_attributes

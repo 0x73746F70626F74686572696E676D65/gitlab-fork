@@ -42,8 +42,8 @@ module EE
         # before the transfer. If Elasticsearch limit indexing is enabled, the group has the ES cache invalidated.
         elasticsearch_limit_indexing_enabled = ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
         group.invalidate_elasticsearch_indexes_cache! if elasticsearch_limit_indexing_enabled
-
-        zoekt_enabled = ::Feature.enabled?(:index_code_with_zoekt) && ::License.feature_available?(:zoekt_code_search)
+        zoekt_enabled = License.feature_available?(:zoekt_code_search) &&
+          ::Gitlab::CurrentSettings.zoekt_indexing_enabled?
 
         # If zoekt is not enabled then we must not do db query as we will skip all zoekt related steps
         old_namespace_had_zoekt_enabled = ::Namespace.find_by_id(old_root_ancestor_id)&.use_zoekt? if zoekt_enabled

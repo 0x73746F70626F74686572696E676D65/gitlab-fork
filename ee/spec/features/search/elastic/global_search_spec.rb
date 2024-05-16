@@ -10,7 +10,6 @@ RSpec.describe 'Global elastic search', :elastic, :js, :sidekiq_inline, :disable
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-    stub_feature_flags(search_code_with_zoekt: false)
 
     project.add_maintainer(user)
     sign_in(user)

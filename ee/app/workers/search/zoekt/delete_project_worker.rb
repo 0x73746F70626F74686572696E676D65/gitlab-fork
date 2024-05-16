@@ -18,7 +18,7 @@ module Search
       pause_control :zoekt
 
       def perform(root_namespace_id, project_id, node_id = nil)
-        return unless ::Feature.enabled?(:index_code_with_zoekt)
+        return unless ::Gitlab::CurrentSettings.zoekt_indexing_enabled?
         return unless ::License.feature_available?(:zoekt_code_search)
 
         node_id ||= ::Search::Zoekt.fetch_node_id(root_namespace_id)

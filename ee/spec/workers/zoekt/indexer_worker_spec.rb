@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
+RSpec.describe ::Zoekt::IndexerWorker, :zoekt_settings_enabled, feature_category: :global_search do
   let_it_be(:project) { create(:project, :repository) }
   let(:use_zoekt) { true }
 
@@ -30,9 +30,9 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
       worker.perform(project.id, options)
     end
 
-    context 'when index_code_with_zoekt is disabled' do
+    context 'when application_setting zoekt_indexing_enabled is disabled' do
       before do
-        stub_feature_flags(index_code_with_zoekt: false)
+        stub_ee_application_setting(zoekt_indexing_enabled: false)
       end
 
       it 'does not send the project to Zoekt for indexing' do

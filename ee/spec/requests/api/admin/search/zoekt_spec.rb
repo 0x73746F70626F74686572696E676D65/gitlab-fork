@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_search do
+RSpec.describe API::Admin::Search::Zoekt, :zoekt, :zoekt_settings_enabled, feature_category: :global_search do
   let(:admin) { create(:admin) }
   let_it_be(:namespace) { create(:group) }
   let_it_be(:unindexed_namespace) { create(:group) }
@@ -13,16 +13,16 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
   let(:node) { ::Search::Zoekt::Node.first }
   let(:node_id) { node.id }
 
-  shared_examples 'an API that returns 400 when the index_code_with_zoekt feature flag is disabled' do |verb|
+  shared_examples 'an API that returns 400 when the application setting zoekt_indexing_enabled is disabled' do |verb|
     before do
-      stub_feature_flags(index_code_with_zoekt: false)
+      stub_ee_application_setting(zoekt_indexing_enabled: false)
     end
 
     it 'returns not_found status' do
       send(verb, api(path, admin, admin_mode: true))
 
       expect(response).to have_gitlab_http_status(:bad_request)
-      expect(json_response['error']).to eq('index_code_with_zoekt feature flag is not enabled')
+      expect(json_response['error']).to eq('application setting zoekt_indexing_enabled is not enabled')
     end
   end
 
@@ -45,9 +45,9 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
   describe 'PUT /admin/zoekt/projects/:projects/index' do
     let(:path) { "/admin/zoekt/projects/#{project_id}/index" }
 
-    it_behaves_like "PUT request permissions for admin mode"
-    it_behaves_like "an API that returns 401 for unauthenticated requests", :put
-    it_behaves_like "an API that returns 400 when the index_code_with_zoekt feature flag is disabled", :put
+    it_behaves_like 'PUT request permissions for admin mode'
+    it_behaves_like 'an API that returns 401 for unauthenticated requests', :put
+    it_behaves_like 'an API that returns 400 when the application setting zoekt_indexing_enabled is disabled', :put
 
     it 'triggers indexing for the project' do
       expect(::Search::Zoekt).to receive(:index_async).with(project.id).and_return('the-job-id')
@@ -69,8 +69,8 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
       create(:zoekt_node, index_base_url: 'http://111.111.111.111/', search_base_url: 'http://111.111.111.112/')
     end
 
-    it_behaves_like "GET request permissions for admin mode"
-    it_behaves_like "an API that returns 401 for unauthenticated requests", :get
+    it_behaves_like 'GET request permissions for admin mode'
+    it_behaves_like 'an API that returns 401 for unauthenticated requests', :get
 
     it 'returns all nodes' do
       get api(path, admin, admin_mode: true)
@@ -119,8 +119,8 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
       enabled_namespace_3
     end
 
-    it_behaves_like "GET request permissions for admin mode"
-    it_behaves_like "an API that returns 401 for unauthenticated requests", :get
+    it_behaves_like 'GET request permissions for admin mode'
+    it_behaves_like 'an API that returns 401 for unauthenticated requests', :get
 
     it 'returns all indexed namespaces for this node' do
       get api(path, admin, admin_mode: true)
@@ -166,9 +166,9 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
   describe 'PUT /admin/zoekt/shards/:node_id/indexed_namespaces/:namespace_id' do
     let(:path) { "/admin/zoekt/shards/#{node_id}/indexed_namespaces/#{namespace_id}" }
 
-    it_behaves_like "PUT request permissions for admin mode"
-    it_behaves_like "an API that returns 401 for unauthenticated requests", :put
-    it_behaves_like "an API that returns 400 when the index_code_with_zoekt feature flag is disabled", :put
+    it_behaves_like 'PUT request permissions for admin mode'
+    it_behaves_like 'an API that returns 401 for unauthenticated requests', :put
+    it_behaves_like 'an API that returns 400 when the application setting zoekt_indexing_enabled is disabled', :put
 
     it 'creates ::Search::Zoekt::EnabledNamespace & ::Search::Zoekt::Index with search enabled for the namespace' do
       expect do
@@ -279,8 +279,8 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
       create(:zoekt_index, node: node, zoekt_enabled_namespace: enabled_namespace, namespace_id: namespace.id)
     end
 
-    it_behaves_like "DELETE request permissions for admin mode"
-    it_behaves_like "an API that returns 401 for unauthenticated requests", :delete
+    it_behaves_like 'DELETE request permissions for admin mode'
+    it_behaves_like 'an API that returns 401 for unauthenticated requests', :delete
 
     it 'removes the ::Search::Zoekt::Index and ::Search::Zoekt::EnabledNamespace for this node and namespace pair' do
       expect do

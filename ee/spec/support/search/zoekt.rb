@@ -66,6 +66,10 @@ module Search
       stub_licensed_features(zoekt_code_search: true)
     end
 
+    config.before(:each, :zoekt_settings_enabled) do
+      stub_ee_application_setting(zoekt_indexing_enabled: true, zoekt_search_enabled: true)
+    end
+
     config.include Search::Zoekt::TestHelpers
   end
 end

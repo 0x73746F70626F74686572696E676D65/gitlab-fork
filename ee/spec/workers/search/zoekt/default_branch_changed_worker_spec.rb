@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Search::Zoekt::DefaultBranchChangedWorker, feature_category: :global_search do
+RSpec.describe ::Search::Zoekt::DefaultBranchChangedWorker, :zoekt_settings_enabled, feature_category: :global_search do
   let_it_be(:zoekt_enabled_namespace) { create(:zoekt_enabled_namespace) }
   let_it_be(:project) { create(:project, :repository, namespace: zoekt_enabled_namespace.namespace) }
   let_it_be(:index) do
@@ -24,7 +24,6 @@ RSpec.describe ::Search::Zoekt::DefaultBranchChangedWorker, feature_category: :g
   context 'when project uses zoekt' do
     it 'schedules indexing operation' do
       expect(::Search::Zoekt).to receive(:index_async).with(project.id)
-
       consume_event(subscriber: described_class, event: default_branch_changed_event)
     end
   end
@@ -54,9 +53,9 @@ RSpec.describe ::Search::Zoekt::DefaultBranchChangedWorker, feature_category: :g
     end
   end
 
-  context 'when feature flag index_code_with_zoekt is disabled' do
+  context 'when application_setting zoekt_indexing_enabled is disabled' do
     before do
-      stub_feature_flags(index_code_with_zoekt: false)
+      stub_ee_application_setting(zoekt_indexing_enabled: false)
     end
 
     it 'does not schedule indexing' do

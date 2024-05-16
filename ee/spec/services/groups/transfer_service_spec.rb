@@ -108,9 +108,8 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
   describe 'zoekt indexing', :aggregate_failures do
     let(:interval) { 0 }
 
-    context 'when index_code_with_zoekt is enabled' do
+    context 'when application_setting zoekt_indexing_enabled is enabled', :zoekt_settings_enabled do
       before do
-        stub_feature_flags(index_code_with_zoekt: true)
         allow(::Search::Zoekt).to receive(:index?).with(group).and_return(namespace_zoekt_enabled)
         allow(::Search::Zoekt).to receive(:index?).with(project).and_return(project_zoekt_enabled)
       end
@@ -179,9 +178,8 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
       end
     end
 
-    context 'when index_code_with_zoekt is disabled' do
+    context 'when application_setting zoekt_indexing_enabled is disabled' do
       before do
-        stub_feature_flags(index_code_with_zoekt: false)
         allow(::Search::Zoekt).to receive(:index?).with(group).and_return(namespace_zoekt_enabled)
         allow(::Search::Zoekt).to receive(:index?).with(project).and_return(project_zoekt_enabled)
       end
@@ -199,9 +197,8 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
       end
     end
 
-    context 'when zoekt_code_search feature is not available' do
+    context 'when license for zoekt_code_search feature is not available', :zoekt_settings_enabled do
       before do
-        stub_feature_flags(index_code_with_zoekt: true)
         stub_licensed_features(zoekt_code_search: false)
         allow(::Search::Zoekt).to receive(:index?).with(group).and_return(namespace_zoekt_enabled)
         allow(::Search::Zoekt).to receive(:index?).with(project).and_return(project_zoekt_enabled)

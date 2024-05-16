@@ -11,10 +11,10 @@ module API
 
         helpers do
           def ensure_zoekt_indexing_enabled!
-            return if Feature.enabled?(:index_code_with_zoekt)
+            return if ::Gitlab::CurrentSettings.zoekt_indexing_enabled?
 
             error!(
-              'index_code_with_zoekt feature flag is not enabled', 400
+              'application setting zoekt_indexing_enabled is not enabled', 400
             )
           end
         end
