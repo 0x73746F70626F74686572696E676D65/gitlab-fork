@@ -23,7 +23,7 @@ module Zoekt
     concurrency_limit -> { 30 if Feature.enabled?(:zoekt_limit_indexing_concurrency) }
 
     def perform(project_id, options = {})
-      return unless ::Feature.enabled?(:index_code_with_zoekt)
+      return unless ::Gitlab::CurrentSettings.zoekt_indexing_enabled?
       return unless ::License.feature_available?(:zoekt_code_search)
 
       project = Project.find_by_id(project_id)

@@ -81,7 +81,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
     end
   end
 
-  context 'when searching with Zoekt' do
+  context 'when searching with Zoekt', :zoekt_settings_enabled do
     let(:service) do
       described_class.new(user, group, search: 'foobar', scope: scope,
         basic_search: basic_search, page: page, source: source)
@@ -151,9 +151,9 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
       end
     end
 
-    context 'when search_code_with_zoekt is disabled' do
+    context 'when application setting zoekt_search_enabled is disabled' do
       before do
-        stub_feature_flags(search_code_with_zoekt: false)
+        stub_ee_application_setting(zoekt_search_enabled: false)
       end
 
       it 'does not search with Zoekt' do

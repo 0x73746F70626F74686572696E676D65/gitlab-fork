@@ -31,7 +31,7 @@ module EE
       end
 
       def enqueue_zoekt_indexing
-        return false unless ::Feature.enabled?(:index_code_with_zoekt)
+        return false unless ::Gitlab::CurrentSettings.zoekt_indexing_enabled?
         return false unless default_branch?
         return false unless project.use_zoekt?
 

@@ -12,7 +12,6 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
       elasticsearch_search: true,
       elasticsearch_indexing: true
     )
-    stub_feature_flags(search_code_with_zoekt: false)
   end
 
   describe 'searching' do

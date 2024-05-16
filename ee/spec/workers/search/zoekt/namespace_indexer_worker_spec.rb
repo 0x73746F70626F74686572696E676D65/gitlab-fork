@@ -11,7 +11,7 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
     zoekt_ensure_namespace_indexed!(namespace)
   end
 
-  describe '#perform' do
+  describe '#perform', :zoekt_settings_enabled do
     context 'for index operation' do
       subject(:perform) { described_class.new.perform(namespace.id, 'index') }
 
@@ -26,9 +26,9 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
         perform
       end
 
-      context 'when zoekt indexing is disabled' do
+      context 'when application_setting zoekt_indexing_enabled is disabled' do
         before do
-          stub_feature_flags(index_code_with_zoekt: false)
+          stub_ee_application_setting(zoekt_indexing_enabled: false)
         end
 
         it 'does nothing' do
@@ -66,9 +66,9 @@ RSpec.describe ::Search::Zoekt::NamespaceIndexerWorker, :zoekt, feature_category
         subject
       end
 
-      context 'when zoekt indexing is disabled' do
+      context 'when application_setting zoekt_indexing_enabled is disabled' do
         before do
-          stub_feature_flags(index_code_with_zoekt: false)
+          stub_ee_application_setting(zoekt_indexing_enabled: false)
         end
 
         it 'does nothing' do

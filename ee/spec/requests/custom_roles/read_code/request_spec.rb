@@ -116,7 +116,7 @@ RSpec.describe 'User with read_code custom role', feature_category: :system_acce
         end
       end
 
-      context 'with Zoekt', :zoekt do
+      context 'with Zoekt', :zoekt, :zoekt_settings_enabled do
         before do
           zoekt_ensure_project_indexed!(project)
         end

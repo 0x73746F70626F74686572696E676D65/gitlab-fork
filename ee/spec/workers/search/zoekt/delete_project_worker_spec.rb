@@ -13,7 +13,7 @@ RSpec.describe ::Search::Zoekt::DeleteProjectWorker, feature_category: :global_s
   let(:root_namespace_id) { enabled_namespace.root_namespace_id }
   let(:project_id) { 128 }
 
-  describe '#perform' do
+  describe '#perform', :zoekt_settings_enabled do
     subject(:perform) { described_class.new.perform(root_namespace_id, project_id) }
 
     context 'when node_id is nil' do
@@ -49,9 +49,9 @@ RSpec.describe ::Search::Zoekt::DeleteProjectWorker, feature_category: :global_s
       end
     end
 
-    context 'when zoekt indexing is disabled' do
+    context 'when application_setting zoekt_indexing_enabled is disabled' do
       before do
-        stub_feature_flags(index_code_with_zoekt: false)
+        stub_ee_application_setting(zoekt_indexing_enabled: false)
       end
 
       it 'does nothing' do

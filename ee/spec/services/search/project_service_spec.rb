@@ -41,7 +41,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
     end
   end
 
-  context 'when searching with Zoekt' do
+  context 'when searching with Zoekt', :zoekt_settings_enabled do
     let_it_be(:user) { create(:user) }
     let_it_be_with_reload(:project) { create(:project, :public) }
 

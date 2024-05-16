@@ -44,7 +44,7 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('Advanced Search'),
+              title: _('Search'),
               link: advanced_search_admin_application_settings_path,
               active_routes: { path: 'admin/application_settings#advanced_search' },
               item_id: :advanced_search,

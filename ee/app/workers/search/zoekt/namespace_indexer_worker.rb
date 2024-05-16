@@ -16,7 +16,7 @@ module Search
       pause_control :zoekt
 
       def perform(namespace_id, operation, node_id = nil)
-        return unless ::Feature.enabled?(:index_code_with_zoekt)
+        return unless ::Gitlab::CurrentSettings.zoekt_indexing_enabled?
 
         namespace = Namespace.find(namespace_id)
 

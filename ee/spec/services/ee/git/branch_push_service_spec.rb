@@ -107,7 +107,7 @@ RSpec.describe Git::BranchPushService, feature_category: :source_code_management
       end
     end
 
-    context 'with Zoekt indexing', feature_category: :global_search do
+    context 'with Zoekt indexing', :zoekt_settings_enabled, feature_category: :global_search do
       let(:use_zoekt) { true }
 
       before do
@@ -130,9 +130,9 @@ RSpec.describe Git::BranchPushService, feature_category: :source_code_management
         end
       end
 
-      context 'when index_code_with_zoekt is disabled' do
+      context 'when application_setting zoekt_indexing_enabled is disabled' do
         before do
-          stub_feature_flags(index_code_with_zoekt: false)
+          stub_ee_application_setting(zoekt_indexing_enabled: false)
         end
 
         it 'does not trigger async_update_zoekt_index' do

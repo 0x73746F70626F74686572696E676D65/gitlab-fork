@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Zoekt search', :zoekt, :js, :disable_rate_limiter, :elastic, feature_category: :global_search do
+RSpec.describe 'Zoekt search', :zoekt, :js, :disable_rate_limiter, :elastic, :zoekt_settings_enabled, feature_category: :global_search do
   include ListboxHelpers
 
   let_it_be(:user) { create(:user) }
@@ -54,32 +54,30 @@ RSpec.describe 'Zoekt search', :zoekt, :js, :disable_rate_limiter, :elastic, fea
     choose_group(group)
   end
 
-  describe 'blob search' do
-    it 'finds files with a regex search and allows filtering down again by project' do
-      submit_search('user.*egex')
-      select_search_scope('Code')
+  it 'finds files with a regex search and allows filtering down again by project' do
+    submit_search('user.*egex')
+    select_search_scope('Code')
 
-      expect(page).to have_selector('.file-content .blob-content', count: 2)
-      expect(page).to have_button('Copy file path')
+    expect(page).to have_selector('.file-content .blob-content', count: 2)
+    expect(page).to have_button('Copy file path')
 
-      choose_project(project1)
+    choose_project(project1)
 
-      expect(page).to have_selector('.file-content .blob-content', count: 1)
+    expect(page).to have_selector('.file-content .blob-content', count: 1)
 
-      allow(Ability).to receive(:allowed?).and_call_original
-      expect(Ability).to receive(:allowed?).with(anything, :read_blob, anything).twice.and_return(false)
+    allow(Ability).to receive(:allowed?).and_call_original
+    expect(Ability).to receive(:allowed?).with(anything, :read_blob, anything).twice.and_return(false)
 
-      submit_search("username_regex")
-      select_search_scope('Code')
+    submit_search("username_regex")
+    select_search_scope('Code')
 
-      expect(page).not_to have_selector('.file-content .blob-content')
-    end
+    expect(page).not_to have_selector('.file-content .blob-content')
+  end
 
-    it 'displays that exact code search is enabled' do
-      submit_search('test')
-      select_search_scope('Code')
-      expect(page).to have_link('Exact code search (powered by Zoekt)',
-        href: help_page_path('user/search/exact_code_search'))
-    end
+  it 'displays that exact code search is enabled' do
+    submit_search('test')
+    select_search_scope('Code')
+    expect(page).to have_link('Exact code search (powered by Zoekt)',
+      href: help_page_path('user/search/exact_code_search'))
   end
 end

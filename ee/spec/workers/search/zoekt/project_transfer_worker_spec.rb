@@ -20,11 +20,7 @@ RSpec.describe ::Search::Zoekt::ProjectTransferWorker, feature_category: :global
         allow(::Search::Zoekt).to receive(:index?).with(project).and_return(project_zoekt_enabled)
       end
 
-      context 'when zoekt is enabled' do
-        before do
-          stub_feature_flags(index_code_with_zoekt: true)
-        end
-
+      context 'when zoekt is enabled', :zoekt_settings_enabled do
         context 'when moving the project from a non-indexed namespace to an indexed namespace' do
           let(:namespace_zoekt_enabled) { false }
           let(:project_zoekt_enabled) { true }
@@ -48,12 +44,12 @@ RSpec.describe ::Search::Zoekt::ProjectTransferWorker, feature_category: :global
         end
       end
 
-      context 'when zoekt is disabled' do
+      context 'when application_setting zoekt_indexing_enabled is disabled' do
         let(:namespace_zoekt_enabled) { false }
         let(:project_zoekt_enabled) { true }
 
         before do
-          stub_feature_flags(index_code_with_zoekt: false)
+          stub_ee_application_setting(zoekt_indexing_enabled: false)
         end
 
         it 'does nothing' do
