@@ -13,6 +13,7 @@ import {
 // This can be any value because the cube proxy adds the real API token.
 const CUBE_API_TOKEN = '1';
 const PRODUCT_ANALYTICS_CUBE_PROXY = '/api/v4/projects/:id/product_analytics/request';
+const CUBE_CONTINUE_WAIT_ERROR = 'Continue wait';
 
 // Filter measurement types must be lowercase
 export const DATE_RANGE_FILTER_DIMENSIONS = {
@@ -161,10 +162,16 @@ export default class CubeAnalyticsDataSource {
     query,
     queryOverrides = {},
     filters = {},
+    onRequestDelayed = () => {},
   }) {
     const userQuery = buildCubeQuery(query, queryOverrides, filters);
     const request = this.#cubeApi.load(userQuery, {
       castNumerics: true,
+      progressCallback: ({ progressResponse }) => {
+        if (progressResponse?.error === CUBE_CONTINUE_WAIT_ERROR) {
+          onRequestDelayed();
+        }
+      },
     });
 
     return request.then((resultSet) =>

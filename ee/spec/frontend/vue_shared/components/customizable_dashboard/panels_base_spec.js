@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import {
   GlDisclosureDropdown,
   GlDisclosureDropdownItem,
@@ -25,6 +26,7 @@ describe('PanelsBase', () => {
 
   const findPanelTitle = () => wrapper.findComponent(TooltipOnTruncate);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findLoadingDelayedIndicator = () => wrapper.findByTestId('panel-loading-delayed-indicator');
   const findPanelTitleTooltipIcon = () => wrapper.findByTestId('panel-title-tooltip-icon');
   const findPanelTitleErrorIcon = () => wrapper.findByTestId('panel-title-error-icon');
   const findPanelTitlePopover = () => wrapper.findByTestId('panel-title-popover');
@@ -47,6 +49,7 @@ describe('PanelsBase', () => {
 
     it('does not render a loading icon', () => {
       expect(findLoadingIcon().exists()).toBe(false);
+      expect(findLoadingDelayedIndicator().exists()).toBe(false);
     });
 
     it('does not render a disclosure dropdown', () => {
@@ -87,6 +90,15 @@ describe('PanelsBase', () => {
 
     it('renders a loading icon', () => {
       expect(findLoadingIcon().exists()).toBe(true);
+      expect(findLoadingDelayedIndicator().exists()).toBe(false);
+    });
+
+    it('renders the additional "Still loading" indicator if the data source is slow', async () => {
+      await wrapper.setProps({ loadingDelayed: true });
+      await nextTick();
+
+      expect(findLoadingIcon().exists()).toBe(true);
+      expect(findLoadingDelayedIndicator().exists()).toBe(true);
     });
   });
 

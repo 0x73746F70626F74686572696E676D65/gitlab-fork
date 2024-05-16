@@ -174,15 +174,28 @@ describe('AnalyticsDashboardPanel', () => {
   });
 
   describe('when fetching the data', () => {
-    beforeEach(() => {
+    it('sets the loading state on the panels base component', async () => {
       mockFetch.mockReturnValue(new Promise(() => {}));
       createWrapper();
-      return waitForPromises();
-    });
+      await waitForPromises();
 
-    it('sets the loading state on the panels base component', () => {
       expect(findPanelsBase().props()).toMatchObject({
         loading: true,
+        loadingDelayed: false,
+        showErrorState: false,
+      });
+    });
+
+    it('sets the loadingDelayed state on the panels base component if the data source is slow', async () => {
+      mockFetch.mockImplementation(({ onRequestDelayed }) => onRequestDelayed());
+      createWrapper();
+
+      await nextTick();
+      await nextTick();
+
+      expect(findPanelsBase().props()).toMatchObject({
+        loading: true,
+        loadingDelayed: true,
         showErrorState: false,
       });
     });

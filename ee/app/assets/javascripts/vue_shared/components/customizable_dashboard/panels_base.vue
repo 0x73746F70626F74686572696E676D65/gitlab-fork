@@ -30,6 +30,11 @@ export default {
       required: false,
       default: false,
     },
+    loadingDelayed: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     showErrorState: {
       type: Boolean,
       required: false,
@@ -132,9 +137,18 @@ export default {
       </div>
       <div
         class="gl-overflow-x-hidden gl-overflow-y-auto gl-flex-grow-1"
-        :class="{ 'gl--flex-center': loading }"
+        :class="{ 'gl-flex gl-flex-wrap gl-text-center gl-content-center': loading }"
       >
-        <gl-loading-icon v-if="loading" size="lg" class="gl-overflow-hidden" />
+        <template v-if="loading">
+          <gl-loading-icon size="lg" class="gl-w-full" />
+          <div
+            v-if="loadingDelayed"
+            class="gl-w-full gl-text-secondary"
+            data-testId="panel-loading-delayed-indicator"
+          >
+            {{ __('Still loading...') }}
+          </div>
+        </template>
         <!-- @slot The panel body to display when not loading. -->
         <slot v-else name="body"></slot>
       </div>
