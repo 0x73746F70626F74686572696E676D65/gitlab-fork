@@ -10,8 +10,7 @@ module EE
           null: true,
           description: 'Retrieve the active add-on purchase. ' \
                        'This query can be used in GitLab SaaS and self-managed environments.',
-          resolver: ::Resolvers::GitlabSubscriptions::AddOnPurchaseResolver,
-          alpha: { milestone: '16.7' }
+          resolver: ::Resolvers::GitlabSubscriptions::AddOnPurchaseResolver
         field :ci_minutes_usage, ::Types::Ci::Minutes::NamespaceMonthlyUsageType.connection_type,
           null: true,
           description: 'Compute usage data for a namespace.' do

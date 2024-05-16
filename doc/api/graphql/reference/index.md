@@ -80,10 +80,6 @@ four standard [pagination arguments](#pagination-arguments):
 
 Retrieve the active add-on purchase. This query can be used in GitLab SaaS and self-managed environments.
 
-DETAILS:
-**Introduced** in GitLab 16.7.
-**Status**: Experiment.
-
 Returns [`AddOnPurchase`](#addonpurchase).
 
 #### Arguments
@@ -9151,10 +9147,6 @@ Input type: `UserAchievementsDeleteInput`
 
 ### `Mutation.userAddOnAssignmentBulkCreate`
 
-DETAILS:
-**Introduced** in GitLab 16.11.
-**Status**: Experiment.
-
 Input type: `UserAddOnAssignmentBulkCreateInput`
 
 #### Arguments
@@ -9174,10 +9166,6 @@ Input type: `UserAddOnAssignmentBulkCreateInput`
 | <a id="mutationuseraddonassignmentbulkcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.userAddOnAssignmentBulkRemove`
-
-DETAILS:
-**Introduced** in GitLab 16.11.
-**Status**: Experiment.
 
 Input type: `UserAddOnAssignmentBulkRemoveInput`
 
@@ -9199,10 +9187,6 @@ Input type: `UserAddOnAssignmentBulkRemoveInput`
 
 ### `Mutation.userAddOnAssignmentCreate`
 
-DETAILS:
-**Introduced** in GitLab 16.3.
-**Status**: Experiment.
-
 Input type: `UserAddOnAssignmentCreateInput`
 
 #### Arguments
@@ -9223,10 +9207,6 @@ Input type: `UserAddOnAssignmentCreateInput`
 | <a id="mutationuseraddonassignmentcreateuser"></a>`user` | [`AddOnUser`](#addonuser) | User who the add-on purchase was assigned to. |
 
 ### `Mutation.userAddOnAssignmentRemove`
-
-DETAILS:
-**Introduced** in GitLab 16.3.
-**Status**: Experiment.
 
 Input type: `UserAddOnAssignmentRemoveInput`
 
