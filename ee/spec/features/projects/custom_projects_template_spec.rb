@@ -39,7 +39,8 @@ RSpec.describe 'Project', feature_category: :groups_and_projects do
         end
       end
 
-      it 'renders a Preview link for instance templates', :js do
+      it 'renders a Preview link for instance templates', :js,
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444728' do
         click_link 'Create from template'
         click_link 'Instance'
 
