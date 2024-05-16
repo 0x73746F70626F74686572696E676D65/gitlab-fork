@@ -56,15 +56,18 @@ module API
                 end
                 post 'callback' do
                   node = ::Search::Zoekt::Node.find_by_uuid(params[:uuid])
-                  log_hash = build_structured_payload(
-                    class: 'API::Internal::Search::Zoekt', node_id: node&.id, callback_name: params[:name],
-                    payload: params[:payload], additional_payload: params[:additional_payload],
-                    success: params[:success], error_message: params[:error]
-                  )
-
+                  log_data = {
+                    class: 'API::Internal::Search::Zoekt', callback_name: params[:name], payload: params[:payload],
+                    additional_payload: params[:additional_payload], success: params[:success],
+                    error_message: params[:error]
+                  }
+                  log_data[:meta] = { 'zoekt.node_name' => node.metadata['name'], 'zoekt.node_id' => node.id } if node
+                  log_hash = build_structured_payload(**log_data)
                   params[:success] ? logger.info(log_hash) : logger.error(log_hash)
+                  break unprocessable_entity! unless node
 
-                  node ? accepted! : unprocessable_entity!
+                  ::Search::Zoekt::CallbackService.execute(node, params.except(:uuid))
+                  accepted!
                 end
               end
             end

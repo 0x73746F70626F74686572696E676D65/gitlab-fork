@@ -24,6 +24,7 @@ module Search
 
       enum state: {
         pending: 0,
+        initializing: 1,
         ready: 10
       }
 
