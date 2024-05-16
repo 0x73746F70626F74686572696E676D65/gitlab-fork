@@ -20,8 +20,8 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
   let_it_be(:issue_milestone) { create(:closed_issue, project: project, milestone: milestone) }
   let_it_be(:assigned_issue) { create(:issue, project: project, assignees: [user]) }
 
-  let(:edit_board) { find('.btn', text: 'Edit board') }
-  let(:view_scope) { find('.btn', text: 'View scope') }
+  let(:edit_board) { find_by_testid('boards-config-button') }
+  let(:view_scope) { find_by_testid('boards-config-button') }
   let(:board_title) { find('.boards-selector-wrapper .gl-new-dropdown-toggle') }
   let(:filtered_search) { find_by_testid('issue-board-filtered-search') }
   let(:filter_input) { find('.gl-filtered-search-last-item') }

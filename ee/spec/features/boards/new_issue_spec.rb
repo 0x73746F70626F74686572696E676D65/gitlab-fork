@@ -97,7 +97,7 @@ RSpec.describe 'Issue Boards new issue', :js, feature_category: :team_planning d
   end
 
   def scope_board_to_current_iteration
-    find('.btn', text: 'Edit board').click
+    find_by_testid('boards-config-button').click
 
     page.within(".iteration") do
       click_button 'Edit'

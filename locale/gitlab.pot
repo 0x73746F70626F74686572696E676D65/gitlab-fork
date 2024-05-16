@@ -20394,6 +20394,9 @@ msgstr ""
 msgid "Epic summary"
 msgstr ""
 
+msgid "Epic swimlanes"
+msgstr ""
+
 msgid "Epic title"
 msgstr ""
 
@@ -57090,6 +57093,9 @@ msgid "View on %{url}"
 msgstr ""
 
 msgid "View open merge request"
+msgstr ""
+
+msgid "View options"
 msgstr ""
 
 msgid "View page @ "

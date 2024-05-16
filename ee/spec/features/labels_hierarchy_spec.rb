@@ -30,9 +30,7 @@ RSpec.describe 'Labels Hierarchy', :js, feature_category: :team_planning do
       labels.push(project_label_1) if project
 
       labels.each do |label|
-        page.within('.filter-dropdown-container') do
-          click_button 'Edit board'
-        end
+        find_by_testid('boards-config-button').click
 
         page.within('.block.labels') do
           click_button 'Edit'

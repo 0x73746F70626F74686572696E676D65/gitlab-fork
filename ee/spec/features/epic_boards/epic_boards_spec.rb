@@ -24,8 +24,8 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
 
   let!(:epic_issue) { create(:epic_issue, epic: epic3, issue: issue_with_weight) }
 
-  let(:edit_board) { find('.btn', text: 'Edit board') }
-  let(:view_scope) { find('.btn', text: 'View scope') }
+  let(:edit_board) { find_by_testid('boards-config-button') }
+  let(:view_scope) { find_by_testid('boards-config-button') }
 
   context 'display epics in board' do
     before do

@@ -1,5 +1,5 @@
 <script>
-import { GlCollapsibleListbox } from '@gitlab/ui';
+import { GlToggle } from '@gitlab/ui';
 import { __ } from '~/locale';
 import Tracking from '~/tracking';
 import { historyPushState } from '~/lib/utils/common_utils';
@@ -25,7 +25,7 @@ const LIST_BOX_ITEMS = [
 export default {
   LIST_BOX_ITEMS,
   components: {
-    GlCollapsibleListbox,
+    GlToggle,
   },
   mixins: [trackingMixin],
   props: {
@@ -77,22 +77,12 @@ export default {
 </script>
 
 <template>
-  <div class="gl-md-display-flex gl-align-items-center gl-ml-3 gl-mb-4 gl-sm-mb-0">
-    <label
-      for="swimlane-listbox"
-      class="gl-whitespace-nowrap gl-font-weight-bold gl-line-height-normal gl-m-0"
-      data-testid="toggle-swimlanes-label"
-    >
-      {{ __('Group by') }}
-    </label>
-    <gl-collapsible-listbox
-      id="swimlane-listbox"
-      toggle-class="gl-ml-3 gl-line-height-normal!"
-      placement="right"
-      :items="$options.LIST_BOX_ITEMS"
-      :toggle-text="dropdownLabel"
-      :selected="selected"
-      @select="onToggle"
-    />
-  </div>
+  <gl-toggle
+    :value="isSwimlanesOn"
+    :label="__('Epic swimlanes')"
+    label-position="left"
+    data-testid="epic-swimlanes-toggle"
+    class="gl-flex-direction-row gl-justify-between gl-w-full"
+    @change="onToggle"
+  />
 </template>

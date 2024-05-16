@@ -27,7 +27,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
       board_name = board.name
       new_board_name = board_name + '-Test'
 
-      click_button 'Edit board'
+      find_by_testid('boards-config-button').click
       fill_in 'board-new-name', with: new_board_name
       click_button 'Save changes'
 
@@ -41,18 +41,20 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
         stub_licensed_features(swimlanes: true)
       end
 
-      it 'does not show Group by dropdown when user is not logged in' do
+      it 'does not show Epic swimlanes toggle when user is not logged in' do
         visit_board_page
 
         expect(page).to have_css('.filtered-search-block')
-        expect(page).not_to have_css('[data-testid="toggle-swimlanes-label"]')
+        page.find("[data-testid='board-options-dropdown'] button").click
+        expect(page).not_to have_css('[data-testid="epic-swimlanes-toggle-item"]')
       end
 
-      it 'shows Group by dropdown when user is logged in' do
+      it 'shows Epic swimlanes toggle when user is logged in' do
         login_as(user)
         visit_board_page
 
-        expect(page).to have_css('[data-testid="toggle-swimlanes-label"]')
+        page.find("[data-testid='board-options-dropdown'] button").click
+        expect(page).to have_css('[data-testid="epic-swimlanes-toggle-item"]')
       end
     end
 
@@ -61,19 +63,23 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
         stub_licensed_features(swimlanes: false)
       end
 
-      it 'does not show Group by dropdown when user is not logged in' do
+      it 'does not show Epic swimlanes toggle when user is not logged in' do
         visit_board_page
 
         expect(page).to have_css('.filtered-search-block')
-        expect(page).not_to have_css('[data-testid="toggle-swimlanes-label"]')
+
+        page.find("[data-testid='board-options-dropdown'] button").click
+        expect(page).not_to have_css('[data-testid="epic-swimlanes-toggle-item"]')
       end
 
-      it 'does not show Group by dropdown when user is logged in' do
+      it 'does not show Epic swimlanes toggle when user is logged in' do
         login_as(user)
         visit_board_page
 
         expect(page).to have_css('.filtered-search-block')
-        expect(page).not_to have_css('[data-testid="toggle-swimlanes-label"]')
+
+        page.find("[data-testid='board-options-dropdown'] button").click
+        expect(page).not_to have_css('[data-testid="epic-swimlanes-toggle-item"]')
       end
     end
   end
