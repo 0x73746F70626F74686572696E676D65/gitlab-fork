@@ -3,11 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe 'Multiple Issue Boards', :js, feature_category: :team_planning do
-  let!(:user) { create(:user) }
-  let!(:group) { create(:group, :public) }
-  let!(:planning) { create(:group_label, group: group, name: 'Planning') }
-  let!(:board) { create(:board, group: group, name: 'Board1') }
-  let!(:board2) { create(:board, group: group, name: 'Board2') }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group, :public) }
+  let_it_be(:planning) { create(:group_label, group: group, name: 'Planning') }
+  let_it_be(:board) { create(:board, group: group, name: 'Board1') }
+  let_it_be(:board2) { create(:board, group: group, name: 'Board2') }
 
   let(:parent) { group }
   let(:boards_path) { group_boards_path(group) }
