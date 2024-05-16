@@ -434,13 +434,14 @@ describe('JobArtifactsTable component', () => {
       );
     });
 
-    it('refetches jobs when an artifactless job remains in the list', async () => {
+    it('only refetches jobs when an artifactless job remains in the list', () => {
       jest.spyOn(wrapper.vm.$apollo.queries.jobArtifacts, 'refetch');
 
-      findDeleteButton().vm.$emit('click');
-      findBulkDeleteModal().vm.$emit('primary');
+      wrapper.vm.$options.watch.hasJobWithNoArtifacts.call(wrapper.vm, false);
 
-      await waitForPromises();
+      expect(wrapper.vm.$apollo.queries.jobArtifacts.refetch).not.toHaveBeenCalled();
+
+      wrapper.vm.$options.watch.hasJobWithNoArtifacts.call(wrapper.vm, true);
 
       expect(wrapper.vm.$apollo.queries.jobArtifacts.refetch).toHaveBeenCalled();
     });
