@@ -36,11 +36,7 @@ module EE
           private
 
           def add_menu_item_for_abilities(menu_item, abilities)
-            add_item(menu_item) if allowed_any_ability?(abilities)
-          end
-
-          def allowed_any_ability?(abilities)
-            Array(abilities).any? { |ability| can?(context.current_user, ability, context.group) }
+            add_item(menu_item) if can_any?(context.current_user, Array(abilities), context.group)
           end
 
           def roles_and_permissions_menu_item

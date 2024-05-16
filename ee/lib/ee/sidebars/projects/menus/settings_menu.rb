@@ -60,20 +60,10 @@ module EE
           alias_method :build, :send
 
           def custom_roles_menu_items
+            return [] if context.current_user.blank?
+
             PERMITTABLE_MENU_ITEMS.filter_map do |(menu_item, permissions)|
-              build(menu_item) if allowed_any?(*permissions)
-            end
-          end
-
-          def allowed?(ability)
-            return false if context.current_user.blank?
-
-            can?(context.current_user, ability, context.project)
-          end
-
-          def allowed_any?(*abilities)
-            abilities.any? do |ability|
-              allowed?(ability)
+              build(menu_item) if can_any?(context.current_user, permissions, context.project)
             end
           end
         end
