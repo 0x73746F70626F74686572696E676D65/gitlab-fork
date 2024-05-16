@@ -14125,6 +14125,12 @@ msgstr ""
 msgid "ContainerRegistry|Show full path"
 msgstr ""
 
+msgid "ContainerRegistry|Signature digest: %{digest}"
+msgstr ""
+
+msgid "ContainerRegistry|Signed"
+msgstr ""
+
 msgid "ContainerRegistry|Some tags were not deleted"
 msgstr ""
 
