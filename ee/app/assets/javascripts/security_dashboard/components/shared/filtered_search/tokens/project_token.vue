@@ -46,9 +46,16 @@ export default {
     },
   },
   data() {
+    const data = this.value?.data;
+    let selectedProjectIds = [];
+
+    if (Array.isArray(data)) {
+      selectedProjectIds = data.map(Number);
+    }
+
     return {
       projects: [],
-      selectedProjectIds: this.value.data?.map(Number) || [],
+      selectedProjectIds,
       isLoadingProjects: false,
       searchTerm: '',
     };
