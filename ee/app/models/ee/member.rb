@@ -32,7 +32,7 @@ module EE
       scope :awaiting, -> { where(state: ::Member::STATE_AWAITING) }
       scope :non_awaiting, -> { where.not(state: ::Member::STATE_AWAITING) }
 
-      scope :banned_from, -> (namespace) do
+      scope :banned_from, ->(namespace) do
         sql = "INNER JOIN namespace_bans
                ON namespace_bans.user_id = members.user_id
                AND namespace_bans.namespace_id = ?"
@@ -62,7 +62,7 @@ module EE
         includes(:user, source: [:route, :parent])
       end
 
-      scope :distinct_awaiting_or_invited_for_group, -> (group) do
+      scope :distinct_awaiting_or_invited_for_group, ->(group) do
         awaiting
         .or(::Member.invite)
         .in_hierarchy(group)

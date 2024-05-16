@@ -15,7 +15,7 @@ module EE
         numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10.days.to_i },
         presence: true
       validates :unique_project_download_limit_allowlist,
-        length: { maximum: 100, message: -> (object, data) { _("exceeds maximum length (100 usernames)") } },
+        length: { maximum: 100, message: ->(object, data) { _("exceeds maximum length (100 usernames)") } },
         allow_nil: false,
         user_existence: true,
         if: :unique_project_download_limit_allowlist_changed?

@@ -106,7 +106,7 @@ module EE
           ).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
       end
 
-      scope :with_feature_available_in_plan, -> (feature) do
+      scope :with_feature_available_in_plan, ->(feature) do
         plans = GitlabSubscriptions::Features.saas_plans_with_feature(feature)
         matcher = ::Plan.where(name: plans)
           .joins(:hosted_subscriptions)
@@ -121,7 +121,7 @@ module EE
           .where(namespace_settings: { experiment_features_enabled: true })
       end
 
-      scope :with_ai_supported_plan, -> (feature = :ai_features) do
+      scope :with_ai_supported_plan, ->(feature = :ai_features) do
         plan_names = GitlabSubscriptions::Features.saas_plans_with_feature(feature)
 
         joins("LEFT OUTER JOIN \"gitlab_subscriptions\" ON \"gitlab_subscriptions\".\"namespace_id\" = \"namespaces\".traversal_ids[1]")

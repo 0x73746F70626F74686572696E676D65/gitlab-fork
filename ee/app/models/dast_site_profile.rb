@@ -24,8 +24,8 @@ class DastSiteProfile < ApplicationRecord
   validate :scan_file_path_contains_valid_url
 
   scope :with_dast_site_and_validation, -> { includes(dast_site: :dast_site_validation) }
-  scope :with_name, -> (name) { where(name: name) }
-  scope :with_project_id, -> (project_id) { where(project_id: project_id) }
+  scope :with_name, ->(name) { where(name: name) }
+  scope :with_project_id, ->(project_id) { where(project_id: project_id) }
   scope :with_project, -> { includes(:project) }
 
   before_save :ensure_scan_file_path

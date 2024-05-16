@@ -221,13 +221,13 @@ module EE
       end
 
       scope :with_wiki_enabled, -> { with_feature_enabled(:wiki) }
-      scope :within_shards, -> (shard_names) { where(repository_storage: Array(shard_names)) }
-      scope :for_plan_name, -> (name) do
+      scope :within_shards, ->(shard_names) { where(repository_storage: Array(shard_names)) }
+      scope :for_plan_name, ->(name) do
         joins(namespace: { gitlab_subscription: :hosted_plan }).where(plans: { name: name })
         .allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
       end
 
-      scope :with_feature_available, -> (name) do
+      scope :with_feature_available, ->(name) do
         groups_of_these_projects = ::Group.id_in(select(:namespace_id))
         root_groups_of_these_projects = groups_of_these_projects.roots
 
@@ -255,7 +255,7 @@ module EE
           project_features: { builds_access_level: ::ProjectFeature::ENABLED }
         )
       end
-      scope :aimed_for_deletion, -> (date) { where('marked_for_deletion_at <= ?', date).without_deleted }
+      scope :aimed_for_deletion, ->(date) { where('marked_for_deletion_at <= ?', date).without_deleted }
       scope :with_repos_templates, -> { where(namespace_id: ::Gitlab::CurrentSettings.current_application_settings.custom_project_templates_group_id) }
       scope :with_groups_level_repos_templates, -> { joins("INNER JOIN namespaces ON projects.namespace_id = namespaces.custom_project_templates_group_id") }
       scope :with_designs, -> { where(id: ::DesignManagement::Design.select(:project_id).distinct) }
@@ -268,7 +268,7 @@ module EE
       scope :with_group_saml_provider, -> { preload(group: :saml_provider) }
       scope :with_invited_groups, -> { preload(:invited_groups) }
 
-      scope :with_total_repository_size_greater_than, -> (value) do
+      scope :with_total_repository_size_greater_than, ->(value) do
         statistics = ::ProjectStatistics.arel_table
 
         joins(:statistics)
@@ -276,14 +276,14 @@ module EE
       end
       scope :without_unlimited_repository_size_limit, -> { where.not(repository_size_limit: 0) }
       scope :without_repository_size_limit, -> { where(repository_size_limit: nil) }
-      scope :with_legacy_open_source_license, -> (available) do
+      scope :with_legacy_open_source_license, ->(available) do
         joins(:project_setting)
           .where('project_settings.legacy_open_source_license_available' => available)
       end
 
       # Less storage left (compared to repo storage limit) means
       # project will be higher on the list.
-      scope :order_by_excess_repo_storage_size_desc, -> (limit = 0) do
+      scope :order_by_excess_repo_storage_size_desc, ->(limit = 0) do
         excess_repo_storage_size_arel = ::ProjectStatistics.arel_table[:repository_size] +
           ::ProjectStatistics.arel_table[:lfs_objects_size] -
           arel_table.coalesce(arel_table[:repository_size_limit], limit)
@@ -308,11 +308,11 @@ module EE
 
       scope :with_project_setting, -> { includes(:project_setting) }
 
-      scope :compliance_framework_id_in, -> (ids) do
+      scope :compliance_framework_id_in, ->(ids) do
         joins(:compliance_framework_setting).where(compliance_framework_setting: { framework_id: ids })
       end
 
-      scope :compliance_framework_id_not_in, -> (ids) do
+      scope :compliance_framework_id_not_in, ->(ids) do
         left_outer_joins(:compliance_framework_setting).where.not(compliance_framework_setting: { framework_id: ids }).or(
           left_outer_joins(:compliance_framework_setting).where(compliance_framework_setting: { framework_id: nil }))
       end
@@ -336,7 +336,7 @@ module EE
           .where(project_states: { verification_state: verification_state_value(state) })
       }
 
-      scope :with_sbom_component_version, -> (id) do
+      scope :with_sbom_component_version, ->(id) do
         where(id: Sbom::Occurrence.select(:project_id).where(component_version_id: id))
       end
 
@@ -345,7 +345,7 @@ module EE
            .where(index_statuses: { project_id: nil })
       }
 
-      scope :with_dora_scores_for_date, -> (date) do
+      scope :with_dora_scores_for_date, ->(date) do
         joins(:dora_performance_scores).where(dora_performance_scores: { date: date })
       end
 

@@ -10,7 +10,7 @@ module EE
       has_many :dora_daily_metrics, class_name: 'Dora::DailyMetrics'
 
       # Returns environments where its latest deployment is to a cluster
-      scope :deployed_to_cluster, -> (cluster) do
+      scope :deployed_to_cluster, ->(cluster) do
         environments = model.arel_table
         deployments = ::Deployment.arel_table
         later_deployments = ::Deployment.arel_table.alias('latest_deployments')
@@ -34,7 +34,7 @@ module EE
         preload({ project: [:route, { namespace: :route }] })
       end
 
-      scope :without_protected, -> (project) do
+      scope :without_protected, ->(project) do
         names = ProtectedEnvironment.names_for_projects(project.id)
         tiers = ProtectedEnvironment.tiers_for_groups(project.ancestors_upto_ids)
         without_names(names).without_tiers(tiers)

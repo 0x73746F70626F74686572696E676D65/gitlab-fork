@@ -24,7 +24,7 @@ module EE
       }.with_indifferent_access.freeze
 
       EE_RUNNER_FEATURES = {
-        vault_secrets: -> (build) { build.ci_secrets_management_available? && build.secrets? }
+        vault_secrets: ->(build) { build.ci_secrets_management_available? && build.secrets? }
       }.freeze
 
       prepended do
@@ -45,14 +45,14 @@ module EE
 
         scope :license_scan, -> { joins(:job_artifacts).merge(::Ci::JobArtifact.of_report_type(:license_scanning)) }
         scope :sbom_generation, -> { joins(:job_artifacts).merge(::Ci::JobArtifact.of_report_type(:sbom)) }
-        scope :max_build_id_by, -> (build_name, ref, project_path) do
+        scope :max_build_id_by, ->(build_name, ref, project_path) do
           select("max(#{quoted_table_name}.id) as id")
             .by_name(build_name)
             .for_ref(ref)
             .for_project_paths(project_path)
         end
 
-        scope :recently_failed_on_instance_runner, -> (failure_reason) do
+        scope :recently_failed_on_instance_runner, ->(failure_reason) do
           merge(::Ci::InstanceRunnerFailedJobs.recent_jobs(failure_reason: failure_reason))
         end
 

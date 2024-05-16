@@ -23,7 +23,7 @@ module EE
           inverse_of: :agent,
           foreign_key: 'cluster_agent_id'
 
-        scope :for_projects, -> (projects) { where(project: projects) }
+        scope :for_projects, ->(projects) { where(project: projects) }
         scope :with_remote_development_agent_config, -> { joins(:remote_development_agent_config) }
         scope :without_remote_development_agent_config, -> do
           includes(:remote_development_agent_config).where(remote_development_agent_config: { cluster_agent_id: nil })

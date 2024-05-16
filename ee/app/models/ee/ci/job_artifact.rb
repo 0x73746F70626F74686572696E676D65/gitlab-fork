@@ -27,7 +27,7 @@ module EE
 
       EE_REPORT_FILE_TYPES = EE::Enums::Ci::JobArtifact.ee_report_file_types
 
-      scope :security_reports, -> (file_types: EE::Enums::Ci::JobArtifact.security_report_file_types) do
+      scope :security_reports, ->(file_types: EE::Enums::Ci::JobArtifact.security_report_file_types) do
         requested_file_types = *file_types
 
         with_file_types(requested_file_types & EE::Enums::Ci::JobArtifact.security_report_file_types)

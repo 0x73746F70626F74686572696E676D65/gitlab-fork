@@ -16,11 +16,11 @@ module Dora
     AVAILABLE_INTERVALS = [INTERVAL_ALL, INTERVAL_MONTHLY, INTERVAL_DAILY].freeze
     AVAILABLE_METRICS = BaseMetric.all_metric_classes.map { |klass| klass::METRIC_NAME }.freeze
 
-    scope :for_environments, -> (environments) do
+    scope :for_environments, ->(environments) do
       where(environment: environments)
     end
 
-    scope :in_range_of, -> (after, before) do
+    scope :in_range_of, ->(after, before) do
       where(date: after..before)
     end
 

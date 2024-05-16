@@ -95,13 +95,13 @@ module EE
       alias_method :issuing_parent, :group
       alias_method :namespace, :group
 
-      scope :in_parents, -> (parent_ids) { where(parent_id: parent_ids) }
+      scope :in_parents, ->(parent_ids) { where(parent_id: parent_ids) }
       scope :inc_group, -> { includes(:group) }
-      scope :in_selected_groups, -> (groups) { where(group_id: groups) }
-      scope :in_milestone, -> (milestone_id) { joins(:issues).where(issues: { milestone_id: milestone_id }).distinct }
-      scope :in_issues, -> (issues) { joins(:epic_issues).where(epic_issues: { issue_id: issues }).distinct }
+      scope :in_selected_groups, ->(groups) { where(group_id: groups) }
+      scope :in_milestone, ->(milestone_id) { joins(:issues).where(issues: { milestone_id: milestone_id }).distinct }
+      scope :in_issues, ->(issues) { joins(:epic_issues).where(epic_issues: { issue_id: issues }).distinct }
       scope :has_parent, -> { where.not(parent_id: nil) }
-      scope :iid_starts_with, -> (query) { where("CAST(iid AS VARCHAR) LIKE ?", "#{sanitize_sql_like(query)}%") }
+      scope :iid_starts_with, ->(query) { where("CAST(iid AS VARCHAR) LIKE ?", "#{sanitize_sql_like(query)}%") }
       scope :from_id, ->(epic_id, inclusive: true) do
         inclusive ? where('epics.id >= ?', epic_id) : where('epics.id > ?', epic_id)
       end
@@ -117,7 +117,7 @@ module EE
       scope :with_work_item, -> { preload(:work_item) }
       scope :has_work_item, -> { where.not(issue_id: nil) }
 
-      scope :within_timeframe, -> (start_date, end_date) do
+      scope :within_timeframe, ->(start_date, end_date) do
         epics = ::Epic.arel_table
         where(epics[:start_date].not_eq(nil).or(epics[:end_date].not_eq(nil)))
           .where(epics[:start_date].eq(nil).or(epics[:start_date].lteq(end_date)))
@@ -184,7 +184,7 @@ module EE
 
       scope :public_only, -> { where(confidential: false) }
       scope :confidential, -> { where(confidential: true) }
-      scope :not_confidential_or_in_groups, -> (groups) do
+      scope :not_confidential_or_in_groups, ->(groups) do
         public_only.or(where(confidential: true, group_id: groups))
       end
 

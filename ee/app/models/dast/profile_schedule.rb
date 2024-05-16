@@ -28,7 +28,7 @@ class Dast::ProfileSchedule < ApplicationRecord
   scope :with_project, -> { includes(:project) }
   scope :with_profile, -> { includes(dast_profile: [:dast_site_profile, :dast_scanner_profile]) }
   scope :with_owner, -> { includes(:owner) }
-  scope :active_for_project, -> (project_id) { where(project_id: project_id).active }
+  scope :active_for_project, ->(project_id) { where(project_id: project_id).active }
   scope :active, -> { where(active: true) }
 
   before_save :set_cron, :set_next_run_at
