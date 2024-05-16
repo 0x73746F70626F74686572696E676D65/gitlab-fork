@@ -17,6 +17,7 @@ import RefSelector from '~/ref/components/ref_selector.vue';
 import GroupProjectsDropdown from 'ee/security_orchestration/components/group_projects_dropdown.vue';
 import { isGroup } from 'ee/security_orchestration/components/utils';
 import { validateOverrideValues } from '../lib';
+import { INJECT, OVERRIDE } from '../constants';
 import CodeBlockSourceSelector from './code_block_source_selector.vue';
 import CodeBlockOverrideSelector from './code_block_override_selector.vue';
 
@@ -26,20 +27,31 @@ export default {
     filePathCopy: s__(
       'ScanExecutionPolicy|%{boldStart}Run%{boldEnd} %{typeSelector} from the project %{projectSelector} with ref %{refSelector}',
     ),
-    pipelineFilePathCopy: s__(
-      'ScanExecutionPolicy|%{overrideSelector}into the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector} And run with reference (Optional) %{refSelector}',
-    ),
+    pipelineFilePathCopy: {
+      [INJECT]: s__(
+        'ScanExecutionPolicy|%{overrideSelector}into the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}',
+      ),
+      [OVERRIDE]: s__(
+        'ScanExecutionPolicy|%{overrideSelector}the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}',
+      ),
+    },
     filePathPrependLabel: __('No project selected'),
     fileRefLabel: s__('ScanExecutionPolicy|Select ref'),
+    fileRefCopy: s__('ScanExecutionPolicy|File reference (Optional) %{refSelector}'),
     filePathInputPlaceholder: s__('ScanExecutionPolicy|Link existing CI file'),
     filePathInputEmptyMessage: s__("ScanExecutionPolicy|The file path can't be empty"),
     filePathInputDoesNotExistMessage: s__(
       "ScanExecutionPolicy|The file at that project, ref, and path doesn't exist",
     ),
     formGroupLabel: s__('ScanExecutionPolicy|file path group'),
-    selectedProjectInformation: s__(
-      'ScanExecutionPolicy|The content of this pipeline execution YAML file is included in the .gitlab-ci.yml file of the target project. All GitLab CI/CD features are supported.',
-    ),
+    selectedProjectInformation: {
+      [INJECT]: s__(
+        'ScanExecutionPolicy|The content of this pipeline execution YAML file is injected into the .gitlab-ci.yml file of the target project. All GitLab CI/CD features are supported.',
+      ),
+      [OVERRIDE]: s__(
+        'ScanExecutionPolicy|The content of this pipeline execution YAML file overrides the .gitlab-ci.yml file of the target project. All GitLab CI/CD features are supported.',
+      ),
+    },
     tooltipText: s__('ScanExecutionPolicy|Select project first, and then insert a file path'),
   },
   refSelectorTranslations: {
@@ -102,7 +114,7 @@ export default {
     },
     fileBlockMessage() {
       return this.isPipelineExecution
-        ? this.$options.i18n.pipelineFilePathCopy
+        ? this.$options.i18n.pipelineFilePathCopy[this.overrideType]
         : this.$options.i18n.filePathCopy;
     },
     isValidFilePath() {
@@ -144,6 +156,9 @@ export default {
     },
     groupProjectsPath() {
       return isGroup(this.namespaceType) ? this.namespacePath : this.rootNamespacePath;
+    },
+    selectedProjectInformationText() {
+      return this.$options.i18n.selectedProjectInformation[this.overrideType];
     },
   },
   methods: {
@@ -199,8 +214,8 @@ export default {
           <gl-icon
             v-if="isPipelineExecution"
             v-gl-tooltip
-            name="question-o"
-            :title="$options.i18n.selectedProjectInformation"
+            name="information-o"
+            :title="selectedProjectInformationText"
           />
         </template>
 
@@ -208,7 +223,6 @@ export default {
           <ref-selector
             v-if="selectedProjectId"
             class="gl-max-w-20"
-            :disabled="!selectedProjectId"
             :project-id="selectedProjectIdShortFormat"
             :state="projectAndRefState"
             :translations="$options.refSelectorTranslations"
@@ -267,6 +281,35 @@ export default {
               </template>
             </gl-form-input-group>
           </gl-form-group>
+        </template>
+      </gl-sprintf>
+    </div>
+
+    <div
+      v-if="isPipelineExecution"
+      data-testid="pipeline-execution-ref-selector"
+      class="gl-flex gl-w-full gl-gap-3 gl-items-baseline gl-flex-nowrap"
+    >
+      <gl-sprintf :message="$options.i18n.fileRefCopy">
+        <template #refSelector>
+          <ref-selector
+            v-if="selectedProjectId"
+            class="gl-max-w-20"
+            :project-id="selectedProjectIdShortFormat"
+            :state="projectAndRefState"
+            :translations="$options.refSelectorTranslations"
+            :value="selectedRef"
+            @input="setSelectedRef"
+          />
+
+          <gl-form-input
+            v-else
+            class="gl-w-auto"
+            :placeholder="$options.i18n.fileRefLabel"
+            :state="projectAndRefState"
+            :value="selectedRef"
+            @input="setSelectedRef"
+          />
         </template>
       </gl-sprintf>
     </div>
