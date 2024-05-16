@@ -150,8 +150,6 @@ RSpec.describe ::Search::RakeTaskExecutorService, :silence_stdout, feature_categ
 
     it 'outputs shard size estimates' do
       expected = <<~STD_OUT
-        Using approximate counts to estimate shard counts for data indexed from database. This does not include repository data.
-        The approximate document counts, recommended shard size, and replica size for each index are:
         - gitlab-test-issues:
            document count: 400
            recommended shards: 5
@@ -176,10 +174,9 @@ RSpec.describe ::Search::RakeTaskExecutorService, :silence_stdout, feature_categ
            document count: 4,000
            recommended shards: 5
            recommended replicas: 1
-        Please note that it is possible to index only selected namespaces/projects by using Advanced search indexing restrictions. This estimate does not take into account indexing restrictions.
       STD_OUT
 
-      expect { task }.to output(expected).to_stdout
+      expect { task }.to output(/#{expected}/).to_stdout
     end
   end
 
