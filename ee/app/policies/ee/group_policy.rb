@@ -7,6 +7,7 @@ module EE
 
     prepended do
       include CrudPolicyHelpers
+      include RemoteDevelopment::GroupPolicy
 
       condition(:ldap_synced, scope: :subject) { @subject.ldap_synced? }
       condition(:saml_group_links_exists, scope: :subject) do
@@ -302,7 +303,6 @@ module EE
 
       rule { owner }.policy do
         enable :admin_protected_environment
-        enable :admin_remote_development_cluster_agent_mapping
         enable :admin_licensed_seat
       end
 
