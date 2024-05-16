@@ -24,15 +24,13 @@ module RemoteDevelopment
               .map(Persistence::WorkspacesFromAgentInfosUpdater.method(:update))
               .map(Persistence::OrphanedWorkspacesObserver.method(:observe))
               .map(Persistence::WorkspacesToBeReturnedFinder.method(:find))
-              .map(Output::WorkspacesToRailsInfosConverter.method(:convert))
+              .map(Output::ResponsePayloadBuilder.method(:build))
               .map(Persistence::WorkspacesToBeReturnedUpdater.method(:update))
-              .map(Output::RailsInfosObserver.method(:observe))
+              .map(Output::ResponsePayloadObserver.method(:observe))
               .map(
-                # As the final step, return the workspace_rails_infos in a WorkspaceReconcileSuccessful message
+                # As the final step, return the response_payload content in a WorkspaceReconcileSuccessful message
                 ->(value) do
-                  RemoteDevelopment::Messages::WorkspaceReconcileSuccessful.new(
-                    workspace_rails_infos: value.fetch(:workspace_rails_infos)
-                  )
+                  RemoteDevelopment::Messages::WorkspaceReconcileSuccessful.new(value.fetch(:response_payload))
                 end
               )
 
@@ -40,7 +38,11 @@ module RemoteDevelopment
           in { err: WorkspaceReconcileParamsValidationFailed => message }
             generate_error_response_from_message(message: message, reason: :bad_request)
           in { ok: WorkspaceReconcileSuccessful => message }
-            message.context => { workspace_rails_infos: Array } # Type-check the payload before returning it
+            # Type-check the payload before returning it
+            message.context => {
+              workspace_rails_infos: Array,
+              settings: Hash
+            }
             { status: :success, payload: message.context }
           else
             raise UnmatchedResultError.new(result: result)

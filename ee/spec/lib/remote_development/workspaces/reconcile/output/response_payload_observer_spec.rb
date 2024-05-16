@@ -2,7 +2,7 @@
 
 require_relative '../../../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::RailsInfosObserver, :rd_fast, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayloadObserver, :rd_fast, feature_category: :remote_development do
   let(:agent) { instance_double("Clusters::Agent", id: 1) }
   let(:update_type) { RemoteDevelopment::Workspaces::Reconcile::UpdateTypes::PARTIAL }
   let(:desired_state) { RemoteDevelopment::Workspaces::States::RUNNING }
@@ -53,7 +53,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::RailsInfosObser
     {
       agent: agent,
       update_type: update_type,
-      workspace_rails_infos: workspace_rails_infos,
+      response_payload: {
+        workspace_rails_infos: workspace_rails_infos,
+        settings: {
+          full_reconciliation_interval_seconds: 3600,
+          partial_reconciliation_interval_seconds: 10
+        }
+      },
       logger: logger
     }
   end
@@ -64,11 +70,17 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::RailsInfosObser
 
   it "logs workspace_rails_infos", :unlimited_max_formatted_output_length do
     expect(logger).to receive(:debug).with(
-      message: 'Returning workspace_rails_infos',
+      message: 'Returning verified response_payload',
       agent_id: agent.id,
       update_type: update_type,
-      count: workspace_rails_infos.length,
-      workspace_rails_infos: expected_logged_workspace_rails_infos
+      response_payload: {
+        workspace_rails_info_count: workspace_rails_infos.length,
+        workspace_rails_infos: expected_logged_workspace_rails_infos,
+        settings: {
+          full_reconciliation_interval_seconds: 3600,
+          partial_reconciliation_interval_seconds: 10
+        }
+      }
     )
 
     expect(returned_value).to eq(value)

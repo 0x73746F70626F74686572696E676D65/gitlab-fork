@@ -26,6 +26,7 @@ module RemoteDevelopment
             .and_then(EnvVarReader.method(:read))
             .and_then(RemoteDevelopment::Settings::ExtensionsGalleryValidator.method(:validate))
             .and_then(RemoteDevelopment::Settings::ExtensionsGalleryMetadataValidator.method(:validate))
+            .and_then(RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidator.method(:validate))
             .map(
               # As the final step, return the settings in a SettingsGetSuccessful message
               ->(value) do
@@ -43,6 +44,10 @@ module RemoteDevelopment
         in { err: SettingsVscodeExtensionsGalleryValidationFailed => message }
           generate_error_response_from_message(message: message, reason: :internal_server_error)
         in { err: SettingsVscodeExtensionsGalleryMetadataValidationFailed => message }
+          generate_error_response_from_message(message: message, reason: :internal_server_error)
+        in { err: SettingsFullReconciliationIntervalSecondsValidationFailed => message }
+          generate_error_response_from_message(message: message, reason: :internal_server_error)
+        in { err: SettingsPartialReconciliationIntervalSecondsValidationFailed => message }
           generate_error_response_from_message(message: message, reason: :internal_server_error)
         in { ok: SettingsGetSuccessful => message }
           { settings: message.context.fetch(:settings), status: :success }

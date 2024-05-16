@@ -2,7 +2,7 @@
 
 require_relative '../../../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::WorkspacesToRailsInfosConverter, :rd_fast, feature_category: :remote_development do
+RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayloadBuilder, :rd_fast, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
 
   let(:logger) { instance_double(Logger) }
@@ -27,10 +27,18 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::WorkspacesToRai
     )
   end
 
+  let(:settings) do
+    {
+      full_reconciliation_interval_seconds: 3600,
+      partial_reconciliation_interval_seconds: 10
+    }
+  end
+
   let(:value) do
     {
       update_type: update_type,
       workspaces_to_be_returned: [workspace],
+      settings: settings,
       logger: logger
     }
   end
@@ -63,10 +71,17 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::WorkspacesToRai
     ]
   end
 
-  let(:expected_returned_value) { value.merge(workspace_rails_infos: returned_workspace_rails_infos) }
+  let(:expected_returned_value) do
+    value.merge(
+      response_payload: {
+        workspace_rails_infos: returned_workspace_rails_infos,
+        settings: settings
+      }
+    )
+  end
 
   subject(:returned_value) do
-    described_class.convert(value)
+    described_class.build(value)
   end
 
   before do

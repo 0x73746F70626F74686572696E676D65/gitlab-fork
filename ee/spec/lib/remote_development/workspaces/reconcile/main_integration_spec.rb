@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# rubocop:disable RSpec/MultipleMemoizedHelpers -- needed helpers for multiple cases
 # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :freeze_time, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
@@ -16,6 +17,16 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
     end
   end
 
+  shared_examples 'includes settings in payload' do
+    it 'returns expected settings' do
+      response = subject
+      settings = response.fetch(:payload).fetch(:settings)
+
+      expect(settings[:full_reconciliation_interval_seconds]).to eq full_reconciliation_interval_seconds
+      expect(settings[:partial_reconciliation_interval_seconds]).to eq partial_reconciliation_interval_seconds
+    end
+  end
+
   let_it_be(:user) { create(:user) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
   let(:egress_ip_rules) { agent.remote_development_agent_config.network_policy_egress }
@@ -23,6 +34,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
   let(:default_resources_per_workspace_container) do
     agent.remote_development_agent_config.default_resources_per_workspace_container
   end
+
+  let(:full_reconciliation_interval_seconds) { 3600 }
+  let(:partial_reconciliation_interval_seconds) { 10 }
 
   let(:logger) { instance_double(::Logger) }
 
@@ -35,6 +49,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
       original_params: {
         workspace_agent_infos: workspace_agent_infos,
         update_type: update_type
+      },
+      settings: {
+        full_reconciliation_interval_seconds: full_reconciliation_interval_seconds,
+        partial_reconciliation_interval_seconds: partial_reconciliation_interval_seconds
       }
     )
   end
@@ -47,7 +65,11 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
     let(:update_type) { RemoteDevelopment::Workspaces::Reconcile::UpdateTypes::FULL }
     let(:workspace_agent_infos) { [] }
 
-    it 'updates workspace record and returns proper workspace_rails_info entry' do
+    it 'returns expected keys within the response payload' do
+      expect(response.fetch(:payload).keys).to contain_exactly(:settings, :workspace_rails_infos)
+    end
+
+    it 'updates workspace record and returns proper response_payload' do
       create(:workspace, agent: agent, user: user, force_include_all_resources: false)
       expect(response[:message]).to be_nil
       workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
@@ -58,6 +80,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
       #       still has a config returned in the rails_info response even though it was not sent by the agent.
       expect(workspace_rails_info[:config_to_apply]).not_to be_nil
     end
+
+    it_behaves_like 'includes settings in payload'
   end
 
   context 'when update_type is partial' do
@@ -501,6 +525,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
         workspace_rails_infos = response.fetch(:payload).fetch(:workspace_rails_infos)
         expect(workspace_rails_infos).to be_empty
       end
+
+      it 'returns settings' do
+        expect(logger).to receive(:warn).with(hash_including(error_type: "orphaned_workspace"))
+
+        settings = response.fetch(:payload).fetch(:settings)
+        expect(settings[:full_reconciliation_interval_seconds]).not_to be_nil
+      end
     end
 
     context 'when new unprovisioned workspace exists in database"' do
@@ -537,7 +568,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
 
       let(:expected_workspace_rails_infos) { [expected_unprovisioned_workspace_rails_info] }
 
-      it 'returns proper workspace_rails_info entry',
+      it 'returns proper response payload',
         quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/457963' do
         # verify initial states in db (sanity check of match between factory and fixtures)
         expect(unprovisioned_workspace.desired_state).to eq(desired_state)
@@ -556,6 +587,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
         # then test everything in the infos
         expect(workspace_rails_infos).to eq(expected_workspace_rails_infos)
       end
+
+      it_behaves_like 'includes settings in payload'
     end
   end
 end
+# rubocop:enable RSpec/MultipleMemoizedHelpers

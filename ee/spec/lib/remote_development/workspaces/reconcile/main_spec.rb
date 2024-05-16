@@ -2,11 +2,28 @@
 
 require_relative '../../rd_fast_spec_helper'
 
+# rubocop:disable RSpec/MultipleMemoizedHelpers -- Stubbing singleton methods
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature_category: :remote_development do
   include RemoteDevelopment::RailwayOrientedProgrammingHelpers
 
   let(:rails_infos) { [double] }
-  let(:value) { { workspace_rails_infos: rails_infos } }
+  let(:settings) { {} }
+  let(:value) do
+    {
+      workspace_rails_infos: rails_infos,
+      settings: settings
+    }
+  end
+
+  let(:builded_value) do
+    {
+      response_payload: {
+        workspace_rails_infos: rails_infos,
+        settings: settings
+      }
+    }
+  end
+
   let(:error_details) { 'some error details' }
   let(:err_message_context) { { details: error_details } }
 
@@ -20,9 +37,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature
   let(:workspaces_from_agent_infos_updater_class) { RemoteDevelopment::Workspaces::Reconcile::Persistence::WorkspacesFromAgentInfosUpdater }
   let(:orphaned_workspaces_observer_class) { RemoteDevelopment::Workspaces::Reconcile::Persistence::OrphanedWorkspacesObserver }
   let(:workspaces_to_be_returned_finder_class) { RemoteDevelopment::Workspaces::Reconcile::Persistence::WorkspacesToBeReturnedFinder }
-  let(:workspaces_to_rails_infos_converter_class) { RemoteDevelopment::Workspaces::Reconcile::Output::WorkspacesToRailsInfosConverter }
+  let(:response_payload_builder_class) { RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayloadBuilder }
   let(:workspaces_to_be_returned_updater_class) { RemoteDevelopment::Workspaces::Reconcile::Persistence::WorkspacesToBeReturnedUpdater }
-  let(:rails_infos_observer_class) { RemoteDevelopment::Workspaces::Reconcile::Output::RailsInfosObserver }
+  let(:response_payload_observer_class) { RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayloadObserver }
 
   # Methods
 
@@ -33,9 +50,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature
   let(:workspaces_from_agent_infos_updater_method) { workspaces_from_agent_infos_updater_class.singleton_method(:update) }
   let(:orphaned_workspaces_observer_method) { orphaned_workspaces_observer_class.singleton_method(:observe) }
   let(:workspaces_to_be_returned_finder_method) { workspaces_to_be_returned_finder_class.singleton_method(:find) }
-  let(:workspaces_to_rails_infos_converter_method) { workspaces_to_rails_infos_converter_class.singleton_method(:convert) }
+  let(:response_payload_builder_method) { response_payload_builder_class.singleton_method(:build) }
   let(:workspaces_to_be_returned_updater_method) { workspaces_to_be_returned_updater_class.singleton_method(:update) }
-  let(:rails_infos_observer_method) { rails_infos_observer_class.singleton_method(:observe) }
+  let(:response_payload_observer_method) { response_payload_observer_class.singleton_method(:observe) }
   # rubocop:enable Layout/LineLength
 
   # Subject
@@ -50,9 +67,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature
     allow(workspaces_from_agent_infos_updater_class).to receive(:method) { workspaces_from_agent_infos_updater_method }
     allow(orphaned_workspaces_observer_class).to receive(:method) { orphaned_workspaces_observer_method }
     allow(workspaces_to_be_returned_finder_class).to receive(:method) { workspaces_to_be_returned_finder_method }
-    allow(workspaces_to_rails_infos_converter_class).to receive(:method) { workspaces_to_rails_infos_converter_method }
+    allow(response_payload_builder_class).to receive(:method) { response_payload_builder_method }
     allow(workspaces_to_be_returned_updater_class).to receive(:method) { workspaces_to_be_returned_updater_method }
-    allow(rails_infos_observer_class).to receive(:method) { rails_infos_observer_method }
+    allow(response_payload_observer_class).to receive(:method) { response_payload_observer_method }
   end
 
   context 'when the ParamsValidator returns an err Result' do
@@ -78,13 +95,22 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature
         workspaces_from_agent_infos_updater_method,
         orphaned_workspaces_observer_method,
         workspaces_to_be_returned_finder_method,
-        workspaces_to_rails_infos_converter_method,
-        workspaces_to_be_returned_updater_method,
-        rails_infos_observer_method
+        response_payload_builder_method,
+        workspaces_to_be_returned_updater_method
       )
     end
 
     it 'returns a workspace reconcile success response with the workspace as the payload' do
+      expect(response_payload_builder_method).to receive(:call).with(value) do
+        builded_value
+      end
+      expect(workspaces_to_be_returned_updater_method).to receive(:call).with(builded_value) do
+        builded_value
+      end
+      expect(response_payload_observer_method).to receive(:call).with(builded_value) do
+        builded_value
+      end
+
       expect(response).to eq({
         status: :success,
         payload: value
@@ -102,3 +128,4 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature
     end
   end
 end
+# rubocop:enable RSpec/MultipleMemoizedHelpers
