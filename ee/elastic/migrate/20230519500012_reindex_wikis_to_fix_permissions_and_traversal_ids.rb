@@ -75,3 +75,5 @@ class ReindexWikisToFixPermissionsAndTraversalIds < Elastic::Migration
     Elastic::Latest::WikiConfig.index_name
   end
 end
+
+ReindexWikisToFixPermissionsAndTraversalIds.prepend ::Elastic::MigrationObsolete
