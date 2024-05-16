@@ -8,13 +8,21 @@ RSpec.describe 'Trial Widget in Sidebar', :saas, :js, feature_category: :acquisi
   let_it_be(:user) { create(:user, :with_namespace, organization: 'YMCA') }
   let_it_be(:group) do
     create(
-      :group_with_plan, plan: :ultimate_trial_plan, trial_starts_on: Date.current, trial_ends_on: 30.days.from_now
-    ) do |record|
-      record.add_owner(user)
-    end
+      :group_with_plan,
+      plan: :ultimate_trial_plan,
+      trial_starts_on: Date.current,
+      trial_ends_on: 30.days.from_now,
+      owners: user
+    )
+  end
+
+  before_all do
+    # Setup a duo pro trial here too so that we ensure ultimate trial widget is unaffected
+    create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :trial, namespace: group)
   end
 
   before do
+    stub_saas_features(subscriptions_trials: true)
     stub_application_setting(check_namespace_plan: true)
     allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService, plan: :free) do |instance|
       allow(instance).to receive(:execute).and_return([{ 'code' => 'ultimate', 'id' => 'ultimate-plan-id' }])

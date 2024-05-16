@@ -134,6 +134,19 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
 
           it { is_expected.to include(:duo_pro_trial_status_widget_data_attrs) }
           it { is_expected.to include(:duo_pro_trial_status_popover_data_attrs) }
+
+          context 'when a namespace is also qualified for a trial status widget' do
+            before do
+              allow(helper).to receive(:can?).with(user, :admin_namespace, namespace).and_return(true)
+              stub_ee_application_setting(should_check_namespace_plan: true)
+              allow(helper).to receive(:show_trial_status_widget?).and_return(true)
+            end
+
+            it { is_expected.to include(:trial_status_widget_data_attrs) }
+            it { is_expected.to include(:trial_status_popover_data_attrs) }
+            it { is_expected.not_to include(:duo_pro_trial_status_widget_data_attrs) }
+            it { is_expected.not_to include(:duo_pro_trial_status_popover_data_attrs) }
+          end
         end
       end
     end

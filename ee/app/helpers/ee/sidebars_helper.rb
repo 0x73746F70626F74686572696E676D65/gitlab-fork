@@ -39,9 +39,12 @@ module EE
 
       context.merge!(
         trial_data(root_namespace),
-        duo_pro_trial_data(root_namespace),
         show_tanuki_bot: ::Gitlab::Llm::TanukiBot.enabled_for?(user: current_user, container: nil)
       )
+
+      # do not add overriding data if there is already an ultimate trial widget to show
+      context.merge!(duo_pro_trial_data(root_namespace)) unless context.key?(:trial_status_widget_data_attrs)
+
       context[:trial] = {
         has_start_trial: trials_allowed?(user),
         url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'top-right-dropdown')
