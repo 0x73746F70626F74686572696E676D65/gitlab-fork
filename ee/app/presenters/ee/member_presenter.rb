@@ -21,6 +21,13 @@ module EE
       super
     end
 
+    override :role_type
+    def role_type
+      return 'custom' if member_role
+
+      super
+    end
+
     delegator_override :valid_member_roles
     def valid_member_roles
       source = member.source

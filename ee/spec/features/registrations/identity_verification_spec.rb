@@ -323,7 +323,9 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
         it 'does not verify the user and lands on group page' do
           expect(page).to have_current_path(group_path(invitation.group))
-          expect(page).to have_content("You have been granted Developer access to group #{invitation.group.name}.")
+          expect(page).to have_content(
+            "You have been granted access to the #{invitation.group.name} group with the following role: Developer."
+          )
         end
       end
 
@@ -342,7 +344,9 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       it 'allows the user to complete registration' do
         expect(page).to have_current_path(group_path(invitation.group))
-        expect(page).to have_content("You have been granted Developer access to group #{invitation.group.name}.")
+        expect(page).to have_content(
+          "You have been granted access to the #{invitation.group.name} group with the following role: Developer."
+        )
       end
     end
   end

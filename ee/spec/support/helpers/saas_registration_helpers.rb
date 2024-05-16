@@ -41,7 +41,8 @@ module SaasRegistrationHelpers
 
   def expect_to_be_on_page_for(group)
     expect(page).to have_current_path(group_path(group), ignore_query: true)
-    expect(page).to have_content('You have been granted Developer access to group Test Group')
+    expect(page)
+      .to have_content('You have been granted access to the Test Group group with the following role: Developer')
   end
 
   def confirm_account

@@ -46,6 +46,22 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#role_type' do
+    context 'when a default role is assigned' do
+      it "returns 'default'" do
+        expect(presenter.role_type).to eq('default')
+      end
+    end
+
+    context 'when a custom role is assigned' do
+      it "returns 'custom'" do
+        member_root.member_role = create(:member_role, namespace: root_group)
+
+        expect(presenter.role_type).to eq('custom')
+      end
+    end
+  end
+
   describe '#valid_member_roles' do
     let_it_be(:member_role_guest) { create(:member_role, :guest, name: 'guest plus', namespace: root_group) }
     let_it_be(:member_role_reporter) do
