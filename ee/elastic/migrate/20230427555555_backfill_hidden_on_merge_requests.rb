@@ -16,3 +16,5 @@ class BackfillHiddenOnMergeRequests < Elastic::Migration
     :hidden
   end
 end
+
+BackfillHiddenOnMergeRequests.prepend ::Elastic::MigrationObsolete
