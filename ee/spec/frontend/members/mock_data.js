@@ -24,8 +24,6 @@ export const customRoles = [
   { baseAccessLevel: 10, name: 'custom role 2', memberRoleId: 102 },
 ];
 
-export const customPermissions = [{ name: 'Read code' }, { name: 'Read vulnerability' }];
-
 export const upgradedMember = {
   ...member,
   accessLevel: {
@@ -34,7 +32,6 @@ export const upgradedMember = {
     memberRoleId: 101,
     description: 'custom role 1 description',
   },
-  customPermissions,
   customRoles,
 };
 

@@ -37,10 +37,6 @@ describe('MaxRole', () => {
       },
     });
   };
-  const CustomPermissionsStub = {
-    name: 'custompermissions-stub',
-    template: '<div></div>',
-  };
 
   const createComponent = (propsData = {}, store = createStore()) => {
     wrapper = mountExtended(MaxRole, {
@@ -57,9 +53,6 @@ describe('MaxRole', () => {
         ...propsData,
       },
       store,
-      stubs: {
-        CustomPermissions: CustomPermissionsStub,
-      },
       directives: {
         GlTooltip: createMockDirective('gl-tooltip'),
       },
@@ -107,7 +100,6 @@ describe('MaxRole', () => {
           member: {
             ...member,
             accessLevel: { integerValue: 50, stringValue: 'Owner', memberRoleId: null },
-            customPermissions: [],
           },
         },
         createStore({ updateMemberRoleReturn: () => Promise.reject(myError) }),

@@ -50,14 +50,6 @@ module EE
       end
     end
 
-    def custom_permissions
-      return super unless member_role
-
-      member_role.enabled_permissions.each.map do |permission|
-        { key: permission, name: permission.to_s.humanize }
-      end
-    end
-
     delegator_override :member_role_description
     def member_role_description
       member_role&.description
