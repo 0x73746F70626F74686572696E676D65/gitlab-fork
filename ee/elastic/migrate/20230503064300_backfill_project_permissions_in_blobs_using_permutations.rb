@@ -282,3 +282,5 @@ class BackfillProjectPermissionsInBlobsUsingPermutations < Elastic::Migration
     @client ||= ::Gitlab::Search::Client.new
   end
 end
+
+BackfillProjectPermissionsInBlobsUsingPermutations.prepend ::Elastic::MigrationObsolete
