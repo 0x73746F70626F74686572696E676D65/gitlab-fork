@@ -68,7 +68,6 @@ export const protectionPropsMock = {
   roles: accessLevelsMock,
   users: usersMock,
   groups: groupsMock,
-  approvals: approvalRulesMock,
   statusChecks: statusChecksRulesMock,
 };
 
