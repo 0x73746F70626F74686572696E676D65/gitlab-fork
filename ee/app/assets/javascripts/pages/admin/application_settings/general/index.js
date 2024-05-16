@@ -1,4 +1,5 @@
 import '~/pages/admin/application_settings/general/index';
+import { initPrivateProfileRestrictions } from 'ee/admin/application_settings/user_restrictions';
 import initAddLicenseApp from 'ee/admin/application_settings/general/add_license';
 import { initScimTokenApp } from 'ee/saml_sso';
 import { initAdminDeletionProtectionSettings } from 'ee/admin/application_settings/deletion_protection';
@@ -11,4 +12,5 @@ initMaintenanceModeSettings();
 initServicePingSettingsClickTracking();
 initAddLicenseApp();
 initScimTokenApp();
+initPrivateProfileRestrictions();
 initInputCopyToggleVisibility();

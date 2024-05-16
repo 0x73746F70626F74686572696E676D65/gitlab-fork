@@ -25,6 +25,8 @@ module EE
         before_action :verify_namespace_plan_check_enabled, only: [:namespace_storage]
         before_action :indexing_status, only: [:advanced_search]
 
+        before_action :push_disable_private_profiles_feature, only: [:general]
+
         feature_category :sm_provisioning, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
         feature_category :global_search, [:advanced_search]
@@ -205,6 +207,10 @@ module EE
       def analytics
         not_found if !::License.feature_available?(:product_analytics) ||
           ::Feature.disabled?(:product_analytics_admin_settings)
+      end
+
+      def push_disable_private_profiles_feature
+        push_licensed_feature(:disable_private_profiles) if ::Feature.enabled?(:disallow_private_profiles)
       end
 
       private
