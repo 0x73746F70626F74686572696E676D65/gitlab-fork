@@ -321,6 +321,7 @@ module Gitlab
                 availableServices {
                   name
                   serviceStartTime
+                  bundledWith
                 }
               }
             }
