@@ -143,35 +143,6 @@ RSpec.describe Analytics::DevopsAdoption::SnapshotCalculator, feature_category: 
     end
   end
 
-  context 'when use_faster_code_owner_file_exist_check feature flag is off' do
-    before do
-      stub_feature_flags(use_faster_code_owner_file_exist_check: false)
-    end
-
-    describe 'code_owners_used_count' do
-      subject { data[:code_owners_used_count] }
-
-      it 'returns 1 for code_owners_used_count' do
-        allow(subproject).to receive(:default_branch).and_return('with-codeowners')
-        allow(service).to receive(:snapshot_projects).and_return([project, subproject])
-
-        is_expected.to eq 1
-      end
-
-      context 'when there is no default branch' do
-        before do
-          allow_any_instance_of(Project).to receive(:default_branch).and_return(nil) # rubocop:disable RSpec/AnyInstanceOf
-        end
-
-        it 'uses HEAD as default value' do
-          expect(Gitlab::CodeOwners::Loader).to receive(:new).with(kind_of(Project), 'HEAD').twice.and_call_original
-
-          expect(subject).to eq 0
-        end
-      end
-    end
-  end
-
   shared_examples 'calculates artifact type count' do |type|
     before do
       create(:ee_ci_job_artifact, type, project: project, created_at: 1.year.before(range_end))

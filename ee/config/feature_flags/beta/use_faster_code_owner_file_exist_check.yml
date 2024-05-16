@@ -1,9 +1,0 @@
----
-name: use_faster_code_owner_file_exist_check
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/394831
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/149527
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/456094
-milestone: '16.11'
-group: group::optimize
-type: beta
-default_enabled: true
