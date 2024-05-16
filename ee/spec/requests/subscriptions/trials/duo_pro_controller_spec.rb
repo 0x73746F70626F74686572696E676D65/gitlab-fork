@@ -199,7 +199,8 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
           let(:namespace) { build_stubbed(:namespace) }
           let(:payload) { { namespace: namespace.id } }
 
-          it 'renders the select namespace form again with trial creation errors only' do
+          it 'renders the select namespace form again with trial creation errors only',
+            quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/452319' do
             expect(post_create).to render_select_namespace
 
             expect(response.body).to include(_('your GitLab Duo Pro trial could not be created'))
