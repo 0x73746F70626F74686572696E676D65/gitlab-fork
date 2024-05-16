@@ -8,7 +8,7 @@ module Gitlab
           def execute
             client_options = ai_prompt_class.get_options(options[:messages])
 
-            response = Gitlab::Llm::VertexAi::Client.new(user, tracking_context: tracking_context)
+            response = Gitlab::Llm::VertexAi::Client.new(user, unit_primitive: 'explain_code', tracking_context: tracking_context) # rubocop:disable Layout/LineLength -- follow-up
               .chat(content: nil, **client_options)
 
             response_modifier = ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions.new(response)

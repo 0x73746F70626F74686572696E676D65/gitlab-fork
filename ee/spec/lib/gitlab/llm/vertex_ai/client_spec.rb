@@ -9,6 +9,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
   let(:url) { 'https://example.com/api' }
   let(:host) { 'example.com' }
   let(:options) { {} }
+  let(:unit_primitive) { 'explain_vulnerability' }
   let(:tracking_context) { { request_id: 'uuid', action: 'chat' } }
   let(:model_config) do
     instance_double(
@@ -61,7 +62,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
     }
   end
 
-  let(:client) { described_class.new(user, tracking_context: tracking_context) }
+  let(:client) { described_class.new(user, unit_primitive: unit_primitive, tracking_context: tracking_context) }
   let(:logger) { instance_double('Gitlab::Llm::Logger') }
 
   RSpec.shared_context 'when request is successful' do
@@ -150,7 +151,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
       end
 
       context 'and retry_content_blocked_requests is true' do
-        let(:client) { described_class.new(user, retry_content_blocked_requests: true) }
+        let(:client) { described_class.new(user, unit_primitive: unit_primitive, retry_content_blocked_requests: true) }
 
         before do
           stub_request(:post, url)
@@ -168,7 +169,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
       end
 
       context 'and retry_content_blocked_requests is false' do
-        let(:client) { described_class.new(user, retry_content_blocked_requests: false) }
+        let(:client) { described_class.new(user, unit_primitive: unit_primitive, retry_content_blocked_requests: false) } # rubocop:disable Layout/LineLength -- follow-up
 
         before do
           stub_request(:post, url)
@@ -309,7 +310,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
 
     let(:http_status) { 200 }
 
-    subject { described_class.new(user).text(content: 'anything', **options) }
+    subject { described_class.new(user, unit_primitive: unit_primitive).text(content: 'anything', **options) }
 
     before do
       allow(Gitlab::Llm::VertexAi::Configuration).to receive(:new).and_return(config)

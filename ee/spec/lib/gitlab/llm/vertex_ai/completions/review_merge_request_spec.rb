@@ -112,7 +112,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
       end
 
       before do
-        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |client|
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, unit_primitive: 'review_merge_request', tracking_context: tracking_context) do |client| # rubocop:disable Layout/LineLength -- follow-up
           allow(client)
             .to receive(:chat)
             .with(content: prompt, parameters: payload_parameters)
@@ -183,7 +183,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
       let(:error) { { error: { message: 'Error' } } }
 
       before do
-        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |client|
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, unit_primitive: 'review_merge_request', tracking_context: tracking_context) do |client| # rubocop:disable Layout/LineLength -- follow-up
           allow(client)
             .to receive(:chat)
             .with(content: prompt, parameters: payload_parameters)
@@ -200,7 +200,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
 
     context 'when the AI response is empty' do
       before do
-        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |client|
+        allow_next_instance_of(Gitlab::Llm::VertexAi::Client, user, unit_primitive: 'review_merge_request', tracking_context: tracking_context) do |client| # rubocop:disable Layout/LineLength -- follow-up
           allow(client)
             .to receive(:chat)
             .with(content: prompt, parameters: payload_parameters)

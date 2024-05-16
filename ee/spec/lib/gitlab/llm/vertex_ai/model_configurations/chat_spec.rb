@@ -3,8 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::Chat, feature_category: :ai_abstraction_layer do
-  let_it_be(:host) { 'example-env.com' }
-  let_it_be(:project) { 'cllm' }
+  let_it_be(:host) { 'cloud.gitlab.com' }
+  let_it_be(:project) { 'PROJECT' }
+  let_it_be(:user) { create(:user) }
+
+  subject(:code_chat) { described_class.new(user: user) }
 
   before do
     stub_application_setting(vertex_ai_host: host)
@@ -35,7 +38,7 @@ RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::Chat, feature_categor
   describe '#url' do
     it 'returns correct url replacing default value' do
       expect(subject.url).to eq(
-        'https://example-env.com/v1/projects/cllm/locations/us-central1/publishers/google/models/chat-bison:predict'
+        "https://#{host}/ai/v1/proxy/vertex-ai/v1/projects/#{project}/locations/LOCATION/publishers/google/models/chat-bison:predict"
       )
     end
   end

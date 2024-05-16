@@ -29,7 +29,7 @@ module Gitlab
 
           def request(user, template)
             ::Gitlab::Llm::VertexAi::Client
-              .new(user, tracking_context: tracking_context)
+              .new(user, unit_primitive: 'fill_in_merge_request_template', tracking_context: tracking_context)
               .text(content: template.to_prompt)
           end
         end

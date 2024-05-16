@@ -3,8 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::TextEmbeddings, feature_category: :ai_abstraction_layer do
-  let(:host) { 'example-env.com' }
-  let(:project) { 'cllm' }
+  let_it_be(:host) { 'cloud.gitlab.com' }
+  let_it_be(:project) { 'PROJECT' }
+  let_it_be(:user) { create(:user) }
+
+  subject(:text) { described_class.new(user: user) }
 
   before do
     stub_application_setting(vertex_ai_host: host)
@@ -28,7 +31,7 @@ RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::TextEmbeddings, featu
   describe '#url' do
     it 'returns correct url replacing default value' do
       expect(subject.url).to eq(
-        'https://example-env.com/v1/projects/cllm/locations/us-central1/publishers/google/models/textembedding-gecko@003:predict'
+        'https://cloud.gitlab.com/ai/v1/proxy/vertex-ai/v1/projects/PROJECT/locations/LOCATION/publishers/google/models/textembedding-gecko@003:predict'
       )
     end
   end

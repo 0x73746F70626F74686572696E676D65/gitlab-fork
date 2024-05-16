@@ -34,7 +34,7 @@ module Gitlab
 
           def response_for(user, prompt)
             ::Gitlab::Llm::VertexAi::Client
-              .new(user, tracking_context: tracking_context)
+              .new(user, unit_primitive: 'review_merge_request', tracking_context: tracking_context)
               .chat(
                 content: prompt,
                 parameters: ::Gitlab::Llm::VertexAi::Configuration.payload_parameters(temperature: 0)

@@ -4,12 +4,12 @@ require 'spec_helper'
 
 RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :ai_abstraction_layer do
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:url) { "https://example.com/v1/projects/llm/locations/us-central1/publishers/google/models/codechat-bison:predict" }
+  let_it_be(:url) { "https://cloud.gitlab.com/ai/v1/proxy/vertex-ai/v1/projects/PROJECT/locations/LOCATION/publishers/google/models/codechat-bison:predict" }
 
   let(:body) { { 'test' => 'test' } }
   let(:token) { create(:personal_access_token, user: current_user) }
   let(:response_double) { instance_double(HTTParty::Response, code: 200, success?: true, body: body.to_json) }
-  let(:host) { 'example.com' }
+  let(:host) { 'cloud.gitlab.com' }
   let(:header) do
     {
       'Accept' => ['application/json'],

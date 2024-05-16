@@ -30,7 +30,7 @@ module Gitlab
           private
 
           def client
-            ::Gitlab::Llm::VertexAi::Client.new(user, tracking_context: tracking_context)
+            ::Gitlab::Llm::VertexAi::Client.new(user, unit_primitive: 'documentation_search', tracking_context: tracking_context) # rubocop:disable Layout/LineLength -- follow-up
           end
         end
       end

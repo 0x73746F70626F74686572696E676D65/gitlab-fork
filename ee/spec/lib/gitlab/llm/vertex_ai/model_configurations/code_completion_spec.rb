@@ -3,8 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::CodeCompletion, feature_category: :ai_abstraction_layer do
-  let_it_be(:host) { 'example-env.com' }
-  let_it_be(:project) { 'cllm' }
+  let_it_be(:host) { 'cloud.gitlab.com' }
+  let_it_be(:project) { 'PROJECT' }
+  let_it_be(:user) { create(:user) }
+
+  subject(:code_completion) { described_class.new(user: user) }
 
   before do
     stub_application_setting(vertex_ai_host: host)
@@ -34,7 +37,7 @@ RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::CodeCompletion, featu
   describe '#url' do
     it 'returns correct url replacing default value' do
       expect(subject.url).to eq(
-        'https://example-env.com/v1/projects/cllm/locations/us-central1/publishers/google/models/code-gecko:predict'
+        'https://cloud.gitlab.com/ai/v1/proxy/vertex-ai/v1/projects/PROJECT/locations/LOCATION/publishers/google/models/code-gecko:predict'
       )
     end
   end

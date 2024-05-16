@@ -25,7 +25,7 @@ RSpec.shared_examples 'delegates AI request to Workhorse' do
     data = Gitlab::Json.parse(Base64.urlsafe_decode64(encoded_data))
 
     expect(send_url_prefix).to eq('send-url')
-    expect(data).to eq({
+    expect(data).to include({
       'AllowRedirects' => false,
       'Method' => 'POST'
     }.merge(expected_params))
