@@ -136,8 +136,8 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
                 end
 
                 it 'shows the visualization code' do
-                  json_snippet = "\"type\": \"#{visualization[:name]}\","
-                  expect(find_by_testid('preview-code')).to have_content(json_snippet)
+                  yaml_snippet = "type: #{visualization[:name]}"
+                  expect(find_by_testid('preview-code')).to have_content(yaml_snippet)
                 end
               end
             end

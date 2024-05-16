@@ -1,8 +1,8 @@
 <script>
 import { GlButton, GlButtonGroup, GlLoadingIcon } from '@gitlab/ui';
+import { safeDump } from 'js-yaml';
 import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
-
 import { convertToTableFormat } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import DataTable from '../visualizations/data_table.vue';
 import AnalyticsDashboardPanel from '../analytics_dashboard_panel.vue';
@@ -68,6 +68,9 @@ export default {
     dataTableResults() {
       return convertToTableFormat(this.resultSet);
     },
+    previewYamlConfiguration() {
+      return this.resultVisualization && safeDump(this.resultVisualization);
+    },
   },
   methods: {
     handleVisualizationError(visualizationTitle, error) {
@@ -102,78 +105,76 @@ export default {
         </div>
       </div>
     </div>
-    <div v-if="resultSet && isQueryPresent" class="border-light">
+    <div v-if="resultSet && isQueryPresent">
       <div
-        class="gl-my-3 gl-mx-5 gl-gap-5 gl-display-flex gl-flex-wrap-reverse gl-justify-content-space-between gl-align-items-center"
+        class="gl-m-5 gl-gap-5 gl-display-flex gl-flex-wrap-reverse gl-justify-content-space-between gl-align-items-center"
       >
-        <div>
-          <gl-button-group>
-            <gl-button
-              v-for="buttonDisplayType in $options.PANEL_DISPLAY_TYPE_ITEMS"
-              :key="buttonDisplayType.type"
-              :selected="displayType === buttonDisplayType.type"
-              :icon="buttonDisplayType.icon"
-              :data-testid="`select-${buttonDisplayType.type}-button`"
-              @click="$emit('selectedDisplayType', buttonDisplayType.type)"
-              >{{ buttonDisplayType.title }}</gl-button
-            >
-          </gl-button-group>
-        </div>
+        <gl-button-group>
+          <gl-button
+            v-for="buttonDisplayType in $options.PANEL_DISPLAY_TYPE_ITEMS"
+            :key="buttonDisplayType.type"
+            :selected="displayType === buttonDisplayType.type"
+            :icon="buttonDisplayType.icon"
+            :data-testid="`select-${buttonDisplayType.type}-button`"
+            @click="$emit('selectedDisplayType', buttonDisplayType.type)"
+            >{{ buttonDisplayType.title }}</gl-button
+          >
+        </gl-button-group>
         <ai-cube-query-feedback
           v-if="aiPromptCorrelationId"
           :correlation-id="aiPromptCorrelationId"
           class="gl-ml-auto gl-h-full"
         />
       </div>
-      <div
-        v-if="displayType === $options.PANEL_DISPLAY_TYPES.DATA"
-        class="grid-stack-item gl-m-5"
-        data-testid="grid-stack-panel"
-      >
+      <div class="border-light gl-border gl-rounded-base gl-m-5 gl-shadow-sm gl-overflow-auto">
         <div
-          class="grid-stack-item-content gl-shadow-sm gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
+          v-if="displayType === $options.PANEL_DISPLAY_TYPES.DATA"
+          data-testid="grid-stack-panel"
         >
-          <strong class="gl-mb-2">{{ s__('Analytics|Resulting Data') }}</strong>
-          <!-- Using Datatable specifically for data preview here -->
-          <data-table
-            :data="dataTableResults"
-            data-testid="preview-datatable"
-            class="gl-overflow-y-auto"
+          <div
+            class="gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
+            data-testid="preview-datatable-wrapper"
             :style="{ height: $options.PANEL_VISUALIZATION_HEIGHT }"
-            @error="(error) => handleVisualizationError('TITLE', error)"
-          />
-        </div>
-      </div>
-
-      <div
-        v-if="displayType === $options.PANEL_DISPLAY_TYPES.VISUALIZATION"
-        class="grid-stack-item gl-m-5"
-      >
-        <analytics-dashboard-panel
-          v-if="selectedVisualizationType"
-          :title="title"
-          :visualization="resultVisualization"
-          :style="{ height: $options.PANEL_VISUALIZATION_HEIGHT }"
-          data-testid="preview-visualization"
-          @error="(error) => handleVisualizationError('TITLE', error)"
-        />
-        <div v-else class="col-12 gl-mt-4">
-          <div class="text-content text-center gl-text-gray-400">
-            <h3 class="gl-text-gray-400">
-              {{ s__('Analytics|Select a visualization type') }}
-            </h3>
+          >
+            <strong class="gl-mb-2">{{ s__('Analytics|Resulting Data') }}</strong>
+            <!-- Using Datatable specifically for data preview here -->
+            <data-table
+              :data="dataTableResults"
+              class="gl-overflow-y-auto"
+              @error="(error) => handleVisualizationError('TITLE', error)"
+            />
           </div>
         </div>
-      </div>
 
-      <div
-        v-if="displayType === $options.PANEL_DISPLAY_TYPES.CODE"
-        class="gl-bg-white gl-m-5 gl-p-4 gl-shadow-sm gl-rounded-base"
-      >
-        <pre
-          class="code highlight gl-display-flex gl-bg-transparent gl-border-none"
-          data-testid="preview-code"
-        ><code>{{ resultVisualization }}</code></pre>
+        <div v-if="displayType === $options.PANEL_DISPLAY_TYPES.VISUALIZATION">
+          <analytics-dashboard-panel
+            v-if="selectedVisualizationType"
+            :title="title"
+            :visualization="resultVisualization"
+            :style="{ height: $options.PANEL_VISUALIZATION_HEIGHT }"
+            data-testid="preview-visualization"
+            class="gl-border-none gl-shadow-none"
+            @error="(error) => handleVisualizationError('TITLE', error)"
+          />
+          <div
+            v-else
+            class="col-12 gl-bg-white gl-overflow-y-auto"
+            :style="{ height: $options.PANEL_VISUALIZATION_HEIGHT }"
+          >
+            <div class="text-content text-center gl-text-gray-400">
+              <h3 class="gl-text-gray-400">
+                {{ s__('Analytics|Select a visualization type') }}
+              </h3>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="displayType === $options.PANEL_DISPLAY_TYPES.CODE" class="gl-bg-white gl-p-4">
+          <pre
+            class="code highlight gl-display-flex gl-bg-transparent gl-border-none"
+            data-testid="preview-code"
+          ><code>{{ previewYamlConfiguration }}</code></pre>
+        </div>
       </div>
     </div>
   </div>

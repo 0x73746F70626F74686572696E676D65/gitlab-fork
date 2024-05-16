@@ -1,3 +1,4 @@
+import { safeDump } from 'js-yaml';
 import AnalyticsVisualizationPreview from 'ee/analytics/analytics_dashboards/components/visualization_designer/analytics_visualization_preview.vue';
 import AiCubeQueryFeedback from 'ee/analytics/analytics_dashboards/components/visualization_designer/ai_cube_query_feedback.vue';
 
@@ -6,7 +7,13 @@ import {
   PANEL_VISUALIZATION_HEIGHT,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import DataTable from 'ee/analytics/analytics_dashboards/components/visualizations/data_table.vue';
+import { convertToTableFormat } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { TEST_VISUALIZATION } from '../../mock_data';
+
+jest.mock('js-yaml', () => ({
+  safeDump: jest.fn().mockImplementation(() => 'yaml: mock-code'),
+}));
 
 describe('AnalyticsVisualizationPreview', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
@@ -16,10 +23,12 @@ describe('AnalyticsVisualizationPreview', () => {
   const findVisualizationButton = () => wrapper.findByTestId('select-visualization-button');
   const findCodeButton = () => wrapper.findByTestId('select-code-button');
   const findAiCubeQueryFeedback = () => wrapper.findComponent(AiCubeQueryFeedback);
+  const findDataTable = () => wrapper.findComponent(DataTable);
 
   const selectDisplayType = jest.fn();
 
   const resultVisualization = TEST_VISUALIZATION();
+  const resultSet = { tableColumns: () => [], tablePivot: () => [] };
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(AnalyticsVisualizationPreview, {
@@ -29,7 +38,7 @@ describe('AnalyticsVisualizationPreview', () => {
         selectDisplayType,
         isQueryPresent: false,
         loading: false,
-        resultSet: { tableColumns: () => [], tablePivot: () => [] },
+        resultSet,
         resultVisualization,
         aiPromptCorrelationId: null,
         ...props,
@@ -126,8 +135,12 @@ describe('AnalyticsVisualizationPreview', () => {
       });
     });
 
-    it('should render data table', () => {
-      expect(wrapper.findByTestId('preview-datatable').attributes('style')).toBe(
+    it('renders the data table', () => {
+      expect(findDataTable().props('data')).toStrictEqual(convertToTableFormat(resultSet));
+    });
+
+    it('renders data table wrapper', () => {
+      expect(wrapper.findByTestId('preview-datatable-wrapper').attributes('style')).toBe(
         `height: ${PANEL_VISUALIZATION_HEIGHT};`,
       );
     });
@@ -163,7 +176,8 @@ describe('AnalyticsVisualizationPreview', () => {
     });
 
     it('should render Code', () => {
-      expect(wrapper.findByTestId('preview-code').exists()).toBe(true);
+      expect(safeDump).toHaveBeenCalledWith(resultVisualization);
+      expect(wrapper.findByTestId('preview-code').text()).toBe('yaml: mock-code');
     });
   });
 });
