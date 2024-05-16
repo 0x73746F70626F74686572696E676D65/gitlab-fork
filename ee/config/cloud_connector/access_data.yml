@@ -28,3 +28,4 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
       code_suggestions:
         unit_primitives:
           - duo_chat
+          - documentation_search

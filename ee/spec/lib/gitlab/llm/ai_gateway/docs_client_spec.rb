@@ -55,7 +55,7 @@ RSpec.describe Gitlab::Llm::AiGateway::DocsClient, feature_category: :ai_abstrac
 
   include StubRequests
 
-  describe '#search' do
+  describe '#search', :with_cloud_connector do
     before do
       stub_request(:post, request_url)
         .with(

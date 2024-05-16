@@ -60,7 +60,7 @@ module Gitlab
         end
 
         def access_token
-          Gitlab::Llm::AiGateway::Client.access_token(scopes: [:documentation_search])
+          ::CloudConnector::AvailableServices.find_by_name(:duo_chat).access_token(user)
         end
         strong_memoize_attr :access_token
 
