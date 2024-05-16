@@ -1794,6 +1794,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: product_analytics_move_funnels
+  :worker_name: ProductAnalytics::MoveFunnelsWorker
+  :feature_category: :product_analytics_data_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: product_analytics_post_push
   :worker_name: ProductAnalytics::PostPushWorker
   :feature_category: :product_analytics_data_management

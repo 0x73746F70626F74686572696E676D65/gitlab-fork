@@ -64,4 +64,40 @@ RSpec.describe Analytics::DashboardsPointer, type: :model, feature_category: :de
       end
     end
   end
+
+  describe "after_commit" do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:prev_target) { create(:project, namespace: group) }
+    let_it_be(:new_target) { create(:project, namespace: group) }
+
+    context "on create" do
+      it "calls MoveFunnelsWorker with target project id" do
+        expect(::ProductAnalytics::MoveFunnelsWorker).to receive(:perform_async)
+                                                           .with(project.id, nil, new_target.id)
+        pointer = build(:analytics_dashboards_pointer, :project_based, project: project, target_project: new_target)
+        pointer.save!
+      end
+    end
+
+    context "on update" do
+      it "calls MoveFunnelsWorker with previous and next target project ids" do
+        expect(::ProductAnalytics::MoveFunnelsWorker).to receive(:perform_async).once.and_call_original
+        expect(::ProductAnalytics::MoveFunnelsWorker).to receive(:perform_async)
+                                                           .with(project.id, prev_target.id, new_target.id)
+        pointer = create(:analytics_dashboards_pointer, :project_based, project: project, target_project: prev_target)
+        pointer.update!(target_project: new_target)
+      end
+    end
+
+    context "on delete" do
+      it "calls MoveFunnelsWorker with previous target project id" do
+        expect(::ProductAnalytics::MoveFunnelsWorker).to receive(:perform_async).once.and_call_original
+        expect(::ProductAnalytics::MoveFunnelsWorker).to receive(:perform_async)
+                                                           .with(project.id, prev_target.id, nil)
+        pointer = create(:analytics_dashboards_pointer, :project_based, project: project, target_project: prev_target)
+        pointer.destroy!
+      end
+    end
+  end
 end

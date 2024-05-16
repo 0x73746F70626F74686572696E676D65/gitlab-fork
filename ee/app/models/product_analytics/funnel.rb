@@ -49,6 +49,21 @@ module ProductAnalytics
       old_name if old_name != current_name
     end
 
+    def self.names_within_project_repository(project)
+      root_trees = project.repository.tree(:head, FUNNELS_ROOT_LOCATION)
+      return [] unless root_trees&.entries&.any?
+
+      root_trees.entries.filter_map do |tree|
+        config = YAML.safe_load(
+          project.repository.blob_data_at(project.repository.root_ref_sha, tree.path)
+        )
+
+        next unless config['name'] && config['seconds_to_convert'] && config['steps']
+
+        config['name']
+      end
+    end
+
     def self.for_project(project)
       config_project = project.analytics_dashboards_configuration_project || project
       root_trees = config_project.repository.tree(:head, FUNNELS_ROOT_LOCATION)
