@@ -160,11 +160,22 @@ module Elastic
                  end
 
         use_match_queries = use_match_queries?(options)
-        if use_match_queries
-          should += [build_multi_match_query(options, :or), build_multi_match_query(options, :and),
-            build_match_phrase_query(options)]
+
+        if options[:count_only] && use_match_queries
+          filter << { bool: {
+            _name: context.name(:count, es_type, :using_match_queries),
+            minimum_should_match: 1,
+            should: [
+              build_multi_match_query(options, :or),
+              build_multi_match_query(options, :and),
+              build_match_phrase_query(options)
+            ]
+          } }
         elsif options[:count_only]
           filter << simple_query_string
+        elsif use_match_queries
+          should.push(build_multi_match_query(options, :or), build_multi_match_query(options, :and),
+            build_match_phrase_query(options))
         else
           must << simple_query_string
         end
@@ -179,7 +190,7 @@ module Elastic
           }
         }
 
-        query_hash[:query][:bool][:minimum_should_match] = 1 if use_match_queries
+        query_hash[:query][:bool][:minimum_should_match] = 1 if !should.empty? && use_match_queries
 
         query_hash
       end
