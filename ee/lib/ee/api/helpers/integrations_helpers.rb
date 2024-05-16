@@ -12,12 +12,12 @@ module EE
           override :integrations
           def integrations
             super.merge(
-              'github' => ::Integrations::Github.api_fields,
-              'git-guardian' => ::Integrations::GitGuardian.api_fields,
+              'github' => ::Integrations::Github.api_arguments,
+              'git-guardian' => ::Integrations::GitGuardian.api_arguments,
               'google-cloud-platform-artifact-registry' =>
-                ::Integrations::GoogleCloudPlatform::ArtifactRegistry.api_fields,
+                ::Integrations::GoogleCloudPlatform::ArtifactRegistry.api_arguments,
               'google-cloud-platform-workload-identity-federation' =>
-                ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.api_fields
+                ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.api_arguments
             )
           end
 
