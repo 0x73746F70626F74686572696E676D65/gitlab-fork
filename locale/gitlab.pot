@@ -24637,6 +24637,9 @@ msgstr ""
 msgid "Group by:"
 msgstr ""
 
+msgid "Group comment templates"
+msgstr ""
+
 msgid "Group description (optional)"
 msgstr ""
 
@@ -31030,6 +31033,9 @@ msgstr ""
 msgid "Makes this %{type} confidential."
 msgstr ""
 
+msgid "Manage"
+msgstr ""
+
 msgid "Manage %{workspace} labels"
 msgstr ""
 
@@ -31048,10 +31054,10 @@ msgstr ""
 msgid "Manage branch rules"
 msgstr ""
 
-msgid "Manage git repositories with fine-grained access controls that keep your code secure."
+msgid "Manage comment templates"
 msgstr ""
 
-msgid "Manage group comment templates"
+msgid "Manage git repositories with fine-grained access controls that keep your code secure."
 msgstr ""
 
 msgid "Manage group labels"
@@ -31064,9 +31070,6 @@ msgid "Manage members"
 msgstr ""
 
 msgid "Manage milestones"
-msgstr ""
-
-msgid "Manage project comment templates"
 msgstr ""
 
 msgid "Manage project labels"
@@ -31085,9 +31088,6 @@ msgid "Manage two-factor authentication"
 msgstr ""
 
 msgid "Manage usage"
-msgstr ""
-
-msgid "Manage your comment templates"
 msgstr ""
 
 msgid "Manage your subscription"
@@ -34091,6 +34091,9 @@ msgid "No changes between %{source} and %{target}"
 msgstr ""
 
 msgid "No child epics match applied filters"
+msgstr ""
+
+msgid "No comment templates found."
 msgstr ""
 
 msgid "No commenters"
@@ -40111,6 +40114,9 @@ msgstr ""
 msgid "Project cannot be shared with the group it is in or one of its ancestors."
 msgstr ""
 
+msgid "Project comment templates"
+msgstr ""
+
 msgid "Project configuration, excluding integrations"
 msgstr ""
 
@@ -45926,6 +45932,9 @@ msgstr ""
 msgid "Search by name"
 msgstr ""
 
+msgid "Search comment templates"
+msgstr ""
+
 msgid "Search files"
 msgstr ""
 
@@ -47869,6 +47878,9 @@ msgid "Select a color"
 msgstr ""
 
 msgid "Select a color from the color picker or from the presets below."
+msgstr ""
+
+msgid "Select a comment template"
 msgstr ""
 
 msgid "Select a file from the left sidebar to begin editing. Afterwards, you'll be able to commit your changes."
@@ -60314,6 +60326,9 @@ msgid "Your changes have been successfully committed."
 msgstr ""
 
 msgid "Your comment could not be submitted! Please check your network connection and try again."
+msgstr ""
+
+msgid "Your comment templates"
 msgstr ""
 
 msgid "Your comment will be discarded."

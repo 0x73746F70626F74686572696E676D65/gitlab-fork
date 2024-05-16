@@ -1,9 +1,15 @@
+import {
+  GlModal,
+  GlDisclosureDropdown,
+  GlDisclosureDropdownGroup,
+  GlDisclosureDropdownItem,
+} from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import CommentTemplatesDropdown from '~/vue_shared/components/markdown/comment_templates_dropdown.vue';
+import CommentTemplatesDropdown from '~/vue_shared/components/markdown/comment_templates_modal.vue';
 import savedRepliesQuery from 'ee/vue_shared/components/markdown/saved_replies.query.graphql';
 
 let wrapper;
@@ -73,13 +79,22 @@ function createComponent(options = {}) {
 
   document.body.dataset.groupFullPath = 'gitlab-org';
 
-  return mountExtended(CommentTemplatesDropdown, {
+  return shallowMountExtended(CommentTemplatesDropdown, {
     propsData: {
       newCommentTemplatePaths: [{ path: '/new', text: 'New' }],
     },
     apolloProvider: mockApollo,
+    stubs: {
+      GlModal,
+      GlDisclosureDropdown,
+      GlDisclosureDropdownGroup,
+      GlDisclosureDropdownItem,
+    },
   });
 }
+
+const findGroups = () =>
+  wrapper.findByTestId('comment-templates-list').findAllComponents(GlDisclosureDropdownGroup);
 
 describe('EE comment templates dropdown', () => {
   afterEach(() => {
@@ -91,17 +106,17 @@ describe('EE comment templates dropdown', () => {
     const mockApollo = createMockApolloProvider();
     wrapper = createComponent({ mockApollo });
 
-    wrapper.find('.js-comment-template-toggle').trigger('click');
+    wrapper.find('.js-comment-template-toggle').vm.$emit('click');
 
     await waitForPromises();
 
-    const items = wrapper.findAll('li');
+    const groups = findGroups();
 
-    expect(items).toHaveLength(4);
-    expect(items.at(0).text()).toBe('User');
-    expect(items.at(1).text()).toContain('saved_reply_1');
-    expect(items.at(2).text()).toBe('Group');
-    expect(items.at(3).text()).toContain('group saved reply');
+    expect(groups).toHaveLength(2);
+    expect(groups.at(0).text()).toContain('User');
+    expect(groups.at(0).text()).toContain('saved_reply_1');
+    expect(groups.at(1).text()).toContain('Group');
+    expect(groups.at(1).text()).toContain('group saved reply');
   });
 
   it('renders project, group and user comment templates', async () => {
@@ -110,18 +125,18 @@ describe('EE comment templates dropdown', () => {
     const mockApollo = createMockApolloProvider();
     wrapper = createComponent({ mockApollo });
 
-    wrapper.find('.js-comment-template-toggle').trigger('click');
+    wrapper.find('.js-comment-template-toggle').vm.$emit('click');
 
     await waitForPromises();
 
-    const items = wrapper.findAll('li');
+    const groups = findGroups();
 
-    expect(items).toHaveLength(6);
-    expect(items.at(0).text()).toBe('User');
-    expect(items.at(1).text()).toContain('saved_reply_1');
-    expect(items.at(2).text()).toBe('Project');
-    expect(items.at(3).text()).toContain('project saved reply');
-    expect(items.at(4).text()).toBe('Group');
-    expect(items.at(5).text()).toContain('group saved reply');
+    expect(groups).toHaveLength(3);
+    expect(groups.at(0).text()).toContain('saved_reply_1');
+    expect(groups.at(0).text()).toContain('User');
+    expect(groups.at(1).text()).toContain('project saved reply');
+    expect(groups.at(1).text()).toContain('Project');
+    expect(groups.at(2).text()).toContain('group saved reply');
+    expect(groups.at(2).text()).toContain('Group');
   });
 });
