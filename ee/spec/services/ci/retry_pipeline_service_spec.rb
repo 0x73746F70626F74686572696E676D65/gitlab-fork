@@ -37,17 +37,19 @@ RSpec.describe Ci::RetryPipelineService, feature_category: :continuous_integrati
     end
   end
 
-  context 'when user is not allowed to retry pipeline because of missing credit card' do
-    it 'returns an error' do
-      allow(user)
-        .to receive(:has_required_credit_card_to_run_pipelines?)
-        .with(project)
-        .and_return(false)
+  context 'when the user is not authorized to run jobs' do
+    before do
+      allow_next_instance_of(::Users::IdentityVerification::AuthorizeCi) do |instance|
+        allow(instance).to receive(:authorize_run_jobs!)
+          .and_raise(::Users::IdentityVerification::Error, 'authorization error')
+      end
+    end
 
+    it 'returns an error' do
       response = service.execute(pipeline)
 
       expect(response.http_status).to eq(:forbidden)
-      expect(response.errors).to include('Credit card required to be on file in order to retry a pipeline')
+      expect(response.errors).to include('authorization error')
       expect(pipeline.reload).not_to be_running
     end
   end

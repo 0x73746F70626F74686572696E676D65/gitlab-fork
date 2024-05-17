@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::AfterConfig, feature_category: :continuous_integration do
-  let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user) }
+  let_it_be(:project) { create(:project, :repository, developers: user) }
 
   let(:pipeline) do
     build(:ci_pipeline, project: project)
@@ -19,57 +19,36 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::Validate::AfterConfig, feature_categ
   let(:ref) { 'master' }
 
   describe '#perform!' do
-    before do
-      project.add_developer(user)
-    end
-
-    describe 'credit card requirement', :saas do
-      context 'when user does not have credit card for pipelines in project' do
-        before do
-          allow(user)
-            .to receive(:has_required_credit_card_to_run_pipelines?)
-            .with(project)
-            .and_return(false)
-        end
-
-        it 'breaks the chain with an error' do
-          step.perform!
-
-          expect(step.break?).to be_truthy
-          expect(pipeline.errors.to_a)
-            .to include('Credit card required to be on file in order to create a pipeline')
-          expect(pipeline.failure_reason).to eq('user_not_verified')
-          expect(pipeline).to be_persisted # when passing a failure reason the pipeline is persisted
-        end
-
-        it 'logs the event' do
-          allow(Gitlab).to receive(:com?).and_return(true).at_least(:once)
-          allow(Gitlab::AppLogger).to receive(:info)
-
-          expect(Gitlab::AppLogger).to receive(:info).with(
-            message: 'Credit card required to be on file in order to create a pipeline',
-            project_path: project.full_path,
-            user_id: user.id,
-            plan: 'free')
-
-          step.perform!
+    context 'when the user is not authorized' do
+      before do
+        allow_next_instance_of(::Users::IdentityVerification::AuthorizeCi) do |instance|
+          allow(instance).to receive(:authorize_run_jobs!).and_raise(
+            ::Users::IdentityVerification::Error, 'authorization error')
         end
       end
 
-      context 'when user has credit card for pipelines in project' do
-        before do
-          allow(user)
-            .to receive(:has_required_credit_card_to_run_pipelines?)
-            .with(project)
-            .and_return(true)
-        end
+      it 'breaks the chain with an error' do
+        step.perform!
 
-        it 'succeeds the step' do
-          step.perform!
+        expect(step.break?).to be_truthy
+        expect(pipeline.errors.to_a).to include('authorization error')
+        expect(pipeline.failure_reason).to eq('user_not_verified')
+        expect(pipeline).to be_persisted # when passing a failure reason the pipeline is persisted
+      end
+    end
 
-          expect(step.break?).to be_falsey
-          expect(pipeline.errors).to be_empty
+    context 'when the user is authorized' do
+      before do
+        allow_next_instance_of(::Users::IdentityVerification::AuthorizeCi) do |instance|
+          allow(instance).to receive(:authorize_run_jobs!)
         end
+      end
+
+      it 'succeeds the step' do
+        step.perform!
+
+        expect(step.break?).to be_falsey
+        expect(pipeline.errors).to be_empty
       end
     end
   end

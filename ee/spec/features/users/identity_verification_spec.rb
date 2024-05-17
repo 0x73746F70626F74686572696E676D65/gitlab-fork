@@ -6,7 +6,9 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   include IdentityVerificationHelpers
   include ListboxHelpers
 
-  let_it_be_with_reload(:user) { create(:user) }
+  let_it_be_with_reload(:user) do
+    create(:user, created_at: IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day)
+  end
 
   before do
     stub_saas_features(identity_verification: true)
@@ -37,6 +39,16 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     wait_for_requests
 
     expect_to_see_dashboard_page
+  end
+
+  context 'when the user was created before the feature relase date' do
+    let_it_be(:user) do
+      create(:user, created_at: IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE - 1.day)
+    end
+
+    it 'does not verify the user' do
+      expect_to_see_dashboard_page
+    end
   end
 
   context 'when the user requests a phone verification exemption' do

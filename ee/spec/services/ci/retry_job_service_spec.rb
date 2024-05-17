@@ -69,61 +69,8 @@ RSpec.describe Ci::RetryJobService, feature_category: :continuous_integration do
         end
       end
 
-      describe 'credit card requirement' do
-        shared_examples 'creates a retried build' do
-          it 'creates a retried build' do
-            build
-
-            expect { new_build }.to change { Ci::Build.count }.by(1)
-
-            expect(new_build.name).to eq build.name
-            expect(new_build).to be_latest
-            expect(build).to be_retried
-            expect(build).to be_processed
-          end
-        end
-
-        context 'when credit card is required', :saas do
-          let_it_be(:ultimate_plan) { create(:ultimate_plan) }
-          let_it_be(:plan_limits) { create(:plan_limits, plan: ultimate_plan) }
-
-          before do
-            create(:gitlab_subscription, namespace: namespace, hosted_plan: ultimate_plan)
-          end
-
-          context 'when project is on free plan' do
-            before do
-              namespace.gitlab_subscription.update!(hosted_plan: create(:free_plan))
-              user.created_at = ::Users::CreditCardValidation::RELEASE_DAY
-            end
-
-            context 'when user has credit card' do
-              before do
-                allow(user).to receive(:credit_card_validated_at).and_return(Time.current)
-              end
-
-              it_behaves_like 'creates a retried build'
-            end
-
-            context 'when user does not have credit card' do
-              it 'raises an exception', :aggregate_failures do
-                expect { new_build }.to raise_error Gitlab::Access::AccessDeniedError
-              end
-
-              context 'when feature flag is disabled' do
-                before do
-                  stub_feature_flags(ci_require_credit_card_on_free_plan: false)
-                end
-
-                it_behaves_like 'creates a retried build'
-              end
-            end
-          end
-        end
-
-        context 'when credit card is not required' do
-          it_behaves_like 'creates a retried build'
-        end
+      it_behaves_like 'authorizing CI jobs' do
+        subject { new_build }
       end
     end
   end

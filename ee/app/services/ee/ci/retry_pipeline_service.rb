@@ -7,11 +7,13 @@ module EE
 
       override :check_access
       def check_access(pipeline)
-        if current_user && !current_user.has_required_credit_card_to_run_pipelines?(project)
-          ServiceResponse.error(message: 'Credit card required to be on file in order to retry a pipeline', http_status: :forbidden)
-        else
-          super
+        begin
+          ::Users::IdentityVerification::AuthorizeCi.new(user: current_user, project: project).authorize_run_jobs!
+        rescue ::Users::IdentityVerification::Error => e
+          return ServiceResponse.error(message: e.message, http_status: :forbidden)
         end
+
+        super
       end
 
       private

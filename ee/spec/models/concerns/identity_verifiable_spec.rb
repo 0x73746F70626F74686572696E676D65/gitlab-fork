@@ -84,7 +84,9 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
   end
 
   describe('#identity_verified?') do
-    let_it_be(:user) { create(:user, :with_sign_ins) }
+    let_it_be(:user) do
+      create(:user, :with_sign_ins, created_at: described_class::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day)
+    end
 
     subject(:identity_verified?) { user.identity_verified? }
 
@@ -154,6 +156,14 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       with_them do
         it { is_expected.to eq(result) }
       end
+    end
+
+    context 'when the user was created before the release date' do
+      let_it_be(:user) do
+        create(:user, :with_sign_ins, created_at: described_class::IDENTITY_VERIFICATION_RELEASE_DATE - 1.day)
+      end
+
+      it { is_expected.to eq true }
     end
   end
 

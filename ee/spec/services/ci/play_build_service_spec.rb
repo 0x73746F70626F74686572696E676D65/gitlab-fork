@@ -7,12 +7,12 @@ RSpec.describe Ci::PlayBuildService, '#execute', feature_category: :continuous_i
     subject { service.execute(build) }
   end
 
-  it_behaves_like 'prevents playing job when credit card is required' do
-    let(:user) { create(:user, maintainer_of: project) }
-    let(:project) { create(:project) }
-    let(:pipeline) { create(:ci_pipeline, project: project) }
-    let(:job) { create(:ci_build, :manual, pipeline: pipeline) }
+  let_it_be(:project) { create(:project) }
+  let_it_be(:user) { create(:user, maintainer_of: project) }
+  let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
+  let_it_be(:job) { create(:ci_build, :manual, pipeline: pipeline) }
 
-    subject { described_class.new(project, user).execute(job) }
-  end
+  subject { described_class.new(project, user).execute(job) }
+
+  it_behaves_like 'authorizing CI jobs'
 end

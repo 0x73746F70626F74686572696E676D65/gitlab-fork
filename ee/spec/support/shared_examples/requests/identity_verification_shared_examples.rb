@@ -71,7 +71,9 @@ RSpec.shared_examples 'logs and tracks the event' do |category, event, reason = 
 end
 
 RSpec.shared_examples 'it requires a signed in user' do
-  let_it_be(:confirmed_user) { create(:user) }
+  let_it_be(:confirmed_user) do
+    create(:user, created_at: IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day)
+  end
 
   before do
     stub_session(session_data: { verification_user_id: nil })
@@ -80,12 +82,24 @@ RSpec.shared_examples 'it requires a signed in user' do
     do_request
   end
 
-  it 'sets the user instance variable' do
-    expect(assigns(:user)).to eq(confirmed_user)
+  context 'when the user was created after the release day' do
+    it 'sets the user instance variable' do
+      expect(assigns(:user)).to eq(confirmed_user)
+    end
+
+    it 'does not redirect to root path' do
+      expect(response).not_to redirect_to(root_path)
+    end
   end
 
-  it 'does not redirect to root path' do
-    expect(response).not_to redirect_to(root_path)
+  context 'when the user was created before the release day' do
+    let_it_be(:confirmed_user) do
+      create(:user, created_at: IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE - 1.day)
+
+      it 'redirects to root path' do
+        expect(response).to redirect_to(root_path)
+      end
+    end
   end
 end
 
