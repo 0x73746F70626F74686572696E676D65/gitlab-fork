@@ -687,20 +687,6 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
           it_behaves_like 'rollback changes when creation fails'
         end
 
-        context 'when sync_epic_to_work_item feature flag is disabled' do
-          before do
-            stub_feature_flags(sync_epic_to_work_item: false)
-          end
-
-          it 'create relationship only for the epic' do
-            expect { create_link }.to change { parent_epic.children.count }.by(1)
-              .and(not_change { WorkItems::ParentLink.count })
-
-            expect(parent_epic.reload.children).to include(child_epic)
-            expect(parent_work_item.reload.work_item_children).to be_empty
-          end
-        end
-
         context 'when synced_epic parameter is true' do
           let(:synced_epic_param) { true }
 

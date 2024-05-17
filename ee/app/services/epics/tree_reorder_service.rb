@@ -194,7 +194,6 @@ module Epics
     end
 
     def sync_move_to_work_item!
-      return unless Feature.enabled?(:sync_epic_work_item_order, base_epic.group)
       return if new_parent_has_no_adjacent_item? || not_all_items_have_a_work_item?
 
       result = WorkItems::ParentLinks::ReorderService.new(work_item_parent, current_user,

@@ -126,7 +126,7 @@ module Epics
       end
 
       def create_synced_work_item_link!(child_epic)
-        return true unless !params[:synced_epic] && issuable.group.epic_sync_to_work_item_enabled?
+        return true if params[:synced_epic]
         return true unless issuable.work_item && child_epic.work_item
 
         response = ::WorkItems::ParentLinks::CreateService

@@ -58,18 +58,6 @@ RSpec.describe Epics::UpdateDatesService, feature_category: :portfolio_managemen
           end
 
           it_behaves_like 'syncs all data from an epic to a work item'
-
-          context 'when sync_epic_to_work_item_dates is disabled' do
-            before do
-              stub_feature_flags(sync_epic_to_work_item_dates: false)
-            end
-
-            it 'does not upsert WorkItems::DatesSource' do
-              expect(WorkItems::DatesSource).not_to receive(:upsert_all)
-
-              described_class.new([epic]).execute
-            end
-          end
         end
 
         context 'without due date' do

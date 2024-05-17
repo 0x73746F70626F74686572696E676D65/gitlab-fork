@@ -206,7 +206,7 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
                 .to eq("added #{parent_work_item.to_reference} as parent epic")
             end
 
-            context 'when sync_epic_to_work_item feature flag is disabled' do
+            context 'when sync_work_item_to_epic feature flag is disabled' do
               before do
                 stub_feature_flags(sync_work_item_to_epic: false)
               end
@@ -320,7 +320,7 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
               expect(child_work_item.notes.last.note).to eq("added #{parent_work_item.to_reference} as parent epic")
             end
 
-            context 'when sync_epic_to_work_item feature flag is disabled' do
+            context 'when sync_work_item_to_epic feature flag is disabled' do
               before do
                 stub_feature_flags(sync_work_item_to_epic: false)
               end

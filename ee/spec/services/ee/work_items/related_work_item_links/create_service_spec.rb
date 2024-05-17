@@ -158,7 +158,7 @@ RSpec.describe WorkItems::RelatedWorkItemLinks::CreateService, feature_category:
           )
         end
 
-        context 'when sync_epic_to_work_item feature flag is disabled' do
+        context 'when sync_work_item_to_epic feature flag is disabled' do
           before do
             stub_feature_flags(sync_work_item_to_epic: false)
           end

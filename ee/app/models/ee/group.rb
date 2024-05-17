@@ -251,17 +251,8 @@ module EE
         provisioned_users.service_account
       end
 
-      def epic_sync_to_work_item_enabled?
-        ::Feature.enabled?(:sync_epic_to_work_item, self, type: :wip)
-      end
-
       def work_item_sync_to_epic_enabled?
         ::Feature.enabled?(:sync_work_item_to_epic, self, type: :wip)
-      end
-
-      def sync_epic_work_item_order_enabled?
-        epic_sync_to_work_item_enabled? &&
-          ::Feature.enabled?(:sync_epic_work_item_order, self, type: :gitlab_com_derisk)
       end
     end
 

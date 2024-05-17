@@ -11,7 +11,7 @@ module Epics
     private
 
     def close_epic(epic)
-      work_item = epic.work_item if epic.group.epic_sync_to_work_item_enabled? && epic.work_item
+      work_item = epic.work_item if epic.work_item
 
       ApplicationRecord.transaction do
         epic.close!
