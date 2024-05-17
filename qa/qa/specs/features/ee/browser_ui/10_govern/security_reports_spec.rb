@@ -143,8 +143,12 @@ module QA
         end
       end
 
-      it 'displays security reports in the group security dashboard', :smoke,
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038' do
+      it 'displays security reports in the group security dashboard',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038',
+        quarantine: {
+          type: :stale,
+          issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/461959"
+        } do
         push_security_reports
         project.visit!
         wait_for_pipeline_success
