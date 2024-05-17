@@ -221,7 +221,7 @@ export default {
             <gl-disclosure-dropdown
               v-gl-tooltip
               class="gl-display-none gl-md-display-inline-flex!"
-              toggle-class="gl-border-0! gl-shadow-none!"
+              toggle-class="gl-border-0! !gl-shadow-none"
               text-sr-only
               :toggle-text="__('More actions')"
               :title="__('More actions')"

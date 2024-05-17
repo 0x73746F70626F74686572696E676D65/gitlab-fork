@@ -12,12 +12,12 @@ export default {
   ITEM_LOADING: {
     id: 'loading',
     text: 'loading',
-    extraAttrs: { disabled: true, class: 'gl-shadow-none!' },
+    extraAttrs: { disabled: true, class: '!gl-shadow-none' },
   },
   ITEM_EMPTY: {
     id: 'empty',
     text: s__('Organization|No organizations available to switch to.'),
-    extraAttrs: { disabled: true, class: 'gl-shadow-none! gl-text-secondary' },
+    extraAttrs: { disabled: true, class: '!gl-shadow-none gl-text-secondary' },
   },
   i18n: {
     currentOrganization: s__('Organization|Current organization'),
