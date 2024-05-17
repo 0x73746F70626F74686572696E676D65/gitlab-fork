@@ -106,6 +106,25 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
     end
   end
 
+  shared_examples_for 'audit event' do
+    let(:comment) { 'LGTM!' }
+
+    it 'creates an audit event' do
+      expect(Gitlab::Audit::Auditor).to receive(:audit).with({
+        name: "deployment_#{status}",
+        author: user,
+        scope: project,
+        target: environment,
+        message: "#{status.capitalize} deployment with IID: #{deployment.iid} and ID: #{deployment.id}",
+        additional_details: {
+          comment: comment
+        }
+      })
+
+      subject
+    end
+  end
+
   describe '#execute' do
     subject { service.execute(deployment, status) }
 
@@ -113,6 +132,7 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
       include_examples 'approve'
       include_examples 'comment'
       include_examples 'set approval rule'
+      include_examples 'audit event'
     end
 
     context 'when status is rejected' do
@@ -121,6 +141,7 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
       include_examples 'reject'
       include_examples 'comment'
       include_examples 'set approval rule'
+      include_examples 'audit event'
     end
 
     context 'when user approves for different groups' do
