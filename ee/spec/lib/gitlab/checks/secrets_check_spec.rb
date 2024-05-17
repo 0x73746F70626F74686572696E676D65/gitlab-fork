@@ -38,6 +38,12 @@ RSpec.describe Gitlab::Checks::SecretsCheck, feature_category: :secret_detection
             stub_licensed_features(pre_receive_secret_detection: true)
           end
 
+          context 'when deleting the branch' do
+            it 'skips the check' do
+              expect(delete_branch.validate!).to be_nil
+            end
+          end
+
           it_behaves_like 'scan passed'
           it_behaves_like 'scan detected secrets'
           it_behaves_like 'scan detected secrets but some errors occured'

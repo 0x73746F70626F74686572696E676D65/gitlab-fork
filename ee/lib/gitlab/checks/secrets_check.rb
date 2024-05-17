@@ -43,10 +43,14 @@ module Gitlab
         #   2. unless we are on GitLab.com or a Dedicated instance
         #   3. unless feature flag is enabled for this project (when instance type is GitLab.com)
         #   4. unless license is ultimate
+        #   5. if it is a delete branch/tag operation, as it would require scanning the entire revision history
+        #   6. if options are passed for us to skip the check
 
         return unless run_pre_receive_secret_detection?
 
         return unless project.licensed_feature_available?(:pre_receive_secret_detection)
+
+        return if includes_full_revision_history?
 
         # Skip if any commit has the special bypass flag `[skip secret detection]`
         if skip_secret_detection_commit_message?
@@ -102,6 +106,10 @@ module Gitlab
       def enabled_for_dedicated_project?
         ::Gitlab::CurrentSettings.gitlab_dedicated_instance &&
           project.security_setting.pre_receive_secret_detection_enabled
+      end
+
+      def includes_full_revision_history?
+        Gitlab::Git.blank_ref?(changes_access.changes.first[:newrev])
       end
 
       def skip_secret_detection_commit_message?
