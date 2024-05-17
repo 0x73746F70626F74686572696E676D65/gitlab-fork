@@ -139,5 +139,25 @@ RSpec.describe PersonalAccessTokens::ExpiringWorker, type: :worker, feature_cate
 
       it_behaves_like 'sends notification about expiry of bot user tokens'
     end
+
+    context 'when bot user it logs error for standard error' do
+      let_it_be(:project_bot) { create(:user, :project_bot) }
+      let_it_be(:group) { create(:group) }
+      let_it_be(:expiring_token) { create(:personal_access_token, user: project_bot, expires_at: 5.days.from_now) }
+
+      before_all do
+        group.add_developer(project_bot)
+      end
+
+      it "logs error" do
+        expect_next_instance_of(NotificationService) do |service|
+          expect(service).to receive(:bot_resource_access_token_about_to_expire).and_raise(StandardError.new('some error'))
+        end
+        allow(Gitlab::AppLogger).to receive(:error).and_call_original
+        expect(Gitlab::AppLogger).to receive(:error)
+
+        worker.perform
+      end
+    end
   end
 end

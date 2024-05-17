@@ -81,6 +81,15 @@ module PersonalAccessTokens
 
             execute_web_hooks(user, expiring_user_token)
             deliver_bot_notifications(user, expiring_user_token.name)
+          rescue StandardError => e
+            # defensive mechanism to not to stop processing tokens
+            # in case something goes wrong with one.
+            Gitlab::AppLogger.error(
+              message: "Notifying Bot User resource owners about expiring tokens failed with exception #{e.message}",
+              class: self.class,
+              user_id: user.id
+            )
+            next
           end
         end
 
@@ -93,19 +102,17 @@ module PersonalAccessTokens
 
     def deliver_bot_notifications(bot_user, token_name)
       notification_service.bot_resource_access_token_about_to_expire(bot_user, token_name)
-
-      Gitlab::AppLogger.info(
-        message: "Notifying Bot User resource owners about expiring tokens",
-        class: self.class,
-        user_id: bot_user.id
-      )
+      log_info("Notifying Bot User resource owners about expiring tokens", user)
     end
 
     def deliver_user_notifications(user, token_names)
       notification_service.access_token_about_to_expire(user, token_names)
+      log_info("Notifying User about expiring tokens", user)
+    end
 
+    def log_info(message_text, user)
       Gitlab::AppLogger.info(
-        message: "Notifying User about expiring tokens",
+        message: message_text,
         class: self.class,
         user_id: user.id
       )
@@ -114,6 +121,7 @@ module PersonalAccessTokens
     def execute_web_hooks(bot_user, token)
       resource = bot_user.resource_bot_resource
 
+      return unless resource
       return if resource.is_a?(Project) && !resource.has_active_hooks?(:resource_access_token_hooks)
 
       hook_data = Gitlab::DataBuilder::ResourceAccessToken.build(token, :expiring, resource)
