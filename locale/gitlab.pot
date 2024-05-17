@@ -21611,6 +21611,9 @@ msgstr ""
 msgid "Failed to find import label for Jira import."
 msgstr ""
 
+msgid "Failed to find issue or merge request"
+msgstr ""
+
 msgid "Failed to find users for %{missing}"
 msgstr ""
 
