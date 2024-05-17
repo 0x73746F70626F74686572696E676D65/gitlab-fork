@@ -3,8 +3,6 @@ import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
-import ApproversList from 'ee/approvals/components/approvers/approvers_list.vue';
-import ApproversSelect from 'ee/approvals/components/approvers/approvers_select.vue';
 import RuleForm, { READONLY_NAMES } from 'ee/approvals/components/rules/rule_form.vue';
 import { TYPE_USER, TYPE_GROUP, TYPE_HIDDEN_GROUPS } from 'ee/approvals/constants';
 import { createStoreOptions } from 'ee/approvals/stores';
@@ -45,8 +43,6 @@ const nameTakenError = {
 
 Vue.use(Vuex);
 
-const addType = (type) => (x) => Object.assign(x, { type });
-
 describe('EE Approvals RuleForm', () => {
   let wrapper;
   let store;
@@ -76,9 +72,9 @@ describe('EE Approvals RuleForm', () => {
   const findNameValidation = () => wrapper.findByTestId('name-group');
   const findApprovalsRequiredInput = () => wrapper.findByTestId('approvals-required');
   const findApprovalsRequiredValidation = () => wrapper.findByTestId('approvals-required-group');
-  const findApproversSelect = () => wrapper.findComponent(ApproversSelect);
+  const findUsersSelector = () => wrapper.findByTestId('users-selector');
+  const findGroupsSelector = () => wrapper.findByTestId('groups-selector');
   const findApproversValidation = () => wrapper.findByTestId('approvers-group');
-  const findApproversList = () => wrapper.findComponent(ApproversList);
   const findProtectedBranchesSelector = () => wrapper.findComponent(ProtectedBranchesSelector);
   const findBranchesValidation = () => wrapper.findByTestId('branches-group');
 
@@ -96,6 +92,18 @@ describe('EE Approvals RuleForm', () => {
     findApproversValidation(),
     findBranchesValidation(),
   ];
+
+  const selectApprovers = () => {
+    const selectedUser1 = { id: 1, type: TYPE_USER };
+    const selectedUser2 = { id: 2, type: TYPE_USER };
+    const selectedGroup1 = { id: 2, type: TYPE_GROUP };
+    const selectedGroup2 = { id: 3, type: TYPE_GROUP };
+
+    findUsersSelector().vm.$emit('select', selectedUser1);
+    findUsersSelector().vm.$emit('select', selectedUser2);
+    findGroupsSelector().vm.$emit('select', selectedGroup1);
+    findGroupsSelector().vm.$emit('select', selectedGroup2);
+  };
 
   beforeEach(() => {
     store = createStoreOptions(
@@ -223,11 +231,13 @@ describe('EE Approvals RuleForm', () => {
           });
 
           const branches = [TEST_PROTECTED_BRANCHES[0]];
-          const expected = ruleData({ protectedBranchIds: branches.map((x) => x.id) });
+          const expected = ruleData({
+            protectedBranchIds: branches.map((x) => x.id),
+          });
 
+          selectApprovers();
           await findNameInput().vm.$emit('input', expected.name);
           await findApprovalsRequiredInput().vm.$emit('input', expected.approvalsRequired);
-          await findApproversList().vm.$emit('input', [...groupRecords, ...userRecords]);
           await findProtectedBranchesSelector().vm.$emit('input', branches[0]);
           await findForm().trigger('submit');
 
@@ -238,12 +248,11 @@ describe('EE Approvals RuleForm', () => {
           createComponent({
             isMrEdit: false,
           });
-
           const expected = ruleData();
 
+          selectApprovers();
           await findNameInput().vm.$emit('input', expected.name);
           await findApprovalsRequiredInput().vm.$emit('input', expected.approvalsRequired);
-          await findApproversList().vm.$emit('input', [...groupRecords, ...userRecords]);
           await findProtectedBranchesSelector().vm.$emit('input', ALL_BRANCHES);
           await findForm().trigger('submit');
 
@@ -262,9 +271,9 @@ describe('EE Approvals RuleForm', () => {
 
             const expected = ruleData({ appliesToAllProtectedBranches: true });
 
+            selectApprovers();
             await findNameInput().vm.$emit('input', expected.name);
             await findApprovalsRequiredInput().vm.$emit('input', expected.approvalsRequired);
-            await findApproversList().vm.$emit('input', [...groupRecords, ...userRecords]);
             await findProtectedBranchesSelector().vm.$emit('input', ALL_PROTECTED_BRANCHES);
             await findForm().trigger('submit');
 
@@ -319,7 +328,6 @@ describe('EE Approvals RuleForm', () => {
       });
 
       it('on submit, shows approvers validation', async () => {
-        await findApproversList().vm.$emit('input', []);
         await findForm().trigger('submit');
         await nextTick();
 
@@ -350,7 +358,7 @@ describe('EE Approvals RuleForm', () => {
         beforeEach(async () => {
           await findNameInput().vm.$emit('input', expected.name);
           await findApprovalsRequiredInput().vm.$emit('input', expected.approvalsRequired);
-          await findApproversList().vm.$emit('input', [...groupRecords, ...userRecords]);
+          selectApprovers();
           await findProtectedBranchesSelector().vm.$emit('input', branches[0]);
         });
 
@@ -377,14 +385,22 @@ describe('EE Approvals RuleForm', () => {
       });
 
       it('adds selected approvers on selection', async () => {
-        const orig = [{ id: 7, type: TYPE_GROUP }];
-        const selected = [{ id: 2, type: TYPE_USER }];
-        const expected = [...orig, ...selected];
+        const selectedUser1 = { id: 1, type: TYPE_USER };
+        const selectedUser2 = { id: 2, type: TYPE_USER };
+        const selectedGroup1 = { id: 1, type: TYPE_GROUP };
+        const selectedGroup2 = { id: 1, type: TYPE_GROUP };
 
-        await findApproversSelect().vm.$emit('input', orig);
-        await findApproversSelect().vm.$emit('input', selected);
+        await findUsersSelector().vm.$emit('select', selectedUser1);
+        await findUsersSelector().vm.$emit('select', selectedUser2);
 
-        expect(findApproversList().props('value')).toEqual(expected);
+        await findGroupsSelector().vm.$emit('select', selectedGroup1);
+        await findGroupsSelector().vm.$emit('select', selectedGroup2);
+
+        expect(findUsersSelector().props('selectedItems')).toEqual([selectedUser1, selectedUser2]);
+        expect(findGroupsSelector().props('selectedItems')).toEqual([
+          selectedGroup1,
+          selectedGroup2,
+        ]);
       });
     });
 
@@ -401,11 +417,9 @@ describe('EE Approvals RuleForm', () => {
       });
 
       it('shows approvers', () => {
-        const list = findApproversList();
-
-        expect(list.props('value')).toEqual([
-          ...TEST_RULE.groups.map(addType(TYPE_GROUP)),
-          ...TEST_RULE.users.map(addType(TYPE_USER)),
+        expect(findGroupsSelector().props('selectedItems')).toEqual([
+          { id: 1, type: TYPE_GROUP },
+          { id: 2, type: TYPE_GROUP },
         ]);
       });
 
@@ -454,7 +468,6 @@ describe('EE Approvals RuleForm', () => {
 
         findNameInput().vm.$emit('input', '');
         findApprovalsRequiredInput().vm.$emit('input', TEST_APPROVALS_REQUIRED);
-        findApproversList().vm.$emit('input', []);
       });
 
       describe('with empty name and empty approvers', () => {
@@ -494,7 +507,7 @@ describe('EE Approvals RuleForm', () => {
 
       describe('with empty name and approvers', () => {
         beforeEach(() => {
-          findApproversList().vm.$emit('input', TEST_APPROVERS);
+          selectApprovers();
           findForm().trigger('submit');
         });
 
@@ -509,7 +522,7 @@ describe('EE Approvals RuleForm', () => {
 
       describe('with name and approvers', () => {
         beforeEach(() => {
-          findApproversList().vm.$emit('input', [{ id: 7, type: TYPE_USER }]);
+          selectApprovers();
           findNameInput().vm.$emit('input', 'Lorem');
           findForm().trigger('submit');
         });
@@ -535,12 +548,11 @@ describe('EE Approvals RuleForm', () => {
       });
 
       it('shows approvers and hidden group', () => {
-        const list = findApproversList();
+        const list = findGroupsSelector();
 
-        expect(list.props('value')).toEqual([
-          ...TEST_RULE.groups.map(addType(TYPE_GROUP)),
-          ...TEST_RULE.users.map(addType(TYPE_USER)),
-          { type: TYPE_HIDDEN_GROUPS },
+        expect(list.props('selectedItems')).toEqual([
+          { id: 1, type: 'group' },
+          { id: 2, type: 'group' },
         ]);
       });
 
@@ -557,12 +569,7 @@ describe('EE Approvals RuleForm', () => {
 
       describe('and hidden groups removed', () => {
         beforeEach(() => {
-          findApproversList().vm.$emit(
-            'input',
-            findApproversList()
-              .props('value')
-              .filter((x) => x.type !== TYPE_HIDDEN_GROUPS),
-          );
+          findGroupsSelector().vm.$emit('delete', { id: 2, type: TYPE_HIDDEN_GROUPS });
         });
 
         it('on submit, removes hidden groups', async () => {
@@ -591,8 +598,8 @@ describe('EE Approvals RuleForm', () => {
 
       it('does not add hidden groups in approvers', () => {
         expect(
-          findApproversList()
-            .props('value')
+          findGroupsSelector()
+            .props('selectedItems')
             .every((x) => x.type !== TYPE_HIDDEN_GROUPS),
         ).toBe(true);
       });
@@ -679,7 +686,7 @@ describe('EE Approvals RuleForm', () => {
 
       describe('with approvers selected', () => {
         beforeEach(() => {
-          findApproversList().vm.$emit('input', TEST_APPROVERS);
+          selectApprovers();
           findForm().trigger('submit');
         });
 
@@ -689,7 +696,6 @@ describe('EE Approvals RuleForm', () => {
             expect.objectContaining({
               name: expectedNameSubmitted,
               approvalsRequired: TEST_APPROVALS_REQUIRED,
-              users: TEST_APPROVERS.map((x) => x.id),
             }),
           );
         });
@@ -723,7 +729,13 @@ describe('EE Approvals RuleForm', () => {
             initRule: { ...TEST_RULE, name: '' },
           });
           findApprovalsRequiredInput().vm.$emit('input', TEST_APPROVALS_REQUIRED);
-          findApproversList().vm.$emit('input', []);
+
+          // Simulate the user removing all approvers
+          findGroupsSelector().vm.$emit('delete', 1);
+          findGroupsSelector().vm.$emit('delete', 2);
+          findUsersSelector().vm.$emit('delete', 1);
+          findUsersSelector().vm.$emit('delete', 2);
+          findUsersSelector().vm.$emit('delete', 3);
 
           findForm().trigger('submit');
         });
@@ -745,7 +757,7 @@ describe('EE Approvals RuleForm', () => {
             initRule: { ...TEST_RULE, name: inputName },
           });
           findApprovalsRequiredInput().vm.$emit('input', TEST_APPROVALS_REQUIRED);
-          findApproversList().vm.$emit('input', TEST_APPROVERS);
+          findUsersSelector().vm.$emit('select', TEST_APPROVERS[0]);
 
           findForm().trigger('submit');
         });
@@ -757,7 +769,7 @@ describe('EE Approvals RuleForm', () => {
               id: TEST_RULE.id,
               name: expectedNameSubmitted,
               approvalsRequired: TEST_APPROVALS_REQUIRED,
-              users: TEST_APPROVERS.map((x) => x.id),
+              users: [1, 2, 3, 7],
             }),
           );
         });

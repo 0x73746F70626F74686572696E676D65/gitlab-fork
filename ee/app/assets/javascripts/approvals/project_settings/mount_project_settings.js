@@ -1,5 +1,7 @@
 import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { GlToast } from '@gitlab/ui';
+import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import { mergeRequestApprovalSettingsMappers } from '../mappers';
 import createStore from '../stores';
@@ -38,6 +40,9 @@ export default function mountProjectSettingsApprovals(el) {
   return new Vue({
     el,
     store,
+    apolloProvider: new VueApollo({
+      defaultClient: createDefaultClient(),
+    }),
     provide: {
       coverageCheckHelpPagePath,
       fullPath,

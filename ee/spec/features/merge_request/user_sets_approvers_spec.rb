@@ -11,6 +11,8 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
   let(:project) { create(:project, :public, :repository) }
   let(:config_selector) { '[data-testid="mr-approval-rules"]' }
   let(:drawer_selector) { '.gl-drawer' }
+  let_it_be(:users_testid) { 'users-selector' }
+  let_it_be(:groups_testid) { 'groups-selector' }
 
   before do
     stub_licensed_features(merge_request_approvers: true)
@@ -31,7 +33,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
     it 'does not allow setting the author as an approver but allows setting the current user as an approver' do
       click_button('Approval rules')
       click_button('Add approval rule')
-      click_button 'Search users or groups'
+      search(user.name, users_testid)
 
       expect_no_listbox_item(author.name)
       expect_listbox_item(user.name)
@@ -54,7 +56,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
     it 'allows setting other users as approvers but does not allow setting the current user as an approver, and filters non members from approvers list', :sidekiq_might_not_need_inline do
       click_button('Approval rules')
       click_button('Add approval rule')
-      click_button 'Search users or groups'
+      search(other_user.name, users_testid)
 
       expect_listbox_item(other_user.name)
       expect_no_listbox_item(non_member.name)
@@ -81,7 +83,8 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
         click_button('Approval rules')
         click_button('Add approval rule')
-        click_button 'Search users or groups'
+
+        search(group.name, groups_testid)
 
         expect_no_listbox_item(group.name)
 
@@ -90,7 +93,13 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         visit project_new_merge_request_path(project, merge_request: { target_branch: 'master', source_branch: 'feature' })
         click_button('Approval rules')
         click_button('Add approval rule')
-        click_button 'Search users or groups'
+
+        within_testid(groups_testid) do
+          click_button "Project groups"
+          find_by_testid("listbox-item-false").click
+        end
+
+        search(group.name, groups_testid)
 
         expect_listbox_item(group.name)
 
@@ -121,7 +130,6 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         remove_approver(group.name, '.gl-drawer-body')
 
         within(drawer_selector) do
-          expect(page).to have_css('.content-list li', count: 1)
           click_button 'Save changes'
         end
 
@@ -155,7 +163,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
         click_button('Approval rules')
         click_button('Add approval rule')
-        click_button 'Search users or groups'
+        search(group.name, groups_testid)
 
         expect_listbox_item(group.name)
 
@@ -188,7 +196,6 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
 
         wait_for_requests
         within(drawer_selector) do
-          expect(page).to have_css('.content-list li', count: 1)
           click_button 'Save changes'
         end
 

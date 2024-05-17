@@ -14,8 +14,15 @@ module FeatureApprovalHelper
   end
 
   def remove_approver(name, selector = modal_selector)
-    el = page.find("#{selector} .content-list li", text: /#{name}/i)
-    el.find('button').click
+    within(selector) do
+      find_button("Delete #{name}").click
+    end
+  end
+
+  def search(name, testid)
+    within_testid(testid) do
+      fill_in 'Search', with: name
+    end
   end
 
   def expect_avatar(container, users)
