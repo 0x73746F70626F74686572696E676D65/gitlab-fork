@@ -150,39 +150,5 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
       it_behaves_like 'returning all custom roles for subgroup'
     end
   end
-
-  describe '#custom_permissions' do
-    context 'when user has static role' do
-      it 'returns an empty array for custom permissions' do
-        expect(presenter.custom_permissions).to be_empty
-      end
-
-      it 'returns an empty description' do
-        expect(presenter.member_role_description).to be_nil
-      end
-    end
-
-    context 'when user has custom role' do
-      let_it_be(:member_role) do
-        build_stubbed(:member_role, namespace: root_group, description: 'Role description',
-          read_vulnerability: true, admin_merge_request: true, read_code: false)
-      end
-
-      before do
-        member_root.member_role = member_role
-      end
-
-      it 'returns its abilities' do
-        expect(presenter.custom_permissions).to match_array(
-          [{ key: :read_vulnerability, name: 'Read vulnerability' },
-            { key: :admin_merge_request, name: 'Admin merge request' }]
-        )
-      end
-
-      it 'returns its description' do
-        expect(presenter.member_role_description).to eq('Role description')
-      end
-    end
-  end
 end
 # rubocop:enable RSpec/FactoryBot/AvoidCreate
