@@ -112,7 +112,7 @@ export default {
     class="right-sidebar epic-sidebar"
     :aria-label="__('Epic')"
   >
-    <div class="issuable-sidebar js-issuable-update gl-reset-bg">
+    <div class="issuable-sidebar js-issuable-update gl-bg-inherit">
       <sidebar-header :sidebar-collapsed="sidebarCollapsed">
         <sidebar-todo-widget
           v-if="isUserSignedIn"
