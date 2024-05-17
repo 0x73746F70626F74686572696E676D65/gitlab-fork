@@ -105,7 +105,7 @@ RSpec.shared_examples 'value stream analytics flow metrics leadTime examples' do
     let(:variables) do
       {
         path: full_path,
-        assignees: nil,
+        assigneeUsernames: nil,
         from: 21.days.ago.iso8601,
         to: 10.days.ago.iso8601
       }
