@@ -1,0 +1,9 @@
+---
+name: ci_requires_identity_verification_on_free_plan
+feature_issue_url: https://gitlab.com/gitlab-org/modelops/anti-abuse/team-tasks/-/issues/669
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/151834
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/460157
+milestone: '17.0'
+group: group::anti-abuse
+type: gitlab_com_derisk
+default_enabled: false

@@ -18,6 +18,7 @@ module IdentityVerifiable
   MEDIUM_RISK_USER_METHODS = %w[email phone].freeze
   LOW_RISK_USER_METHODS = %w[email].freeze
   ACTIVE_USER_METHODS = %w[phone].freeze
+  IDENTITY_VERIFICATION_RELEASE_DATE = Date.new(2024, 6, 3)
 
   def signup_identity_verification_enabled?
     return false unless ::Gitlab::Saas.feature_available?(:identity_verification)
@@ -66,8 +67,9 @@ module IdentityVerifiable
   end
 
   def identity_verified?
-    return false unless active_user?
     return true unless identity_verification_enabled?
+    return false unless active_user?
+    return true if created_at < IDENTITY_VERIFICATION_RELEASE_DATE
 
     # Allow an existing credit card validation to override the identity verification state if
     # credit_card is not a required verification method.

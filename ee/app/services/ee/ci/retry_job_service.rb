@@ -12,15 +12,10 @@ module EE
       def check_access!(build)
         super
 
-        if current_user && !current_user.has_required_credit_card_to_run_pipelines?(project)
-          ::Gitlab::AppLogger.info(
-            message: 'Credit card required to be on file in order to retry build',
-            project_path: project.full_path,
-            user_id: current_user.id,
-            plan: project.root_namespace.actual_plan_name
-          )
-
-          raise ::Gitlab::Access::AccessDeniedError, 'Credit card required to be on file in order to retry a build'
+        begin
+          ::Users::IdentityVerification::AuthorizeCi.new(user: current_user, project: project).authorize_run_jobs!
+        rescue ::Users::IdentityVerification::Error => e
+          raise ::Gitlab::Access::AccessDeniedError, e
         end
       end
 

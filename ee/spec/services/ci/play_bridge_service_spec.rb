@@ -3,13 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe Ci::PlayBridgeService, '#execute', feature_category: :continuous_integration do
-  it_behaves_like 'prevents playing job when credit card is required' do
-    let(:user) { create(:user, maintainer_of: [project, downstream_project]) }
-    let(:project) { create(:project) }
-    let(:pipeline) { create(:ci_pipeline, project: project) }
-    let(:downstream_project) { create(:project) }
-    let(:job) { create(:ci_bridge, :playable, pipeline: pipeline, downstream: downstream_project) }
+  let_it_be(:project) { create(:project) }
+  let_it_be(:downstream_project) { create(:project) }
+  let_it_be(:user) { create(:user, maintainer_of: [project, downstream_project]) }
+  let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
+  let_it_be_with_reload(:job) { create(:ci_bridge, :playable, pipeline: pipeline, downstream: downstream_project) }
 
-    subject { described_class.new(project, user).execute(job) }
-  end
+  subject { described_class.new(project, user).execute(job) }
+
+  it_behaves_like 'authorizing CI jobs'
 end

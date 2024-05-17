@@ -15593,7 +15593,7 @@ msgstr ""
 msgid "CredentialsInventory|SSH Keys"
 msgstr ""
 
-msgid "Credit card required to be on file in order to create a pipeline"
+msgid "Credit card required to be on file in order to run CI jobs"
 msgstr ""
 
 msgid "Credit card validation record saved"
