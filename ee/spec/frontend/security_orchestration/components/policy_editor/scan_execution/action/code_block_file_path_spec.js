@@ -82,7 +82,6 @@ describe('CodeBlockFilePath', () => {
   describe('pipeline execution policy', () => {
     it('renders message for "inject" pipeline execution policy', () => {
       createComponent({
-        propsData: { overrideType: 'inject' },
         provide: { glFeatures: { pipelineExecutionPolicyType: true } },
         stubs: { GlSprintf: false },
       });
@@ -104,7 +103,6 @@ describe('CodeBlockFilePath', () => {
 
     it('renders icon tooltip message for inject pipeline execution policy', () => {
       createComponent({
-        propsData: { overrideType: 'inject' },
         provide: { glFeatures: { pipelineExecutionPolicyType: true } },
       });
       expect(findIcon().attributes('title')).toBe(
@@ -124,7 +122,6 @@ describe('CodeBlockFilePath', () => {
 
     it('renders the help icon', () => {
       createComponent({
-        propsData: { overrideType: 'inject' },
         provide: { glFeatures: { pipelineExecutionPolicyType: true } },
       });
       expect(findIcon().exists()).toBe(true);
