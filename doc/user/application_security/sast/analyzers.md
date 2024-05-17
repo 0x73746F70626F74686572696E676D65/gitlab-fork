@@ -56,7 +56,7 @@ SAST has used other analyzers in previous versions. These analyzers reached End 
 
 ## SAST analyzer features
 
-For an analyzer to be considered Generally Available, it is expected to minimally
+For an analyzer to be considered generally available, it is expected to minimally
 support the following features:
 
 - [Customizable configuration](index.md#available-cicd-variables)
