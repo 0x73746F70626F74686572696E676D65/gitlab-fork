@@ -35,16 +35,6 @@ class SoftwareLicense < ApplicationRecord
       pluck(:name)
     end
 
-    def create_policy_for!(project:, name:, classification:, scan_result_policy_read: nil)
-      raise TransactionInProgressError, TRANSACTION_MESSAGE if transaction_open?
-
-      project.software_license_policies.create!(
-        classification: classification,
-        software_license: safe_find_or_create_by!(name: name),
-        scan_result_policy_read: scan_result_policy_read
-      )
-    end
-
     # This method can be used when called within a transaction.
     # For example from Security::ProcessScanResultPolicyWorker.
     # To avoid sub transactions the method does not call `safe_find_or_create_by!`.
@@ -54,10 +44,6 @@ class SoftwareLicense < ApplicationRecord
         software_license: find_or_create_by!(name: name),
         scan_result_policy_read: scan_result_policy_read
       )
-    end
-
-    def transaction_open?
-      connection.transaction_open?
     end
   end
 

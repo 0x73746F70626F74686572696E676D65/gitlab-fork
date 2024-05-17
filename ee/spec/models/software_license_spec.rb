@@ -12,57 +12,6 @@ RSpec.describe SoftwareLicense, feature_category: :security_policy_management do
     it { is_expected.to validate_uniqueness_of(:name) }
   end
 
-  describe '.create_policy_for!' do
-    subject { described_class }
-
-    before do
-      # We disable the check because the specs are wrapped in a transaction
-      allow(described_class).to receive(:transaction_open?).and_return(false)
-    end
-
-    let(:project) { create(:project) }
-
-    context 'when a software license with a given name has already been created' do
-      let(:mit_license) { create(:software_license, :mit) }
-      let(:result) { subject.create_policy_for!(project: project, name: mit_license.name, classification: :allowed) }
-
-      specify { expect(result).to be_persisted }
-      specify { expect(result).to be_allowed }
-      specify { expect(result.software_license).to eql(mit_license) }
-    end
-
-    context 'when a software license with a given name has NOT been created' do
-      let(:license_name) { SecureRandom.uuid }
-      let(:result) { subject.create_policy_for!(project: project, name: license_name, classification: :denied) }
-
-      specify { expect(result).to be_persisted }
-      specify { expect(result).to be_denied }
-      specify { expect(result.software_license).to be_persisted }
-      specify { expect(result.software_license.name).to eql(license_name) }
-    end
-
-    context 'when scan_result_policy_read is given' do
-      let(:mit_license) { create(:software_license, :mit) }
-      let(:scan_result_policy_read) { create(:scan_result_policy_read) }
-      let(:result) { subject.create_policy_for!(project: project, name: mit_license.name, classification: :allowed, scan_result_policy_read: scan_result_policy_read) }
-
-      specify { expect(result).to be_persisted }
-      specify { expect(result).to be_allowed }
-      specify { expect(result.scan_result_policy_read).to eq(scan_result_policy_read) }
-      specify { expect(result.software_license).to eql(mit_license) }
-    end
-
-    context 'with an open database transaction' do
-      it 'raises an exception and does not create policy' do
-        expect(described_class).to receive(:transaction_open?).and_return(true)
-
-        expect { subject.create_policy_for!(project: project, name: 'name', classification: :allowed) }
-          .to raise_error(SoftwareLicense::TransactionInProgressError)
-          .and not_change { SoftwareLicensePolicy.count }
-      end
-    end
-  end
-
   describe '.unsafe_create_policy_for!' do
     subject { described_class.unsafe_create_policy_for!(project: project, name: mit_license.name, classification: :allowed) }
 
@@ -73,26 +22,6 @@ RSpec.describe SoftwareLicense, feature_category: :security_policy_management do
       expect(described_class).to receive(:find_or_create_by!).with(name: mit_license.name).and_call_original
 
       subject
-    end
-  end
-
-  describe '.transaction_open?' do
-    subject { described_class.transaction_open? }
-
-    before do
-      allow(ApplicationRecord.connection).to receive(:transaction_open?).and_return(transaction_open)
-    end
-
-    context 'when transaction_open is true' do
-      let(:transaction_open) { true }
-
-      it { is_expected.to be_truthy }
-    end
-
-    context 'when transaction_open is false' do
-      let(:transaction_open) { false }
-
-      it { is_expected.to be_falsey }
     end
   end
 
