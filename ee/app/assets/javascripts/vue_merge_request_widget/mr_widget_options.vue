@@ -8,7 +8,6 @@ import MrWidgetSuggestPipeline from '~/vue_merge_request_widget/components/mr_wi
 import MrWidgetPipelineContainer from '~/vue_merge_request_widget/components/mr_widget_pipeline_container.vue';
 import MrWidgetApprovals from 'ee_else_ce/vue_merge_request_widget/components/approvals/approvals.vue';
 import MrWidgetMigrateJenkins from '~/vue_merge_request_widget/components/mr_widget_migrate_jenkins.vue';
-import ReportWidgetContainer from '~/vue_merge_request_widget/components/report_widget_container.vue';
 import MrWidgetAutoMergeEnabled from '~/vue_merge_request_widget/components/states/mr_widget_auto_merge_enabled.vue';
 import MergeChecks from '~/vue_merge_request_widget/components/merge_checks.vue';
 import ReadyToMerge from '~/vue_merge_request_widget/components/states/ready_to_merge.vue';
@@ -31,7 +30,6 @@ export default {
     MrWidgetMigrateJenkins,
     MrWidgetPipelineContainer,
     MrWidgetApprovals,
-    ReportWidgetContainer,
     MrWidgetAutoMergeEnabled,
     Loading,
     MergeChecks,
@@ -58,17 +56,14 @@ export default {
 </script>
 <template>
   <div v-if="!loading" id="widget-state" class="mr-state-widget gl-mt-5">
-    <header
-      v-if="shouldRenderCollaborationStatus"
-      class="gl-rounded-base gl-border-solid gl-border-1 gl-border-gray-100 gl-overflow-hidden mr-widget-workflow gl-mt-0!"
-    >
-      <mr-widget-alert-message v-if="shouldRenderCollaborationStatus" type="info">
+    <header v-if="shouldRenderCollaborationStatus" class="mr-section-container gl-overflow-hidden">
+      <mr-widget-alert-message type="info">
         {{ s__('mrWidget|Members who can merge are allowed to add commits.') }}
       </mr-widget-alert-message>
     </header>
     <mr-widget-suggest-pipeline
       v-if="shouldSuggestPipelines"
-      class="mr-widget-workflow"
+      class="mr-section-container"
       :pipeline-path="mr.mergeRequestAddCiConfigPath"
       :pipeline-svg-path="mr.pipelinesEmptySvgPath"
       :human-access="formattedHumanAccess"
@@ -88,16 +83,15 @@ export default {
       data-testid="pipeline-container"
     />
     <mr-widget-approvals v-if="shouldRenderApprovals" :mr="mr" :service="service" />
-    <report-widget-container>
-      <widget-container v-if="mr" :mr="mr" />
-    </report-widget-container>
-    <div class="mr-section-container mr-widget-workflow">
-      <div v-if="hasAlerts" class="gl-overflow-hidden mr-widget-alert-container">
+    <widget-container v-if="mr" :mr="mr" />
+    <div class="mr-section-container">
+      <template v-if="hasAlerts">
         <mr-widget-alert-message
           v-if="hasMergeError"
           type="danger"
           dismissible
-          data-testid="merge_error"
+          data-testid="merge-error"
+          class="mr-widget-section"
         >
           <span v-safe-html="mergeError"></span>
         </mr-widget-alert-message>
@@ -105,6 +99,8 @@ export default {
           v-if="showMergePipelineForkWarning"
           type="warning"
           :help-path="mr.mergeRequestPipelinesHelpPath"
+          class="mr-widget-section"
+          data-testid="merge-pipeline-fork-warning"
         >
           {{
             s__(
@@ -115,8 +111,8 @@ export default {
             {{ __('Learn more') }}
           </template>
         </mr-widget-alert-message>
-      </div>
-      <blocking-merge-requests-report :mr="mr" />
+      </template>
+      <blocking-merge-requests-report class="gl-border-b" :mr="mr" />
 
       <div class="mr-widget-section">
         <template v-if="mergeBlockedComponentVisible">
@@ -124,7 +120,7 @@ export default {
             v-if="autoMergeEnabled"
             :mr="mr"
             :service="service"
-            class="gl-border-b-1 gl-border-b-solid gl-border-gray-100"
+            class="gl-border-b"
           />
           <merge-checks :mr="mr" :service="service" />
         </template>
@@ -134,10 +130,10 @@ export default {
     </div>
     <mr-widget-pipeline-container
       v-if="shouldRenderMergedPipeline"
-      class="js-post-merge-pipeline mr-widget-workflow"
+      class="js-post-merge-pipeline"
       data-testid="merged-pipeline-container"
       :mr="mr"
-      :is-post-merge="true"
+      is-post-merge
     />
   </div>
   <loading v-else />
