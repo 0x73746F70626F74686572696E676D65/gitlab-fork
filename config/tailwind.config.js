@@ -165,6 +165,9 @@ module.exports = {
         stroke: 'stroke',
         'stroke-opacity': 'stroke-opacity',
       },
+      gridTemplateRows: {
+        auto: 'auto',
+      },
     },
   },
   plugins: [
