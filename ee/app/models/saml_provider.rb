@@ -118,6 +118,6 @@ class SamlProvider < ApplicationRecord
   end
 
   def strip_left_to_right_chars(input)
-    input&.gsub(/\u200E/, '')
+    input&.delete("\u200E")
   end
 end
