@@ -42,7 +42,7 @@ RSpec.describe ::Search::Elastic::Queries, feature_category: :global_search do
                                    query: 'foo bar', lenient: true, default_operator: :and } }
         ]
 
-        expect(by_simple_query_string[:query][:bool][:must]).to eq(expected_must)
+        expect(by_simple_query_string[:query][:bool][:must]).to eql(expected_must)
       end
     end
 
@@ -106,6 +106,129 @@ RSpec.describe ::Search::Elastic::Queries, feature_category: :global_search do
         expect(by_simple_query_string[:query][:bool][:must_not]).to eq([])
         expect(by_simple_query_string[:query][:bool][:should]).to eq([])
         expect(by_simple_query_string[:query][:bool][:filter]).to eq(expected_filter)
+      end
+    end
+  end
+
+  describe '#by_multi_match_query' do
+    let(:query) { 'foo bar' }
+    let(:options) { base_options }
+    let(:base_options) { { doc_type: 'my_type' } }
+    let(:fields) { %w[iid^3 title^2 description] }
+
+    subject(:by_multi_match_query) do
+      described_class.by_multi_match_query(fields: fields, query: query, options: options)
+    end
+
+    context 'when custom elasticsearch analyzers are enabled' do
+      before do
+        stub_ee_application_setting(elasticsearch_analyzers_smartcn_enabled: true,
+          elasticsearch_analyzers_smartcn_search: true)
+      end
+
+      it 'applies custom analyzer fields to multi_match_query' do
+        expected_must = [{ bool: {
+          should: [
+            { multi_match: { _name: 'my_type:multi_match:or:search_terms',
+                             fields: %w[iid^3 title^2 description title.smartcn description.smartcn],
+                             query: 'foo bar', operator: :or, lenient: true } },
+            { multi_match: { _name: 'my_type:multi_match:and:search_terms',
+                             fields: %w[iid^3 title^2 description title.smartcn description.smartcn],
+                             query: 'foo bar', operator: :and, lenient: true } },
+            { multi_match: { _name: 'my_type:multi_match_phrase:search_terms',
+                             type: :phrase, fields: %w[iid^3 title^2 description title.smartcn description.smartcn],
+                             query: 'foo bar', lenient: true } }
+          ],
+          minimum_should_match: 1
+        } }]
+
+        expect(by_multi_match_query[:query][:bool][:must]).to eql(expected_must)
+      end
+    end
+
+    it 'applies highlight in query' do
+      expected = { fields: { iid: {}, title: {}, description: {} },
+                   number_of_fragments: 0, pre_tags: ['gitlabelasticsearch→'], post_tags: ['←gitlabelasticsearch'] }
+
+      expect(by_multi_match_query[:highlight]).to eq(expected)
+    end
+
+    context 'when query is provided' do
+      it 'returns a by_multi_match_query query as a should and adds doc type as a filter' do
+        expected_must = [{ bool: {
+          should: [
+            { multi_match: { _name: 'my_type:multi_match:or:search_terms',
+                             fields: %w[iid^3 title^2 description],
+                             query: 'foo bar', operator: :or, lenient: true } },
+            { multi_match: { _name: 'my_type:multi_match:and:search_terms',
+                             fields: %w[iid^3 title^2 description],
+                             query: 'foo bar', operator: :and, lenient: true } },
+            { multi_match: { _name: 'my_type:multi_match_phrase:search_terms',
+                             type: :phrase, fields: %w[iid^3 title^2 description],
+                             query: 'foo bar', lenient: true } }
+          ],
+          minimum_should_match: 1
+        } }]
+
+        expected_filter = [
+          { term: { type: { _name: 'doc:is_a:my_type', value: 'my_type' } } }
+        ]
+
+        expect(by_multi_match_query[:query][:bool][:must]).to eql(expected_must)
+        expect(by_multi_match_query[:query][:bool][:must_not]).to eq([])
+        expect(by_multi_match_query[:query][:bool][:should]).to eq([])
+        expect(by_multi_match_query[:query][:bool][:filter]).to eq(expected_filter)
+      end
+    end
+
+    context 'when query is not provided' do
+      let(:query) { nil }
+
+      it 'returns a match_all query' do
+        expected_must = { match_all: {} }
+
+        expect(by_multi_match_query[:query][:bool][:must]).to eq(expected_must)
+        expect(by_multi_match_query[:query][:bool][:must_not]).to eq([])
+        expect(by_multi_match_query[:query][:bool][:should]).to eq([])
+        expect(by_multi_match_query[:query][:bool][:filter]).to eq([])
+        expect(by_multi_match_query[:track_scores]).to eq(true)
+      end
+    end
+
+    context 'when options[:count_only] is true' do
+      let(:options) { base_options.merge(count_only: true) }
+
+      it 'adds size set to 0 in query' do
+        expect(by_multi_match_query[:size]).to eq(0)
+      end
+
+      it 'does not apply highlight in query' do
+        expect(by_multi_match_query[:highlight]).to be_nil
+      end
+
+      it 'removes field boosts and returns a by_multi_match_query as a filter' do
+        expected_filter = [
+          { term: { type: { _name: 'doc:is_a:my_type', value: 'my_type' } } },
+          { bool: {
+            should: [
+              { multi_match: { _name: 'my_type:multi_match:or:search_terms',
+                               fields: %w[iid title description],
+                               query: 'foo bar', operator: :or, lenient: true } },
+              { multi_match: { _name: 'my_type:multi_match:and:search_terms',
+                               fields: %w[iid title description],
+                               query: 'foo bar', operator: :and, lenient: true } },
+              { multi_match: { _name: 'my_type:multi_match_phrase:search_terms',
+                               type: :phrase, fields: %w[iid title description],
+                               query: 'foo bar', lenient: true } }
+            ],
+            minimum_should_match: 1
+          } }
+        ]
+
+        expect(by_multi_match_query[:query][:bool][:must]).to eq([])
+        expect(by_multi_match_query[:query][:bool][:must_not]).to eq([])
+        expect(by_multi_match_query[:query][:bool][:should]).to eq([])
+        expect(by_multi_match_query[:query][:bool][:filter]).to eql(expected_filter)
       end
     end
   end

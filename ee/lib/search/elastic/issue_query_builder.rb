@@ -15,7 +15,13 @@ module Search
             # iid field can be added here as lenient option will
             # pardon format errors, like integer out of range.
             fields = %w[iid^3 title^2 description]
-            ::Search::Elastic::Queries.by_simple_query_string(fields: fields, query: query, options: options)
+
+            if Feature.enabled?(:search_uses_match_queries, options[:current_user]) &&
+                !::Search::Elastic::Queries::ADVANCED_QUERY_SYNTAX_REGEX.match?(query)
+              ::Search::Elastic::Queries.by_multi_match_query(fields: fields, query: query, options: options)
+            else
+              ::Search::Elastic::Queries.by_simple_query_string(fields: fields, query: query, options: options)
+            end
           end
 
         query_hash = ::Search::Elastic::Filters.by_authorization(query_hash: query_hash, options: options)

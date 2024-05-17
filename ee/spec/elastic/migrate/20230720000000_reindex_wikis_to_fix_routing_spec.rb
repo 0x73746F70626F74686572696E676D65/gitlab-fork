@@ -86,6 +86,7 @@ RSpec.describe ReindexWikisToFixRouting, :elastic_clean, :sidekiq_inline, featur
 
   def set_old_schema_version_in_three_documents!
     client.update_by_query(index: Elastic::Latest::WikiConfig.index_name, max_docs: 3, refresh: true,
+      wait_for_completion: true,
       body: { script: { lang: 'painless', source: 'ctx._source.schema_version = 2305' } }
     )
   end

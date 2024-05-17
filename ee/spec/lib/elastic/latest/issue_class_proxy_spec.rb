@@ -5,16 +5,16 @@ require 'spec_helper'
 RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feature_category: :global_search do
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-    stub_feature_flags(search_uses_match_queries: false)
   end
 
-  subject { described_class.new(Issue, use_separate_indices: true) }
+  subject(:proxy) { described_class.new(Issue, use_separate_indices: true) }
 
   let!(:group) { create(:group) }
   let!(:project) { create(:project, :public, group: group) }
   let!(:user) { create(:user, developer_of: project) }
   let!(:label) { create(:label, project: project) }
   let!(:issue) { create(:labeled_issue, title: 'test', project: project, labels: [label]) }
+  let(:query) { 'test' }
 
   let(:options) do
     {
@@ -33,7 +33,7 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
 
     shared_examples 'returns aggregations' do
       it 'filters by labels' do
-        result = subject.issue_aggregations('test', options)
+        result = proxy.issue_aggregations('test', options)
 
         expect(result.first.name).to eq('labels')
         expect(result.first.buckets.first.symbolize_keys).to match(
@@ -59,7 +59,7 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
   end
 
   describe '#elastic_search' do
-    let(:result) { subject.elastic_search('test', options: options) }
+    let(:result) { proxy.elastic_search(query, options: options) }
 
     describe 'search on basis of hidden attribute' do
       context 'when author of the issue is banned' do
@@ -79,7 +79,7 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
 
         it 'current_user is empty then user can not see the issue' do
           options[:current_user] = nil
-          result = subject.elastic_search('test', options: options)
+          result = proxy.elastic_search('test', options: options)
           expect(elasticsearch_hit_ids(result)).not_to include issue.id
         end
       end
@@ -100,138 +100,277 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
 
         it 'current_user is empty then user can see the issue' do
           options[:current_user] = nil
-          result = subject.elastic_search('test', options: options)
+          result = proxy.elastic_search('test', options: options)
           expect(elasticsearch_hit_ids(result)).to include issue.id
         end
       end
     end
 
     describe 'named queries' do
-      let(:project_ids) { [project.id] }
-      let(:group_ids) { [] } # TODO - group.id
-      let(:options) do
-        {
-          current_user: user,
-          project_ids: project_ids,
-          group_ids: group_ids,
-          public_and_internal_projects: false,
-          order_by: nil,
-          sort: nil,
-          labels: [label.id]
-        }
+      using RSpec::Parameterized::TableSyntax
+
+      where(:projects, :groups) do
+        [] | []
+        [ref(:project)] | []
+        [] | [ref(:group)]
+        [ref(:project)] | [ref(:group)]
       end
 
-      describe 'hidden filter' do
-        context 'when user can admin all resources' do
-          before do
-            allow(user).to receive(:can_admin_all_resources?).and_return(true)
+      with_them do
+        let(:project_ids) { projects.map(&:id) }
+        let(:group_ids) { groups.map(&:id) }
+        let(:options) { base_options }
+
+        let(:base_options) do
+          {
+            current_user: user,
+            project_ids: project_ids,
+            group_ids: group_ids,
+            public_and_internal_projects: false,
+            order_by: nil,
+            sort: nil
+          }
+        end
+
+        describe 'base query' do
+          shared_examples 'a query that uses simple_query_string' do
+            it 'includes the correct base query name' do
+              result.response
+
+              assert_named_queries('issue:match:search_terms')
+            end
+          end
+
+          shared_examples 'a query that uses multi_match' do
+            it 'includes the correct base query name' do
+              result.response
+
+              assert_named_queries('issue:multi_match:or:search_terms', 'issue:multi_match:and:search_terms',
+                'issue:multi_match_phrase:search_terms')
+            end
           end
 
           context 'when search_query_builder feature flag is false' do
             before do
               stub_feature_flags(search_query_builder: false)
+            end
+
+            context 'when search_uses_match_queries feature flag is false' do
+              before do
+                stub_feature_flags(search_uses_match_queries: false)
+              end
+
+              it_behaves_like 'a query that uses simple_query_string'
+            end
+
+            it_behaves_like 'a query that uses multi_match'
+          end
+
+          context 'when querying by iid' do
+            let(:query) { '#1' }
+
+            it 'includes the correct base query name' do
+              result.response
+
+              assert_named_queries('issue:related:iid', 'doc:is_a:issue')
+            end
+          end
+
+          context 'when search_uses_match_queries feature flag is false' do
+            before do
+              stub_feature_flags(search_uses_match_queries: false)
+            end
+
+            it_behaves_like 'a query that uses simple_query_string'
+          end
+
+          context 'when using advanced search syntax' do
+            let(:query) { 'test -banner' }
+
+            it_behaves_like 'a query that uses simple_query_string'
+          end
+
+          it_behaves_like 'a query that uses multi_match'
+        end
+
+        describe 'state filter' do
+          context 'when search_query_builder feature flag is false' do
+            before do
+              stub_feature_flags(search_query_builder: false)
+            end
+
+            it 'does not filter by state in the query' do
+              result.response
+
+              assert_named_queries(without: ['issue:match:state'])
+            end
+          end
+
+          it 'does not filter by state in the query' do
+            result.response
+
+            assert_named_queries(without: ['filters:state'])
+          end
+
+          context 'when state option is provided' do
+            let(:options) { base_options.merge(state: 'opened') }
+
+            context 'when search_query_builder feature flag is false' do
+              before do
+                stub_feature_flags(search_query_builder: false)
+              end
+
+              it 'filters by state in the query' do
+                result.response
+
+                assert_named_queries('issue:match:state')
+              end
+            end
+
+            it 'filters by state in the query' do
+              result.response
+
+              assert_named_queries('filters:state')
+            end
+          end
+        end
+
+        describe 'hidden filter' do
+          context 'when user can admin all resources' do
+            before do
+              allow(user).to receive(:can_admin_all_resources?).and_return(true)
+            end
+
+            context 'when search_query_builder feature flag is false' do
+              before do
+                stub_feature_flags(search_query_builder: false)
+              end
+
+              it 'does not filter hidden issues' do
+                result.response
+
+                assert_named_queries(without: ['issue:hidden:non_hidden'])
+              end
             end
 
             it 'does not filter hidden issues' do
               result.response
 
-              assert_named_queries(without: ['issue:hidden:non_hidden'])
+              assert_named_queries(without: ['filters:non_hidden'])
             end
           end
 
-          it 'does not filter hidden issues' do
-            result.response
-
-            assert_named_queries(without: ['filters:non_hidden'])
-          end
-        end
-
-        context 'when user cannot admin all resources' do
-          before do
-            allow(user).to receive(:can_admin_all_resources?).and_return(false)
-          end
-
-          context 'when search_query_builder feature flag is false' do
+          context 'when user cannot admin all resources' do
             before do
-              stub_feature_flags(search_query_builder: false)
+              allow(user).to receive(:can_admin_all_resources?).and_return(false)
+            end
+
+            context 'when search_query_builder feature flag is false' do
+              before do
+                stub_feature_flags(search_query_builder: false)
+              end
+
+              it 'filters hidden issues' do
+                result.response
+
+                assert_named_queries('issue:hidden:non_hidden')
+              end
             end
 
             it 'filters hidden issues' do
               result.response
 
-              assert_named_queries('issue:hidden:non_hidden')
+              assert_named_queries('filters:not_hidden')
             end
           end
-
-          it 'filters hidden issues' do
-            result.response
-
-            assert_named_queries('filters:not_hidden')
-          end
         end
-      end
 
-      context 'when label filters are passed' do
-        context 'when search_query_builder feature flag is false' do
-          before do
-            stub_feature_flags(search_query_builder: false)
+        describe 'label filter' do
+          context 'when search_query_builder feature flag is false' do
+            before do
+              stub_feature_flags(search_query_builder: false)
+            end
+
+            it 'filters the labels in the query' do
+              result.response
+
+              assert_named_queries(without: ['issue:filter:label_ids'])
+            end
           end
 
           it 'filters the labels in the query' do
             result.response
 
-            assert_named_queries('issue:match:search_terms', 'issue:filter:label_ids', 'issue:archived:non_archived')
+            assert_named_queries(without: ['filters:label_ids'])
+          end
+
+          context 'when labels option is provided' do
+            let(:options) { base_options.merge(labels: [label.id]) }
+
+            context 'when search_query_builder feature flag is false' do
+              before do
+                stub_feature_flags(search_query_builder: false)
+              end
+
+              it 'filters the labels in the query' do
+                result.response
+
+                assert_named_queries('issue:filter:label_ids')
+              end
+            end
+
+            it 'filters the labels in the query' do
+              result.response
+
+              assert_named_queries('filters:label_ids')
+            end
           end
         end
 
-        it 'filters the labels in the query' do
-          result.response
+        describe 'archived filter' do
+          context 'when include_archived is set' do
+            let(:options) { { include_archived: true } }
 
-          assert_named_queries('issue:match:search_terms', 'filters:label_ids', 'filters:non_archived')
-        end
-      end
+            context 'when search_query_builder feature flag is false' do
+              before do
+                stub_feature_flags(search_query_builder: false)
+              end
 
-      context 'when include_archived is set' do
-        let(:options) { { include_archived: true } }
+              it 'does not have a filter for archived' do
+                result.response
 
-        context 'when search_query_builder feature flag is false' do
-          before do
-            stub_feature_flags(search_query_builder: false)
+                assert_named_queries(without: ['issue:archived:non_archived'])
+              end
+            end
+
+            it 'does not have a filter for archived' do
+              result.response
+
+              assert_named_queries(without: ['filters:non_archived'])
+            end
           end
 
-          it 'does not have a filter for archived' do
-            result.response
+          context 'when include_archived is not set' do
+            let(:options) { {} }
 
-            assert_named_queries(without: ['issue:archived:non_archived'])
+            context 'when search_query_builder feature flag is false' do
+              before do
+                stub_feature_flags(search_query_builder: false)
+              end
+
+              it 'does have a filter for archived' do
+                result.response
+
+                assert_named_queries('issue:archived:non_archived')
+              end
+            end
+
+            it 'does have a filter for archived' do
+              result.response
+
+              assert_named_queries('filters:non_archived')
+            end
           end
-        end
-
-        it 'does not have a filter for archived' do
-          result.response
-
-          assert_named_queries(without: ['filters:non_archived'])
-        end
-      end
-
-      context 'when include_archived is not set' do
-        let(:options) { {} }
-
-        context 'when search_query_builder feature flag is false' do
-          before do
-            stub_feature_flags(search_query_builder: false)
-          end
-
-          it 'does have a filter for archived' do
-            result.response
-
-            assert_named_queries('issue:match:search_terms', 'issue:archived:non_archived')
-          end
-        end
-
-        it 'does have a filter for archived' do
-          result.response
-
-          assert_named_queries('issue:match:search_terms', 'filters:non_archived')
         end
       end
     end

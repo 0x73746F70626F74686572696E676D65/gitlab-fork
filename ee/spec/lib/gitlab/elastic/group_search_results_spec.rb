@@ -19,17 +19,42 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
   end
 
   context 'for issues search', :sidekiq_inline do
-    let_it_be_with_reload(:project) { create(:project, :public, group: group, developers: user) }
-    let_it_be_with_reload(:closed_result) { create(:issue, :closed, project: project, title: 'foo closed') }
-    let_it_be_with_reload(:opened_result) { create(:issue, :opened, project: project, title: 'foo opened') }
-    let_it_be_with_reload(:confidential_result) { create(:issue, :confidential, project: project, title: 'foo confidential') }
+    let_it_be(:project) { create(:project, :public, group: group, developers: user) }
+    let_it_be(:closed_result) { create(:issue, :closed, project: project, title: 'foo closed') }
+    let_it_be(:opened_result) { create(:issue, :opened, project: project, title: 'foo opened') }
+    let_it_be(:confidential_result) { create(:issue, :confidential, project: project, title: 'foo confidential') }
 
     let(:query) { 'foo' }
     let(:scope) { 'issues' }
 
     before do
+      stub_feature_flags(search_uses_match_queries: true)
       ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project)
       ensure_elasticsearch_index!
+    end
+
+    context 'when advanced search query syntax is used' do
+      let(:query) { 'foo -banner' }
+
+      include_examples 'search results filtered by state'
+      include_examples 'search results filtered by confidential'
+      include_examples 'search results filtered by labels'
+      it_behaves_like 'namespace ancestry_filter for aggregations' do
+        let(:query_name) { 'filters:namespace:ancestry_filter:descendants' }
+      end
+    end
+
+    context 'when search_uses_match_queries flag is false' do
+      before do
+        stub_feature_flags(search_uses_match_queries: false)
+      end
+
+      include_examples 'search results filtered by state'
+      include_examples 'search results filtered by confidential'
+      include_examples 'search results filtered by labels'
+      it_behaves_like 'namespace ancestry_filter for aggregations' do
+        let(:query_name) { 'filters:namespace:ancestry_filter:descendants' }
+      end
     end
 
     context 'when search_query_builder feature flag is false' do

@@ -93,6 +93,34 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic, feature_category
           ensure_elasticsearch_index!
         end
 
+        context 'when advanced search query syntax is used' do
+          let(:query) { 'foo -banner' }
+
+          include_examples 'search results filtered by state'
+          include_examples 'search results filtered by confidential'
+          include_examples 'search results filtered by labels'
+        end
+
+        context 'when search_uses_match_queries flag is false' do
+          before do
+            stub_feature_flags(search_uses_match_queries: false)
+          end
+
+          include_examples 'search results filtered by state'
+          include_examples 'search results filtered by confidential'
+          include_examples 'search results filtered by labels'
+        end
+
+        context 'when search_query_builder feature flag is false' do
+          before do
+            stub_feature_flags(search_query_builder: false)
+          end
+
+          include_examples 'search results filtered by state'
+          include_examples 'search results filtered by confidential'
+          include_examples 'search results filtered by labels'
+        end
+
         include_examples 'search results filtered by state'
         include_examples 'search results filtered by confidential'
         include_examples 'search results filtered by labels'
