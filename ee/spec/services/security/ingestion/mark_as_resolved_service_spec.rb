@@ -63,6 +63,143 @@ RSpec.describe Security::Ingestion::MarkAsResolvedService, feature_category: :vu
           expect(ingested_vulnerability.reload).not_to be_resolved_on_default_branch
         end
       end
+
+      context 'when a vulnerability has been created by Continuous Vulnerability Scanning' do
+        let_it_be(:cvs_scanner) do
+          create(:vulnerabilities_scanner, project: project,
+            name: 'CVS scanner',
+            external_id: 'gitlab-sbom-vulnerability-scanner'
+          )
+        end
+
+        let_it_be(:cvs_ds_vulnerability) do
+          create(:vulnerability, :dependency_scanning, project: project,
+            present_on_default_branch: true,
+            resolved_on_default_branch: false,
+            findings: [create(:vulnerabilities_finding, project: project, scanner: cvs_scanner)]
+          )
+        end
+
+        let_it_be(:cvs_cs_vulnerability) do
+          create(:vulnerability, :container_scanning, project: project,
+            present_on_default_branch: true,
+            resolved_on_default_branch: false,
+            findings: [create(:vulnerabilities_finding, project: project, scanner: cvs_scanner)]
+          )
+        end
+
+        context 'when ingesting vulnerabilities from a Dependency Scanning scanner' do
+          using RSpec::Parameterized::TableSyntax
+
+          where(scanner_id: described_class::DS_SCANNERS_EXTERNAL_IDS)
+
+          with_them do
+            let(:scanner) do
+              create(:vulnerabilities_scanner, project: project,
+                name: scanner_id,
+                external_id: scanner_id
+              )
+            end
+
+            context 'when mark_cvs_vulnerabilities_as_resolved FF is disabled' do
+              before do
+                stub_feature_flags(mark_cvs_vulnerabilities_as_resolved: false)
+              end
+
+              it 'does not resolve CVS vulnerabilities' do
+                command.execute
+
+                expect(cvs_cs_vulnerability.reload).not_to be_resolved_on_default_branch
+                expect(cvs_ds_vulnerability.reload).not_to be_resolved_on_default_branch
+              end
+            end
+
+            context 'when mark_cvs_vulnerabilities_as_resolved FF is enabled' do
+              before do
+                stub_feature_flags(mark_cvs_vulnerabilities_as_resolved: true)
+              end
+
+              it 'resolves CVS vulnerabilities of the Dependency Scanning report type' do
+                command.execute
+
+                expect(cvs_ds_vulnerability.reload).to be_resolved_on_default_branch
+                expect(cvs_cs_vulnerability.reload).not_to be_resolved_on_default_branch
+              end
+            end
+          end
+        end
+
+        context 'when ingesting vulnerabilities from a Container Scanning scanner' do
+          let_it_be(:scanner) do
+            create(:vulnerabilities_scanner, project: project,
+              name: 'CS scanner',
+              external_id: 'trivy'
+            )
+          end
+
+          context 'when mark_cvs_vulnerabilities_as_resolved FF is disabled' do
+            before do
+              stub_feature_flags(mark_cvs_vulnerabilities_as_resolved: false)
+            end
+
+            it 'does not resolve CVS vulnerabilities' do
+              command.execute
+
+              expect(cvs_cs_vulnerability.reload).not_to be_resolved_on_default_branch
+              expect(cvs_ds_vulnerability.reload).not_to be_resolved_on_default_branch
+            end
+          end
+
+          context 'when mark_cvs_vulnerabilities_as_resolved FF is enabled' do
+            before do
+              stub_feature_flags(mark_cvs_vulnerabilities_as_resolved: true)
+            end
+
+            it 'resolves CVS vulnerabilities of the Container Scanning report type' do
+              command.execute
+
+              expect(cvs_cs_vulnerability.reload).to be_resolved_on_default_branch
+              expect(cvs_ds_vulnerability.reload).not_to be_resolved_on_default_branch
+            end
+          end
+        end
+
+        context 'when ingesting vulnerabilities from other scanners' do
+          let_it_be(:scanner) do
+            create(:vulnerabilities_scanner, project: project,
+              name: 'SAST scanner',
+              external_id: 'semgrep'
+            )
+          end
+
+          it 'does not resolve CVS vulnerabilities' do
+            command.execute
+
+            expect(cvs_cs_vulnerability.reload).not_to be_resolved_on_default_branch
+            expect(cvs_ds_vulnerability.reload).not_to be_resolved_on_default_branch
+          end
+        end
+
+        context 'when the vulnerability is still reported' do
+          let_it_be(:scanner) do
+            create(:vulnerabilities_scanner, project: project,
+              name: 'CS scanner',
+              external_id: 'trivy'
+            )
+          end
+
+          before do
+            ingested_ids << cvs_cs_vulnerability.id
+          end
+
+          it 'does not resolve CVS vulnerabilities' do
+            command.execute
+
+            expect(cvs_cs_vulnerability.reload).not_to be_resolved_on_default_branch
+            expect(cvs_ds_vulnerability.reload).not_to be_resolved_on_default_branch
+          end
+        end
+      end
     end
 
     context 'when a scanner is not available' do
