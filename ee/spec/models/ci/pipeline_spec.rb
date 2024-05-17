@@ -763,6 +763,12 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
 
       it { is_expected.to be true }
     end
+
+    context 'with merge train pipeline' do
+      let(:merge_request) { create(:merge_request, :with_merge_train_pipeline) }
+
+      it { is_expected.to be false }
+    end
   end
 
   describe '#merge_train_pipeline?' do
