@@ -8,7 +8,9 @@ module Gitlab
           def execute
             prompt = ai_prompt_class.new(options[:question]).to_prompt
 
-            response = Gitlab::Llm::VertexAi::Client.new(user, unit_primitive: 'generate_cube_query').code(content: prompt) # rubocop:disable Layout/LineLength -- follow-up
+            response = Gitlab::Llm::VertexAi::Client.new(user,
+              unit_primitive: 'generate_cube_query'
+            ).code(content: prompt)
 
             response_modifier = ::Gitlab::Llm::VertexAi::ResponseModifiers::Predictions.new(response)
 

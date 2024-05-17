@@ -14,6 +14,7 @@ RSpec.describe CloudConnector::GitlabCom::AccessDataReader, feature_category: :c
     let_it_be(:ai_gateway_proxy_unit_primitives) do
       %i[
         analyze_ci_job_failure
+        categorize_duo_chat_question
         documentation_search
         duo_chat
         explain_code
@@ -21,6 +22,7 @@ RSpec.describe CloudConnector::GitlabCom::AccessDataReader, feature_category: :c
         fill_in_merge_request_template
         generate_commit_message
         generate_cube_query
+        generate_issue_description
         resolve_vulnerability
         review_merge_request
         summarize_issue_discussions

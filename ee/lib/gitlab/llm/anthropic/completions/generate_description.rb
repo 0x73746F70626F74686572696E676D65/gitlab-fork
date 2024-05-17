@@ -23,7 +23,8 @@ module Gitlab
           def request!
             prompt_template = ai_prompt_class.new(prompt_message.content, template: template)
 
-            ai_client = ::Gitlab::Llm::Anthropic::Client.new(user, tracking_context: tracking_context)
+            ai_client = ::Gitlab::Llm::Anthropic::Client.new(user,
+              unit_primitive: 'generate_issue_description', tracking_context: tracking_context)
             ai_client.complete(
               prompt: prompt_template.to_prompt,
               max_tokens_to_sample: OUTPUT_TOKEN_LIMIT,

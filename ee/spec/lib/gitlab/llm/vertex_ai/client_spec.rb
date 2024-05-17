@@ -169,7 +169,9 @@ RSpec.describe Gitlab::Llm::VertexAi::Client, feature_category: :ai_abstraction_
       end
 
       context 'and retry_content_blocked_requests is false' do
-        let(:client) { described_class.new(user, unit_primitive: unit_primitive, retry_content_blocked_requests: false) } # rubocop:disable Layout/LineLength -- follow-up
+        let(:client) do
+          described_class.new(user, unit_primitive: unit_primitive, retry_content_blocked_requests: false)
+        end
 
         before do
           stub_request(:post, url)

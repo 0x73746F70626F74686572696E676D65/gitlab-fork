@@ -3,11 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo_chat do
+  let_it_be(:user) { create(:user) }
+
   let(:options) { { suggestions: "", input: "" } }
-  let(:ai_request) { ::Gitlab::Llm::Chain::Requests::Anthropic.new(double) }
+  let(:ai_request) { ::Gitlab::Llm::Chain::Requests::Anthropic.new(user, unit_primitive: 'duo_chat') }
   let(:context) do
     ::Gitlab::Llm::Chain::GitlabContext.new(
-      current_user: build(:user),
+      current_user: user,
       container: double,
       resource: double,
       ai_request: ai_request

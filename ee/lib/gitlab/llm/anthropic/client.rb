@@ -7,16 +7,17 @@ module Gitlab
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
         include ::Gitlab::Llm::Concerns::EventTracking
         include ::Gitlab::Llm::Concerns::AvailableModels
+        include ::API::Helpers::CloudConnector
         include Langsmith::RunHelpers
 
-        URL = 'https://api.anthropic.com'
         DEFAULT_TEMPERATURE = 0
         DEFAULT_MAX_TOKENS = 2048
         DEFAULT_TIMEOUT = 30.seconds
 
-        def initialize(user, tracking_context: {})
+        def initialize(user, unit_primitive:, tracking_context: {})
           @user = user
           @tracking_context = tracking_context
+          @unit_primitive = unit_primitive
           @logger = Gitlab::Llm::Logger.build
         end
 
@@ -60,14 +61,14 @@ module Gitlab
 
         private
 
-        attr_reader :user, :logger, :tracking_context
+        attr_reader :user, :logger, :tracking_context, :unit_primitive
 
         def perform_completion_request(prompt:, options:)
           logger.info(message: "Performing request to Anthropic", options: options)
           timeout = options.delete(:timeout) || DEFAULT_TIMEOUT
 
           Gitlab::HTTP.post(
-            URI.join(URL, '/v1/complete'),
+            "#{url}/v1/complete",
             headers: request_headers,
             body: request_body(prompt: prompt, options: options).to_json,
             timeout: timeout,
@@ -83,13 +84,35 @@ module Gitlab
           api_key.present?
         end
 
+        def url
+          return "#{Gitlab::AiGateway.url}/v1/proxy/anthropic" if ::Feature.enabled?(:use_ai_gateway_proxy, user)
+
+          'https://api.anthropic.com'
+        end
+
         def api_key
+          if ::Feature.enabled?(:use_ai_gateway_proxy, user)
+            return ::CloudConnector::AvailableServices.find_by_name(:ai_gateway_proxy).access_token(user)
+          end
+
           @api_key ||= ::Gitlab::CurrentSettings.anthropic_api_key
         end
 
         # We specificy the `anthropic-version` header to receive the stream word by word instead of the accumulated
         # response https://docs.anthropic.com/claude/reference/streaming.
         def request_headers
+          if ::Feature.enabled?(:use_ai_gateway_proxy, user)
+            return {
+              "Accept" => "application/json",
+              "Content-Type" => "application/json",
+              'anthropic-version' => '2023-06-01',
+              "Authorization" => "Bearer #{api_key}",
+              'X-Gitlab-Authentication-Type' => 'oidc',
+              'X-Gitlab-Unit-Primitive' => unit_primitive,
+              'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
+            }.merge(cloud_connector_headers(user))
+          end
+
           {
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',

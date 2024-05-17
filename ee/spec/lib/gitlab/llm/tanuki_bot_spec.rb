@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let(:vertex_args) { { content: question } }
     let(:vertex_client) { ::Gitlab::Llm::VertexAi::Client.new(user, unit_primitive: 'documentation_search') }
     let(:ai_gateway_client) { ::Gitlab::Llm::AiGateway::Client.new(user) }
-    let(:anthropic_client) { ::Gitlab::Llm::Anthropic::Client.new(user) }
+    let(:anthropic_client) { ::Gitlab::Llm::Anthropic::Client.new(user, unit_primitive: 'documentation_search') }
     let(:embedding) { Array.new(1536, 0.5) }
     let(:vertex_embedding) { Array.new(768, 0.5) }
     let(:predictions) { [{ "embeddings" => { "values" => vertex_embedding } }] }

@@ -16,7 +16,9 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
       'Accept' => 'application/json',
       'Content-Type' => 'application/json',
       'anthropic-version' => '2023-06-01',
-      'x-api-key' => api_key
+      'Authorization' => "Bearer #{api_key}",
+      'X-Gitlab-Authentication-Type' => 'oidc',
+      'X-Gitlab-Unit-Primitive' => unit_primitive
     }
   end
 
@@ -46,10 +48,15 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
   let(:http_status) { 200 }
   let(:response_headers) { { 'Content-Type' => 'application/json' } }
   let(:logger) { instance_double('Gitlab::Llm::Logger') }
+  let(:unit_primitive) { 'explain_vulnerability' }
 
   before do
     stub_application_setting(anthropic_api_key: api_key)
-    stub_request(:post, "#{described_class::URL}/v1/complete")
+
+    available_service_data = instance_double(CloudConnector::BaseAvailableServiceData, access_token: api_key)
+    allow(::CloudConnector::AvailableServices).to receive(:find_by_name).and_return(available_service_data)
+
+    stub_request(:post, "https://cloud.gitlab.com/ai/v1/proxy/anthropic/v1/complete")
       .with(
         body: expected_request_body,
         headers: expected_request_headers
@@ -66,7 +73,8 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
 
   describe '#complete' do
     subject(:complete) do
-      described_class.new(user, tracking_context: tracking_context).complete(prompt: 'anything', **options)
+      described_class.new(user, unit_primitive: unit_primitive, tracking_context: tracking_context)
+        .complete(prompt: 'anything', **options)
     end
 
     context 'when measuring request success' do
@@ -94,7 +102,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
 
       context 'when request is retried once' do
         before do
-          stub_request(:post, "#{described_class::URL}/v1/complete")
+          stub_request(:post, 'https://cloud.gitlab.com/ai/v1/proxy/anthropic/v1/complete')
             .to_return(status: 429, body: '', headers: response_headers)
             .then.to_return(status: 200, body: response_body, headers: response_headers)
 
@@ -160,7 +168,10 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
   end
 
   describe '#stream' do
-    subject { described_class.new(user, tracking_context: tracking_context).stream(prompt: 'anything', **options) }
+    subject do
+      described_class.new(user, unit_primitive: unit_primitive, tracking_context: tracking_context)
+        .stream(prompt: 'anything', **options)
+    end
 
     context 'when streaming the request' do
       let(:response_body) { expected_response }
@@ -177,7 +188,9 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
         end
 
         it 'provides parsed streamed response' do
-          expect { |b| described_class.new(user).stream(prompt: 'anything', **options, &b) }.to yield_with_args(
+          expect do |b|
+            described_class.new(user, unit_primitive: unit_primitive).stream(prompt: 'anything', **options, &b)
+          end.to yield_with_args(
             {
               "completion" => "Hello",
               "stop_reason" => nil,
@@ -191,11 +204,13 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
             .with(anything, hash_including(timeout: described_class::DEFAULT_TIMEOUT))
             .and_call_original
 
-          expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq("Hello")
+          expect(
+            described_class.new(user, unit_primitive: unit_primitive).stream(prompt: 'anything', **options)
+          ).to eq("Hello")
         end
 
         it 'logs the response' do
-          described_class.new(user).stream(prompt: 'anything', **options)
+          described_class.new(user, unit_primitive: unit_primitive).stream(prompt: 'anything', **options)
           expected_logging_response = "Hello"
 
           expect(logger).to have_received(:info).with(message: "Performing request to Anthropic", options: options)
@@ -211,7 +226,7 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
               .with(anything, hash_including(timeout: 50.seconds))
               .and_call_original
 
-            described_class.new(user).stream(prompt: 'anything', **options)
+            described_class.new(user, unit_primitive: unit_primitive).stream(prompt: 'anything', **options)
           end
         end
 
@@ -231,7 +246,9 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
         end
 
         it 'provides parsed streamed response' do
-          expect { |b| described_class.new(user).stream(prompt: 'anything', **options, &b) }.to yield_successive_args(
+          expect do |b|
+            described_class.new(user, unit_primitive: unit_primitive).stream(prompt: 'anything', **options, &b)
+          end.to yield_successive_args(
             {
               "completion" => "Hello",
               "stop_reason" => nil,
@@ -246,7 +263,9 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
         end
 
         it 'returns response' do
-          expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq("Hello World")
+          expect(
+            described_class.new(user, unit_primitive: unit_primitive).stream(prompt: 'anything', **options)
+          ).to eq("Hello World")
         end
       end
 
@@ -260,7 +279,9 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
         end
 
         it 'provides parsed streamed response' do
-          expect { |b| described_class.new(user).stream(prompt: 'anything', **options, &b) }.to yield_with_args(
+          expect do |b|
+            described_class.new(user, unit_primitive: unit_primitive).stream(prompt: 'anything', **options, &b)
+          end.to yield_with_args(
             {
               "error" => { "message" => "Overloaded", "type" => "overloaded_error" }
             }
@@ -268,7 +289,9 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
         end
 
         it 'returns empty response' do
-          expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq("")
+          expect(
+            described_class.new(user, unit_primitive: unit_primitive).stream(prompt: 'anything', **options)
+          ).to eq("")
         end
       end
 
@@ -282,11 +305,15 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
         end
 
         it 'provides parsed streamed response' do
-          expect { |b| described_class.new(user).stream(prompt: 'anything', **options, &b) }.to yield_with_args({})
+          expect do |b|
+            described_class.new(user, unit_primitive: unit_primitive).stream(prompt: 'anything', **options, &b)
+          end.to yield_with_args({})
         end
 
         it 'returns empty response' do
-          expect(described_class.new(user).stream(prompt: 'anything', **options)).to eq("")
+          expect(
+            described_class.new(user, unit_primitive: unit_primitive).stream(prompt: 'anything', **options)
+          ).to eq("")
         end
       end
     end
@@ -295,11 +322,15 @@ RSpec.describe Gitlab::Llm::Anthropic::Client, feature_category: :ai_abstraction
       let(:api_key) { nil }
 
       it 'does not provide stream response' do
-        expect { |b| described_class.new(user).stream(prompt: 'anything', **options, &b) }.not_to yield_with_args
+        expect do |b|
+          described_class.new(user, unit_primitive: unit_primitive).stream(prompt: 'anything', **options, &b)
+        end.not_to yield_with_args
       end
 
       it 'returns nil' do
-        expect(described_class.new(user).stream(prompt: 'anything', **options)).to be_nil
+        expect(
+          described_class.new(user, unit_primitive: unit_primitive).stream(prompt: 'anything', **options)
+        ).to be_nil
       end
     end
   end

@@ -135,8 +135,8 @@ module DuoChatQaEvaluationHelpers
   end
 
   def evaluate_with_claude(user, test_prompt)
-    anthropic_response = Gitlab::Llm::Anthropic::Client.new(user).complete(prompt: test_prompt, temperature: 0.1,
-      timeout: ANTHROPIC_TIMEOUT)
+    anthropic_response = Gitlab::Llm::Anthropic::Client.new(user,
+      unit_primitive: 'duo_chat').complete(prompt: test_prompt, temperature: 0.1, timeout: ANTHROPIC_TIMEOUT)
 
     {
       model: Gitlab::Llm::Concerns::AvailableModels::CLAUDE_2_1,
