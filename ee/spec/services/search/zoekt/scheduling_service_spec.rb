@@ -179,9 +179,9 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
           group.update!(experiment_features_enabled: true)
         end
 
-        context 'when enabled_namespace record created before the DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER' do
+        context 'when enabled_namespace record created before the DOT_COM_ROLLOUT_CUTOFF_DATE' do
           it 'enables search for the enabled namespaces' do
-            rollout_cutoff = described_class::DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER.ago - 1.week
+            rollout_cutoff = described_class::DOT_COM_ROLLOUT_CUTOFF_DATE - 1.week
             ns = create(:zoekt_enabled_namespace, namespace: group, search: false,
               created_at: rollout_cutoff, updated_at: rollout_cutoff)
             create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
@@ -190,11 +190,13 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
           end
         end
 
-        context 'when enabled_namespace record created after the DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER' do
+        context 'when enabled_namespace record created after the DOT_COM_ROLLOUT_CUTOFF_DATE' do
           it 'enables search for the enabled namespaces' do
-            travel_to(described_class::DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER.ago + 1.week) do
-              rollout_cutoff = described_class::DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER.ago - 1.hour
-              ns = create(:zoekt_enabled_namespace, namespace: group, search: false, updated_at: rollout_cutoff)
+            travel_to(described_class::DOT_COM_ROLLOUT_CUTOFF_DATE + 1.week) do
+              created_date = described_class::DOT_COM_ROLLOUT_CUTOFF_DATE + 3.days
+
+              ns = create(:zoekt_enabled_namespace, namespace: group, search: false,
+                created_at: created_date, updated_at: created_date)
               create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
 
               expect { execute_task }.to change { ns.reload.search }
@@ -221,8 +223,11 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
 
         context 'when enabled_namespace record created after the DOT_COM_ROLLOUT_CUTOFF_DATE' do
           it 'skips the enabled namespaces' do
-            travel_to(described_class::DOT_COM_ROLLOUT_CUTOFF_DATE + 3.days) do
-              ns = create(:zoekt_enabled_namespace, namespace: group, search: false)
+            travel_to(described_class::DOT_COM_ROLLOUT_CUTOFF_DATE + 1.week) do
+              created_date = described_class::DOT_COM_ROLLOUT_CUTOFF_DATE + 3.days
+
+              ns = create(:zoekt_enabled_namespace, namespace: group, search: false,
+                created_at: created_date, updated_at: created_date)
               create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
 
               expect { execute_task }.not_to change { ns.reload.search }
