@@ -8,12 +8,12 @@ module Types
       description 'Active period time range for on-call rotation'
 
       field :start_time, GraphQL::Types::String,
-            null: true,
-            description: 'Start of the rotation active period.'
+        null: true,
+        description: 'Start of the rotation active period.'
 
       field :end_time, GraphQL::Types::String,
-            null: true,
-            description: 'End of the rotation active period.'
+        null: true,
+        description: 'End of the rotation active period.'
 
       alias_method :active_period, :object
 

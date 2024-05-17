@@ -8,21 +8,21 @@ module Types
       description 'The rotation participant and color palette'
 
       field :id,
-            Types::GlobalIDType[::IncidentManagement::OncallParticipant],
-            null: false,
-            description: 'ID of the on-call participant.'
+        Types::GlobalIDType[::IncidentManagement::OncallParticipant],
+        null: false,
+        description: 'ID of the on-call participant.'
 
       field :user, Types::UserType,
-                null: false,
-                description: 'User who is participating.'
+        null: false,
+        description: 'User who is participating.'
 
       field :color_palette, GraphQL::Types::String,
-                null: true,
-                description: 'Color palette to assign to the on-call user. For example "blue".'
+        null: true,
+        description: 'Color palette to assign to the on-call user. For example "blue".'
 
       field :color_weight, GraphQL::Types::String,
-                null: true,
-                description: 'Color weight to assign to for the on-call user, for example "500". Max 4 chars. For easy identification of the user.'
+        null: true,
+        description: 'Color weight to assign to for the on-call user, for example "500". Max 4 chars. For easy identification of the user.'
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end

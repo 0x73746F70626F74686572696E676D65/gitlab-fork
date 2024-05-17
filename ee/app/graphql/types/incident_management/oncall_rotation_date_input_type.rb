@@ -7,12 +7,12 @@ module Types
       description 'Date input type for on-call rotation'
 
       argument :date, GraphQL::Types::String,
-                required: true,
-                description: 'Date component of the date in YYYY-MM-DD format.'
+        required: true,
+        description: 'Date component of the date in YYYY-MM-DD format.'
 
       argument :time, GraphQL::Types::String,
-                required: true,
-                description: 'Time component of the date in 24hr HH:MM format.'
+        required: true,
+        description: 'Time component of the date in 24hr HH:MM format.'
 
       DATE_FORMAT = %r[^\d{4}-[0123]\d-\d{2}$]
       TIME_FORMAT = %r{^(0\d|1\d|2[0-3]):[0-5]\d$}
