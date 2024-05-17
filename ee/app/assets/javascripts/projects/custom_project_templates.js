@@ -134,23 +134,28 @@ export default () => {
   const tabContent = document.querySelector(INSTANCE_TAB_CONTENT_SELECTOR);
   const groupNavElement = document.querySelector('.js-custom-group-project-templates-nav-link');
   const groupTabContent = document.querySelector(GROUP_TAB_CONTENT_SELECTOR);
+  const findActiveTab = (selector) => document.querySelector(`${selector}.active`);
+  const findPagination = (selector) => findActiveTab(selector)?.querySelector('.pagination');
 
-  const initPagination = (content, handler) => {
+  const initPagination = (handler) => {
     // This is a temporary workaround as part of a P1 bug fix
     // In a future iteration the pagination should be implemented on the frontend
-    const el = content.querySelector('.js-custom-group-project-templates-tab-content .pagination');
-    if (!el) return;
+    const pagination =
+      findPagination(INSTANCE_TAB_CONTENT_SELECTOR) || findPagination(GROUP_TAB_CONTENT_SELECTOR);
+    if (!pagination) return;
 
-    el.querySelectorAll('a').forEach((anchor) => anchor.addEventListener('click', handler));
+    pagination.querySelectorAll('a').forEach((anchor) => anchor.addEventListener('click', handler));
   };
 
   const handlePaginate = async (e) => {
     e.preventDefault();
     const response = await axios.get(e.currentTarget.href);
     const secureContent = sanitize(response.data);
+    const activeTabContent =
+      findActiveTab(INSTANCE_TAB_CONTENT_SELECTOR) || findActiveTab(GROUP_TAB_CONTENT_SELECTOR);
 
-    groupTabContent.innerHTML = secureContent;
-    initPagination(groupTabContent, handlePaginate);
+    activeTabContent.innerHTML = secureContent;
+    initPagination(handlePaginate);
     bindEvents();
   };
 
@@ -159,7 +164,7 @@ export default () => {
     const secureContent = sanitize(response.data);
     // eslint-disable-next-line no-param-reassign
     content.innerHTML = secureContent;
-    initPagination(groupTabContent, handlePaginate);
+    initPagination(handlePaginate);
     bindEvents();
   };
 
