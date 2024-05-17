@@ -1,15 +1,16 @@
 <script>
 // eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
-import { GlTableLite, GlAvatarLabeled, GlAvatarLink } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { GlTableLite } from '@gitlab/ui';
+import { __, s__ } from '~/locale';
 import MembersPagination from '~/members/components/table/members_pagination.vue';
 import UserDate from '~/vue_shared/components/user_date.vue';
+import UserAvatar from '~/members/components/avatars/user_avatar.vue';
 
-export const FIELDS = [
+const FIELDS = [
   {
     key: 'user',
-    label: s__('Members|User'),
+    label: __('User'),
   },
   {
     key: 'requested_role',
@@ -32,10 +33,9 @@ export default {
   name: 'PromotionRequestsTabApp',
   components: {
     MembersPagination,
-    GlAvatarLabeled,
-    GlAvatarLink,
     GlTableLite,
     UserDate,
+    UserAvatar,
   },
   props: {
     namespace: {
@@ -56,6 +56,9 @@ export default {
         return state[this.namespace].pagination;
       },
     }),
+    currentUserId() {
+      return gon.current_user_id;
+    },
   },
   FIELDS,
 };
@@ -63,15 +66,8 @@ export default {
 <template>
   <div>
     <gl-table-lite :items="users" :fields="$options.FIELDS">
-      <template #cell(user)="{ item: { user } }">
-        <gl-avatar-link target="blank" :href="user.web_url">
-          <gl-avatar-labeled
-            :src="user.avatar_url"
-            :size="32"
-            :label="user.name"
-            :sub-label="user.username"
-          />
-        </gl-avatar-link>
+      <template #cell(user)="{ item }">
+        <user-avatar :member="item" :is-current-user="item.user.id === currentUserId" />
       </template>
       <template #cell(requested_role)="{ item }">
         {{ item.newAccessLevel.stringValue }}

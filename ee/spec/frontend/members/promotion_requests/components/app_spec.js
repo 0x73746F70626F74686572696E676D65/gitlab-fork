@@ -7,6 +7,7 @@ import PromotionRequestsApp from 'ee/members/promotion_requests/components/app.v
 import { MEMBER_TYPES, TAB_QUERY_PARAM_VALUES } from 'ee_else_ce/members/constants';
 import initStore from 'ee/members/promotion_requests/store/index';
 import MembersPagination from '~/members/components/table/members_pagination.vue';
+import UserAvatar from '~/members/components/avatars/user_avatar.vue';
 import UserDate from '~/vue_shared/components/user_date.vue';
 import { data as mockData, pagination as mockPagination } from '../mock_data';
 
@@ -41,18 +42,22 @@ describe('PromotionRequestsApp', () => {
     await createComponent();
   });
 
-  it('renders the table of users pending promotion', () => {
-    expect(findTable().exists()).toBe(true);
+  describe('renders pending promotion users table', () => {
+    it('renders the table with rows corresponding to mocked data', () => {
+      expect(findTable().exists()).toBe(true);
 
-    const rows = findTable().findAll('tbody > tr');
-    expect(rows.length).toEqual(mockData.length);
+      expect(findTable().findAll('tbody > tr').length).toEqual(mockData.length);
+    });
 
-    const columns = rows.at(0).findAll('td');
-    expect(columns.at(0).text()).toContain(mockData[0].user.name);
-    expect(columns.at(1).text()).toBe(mockData[0].newAccessLevel.stringValue);
-    expect(columns.at(2).text()).toBe(mockData[0].requestedBy.name);
-    expect(columns.at(3).findComponent(UserDate).exists()).toBe(true);
-    expect(columns.at(3).findComponent(UserDate).props('date')).toBe(mockData[0].createdAt);
+    it('renders the mocked data properly inside a row', () => {
+      const columns = findTable().findAll('tbody > tr').at(0).findAll('td');
+      expect(columns.at(0).findComponent(UserAvatar).exists()).toBe(true);
+      expect(columns.at(0).findComponent(UserAvatar).props('member')).toMatchObject(mockData[0]);
+      expect(columns.at(1).text()).toBe(mockData[0].newAccessLevel.stringValue);
+      expect(columns.at(2).text()).toBe(mockData[0].requestedBy.name);
+      expect(columns.at(3).findComponent(UserDate).exists()).toBe(true);
+      expect(columns.at(3).findComponent(UserDate).props('date')).toBe(mockData[0].createdAt);
+    });
   });
 
   it('renders `members-pagination` component with correct props', () => {
