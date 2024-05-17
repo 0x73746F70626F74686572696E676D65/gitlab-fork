@@ -278,10 +278,6 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
         create(:project, :public, archived: true, marked_for_deletion_at: 1.day.ago, deleting_user: user)
       end
 
-      before do
-        project.add_maintainer(user)
-      end
-
       describe 'marked_for_deletion_at attribute' do
         it 'exposed when the feature is available' do
           stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)

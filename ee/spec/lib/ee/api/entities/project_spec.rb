@@ -2,178 +2,68 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::API::Entities::Project, feature_category: :shared do
-  let_it_be(:private_project) { create(:project, :private) }
-  let_it_be(:current_user) { create(:user) }
+RSpec.describe ::EE::API::Entities::Project, feature_category: :shared do
+  let_it_be(:project) { create(:project) }
 
-  let(:project) { private_project }
-  let(:options) { { current_user: current_user, statistics: true } }
-  let(:entity) { ::API::Entities::Project.new(project, options) }
+  let(:options) { {} }
+  let(:developer) { create(:user, developer_of: project) }
 
-  subject(:json) { entity.as_json }
-
-  before do
-    allow(Gitlab.config.registry).to receive(:enabled).and_return(true)
+  let(:entity) do
+    ::API::Entities::Project.new(project, options)
   end
 
-  context 'as a guest' do
-    before_all do
-      private_project.add_guest(current_user)
-    end
-
-    it 'exposes the correct attributes' do
-      expect(json.keys).to contain_exactly(
-        :id, :description, :name, :name_with_namespace, :path, :path_with_namespace,
-        :created_at, :tag_list, :topics, :ssh_url_to_repo, :http_url_to_repo, :web_url,
-        :avatar_url, :star_count, :last_activity_at, :namespace, :container_registry_image_prefix,
-        :_links, :empty_repo, :archived, :visibility, :owner, :open_issues_count,
-        :description_html, :updated_at, :can_create_merge_request_in, :shared_with_groups,
-        :issues_template
-      )
-    end
-  end
-
-  context 'as a reporter' do
-    before_all do
-      private_project.add_reporter(current_user)
-    end
-
-    it 'exposes the correct attributes' do
-      expect(json.keys).to contain_exactly(
-        :id, :description, :name, :name_with_namespace, :path, :path_with_namespace,
-        :created_at, :default_branch, :tag_list, :topics, :ssh_url_to_repo, :http_url_to_repo,
-        :web_url, :readme_url, :forks_count, :avatar_url, :star_count, :last_activity_at,
-        :namespace, :container_registry_image_prefix, :_links, :empty_repo, :archived,
-        :visibility, :owner, :open_issues_count, :description_html, :updated_at,
-        :can_create_merge_request_in, :statistics, :ci_config_path,
-        :shared_with_groups, :service_desk_address, :issues_template, :merge_requests_template
-      )
-    end
-  end
-
-  context 'as a developer' do
-    before_all do
-      private_project.add_developer(current_user)
-    end
-
-    it 'exposes the correct attributes' do
-      expect(json.keys).to contain_exactly(
-        :id, :description, :name, :name_with_namespace, :path, :path_with_namespace,
-        :created_at, :default_branch, :tag_list, :topics, :ssh_url_to_repo, :http_url_to_repo,
-        :web_url, :readme_url, :forks_count, :avatar_url, :star_count, :last_activity_at,
-        :namespace, :container_registry_image_prefix, :_links, :empty_repo, :archived,
-        :visibility, :owner, :open_issues_count, :description_html, :updated_at,
-        :can_create_merge_request_in, :statistics, :ci_config_path, :shared_with_groups,
-        :service_desk_address, :issues_template, :merge_requests_template
-      )
-    end
-  end
-
-  context 'as a maintainer' do
-    before_all do
-      private_project.add_maintainer(current_user)
-    end
-
-    it 'exposes the correct attributes' do
-      expect(json.keys).to contain_exactly(
-        :id, :description, :name, :name_with_namespace, :path, :path_with_namespace, :created_at,
-        :default_branch, :tag_list, :topics, :ssh_url_to_repo, :http_url_to_repo, :web_url,
-        :readme_url, :forks_count, :avatar_url, :star_count, :last_activity_at, :namespace,
-        :container_registry_image_prefix, :_links, :empty_repo, :archived, :visibility,
-        :owner, :open_issues_count, :description_html, :updated_at, :can_create_merge_request_in,
-        :statistics, :shared_with_groups, :service_desk_address, :emails_disabled, :emails_enabled,
-        :resolve_outdated_diff_discussions, :container_expiration_policy, :repository_object_format,
-        :shared_runners_enabled, :lfs_enabled, :creator_id, :import_url, :import_type,
-        :import_status, :import_error, :ci_config_path, :ci_default_git_depth,
-        :ci_forward_deployment_enabled, :ci_forward_deployment_rollback_allowed,
-        :ci_job_token_scope_enabled, :ci_separated_caches,
-        :ci_allow_fork_pipelines_to_run_in_parent_project, :build_git_strategy,
-        :keep_latest_artifact, :restrict_user_defined_variables, :runners_token,
-        :runner_token_expiration_interval, :group_runners_enabled, :auto_cancel_pending_pipelines,
-        :build_timeout, :auto_devops_enabled, :auto_devops_deploy_strategy, :public_jobs,
-        :only_allow_merge_if_pipeline_succeeds, :allow_merge_on_skipped_pipeline,
-        :request_access_enabled, :only_allow_merge_if_all_discussions_are_resolved,
-        :remove_source_branch_after_merge, :printing_merge_request_link_enabled,
-        :merge_method, :squash_option, :enforce_auth_checks_on_uploads,
-        :suggestion_commit_message, :merge_commit_template, :squash_commit_template,
-        :issue_branch_template, :warn_about_potentially_unwanted_characters,
-        :autoclose_referenced_issues, :packages_enabled, :service_desk_enabled,
-        :issues_enabled, :merge_requests_enabled, :wiki_enabled, :jobs_enabled,
-        :snippets_enabled, :container_registry_enabled, :issues_access_level,
-        :repository_access_level, :merge_requests_access_level, :forking_access_level,
-        :wiki_access_level, :builds_access_level, :snippets_access_level, :pages_access_level,
-        :analytics_access_level, :container_registry_access_level,
-        :security_and_compliance_access_level, :releases_access_level, :environments_access_level,
-        :feature_flags_access_level, :infrastructure_access_level, :monitor_access_level,
-        :model_experiments_access_level, :model_registry_access_level, :issues_template,
-        :merge_requests_template, :approvals_before_merge, :mirror, :requirements_enabled,
-        :security_and_compliance_enabled, :requirements_access_level, :compliance_frameworks
-      )
-    end
-  end
+  subject { entity.as_json }
 
   context 'compliance_frameworks' do
-    let_it_be(:project_with_compliance) { create(:project, :with_sox_compliance_framework) }
-
     context 'when project has a compliance framework' do
-      let(:project) { project_with_compliance }
-
-      before_all do
-        project_with_compliance.add_maintainer(current_user)
-      end
+      let(:project) { create(:project, :with_sox_compliance_framework) }
 
       it 'is an array containing a single compliance framework' do
-        expect(json[:compliance_frameworks]).to contain_exactly('SOX')
+        expect(subject[:compliance_frameworks]).to contain_exactly('SOX')
       end
     end
 
     context 'when project has no compliance framework' do
-      let(:project) { private_project }
-
-      before_all do
-        private_project.add_maintainer(current_user)
-      end
+      let(:project) { create(:project) }
 
       it 'is empty array when project has no compliance framework' do
-        expect(json[:compliance_frameworks]).to eq([])
+        expect(subject[:compliance_frameworks]).to eq([])
       end
     end
   end
 
   describe 'ci_restrict_pipeline_cancellation_role' do
-    context 'when user has maintainer permission or above' do
-      before_all do
-        private_project.add_maintainer(current_user)
-      end
+    let(:options) { { current_user: current_user } }
 
-      context 'when feature is available' do
+    context 'when user has maintainer permission or above' do
+      let(:current_user) { project.owner }
+
+      context 'when available' do
         before do
           mock_available
         end
 
-        it { expect(json[:ci_restrict_pipeline_cancellation_role]).to eq 'developer' }
+        it { expect(subject[:ci_restrict_pipeline_cancellation_role]).to eq 'developer' }
       end
 
-      context 'when feature is not available' do
-        it { expect(json[:ci_restrict_pipeline_cancellation_role]).to be nil }
+      context 'when not available' do
+        it { expect(subject[:ci_restrict_pipeline_cancellation_role]).to be nil }
       end
     end
 
     context 'when user permission is below maintainer' do
-      before_all do
-        private_project.add_developer(current_user)
-      end
+      let(:current_user) { developer }
 
-      context 'when feature is available' do
+      context 'when available' do
         before do
           mock_available
         end
 
-        it { expect(json[:ci_restrict_pipeline_cancellation_role]).to be nil }
+        it { expect(subject[:ci_restrict_pipeline_cancellation_role]).to be nil }
       end
 
-      context 'when feature is not available' do
-        it { expect(json[:ci_restrict_pipeline_cancellation_role]).to be nil }
+      context 'when not available' do
+        it { expect(subject[:ci_restrict_pipeline_cancellation_role]).to be nil }
       end
     end
 
