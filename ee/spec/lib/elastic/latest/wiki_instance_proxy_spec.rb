@@ -18,7 +18,7 @@ RSpec.describe Elastic::Latest::WikiInstanceProxy, feature_category: :global_sea
 
     it 'provides repository_id if not provided' do
       expected_params = params.deep_dup
-      expected_params[:options][:repository_id] = "wiki_#{project.id}"
+      expected_params[:options][:repository_id] = "wiki_project_#{project.id}"
 
       expect(subject.class).to receive(:elastic_search_as_wiki_page).with('foo', expected_params)
 

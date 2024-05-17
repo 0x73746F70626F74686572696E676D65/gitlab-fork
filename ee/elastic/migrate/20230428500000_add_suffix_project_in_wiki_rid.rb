@@ -113,3 +113,5 @@ class AddSuffixProjectInWikiRid < Elastic::Migration
     end
   end
 end
+
+AddSuffixProjectInWikiRid.prepend ::Elastic::MigrationObsolete

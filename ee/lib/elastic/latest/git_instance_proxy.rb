@@ -34,7 +34,6 @@ module Elastic
 
       # If is_wiki is true then set index as (#{env}-wikis)
       # rid as (wiki_project_#{id}) for ProjectWiki and (wiki_group_#{id}) for GroupWiki
-      # If add_suffix_project_in_wiki_rid has not finished then rid might not have prefix(project/group) then
       # run delete_query_by_rid with sending rid as 'wiki_#{project_id}'
       def delete_index_for_commits_and_blobs(is_wiki: false)
         types = is_wiki ? %w[wiki_blob] : %w[commit blob]
@@ -47,10 +46,6 @@ module Elastic
                        end
 
           response = delete_query_by_rid(index, rid, is_wiki)
-          # Consider to delete wikis by older rid(without suffix _project) as well
-          if is_wiki && project_id && !::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
-            response = delete_query_by_rid(index, "wiki_#{project_id}", is_wiki)
-          end
 
           return response if is_wiki # if condition can be removed once the blob gets migrated to the separate index
         end

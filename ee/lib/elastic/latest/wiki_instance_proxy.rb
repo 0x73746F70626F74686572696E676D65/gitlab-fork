@@ -18,11 +18,7 @@ module Elastic
       private
 
       def repository_id
-        if ::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
-          "wiki_project_#{project.id}"
-        else
-          "wiki_#{project.id}"
-        end
+        "wiki_project_#{project.id}"
       end
     end
   end
