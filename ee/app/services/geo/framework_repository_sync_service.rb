@@ -37,6 +37,7 @@ module Geo
     end
 
     def sync_repository
+      @skip_housekeeping = false
       start_registry_sync!
       fetch_repository
       mark_sync_as_successful
@@ -45,6 +46,7 @@ module Geo
 
       log_info('Expiring caches')
       repository.after_create
+      @skip_housekeeping = true
     rescue Gitlab::Shell::Error, Gitlab::Git::BaseError => e
       # In some cases repository does not exist, the only way to know about this
       # is to parse the error text. If the repository does not exist on the
@@ -53,6 +55,7 @@ module Geo
       if e.message.include?(replicator.class.no_repo_message)
         log_info('Repository is not found, marking it as successfully synced')
         mark_sync_as_successful(missing_on_primary: true)
+        @skip_housekeeping = true
       else
         fail_registry_sync!('Error syncing repository', e)
       end
@@ -160,6 +163,7 @@ module Geo
 
     def execute_housekeeping
       return unless replicator.class.housekeeping_enabled?
+      return if skip_housekeeping?
 
       task = new_repository? ? :gc : nil
       service = Repositories::HousekeepingService.new(replicator.housekeeping_model_record, task)
@@ -180,6 +184,10 @@ module Geo
 
     def reschedule_sync?
       @reschedule_sync
+    end
+
+    def skip_housekeeping?
+      @skip_housekeeping
     end
 
     def do_reschedule_sync
