@@ -325,7 +325,7 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
   describe "#process" do
     context 'when the merge request does not have a ci config' do
       before do
-        allow(mr_merge_if_green_enabled.project).to receive(:has_ci?).and_return(false)
+        allow(mr_merge_if_green_enabled).to receive(:has_ci_enabled?).and_return(false)
       end
 
       context 'when the merge request is mergable' do
@@ -350,7 +350,7 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
 
     context 'when the merge request has a ci config' do
       before do
-        allow(mr_merge_if_green_enabled.project).to receive(:has_ci?).and_return(true)
+        allow(mr_merge_if_green_enabled).to receive(:has_ci_enabled?).and_return(true)
       end
 
       context 'when the pipeline has not succeeded' do
