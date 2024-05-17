@@ -86,6 +86,9 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
         body: response_body,
         headers: response_headers
       )
+
+    allow(CloudConnector::AvailableServices).to receive_message_chain(:find_by_name,
+      :access_token).and_return(expected_access_token)
   end
 
   shared_examples 'tracks events with provider for AI requests' do |prompt_size, response_size, klass|

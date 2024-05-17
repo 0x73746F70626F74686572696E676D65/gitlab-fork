@@ -116,7 +116,7 @@ module Gitlab
         end
 
         def chat_access_token
-          self.class.access_token(scopes: [:duo_chat])
+          ::CloudConnector::AvailableServices.find_by_name(:duo_chat).access_token(user)
         end
         strong_memoize_attr :chat_access_token
 

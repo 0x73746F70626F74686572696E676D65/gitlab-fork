@@ -70,7 +70,7 @@ module EE
         next false unless ::License.feature_available?(:ai_chat)
 
         if duo_chat_free_access_was_cut_off?
-          @user.duo_pro_add_on_available?
+          duo_chat.allowed_for?(@user)
         else # Before service start date
           ::Gitlab::CurrentSettings.duo_features_enabled?
         end
@@ -81,7 +81,7 @@ module EE
         next true unless ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
 
         if duo_chat_free_access_was_cut_off?
-          @user.duo_pro_add_on_available?
+          duo_chat.allowed_for?(@user)
         else
           @user.any_group_with_ai_chat_available?
         end
@@ -185,7 +185,11 @@ module EE
 
     def duo_chat_free_access_was_cut_off_for_sm?
       ::Feature.enabled?(:duo_chat_requires_licensed_seat_sm) ||
-        !CloudConnector::AccessService.new.free_access_for?(:duo_chat)
+        !duo_chat.free_access?
+    end
+
+    def duo_chat
+      CloudConnector::AvailableServices.find_by_name(:duo_chat)
     end
   end
 end
