@@ -9,7 +9,9 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
   let_it_be(:app_settings) { build(:application_setting) }
 
   let(:duo_chat_cut_off_date) { Time.zone.parse('2024-03-15T00:00:00Z') }
-  let(:duo_chat) { CloudConnector::ConnectedService.new(name: :duo_chat, cut_off_date: duo_chat_cut_off_date) }
+  let(:duo_chat_service_data) do
+    CloudConnector::SelfManaged::AvailableServiceData.new(:duo_chat, duo_chat_cut_off_date, %w[duo_pro])
+  end
 
   subject { rendered }
 
@@ -17,9 +19,8 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
     assign(:application_setting, app_settings)
     allow(view).to receive(:current_user).and_return(user)
 
-    allow_next_instance_of(::CloudConnector::AccessService) do |instance|
-      allow(instance).to receive(:available_services).and_return({ duo_chat: duo_chat })
-    end
+    allow(CloudConnector::AvailableServices).to receive(:find_by_name).with(:duo_chat)
+                                                                      .and_return(duo_chat_service_data)
   end
 
   describe 'maintenance mode' do

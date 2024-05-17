@@ -15,7 +15,7 @@ module Admin
     end
 
     def admin_display_ai_powered_toggle?
-      License.feature_available?(:ai_chat) && CloudConnector::AccessService.new.free_access_for?(:duo_chat)
+      License.feature_available?(:ai_chat) && CloudConnector::AvailableServices.find_by_name(:duo_chat).free_access?
     end
 
     def code_suggestions_purchased?

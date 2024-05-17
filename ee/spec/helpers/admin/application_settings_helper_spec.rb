@@ -23,14 +23,15 @@ RSpec.describe Admin::ApplicationSettingsHelper, feature_category: :code_suggest
     let(:feature_enabled) { true }
     let(:past) { Time.current - 1.second }
     let(:future) { Time.current + 1.second }
-    let(:duo_chat) { CloudConnector::ConnectedService.new(name: :duo_chat, cut_off_date: duo_chat_cut_off_date) }
+    let(:duo_chat_service_data) do
+      CloudConnector::SelfManaged::AvailableServiceData.new(:duo_chat, duo_chat_cut_off_date,  %w[duo_pro])
+    end
 
     before do
       stub_licensed_features(ai_chat: feature_enabled)
 
-      allow_next_instance_of(::CloudConnector::AccessService) do |instance|
-        allow(instance).to receive(:available_services).and_return({ duo_chat: duo_chat })
-      end
+      allow(CloudConnector::AvailableServices).to receive(:find_by_name).with(:duo_chat)
+                                                                        .and_return(duo_chat_service_data)
     end
 
     where(:duo_chat_cut_off_date, :feature_available, :expectation) do
