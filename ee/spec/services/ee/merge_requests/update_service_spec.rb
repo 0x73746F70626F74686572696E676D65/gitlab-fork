@@ -131,6 +131,27 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
         update_merge_request(override_requested_changes: true)
       end
 
+      it 'publishes a OverrideRequestedChanges state event' do
+        expect do
+          update_merge_request(override_requested_changes: true)
+        end.to publish_event(MergeRequests::OverrideRequestedChangesStateEvent).with({
+          current_user_id: current_user.id,
+          merge_request_id: merge_request.id
+        })
+      end
+
+      context 'when additional_merge_when_checks_ready ff is off' do
+        before do
+          stub_feature_flags(additional_merge_when_checks_ready: false)
+        end
+
+        it 'does not publish a OverrideRequestedChanges state event' do
+          expect do
+            update_merge_request(override_requested_changes: true)
+          end.not_to publish_event(MergeRequests::OverrideRequestedChangesStateEvent)
+        end
+      end
+
       it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
         let(:action) { update_merge_request(override_requested_changes: true) }
       end
