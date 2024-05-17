@@ -55,7 +55,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="canEditTestCase" class="gl-order-n1">
+  <div v-if="canEditTestCase" class="-gl-order-1">
     <div v-if="sidebarExpanded" data-testid="todo" class="todo gl-display-flex">
       <gl-button
         :loading="todoUpdateInProgress"
