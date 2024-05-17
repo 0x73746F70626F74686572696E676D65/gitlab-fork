@@ -80,9 +80,7 @@ module Epics
       end
 
       def sync_to_work_item?
-        !params[:synced_epic] &&
-          issuable.group.epic_sync_to_work_item_enabled? &&
-          issuable.work_item && referenced_issuables.any?(&:issue_id)
+        !params[:synced_epic] && issuable.work_item && referenced_issuables.any?(&:issue_id)
       end
 
       def referenced_synced_work_items

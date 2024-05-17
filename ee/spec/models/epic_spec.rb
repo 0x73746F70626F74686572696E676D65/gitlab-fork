@@ -1582,17 +1582,5 @@ RSpec.describe Epic, feature_category: :portfolio_management do
 
       epic.sync_work_item_updated_at
     end
-
-    context 'when sync_epic_to_work_item feature flag is disabled' do
-      before do
-        stub_feature_flags(sync_epic_to_work_item: false)
-      end
-
-      it 'does not update the updated_at column on the work item' do
-        expect(epic.work_item).not_to receive(:update_column)
-
-        epic.sync_work_item_updated_at
-      end
-    end
   end
 end

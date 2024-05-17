@@ -224,20 +224,6 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
             end
           end
 
-          context 'when sync_epic_to_work_item feature flag is disabled' do
-            before do
-              stub_feature_flags(sync_epic_to_work_item: false)
-            end
-
-            it 'removes epic relationship and destroy work item parent link' do
-              expect { remove_epic_relation(child_epic) }.to change { parent_epic.children.count }.by(-1)
-                .and(change { WorkItems::ParentLink.count }.by(-1))
-
-              expect(parent_epic.reload.children).not_to include(child_epic)
-              expect(parent.reload.work_item_children).not_to include(child)
-            end
-          end
-
           context 'when synced_epic argument is true' do
             subject(:destroy_link) { described_class.new(child_epic, user, synced_epic: true).execute }
 

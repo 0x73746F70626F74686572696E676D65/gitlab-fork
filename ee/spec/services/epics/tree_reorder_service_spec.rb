@@ -277,18 +277,6 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
                     expect(new_parent.updated_at).to eq(new_parent.work_item.updated_at)
                   end
 
-                  context 'when feature flag is turned off' do
-                    before do
-                      stub_feature_flags(sync_epic_work_item_order: false)
-                    end
-
-                    it 'only sets the new parent for the epic_issue' do
-                      expect { subject }.to change { moving_epic_issue.reload.epic }.from(old_parent).to(new_parent)
-                      expect { subject }.to not_change { moving_parent_link.reload.work_item_parent }
-                      expect(subject[:status]).to eq(:success)
-                    end
-                  end
-
                   context 'when the new parent has no synced work item' do
                     let_it_be_with_reload(:new_parent) { create(:epic, group: group) }
 
@@ -807,19 +795,6 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
 
                       expect(moving_object_parent_link.reload.relative_position)
                         .to eq(moving_epic.reload.relative_position)
-
-                      expect(subject[:status]).to eq(:success)
-                    end
-                  end
-
-                  context 'when the feature flag is turned off' do
-                    before do
-                      stub_feature_flags(sync_epic_work_item_order: false)
-                    end
-
-                    it 'only changes the position of the epics' do
-                      expect { subject }.to change { moving_epic.reload.relative_position }
-                        .and not_change { moving_object_parent_link.reload.relative_position }
 
                       expect(subject[:status]).to eq(:success)
                     end

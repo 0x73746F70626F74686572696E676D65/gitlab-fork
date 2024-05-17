@@ -115,19 +115,6 @@ RSpec.describe Epics::ReopenService, feature_category: :portfolio_management do
                 expect(epic.reload.state).to eq('closed')
               end
             end
-
-            context 'when feature flag is disabled' do
-              before do
-                stub_feature_flags(sync_epic_to_work_item: false)
-              end
-
-              it 'does not change the work item' do
-                subject
-
-                expect(epic.reload.state).to eq('opened')
-                expect(work_item.reload.state).to eq('closed')
-              end
-            end
           end
 
           context 'when project bot it logs audit events' do

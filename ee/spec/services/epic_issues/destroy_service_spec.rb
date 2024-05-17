@@ -151,17 +151,6 @@ RSpec.describe EpicIssues::DestroyService, feature_category: :portfolio_manageme
             expect(epic.reload.updated_at).to eq(epic.work_item.updated_at)
           end
 
-          context 'when feature flag is disabled' do
-            before do
-              stub_feature_flags(sync_epic_to_work_item: false)
-            end
-
-            it 'removes the epic and work item link' do
-              expect { subject }.to change { EpicIssue.count }.by(-1)
-                .and(change { WorkItems::ParentLink.count }.by(-1))
-            end
-          end
-
           it_behaves_like 'removes relationship with the issue' do
             let(:issue) { child_issue }
           end

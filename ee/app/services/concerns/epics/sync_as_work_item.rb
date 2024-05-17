@@ -16,8 +16,6 @@ module Epics
     def create_work_item_for!(epic)
       work_item = WorkItem.create!(create_params(epic))
 
-      return work_item unless group.epic_sync_to_work_item_enabled?
-
       sync_color(epic, work_item)
       sync_dates(epic, work_item)
 
@@ -29,7 +27,6 @@ module Epics
     end
 
     def update_work_item_for!(epic)
-      return true unless group.epic_sync_to_work_item_enabled?
       return true unless epic.work_item
 
       sync_color(epic, epic.work_item)

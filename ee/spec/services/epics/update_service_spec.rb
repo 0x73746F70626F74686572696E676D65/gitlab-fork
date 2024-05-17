@@ -965,16 +965,6 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                     expect(work_item.reload.description).to eq('- [ ] Task')
                   end
                 end
-
-                context 'when feature flag is disabled' do
-                  before do
-                    stub_feature_flags(sync_epic_to_work_item: false)
-                  end
-
-                  it 'does not propagate changes' do
-                    expect { subject }.to change { epic.reload.description }.and not_change { work_item.reload.description }
-                  end
-                end
               end
 
               context 'when unchecking a task' do
@@ -1000,16 +990,6 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                   expect(epic.reload.description).to eq('- [ ] Task')
                   expect(work_item.reload.description).to eq('- [ ] Task')
                 end
-              end
-            end
-
-            context 'when feature flag is disabled' do
-              before do
-                stub_feature_flags(sync_epic_to_work_item: false)
-              end
-
-              it 'does not propagate changes' do
-                expect { subject }.to change { epic.reload.title }.and not_change { work_item.reload.title }
               end
             end
           end

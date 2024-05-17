@@ -91,7 +91,7 @@ module EpicIssues
     def sync_work_item_link!(epic_issue_link)
       return if synced_epic
 
-      if issuable.group.epic_sync_to_work_item_enabled? && issuable.work_item
+      if issuable.work_item
         create_synced_work_item_link!(epic_issue_link)
       else
         delete_synced_work_item_link!(epic_issue_link)

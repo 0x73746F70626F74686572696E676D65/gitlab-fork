@@ -61,7 +61,7 @@ module Epics
       end
 
       def sync_work_item_parent_links?(epic, before_epic, after_epic)
-        return false unless epic.parent.group.sync_epic_work_item_order_enabled? && epic.work_item&.parent_link.present?
+        return false unless epic.work_item&.parent_link.present?
         return false if after_epic && after_epic.work_item&.parent_link.blank?
         return false if before_epic && before_epic.work_item&.parent_link.blank?
 

@@ -197,22 +197,6 @@ RSpec.describe Epics::EpicLinks::UpdateService, feature_category: :portfolio_man
           end
         end
 
-        context 'when sync_epic_to_work_item feature flag is disabled' do
-          before do
-            stub_feature_flags(sync_epic_to_work_item: false)
-          end
-
-          it_behaves_like 'reordering without syncing relative positions'
-        end
-
-        context 'when sync_epic_work_item_order feature flag is disabled' do
-          before do
-            stub_feature_flags(sync_epic_work_item_order: false)
-          end
-
-          it_behaves_like 'reordering without syncing relative positions'
-        end
-
         context 'when moving child does not have a synced work item parent link' do
           before do
             WorkItems::ParentLink.where(work_item_id: epic_to_move.issue_id).delete_all

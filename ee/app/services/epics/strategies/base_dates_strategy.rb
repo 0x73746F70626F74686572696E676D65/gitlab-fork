@@ -16,8 +16,6 @@ module Epics
       # rubocop: enable CodeReuse/ActiveRecord
 
       def update_epic_work_items(epics)
-        return unless Feature.enabled?(:sync_epic_to_work_item_dates)
-
         work_items_dates = build_work_items_date_sources(epics)
         return if work_items_dates.blank?
 
