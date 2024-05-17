@@ -15,12 +15,14 @@ RSpec.describe Gitlab::Tracking::AiTracking, feature_category: :value_stream_man
       stub_application_setting(use_clickhouse_for_analytics: true)
     end
 
-    it 'writes to ClickHouse buffer with event data' do
-      expect(::ClickHouse::WriteBuffer).to receive(:write_event).with({
-        user_id: current_user.id,
-        timestamp: Time.current,
-        event: 1
-      }).once
+    it 'stores new event' do
+      event_hash = {
+        user: current_user,
+        event: event_name
+      }
+      expect_next_instance_of(Ai::CodeSuggestionsUsage, event_hash) do |instance|
+        expect(instance).to receive(:store).once
+      end
 
       track_event
     end
@@ -30,8 +32,8 @@ RSpec.describe Gitlab::Tracking::AiTracking, feature_category: :value_stream_man
         stub_feature_flags(ai_tracking_data_gathering: false)
       end
 
-      it 'does not write to ClickHouse buffer' do
-        expect(::ClickHouse::WriteBuffer).not_to receive(:write_event)
+      it 'does not create new events' do
+        expect(Ai::CodeSuggestionsUsage).not_to receive(:new)
 
         track_event
       end
@@ -42,32 +44,8 @@ RSpec.describe Gitlab::Tracking::AiTracking, feature_category: :value_stream_man
         stub_application_setting(use_clickhouse_for_analytics: false)
       end
 
-      it 'does not write to ClickHouse buffer' do
-        expect(::ClickHouse::WriteBuffer).not_to receive(:write_event)
-
-        track_event
-      end
-    end
-
-    context 'when event is not from AiTracking list' do
-      let(:event_name) { 'something_irrelevant' }
-
-      it 'does not write to ClickHouse buffer' do
-        expect(::ClickHouse::WriteBuffer).not_to receive(:write_event)
-
-        track_event
-      end
-    end
-
-    context 'when context has timestamp overridden' do
-      let(:event_context) { { user: current_user, timestamp: 3.days.ago.to_s } }
-
-      it 'respects overridden timestamp' do
-        expect(::ClickHouse::WriteBuffer).to receive(:write_event).with({
-          user_id: current_user.id,
-          timestamp: 3.days.ago,
-          event: 1
-        }).once
+      it 'does not create new events' do
+        expect(Ai::CodeSuggestionsUsage).not_to receive(:new)
 
         track_event
       end

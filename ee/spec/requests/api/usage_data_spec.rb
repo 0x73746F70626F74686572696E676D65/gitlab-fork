@@ -17,7 +17,7 @@ RSpec.describe API::UsageData, feature_category: :service_ping do
         let_it_be(:additional_properties) do
           {
             language: 'ruby',
-            timestamp: DateTime.parse('2024-01-01')
+            timestamp: '2024-01-01'
           }
         end
 
