@@ -46,6 +46,10 @@ namespace :admin do
 
   get 'code_suggestions', to: 'code_suggestions#index'
 
+  namespace :ai do
+    resources :self_hosted_models, only: [:index, :new, :create, :edit, :update, :destroy]
+  end
+
   # using `only: []` to keep duplicate routes from being created
   resource :application_settings, only: [] do
     get :seat_link_payload

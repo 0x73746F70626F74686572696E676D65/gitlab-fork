@@ -25,9 +25,9 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
   it_behaves_like 'a panel without placeholders'
   it_behaves_like 'a panel instantiable by the anonymous user'
 
-  shared_examples 'hides code suggestions menu' do
-    it 'does not render code suggestions menu' do
-      expect(menus).not_to include(instance_of(::Sidebars::Admin::Menus::CodeSuggestionsMenu))
+  shared_examples 'hides ai-powered features menu' do
+    it 'does not render ai-powered features menu' do
+      expect(menus).not_to include(instance_of(::Sidebars::Admin::Menus::AiPoweredFeaturesMenu))
     end
   end
 
@@ -41,6 +41,20 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
 
       context 'when self_managed_code_suggestions feature flag is enabled' do
         context 'when instance has a paid license' do
+          it 'renders ai-powered features menu' do
+            license = build(:license, plan: License::PREMIUM_PLAN)
+
+            allow(License).to receive(:current).and_return(license)
+
+            expect(menus).to include(instance_of(::Sidebars::Admin::Menus::AiPoweredFeaturesMenu))
+          end
+        end
+
+        context 'when ai_custom_model feature is disabled' do
+          before do
+            stub_feature_flags(ai_custom_model: false)
+          end
+
           it 'renders code suggestions menu' do
             license = build(:license, plan: License::PREMIUM_PLAN)
 
@@ -55,7 +69,7 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
             allow(License).to receive(:current).and_return(nil)
           end
 
-          it_behaves_like 'hides code suggestions menu'
+          it_behaves_like 'hides ai-powered features menu'
         end
       end
 
@@ -71,7 +85,7 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
             allow(License).to receive(:current).and_return(license)
           end
 
-          it_behaves_like 'hides code suggestions menu'
+          it_behaves_like 'hides ai-powered features menu'
         end
 
         context 'when instance has no paid license' do
@@ -79,7 +93,7 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
             allow(License).to receive(:current).and_return(nil)
           end
 
-          it_behaves_like 'hides code suggestions menu'
+          it_behaves_like 'hides ai-powered features menu'
         end
       end
     end
@@ -95,7 +109,7 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
           stub_feature_flags(self_managed_code_suggestions: self_managed_code_suggestions)
         end
 
-        it_behaves_like 'hides code suggestions menu'
+        it_behaves_like 'hides ai-powered features menu'
       end
     end
   end

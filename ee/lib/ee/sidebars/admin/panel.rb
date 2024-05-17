@@ -39,10 +39,17 @@ module EE
         def insert_code_suggestions_menu
           return unless !gitlab_com_subscription? && gitlab_duo_available? && License.current&.paid?
 
-          insert_menu_after(
-            ::Sidebars::Admin::Menus::SubscriptionMenu,
-            ::Sidebars::Admin::Menus::CodeSuggestionsMenu.new(context)
-          )
+          if ::Feature.enabled?(:ai_custom_model) # rubocop:disable Gitlab/FeatureFlagWithoutActor -- The feature flag is global
+            insert_menu_after(
+              ::Sidebars::Admin::Menus::SubscriptionMenu,
+              ::Sidebars::Admin::Menus::AiPoweredFeaturesMenu.new(context)
+            )
+          else
+            insert_menu_after(
+              ::Sidebars::Admin::Menus::SubscriptionMenu,
+              ::Sidebars::Admin::Menus::CodeSuggestionsMenu.new(context)
+            )
+          end
         end
       end
     end
