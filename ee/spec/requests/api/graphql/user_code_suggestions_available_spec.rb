@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Querying user duo pro access',
+RSpec.describe 'Querying user code suggestions access',
   :clean_gitlab_redis_cache, feature_category: :code_suggestions do
   include GraphqlHelpers
 
@@ -36,10 +36,10 @@ RSpec.describe 'Querying user duo pro access',
         .to receive(:allowed?).and_call_original
     end
 
-    context 'when user has access to duo pro' do
+    context 'when user has access to code suggestions' do
       it 'returns true' do
-        expect(GitlabSubscriptions::UserAddOnAssignment)
-          .to receive_message_chain(:by_user, :for_active_gitlab_duo_pro_purchase).and_return([true])
+        expect(CloudConnector::AvailableServices).to receive_message_chain(:find_by_name,
+          :allowed_for?).and_return(true)
 
         post_graphql(query, current_user: current_user)
 
@@ -47,10 +47,10 @@ RSpec.describe 'Querying user duo pro access',
       end
     end
 
-    context 'when user does not have access to duo pro' do
+    context 'when user does not have access to code suggestions' do
       it 'returns false' do
-        expect(GitlabSubscriptions::UserAddOnAssignment)
-          .to receive_message_chain(:by_user, :for_active_gitlab_duo_pro_purchase).and_return([])
+        expect(CloudConnector::AvailableServices).to receive_message_chain(:find_by_name,
+          :allowed_for?).and_return(false)
 
         post_graphql(query, current_user: current_user)
 

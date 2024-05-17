@@ -190,6 +190,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
     before do
       allow(Gitlab::ApplicationRateLimiter).to receive(:threshold).and_return(0)
+      allow(CloudConnector::AvailableServices).to receive_message_chain(:find_by_name,
+        :access_token).and_return(token)
     end
 
     shared_examples 'code completions endpoint' do
@@ -376,10 +378,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           'Content-Type' => 'application/json',
           'User-Agent' => 'Super Awesome Browser 43.144.12'
         }
-      end
-
-      before do
-        allow(Gitlab::Llm::AiGateway::Client).to receive(:access_token).and_return(token)
       end
 
       context 'when user belongs to a namespace with an active code suggestions purchase' do

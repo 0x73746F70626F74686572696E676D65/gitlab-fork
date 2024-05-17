@@ -85,7 +85,7 @@ module API
             documentation: { example: 'namespace/project' }
         end
         post do
-          token = Gitlab::Llm::AiGateway::Client.access_token(scopes: [:code_suggestions])
+          token = ::CloudConnector::AvailableServices.find_by_name(:code_suggestions).access_token(current_user)
 
           unauthorized! if token.nil?
 
@@ -156,7 +156,7 @@ module API
             # for development purposes we just return instance JWT, this should not be used in production
             # until we generate a short-term token for user
             # https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist/-/issues/429
-            token: ::Gitlab::Llm::AiGateway::Client.access_token(scopes: [:code_suggestions]),
+            token: ::CloudConnector::AvailableServices.find_by_name(:code_suggestions).access_token(current_user),
             expires_at: token_expiration_time,
             headers: connector_public_headers
           }
