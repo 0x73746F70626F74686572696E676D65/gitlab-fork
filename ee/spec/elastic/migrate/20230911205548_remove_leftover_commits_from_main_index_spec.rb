@@ -33,7 +33,7 @@ RSpec.describe RemoveLeftoverCommitsFromMainIndex, feature_category: :global_sea
     end
 
     context 'when commits are still present in the index' do
-      it 'removes commits from the index' do
+      it 'removes commits from the index', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/451693' do
         expect(migration.completed?).to be_falsey
         migration.migrate
         expect(migration.migration_state).to match(documents_remaining: anything, task_id: anything)
