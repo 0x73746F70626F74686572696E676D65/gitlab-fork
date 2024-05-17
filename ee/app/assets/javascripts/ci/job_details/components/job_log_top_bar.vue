@@ -71,6 +71,13 @@ export default {
     rootCauseAnalysisIsAvailable() {
       return this.glFeatures.aiBuildFailureCause && this.aiRootCauseAnalysisAvailable;
     },
+    jobFailed() {
+      const { status } = this.job;
+
+      const failedGroups = ['failed', 'failed-with-warnings'];
+
+      return failedGroups.includes(status.group);
+    },
     jobId() {
       return convertToGraphQLId(TYPENAME_CI_BUILD, this.job.id);
     },
@@ -129,9 +136,14 @@ export default {
       @exitFullscreen="handleExitFullscreen"
     >
       <template #controllers>
-        <gl-button v-if="rootCauseAnalysisIsAvailable" class="gl-mr-2" @click="toggleDrawer">{{
-          $options.i18n.buttonName
-        }}</gl-button>
+        <gl-button
+          v-if="rootCauseAnalysisIsAvailable && jobFailed"
+          class="gl-mr-2"
+          data-testid="rca-button"
+          @click="toggleDrawer"
+        >
+          {{ $options.i18n.buttonName }}
+        </gl-button>
       </template>
     </ce-job-log-top-bar>
   </div>
