@@ -39,6 +39,17 @@ RSpec.shared_context 'secrets check context' do
     ]
   end
 
+  # repository.blank_ref is used to denote a delete commit
+  let(:delete_changes) do
+    [
+      {
+        oldrev: initial_commit,
+        newrev: repository.blank_ref,
+        ref: 'refs/heads/master'
+      }
+    ]
+  end
+
   # Set up the `changes_access` object to use below.
   let(:protocol) { 'ssh' }
   let(:timeout) { Gitlab::GitAccess::INTERNAL_TIMEOUT }
@@ -49,6 +60,17 @@ RSpec.shared_context 'secrets check context' do
   let(:changes_access) do
     Gitlab::Checks::ChangesAccess.new(
       changes,
+      project: project,
+      user_access: user_access,
+      protocol: protocol,
+      logger: logger,
+      push_options: push_options
+    )
+  end
+
+  let(:delete_changes_access) do
+    Gitlab::Checks::ChangesAccess.new(
+      delete_changes,
       project: project,
       user_access: user_access,
       protocol: protocol,
@@ -99,6 +121,8 @@ RSpec.shared_context 'secrets check context' do
   end
 
   subject(:secrets_check) { described_class.new(changes_access) }
+
+  let(:delete_branch) { described_class.new(delete_changes_access) }
 end
 
 RSpec.shared_context 'secret detection error and log messages context' do
