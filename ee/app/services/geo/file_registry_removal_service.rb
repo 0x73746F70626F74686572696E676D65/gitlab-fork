@@ -57,17 +57,17 @@ module Geo
           log_info('Local file not found. Trying object storage')
           destroy_object_storage_file
         else
-          log_error('Unable to unlink file from filesystem, or object storage. A file may be orphaned.', object_type: object_type, object_db_id: object_db_id)
+          log_warning('Unable to unlink file from filesystem, or object storage. A file may be orphaned.', object_type: object_type, object_db_id: object_db_id)
         end
       else
-        log_error('Unable to unlink file because file path is unknown. A file may be orphaned.', object_type: object_type, object_db_id: object_db_id)
+        log_warning('Unable to unlink file because file path is unknown. A file may be orphaned.', object_type: object_type, object_db_id: object_db_id)
       end
     end
 
     def destroy_object_storage_file
       if sync_object_storage_enabled?
         if object_file.nil?
-          log_error("Can't find #{object_file_path} in object storage path #{object_storage_config[:remote_directory]}")
+          log_warning("Can't find #{object_file_path} in object storage path #{object_storage_config[:remote_directory]}")
         else
           log_info("Removing #{object_file_path} from #{object_storage_config[:remote_directory]}")
           object_file.destroy
@@ -119,7 +119,7 @@ module Geo
         #    but the node is not configured to use Object Store;
         # 3. Unrecognized replicable type;
         #
-        log_error('Could not build uploader', err.message)
+        log_warning('Could not build uploader', { error: err.message })
 
         nil
       end

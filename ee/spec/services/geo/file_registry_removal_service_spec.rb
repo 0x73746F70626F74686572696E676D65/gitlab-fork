@@ -170,7 +170,9 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
                 end
 
                 expect_to_log_a_message_with(
-                  upload.id, "Can't find #{blob_path} in object storage path uploads"
+                  upload.id,
+                  "Can't find #{blob_path} in object storage path uploads",
+                  level: :warn
                 )
 
                 service.execute
@@ -215,7 +217,9 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
               expect(Fog::Storage).not_to receive(:new)
 
               expect_to_log_a_message_with(
-                upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+                upload.id,
+                'Unable to unlink file because file path is unknown. A file may be orphaned.',
+                level: :warn
               )
 
               service.execute
@@ -235,7 +239,9 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
               expect(Fog::Storage).not_to receive(:new)
 
               expect_to_log_a_message_with(
-                upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+                upload.id,
+                'Unable to unlink file because file path is unknown. A file may be orphaned.',
+                level: :warn
               )
 
               service.execute
@@ -382,7 +388,11 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
                   expect(files).to receive(:head).with(blob_path).once.and_return(nil)
                 end
 
-                expect_to_log_a_message_with(upload.id, "Can't find #{blob_path} in object storage path uploads")
+                expect_to_log_a_message_with(
+                  upload.id,
+                  "Can't find #{blob_path} in object storage path uploads",
+                  level: :warn
+                )
 
                 service.execute
               end
@@ -426,7 +436,9 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
               expect(Fog::Storage).not_to receive(:new)
 
               expect_to_log_a_message_with(
-                upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+                upload.id,
+                'Unable to unlink file because file path is unknown. A file may be orphaned.',
+                level: :warn
               )
 
               service.execute
@@ -446,7 +458,9 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
               expect(Fog::Storage).not_to receive(:new)
 
               expect_to_log_a_message_with(
-                upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+                upload.id,
+                'Unable to unlink file because file path is unknown. A file may be orphaned.',
+                level: :warn
               )
 
               service.execute
@@ -543,13 +557,14 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
               upload.delete
             end
 
-            it 'logs an error message' do
+            it 'logs an warning message' do
               expect_to_log_a_message_with(
                 upload.id,
                 [
                   'Could not build uploader',
                   'Unable to unlink file because file path is unknown. A file may be orphaned.'
-                ]
+                ],
+                level: :warn
               )
 
               subject.execute
@@ -574,13 +589,14 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
               upload.delete
             end
 
-            it 'logs an error message' do
+            it 'logs an warning message' do
               expect_to_log_a_message_with(
                 upload.id,
                 [
                   'Could not build uploader',
                   'Unable to unlink file because file path is unknown. A file may be orphaned.'
-                ]
+                ],
+                level: :warn
               )
 
               subject.execute
@@ -609,14 +625,16 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
             end
 
             context 'when GitLab managed replication is enabled' do
-              it 'logs an error message' do
+              it 'logs a warning message' do
                 file_uploader = upload.retrieve_uploader
                 blob_path = FileUploader.absolute_path(file_uploader)
                 blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
                 upload.delete
 
                 expect_to_log_a_message_with(
-                  upload.id, 'Unable to unlink file from filesystem, or object storage. A file may be orphaned.'
+                  upload.id,
+                  'Unable to unlink file from filesystem, or object storage. A file may be orphaned.',
+                  level: :warn
                 )
 
                 described_class.new('upload', upload.id, blob_path).execute
@@ -638,7 +656,7 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
                 allow(secondary).to receive(:sync_object_storage).and_return(false)
               end
 
-              it 'logs an error message' do
+              it 'logs a warning message' do
                 file_uploader = upload.retrieve_uploader
                 blob_path = FileUploader.absolute_path(file_uploader)
                 blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
@@ -647,7 +665,9 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
                 expect(Fog::Storage).not_to receive(:new)
 
                 expect_to_log_a_message_with(
-                  upload.id, 'Unable to unlink file from filesystem, or object storage. A file may be orphaned.'
+                  upload.id,
+                  'Unable to unlink file from filesystem, or object storage. A file may be orphaned.',
+                  level: :warn
                 )
 
                 described_class.new('upload', upload.id, blob_path).execute
@@ -667,7 +687,7 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
 
           context 'when object storage is disabled' do
             context 'when Gitlab managed replication is enabled' do
-              it 'logs an error message' do
+              it 'logs a warning message' do
                 stub_uploads_object_storage(FileUploader)
 
                 file_uploader = upload.retrieve_uploader
@@ -678,7 +698,9 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
                 stub_uploads_object_storage(FileUploader, enabled: false)
 
                 expect_to_log_a_message_with(
-                  upload.id, 'Unable to unlink file from filesystem, or object storage. A file may be orphaned.'
+                  upload.id,
+                  'Unable to unlink file from filesystem, or object storage. A file may be orphaned.',
+                  level: :warn
                 )
 
                 described_class.new('upload', upload.id, blob_path).execute
@@ -704,7 +726,7 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
                 allow(secondary).to receive(:sync_object_storage).and_return(false)
               end
 
-              it 'logs an error message' do
+              it 'logs a warning message' do
                 stub_uploads_object_storage(FileUploader)
 
                 file_uploader = upload.retrieve_uploader
@@ -715,7 +737,9 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
                 stub_uploads_object_storage(FileUploader, enabled: false)
 
                 expect_to_log_a_message_with(
-                  upload.id, 'Unable to unlink file from filesystem, or object storage. A file may be orphaned.'
+                  upload.id,
+                  'Unable to unlink file from filesystem, or object storage. A file may be orphaned.',
+                  level: :warn
                 )
 
                 described_class.new('upload', upload.id, blob_path).execute
@@ -752,9 +776,11 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
             end
 
             context 'when GitLab managed replication is enabled' do
-              it 'logs an error message' do
+              it 'logs a warning message' do
                 expect_to_log_a_message_with(
-                  upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+                  upload.id,
+                  'Unable to unlink file because file path is unknown. A file may be orphaned.',
+                  level: :warn
                 )
 
                 service.execute
@@ -770,9 +796,11 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
                 allow(secondary).to receive(:sync_object_storage).and_return(false)
               end
 
-              it 'logs an error message' do
+              it 'logs a warning message' do
                 expect_to_log_a_message_with(
-                  upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+                  upload.id,
+                  'Unable to unlink file because file path is unknown. A file may be orphaned.',
+                  level: :warn
                 )
 
                 service.execute
@@ -794,9 +822,11 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
             end
 
             context 'when GitLab managed replication is enabled' do
-              it 'logs an error message' do
+              it 'logs a warning message' do
                 expect_to_log_a_message_with(
-                  upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+                  upload.id,
+                  'Unable to unlink file because file path is unknown. A file may be orphaned.',
+                  level: :warn
                 )
 
                 service.execute
@@ -812,9 +842,11 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo, feature_category: :geo_rep
                 allow(secondary).to receive(:sync_object_storage).and_return(false)
               end
 
-              it 'logs an error message' do
+              it 'logs a warning message' do
                 expect_to_log_a_message_with(
-                  upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+                  upload.id,
+                  'Unable to unlink file because file path is unknown. A file may be orphaned.',
+                  level: :warn
                 )
 
                 service.execute

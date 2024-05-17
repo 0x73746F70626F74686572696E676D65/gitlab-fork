@@ -11,6 +11,12 @@ module Gitlab
         geo_logger.info(data)
       end
 
+      def log_warning(message, details = {})
+        data = base_log_data(message)
+        data.merge!(details) if details
+        geo_logger.warn(data)
+      end
+
       def log_error(message, error = nil, details = {})
         data = base_log_data(message)
         data[:error] = error.to_s if error
