@@ -14,7 +14,7 @@ RSpec.describe EE::API::Entities::SamlGroupLink, feature_category: :system_acces
         stub_licensed_features(custom_roles: true)
       end
 
-      it 'exposes the attributes' do
+      it 'exposes the attributes', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/447505' do
         expect(entity[:name]).to eq saml_group_link.saml_group_name
         expect(entity[:access_level]).to eq saml_group_link.access_level
         expect(entity[:member_role_id]).to eq saml_group_link.member_role_id
