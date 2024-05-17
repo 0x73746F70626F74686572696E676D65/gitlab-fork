@@ -1259,60 +1259,80 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
       private_project2.project_members.create!(user: user, access_level: ProjectMember::DEVELOPER)
     end
 
-    context 'issues' do
-      it 'finds right set of issues' do
-        issue_1 = create :issue, project: internal_project, title: "Internal project"
-        create :issue, project: private_project1, title: "Private project"
-        issue_3 = create :issue, project: private_project2, title: "Private project where I'm a member"
-        issue_4 = create :issue, project: public_project, title: "Public project"
+    context 'for issues' do
+      shared_examples 'issues respect visibility' do
+        it 'finds right set of issues' do
+          issue_1 = create :issue, project: internal_project, title: "Internal project"
+          create :issue, project: private_project1, title: "Private project"
+          issue_3 = create :issue, project: private_project2, title: "Private project where I'm a member"
+          issue_4 = create :issue, project: public_project, title: "Public project"
 
-        ensure_elasticsearch_index!
+          ensure_elasticsearch_index!
 
-        # Authenticated search
-        results = described_class.new(user, 'project', limit_project_ids)
-        issues = results.objects('issues')
+          # Authenticated search
+          results = described_class.new(user, 'project', limit_project_ids)
+          issues = results.objects('issues')
 
-        expect(issues).to include issue_1
-        expect(issues).to include issue_3
-        expect(issues).to include issue_4
-        expect(results.issues_count).to eq 3
+          expect(issues).to include issue_1
+          expect(issues).to include issue_3
+          expect(issues).to include issue_4
+          expect(results.issues_count).to eq 3
 
-        # Unauthenticated search
-        results = described_class.new(nil, 'project', [])
-        issues = results.objects('issues')
+          # Unauthenticated search
+          results = described_class.new(nil, 'project', [])
+          issues = results.objects('issues')
 
-        expect(issues).to include issue_4
-        expect(results.issues_count).to eq 1
+          expect(issues).to include issue_4
+          expect(results.issues_count).to eq 1
+        end
+
+        context 'when different issue descriptions', :aggregate_failures do
+          let(:examples) do
+            code_examples.merge(
+              'screen' => 'Screenshots or screen recordings',
+              'problem' => 'Problem to solve'
+            )
+          end
+
+          include_context 'with code examples' do
+            before do
+              examples.values.uniq.each do |description|
+                sha = Digest::SHA256.hexdigest(description)
+                create :issue, project: private_project2, title: sha, description: description
+              end
+
+              ensure_elasticsearch_index!
+            end
+
+            it 'finds all examples' do
+              examples.each do |search_term, description|
+                sha = Digest::SHA256.hexdigest(description)
+
+                results = described_class.new(user, search_term, limit_project_ids)
+                issues = results.objects('issues')
+                expect(issues.map(&:title)).to include(sha), "failed to find #{search_term}"
+              end
+            end
+          end
+        end
       end
 
-      context 'when different issue descriptions', :aggregate_failures do
-        let(:examples) do
-          code_examples.merge(
-            'screen' => 'Screenshots or screen recordings',
-            'problem' => 'Problem to solve'
-          )
+      it_behaves_like 'issues respect visibility'
+
+      context 'when search_uses_match_queries flag is false' do
+        before do
+          stub_feature_flags(search_uses_match_queries: false)
         end
 
-        include_context 'with code examples' do
-          before do
-            examples.values.uniq.each do |description|
-              sha = Digest::SHA256.hexdigest(description)
-              create :issue, project: private_project2, title: sha, description: description
-            end
+        it_behaves_like 'issues respect visibility'
+      end
 
-            ensure_elasticsearch_index!
-          end
-
-          it 'finds all examples' do
-            examples.each do |search_term, description|
-              sha = Digest::SHA256.hexdigest(description)
-
-              results = described_class.new(user, search_term, limit_project_ids)
-              issues = results.objects('issues')
-              expect(issues.map(&:title)).to include(sha), "failed to find #{search_term}"
-            end
-          end
+      context 'when search_query_builder feature flag is false' do
+        before do
+          stub_feature_flags(search_query_builder: false)
         end
+
+        it_behaves_like 'issues respect visibility'
       end
     end
 

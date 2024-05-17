@@ -1,9 +1,8 @@
-# rubocop:disable Naming/FileName
 # frozen_string_literal: true
 
 module Gitlab
   module Elastic
-    BoolExpr = Struct.new(:must, :must_not, :should, :filter) do # rubocop:disable Lint/StructNewOverride
+    BoolExpr = Struct.new(:must, :must_not, :should, :filter, :minimum_should_match) do # rubocop:disable Lint/StructNewOverride -- existing implementation
       def initialize
         super
         reset!
@@ -14,6 +13,7 @@ module Gitlab
         self.must_not = []
         self.should   = []
         self.filter   = []
+        self.minimum_should_match = nil
       end
 
       def to_h
@@ -26,5 +26,3 @@ module Gitlab
     end
   end
 end
-
-# rubocop:enable Naming/FileName

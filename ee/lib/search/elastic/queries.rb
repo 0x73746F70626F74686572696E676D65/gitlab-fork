@@ -3,10 +3,10 @@
 module Search
   module Elastic
     module Queries
+      ADVANCED_QUERY_SYNTAX_REGEX = /[+*"\-|()~\\]/
+
       class << self
         include ::Elastic::Latest::QueryContext::Aware
-
-        AGGREGATION_LIMIT = 500
 
         def by_iid(iid:, doc_type:)
           bool_expr = Gitlab::Elastic::BoolExpr.new
@@ -22,26 +22,80 @@ module Search
           }
         end
 
-        def by_simple_query_string(fields:, query:, options:)
+        def by_multi_match_query(fields:, query:, options:)
           fields = ::Elastic::Latest::CustomLanguageAnalyzers.add_custom_analyzers_fields(fields)
-
           fields = remove_fields_boost(fields) if options[:count_only]
 
-          query_hash =
-            if query.present?
-              simple_query_string = simple_query_string(fields, query, options)
+          bool_expr = Gitlab::Elastic::BoolExpr.new
 
-              build_bool_query(simple_query_string, options)
-            else
-              bool_expr = Gitlab::Elastic::BoolExpr.new
-              bool_expr.must = { match_all: {} }
-              {
-                query: {
-                  bool: bool_expr
-                },
-                track_scores: true
+          if query.present?
+            bool_expr = Gitlab::Elastic::BoolExpr.new
+            unless options[:no_join_project]
+              bool_expr.filter << {
+                term: {
+                  type: {
+                    _name: context.name(:doc, :is_a, options[:doc_type]),
+                    value: options[:doc_type]
+                  }
+                }
               }
             end
+
+            multi_match_bool = Gitlab::Elastic::BoolExpr.new
+            multi_match_bool.should << multi_match_query(fields, query, options.merge(operator: :or))
+            multi_match_bool.should << multi_match_query(fields, query, options.merge(operator: :and))
+            multi_match_bool.should << multi_match_phrase_query(fields, query, options)
+            multi_match_bool.minimum_should_match = 1
+
+            if options[:count_only]
+              bool_expr.filter << { bool: multi_match_bool }
+            else
+              bool_expr.must << { bool: multi_match_bool }
+            end
+          else
+            bool_expr.must = { match_all: {} }
+          end
+
+          query_hash = { query: { bool: bool_expr } }
+          query_hash[:track_scores] = true unless query.present?
+
+          if options[:count_only]
+            query_hash[:size] = 0
+          else
+            query_hash[:highlight] = apply_highlight(fields)
+          end
+
+          query_hash
+        end
+
+        def by_simple_query_string(fields:, query:, options:)
+          fields = ::Elastic::Latest::CustomLanguageAnalyzers.add_custom_analyzers_fields(fields)
+          fields = remove_fields_boost(fields) if options[:count_only]
+
+          bool_expr = Gitlab::Elastic::BoolExpr.new
+          if query.present?
+            unless options[:no_join_project]
+              bool_expr.filter << {
+                term: {
+                  type: {
+                    _name: context.name(:doc, :is_a, options[:doc_type]),
+                    value: options[:doc_type]
+                  }
+                }
+              }
+            end
+
+            if options[:count_only]
+              bool_expr.filter << simple_query_string(fields, query, options)
+            else
+              bool_expr.must << simple_query_string(fields, query, options)
+            end
+          else
+            bool_expr.must = { match_all: {} }
+          end
+
+          query_hash = { query: { bool: bool_expr } }
+          query_hash[:track_scores] = true unless query.present?
 
           if options[:count_only]
             query_hash[:size] = 0
@@ -70,29 +124,26 @@ module Search
           }
         end
 
-        def build_bool_query(simple_query_string, options)
-          bool_expr = Gitlab::Elastic::BoolExpr.new
-
-          unless options[:no_join_project]
-            bool_expr.filter << {
-              term: {
-                type: {
-                  _name: context.name(:doc, :is_a, options[:doc_type]),
-                  value: options[:doc_type]
-                }
-              }
-            }
-          end
-
-          if options[:count_only]
-            bool_expr.filter << simple_query_string
-          else
-            bool_expr.must << simple_query_string
-          end
-
+        def multi_match_phrase_query(fields, query, options)
           {
-            query: {
-              bool: bool_expr
+            multi_match: {
+              _name: context.name(options[:doc_type], :multi_match_phrase, :search_terms),
+              type: :phrase,
+              fields: fields,
+              query: query,
+              lenient: true
+            }
+          }
+        end
+
+        def multi_match_query(fields, query, options)
+          {
+            multi_match: {
+              _name: context.name(options[:doc_type], :multi_match, options[:operator], :search_terms),
+              fields: fields,
+              query: query,
+              operator: options[:operator],
+              lenient: true
             }
           }
         end
