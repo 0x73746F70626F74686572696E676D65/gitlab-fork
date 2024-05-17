@@ -50,7 +50,7 @@ export default {
     </div>
     <pre
       v-if="job.userPermissions.readBuild"
-      class="gl-w-full gl-border-none gl-reset-bg gl-m-0 gl-p-0"
-    ><code v-safe-html="traceSummary" class="gl-reset-bg gl-p-0"></code></pre>
+      class="gl-w-full gl-border-none gl-bg-inherit gl-m-0 gl-p-0"
+    ><code v-safe-html="traceSummary" class="gl-bg-inherit gl-p-0"></code></pre>
   </div>
 </template>
