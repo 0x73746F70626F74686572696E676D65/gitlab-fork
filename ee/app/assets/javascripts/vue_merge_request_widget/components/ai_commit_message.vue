@@ -124,7 +124,7 @@ export default {
       size="small"
       @click="triggerAiMutation"
     >
-      {{ __('Create AI-generated commit message') }}
+      {{ __('Generate commit message') }}
     </gl-button>
     <gl-badge class="gl-ml-2" size="sm">
       {{ __('Experiment') }}
