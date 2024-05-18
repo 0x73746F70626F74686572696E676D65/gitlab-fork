@@ -44,9 +44,7 @@ module Elastic
 
         data['traversal_ids'] = target.elastic_namespace_ancestry
 
-        if ::Elastic::DataMigrationService.migration_has_finished?(:add_ci_catalog_to_project)
-          data['ci_catalog'] = target.catalog_resource.present?
-        end
+        data['ci_catalog'] = target.catalog_resource.present?
 
         if ::Elastic::DataMigrationService.migration_has_finished?(:add_fields_to_projects_index)
           data['mirror'] = target.mirror?

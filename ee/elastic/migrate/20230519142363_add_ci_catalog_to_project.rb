@@ -18,3 +18,5 @@ class AddCiCatalogToProject < Elastic::Migration
     }
   end
 end
+
+AddCiCatalogToProject.prepend ::Elastic::MigrationObsolete

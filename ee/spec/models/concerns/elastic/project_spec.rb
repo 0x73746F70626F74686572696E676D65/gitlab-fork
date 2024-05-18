@@ -267,15 +267,5 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
         expect(project.__elasticsearch__.as_indexed_json).to eq(expected_hash)
       end
     end
-
-    context 'when the add_ci_catalog_to_project migration has not finished' do
-      before do
-        set_elasticsearch_migration_to(:add_ci_catalog_to_project, including: false)
-      end
-
-      it 'does not include the ci_catalog field' do
-        expect(project.__elasticsearch__.as_indexed_json).not_to have_key('ci_catalog')
-      end
-    end
   end
 end
