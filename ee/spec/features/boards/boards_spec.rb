@@ -5,11 +5,16 @@ require 'spec_helper'
 RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
   include DragTo
 
-  let(:user) { create(:user) }
+  let_it_be(:user) { create(:user) }
+
   let(:project) { create(:project, :public) }
   let!(:board) { create(:board, project: project) }
   let(:milestone) { create(:milestone, title: "v2.2", project: project) }
   let!(:board_with_milestone) { create(:board, project: project, milestone: milestone) }
+
+  before_all do
+    create(:callout, feature_name: :board_add_new_column_trigger_popover, user: user)
+  end
 
   context 'with group and reporter' do
     let(:group) { create(:group) }
