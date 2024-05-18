@@ -5,6 +5,12 @@ import SecretTabs from 'ee/ci/secrets/components/secret_details/secret_tabs.vue'
 
 describe('SecretTabs component', () => {
   let wrapper;
+  const mockRouter = {
+    push: jest.fn(),
+  };
+  const defaultProps = {
+    secretId: 123,
+  };
 
   const findEditSecretButton = () => wrapper.findByTestId('edit-secret-button');
   const findTabs = () => wrapper.findComponent(GlTabs);
@@ -12,13 +18,14 @@ describe('SecretTabs component', () => {
   const createComponent = (routeName) => {
     wrapper = shallowMountExtended(SecretTabs, {
       propsData: {
-        secretKey: 'group_secret_1',
+        ...defaultProps,
         routeName,
       },
       stubs: {
         RouterView: true,
       },
       mocks: {
+        $router: mockRouter,
         $route: { name: routeName },
       },
     });
@@ -34,7 +41,11 @@ describe('SecretTabs component', () => {
     });
 
     it('shows a link to the edit secret page', () => {
-      expect(findEditSecretButton().attributes('to')).toBe(EDIT_ROUTE_NAME);
+      findEditSecretButton().vm.$emit('click');
+      expect(mockRouter.push).toHaveBeenCalledWith({
+        name: EDIT_ROUTE_NAME,
+        params: { id: defaultProps.secretId },
+      });
     });
 
     it('highlights the correct tab', () => {

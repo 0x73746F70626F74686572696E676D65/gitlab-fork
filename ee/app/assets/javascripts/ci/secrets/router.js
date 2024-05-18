@@ -53,10 +53,10 @@ export default (base, props) => {
         },
       },
       {
-        path: '/:key',
+        path: '/:id',
         component: SecretTabs,
-        props: ({ params: { key }, name }) => {
-          return { secretKey: key, routeName: name };
+        props: ({ params: { id }, name }) => {
+          return { secretId: Number(id), routeName: name };
         },
         children: [
           {
@@ -64,7 +64,7 @@ export default (base, props) => {
             path: 'details',
             component: SecretDetails,
             meta: {
-              getBreadcrumbText: ({ key }) => key,
+              getBreadcrumbText: ({ id }) => id,
               isDetails: true,
             },
           },
@@ -84,14 +84,14 @@ export default (base, props) => {
       },
       {
         name: EDIT_ROUTE_NAME,
-        path: '/:key/edit',
+        path: '/:id/edit',
         component: SecretFormWrapper,
-        props: ({ params: { key } }) => {
+        props: ({ params: { id } }) => {
           return {
             entity,
             fullPath,
             isEditing: true,
-            secretKey: key,
+            secretId: Number(id),
           };
         },
         meta: {
