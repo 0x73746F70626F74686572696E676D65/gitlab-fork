@@ -36453,9 +36453,6 @@ msgstr ""
 msgid "Package type must be PyPi"
 msgstr ""
 
-msgid "Package type must be RPM"
-msgstr ""
-
 msgid "Package type must be Terraform Module"
 msgstr ""
 
