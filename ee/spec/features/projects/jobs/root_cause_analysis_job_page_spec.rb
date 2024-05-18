@@ -45,4 +45,18 @@ RSpec.describe 'Root cause analysis job page', :js, feature_category: :continuou
       expect(page).not_to have_selector("[data-testid='rca-button']")
     end
   end
+
+  context 'without duo_features_enabled permissions' do
+    before do
+      project.update!(duo_features_enabled: false)
+
+      visit(project_job_path(project, passed_job))
+
+      wait_for_requests
+    end
+
+    it 'does not display rca button' do
+      expect(page).not_to have_selector("[data-testid='rca-button']")
+    end
+  end
 end

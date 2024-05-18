@@ -15,7 +15,7 @@ export default {
     RootCauseAnalysis,
   },
   mixins: [glFeatureFlagMixin()],
-  inject: ['aiRootCauseAnalysisAvailable'],
+  inject: ['aiRootCauseAnalysisAvailable', 'duoFeaturesEnabled'],
   props: {
     size: {
       type: Number,
@@ -68,7 +68,11 @@ export default {
   },
   computed: {
     rootCauseAnalysisIsAvailable() {
-      return this.glFeatures.aiBuildFailureCause && this.aiRootCauseAnalysisAvailable;
+      return (
+        this.glFeatures.aiBuildFailureCause &&
+        this.aiRootCauseAnalysisAvailable &&
+        this.duoFeaturesEnabled
+      );
     },
     jobFailed() {
       const { status } = this.job;
