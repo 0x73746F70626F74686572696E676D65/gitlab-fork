@@ -95,7 +95,7 @@ module QA
               within_element('findings-hide-dismissed-toggle') do
                 toggle = find('button.gl-toggle')
                 checked = toggle[:class].include?('is-checked')
-                toggle.click if checked && toggle_to == "off" || !checked && toggle_to == "on"
+                toggle.click if (checked && toggle_to == "off") || (!checked && toggle_to == "on")
               end
             end
 
