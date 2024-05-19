@@ -14,7 +14,6 @@ import { mockDastScanExecutionObject } from '../../mocks/mock_scan_execution_pol
 describe('EditorWrapper component', () => {
   let wrapper;
 
-  const findGroupLevelNotification = () => wrapper.findByTestId('group-level-notification');
   const findErrorAlert = () => wrapper.findByTestId('error-alert');
   const findPipelineExecutionPolicyEditor = () =>
     wrapper.findComponent(PipelineExecutionPolicyEditor);
@@ -41,9 +40,8 @@ describe('EditorWrapper component', () => {
       beforeEach(factory);
 
       it.each`
-        component              | findComponent
-        ${'group-level alert'} | ${findGroupLevelNotification}
-        ${'error alert'}       | ${findErrorAlert}
+        component        | findComponent
+        ${'error alert'} | ${findErrorAlert}
       `('does not display the $component', ({ findComponent }) => {
         expect(findComponent().exists()).toBe(false);
       });
@@ -86,16 +84,6 @@ describe('EditorWrapper component', () => {
           expect(component.props('isEditing')).toBe(false);
         },
       );
-    });
-
-    describe('group-level', () => {
-      beforeEach(() => {
-        factory({ provide: { namespaceType: NAMESPACE_TYPES.GROUP } });
-      });
-
-      it('does display the group-level alert', () => {
-        expect(findGroupLevelNotification().exists()).toBe(true);
-      });
     });
   });
 

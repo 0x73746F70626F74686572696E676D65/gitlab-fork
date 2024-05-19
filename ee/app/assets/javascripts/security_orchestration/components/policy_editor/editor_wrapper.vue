@@ -1,6 +1,5 @@
 <script>
 import { GlAlert, GlFormGroup, GlFormSelect } from '@gitlab/ui';
-import { s__ } from '~/locale';
 import { NAMESPACE_TYPES } from '../../constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import PipelineExecutionPolicyEditor from './pipeline_execution/editor_component.vue';
@@ -57,22 +56,11 @@ export default {
     },
   },
   NAMESPACE_TYPES,
-  i18n: {
-    groupPolicyMessage: s__(
-      'SecurityOrchestration|After enabling a group-level policy, this policy automatically applies to all projects and sub-groups in this group.',
-    ),
-  },
 };
 </script>
 
 <template>
   <section class="policy-editor">
-    <span
-      v-if="namespaceType === $options.NAMESPACE_TYPES.GROUP"
-      data-testid="group-level-notification"
-    >
-      {{ $options.i18n.groupPolicyMessage }}
-    </span>
     <gl-alert
       v-if="error"
       class="gl-mt-5 security-policies-alert gl-z-2"

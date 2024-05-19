@@ -6,7 +6,7 @@ export const SPECIFIC_PROJECTS = 'specific_projects';
 
 export const PROJECT_SCOPE_TYPE_TEXTS = {
   [PROJECTS_WITH_FRAMEWORK]: s__('SecurityOrchestration|projects with compliance frameworks'),
-  [ALL_PROJECTS_IN_GROUP]: s__('SecurityOrchestration|all projects in this group'),
+  [ALL_PROJECTS_IN_GROUP]: s__('SecurityOrchestration|all subgroups/projects in this group'),
   [SPECIFIC_PROJECTS]: s__('SecurityOrchestration|specific projects'),
 };
 
