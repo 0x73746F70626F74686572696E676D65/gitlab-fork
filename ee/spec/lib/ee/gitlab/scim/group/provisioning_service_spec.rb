@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ::EE::Gitlab::Scim::Group::ProvisioningService, :saas,
-               feature_category: :system_access do
+  feature_category: :system_access do
   describe '#execute' do
     let(:group) { create(:group) }
     let_it_be(:service_params) do
@@ -19,8 +19,8 @@ RSpec.describe ::EE::Gitlab::Scim::Group::ProvisioningService, :saas,
     let(:enforced_sso) { false }
     let!(:saml_provider) do
       create(:saml_provider, group: group,
-                             enforced_sso: enforced_sso,
-                             default_membership_role: Gitlab::Access::DEVELOPER)
+        enforced_sso: enforced_sso,
+        default_membership_role: Gitlab::Access::DEVELOPER)
     end
 
     before do
@@ -289,8 +289,8 @@ RSpec.describe ::EE::Gitlab::Scim::Group::ProvisioningService, :saas,
 
           let(:provision_response) do
             ::EE::Gitlab::Scim::ProvisioningResponse.new(identity: nil,
-                                                         status: :error,
-                                                         message: "Extern uid can't be blank")
+              status: :error,
+              message: "Extern uid can't be blank")
           end
 
           it 'does not return nil result' do
@@ -314,8 +314,8 @@ RSpec.describe ::EE::Gitlab::Scim::Group::ProvisioningService, :saas,
 
             expect(response).to be_a(::EE::Gitlab::Scim::ProvisioningResponse)
             expect(response.as_json).to match(hash_including('status' => 'error',
-                                                             'message' => /^undefined method `save' for nil:NilClass/,
-                                                             'identity' => nil))
+              'message' => /^undefined method `save' for nil:NilClass/,
+              'identity' => nil))
           end
         end
       end

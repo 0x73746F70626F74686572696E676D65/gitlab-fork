@@ -25,48 +25,48 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, 
 
   let_it_be(:stage) do
     create(:cycle_analytics_stage,
-           namespace: group,
-           start_event_identifier: :issue_created,
-           end_event_identifier: :issue_deployed_to_production
-          )
+      namespace: group,
+      start_event_identifier: :issue_created,
+      end_event_identifier: :issue_deployed_to_production
+    )
   end
 
   let_it_be(:stage_event_1) do
     create(:cycle_analytics_issue_stage_event,
-           stage_event_hash_id: stage.stage_event_hash_id,
-           group_id: sub_group.id,
-           project_id: project_1.id,
-           start_event_timestamp: 4.weeks.ago,
-           end_event_timestamp: 1.week.ago,
-           sprint_id: iteration.id,
-           issue_id: issue_with_iteration.id,
-           duration_in_milliseconds: 3000
-          )
+      stage_event_hash_id: stage.stage_event_hash_id,
+      group_id: sub_group.id,
+      project_id: project_1.id,
+      start_event_timestamp: 4.weeks.ago,
+      end_event_timestamp: 1.week.ago,
+      sprint_id: iteration.id,
+      issue_id: issue_with_iteration.id,
+      duration_in_milliseconds: 3000
+    )
   end
 
   let_it_be(:stage_event_2) do
     create(:cycle_analytics_issue_stage_event,
-           stage_event_hash_id: stage.stage_event_hash_id,
-           author_id: other_user.id,
-           group_id: sub_group.id,
-           project_id: project_2.id,
-           start_event_timestamp: 2.weeks.ago,
-           end_event_timestamp: 1.week.ago,
-           milestone_id: milestone.id,
-           weight: 5,
-           issue_id: issue_with_epic.id,
-           duration_in_milliseconds: 57000
-          )
+      stage_event_hash_id: stage.stage_event_hash_id,
+      author_id: other_user.id,
+      group_id: sub_group.id,
+      project_id: project_2.id,
+      start_event_timestamp: 2.weeks.ago,
+      end_event_timestamp: 1.week.ago,
+      milestone_id: milestone.id,
+      weight: 5,
+      issue_id: issue_with_epic.id,
+      duration_in_milliseconds: 57000
+    )
   end
 
   let_it_be(:stage_event_3) do
     create(:cycle_analytics_issue_stage_event,
-           stage_event_hash_id: stage.stage_event_hash_id,
-           group_id: other_group.id,
-           project_id: other_project.id,
-           issue_id: create(:issue, project: other_project).id,
-           duration_in_milliseconds: 5000
-          )
+      stage_event_hash_id: stage.stage_event_hash_id,
+      group_id: other_group.id,
+      project_id: other_project.id,
+      issue_id: create(:issue, project: other_project).id,
+      duration_in_milliseconds: 5000
+    )
   end
 
   let_it_be(:epic_issue) { create(:epic_issue, epic: epic, issue: issue_with_epic) }

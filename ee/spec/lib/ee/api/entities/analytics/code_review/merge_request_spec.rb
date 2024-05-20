@@ -7,9 +7,9 @@ RSpec.describe EE::API::Entities::Analytics::CodeReview::MergeRequest do
 
   let(:merge_request) do
     create(:merge_request, :with_productivity_metrics,
-           milestone: milestone,
-           source_project: project,
-           metrics_data: { first_comment_at: 1.day.ago, merged_at: 1.hour.ago }
+      milestone: milestone,
+      source_project: project,
+      metrics_data: { first_comment_at: 1.day.ago, merged_at: 1.hour.ago }
     )
   end
 

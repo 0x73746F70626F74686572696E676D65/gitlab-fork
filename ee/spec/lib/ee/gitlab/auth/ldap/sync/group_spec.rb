@@ -96,8 +96,8 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
 
     let(:group) do
       create(:group_with_ldap_group_link,
-             cn: 'ldap_group1',
-             group_access: ::Gitlab::Access::DEVELOPER)
+        cn: 'ldap_group1',
+        group_access: ::Gitlab::Access::DEVELOPER)
     end
 
     let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
@@ -112,8 +112,8 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
 
     let(:group) do
       create(:group_with_ldap_group_link,
-             cn: 'ldap_group1',
-             group_access: ::Gitlab::Access::DEVELOPER)
+        cn: 'ldap_group1',
+        group_access: ::Gitlab::Access::DEVELOPER)
     end
 
     let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
@@ -126,11 +126,11 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
 
     it 'handles nil ldap_sync_last_sync_at' do
       group = create(:group_with_ldap_group_link,
-                     cn: 'ldap_group1',
-                     group_access: ::Gitlab::Access::DEVELOPER,
-                     ldap_sync_status: 'started',
-                     ldap_sync_last_sync_at: nil,
-                     visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+        cn: 'ldap_group1',
+        group_access: ::Gitlab::Access::DEVELOPER,
+        ldap_sync_status: 'started',
+        ldap_sync_last_sync_at: nil,
+        visibility_level: Gitlab::VisibilityLevel::PUBLIC)
       create(:project, group: group, visibility_level: Gitlab::VisibilityLevel::PUBLIC)
       group.update_columns(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
 
@@ -175,8 +175,8 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
 
     let(:group) do
       create(:group_with_ldap_group_link,
-             cn: 'ldap_group1',
-             group_access: ::Gitlab::Access::DEVELOPER)
+        cn: 'ldap_group1',
+        group_access: ::Gitlab::Access::DEVELOPER)
     end
 
     let(:sync_group) { described_class.new(group, proxy(adapter)) }
@@ -642,7 +642,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group, feature_category: :system_ac
     describe '#update_permissions' do
       let(:group) do
         create(:group_with_ldap_group_filter_link,
-               group_access: ::Gitlab::Access::DEVELOPER)
+          group_access: ::Gitlab::Access::DEVELOPER)
       end
 
       let(:sync_group) { described_class.new(group, proxy(adapter)) }

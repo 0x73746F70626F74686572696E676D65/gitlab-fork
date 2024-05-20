@@ -24,7 +24,7 @@ RSpec.describe Gitlab::ApplicationContext, :request_store do
 
       expect(result(context))
         .to include(root_namespace: namespace.full_path,
-                    subscription_plan: 'free')
+          subscription_plan: 'free')
     end
 
     it 'falls back to a projects namespace plan when a project is passed but no namespace' do
@@ -34,8 +34,8 @@ RSpec.describe Gitlab::ApplicationContext, :request_store do
 
       expect(result(context))
         .to include(project: project.full_path,
-                    root_namespace: project.full_path_components.first,
-                    subscription_plan: 'premium')
+          root_namespace: project.full_path_components.first,
+          subscription_plan: 'premium')
     end
   end
 

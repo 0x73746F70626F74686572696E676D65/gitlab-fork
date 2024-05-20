@@ -58,8 +58,8 @@ RSpec.describe EE::API::Entities::GeoNodeStatus, feature_category: :geo_replicat
   describe '#job_artifacts_synced_in_percentage' do
     it 'formats as percentage' do
       geo_node_status.assign_attributes(job_artifacts_registry_count: 256,
-                                        job_artifacts_failed_count: 12,
-                                        job_artifacts_synced_count: 123)
+        job_artifacts_failed_count: 12,
+        job_artifacts_synced_count: 123)
 
       expect(subject[:job_artifacts_synced_in_percentage]).to eq '48.05%'
     end
@@ -80,7 +80,7 @@ RSpec.describe EE::API::Entities::GeoNodeStatus, feature_category: :geo_replicat
   describe '#replication_slots_used_in_percentage' do
     it 'formats as percentage' do
       geo_node_status.assign_attributes(replication_slots_count: 4,
-                                        replication_slots_used_count: 2)
+        replication_slots_used_count: 2)
 
       expect(subject[:replication_slots_used_in_percentage]).to eq '50.00%'
     end

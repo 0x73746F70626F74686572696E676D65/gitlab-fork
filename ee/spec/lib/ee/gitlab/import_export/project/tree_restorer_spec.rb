@@ -22,11 +22,11 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer, feature_category: :i
         group = create(:group, :private)
         group.add_maintainer(user)
         create(:project,
-               :builds_disabled,
-               :issues_disabled,
-               name: 'project',
-               path: 'project',
-               group: group)
+          :builds_disabled,
+          :issues_disabled,
+          name: 'project',
+          path: 'project',
+          group: group)
       end
 
       let(:issue) { project.issues.find_by_title('Issue with Epic') }
@@ -87,11 +87,11 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer, feature_category: :i
     context 'with personal namespace' do
       let_it_be(:project) do
         create(:project,
-               :builds_disabled,
-               :issues_disabled,
-               name: 'project',
-               path: 'project',
-               namespace: user.namespace)
+          :builds_disabled,
+          :issues_disabled,
+          name: 'project',
+          path: 'project',
+          namespace: user.namespace)
       end
 
       it 'ignores epic relation' do
@@ -108,7 +108,7 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer, feature_category: :i
     let_it_be(:second_user) { create(:user, email: 'user_2@gitlabexample.com') }
     let_it_be(:project) do
       create(:project, :builds_disabled, :issues_disabled,
-             { name: 'project', path: 'project' })
+        { name: 'project', path: 'project' })
     end
 
     before do
