@@ -84,7 +84,7 @@ module EE
         # requests in a single API request.
         expose :subscribed,
           documentation: { type: "boolean", example: true },
-          if: -> (_, options) { options.fetch(:include_subscribed, false) } do |epic, options|
+          if: ->(_, options) { options.fetch(:include_subscribed, false) } do |epic, options|
             user = options[:user]
 
             user.present? ? epic.subscribed?(user) : false

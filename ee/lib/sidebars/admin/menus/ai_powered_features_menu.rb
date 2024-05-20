@@ -40,7 +40,7 @@ module Sidebars
         end
 
         def self_hosted_models_menu_item
-          return unless Feature.enabled?(:ai_custom_model)  # rubocop:disable Gitlab/FeatureFlagWithoutActor -- The feature flag is global
+          return unless Feature.enabled?(:ai_custom_model) # rubocop:disable Gitlab/FeatureFlagWithoutActor -- The feature flag is global
 
           ::Sidebars::MenuItem.new(
             title: _('Models'),

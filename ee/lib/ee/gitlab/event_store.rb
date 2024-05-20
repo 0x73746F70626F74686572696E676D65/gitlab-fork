@@ -26,7 +26,7 @@ module EE
           store.subscribe ::Security::Scans::PurgeByJobIdWorker, to: ::Ci::JobArtifactsDeletedEvent
           store.subscribe ::Geo::CreateRepositoryUpdatedEventWorker,
             to: ::Repositories::KeepAroundRefsCreatedEvent,
-            if: -> (_) { ::Gitlab::Geo.primary? }
+            if: ->(_) { ::Gitlab::Geo.primary? }
           store.subscribe ::MergeRequests::StreamApprovalAuditEventWorker, to: ::MergeRequests::ApprovedEvent
           store.subscribe ::MergeRequests::CreateApprovalsResetNoteWorker, to: ::MergeRequests::ApprovalsResetEvent
           store.subscribe ::PullMirrors::ReenableConfigurationWorker, to: ::GitlabSubscriptions::RenewedEvent
@@ -37,7 +37,7 @@ module EE
           store.subscribe ::MergeRequests::ProcessAutoMergeFromEventWorker, to: ::MergeRequests::DraftStateChangeEvent
           store.subscribe ::Search::ElasticDefaultBranchChangedWorker,
             to: ::Repositories::DefaultBranchChangedEvent,
-            if: -> (_) { ::Gitlab::CurrentSettings.elasticsearch_indexing? }
+            if: ->(_) { ::Gitlab::CurrentSettings.elasticsearch_indexing? }
           store.subscribe ::Search::Zoekt::DefaultBranchChangedWorker, to: ::Repositories::DefaultBranchChangedEvent
           store.subscribe ::PackageMetadata::GlobalAdvisoryScanWorker, to: ::PackageMetadata::IngestedAdvisoryEvent
           store.subscribe ::Llm::NamespaceAccessCacheResetWorker, to: ::NamespaceSettings::AiRelatedSettingsChangedEvent

@@ -80,7 +80,7 @@ module EE
         def perform
           not_parent = 'NOT EXISTS (SELECT 1 FROM epics e WHERE e.parent_id = epics.id)'
           each_sub_batch(
-            batching_scope: -> (relation) { relation.where(not_parent) }
+            batching_scope: ->(relation) { relation.where(not_parent) }
           ) do |batch|
             update_epics(batch, level: 1)
           end
