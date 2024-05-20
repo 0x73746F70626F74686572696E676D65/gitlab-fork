@@ -50,7 +50,11 @@ disable the automated scheduling to
 Similar to membership, iterations cascade down your group, subgroup, and project hierarchy. If your team has multiple groups and projects, create the iteration cadence in the top-most shared group:
 
 ```mermaid
+%%{init: { "fontFamily": "GitLab Sans" }}%%
 graph TD
+    accTitle: Iteration cadence
+    accDescr: Identify the group you should create an iteration cadence in
+
     Group --> SubgroupA --> Project1
     Group --> SubgroupB --> Project2
     Group --> IterationCadence
