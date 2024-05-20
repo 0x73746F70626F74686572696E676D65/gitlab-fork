@@ -3,6 +3,7 @@
 module Groups
   class DependenciesController < Groups::ApplicationController
     include GovernUsageGroupTracking
+    include Gitlab::Utils::StrongMemoize
 
     before_action only: :index do
       push_frontend_feature_flag(:group_level_dependencies_filtering_by_component, group)
@@ -27,7 +28,6 @@ module Groups
           render status: :ok
         end
         format.json do
-          dependencies = dependencies_finder.execute.with_component.with_version.with_source.with_project_route
           render json: dependencies_serializer.represent(dependencies)
         end
       end
@@ -72,8 +72,18 @@ module Groups
       )
     end
 
-    def dependencies_finder
-      ::Sbom::DependenciesFinder.new(group, params: dependencies_finder_params)
+    def dependencies
+      if using_new_query?
+        ::DependencyManagement::AggregationsFinder.new(group, params: dependencies_finder_params).execute
+          .with_component
+          .with_version
+      else
+        ::Sbom::DependenciesFinder.new(group, params: dependencies_finder_params).execute
+          .with_component
+          .with_version
+          .with_source
+          .with_project_route
+      end
     end
 
     def dependencies_finder_params
@@ -125,5 +135,10 @@ module Groups
     def below_group_limit?
       group.count_within_namespaces <= GROUP_COUNT_LIMIT
     end
+
+    def using_new_query?
+      ::Feature.enabled?(:rewrite_sbom_occurrences_query, group)
+    end
+    strong_memoize_attr :using_new_query?
   end
 end

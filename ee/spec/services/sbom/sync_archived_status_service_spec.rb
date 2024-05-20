@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Sbom::SyncArchivedStatusService, feature_category: :dependency_management do
   let_it_be(:project) { create(:project, :archived) }
-  let_it_be(:sbom_occurrence) { create(:sbom_occurrence, project: project) }
-  let_it_be(:sbom_occurrence_2) { create(:sbom_occurrence, project: project) }
+  let_it_be(:sbom_occurrence) { create(:sbom_occurrence, archived: false, project: project) }
+  let_it_be(:sbom_occurrence_2) { create(:sbom_occurrence, archived: false, project: project) }
 
   let(:project_id) { project.id }
 
@@ -13,6 +13,7 @@ RSpec.describe Sbom::SyncArchivedStatusService, feature_category: :dependency_ma
 
   it 'updates sbom_occurrences.archived' do
     expect { sync }.to change { sbom_occurrence.reload.archived }.from(false).to(true)
+      .and change { sbom_occurrence_2.reload.archived }.from(false).to(true)
   end
 
   context 'when project does not exist with id' do
