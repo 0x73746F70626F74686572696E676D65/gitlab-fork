@@ -57,6 +57,10 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
     page.driver.browser.action.move_to(page.find(path).native).perform
   end
 
+  def group_vsd_link(target_group)
+    "#{group_analytics_dashboards_path(target_group)}/value_streams_dashboard"
+  end
+
   before do
     stub_licensed_features(cycle_analytics_for_groups: true, type_of_work_analytics: true, dora4_analytics: true, group_level_analytics_dashboard: true)
 
@@ -186,7 +190,8 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       it 'renders a link to the group dashboard' do
         expect(page).to have_selector(vsd_link_selector)
 
-        expected_url = value_streams_dashboard_group_analytics_dashboards_path(target_group)
+        expected_url = group_vsd_link(target_group)
+
         expect(page.find(vsd_link_selector)).to have_link("Value Streams Dashboard | DORA", href: expected_url)
       end
     end

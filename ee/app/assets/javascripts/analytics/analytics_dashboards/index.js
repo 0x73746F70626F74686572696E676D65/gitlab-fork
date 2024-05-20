@@ -41,7 +41,6 @@ export default () => {
     analyticsSettingsPath,
     routerBase,
     features,
-    availableVisualizations = '',
     rootNamespaceName,
     rootNamespaceFullPath,
     dataSourceClickhouse,
@@ -54,17 +53,6 @@ export default () => {
   } = el.dataset;
 
   const analyticsDashboardPointer = buildAnalyticsDashboardPointer(analyticsDashboardPointerJSON);
-
-  // We need the raw visualization information to augment the YAML configured dashboards
-  // with the change in https://gitlab.com/gitlab-org/gitlab/-/issues/423427, we will be removing
-  // the DORAChart from the graphql API, so until that is re-instated we should simply
-  // hydrate this app with the visualization configuration from the backend.
-  // Currently only include DORAChart, but will also include DORAPerformersScore (when its ready)
-  // TODO: Remove the `availableVisualizations` property once we resolve https://gitlab.com/gitlab-org/gitlab/-/issues/414494
-  //       and are able to return the VSD visualizations from the graphql endpoint
-  const vsdAvailableVisualizations = availableVisualizations
-    ? JSON.parse(availableVisualizations)
-    : [];
 
   Vue.use(VueApollo);
 
@@ -126,7 +114,6 @@ export default () => {
       analyticsSettingsPath,
       dashboardsPath: router.resolve('/').href,
       features: convertArrayToCamelCase(JSON.parse(features)),
-      vsdAvailableVisualizations,
       rootNamespaceName,
       rootNamespaceFullPath,
       dataSourceClickhouse: parseBoolean(dataSourceClickhouse),

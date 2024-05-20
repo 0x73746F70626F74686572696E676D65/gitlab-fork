@@ -16,40 +16,12 @@ module Groups
         push_frontend_feature_flag(:ai_impact_analytics_dashboard, @group)
         push_frontend_feature_flag(:enable_vsd_visual_editor, @group)
 
-        load_visualizations
-
         @data_source_clickhouse = ::Gitlab::ClickHouse.enabled_for_analytics?(@group)
       end
 
       layout 'group'
 
-      VALUE_STREAM_VISUALIZATIONS_PATH = 'ee/lib/gitlab/analytics/value_stream_dashboard/visualizations/'
-
-      def value_streams_dashboard
-        respond_to do |format|
-          format.html do
-            track_value_streams_event
-
-            render :index
-          end
-        end
-      end
-
       private
-
-      # TODO: we might be able to remove these load methods now and rely on the graphql queries
-      def load_visualizations
-        @available_visualizations = [load_yaml_dashboard_config(VALUE_STREAM_VISUALIZATIONS_PATH, "dora_chart.yaml")]
-      end
-
-      def load_yaml_dashboard_config(path, file)
-        visualizations = YAML.safe_load(
-          File.read(Rails.root.join(path, file))
-        )
-
-        visualizations[:slug] = file.gsub(".yaml", "")
-        visualizations
-      end
 
       def tracking_namespace_source
         @group

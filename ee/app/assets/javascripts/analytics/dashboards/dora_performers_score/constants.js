@@ -73,8 +73,6 @@ export const DORA_PERFORMERS_SCORE_METRICS = [
   },
 ];
 
-export const DORA_PERFORMERS_SCORE_DEFAULT_PANEL_TITLE = s__('DORA4Metrics|DORA performers score');
-
 export const DORA_PERFORMERS_SCORE_PANEL_TITLE_WITH_PROJECTS_COUNT = s__(
   'DORA4Metrics|Total projects (%{count}) with DORA metrics',
 );
@@ -87,10 +85,6 @@ export const DORA_PERFORMERS_SCORE_NOT_INCLUDED = (count) =>
 
 export const DORA_PERFORMERS_SCORE_LOADING_ERROR = s__(
   'DORA4Metrics|Failed to load DORA performance scores for Group: %{fullPath}',
-);
-
-export const DORA_PERFORMERS_SCORE_GROUP_ERROR = s__(
-  'DORA4Metrics|Failed to load Group: %{fullPath}',
 );
 
 export const DORA_PERFORMERS_SCORE_PROJECT_ERROR = s__(

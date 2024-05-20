@@ -1,15 +1,3 @@
-import { createAlert } from '~/alert';
-import { __ } from '~/locale';
+import initApp from 'ee/analytics/analytics_dashboards';
 
-try {
-  (async () => {
-    const { default: initApp } = await import('ee/analytics/analytics_dashboards');
-    return initApp();
-  })();
-} catch (error) {
-  createAlert({
-    message: __('An error occurred. Please try again.'),
-    captureError: true,
-    error,
-  });
-}
+initApp();

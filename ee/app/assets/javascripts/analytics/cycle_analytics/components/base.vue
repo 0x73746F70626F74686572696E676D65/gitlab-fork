@@ -81,7 +81,6 @@ export default {
       'namespacePath',
       'activeStages',
       'selectedProjectIds',
-      'selectedProjectFullPaths',
       'cycleAnalyticsRequestParams',
       'pathNavigationData',
       'isOverviewStageSelected',
@@ -155,11 +154,7 @@ export default {
     dashboardsPath() {
       if (this.showDashboardsLink) {
         const namespacePath = this.enableProjectsFilter ? this.namespacePath : this.groupPath;
-        const projectsQuery = this.enableProjectsFilter
-          ? this.selectedProjectFullPaths
-          : [this.namespacePath];
-
-        return generateValueStreamsDashboardLink(namespacePath, projectsQuery);
+        return generateValueStreamsDashboardLink(namespacePath);
       }
       return null;
     },

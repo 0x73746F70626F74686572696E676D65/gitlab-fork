@@ -5813,9 +5813,6 @@ msgstr ""
 msgid "Analytics|Custom events"
 msgstr ""
 
-msgid "Analytics|DORA performers score for %{namespaceName} group"
-msgstr ""
-
 msgid "Analytics|Dashboard description"
 msgstr ""
 
@@ -16115,9 +16112,6 @@ msgstr ""
 msgid "DORA4Metrics|Cycle time"
 msgstr ""
 
-msgid "DORA4Metrics|DORA performers score"
-msgstr ""
-
 msgid "DORA4Metrics|Date"
 msgstr ""
 
@@ -16137,15 +16131,6 @@ msgid "DORA4Metrics|Failed to generate forecast. Try again later. If the problem
 msgstr ""
 
 msgid "DORA4Metrics|Failed to load DORA performance scores for Group: %{fullPath}"
-msgstr ""
-
-msgid "DORA4Metrics|Failed to load Group: %{fullPath}"
-msgstr ""
-
-msgid "DORA4Metrics|Failed to load YAML config from Project: %{fullPath}"
-msgstr ""
-
-msgid "DORA4Metrics|Failed to load comparison chart for Namespace: %{fullPath}"
 msgstr ""
 
 msgid "DORA4Metrics|Failed to load labels matching the filter: %{labels}"
@@ -16231,12 +16216,6 @@ msgstr ""
 msgid "DORA4Metrics|Metrics comparison for %{name}"
 msgstr ""
 
-msgid "DORA4Metrics|Metrics comparison for %{name} group"
-msgstr ""
-
-msgid "DORA4Metrics|Metrics comparison for %{name} project"
-msgstr ""
-
 msgid "DORA4Metrics|Month to date"
 msgstr ""
 
@@ -16283,9 +16262,6 @@ msgid "DORA4Metrics|Something went wrong while getting lead time data."
 msgstr ""
 
 msgid "DORA4Metrics|Something went wrong while getting time to restore service data."
-msgstr ""
-
-msgid "DORA4Metrics|The Value Streams Dashboard allows all stakeholders from executives to individual contributors to identify trends, patterns, and opportunities for software development improvements."
 msgstr ""
 
 msgid "DORA4Metrics|The chart displays the frequency of deployments to production environment(s) that are based on the %{linkStart}deployment_tier%{linkEnd} value."
@@ -16343,9 +16319,6 @@ msgid "DORA4Metrics|Took more than 7 days to restore service when a service inci
 msgstr ""
 
 msgid "DORA4Metrics|Total projects (%{count}) with DORA metrics"
-msgstr ""
-
-msgid "DORA4Metrics|Value Streams Dashboard"
 msgstr ""
 
 msgid "DSN"

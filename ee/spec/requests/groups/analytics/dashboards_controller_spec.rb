@@ -20,48 +20,6 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
     end
   end
 
-  shared_examples 'built in value streams dashboard' do
-    it 'accepts a `query` params' do
-      project = projects.first
-
-      get build_dashboard_path(
-        value_streams_dashboard_group_analytics_dashboards_path(group),
-        [another_group, subgroup, project]
-      )
-
-      expect(response).to be_successful
-
-      expect(response.body.include?("data-namespaces")).to be_truthy
-      expect(response.body).not_to include(parsed_response(another_group, false))
-      expect(response.body).to include(parsed_response(subgroup, false))
-      expect(response.body).to include(parsed_response(project))
-    end
-
-    it 'returns projects in a subgroup' do
-      first_parent_project = projects.first
-      params = [].concat(subgroup_projects, [subgroup], [first_parent_project])
-
-      get build_dashboard_path(value_streams_dashboard_group_analytics_dashboards_path(group), params)
-
-      expect(response).to be_successful
-      expect(response.body).to include(parsed_response(subgroup, false))
-      expect(response.body).to include(parsed_response(first_parent_project))
-
-      subgroup_projects.each do |project|
-        expect(response.body).to include(parsed_response(project))
-      end
-    end
-
-    def parsed_response(namespace, is_project = true)
-      json = { name: namespace.name, full_path: namespace.full_path, is_project: is_project }.to_json
-      HTMLEntities.new.encode(json)
-    end
-
-    def build_dashboard_path(path, namespaces)
-      "#{path}?query=#{namespaces.map(&:full_path).join(',')}"
-    end
-  end
-
   shared_examples 'shared analytics value streams dashboard' do
     it 'passes pointer_project if it has been configured' do
       analytics_dashboards_pointer
@@ -75,13 +33,6 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
         name: analytics_dashboards_pointer.target_project.name,
         default_branch: analytics_dashboards_pointer.target_project.default_branch
       }.to_json)
-    end
-
-    it 'loads the available visualizations' do
-      request
-
-      expect(response).to be_successful
-      expect(js_list_app_attributes).to include('data-available-visualizations')
     end
 
     it 'passes data_source_clickhouse to data attributes' do
@@ -207,7 +158,7 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
   end
 
   describe 'GET value_streams_dashboard' do
-    let(:request) { get(value_streams_dashboard_group_analytics_dashboards_path(group)) }
+    let(:request) { get(build_dashboard_path(group)) }
 
     context 'when user is not logged in' do
       before do
@@ -270,42 +221,11 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :group
     end
   end
 
-  def js_app_attributes
-    Nokogiri::HTML.parse(response.body).at_css('div#js-analytics-dashboards-app').attributes
-  end
-
   def js_list_app_attributes
     Nokogiri::HTML.parse(response.body).at_css('div#js-analytics-dashboards-list-app').attributes
   end
-end
 
-RSpec.describe Groups::Analytics::DashboardsController, type: :controller, feature_category: :product_analytics_data_management do
-  let_it_be(:group) { create(:group) }
-  let_it_be(:user) do
-    create(:user).tap do |user|
-      group.add_reporter(user)
-    end
-  end
-
-  before do
-    stub_licensed_features(group_level_analytics_dashboard: true)
-
-    sign_in(user)
-  end
-
-  it_behaves_like 'tracking unique visits', :value_streams_dashboard do
-    let(:request_params) { { group_id: group.to_param } }
-    let(:target_id) { 'g_metrics_comparison_page' }
-  end
-
-  it_behaves_like 'Snowplow event tracking with RedisHLL context' do
-    subject { get :value_streams_dashboard, params: { group_id: group.to_param }, format: :html }
-
-    let(:category) { described_class.name }
-    let(:action) { 'perform_analytics_usage_action' }
-    let(:label) { 'redis_hll_counters.analytics.g_metrics_comparison_page_monthly' }
-    let(:property) { 'g_metrics_comparison_page' }
-    let(:namespace) { group }
-    let(:project) { nil }
+  def build_dashboard_path(namespace)
+    "#{group_analytics_dashboards_path(namespace)}/value_streams_dashboard"
   end
 end
