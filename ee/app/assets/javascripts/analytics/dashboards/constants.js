@@ -129,21 +129,9 @@ export const METRICS_WITHOUT_LABEL_FILTERING = Object.keys(TABLE_METRICS).filter
   (metric) => !METRICS_WITH_LABEL_FILTERING.includes(metric),
 );
 
-export const DASHBOARD_TITLE = s__('DORA4Metrics|Value Streams Dashboard');
-export const DASHBOARD_DESCRIPTION = s__(
-  'DORA4Metrics|The Value Streams Dashboard allows all stakeholders from executives to individual contributors to identify trends, patterns, and opportunities for software development improvements.',
-);
 export const DASHBOARD_SURVEY_LINK =
   'https://gitlab.fra1.qualtrics.com/jfe/form/SV_50guMGNU2HhLeT4';
-export const DASHBOARD_DOCS_LINK = helpPagePath('user/analytics/value_streams_dashboard');
-export const DASHBOARD_DESCRIPTION_GROUP = s__('DORA4Metrics|Metrics comparison for %{name} group');
-export const DASHBOARD_DESCRIPTION_PROJECT = s__(
-  'DORA4Metrics|Metrics comparison for %{name} project',
-);
 export const DASHBOARD_LOADING_FAILURE = s__('DORA4Metrics|Some metric comparisons failed to load');
-export const DASHBOARD_NAMESPACE_LOAD_ERROR = s__(
-  'DORA4Metrics|Failed to load comparison chart for Namespace: %{fullPath}',
-);
 export const DASHBOARD_LABELS_LOAD_ERROR = s__(
   'DORA4Metrics|Failed to load labels matching the filter: %{labels}',
 );
@@ -158,11 +146,6 @@ export const CHART_TOOLTIP_UNITS = {
   [UNITS.PER_DAY]: __('/day'),
   [UNITS.PERCENT]: '%',
 };
-
-export const YAML_CONFIG_PATH = '.gitlab/analytics/dashboards/value_streams/value_streams.yaml';
-export const YAML_CONFIG_LOAD_ERROR = s__(
-  'DORA4Metrics|Failed to load YAML config from Project: %{fullPath}',
-);
 
 export const ALERT_TEXT = s__(
   'DORA4Metrics|To help us improve the Value Stream Management Dashboard, please share feedback about your experience in this %{linkStart}survey%{linkEnd}.',

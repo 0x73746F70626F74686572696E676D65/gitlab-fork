@@ -27,18 +27,4 @@ RSpec.describe 'groups/analytics/dashboards/index',
     expect(rendered).to have_selector('#js-analytics-dashboards-list-app')
     expect(rendered).to have_css("[data-namespace-full-path='#{group.full_path}']")
   end
-
-  context 'with available_visualizations set' do
-    let_it_be(:available_visualizations) { [{ name: project.name, full_path: project.full_path, is_project: true }] }
-
-    before do
-      assign(:available_visualizations, [{ version: 1, type: "DORAChart", data: {} }])
-    end
-
-    it 'sets the namespaces key' do
-      render
-
-      expect(rendered).to have_css("[data-available-visualizations]")
-    end
-  end
 end

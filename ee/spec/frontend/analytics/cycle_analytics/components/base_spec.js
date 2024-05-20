@@ -603,22 +603,6 @@ describe('EE Value Stream Analytics component', () => {
         '/groups/foo/-/analytics/dashboards/value_streams_dashboard',
       );
     });
-
-    it('renders the value streams dashboard with selected projects as a query parameter', async () => {
-      wrapper = await createComponent({
-        withStageSelected: true,
-        features: { groupLevelAnalyticsDashboard: true },
-        initialState: {
-          ...initialCycleAnalyticsState,
-          selectedProjects,
-          enableVsdLink: true,
-        },
-      });
-
-      expect(findOverviewMetrics().props('dashboardsPath')).toContain(
-        '?query=group/cool-project,group/another-cool-project',
-      );
-    });
   });
 
   describe('with `enableTasksByTypeChart=false`', () => {
@@ -710,9 +694,11 @@ describe('EE Value Stream Analytics component', () => {
       mock.restore();
     });
 
+    // NOTE: current behaviour is still to point to the group VSD
+    // we should resolve this with https://gitlab.com/gitlab-org/gitlab/-/issues/454206
     it('renders a link to the value streams dashboard', () => {
       expect(findOverviewMetrics().props('dashboardsPath')).toBe(
-        '/groups/foo/-/analytics/dashboards/value_streams_dashboard?query=some/cool/path',
+        '/groups/foo/-/analytics/dashboards/value_streams_dashboard',
       );
     });
   });

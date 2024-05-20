@@ -1,4 +1,4 @@
 - page_title s_('Analytics|Analytics dashboards')
 - breadcrumb_title s_("Analytics|Analytics dashboards")
 
-#js-analytics-dashboards-list-app{ data: analytics_dashboards_list_app_data(@group).merge({ available_visualizations: @available_visualizations&.to_json, data_source_clickhouse: @data_source_clickhouse.to_s, topics_explore_projects_path: topics_explore_projects_path }) }
+#js-analytics-dashboards-list-app{ data: analytics_dashboards_list_app_data(@group).merge({ data_source_clickhouse: @data_source_clickhouse.to_s, topics_explore_projects_path: topics_explore_projects_path }) }

@@ -27,9 +27,6 @@ export const currentValueStreamId = ({ selectedValueStream }) =>
 export const selectedProjectIds = ({ selectedProjects }) =>
   selectedProjects?.map(({ id }) => getIdFromGraphQLId(id)) || [];
 
-export const selectedProjectFullPaths = ({ selectedProjects }) =>
-  selectedProjects?.map(({ fullPath }) => fullPath) || [];
-
 export const cycleAnalyticsRequestParams = (state, getters) => {
   const {
     createdAfter = null,
