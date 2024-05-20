@@ -31,59 +31,61 @@ RSpec.shared_examples 'security findings finder' do
     }
   end
 
-  describe '#execute' do
-    context 'when the pipeline does not have security findings' do
+  context 'when the pipeline does not have security findings' do
+    describe '#execute' do
       subject { service_object.execute }
 
       it { is_expected.to be_empty }
     end
+  end
 
-    context 'when the pipeline has security findings' do
+  shared_examples 'when the pipeline has security findings' do
+    before_all do
+      ds_content = File.read(artifact_ds.file.path)
+      Gitlab::Ci::Parsers::Security::DependencyScanning.parse!(ds_content, report_ds)
+      report_ds.merge!(report_ds)
+      sast_content = File.read(artifact_sast.file.path)
+      Gitlab::Ci::Parsers::Security::Sast.parse!(sast_content, report_sast)
+      report_sast.merge!(report_sast)
+
+      findings = { artifact_ds => report_ds, artifact_sast => report_sast }.collect do |artifact, report|
+        scan = create(:security_scan, :latest_successful, scan_type: artifact.job.name, build: artifact.job)
+        scanner_external_id = report.scanners.each_value.first.external_id
+        scanner = create(:vulnerabilities_scanner, project: pipeline.project, external_id: scanner_external_id)
+
+        report.findings.collect do |finding, index|
+          create(
+            :security_finding,
+            severity: finding.severity,
+            confidence: finding.confidence,
+            uuid: finding.uuid,
+            deduplicated: true,
+            scan: scan,
+            scanner: scanner
+          )
+        end
+      end.flatten
+
+      findings.second.update!(deduplicated: false)
+
+      create(
+        :vulnerability_feedback,
+        :dismissal,
+        project: pipeline.project,
+        category: :dependency_scanning,
+        finding_uuid: findings.first.uuid
+      )
+
+      vulnerability_finding = create(:vulnerabilities_finding, uuid: findings.second.uuid)
+
+      vulnerability = create(:vulnerability, findings: [vulnerability_finding])
+      create(:vulnerability_state_transition, vulnerability: vulnerability)
+      create(:vulnerabilities_issue_link, vulnerability: vulnerability)
+      create(:vulnerabilities_merge_request_link, vulnerability: vulnerability)
+    end
+
+    describe '#execute' do
       let(:finder_result) { service_object.execute }
-
-      before(:all) do
-        ds_content = File.read(artifact_ds.file.path)
-        Gitlab::Ci::Parsers::Security::DependencyScanning.parse!(ds_content, report_ds)
-        report_ds.merge!(report_ds)
-        sast_content = File.read(artifact_sast.file.path)
-        Gitlab::Ci::Parsers::Security::Sast.parse!(sast_content, report_sast)
-        report_sast.merge!(report_sast)
-
-        findings = { artifact_ds => report_ds, artifact_sast => report_sast }.collect do |artifact, report|
-          scan = create(:security_scan, :latest_successful, scan_type: artifact.job.name, build: artifact.job)
-          scanner_external_id = report.scanners.each_value.first.external_id
-          scanner = create(:vulnerabilities_scanner, project: pipeline.project, external_id: scanner_external_id)
-
-          report.findings.collect do |finding, index|
-            create(
-              :security_finding,
-              severity: finding.severity,
-              confidence: finding.confidence,
-              uuid: finding.uuid,
-              deduplicated: true,
-              scan: scan,
-              scanner: scanner
-            )
-          end
-        end.flatten
-
-        findings.second.update!(deduplicated: false)
-
-        create(
-          :vulnerability_feedback,
-          :dismissal,
-          project: pipeline.project,
-          category: :dependency_scanning,
-          finding_uuid: findings.first.uuid
-        )
-
-        vulnerability_finding = create(:vulnerabilities_finding, uuid: findings.second.uuid)
-
-        vulnerability = create(:vulnerability, findings: [vulnerability_finding])
-        create(:vulnerability_state_transition, vulnerability: vulnerability)
-        create(:vulnerabilities_issue_link, vulnerability: vulnerability)
-        create(:vulnerabilities_merge_request_link, vulnerability: vulnerability)
-      end
 
       before do
         stub_licensed_features(sast: true, dependency_scanning: true)
