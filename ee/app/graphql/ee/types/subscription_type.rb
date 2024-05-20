@@ -6,8 +6,13 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
+        def self.authorization_scopes
+          [:api, :read_api, :ai_features]
+        end
+
         field :ai_completion_response,
           subscription: ::Subscriptions::AiCompletionResponse, null: true,
+          scopes: [:api, :read_api, :ai_features],
           description: 'Triggered when a response from AI integration is received.',
           alpha: { milestone: '15.11' }
 

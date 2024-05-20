@@ -7,12 +7,18 @@ module Types
       graphql_name 'AiMessageExtras'
       description "Extra metadata for AI message."
 
+      def self.authorization_scopes
+        [:api, :read_api, :ai_features]
+      end
+
       field :sources, [GraphQL::Types::JSON],
         null: true,
+        scopes: [:api, :read_api, :ai_features],
         description: "Sources used to form the message."
 
       field :has_feedback, GraphQL::Types::Boolean,
         null: true,
+        scopes: [:api, :read_api, :ai_features],
         description: "Whether the user has provided feedback for the mesage."
     end
     # rubocop: enable Graphql/AuthorizeTypes
