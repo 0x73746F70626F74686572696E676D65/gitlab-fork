@@ -32,7 +32,7 @@ DETAILS:
 - Helps you write code more efficiently by showing code suggestions as you type.
 - Large language model (LLM) for code completion: Vertex AI Codey [`code-gecko`](https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/code-completion)
 - LLM for code generation: Anthropic [`claude-3-sonnet-20240229`](https://docs.anthropic.com/claude/docs/models-overview)
-- <i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=hCAyCTacdAQ)
+- <i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://youtu.be/ds7SG1wgcVM)
 - [View documentation](project/repository/code_suggestions/index.md).
 
 ### GitLab Duo Chat
@@ -98,7 +98,7 @@ DETAILS:
 
 - Helps you remediate vulnerabilities more efficiently, boost your skills, and write more secure code.
 - LLM: Vertex AI Codey [`text-bison`](https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/text). If degraded performance, then Anthropic [`Claude-2.1`](https://docs.anthropic.com/claude/docs/models-overview#model-comparison).
-- <i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://www.youtube.com/watch?v=6sDf73QOav8)
+- <i class="fa fa-youtube-play youtube" aria-hidden="true"></i> [Watch overview](https://youtu.be/ctD_qcVpIJY)
 - [View documentation](application_security/vulnerabilities/index.md#explaining-a-vulnerability).
 
 ## Experimental features
