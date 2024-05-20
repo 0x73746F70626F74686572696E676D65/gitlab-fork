@@ -36,7 +36,7 @@ module QA
         end
       end
 
-      context 'when only one user is allowed to merge and push to a protected branch' do
+      context 'when only one user is allowed to merge and push to a protected branch', :blocking do
         let(:project) { create(:project, :with_readme, name: 'user-with-access-to-protected-branch') }
 
         before do
