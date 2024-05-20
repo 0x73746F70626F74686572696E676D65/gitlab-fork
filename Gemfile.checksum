@@ -21,7 +21,7 @@
 {"name":"aliyun-sdk","version":"0.8.0","platform":"ruby","checksum":"65915d3f9b528082253d1f9ad0e4d13d6b552933fe49251c68c6915cd4d75b9d"},
 {"name":"amatch","version":"0.4.1","platform":"ruby","checksum":"d3ff15226a2e627c72802e94579db829e5e10c96cf89d329494caec5889145f7"},
 {"name":"android_key_attestation","version":"0.3.0","platform":"ruby","checksum":"467eb01a99d2bb48ef9cf24cc13712669d7056cba5a52d009554ff037560570b"},
-{"name":"apollo_upload_server","version":"2.1.5","platform":"ruby","checksum":"0f66bea96bdf7ce8b7278712ebafc8a26b82864ea6541213b58d9b3f673413a5"},
+{"name":"apollo_upload_server","version":"2.1.6","platform":"ruby","checksum":"dcec4072258e6518b0b82e03b485efbddde946813543c14184fc81952d6bcdb2"},
 {"name":"app_store_connect","version":"0.29.0","platform":"ruby","checksum":"01d7a923825a4221892099acb5a72f86f6ee7d8aa95815d3c459ba6816ea430f"},
 {"name":"arr-pm","version":"0.0.12","platform":"ruby","checksum":"fdff482f75239239201f4d667d93424412639aad0b3b0ad4d827e7c637e0ad39"},
 {"name":"asciidoctor","version":"2.0.18","platform":"ruby","checksum":"bbd1e1d16deed8db94bf9624b9f4474fac32d9ca7225d377f076c08d9adde387"},
