@@ -3726,214 +3726,70 @@ RSpec.describe User, feature_category: :system_access do
           stub_feature_flags(duo_chat_requires_licensed_seat: false)
         end
 
-        context 'when GA feature flag is disabled' do
-          before do
-            stub_feature_flags(duo_chat_ga: false)
-          end
+        it { is_expected.to eq(result) }
 
-          context 'when ai features are enabled' do
-            include_context 'with ai features enabled for group'
+        it 'caches the result' do
+          group_with_ai_chat_enabled
 
-            it { is_expected.to eq(result) }
-
-            it 'caches the result' do
-              group_with_ai_chat_enabled
-
-              expect(Rails.cache.fetch(['users', user.id, 'group_with_ai_chat_enabled'])).to eq(result)
-            end
-          end
-
-          context 'when ai features are not enabled' do
-            it { is_expected.to eq(false) }
-          end
-        end
-
-        context 'when ga feature flag is enabled' do
-          before do
-            stub_feature_flags(duo_chat_ga: true)
-          end
-
-          it { is_expected.to eq(result) }
-
-          it 'caches the result' do
-            group_with_ai_chat_enabled
-
-            expect(Rails.cache.fetch(['users', user.id, 'group_with_ai_chat_enabled'])).to eq(result)
-          end
+          expect(Rails.cache.fetch(['users', user.id, 'group_with_ai_chat_enabled'])).to eq(result)
         end
       end
     end
 
     context 'when member of a sub-group only' do
-      context 'when ga feature flag is disabled' do
+      context 'with eligible group' do
+        let(:group) { ultimate_group }
+
         before do
-          stub_feature_flags(duo_chat_ga: false)
+          ultimate_sub_group.add_guest(user)
         end
 
-        context 'with eligible group' do
-          include_context 'with ai features enabled for group'
-
-          context 'with eligible ultimate group' do
-            let(:group) { ultimate_group }
-
-            before do
-              ultimate_sub_group.add_guest(user)
-            end
-
-            it { is_expected.to eq(true) }
-          end
-
-          context 'with eligible group on premium' do
-            let(:group) { premium_group }
-
-            before do
-              premium_sub_group.add_guest(user)
-            end
-
-            it { is_expected.to eq(true) }
-          end
-        end
-
-        context 'with not eligible group' do
-          let(:group) { free_group }
-
-          before do
-            free_sub_group.add_guest(user)
-          end
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'with not eligible group on premium' do
-          let(:group) { premium_group }
-
-          before do
-            premium_sub_group.add_guest(user)
-          end
-
-          it { is_expected.to eq(false) }
-        end
+        it { is_expected.to eq(true) }
       end
 
-      context 'when ga feature flag is enabled' do
+      context 'with not eligible group' do
+        let(:group) { free_group }
+
         before do
-          stub_feature_flags(duo_chat_ga: true)
+          free_sub_group.add_guest(user)
         end
 
-        context 'with eligible group' do
-          let(:group) { ultimate_group }
-
-          before do
-            ultimate_sub_group.add_guest(user)
-          end
-
-          it { is_expected.to eq(true) }
-        end
-
-        context 'with not eligible group' do
-          let(:group) { free_group }
-
-          before do
-            free_sub_group.add_guest(user)
-          end
-
-          it { is_expected.to eq(false) }
-        end
+        it { is_expected.to eq(false) }
       end
     end
 
     context 'when member of a project only' do
-      context 'when ga feature flag is disabled' do
+      context 'with eligible group' do
+        let(:group) { ultimate_group }
+        let_it_be(:project) { create(:project, group: ultimate_group) }
+
         before do
-          stub_feature_flags(duo_chat_ga: false)
+          project.add_guest(user)
         end
 
-        context 'with eligible group' do
-          include_context 'with ai features enabled for group'
-
-          let(:group) { ultimate_group }
-          let_it_be(:project) { create(:project, group: ultimate_group) }
-
-          before do
-            project.add_guest(user)
-          end
-
-          it { is_expected.to eq(true) }
-        end
-
-        context 'with eligible premium group' do
-          include_context 'with ai features enabled for group'
-
-          let(:group) { premium_group }
-          let_it_be(:project) { create(:project, group: premium_group) }
-
-          before do
-            project.add_guest(user)
-          end
-
-          it { is_expected.to eq(true) }
-        end
-
-        context 'with non-eligible premium group' do
-          let(:group) { premium_group }
-          let_it_be(:project) { create(:project, group: premium_group) }
-
-          before do
-            project.add_guest(user)
-          end
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'with not eligible group' do
-          let(:group) { free_group }
-          let_it_be(:project) { create(:project, group: free_group) }
-
-          before do
-            project.add_guest(user)
-          end
-
-          it { is_expected.to eq(false) }
-        end
+        it { is_expected.to eq(true) }
       end
 
-      context 'when ga feature flag is enabled' do
+      context 'with eligible premium group' do
+        let(:group) { premium_group }
+        let_it_be(:project) { create(:project, group: premium_group) }
+
         before do
-          stub_feature_flags(duo_chat_ga: true)
+          project.add_guest(user)
         end
 
-        context 'with eligible group' do
-          let(:group) { ultimate_group }
-          let_it_be(:project) { create(:project, group: ultimate_group) }
+        it { is_expected.to eq(true) }
+      end
 
-          before do
-            project.add_guest(user)
-          end
+      context 'with not eligible group' do
+        let(:group) { free_group }
+        let_it_be(:project) { create(:project, group: free_group) }
 
-          it { is_expected.to eq(true) }
+        before do
+          project.add_guest(user)
         end
 
-        context 'with eligible premium group' do
-          let(:group) { premium_group }
-          let_it_be(:project) { create(:project, group: premium_group) }
-
-          before do
-            project.add_guest(user)
-          end
-
-          it { is_expected.to eq(true) }
-        end
-
-        context 'with not eligible group' do
-          let(:group) { free_group }
-          let_it_be(:project) { create(:project, group: free_group) }
-
-          before do
-            project.add_guest(user)
-          end
-
-          it { is_expected.to eq(false) }
-        end
+        it { is_expected.to eq(false) }
       end
     end
   end
@@ -4014,14 +3870,6 @@ RSpec.describe User, feature_category: :system_access do
 
             expect(Rails.cache.fetch(['users', user.id, 'group_ids_with_ai_chat_enabled'])).to eq(result)
           end
-        end
-
-        context 'when duo_chat_ga feature flag is disaabled and ai features are not enabled' do
-          before do
-            stub_feature_flags(duo_chat_ga: false)
-          end
-
-          it { is_expected.to eq([]) }
         end
       end
     end

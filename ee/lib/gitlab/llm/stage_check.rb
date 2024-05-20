@@ -18,56 +18,73 @@ module Gitlab
         :ai_review_merge_request
       ].freeze
       BETA_FEATURES = [].freeze
-      GA_FEATURES = [].freeze
+      GA_FEATURES = [:chat].freeze
 
       class << self
         def available?(container, feature)
-          available_on_experimental_stage?(container, feature) ||
-            available_on_beta_stage?(container, feature) ||
-            available_on_ga_stage?(container, feature)
+          root_ancestor = container.root_ancestor
+
+          return false if personal_namespace?(root_ancestor)
+          return false unless root_ancestor.licensed_feature_available?(license_feature_name(feature))
+
+          available_on_experimental_stage?(root_ancestor, feature) ||
+            available_on_beta_stage?(root_ancestor, feature) ||
+            available_on_ga_stage?(feature)
         end
 
         private
 
-        def available_on_experimental_stage?(container, feature)
-          return false unless ::Gitlab::Saas.feature_available?(:gitlab_duo_saas_only)
+        def personal_namespace?(root_ancestor)
+          root_ancestor.user_namespace?
+        end
 
+        def available_on_experimental_stage?(root_ancestor, feature)
+          return false unless instance_allows_experiment_and_beta_features
+          return false unless gitlab_com_namespace_enables_experiment_and_beta_features(root_ancestor)
           return false unless EXPERIMENTAL_FEATURES.include?(feature)
 
-          root_ancestor = container&.root_ancestor
-          return false unless root_ancestor&.experiment_features_enabled
-
-          root_ancestor.licensed_feature_available?(:ai_features)
+          true
         end
 
         # There is no beta setting yet.
         # https://gitlab.com/gitlab-org/gitlab/-/issues/409929
-        def available_on_beta_stage?(container, feature)
-          return false unless beta_features.include?(feature)
+        def available_on_beta_stage?(root_ancestor, feature)
+          return false unless instance_allows_experiment_and_beta_features
+          return false unless gitlab_com_namespace_enables_experiment_and_beta_features(root_ancestor)
+          return false unless BETA_FEATURES.include?(feature)
 
-          root_ancestor = container&.root_ancestor
-          return false unless root_ancestor&.experiment_features_enabled
-
-          root_ancestor.licensed_feature_available?(license_feature_name(feature))
+          true
         end
 
-        def available_on_ga_stage?(container, feature)
-          return false unless ga_features.include?(feature)
+        def available_on_ga_stage?(feature)
+          return true if GA_FEATURES.include?(feature)
 
-          root_ancestor = container&.root_ancestor
-          root_ancestor.licensed_feature_available?(license_feature_name(feature))
+          false
         end
 
         def license_feature_name(feature)
           feature == :chat ? :ai_chat : :ai_features
         end
 
-        def beta_features
-          BETA_FEATURES.dup.tap { |features| features << :chat if Feature.disabled?(:duo_chat_ga) }
+        def instance_allows_experiment_and_beta_features
+          if ::Gitlab::Saas.feature_available?(:gitlab_duo_saas_only)
+            true
+          else
+            # experiment features are only available on .com until we implement
+            # https://gitlab.com/groups/gitlab-org/-/epics/13400
+            false
+          end
         end
 
-        def ga_features
-          GA_FEATURES.dup.tap { |features| features << :chat if Feature.enabled?(:duo_chat_ga) }
+        def gitlab_com_namespace_enables_experiment_and_beta_features(namespace)
+          # namespace-level settings check is only relevant for .com
+          return true unless ::Gitlab::Saas.feature_available?(:gitlab_duo_saas_only)
+
+          if namespace.experiment_features_enabled
+            true
+          else
+            false
+          end
         end
       end
     end

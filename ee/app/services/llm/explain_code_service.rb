@@ -10,7 +10,6 @@ module Llm
 
     def valid?
       super &&
-        ::Feature.enabled?(:ai_global_switch, type: :ops) &&
         resource.licensed_feature_available?(:explain_code) &&
         Gitlab::Llm::StageCheck.available?(resource, :explain_code)
     end
