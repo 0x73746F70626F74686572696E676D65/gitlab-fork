@@ -1,39 +1,55 @@
 <script>
-import { GlButton, GlFormCheckbox, GlSprintf } from '@gitlab/ui';
+import { GlButton, GlFormCheckbox, GlLink, GlModal, GlSprintf } from '@gitlab/ui';
 import CloudTanukiIllustrationPath from '@gitlab/svgs/dist/illustrations/cloud-tanuki-sm.svg';
 
-import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_action';
 import { PROMO_URL } from '~/lib/utils/url_utility';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 
-import { getRedirectConfirmationMessage } from './utils';
+import productAnalyticsProjectSettingsUpdate from '../../../graphql/mutations/product_analytics_project_settings_update.mutation.graphql';
 
 export default {
   name: 'GitlabManagedProviderCard',
-  components: { GlButton, GlFormCheckbox, GlSprintf },
+  components: { GlButton, GlFormCheckbox, GlLink, GlModal, GlSprintf },
   inject: {
     projectLevelAnalyticsProviderSettings: {
       default: () => ({}),
     },
+    analyticsSettingsPath: {},
     managedClusterPurchased: {
       default: false,
     },
-  },
-  props: {
-    projectAnalyticsSettingsPath: {
-      type: String,
-      required: true,
-    },
+    namespaceFullPath: {},
   },
   data() {
     return {
+      projectSettings: this.projectLevelAnalyticsProviderSettings,
       hasAgreedToGCPZone: false,
       gcpZoneError: null,
+      clearSettingsModalIsVisible: false,
+      clearSettingsModalIsLoading: false,
+      clearSettingsModalHasError: false,
     };
   },
   computed: {
     hasAnyProjectLevelProviderConfig() {
-      return Object.values(this.projectLevelAnalyticsProviderSettings).some(Boolean);
+      return Object.values(this.projectSettings).some(Boolean);
+    },
+    modalPrimaryAction() {
+      return {
+        text: __('Continue'),
+        attributes: {
+          variant: 'confirm',
+          loading: this.clearSettingsModalIsLoading,
+        },
+      };
+    },
+    modalCancelAction() {
+      return {
+        text: __('Cancel'),
+        attributes: {
+          disabled: this.clearSettingsModalIsLoading,
+        },
+      };
     },
   },
   methods: {
@@ -43,7 +59,7 @@ export default {
       }
 
       if (this.hasAnyProjectLevelProviderConfig) {
-        await this.promptToClearSettings();
+        this.clearSettingsModalIsVisible = true;
         return;
       }
 
@@ -60,21 +76,39 @@ export default {
       );
       return false;
     },
-    async promptToClearSettings() {
-      const confirmed = await confirmAction('', {
-        title: s__('ProductAnalytics|Reset existing project provider settings'),
-        primaryBtnText: s__('ProductAnalytics|Go to analytics settings'),
-        modalHtmlMessage: getRedirectConfirmationMessage(
-          s__(
-            `ProductAnalytics|This project uses the provider configuration. To connect to a GitLab-managed provider, you'll be redirected to the %{analyticsSettingsLink} page where you must remove the current configuration.`,
-          ),
-          this.projectAnalyticsSettingsPath,
-        ),
+    onCancelClearSettings() {
+      this.clearSettingsModalIsVisible = false;
+    },
+    async onConfirmClearSettings() {
+      this.clearSettingsModalHasError = false;
+      this.clearSettingsModalIsLoading = true;
+
+      const { data } = await this.$apollo.mutate({
+        mutation: productAnalyticsProjectSettingsUpdate,
+        variables: {
+          fullPath: this.namespaceFullPath,
+          productAnalyticsConfiguratorConnectionString: null,
+          productAnalyticsDataCollectorHost: null,
+          cubeApiBaseUrl: null,
+          cubeApiKey: null,
+        },
       });
 
-      if (confirmed) {
-        this.$emit('open-settings');
+      this.clearSettingsModalIsLoading = false;
+      const {
+        errors,
+        __typename,
+        ...updatedProjectSetting
+      } = data.productAnalyticsProjectSettingsUpdate;
+
+      if (errors?.length) {
+        this.clearSettingsModalHasError = true;
+        return;
       }
+
+      this.clearSettingsModalIsVisible = false;
+      this.projectSettings = updatedProjectSetting;
+      await this.onSelected();
     },
   },
   zone: 'us-central-1',
@@ -151,5 +185,38 @@ export default {
         >{{ s__('ProductAnalytics|Contact our sales team') }}</gl-button
       >
     </div>
+    <gl-modal
+      :visible="clearSettingsModalIsVisible"
+      :action-primary="modalPrimaryAction"
+      :action-cancel="modalCancelAction"
+      data-testid="clear-project-level-settings-confirmation-modal"
+      modal-id="clear-project-level-settings-confirmation-modal"
+      :title="s__('ProductAnalytics|Reset existing project provider settings')"
+      @primary="onConfirmClearSettings"
+      @canceled="onCancelClearSettings"
+    >
+      {{
+        s__(
+          `ProductAnalytics|This project has analytics provider settings configured. If you continue, these project-level settings will be reset so that GitLab-managed provider settings can be used.`,
+        )
+      }}
+      <p
+        v-if="clearSettingsModalHasError"
+        class="gl-text-red-500 gl-mt-5"
+        data-testid="clear-project-level-settings-confirmation-modal-error"
+      >
+        <gl-sprintf
+          :message="
+            s__(
+              'Analytics|Failed to clear project-level settings. Please try again or %{linkStart}clear them manually%{linkEnd}.',
+            )
+          "
+        >
+          <template #link="{ content }">
+            <gl-link :href="analyticsSettingsPath">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </p>
+    </gl-modal>
   </div>
 </template>

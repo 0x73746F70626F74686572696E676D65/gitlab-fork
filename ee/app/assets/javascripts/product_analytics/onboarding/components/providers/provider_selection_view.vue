@@ -126,11 +126,7 @@ export default {
           @confirm="onConfirm"
           @open-settings="openSettings"
         />
-        <gitlab-managed-provider-card
-          :project-analytics-settings-path="projectAnalyticsSettingsPath"
-          @confirm="onConfirm"
-          @open-settings="openSettings"
-        />
+        <gitlab-managed-provider-card @confirm="onConfirm" />
       </div>
     </section>
   </section>
