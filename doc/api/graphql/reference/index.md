@@ -31760,7 +31760,6 @@ Check permissions for the current user on a work item.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="workitemrelatedmergerequestclosesworkitem"></a>`closesWorkItem` | [`Boolean!`](#boolean) | Whether the related merge request will close the work item when it is merged. |
 | <a id="workitemrelatedmergerequestmergerequest"></a>`mergeRequest` | [`MergeRequest`](#mergerequest) | Related merge request. |
 
 ### `WorkItemStateCountsType`
