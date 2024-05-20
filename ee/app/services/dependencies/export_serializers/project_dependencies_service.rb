@@ -22,16 +22,10 @@ module Dependencies
       delegate :project, :author, to: :dependency_list_export, private: true
 
       def dependencies_list
-        if ::Feature.enabled?(:use_database_for_dependency_export, project)
-          ::Sbom::DependenciesFinder.new(project).execute
-            .with_component
-            .with_version
-            .with_vulnerabilities
-        else
-          return [] unless report_fetch_service.able_to_fetch?
-
-          ::Security::DependencyListService.new(pipeline: report_fetch_service.pipeline).execute(skip_pagination: true)
-        end
+        ::Sbom::DependenciesFinder.new(project).execute
+          .with_component
+          .with_version
+          .with_vulnerabilities
       end
 
       def report_fetch_service

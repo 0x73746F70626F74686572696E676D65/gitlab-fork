@@ -1,9 +1,0 @@
----
-name: use_database_for_dependency_export
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/458226
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/150879
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/458224
-milestone: '17.0'
-group: group::threat insights
-type: gitlab_com_derisk
-default_enabled: false
