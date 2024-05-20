@@ -11,9 +11,8 @@ module CloudConnector
         ::CloudConnector::ServiceAccessToken.active.last&.token
       end
 
-      private
-
-      def add_on_purchases(_namespace = nil)
+      override :purchased?
+      def purchased?(_namespace = nil)
         # We are not passing namespace argument because AddOnPurchases for Self-Managed does not have namespace_id
         super()
       end

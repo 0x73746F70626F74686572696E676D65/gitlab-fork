@@ -17,16 +17,22 @@ module CloudConnector
       cut_off_date.nil? || cut_off_date&.future?
     end
 
-    # Returns true if service is allowed to be used based on provided resource:
+    # Returns true if service is allowed to be used.
+    # For provided user, it will check if user is assigned to a proper seat.
     #
-    # - For provided user, it will check if user is assigned to a proper seat.
-    # - For provided namespace, it will check if add-on is purchased for the provided group/project.
+    # user - User
+    def allowed_for?(user)
+      add_on_purchases_assigned_to(user).any?
+    end
+
+    # Returns true if service is purchased.
+    # For provided namespace, it will check if add-on is purchased for the provided group/project or its ancestors.
     #
     # For SM, it will check if add-on is purchased, by ignoring namespace as AddOns are not purchased per namespace.
     #
-    # resource - User or Namespace
-    def allowed_for?(resource)
-      add_on_purchases_for(resource).any?
+    # namespace - Namespace
+    def purchased?(namespace = nil)
+      add_on_purchases(namespace).any?
     end
 
     # Returns CloudConnector access JWT token.
@@ -46,10 +52,6 @@ module CloudConnector
 
     private
 
-    def add_on_purchases_for(resource = nil)
-      resource.is_a?(User) ? add_on_purchases_assigned_to(resource) : add_on_purchases(resource)
-    end
-
     def add_on_purchases_assigned_to(user)
       cache_key = format(GitlabSubscriptions::UserAddOnAssignment::USER_ADD_ON_ASSIGNMENT_CACHE_KEY, user_id: user.id)
 
@@ -63,7 +65,7 @@ module CloudConnector
         results = GitlabSubscriptions::AddOnPurchase
           .by_add_on_name(@add_on_names)
           .active
-        results = results.by_namespace_id(namespace.id) if namespace
+        results = results.by_namespace_id(namespace.self_and_ancestor_ids) if namespace
 
         results
       end

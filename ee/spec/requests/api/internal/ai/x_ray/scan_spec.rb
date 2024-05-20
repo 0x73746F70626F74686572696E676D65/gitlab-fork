@@ -9,6 +9,7 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
     let_it_be(:user) { create(:user) }
     let_it_be(:job) { create(:ci_build, :running, namespace: namespace, user: user) }
     let_it_be(:sub_job) { create(:ci_build, :running, namespace: sub_namespace, user: user) }
+    let_it_be(:code_suggestion_add_on) { create(:gitlab_subscription_add_on) }
 
     let(:ai_gateway_token) { 'ai gateway token' }
     let(:instance_uuid) { "uuid-not-set" }
@@ -86,8 +87,12 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
       include_examples 'sends request to the XRay libraries'
     end
 
-    context 'when on self-managed' do
+    context 'when on self-managed', :with_cloud_connector do
       let(:gitlab_realm) { "self-managed" }
+
+      before do
+        ::CloudConnector::AvailableServices.clear_memoization(:access_data_reader)
+      end
 
       context 'without code suggestion license feature' do
         before do
@@ -110,17 +115,15 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
           it 'returns NOT_FOUND status' do
             post_api
 
-            expect(response).to have_gitlab_http_status(:not_found)
+            expect(response).to have_gitlab_http_status(:unauthorized)
           end
         end
 
         context 'with add on' do
-          before_all { create(:gitlab_subscription_add_on_purchase, namespace: namespace) }
+          before_all { create(:gitlab_subscription_add_on_purchase, :self_managed, add_on: code_suggestion_add_on) }
 
           context 'when cloud connector access token is missing' do
-            before do
-              allow(::Gitlab::Llm::AiGateway::Client).to receive(:access_token).and_return(nil)
-            end
+            let(:ai_gateway_token) { nil }
 
             it 'returns UNAUTHORIZED status' do
               post_api
@@ -131,7 +134,9 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
 
           context 'when cloud connector access token is valid' do
             before do
-              allow(::Gitlab::Llm::AiGateway::Client).to receive(:access_token).and_return(ai_gateway_token)
+              allow(::CloudConnector::ServiceAccessToken)
+                .to receive_message_chain(:active, :last, :token)
+                .and_return(ai_gateway_token)
             end
 
             context 'when instance has uuid available' do
@@ -163,9 +168,7 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
       end
     end
 
-    context 'when on SaaS instance', :saas do
-      let_it_be(:code_suggestion_add_on) { create(:gitlab_subscription_add_on, :code_suggestions) }
-
+    context 'when on Gitlab.com instance', :saas do
       let(:gitlab_realm) { "saas" }
       let(:namespace_workhorse_headers) do
         {
@@ -183,7 +186,10 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
       end
 
       before do
-        allow(::Gitlab::Llm::AiGateway::Client).to receive(:access_token).and_return(ai_gateway_token)
+        allow_next_instance_of(::Gitlab::CloudConnector::SelfIssuedToken) do |token|
+          allow(token).to receive(:encoded).and_return(ai_gateway_token)
+        end
+        ::CloudConnector::AvailableServices.clear_memoization(:access_data_reader)
       end
 
       it_behaves_like 'successful send request via workhorse'
