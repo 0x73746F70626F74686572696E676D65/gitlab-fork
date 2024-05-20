@@ -17,39 +17,6 @@ module Gitlab
 
       InvalidError = Class.new(StandardError)
 
-      class Collection
-        include Enumerable
-
-        def initialize
-          @refs = []
-        end
-
-        def deserialize_and_add(string)
-          @refs << ::Gitlab::Elastic::DocumentReference.deserialize(string)
-        end
-
-        def each(&blk)
-          @refs.each(&blk)
-        end
-
-        def preload_database_records
-          @refs.group_by(&:klass).each do |klass, group|
-            group.each_slice(PRELOAD_BATCH_SIZE) do |group_slice|
-              ids = group_slice.map(&:db_id)
-
-              records = klass.id_in(ids).preload_indexing_data
-              records_by_id = records.index_by(&:id)
-
-              group_slice.each do |ref|
-                ref.database_record = records_by_id[ref.db_id.to_i]
-              end
-            end
-          end
-
-          self
-        end
-      end
-
       class << self
         def build(instance)
           new(instance.class, instance.id, instance.es_id, instance.es_parent)
@@ -91,6 +58,21 @@ module Gitlab
           new(*array)
         end
 
+        def preload_indexing_data(refs)
+          refs.group_by(&:klass).each do |klass, group|
+            ids = group.map(&:db_id)
+
+            records = klass.id_in(ids).preload_indexing_data
+            records_by_id = records.index_by(&:id)
+
+            group.each do |ref|
+              ref.database_record = records_by_id[ref.database_id.to_i]
+            end
+          end
+
+          refs
+        end
+
         private
 
         def test_array!(array)
@@ -103,6 +85,10 @@ module Gitlab
 
       # This attribute is nil for some records, e.g., projects
       attr_reader :es_parent
+
+      alias_attribute :identifier, :es_id
+      alias_attribute :routing, :es_parent
+      alias_attribute :database_id, :db_id
 
       def initialize(klass_or_name, db_id, es_id, es_parent = nil)
         @klass = klass_or_name
@@ -133,40 +119,29 @@ module Gitlab
         self.class.serialize_array([klass_name, db_id, es_id, es_parent].compact)
       end
 
-      def index?
-        database_record.present?
+      def operation
+        database_record.present? ? :index : :delete
       end
-
-      def index_operation
-        if Feature.enabled?(:elastic_bulk_indexer_use_upsert, type: :gitlab_com_derisk)
-          [{ update: build_op(proxy: proxy) }, { doc: as_indexed_json, doc_as_upsert: true }]
-        else
-          [{ index: build_op(proxy: proxy) }, as_indexed_json]
-        end
-      end
-
-      def delete_operation(index_name: nil)
-        [{ delete: build_op(proxy: klass.__elasticsearch__, index_name: index_name) }]
-      end
+      strong_memoize_attr :operation
 
       def as_indexed_json
         proxy.as_indexed_json
+      end
+
+      def index_name
+        operation == :delete ? klass_proxy.index_name : proxy.index_name
+      end
+
+      def document_type
+        operation == :delete ? klass_proxy.document_type : proxy.document_type
       end
 
       def proxy
         database_record.__elasticsearch__
       end
 
-      def build_op(proxy:, index_name: nil)
-        op = {
-          _index: index_name || proxy.index_name,
-          _type: proxy.document_type,
-          _id: es_id
-        }
-
-        op[:routing] = es_parent if es_parent
-
-        op
+      def klass_proxy
+        klass.__elasticsearch__
       end
     end
   end

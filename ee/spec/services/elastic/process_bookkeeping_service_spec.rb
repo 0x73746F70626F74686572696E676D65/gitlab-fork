@@ -101,6 +101,12 @@ RSpec.describe Elastic::ProcessBookkeepingService,
 
       expect(described_class.queue_size).to eq(1)
     end
+
+    it 'serializes with Elastic::Reference' do
+      expect(::Search::Elastic::Reference).to receive(:serialize).with(issue).and_call_original
+
+      described_class.track!(issue)
+    end
   end
 
   describe '.queue_size' do
@@ -305,6 +311,21 @@ RSpec.describe Elastic::ProcessBookkeepingService,
       expect(described_class.queue_size).to eq(1)
     end
 
+    it 'deserializes and processes each tracked item' do
+      issue_2 = create(:issue)
+      described_class.track!(issue, issue_2)
+
+      expect(Search::Elastic::Reference).to receive(:deserialize).with(issue_2.elastic_reference).and_call_original
+      expect(Search::Elastic::Reference).to receive(:deserialize).with(issue_spec).and_call_original
+      expect(Search::Elastic::Reference).to receive(:preload_database_records).and_call_original
+
+      expect_next_instance_of(::Gitlab::Elastic::BulkIndexer) do |indexer|
+        expect(indexer).to receive(:process).twice.and_call_original
+      end
+
+      described_class.new.execute
+    end
+
     context 'logging' do
       let(:logger_double) { instance_double(Gitlab::Elasticsearch::Logger) }
 
@@ -317,10 +338,10 @@ RSpec.describe Elastic::ProcessBookkeepingService,
         expect_processing(*fake_refs)
 
         expect(logger_double).to receive(:info).with(
-          class: described_class.name,
-          message: 'bulk_indexer_flushed',
-          search_flushing_duration_s: an_instance_of(Float),
-          search_indexed_bytes_per_second: an_instance_of(Integer)
+          'class' => described_class.name,
+          'message' => 'bulk_indexer_flushed',
+          'meta.indexing.search_flushing_duration_s' => an_instance_of(Float),
+          'meta.indexing.search_indexed_bytes_per_second' => an_instance_of(Integer)
         )
 
         described_class.new.execute
@@ -331,15 +352,27 @@ RSpec.describe Elastic::ProcessBookkeepingService,
         expect_processing(*fake_refs)
 
         expect(logger_double).to receive(:info).with(
-          class: described_class.name,
-          message: 'indexing_done',
-          model_class: "Issue",
-          model_id: an_instance_of(String),
-          es_id: an_instance_of(String),
-          es_parent: "project_1",
-          search_indexing_duration_s: an_instance_of(Float),
-          search_indexing_flushing_duration_s: an_instance_of(Float)
+          'class' => described_class.name,
+          'message' => 'indexing_done',
+          'meta.indexing.reference_class' => "Issue",
+          'meta.indexing.database_id' => an_instance_of(String),
+          'meta.indexing.identifier' => an_instance_of(String),
+          'meta.indexing.routing' => "project_1",
+          'meta.indexing.search_indexing_duration_s' => an_instance_of(Float),
+          'meta.indexing.search_indexing_flushing_duration_s' => an_instance_of(Float)
         ).exactly(fake_refs.size).times
+
+        described_class.new.execute
+      end
+
+      it 'logs when a document fails to be deserialized' do
+        described_class.track!(*fake_refs)
+
+        allow(Search::Elastic::Reference).to receive(:deserialize).and_raise(Search::Elastic::Reference::InvalidError)
+
+        expect(logger_double).to receive(:error)
+          .with(hash_including('message' => 'submit_document_failed'))
+          .exactly(fake_refs.size).times
 
         described_class.new.execute
       end
@@ -351,25 +384,25 @@ RSpec.describe Elastic::ProcessBookkeepingService,
         expect_processing(*fake_refs, failures: [failed])
 
         expect(logger_double).not_to receive(:info).with(
-          class: described_class.name,
-          message: 'indexing_done',
-          model_class: "Issue",
-          model_id: failed.db_id,
-          es_id: failed.es_id,
-          es_parent: "project_1",
-          search_indexing_duration_s: an_instance_of(Float),
-          search_indexing_flushing_duration_s: an_instance_of(Float)
+          'class' => described_class.name,
+          'message' => 'indexing_done',
+          'meta.indexing.reference_class' => "Issue",
+          'meta.indexing.database_id' => failed.db_id,
+          'meta.indexing.identifier' => failed.es_id,
+          'meta.indexing.routing' => "project_1",
+          'meta.indexing.search_indexing_duration_s' => an_instance_of(Float),
+          'meta.indexing.search_indexing_flushing_duration_s' => an_instance_of(Float)
         )
 
         expect(logger_double).to receive(:info).with(
-          class: described_class.name,
-          message: 'indexing_done',
-          model_class: "Issue",
-          model_id: an_instance_of(String),
-          es_id: an_instance_of(String),
-          es_parent: "project_1",
-          search_indexing_duration_s: an_instance_of(Float),
-          search_indexing_flushing_duration_s: an_instance_of(Float)
+          'class' => described_class.name,
+          'message' => 'indexing_done',
+          'meta.indexing.reference_class' => "Issue",
+          'meta.indexing.database_id' => an_instance_of(String),
+          'meta.indexing.identifier' => an_instance_of(String),
+          'meta.indexing.routing' => "project_1",
+          'meta.indexing.search_indexing_duration_s' => an_instance_of(Float),
+          'meta.indexing.search_indexing_flushing_duration_s' => an_instance_of(Float)
         ).exactly(fake_refs.size - 1).times
 
         described_class.new.execute
