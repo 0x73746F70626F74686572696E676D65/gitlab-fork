@@ -89,7 +89,7 @@ export default {
   },
   watch: {
     branchesToAdd(value) {
-      this.branches = value ? [value] : [];
+      this.branches = value || [];
     },
   },
   methods: {
@@ -178,6 +178,7 @@ export default {
           :project-id="projectId"
           :is-invalid="!branchesState"
           :selected-branches="branches"
+          multiple
           @apiError="setBranchApiError"
         />
       </gl-form-group>

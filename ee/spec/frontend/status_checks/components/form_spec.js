@@ -60,6 +60,7 @@ describe('Status checks form', () => {
       expect(inputsAreValid()).toBe(true);
       expect(findNameInput().props('value')).toBe('');
       expect(findProtectedBranchesSelector().props('selectedBranches')).toStrictEqual([]);
+      expect(findProtectedBranchesSelector().props('multiple')).toBe(true);
       expect(findUrlInput().props('value')).toBe('');
     });
 
@@ -75,7 +76,7 @@ describe('Status checks form', () => {
     });
   });
 
-  describe('Validation', () => {
+  describe('validation', () => {
     it('shows the validation messages if invalid on submission', async () => {
       createWrapper({ branches: ['abc'] });
 
@@ -141,7 +142,7 @@ describe('Status checks form', () => {
     });
   });
 
-  describe('Branches error alert', () => {
+  describe('branches error alert', () => {
     beforeEach(() => {
       jest.spyOn(Sentry, 'captureException');
       createWrapper();
