@@ -13,7 +13,6 @@ import { testActions, testSections, testProject } from './mock_data';
 
 describe('Learn GitLab', () => {
   let wrapper;
-  let sidebar;
 
   const findProgressBarBlock = () => wrapper.findByTestId('progress-bar-block');
 
@@ -124,26 +123,6 @@ describe('Learn GitLab', () => {
 
     beforeEach(() => {
       spy = jest.spyOn(eventHubNav, '$emit');
-    });
-
-    it('modifies the sidebar percentage', () => {
-      sidebar = document.createElement('div');
-      sidebar.innerHTML = `
-    <div class="sidebar-top-level-items">
-      <div class="active">
-        <div class="count"></div>
-      </div>
-    </div>
-    `;
-      document.body.appendChild(sidebar);
-      createWrapper();
-
-      eventHub.$emit('showSuccessfulInvitationsAlert');
-
-      expect(sidebar.textContent.trim()).toBe('25%');
-      expect(spy).not.toHaveBeenCalled();
-
-      sidebar.remove();
     });
 
     it('emits updatePillValue event for super sidebar', () => {

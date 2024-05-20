@@ -82,10 +82,10 @@ $epic-icons-spacing: 40px;
 
 .board-epic-lane,
 .swimlanes-button {
-  max-width: calc(100vw - #{$contextual-sidebar-width} - #{$epic-icons-spacing});
+  max-width: calc(100vw - #{$super-sidebar-width} - #{$epic-icons-spacing});
 
   .is-compact & {
-    max-width: calc(100vw - #{$contextual-sidebar-width} - #{$right-sidebar-width} - #{$epic-icons-spacing});
+    max-width: calc(100vw - #{$super-sidebar-width} - #{$right-sidebar-width} - #{$epic-icons-spacing});
   }
 }
 

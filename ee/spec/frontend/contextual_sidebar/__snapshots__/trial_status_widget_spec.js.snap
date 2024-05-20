@@ -29,7 +29,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
           Ultimate Trial
         </span>
         <span
-          class="collapse-text gl-font-sm gl-mr-auto"
+          class="gl-font-sm gl-mr-auto gl-overflow-hidden gl-whitespace-nowrap"
         >
           Day 10/30
         </span>

@@ -302,7 +302,6 @@ RSpec.describe 'SAML provider settings', feature_category: :system_access do
 
           it "doesn't leak group information" do
             expect(page).not_to have_selector('.group-avatar')
-            expect(page).not_to have_selector('.nav-sidebar')
           end
         end
       end

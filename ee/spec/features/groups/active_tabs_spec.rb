@@ -11,12 +11,6 @@ RSpec.describe 'Group active tab', :js, feature_category: :groups_and_projects d
     sign_in(user)
   end
 
-  def click_tab(title)
-    page.within '.sidebar-top-level-items > .active' do
-      click_link(title)
-    end
-  end
-
   context 'on group Insights' do
     before do
       stub_licensed_features(insights: true)
