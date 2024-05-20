@@ -69,7 +69,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConf
           },
           allow_failure: true,
           script: ['/analyze'],
-          artifacts: { reports: { dast: 'gl-dast-report.json' } },
+          artifacts: { access: 'developer', reports: { dast: 'gl-dast-report.json' } },
           dast_configuration: { site_profile: site_profile.name, scanner_profile: scanner_profile.name },
           rules: [
             { if: '$CI_GITLAB_FIPS_MODE == "true"', variables: { DAST_IMAGE_SUFFIX: "-fips" } },
