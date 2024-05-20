@@ -137,7 +137,7 @@ module QA
               snippets_size = convert_to_mib(usage_quota.project_snippets_size) # 10.2 KiB
               wiki_size = convert_to_mib(usage_quota.project_wiki_size) # 10.2 KiB
               containers_registry_size = convert_to_mib(usage_quota.project_containers_registry_size) # 48.2 MiB
-              total_size = ((repository_size + snippets_size + wiki_size + containers_registry_size) * 10).to_i / 10.0
+              total_size = (repository_size + snippets_size + wiki_size + containers_registry_size).round(1)
 
               expect do
                 ::QA::Support::WaitForRequests.wait_for_requests # Handle element loading text
