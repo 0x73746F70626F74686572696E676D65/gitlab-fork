@@ -66,6 +66,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Template,
             services: [],
             allow_failure: true,
             artifacts: {
+              access: 'developer',
               reports: {
                 secret_detection: 'gl-secret-detection-report.json'
               }
@@ -108,6 +109,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiAction::Template,
             tags: ['runner-tag'],
             allow_failure: true,
             artifacts: {
+              access: 'developer',
               reports: {
                 container_scanning: 'gl-container-scanning-report.json',
                 cyclonedx: "**/gl-sbom-*.cdx.json"

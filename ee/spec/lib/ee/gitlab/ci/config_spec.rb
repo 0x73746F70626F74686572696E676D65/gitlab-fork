@@ -83,7 +83,7 @@ RSpec.describe Gitlab::Ci::Config, feature_category: :pipeline_composition do
                 },
                 allow_failure: true,
                 script: ['/analyze'],
-                artifacts: { reports: { dast: 'gl-dast-report.json' } },
+                artifacts: { access: 'developer', reports: { dast: 'gl-dast-report.json' } },
                 dast_configuration: {
                   site_profile: dast_site_profile.name,
                   scanner_profile: dast_scanner_profile.name
