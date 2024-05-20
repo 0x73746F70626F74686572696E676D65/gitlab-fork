@@ -79,8 +79,8 @@ module ProductAnalytics
       map = {}
 
       project_ids_to_send.each do |project_id|
-        url = "#{::ProductAnalytics::Settings.for_project(Project.find_by_id(project_id))
-                                             .product_analytics_configurator_connection_string}/funnel-schemas"
+        settings = ::ProductAnalytics::Settings.for_project(Project.find_by_id(project_id))
+        url = URI.join(settings.product_analytics_configurator_connection_string, "funnel-schemas")
 
         if map.has_key?(url)
           map[url] << project_id

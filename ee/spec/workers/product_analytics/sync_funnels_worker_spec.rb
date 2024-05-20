@@ -14,7 +14,7 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
       it 'is successful' do
         url_to_projects_regex.each do |url, projects_regex|
           expect(Gitlab::HTTP).to receive(:post)
-                                    .with(url.to_s, {
+                                    .with(URI.parse(url.to_s), {
                                       allow_local_requests: true,
                                       body: Regexp.new(projects_regex.source + /.*\"state\":\"created\"/.source)
                                     }).once
@@ -33,7 +33,7 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
       it 'is successful' do
         url_to_projects_regex.each do |url, projects_regex|
           expect(Gitlab::HTTP).to receive(:post)
-                                    .with(url.to_s, {
+                                    .with(URI.parse(url.to_s), {
                                       allow_local_requests: true,
                                       body: Regexp.new(projects_regex.source + /.*\"state\":\"updated\"/.source)
                                     }).once.and_return(instance_double("HTTParty::Response",
@@ -52,7 +52,7 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
       it 'is successful' do
         url_to_projects_regex.each do |url, _projects_regex|
           expect(Gitlab::HTTP).to receive(:post)
-                                    .with(url.to_s, {
+                                    .with(URI.parse(url.to_s), {
                                       allow_local_requests: true,
                                       body: /\"previous_name\":\"completed_purchase\"/
                                     }).once
@@ -71,7 +71,7 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
       it 'is successful' do
         url_to_projects_regex.each do |url, projects_regex|
           expect(Gitlab::HTTP).to receive(:post)
-                                    .with(url.to_s, {
+                                    .with(URI.parse(url.to_s), {
                                       allow_local_requests: true,
                                       body: Regexp.new(projects_regex.source + /.*\"state\":\"deleted\"/.source)
                                     }).once
@@ -128,7 +128,21 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
 
       it_behaves_like 'sends data to configurator' do
         let(:url_to_projects_regex) do
-          { "http://test:test@localhost:4567/funnel-schemas": /["gitlab_projec#{project.id}]/ }
+          { "http://test:test@localhost:4567/funnel-schemas": /gitlab_project_#{project.id}/ }
+        end
+      end
+
+      context "when the connection string ends with /" do
+        before do
+          allow_next_instance_of(ProductAnalytics::Settings) do |settings|
+            allow(settings).to receive(:product_analytics_configurator_connection_string).and_return('http://test:test@localhost:4567/')
+          end
+        end
+
+        it_behaves_like 'sends data to configurator' do
+          let(:url_to_projects_regex) do
+            { "http://test:test@localhost:4567/funnel-schemas": /gitlab_project_#{project.id}/ }
+          end
         end
       end
     end
@@ -150,7 +164,7 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
 
         it_behaves_like 'sends data to configurator' do
           let(:url_to_projects_regex) do
-            { "http://test:test@localhost:4567/funnel-schemas": /["gitlab_projec#{other_project_1.id}]/ }
+            { "http://test:test@localhost:4567/funnel-schemas": /gitlab_project_#{other_project_1.id}/ }
           end
         end
       end
@@ -171,7 +185,7 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
 
           it_behaves_like 'sends data to configurator' do
             let(:url_to_projects_regex) do
-              { "http://test:test@localhost:4567/funnel-schemas": /["gitlab_projec#{other_project_1.id},\"#{other_project_2.id}]/ }
+              { "http://test:test@localhost:4567/funnel-schemas": /gitlab_project_#{other_project_1.id}.*gitlab_project_#{other_project_2.id}/ }
             end
           end
         end
@@ -187,8 +201,8 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
           it_behaves_like 'sends data to configurator' do
             let(:url_to_projects_regex) do
               {
-                "http://test:test@localhost:4567/funnel-schemas": /"gitlab_project_#{other_project_1.id}\"/,
-                "http://test:test@anotherhost:4567/funnel-schemas": /"gitlab_project_#{other_project_2.id}\"/
+                "http://test:test@localhost:4567/funnel-schemas": /gitlab_project_#{other_project_1.id}/,
+                "http://test:test@anotherhost:4567/funnel-schemas": /gitlab_project_#{other_project_2.id}/
               }
             end
           end
