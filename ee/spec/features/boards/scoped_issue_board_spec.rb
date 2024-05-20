@@ -482,7 +482,7 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
       view_scope.click
 
       page.within('.modal') do
-        expect(find('.modal-header')).to have_content('Board scope')
+        expect(find('.modal-header')).to have_content('Board configuration')
         expect(page).not_to have_content('Board name')
         expect(page).not_to have_link('Edit')
         expect(page).not_to have_button('Edit')
@@ -513,7 +513,7 @@ RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
     end
 
     it "doesn't show the button to edit scope" do
-      expect(page).not_to have_button('View Scope')
+      expect(page).not_to have_button('Board configuration')
     end
   end
 
