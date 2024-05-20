@@ -120,9 +120,8 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
     end
 
     before do
-      allow(Gitlab).to receive(:org_or_com?).and_return(true)
-      stub_ee_application_setting(should_check_namespace_plan: true)
       allow(group.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+      stub_saas_features(gitlab_duo_saas_only: true)
       stub_licensed_features(
         summarize_notes: true,
         ai_features: true,

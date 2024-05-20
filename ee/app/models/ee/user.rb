@@ -669,7 +669,6 @@ module EE
 
       Rails.cache.fetch(['users', id, GROUP_IDS_WITH_AI_CHAT_ENABLED_CACHE_KEY], expires_in: GROUP_WITH_AI_CHAT_ENABLED_CACHE_PERIOD) do
         groups = member_namespaces.with_ai_supported_plan(:ai_chat)
-        groups = ::Feature.enabled?(:duo_chat_ga) ? groups : groups.namespace_settings_with_ai_features_enabled
         groups.pluck(Arel.sql('DISTINCT traversal_ids[1]'))
       end
     end
@@ -678,7 +677,6 @@ module EE
       Rails.cache.fetch(['users', id, GROUP_WITH_AI_CHAT_ENABLED_CACHE_KEY], expires_in: GROUP_WITH_AI_CHAT_ENABLED_CACHE_PERIOD) do
         groups = member_namespaces.with_ai_supported_plan(:ai_chat)
         groups_that_require_licensed_seat_for_chat = groups.select { |group| ::Feature.enabled?(:duo_chat_requires_licensed_seat, group) }
-        groups = ::Feature.enabled?(:duo_chat_ga) ? groups : groups.namespace_settings_with_ai_features_enabled
 
         if groups.any? && groups_that_require_licensed_seat_for_chat.any?
           duo_pro_add_on_available?
