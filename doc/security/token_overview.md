@@ -287,7 +287,10 @@ The following table shows the prefixes for each type of token.
 ## Expired access tokens
 
 If an existing access token is in use and reaches the `expires_at` value, the token
-expires and can no longer be used for authentication.
+expires and:
+
+- Can no longer be used for authentication.
+- Is not visible in the UI.
 
 Requests made using this token return a `401 Unauthorized` response. Too many
 unauthorized requests in a short period of time from the same IP address
