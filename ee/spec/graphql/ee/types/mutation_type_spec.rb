@@ -21,4 +21,10 @@ RSpec.describe Types::MutationType do
   def get_field(name)
     described_class.fields[GraphqlHelpers.fieldnamerize(name)]
   end
+
+  describe '.authorization' do
+    it 'allows ai_features scope token' do
+      expect(described_class.authorization.permitted_scopes).to include(:ai_features)
+    end
+  end
 end

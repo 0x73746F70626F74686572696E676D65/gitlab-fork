@@ -46,4 +46,10 @@ RSpec.describe GitlabSchema.types['AiMessage'], feature_category: :duo_chat do
       expect(resolved_field).to eq('banzai_content')
     end
   end
+
+  describe '.authorization' do
+    it 'allows ai_features scope token' do
+      expect(described_class.authorization.permitted_scopes).to include(:ai_features)
+    end
+  end
 end

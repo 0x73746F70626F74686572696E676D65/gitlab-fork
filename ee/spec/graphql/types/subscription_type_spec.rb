@@ -13,4 +13,10 @@ RSpec.describe GitlabSchema.types['Subscription'], feature_category: :shared do
 
     expect(described_class).to include_graphql_fields(*expected_fields)
   end
+
+  describe '.authorization' do
+    it 'allows ai_features scope token' do
+      expect(described_class.authorization.permitted_scopes).to include(:ai_features)
+    end
+  end
 end

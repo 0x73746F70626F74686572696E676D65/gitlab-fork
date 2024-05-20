@@ -18,9 +18,20 @@ module Mutations
         required: false,
         description: 'Client generated ID that can be subscribed to, to receive a response for the mutation.'
 
+      # We need to re-declare the `errors` because we want to allow ai_features token to work for this
+      field :errors, [GraphQL::Types::String],
+        null: false,
+        scopes: [:api, :ai_features],
+        description: 'Errors encountered during execution of the mutation.'
+
       field :request_id, GraphQL::Types::String,
+        scopes: [:api, :ai_features],
         null: true,
         description: 'ID of the request.'
+
+      def self.authorization_scopes
+        super + [:ai_features]
+      end
 
       def ready?(**args)
         raise Gitlab::Graphql::Errors::ArgumentError, MUTUALLY_EXCLUSIVE_ARGUMENTS_ERROR if methods(args).size != 1

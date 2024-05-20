@@ -1,0 +1,9 @@
+---
+name: allow_ai_features_token_for_graphql_ai_features
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/149039
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/149039
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/460600
+milestone: '17.1'
+group: group::import and integrate
+type: gitlab_com_derisk
+default_enabled: false

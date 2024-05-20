@@ -34,6 +34,12 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
     end
   end
 
+  describe '.authorization' do
+    it 'allows ai_features scope token' do
+      expect(described_class.authorization.permitted_scopes).to include(:ai_features)
+    end
+  end
+
   describe '#resolve' do
     subject do
       mutation.resolve(**input)

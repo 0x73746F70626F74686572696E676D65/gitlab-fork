@@ -1,0 +1,82 @@
+diff --git a/ee/app/channels/ee/graphql_channel.rb b/ee/app/channels/ee/graphql_channel.rb
+index d5383dfb245e..1a23cfad2193 100644
+--- a/ee/app/channels/ee/graphql_channel.rb
++++ b/ee/app/channels/ee/graphql_channel.rb
+@@ -6,13 +6,7 @@ module GraphqlChannel
+
+     prepended do
+       def authorization_scopes
+-        # rubocop:disable Gitlab/FeatureFlagWithoutActor -- this is before we auth the user and we may not have project
+-        if ::Feature.enabled?(:allow_ai_features_token_for_graphql_ai_features)
+-          super + [:ai_features]
+-        else
+-          super
+-        end
+-        # rubocop:enable Gitlab/FeatureFlagWithoutActor
++        super + [:ai_features]
+       end
+     end
+   end
+diff --git a/ee/app/controllers/ee/graphql_controller.rb b/ee/app/controllers/ee/graphql_controller.rb
+index 3393f5db0a83..12d40bf44abc 100644
+--- a/ee/app/controllers/ee/graphql_controller.rb
++++ b/ee/app/controllers/ee/graphql_controller.rb
+@@ -7,13 +7,7 @@ module GraphqlController
+
+     override :authorization_scopes
+     def authorization_scopes
+-      # rubocop:disable Gitlab/FeatureFlagWithoutActor -- this is before we auth the user and we may not have project
+-      if ::Feature.enabled?(:allow_ai_features_token_for_graphql_ai_features)
+-        super + [:ai_features]
+-      else
+-        super
+-      end
+-      # rubocop:enable Gitlab/FeatureFlagWithoutActor
++      super + [:ai_features]
+     end
+   end
+ end
+diff --git a/ee/spec/channels/graphql_channel_spec.rb b/ee/spec/channels/graphql_channel_spec.rb
+index eda5859097bf..9a76c4069c48 100644
+--- a/ee/spec/channels/graphql_channel_spec.rb
++++ b/ee/spec/channels/graphql_channel_spec.rb
+@@ -101,18 +101,6 @@
+               /graphql-event::aiCompletionResponse:aiAction:chat:clientSubscriptionId:abc123/
+             )
+           end
+-
+-          context 'when allow_ai_features_token_for_graphql_ai_features is disabled' do
+-            before do
+-              stub_feature_flags(allow_ai_features_token_for_graphql_ai_features: false)
+-            end
+-
+-            it 'does not confirm the stream' do
+-              subscribe(subscribe_params)
+-
+-              expect(subscription).not_to be_confirmed
+-            end
+-          end
+         end
+       end
+     end
+diff --git a/ee/spec/controllers/ee/graphql_controller_spec.rb b/ee/spec/controllers/ee/graphql_controller_spec.rb
+index 6739df473d84..3be8a7e4483c 100644
+--- a/ee/spec/controllers/ee/graphql_controller_spec.rb
++++ b/ee/spec/controllers/ee/graphql_controller_spec.rb
+@@ -16,16 +16,6 @@
+       expect(response).to be_successful
+     end
+
+-    context 'when allow_ai_features_token_for_graphql_ai_features is disabled' do
+-      before do
+-        stub_feature_flags(allow_ai_features_token_for_graphql_ai_features: false)
+-      end
+-
+-      it 'fails' do
+-        expect(response).not_to be_successful
+-      end
+-    end
+-
+     context 'when graphql_minimal_auth_methods is disabled' do
+       before do
+         stub_feature_flags(graphql_minimal_auth_methods: false)
