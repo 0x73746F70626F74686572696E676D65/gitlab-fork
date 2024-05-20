@@ -94,7 +94,7 @@ export default {
           key: OVERVIEW_TABLE_NAME_KEY,
           label: I18N_GROUP_COL_LABEL,
           ...fieldOptions,
-          thClass: ['gl-w-grid-size-30', ...thClass],
+          thClass: ['gl-w-30', ...thClass],
           tdClass: 'header-cell da-table-mobile-header',
         },
         ...DEVOPS_ADOPTION_TABLE_CONFIGURATION.map((item) => ({
