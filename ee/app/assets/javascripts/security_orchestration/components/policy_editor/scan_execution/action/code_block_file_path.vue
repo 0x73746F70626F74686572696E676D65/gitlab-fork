@@ -79,7 +79,7 @@ export default {
     overrideType: {
       type: String,
       required: false,
-      default: null,
+      default: INJECT,
       validator: validateOverrideValues,
     },
     selectedType: {
