@@ -195,6 +195,16 @@ DETAILS:
 - LLM: Vertex AI Codey [`codechat-bison`](https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/code-chat)
 - [View documentation](analytics/analytics_dashboards.md#generate-a-custom-visualization-with-gitlab-duo).
 
+### Merge and squash commit generation
+
+DETAILS:
+**Tier:** Freely available for Ultimate for a limited time. In the future, will require Ultimate with [GitLab Duo Enterprise](../subscriptions/subscription-add-ons.md).
+**Offering:** GitLab.com
+
+- Helps users generate meaningful commit messages for merge and squash commits.
+- LLM: Vertex AI Codey [`text-bison`](https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/text).
+- [View documentation](project/merge_requests/ai_in_merge_requests.md#generate-messages-for-merge-or-squash-commits).
+
 ## Disable GitLab Duo features for specific groups or projects or an entire instance
 
 Disable GitLab Duo features by [following these instructions](ai_features_enable.md).
