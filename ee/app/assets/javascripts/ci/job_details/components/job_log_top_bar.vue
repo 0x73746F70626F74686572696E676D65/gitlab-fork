@@ -2,7 +2,6 @@
 import { GlButton } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
-import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_CI_BUILD } from '~/graphql_shared/constants';
@@ -103,9 +102,6 @@ export default {
       this.$emit('exitFullscreen');
     },
   },
-  i18n: {
-    buttonName: s__('Jobs|Root cause analysis'),
-  },
 };
 </script>
 <template>
@@ -138,11 +134,12 @@ export default {
       <template #controllers>
         <gl-button
           v-if="rootCauseAnalysisIsAvailable && jobFailed"
+          icon="tanuki-ai"
           class="gl-mr-2"
           data-testid="rca-button"
           @click="toggleDrawer"
         >
-          {{ $options.i18n.buttonName }}
+          {{ s__('Jobs|Troubleshoot') }}
         </gl-button>
       </template>
     </ce-job-log-top-bar>
