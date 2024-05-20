@@ -61,7 +61,7 @@ RSpec.describe Dependencies::ExportSerializers::ProjectDependenciesService, feat
           },
           'licenses' => occurrence.licenses,
           'vulnerabilities' => vulnerabilities,
-          'vulnerability_count' => 0
+          'vulnerability_count' => 2
         }
       end
 

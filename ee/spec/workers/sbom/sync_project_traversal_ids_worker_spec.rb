@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Sbom::SyncProjectTraversalIdsWorker, feature_category: :dependency_management, type: :worker do
   let_it_be(:project) { create(:project) }
-  let_it_be(:sbom_occurrence) { create(:sbom_occurrence, project: project) }
+  let_it_be(:sbom_occurrence) { create(:sbom_occurrence, traversal_ids: [], project: project) }
 
   let(:job_args) { project.id }
 
