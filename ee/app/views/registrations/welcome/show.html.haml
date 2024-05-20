@@ -15,7 +15,7 @@
         = _('To personalize your GitLab experience, we\'d like to know a bit more about you. We won\'t share this information with anyone.')
       = gitlab_ui_form_for(current_user,
         url: users_sign_up_welcome_path(glm_tracking_params.merge(params.permit(:trial))),
-        html: { class: 'gl-w-full! gl-p-5 js-users-signup-welcome',
+        html: { class: '!gl-w-full gl-p-5 js-users-signup-welcome',
                 'aria-live' => 'assertive',
                 data: { testid: 'welcome-form' } }) do |f|
         = render Pajamas::CardComponent.new do |c|

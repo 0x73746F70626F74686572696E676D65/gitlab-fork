@@ -220,7 +220,7 @@ export default {
           ref="dropdownButton"
           :text="dropdownToggleText"
           class="gl-w-full projects-dropdown"
-          menu-class="gl-w-full! gl-overflow-hidden!"
+          menu-class="!gl-w-full gl-overflow-hidden!"
           toggle-class="gl-display-flex gl-align-items-center gl-justify-content-between gl-text-truncate"
           @show="handleDropdownShow"
         >

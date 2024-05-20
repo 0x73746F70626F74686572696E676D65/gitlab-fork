@@ -36,7 +36,7 @@ exports[`MetricChart component template when isLoading is false and chartData is
     showselectallbuttonlabel=""
     size="medium"
     sronlyresultslabel="[Function]"
-    toggleclass="dropdown-menu-toggle gl-w-full!"
+    toggleclass="dropdown-menu-toggle !gl-w-full"
     toggletext="Please select a metric"
     variant="default"
   />

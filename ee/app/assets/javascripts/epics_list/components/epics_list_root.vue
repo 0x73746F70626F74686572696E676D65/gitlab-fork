@@ -271,7 +271,7 @@ export default {
       <div class="gl-display-flex gl-gap-3">
         <gl-button
           v-if="canBulkEditEpics"
-          class="gl-w-auto! gl-flex-grow-1"
+          class="!gl-w-auto gl-flex-grow-1"
           :disabled="showBulkEditSidebar"
           @click="showBulkEditSidebar = true"
           >{{ __('Bulk edit') }}</gl-button
@@ -285,7 +285,7 @@ export default {
           v-else-if="canCreateEpic"
           category="primary"
           variant="confirm"
-          class="gl-w-auto! gl-flex-grow-1"
+          class="!gl-w-auto gl-flex-grow-1"
           :href="epicNewPath"
           data-testid="new-epic-button"
           >{{ __('New epic') }}</gl-button

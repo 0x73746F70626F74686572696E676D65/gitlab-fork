@@ -150,7 +150,7 @@ export default {
                 :value="approvalsRequired"
                 data-testid="approvals-required-input"
                 type="number"
-                class="gl-w-11! gl-mx-3"
+                class="!gl-w-11 gl-mx-3"
                 :min="1"
                 :max="100"
                 @update="approvalsRequiredChanged"
