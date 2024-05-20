@@ -25007,6 +25007,8 @@ CREATE INDEX index_ci_pipelines_on_ci_ref_id_and_more ON ci_pipelines USING btre
 
 CREATE INDEX index_ci_pipelines_on_external_pull_request_id ON ci_pipelines USING btree (external_pull_request_id) WHERE (external_pull_request_id IS NOT NULL);
 
+CREATE UNIQUE INDEX index_ci_pipelines_on_id_and_partition_id ON ci_pipelines USING btree (id, partition_id);
+
 CREATE INDEX index_ci_pipelines_on_merge_request_id ON ci_pipelines USING btree (merge_request_id) WHERE (merge_request_id IS NOT NULL);
 
 CREATE INDEX index_ci_pipelines_on_pipeline_schedule_id_and_id ON ci_pipelines USING btree (pipeline_schedule_id, id);
@@ -25014,6 +25016,8 @@ CREATE INDEX index_ci_pipelines_on_pipeline_schedule_id_and_id ON ci_pipelines U
 CREATE INDEX index_ci_pipelines_on_project_id_and_id_desc ON ci_pipelines USING btree (project_id, id DESC);
 
 CREATE UNIQUE INDEX index_ci_pipelines_on_project_id_and_iid ON ci_pipelines USING btree (project_id, iid) WHERE (iid IS NOT NULL);
+
+CREATE UNIQUE INDEX index_ci_pipelines_on_project_id_and_iid_and_partition_id ON ci_pipelines USING btree (project_id, iid, partition_id) WHERE (iid IS NOT NULL);
 
 CREATE INDEX index_ci_pipelines_on_project_id_and_ref_and_status_and_id ON ci_pipelines USING btree (project_id, ref, status, id);
 
