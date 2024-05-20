@@ -59,7 +59,7 @@ You can use the [project access tokens API](../api/project_access_tokens.md) to
 programmatically take action, such as
 [rotating a project access token](../api/project_access_tokens.md#rotate-a-project-access-token).
 
-Project maintainers receive an email when project access tokens are 7 days or less from expiration.
+Project maintainers with a direct membership receive an email when project access tokens are 7 days or less from expiration. Inherited members do not receive an email.
 
 ## Group access tokens
 
@@ -78,7 +78,7 @@ You can use the [group access tokens API](../api/group_access_tokens.md) to
 programmatically take action, such as
 [rotating a group access token](../api/group_access_tokens.md#rotate-a-group-access-token).
 
-All group owners receive an email when group access tokens are 7 days or less from expiration.
+All group owners with a direct membership receive an email when group access tokens are 7 days or less from expiration. Inherited members do not receive an email.
 
 ## Deploy tokens
 
