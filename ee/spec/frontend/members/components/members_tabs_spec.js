@@ -1,12 +1,13 @@
 import Vue, { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import { GlButton } from '@gitlab/ui';
 import { pagination } from 'ee_else_ce_jest/members/mock_data';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import MembersApp from '~/members/components/app.vue';
 import MembersTabs from '~/members/components/members_tabs.vue';
-import { MEMBER_TYPES } from 'ee_else_ce/members/constants';
 import { TABS } from 'ee_else_ce/members/tabs_metadata';
+import { MEMBER_TYPES, TAB_QUERY_PARAM_VALUES } from 'ee_else_ce/members/constants';
 
 describe('MembersTabs', () => {
   Vue.use(Vuex);
@@ -101,6 +102,34 @@ describe('MembersTabs', () => {
 
       expect(findTabByText('Members')).not.toBeUndefined();
       expect(findTabByText('Banned')).toBeUndefined();
+    });
+  });
+
+  describe('hiding export button for pending promotion tab', () => {
+    beforeEach(() => {
+      delete window.location;
+      window.location = new URL('https://localhost');
+    });
+
+    const findExportButton = () => wrapper.findComponent(GlButton);
+
+    it('shows the export button when the active tab is not the pending promotion tab', async () => {
+      await createComponent({ provide: { canExportMembers: true, exportCsvPath: 'foo' } });
+      // ensuring the active tab is NOT the pending promotion tab
+      expect(findActiveTab().text()).not.toContain('Promotions');
+      expect(findExportButton().exists()).toBe(true);
+    });
+
+    it('hides the export button when the active tab is the pending promotion tab', async () => {
+      // activate the pending promotion tab
+      window.location.search = `?tab=${TAB_QUERY_PARAM_VALUES.promotionRequest}`;
+      await createComponent({ provide: { canExportMembers: true, exportCsvPath: 'foo' } });
+      await nextTick();
+      // ensure the current tab is the pending promotion tab
+      expect(findActiveTab().text()).toContain('Promotions');
+
+      // ensure the export button is not shown
+      expect(findExportButton().exists()).toBe(false);
     });
   });
 });
