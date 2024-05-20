@@ -128,18 +128,10 @@ export default {
       });
     },
     modifySidebarPercentage() {
-      const el = document.querySelector('.sidebar-top-level-items .active .count');
-      const formattedProgress = `${this.progressPercentage}%`;
-
-      if (el) {
-        el.textContent = formattedProgress;
-      } else {
-        // super sidebar
-        eventHubNav.$emit('updatePillValue', {
-          value: formattedProgress,
-          itemId: 'learn_gitlab',
-        });
-      }
+      eventHubNav.$emit('updatePillValue', {
+        value: `${this.progressPercentage}%`,
+        itemId: 'learn_gitlab',
+      });
     },
   },
 };

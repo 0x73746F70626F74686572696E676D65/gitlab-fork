@@ -84,7 +84,7 @@ export default {
           <span class="nav-item-name gl-flex-grow-1">
             {{ widgetTitle }}
           </span>
-          <span class="collapse-text gl-font-sm gl-mr-auto">
+          <span class="gl-whitespace-nowrap gl-overflow-hidden gl-font-sm gl-mr-auto">
             {{ widgetRemainingDays }}
           </span>
         </div>
