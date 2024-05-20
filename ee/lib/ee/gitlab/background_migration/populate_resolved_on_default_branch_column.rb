@@ -217,7 +217,7 @@ module EE
 
           self.table_name = 'vulnerabilities'
 
-          scope :not_found_in_pipeline_id, -> (pipeline_id) do
+          scope :not_found_in_pipeline_id, ->(pipeline_id) do
             where(<<~SQL)
               NOT EXISTS (
                 SELECT 1

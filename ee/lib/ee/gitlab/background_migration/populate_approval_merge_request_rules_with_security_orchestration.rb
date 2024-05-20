@@ -8,7 +8,7 @@ module EE
         extend ::Gitlab::Utils::Override
 
         prepended do
-          scope_to -> (relation) { relation.where(report_type: 4) }
+          scope_to ->(relation) { relation.where(report_type: 4) }
         end
 
         override :perform

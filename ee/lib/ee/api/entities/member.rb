@@ -10,7 +10,7 @@ module EE
           # EE attributes
           expose :group_saml_identity,
             using: ::API::Entities::Identity,
-            if: -> (member, options) { member.user && Ability.allowed?(options[:current_user], :read_group_saml_identity, member.source) }
+            if: ->(member, options) { member.user && Ability.allowed?(options[:current_user], :read_group_saml_identity, member.source) }
 
           expose(
             :email,
@@ -21,7 +21,7 @@ module EE
             member.user&.email
           end
 
-          expose :is_using_seat, if: -> (_, options) { options[:show_seat_info] }
+          expose :is_using_seat, if: ->(_, options) { options[:show_seat_info] }
 
           expose :override, if: ->(member, _) { member.source_type == 'Namespace' && member.ldap? }
 

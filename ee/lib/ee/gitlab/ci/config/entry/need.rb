@@ -13,12 +13,12 @@ module EE
               # needs:pipeline: other/project
               strategy :BridgeHash,
                 class: EE::Gitlab::Ci::Config::Entry::Need::BridgeHash,
-                if: -> (config) { config.is_a?(Hash) && bridge_to_upstream_pipeline?(config) }
+                if: ->(config) { config.is_a?(Hash) && bridge_to_upstream_pipeline?(config) }
 
               # When defining DAG dependency across project/ref
               strategy :CrossProjectDependency,
                 class: EE::Gitlab::Ci::Config::Entry::Need::CrossProjectDependency,
-                if: -> (config) { config.is_a?(Hash) && cross_project_need?(config) }
+                if: ->(config) { config.is_a?(Hash) && cross_project_need?(config) }
             end
 
             class_methods do
