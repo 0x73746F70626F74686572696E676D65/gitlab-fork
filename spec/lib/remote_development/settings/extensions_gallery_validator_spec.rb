@@ -44,7 +44,7 @@ RSpec.describe RemoteDevelopment::Settings::ExtensionsGalleryValidator, :rd_fast
     shared_examples "err result" do |expected_error_details:|
       it "returns an err Result containing error details" do
         expect(result).to be_err_result do |message|
-          expect(message).to be_a(RemoteDevelopment::Messages::SettingsVscodeExtensionsGalleryValidationFailed)
+          expect(message).to be_a RemoteDevelopment::Settings::Messages::SettingsVscodeExtensionsGalleryValidationFailed
           message.context => { details: String => error_details }
           expect(error_details).to eq(expected_error_details)
         end
