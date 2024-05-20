@@ -32,6 +32,24 @@ export const getProductAnalyticsStateResponse = (productAnalyticsState = null) =
   },
 });
 
+export const getProductAnalyticsProjectSettingsUpdateResponse = (
+  updatedSettings = {
+    productAnalyticsConfiguratorConnectionString: null,
+    productAnalyticsDataCollectorHost: null,
+    cubeApiBaseUrl: null,
+    cubeApiKey: null,
+  },
+  errors = [],
+) => ({
+  data: {
+    productAnalyticsProjectSettingsUpdate: {
+      __typename: 'ProductAnalyticsProjectSettingsUpdatePayload',
+      errors,
+      ...updatedSettings,
+    },
+  },
+});
+
 export const getProjectLevelAnalyticsProviderSettings = () => ({
   productAnalyticsConfiguratorConnectionString: 'https://configurator.example.com',
   productAnalyticsDataCollectorHost: 'https://collector.example.com',

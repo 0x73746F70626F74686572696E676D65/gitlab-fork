@@ -127,20 +127,20 @@ describe('ProviderSelectionView', () => {
         });
       });
     });
+  });
 
-    describe('when component emits "open-settings" event', () => {
-      beforeEach(() => {
-        createWrapper();
-        findComponent().vm.$emit('open-settings');
-        return waitForPromises();
-      });
+  describe('when self-managed provider component emits "open-settings" event', () => {
+    beforeEach(() => {
+      createWrapper();
+      findSelfManagedProviderCard().vm.$emit('open-settings');
+      return waitForPromises();
+    });
 
-      it('should redirect the user to settings', () => {
-        expect(windowOpenSpy).toHaveBeenCalledWith(
-          '/settings/analytics#js-analytics-data-sources',
-          '_blank',
-        );
-      });
+    it('should redirect the user to settings', () => {
+      expect(windowOpenSpy).toHaveBeenCalledWith(
+        '/settings/analytics#js-analytics-data-sources',
+        '_blank',
+      );
     });
   });
 });
