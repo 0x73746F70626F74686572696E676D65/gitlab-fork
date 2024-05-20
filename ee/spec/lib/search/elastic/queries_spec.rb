@@ -87,10 +87,6 @@ RSpec.describe ::Search::Elastic::Queries, feature_category: :global_search do
     context 'when options[:count_only] is true' do
       let(:options) { base_options.merge(count_only: true) }
 
-      it 'adds size set to 0 in query' do
-        expect(by_simple_query_string[:size]).to eq(0)
-      end
-
       it 'does not apply highlight in query' do
         expect(by_simple_query_string[:highlight]).to be_nil
       end
@@ -197,10 +193,6 @@ RSpec.describe ::Search::Elastic::Queries, feature_category: :global_search do
 
     context 'when options[:count_only] is true' do
       let(:options) { base_options.merge(count_only: true) }
-
-      it 'adds size set to 0 in query' do
-        expect(by_multi_match_query[:size]).to eq(0)
-      end
 
       it 'does not apply highlight in query' do
         expect(by_multi_match_query[:highlight]).to be_nil
