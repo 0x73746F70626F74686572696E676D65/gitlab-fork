@@ -13,16 +13,16 @@ RSpec.describe CloudConnector::SelfManaged::AvailableServiceData, feature_catego
     it { is_expected.to eq(newer_active_token.token) }
   end
 
-  describe '#allowed_for?' do
+  describe '#purchased?' do
     let(:available_service_data) { described_class.new(:duo_chat, nil, nil) }
     let_it_be(:group) { build(:group) }
 
-    subject(:allowed_for?) { available_service_data.allowed_for?(group) }
+    subject(:purchased?) { available_service_data.purchased?(group) }
 
     it 'ignores namespaces' do
       expect(GitlabSubscriptions::AddOnPurchase).not_to receive(:by_namespace_id)
 
-      allowed_for?
+      purchased?
     end
   end
 end

@@ -12,10 +12,14 @@ module API
           helpers ::API::Ci::Helpers::Runner
           helpers ::API::Helpers::CloudConnector
 
+          PURCHASE_NOT_FOUND_MESSAGE = "GitLab Duo Pro Add-On purchase can't be found"
+          TOKEN_NOT_FOUND_MESSAGE = "GitLab Duo Pro Add-On access token missing. Please synchronise Add-On access token"
+
           before do
             authenticate_job!
             not_found! unless x_ray_enabled_on_instance?
-            unauthorized! unless x_ray_available?
+            unauthorized!(PURCHASE_NOT_FOUND_MESSAGE) unless token_available?
+            unauthorized!(TOKEN_NOT_FOUND_MESSAGE) unless x_ray_available?
           end
 
           helpers do
@@ -23,25 +27,20 @@ module API
 
             def x_ray_enabled_on_instance?
               return true if ::Gitlab::Saas.feature_available?(:code_suggestions_x_ray)
-              return false unless ::License.feature_available?(:code_suggestions)
 
-              ::GitlabSubscriptions::AddOnPurchase.for_gitlab_duo_pro.any?
+              ::License.feature_available?(:code_suggestions)
             end
 
             def x_ray_available?
-              if ::Gitlab::Saas.feature_available?(:code_suggestions_x_ray)
-                gitlab_duo_pro_add_on?
-              else
-                ai_gateway_token.present?
-              end
+              code_suggestions_data.purchased?(current_namespace)
             end
 
-            def gitlab_duo_pro_add_on?
-              ::GitlabSubscriptions::AddOnPurchase
-                .for_gitlab_duo_pro
-                .by_namespace_id(current_namespace.self_and_ancestor_ids)
-                .active
-                .any?
+            def token_available?
+              ai_gateway_token.present?
+            end
+
+            def code_suggestions_data
+              CloudConnector::AvailableServices.find_by_name(:code_suggestions)
             end
 
             def model_gateway_headers(headers, gateway_token)
@@ -67,7 +66,7 @@ module API
             strong_memoize_attr :current_namespace
 
             def ai_gateway_token
-              Gitlab::Llm::AiGateway::Client.access_token(scopes: [:code_suggestions])
+              code_suggestions_data.access_token(current_namespace)
             end
             strong_memoize_attr :ai_gateway_token
           end

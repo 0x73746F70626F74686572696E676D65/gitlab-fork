@@ -26,19 +26,17 @@ RSpec.describe CloudConnector::BaseAvailableServiceData, feature_category: :clou
     let_it_be(:gitlab_add_on) { create(:gitlab_subscription_add_on) }
     let_it_be(:user) { create(:user) }
 
+    let_it_be_with_reload(:active_gitlab_purchase) do
+      create(:gitlab_subscription_add_on_purchase, add_on: gitlab_add_on)
+    end
+
     let_it_be(:expired_gitlab_purchase) do
       create(:gitlab_subscription_add_on_purchase, expires_on: 1.day.ago, add_on: gitlab_add_on)
     end
 
-    let_it_be_with_reload(:active_gitlab_purchase) do
-      create(:gitlab_subscription_add_on_purchase, :self_managed, add_on: gitlab_add_on)
-    end
+    subject(:allowed_for?) { described_class.new(:duo_chat, cut_off_date, purchased_add_ons).allowed_for?(user) }
 
-    subject(:allowed_for?) { described_class.new(:duo_chat, cut_off_date, purchased_add_ons).allowed_for?(resource) }
-
-    context 'when user is passed as a resource' do
-      let(:resource) { user }
-
+    shared_examples_for 'when the user has an active assigned seat' do
       context 'when the user has an active assigned seat' do
         before do
           create(
@@ -58,56 +56,93 @@ RSpec.describe CloudConnector::BaseAvailableServiceData, feature_category: :clou
           end
         end
       end
+    end
 
-      context 'when the user has an expired assigned duo pro seat' do
-        before do
-          create(
-            :gitlab_subscription_user_add_on_assignment,
-            user: user,
-            add_on_purchase: expired_gitlab_purchase
-          )
-        end
-
-        it { is_expected.to be false }
+    context 'when on Gitlab.com instance', :saas do
+      before do
+        active_gitlab_purchase.namespace.add_owner(user)
       end
 
-      context 'when the user has no add on seat assignments' do
-        it { is_expected.to be false }
+      include_examples 'when the user has an active assigned seat'
+    end
+
+    context 'when on Self managed instance' do
+      let_it_be_with_reload(:active_gitlab_purchase) do
+        create(:gitlab_subscription_add_on_purchase, :self_managed, add_on: gitlab_add_on)
+      end
+
+      include_examples 'when the user has an active assigned seat'
+    end
+
+    context 'when the user has an expired assigned duo pro seat' do
+      before do
+        create(
+          :gitlab_subscription_user_add_on_assignment,
+          user: user,
+          add_on_purchase: expired_gitlab_purchase
+        )
+      end
+
+      it { is_expected.to be false }
+    end
+
+    context 'when the user has no add on seat assignments' do
+      it { is_expected.to be false }
+    end
+  end
+
+  describe '#purchased?' do
+    let_it_be(:gitlab_add_on) { create(:gitlab_subscription_add_on) }
+
+    let_it_be_with_reload(:active_gitlab_purchase) do
+      create(:gitlab_subscription_add_on_purchase, add_on: gitlab_add_on)
+    end
+
+    let_it_be(:expired_gitlab_purchase) do
+      create(:gitlab_subscription_add_on_purchase, expires_on: 1.day.ago, add_on: gitlab_add_on)
+    end
+
+    subject(:purchased?) { described_class.new(:duo_chat, cut_off_date, purchased_add_ons).purchased?(namespace) }
+
+    context 'when the add_on is purchased and active for a namespace' do
+      let(:namespace) { active_gitlab_purchase.namespace }
+      let_it_be_with_reload(:active_gitlab_purchase) do
+        create(:gitlab_subscription_add_on_purchase, add_on: gitlab_add_on)
+      end
+
+      it { is_expected.to be true }
+
+      it 'calls by_namespace_id' do
+        expect(GitlabSubscriptions::AddOnPurchase)
+          .to receive(:by_namespace_id)
+                .with(namespace.self_and_ancestor_ids)
+                .and_call_original
+
+        purchased?
       end
     end
 
-    context 'when namespace is passed as a resource' do
-      context 'when the add_on is purchased and active for a namespace' do
-        let(:resource) { active_gitlab_purchase.namespace }
-        let_it_be_with_reload(:active_gitlab_purchase) do
-          create(:gitlab_subscription_add_on_purchase, add_on: gitlab_add_on)
-        end
+    context 'when tha add_on is purchased and active for a parent namespace' do
+      let(:namespace) { create(:group, parent: active_gitlab_purchase.namespace) }
 
-        it { is_expected.to be true }
+      it { is_expected.to be true }
+    end
 
-        it 'calls by_namespace_id' do
-          expect(GitlabSubscriptions::AddOnPurchase).to receive(:by_namespace_id).with(resource.id).and_call_original
+    context 'when the add_on is purchased but expired' do
+      let(:namespace) { expired_gitlab_purchase.namespace }
 
-          allowed_for?
-        end
-      end
+      it { is_expected.to be false }
+    end
 
-      context 'when the add_on is purchased but expired' do
-        let(:resource) { expired_gitlab_purchase.namespace }
+    context 'when the add_on purchase has no namespace' do
+      let(:namespace) { nil }
 
-        it { is_expected.to be false }
-      end
+      it { is_expected.to be true }
 
-      context 'when the add_on purchase has no namespace' do
-        let(:resource) { nil }
+      it 'doesn\'t call by_namespace_id' do
+        expect(GitlabSubscriptions::AddOnPurchase).not_to receive(:by_namespace_id)
 
-        it { is_expected.to be true }
-
-        it 'doesn\'t call by_namespace_id' do
-          expect(GitlabSubscriptions::AddOnPurchase).not_to receive(:by_namespace_id)
-
-          allowed_for?
-        end
+        purchased?
       end
     end
   end

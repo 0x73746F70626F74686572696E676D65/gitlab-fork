@@ -8,12 +8,12 @@ FactoryBot.define do
           {
             name: "code_suggestions",
             serviceStartTime: "2024-02-15T00:00:00Z",
-            bundledWith: %w[duo_pro]
+            bundledWith: %w[code_suggestions]
           },
           {
             name: "duo_chat",
             serviceStartTime: nil,
-            bundledWith: %w[duo_pro duo_enterprise]
+            bundledWith: %w[code_suggestions]
           }
         ]
       }

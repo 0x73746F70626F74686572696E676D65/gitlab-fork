@@ -36,6 +36,10 @@ module CloudConnector
         end.uniq
       end
 
+      def add_on_purchases_for(resource = nil)
+        resource.is_a?(User) ? add_on_purchases_assigned_to(resource) : add_on_purchases(resource)
+      end
+
       def allowed_scopes_during_free_access
         @bundled_with.values.flatten.uniq
       end
