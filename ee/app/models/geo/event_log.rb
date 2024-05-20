@@ -6,16 +6,6 @@ module Geo
 
     ignore_column :geo_event_id_convert_to_bigint, remove_with: '16.11', remove_after: '2024-03-21'
 
-    ignore_columns %i[
-      hashed_storage_migrated_event_id
-      hashed_storage_attachments_event_id
-      repository_created_event_id
-      repository_updated_event_id
-      repository_deleted_event_id
-      repository_renamed_event_id
-      reset_checksum_event_id
-    ], remove_with: '17.1', remove_after: '2024-05-16'
-
     include Geo::Model
     include ::EachBatch
 
