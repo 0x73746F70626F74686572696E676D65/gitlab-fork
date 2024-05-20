@@ -59,11 +59,7 @@ module Search
           query_hash = { query: { bool: bool_expr } }
           query_hash[:track_scores] = true unless query.present?
 
-          if options[:count_only]
-            query_hash[:size] = 0
-          else
-            query_hash[:highlight] = apply_highlight(fields)
-          end
+          query_hash[:highlight] = apply_highlight(fields) unless options[:count_only]
 
           query_hash
         end
@@ -97,11 +93,7 @@ module Search
           query_hash = { query: { bool: bool_expr } }
           query_hash[:track_scores] = true unless query.present?
 
-          if options[:count_only]
-            query_hash[:size] = 0
-          else
-            query_hash[:highlight] = apply_highlight(fields)
-          end
+          query_hash[:highlight] = apply_highlight(fields) unless options[:count_only]
 
           query_hash
         end

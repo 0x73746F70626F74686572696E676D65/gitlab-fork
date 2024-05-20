@@ -48,7 +48,7 @@ RSpec.describe Issue, :elastic_delete_by_query, feature_category: :global_search
 
       results = described_class.elastic_search("##{issue.iid}", options: options)
       expect(results.total_count).to eq(1)
-      expect(results.first.title).to eq('bla-bla issue')
+      expect(results.first.id).to eq(issue.id.to_s)
     end
 
     it_behaves_like 'no results when the user cannot read cross project' do

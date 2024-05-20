@@ -36,6 +36,9 @@ module Search
 
         return ::Search::Elastic::Aggregations.by_label_ids(query_hash: query_hash) if options[:aggregation]
 
+        query_hash = ::Search::Elastic::Formats.source_fields(query_hash: query_hash, options: options)
+        query_hash = ::Search::Elastic::Formats.size(query_hash: query_hash, options: options)
+
         ::Search::Elastic::Sorts.sort_by(query_hash: query_hash, options: options)
       end
 
@@ -47,7 +50,8 @@ module Search
           doc_type: DOC_TYPE,
           features: 'issues',
           no_join_project: true,
-          traversal_ids_prefix: :namespace_ancestry_ids
+          traversal_ids_prefix: :namespace_ancestry_ids,
+          source_fields: ['id']
         }
       end
     end
