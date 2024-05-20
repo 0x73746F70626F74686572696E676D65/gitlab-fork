@@ -72,27 +72,6 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
           is_expected.to eq(dependency.except(:vulnerabilities, :package_manager, :iid))
         end
       end
-
-      context 'with project' do
-        let(:project) { create(:project, :repository, :private, :in_group) }
-        let(:dependency) { build(:dependency, project: project) }
-
-        before do
-          allow(request).to receive(:project).and_return(nil)
-          allow(request).to receive(:group).and_return(project.group)
-        end
-
-        it 'includes project name and full_path' do
-          result = subject
-
-          expect(result.dig(:project, :full_path)).to eq(project.full_path)
-          expect(result.dig(:project, :name)).to eq(project.name)
-        end
-
-        it 'includes component_id' do
-          expect(subject.keys).to include(:component_id)
-        end
-      end
     end
 
     context 'when all required features are unavailable' do
@@ -136,20 +115,10 @@ RSpec.describe DependencyEntity, feature_category: :dependency_management do
           "name" => sbom_occurrence.name,
           "occurrence_count" => 1,
           "packager" => sbom_occurrence.packager,
-          "project" => {
-            "name" => project.name,
-            "full_path" => project.full_path
-          },
           "project_count" => 1,
           "version" => sbom_occurrence.version,
           "licenses" => sbom_occurrence.licenses,
           "component_id" => sbom_occurrence.component_version_id,
-          "location" => {
-            "ancestors" => sbom_occurrence.ancestors,
-            "blob_path" => sbom_occurrence.location[:blob_path],
-            "path" => sbom_occurrence.location[:path],
-            "top_level" => sbom_occurrence.location[:top_level]
-          },
           "vulnerability_count" => 0,
           "occurrence_id" => sbom_occurrence.id
         })

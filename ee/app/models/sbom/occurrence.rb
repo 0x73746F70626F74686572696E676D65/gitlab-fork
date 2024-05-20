@@ -77,8 +77,13 @@ module Sbom
       where(query_parts.join(' OR '), licenses: Array(ids))
     end
 
+    scope :unarchived, -> { where(archived: false) }
     scope :by_project_ids, ->(project_ids) { where(project_id: project_ids) }
     scope :by_uuids, ->(uuids) { where(uuid: uuids) }
+    scope :for_namespace_and_descendants, ->(namespace) do
+      where("traversal_ids >= ('{?}')", namespace.traversal_ids)
+        .where("traversal_ids < ('{?}')", namespace.next_traversal_ids)
+    end
 
     scope :filter_by_package_managers, ->(package_managers) do
       where(package_manager: package_managers)
@@ -135,6 +140,16 @@ module Sbom
 
       joins(project: [:project_authorizations])
         .where(project_authorizations: { user_id: user.id })
+    end
+
+    def self.select_distinct(on:, table_name: quoted_table_name)
+      quote = ->(column) { "#{table_name}.#{connection.quote_column_name(column)}" }
+
+      distinct_values = on.map { |column| quote.call(column) }
+
+      select_values = column_names.map { |column| quote.call(column) }
+
+      select("DISTINCT ON (#{distinct_values.join(', ')}) #{select_values.join(', ')}")
     end
 
     def location

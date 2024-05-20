@@ -6,7 +6,10 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
+  let(:using_new_query) { false }
+
   before do
+    stub_feature_flags(rewrite_sbom_occurrences_query: using_new_query)
     sign_in(user)
   end
 
@@ -127,6 +130,11 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
             let_it_be(:project) { create(:project, group: group) }
             let_it_be(:sbom_occurrence_npm) { create(:sbom_occurrence, :mit, :npm, project: project) }
             let_it_be(:sbom_occurrence_bundler) { create(:sbom_occurrence, :apache_2, :bundler, project: project) }
+            let_it_be(:archived_occurrence) do
+              create(:sbom_occurrence, project: create(:project, :archived, group: group))
+            end
+
+            let(:using_new_query) { true }
 
             let(:expected_response) do
               {
@@ -135,7 +143,6 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                 },
                 'dependencies' => [
                   {
-                    'location' => sbom_occurrence_npm.location.as_json,
                     'name' => sbom_occurrence_npm.name,
                     'packager' => sbom_occurrence_npm.packager,
                     'version' => sbom_occurrence_npm.version,
@@ -148,13 +155,11 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                     ],
                     'occurrence_count' => 1,
                     'project_count' => 1,
-                    "project" => { "full_path" => project.full_path, "name" => project.name },
                     "component_id" => sbom_occurrence_npm.component_version_id,
                     "occurrence_id" => sbom_occurrence_npm.id,
                     "vulnerability_count" => 0
                   },
                   {
-                    'location' => sbom_occurrence_bundler.location.as_json,
                     'name' => sbom_occurrence_bundler.name,
                     'packager' => sbom_occurrence_bundler.packager,
                     'version' => sbom_occurrence_bundler.version,
@@ -167,7 +172,6 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                     ],
                     'occurrence_count' => 1,
                     'project_count' => 1,
-                    "project" => { "full_path" => project.full_path, "name" => project.name },
                     "component_id" => sbom_occurrence_bundler.component_version_id,
                     "occurrence_id" => sbom_occurrence_bundler.id,
                     "vulnerability_count" => 0
@@ -188,187 +192,234 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               expect(response).to include_pagination_headers
             end
 
-            it 'avoids N+1 database queries related to projects and routes', :aggregate_failures do
-              control = ActiveRecord::QueryRecorder.new(skip_cached: false) { subject }
+            it 'avoids N+1 database queries', :aggregate_failures do
+              recording = ActiveRecord::QueryRecorder.new { subject }
 
-              project_routes_count = control.log.count do |entry|
-                entry[/\Aselect.+routes.+from.+routes.+where.+routes(.+source_id|.+source_type.+project){2}/i]
-              end
-              project_count = control.log.count do |entry|
-                entry[/\Aselect.+projects.+from.+projects.+where.+projects.+id/i]
-              end
-              component_versions_count = control.log.count do |entry|
-                entry[/\Aselect.+sbom_component_versions.+from.+sbom_component_versions/i]
-              end
-              sbom_sources_count = control.log.count do |entry|
-                entry[/\Aselect.+sbom_sources.+from.+sbom_sources/i]
-              end
-              sbom_components_count = control.log.count do |entry|
-                entry[/\Aselect.+sbom_components.+from.+sbom_components/i]
-              end
-
-              expect(project_routes_count).to eq(1)
-              expect(project_count).to eq(1)
-              expect(component_versions_count).to eq(1)
-              expect(sbom_sources_count).to eq(1)
-              expect(sbom_components_count).to eq(1)
+              expect(recording).not_to exceed_all_query_limit(1).for_model(::Sbom::Component)
+              expect(recording).not_to exceed_all_query_limit(1).for_model(::Sbom::ComponentVersion)
+              expect(recording).not_to exceed_all_query_limit(1).for_model(::Sbom::Source)
             end
 
-            context 'with sorting params' do
-              context 'when sorted by packager in ascending order' do
-                let(:params) { { group_id: group.to_param, sort_by: 'packager', sort: 'asc' } }
+            context 'when using old query' do
+              let(:using_new_query) { false }
 
-                it 'returns sorted list' do
-                  subject
-
-                  expect(json_response['dependencies'].first['packager']).to eq('bundler')
-                  expect(json_response['dependencies'].last['packager']).to eq('npm')
-                end
+              let(:expected_response) do
+                {
+                  'report' => {
+                    'status' => 'ok'
+                  },
+                  'dependencies' => [
+                    {
+                      'location' => sbom_occurrence_npm.location.as_json,
+                      'name' => sbom_occurrence_npm.name,
+                      'packager' => sbom_occurrence_npm.packager,
+                      'version' => sbom_occurrence_npm.version,
+                      'licenses' => [
+                        {
+                          'spdx_identifier' => 'MIT',
+                          'name' => 'MIT License',
+                          'url' => 'https://spdx.org/licenses/MIT.html'
+                        }
+                      ],
+                      'occurrence_count' => 1,
+                      'project_count' => 1,
+                      "project" => { "full_path" => project.full_path, "name" => project.name },
+                      "component_id" => sbom_occurrence_npm.component_version_id,
+                      "occurrence_id" => sbom_occurrence_npm.id,
+                      "vulnerability_count" => 0
+                    },
+                    {
+                      'location' => sbom_occurrence_bundler.location.as_json,
+                      'name' => sbom_occurrence_bundler.name,
+                      'packager' => sbom_occurrence_bundler.packager,
+                      'version' => sbom_occurrence_bundler.version,
+                      'licenses' => [
+                        {
+                          'spdx_identifier' => 'Apache-2.0',
+                          'name' => 'Apache 2.0 License',
+                          'url' => 'https://spdx.org/licenses/Apache-2.0.html'
+                        }
+                      ],
+                      'occurrence_count' => 1,
+                      'project_count' => 1,
+                      "project" => { "full_path" => project.full_path, "name" => project.name },
+                      "component_id" => sbom_occurrence_bundler.component_version_id,
+                      "occurrence_id" => sbom_occurrence_bundler.id,
+                      "vulnerability_count" => 0
+                    }
+                  ]
+                }
               end
 
-              context 'when sorted by packager in descending order' do
-                let(:params) { { group_id: group.to_param, sort_by: 'packager', sort: 'desc' } }
-
-                it 'returns sorted list' do
-                  subject
-
-                  expect(json_response['dependencies'].first['packager']).to eq('npm')
-                  expect(json_response['dependencies'].last['packager']).to eq('bundler')
-                end
+              before_all do
+                # The old version of the query has a functional bug where it returns records from archived projects.
+                # This oversight is fixed in the new version of the query. Once all tests are migrated over to the
+                # new query, this line should be deleted.
+                archived_occurrence.destroy!
               end
 
-              context 'when sorted by name in ascending order' do
-                let(:params) { { group_id: group.to_param, sort_by: 'name', sort: 'asc' } }
+              it 'returns the expected response' do
+                subject
 
-                it 'returns sorted list' do
-                  subject
-
-                  expect(json_response['dependencies'].first['name']).to eq(sbom_occurrence_npm.name)
-                  expect(json_response['dependencies'].last['name']).to eq(sbom_occurrence_bundler.name)
-                end
+                expect(json_response).to eq(expected_response)
               end
 
-              context 'when sorted by name in descending order' do
-                let(:params) { { group_id: group.to_param, sort_by: 'name', sort: 'desc' } }
+              context 'with sorting params' do
+                context 'when sorted by packager in ascending order' do
+                  let(:params) { { group_id: group.to_param, sort_by: 'packager', sort: 'asc' } }
 
-                it 'returns sorted list' do
-                  subject
-
-                  expect(json_response['dependencies'].first['name']).to eq(sbom_occurrence_bundler.name)
-                  expect(json_response['dependencies'].last['name']).to eq(sbom_occurrence_npm.name)
-                end
-              end
-
-              context 'when sorted by license in ascending order' do
-                let(:params) { { group_id: group.to_param, sort_by: 'license', sort: 'asc' } }
-
-                it 'returns sorted list' do
-                  subject
-
-                  expect(json_response['dependencies'].first['licenses'][0]['spdx_identifier']).to eq('Apache-2.0')
-                  expect(json_response['dependencies'].last['licenses'][0]['spdx_identifier']).to eq('MIT')
-                end
-              end
-
-              context 'when sorted by license in descending order' do
-                let(:params) { { group_id: group.to_param, sort_by: 'license', sort: 'desc' } }
-
-                it 'returns sorted list' do
-                  subject
-
-                  expect(json_response['dependencies'].first['licenses'][0]['spdx_identifier']).to eq('MIT')
-                  expect(json_response['dependencies'].last['licenses'][0]['spdx_identifier']).to eq('Apache-2.0')
-                end
-              end
-            end
-
-            context 'with filtering params' do
-              context 'when filtered by package managers' do
-                let(:params) { { group_id: group.to_param, package_managers: ['npm'] } }
-
-                it 'returns filtered list' do
-                  subject
-
-                  expect(json_response['dependencies'].count).to eq(1)
-                  expect(json_response['dependencies'].pluck('packager')).to eq(['npm'])
-                end
-              end
-
-              context 'when filtered by component_names' do
-                let(:params) do
-                  {
-                    group_id: group.to_param,
-                    component_names: [sbom_occurrence_bundler.name]
-                  }
-                end
-
-                it 'returns filtered list' do
-                  subject
-
-                  expect(json_response['dependencies'].count).to eq(1)
-                  expect(json_response['dependencies'].pluck('name')).to eq([sbom_occurrence_bundler.name])
-                end
-
-                context 'when the group hierarchy depth is too high' do
-                  before do
-                    stub_const('::Groups::DependenciesController::GROUP_COUNT_LIMIT', 0)
-                  end
-
-                  it 'ignores the filter' do
+                  it 'returns sorted list' do
                     subject
 
-                    expect(json_response['dependencies'].pluck('name')).to match_array([
-                      sbom_occurrence_bundler.component_name,
-                      sbom_occurrence_npm.component_name
-                    ])
+                    expect(json_response['dependencies'].first['packager']).to eq('bundler')
+                    expect(json_response['dependencies'].last['packager']).to eq('npm')
+                  end
+                end
+
+                context 'when sorted by packager in descending order' do
+                  let(:params) { { group_id: group.to_param, sort_by: 'packager', sort: 'desc' } }
+
+                  it 'returns sorted list' do
+                    subject
+
+                    expect(json_response['dependencies'].first['packager']).to eq('npm')
+                    expect(json_response['dependencies'].last['packager']).to eq('bundler')
+                  end
+                end
+
+                context 'when sorted by name in ascending order' do
+                  let(:params) { { group_id: group.to_param, sort_by: 'name', sort: 'asc' } }
+
+                  it 'returns sorted list' do
+                    subject
+
+                    expect(json_response['dependencies'].first['name']).to eq(sbom_occurrence_npm.name)
+                    expect(json_response['dependencies'].last['name']).to eq(sbom_occurrence_bundler.name)
+                  end
+                end
+
+                context 'when sorted by name in descending order' do
+                  let(:params) { { group_id: group.to_param, sort_by: 'name', sort: 'desc' } }
+
+                  it 'returns sorted list' do
+                    subject
+
+                    expect(json_response['dependencies'].first['name']).to eq(sbom_occurrence_bundler.name)
+                    expect(json_response['dependencies'].last['name']).to eq(sbom_occurrence_npm.name)
+                  end
+                end
+
+                context 'when sorted by license in ascending order' do
+                  let(:params) { { group_id: group.to_param, sort_by: 'license', sort: 'asc' } }
+
+                  it 'returns sorted list' do
+                    subject
+
+                    expect(json_response['dependencies'].first['licenses'][0]['spdx_identifier']).to eq('Apache-2.0')
+                    expect(json_response['dependencies'].last['licenses'][0]['spdx_identifier']).to eq('MIT')
+                  end
+                end
+
+                context 'when sorted by license in descending order' do
+                  let(:params) { { group_id: group.to_param, sort_by: 'license', sort: 'desc' } }
+
+                  it 'returns sorted list' do
+                    subject
+
+                    expect(json_response['dependencies'].first['licenses'][0]['spdx_identifier']).to eq('MIT')
+                    expect(json_response['dependencies'].last['licenses'][0]['spdx_identifier']).to eq('Apache-2.0')
                   end
                 end
               end
 
-              context 'when filtered by licenses' do
-                let(:params) do
-                  {
-                    group_id: group.to_param,
-                    licenses: ['Apache-2.0']
-                  }
+              context 'with filtering params' do
+                context 'when filtered by package managers' do
+                  let(:params) { { group_id: group.to_param, package_managers: ['npm'] } }
+
+                  it 'returns filtered list' do
+                    subject
+
+                    expect(json_response['dependencies'].count).to eq(1)
+                    expect(json_response['dependencies'].pluck('packager')).to eq(['npm'])
+                  end
                 end
 
-                it 'returns a filtered list' do
-                  subject
+                context 'when filtered by component_names' do
+                  let(:params) do
+                    {
+                      group_id: group.to_param,
+                      component_names: [sbom_occurrence_bundler.name]
+                    }
+                  end
 
-                  expect(json_response['dependencies'].count).to eq(1)
-                  expect(json_response['dependencies'].pluck('name')).to eq([sbom_occurrence_bundler.name])
+                  it 'returns filtered list' do
+                    subject
+
+                    expect(json_response['dependencies'].count).to eq(1)
+                    expect(json_response['dependencies'].pluck('name')).to eq([sbom_occurrence_bundler.name])
+                  end
+
+                  context 'when the group hierarchy depth is too high' do
+                    before do
+                      stub_const('::Groups::DependenciesController::GROUP_COUNT_LIMIT', 0)
+                    end
+
+                    it 'ignores the filter' do
+                      subject
+
+                      expect(json_response['dependencies'].pluck('name')).to match_array([
+                        sbom_occurrence_bundler.component_name,
+                        sbom_occurrence_npm.component_name
+                      ])
+                    end
+                  end
                 end
-              end
 
-              context 'when filtered by unknown licenses' do
-                let_it_be(:sbom_occurrence_unknown) { create(:sbom_occurrence, project: project) }
+                context 'when filtered by licenses' do
+                  let(:params) do
+                    {
+                      group_id: group.to_param,
+                      licenses: ['Apache-2.0']
+                    }
+                  end
 
-                let(:params) do
-                  {
-                    group_id: group.to_param,
-                    licenses: ['unknown']
-                  }
+                  it 'returns a filtered list' do
+                    subject
+
+                    expect(json_response['dependencies'].count).to eq(1)
+                    expect(json_response['dependencies'].pluck('name')).to eq([sbom_occurrence_bundler.name])
+                  end
                 end
 
-                it 'returns a filtered list' do
-                  subject
+                context 'when filtered by unknown licenses' do
+                  let_it_be(:sbom_occurrence_unknown) { create(:sbom_occurrence, project: project) }
 
-                  expect(json_response['dependencies'].pluck('occurrence_id')).to eq([sbom_occurrence_unknown.id])
+                  let(:params) do
+                    {
+                      group_id: group.to_param,
+                      licenses: ['unknown']
+                    }
+                  end
+
+                  it 'returns a filtered list' do
+                    subject
+
+                    expect(json_response['dependencies'].pluck('occurrence_id')).to eq([sbom_occurrence_unknown.id])
+                  end
                 end
-              end
 
-              context 'when filtered by projects' do
-                let_it_be(:other_project) { create(:project, group: group) }
-                let_it_be(:occurrence_from_other_project) { create(:sbom_occurrence, project: other_project) }
+                context 'when filtered by projects' do
+                  let_it_be(:other_project) { create(:project, group: group) }
+                  let_it_be(:occurrence_from_other_project) { create(:sbom_occurrence, project: other_project) }
 
-                let(:params) { { project_ids: [other_project.id] } }
+                  let(:params) { { project_ids: [other_project.id] } }
 
-                it 'returns a filtered list' do
-                  subject
+                  it 'returns a filtered list' do
+                    subject
 
-                  expect(json_response['dependencies'].count).to eq(1)
-                  expect(json_response['dependencies'].pluck('name')).to eq([occurrence_from_other_project.name])
+                    expect(json_response['dependencies'].count).to eq(1)
+                    expect(json_response['dependencies'].pluck('name')).to eq([occurrence_from_other_project.name])
+                  end
                 end
 
                 context 'when trying to search for too many projects' do

@@ -306,6 +306,18 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.unarchived' do
+    let_it_be(:unarchived_occurrence) { create(:sbom_occurrence) }
+
+    before_all do
+      create(:sbom_occurrence, project: create(:project, :archived))
+    end
+
+    it 'returns only unarchived occurrences' do
+      expect(described_class.unarchived).to eq([unarchived_occurrence])
+    end
+  end
+
   describe '.by_project_ids' do
     let_it_be(:occurrence_1) { create(:sbom_occurrence) }
     let_it_be(:occurrence_2) { create(:sbom_occurrence) }

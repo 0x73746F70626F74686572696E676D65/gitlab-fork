@@ -9,6 +9,8 @@ FactoryBot.define do
     component { component_version&.component || association(:sbom_component) }
     source { association :sbom_source, packager_name: packager_name }
     source_package { association :sbom_source_package }
+    traversal_ids { project.namespace.traversal_ids }
+    archived { project.archived }
 
     trait :os_occurrence do
       source do
@@ -18,10 +20,7 @@ FactoryBot.define do
     end
 
     trait :with_vulnerabilities do
-      transient do
-        vulnerability_count { 2 }
-      end
-
+      vulnerability_count { 2 }
       vulnerabilities { build_list(:vulnerability, vulnerability_count) }
     end
 
