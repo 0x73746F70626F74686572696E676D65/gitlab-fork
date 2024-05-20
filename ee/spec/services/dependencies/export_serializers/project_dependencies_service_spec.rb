@@ -84,16 +84,5 @@ RSpec.describe Dependencies::ExportSerializers::ProjectDependenciesService, feat
         expect { render }.not_to exceed_query_limit(control)
       end
     end
-
-    context 'when the project has dependencies and use_database_for_dependency_export is disabled' do
-      before do
-        create(:ee_ci_pipeline, :with_dependency_list_report, project: project)
-        stub_feature_flags(use_database_for_dependency_export: false)
-      end
-
-      it 'returns all the dependencies' do
-        expect(dependencies.count).to be 21
-      end
-    end
   end
 end
