@@ -24,7 +24,8 @@ module Analytics
       end
 
       def usage_url(year, month)
-        "#{settings.product_analytics_configurator_connection_string}/usage/gitlab_project_#{@project.id}/#{year}/#{month}" # rubocop:disable Layout/LineLength
+        URI.join(settings.product_analytics_configurator_connection_string,
+          "usage/gitlab_project_#{@project.id}/#{year}/#{month}")
       end
     end
   end

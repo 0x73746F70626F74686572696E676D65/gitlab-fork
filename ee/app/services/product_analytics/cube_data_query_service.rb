@@ -85,7 +85,7 @@ module ProductAnalytics
     end
 
     def cube_server_url(endpoint)
-      "#{product_analytics_settings.cube_api_base_url}/cubejs-api/v1/" + endpoint
+      URI.join(product_analytics_settings.cube_api_base_url, "cubejs-api/v1/", endpoint)
     end
 
     def gitlab_token
