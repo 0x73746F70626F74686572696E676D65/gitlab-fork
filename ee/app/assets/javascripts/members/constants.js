@@ -7,11 +7,8 @@ import {
   AVAILABLE_FILTERED_SEARCH_TOKENS as AVAILABLE_FILTERED_SEARCH_TOKENS_CE,
   MEMBER_TYPES as MEMBER_TYPES_CE,
   TAB_QUERY_PARAM_VALUES as CE_TAB_QUERY_PARAM_VALUES,
-  TABS as CE_TABS,
 } from '~/members/constants';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import PromotionRequestsTabApp from './promotion_requests/components/app.vue';
-import promotionRequestsTabStore from './promotion_requests/store/index';
 
 // eslint-disable-next-line import/export
 export * from '~/members/constants';
@@ -75,23 +72,6 @@ export const TAB_QUERY_PARAM_VALUES = Object.freeze({
   promotionRequest: 'promotion_request',
   banned: 'banned',
 });
-
-// eslint-disable-next-line import/export
-export const TABS = [
-  ...CE_TABS,
-  {
-    namespace: MEMBER_TYPES.promotionRequest,
-    title: __('Promotions'),
-    queryParamValue: TAB_QUERY_PARAM_VALUES.promotionRequest,
-    component: PromotionRequestsTabApp,
-    store: promotionRequestsTabStore,
-  },
-  {
-    namespace: MEMBER_TYPES.banned,
-    title: __('Banned'),
-    queryParamValue: TAB_QUERY_PARAM_VALUES.banned,
-  },
-];
 
 const APP_OPTIONS_BASE = {
   [MEMBER_TYPES.promotionRequest]: gon.features?.memberPromotionManagement,

@@ -5,7 +5,8 @@ import { pagination } from 'ee_else_ce_jest/members/mock_data';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import MembersApp from '~/members/components/app.vue';
 import MembersTabs from '~/members/components/members_tabs.vue';
-import { MEMBER_TYPES, TABS } from 'ee_else_ce/members/constants';
+import { MEMBER_TYPES } from 'ee_else_ce/members/constants';
+import { TABS } from 'ee_else_ce/members/tabs_metadata';
 
 describe('MembersTabs', () => {
   Vue.use(Vuex);
