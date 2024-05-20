@@ -23394,9 +23394,6 @@ msgstr ""
 msgid "GitLab Pages"
 msgstr ""
 
-msgid "GitLab Pages has moved"
-msgstr ""
-
 msgid "GitLab Premium"
 msgstr ""
 
@@ -54145,9 +54142,6 @@ msgid "To get started, please enter your Gitea host URL and a %{link_to_personal
 msgstr ""
 
 msgid "To get started, use the link below to confirm your account."
-msgstr ""
-
-msgid "To go to GitLab Pages, on the left sidebar, select %{pages_link}."
 msgstr ""
 
 msgid "To invite more users, you can reduce the number of users in your top-level group to %{free_limit} user or less. You can also upgrade to a paid tier which do not have user limits. If you need additional time, you can start a free 30-day trial which includes unlimited users."
