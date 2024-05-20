@@ -297,7 +297,7 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
 
       page.within('.modal') do
         aggregate_failures do
-          expect(find('.modal-header')).to have_content('Board scope')
+          expect(find('.modal-header')).to have_content('Board configuration')
           expect(page).not_to have_content('Board name')
           expect(page).not_to have_link('Edit')
           expect(page).not_to have_button('Edit')

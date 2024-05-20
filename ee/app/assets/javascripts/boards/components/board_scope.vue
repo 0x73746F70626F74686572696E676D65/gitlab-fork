@@ -77,6 +77,7 @@ export default {
         {{ expandButtonText }}
       </gl-button>
     </div>
+    <div v-else class="gl-font-bold gl-font-lg gl-mb-2">{{ __('Scope') }}</div>
     <p class="text-secondary gl-mb-3">
       {{ scopeText }}
     </p>
