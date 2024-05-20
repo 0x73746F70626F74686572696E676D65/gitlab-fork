@@ -195,10 +195,8 @@ module Gitlab
         %W[--repository-access-level=#{container.repository_access_level}].tap do |c|
           c << "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}"
           c << "--schema-version-blob=#{BLOB_SCHEMA_VERSION}"
-          if migration_finished?(:add_schema_version_to_commits)
-            c << '--schema-version-commits'
-            c << "--schema-version-commit=#{COMMIT_SCHEMA_VERSION}"
-          end
+          c << '--schema-version-commits'
+          c << "--schema-version-commit=#{COMMIT_SCHEMA_VERSION}"
 
           c << "--archived=#{project.archived}" if migration_finished?(:add_archived_to_commits) &&
             migration_finished?(:add_archived_to_main_index)
