@@ -91,7 +91,7 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
       expect(indexer.failures).to be_empty
     end
 
-    it 'calls bulk with an update request' do
+    it 'calls bulk with an index request' do
       set_bulk_limit(indexer, 1)
       indexer.process(issue_as_ref)
       allow(es_client).to receive(:bulk).and_return({})
@@ -99,39 +99,62 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
       indexer.process(issue_as_ref)
 
       expected_op_hash = {
-        update: {
-          _index: issue_as_ref.proxy.index_name,
+        index: {
+          _index: issue_as_ref.index_name,
           _type: nil,
           _id: issue.id.to_s,
           routing: "project_#{issue.project.id}"
         }
       }.with_indifferent_access
 
-      expect(es_client).to have_received(:bulk).with(valid_request(:update, expected_op_hash, issue_as_json))
+      expect(es_client).to have_received(:bulk).with(valid_request(:index, expected_op_hash, issue_as_json))
     end
 
-    context 'when the elastic_bulk_indexer_use_upsert feature flag is disabled' do
+    context 'when ref operation is upsert' do
       before do
-        stub_feature_flags(elastic_bulk_indexer_use_upsert: false)
+        allow(issue_as_ref).to receive(:operation).and_return(:upsert)
       end
 
-      it 'calls bulk with an index request' do
+      it 'calls bulk with an update request' do
         set_bulk_limit(indexer, 1)
+
         indexer.process(issue_as_ref)
         allow(es_client).to receive(:bulk).and_return({})
 
         indexer.process(issue_as_ref)
 
         expected_op_hash = {
-          index: {
-            _index: issue_as_ref.proxy.index_name,
+          update: {
+            _index: issue_as_ref.index_name,
             _type: nil,
             _id: issue.id.to_s,
             routing: "project_#{issue.project.id}"
           }
         }.with_indifferent_access
 
-        expect(es_client).to have_received(:bulk).with(valid_request(:index, expected_op_hash, issue_as_json))
+        expect(es_client).to have_received(:bulk).with(valid_request(:update, expected_op_hash, issue_as_json))
+      end
+
+      it 'returns bytesize when DocumentShouldBeDeletedFromIndexException is raised' do
+        bytesize = instance_double(Integer)
+        allow(indexer).to receive(:submit).and_return(bytesize)
+
+        rec = issue_as_ref.database_record
+        allow(rec.__elasticsearch__)
+          .to receive(:as_indexed_json)
+          .and_raise ::Elastic::Latest::DocumentShouldBeDeletedFromIndexError.new(rec.class.name, rec.id)
+
+        expect(indexer.process(issue_as_ref)).to eq(bytesize)
+      end
+    end
+
+    describe 'when the operation is invalid' do
+      before do
+        allow(issue_as_ref).to receive(:operation).and_return('Invalid')
+      end
+
+      it 'raises an error' do
+        expect { indexer.process(issue_as_ref) }.to raise_error(StandardError, 'Operation Invalid is not supported')
       end
     end
   end
@@ -396,7 +419,7 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
   end
 
   def ref(record)
-    Gitlab::Elastic::DocumentReference.build(record)
+    ::Search::Elastic::Reference.build(record)
   end
 
   def stub_es_client(indexer, client)

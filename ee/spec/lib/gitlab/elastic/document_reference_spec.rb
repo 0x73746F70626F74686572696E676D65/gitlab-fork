@@ -99,6 +99,52 @@ RSpec.describe Gitlab::Elastic::DocumentReference, feature_category: :global_sea
     end
   end
 
+  describe '#preload_indexing_data' do
+    let_it_be(:issue1) { create(:issue) }
+    let_it_be(:issue2) { create(:issue) }
+    let_it_be(:note1) { create(:note) }
+    let_it_be(:note2) { create(:note) }
+    let_it_be(:note_deleted) do
+      note = create(:note)
+      note.delete
+      note
+    end
+
+    let_it_be(:issue_ref1) { described_class.new(Issue, issue1.id, issue1.es_id, issue1.es_parent) }
+    let_it_be(:issue_ref2) { described_class.new(Issue, issue2.id, issue2.es_id, issue2.es_parent) }
+    let_it_be(:note_ref1) { described_class.new(Note, note1.id, note1.es_id, note1.es_parent) }
+    let_it_be(:note_ref2) { described_class.new(Note, note2.id, note2.es_id, note2.es_parent) }
+    let_it_be(:note_ref_deleted) do
+      described_class.new(Note, note_deleted.id, note_deleted.es_id, note_deleted.es_parent)
+    end
+
+    it 'preloads database records to avoid N+1 queries' do
+      refs = []
+      refs << described_class.deserialize(issue_ref1.serialize)
+      refs << described_class.deserialize(note_ref1.serialize)
+
+      control = ActiveRecord::QueryRecorder.new { described_class.preload_indexing_data(refs).map(&:database_record) }
+
+      refs = []
+      refs << described_class.deserialize(issue_ref1.serialize)
+      refs << described_class.deserialize(note_ref1.serialize)
+      refs << described_class.deserialize(issue_ref2.serialize)
+      refs << described_class.deserialize(note_ref2.serialize)
+      refs << described_class.deserialize(note_ref_deleted.serialize)
+
+      database_records = nil
+      expect do
+        database_records = described_class.preload_indexing_data(refs).map { |ref| ref.database_record }
+      end.not_to exceed_query_limit(control)
+
+      expect(database_records[0]).to eq(issue1)
+      expect(database_records[1]).to eq(note1)
+      expect(database_records[2]).to eq(issue2)
+      expect(database_records[3]).to eq(note2)
+      expect(database_records[4]).to eq(nil) # Deleted database record will be nil
+    end
+  end
+
   describe '#initialize' do
     it 'creates an issue reference' do
       expect(described_class.new(*issue_as_array)).to eq(issue_as_ref)
@@ -179,89 +225,34 @@ RSpec.describe Gitlab::Elastic::DocumentReference, feature_category: :global_sea
     end
   end
 
-  describe '::Collection' do
-    it 'contains a collection of DocumentReference' do
-      ref1 = described_class.new(Integer, 1, 'integer_1')
-      ref2 = described_class.new(Integer, 1, 'integer_1')
-      ref3 = described_class.new(Integer, 1, 'integer_1')
+  describe '#index_name' do
+    context 'when operation is :delete' do
+      it 'is the ref klass index name' do
+        allow(issue_as_ref).to receive(:operation).and_return(:delete)
 
-      collection = described_class::Collection.new
-      collection.deserialize_and_add(ref1.serialize)
-      collection.deserialize_and_add(ref2.serialize)
-      collection.deserialize_and_add(ref3.serialize)
-
-      expect(collection.count).to eq(3)
-      expect(collection.first).to eq(ref1)
+        expect(issue_as_ref.index_name).to eq(issue_as_ref.klass.index_name)
+      end
     end
 
-    describe '#preload_database_records' do
-      let_it_be(:issue1) { create(:issue) }
-      let_it_be(:issue2) { create(:issue) }
-      let_it_be(:note1) { create(:note) }
-      let_it_be(:note2) { create(:note) }
-      let_it_be(:note_deleted) do
-        note = create(:note)
-        note.delete
-        note
+    [:index, :upsert].each do |op|
+      context "when operation is #{op}" do
+        it 'is the ref proxy index name' do
+          allow(issue_as_ref).to receive(:operation).and_return(op)
+
+          expect(issue_as_ref.index_name).to eq(issue_as_ref.proxy.index_name)
+        end
       end
+    end
+  end
 
-      let_it_be(:issue_ref1) { described_class.new(Issue, issue1.id, issue1.es_id, issue1.es_parent) }
-      let_it_be(:issue_ref2) { described_class.new(Issue, issue2.id, issue2.es_id, issue2.es_parent) }
-      let_it_be(:note_ref1) { described_class.new(Note, note1.id, note1.es_id, note1.es_parent) }
-      let_it_be(:note_ref2) { described_class.new(Note, note2.id, note2.es_id, note2.es_parent) }
-      let_it_be(:note_ref_deleted) do
-        described_class.new(Note, note_deleted.id, note_deleted.es_id, note_deleted.es_parent)
-      end
+  describe '#document_type' do
+    [:index, :upsert, :delete].each do |op|
+      context "when operation is #{op}" do
+        it 'is nil' do
+          allow(issue_as_ref).to receive(:operation).and_return(op)
 
-      it 'preloads database records to avoid N+1 queries' do
-        collection = described_class::Collection.new
-        collection.deserialize_and_add(issue_ref1.serialize)
-        collection.deserialize_and_add(note_ref1.serialize)
-
-        control = ActiveRecord::QueryRecorder.new { collection.preload_database_records.map(&:database_record) }
-
-        collection = described_class::Collection.new
-        collection.deserialize_and_add(issue_ref1.serialize)
-        collection.deserialize_and_add(note_ref1.serialize)
-        collection.deserialize_and_add(issue_ref2.serialize)
-        collection.deserialize_and_add(note_ref2.serialize)
-        collection.deserialize_and_add(note_ref_deleted.serialize)
-
-        database_records = nil
-        expect do
-          database_records = collection.preload_database_records.map { |ref| ref.database_record }
-        end.not_to exceed_query_limit(control)
-
-        expect(database_records[0]).to eq(issue1)
-        expect(database_records[1]).to eq(note1)
-        expect(database_records[2]).to eq(issue2)
-        expect(database_records[3]).to eq(note2)
-        expect(database_records[4]).to eq(nil) # Deleted database record will be nil
-      end
-
-      it 'batches database records to avoid sql timeouts' do
-        stub_const("#{described_class.name}::PRELOAD_BATCH_SIZE", 2)
-
-        note3 = create(:note)
-        note_ref3 = described_class.new(Note, note3.id, note3.es_id, note3.es_parent)
-
-        collection = described_class::Collection.new
-        collection.deserialize_and_add(note_ref1.serialize)
-        collection.deserialize_and_add(note_ref2.serialize)
-
-        control = ActiveRecord::QueryRecorder.new { collection.preload_database_records.map(&:database_record) }
-
-        collection = described_class::Collection.new
-        collection.deserialize_and_add(note_ref1.serialize)
-        collection.deserialize_and_add(note_ref2.serialize)
-        collection.deserialize_and_add(note_ref3.serialize)
-
-        # preloading is done in batches. we use the query recorder to validate that batching
-        # is occurring. this is proven by setting the batch size to a low number and verify each set of queries
-        # is run for each batch
-        expect do
-          collection.preload_database_records.map(&:database_record)
-        end.not_to exceed_query_limit(control).with_threshold(control.count)
+          expect(issue_as_ref.document_type).to be_nil
+        end
       end
     end
   end

@@ -25,11 +25,11 @@ module Elastic
       end
 
       # Add some records to the processing queue. Items must be serializable to
-      # a Gitlab::Elastic::DocumentReference
+      # a Search::Elastic::Reference
       def track!(*items)
         return true if items.empty?
 
-        items.map! { |item| ::Gitlab::Elastic::DocumentReference.serialize(item) }
+        items.map! { |item| ::Search::Elastic::Reference.serialize(item) }
 
         items_by_shard = items.group_by { |item| shard_number(item) }
 
@@ -42,11 +42,11 @@ module Elastic
             min = (max - shard_items.size) + 1
 
             (min..max).zip(shard_items).each_slice(1000) do |group|
-              logger.debug(class: self.name,
-                           redis_set: set_key,
-                           message: 'track_items',
-                           count: group.count,
-                           tracked_items_encoded: group.to_json)
+              logger.debug('class' => self.name,
+                           'message' => 'track_items',
+                           'meta.indexing.redis_set' => set_key,
+                           'meta.indexing.count' => group.count,
+                           'meta.indexing.tracked_items_encoded' => group.to_json)
 
               redis.zadd(set_key, group)
             end
@@ -164,12 +164,12 @@ module Elastic
         last_score = specs.last.last
 
         logger.info(
-          class: self.class.name,
-          message: 'bulk_indexing_start',
-          redis_set: set_key,
-          records_count: specs.count,
-          first_score: first_score,
-          last_score: last_score
+          'class' => self.class.name,
+          'message' => 'bulk_indexing_start',
+          'meta.indexing.redis_set' => set_key,
+          'meta.indexing.records_count' => specs.count,
+          'meta.indexing.first_score' => first_score,
+          'meta.indexing.last_score' => last_score
         )
 
         specs_buffer += specs
@@ -183,10 +183,10 @@ module Elastic
       refs = deserialize_all(specs_buffer)
       total_bytes = 0
 
-      refs.preload_database_records.each do |ref|
+      Search::Elastic::Reference.preload_database_records(refs).each do |ref|
         total_bytes += submit_document(ref)
 
-        indexing_duration = ref.database_record&.updated_at&.then { |updated_at| Time.current - updated_at } || 0.0
+        indexing_duration = ref.database_record&.try(:updated_at)&.then { |updated| Time.current - updated } || 0.0
         indexing_durations << indexing_duration
       end
 
@@ -197,10 +197,10 @@ module Elastic
       indexed_bytes_per_second = (total_bytes / (Time.current - start_time)).ceil
 
       logger.info(
-        class: self.class.name,
-        message: 'bulk_indexer_flushed',
-        search_flushing_duration_s: flushing_duration_s,
-        search_indexed_bytes_per_second: indexed_bytes_per_second
+        'class' => self.class.name,
+        'message' => 'bulk_indexer_flushed',
+        'meta.indexing.search_flushing_duration_s' => flushing_duration_s,
+        'meta.indexing.search_indexed_bytes_per_second' => indexed_bytes_per_second
       )
       Gitlab::Metrics::GlobalSearchIndexingSlis.record_bytes_per_second_apdex(
         throughput: indexed_bytes_per_second,
@@ -215,14 +215,14 @@ module Elastic
         redis.zremrangebyscore(set_key, first_score, last_score)
 
         logger.info(
-          class: self.class.name,
-          message: 'bulk_indexing_end',
-          redis_set: set_key,
-          records_count: count,
-          first_score: first_score,
-          last_score: last_score,
-          failures_count: @failures.count,
-          bulk_execution_duration_s: Time.current - start_time
+          'class' => self.class.name,
+          'message' => 'bulk_indexing_end',
+          'meta.indexing.redis_set' => set_key,
+          'meta.indexing.records_count' => count,
+          'meta.indexing.first_score' => first_score,
+          'meta.indexing.last_score' => last_score,
+          'meta.indexing.failures_count' => @failures.count,
+          'meta.indexing.bulk_execution_duration_s' => Time.current - start_time
         )
       end
 
@@ -232,14 +232,14 @@ module Elastic
         klass = ref.klass.to_s
 
         logger.info(
-          class: self.class.name,
-          message: 'indexing_done',
-          model_class: klass,
-          model_id: ref.db_id,
-          es_id: ref.es_id,
-          es_parent: ref.es_parent,
-          search_indexing_duration_s: indexing_durations[index],
-          search_indexing_flushing_duration_s: flushing_duration_s
+          'class' => self.class.name,
+          'message' => 'indexing_done',
+          'meta.indexing.reference_class' => klass,
+          'meta.indexing.database_id' => ref.database_id,
+          'meta.indexing.identifier' => ref.identifier,
+          'meta.indexing.routing' => ref.routing,
+          'meta.indexing.search_indexing_duration_s' => indexing_durations[index],
+          'meta.indexing.search_indexing_flushing_duration_s' => flushing_duration_s
         )
       end
 
@@ -247,16 +247,16 @@ module Elastic
     end
 
     def deserialize_all(specs)
-      refs = ::Gitlab::Elastic::DocumentReference::Collection.new
+      refs = []
       specs.each do |spec, _|
-        refs.deserialize_and_add(spec)
-      rescue ::Gitlab::Elastic::DocumentReference::InvalidError => err
-        logger.warn(
-          class: self.class.name,
-          message: 'submit_document_failed',
-          reference: spec,
-          error_class: err.class.to_s,
-          error_message: err.message
+        refs << Search::Elastic::Reference.deserialize(spec)
+      rescue Search::Elastic::Reference::InvalidError, Gitlab::Elastic::DocumentReference::InvalidError => err
+        logger.error(
+          'class' => self.class.name,
+          'message' => 'submit_document_failed',
+          'error_class' => err.class.to_s,
+          'error_message' => err.message,
+          'meta.indexing.reference' => spec
         )
       end
 

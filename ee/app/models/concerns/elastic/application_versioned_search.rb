@@ -30,6 +30,10 @@ module Elastic
       self.class.es_type
     end
 
+    def elastic_reference
+      ::Search::Elastic::Reference.ref(self)
+    end
+
     included do
       delegate(*FORWARDABLE_INSTANCE_METHODS, to: :__elasticsearch__)
 

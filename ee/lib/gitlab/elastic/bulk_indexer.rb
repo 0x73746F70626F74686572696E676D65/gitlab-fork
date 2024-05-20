@@ -35,10 +35,15 @@ module Gitlab
       # Adds or removes a document in elasticsearch, depending on whether the
       # database record it refers to can be found
       def process(ref)
-        if ref.index?
+        case ref.operation.to_sym
+        when :index
           index(ref)
-        else
+        when :upsert
+          upsert(ref)
+        when :delete
           delete(ref)
+        else
+          raise StandardError, "Operation #{ref.operation} is not supported"
         end
       end
 
@@ -57,17 +62,25 @@ module Gitlab
       attr_reader :body, :body_size_bytes, :ref_buffer
 
       def index(ref)
-        # return bytesize to calculate total bytes in calling method
-        submit(ref, ref.index_operation).tap do |_bytesize|
-          delete_from_rolled_over_indices(alias_name: ref.proxy.index_name, ref: ref)
+        submit(ref, index_operation(ref)).tap do |_bytesize|
+          delete_from_rolled_over_indices(alias_name: ref.index_name, ref: ref)
         end
-      rescue ::Elastic::Latest::DocumentShouldBeDeletedFromIndexError => error
-        logger.warn(message: error.message, record_id: error.record_id, class_name: error.class_name)
+      rescue ::Elastic::Latest::DocumentShouldBeDeletedFromIndexError => e
+        logger.warn(error_message: e.message, record_id: e.record_id, error_class: e.class)
+        delete(ref)
+      end
+
+      def upsert(ref)
+        submit(ref, upsert_operation(ref)).tap do |_bytesize|
+          delete_from_rolled_over_indices(alias_name: ref.index_name, ref: ref)
+        end
+      rescue ::Elastic::Latest::DocumentShouldBeDeletedFromIndexError => e
+        logger.warn(error_message: e.message, record_id: e.record_id, error_class: e.class)
         delete(ref)
       end
 
       def delete(ref, index_name: nil)
-        submit(ref, ref.delete_operation(index_name: index_name))
+        submit(ref, delete_operation(ref, index_name: index_name))
       end
 
       def bulk_limit_bytes
@@ -106,10 +119,10 @@ module Gitlab
         failed_refs = try_send_bulk
 
         logger.info(
-          message: 'bulk_submitted',
-          body_size_bytes: body_size_bytes,
-          bulk_count: ref_buffer.count,
-          errors_count: failed_refs.count
+          'message' => 'bulk_submitted',
+          'meta.indexing.body_size_bytes' => body_size_bytes,
+          'meta.indexing.bulk_count' => ref_buffer.count,
+          'meta.indexing.errors_count' => failed_refs.count
         )
 
         failures.push(*failed_refs)
@@ -147,6 +160,30 @@ module Gitlab
         end
 
         out
+      end
+
+      def index_operation(ref)
+        [{ index: build_op(ref) }, ref.as_indexed_json]
+      end
+
+      def upsert_operation(ref)
+        [{ update: build_op(ref) }, { doc: ref.as_indexed_json, doc_as_upsert: true }]
+      end
+
+      def delete_operation(ref, index_name: nil)
+        [{ delete: build_op(ref, index_name: index_name) }]
+      end
+
+      def build_op(ref, index_name: nil)
+        op = {
+          _index: index_name || ref.index_name,
+          _type: nil,
+          _id: ref.identifier
+        }
+
+        op[:routing] = ref.routing if ref.routing
+
+        op
       end
 
       def delete_from_rolled_over_indices(alias_name:, ref:)
