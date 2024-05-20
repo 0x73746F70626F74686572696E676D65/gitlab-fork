@@ -4,6 +4,7 @@ import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { contentTop } from '~/lib/utils/common_utils';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
+import { queryToObject } from '~/lib/utils/url_utility';
 import LogsTable from './logs_table.vue';
 import LogsDrawer from './logs_drawer.vue';
 import LogsFilteredSearch from './filter_bar/logs_filtered_search.vue';
@@ -11,6 +12,8 @@ import { queryToFilterObj, filterObjToQuery, selectedLogQueryObject } from './fi
 
 const LIST_V_PADDING = 100;
 const PAGE_SIZE = 100;
+
+const OPEN_DRAWER_QUERY_PARAM = 'drawerOpen';
 
 export default {
   components: {
@@ -32,13 +35,14 @@ export default {
     },
   },
   data() {
+    const { [OPEN_DRAWER_QUERY_PARAM]: shouldOpenDrawer } = queryToObject(window.location.search);
     return {
       loadingLogs: false,
       loadingMetadata: false,
       logs: [],
       metadata: {},
       filters: queryToFilterObj(window.location.search),
-      isDrawerOpen: false,
+      shouldOpenDrawer: shouldOpenDrawer === 'true',
       selectedLog: null,
       nextPageToken: null,
     };
@@ -49,9 +53,12 @@ export default {
     },
     query() {
       if (this.selectedLog) {
-        return selectedLogQueryObject(this.selectedLog);
+        return {
+          ...selectedLogQueryObject(this.selectedLog),
+          [OPEN_DRAWER_QUERY_PARAM]: true,
+        };
       }
-      return filterObjToQuery(this.filters);
+      return { ...filterObjToQuery(this.filters), [OPEN_DRAWER_QUERY_PARAM]: undefined };
     },
   },
   created() {
@@ -70,6 +77,13 @@ export default {
         this.logs = [...this.logs, ...logs];
         if (nextPageToken) {
           this.nextPageToken = nextPageToken;
+        }
+        if (this.shouldOpenDrawer) {
+          this.shouldOpenDrawer = false;
+          const [selectedFingerprint] = this.filters.attributes?.fingerprint || [];
+          if (selectedFingerprint?.value) {
+            this.selectLog(selectedFingerprint?.value);
+          }
         }
       } catch {
         createAlert({
@@ -97,9 +111,12 @@ export default {
       if (this.selectedLog?.fingerprint === fingerprint) {
         this.closeDrawer();
       } else {
-        const log = this.logs.find((s) => s.fingerprint === fingerprint);
-        this.selectedLog = log;
+        this.selectLog(fingerprint);
       }
+    },
+    selectLog(fingerprint) {
+      const log = this.logs.find((s) => s.fingerprint === fingerprint);
+      this.selectedLog = log;
     },
     closeDrawer() {
       this.selectedLog = null;
