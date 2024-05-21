@@ -17,9 +17,9 @@ module Types
         deprecated: { reason: 'Use work_item_iid instead', milestone: '15.8' }
 
       field :work_item_iid, GraphQL::Types::ID, null: false,
-                                                method: :work_item_iid,
-                                                description: 'Work item IID of the requirement, '\
-                                                             'will replace current IID as identifier soon.'
+        method: :work_item_iid,
+        description: 'Work item IID of the requirement, '\
+                     'will replace current IID as identifier soon.'
 
       field :title, GraphQL::Types::String, null: true, description: 'Title of the requirement.'
 
