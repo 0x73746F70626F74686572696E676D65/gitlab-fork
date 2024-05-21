@@ -681,7 +681,7 @@ module EE
         groups = ::Feature.enabled?(:duo_chat_ga) ? groups : groups.namespace_settings_with_ai_features_enabled
 
         if groups.any? && groups_that_require_licensed_seat_for_chat.any?
-          duo_pro_add_on_available?
+          ::CloudConnector::AvailableServices.find_by_name(:duo_chat).allowed_for?(self)
         else
           groups.any?
         end
