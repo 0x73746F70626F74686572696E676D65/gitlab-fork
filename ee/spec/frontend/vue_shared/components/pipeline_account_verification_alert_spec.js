@@ -6,9 +6,10 @@ import PipelineAccountVerificationAlert from 'ee/vue_shared/components/pipeline_
 describe('Identity verification needed to run pipelines alert', () => {
   let wrapper;
 
-  const createWrapper = () => {
+  const createWrapper = ({ identityVerificationRequired = true } = {}) => {
     wrapper = shallowMount(PipelineAccountVerificationAlert, {
       provide: {
+        identityVerificationRequired,
         identityVerificationPath: 'identity/verification/path',
       },
     });
@@ -16,29 +17,39 @@ describe('Identity verification needed to run pipelines alert', () => {
 
   const findAlert = () => wrapper.findComponent(GlAlert);
 
-  beforeEach(() => {
-    createWrapper();
-  });
+  describe('when identity verification is not required', () => {
+    it('does not show alert', () => {
+      createWrapper({ identityVerificationRequired: false });
 
-  it('shows alert with expected props', () => {
-    expect(findAlert().props()).toMatchObject({
-      title: 'Before you can run pipelines, we need to verify your account.',
-      primaryButtonText: 'Verify my account',
-      primaryButtonLink: 'identity/verification/path',
-      variant: 'danger',
+      expect(findAlert().exists()).toBe(false);
     });
   });
 
-  it('shows alert with expected description', () => {
-    expect(findAlert().text()).toBe(
-      `We won't ask you for this information again. It will never be used for marketing purposes.`,
-    );
-  });
+  describe('when identity verification is required', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
 
-  it(`hides the alert when it's dismissed`, async () => {
-    findAlert().vm.$emit('dismiss');
-    await nextTick();
+    it('shows alert with expected props', () => {
+      expect(findAlert().props()).toMatchObject({
+        title: 'Before you can run pipelines, we need to verify your account.',
+        primaryButtonText: 'Verify my account',
+        primaryButtonLink: 'identity/verification/path',
+        variant: 'danger',
+      });
+    });
 
-    expect(findAlert().exists()).toBe(false);
+    it('shows alert with expected description', () => {
+      expect(findAlert().text()).toBe(
+        `We won't ask you for this information again. It will never be used for marketing purposes.`,
+      );
+    });
+
+    it(`hides the alert when it's dismissed`, async () => {
+      findAlert().vm.$emit('dismiss');
+      await nextTick();
+
+      expect(findAlert().exists()).toBe(false);
+    });
   });
 });

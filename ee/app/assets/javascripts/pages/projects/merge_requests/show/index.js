@@ -6,7 +6,10 @@ const initVerificationAlert = (el) => {
   return new Vue({
     el,
     name: 'PipelineAccountVerificationAlertRoot',
-    provide: { identityVerificationPath: el.dataset.identityVerificationPath },
+    provide: {
+      identityVerificationRequired: true,
+      identityVerificationPath: el.dataset.identityVerificationPath,
+    },
     render(createElement) {
       return createElement(PipelineAccountVerificationAlert, { class: 'gl-mt-3' });
     },

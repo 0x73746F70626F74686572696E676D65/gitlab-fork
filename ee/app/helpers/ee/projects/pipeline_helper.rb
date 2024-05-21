@@ -25,6 +25,14 @@ module EE
         )
       end
 
+      override :js_pipeline_header_data
+      def js_pipeline_header_data(project, pipeline)
+        super.merge(
+          identity_verification_required: false.to_s,
+          identity_verification_path: '#'
+        )
+      end
+
       def licenses_api_path(project, pipeline)
         if project.licensed_feature_available?(:license_scanning)
           licenses_project_pipeline_path(project, pipeline)
