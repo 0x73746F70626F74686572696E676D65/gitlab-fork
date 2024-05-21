@@ -130,26 +130,16 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyBranchesService, f
           project.save!
 
           group.protected_branches.create!(name: branch_name)
+
+          project.repository.add_branch(project.creator, branch_name, project.repository.head_commit.sha)
         end
 
         after do
           project.repository.delete_branch(branch_name)
         end
 
-        context 'when branch is not present in project' do
-          specify do
-            expect(execute).to include(branch_name)
-          end
-        end
-
-        context 'when branch is present in project' do
-          before do
-            project.repository.add_branch(project.creator, branch_name, project.repository.head_commit.sha)
-          end
-
-          specify do
-            expect(execute).to include(branch_name)
-          end
+        specify do
+          expect(execute).to include(branch_name)
         end
 
         context "with feature disabled" do

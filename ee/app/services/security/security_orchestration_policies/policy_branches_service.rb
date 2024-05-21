@@ -83,12 +83,9 @@ module Security
         all_branches_matched_by(all_protected_branch_names)
       end
 
-      # all_branch_names does not include group level protected_branches.
-      # So we need to include all_protected_branch_names to check if the pattern
-      # matches the group level protected_branches.
       def all_branches_matched_by(patterns)
         patterns.flat_map do |pattern|
-          RefMatcher.new(pattern).matching(all_branch_names + all_protected_branch_names)
+          RefMatcher.new(pattern).matching(all_branch_names)
         end
       end
 
