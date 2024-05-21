@@ -7,9 +7,9 @@ module Types
         graphql_name 'WorkItemWidgetHealthStatusInput'
 
         argument :health_status,
-                 ::Types::HealthStatusEnum,
-                 required: false,
-                 description: 'Health status to be assigned to the work item.'
+          ::Types::HealthStatusEnum,
+          required: false,
+          description: 'Health status to be assigned to the work item.'
       end
     end
   end

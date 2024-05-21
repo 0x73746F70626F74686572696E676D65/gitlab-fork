@@ -13,9 +13,9 @@ module Types
         implements Types::WorkItems::WidgetInterface
 
         field :iteration,
-              ::Types::IterationType,
-              null: true,
-              description: 'Iteration of the work item.'
+          ::Types::IterationType,
+          null: true,
+          description: 'Iteration of the work item.'
       end
       # rubocop:enable Graphql/AuthorizeTypes
     end
