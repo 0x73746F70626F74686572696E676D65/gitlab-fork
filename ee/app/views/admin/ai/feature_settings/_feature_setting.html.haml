@@ -1,0 +1,12 @@
+- feature = feature_setting.feature
+
+%li.gl-list-none.gl-py-3.gl-border-b.gl-last-of-type-border-b-0{ id: feature }
+  .label-content.gl-px-3.gl-py-2
+    .label-name.gl-flex-shrink-0.gl-mr-5
+      = feature.titleize
+    .label-description.gl-w-full
+      .gl-flex-wrap
+        .gl-mr-5
+          = feature_setting.provider_title
+    = render Pajamas::ButtonComponent.new(href: edit_admin_ai_feature_setting_path(feature)) do
+      = _('Edit')

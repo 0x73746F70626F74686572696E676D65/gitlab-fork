@@ -8,6 +8,8 @@ module Ai
     validates :endpoint, presence: true, addressable_url: true
     validates :name, presence: true, uniqueness: true
 
+    has_many :feature_settings
+
     attr_encrypted :api_token,
       mode: :per_attribute_iv,
       key: Settings.attr_encrypted_db_key_base_32,

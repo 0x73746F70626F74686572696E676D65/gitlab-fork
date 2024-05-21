@@ -3705,11 +3705,7 @@ RSpec.describe User, feature_category: :system_access do
 
         context 'when user has a duo pro seat' do
           before do
-            allow(::CloudConnector::AvailableServices)
-              .to receive_message_chain(:find_by_name, :allowed_for?)
-              .with(:duo_chat)
-              .with(user)
-              .and_return(true)
+            allow(user).to receive(:duo_pro_add_on_available?).and_return(true)
           end
 
           it { is_expected.to eq(result) }

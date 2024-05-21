@@ -53,7 +53,7 @@ RSpec.describe Admin::ApplicationSettingsHelper, feature_category: :code_suggest
   end
 
   describe '#code_suggestions_purchased?' do
-    context 'when code suggestions purchase exists', :with_cloud_connector do
+    context 'when code suggestions purchase exists' do
       before do
         gitlab_duo_pro_add_on = build(:gitlab_subscription_add_on)
         create(:gitlab_subscription_add_on_purchase, add_on: gitlab_duo_pro_add_on) # rubocop:disable RSpec/FactoryBot/AvoidCreate -- testing that the record exists in the database

@@ -14,6 +14,9 @@ RSpec.describe Sidebars::Admin::Menus::AiPoweredFeaturesMenu, feature_category: 
 
   it_behaves_like 'Admin menu with sub menus'
 
+  it_behaves_like 'Admin menu with extra container html options',
+    extra_container_html_options: { testid: 'admin-ai-powered-features-link' }
+
   describe 'Menu items' do
     let(:sub_item) { described_class.new(context).renderable_items.find { |e| e.item_id == item_id } }
 
@@ -34,6 +37,16 @@ RSpec.describe Sidebars::Admin::Menus::AiPoweredFeaturesMenu, feature_category: 
         expect(sub_item.link).to eq('/admin/ai/self_hosted_models')
         expect(sub_item.title).to eq('Models')
         expect(sub_item.active_routes).to eq({ controller: 'admin/ai/self_hosted_models' })
+      end
+    end
+
+    describe 'Features' do
+      let(:item_id) { :duo_pro_features }
+
+      it 'renders a sub item' do
+        expect(sub_item.link).to eq('/admin/ai/feature_settings')
+        expect(sub_item.title).to eq('Features')
+        expect(sub_item.active_routes).to eq({ controller: 'admin/ai/feature_settings' })
       end
     end
   end
