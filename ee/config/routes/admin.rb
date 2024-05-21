@@ -48,6 +48,7 @@ namespace :admin do
 
   namespace :ai do
     resources :self_hosted_models, only: [:index, :new, :create, :edit, :update, :destroy]
+    resources :feature_settings, only: [:index, :edit, :update, :create]
   end
 
   # using `only: []` to keep duplicate routes from being created
