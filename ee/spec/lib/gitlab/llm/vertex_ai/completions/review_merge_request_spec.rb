@@ -120,11 +120,11 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
         end
       end
 
-      it 'calls Notes::CreateService#execute to create diff note on new and updated files' do
-        new_file_create_note_params = {
+      it 'builds draft note and publish to create diff note on new and updated files' do
+        new_file_draft_note_params = {
+          merge_request: merge_request,
+          author: llm_bot,
           note: example_answer,
-          noteable_id: merge_request.id,
-          noteable_type: MergeRequest,
           position: {
             base_sha: diff_refs.base_sha,
             start_sha: diff_refs.start_sha,
@@ -135,14 +135,13 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
             old_line: nil,
             new_line: 4,
             ignore_whitespace_change: false
-          },
-          type: 'DiffNote'
+          }
         }
 
-        updated_file_create_note_params = {
+        updated_file_draft_note_params = {
+          merge_request: merge_request,
+          author: llm_bot,
           note: example_answer,
-          noteable_id: merge_request.id,
-          noteable_type: MergeRequest,
           position: {
             base_sha: diff_refs.base_sha,
             start_sha: diff_refs.start_sha,
@@ -153,29 +152,55 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
             old_line: 4,
             new_line: nil,
             ignore_whitespace_change: false
-          },
-          type: 'DiffNote'
+          }
         }
 
-        expect_next_instance_of(
-          Notes::CreateService,
-          merge_request.project,
-          llm_bot,
-          new_file_create_note_params
-        ) do |svc|
-          expect(svc).to receive(:execute)
-        end
+        draft_note_1 = instance_double(DraftNote)
+        draft_note_2 = instance_double(DraftNote)
 
-        expect_next_instance_of(
-          Notes::CreateService,
-          merge_request.project,
-          llm_bot,
-          updated_file_create_note_params
-        ) do |svc|
+        expect(DraftNote).to receive(:new).with(new_file_draft_note_params).and_return(draft_note_1)
+        expect(DraftNote).to receive(:new).with(updated_file_draft_note_params).and_return(draft_note_2)
+        expect(DraftNote).to receive(:bulk_insert!).with([draft_note_1, draft_note_2], batch_size: 20)
+        expect_next_instance_of(DraftNotes::PublishService, merge_request, llm_bot) do |svc|
           expect(svc).to receive(:execute)
         end
 
         completion.execute
+      end
+
+      context 'when draft notes limit is reached' do
+        before do
+          stub_const("#{described_class}::DRAFT_NOTES_COUNT_LIMIT", 1)
+        end
+
+        it 'builds draft note and publish to create diff note on new and updated files' do
+          new_file_draft_note_params = {
+            merge_request: merge_request,
+            author: llm_bot,
+            note: example_answer,
+            position: {
+              base_sha: diff_refs.base_sha,
+              start_sha: diff_refs.start_sha,
+              head_sha: diff_refs.head_sha,
+              old_path: 'NEW.md',
+              new_path: 'NEW.md',
+              position_type: 'text',
+              old_line: nil,
+              new_line: 4,
+              ignore_whitespace_change: false
+            }
+          }
+
+          draft_note_1 = instance_double(DraftNote)
+
+          expect(DraftNote).to receive(:new).with(new_file_draft_note_params).and_return(draft_note_1)
+          expect(DraftNote).to receive(:bulk_insert!).with([draft_note_1], batch_size: 20)
+          expect_next_instance_of(DraftNotes::PublishService, merge_request, llm_bot) do |svc|
+            expect(svc).to receive(:execute)
+          end
+
+          completion.execute
+        end
       end
     end
 
@@ -191,8 +216,8 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
         end
       end
 
-      it 'does not call Notes::CreateService' do
-        expect(Notes::CreateService).not_to receive(:new)
+      it 'does not call DraftNote#new' do
+        expect(DraftNote).not_to receive(:new)
 
         completion.execute
       end
@@ -208,8 +233,8 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
         end
       end
 
-      it 'does not call Notes::CreateService' do
-        expect(Notes::CreateService).not_to receive(:new)
+      it 'does not call DraftNote#new' do
+        expect(DraftNote).not_to receive(:new)
 
         completion.execute
       end
