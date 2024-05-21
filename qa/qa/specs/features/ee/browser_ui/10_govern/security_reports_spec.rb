@@ -109,7 +109,11 @@ module QA
       end
 
       it 'displays security reports in the project security dashboard',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037',
+        quarantine: {
+          type: :stale,
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/461959'
+        } do
         push_security_reports
         project.visit!
         wait_for_pipeline_success
@@ -195,7 +199,11 @@ module QA
       end
 
       it 'displays false positives for the vulnerabilities',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412',
+        quarantine: {
+          type: :stale,
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/461959'
+        } do
         push_security_reports
         project.visit!
         wait_for_pipeline_success
@@ -270,10 +278,10 @@ module QA
         build(:commit,
           project: project,
           commit_message: 'Create Secure compatible application to serve premade reports') do |commit|
-            commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('dismissed_security_findings_mr_widget')))
-            commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('secure_premade_reports')))
-            commit.update_files([ci_file])
-          end.fabricate_via_api!
+          commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('dismissed_security_findings_mr_widget')))
+          commit.add_directory(Pathname.new(EE::Runtime::Path.fixture('secure_premade_reports')))
+          commit.update_files([ci_file])
+        end.fabricate_via_api!
       end
 
       def commit_scan_files(fixture_json:, ci_yaml_content:)
