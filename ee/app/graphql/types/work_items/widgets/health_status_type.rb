@@ -11,9 +11,9 @@ module Types
         implements Types::WorkItems::WidgetInterface
 
         field :health_status,
-              ::Types::HealthStatusEnum,
-              null: true,
-              description: 'Health status of the work item.'
+          ::Types::HealthStatusEnum,
+          null: true,
+          description: 'Health status of the work item.'
       end
       # rubocop:enable Graphql/AuthorizeTypes
     end
