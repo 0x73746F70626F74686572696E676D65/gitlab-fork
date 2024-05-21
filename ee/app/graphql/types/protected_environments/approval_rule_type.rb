@@ -9,7 +9,7 @@ module Types
       description 'Which group, user or role is allowed to approve deployments to the environment.'
 
       field :required_approvals, GraphQL::Types::Int,
-            description: "Number of required approvals."
+        description: "Number of required approvals."
     end
     # rubocop:enable Graphql/AuthorizeTypes
   end
