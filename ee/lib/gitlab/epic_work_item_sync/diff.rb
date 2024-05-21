@@ -12,6 +12,7 @@ module Gitlab
         description
         external_key
         iid
+        imported_from
         last_edited_at
         last_edited_by_id
         lock_version
