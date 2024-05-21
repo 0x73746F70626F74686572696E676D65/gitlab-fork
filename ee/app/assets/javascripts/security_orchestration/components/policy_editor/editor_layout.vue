@@ -340,7 +340,7 @@ export default {
         </section>
         <section
           v-if="shouldShowRuleEditor"
-          class="security-policies-bg-gray-10 gl-px-5 gl-pb-5 gl-w-full gl-lg-w-30p gl-lg-ml-10 gl-align-self-start"
+          class="security-policies-bg-gray-10 gl-px-5 gl-pb-5 gl-w-full lg:gl-w-3/10 gl-lg-ml-10 gl-align-self-start"
           data-testid="rule-editor-preview"
         >
           <h5>{{ $options.i18n.yamlPreview }}</h5>
