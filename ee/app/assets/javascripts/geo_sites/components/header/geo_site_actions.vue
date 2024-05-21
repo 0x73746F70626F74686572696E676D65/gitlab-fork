@@ -32,7 +32,7 @@ export default {
   <div>
     <geo-site-actions-mobile class="gl-lg-display-none" :site="site" @remove="warnSiteRemoval" />
     <geo-site-actions-desktop
-      class="gl-display-none gl-lg-display-flex"
+      class="gl-hidden gl-lg-display-flex"
       :site="site"
       @remove="warnSiteRemoval"
     />

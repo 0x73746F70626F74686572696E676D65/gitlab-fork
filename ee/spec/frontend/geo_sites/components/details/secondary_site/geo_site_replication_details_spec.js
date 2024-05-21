@@ -72,7 +72,7 @@ describe('GeoSiteReplicationDetails', () => {
       it('renders desktop details with correct visibility class', () => {
         expect(findGeoDesktopReplicationDetails().exists()).toBe(true);
         expect(findGeoDesktopReplicationDetails().classes()).toStrictEqual([
-          'gl-display-none',
+          'gl-hidden',
           'gl-md-display-block',
         ]);
       });
