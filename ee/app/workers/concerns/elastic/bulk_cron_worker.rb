@@ -7,6 +7,7 @@ module Elastic
     RESCHEDULE_INTERVAL = 1.second
 
     included do
+      prepend ::Geo::SkipSecondary
       include ApplicationWorker
       include Gitlab::ExclusiveLeaseHelpers
       # There is no onward scheduling and this cron handles work from across the
