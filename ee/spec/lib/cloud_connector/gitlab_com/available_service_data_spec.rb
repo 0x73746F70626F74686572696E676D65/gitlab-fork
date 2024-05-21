@@ -65,6 +65,18 @@ RSpec.describe CloudConnector::GitlabCom::AvailableServiceData, feature_category
         include_examples 'issue a token with scopes'
       end
 
+      context 'with code_suggestions purchased' do
+        let(:scopes) { duo_pro_scopes }
+
+        before do
+          allow(available_service_data)
+            .to receive_message_chain(:add_on_purchases_assigned_to, :uniq_add_on_names)
+            .and_return(%w[code_suggestions])
+        end
+
+        include_examples 'issue a token with scopes'
+      end
+
       context 'with duo_extra purchased' do
         let(:scopes) { duo_extra_scopes }
 

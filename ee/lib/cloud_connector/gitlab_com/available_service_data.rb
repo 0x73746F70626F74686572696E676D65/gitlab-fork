@@ -32,7 +32,9 @@ module CloudConnector
 
       def allowed_scopes_from_purchased_bundles_for(resource)
         add_on_purchases_for(resource).uniq_add_on_names.flat_map do |name|
-          @bundled_with[name]
+          # TODO: We shold remove this when https://gitlab.com/gitlab-org/gitlab/-/issues/458745 is done
+          add_on_name = name == 'code_suggestions' ? 'duo_pro' : name
+          @bundled_with[add_on_name]
         end.uniq
       end
 
