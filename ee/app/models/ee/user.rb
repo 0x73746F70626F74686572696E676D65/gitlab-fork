@@ -679,7 +679,7 @@ module EE
         groups_that_require_licensed_seat_for_chat = groups.select { |group| ::Feature.enabled?(:duo_chat_requires_licensed_seat, group) }
 
         if groups.any? && groups_that_require_licensed_seat_for_chat.any?
-          ::CloudConnector::AvailableServices.find_by_name(:duo_chat).allowed_for?(self)
+          duo_pro_add_on_available?
         else
           groups.any?
         end
