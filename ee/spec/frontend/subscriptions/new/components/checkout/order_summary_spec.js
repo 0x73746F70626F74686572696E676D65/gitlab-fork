@@ -21,6 +21,7 @@ import {
   PROMO_CODE_TERMS_LINK,
   PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE,
   INVALID_PROMO_CODE_ERROR_MESSAGE,
+  ZUORA_LOCK_ERROR_CODE,
   PurchaseEvent,
 } from 'ee/subscriptions/new/constants';
 import {
@@ -423,7 +424,27 @@ describe('Order Summary', () => {
   });
 
   describe('Error handling', () => {
-    const errorMessage = 'I failed!';
+    const errorMessage = 'Zuora lock error';
+
+    describe('when API has Zuora lock error', () => {
+      it('emits an error with received error message', async () => {
+        const invoicePreviewSpy = jest.fn().mockResolvedValue({
+          data: {},
+          errors: [
+            {
+              message: 'Invoice Preview failed',
+              extensions: { code: ZUORA_LOCK_ERROR_CODE, message: errorMessage },
+            },
+          ],
+        });
+        await createComponent(invoicePreviewSpy);
+
+        expect(wrapper.emitted(PurchaseEvent.ERROR)).toStrictEqual([
+          [new Error(errorMessage)],
+          [new Error(errorMessage)],
+        ]);
+      });
+    });
 
     describe('when API has errors in the response', () => {
       it('emits an error with received error message', async () => {

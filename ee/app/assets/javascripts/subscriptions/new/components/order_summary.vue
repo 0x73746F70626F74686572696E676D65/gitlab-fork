@@ -16,6 +16,7 @@ import {
   VALIDATION_ERROR_CODE,
   INVALID_PROMO_CODE_ERROR_MESSAGE,
   PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE,
+  ZUORA_LOCK_ERROR_CODE,
   PurchaseEvent,
 } from 'ee/subscriptions/new/constants';
 import { isInvalidPromoCodeError } from 'ee/subscriptions/new/utils';
@@ -135,7 +136,7 @@ export default {
       let errorMessage = this.$options.i18n.errorMessageText;
 
       if (gqlErrorExtensions) {
-        const { message } = gqlErrorExtensions || {};
+        const { message, code } = gqlErrorExtensions || {};
 
         if (isInvalidPromoCodeError(gqlErrorExtensions)) {
           this.isPromoCodeValid = false;
@@ -143,7 +144,10 @@ export default {
           this.track('failure_response', { label: 'apply_coupon_code_failure_saas' });
           return;
         }
-        if (gqlError.message) {
+
+        if (code === ZUORA_LOCK_ERROR_CODE) {
+          errorMessage = message;
+        } else if (gqlError.message) {
           errorMessage = gqlError.message;
         } else if (message) {
           errorMessage = message;
