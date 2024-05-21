@@ -11,135 +11,135 @@ module Types
     expose_permissions Types::PermissionTypes::PipelineSecurityReportFinding
 
     field :report_type,
-          type: VulnerabilityReportTypeEnum,
-          null: true,
-          description: 'Type of the security report that found the vulnerability finding.'
+      type: VulnerabilityReportTypeEnum,
+      null: true,
+      description: 'Type of the security report that found the vulnerability finding.'
 
     field :project,
-          type: ::Types::ProjectType,
-          null: true,
-          description: 'Project on which the vulnerability finding was found.'
+      type: ::Types::ProjectType,
+      null: true,
+      description: 'Project on which the vulnerability finding was found.'
 
     field :description,
-          type: GraphQL::Types::String,
-          null: true,
-          description: 'Description of the vulnerability finding.'
+      type: GraphQL::Types::String,
+      null: true,
+      description: 'Description of the vulnerability finding.'
 
     field :location,
-          type: VulnerabilityLocationType,
-          null: true,
-          description: 'Location metadata for the vulnerability. Its fields depend on the type of security scan that ' \
-            'found the vulnerability.'
+      type: VulnerabilityLocationType,
+      null: true,
+      description: 'Location metadata for the vulnerability. Its fields depend on the type of security scan that ' \
+        'found the vulnerability.'
 
     field :solution,
-          type: GraphQL::Types::String,
-          null: true,
-          description: "Solution for resolving the security report finding."
+      type: GraphQL::Types::String,
+      null: true,
+      description: "Solution for resolving the security report finding."
 
     field :state,
-          type: VulnerabilityStateEnum,
-          null: true,
-          description: "Finding status."
+      type: VulnerabilityStateEnum,
+      null: true,
+      description: "Finding status."
 
     field :details, [::Types::VulnerabilityDetailType],
-          null: false,
-          resolver: Resolvers::Vulnerabilities::DetailsResolver,
-          description: 'Details of the security finding.'
+      null: false,
+      resolver: Resolvers::Vulnerabilities::DetailsResolver,
+      description: 'Details of the security finding.'
 
     field :title,
-          type: GraphQL::Types::String,
-          null: true,
-          description: 'Title of the vulnerability finding.', method: :name
+      type: GraphQL::Types::String,
+      null: true,
+      description: 'Title of the vulnerability finding.', method: :name
 
     field :severity,
-          type: VulnerabilitySeverityEnum,
-          null: true,
-          description: 'Severity of the vulnerability finding.'
+      type: VulnerabilitySeverityEnum,
+      null: true,
+      description: 'Severity of the vulnerability finding.'
 
     field :false_positive,
-          type: GraphQL::Types::Boolean,
-          null: true,
-          description: 'Indicates whether the vulnerability is a false positive.',
-          resolver_method: :false_positive?
+      type: GraphQL::Types::Boolean,
+      null: true,
+      description: 'Indicates whether the vulnerability is a false positive.',
+      resolver_method: :false_positive?
 
     field :links, [::Types::Vulnerabilities::LinkType],
-          null: true,
-          description: 'List of links associated with the vulnerability.'
+      null: true,
+      description: 'List of links associated with the vulnerability.'
 
     field :assets, [::Types::Vulnerabilities::AssetType],
-          null: true,
-          description: 'List of assets associated with the vulnerability.'
+      null: true,
+      description: 'List of assets associated with the vulnerability.'
 
     field :evidence,
-          type: VulnerabilityEvidenceType,
-          null: true,
-          description: 'Evidence for the vulnerability.'
+      type: VulnerabilityEvidenceType,
+      null: true,
+      description: 'Evidence for the vulnerability.'
 
     field :scanner,
-          type: VulnerabilityScannerType,
-          null: true,
-          description: 'Scanner metadata for the vulnerability.'
+      type: VulnerabilityScannerType,
+      null: true,
+      description: 'Scanner metadata for the vulnerability.'
 
     field :identifiers,
-          type: [VulnerabilityIdentifierType],
-          null: false,
-          description: 'Identifiers of the vulnerability finding.'
+      type: [VulnerabilityIdentifierType],
+      null: false,
+      description: 'Identifiers of the vulnerability finding.'
 
     field :project_fingerprint,
-          type: GraphQL::Types::String,
-          null: true,
-          method: :uuid,
-          description: 'Same as uuid. It is strongly suggested to use the uuid field instead.',
-          deprecated: { milestone: '16.1', reason: 'Use uuid instead' }
+      type: GraphQL::Types::String,
+      null: true,
+      method: :uuid,
+      description: 'Same as uuid. It is strongly suggested to use the uuid field instead.',
+      deprecated: { milestone: '16.1', reason: 'Use uuid instead' }
 
     field :uuid,
-          type: GraphQL::Types::String,
-          null: true,
-          description: 'UUIDv5 digest based on the vulnerability\'s report type, primary identifier, location, ' \
-            'fingerprint, project identifier.'
+      type: GraphQL::Types::String,
+      null: true,
+      description: 'UUIDv5 digest based on the vulnerability\'s report type, primary identifier, location, ' \
+        'fingerprint, project identifier.'
 
     field :vulnerability,
-          type: VulnerabilityType,
-          null: true,
-          description: 'Vulnerability related to the security report finding.'
+      type: VulnerabilityType,
+      null: true,
+      description: 'Vulnerability related to the security report finding.'
 
     field :issue_links,
-          type: ::Types::Vulnerability::IssueLinkType.connection_type,
-          null: true,
-          description: "List of issue links related to the vulnerability."
+      type: ::Types::Vulnerability::IssueLinkType.connection_type,
+      null: true,
+      description: "List of issue links related to the vulnerability."
 
     field :merge_request, ::Types::MergeRequestType,
-          null: true,
-          description: 'Merge request that fixes the vulnerability.'
+      null: true,
+      description: 'Merge request that fixes the vulnerability.'
 
     field :remediations,
-          type: [::Types::Vulnerabilities::RemediationType],
-          null: true,
-          description: 'Remediations of the security report finding.'
+      type: [::Types::Vulnerabilities::RemediationType],
+      null: true,
+      description: 'Remediations of the security report finding.'
 
     field :dismissed_at,
-          type: Types::TimeType,
-          null: true,
-          extras: [:lookahead],
-          description: 'Time of the dismissal of the security report finding.'
+      type: Types::TimeType,
+      null: true,
+      extras: [:lookahead],
+      description: 'Time of the dismissal of the security report finding.'
 
     field :dismissed_by,
-          type: ::Types::UserType,
-          null: true,
-          extras: [:lookahead],
-          description: 'User who dismissed the security report finding.'
+      type: ::Types::UserType,
+      null: true,
+      extras: [:lookahead],
+      description: 'User who dismissed the security report finding.'
 
     field :dismissal_reason,
-          type: Types::Vulnerabilities::DismissalReasonEnum,
-          null: true,
-          extras: [:lookahead],
-          description: 'Reason for the dismissal of the security report finding.'
+      type: Types::Vulnerabilities::DismissalReasonEnum,
+      null: true,
+      extras: [:lookahead],
+      description: 'Reason for the dismissal of the security report finding.'
 
     field :state_comment,
-          type: GraphQL::Types::String,
-          null: true,
-          extras: [:lookahead],
-          description: 'Comment for the state of the security report finding.'
+      type: GraphQL::Types::String,
+      null: true,
+      extras: [:lookahead],
+      description: 'Comment for the state of the security report finding.'
 
     markdown_field :description_html, null: true
 
