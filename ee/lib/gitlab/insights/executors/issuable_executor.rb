@@ -75,7 +75,7 @@ module Gitlab
           @finder ||=
             Gitlab::Insights::Finders::IssuableFinder
             .new(insights_entity, current_user,
-                 query: query_params, projects: projects)
+              query: query_params, projects: projects)
         end
 
         def period_field_param

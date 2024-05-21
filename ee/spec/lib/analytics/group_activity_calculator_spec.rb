@@ -52,13 +52,13 @@ RSpec.describe Analytics::GroupActivityCalculator, :use_clean_rails_memory_store
   context 'with merge requests' do
     before_all do
       create(:merge_request,
-             source_project: project,
-             source_branch: "my-personal-branch-1")
+        source_project: project,
+        source_branch: "my-personal-branch-1")
 
       create(:merge_request,
-             source_project: project,
-             source_branch: "my-personal-branch-2",
-             created_at: 40.days.ago)
+        source_project: project,
+        source_branch: "my-personal-branch-2",
+        created_at: 40.days.ago)
     end
 
     it 'only returns the count of recent MRs' do
@@ -77,8 +77,8 @@ RSpec.describe Analytics::GroupActivityCalculator, :use_clean_rails_memory_store
       expect(subject.merge_requests_count).to eq 1
 
       create(:merge_request,
-             source_project: project,
-             source_branch: "my-personal-branch-3")
+        source_project: project,
+        source_branch: "my-personal-branch-3")
 
       expect(subject.merge_requests_count).to eq 1
       expect(described_class.new(group, another_user).merge_requests_count).to eq 2
@@ -88,11 +88,11 @@ RSpec.describe Analytics::GroupActivityCalculator, :use_clean_rails_memory_store
       stub_const('Analytics::GroupActivityCalculator::RECENT_COUNT_LIMIT', 2)
 
       create(:merge_request,
-             source_project: project,
-             source_branch: "my-personal-branch-3")
+        source_project: project,
+        source_branch: "my-personal-branch-3")
       create(:merge_request,
-             source_project: project,
-             source_branch: "my-personal-branch-4")
+        source_project: project,
+        source_branch: "my-personal-branch-4")
 
       expect(subject.merge_requests_count).to eq 2
     end
