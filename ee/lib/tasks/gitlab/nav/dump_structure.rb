@@ -4,11 +4,12 @@ module Tasks
   module Gitlab
     module Nav
       class DumpStructure
-        attr_accessor :context_defaults
+        attr_accessor :context_defaults, :user
 
-        def initialize
+        def initialize(user:)
+          @user = user
           @context_defaults = {
-            current_user: User.first,
+            current_user: @user,
             is_super_sidebar: true,
 
             # Turn features on that impact the list of items rendered
@@ -29,15 +30,15 @@ module Tasks
         def panels
           panels = []
           panels << Sidebars::UserProfile::Panel.new(Sidebars::Context.new(
-            container: User.first,
+            container: @user,
             **@context_defaults
           ))
           panels << Sidebars::UserSettings::Panel.new(Sidebars::Context.new(
-            container: User.first,
+            container: @user,
             **@context_defaults
           ))
           panels << Sidebars::YourWork::Panel.new(Sidebars::Context.new(
-            container: User.first,
+            container: @user,
             **@context_defaults
           ))
           panels << Sidebars::Projects::SuperSidebarPanel.new(Sidebars::Projects::Context.new(
@@ -72,7 +73,7 @@ module Tasks
           `git rev-parse --short HEAD`.strip
         end
 
-        def dump
+        def dump(tags: nil)
           contexts = panels.map do |panel|
             {
               title: panel.aria_label,
@@ -82,12 +83,9 @@ module Tasks
 
           # Recurse through structure to drop info we don't need
           clean_keys!(contexts)
+          tag_keys!(contexts, tags) if tags
 
-          YAML.dump({
-            generated_at: current_time,
-            commit_sha: current_sha,
-            contexts: contexts
-          }.deep_stringify_keys)
+          contexts
         end
 
         private
@@ -98,6 +96,14 @@ module Tasks
 
             entry[:id] = entry[:id].to_s if entry[:id]
             entry.slice!(:id, :title, :icon, :link, :items)
+          end
+        end
+
+        def tag_keys!(entries, tags)
+          entries.each do |entry|
+            tag_keys!(entry[:items], tags) if entry[:items]
+
+            entry[:tags] = tags
           end
         end
       end
