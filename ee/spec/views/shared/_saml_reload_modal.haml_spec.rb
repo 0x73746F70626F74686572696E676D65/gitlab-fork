@@ -13,7 +13,6 @@ RSpec.describe 'shared/saml_reload_modal', feature_category: :system_access do
 
   before do
     allow(view).to receive(:current_user).and_return(user)
-    stub_feature_flags(saml_reload: true)
   end
 
   context 'with root group' do
