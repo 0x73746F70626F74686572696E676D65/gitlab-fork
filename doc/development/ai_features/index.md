@@ -218,7 +218,7 @@ it will print useful error messages with links to the docs on how to resolve the
 GITLAB_SIMULATE_SAAS=1 RAILS_ENV=development bundle exec rake 'gitlab:duo:setup[<test-group-name>]'
 ```
 
-[AI Gateway](#set-up) still needs to be setup when using the automated setup.
+[AI Gateway](#test-ai-features-with-ai-gateway-locally) still needs to be setup when using the automated setup.
 
 **Manual way**
 
@@ -241,7 +241,7 @@ GITLAB_SIMULATE_SAAS=1 RAILS_ENV=development bundle exec rake 'gitlab:duo:setup[
    1. Enable **Experiment & Beta features**.
 1. Enable the specific feature flag for the feature you want to test.
 1. You can use Rake task `rake gitlab:duo:enable_feature_flags` to enable all feature flags that are assigned to group AI Framework.
-1. Setup [AI Gateway](#set-up).
+1. Setup [AI Gateway](#test-ai-features-with-ai-gateway-locally).
 
 ### Help
 
