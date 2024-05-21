@@ -5,20 +5,20 @@ import RunnerDashboardStatOnline from '../components/runner_dashboard_stat_onlin
 import RunnerDashboardStatOffline from '../components/runner_dashboard_stat_offline.vue';
 import RunnerUsage from '../components/runner_usage.vue';
 import RunnerJobFailures from '../components/runner_job_failures.vue';
-import RunnerWaitTimes from '../components/runner_wait_times.vue';
 
-import AdminRunnerActiveList from './admin_runners_active_list.vue';
+import AdminRunnersActiveList from './admin_runners_active_list.vue';
+import AdminRunnersWaitTimes from './admin_runners_wait_times.vue';
 
 export default {
   components: {
     GlButton,
-    AdminRunnerActiveList,
+    AdminRunnersActiveList,
+    AdminRunnersWaitTimes,
     RunnerListHeader,
     RunnerDashboardStatOnline,
     RunnerDashboardStatOffline,
     RunnerUsage,
     RunnerJobFailures,
-    RunnerWaitTimes,
   },
   inject: {
     clickhouseCiAnalyticsAvailable: {
@@ -68,9 +68,9 @@ export default {
           <runner-job-failures v-else class="gl-flex-basis-full" />
         </div>
 
-        <admin-runner-active-list class="runners-dashboard-third-gap-4 gl-mb-4" />
+        <admin-runners-active-list class="runners-dashboard-third-gap-4 gl-mb-4" />
       </div>
     </div>
-    <runner-wait-times class="gl-mb-4" />
+    <admin-runners-wait-times class="gl-mb-4" />
   </div>
 </template>

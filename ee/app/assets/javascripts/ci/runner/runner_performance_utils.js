@@ -1,4 +1,5 @@
 import { formatNumber } from '~/locale';
+import { nSecondsBefore } from '~/lib/utils/datetime_utility';
 import { I18N_MEDIAN, I18N_P75, I18N_P90, I18N_P99 } from './constants';
 
 const I18N_PERCENTILES = {
@@ -24,8 +25,8 @@ const emptyWaitTimeQueryData = {
   p99: null,
 };
 
-export const runnerWaitTimeQueryData = (queryData = emptyWaitTimeQueryData) => {
-  const { __typename, ...durations } = queryData;
+export const runnerWaitTimeQueryData = (queryData) => {
+  const { __typename, ...durations } = queryData || emptyWaitTimeQueryData;
   return Object.entries(durations).map(([key, value]) => ({
     key,
     title: I18N_PERCENTILES[key] || key,
@@ -49,4 +50,20 @@ export const runnerWaitTimeHistoryQueryData = (queryData = []) => {
     name: I18N_PERCENTILES[key] || key,
     data,
   }));
+};
+
+const THREE_HOURS_SECS = 60 * 60 * 3;
+
+/**
+ * Returns the time range variables for a history query.
+ *
+ * Defaults to 3 hours.
+ */
+export const runnerWaitTimeHistoryRange = (seconds = THREE_HOURS_SECS) => {
+  const now = new Date();
+
+  return {
+    fromTime: nSecondsBefore(now, seconds).toISOString(),
+    toTime: now.toISOString(),
+  };
 };

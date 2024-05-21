@@ -2,8 +2,10 @@ import {
   formatSeconds,
   runnerWaitTimeQueryData,
   runnerWaitTimeHistoryQueryData,
+  runnerWaitTimeHistoryRange,
 } from 'ee/ci/runner/runner_performance_utils';
 
+import { useFakeDate } from 'helpers/fake_date';
 import { I18N_MEDIAN, I18N_P75, I18N_P90, I18N_P99 } from 'ee/ci/runner/constants';
 
 const mockSecondValues = [
@@ -24,8 +26,8 @@ describe('runner_performance_utils', () => {
   });
 
   describe('runnerWaitTimeQueryData', () => {
-    it('empty data returns placeholders', () => {
-      expect(runnerWaitTimeQueryData(undefined)).toEqual([
+    it.each([null, undefined])('%o data returns placeholders', (data) => {
+      expect(runnerWaitTimeQueryData(data)).toEqual([
         { key: 'p50', title: I18N_MEDIAN, value: '-' },
         { key: 'p75', title: I18N_P75, value: '-' },
         { key: 'p90', title: I18N_P90, value: '-' },
@@ -159,6 +161,24 @@ describe('runner_performance_utils', () => {
           ],
         },
       ]);
+    });
+  });
+
+  describe('runnerWaitTimeHistoryRange', () => {
+    useFakeDate('2023-9-18');
+
+    it('returns default range of three hours', () => {
+      expect(runnerWaitTimeHistoryRange()).toEqual({
+        fromTime: '2023-09-17T21:00:00.000Z',
+        toTime: '2023-09-18T00:00:00.000Z',
+      });
+    });
+
+    it('returns a range', () => {
+      expect(runnerWaitTimeHistoryRange(3600)).toEqual({
+        fromTime: '2023-09-17T23:00:00.000Z',
+        toTime: '2023-09-18T00:00:00.000Z',
+      });
     });
   });
 });

@@ -1,32 +1,24 @@
 import { GlSprintf, GlLink, GlLoadingIcon, GlSkeletonLoader } from '@gitlab/ui';
 import { GlSingleStat, GlLineChart } from '@gitlab/ui/dist/charts';
-import Vue from 'vue';
-import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { useFakeDate } from 'helpers/fake_date';
 import { stubComponent } from 'helpers/stub_component';
 
 import RunnerWaitTimes from 'ee/ci/runner/components/runner_wait_times.vue';
-import runnerWaitTimesQuery from 'ee/ci/runner/graphql/performance/runner_wait_times.query.graphql';
-import runnerWaitTimeHistoryQuery from 'ee/ci/runner/graphql/performance/runner_wait_time_history.query.graphql';
 import { I18N_MEDIAN, I18N_P75, I18N_P90, I18N_P99 } from 'ee/ci/runner/constants';
-
-import createMockApollo from 'helpers/mock_apollo_helper';
-import waitForPromises from 'helpers/wait_for_promises';
 
 import HelpPopover from '~/vue_shared/components/help_popover.vue';
 
 import { runnersWaitTimes, runnerWaitTimeHistory } from '../mock_data';
 
+const waitTimes = runnersWaitTimes.data.runners.jobsStatistics.queuedDuration;
+const waitTimeHistory = runnerWaitTimeHistory.data.ciQueueingHistory.timeSeries;
+
 jest.mock('~/alert');
 jest.mock('~/ci/runner/sentry_utils');
 
-Vue.use(VueApollo);
-
 describe('RunnerActiveList', () => {
   let wrapper;
-  let runnerWaitTimesHandler;
-  let runnerWaitTimeHistoryHandler;
 
   const findSingleStats = () => wrapper.findAllComponents(GlSingleStat);
   const findHelpPopover = () => wrapper.findComponent(HelpPopover);
@@ -37,48 +29,35 @@ describe('RunnerActiveList', () => {
   const getStatData = () =>
     findSingleStats().wrappers.map((w) => [w.props('title'), w.props('value')]);
 
-  const createComponent = ({ mountFn = shallowMountExtended, ...options } = {}) => {
-    wrapper = mountFn(RunnerWaitTimes, {
-      apolloProvider: createMockApollo([
-        [runnerWaitTimesQuery, runnerWaitTimesHandler],
-        [runnerWaitTimeHistoryQuery, runnerWaitTimeHistoryHandler],
-      ]),
+  const createComponent = ({ props, ...options } = {}) => {
+    wrapper = shallowMountExtended(RunnerWaitTimes, {
+      propsData: {
+        waitTimeHistoryEnabled: true,
+        ...props,
+      },
       stubs: { GlSprintf },
-      provide: { clickhouseCiAnalyticsAvailable: true },
       ...options,
     });
   };
-
-  beforeEach(() => {
-    runnerWaitTimesHandler = jest.fn().mockResolvedValue(new Promise(() => {}));
-    runnerWaitTimeHistoryHandler = jest.fn().mockResolvedValue(new Promise(() => {}));
-  });
 
   describe('When loading data', () => {
     useFakeDate('2023-9-18');
 
     beforeEach(() => {
-      createComponent();
+      createComponent({
+        props: {
+          waitTimesLoading: true,
+          waitTimeHistoryLoading: true,
+        },
+      });
     });
 
     it('shows loading icon', () => {
       expect(findLoadingIcon().exists()).toBe(true);
     });
 
-    it('requests wait times', () => {
-      expect(runnerWaitTimesHandler).toHaveBeenCalledTimes(1);
-    });
-
     it('shows loading area', () => {
       expect(findSkeletonLoader().exists()).toBe(true);
-    });
-
-    it('requests wait time history', () => {
-      expect(runnerWaitTimeHistoryHandler).toHaveBeenCalledTimes(1);
-      expect(runnerWaitTimeHistoryHandler).toHaveBeenCalledWith({
-        fromTime: '2023-09-17T21:00:00.000Z',
-        toTime: '2023-09-18T00:00:00.000Z',
-      });
     });
 
     it('shows help popover with link', () => {
@@ -100,12 +79,15 @@ describe('RunnerActiveList', () => {
   });
 
   describe('When wait times are loaded', () => {
-    beforeEach(async () => {
-      runnerWaitTimesHandler.mockResolvedValue(runnersWaitTimes);
-      runnerWaitTimeHistoryHandler.mockResolvedValue(runnerWaitTimeHistory);
-
-      createComponent();
-      await waitForPromises();
+    beforeEach(() => {
+      createComponent({
+        props: {
+          waitTimes,
+          waitTimeHistory,
+          waitTimesLoading: false,
+          waitTimeHistoryLoading: false,
+        },
+      });
     });
 
     it('does not show loading icon', () => {
@@ -132,8 +114,11 @@ describe('RunnerActiveList', () => {
       });
     });
 
-    it('shows chart formatted tooltip', async () => {
+    it('shows chart formatted tooltip', () => {
       createComponent({
+        props: {
+          waitTimeHistory,
+        },
         stubs: {
           GlLineChart: stubComponent(GlLineChart, {
             template: `<div>
@@ -143,35 +128,19 @@ describe('RunnerActiveList', () => {
         },
       });
 
-      await waitForPromises();
-
       expect(findChart().text()).toContain('1,234.57');
     });
   });
 
   describe('When ClickHouse is not configured', () => {
-    beforeEach(async () => {
-      runnerWaitTimesHandler.mockResolvedValue(runnersWaitTimes);
-
-      createComponent({ provide: { clickhouseCiAnalyticsAvailable: false } });
-      await waitForPromises();
-    });
-
-    it('request wait times', () => {
-      expect(runnerWaitTimesHandler).toHaveBeenCalledTimes(1);
-    });
-
-    it('shows stats', () => {
-      expect(getStatData()).toEqual([
-        [I18N_P99, '99.00'],
-        [I18N_P90, '90.00'],
-        [I18N_P75, '75.00'],
-        [I18N_MEDIAN, '50.00'],
-      ]);
-    });
-
-    it('does not request wait time history', () => {
-      expect(runnerWaitTimeHistoryHandler).toHaveBeenCalledTimes(0);
+    beforeEach(() => {
+      createComponent({
+        props: {
+          waitTimes,
+          waitTimeHistory,
+          waitTimeHistoryEnabled: false,
+        },
+      });
     });
 
     it('does not show the chart', () => {

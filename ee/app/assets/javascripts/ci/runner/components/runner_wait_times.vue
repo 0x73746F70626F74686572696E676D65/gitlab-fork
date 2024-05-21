@@ -6,12 +6,8 @@ import HelpPopover from '~/vue_shared/components/help_popover.vue';
 
 import { s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { formatDate, nSecondsBefore } from '~/lib/utils/datetime_utility';
-import { captureException } from '~/ci/runner/sentry_utils';
-import { createAlert } from '~/alert';
+import { formatDate } from '~/lib/utils/datetime_utility';
 
-import runnerWaitTimes from 'ee/ci/runner/graphql/performance/runner_wait_times.query.graphql';
-import runnerWaitTimeHistoryQuery from 'ee/ci/runner/graphql/performance/runner_wait_time_history.query.graphql';
 import {
   formatSeconds,
   runnerWaitTimeQueryData,
@@ -30,50 +26,35 @@ export default {
     GlSingleStat,
     GlLineChart,
   },
-  apollo: {
+  props: {
     waitTimes: {
-      query: runnerWaitTimes,
-      update({ runners }) {
-        return runners?.jobsStatistics?.queuedDuration;
-      },
-      error(error) {
-        this.handlerError(error);
-      },
+      type: Object,
+      required: false,
+      default: null,
+    },
+    waitTimesLoading: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+
+    waitTimeHistoryEnabled: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
     waitTimeHistory: {
-      query: runnerWaitTimeHistoryQuery,
-      skip() {
-        return !this.isHistoryFeatureEnabled;
-      },
-      variables() {
-        const fromTime = nSecondsBefore(new Date(), 60 * 60 * 3).toISOString(); // last 3 hours
-        const toTime = new Date().toISOString();
-
-        return { fromTime, toTime };
-      },
-      update({ ciQueueingHistory }) {
-        return ciQueueingHistory?.timeSeries;
-      },
-      error(error) {
-        this.handlerError(error);
-      },
+      type: Array,
+      required: false,
+      default: () => [],
     },
-  },
-  inject: {
-    clickhouseCiAnalyticsAvailable: {
+    waitTimeHistoryLoading: {
+      type: Boolean,
+      required: false,
       default: false,
     },
   },
   computed: {
-    isHistoryFeatureEnabled() {
-      return this.clickhouseCiAnalyticsAvailable;
-    },
-    waitTimesLoading() {
-      return this.$apollo.queries.waitTimes.loading;
-    },
-    waitTimeHistoryLoading() {
-      return this.$apollo.queries.waitTimeHistory.loading;
-    },
     waitTimesStatsData() {
       return runnerWaitTimeQueryData(this.waitTimes);
     },
@@ -84,10 +65,6 @@ export default {
   methods: {
     formatSeconds(value) {
       return formatSeconds(value);
-    },
-    handlerError(error) {
-      createAlert({ message: error.message });
-      captureException({ error, component: this.$options.name });
     },
   },
   jobDurationHelpPagePath: helpPagePath('ci/runners/runners_scope', {
@@ -139,7 +116,7 @@ export default {
         :unit="s__('Units|sec')"
       />
     </div>
-    <div v-if="isHistoryFeatureEnabled">
+    <div v-if="waitTimeHistoryEnabled">
       <div
         v-if="waitTimeHistoryLoading && !waitTimeHistoryChartData.length"
         class="gl-py-4 gl--flex-center"
