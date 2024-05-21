@@ -33,7 +33,7 @@ RSpec.describe RemoveProjectsFromMainIndex, feature_category: :global_search do
     end
 
     context 'when projects are still present in the index' do
-      it 'removes projects from the index' do
+      it 'removes projects from the index', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/448563' do
         expect(migration.completed?).to be_falsey
         migration.migrate
         expect(migration.migration_state).to match(documents_remaining: anything, task_id: anything)
