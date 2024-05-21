@@ -31003,30 +31003,6 @@ msgstr ""
 msgid "MLExperimentTracking|Delete experiment?"
 msgstr ""
 
-msgid "MLOps|Are you sure you want to delete model version %{versionName}?"
-msgstr ""
-
-msgid "MLOps|Delete model version"
-msgstr ""
-
-msgid "MLOps|Delete model version?"
-msgstr ""
-
-msgid "MLOps|Deleting this model version will delete the associated artifacts."
-msgstr ""
-
-msgid "MLOps|Drop or %{linkStart}select%{linkEnd} artifact to attach"
-msgstr ""
-
-msgid "MLOps|Drop to start upload"
-msgstr ""
-
-msgid "MLOps|Error importing artifact. Please try again."
-msgstr ""
-
-msgid "MLOps|Model version %{versionName} deleted successfully"
-msgstr ""
-
 msgid "MLOps|Something went wrong while trying to delete the model version. Please try again later."
 msgstr ""
 
@@ -33049,6 +33025,9 @@ msgstr ""
 msgid "MlModelRegistry|An error has occurred when saving the model."
 msgstr ""
 
+msgid "MlModelRegistry|Are you sure you want to delete model version %{versionName}?"
+msgstr ""
+
 msgid "MlModelRegistry|Artifacts"
 msgstr ""
 
@@ -33076,10 +33055,28 @@ msgstr ""
 msgid "MlModelRegistry|Delete model"
 msgstr ""
 
+msgid "MlModelRegistry|Delete model version"
+msgstr ""
+
+msgid "MlModelRegistry|Delete model version?"
+msgstr ""
+
 msgid "MlModelRegistry|Delete model?"
 msgstr ""
 
+msgid "MlModelRegistry|Deleting this model version will delete the associated artifacts."
+msgstr ""
+
 msgid "MlModelRegistry|Details"
+msgstr ""
+
+msgid "MlModelRegistry|Drop or %{linkStart}select%{linkEnd} artifact to attach"
+msgstr ""
+
+msgid "MlModelRegistry|Drop to start upload"
+msgstr ""
+
+msgid "MlModelRegistry|Error importing artifact. Please try again."
 msgstr ""
 
 msgid "MlModelRegistry|Experiment"
@@ -33122,6 +33119,9 @@ msgid "MlModelRegistry|Model performance"
 msgstr ""
 
 msgid "MlModelRegistry|Model registry"
+msgstr ""
+
+msgid "MlModelRegistry|Model version %{versionName} deleted successfully"
 msgstr ""
 
 msgid "MlModelRegistry|New model"
