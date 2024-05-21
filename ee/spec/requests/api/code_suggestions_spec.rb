@@ -244,12 +244,30 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           )
         end
 
-        it 'tracks code_suggestions_requested ai event' do
-          post_api
+        context 'with old approach' do
+          before do
+            allow(Gitlab::Tracking::AiTracking).to receive(:track_via_code_suggestions?).and_return(true)
+          end
 
-          expect(Gitlab::Tracking::AiTracking)
-            .to have_received(:track_event)
-                  .with('code_suggestions_requested', user_id: current_user.id)
+          it 'tracks code_suggestions_requested ai event' do
+            post_api
+
+            expect(Gitlab::Tracking::AiTracking)
+              .to have_received(:track_event)
+                    .with('code_suggestions_requested', user: current_user)
+          end
+        end
+
+        context 'with new approach' do
+          before do
+            allow(Gitlab::Tracking::AiTracking).to receive(:track_via_code_suggestions?).and_return(false)
+          end
+
+          it 'does not track code_suggestions_requested ai event' do
+            post_api
+
+            expect(Gitlab::Tracking::AiTracking).not_to have_received(:track_event)
+          end
         end
 
         context 'with telemetry headers' do

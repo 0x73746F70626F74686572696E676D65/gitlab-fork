@@ -47,9 +47,9 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
 
     context 'when data is present' do
       before do
-        Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', { user_id: 1 })
-        Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', { user_id: 2 })
-        Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', { user_id: 3 })
+        Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', { user: build_stubbed(:user, id: 1) })
+        Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', { user: build_stubbed(:user, id: 2) })
+        Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', { user: build_stubbed(:user, id: 3) })
       end
 
       it 'inserts all rows' do

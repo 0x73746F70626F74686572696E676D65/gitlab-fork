@@ -1,5 +1,5 @@
 ---
-description: Tracks the number of requests to the `POST /code_suggestions/completions` API endpoint
+description: Tracks the number of requests to the `POST /code_suggestions/completions` API endpoint. Important for AI analytics
 internal_events: true
 action: code_suggestions_requested
 identifiers:
