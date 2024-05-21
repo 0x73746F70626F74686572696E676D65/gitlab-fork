@@ -130,7 +130,7 @@ module Gitlab
               {
                 success: true,
                 eligible_for_seat_usage_alerts: response.dig(:data, 'data', 'subscription',
-                                                             'eligibleForSeatUsageAlerts')
+                  'eligibleForSeatUsageAlerts')
               }
             else
               error(response.dig(:data, :errors))

@@ -8,7 +8,7 @@ module Gitlab
           @filters ||= super
             .dup
             .insert_before(::Banzai::Filter::ReferenceRedactorFilter,
-                           Gitlab::StatusPage::Filter::MentionAnonymizationFilter)
+              Gitlab::StatusPage::Filter::MentionAnonymizationFilter)
             .concat(::Banzai::FilterArray[StatusPage::Filter::ImageFilter])
             .freeze
         end

@@ -8,8 +8,8 @@ RSpec.describe Mutations::Ci::Runner::Update, feature_category: :runner do
   describe '#resolve' do
     let(:runner) do
       create(:ci_runner,
-             active: true, locked: false, run_untagged: true,
-             public_projects_minutes_cost_factor: 0.0, private_projects_minutes_cost_factor: 0.0)
+        active: true, locked: false, run_untagged: true,
+        public_projects_minutes_cost_factor: 0.0, private_projects_minutes_cost_factor: 0.0)
     end
 
     let(:mutation) { described_class.new(object: nil, context: current_ctx, field: nil) }

@@ -12,20 +12,20 @@ RSpec.describe Analytics::MergeRequestMetricsCalculator, feature_category: :code
 
   let_it_be(:merge_request_author_note) do
     create(:diff_note_on_merge_request,
-           noteable: merge_request,
-           project: merge_request.source_project,
-           author: merge_request.author,
-           created_at: 11.months.ago
-          )
+      noteable: merge_request,
+      project: merge_request.source_project,
+      author: merge_request.author,
+      created_at: 11.months.ago
+    )
   end
 
   let_it_be(:merge_request_bot_note) do
     create(:diff_note_on_merge_request,
-           noteable: merge_request,
-           project: merge_request.source_project,
-           author: create(:user, :bot),
-           created_at: 12.months.ago
-          )
+      noteable: merge_request,
+      project: merge_request.source_project,
+      author: create(:user, :bot),
+      created_at: 12.months.ago
+    )
   end
 
   describe '#productivity_data' do

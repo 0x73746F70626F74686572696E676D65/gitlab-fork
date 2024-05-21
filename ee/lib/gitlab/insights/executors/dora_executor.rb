@@ -41,12 +41,12 @@ module Gitlab
           input = data.each_with_object({}) { |item, hash| hash[item['date']] = format_value(item[metric]) }
 
           Gitlab::Analytics::DateFiller.new(input,
-                                            from: start_date,
-                                            to: Date.today,
-                                            period: group_by.to_sym,
-                                            default_value: DEFAULT_VALUES[metric],
-                                            date_formatter: ->(date) { date.strftime(FORMATTERS[group_by]) }
-                                           ).fill
+            from: start_date,
+            to: Date.today,
+            period: group_by.to_sym,
+            default_value: DEFAULT_VALUES[metric],
+            date_formatter: ->(date) { date.strftime(FORMATTERS[group_by]) }
+          ).fill
         end
 
         def format_value(value)
