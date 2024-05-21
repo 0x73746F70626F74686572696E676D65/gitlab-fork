@@ -1,0 +1,16 @@
+---
+description: Tracks the number of accepted code suggestions. Important for AI analytics
+internal_events: true
+action: code_suggestions_accepted
+identifiers:
+- user
+product_section: dev
+product_stage: create
+product_group: code_creation
+milestone: '17.1'
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/152946
+distributions:
+- ee
+tiers:
+- premium
+- ultimate
