@@ -13,7 +13,7 @@ export default {
     ),
     buttonText: s__('IdentityVerification|Verify my account'),
   },
-  inject: ['identityVerificationPath'],
+  inject: ['identityVerificationRequired', 'identityVerificationPath'],
   data() {
     return {
       isVisible: true,
@@ -29,7 +29,7 @@ export default {
 
 <template>
   <gl-alert
-    v-if="isVisible"
+    v-if="identityVerificationRequired && isVisible"
     :title="$options.i18n.title"
     :primary-button-text="$options.i18n.buttonText"
     :primary-button-link="identityVerificationPath"

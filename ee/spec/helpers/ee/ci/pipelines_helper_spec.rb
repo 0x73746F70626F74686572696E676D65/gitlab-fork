@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe EE::Ci::PipelinesHelper do
+  include Devise::Test::ControllerHelpers
+
   describe '#show_cc_validation_alert?' do
     using RSpec::Parameterized::TableSyntax
 
@@ -49,6 +51,16 @@ RSpec.describe EE::Ci::PipelinesHelper do
       end
 
       it { is_expected.to be_falsy }
+    end
+  end
+
+  describe '#pipelines_list_data' do
+    let_it_be(:project) { build_stubbed(:project) }
+
+    subject(:data) { helper.pipelines_list_data(project, 'list_url') }
+
+    it 'has the expected keys' do
+      expect(data.keys).to include(:identity_verification_required, :identity_verification_path)
     end
   end
 end
