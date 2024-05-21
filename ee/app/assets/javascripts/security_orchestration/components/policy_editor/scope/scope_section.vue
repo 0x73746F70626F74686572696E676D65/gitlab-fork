@@ -336,14 +336,11 @@ export default {
       {{ errorDescription }}
     </gl-alert>
 
-    <loader-with-message v-if="showLoader" class="gl-mb-4" />
+    <loader-with-message v-if="showLoader" />
 
-    <div v-else class="gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap gl-mt-2 gl-mb-6">
+    <div v-else class="gl-flex gl-gap-3 gl-items-center gl-flex-wrap gl-mt-2">
       <template v-if="showLinkedSppItemsError">
-        <div
-          data-testid="policy-scope-project-error"
-          class="gl-display-flex gl-align-items-center gl-gap-3"
-        >
+        <div data-testid="policy-scope-project-error" class="gl-flex gl-items-center gl-gap-3">
           <gl-icon class="gl-text-red-500" name="status_warning" />
           <p data-testid="policy-scope-project-error-text" class="gl-text-red-500 gl-m-0">
             {{ $options.i18n.policyScopeErrorText }}
@@ -354,7 +351,7 @@ export default {
       <template v-else-if="showScopeSelector">
         <div
           :class="{ 'gl-text-gray-400': disableScopeSelector }"
-          class="gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap"
+          class="gl-flex gl-gap-3 gl-items-center gl-flex-wrap"
         >
           <gl-sprintf :message="policyScopeCopy">
             <template #projectScopeType>
@@ -374,7 +371,7 @@ export default {
             </template>
 
             <template #frameworkSelector>
-              <div class="gl-display-inline-flex gl-align-items-center gl-flex-wrap gl-gap-3">
+              <div class="gl-inline-flex gl-items-center gl-flex-wrap gl-gap-3">
                 <compliance-framework-dropdown
                   :disabled="disableScopeSelector"
                   :selected-framework-ids="complianceFrameworksIds"
@@ -439,7 +436,7 @@ export default {
         </template>
       </template>
       <template v-else>
-        <p data-testid="policy-scope-project-text">
+        <p data-testid="policy-scope-project-text" class="gl-mb-0">
           {{ $options.i18n.policyScopeFrameworkCopyProject }}
         </p>
       </template>

@@ -294,7 +294,11 @@ export default {
               />
             </gl-form-group>
 
-            <gl-form-group :label="$options.i18n.toggleLabel" :disabled="hasParsingError">
+            <gl-form-group
+              :label="$options.i18n.toggleLabel"
+              :disabled="hasParsingError"
+              class="gl-mb-0"
+            >
               <gl-form-radio-group
                 v-gl-tooltip="{
                   disabled: !policyLimitDetails.radioButton.disabled,
