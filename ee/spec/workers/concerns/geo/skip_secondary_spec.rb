@@ -29,48 +29,15 @@ RSpec.describe ::Geo::SkipSecondary, feature_category: :global_search do
       ConcurrencyLimit::ResumeWorker
     ]
 
-    expected_workers = [
-      ::Elastic::NamespaceUpdateWorker,
-      ::Elastic::ProjectTransferWorker,
-      ::Elastic::MigrationWorker,
-
-      ElasticAssociationIndexerWorker,
-      ElasticCommitIndexerWorker,
-      ElasticDeleteProjectWorker,
-      ElasticFullIndexWorker,
-      ElasticNamespaceIndexerWorker,
-      ElasticRemoveExpiredNamespaceSubscriptionsFromIndexCronWorker,
-      ElasticWikiIndexerWorker,
-      ElasticIndexBulkCronWorker,
-      ElasticIndexInitialBulkCronWorker,
-      ElasticNamespaceRolloutWorker,
-      ElasticClusterReindexingCronWorker,
-      ElasticIndexingControlWorker,
-
-      Search::ElasticDefaultBranchChangedWorker,
-      Search::ElasticGroupAssociationDeletionWorker,
-      Search::IndexCurationWorker,
-      Search::NamespaceIndexIntegrityWorker,
-      Search::ProjectIndexIntegrityWorker,
-      Search::Wiki::ElasticDeleteGroupWikiWorker,
-      Search::Elastic::TriggerIndexingWorker,
-
-      Search::Zoekt::DefaultBranchChangedWorker,
-      Zoekt::IndexerWorker,
-      Search::Zoekt::DeleteProjectWorker,
-      Search::Zoekt::SchedulingWorker,
-      Search::Zoekt::ProjectTransferWorker,
-      Search::Zoekt::NamespaceIndexerWorker,
-      Search::Zoekt::IndexingTaskWorker
-    ]
-
     workers = ObjectSpace.each_object(::Class).select do |klass|
       klass < ApplicationWorker &&
         klass.get_feature_category == :global_search &&
         exceptions.exclude?(klass)
     end
 
-    expect(workers.uniq).to match_array(expected_workers)
+    workers.each do |worker|
+      expect(worker.ancestors).to include(::Geo::SkipSecondary)
+    end
   end
 
   context 'when ::Gitlab::Geo.secondary? is true' do

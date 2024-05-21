@@ -2,6 +2,7 @@
 
 class ElasticNamespaceRolloutWorker # rubocop:disable Scalability/IdempotentWorker
   include ApplicationWorker
+  prepend ::Geo::SkipSecondary
 
   data_consistency :always
 
