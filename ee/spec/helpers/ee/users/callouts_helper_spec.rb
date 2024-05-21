@@ -277,45 +277,4 @@ RSpec.describe EE::Users::CalloutsHelper do
       it { is_expected.to be expected_result }
     end
   end
-
-  describe '.show_duo_chat_ga_alert?', :saas, feature_category: :code_suggestions do
-    using RSpec::Parameterized::TableSyntax
-
-    let_it_be(:user) { create(:user) }
-    let_it_be(:ultimate_plan) { create(:ultimate_plan) }
-    let(:group) { create(:group) }
-
-    where(
-      saas_feature_available?: [true, false],
-      feature_flag_enabled?: [true, false],
-      member_of_group?: [true, false],
-      group_paid_and_not_trial?: [true, false],
-      user_dismissed_callout?: [true, false]
-    )
-
-    with_them do
-      before do
-        stub_saas_features(subscriptions_trials: saas_feature_available?)
-        stub_feature_flags(duo_chat_ga_alert: feature_flag_enabled?)
-
-        allow(helper).to receive(:current_user).and_return(user)
-        group.add_member(user, GroupMember::GUEST) if member_of_group?
-
-        create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan) if group_paid_and_not_trial?
-        allow(helper).to receive(:user_dismissed?).with('duo_chat_ga_alert').and_return(user_dismissed_callout?)
-      end
-
-      let(:expected_result) do
-        saas_feature_available? &&
-          feature_flag_enabled? &&
-          member_of_group? &&
-          group_paid_and_not_trial? &&
-          !user_dismissed_callout?
-      end
-
-      subject { helper.show_duo_chat_ga_alert?(group) }
-
-      it { is_expected.to eq(expected_result) }
-    end
-  end
 end
