@@ -50,7 +50,8 @@ RSpec.describe ReindexWikisToFixRouting, :elastic_clean, :sidekiq_inline, featur
         set_old_schema_version_in_three_documents!
       end
 
-      it 'performs logging and calls ElasticWikiIndexerWorker' do
+      it 'performs logging and calls ElasticWikiIndexerWorker',
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/462426' do
         expect(migration).to receive(:log).with("Setting migration_state to #{{ documents_remaining: 3 }.to_json}").once
         expect(migration).to receive(:log).with('Checking if migration is finished', { total_remaining: 3 }).once
         delay = a_value_between(0, migration.throttle_delay.seconds)
