@@ -44,7 +44,7 @@ module Mutations
         return true if ::Gitlab::Saas.feature_available?(:duo_chat_on_saas)
         return false unless ::License.feature_available?(:code_suggestions)
 
-        ::GitlabSubscriptions::AddOnPurchase.for_gitlab_duo_pro.any?
+        ::CloudConnector::AvailableServices.find_by_name(:code_suggestions).purchased?
       end
     end
   end

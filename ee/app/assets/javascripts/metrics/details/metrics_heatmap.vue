@@ -41,7 +41,7 @@ export default {
         arr.map((entry, timeIndex) => [
           timeIndex,
           bucketIndex,
-          entry[1], // value
+          parseFloat(entry[1]), // value
         ]),
       );
     },
