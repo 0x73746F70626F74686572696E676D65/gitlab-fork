@@ -5,7 +5,6 @@ import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser
 import DUO_CHAT_ILLUSTRATION from './callout_illustration.svg?url';
 
 export const DUO_CHAT_GLOBAL_BUTTON_CSS_CLASS = 'js-tanuki-bot-chat-toggle';
-export const DUO_CHAT_GA_ALERT_IDENTIFIER = '.js-duo-chat-ga-alert';
 
 const i18n = {
   POPOVER_LABEL: s__('DuoChat|GitLab Duo Chat'),
@@ -23,17 +22,6 @@ export default {
     GlPopover,
     GlLink,
     UserCalloutDismisser,
-  },
-  computed: {
-    // This is a hack and needs to removed or refactored!
-    // This value is querying the DOM to check for another DuoChat alert
-    // to make sure we're not rendering 2 DuoChat alerts on top of each other.
-    // This needs to removed asap as soon as DUO_CHAT_GA_ALERT_IDENTIFIER is removed
-    // or refactored to DUO_CHAT_GA_ALERT_IDENTIFIER using global state
-    // without querying the DOM.
-    checkForGAAlert() {
-      return document.querySelector(DUO_CHAT_GA_ALERT_IDENTIFIER);
-    },
   },
 
   beforeMount() {
@@ -83,7 +71,7 @@ export default {
   <user-callout-dismisser v-if="popoverTarget" feature-name="duo_chat_callout">
     <template #default="{ dismiss, shouldShowCallout }">
       <gl-popover
-        v-if="shouldShowCallout && !checkForGAAlert"
+        v-if="shouldShowCallout"
         :target="popoverTarget"
         :show="shouldShowCallout"
         show-close-button

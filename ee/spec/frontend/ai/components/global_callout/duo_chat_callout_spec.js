@@ -21,14 +21,11 @@ describe('DuoChatCallout', () => {
   const findParagraphWithinPopover = () =>
     wrapper.find('[data-testid="duo-chat-callout-description"]');
 
-  const createComponent = ({ shouldShowCallout = true, checkForGAAlert = false } = {}) => {
+  const createComponent = ({ shouldShowCallout = true } = {}) => {
     userCalloutDismissSpy = jest.fn();
     wrapper = shallowMount(DuoChatCallout, {
       directives: {
         Outside: createMockDirective('outside'),
-      },
-      computed: {
-        checkForGAAlert: () => checkForGAAlert,
       },
       stubs: {
         UserCalloutDismisser: makeMockUserCalloutDismisser({
@@ -70,17 +67,6 @@ describe('DuoChatCallout', () => {
     createComponent({ shouldShowCallout: false });
     expect(findPopoverWithinDismisser().exists()).toBe(false);
     expect(findLinkWithinDismisser().exists()).toBe(false);
-  });
-
-  // This is a hack and needs to removed or refactored!
-  // This value is querying the DOM to check for another DuoChat alert
-  // to make sure we're not rendering 2 DuoChat alerts on top of each other.
-  // This needs to removed asap as soon as DUO_CHAT_GA_ALERT_IDENTIFIER is removed
-  // or refactored to DUO_CHAT_GA_ALERT_IDENTIFIER using global state
-  // without querying the DOM.
-  it('does not render the popover if other banner exists', () => {
-    createComponent({ shouldShowCallout: true, checkForGAAlert: true });
-    expect(findPopoverWithinDismisser().exists()).toBe(false);
   });
 
   it('does not throw if the popoverTarget button does not exist', () => {
