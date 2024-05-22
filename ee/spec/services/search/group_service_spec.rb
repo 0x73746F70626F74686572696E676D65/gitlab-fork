@@ -259,7 +259,7 @@ RSpec.describe Search::GroupService, feature_category: :global_search do
         let!(:confidential_note) do
           note_author_and_assignee = user || project.creator
           issue = create(:issue, project: project, assignees: [note_author_and_assignee])
-          create(:note, confidential: true, project: project, noteable: issue, author: note_author_and_assignee)
+          create(:note, note: note.note, confidential: true, project: project, noteable: issue, author: note_author_and_assignee)
         end
 
         where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do

@@ -48,12 +48,6 @@ module Elastic
 
       private
 
-      def default_operator
-        return :or if Feature.enabled?(:elasticsearch_use_or_default_operator)
-
-        :and
-      end
-
       def match_none
         {
           query: { match_none: {} },
@@ -113,7 +107,7 @@ module Elastic
                 fields: fields,
                 query: query,
                 lenient: true,
-                default_operator: default_operator
+                default_operator: :and
               }
             }
 
