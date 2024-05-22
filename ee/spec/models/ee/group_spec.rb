@@ -3580,28 +3580,6 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#google_cloud_support_enabled?' do
-    subject { group.google_cloud_support_enabled? }
-
-    it { is_expected.to eq(false) }
-
-    context 'when feature is available' do
-      before do
-        stub_saas_features(google_cloud_support: true)
-      end
-
-      it { is_expected.to eq(true) }
-    end
-
-    context 'when google_cloud_support FF is disabled' do
-      before do
-        stub_feature_flags(google_cloud_support_feature_flag: false)
-      end
-
-      it { is_expected.to eq(false) }
-    end
-  end
-
   describe '#block_seat_overages?' do
     context 'when gitlab subscriptions are available' do
       before do

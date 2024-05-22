@@ -46,7 +46,7 @@ module EE
           end
 
           def show_google_artifact_registry_menu_item?
-            context.project.google_cloud_support_enabled? &&
+            ::Gitlab::Saas.feature_available?(:google_cloud_support) &&
               can?(context.current_user, :read_google_cloud_artifact_registry, context.project) &&
               context.project.google_cloud_platform_workload_identity_federation_integration&.operating? &&
               context.project.google_cloud_platform_artifact_registry_integration&.operating?

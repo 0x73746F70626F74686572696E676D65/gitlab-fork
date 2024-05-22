@@ -19,14 +19,6 @@ RSpec.describe Projects::GoogleCloud::ArtifactRegistryController, feature_catego
 
       it_behaves_like 'returning response status', :ok
 
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(google_cloud_support_feature_flag: false)
-        end
-
-        it_behaves_like 'returning response status', :not_found
-      end
-
       context 'when feature is unavailable' do
         before do
           stub_saas_features(google_cloud_support: false)

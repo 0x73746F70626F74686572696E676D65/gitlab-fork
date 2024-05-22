@@ -56,7 +56,7 @@ RSpec.describe EE::PackagesHelper, feature_category: :package_registry do
 
     describe 'settings_path' do
       before do
-        allow(project).to receive(:google_cloud_support_enabled?).and_return(true)
+        stub_saas_features(google_cloud_support: true)
         allow(Ability).to receive(:allowed?).with(user, :admin_google_cloud_artifact_registry, project)
           .and_return(true)
       end
@@ -66,9 +66,9 @@ RSpec.describe EE::PackagesHelper, feature_category: :package_registry do
           ::Integrations::GoogleCloudPlatform::ArtifactRegistry))
       end
 
-      context 'when google_cloud_support_enabled? is false' do
+      context 'when google artifact registry feature is unavailable' do
         before do
-          allow(project).to receive(:google_cloud_support_enabled?).and_return(false)
+          stub_saas_features(google_cloud_support: false)
         end
 
         it { is_expected.to include(settings_path: '') }

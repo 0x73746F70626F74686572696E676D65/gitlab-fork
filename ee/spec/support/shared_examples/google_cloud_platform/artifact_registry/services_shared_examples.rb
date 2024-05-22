@@ -45,15 +45,6 @@ RSpec.shared_examples 'an artifact registry service handling validation errors' 
       end
     end
 
-    context 'with google_cloud_support_feature_flag FF disabled' do
-      before do
-        stub_feature_flags(google_cloud_support_feature_flag: false)
-      end
-
-      it_behaves_like 'returning an error service response',
-        message: described_class::ERROR_RESPONSES[:feature_flag_disabled].message
-    end
-
     %i[wlif artifact_registry].each do |integration_type|
       context "with #{integration_type}" do
         let(:integration) { public_send("#{integration_type}_integration") }

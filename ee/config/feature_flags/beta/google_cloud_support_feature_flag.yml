@@ -1,9 +1,0 @@
----
-name: google_cloud_support_feature_flag
-feature_issue_url: https://gitlab.com/groups/gitlab-org/-/epics/11412
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/145918
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/443470
-milestone: '16.10'
-group: group::container registry
-type: beta
-default_enabled: false

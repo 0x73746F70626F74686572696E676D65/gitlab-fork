@@ -41,18 +41,6 @@ RSpec.describe API::ProjectGoogleCloudIntegration, feature_category: :integratio
         expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
-
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(google_cloud_support_feature_flag: false)
-      end
-
-      it 'returns error' do
-        get(api(path, owner), params: params)
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
   end
 
   describe 'GET /projects/:id/google_cloud/setup/runner_deployment_project.sh' do

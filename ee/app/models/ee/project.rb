@@ -926,7 +926,7 @@ module EE
 
       names << 'github' unless github_integration_enabled?
 
-      unless google_cloud_support_enabled?
+      unless ::Gitlab::Saas.feature_available?(:google_cloud_support)
         names << 'google_cloud_platform_artifact_registry'
         names << 'google_cloud_platform_workload_identity_federation'
       end
@@ -1259,10 +1259,6 @@ module EE
     override :supports_saved_replies?
     def supports_saved_replies?
       ::Feature.enabled?(:project_saved_replies_flag, self, type: :beta) && licensed_feature_available?(:project_saved_replies)
-    end
-
-    def google_cloud_support_enabled?
-      ::Feature.enabled?(:google_cloud_support_feature_flag, self.root_ancestor) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
     end
 
     private

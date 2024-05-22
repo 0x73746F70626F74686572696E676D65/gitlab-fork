@@ -26,15 +26,6 @@ RSpec.describe API::Integrations, feature_category: :integrations do
       it_behaves_like 'returning response status', unavailable_status
       it_behaves_like 'does not change integrations count'
     end
-
-    context 'when google_cloud_support_feature_flag FF is disabled' do
-      before do
-        stub_feature_flags(google_cloud_support_feature_flag: false)
-      end
-
-      it_behaves_like 'returning response status', unavailable_status
-      it_behaves_like 'does not change integrations count'
-    end
   end
 
   %w[integrations services].each do |endpoint|
@@ -92,15 +83,6 @@ RSpec.describe API::Integrations, feature_category: :integrations do
       context 'when google artifact registry feature is unavailable' do
         before do
           stub_saas_features(google_cloud_support: false)
-        end
-
-        it_behaves_like 'returning response status', unavailable_status
-        it_behaves_like 'does not change integrations count'
-      end
-
-      context 'when google_cloud_support_feature_flag FF is disabled' do
-        before do
-          stub_feature_flags(google_cloud_support_feature_flag: false)
         end
 
         it_behaves_like 'returning response status', unavailable_status

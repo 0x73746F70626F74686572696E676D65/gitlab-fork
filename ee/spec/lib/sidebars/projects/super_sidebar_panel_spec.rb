@@ -45,7 +45,7 @@ RSpec.describe Sidebars::Projects::SuperSidebarPanel, feature_category: :navigat
     # Needed to show Container Registry items
     allow(::Gitlab.config.registry).to receive(:enabled).and_return(true)
     # Needed to show Google Artifactory Registry items
-    allow(project).to receive(:google_cloud_support_enabled?).and_return true
+    stub_saas_features(google_cloud_support: true)
     # Iterations are only available in non-personal projects
     allow(project).to receive(:personal?).and_return(false)
   end
