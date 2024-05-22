@@ -19,7 +19,7 @@ module Admin
     end
 
     def code_suggestions_purchased?
-      ::GitlabSubscriptions::AddOnPurchase.active.for_gitlab_duo_pro.any?
+      ::CloudConnector::AvailableServices.find_by_name(:code_suggestions).purchased?
     end
 
     private

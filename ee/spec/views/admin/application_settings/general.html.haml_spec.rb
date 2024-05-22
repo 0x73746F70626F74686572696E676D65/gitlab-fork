@@ -8,9 +8,9 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
   let_it_be(:user) { create(:admin) }
   let_it_be(:app_settings) { build(:application_setting) }
 
-  let(:duo_chat_cut_off_date) { Time.zone.parse('2024-03-15T00:00:00Z') }
-  let(:duo_chat_service_data) do
-    CloudConnector::SelfManaged::AvailableServiceData.new(:duo_chat, duo_chat_cut_off_date, %w[duo_pro])
+  let(:cut_off_date) { Time.zone.parse('2024-03-15T00:00:00Z') }
+  let(:service_data) do
+    CloudConnector::BaseAvailableServiceData.new(:mock_service, cut_off_date, %w[duo_pro])
   end
 
   subject { rendered }
@@ -18,9 +18,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
   before do
     assign(:application_setting, app_settings)
     allow(view).to receive(:current_user).and_return(user)
-
-    allow(CloudConnector::AvailableServices).to receive(:find_by_name).with(:duo_chat)
-                                                                      .and_return(duo_chat_service_data)
+    allow(CloudConnector::AvailableServices).to receive(:find_by_name).and_return(service_data)
   end
 
   describe 'maintenance mode' do
@@ -154,7 +152,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
 
           context 'when before the cut off date date' do
             around do |example|
-              travel_to(duo_chat_cut_off_date - 1.day) do
+              travel_to(cut_off_date - 1.day) do
                 example.run
               end
             end
@@ -167,7 +165,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
 
           context 'when after the cut off date' do
             around do |example|
-              travel_to(duo_chat_cut_off_date + 1.second) do
+              travel_to(cut_off_date + 1.second) do
                 example.run
               end
             end
@@ -179,7 +177,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
           end
 
           context 'when cut off date is nil' do
-            let(:duo_chat_cut_off_date) { nil }
+            let(:cut_off_date) { nil }
 
             it 'renders AI Beta features toggle' do
               render
@@ -204,8 +202,8 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
   end
 
   describe 'entire instance-level ai-powered menu section visibility', feature_category: :duo_chat do
-    let(:before_duo_chat_cut_off_date) { duo_chat_cut_off_date - 1.second }
-    let(:after_duo_chat_cut_off_date) { duo_chat_cut_off_date + 1.second }
+    let(:before_duo_chat_cut_off_date) { cut_off_date - 1.second }
+    let(:after_duo_chat_cut_off_date) { cut_off_date + 1.second }
 
     where(:current_date, :ai_chat_available, :expect_section_is_visible) do
       ref(:before_duo_chat_cut_off_date) | false | false
