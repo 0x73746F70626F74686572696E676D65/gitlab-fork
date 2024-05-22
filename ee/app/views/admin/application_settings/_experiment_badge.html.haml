@@ -1,19 +1,19 @@
-- popover_title = s_("ExperimentBadge|What's an Experiment?")
+- popover_title = s_("ExperimentBadge|What's an experiment?")
 - popover_content = capture do
   %p
-    = s_("ExperimentBadge|An Experiment is a feature that's in the process of being developed. It's not production-ready. We encourage users to try Experimental features and provide feedback.")
+    = s_("ExperimentBadge|An experiment is not yet production-ready, but is released for initial testing and feedback during development.")
   %p.gl-mb-0
-    = s_("ExperimentBadge|An Experiment:")
+    = s_("ExperimentBadge|Experiments:")
 
   %ul.gl-pl-4
     %li
-      = s_("ExperimentBadge|May be unstable.")
+      = s_("ExperimentBadge|Might be unstable or cause data loss.")
     %li
-      = s_("ExperimentBadge|Can cause data loss.")
+      = s_("ExperimentBadge|Are not supported and might not be documented.")
     %li
-      = s_("ExperimentBadge|Has no support and might not be documented.")
+      = s_("ExperimentBadge|Could be changed or removed at any time.")
     %li
-      = s_("ExperimentBadge|Can be removed at any time.")
+      = s_("ExperimentBadge|Are subject to the GitLab Testing Agreement.")
 
 - popover_data = { container: 'body', toggle: 'popover', placement: "top", html: 'true', triggers: 'hover focus', title: popover_title, content: popover_content }
 
