@@ -26,7 +26,6 @@ FactoryBot.modify do
 
       synced_epic do
         association(:epic,
-          :without_synced_work_item,
           group: instance.namespace,
           title: title,
           description: description,

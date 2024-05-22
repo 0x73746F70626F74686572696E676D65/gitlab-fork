@@ -56,26 +56,6 @@ RSpec.describe Epics::RelatedEpicLinks::DestroyService, feature_category: :portf
         end
       end
 
-      context 'when the source has no synced work item' do
-        let_it_be_with_reload(:source) { create(:epic, :without_synced_work_item, group: group) }
-        let_it_be_with_refind(:issuable_link) { create(:related_epic_link, source: source, target: target) }
-
-        it 'removes the epic but not the work item relation' do
-          expect { subject }.to change { issuable_link.class.count }.by(-1)
-          .and not_change { WorkItems::RelatedWorkItemLink.count }
-        end
-      end
-
-      context 'when the target has no synced work item' do
-        let_it_be_with_reload(:target) { create(:epic, :without_synced_work_item, group: group) }
-        let_it_be_with_refind(:issuable_link) { create(:related_epic_link, source: source, target: target) }
-
-        it 'removes the epic but not the work item relation' do
-          expect { subject }.to change { issuable_link.class.count }.by(-1)
-          .and not_change { WorkItems::RelatedWorkItemLink.count }
-        end
-      end
-
       context 'when destroying the work item link fails' do
         before do
           allow_next_instance_of(WorkItems::RelatedWorkItemLinks::DestroyService) do |instance|

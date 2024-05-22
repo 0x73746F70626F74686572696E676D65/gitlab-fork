@@ -83,7 +83,7 @@ RSpec.describe Mutations::Boards::Epics::Create, feature_category: :portfolio_ma
           subject
 
           expect(mutation_response['epic']).to be_nil
-          expect(mutation_response['errors'].first).to eq("Title can't be blank")
+          expect(mutation_response['errors'].first).to eq("Title can't be blank, Work item can't be blank")
         end
       end
     end

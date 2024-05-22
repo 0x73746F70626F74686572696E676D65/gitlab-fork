@@ -257,17 +257,6 @@ RSpec.describe EpicIssues::CreateService, feature_category: :portfolio_managemen
                     expect(WorkItem.find(issue.id).work_item_parent).to eq(another_epic.work_item)
                   end
                 end
-
-                context 'and new parent does not have associated work item' do
-                  let_it_be(:another_epic) { create(:epic, :without_synced_work_item, group: group) }
-
-                  it 'deletes the old work item parent link' do
-                    expect { subject }.to change { WorkItems::ParentLink.count }.by(-1)
-                    expect(WorkItems::ParentLink.where(work_item_id: issue.id)).to be_empty
-                    expect(created_link.issue).to eq(issue)
-                    expect(created_link.epic).to eq(another_epic)
-                  end
-                end
               end
 
               it 'triggers the issuable_epic_updated subscription' do

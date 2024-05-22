@@ -89,6 +89,8 @@ module EE
         presence: true,
         numericality: { only_integer: true }
 
+      validates :work_item, presence: true
+
       alias_attribute :parent_ids, :parent_id
       alias_attribute :issuing_parent_id, :group_id
       alias_attribute :issue, :work_item
@@ -115,7 +117,6 @@ module EE
       scope :preload_group_and_routables, -> { preload(group: [:route, :ip_restrictions, :saml_provider]) }
 
       scope :with_work_item, -> { preload(:work_item) }
-      scope :has_work_item, -> { where.not(issue_id: nil) }
 
       scope :within_timeframe, ->(start_date, end_date) do
         epics = ::Epic.arel_table

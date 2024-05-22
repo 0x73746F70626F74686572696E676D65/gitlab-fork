@@ -21,10 +21,8 @@ module Epics
     # We should call epic.save here to save the object and since
     # transaction_create is using `with_transaction_returning_status`
     def transaction_create(epic)
-      return super unless epic.valid?
-
-      work_item = create_work_item_for!(epic)
-      if work_item
+      work_item = create_work_item_for(epic)
+      if work_item.persisted?
         epic.issue_id = work_item.id
         epic.iid = work_item.iid
         epic.created_at = work_item.created_at
@@ -37,7 +35,7 @@ module Epics
         work_item.title_html = epic.title_html
         work_item.description_html = epic.description_html
         work_item.updated_at = epic.updated_at
-        work_item.save!(touch: false)
+        work_item.save(touch: false)
       end
     end
 

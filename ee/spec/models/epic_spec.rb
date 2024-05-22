@@ -138,15 +138,6 @@ RSpec.describe Epic, feature_category: :portfolio_management do
       end
     end
 
-    describe '.has_work_item' do
-      let_it_be(:epic_with_work_item) { create(:epic, :with_synced_work_item) }
-      let_it_be(:epic_without_work_item) { create(:epic, :without_synced_work_item) }
-
-      it 'returns only epics with a work item' do
-        expect(described_class.has_work_item).to match_array(described_class.all.to_a - [epic_without_work_item])
-      end
-    end
-
     describe '.preload_group_and_routables' do
       before_all do
         create(:epic, group: group)
@@ -169,6 +160,7 @@ RSpec.describe Epic, feature_category: :portfolio_management do
     it { is_expected.to validate_presence_of(:group) }
     it { is_expected.to validate_presence_of(:author) }
     it { is_expected.to validate_presence_of(:title) }
+    it { is_expected.to validate_presence_of(:work_item) }
 
     it { is_expected.to validate_presence_of(:total_opened_issue_weight) }
     it { is_expected.to validate_presence_of(:total_closed_issue_weight) }

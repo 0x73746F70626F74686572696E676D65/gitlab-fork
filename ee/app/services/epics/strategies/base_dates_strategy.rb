@@ -23,7 +23,7 @@ module Epics
       end
 
       def build_work_items_date_sources(epics)
-        epics.has_work_item.flat_map do |epic|
+        epics.flat_map do |epic|
           {
             issue_id: epic.issue_id,
             namespace_id: epic.group_id,

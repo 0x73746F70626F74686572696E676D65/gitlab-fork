@@ -154,22 +154,6 @@ RSpec.describe ::WorkItems::RelatedWorkItemLink, feature_category: :portfolio_ma
       let_it_be(:related_epic_link) { create(:related_epic_link, source: epic_a, target: epic_b) }
 
       it { is_expected.to eq(related_epic_link) }
-
-      context 'and source work item does not have a synced epic' do
-        before do
-          epic_a.update!(issue_id: nil)
-        end
-
-        it { is_expected.to be_nil }
-      end
-
-      context 'and target work item does not have a synced epic' do
-        before do
-          epic_b.update!(issue_id: nil)
-        end
-
-        it { is_expected.to be_nil }
-      end
     end
   end
 end

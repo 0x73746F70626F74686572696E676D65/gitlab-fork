@@ -122,17 +122,6 @@ RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :tea
     end
   end
 
-  context 'when epic has no associated work item' do
-    let_it_be_with_reload(:epic) { create(:epic, :without_synced_work_item, group: group) }
-
-    it 'does not log anything or tries to create a diff' do
-      expect(Gitlab::EpicWorkItemSync::Logger).not_to receive(:warn)
-      expect(Gitlab::EpicWorkItemSync::Diff).not_to receive(:new)
-
-      consume_event(subscriber: described_class, event: epic_created_event)
-    end
-  end
-
   context 'when work item has no associated epic' do
     let_it_be_with_reload(:work_item) { create(:work_item, :epic, namespace: group) }
 
