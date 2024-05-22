@@ -15,15 +15,19 @@ FactoryBot.define do
 
     [
       :admin_cicd_variables,
+      :admin_compliance_framework,
       :admin_merge_request,
       :admin_push_rules,
       :admin_terraform_state,
       :admin_web_hook,
+      :manage_deploy_tokens,
+      :manage_group_access_tokens,
       :manage_merge_request_settings,
       :manage_project_access_tokens,
       :read_code,
       :read_dependency,
-      :read_vulnerability
+      :read_vulnerability,
+      :remove_group
     ].each do |permission|
       trait permission do
         send(permission) { true }

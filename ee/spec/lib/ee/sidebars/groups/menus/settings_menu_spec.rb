@@ -294,156 +294,42 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
       end
     end
 
-    context 'for user with `read_resource_access_tokens` custom permission', feature_category: :permissions do
-      let_it_be(:user) { create(:user) }
-      let_it_be(:role) { create(:member_role, :guest, namespace: group, manage_group_access_tokens: true) }
-      let_it_be(:member) { create(:group_member, :guest, member_role: role, user: user, group: group) }
+    describe 'Custom Roles' do
+      using RSpec::Parameterized::TableSyntax
 
-      subject { menu.renderable_items.find { |e| e.item_id == item_id } }
+      let_it_be_with_reload(:user) { create(:user) }
+      let_it_be_with_reload(:group) { create(:group) }
+      let_it_be_with_reload(:sub_group) { create(:group, parent: group) }
 
-      before do
-        stub_licensed_features(custom_roles: true)
-      end
+      let(:context) { Sidebars::Groups::Context.new(current_user: user, container: sub_group) }
+      let(:menu) { described_class.new(context) }
 
-      describe 'Access Tokens menu item' do
-        let(:item_id) { :access_tokens }
-
-        it { is_expected.to be_present }
-
-        it 'does not show any other menu items' do
-          expect(menu.renderable_items.length).to equal(1)
-        end
-      end
-    end
-
-    context 'when the user is not an owner but has `admin_cicd_variables` custom ability', feature_category: :permissions do
-      let_it_be(:user) { create(:user) }
-
-      subject { menu.renderable_items.find { |e| e.item_id == item_id } }
+      subject(:menu_items) { menu.renderable_items }
 
       before do
-        allow(Ability).to receive(:allowed?).and_call_original
-        allow(Ability).to receive(:allowed?).with(user, :admin_group, group).and_return(false)
-        allow(Ability).to receive(:allowed?).with(user, :admin_cicd_variables, group).and_return(true)
+        stub_licensed_features(custom_roles: true, custom_compliance_frameworks: true)
       end
 
-      describe 'CI/CD menu item' do
-        let(:item_id) { :ci_cd }
-
-        it { is_expected.to be_present }
-
-        it 'does not show any other menu items' do
-          expect(menu.renderable_items.length).to equal(1)
-        end
-      end
-    end
-
-    context 'when the user is not an admin of the group but has `admin_push_rules` custom ability', feature_category: :permissions do
-      let_it_be(:user) { create(:user) }
-
-      subject { menu.renderable_items.find { |e| e.item_id == item_id } }
-
-      before do
-        allow(Ability).to receive(:allowed?).and_call_original
-        allow(Ability).to receive(:allowed?).with(user, :admin_group, group).and_return(false)
-        allow(Ability).to receive(:allowed?).with(user, :admin_push_rules, group).and_return(true)
+      where(:ability, :menu_item) do
+        :admin_cicd_variables          | 'CI/CD'
+        :admin_compliance_framework    | 'General'
+        :admin_push_rules              | 'Repository'
+        :manage_deploy_tokens          | 'Repository'
+        :manage_group_access_tokens    | 'Access Tokens'
+        :manage_merge_request_settings | 'General'
+        :remove_group                  | 'General'
       end
 
-      describe 'Repository menu item' do
-        let(:item_id) { :repository }
+      with_them do
+        describe "when the user has the `#{params[:ability]}` custom ability" do
+          let!(:role) { create(:member_role, :guest, ability, namespace: group) }
+          let!(:membership) { create(:group_member, :guest, member_role: role, user: user, group: group) }
 
-        it { is_expected.to be_present }
+          it { is_expected.to include(have_attributes(title: menu_item)) }
 
-        it 'does not show any other menu items' do
-          expect(menu.renderable_items.length).to equal(1)
-        end
-      end
-    end
-
-    context 'when the user is not an owner but has `remove_group` custom ability', feature_category: :permissions do
-      let_it_be(:user) { create(:user) }
-
-      subject { menu.renderable_items.find { |e| e.item_id == item_id } }
-
-      before do
-        allow(Ability).to receive(:allowed?).and_call_original
-        allow(Ability).to receive(:allowed?).with(user, :admin_group, group).and_return(false)
-        allow(Ability).to receive(:allowed?).with(user, :remove_group, group).and_return(true)
-      end
-
-      describe 'General menu item' do
-        let(:item_id) { :general }
-
-        it { is_expected.to be_present }
-
-        it 'does not show any other menu items' do
-          expect(menu.renderable_items.length).to equal(1)
-        end
-      end
-    end
-
-    context 'when the user is not an owner but has `admin_compliance_framework` custom ability', feature_category: :compliance_management do
-      let_it_be(:user) { create(:user) }
-
-      subject { menu.renderable_items.find { |e| e.item_id == item_id } }
-
-      before do
-        allow(Ability).to receive(:allowed?).and_call_original
-        allow(Ability).to receive(:allowed?).with(user, :admin_group, group).and_return(false)
-        allow(Ability).to receive(:allowed?).with(user, :admin_compliance_framework, group).and_return(true)
-      end
-
-      describe 'General menu item' do
-        let(:item_id) { :general }
-
-        it { is_expected.to be_present }
-
-        it 'does not show any other menu items' do
-          expect(menu.renderable_items.length).to equal(1)
-        end
-      end
-    end
-
-    context 'when the user is not an owner but has `manage_deploy_tokens` custom permission', feature_category: :continuous_delivery do
-      let_it_be(:user) { create(:user) }
-
-      subject { menu.renderable_items.find { |e| e.item_id == item_id } }
-
-      before do
-        allow(Ability).to receive(:allowed?).and_call_original
-        allow(Ability).to receive(:allowed?).with(user, :admin_group, group).and_return(false)
-        allow(Ability).to receive(:allowed?).with(user, :manage_deploy_tokens, group).and_return(true)
-      end
-
-      describe 'General menu item' do
-        let(:item_id) { :repository }
-
-        it { is_expected.to be_present }
-
-        it 'does not show any other menu items' do
-          expect(menu.renderable_items.length).to equal(1)
-        end
-      end
-    end
-
-    context 'when the user is not an owner but has `manage_merge_request_settings` custom ability', feature_category: :code_review_workflow do
-      let_it_be(:user) { create(:user) }
-
-      subject { menu.renderable_items.find { |e| e.item_id == item_id } }
-
-      before do
-        allow(Ability).to receive(:allowed?).and_call_original
-        allow(Ability).to receive(:allowed?).with(user, :admin_group, group).and_return(false)
-        allow(Ability).to receive(:allowed?).with(user, :manage_merge_request_settings, group).and_return(true)
-      end
-
-      describe 'General menu item' do
-        let(:item_id) { :general }
-
-        it { is_expected.to be_present }
-
-        it 'does not show any other menu items' do
-          expect(menu.renderable_items.length).to equal(1)
+          it 'does not show any other menu items' do
+            expect(menu_items.length).to eq(1)
+          end
         end
       end
     end
