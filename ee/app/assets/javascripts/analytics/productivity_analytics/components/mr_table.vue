@@ -69,7 +69,7 @@ export default {
                 block
                 fluid-width
                 class="metric-col"
-                toggle-class="dropdown-menu-toggle gl-w-full!"
+                toggle-class="dropdown-menu-toggle !gl-w-full"
                 placement="right"
                 is-check-centered
                 :items="listBoxColumnOptions"

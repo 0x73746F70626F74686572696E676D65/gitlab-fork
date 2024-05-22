@@ -212,7 +212,7 @@ export default {
     <gl-button
       type="submit"
       variant="confirm"
-      class="gl-w-full! gl-mt-5"
+      class="!gl-w-full gl-mt-5"
       :disabled="isSubmitButtonDisabled"
       :loading="isLoading"
     >

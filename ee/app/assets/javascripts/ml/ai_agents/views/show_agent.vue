@@ -158,7 +158,7 @@ export default {
         :is-loading="isLoading"
         :predefined-prompts="$options.predefinedPrompts"
         :tool-name="s__('AIAgent|Agent')"
-        class="ai-agent-chat gl-w-full! gl-static gl-border-r gl-border-transparent"
+        class="ai-agent-chat !gl-w-full gl-static gl-border-r gl-border-transparent"
         :empty-state-title="s__('AIAgent|Try out your agent')"
         :empty-state-description="
           s__('AIAgent|Your agent\'s system prompt will be applied to the chat input.')

@@ -50,7 +50,7 @@ exports[`MergeRequestTable component matches the snapshot 1`] = `
               showselectallbuttonlabel=""
               size="medium"
               sronlyresultslabel="[Function]"
-              toggleclass="dropdown-menu-toggle gl-w-full!"
+              toggleclass="dropdown-menu-toggle !gl-w-full"
               toggletext="Time from first comment to last commit"
               variant="default"
             />

@@ -80,7 +80,7 @@ export default {
         :id="inputId"
         :value="value"
         type="number"
-        class="gl-w-11!"
+        class="!gl-w-11"
         :min="0"
         :data-testid="`${id}-input`"
         @input="onValueChange"

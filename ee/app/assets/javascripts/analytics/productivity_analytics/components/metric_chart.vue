@@ -96,7 +96,7 @@ export default {
           class="gl-mb-4 metric-dropdown"
           fluid-width
           is-check-centered
-          toggle-class="dropdown-menu-toggle gl-w-full!"
+          toggle-class="dropdown-menu-toggle !gl-w-full"
           :items="listBoxMetricTypes"
           :toggle-text="metricDropdownLabel"
           :selected="selectedMetric"
