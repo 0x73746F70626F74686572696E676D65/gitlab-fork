@@ -238,7 +238,7 @@ GITLAB_SIMULATE_SAAS=1 RAILS_ENV=development bundle exec rake 'gitlab:duo:setup[
    1. Go to the group with the Ultimate license.
    1. Select **Settings > General**.
    1. Expand the **Permissions and group features** section.
-   1. Enable **Experiment & Beta features**.
+   1. Enable **Use experiment and beta features**.
 1. Enable the specific feature flag for the feature you want to test.
 1. You can use Rake task `rake gitlab:duo:enable_feature_flags` to enable all feature flags that are assigned to group AI Framework.
 1. Setup [AI Gateway](#test-ai-features-with-ai-gateway-locally).

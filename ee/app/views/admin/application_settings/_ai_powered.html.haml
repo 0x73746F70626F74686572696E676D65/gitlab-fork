@@ -40,7 +40,7 @@
                 = render Pajamas::ButtonComponent.new(variant: :default, href: 'https://about.gitlab.com/solutions/gitlab-duo-pro/sales/', target: '_blank') do
                   = s_('CodeSuggestionsSM|Contact Sales')
             = f.gitlab_ui_checkbox_component :instance_level_ai_beta_features_enabled,
-              s_('AIPoweredSM|Enable Experiment and Beta AI-powered features'),
+              s_('AIPoweredSM|Enable experiment and beta AI-powered features'),
               help_text: ai_powered_testing_agreement
 
       = f.submit _('Save changes'), pajamas_button: true
