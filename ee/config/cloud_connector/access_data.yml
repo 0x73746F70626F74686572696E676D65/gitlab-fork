@@ -29,3 +29,22 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
         unit_primitives:
           - duo_chat
           - documentation_search
+  ai_gateway_proxy:
+    backend: 'gitlab-ai-gateway'
+    bundled_with:
+      duo_enterprise:
+        unit_primitives:
+          - analyze_ci_job_failure
+          - documentation_search
+          - duo_chat
+          - explain_code
+          - explain_vulnerability
+          - fill_in_merge_request_template
+          - generate_commit_message
+          - generate_cube_query
+          - resolve_vulnerability
+          - review_merge_request
+          - summarize_issue_discussions
+          - summarize_merge_request
+          - summarize_review
+          - summarize_submitted_review

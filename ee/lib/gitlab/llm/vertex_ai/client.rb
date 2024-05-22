@@ -8,11 +8,12 @@ module Gitlab
         include ::Gitlab::Llm::Concerns::EventTracking
         extend ::Gitlab::Utils::Override
 
-        def initialize(user, retry_content_blocked_requests: false, tracking_context: {})
+        def initialize(user, unit_primitive:, retry_content_blocked_requests: false, tracking_context: {})
           @logger = Gitlab::Llm::Logger.build
           @retry_content_blocked_requests = retry_content_blocked_requests
           @user = user
           @tracking_context = tracking_context
+          @unit_primitive = unit_primitive
         end
 
         # @param [String] content - Input string
@@ -21,7 +22,9 @@ module Gitlab
           request(
             content: content,
             config: Configuration.new(
-              model_config: ModelConfigurations::CodeChat.new
+              model_config: ModelConfigurations::CodeChat.new(user: user),
+              user: user,
+              unit_primitive: unit_primitive
             ),
             **options
           )
@@ -38,7 +41,9 @@ module Gitlab
           request(
             content: content,
             config: Configuration.new(
-              model_config: ModelConfigurations::Chat.new
+              model_config: ModelConfigurations::Chat.new(user: user),
+              user: user,
+              unit_primitive: unit_primitive
             ),
             **options
           )
@@ -50,7 +55,9 @@ module Gitlab
           request(
             content: content,
             config: Configuration.new(
-              model_config: ModelConfigurations::Text.new
+              model_config: ModelConfigurations::Text.new(user: user),
+              user: user,
+              unit_primitive: unit_primitive
             ),
             **options
           )
@@ -62,7 +69,9 @@ module Gitlab
           request(
             content: content,
             config: Configuration.new(
-              model_config: ModelConfigurations::Code.new
+              model_config: ModelConfigurations::Code.new(user: user),
+              user: user,
+              unit_primitive: unit_primitive
             ),
             **options
           )
@@ -76,7 +85,9 @@ module Gitlab
           request(
             content: content,
             config: Configuration.new(
-              model_config: ModelConfigurations::CodeCompletion.new
+              model_config: ModelConfigurations::CodeCompletion.new(user: user),
+              user: user,
+              unit_primitive: unit_primitive
             ),
             **options
           )
@@ -88,7 +99,9 @@ module Gitlab
           request(
             content: content,
             config: Configuration.new(
-              model_config: ModelConfigurations::TextEmbeddings.new
+              model_config: ModelConfigurations::TextEmbeddings.new(user: user),
+              user: user,
+              unit_primitive: unit_primitive
             ),
             **options
           )
@@ -96,7 +109,7 @@ module Gitlab
 
         private
 
-        attr_reader :logger, :tracking_context, :user, :retry_content_blocked_requests
+        attr_reader :logger, :tracking_context, :user, :retry_content_blocked_requests, :unit_primitive
 
         def request(content:, config:, **options)
           logger.info(message: "Performing request to Vertex", config: config)

@@ -11,7 +11,7 @@ RSpec.describe Llm::Embedding::GitlabDocumentation::SetEmbeddingsOnTheRecordWork
   let(:embedding) { Array.new(768, 0.5) }
   let(:logger) { described_class.new.send(:logger) }
   let(:class_instance) { described_class.new }
-  let(:ai_client) { ::Gitlab::Llm::VertexAi::Client.new(nil) }
+  let(:ai_client) { ::Gitlab::Llm::VertexAi::Client.new(nil, unit_primitive: 'documentation_search') }
   let(:response) { { "predictions" => [{ "embeddings" => { "values" => embedding } }] } }
 
   let(:metadata) { { source: '/ee/spec/fixtures/gitlab_documentation/non_existent.md' } }

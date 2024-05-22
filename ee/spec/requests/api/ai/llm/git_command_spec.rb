@@ -29,7 +29,15 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
           'Authorization' => ['Bearer access token'],
           'Content-Type' => ['application/json'],
           'Accept' => ["application/json"],
-          'Host' => ['host']
+          'Host' => ['cloud.gitlab.com'],
+          'X-Gitlab-Authentication-Type' => ['oidc'],
+          'X-Gitlab-Global-User-Id' => anything,
+          'X-Gitlab-Host-Name' => anything,
+          'X-Gitlab-Instance-Id' => anything,
+          'X-Gitlab-Realm' => anything,
+          'X-Gitlab-Unit-Primitive' => ['generate_commit_message'],
+          'X-Gitlab-Version' => anything,
+          'X-Request-ID' => anything
         }
       end
 
@@ -51,7 +59,7 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
         PROMPT
 
         {
-          'URL' => "https://host/v1/projects/c/locations/us-central1/publishers/google/models/codechat-bison:predict",
+          'URL' => "https://cloud.gitlab.com/ai/v1/proxy/vertex-ai/v1/projects/PROJECT/locations/LOCATION/publishers/google/models/codechat-bison:predict",
           'Header' => header,
           'Body' => {
             instances: [{

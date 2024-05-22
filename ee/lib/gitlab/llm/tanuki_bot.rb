@@ -114,7 +114,7 @@ module Gitlab
       attr_reader :current_user, :question, :logger, :correlation_id, :tracking_context
 
       def vertex_client
-        @vertex_client ||= ::Gitlab::Llm::VertexAi::Client.new(current_user, tracking_context: tracking_context)
+        @vertex_client ||= ::Gitlab::Llm::VertexAi::Client.new(current_user, unit_primitive: 'documentation_search', tracking_context: tracking_context) # rubocop:disable Layout/LineLength -- follow-up
       end
 
       def anthropic_client

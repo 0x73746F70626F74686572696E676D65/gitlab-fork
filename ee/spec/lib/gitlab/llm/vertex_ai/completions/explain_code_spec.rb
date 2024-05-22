@@ -74,7 +74,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ExplainCode, feature_category
 
   describe "#execute" do
     it 'performs an Vertex AI request' do
-      expect_next_instance_of(Gitlab::Llm::VertexAi::Client, user, tracking_context: tracking_context) do |instance|
+      expect_next_instance_of(Gitlab::Llm::VertexAi::Client, user, unit_primitive: 'explain_code', tracking_context: tracking_context) do |instance| # rubocop:disable Layout/LineLength -- follow-up
         expect(instance).to receive(:chat).with(content: nil, **ai_template).and_return(ai_response)
       end
 

@@ -44,7 +44,7 @@ module Gitlab
 
           def request
             ::Gitlab::Llm::VertexAi::Client
-              .new(user, tracking_context: TRACKING_CONTEXT)
+              .new(user, unit_primitive: 'analyze_ci_job_failure', tracking_context: TRACKING_CONTEXT)
               .text(content: chat_content)
           end
 

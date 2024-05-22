@@ -58,7 +58,9 @@ module API
 
           def configuration
             @configuration ||= Gitlab::Llm::VertexAi::Configuration.new(
-              model_config: ::Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat.new
+              model_config: ::Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat.new(user: current_user),
+              user: current_user,
+              unit_primitive: 'unknown'
             )
           end
 

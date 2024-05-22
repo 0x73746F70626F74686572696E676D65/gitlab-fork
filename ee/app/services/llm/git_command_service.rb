@@ -16,7 +16,9 @@ module Llm
 
     def perform
       config = ::Gitlab::Llm::VertexAi::Configuration.new(
-        model_config: ::Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat.new
+        model_config: ::Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat.new(user: user),
+        user: user,
+        unit_primitive: 'generate_commit_message'
       )
 
       payload = { url: config.url, headers: config.headers, body: config.payload(prompt).to_json }

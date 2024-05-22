@@ -145,7 +145,7 @@ module DuoChatQaEvaluationHelpers
   end
 
   def evaluate_with_vertex(user, test_prompt)
-    vertex_response = Gitlab::Llm::VertexAi::Client.new(user).text(content: test_prompt)
+    vertex_response = Gitlab::Llm::VertexAi::Client.new(user, unit_primitive: 'duo_chat').text(content: test_prompt)
 
     {
       model: Gitlab::Llm::VertexAi::ModelConfigurations::Text::NAME,
