@@ -1,21 +1,12 @@
 - purchase_link = plan.purchase_link
 - plan_name = plan.name
 - show_deprecated_plan = plan.deprecated?
-- has_upgrade = has_upgrade?(plan_offer_type)
 - if show_deprecated_plan
   - plan_name      += ' (Legacy)'
   - faq_link_url   = "https://#{ApplicationHelper.promo_host}/pricing/faq-new-product-subscription-tiers"
   - faq_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: faq_link_url }
 
-.card-wrapper{ class: ("card-wrapper-has-badge" if has_upgrade), data: { testid: "plan-card-#{plan.code}" } }
-  - if has_upgrade
-    .card-badge
-      %span.card-badge-text
-        - case plan_offer_type
-        - when :upgrade_for_free
-          = s_("BillingPlans|Free upgrade!")
-        - else
-          = _("Upgrade offers available!")
+.card-wrapper{ data: { testid: "plan-card-#{plan.code}" } }
   .card{ class: ("card-active" if is_current || show_deprecated_plan) }
     .card-header.gl-line-height-normal.gl-py-5.gl-font-weight-bold
       = plan_name
@@ -26,29 +17,14 @@
       - else
         .price-description
           .gl-mr-2.gl-display-flex.gl-align-items-center
-            - case plan_offer_type
-            - when :upgrade_for_free
-              %span.gl-mr-3.price-rebate
-                = number_to_plan_currency(plan.price_per_month)
-              %span
-                = number_to_plan_currency(plan.upgrade_price_per_month)
-            - when :upgrade_for_offer
-              %span.price-cut
-                = number_to_plan_currency(plan.price_per_month)
-            - else
-              %span
-                = number_to_plan_currency(plan.price_per_month)
-
+            %span
+              = number_to_plan_currency(plan.price_per_month)
           %ul.conditions.gl-p-0.gl-my-auto
             %li= s_("BillingPlans|per user")
             %li= s_("BillingPlans|monthly")
         .price-conclusion{ class: ("invisible" unless plan.price_per_year > 0) }
-          - case plan_offer_type
-          - when :upgrade_for_free
-            = s_("BillingPlans|for the remainder of your subscription")
-          - else
-            - price_per_year = number_to_plan_currency(plan.price_per_year)
-            = s_("BillingPlans|billed annually at %{price_per_year}") % { price_per_year: price_per_year }
+          - price_per_year = number_to_plan_currency(plan.price_per_year)
+          = s_("BillingPlans|billed annually at %{price_per_year}") % { price_per_year: price_per_year }
         %hr.gl-my-3
 
         %ul.unstyled-list
@@ -68,8 +44,8 @@
 
     - unless read_only
       .card-footer
-        - show_upgrade_button = show_upgrade_button?(purchase_link.action, plan_offer_type, plan.allow_upgrade)
+        - show_upgrade_button = show_upgrade_button?(purchase_link.action, plan.allow_upgrade)
         .gl-min-h-7.gl-display-flex.gl-flex-wrap.gl-justify-content-end
           = render "shared/billings/billing_plan_actions", namespace: namespace, plan: plan,
                                                            purchase_link: purchase_link, show_upgrade_button: show_upgrade_button,
-                                                           plan_offer_type: plan_offer_type, is_current: is_current
+                                                           is_current: is_current

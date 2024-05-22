@@ -12,7 +12,6 @@ RSpec.describe 'shared/billings/_billing_plan_actions.html.haml', :saas do
     allow(view).to receive(:plan).and_return(plan)
     allow(view).to receive(:purchase_link).and_return(plan.purchase_link)
     allow(view).to receive(:hand_raise_props).and_return({})
-    allow(view).to receive(:plan_offer_type)
     allow(view).to receive(:show_upgrade_button)
     allow(view).to receive(:namespace)
     allow(view).to receive(:read_only)

@@ -13,27 +13,14 @@ module BillingPlansHelper
     number_to_currency(value, unit: '$', strip_insignificant_zeros: true, format: "%u%n")
   end
 
-  def upgrade_offer_type(namespace, plan)
-    return :no_offer if namespace.actual_plan_name != Plan::BRONZE || !offer_from_previous_tier?(namespace.id, plan.id)
-
-    upgrade_for_free?(namespace.id) ? :upgrade_for_free : :upgrade_for_offer
+  def show_contact_sales_button?(purchase_link_action)
+    purchase_link_action == 'upgrade'
   end
 
-  def has_upgrade?(upgrade_offer)
-    [:upgrade_for_free, :upgrade_for_offer].include?(upgrade_offer)
-  end
-
-  def show_contact_sales_button?(purchase_link_action, upgrade_offer)
-    return false unless purchase_link_action == 'upgrade'
-
-    [:upgrade_for_offer, :no_offer].include?(upgrade_offer)
-  end
-
-  def show_upgrade_button?(purchase_link_action, upgrade_offer, allow_upgrade)
+  def show_upgrade_button?(purchase_link_action, allow_upgrade)
     return false if allow_upgrade == false
-    return false unless purchase_link_action == 'upgrade'
 
-    [:no_offer, :upgrade_for_free].include?(upgrade_offer)
+    purchase_link_action == 'upgrade'
   end
 
   # [namespace] can be either a namespace or a group
@@ -97,10 +84,6 @@ module BillingPlansHelper
 
     root = namespace.has_parent? ? namespace.root_ancestor : namespace
     root.trial_active?
-  end
-
-  def upgrade_button_text(plan_offer_type)
-    plan_offer_type === :upgrade_for_free ? s_('BillingPlan|Upgrade for free') : s_('BillingPlan|Upgrade')
   end
 
   def upgrade_button_css_classes(namespace, plan, is_current_plan)
@@ -231,26 +214,6 @@ module BillingPlansHelper
     return unless namespace.group_namespace?
 
     group_usage_quotas_path(namespace, anchor: 'seats-quota-tab')
-  end
-
-  def offer_from_previous_tier?(namespace_id, plan_id)
-    upgrade_plan_id = upgrade_plan_data(namespace_id)[:upgrade_plan_id]
-
-    return false unless upgrade_plan_id
-
-    upgrade_plan_id == plan_id
-  end
-
-  def upgrade_for_free?(namespace_id)
-    !!upgrade_plan_data(namespace_id)[:upgrade_for_free]
-  end
-
-  def upgrade_plan_data(namespace_id)
-    strong_memoize(:upgrade_plan_data) do
-      GitlabSubscriptions::PlanUpgradeService
-        .new(namespace_id: namespace_id)
-        .execute
-    end
   end
 
   def highest_tier?(namespace)

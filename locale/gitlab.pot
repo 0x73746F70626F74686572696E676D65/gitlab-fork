@@ -8174,9 +8174,6 @@ msgstr ""
 msgid "BillingPlans|Free guest users"
 msgstr ""
 
-msgid "BillingPlans|Free upgrade!"
-msgstr ""
-
 msgid "BillingPlans|Have a question? We're here to help."
 msgstr ""
 
@@ -8315,9 +8312,6 @@ msgstr ""
 msgid "BillingPlans|billed annually at %{price_per_year}"
 msgstr ""
 
-msgid "BillingPlans|for the remainder of your subscription"
-msgstr ""
-
 msgid "BillingPlans|frequently asked questions"
 msgstr ""
 
@@ -8331,9 +8325,6 @@ msgid "BillingPlans|per user"
 msgstr ""
 
 msgid "BillingPlan|Upgrade"
-msgstr ""
-
-msgid "BillingPlan|Upgrade for free"
 msgstr ""
 
 msgid "Billings|Error validating card details"
@@ -55800,9 +55791,6 @@ msgid "Updating"
 msgstr ""
 
 msgid "Updating…"
-msgstr ""
-
-msgid "Upgrade offers available!"
 msgstr ""
 
 msgid "Upload"

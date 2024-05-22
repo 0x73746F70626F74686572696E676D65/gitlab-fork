@@ -87,32 +87,6 @@ module Gitlab
             error(CONNECTIVITY_ERROR)
           end
 
-          def plan_upgrade_offer(namespace_id)
-            query = <<~GQL
-              {
-                subscription(namespaceId: "#{namespace_id}") {
-                  eoaStarterBronzeEligible
-                  freeUpgradePlanId
-                }
-              }
-            GQL
-
-            response = execute_graphql_query({ query: query }).dig(:data)
-
-            if response['errors'].blank?
-              eligible = response.dig('data', 'subscription', 'eoaStarterBronzeEligible')
-              free_upgrade = response.dig('data', 'subscription', 'freeUpgradePlanId')
-
-              {
-                success: true,
-                eligible_for_free_upgrade: eligible,
-                free_upgrade_plan_id: free_upgrade
-              }
-            else
-              error
-            end
-          end
-
           def subscription_seat_usage_alerts_eligibility(namespace_id)
             return error('Must provide a namespace ID') unless namespace_id
 

@@ -35,7 +35,6 @@ RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :purchase do
 
   context 'when CustomersDot is available' do
     before do
-      stub_eoa_eligibility_request(group.id)
       stub_billing_plans(group.id, plan)
     end
 
