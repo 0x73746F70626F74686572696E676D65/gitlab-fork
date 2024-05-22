@@ -749,13 +749,22 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
         AutoMergeService::STRATEGY_ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS
       end
 
-      it_behaves_like 'maintained merge requests for MWPS'
+      it_behaves_like 'maintained merge requests for auto merges'
     end
 
     context 'with merge train strategy' do
       let(:auto_merge_strategy) { AutoMergeService::STRATEGY_MERGE_TRAIN }
 
-      it_behaves_like 'maintained merge requests for MWPS'
+      it_behaves_like 'maintained merge requests for auto merges'
+    end
+  end
+
+  describe '#abort_ff_merge_requests_with_auto_merges' do
+    # TODO: Move to FOSS in https://gitlab.com/gitlab-org/gitlab/-/issues/460652
+    context 'when the auto megre strategy is MWCP' do
+      it_behaves_like 'abort ff merge requests with auto merges' do
+        let(:auto_merge_strategy) { AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS }
+      end
     end
   end
 end
