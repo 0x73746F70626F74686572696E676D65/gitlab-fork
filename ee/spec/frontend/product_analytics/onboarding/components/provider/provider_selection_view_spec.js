@@ -5,6 +5,7 @@ import { GlEmptyState, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { visitUrl } from '~/lib/utils/url_utility';
 
 import initializeProductAnalyticsMutation from 'ee/product_analytics/graphql/mutations/initialize_product_analytics.mutation.graphql';
 import ProviderSelectionView from 'ee/product_analytics/onboarding/components/providers/provider_selection_view.vue';
@@ -13,12 +14,16 @@ import SelfManagedProviderCard from 'ee/product_analytics/onboarding/components/
 
 import { createInstanceResponse } from '../../../mock_data';
 
+jest.mock('~/lib/utils/url_utility', () => ({
+  ...jest.requireActual('~/lib/utils/url_utility'),
+  visitUrl: jest.fn(),
+}));
+
 Vue.use(VueApollo);
 
 describe('ProviderSelectionView', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
-  let windowOpenSpy;
 
   const fatalError = new Error('GraphQL networkError');
   const apiErrorMsg = 'Product analytics initialization is already complete';
@@ -33,7 +38,6 @@ describe('ProviderSelectionView', () => {
   const findGitLabManagedProviderCard = () => wrapper.findComponent(GitLabManagedProviderCard);
 
   const createWrapper = (apolloMock = mockApolloSuccess) => {
-    windowOpenSpy = jest.spyOn(window, 'open').mockImplementation(() => {});
     wrapper = shallowMountExtended(ProviderSelectionView, {
       apolloProvider: createMockApollo([[initializeProductAnalyticsMutation, apolloMock]]),
       propsData: {
@@ -137,10 +141,7 @@ describe('ProviderSelectionView', () => {
     });
 
     it('should redirect the user to settings', () => {
-      expect(windowOpenSpy).toHaveBeenCalledWith(
-        '/settings/analytics#js-analytics-data-sources',
-        '_blank',
-      );
+      expect(visitUrl).toHaveBeenCalledWith('/settings/analytics#js-analytics-data-sources', true);
     });
   });
 });

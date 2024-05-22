@@ -2,7 +2,7 @@
 import { GlEmptyState, GlLink, GlLoadingIcon, GlSprintf } from '@gitlab/ui';
 
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { setUrlFragment } from '~/lib/utils/url_utility';
+import { setUrlFragment, visitUrl } from '~/lib/utils/url_utility';
 
 import initializeProductAnalyticsMutation from '../../../graphql/mutations/initialize_product_analytics.mutation.graphql';
 import SelfManagedProviderCard from './self_managed_provider_card.vue';
@@ -71,7 +71,7 @@ export default {
       }
     },
     openSettings() {
-      window.open(this.projectAnalyticsSettingsPath, '_blank');
+      visitUrl(this.projectAnalyticsSettingsPath, true);
     },
   },
   docsPath: helpPagePath('user/product_analytics/index', {
