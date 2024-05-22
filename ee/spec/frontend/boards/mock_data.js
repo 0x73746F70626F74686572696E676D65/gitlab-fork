@@ -705,6 +705,7 @@ export const mockTokens = (fetchLabels, fetchIterations, fetchIterationCadences)
     unique: false,
     symbol: '~',
     fetchLabels,
+    recentSuggestionsStorageKey: 'gitlab-org-board-recent-tokens-label',
   },
   {
     type: TOKEN_TYPE_MY_REACTION,

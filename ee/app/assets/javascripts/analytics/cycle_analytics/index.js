@@ -6,6 +6,7 @@ import {
   extractFilterQueryParameters,
   extractPaginationQueryParameters,
 } from '~/analytics/shared/utils';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import { buildCycleAnalyticsInitialData } from '../shared/utils';
 import CycleAnalytics from './components/base.vue';
 import createStore from './store';
@@ -25,6 +26,7 @@ export default () => {
     noAccessSvgPath,
     newValueStreamPath,
     editValueStreamPath,
+    hasScopedLabelsFeature,
   } = el.dataset;
   const initialData = buildCycleAnalyticsInitialData(el.dataset);
   const store = createStore();
@@ -54,6 +56,7 @@ export default () => {
     provide: {
       newValueStreamPath,
       editValueStreamPath,
+      hasScopedLabelsFeature: parseBoolean(hasScopedLabelsFeature),
     },
     render: (createElement) =>
       createElement(CycleAnalytics, {
