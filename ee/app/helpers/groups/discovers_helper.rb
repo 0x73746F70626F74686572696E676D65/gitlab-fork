@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Groups
-  module TrialDiscoverPageHelper
+  module DiscoversHelper
     include Gitlab::Utils::StrongMemoize
 
     def trial_discover_page_features

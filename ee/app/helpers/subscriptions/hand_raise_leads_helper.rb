@@ -14,5 +14,21 @@ module Subscriptions
         submit_path: subscriptions_hand_raise_leads_path
       }
     end
+
+    def discover_page_hand_raise_lead_data(group)
+      {
+        glm_content: 'trial_discover_page',
+        cta_tracking: {
+          track_action: 'click_contact_sales',
+          track_label: group_trial_status(group),
+          track_experiment: :trial_discover_page
+        }.to_json,
+        button_attributes: {
+          variant: 'confirm',
+          category: 'secondary',
+          'data-testid': 'trial-discover-hand-raise-lead-button'
+        }.to_json
+      }
+    end
   end
 end
