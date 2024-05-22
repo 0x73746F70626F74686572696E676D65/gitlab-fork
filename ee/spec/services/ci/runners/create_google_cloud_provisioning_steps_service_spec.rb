@@ -190,18 +190,6 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
           expect(execute.message).to eq s_('Runners|The user is not allowed to provision a cloud runner')
         end
       end
-
-      context 'when google_cloud_support_feature_flag FF is not enabled' do
-        before do
-          stub_feature_flags(google_cloud_support_feature_flag: false)
-        end
-
-        it 'returns an error' do
-          expect(execute).to be_error
-          expect(execute.reason).to eq :google_cloud_provisioning_disabled
-          expect(execute.message).to eq s_('Runners|Google Cloud provisioning is disabled for this top-level namespace')
-        end
-      end
     end
   end
 end

@@ -140,13 +140,13 @@ module Integrations
       end
 
       def identity_provider_resource_name
-        return unless parent.google_cloud_support_enabled? && activated?
+        return unless ::Gitlab::Saas.feature_available?(:google_cloud_support) && activated?
 
         "//#{identity_pool_resource_name}/providers/#{workload_identity_pool_provider_id}"
       end
 
       def identity_pool_resource_name
-        return unless parent.google_cloud_support_enabled? && activated?
+        return unless ::Gitlab::Saas.feature_available?(:google_cloud_support) && activated?
 
         "iam.googleapis.com/projects/#{workload_identity_federation_project_number}/" \
           "locations/global/workloadIdentityPools/#{workload_identity_pool_id}"

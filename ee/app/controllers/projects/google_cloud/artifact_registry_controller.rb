@@ -18,7 +18,7 @@ module Projects
       private
 
       def ensure_feature!
-        render_404 unless project.google_cloud_support_enabled?
+        render_404 unless ::Gitlab::Saas.feature_available?(:google_cloud_support)
       end
     end
   end

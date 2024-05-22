@@ -88,7 +88,7 @@ module Integrations
       end
 
       def ci_variables
-        return [] unless project.google_cloud_support_enabled? && activated?
+        return [] unless ::Gitlab::Saas.feature_available?(:google_cloud_support) && activated?
 
         [
           { key: 'GOOGLE_ARTIFACT_REGISTRY_PROJECT_ID', value: artifact_registry_project_id },

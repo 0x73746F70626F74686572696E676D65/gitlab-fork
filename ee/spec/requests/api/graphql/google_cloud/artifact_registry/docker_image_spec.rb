@@ -161,14 +161,6 @@ RSpec.describe 'getting the google cloud docker image linked to a project', :fre
     it_behaves_like 'returning a blank response'
   end
 
-  context 'when google_cloud_support_feature_flag FF is disabled' do
-    before do
-      stub_feature_flags(google_cloud_support_feature_flag: false)
-    end
-
-    it_behaves_like 'returning a blank response'
-  end
-
   %i[wlif artifact_registry].each do |integration_type|
     context "with the #{integration_type} integration" do
       let(:integration) { public_send("#{integration_type}_integration") }

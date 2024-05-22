@@ -10,7 +10,6 @@ module GoogleCloud
 
       ERROR_RESPONSES = {
         saas_only: ServiceResponse.error(message: "This is a SaaS-only feature that can't run here"),
-        feature_flag_disabled: ServiceResponse.error(message: 'Feature flag not enabled'),
         access_denied: ServiceResponse.error(message: 'Access denied'),
         no_integration: ServiceResponse.error(
           message: "#{Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.title} integration not set"),
@@ -37,10 +36,6 @@ module GoogleCloud
 
       def validate_before_execute
         return ERROR_RESPONSES[:saas_only] unless Gitlab::Saas.feature_available?(:google_cloud_support)
-
-        unless Feature.enabled?(:google_cloud_support_feature_flag, container.root_ancestor)
-          return ERROR_RESPONSES[:feature_flag_disabled]
-        end
 
         return ERROR_RESPONSES[:access_denied] unless allowed?
 

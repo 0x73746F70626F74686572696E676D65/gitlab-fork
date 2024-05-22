@@ -202,14 +202,6 @@ RSpec.describe 'getting the google cloud docker images linked to a project', :fr
     it { is_expected.to be_nil }
   end
 
-  context 'when google_cloud_support_feature_flag FF is disabled' do
-    before do
-      stub_feature_flags(google_cloud_support_feature_flag: false)
-    end
-
-    it { is_expected.to be_nil }
-  end
-
   context 'with the Google Cloud Identity and Access Management (IAM) project integration' do
     context 'when does not exist' do
       before do

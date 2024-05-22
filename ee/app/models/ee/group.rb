@@ -978,10 +978,6 @@ module EE
       users_without_bots(members, merge_condition: merge_condition)
     end
 
-    def google_cloud_support_enabled?
-      ::Feature.enabled?(:google_cloud_support_feature_flag, self.root_ancestor) && ::Gitlab::Saas.feature_available?(:google_cloud_support)
-    end
-
     def assigning_role_too_high?(current_user, access_level)
       return false if current_user.can_admin_all_resources?
       return false unless access_level

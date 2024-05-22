@@ -40,14 +40,6 @@ RSpec.describe Sidebars::Projects::Menus::PackagesRegistriesMenu, feature_catego
 
       it_behaves_like 'the menu item gets added to list of menu items'
 
-      context 'when feature flag is turned off' do
-        before do
-          stub_feature_flags(google_cloud_support_feature_flag: false)
-        end
-
-        it_behaves_like 'the menu item is not added to list of menu items'
-      end
-
       context 'when feature is unavailable' do
         before do
           stub_saas_features(google_cloud_support: false)

@@ -352,8 +352,7 @@ module EE
           null: true,
           alpha: { milestone: '16.9' },
           description: 'Information used for provisioning the runner on a cloud provider. ' \
-                       'Returns `null` if `:google_cloud_support_feature_flag` feature flag is disabled, ' \
-                       'or the GitLab instance is not a SaaS instance.' do
+                       'Returns `null` if the GitLab instance is not a SaaS instance.' do
                          argument :provider, ::Types::Ci::RunnerCloudProviderEnum, required: true,
                            description: 'Identifier of the cloud provider.'
                          argument :cloud_project_id, ::Types::GoogleCloud::ProjectType, required: true,
@@ -371,8 +370,7 @@ module EE
           null: true,
           alpha: { milestone: '16.10' },
           description: 'Google Artifact Registry repository. ' \
-                       'Returns `null` if `google_cloud_support_feature_flag` feature flag is disabled, ' \
-                       'or the GitLab instance is not a SaaS instance.'
+                       'Returns `null` if the GitLab instance is not a SaaS instance.'
 
         field :ai_agent, ::Types::Ai::Agents::AgentType,
           null: true,
@@ -460,8 +458,6 @@ module EE
       end
 
       def runner_cloud_provisioning(provider:, cloud_project_id:)
-        return if ::Feature.disabled?(:google_cloud_support_feature_flag, project.root_ancestor)
-
         {
           container: project,
           provider: provider,
@@ -470,7 +466,7 @@ module EE
       end
 
       def google_cloud_artifact_registry_repository
-        return unless project.google_cloud_support_enabled?
+        return unless ::Gitlab::Saas.feature_available?(:google_cloud_support)
 
         project
       end

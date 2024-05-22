@@ -23,11 +23,6 @@ module EE
             error!("#{name} job: #{s_('GoogleCloud|The google_cloud_support feature is not available')}")
           end
 
-          unless google_cloud_support_feature_flag?
-            error!("#{name} job: google_cloud_support_feature_flag feature flag is not enabled for the " \
-                   'top-level namespace')
-          end
-
           integration = project.google_cloud_platform_workload_identity_federation_integration
           if integration.nil?
             error!("#{name} job: #{s_('GoogleCloud|The Google Cloud Identity and Access Management ' \
@@ -44,11 +39,6 @@ module EE
           ::Gitlab::Saas.feature_available?(:google_cloud_support)
         end
         strong_memoize_attr :google_cloud_support_saas_feature?
-
-        def google_cloud_support_feature_flag?
-          ::Feature.enabled?(:google_cloud_support_feature_flag, project.root_ancestor)
-        end
-        strong_memoize_attr :google_cloud_support_feature_flag?
       end
     end
   end

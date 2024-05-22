@@ -35,13 +35,6 @@ module Ci
       private
 
       def validate
-        if Feature.disabled?(:google_cloud_support_feature_flag, container.root_ancestor)
-          return ServiceResponse.error(
-            message: s_('Runners|Google Cloud provisioning is disabled for this top-level namespace'),
-            reason: :google_cloud_provisioning_disabled
-          )
-        end
-
         unless Ability.allowed?(current_user, :provision_cloud_runner, container)
           return ServiceResponse.error(
             message: s_('Runners|The user is not allowed to provision a cloud runner'),

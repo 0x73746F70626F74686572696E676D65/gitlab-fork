@@ -188,13 +188,5 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
 
       it { is_expected.to be nil }
     end
-
-    context 'when google_cloud_support_feature_flag FF is disabled' do
-      before do
-        stub_feature_flags(google_cloud_support_feature_flag: false)
-      end
-
-      it { is_expected.to be nil }
-    end
   end
 end

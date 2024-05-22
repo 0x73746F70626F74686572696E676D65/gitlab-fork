@@ -370,17 +370,6 @@ RSpec.describe Gitlab::Ci::YamlProcessor, feature_category: :pipeline_compositio
       end
     end
 
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(google_cloud_support_feature_flag: false)
-      end
-
-      it 'returns errors' do
-        expect(result.errors).to include(
-          'build job: google_cloud_support_feature_flag feature flag is not enabled for the top-level namespace')
-      end
-    end
-
     context 'when project integration does not exist' do
       before do
         integration.destroy!
