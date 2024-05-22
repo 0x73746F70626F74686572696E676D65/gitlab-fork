@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Duo Pro Trial Widget in Sidebar', :saas, :js, feature_category: :acquisition do
+  include Features::HandRaiseLeadHelpers
+
   let_it_be(:user) { create(:user, :with_namespace, organization: 'YMCA') }
   let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan, name: 'gitlab', owners: user) }
 
@@ -64,6 +66,8 @@ RSpec.describe 'Duo Pro Trial Widget in Sidebar', :saas, :js, feature_category: 
         find_by_testid(widget_menu_selector).hover
 
         expect_popover_content_to_be("We hope you’re enjoying the features of GitLab Duo Pro")
+
+        expect_launch_and_submit_hand_raise_lead_success
       end
     end
 
@@ -80,13 +84,27 @@ RSpec.describe 'Duo Pro Trial Widget in Sidebar', :saas, :js, feature_category: 
         find_by_testid(widget_menu_selector).hover
 
         expect_popover_content_to_be("We hope you’re enjoying the features of GitLab Duo Pro")
+
+        expect_launch_and_submit_hand_raise_lead_success
       end
     end
 
     def expect_popover_content_to_be(content)
-      within_testid('duo-pro-trial-status-popover') do
+      within_testid(popover_selector) do
         expect(page).to have_content(content)
       end
+    end
+
+    def popover_selector
+      'duo-pro-trial-status-popover'
+    end
+
+    def expect_launch_and_submit_hand_raise_lead_success
+      within_testid(popover_selector) do
+        find_by_testid('duo-pro-trial-popover-hand-raise-lead-button').click
+      end
+
+      fill_in_and_submit_hand_raise_lead(user, group, glm_content: 'duo-pro-trial-status-show-group')
     end
   end
 
