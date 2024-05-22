@@ -16,7 +16,10 @@ RSpec.describe PersonalAccessTokens::RevokeService, feature_category: :system_ac
         author: user,
         scope: user,
         target: user,
-        message: "Revoked personal access token with id #{token.id}"
+        message: "Revoked personal access token with id #{token.id}",
+        additional_details: {
+          revocation_source: :self
+        }
       }
 
       expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)

@@ -68,7 +68,10 @@ RSpec.describe Security::TokenRevocationService, '#execute', feature_category: :
         author: Users::Internal.security_bot,
         scope: Users::Internal.security_bot,
         target: glpat_token.user,
-        message: "Revoked personal access token with id #{glpat_token.id}"
+        message: "Revoked personal access token with id #{glpat_token.id}",
+        additional_details: {
+          revocation_source: :secret_detection
+        }
       }
 
       expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context).and_call_original

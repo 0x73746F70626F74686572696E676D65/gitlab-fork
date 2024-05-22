@@ -42,7 +42,10 @@ module EE
           author: current_user,
           scope: current_user,
           target: token&.user,
-          message: message
+          message: message,
+          additional_details: {
+            revocation_source: source
+          }
         }
 
         ::Gitlab::Audit::Auditor.audit(audit_context)
