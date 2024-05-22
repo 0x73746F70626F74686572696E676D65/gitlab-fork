@@ -16,7 +16,11 @@ RSpec.describe API::DebianGroupPackages, feature_category: :package_registry do
   let(:headers) { basic_auth_header(user.username, personal_access_token.token) }
 
   describe 'GET groups/:id/-/packages/debian/pool/:codename/:project_id/:letter/:package_name/:package_version/:file_name' do # rubocop:disable convention:Layout/LineLength
-    let(:url) { "/groups/#{group.id}/-/packages/debian/pool/#{package.debian_distribution.codename}/#{project.id}/#{letter}/#{package.name}/#{package.version}/#{file_name}" } # rubocop:disable convention:Layout/LineLength
+    let(:url) do
+      "/groups/#{group.id}/-/packages/debian/pool/" \
+        "#{package.distribution.codename}/#{project.id}/#{letter}/#{package.name}/#{package.version}/#{file_name}"
+    end
+
     let(:file_name) { 'sample_1.2.3~alpha2.tar.xz' }
 
     subject { get api(url), headers: headers }
