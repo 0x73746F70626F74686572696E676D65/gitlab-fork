@@ -149,7 +149,7 @@ RSpec.describe Epics::UpdateCachedMetadataWorker, feature_category: :portfolio_m
           expect(Sidekiq.logger).to receive(:error).with(
             hash_including(
               'epic_id' => other_epic.id,
-              'message' => "skipping cache update, validation failed: Group can't be blank"
+              'message' => "skipping cache update, validation failed: Group can't be blank and Work item can't be blank"
             )
           ).and_call_original
 

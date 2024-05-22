@@ -92,7 +92,7 @@ RSpec.describe BulkImports::Groups::Pipelines::EpicsPipeline, feature_category: 
       it 'saves the epic' do
         epic = build(:epic, group: group)
 
-        expect(epic).to receive(:save)
+        expect(epic).to receive(:save).and_call_original
 
         subject.load(context, epic)
       end

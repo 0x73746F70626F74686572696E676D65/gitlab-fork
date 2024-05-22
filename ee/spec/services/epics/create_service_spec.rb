@@ -155,8 +155,14 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
       end
 
       context 'when work item creation fails' do
-        it 'does not create epic or work item' do
-          allow(WorkItem).to receive(:create!).and_raise(ActiveRecord::RecordInvalid.new)
+        let(:invalid_work_item) { WorkItem.new }
+
+        before do
+          allow(WorkItem).to receive(:create).and_return(invalid_work_item)
+        end
+
+        it 'does not create epic when saving raises an error' do
+          allow(invalid_work_item).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new)
 
           expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
             .with({
@@ -169,6 +175,21 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
           expect { subject }.to raise_error(ActiveRecord::RecordInvalid)
             .and not_change { Epic.count }
             .and not_change { WorkItem.count }
+        end
+
+        it 'does not create epic or work item when work item is not valid' do
+          errors = ActiveModel::Errors.new(invalid_work_item).tap { |e| e.add(:title, "cannot be empty") }
+          allow(invalid_work_item).to receive(:errors).and_return(errors)
+
+          expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error)
+            .with({
+              message: "Not able to create epic work item",
+              error_message: "Title cannot be empty",
+              group_id: group.id,
+              epic_id: nil
+            })
+
+          expect { subject }.to not_change { Epic.count }.and(not_change { WorkItem.count })
         end
       end
 

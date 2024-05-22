@@ -14,17 +14,21 @@ module Epics
       imported_from
     ].freeze
 
-    def create_work_item_for!(epic)
-      work_item = WorkItem.create!(create_params(epic))
+    def create_work_item_for(epic)
+      work_item = WorkItem.create(create_params(epic))
+
+      if work_item.errors.any?
+        track_error(:create, work_item.errors.full_messages.to_sentence)
+        return work_item
+      end
 
       sync_color(epic, work_item)
       sync_dates(epic, work_item)
 
       work_item.save!(touch: false)
-
       work_item
     rescue StandardError => error
-      handle_error!(:create, error)
+      raise_error!(:create, error)
     end
 
     def update_work_item_for!(epic)
@@ -36,7 +40,7 @@ module Epics
 
       epic.work_item.save!(touch: false)
     rescue StandardError => error
-      handle_error!(:update, error, epic)
+      raise_error!(:update, error, epic)
     end
 
     private
@@ -99,14 +103,24 @@ module Epics
       work_item.dates_source = dates_source
     end
 
-    def handle_error!(action, error, epic = nil)
-      Gitlab::EpicWorkItemSync::Logger.error(
-        message: "Not able to #{action} epic work item",
-        error_message: error.message,
-        group_id: group.id,
-        epic_id: epic&.id)
+    def raise_error!(action, error, epic = nil)
+      log_error(action, error.message, epic)
 
       Gitlab::ErrorTracking.track_and_raise_exception(error, epic_id: epic&.id)
+    end
+
+    def track_error(action, error_message, epic = nil)
+      log_error(action, error_message, epic)
+
+      Gitlab::ErrorTracking.track_exception(SyncAsWorkItemError.new(error_message), epic_id: epic&.id)
+    end
+
+    def log_error(action, error_message, epic)
+      Gitlab::EpicWorkItemSync::Logger.error(
+        message: "Not able to #{action} epic work item",
+        error_message: error_message,
+        group_id: group.id,
+        epic_id: epic&.id)
     end
   end
 end

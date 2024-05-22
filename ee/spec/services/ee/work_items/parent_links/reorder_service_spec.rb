@@ -184,7 +184,7 @@ RSpec.describe WorkItems::ParentLinks::ReorderService, feature_category: :portfo
         let(:synced_moving_object) { nil }
 
         before do
-          top_adjacent.synced_epic.update!(issue_id: nil)
+          top_adjacent.synced_epic.update_columns(issue_id: nil)
         end
 
         it_behaves_like 'reorders the hierarchy'
@@ -241,7 +241,7 @@ RSpec.describe WorkItems::ParentLinks::ReorderService, feature_category: :portfo
         let(:synced_moving_object) { nil }
 
         before do
-          top_adjacent.synced_epic.update!(issue_id: nil)
+          top_adjacent.synced_epic.update_columns(issue_id: nil)
         end
 
         it_behaves_like 'reorders the hierarchy'

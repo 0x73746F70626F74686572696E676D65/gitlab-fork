@@ -1022,16 +1022,6 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
             .and not_change { epic.reload }
         end
       end
-
-      context 'when epic has no synced work item' do
-        let_it_be_with_reload(:epic) { create(:epic, :without_synced_work_item, group: group) }
-
-        it 'does not call WorkItems::UpdateService' do
-          expect(WorkItems::UpdateService).not_to receive(:new)
-
-          update_epic({ title: 'New title' })
-        end
-      end
     end
   end
 end

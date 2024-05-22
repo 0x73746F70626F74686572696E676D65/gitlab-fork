@@ -97,8 +97,8 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService, feature_category: :portfo
     context 'for synced epic work items' do
       let(:current_user) { user }
       let(:params) { { issuable_references: [epic_b.to_reference(full: true)] } }
-      let_it_be_with_reload(:epic_a) { create(:epic, :without_synced_work_item, group: group) }
-      let_it_be_with_reload(:epic_b) { create(:epic, :without_synced_work_item, group: group) }
+      let_it_be_with_reload(:epic_a) { create(:epic, group: group) }
+      let_it_be_with_reload(:epic_b) { create(:epic, group: group) }
 
       subject(:execute) { described_class.new(epic_a, current_user, params).execute }
 
@@ -107,22 +107,6 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService, feature_category: :portfo
           expect { execute }.to change { Epic::RelatedEpicLink.count }.by(1)
             .and not_change { WorkItems::RelatedWorkItemLink.count }
         end
-      end
-
-      context 'when no epic has a synced work item' do
-        it_behaves_like 'only creates an epic link'
-      end
-
-      context 'when source has a synced epic work item' do
-        let_it_be_with_reload(:epic_a) { create(:epic, :with_synced_work_item, group: group) }
-
-        it_behaves_like 'only creates an epic link'
-      end
-
-      context 'when target has a synced epic work item' do
-        let_it_be_with_reload(:epic_b) { create(:epic, :with_synced_work_item, group: group) }
-
-        it_behaves_like 'only creates an epic link'
       end
 
       context 'when both source and target have a synced epic work item' do
@@ -197,15 +181,6 @@ RSpec.describe Epics::RelatedEpicLinks::CreateService, feature_category: :portfo
               an_object_having_attributes(target: epic_b.work_item, link_type: IssuableLink::TYPE_RELATES_TO),
               an_object_having_attributes(target: epic_c.work_item, link_type: IssuableLink::TYPE_RELATES_TO)
             )
-          end
-
-          context 'when epic does not have a synced work item' do
-            let_it_be(:epic_c) { create(:epic, :without_synced_work_item, group: group) }
-
-            it 'does create related work item links for the rest' do
-              expect { execute }.to change { Epic::RelatedEpicLink.count }.by(2)
-                .and change { WorkItems::RelatedWorkItemLink.count }.by(1)
-            end
           end
         end
 

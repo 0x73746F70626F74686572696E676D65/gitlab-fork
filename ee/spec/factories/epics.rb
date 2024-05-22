@@ -38,10 +38,6 @@ FactoryBot.define do
       end
     end
 
-    trait :without_synced_work_item do
-      work_item { nil }
-    end
-
     trait :with_synced_work_item do
       work_item do
         association(:work_item,

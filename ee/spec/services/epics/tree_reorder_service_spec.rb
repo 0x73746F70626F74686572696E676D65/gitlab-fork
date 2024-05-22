@@ -621,16 +621,6 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
                       expect(subject[:status]).to eq(:success)
                     end
 
-                    context 'when the new parent has no synced work item' do
-                      let_it_be_with_reload(:new_parent) { create(:epic, :without_synced_work_item, group: group) }
-
-                      it 'only sets the new parent for the epic' do
-                        expect { subject }.to change { moving_epic.reload.parent }.from(old_parent).to(new_parent)
-                          .and not_change { moving_epic.work_item.reload.work_item_parent }
-                        expect(subject[:status]).to eq(:success)
-                      end
-                    end
-
                     context 'when syncing to the work item fails' do
                       before do
                         allow_next_instance_of(WorkItems::ParentLinks::CreateService) do |instance|
@@ -810,20 +800,6 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
                     it 'successfully changes the position of the epic' do
                       expect(WorkItems::ParentLinks::ReorderService).not_to receive(:new)
                       expect { subject }.to change { moving_epic.reload.relative_position }
-                    end
-                  end
-
-                  context 'when the adjacent epic has no correlating work item' do
-                    let_it_be_with_reload(:adjacent_epic) do
-                      create(:epic, :without_synced_work_item, group: group, parent: parent, relative_position: 20)
-                    end
-
-                    let_it_be_with_reload(:adjacent_parent_link) { nil }
-
-                    it 'successfully changes the position of the epic' do
-                      expect(WorkItems::ParentLinks::ReorderService).not_to receive(:new)
-                      expect { subject }.to change { moving_epic.reload.relative_position }
-                      expect(subject[:status]).to eq(:success)
                     end
                   end
 

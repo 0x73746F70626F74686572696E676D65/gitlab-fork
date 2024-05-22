@@ -132,7 +132,6 @@ module Gitlab
 
       def check_related_epic_links
         related_epic_issues = epic.unauthorized_related_epics
-        related_epic_issues = related_epic_issues.has_work_item unless strict_equal
 
         related_epic_issue_ids = related_epic_issues.map(&:issue_id)
         related_work_item_ids = work_item.related_issues(authorize: false).map(&:id)

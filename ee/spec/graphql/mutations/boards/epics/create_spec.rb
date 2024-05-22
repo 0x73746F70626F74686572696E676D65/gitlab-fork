@@ -93,7 +93,7 @@ RSpec.describe Mutations::Boards::Epics::Create do
           let(:epic_create_params) { default_params.merge({ title: "" }) }
 
           it 'returns an error' do
-            expect(subject[:errors]).to include "Title can't be blank"
+            expect(subject[:errors]).to include "Title can't be blank, Work item can't be blank"
           end
         end
 
@@ -101,7 +101,7 @@ RSpec.describe Mutations::Boards::Epics::Create do
           let(:epic_create_params) { default_params.merge({ title: nil }) }
 
           it 'returns an error' do
-            expect(subject[:errors]).to include "Title can't be blank"
+            expect(subject[:errors]).to include "Title can't be blank, Work item can't be blank"
           end
         end
       end

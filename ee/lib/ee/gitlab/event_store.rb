@@ -77,15 +77,13 @@ module EE
           store.subscribe ::WorkItems::ValidateEpicWorkItemSyncWorker,
             to: ::Epics::EpicCreatedEvent,
             if: ->(event) {
-                  ::Feature.enabled?(:validate_epic_work_item_sync, ::Group.actor_from_id(event.data[:group_id])) &&
-                    ::Epic.has_work_item.id_in(event.data[:id]).exists?
-                }
+              ::Feature.enabled?(:validate_epic_work_item_sync, ::Group.actor_from_id(event.data[:group_id]))
+            }
           store.subscribe ::WorkItems::ValidateEpicWorkItemSyncWorker,
             to: ::Epics::EpicUpdatedEvent,
             if: ->(event) {
-                  ::Feature.enabled?(:validate_epic_work_item_sync, ::Group.actor_from_id(event.data[:group_id])) &&
-                    ::Epic.has_work_item.id_in(event.data[:id]).exists?
-                }
+              ::Feature.enabled?(:validate_epic_work_item_sync, ::Group.actor_from_id(event.data[:group_id]))
+            }
         end
 
         def subscribe_to_external_issue_links_events(store)

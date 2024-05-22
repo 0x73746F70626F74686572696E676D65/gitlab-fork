@@ -107,16 +107,6 @@ RSpec.describe WorkItems::RelatedWorkItemLinks::DestroyService, feature_category
             .and not_change { epic_b.notes.count }
         end
 
-        context 'when work item does not have a synced epic' do
-          before do
-            epic_a.update!(issue_id: nil)
-          end
-
-          it 'does not destroy related epic link' do
-            expect { destroy_links }.not_to change { Epic::RelatedEpicLink.count }
-          end
-        end
-
         context 'when destroying the related epic link fails' do
           before do
             allow_next_instance_of(Epics::RelatedEpicLinks::DestroyService) do |instance|
