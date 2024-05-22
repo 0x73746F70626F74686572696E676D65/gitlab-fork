@@ -101,30 +101,11 @@ RSpec.describe Security::Ingestion::MarkAsResolvedService, feature_category: :vu
               )
             end
 
-            context 'when mark_cvs_vulnerabilities_as_resolved FF is disabled' do
-              before do
-                stub_feature_flags(mark_cvs_vulnerabilities_as_resolved: false)
-              end
+            it 'resolves CVS vulnerabilities of the Dependency Scanning report type' do
+              command.execute
 
-              it 'does not resolve CVS vulnerabilities' do
-                command.execute
-
-                expect(cvs_cs_vulnerability.reload).not_to be_resolved_on_default_branch
-                expect(cvs_ds_vulnerability.reload).not_to be_resolved_on_default_branch
-              end
-            end
-
-            context 'when mark_cvs_vulnerabilities_as_resolved FF is enabled' do
-              before do
-                stub_feature_flags(mark_cvs_vulnerabilities_as_resolved: true)
-              end
-
-              it 'resolves CVS vulnerabilities of the Dependency Scanning report type' do
-                command.execute
-
-                expect(cvs_ds_vulnerability.reload).to be_resolved_on_default_branch
-                expect(cvs_cs_vulnerability.reload).not_to be_resolved_on_default_branch
-              end
+              expect(cvs_ds_vulnerability.reload).to be_resolved_on_default_branch
+              expect(cvs_cs_vulnerability.reload).not_to be_resolved_on_default_branch
             end
           end
         end
@@ -137,30 +118,11 @@ RSpec.describe Security::Ingestion::MarkAsResolvedService, feature_category: :vu
             )
           end
 
-          context 'when mark_cvs_vulnerabilities_as_resolved FF is disabled' do
-            before do
-              stub_feature_flags(mark_cvs_vulnerabilities_as_resolved: false)
-            end
+          it 'resolves CVS vulnerabilities of the Container Scanning report type' do
+            command.execute
 
-            it 'does not resolve CVS vulnerabilities' do
-              command.execute
-
-              expect(cvs_cs_vulnerability.reload).not_to be_resolved_on_default_branch
-              expect(cvs_ds_vulnerability.reload).not_to be_resolved_on_default_branch
-            end
-          end
-
-          context 'when mark_cvs_vulnerabilities_as_resolved FF is enabled' do
-            before do
-              stub_feature_flags(mark_cvs_vulnerabilities_as_resolved: true)
-            end
-
-            it 'resolves CVS vulnerabilities of the Container Scanning report type' do
-              command.execute
-
-              expect(cvs_cs_vulnerability.reload).to be_resolved_on_default_branch
-              expect(cvs_ds_vulnerability.reload).not_to be_resolved_on_default_branch
-            end
+            expect(cvs_cs_vulnerability.reload).to be_resolved_on_default_branch
+            expect(cvs_ds_vulnerability.reload).not_to be_resolved_on_default_branch
           end
         end
 
