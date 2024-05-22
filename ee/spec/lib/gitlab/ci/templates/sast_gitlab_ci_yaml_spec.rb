@@ -73,7 +73,6 @@ RSpec.describe 'SAST.gitlab-ci.yml', feature_category: :continuous_integration d
             'PHP'                  | { 'app.php' => '' }                                    | {}                                         | %w[semgrep-sast]
             'Python'               | { 'app.py' => '' }                                     | {}                                         | %w[semgrep-sast]
             'Ruby'                 | { 'config/routes.rb' => '' }                           | {}                                         | %w[semgrep-sast]
-            'Scala'                | { 'app.scala' => '' }                                  | {}                                         | %w[spotbugs-sast]
             'Scala'                | { 'app.scala' => '' }                                  | {}                                         | %w[semgrep-sast]
             'Scala'                | { 'app.sc' => '' }                                     | {}                                         | %w[semgrep-sast]
             'Swift'                | { 'app.swift' => '' }                                  | {}                                         | %w[semgrep-sast]
