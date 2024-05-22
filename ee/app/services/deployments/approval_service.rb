@@ -17,6 +17,8 @@ module Deployments
       approval = upsert_approval(deployment, status, params[:comment])
       return error(approval.errors.full_messages) if approval.errors.any?
 
+      create_audit_event(deployment, approval)
+
       process_build!(deployment, approval)
 
       deployment.invalidate_cache
@@ -39,6 +41,21 @@ module Deployments
       else
         deployment.approvals.create(user: current_user, status: status, comment: comment)
       end
+    end
+
+    def create_audit_event(deployment, approval)
+      audit_context = {
+        name: "deployment_#{approval.status}",
+        author: current_user,
+        scope: deployment.project,
+        target: deployment.environment,
+        message: "#{approval.status.capitalize} deployment with IID: #{deployment.iid} and ID: #{deployment.id}",
+        additional_details: {
+          comment: approval.comment
+        }
+      }
+
+      ::Gitlab::Audit::Auditor.audit(audit_context)
     end
 
     def process_build!(deployment, approval)
