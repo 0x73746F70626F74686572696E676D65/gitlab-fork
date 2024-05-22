@@ -52,10 +52,7 @@ describe('GeoSiteActions', () => {
 
     it('renders desktop actions with correct visibility class always', () => {
       expect(findGeoDesktopActions().exists()).toBe(true);
-      expect(findGeoDesktopActions().classes()).toStrictEqual([
-        'gl-display-none',
-        'gl-lg-display-flex',
-      ]);
+      expect(findGeoDesktopActions().classes()).toStrictEqual(['gl-hidden', 'gl-lg-display-flex']);
     });
   });
 

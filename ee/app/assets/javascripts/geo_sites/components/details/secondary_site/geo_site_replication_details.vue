@@ -97,7 +97,7 @@ export default {
     </div>
     <div v-if="!collapsed">
       <geo-site-replication-details-responsive
-        class="gl-display-none gl-md-display-block"
+        class="gl-hidden gl-md-display-block"
         :site-id="site.id"
         :replication-items="replicationItems"
         data-testid="geo-replication-details-desktop"
