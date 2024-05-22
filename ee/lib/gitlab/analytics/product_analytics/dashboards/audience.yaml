@@ -1,7 +1,6 @@
 ---
 title: Audience
 description: Understand your audience
-version: "2"
 panels:
   - visualization: daily_active_users
     title: Daily Active Users

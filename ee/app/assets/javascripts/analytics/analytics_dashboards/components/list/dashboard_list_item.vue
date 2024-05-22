@@ -28,9 +28,6 @@ export default {
     showBetaBadge() {
       return this.dashboard?.status === DASHBOARD_STATUS_BETA;
     },
-    showErrorsBadge() {
-      return this.dashboard?.errors?.length > 0;
-    },
     redirectHref() {
       return joinPaths(window.location.pathname, this.dashboard.slug);
     },
@@ -88,16 +85,6 @@ export default {
             size="sm"
           >
             {{ __('Beta') }}
-          </gl-badge>
-          <gl-badge
-            v-if="showErrorsBadge"
-            data-testid="dashboard-errors-badge"
-            class="gl-ml-2"
-            size="sm"
-            icon="error"
-            variant="danger"
-          >
-            {{ __('Contains errors') }}
           </gl-badge>
         </div>
         <gl-truncate-text

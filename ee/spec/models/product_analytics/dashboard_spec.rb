@@ -95,7 +95,7 @@ description: with missing properties
           expect(subject.last.title).to eq('Dashboard Example 1')
           expect(subject.last.slug).to eq('dashboard_example_1')
           expect(subject.last.description).to eq('North Star Metrics across all departments for the last 3 quarters.')
-          expect(subject.last.schema_version).to eq('2')
+          expect(subject.last.schema_version).to eq('1')
           expect(subject.last.errors).to be_nil
         end
       end
@@ -256,7 +256,7 @@ description: with missing properties
         'The Value Streams Dashboard allows all stakeholders from executives ' \
         'to individual contributors to identify trends, patterns, and ' \
         'opportunities for software development improvements.')
-      expect(dashboard.schema_version).to eq('2')
+      expect(dashboard.schema_version).to eq(nil)
     end
 
     context 'with the project_analytics_dashboard_dynamic_vsd feature flag disabled' do
@@ -292,7 +292,7 @@ description: with missing properties
         expect(subject.title).to eq('AI impact analytics')
         expect(subject.slug).to eq('ai_impact')
         expect(subject.status).to eq('beta')
-        expect(subject.schema_version).to eq('2')
+        expect(subject.schema_version).to eq(nil)
       end
 
       context 'when feature is not available' do
@@ -311,7 +311,7 @@ description: with missing properties
         expect(subject.title).to eq('AI impact analytics')
         expect(subject.slug).to eq('ai_impact')
         expect(subject.status).to eq('beta')
-        expect(subject.schema_version).to eq('2')
+        expect(subject.schema_version).to eq(nil)
       end
 
       context 'when feature is not available' do
@@ -351,7 +351,7 @@ description: with missing properties
 
       it 'loads the dashboard config' do
         expect(subject["title"]).to eq('Behavior')
-        expect(subject.size).to eq(4)
+        expect(subject.size).to eq(3)
       end
     end
   end
