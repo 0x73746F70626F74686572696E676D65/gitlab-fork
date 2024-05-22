@@ -9,7 +9,6 @@ RSpec.describe 'shared/billings/_billing_plan.html.haml', :saas do
 
   before do
     allow(view).to receive(:plan).and_return(plan)
-    allow(view).to receive(:plan_offer_type)
     allow(view).to receive(:is_current)
     allow(view).to receive(:namespace)
   end

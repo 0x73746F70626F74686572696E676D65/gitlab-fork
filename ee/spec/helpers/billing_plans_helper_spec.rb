@@ -216,60 +216,6 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
     end
   end
 
-  describe '#upgrade_offer_type' do
-    using RSpec::Parameterized::TableSyntax
-
-    let(:plan) { double('plan', { id: '123456789' }) }
-
-    context 'when plan has a valid property' do
-      where(:plan_name, :for_free, :plan_id, :result) do
-        Plan::BRONZE | true | '123456789' | :upgrade_for_free
-        Plan::BRONZE | true | '987654321' | :no_offer
-        Plan::BRONZE | true | nil | :no_offer
-        Plan::BRONZE | false | '123456789' | :upgrade_for_offer
-        Plan::BRONZE | false | nil | :no_offer
-        Plan::BRONZE | nil | nil | :no_offer
-        Plan::PREMIUM | nil | nil | :no_offer
-        nil | true | nil | :no_offer
-      end
-
-      with_them do
-        let(:namespace) do
-          double('plan', { actual_plan_name: plan_name, id: '000000000' })
-        end
-
-        before do
-          allow_next_instance_of(GitlabSubscriptions::PlanUpgradeService) do |instance|
-            expect(instance).to receive(:execute).once.and_return({
-                                                                    upgrade_for_free: for_free,
-                                                                    upgrade_plan_id: plan_id
-                                                                  })
-          end
-        end
-
-        subject { helper.upgrade_offer_type(namespace, plan) }
-
-        it { is_expected.to eq(result) }
-      end
-    end
-  end
-
-  describe '#has_upgrade?' do
-    using RSpec::Parameterized::TableSyntax
-
-    where(:offer_type, :result) do
-      :no_offer | false
-      :upgrade_for_free | true
-      :upgrade_for_offer | true
-    end
-
-    with_them do
-      subject { helper.has_upgrade?(offer_type) }
-
-      it { is_expected.to eq(result) }
-    end
-  end
-
   describe '#can_edit_billing?' do
     let(:auditor_group) { build(:group) }
     let(:auditor) { create(:auditor) }
@@ -304,17 +250,13 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
   describe '#show_contact_sales_button?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:link_action, :upgrade_offer, :result) do
-      'upgrade' | :no_offer | true
-      'upgrade' | :upgrade_for_free | false
-      'upgrade' | :upgrade_for_offer | true
-      'no_upgrade' | :no_offer | false
-      'no_upgrade' | :upgrade_for_free | false
-      'no_upgrade' | :upgrade_for_offer | false
+    where(:link_action, :result) do
+      'upgrade' | true
+      'no_upgrade' | false
     end
 
     with_them do
-      subject { helper.show_contact_sales_button?(link_action, upgrade_offer) }
+      subject { helper.show_contact_sales_button?(link_action) }
 
       it { is_expected.to eq(result) }
     end
@@ -323,29 +265,17 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
   describe '#show_upgrade_button?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:link_action, :upgrade_offer, :allow_upgrade, :result) do
-      'upgrade' | :no_offer             | true  | true
-      'upgrade' | :upgrade_for_free     | true  | true
-      'upgrade' | :upgrade_for_offer    | true  | false
-      'upgrade' | :no_offer             | false | false
-      'upgrade' | :upgrade_for_free     | false | false
-      'upgrade' | :upgrade_for_offer    | false | false
-      'upgrade' | :no_offer             | nil   | true
-      'upgrade' | :upgrade_for_free     | nil   | true
-      'upgrade' | :upgrade_for_offer    | nil   | false
-      'no_upgrade' | :no_offer          | true  | false
-      'no_upgrade' | :upgrade_for_free  | true  | false
-      'no_upgrade' | :upgrade_for_offer | true  | false
-      'no_upgrade' | :no_offer          | false | false
-      'no_upgrade' | :upgrade_for_free  | false | false
-      'no_upgrade' | :upgrade_for_offer | false | false
-      'no_upgrade' | :no_offer          | nil   | false
-      'no_upgrade' | :upgrade_for_free  | nil   | false
-      'no_upgrade' | :upgrade_for_offer | nil   | false
+    where(:link_action, :allow_upgrade, :result) do
+      'upgrade'    | true  | true
+      'upgrade'    | false | false
+      'upgrade'    | nil   | true
+      'no_upgrade' | true  | false
+      'no_upgrade' | false | false
+      'no_upgrade' | nil   | false
     end
 
     with_them do
-      subject { helper.show_upgrade_button?(link_action, upgrade_offer, allow_upgrade) }
+      subject { helper.show_upgrade_button?(link_action, allow_upgrade) }
 
       it { is_expected.to eq(result) }
     end
@@ -462,22 +392,6 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
                                          :button_text,
                                          :track_action,
                                          :track_label])
-    end
-  end
-
-  describe '#upgrade_button_text' do
-    using RSpec::Parameterized::TableSyntax
-
-    subject { helper.upgrade_button_text(plan_offer_type) }
-
-    where(:plan_offer_type, :result) do
-      :no_offer | 'Upgrade'
-      :upgrade_for_free | 'Upgrade for free'
-      :upgrade_for_offer | 'Upgrade'
-    end
-
-    with_them do
-      it { is_expected.to eq(result) }
     end
   end
 

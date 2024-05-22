@@ -13,24 +13,6 @@ module SubscriptionPortalHelpers
     stub_application_setting(customers_dot_jwt_signing_key: key)
   end
 
-  def stub_eoa_eligibility_request(namespace_id, eligible = false, free_upgrade_plan_id = nil)
-    stub_full_request(graphql_url, method: :post)
-      .with(
-        body: "{\"query\":\"{\\n  subscription(namespaceId: \\\"#{namespace_id}\\\") {\\n    eoaStarterBronzeEligible\\n    freeUpgradePlanId\\n  }\\n}\\n\"}",
-        headers: {
-          'Accept' => 'application/json',
-          'Content-Type' => 'application/json',
-          'X-Admin-Email' => Gitlab::SubscriptionPortal::SUBSCRIPTION_PORTAL_ADMIN_EMAIL,
-          'X-Admin-Token' => Gitlab::SubscriptionPortal::SUBSCRIPTION_PORTAL_ADMIN_TOKEN
-        }
-      )
-      .to_return(
-        status: 200,
-        headers: { 'Content-Type' => 'application/json' },
-        body: stubbed_eoa_eligibility_response_body(eligible, free_upgrade_plan_id)
-      )
-  end
-
   def billing_plans_data
     Gitlab::Json.parse(plans_fixture.read).map do |data|
       data.deep_symbolize_keys
@@ -208,16 +190,5 @@ module SubscriptionPortalHelpers
 
   def plans_fixture
     File.new(Rails.root.join('ee/spec/fixtures/gitlab_com_plans.json'))
-  end
-
-  def stubbed_eoa_eligibility_response_body(eligible, free_upgrade_plan_id)
-    {
-      "data": {
-        "subscription": {
-          "eoaStarterBronzeEligible": eligible,
-          "freeUpgradePlanId": free_upgrade_plan_id
-        }
-      }
-    }.to_json
   end
 end

@@ -23,7 +23,6 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
 
     stub_billing_plans(nil)
     stub_billing_plans(namespace.id, plan.name, plans_data.to_json)
-    stub_eoa_eligibility_request(namespace.id)
     stub_subscription_management_data(namespace.id)
     stub_temporary_extension_data(namespace.id)
 
@@ -191,22 +190,10 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
       let(:premium_plan_data) { plans_data.find { |plan_data| plan_data[:id] == 'premium-external-id' } }
       let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 15) }
 
-      before do
-        stub_eoa_eligibility_request(namespace.id, true, premium_plan_data[:id])
-      end
-
       it_behaves_like 'plan with header'
       it_behaves_like 'downgradable plan'
       it_behaves_like 'can not contact sales'
       it_behaves_like 'plan with subscription table'
-
-      it 'displays the free upgrade' do
-        visit page_path
-
-        within '.card-badge' do
-          expect(page).to have_text('Free upgrade!')
-        end
-      end
 
       context 'with an active deprecated plan' do
         let(:legacy_plan) { plans_data.find { |plan_data| plan_data[:id] == 'bronze-external-id' } }
@@ -222,22 +209,6 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
 
             expect(panel_with_legacy_plan.find('.card-header')).to have_content(expected_card_header)
             expect(panel_with_legacy_plan.find('.card-body')).to have_link('frequently asked questions')
-          end
-        end
-      end
-
-      context 'with more than 25 users' do
-        let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 30) }
-
-        before do
-          stub_eoa_eligibility_request(namespace.id, false, premium_plan_data[:id])
-        end
-
-        it 'displays the sales assisted offer' do
-          visit page_path
-
-          within '.card-badge' do
-            expect(page).to have_text('Upgrade offers available!')
           end
         end
       end
