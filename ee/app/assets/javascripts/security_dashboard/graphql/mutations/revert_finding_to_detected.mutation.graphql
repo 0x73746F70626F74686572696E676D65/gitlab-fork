@@ -9,6 +9,7 @@ mutation revertFindingToDetected($uuid: String!) {
         id
         stateTransitions(last: 1) {
           nodes {
+            id
             author {
               id
               name
