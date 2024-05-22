@@ -88,6 +88,7 @@ export default {
     :get-active-token-value="getActiveGroup"
     :default-suggestions="defaultGroups"
     search-by="title"
+    :value-identifier="getValue"
     v-bind="$attrs"
     @fetch-suggestions="fetchGroupsBySearchTerm"
     v-on="$listeners"
