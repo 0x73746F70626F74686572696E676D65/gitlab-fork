@@ -20,6 +20,10 @@ RSpec.describe Groups::SeatUsageExportService, feature_category: :purchase do
 
       let(:reporter) { create(:user, name: 'Reporter', username: 'reporter', state: 'active') }
 
+      let(:maintainer) do
+        create(:user, name: 'Maintainer', username: 'maintainer', state: 'active', email: 'maintainer@enterprise.com')
+      end
+
       before do
         group.add_owner(owner)
       end
@@ -32,8 +36,11 @@ RSpec.describe Groups::SeatUsageExportService, feature_category: :purchase do
             public_email = create(:email, :confirmed, user: developer, email: 'public@email.org')
             developer.update!(public_email: public_email.email)
 
+            create(:user_detail, user: maintainer, enterprise_group_id: group.id)
+
             group.add_developer(developer)
             group.add_reporter(reporter)
+            group.add_maintainer(maintainer)
           end
 
           it 'returns csv data', :freeze_time do
@@ -44,6 +51,7 @@ RSpec.describe Groups::SeatUsageExportService, feature_category: :purchase do
               "Id,Name,Username,Email,State,Last GitLab activity,Last login\n",
               "#{owner.id},Owner,owner,,active,,\n",
               "#{developer.id},Dev,dev,public@email.org,active,#{formatted_last_activity},#{formatted_last_login}\n",
+              "#{maintainer.id},Maintainer,maintainer,maintainer@enterprise.com,active,,\n",
               "#{reporter.id},Reporter,reporter,,active,,\n"
             ])
           end

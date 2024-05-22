@@ -39,12 +39,16 @@ module Groups
       result[:users] || User.none
     end
 
+    def export_private_email?(user)
+      current_user.can_admin_all_resources? || user.enterprise_user_of_group?(group)
+    end
+
     def header_to_value_hash
       {
         'Id' => 'id',
         'Name' => 'name',
         'Username' => 'username',
-        'Email' => ->(user) { user.public_email.presence },
+        'Email' => ->(user) { export_private_email?(user) ? user.email : user.public_email.presence },
         'State' => 'state',
         'Last GitLab activity' => ->(user) { user&.last_active_at&.iso8601 },
         'Last login' => ->(user) { user&.last_sign_in_at&.iso8601 }
