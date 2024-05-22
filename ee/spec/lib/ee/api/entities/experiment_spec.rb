@@ -38,36 +38,36 @@ RSpec.describe EE::API::Entities::Experiment do
     Feature.enable_percentage_of_time(:null_hypothesis, 1)
 
     expect(subject[:current_status]).to match({
-                                                state: :conditional,
-                                                gates: [
-                                                  {
-                                                    key: :boolean,
-                                                    value: false
-                                                  },
-                                                  {
-                                                    key: :percentage_of_time,
-                                                    value: 1
-                                                  }
-                                                ]
-                                              })
+      state: :conditional,
+      gates: [
+        {
+          key: :boolean,
+          value: false
+        },
+        {
+          key: :percentage_of_time,
+          value: 1
+        }
+      ]
+    })
   end
 
   it "understands state and what that means for if its enabled or not" do
     Feature.enable_percentage_of_time(:null_hypothesis, 100)
 
     expect(subject[:current_status]).to match({
-                                                state: :on,
-                                                gates: [
-                                                  {
-                                                    key: :boolean,
-                                                    value: false
-                                                  },
-                                                  {
-                                                    key: :percentage_of_time,
-                                                    value: 100
-                                                  }
-                                                ]
-                                              })
+      state: :on,
+      gates: [
+        {
+          key: :boolean,
+          value: false
+        },
+        {
+          key: :percentage_of_time,
+          value: 100
+        }
+      ]
+    })
   end
 
   it "truncates the name since some experiments include extra data in their feature flag name" do

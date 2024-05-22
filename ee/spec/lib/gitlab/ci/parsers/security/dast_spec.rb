@@ -84,19 +84,19 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Dast do
 
       let(:raw_json) do
         {
-        vulnerabilities: [],
-        remediations: [],
-        dependency_files: [],
-        scan: {
-          scanned_resources: [
-            {
-              method: "GET",
-              type: "url",
-              url: "not a URL"
-            }
-          ]
+          vulnerabilities: [],
+          remediations: [],
+          dependency_files: [],
+          scan: {
+            scanned_resources: [
+              {
+                method: "GET",
+                type: "url",
+                url: "not a URL"
+              }
+            ]
+          }
         }
-      }
       end
 
       it 'skips invalid URLs' do

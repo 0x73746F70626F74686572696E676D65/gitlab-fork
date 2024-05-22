@@ -27,10 +27,10 @@ RSpec.describe Audit::ComplianceFrameworkChangesAuditor do
         it 'adds an audit event' do
           expect { subject.execute }.to change(AuditEvent, :count).by(1)
           expect(AuditEvent.last.details).to include({
-                                                       change: 'compliance framework',
-                                                       from: 'None',
-                                                       to: 'GDPR'
-                                                     })
+            change: 'compliance framework',
+            from: 'None',
+            to: 'GDPR'
+          })
         end
 
         it 'streams correct audit event stream' do
@@ -57,8 +57,8 @@ RSpec.describe Audit::ComplianceFrameworkChangesAuditor do
         it 'adds an audit event' do
           expect { subject.execute }.to change(AuditEvent, :count).by(1)
           expect(AuditEvent.last.details).to include({
-                                                       custom_message: "Unassigned project compliance framework"
-                                                     })
+            custom_message: "Unassigned project compliance framework"
+          })
         end
 
         it 'streams correct audit event stream' do
@@ -78,10 +78,10 @@ RSpec.describe Audit::ComplianceFrameworkChangesAuditor do
         it 'adds an audit event' do
           expect { subject.execute }.to change(AuditEvent, :count).by(1)
           expect(AuditEvent.last.details).to include({
-                                                       change: 'compliance framework',
-                                                       from: 'GDPR',
-                                                       to: 'SOX'
-                                                     })
+            change: 'compliance framework',
+            from: 'GDPR',
+            to: 'SOX'
+          })
         end
       end
     end

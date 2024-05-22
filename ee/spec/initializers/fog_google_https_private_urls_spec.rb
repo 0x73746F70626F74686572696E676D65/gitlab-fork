@@ -6,10 +6,10 @@ RSpec.describe 'Fog::Storage::GoogleXML::File' do
   let(:storage) do
     Fog.mock!
     Fog::Storage.new({
-                       google_storage_access_key_id: "asdf",
-                       google_storage_secret_access_key: "asdf",
-                       provider: "Google"
-                     })
+      google_storage_access_key_id: "asdf",
+      google_storage_secret_access_key: "asdf",
+      provider: "Google"
+    })
   end
 
   let(:file) do
