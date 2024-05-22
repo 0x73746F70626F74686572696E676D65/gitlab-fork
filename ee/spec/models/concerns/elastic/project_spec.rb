@@ -117,24 +117,6 @@ RSpec.describe Project, :elastic_delete_by_query, feature_category: :global_sear
               options: { project_ids: :any }).total_count).to eq(expected_count)
           end
         end
-
-        context 'feature flag is enabled' do
-          before do
-            stub_feature_flags(elasticsearch_use_or_default_operator: true)
-            stub_feature_flags(search_uses_match_queries: false)
-          end
-
-          include_examples 'use correct default_operator', :or
-        end
-
-        context 'feature flag is disabled' do
-          before do
-            stub_feature_flags(elasticsearch_use_or_default_operator: false)
-            stub_feature_flags(search_uses_match_queries: false)
-          end
-
-          include_examples 'use correct default_operator', :and
-        end
       end
     end
   end
