@@ -36,6 +36,13 @@ module WorkItems
       epic_params[:iid] = work_item.iid
       epic_params[:created_at] = work_item.created_at
 
+      parent_link = WorkItems::ParentLink.find_by_work_item_id(work_item.id)
+
+      if parent_link && parent_link.work_item_parent.synced_epic
+        epic_params[:relative_position] = parent_link.relative_position
+        epic_params[:parent_id] = parent_link.work_item_parent.synced_epic.id
+      end
+
       epic_params
         .merge(callback_params)
         .merge(base_attributes_params(work_item))

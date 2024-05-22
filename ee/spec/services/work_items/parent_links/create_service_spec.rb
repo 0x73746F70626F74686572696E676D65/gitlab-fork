@@ -158,7 +158,7 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
     end
 
     context 'when only parent work item has a synced epic' do
-      let(:parent_work_item) { parent_epic.work_item }
+      let_it_be(:parent_work_item) { parent_epic.work_item }
       let(:child_work_item) { work_item2 }
 
       context 'when synced_work_item param is true' do
@@ -173,6 +173,16 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
         it_behaves_like 'does not create parent link'
 
         context 'when make_synced_work_item_read_only feature flag is disabled' do
+          let_it_be(:other_epic_work_item) { create(:work_item, :epic_with_legacy_epic, namespace: group) }
+          let_it_be(:other_epic_work_item_link) do
+            create(:parent_link, work_item: other_epic_work_item, work_item_parent: parent_work_item,
+              relative_position: 500)
+          end
+
+          before_all do
+            other_epic_work_item.synced_epic.update!(parent: parent_epic, relative_position: 500)
+          end
+
           before do
             stub_feature_flags(make_synced_work_item_read_only: false)
           end
@@ -184,6 +194,17 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
           context 'when child is type :issue' do
             let(:child_work_item) { work_item_issue }
             let(:child_issue) { Issue.find(child_work_item.id) }
+
+            let_it_be(:other_issue_work_item) { create(:work_item, :issue, namespace: group) }
+            let_it_be(:other_issue_work_item_link) do
+              create(:parent_link, work_item: other_issue_work_item, work_item_parent: parent_work_item,
+                relative_position: 600)
+            end
+
+            let_it_be(:other_issue_epic_issue) do
+              create(:epic_issue, issue: other_issue_work_item, epic: parent_work_item.synced_epic,
+                relative_position: 600)
+            end
 
             it 'calls this service once' do
               allow(described_class).to receive(:new).and_call_original
@@ -280,7 +301,7 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
 
     context 'when both work items have a synced epic' do
       let_it_be(:child_epic) { create(:epic, :with_synced_work_item, group: group) }
-      let(:parent_work_item) { parent_epic.work_item }
+      let_it_be(:parent_work_item) { parent_epic.work_item }
       let(:child_work_item) { child_epic.work_item }
 
       context 'when synced_work_item param is true' do
@@ -295,6 +316,16 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
         it_behaves_like 'does not create parent link'
 
         context 'when make_synced_work_item_read_only feature flag is disabled' do
+          let_it_be(:other_epic_work_item) { create(:work_item, :epic_with_legacy_epic, namespace: group) }
+          let_it_be(:other_epic_work_item_link) do
+            create(:parent_link, work_item: other_epic_work_item, work_item_parent: parent_work_item,
+              relative_position: 500)
+          end
+
+          before_all do
+            other_epic_work_item.synced_epic.update!(parent: parent_epic, relative_position: 500)
+          end
+
           before do
             stub_feature_flags(make_synced_work_item_read_only: false)
           end
@@ -331,7 +362,8 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
                 let(:child_work_item) { other_child_epic.work_item }
 
                 before do
-                  create(:parent_link, work_item_parent: other_parent_epic.work_item, work_item: child_work_item)
+                  create(:parent_link, work_item_parent: other_parent_epic.work_item,
+                    work_item: child_work_item)
                 end
 
                 it_behaves_like 'creates parent link and deletes legacy link' do

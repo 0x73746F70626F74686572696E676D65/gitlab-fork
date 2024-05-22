@@ -33,6 +33,20 @@ module EE
           end
         end
 
+        override :relate_issuables
+        def relate_issuables(work_item)
+          return super if synced_work_item
+          return super unless sync_epic_link?
+
+          ApplicationRecord.transaction do
+            parent_link = super
+
+            sync_relative_position(parent_link) if parent_link
+
+            parent_link
+          end
+        end
+
         override :create_notes_and_resource_event
         def create_notes_and_resource_event(work_item, _link)
           return if synced_work_item
@@ -60,6 +74,15 @@ module EE
             work_item_id: work_item.id
           )
           raise ::WorkItems::SyncAsEpic::SyncAsEpicError, result[:message]
+        end
+
+        def sync_relative_position(parent_link)
+          if parent_link.work_item.work_item_type.epic? && parent_link.work_item.synced_epic
+            parent_link.work_item.synced_epic.update(relative_position: parent_link.relative_position)
+          elsif parent_link.work_item.work_item_type.issue?
+            epic_issue = EpicIssue.find_by_issue_id(parent_link.work_item.id)
+            epic_issue.update(relative_position: parent_link.relative_position) if epic_issue
+          end
         end
 
         def handle_epic_link(work_item)
