@@ -11,12 +11,12 @@ module Types
       description 'Represents DAST Profile Cadence.'
 
       field :unit, ::Types::Dast::ProfileCadenceUnitEnum,
-            null: true,
-            description: 'Unit for the duration of DAST profile cadence.'
+        null: true,
+        description: 'Unit for the duration of DAST profile cadence.'
 
       field :duration, GraphQL::Types::Int,
-            null: true,
-            description: 'Duration of the DAST profile cadence.'
+        null: true,
+        description: 'Duration of the DAST profile cadence.'
     end
   end
 end

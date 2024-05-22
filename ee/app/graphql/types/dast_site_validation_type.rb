@@ -17,6 +17,6 @@ module Types
       null: true, method: :url_base, description: 'Normalized URL of the target to be validated.'
 
     field :validation_started_at, Types::TimeType,
-          null: true, description: 'Timestamp of when the validation started.'
+      null: true, description: 'Timestamp of when the validation started.'
   end
 end
