@@ -30,10 +30,18 @@ module CodeSuggestions
         )
       end
 
-      CodeSuggestions::Tasks::CodeGeneration.new(
-        params: code_generation_params(instruction),
-        unsafe_passthrough_params: unsafe_passthrough_params
-      )
+      if code_generations_feature_setting&.self_hosted?
+        CodeSuggestions::Tasks::SelfHostedCodeGeneration.new(
+          feature_setting: code_generations_feature_setting,
+          params: params,
+          unsafe_passthrough_params: unsafe_passthrough_params
+        )
+      else
+        CodeSuggestions::Tasks::CodeGeneration.new(
+          params: code_generation_params(instruction),
+          unsafe_passthrough_params: unsafe_passthrough_params
+        )
+      end
     end
 
     private
@@ -67,5 +75,9 @@ module CodeSuggestions
         ).execute.first
     end
     strong_memoize_attr(:project)
+
+    def code_generations_feature_setting
+      ::Ai::FeatureSetting.find_by_feature(:code_generations)
+    end
   end
 end
