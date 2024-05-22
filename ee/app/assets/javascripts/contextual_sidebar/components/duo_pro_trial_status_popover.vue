@@ -5,6 +5,7 @@ import { debounce } from 'lodash';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { n__, sprintf } from '~/locale';
 import Tracking from '~/tracking';
+import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import {
   RESIZE_EVENT,
   RESIZE_EVENT_DEBOUNCE_MS,
@@ -18,6 +19,7 @@ import {
 
 export default {
   components: {
+    HandRaiseLeadButton,
     GlButton,
     GlPopover,
     GlSprintf,
@@ -56,6 +58,20 @@ export default {
   learnAboutButtonUrl: DUO_PRO_TRIAL_POPOVER_LEARN_URL,
   hideDelay: { hide: POPOVER_HIDE_DELAY },
   popoverClasses: ['gl-p-2'],
+  handRaiseLeadAttributes: {
+    size: 'small',
+    variant: 'confirm',
+    category: 'secondary',
+    class: 'gl-w-full',
+    buttonTextClasses: 'gl-font-sm',
+    'data-testid': 'duo-pro-trial-popover-hand-raise-lead-button',
+    href: '#',
+  },
+  handRaiseLeadBtnTracking: {
+    category: DUO_PRO_TRIAL_POPOVER_TRACKING_CATEGORY,
+    action: 'click_button',
+    label: 'contact_sales',
+  },
   computed: {
     formattedTrialEndDate() {
       return formatDate(this.trialEndDate, 'mmmm d', true);
@@ -134,6 +150,7 @@ export default {
         :href="purchaseNowUrl"
         variant="confirm"
         size="small"
+        class="gl-mb-3"
         block
         data-testid="purchase-now-btn"
         :title="$options.purchaseNowTitle"
@@ -142,12 +159,19 @@ export default {
         <span class="gl-text-sm">{{ $options.purchaseNowTitle }}</span>
       </gl-button>
 
+      <hand-raise-lead-button
+        :button-attributes="$options.handRaiseLeadAttributes"
+        glm-content="duo-pro-trial-status-show-group"
+        :cta-tracking="$options.handRaiseLeadBtnTracking"
+      />
+
       <gl-button
         :href="$options.learnAboutButtonUrl"
         target="_blank"
-        category="secondary"
+        category="tertiary"
         variant="confirm"
         size="small"
+        class="gl-mt-3"
         block
         data-testid="learn-about-features-btn"
         :title="$options.learnAboutButtonTitle"

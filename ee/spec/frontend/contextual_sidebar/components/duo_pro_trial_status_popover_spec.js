@@ -6,6 +6,7 @@ import { DUO_PRO_TRIAL_POPOVER_TRACKING_CATEGORY } from 'ee/contextual_sidebar/c
 import DuoProTrialStatusPopover from 'ee/contextual_sidebar/components/duo_pro_trial_status_popover.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 
 describe('DuoProTrialStatusPopover component', () => {
   let wrapper;
@@ -16,6 +17,7 @@ describe('DuoProTrialStatusPopover component', () => {
   const findGlPopover = () => wrapper.findComponent(GlPopover);
   const findPurchaseNowBtn = () => wrapper.findByTestId('purchase-now-btn');
   const findLearnAboutFeaturesBtn = () => wrapper.findByTestId('learn-about-features-btn');
+  const handRaiseLeadBtn = () => wrapper.findComponent(HandRaiseLeadButton);
 
   const expectTracking = ({ action, ...options } = {}) => {
     return expect(trackingSpy).toHaveBeenCalledWith(
@@ -78,6 +80,28 @@ describe('DuoProTrialStatusPopover component', () => {
       createComponent({ providers: { daysRemaining: 5 }, mountFn: mountExtended });
 
       expect(wrapper.text()).toContain('To continue using your AI-powered assistant');
+    });
+  });
+
+  it('sets correct props to the hand raise lead button', () => {
+    const buttonAttributes = {
+      size: 'small',
+      variant: 'confirm',
+      category: 'secondary',
+      class: 'gl-w-full',
+      buttonTextClasses: 'gl-font-sm',
+      href: '#',
+      'data-testid': 'duo-pro-trial-popover-hand-raise-lead-button',
+    };
+
+    expect(handRaiseLeadBtn().props()).toMatchObject({
+      buttonAttributes,
+      glmContent: 'duo-pro-trial-status-show-group',
+      ctaTracking: {
+        category: DUO_PRO_TRIAL_POPOVER_TRACKING_CATEGORY,
+        action: 'click_button',
+        label: 'contact_sales',
+      },
     });
   });
 
