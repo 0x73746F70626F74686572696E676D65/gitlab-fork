@@ -1,4 +1,4 @@
-mutation editBrachRule($input: BranchRuleUpdateInput!) {
+mutation editBrachRuleEE($input: BranchRuleUpdateInput!) {
   branchRuleUpdate(input: $input) {
     errors
     branchRule {
@@ -6,16 +6,29 @@ mutation editBrachRule($input: BranchRuleUpdateInput!) {
       name
       branchProtection {
         allowForcePush
-        pushAccessLevels {
-          nodes {
-            accessLevel
-            accessLevelDescription
-          }
-        }
+        codeOwnerApprovalRequired
         mergeAccessLevels {
           nodes {
             accessLevel
             accessLevelDescription
+            user {
+              id
+            }
+            group {
+              id
+            }
+          }
+        }
+        pushAccessLevels {
+          nodes {
+            accessLevel
+            accessLevelDescription
+            user {
+              id
+            }
+            group {
+              id
+            }
           }
         }
       }

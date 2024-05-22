@@ -1,4 +1,4 @@
-const usersMock = [
+export const usersMock = [
   {
     id: '123',
     username: 'usr1',
@@ -38,7 +38,7 @@ const usersMock = [
 
 const accessLevelsMock = [
   { accessLevelDescription: 'Administrator' },
-  { accessLevelDescription: 'Maintainer' },
+  { accessLevelDescription: 'Maintainers' },
 ];
 
 const approvalsRequired = 3;
@@ -92,7 +92,9 @@ export const accessLevelsMockResponse = [
         id: '123',
         webUrl: 'test.com',
         name: 'peter',
+        username: 'peter',
         avatarUrl: 'test.com/user.png',
+        src: 'test.com/user.png',
       },
     },
   },
@@ -107,6 +109,32 @@ export const accessLevelsMockResponse = [
     },
   },
 ];
+
+export const mergeAccessLevelsMockResponse = {
+  nodes: [
+    {
+      accessLevel: 40,
+      accessLevelDescription: 'Administrator',
+      user: {
+        id: 'gid://gitlab/User/1',
+        __typename: 'AccessLevelUser',
+      },
+      group: null,
+      __typename: 'MergeAccessLevel',
+    },
+    {
+      accessLevel: 40,
+      accessLevelDescription: 'Carlos Orn',
+      user: {
+        id: 'gid://gitlab/User/3',
+        __typename: 'AccessLevelUser',
+      },
+      group: null,
+      __typename: 'MergeAccessLevel',
+    },
+  ],
+  __typename: 'MergeAccessLevelConnection',
+};
 
 export const matchingBranchesCount = 3;
 
@@ -199,17 +227,8 @@ export const predefinedBranchRulesMockResponse = {
               __typename: 'ExternalStatusCheckConnection',
             },
             approvalRules: {
-              nodes: [
-                {
-                  id: '3',
-                  __typename: 'ApprovalProjectRule',
-                },
-                {
-                  id: '4',
-                  __typename: 'ApprovalProjectRule',
-                },
-              ],
               __typename: 'ApprovalProjectRuleConnection',
+              nodes: approvalRulesMock,
             },
             __typename: 'BranchRule',
           },
@@ -224,17 +243,8 @@ export const predefinedBranchRulesMockResponse = {
               __typename: 'ExternalStatusCheckConnection',
             },
             approvalRules: {
-              nodes: [
-                {
-                  id: '5',
-                  __typename: 'ApprovalProjectRule',
-                },
-                {
-                  id: '6',
-                  __typename: 'ApprovalProjectRule',
-                },
-              ],
               __typename: 'ApprovalProjectRuleConnection',
+              nodes: approvalRulesMock,
             },
             __typename: 'BranchRule',
           },
@@ -255,9 +265,26 @@ export const deleteBranchRuleMockResponse = {
 
 export const editBranchRuleMockResponse = {
   data: {
-    branchRule: {
+    branchRuleUpdate: {
       errors: [],
       __typename: 'BranchRuleEditPayload',
+      branchRule: {
+        __typename: 'BranchRule',
+        name: 'newname',
+        isDefault: true,
+        id: 'gid://gitlab/Projects/BranchRule/1',
+        matchingBranchesCount,
+        branchProtection: {
+          __typename: 'BranchProtection',
+          allowForcePush: true,
+          codeOwnerApprovalRequired: true,
+          mergeAccessLevels: mergeAccessLevelsMockResponse,
+          pushAccessLevels: {
+            __typename: 'PushAccessLevelConnection',
+            nodes: [],
+          },
+        },
+      },
     },
   },
 };
@@ -270,4 +297,13 @@ export const protectableBranchesMockResponse = {
       __typename: 'Project',
     },
   },
+};
+
+export const allowedToMergeDrawerProps = {
+  groups: [],
+  isLoading: false,
+  isOpen: false,
+  title: 'Edit allowed to merge',
+  roles: [accessLevelsMock[1]],
+  users: [accessLevelsMockResponse[0].node.user],
 };
