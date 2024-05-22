@@ -176,9 +176,9 @@ export default {
         )}`;
       } else if (this.presetTypeWeeks) {
         // eslint-disable-next-line @gitlab/require-i18n-strings
-        barStyles = `width: ${this.getTimelineBarWidthForWeeks()}px; ${this.getTimelineBarStartOffsetForWeeks(
+        barStyles = `width: ${this.getTimelineBarWidthForWeeks(
           roadmapItem,
-        )}`;
+        )}px; ${this.getTimelineBarStartOffsetForWeeks(roadmapItem)}`;
       }
 
       if (roadmapItem.color) {
