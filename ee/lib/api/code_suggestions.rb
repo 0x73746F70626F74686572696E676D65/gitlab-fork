@@ -165,6 +165,8 @@ module API
           result = Gitlab::Llm::AiGateway::CodeSuggestionsClient.new(current_user).direct_access_token
           service_unavailable!(result[:message]) if result[:status] == :error
 
+          Gitlab::Tracking::AiTracking.track_event('code_suggestion_direct_access_token_refresh', user: current_user)
+
           access = {
             base_url: ::Gitlab::AiGateway.url,
             # for development purposes we just return instance JWT, this should not be used in production

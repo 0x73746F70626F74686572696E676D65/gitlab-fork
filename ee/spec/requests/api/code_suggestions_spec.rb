@@ -932,6 +932,14 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             expect(response).to have_gitlab_http_status(:created)
             expect(json_response).to match(expected_response)
           end
+
+          it 'tracks code_suggestion_direct_access_token_refresh ai event' do
+            post_api
+
+            expect(Gitlab::Tracking::AiTracking)
+              .to have_received(:track_event)
+                    .with('code_suggestion_direct_access_token_refresh', user: current_user)
+          end
         end
 
         context 'when token creation fails' do
