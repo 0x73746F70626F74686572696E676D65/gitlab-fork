@@ -8,6 +8,7 @@ import MembersApp from '~/members/components/app.vue';
 import MembersTabs from '~/members/components/members_tabs.vue';
 import { TABS } from 'ee_else_ce/members/tabs_metadata';
 import { MEMBER_TYPES, TAB_QUERY_PARAM_VALUES } from 'ee_else_ce/members/constants';
+import setWindowLocation from 'helpers/set_window_location_helper';
 
 describe('MembersTabs', () => {
   Vue.use(Vuex);
@@ -106,11 +107,6 @@ describe('MembersTabs', () => {
   });
 
   describe('hiding export button for pending promotion tab', () => {
-    beforeEach(() => {
-      delete window.location;
-      window.location = new URL('https://localhost');
-    });
-
     const findExportButton = () => wrapper.findComponent(GlButton);
 
     it('shows the export button when the active tab is not the pending promotion tab', async () => {
@@ -122,7 +118,7 @@ describe('MembersTabs', () => {
 
     it('hides the export button when the active tab is the pending promotion tab', async () => {
       // activate the pending promotion tab
-      window.location.search = `?tab=${TAB_QUERY_PARAM_VALUES.promotionRequest}`;
+      setWindowLocation(`?tab=${TAB_QUERY_PARAM_VALUES.promotionRequest}`);
       await createComponent({ provide: { canExportMembers: true, exportCsvPath: 'foo' } });
       await nextTick();
       // ensure the current tab is the pending promotion tab
