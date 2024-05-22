@@ -121,6 +121,23 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
         end
       end
 
+      context 'when on a self managed instance' do
+        let(:expected_class) { ::CodeSuggestions::Tasks::SelfHostedCodeGeneration }
+        let(:expected_params) do
+          {
+            feature_setting: feature_setting,
+            params: params,
+            unsafe_passthrough_params: {}
+          }
+        end
+
+        let(:feature_setting) { create(:ai_feature_setting, feature: :code_generations) }
+
+        context 'when code_generations is self hosted' do
+          it_behaves_like 'correct task initializer'
+        end
+      end
+
       context 'with claude_3_code_generation_haiku flag is enabled' do
         before do
           stub_feature_flags(claude_3_code_generation_haiku: true)
