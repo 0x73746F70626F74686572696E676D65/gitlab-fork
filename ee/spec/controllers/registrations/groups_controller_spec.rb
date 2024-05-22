@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
+
+  let(:experiment) { instance_double(ApplicationExperiment) }
   let(:onboarding_enabled?) { true }
 
   before do
@@ -72,27 +74,42 @@ RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
           expect(assigns(:project)).to be_a_new(Project)
         end
 
-        it 'tracks the new group view event' do
-          get_new
+        context 'when form is rendered' do
+          before do
+            allow(controller)
+              .to receive(:experiment)
+              .with(:project_templates_during_registration, user: user)
+              .and_return(experiment)
+          end
 
-          expect_snowplow_event(
-            category: described_class.name,
-            action: 'view_new_group_action',
-            label: 'free_registration',
-            user: user
-          )
-        end
-
-        context 'when on trial' do
           it 'tracks the new group view event' do
-            get :new, params: { trial_onboarding_flow: true }
+            expect(experiment).to receive(:publish)
+            expect(experiment).to receive(:track).with(:render_groups_new, label: 'free_registration')
+
+            get_new
 
             expect_snowplow_event(
               category: described_class.name,
               action: 'view_new_group_action',
-              label: 'trial_registration',
+              label: 'free_registration',
               user: user
             )
+          end
+
+          context 'when on trial' do
+            it 'tracks the new group view event' do
+              expect(experiment).to receive(:publish)
+              expect(experiment).to receive(:track).with(:render_groups_new, label: 'trial_registration')
+
+              get :new, params: { trial_onboarding_flow: true }
+
+              expect_snowplow_event(
+                category: described_class.name,
+                action: 'view_new_group_action',
+                label: 'trial_registration',
+                user: user
+              )
+            end
           end
         end
 
@@ -131,6 +148,7 @@ RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
         name: 'New project',
         path: 'project-path',
         visibility_level: Gitlab::VisibilityLevel::PRIVATE,
+        template_name: '',
         initialize_with_readme: 'true'
       }
     end
@@ -152,35 +170,54 @@ RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
         expect { post_create }.to change { Group.count }.by(1).and change { Project.count }.by(1)
       end
 
-      it 'tracks submission event' do
-        post_create
-
-        expect_snowplow_event(
-          category: described_class.name,
-          action: 'successfully_submitted_form',
-          label: 'free_registration',
-          user: user
-        )
-      end
-
       it 'sets the cookie for confetti for learn gitlab' do
         post_create
 
         expect(cookies[:confetti_post_signup]).to eq(true)
       end
 
-      context 'when on trial' do
-        let(:extra_params) { { trial_onboarding_flow: true } }
+      context 'when form is successfully submitted' do
+        before do
+          allow(controller).to receive(:experiment).and_return(experiment)
+        end
 
         it 'tracks submission event' do
-          post_create
+          expect(experiment).to receive(:publish)
+          expect(experiment).to receive(:track).with(:successfully_submitted_form, label: 'free_registration')
 
-          expect_snowplow_event(
-            category: described_class.name,
-            action: 'successfully_submitted_form',
-            label: 'trial_registration',
-            user: user
+          expect(experiment).not_to receive(:track).with(
+            'select_project_template_plainhtml',
+            label: 'free_registration'
           )
+
+          post_create
+        end
+
+        context 'with template name' do
+          let(:project_params) { super().merge(template_name: 'plainhtml') }
+
+          it 'tracks submission event' do
+            expect(experiment).to receive(:publish)
+            expect(experiment).to receive(:track).with(:successfully_submitted_form, label: 'free_registration')
+
+            expect(experiment).to receive(:track).with(
+              'select_project_template_plainhtml',
+              label: 'free_registration'
+            )
+
+            post_create
+          end
+        end
+
+        context 'when on trial' do
+          let(:extra_params) { { trial_onboarding_flow: true } }
+
+          it 'tracks submission event' do
+            expect(experiment).to receive(:publish)
+            expect(experiment).to receive(:track).with(:successfully_submitted_form, label: 'trial_registration')
+
+            post_create
+          end
         end
       end
 
@@ -209,15 +246,17 @@ RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
         it { is_expected.to have_gitlab_http_status(:ok) }
         it { is_expected.to render_template(:new) }
 
-        it 'does not tracks submission event' do
-          post_create
+        context 'when form is not submitted' do
+          before do
+            allow(controller).to receive(:experiment).and_return(experiment)
+          end
 
-          expect_no_snowplow_event(
-            category: described_class.name,
-            action: 'successfully_submitted_form',
-            label: 'free_registration',
-            user: user
-          )
+          it 'does not track submission event' do
+            expect(experiment).to receive(:publish)
+            expect(experiment).not_to receive(:track).with(:successfully_submitted_form, label: 'free_registration')
+
+            post_create
+          end
         end
       end
 

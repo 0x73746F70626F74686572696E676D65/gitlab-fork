@@ -12,10 +12,7 @@ module Registrations
     before_action :authorize_create_group!, only: :new
 
     before_action do
-      experiment(:project_templates_during_registration,
-        type: :experiment,
-        user: current_user
-      ).publish
+      experiment(:project_templates_during_registration, user: current_user).publish
     end
 
     layout 'minimal'
@@ -29,6 +26,9 @@ module Registrations
       @project = Project.new(namespace: @group)
       @template_name = ''
       @initialize_with_readme = true
+
+      experiment(:project_templates_during_registration, user: current_user)
+        .track(:render_groups_new, label: onboarding_status.group_creation_tracking_label)
 
       track_event('view_new_group_action')
     end
@@ -63,7 +63,7 @@ module Registrations
         import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{payload[:group].id}").to_s
         redirect_to import_url
       else
-        track_event('successfully_submitted_form')
+        track_project_registration_submission(payload[:project])
 
         cookies[:confetti_post_signup] = true
 
@@ -82,6 +82,32 @@ module Registrations
     def track_event(action)
       ::Gitlab::Tracking
         .event(self.class.name, action, user: current_user, label: onboarding_status.group_creation_tracking_label)
+    end
+
+    def track_project_registration_submission(project)
+      experiment_project_templates_during_registration(
+        project,
+        :successfully_submitted_form,
+        onboarding_status.group_creation_tracking_label
+      )
+
+      template_name = params.dig(:project, :template_name)
+      return if template_name.blank?
+
+      experiment_project_templates_during_registration(
+        project,
+        "select_project_template_#{template_name}",
+        onboarding_status.group_creation_tracking_label
+      )
+    end
+
+    def experiment_project_templates_during_registration(project, name, label)
+      experiment(
+        :project_templates_during_registration,
+        user: current_user,
+        project: project,
+        namespace: project.namespace
+      ).track(name, label: label)
     end
 
     def onboarding_status
