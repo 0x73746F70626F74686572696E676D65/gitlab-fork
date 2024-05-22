@@ -40252,6 +40252,9 @@ msgstr ""
 msgid "Project milestone"
 msgstr ""
 
+msgid "Project mismatch"
+msgstr ""
+
 msgid "Project must have default branch"
 msgstr ""
 
@@ -42942,6 +42945,9 @@ msgid "Reminder set."
 msgstr ""
 
 msgid "Remote"
+msgstr ""
+
+msgid "Remote mirror is missing"
 msgstr ""
 
 msgid "Remote object has no absolute path."
