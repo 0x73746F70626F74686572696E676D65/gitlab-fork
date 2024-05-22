@@ -25,6 +25,7 @@ describe('EE JobLogTopBar', () => {
       },
       provide: {
         aiRootCauseAnalysisAvailable: true,
+        duoFeaturesEnabled: true,
       },
     });
   };
