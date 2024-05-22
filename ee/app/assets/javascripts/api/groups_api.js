@@ -49,43 +49,6 @@ export const removeBillableMemberFromGroup = (groupId, memberId) => {
   return axios.delete(url);
 };
 
-const GROUPS_PENDING_MEMBERS_PATH = '/api/:version/groups/:id/pending_members';
-const GROUPS_PENDING_MEMBERS_STATE = 'awaiting';
-
-export const fetchPendingGroupMembersList = (namespaceId, options = {}) => {
-  const url = buildApiUrl(GROUPS_PENDING_MEMBERS_PATH).replace(':id', namespaceId);
-  const defaults = {
-    state: GROUPS_PENDING_MEMBERS_STATE,
-    per_page: DEFAULT_PER_PAGE,
-    page: 1,
-  };
-
-  return axios.get(url, {
-    params: {
-      ...defaults,
-      ...options,
-    },
-  });
-};
-
-const APPROVE_PENDING_GROUP_MEMBER_PATH = '/api/:version/groups/:id/members/:user_id/approve';
-
-export const approvePendingGroupMember = (namespaceId, userId) => {
-  const url = buildApiUrl(APPROVE_PENDING_GROUP_MEMBER_PATH)
-    .replace(':id', namespaceId)
-    .replace(':user_id', userId);
-
-  return axios.put(url);
-};
-
-const APPROVE_ALL_PENDING_GROUP_MEMBERS_PATH = '/api/:version/groups/:id/members/approve_all';
-
-export const approveAllPendingGroupMembers = (namespaceId) => {
-  const url = buildApiUrl(APPROVE_ALL_PENDING_GROUP_MEMBERS_PATH).replace(':id', namespaceId);
-
-  return axios.post(url);
-};
-
 export const updateGroupSettings = (id, settings) => {
   const url = buildApiUrl(GROUP_PATH).replace(':id', id);
 

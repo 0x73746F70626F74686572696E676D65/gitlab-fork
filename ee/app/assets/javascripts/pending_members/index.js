@@ -1,11 +1,10 @@
 import Vue from 'vue';
-// eslint-disable-next-line no-restricted-imports
-import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import PendingMembersApp from './components/app.vue';
-import initialStore from './store';
+import apolloProvider from './graphql_client';
 
-Vue.use(Vuex);
+Vue.use(VueApollo);
 
 export default (containerId = 'js-pending-members-app') => {
   const el = document.getElementById(containerId);
@@ -18,10 +17,12 @@ export default (containerId = 'js-pending-members-app') => {
 
   return new Vue({
     el,
-    apolloProvider: {},
-    store: new Vuex.Store(
-      initialStore({ namespaceId, namespaceName, userCapSet: parseBoolean(userCapSet) }),
-    ),
+    apolloProvider,
+    provide: {
+      namespaceName,
+      namespaceId,
+      userCapSet: parseBoolean(userCapSet),
+    },
     render(createElement) {
       return createElement(PendingMembersApp);
     },
