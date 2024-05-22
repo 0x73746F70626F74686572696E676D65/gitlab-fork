@@ -29,6 +29,32 @@ RSpec.describe 'Standard flow for user picking just me and creating a project', 
     end
   end
 
+  context 'when template was selected' do
+    it 'creates a project from given template', :sidekiq_inline do
+      stub_experiments(project_templates_during_registration: :candidate)
+      regular_sign_up
+
+      expect_to_see_welcome_form
+      expect_to_send_iterable_request
+
+      fills_in_welcome_form
+      click_on 'Continue'
+
+      expect_to_see_group_and_project_creation_form
+
+      fills_in_group_and_project_creation_form
+      selects_project_template
+      click_on 'Create project'
+
+      expect_to_be_in_learn_gitlab
+
+      visit root_path
+      click_on 'Test Project'
+
+      expect(page).to have_content("Initialized from 'NodeJS Express' project template")
+    end
+  end
+
   def fills_in_welcome_form
     select 'Software Developer', from: 'user_role'
     select 'A different reason', from: 'user_registration_objective'
@@ -37,6 +63,11 @@ RSpec.describe 'Standard flow for user picking just me and creating a project', 
     choose 'Just me'
     check _("I'd like to receive updates about GitLab via email")
     choose 'Create a new project'
+  end
+
+  def selects_project_template
+    click_on 'Select'
+    find_by_testid('listbox-item-express').click
   end
 
   def expect_to_see_welcome_form

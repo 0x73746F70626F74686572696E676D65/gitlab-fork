@@ -68,7 +68,7 @@ export default {
     },
   },
   mounted() {
-    if (this.selectedTemplateName) {
+    if (this.selectedTemplateName.length > 0) {
       this.selectTemplate(this.selectedTemplateName);
     }
   },
