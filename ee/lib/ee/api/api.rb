@@ -12,8 +12,6 @@ module EE
 
         mount ::API::Admin::Search::Zoekt
         mount ::API::Admin::Search::Migrations
-        mount ::API::Ai::Experimentation::VertexAi
-        mount ::API::Ai::Experimentation::Anthropic
         mount ::API::AuditEvents
         mount ::API::ProjectApprovalRules
         mount ::API::GroupApprovalRules

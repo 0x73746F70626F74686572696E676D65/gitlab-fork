@@ -7,8 +7,6 @@ module API
         feature_category :source_code_management
         urgency :low
 
-        helpers ::API::Helpers::AiHelper
-
         before do
           authenticate!
           check_rate_limit!(:ai_action, scope: [current_user])
