@@ -14129,6 +14129,9 @@ msgstr ""
 msgid "ContainerRegistry|Keep these tags"
 msgstr ""
 
+msgid "ContainerRegistry|Last published at %{time}"
+msgstr ""
+
 msgid "ContainerRegistry|Login"
 msgstr ""
 
