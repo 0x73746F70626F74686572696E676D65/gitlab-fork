@@ -4,14 +4,52 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Tools::CiEditorAssistant::Prompts::Anthropic, feature_category: :pipeline_composition do
   describe '.prompt' do
-    it 'returns prompt' do
-      prompt = described_class.prompt({ input: 'foo' })[:prompt]
+    let_it_be(:user) { create(:user) }
+    let(:options) do
+      {
+        input: "foo"
+      }
+    end
 
-      expect(prompt).to include('Human:')
-      expect(prompt).to include('Assistant:')
-      expect(prompt).to include('foo')
-      expect(prompt).to include(
-        <<~PROMPT
+    let(:context) do
+      Gitlab::Llm::Chain::GitlabContext.new(
+        current_user: user,
+        container: nil,
+        resource: nil,
+        ai_request: nil
+      )
+    end
+
+    context 'when ai_claude_3_ci_editor is enabled' do
+      it 'returns prompt in correct format for messages api' do
+        prompt = described_class.claude_3_prompt(options)[:prompt]
+        expect(prompt.length).to eq(3)
+
+        expect(prompt[0][:role]).to eq(:system)
+        expect(prompt[0][:content]).to eq(system_prompt)
+
+        expect(prompt[1][:role]).to eq(:user)
+        expect(prompt[1][:content]).to eq("foo")
+
+        expect(prompt[2][:role]).to eq(:assistant)
+        expect(prompt[2][:content]).to eq('```yaml')
+      end
+    end
+
+    context 'when ai_claude_3_ci_editor is disabled' do
+      it 'returns prompt in correct format for text completions api' do
+        prompt = described_class.prompt(options)[:prompt]
+
+        expect(prompt).to include('Human:')
+        expect(prompt).to include('Assistant:')
+        expect(prompt).to include('foo')
+        expect(prompt).to include(system_prompt)
+      end
+    end
+  end
+
+  def system_prompt
+    <<~PROMPT
           You are an ai assistant talking to a devops or software engineer.
           You should coach users to author a ".gitlab-ci.yml" file which can be used to create a GitLab pipeline.
           Please provide concrete and detailed yaml that implements what the user asks for as closely as possible, assuming a single yaml file will be used.
@@ -21,8 +59,6 @@ RSpec.describe Gitlab::Llm::Chain::Tools::CiEditorAssistant::Prompts::Anthropic,
           If any configuration is missing, such as configuration variables, connection strings, secrets and so on, assume it will be taken from GitLab Ci/CD variables. Please include the variables configuration block that would use these Ci/CD variables.
 
           Please include the commented sections explaining every configuration block, unless the user explicitly asks you to skip or not include comments.
-        PROMPT
-      )
-    end
+    PROMPT
   end
 end

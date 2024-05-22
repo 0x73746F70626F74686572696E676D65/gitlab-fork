@@ -225,7 +225,7 @@ module Gitlab
                   Thought: I know the final answer.
                   Final Answer: the final answer to the original input question.
 
-                  When concluding your response, provide the final answer as "Final Answer:" as soon as the answer is recognized.
+                  When concluding your response, provide the final answer as "Final Answer:". It should contain everything that user needs to see, including answer from "Observation" section.
                   %<current_code>s
 
                   You have access to the following GitLab resources: %<resources>s.
