@@ -16,7 +16,7 @@ module EE
         }
 
         ::MemberRole.all_customizable_permissions.each_key do |permission_name|
-          expose permission_name, documentation: { type: 'boolean' }
+          expose permission_name, documentation: { type: 'boolean' }, default: false
         end
       end
     end
