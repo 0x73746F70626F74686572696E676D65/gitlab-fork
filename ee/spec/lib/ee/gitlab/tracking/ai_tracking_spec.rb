@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Tracking::AiTracking, feature_category: :value_stream_man
     let(:current_user) { build_stubbed(:user) }
 
     let(:event_context) { { user: current_user } }
-    let(:event_name) { 'code_suggestions_requested' }
+    let(:event_name) { 'code_suggestion_shown_in_ide' }
 
     before do
       stub_application_setting(use_clickhouse_for_analytics: true)

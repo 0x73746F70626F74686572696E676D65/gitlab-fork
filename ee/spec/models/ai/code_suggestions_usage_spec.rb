@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Ai::CodeSuggestionsUsage, feature_category: :value_stream_management do
   subject(:model) { described_class.new(**attributes) }
 
-  let(:attributes) { { event: 'code_suggestions_shown', user: user } }
+  let(:attributes) { { event: 'code_suggestion_shown_in_ide', user: user } }
   let(:user) { build_stubbed(:user) }
 
   describe 'validations' do
@@ -31,7 +31,7 @@ RSpec.describe Ai::CodeSuggestionsUsage, feature_category: :value_stream_managem
       expect(::ClickHouse::WriteBuffer).to receive(:write_event)
         .with({
           user_id: user.id,
-          event: described_class::EVENTS['code_suggestions_shown'],
+          event: described_class::EVENTS['code_suggestion_shown_in_ide'],
           timestamp: 1.day.ago.to_f
         })
 
@@ -45,7 +45,7 @@ RSpec.describe Ai::CodeSuggestionsUsage, feature_category: :value_stream_managem
     it 'returns serialized attributes hash' do
       expect(model.to_clickhouse_csv_row).to eq({
         user_id: user.id,
-        event: described_class::EVENTS['code_suggestions_shown'],
+        event: described_class::EVENTS['code_suggestion_shown_in_ide'],
         timestamp: 1.day.ago.to_f
       })
     end

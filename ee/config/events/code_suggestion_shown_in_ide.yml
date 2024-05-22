@@ -1,14 +1,14 @@
 ---
 description: Tracks the number of code suggestions shown to a user. Important for AI analytics
 internal_events: true
-action: code_suggestions_shown
+action: code_suggestion_shown_in_ide
 identifiers:
   - user
 product_section: dev
 product_stage: create
 product_group: code_creation
 milestone: '17.1'
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/152946
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/153881
 distributions:
   - ee
 tiers:
