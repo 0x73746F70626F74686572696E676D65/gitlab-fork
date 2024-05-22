@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Types::WorkItems::Widgets::DevelopmentType, feature_category: :team_planning do
   let(:fields) do
-    %i[type feature_flags related_merge_requests]
+    %i[type feature_flags closing_merge_requests]
   end
 
   specify { expect(described_class.graphql_name).to eq('WorkItemWidgetDevelopment') }
