@@ -68,7 +68,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
             instruction: instruction,
             prefix: prefix,
             project: expected_project,
-            model_name: described_class::ANTHROPIC_MODEL,
+            model_name: expected_model,
             current_user: current_user
           ),
           unsafe_passthrough_params: {}
@@ -79,10 +79,14 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
         instance_double(CodeSuggestions::Instruction, instruction: 'instruction', trigger_type: 'comment')
       end
 
+      let(:expected_model) { 'claude-3-sonnet-20240229' }
+
       before do
         allow_next_instance_of(CodeSuggestions::InstructionsExtractor) do |instance|
           allow(instance).to receive(:extract).and_return(instruction)
         end
+
+        stub_feature_flags(claude_3_code_generation_haiku: false)
       end
 
       it_behaves_like 'correct task initializer'
@@ -115,6 +119,16 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
                                           params: { full_paths: [expected_project.full_path] }
                                         )
         end
+      end
+
+      context 'with claude_3_code_generation_haiku flag is enabled' do
+        before do
+          stub_feature_flags(claude_3_code_generation_haiku: true)
+        end
+
+        let(:expected_model) { 'claude-3-haiku-20240307' }
+
+        it_behaves_like 'correct task initializer'
       end
     end
   end

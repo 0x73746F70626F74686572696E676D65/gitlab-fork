@@ -22,7 +22,7 @@ RSpec.shared_examples 'anthropic prompt' do
   end
 
   let(:file_name) { 'main.go' }
-  let(:model_name) { 'claude-2.1' }
+  let(:model_name) { 'claude-3-sonnet-20240229' }
   let(:comment) { 'Generate the best possible code based on instructions.' }
   let(:instruction) { instance_double(CodeSuggestions::Instruction, instruction: comment, trigger_type: 'comment') }
 
