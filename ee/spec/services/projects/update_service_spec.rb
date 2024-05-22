@@ -10,7 +10,7 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
   let(:project) { create(:project, :repository, creator: user, namespace: user.namespace) }
 
   context 'shared runners', :saas do
-    let(:user) { create(:user) }
+    let(:user) { create(:user, :with_sign_ins) }
     let(:opts) { { shared_runners_enabled: enabled } }
     let(:enabled) { true }
 
@@ -66,12 +66,37 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
       end
 
       context 'when user does not have valid credit card' do
+        before do
+          allow(user).to receive(:requires_identity_verification_to_enable_shared_runners?).and_return(false)
+        end
+
         it 'does not enable shared runners', :aggregate_failures do
           result = update_project(project, user, opts)
 
           project.reload
 
           expect(result).to eq(status: :error, message: 'Shared runners enabled cannot be enabled until a valid credit card is on file')
+          expect(project.shared_runners_enabled).to eq(false)
+        end
+      end
+
+      context 'when user has not completed identity verification' do
+        before do
+          allow(user).to receive(:has_required_credit_card_to_enable_shared_runners?).and_return(true)
+          allow_next_instance_of(::Users::IdentityVerification::AuthorizeCi) do |instance|
+            allow(instance).to receive(:user_can_enable_shared_runners?).and_return(false)
+          end
+        end
+
+        it 'does not enable shared runners', :aggregate_failures do
+          result = update_project(project, user, opts)
+
+          project.reload
+
+          expect(result).to eq(
+            status: :error,
+            message: 'Shared runners enabled cannot be enabled until identity verification is completed'
+          )
           expect(project.shared_runners_enabled).to eq(false)
         end
       end

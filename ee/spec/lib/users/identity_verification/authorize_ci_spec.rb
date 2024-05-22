@@ -59,9 +59,22 @@ RSpec.describe Users::IdentityVerification::AuthorizeCi, :saas, feature_category
       let(:user) { nil }
 
       before do
-        allow(described_class).to receive(:authorize_credit_card!).and_raise(::Users::IdentityVerification::Error)
-        allow(described_class).to receive(:authorize_identity_verification!).and_raise(
-          ::Users::IdentityVerification::Error)
+        allow_next_instance_of(described_class) do |instance|
+          allow(instance).to receive(:authorize_credit_card!).and_raise(::Users::IdentityVerification::Error)
+          allow(instance).to receive(:authorize_identity_verification!).and_raise(::Users::IdentityVerification::Error)
+        end
+      end
+
+      it { expect { authorize }.not_to raise_error }
+    end
+
+    context 'when shared runners are not enabled' do
+      before do
+        allow(project).to receive(:shared_runners_enabled).and_return(false)
+        allow_next_instance_of(described_class) do |instance|
+          allow(instance).to receive(:authorize_credit_card!).and_raise(::Users::IdentityVerification::Error)
+          allow(instance).to receive(:authorize_identity_verification!).and_raise(::Users::IdentityVerification::Error)
+        end
       end
 
       it { expect { authorize }.not_to raise_error }
@@ -88,14 +101,6 @@ RSpec.describe Users::IdentityVerification::AuthorizeCi, :saas, feature_category
         stub_verifications(credit_card: false, identity_verification: true)
       end
 
-      context 'when the feature flag is disabled' do
-        before do
-          stub_feature_flags(ci_requires_identity_verification_on_free_plan: false)
-        end
-
-        it { expect { authorize }.not_to raise_error }
-      end
-
       context 'when user identity is verified' do
         before do
           allow(user).to receive(:identity_verified?).and_return(true)
@@ -113,9 +118,9 @@ RSpec.describe Users::IdentityVerification::AuthorizeCi, :saas, feature_category
           let(:error_message) { 'Identity verification is required in order to run CI jobs' }
         end
 
-        context 'when project shared runners are disabled' do
+        context 'when the feature flag is disabled' do
           before do
-            allow(project).to receive(:shared_runners_enabled).and_return(false)
+            stub_feature_flags(ci_requires_identity_verification_on_free_plan: false)
           end
 
           it { expect { authorize }.not_to raise_error }
@@ -138,5 +143,81 @@ RSpec.describe Users::IdentityVerification::AuthorizeCi, :saas, feature_category
         end
       end
     end
+  end
+
+  shared_examples 'verifying identity' do
+    context 'when user identity is verified' do
+      before do
+        allow(user).to receive(:identity_verified?).and_return(true)
+      end
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when user identity is not verified' do
+      before do
+        allow(user).to receive(:identity_verified?).and_return(false)
+      end
+
+      it { is_expected.to eq(false) }
+
+      context 'when the feature flag is disabled' do
+        before do
+          stub_feature_flags(ci_requires_identity_verification_on_free_plan: false)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'when user identity is verified' do
+        before do
+          allow(user).to receive(:identity_verified?).and_return(true)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'when root namespace has a paid plan' do
+        let_it_be(:ultimate_group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
+        let_it_be(:project) { create(:project, group: ultimate_group) }
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'when root namespace has purchased CI minutes' do
+        before do
+          project.namespace.update!(extra_shared_runners_minutes_limit: 100)
+          project.namespace.clear_memoization(:ci_minutes_usage)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+    end
+  end
+
+  describe '#user_can_run_jobs?' do
+    subject { described_class.new(user: user, project: project).user_can_run_jobs? }
+
+    context 'when project shared runners are disabled' do
+      before do
+        allow(project).to receive(:shared_runners_enabled).and_return(false)
+      end
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when project shared runners enabled' do
+      before do
+        allow(project).to receive(:shared_runners_enabled).and_return(true)
+      end
+
+      it_behaves_like 'verifying identity'
+    end
+  end
+
+  describe '#user_can_enable_shared_runners?' do
+    subject { described_class.new(user: user, project: project).user_can_enable_shared_runners? }
+
+    it_behaves_like 'verifying identity'
   end
 end

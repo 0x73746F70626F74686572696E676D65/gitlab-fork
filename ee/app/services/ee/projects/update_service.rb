@@ -151,9 +151,18 @@ module EE
         return unless params[:shared_runners_enabled]
         return if project.shared_runners_enabled
 
-        unless current_user.has_required_credit_card_to_enable_shared_runners?(project)
+        if !current_user.has_required_credit_card_to_enable_shared_runners?(project)
           project.errors.add(:shared_runners_enabled, _('cannot be enabled until a valid credit card is on file'))
+        elsif !user_can_enable_shared_runners?
+          project.errors.add(:shared_runners_enabled, _('cannot be enabled until identity verification is completed'))
         end
+      end
+
+      def user_can_enable_shared_runners?
+        ::Users::IdentityVerification::AuthorizeCi.new(
+          user: current_user,
+          project: project
+        ).user_can_enable_shared_runners?
       end
 
       # A user who changes any aspect of pull mirroring settings must be made

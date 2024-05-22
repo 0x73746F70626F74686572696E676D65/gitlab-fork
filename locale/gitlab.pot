@@ -60932,6 +60932,9 @@ msgstr ""
 msgid "cannot be enabled until a valid credit card is on file"
 msgstr ""
 
+msgid "cannot be enabled until identity verification is completed"
+msgstr ""
+
 msgid "cannot be used because it belongs to a compromised private key. Stop using this key and generate a new one."
 msgstr ""
 
