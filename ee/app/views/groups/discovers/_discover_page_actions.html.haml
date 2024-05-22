@@ -3,9 +3,4 @@
     button_options: { class: 'gl-mr-3', data: { track_action: "click_compare_plans", track_label: group_trial_status(group), track_experiment: :trial_discover_page } }) do
     = s_('TrialDiscoverPage|Compare all plans')
 
-  .js-hand-raise-lead-button{ data: { **hand_raise_props(group, glm_content: 'trial_discover_page'),
-                                      button_attributes: { variant: 'confirm', category: 'secondary',
-                                                          'data-testid': 'trial-discover-hand-raise-lead-button' }.to_json,
-                                      track_action: 'click_contact_sales',
-                                      track_label: group_trial_status(group),
-                                      track_experiment: :trial_discover_page } }
+  .js-hand-raise-lead-trigger{ data: discover_page_hand_raise_lead_data(group) }

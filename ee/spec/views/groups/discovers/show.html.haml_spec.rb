@@ -75,7 +75,7 @@ RSpec.describe 'groups/discovers/show', :saas, :aggregate_failures, feature_cate
       render
 
       expect_to_have_experiment_tracking(action: 'click_compare_plans', label: :trial_active)
-      expect_to_have_experiment_tracking(action: 'click_contact_sales', label: :trial_active)
+      expect_to_have_hand_raise_lead_tracking
     end
   end
 
@@ -104,7 +104,7 @@ RSpec.describe 'groups/discovers/show', :saas, :aggregate_failures, feature_cate
       render
 
       expect_to_have_experiment_tracking(action: 'click_compare_plans', label: :trial_expired)
-      expect_to_have_experiment_tracking(action: 'click_contact_sales', label: :trial_expired)
+      expect_to_have_hand_raise_lead_tracking(label: :trial_expired)
     end
   end
 
@@ -114,5 +114,15 @@ RSpec.describe 'groups/discovers/show', :saas, :aggregate_failures, feature_cate
     css += "[data-track-label='#{label}']" if label
 
     expect(rendered).to have_css(css)
+  end
+
+  def expect_to_have_hand_raise_lead_tracking(label: :trial_active)
+    tracking = {
+      track_action: 'click_contact_sales',
+      track_label: label,
+      track_experiment: :trial_discover_page
+    }.to_json
+
+    expect(rendered).to have_css("[data-cta-tracking='#{tracking}']")
   end
 end

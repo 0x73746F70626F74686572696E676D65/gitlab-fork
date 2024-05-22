@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::TrialDiscoverPageHelper, feature_category: :activation do
+RSpec.describe Groups::DiscoversHelper, feature_category: :activation do
   describe '#discover_details' do
     subject(:discover_details) { helper.trial_discover_page_details }
 

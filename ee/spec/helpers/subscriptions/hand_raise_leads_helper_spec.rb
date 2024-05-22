@@ -22,4 +22,24 @@ RSpec.describe Subscriptions::HandRaiseLeadsHelper, feature_category: :acquisiti
       expect(helper.hand_raise_modal_dataset(root_namespace)).to eq(result)
     end
   end
+
+  describe '#discover_page_hand_raise_lead_data' do
+    it 'provides the expected dataset' do
+      result = {
+        glm_content: 'trial_discover_page',
+        cta_tracking: {
+          track_action: 'click_contact_sales',
+          track_label: 'trial_expired',
+          track_experiment: :trial_discover_page
+        }.to_json,
+        button_attributes: {
+          variant: 'confirm',
+          category: 'secondary',
+          'data-testid': 'trial-discover-hand-raise-lead-button'
+        }.to_json
+      }
+
+      expect(helper.discover_page_hand_raise_lead_data(build_stubbed(:group))).to eq(result)
+    end
+  end
 end
