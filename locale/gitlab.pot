@@ -27202,9 +27202,6 @@ msgstr ""
 msgid "Incidents|Drop or %{linkStart}upload%{linkEnd} a metric screenshot to attach it to the incident"
 msgstr ""
 
-msgid "Incidents|Must start with http or https"
-msgstr ""
-
 msgid "Incidents|Must start with http:// or https://"
 msgstr ""
 
