@@ -5,6 +5,7 @@ fragment CustomizableDashboardFragment on CustomizableDashboardConnection {
     description
     userDefined
     status
+    errors
     panels {
       nodes {
         title

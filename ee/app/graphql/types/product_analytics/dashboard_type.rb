@@ -9,7 +9,7 @@ module Types
 
       field :title,
         type: GraphQL::Types::String,
-        null: false,
+        null: true,
         description: 'Title of the dashboard.'
 
       field :category,
@@ -35,7 +35,7 @@ module Types
 
       field :panels,
         type: Types::ProductAnalytics::PanelType.connection_type,
-        null: false,
+        null: true,
         description: 'Panels shown on the dashboard.'
 
       field :user_defined,
