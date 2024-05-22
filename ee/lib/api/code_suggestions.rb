@@ -25,8 +25,6 @@ module API
 
     helpers do
       def model_gateway_headers(headers, gateway_token)
-        telemetry_headers = headers.select { |k| /\Ax-gitlab-cs-/i.match?(k) }
-
         {
           'X-Gitlab-Authentication-Type' => 'oidc',
           # Forward the request time on to the model gateway to calculate latency
@@ -34,7 +32,7 @@ module API
           'Authorization' => "Bearer #{gateway_token}",
           'Content-Type' => 'application/json',
           'User-Agent' => headers["User-Agent"] # Forward the User-Agent on to the model gateway
-        }.merge(telemetry_headers).merge(connector_public_headers)
+        }.merge(connector_public_headers)
           .transform_values { |v| Array(v) }
       end
 

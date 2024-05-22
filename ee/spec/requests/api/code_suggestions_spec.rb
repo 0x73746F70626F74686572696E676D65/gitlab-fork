@@ -278,10 +278,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               'X-Gitlab-Authentication-Type' => 'oidc',
               'X-Gitlab-Oidc-Token' => token,
               'Content-Type' => 'application/json',
-              'X-GitLab-CS-Accepts' => 'accepts',
-              'X-GitLab-CS-Requests' => "requests",
-              'X-GitLab-CS-Errors' => 'errors',
-              'X-GitLab-CS-Custom' => 'helloworld',
               'X-GitLab-NO-Ignore' => 'ignoreme',
               'User-Agent' => 'Super Cool Browser 14.5.2'
             }
@@ -299,10 +295,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               'X-Gitlab-Global-User-Id' => [global_user_id],
               'X-Gitlab-Host-Name' => [Gitlab.config.gitlab.host],
               'X-Gitlab-Realm' => [gitlab_realm],
-              'X-Gitlab-Cs-Accepts' => ['accepts'],
-              'X-Gitlab-Cs-Requests' => ['requests'],
-              'X-Gitlab-Cs-Errors' => ['errors'],
-              'X-Gitlab-Cs-Custom' => ['helloworld'],
               'User-Agent' => ['Super Cool Browser 14.5.2']
             })
           end
