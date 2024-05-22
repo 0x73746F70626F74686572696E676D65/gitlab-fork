@@ -4,15 +4,15 @@
   .settings-sticky-header
     .settings-sticky-header-inner
       %h4.gl-my-0
-        = s_('Preferences|Enable Zoekt code search')
+        = s_('Preferences|Exact code search')
         = gl_badge_tag _('beta'), variant: :info, size: :sm
   %p.gl-text-secondary
-    = s_('Preferences|Turns on or off the preference to search with Zoekt instead of Elasticsearch.')
-    = link_to _('Learn more.'), help_page_path('user/profile/index', anchor: 'exact-code-search'), target: '_blank', rel: 'noopener noreferrer'
+    = s_('Preferences|Use exact code search instead of advanced search to search for code in GitLab.')
+    = link_to _('Learn more.'), help_page_path('user/profile/preferences', anchor: 'enable-exact-code-search'), target: '_blank', rel: 'noopener noreferrer'
 
   .form-group
     = form.gitlab_ui_checkbox_component :enabled_zoekt,
-      s_('Preferences|Enable Zoekt code search')
+      s_('Preferences|Enable exact code search')
 
   %p
     = link_button_to _('Provide feedback'), "https://gitlab.com/gitlab-org/gitlab/-/issues/420920", target: '_blank'
