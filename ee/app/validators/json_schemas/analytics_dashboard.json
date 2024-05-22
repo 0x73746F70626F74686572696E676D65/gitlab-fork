@@ -7,7 +7,7 @@
       "additionalProperties": false,
       "properties": {
         "version": {
-          "const": "1"
+          "const": "2"
         },
         "title": {
           "type": "string"
@@ -57,7 +57,6 @@
       },
       "required": [
         "gridAttributes",
-        "queryOverrides",
         "title",
         "visualization"
       ],
@@ -119,10 +118,16 @@
       "properties": {
         "timeDimensions": {
           "$ref": "#/definitions/TimeDimensions"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "filters": {
+          "$ref": "#/definitions/Filters"
         }
       },
       "required": [
-        "timeDimensions"
+
       ],
       "title": "QueryOverrides"
     },
@@ -142,6 +147,40 @@
         "dateRange"
       ],
       "title": "TimeDimensions"
+    },
+    "Filters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "excludeMetrics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "include": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "projectTopics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+
+      ],
+      "title": "Filters"
     }
   }
 }
