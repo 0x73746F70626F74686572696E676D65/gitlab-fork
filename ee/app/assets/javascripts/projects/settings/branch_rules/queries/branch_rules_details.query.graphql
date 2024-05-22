@@ -20,6 +20,7 @@ query getBranchRulesDetailsEE($projectPath: ID!) {
                 user {
                   id
                   name
+                  username
                   avatarUrl
                   webUrl
                 }
@@ -40,6 +41,7 @@ query getBranchRulesDetailsEE($projectPath: ID!) {
                   name
                   avatarUrl
                   webUrl
+                  username
                 }
               }
             }

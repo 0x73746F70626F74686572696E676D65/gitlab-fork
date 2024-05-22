@@ -9038,6 +9038,9 @@ msgstr ""
 msgid "BranchRules|Allowed to merge (%{total})"
 msgstr ""
 
+msgid "BranchRules|Allowed to merge updated"
+msgstr ""
+
 msgid "BranchRules|Allowed to push and merge"
 msgstr ""
 
@@ -9111,6 +9114,9 @@ msgid "BranchRules|Does not require approval from code owners"
 msgstr ""
 
 msgid "BranchRules|Edit"
+msgstr ""
+
+msgid "BranchRules|Edit allowed to merge"
 msgstr ""
 
 msgid "BranchRules|From users with push access."
