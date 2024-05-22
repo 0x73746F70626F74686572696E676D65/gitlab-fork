@@ -3,7 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe Projects::RunnersController, :saas, feature_category: :fleet_visibility do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) do
+    create(:user, :with_sign_ins, created_at: IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day)
+  end
+
   let_it_be(:namespace) { create(:namespace) }
 
   let(:project) { create(:project, namespace: namespace, creator: user) }
@@ -29,6 +32,18 @@ RSpec.describe Projects::RunnersController, :saas, feature_category: :fleet_visi
 
     let(:project) { create(:project, group: group) }
 
+    shared_examples 'does not permit enabling shared runners' do
+      it 'does not enable shared runners', :aggregate_failures do
+        post :toggle_shared_runners, params: params
+
+        project.reload
+
+        expect(response).to have_gitlab_http_status(:unauthorized)
+        expect(project.shared_runners_enabled).to eq(false)
+        expect(json_response['error']).to eq(error_msg)
+      end
+    end
+
     context 'when shared runners are off' do
       before do
         project.update!(shared_runners_enabled: false)
@@ -53,15 +68,19 @@ RSpec.describe Projects::RunnersController, :saas, feature_category: :fleet_visi
       end
 
       context 'when user does not have valid credit card' do
-        it 'does not permit enabling shared runners', :aggregate_failures do
-          post :toggle_shared_runners, params: params
+        it_behaves_like 'does not permit enabling shared runners' do
+          let(:error_msg) { 'Shared runners enabled cannot be enabled until a valid credit card is on file' }
+        end
+      end
 
-          project.reload
+      context 'when user has not completed identity verification' do
+        before do
+          # credit card verification takes precedence over identity verification so we need to disable it
+          stub_feature_flags(ci_require_credit_card_on_free_plan: false)
+        end
 
-          expect(response).to have_gitlab_http_status(:unauthorized)
-          expect(project.shared_runners_enabled).to eq(false)
-          expect(json_response['error'])
-            .to eq('Shared runners enabled cannot be enabled until a valid credit card is on file')
+        it_behaves_like 'does not permit enabling shared runners' do
+          let(:error_msg) { 'Shared runners enabled cannot be enabled until identity verification is completed' }
         end
       end
     end

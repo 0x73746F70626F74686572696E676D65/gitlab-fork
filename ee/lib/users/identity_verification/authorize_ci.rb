@@ -14,9 +14,20 @@ module Users
 
       def authorize_run_jobs!
         return unless user
+        return unless project.shared_runners_enabled
 
         authorize_credit_card!
         authorize_identity_verification!
+      end
+
+      def user_can_run_jobs?
+        return true unless project.shared_runners_enabled
+
+        identity_verified?
+      end
+
+      def user_can_enable_shared_runners?
+        identity_verified?
       end
 
       private
@@ -28,20 +39,23 @@ module Users
       end
 
       def authorize_identity_verification!
-        return unless identity_verification_enabled_for_ci?
-        return if user.identity_verified?
-        return unless project_requires_identity_verification_to_run_pipelines?
+        return if identity_verified?
 
         ci_access_denied!('Identity verification is required in order to run CI jobs')
+      end
+
+      def identity_verified?
+        return true unless identity_verification_enabled_for_ci?
+        return true if user.identity_verified?
+
+        !project_requires_verified_user?
       end
 
       def identity_verification_enabled_for_ci?
         ::Feature.enabled?(:ci_requires_identity_verification_on_free_plan, project, type: :gitlab_com_derisk)
       end
 
-      def project_requires_identity_verification_to_run_pipelines?
-        return false unless project.shared_runners_enabled
-
+      def project_requires_verified_user?
         root_namespace = project.root_namespace
         return false if root_namespace.actual_plan.paid_excluding_trials?
 
