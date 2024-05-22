@@ -12,6 +12,7 @@ export const TABS = [
     queryParamValue: TAB_QUERY_PARAM_VALUES.promotionRequest,
     component: PromotionRequestsTabApp,
     store: promotionRequestsTabStore,
+    hideExportButton: true,
   },
   {
     namespace: MEMBER_TYPES.banned,

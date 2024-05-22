@@ -43,11 +43,7 @@ export default {
       });
     },
     shouldShowExportButton() {
-      return (
-        this.canExportMembers &&
-        // hide the export button if the current tab is the promotionRequest
-        this.tabs[this.selectedTabIndex].namespace !== MEMBER_TYPES.promotionRequest
-      );
+      return this.canExportMembers && !this.tabs[this.selectedTabIndex].hideExportButton;
     },
     tabs() {
       return this.$options.TABS.filter(this.showTab);
