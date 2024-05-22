@@ -3,6 +3,11 @@ import { uniqueId } from 'lodash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import SettingsSection from 'ee/security_orchestration/components/policy_editor/scan_result/settings/settings_section.vue';
+import FallbackSection from 'ee/security_orchestration/components/policy_editor/scan_result/fallback_section.vue';
+import {
+  CLOSED,
+  OPEN,
+} from 'ee/security_orchestration/components/policy_editor/scan_result/constants';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import EditorLayout from 'ee/security_orchestration/components/policy_editor/editor_layout.vue';
 import {
@@ -140,6 +145,7 @@ describe('EditorComponent', () => {
   };
 
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
+  const findFallbackSection = () => wrapper.findComponent(FallbackSection);
   const findPolicyEditorLayout = () => wrapper.findComponent(EditorLayout);
   const findActionSection = () => wrapper.findComponent(ActionSection);
   const findAllActionSections = () => wrapper.findAllComponents(ActionSection);
@@ -1132,6 +1138,26 @@ describe('EditorComponent', () => {
         it('disabled the update button', () => {
           expect(findPolicyEditorLayout().props('disableUpdate')).toBe(false);
         });
+      });
+    });
+  });
+
+  describe('fallback section', () => {
+    it('renders the fallback section with "property: closed" for a policy without fallback section', () => {
+      factory();
+      expect(findFallbackSection().props()).toEqual({
+        disabled: false,
+        property: CLOSED,
+      });
+    });
+
+    it('renders the fallback section with the fallback property in the yaml', () => {
+      factoryWithExistingPolicy({
+        policy: { fallback_behavior: { fail: OPEN } },
+      });
+      expect(findFallbackSection().props()).toEqual({
+        disabled: false,
+        property: OPEN,
       });
     });
   });

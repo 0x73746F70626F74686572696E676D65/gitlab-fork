@@ -6,6 +6,7 @@ import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { isGroup, isProject } from 'ee/security_orchestration/components/utils';
+
 import {
   ADD_ACTION_LABEL,
   BRANCHES_KEY,
@@ -27,6 +28,8 @@ import SettingsSection from './settings/settings_section.vue';
 import ActionSection from './action/action_section.vue';
 import ApproverAction from './action/approver_action.vue';
 import RuleSection from './rule/rule_section.vue';
+import FallbackSection from './fallback_section.vue';
+import { CLOSED } from './constants';
 
 import {
   ACTION_LISTBOX_ITEMS,
@@ -91,6 +94,7 @@ export default {
     ActionSection,
     ApproverAction,
     DimDisableContainer,
+    FallbackSection,
     GlAlert,
     GlButton,
     GlEmptyState,
@@ -179,6 +183,9 @@ export default {
     },
     disableUpdate() {
       return !this.hasParsingError && this.hasEmptyActions && this.hasEmptySettings;
+    },
+    fallbackBehaviorSetting() {
+      return this.policy.fallback_behavior?.fail || CLOSED;
     },
     isProject() {
       return isProject(this.namespaceType);
@@ -600,6 +607,11 @@ export default {
 
         <settings-section :rules="policy.rules" :settings="settings" @changed="updateSettings" />
       </dim-disable-container>
+      <fallback-section
+        :property="fallbackBehaviorSetting"
+        :disabled="hasParsingError"
+        @changed="handleUpdateProperty"
+      />
       <gl-alert
         v-if="!hasParsingError && !hasRequireApprovalAction"
         data-testid="empty-actions-alert"
