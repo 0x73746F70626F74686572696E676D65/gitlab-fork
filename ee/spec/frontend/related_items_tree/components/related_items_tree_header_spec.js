@@ -1,9 +1,10 @@
-import { GlPopover, GlIcon, GlAlert } from '@gitlab/ui';
+import { GlPopover, GlSprintf, GlIcon, GlAlert } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
+import EpicCountables from 'ee/vue_shared/components/epic_countables/epic_countables.vue';
 import EpicHealthStatus from 'ee/related_items_tree/components/epic_health_status.vue';
 import EpicActionsSplitButton from 'ee/related_items_tree/components/epic_issue_actions_split_button.vue';
 import RelatedItemsTreeHeader from 'ee/related_items_tree/components/related_items_tree_header.vue';
@@ -42,6 +43,10 @@ const createComponent = ({ slots, isOpenString } = { isOpenString: 'expanded' })
     propsData: {
       isOpenString,
     },
+    stubs: {
+      GlSprintf,
+      EpicCountables,
+    },
   });
 };
 
@@ -59,13 +64,11 @@ describe('RelatedItemsTree', () => {
       });
 
       it('returns string containing epic count based on available direct children within state', () => {
-        expect(wrapper.findComponent(GlPopover).text()).toContain(`Epics •
-            1 open, 1 closed`);
+        expect(wrapper.findComponent(GlPopover).text()).toMatch(/Epics •\n\s+1 open, 1 closed/);
       });
 
       it('returns string containing issue count based on available direct children within state', () => {
-        expect(wrapper.findComponent(GlPopover).text()).toContain(`Issues •
-            2 open, 1 closed`);
+        expect(wrapper.findComponent(GlPopover).text()).toMatch(/Issues •\n\s+2 open, 1 closed/);
       });
 
       it('displays warning', () => {
@@ -81,7 +84,7 @@ describe('RelatedItemsTree', () => {
       });
 
       it('total of openedIssues and closedIssues weight', () => {
-        expect(wrapper.vm.totalWeight).toBe(15);
+        expect(wrapper.findComponent(GlPopover).text()).toMatch(/Total weight •\n\s+15/);
       });
     });
 

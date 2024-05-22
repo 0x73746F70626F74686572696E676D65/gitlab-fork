@@ -1,4 +1,4 @@
-import { GlLabel, GlTooltip } from '@gitlab/ui';
+import { GlLabel, GlPopover, GlSprintf } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
@@ -6,6 +6,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import IssueCardWeight from 'ee/boards/components/issue_card_weight.vue';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
+import EpicCountables from 'ee/vue_shared/components/epic_countables/epic_countables.vue';
 import BoardCardInner from '~/boards/components/board_card_inner.vue';
 import isShowingLabelsQuery from '~/graphql_shared/client/is_showing_labels.query.graphql';
 import { TYPE_ISSUE } from '~/issues/constants';
@@ -19,13 +20,13 @@ describe('Board card component', () => {
   let list;
   let store;
 
-  const findEpicCountablesTotalTooltip = () => wrapper.findComponent(GlTooltip);
-  const findEpicCountables = () => wrapper.findByTestId('epic-countables');
+  const findEpicCountablesTotalPopover = () => wrapper.findComponent(GlPopover);
+  const findEpicCountables = () => wrapper.findComponent(EpicCountables);
   const findEpicCountablesBadgeIssues = () => wrapper.findByTestId('epic-countables-counts-issues');
   const findEpicCountablesBadgeWeight = () => wrapper.findByTestId('epic-countables-weight-issues');
   const findEpicBadgeProgress = () => wrapper.findByTestId('epic-progress');
   const findEpicCountablesTotalWeight = () => wrapper.findByTestId('epic-countables-total-weight');
-  const findEpicProgressTooltip = () => wrapper.findByTestId('epic-progress-tooltip-content');
+  const findEpicProgressPopover = () => wrapper.findByTestId('epic-progress-popover-content');
 
   const mockApollo = createMockApollo();
 
@@ -54,6 +55,10 @@ describe('Board card component', () => {
         allowSubEpics: isEpicBoard,
         issuableType: TYPE_ISSUE,
         isGroupBoard: true,
+      },
+      stubs: {
+        GlSprintf,
+        EpicCountables,
       },
     });
   };
@@ -254,7 +259,7 @@ describe('Board card component', () => {
       expect(findEpicBadgeProgress().exists()).toBe(false);
     });
 
-    it('renders the tooltip with the correct data', () => {
+    it('renders the popover with the correct data', () => {
       createComponent({
         props: {
           item: {
@@ -273,12 +278,12 @@ describe('Board card component', () => {
         isEpicBoard: true,
       });
 
-      const tooltip = findEpicCountablesTotalTooltip();
-      expect(tooltip).toBeDefined();
+      const popover = findEpicCountablesTotalPopover();
+      expect(popover).toBeDefined();
 
       expect(findEpicCountablesTotalWeight().text()).toBe('15');
       expect(findEpicBadgeProgress().exists()).toBe(true);
-      expect(findEpicProgressTooltip().text()).toBe('10 of 15 weight completed');
+      expect(findEpicProgressPopover().text()).toBe('10 of 15 weight completed');
     });
   });
 });

@@ -1,21 +1,20 @@
 <script>
-import { GlAlert, GlPopover, GlIcon, GlButton } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import { __ } from '~/locale';
-import { i18n, treeTitle, ParentType } from '../constants';
+import { treeTitle, ParentType } from '../constants';
 import EpicHealthStatus from './epic_health_status.vue';
 import EpicActionsSplitButton from './epic_issue_actions_split_button.vue';
 
 export default {
   components: {
-    GlAlert,
-    GlPopover,
-    GlIcon,
     GlButton,
     EpicHealthStatus,
     EpicActionsSplitButton,
+    EpicCountables: () =>
+      import('ee_else_ce/vue_shared/components/epic_countables/epic_countables.vue'),
   },
   props: {
     isOpenString: {
@@ -38,20 +37,8 @@ export default {
       'allowSubEpics',
       'allowIssuableHealthStatus',
     ]),
-    totalEpicsCount() {
-      return this.descendantCounts.openedEpics + this.descendantCounts.closedEpics;
-    },
-    totalIssuesCount() {
-      return this.descendantCounts.openedIssues + this.descendantCounts.closedIssues;
-    },
-    totalChildrenCount() {
-      return this.totalEpicsCount + this.totalIssuesCount;
-    },
     showHealthStatus() {
       return this.healthStatus && this.allowIssuableHealthStatus;
-    },
-    totalWeight() {
-      return this.weightSum.openedIssues + this.weightSum.closedIssues;
     },
     parentIsEpic() {
       return this.parentItem.type === ParentType.Epic;
@@ -98,7 +85,6 @@ export default {
       this.$emit('toggleRelatedItemsView', this.isOpen);
     },
   },
-  i18n,
   treeTitle,
 };
 </script>
@@ -114,67 +100,15 @@ export default {
           v-if="parentIsEpic"
           class="gl-display-inline-flex gl-line-height-1 gl-align-middle gl-ml-3 gl-flex-wrap"
         >
-          <gl-popover :target="() => $refs.countBadge">
-            <p v-if="allowSubEpics" class="gl-font-weight-bold gl-m-0">
-              {{ __('Epics') }} &#8226;
-              <span class="gl-font-weight-normal"
-                >{{
-                  sprintf(__('%{openedEpics} open, %{closedEpics} closed'), {
-                    openedEpics: descendantCounts.openedEpics,
-                    closedEpics: descendantCounts.closedEpics,
-                  })
-                }}
-              </span>
-            </p>
-            <p class="gl-font-weight-bold gl-m-0">
-              {{ __('Issues') }} &#8226;
-              <span class="gl-font-weight-normal"
-                >{{
-                  sprintf(__('%{openedIssues} open, %{closedIssues} closed'), {
-                    openedIssues: descendantCounts.openedIssues,
-                    closedIssues: descendantCounts.closedIssues,
-                  })
-                }}
-              </span>
-            </p>
-            <p class="gl-font-weight-bold gl-m-0">
-              {{ __('Total weight') }} &#8226;
-              <span class="gl-font-weight-normal">{{ totalWeight }} </span>
-            </p>
-            <gl-alert
-              v-if="totalChildrenCount > 0"
-              :dismissible="false"
-              class="gl-max-w-26 gl-mt-3"
-            >
-              {{ $options.i18n.permissionAlert }}
-            </gl-alert>
-          </gl-popover>
-          <div
-            ref="countBadge"
-            class="issue-count-badge gl-display-inline-flex gl-text-gray-500 gl-p-0 gl-pr-5"
-          >
-            <span
-              v-if="allowSubEpics"
-              class="gl-display-inline-flex gl-align-items-center gl-font-weight-bold"
-            >
-              <gl-icon name="epic" class="gl-mr-2" />
-              {{ totalEpicsCount }}
-            </span>
-            <span
-              class="gl-display-inline-flex gl-align-items-center gl-font-weight-bold"
-              :class="{ 'gl-ml-3': allowSubEpics }"
-            >
-              <gl-icon name="issues" class="gl-mr-2" />
-              {{ totalIssuesCount }}
-            </span>
-            <span
-              class="gl-display-inline-flex gl-align-items-center gl-font-weight-bold"
-              :class="{ 'gl-ml-3': allowSubEpics }"
-            >
-              <gl-icon name="weight" class="gl-mr-2" />
-              {{ totalWeight }}
-            </span>
-          </div>
+          <epic-countables
+            :allow-sub-epics="allowSubEpics"
+            :opened-epics-count="descendantCounts.openedEpics"
+            :closed-epics-count="descendantCounts.closedEpics"
+            :opened-issues-count="descendantCounts.openedIssues"
+            :closed-issues-count="descendantCounts.closedIssues"
+            :opened-issues-weight="weightSum.openedIssues"
+            :closed-issues-weight="weightSum.closedIssues"
+          />
         </div>
       </div>
       <div
