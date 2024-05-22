@@ -51748,6 +51748,9 @@ msgstr ""
 msgid "Terraform|Reported Resource Changes: %{addNum} to add, %{changeNum} to change, %{deleteNum} to delete"
 msgstr ""
 
+msgid "Terraform|Support for periods (`.`) in Terraform state names might break existing states."
+msgstr ""
+
 msgid "Terraform|Terraform init command"
 msgstr ""
 
