@@ -18,8 +18,8 @@ module EE
           License.feature_available?(:custom_project_templates)
 
         [::Gitlab::ImportSources::ImportSource.new('gitlab_custom_project_template',
-                                                   'GitLab custom project template export',
-                                                   ::Gitlab::ImportExport::Importer)]
+          'GitLab custom project template export',
+          ::Gitlab::ImportExport::Importer)]
       end
     end
   end

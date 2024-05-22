@@ -78,7 +78,7 @@ module EE
             return false if ::Gitlab::Geo.secondary?
 
             request.path.start_with?('/api/v4/application/settings',
-                                     '/admin/application_settings/general')
+              '/admin/application_settings/general')
           end
 
           def geo_node_update_route?

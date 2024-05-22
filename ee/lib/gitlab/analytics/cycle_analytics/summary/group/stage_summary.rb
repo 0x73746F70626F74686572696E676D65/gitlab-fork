@@ -44,7 +44,7 @@ module Gitlab
                   deployments: deployments_summary.value.raw_value,
                   group: group,
                   options: options),
-                  with_unit: true
+                with_unit: true
               )
             end
 

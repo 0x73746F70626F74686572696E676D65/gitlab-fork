@@ -24,17 +24,17 @@ class AddUniqueIndexOnContainerRepositoryRegistry < ActiveRecord::Migration[6.0]
     SQL
 
     add_concurrent_index(:container_repository_registry,
-                         :container_repository_id,
-                         unique: true,
-                         name: NEW_INDEX_NAME)
+      :container_repository_id,
+      unique: true,
+      name: NEW_INDEX_NAME)
 
     remove_concurrent_index_by_name :container_repository_registry, OLD_INDEX_NAME
   end
 
   def down
     add_concurrent_index(:container_repository_registry,
-                         :container_repository_id,
-                         name: OLD_INDEX_NAME)
+      :container_repository_id,
+      name: OLD_INDEX_NAME)
 
     remove_concurrent_index_by_name :container_repository_registry, NEW_INDEX_NAME
   end

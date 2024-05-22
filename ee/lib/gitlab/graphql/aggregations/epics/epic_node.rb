@@ -11,7 +11,7 @@ module Gitlab
           include Gitlab::Utils::StrongMemoize
 
           attr_reader :epic_id, :epic_state_id, :epic_info_flat_list, :parent_id,
-                      :count_aggregate, :weight_sum_aggregate, :health_status_aggregate
+            :count_aggregate, :weight_sum_aggregate, :health_status_aggregate
 
           attr_accessor :children, :calculated_count_totals, :calculated_weight_sum_totals
 

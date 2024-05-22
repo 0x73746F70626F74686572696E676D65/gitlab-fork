@@ -7,7 +7,7 @@ module Gitlab
         InvalidCertificate = Class.new(StandardError)
 
         delegate :allow_signup?,
-                 to: :'Gitlab::CurrentSettings.current_application_settings'
+          to: :'Gitlab::CurrentSettings.current_application_settings'
 
         def self.store
           @store ||= OpenSSL::X509::Store.new.tap do |store|
@@ -15,7 +15,7 @@ module Gitlab
           end
         rescue OpenSSL::X509::StoreError => ex
           logger.error(message: 'Gitlab.config.smartcard.ca_file is invalid or does not exist',
-                       error: ex)
+            error: ex)
 
           raise InvalidCertificate
         end
@@ -43,17 +43,17 @@ module Gitlab
 
         def find_user
           raise NotImplementedError,
-                "#{self.class.name} does not implement #{__method__}"
+            "#{self.class.name} does not implement #{__method__}"
         end
 
         def create_identity_for_existing_user
           raise NotImplementedError,
-                "#{self.class.name} does not implement #{__method__}"
+            "#{self.class.name} does not implement #{__method__}"
         end
 
         def create_user
           raise NotImplementedError,
-                "#{self.class.name} does not implement #{__method__}"
+            "#{self.class.name} does not implement #{__method__}"
         end
 
         def valid?
