@@ -71,42 +71,6 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
             label: 'trial_registration'
           )
         end
-
-        context 'when feature flag use_only_onboarding_status_db_value is disabled' do
-          before do
-            stub_feature_flags(use_only_onboarding_status_db_value: false)
-          end
-
-          context 'when trial is detected from params' do
-            it 'tracks render event' do
-              get :new, params: { trial: true }
-
-              expect_snowplow_event(
-                category: described_class.name,
-                action: 'render',
-                user: user,
-                label: 'trial_registration'
-              )
-            end
-          end
-
-          context 'when trial is detected from onboarding_status' do
-            before do
-              user.update!(onboarding_status_registration_type: 'trial')
-            end
-
-            it 'tracks render event' do
-              get_new
-
-              expect_snowplow_event(
-                category: described_class.name,
-                action: 'render',
-                user: user,
-                label: 'trial_registration'
-              )
-            end
-          end
-        end
       end
     end
   end
@@ -274,44 +238,6 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
               user: user,
               label: 'trial_registration'
             )
-          end
-
-          context 'when feature flag use_only_onboarding_status_db_value is disabled' do
-            before do
-              stub_feature_flags(use_only_onboarding_status_db_value: false)
-            end
-
-            context 'when trial is detected from params' do
-              let(:params) { { trial: 'true' } }
-
-              it 'tracks successful submission event' do
-                post_create
-
-                expect_snowplow_event(
-                  category: described_class.name,
-                  action: 'successfully_submitted_form',
-                  user: user,
-                  label: 'trial_registration'
-                )
-              end
-            end
-
-            context 'when trial is detected from onboarding_status' do
-              before do
-                user.update!(onboarding_status_registration_type: 'trial')
-              end
-
-              it 'tracks successful submission event' do
-                post_create
-
-                expect_snowplow_event(
-                  category: described_class.name,
-                  action: 'successfully_submitted_form',
-                  user: user,
-                  label: 'trial_registration'
-                )
-              end
-            end
           end
         end
       end

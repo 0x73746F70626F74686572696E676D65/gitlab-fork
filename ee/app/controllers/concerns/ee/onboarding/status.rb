@@ -59,13 +59,6 @@ module EE
       end
 
       def invite?
-        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove the
-        # invited_registration_type? from this logic as we will be fully driving off the db value.
-
-        if ::Feature.disabled?(:use_only_onboarding_status_db_value, user)
-          return user.onboarding_status_registration_type == REGISTRATION_TYPE[:invite] || invited_registration_type?
-        end
-
         user.onboarding_status_registration_type == REGISTRATION_TYPE[:invite]
       end
 
@@ -73,11 +66,6 @@ module EE
         # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove the
         # the params and stored location considerations as we will be fully driving off the db registration_type.
         return false unless enabled?
-
-        if ::Feature.disabled?(:use_only_onboarding_status_db_value, user)
-          return user.onboarding_status_registration_type == REGISTRATION_TYPE[:trial] ||
-              trial_from_params? || trial_from_stored_location?
-        end
 
         user.onboarding_status_registration_type == REGISTRATION_TYPE[:trial]
       end
@@ -137,11 +125,6 @@ module EE
       def subscription?
         return false unless enabled?
 
-        if ::Feature.disabled?(:use_only_onboarding_status_db_value, user)
-          return user.onboarding_status_registration_type == REGISTRATION_TYPE[:subscription] ||
-              subscription_from_stored_location?
-        end
-
         user.onboarding_status_registration_type == REGISTRATION_TYPE[:subscription]
       end
 
@@ -154,7 +137,7 @@ module EE
       end
 
       def company_lead_product_interaction
-        if trial? && initial_trial?
+        if trial? && trial_from_the_beginning?
           PRODUCT_INTERACTION[:trial]
         else
           # Due to this only being called in an area where only trials reach,
@@ -164,16 +147,7 @@ module EE
       end
 
       def trial_from_the_beginning?
-        # We do not need to consider trial_from_stored_location? here as this is only used in the
-        # identity_verification area and this method is not called there.
-        # TODO: We can simplify/remove this method once we cutover to DB only solution as the next step in
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/435746.
-
-        if ::Feature.disabled?(:use_only_onboarding_status_db_value, user)
-          return trial_from_params? || (user.onboarding_status_initial_registration_type.present? && initial_trial?)
-        end
-
-        initial_trial?
+        user.onboarding_status_initial_registration_type == REGISTRATION_TYPE[:trial]
       end
 
       def eligible_for_iterable_trigger?
@@ -199,56 +173,14 @@ module EE
 
       attr_reader :params, :session
 
-      def trial_from_params?
-        ::Gitlab::Utils.to_boolean(params[:trial], default: false)
-      end
-
       def subscription_from_stored_location?
-        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove the
-        # subscription_from_stored_location? alias and use as we will drive off the DB.
-        # This method will need to remain though long term.
         base_stored_user_location_path == ::Gitlab::Routing.url_helpers.new_subscriptions_path
-      end
-
-      def invited_registration_type?
-        members.any?
-      end
-
-      def initial_trial?
-        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove the
-        # return true condition here and simplify this area as we drive off the db values.
-        return true unless user.onboarding_status_initial_registration_type
-
-        user.onboarding_status_initial_registration_type == REGISTRATION_TYPE[:trial]
       end
 
       def base_stored_user_location_path
         return unless stored_user_location
 
         URI.parse(stored_user_location).path
-      end
-
-      def stored_redirect_location
-        # side effect free look at devise stored_location_for(:redirect)
-        session['redirect_return_to']
-      end
-
-      def trial_from_stored_location?
-        # TODO: See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/143148
-        # This is used for detection of proper tracking in the identity_verification
-        # area. We can also look to remove this in the next step where we rely
-        # on the database in https://gitlab.com/gitlab-org/gitlab/-/issues/435746.
-        return false unless session
-
-        # for regular signup it will be in `redirect`, but for SSO it will be in `user`
-        redirect_to_location = stored_redirect_location || stored_user_location
-        return false unless redirect_to_location
-
-        uri = URI.parse(redirect_to_location)
-
-        return false unless uri.query
-
-        URI.decode_www_form(uri.query).to_h['trial'] == 'true'
       end
     end
   end

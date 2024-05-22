@@ -1,9 +1,0 @@
----
-name: use_only_onboarding_status_db_value
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/435746
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/148752
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/454680
-milestone: '17.0'
-group: group::acquisition
-type: gitlab_com_derisk
-default_enabled: false
