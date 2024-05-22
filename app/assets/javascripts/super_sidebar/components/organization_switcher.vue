@@ -135,7 +135,7 @@ export default {
   <gl-disclosure-dropdown
     :items="items"
     class="gl-display-block"
-    placement="center"
+    placement="bottom"
     @shown="onShown"
   >
     <template #toggle>
