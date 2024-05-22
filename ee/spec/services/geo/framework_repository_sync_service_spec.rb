@@ -188,6 +188,28 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo, feature_category: :geo
 
           expect { subject.execute }.not_to raise_error
         end
+
+        it 'skips housekeeping when repository is invalid' do
+          allow(repository)
+            .to receive(:fetch_as_mirror)
+            .with(url_to_repo, forced: true, http_authorization_header: anything)
+            .and_raise(Gitlab::Git::Repository::NoRepository)
+
+          expect(Repositories::HousekeepingService).not_to receive(:new)
+
+          subject.execute
+        end
+
+        it 'skips housekeeping when repository is not found' do
+          allow(repository)
+            .to receive(:fetch_as_mirror)
+            .with(url_to_repo, forced: true, http_authorization_header: anything)
+            .and_raise(Gitlab::Shell::Error.new(Gitlab::GitAccessSnippet::ERROR_MESSAGES[:no_repo]))
+
+          expect(Repositories::HousekeepingService).not_to receive(:new)
+
+          subject.execute
+        end
       end
 
       context 'when the replicator class does not support housekeeping' do
@@ -244,7 +266,7 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo, feature_category: :geo
           retry_count: 1)
       end
 
-      it 'marks sync as successful if no repository found' do
+      it 'marks sync as successful if repository is not found' do
         allow(repository).to receive(:fetch_as_mirror)
                                .with(url_to_repo, forced: true, http_authorization_header: anything)
                                .and_raise(Gitlab::Shell::Error.new(Gitlab::GitAccessSnippet::ERROR_MESSAGES[:no_repo]))
