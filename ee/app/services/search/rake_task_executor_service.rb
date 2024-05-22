@@ -73,9 +73,6 @@ module Search
       estimates = {}
 
       klasses = CLASSES_TO_COUNT
-      unless ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
-        klasses -= [Project]
-      end
 
       unless ::Elastic::DataMigrationService.migration_has_finished?(:create_epic_index) &&
           ::Elastic::DataMigrationService.migration_has_finished?(:backfill_epics)

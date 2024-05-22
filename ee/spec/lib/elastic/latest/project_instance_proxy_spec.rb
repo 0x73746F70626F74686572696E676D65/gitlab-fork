@@ -9,198 +9,92 @@ RSpec.describe Elastic::Latest::ProjectInstanceProxy, :elastic_helpers, feature_
 
   subject(:proxy) { described_class.new(project) }
 
-  describe 'when migrate_projects_to_separate_index migration is not completed' do
-    before do
-      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-      set_elasticsearch_migration_to(:migrate_projects_to_separate_index, including: false)
-      ensure_elasticsearch_index! # ensure objects are indexed
+  before do
+    stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+    ensure_elasticsearch_index! # ensure objects are indexed
+    allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?).and_return(true)
+  end
+
+  describe '#as_indexed_json' do
+    it 'contains the expected mappings' do
+      result = proxy.as_indexed_json.with_indifferent_access.keys
+      project_proxy = Elastic::Latest::ApplicationClassProxy.new(Project, use_separate_indices: true)
+      # readme_content is not populated by as_indexed_json
+      expected_keys = project_proxy.mappings.to_hash[:properties].keys.map(&:to_s) - ['readme_content']
+
+      expect(result).to match_array(expected_keys)
     end
 
-    describe '#as_indexed_json' do
-      it 'serializes project as hash' do
+    it 'serializes project as hash' do
+      result = proxy.as_indexed_json.with_indifferent_access
+
+      expect(result).to include(
+        id: project.id,
+        name: project.name,
+        path: project.path,
+        description: project.description,
+        namespace_id: project.namespace_id,
+        created_at: project.created_at,
+        updated_at: project.updated_at,
+        archived: project.archived,
+        last_activity_at: project.last_activity_at,
+        name_with_namespace: project.name_with_namespace,
+        path_with_namespace: project.path_with_namespace,
+        traversal_ids: project.elastic_namespace_ancestry,
+        type: 'project',
+        visibility_level: project.visibility_level,
+        schema_version: schema_version,
+        ci_catalog: project.catalog_resource.present?
+      )
+    end
+
+    context 'when project does not have an owner' do
+      it 'does not throw an exception' do
+        allow(project).to receive(:owner).and_return(nil)
+
         result = proxy.as_indexed_json.with_indifferent_access
 
-        expect(result).to include(
-          id: project.id,
-          name: project.name,
-          path: project.path,
-          description: project.description,
-          namespace_id: project.namespace_id,
-          created_at: project.created_at,
-          updated_at: project.updated_at,
-          archived: project.archived,
-          visibility_level: project.visibility_level,
-          last_activity_at: project.last_activity_at,
-          name_with_namespace: project.name_with_namespace,
-          path_with_namespace: project.path_with_namespace)
+        expect(result[:owner_id]).to be_nil
+      end
+    end
 
-        described_class::TRACKED_FEATURE_SETTINGS.each do |feature|
-          expect(result).to include(feature => project.project_feature.public_send(feature)) # rubocop:disable GitlabSecurity/PublicSend
-        end
+    context 'when add_fields_to_projects_index migration is not completed' do
+      before do
+        set_elasticsearch_migration_to(:add_fields_to_projects_index, including: false)
       end
 
-      context 'when project_feature is null' do
-        before do
-          allow(project).to receive(:project_feature).and_return(nil)
-        end
+      it 'does not include the gated fields' do
+        result = proxy.as_indexed_json.with_indifferent_access
 
-        it 'sets all tracked feature access levels to PRIVATE' do
-          result = proxy.as_indexed_json.with_indifferent_access
+        expect(result.keys).not_to include(:mirror)
+        expect(result.keys).not_to include(:forked)
+        expect(result.keys).not_to include(:owner_id)
+        expect(result.keys).not_to include(:repository_languages)
+      end
+    end
 
-          Elastic::Latest::ProjectInstanceProxy::TRACKED_FEATURE_SETTINGS.each do |feature|
-            expect(result).to include(feature => ProjectFeature::PRIVATE) # rubocop:disable GitlabSecurity/PublicSend
-          end
-        end
+    context 'when add_count_fields_to_projects migration is not completed' do
+      before do
+        set_elasticsearch_migration_to(:add_count_fields_to_projects, including: false)
+      end
+
+      it 'does not include the gated fields' do
+        result = proxy.as_indexed_json.with_indifferent_access
+
+        expect(result.keys).not_to include(:star_count)
+        expect(result.keys).not_to include(:last_repository_updated_date)
       end
     end
   end
 
-  describe 'when migrate_projects_to_separate_index migration is completed' do
-    before do
-      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-      set_elasticsearch_migration_to(:migrate_projects_to_separate_index, including: true)
-      ensure_elasticsearch_index! # ensure objects are indexed
-    end
+  describe '#es_parent' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:target) { create(:project, group: group) }
 
-    describe '#as_indexed_json' do
-      it 'serializes project as hash' do
-        result = proxy.as_indexed_json.with_indifferent_access
+    subject(:es_parent) { described_class.new(target).es_parent }
 
-        expect(result).to include(
-          id: project.id,
-          name: project.name,
-          path: project.path,
-          description: project.description,
-          namespace_id: project.namespace_id,
-          created_at: project.created_at,
-          updated_at: project.updated_at,
-          archived: project.archived,
-          last_activity_at: project.last_activity_at,
-          name_with_namespace: project.name_with_namespace,
-          path_with_namespace: project.path_with_namespace,
-          traversal_ids: project.elastic_namespace_ancestry,
-          type: 'project',
-          visibility_level: project.visibility_level,
-          schema_version: schema_version,
-          ci_catalog: project.catalog_resource.present?
-        )
-      end
-    end
-  end
-
-  describe 'when add_fields_to_projects_index migration is completed' do
-    before do
-      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-      set_elasticsearch_migration_to(:add_fields_to_projects_index, including: true)
-      ensure_elasticsearch_index! # ensure objects are indexed
-    end
-
-    describe '#as_indexed_json' do
-      it 'serializes project as hash' do
-        result = proxy.as_indexed_json.with_indifferent_access
-
-        expect(result).to include(
-          id: project.id,
-          name: project.name,
-          path: project.path,
-          description: project.description,
-          namespace_id: project.namespace_id,
-          created_at: project.created_at,
-          updated_at: project.updated_at,
-          archived: project.archived,
-          last_activity_at: project.last_activity_at,
-          name_with_namespace: project.name_with_namespace,
-          path_with_namespace: project.path_with_namespace,
-          traversal_ids: project.elastic_namespace_ancestry,
-          type: 'project',
-          visibility_level: project.visibility_level,
-          schema_version: schema_version,
-          ci_catalog: project.catalog_resource.present?,
-          mirror: project.mirror?,
-          forked: project.forked? || false,
-          owner_id: project.owner.id,
-          repository_languages: project.repository_languages.map(&:name)
-        )
-      end
-
-      context 'when project does not have an owner' do
-        it 'does not throw an exception' do
-          allow(project).to receive(:owner).and_return(nil)
-
-          result = proxy.as_indexed_json.with_indifferent_access
-
-          expect(result[:owner_id]).to be_nil
-        end
-      end
-    end
-  end
-
-  describe 'when add_count_fields_to_projects migration is completed' do
-    before do
-      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-      set_elasticsearch_migration_to(:add_count_fields_to_projects, including: true)
-      ensure_elasticsearch_index! # ensure objects are indexed
-    end
-
-    describe '#as_indexed_json' do
-      it 'serializes project as hash' do
-        result = proxy.as_indexed_json.with_indifferent_access
-
-        expect(result).to include(
-          id: project.id,
-          name: project.name,
-          path: project.path,
-          description: project.description,
-          namespace_id: project.namespace_id,
-          created_at: project.created_at,
-          updated_at: project.updated_at,
-          archived: project.archived,
-          last_activity_at: project.last_activity_at,
-          name_with_namespace: project.name_with_namespace,
-          path_with_namespace: project.path_with_namespace,
-          traversal_ids: project.elastic_namespace_ancestry,
-          type: 'project',
-          visibility_level: project.visibility_level,
-          schema_version: schema_version,
-          ci_catalog: project.catalog_resource.present?,
-          mirror: project.mirror?,
-          forked: project.forked? || false,
-          owner_id: project.owner.id,
-          repository_languages: project.repository_languages.map(&:name),
-          star_count: project.star_count,
-          last_repository_updated_date: project.last_repository_updated_at
-        )
-      end
-
-      it 'contains the expected mappings' do
-        result = proxy.as_indexed_json.with_indifferent_access.keys
-        project_proxy = Elastic::Latest::ApplicationClassProxy.new(Project, use_separate_indices: true)
-        # readme_content is not populated by as_indexed_json
-        expected_keys = project_proxy.mappings.to_hash[:properties].keys.map(&:to_s) - ['readme_content']
-
-        expect(result).to match_array(expected_keys)
-      end
-    end
-
-    describe '#es_parent' do
-      let_it_be(:group) { create(:group) }
-      let_it_be(:target) { create(:project, group: group) }
-
-      subject(:es_parent) { described_class.new(target).es_parent }
-
-      it 'is the root namespace id' do
-        expect(es_parent).to eq("n_#{group.id}")
-      end
-
-      context 'if migration is not finished' do
-        before do
-          set_elasticsearch_migration_to :migrate_projects_to_separate_index, including: false
-        end
-
-        it 'is nil' do
-          expect(es_parent).to be_nil
-        end
-      end
+    it 'is the root namespace id' do
+      expect(es_parent).to eq("n_#{group.id}")
     end
   end
 end

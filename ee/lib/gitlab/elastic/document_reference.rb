@@ -81,10 +81,7 @@ module Gitlab
         end
       end
 
-      attr_reader :klass, :db_id, :es_id
-
-      # This attribute is nil for some records, e.g., projects
-      attr_reader :es_parent
+      attr_reader :klass, :db_id, :es_id, :es_parent
 
       alias_attribute :identifier, :es_id
       alias_attribute :routing, :es_parent

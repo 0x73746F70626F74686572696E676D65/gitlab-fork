@@ -6,12 +6,9 @@ module Elastic
       extend ::Gitlab::Utils::Override
 
       def elastic_search(query, options: {})
-        if ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
-          options[:project_id_field] = :id
-          options[:no_join_project] = true
-        end
-
         options[:in] = %w[name^10 name_with_namespace^2 path_with_namespace path^9 description]
+        options[:project_id_field] = :id
+        options[:no_join_project] = true
 
         query_hash = basic_query_hash(options[:in], query, options)
 

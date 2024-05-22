@@ -135,3 +135,5 @@ class MigrateProjectsToSeparateIndex < Elastic::Migration
     )
   end
 end
+
+MigrateProjectsToSeparateIndex.prepend ::Elastic::MigrationObsolete

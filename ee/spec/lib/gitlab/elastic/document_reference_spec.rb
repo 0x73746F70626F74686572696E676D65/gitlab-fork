@@ -11,7 +11,7 @@ RSpec.describe Gitlab::Elastic::DocumentReference, feature_category: :global_sea
   let(:issue_as_ref) { described_class.new(*issue_as_array) }
   let(:issue_as_str) { issue_as_array.join(' ') }
 
-  let(:project_as_array) { [Project, project.id, project.es_id] }
+  let(:project_as_array) { [Project, project.id, project.es_id, project.es_parent] }
   let(:project_as_ref) { described_class.new(*project_as_array) }
   let(:project_as_str) { project_as_array.join(delimiter) }
   let(:delimiter) { ' ' }
