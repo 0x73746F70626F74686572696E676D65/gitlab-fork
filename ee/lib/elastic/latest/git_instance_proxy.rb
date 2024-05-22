@@ -73,38 +73,6 @@ module Elastic
             }
           }
         )
-
-        return if ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
-
-        # This delete_by_query can be removed completely once the blob gets migrated to the separate index
-        client.delete_by_query(
-          index: index_name,
-          routing: es_parent,
-          conflicts: 'proceed',
-          body: {
-            query: {
-              bool: {
-                filter: [
-                  {
-                    terms: {
-                      type: types
-                    }
-                  },
-                  {
-                    has_parent: {
-                      parent_type: 'project',
-                      query: {
-                        term: {
-                          id: project_id
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        )
       end
 
       private

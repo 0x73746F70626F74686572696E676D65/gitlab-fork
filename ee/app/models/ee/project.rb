@@ -500,7 +500,7 @@ module EE
 
       override :use_separate_indices?
       def use_separate_indices?
-        ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
+        true
       end
 
       override :verification_state_table_class

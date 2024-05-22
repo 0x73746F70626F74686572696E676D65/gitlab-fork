@@ -6,7 +6,6 @@ require File.expand_path('ee/elastic/migrate/20230518064300_backfill_project_per
 RSpec.describe BackfillProjectPermissionsInBlobs, :elastic_clean, :sidekiq_inline,
   feature_category: :global_search do
     let(:version) { 20230518064300 }
-    let(:old_version_without_project_permissions) { 20230321202400 }
     let(:helper) { Gitlab::Elastic::Helper.new }
     let(:migration) { described_class.new(version) }
 
@@ -156,7 +155,7 @@ RSpec.describe BackfillProjectPermissionsInBlobs, :elastic_clean, :sidekiq_inlin
 
     describe 'integration test', :elastic_clean do
       before do
-        set_elasticsearch_migration_to(old_version_without_project_permissions, including: false)
+        set_elasticsearch_migration_to(version, including: false)
 
         projects.each do |project|
           project.repository.index_commits_and_blobs # ensure objects are indexed
@@ -208,8 +207,8 @@ RSpec.describe BackfillProjectPermissionsInBlobs, :elastic_clean, :sidekiq_inlin
     end
 
     def update_by_query(project, source)
-      Project.__elasticsearch__.client.update_by_query({
-        index: Project.__elasticsearch__.index_name,
+      Repository.__elasticsearch__.client.update_by_query({
+        index: Repository.__elasticsearch__.index_name,
         wait_for_completion: true,
         refresh: true,
         body: {

@@ -62,3 +62,5 @@ class RemoveProjectsFromMainIndex < Elastic::Migration
     :project
   end
 end
+
+RemoveProjectsFromMainIndex.prepend ::Elastic::MigrationObsolete

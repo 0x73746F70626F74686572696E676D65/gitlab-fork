@@ -6,7 +6,7 @@ module Elastic
       include InstanceProxyUtil
 
       def es_parent
-        "project_#{target.project_id}" unless target.is_a?(Project) || target&.project_id.nil?
+        "project_#{target.project_id}" unless target&.project_id.nil?
       end
 
       def es_type

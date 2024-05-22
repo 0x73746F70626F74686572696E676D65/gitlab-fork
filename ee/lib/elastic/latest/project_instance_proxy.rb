@@ -3,6 +3,8 @@
 module Elastic
   module Latest
     class ProjectInstanceProxy < ApplicationInstanceProxy
+      extend ::Gitlab::Utils::Override
+
       SCHEMA_VERSION = 24_02
 
       TRACKED_FEATURE_SETTINGS = %w[
@@ -55,25 +57,11 @@ module Elastic
 
         data.merge!(add_count_fields(target))
 
-        unless ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
-          # Set it as a parent in our `project => child` JOIN field
-          data['join_field'] = es_type
-          TRACKED_FEATURE_SETTINGS.each do |feature|
-            data[feature] = if target.project_feature.present?
-                              target.project_feature.public_send(feature) # rubocop:disable GitlabSecurity/PublicSend
-                            else
-                              logger.warn(message: 'Project is missing ProjectFeature', id: target.id)
-                              ProjectFeature::PRIVATE
-                            end
-          end
-        end
-
         data
       end
 
+      override :es_parent
       def es_parent
-        return unless ::Elastic::DataMigrationService.migration_has_finished?(:migrate_projects_to_separate_index)
-
         "n_#{target.root_ancestor.id}"
       end
 

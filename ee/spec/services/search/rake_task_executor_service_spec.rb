@@ -134,20 +134,6 @@ RSpec.describe ::Search::RakeTaskExecutorService, :silence_stdout, feature_categ
       end
     end
 
-    context 'when projects are not in a standalone index' do
-      let(:counts) { [1500, 10_000_000, 50_000_000, 100_000_000, 4_000] }
-      let(:counted_items) { described_class::CLASSES_TO_COUNT - [Project] }
-
-      before do
-        allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
-          .with(:migrate_projects_to_separate_index).and_return(false)
-      end
-
-      it 'does not include projects index in shard size estimates' do
-        expect { task }.not_to output(/gitlab-test-projects/).to_stdout
-      end
-    end
-
     it 'outputs shard size estimates' do
       expected = <<~STD_OUT
         - gitlab-test-issues:

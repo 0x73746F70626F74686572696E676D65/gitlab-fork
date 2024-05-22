@@ -56,14 +56,6 @@ RSpec.describe Elastic::Latest::ApplicationInstanceProxy, feature_category: :glo
     it 'includes project id' do
       expect(subject.es_parent).to eq("project_#{target.project.id}")
     end
-
-    context 'when target type is in routing excluded list' do
-      let(:target) { project }
-
-      it 'is nil' do
-        expect(subject.es_parent).to be_nil
-      end
-    end
   end
 
   describe '#namespace_ancestry' do
