@@ -1,7 +1,7 @@
 <script>
 import { GlAlert, GlPopover, GlBadge } from '@gitlab/ui';
 
-import { i18n } from '../constants';
+import { epicCountPermissionText } from 'ee/vue_shared/components/epic_countables/constants';
 
 export default {
   components: {
@@ -23,7 +23,9 @@ export default {
       return totalHealthStatuses > 0;
     },
   },
-  i18n,
+  i18n: {
+    epicCountPermissionText,
+  },
   badgeClasses: 'gl-ml-0! gl-mr-2 gl-font-weight-bold',
 };
 </script>
@@ -46,7 +48,7 @@ export default {
         >&nbsp;<span>{{ __('issues at risk') }}</span></span
       >
       <gl-alert :dismissible="false" class="gl-max-w-26 gl-mt-3">
-        {{ $options.i18n.permissionAlert }}
+        {{ $options.i18n.epicCountPermissionText }}
       </gl-alert>
     </gl-popover>
 
