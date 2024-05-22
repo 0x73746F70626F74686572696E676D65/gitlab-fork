@@ -36,20 +36,20 @@ const resetReferrer = () => {
 describe('DAST Profiles redirector', () => {
   describe('returnToPreviousPageFactory', () => {
     beforeEach(() => {
-      jest.spyOn(urlUtility, 'redirectTo').mockImplementation();
+      jest.spyOn(urlUtility, 'visitUrl').mockImplementation();
     });
 
     describe('redirects to default page', () => {
       it('when no referrer is present', () => {
         factory();
-        expect(urlUtility.redirectTo).toHaveBeenCalledWith(defaultRedirectionPath); // eslint-disable-line import/no-deprecated
+        expect(urlUtility.visitUrl).toHaveBeenCalledWith(defaultRedirectionPath);
       });
 
       it.each(disallowedPaths)('when previous path is %s', (path) => {
         setReferrer(path);
 
         factory();
-        expect(urlUtility.redirectTo).toHaveBeenCalledWith(defaultRedirectionPath); // eslint-disable-line import/no-deprecated
+        expect(urlUtility.visitUrl).toHaveBeenCalledWith(defaultRedirectionPath);
 
         resetReferrer();
       });
@@ -67,15 +67,13 @@ describe('DAST Profiles redirector', () => {
 
         it('without params', () => {
           factory();
-          expect(urlUtility.redirectTo).toHaveBeenCalledWith(path); // eslint-disable-line import/no-deprecated
+          expect(urlUtility.visitUrl).toHaveBeenCalledWith(path);
         });
 
         it('with params', () => {
           factory({ id: 2 });
-          // eslint-disable-next-line import/no-deprecated
-          expect(urlUtility.redirectTo).toHaveBeenCalledWith(
-            `${TEST_HOST}${path}?site_profile_id=2`,
-          );
+
+          expect(urlUtility.visitUrl).toHaveBeenCalledWith(`${TEST_HOST}${path}?site_profile_id=2`);
         });
       });
     });

@@ -405,8 +405,8 @@ describe('Confirm Order', () => {
         findConfirmButton().vm.$emit('click');
         await waitForPromises();
 
-        expect(UrlUtility.redirectTo).toHaveBeenCalledTimes(1); // eslint-disable-line import/no-deprecated
-        expect(UrlUtility.redirectTo).toHaveBeenCalledWith(location); // eslint-disable-line import/no-deprecated
+        expect(UrlUtility.visitUrl).toHaveBeenCalledTimes(1);
+        expect(UrlUtility.visitUrl).toHaveBeenCalledWith(location);
       });
 
       describe('when there is a failure', () => {

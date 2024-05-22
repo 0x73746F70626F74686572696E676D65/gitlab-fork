@@ -3,7 +3,7 @@ import { GlAlert, GlButton } from '@gitlab/ui';
 import { cloneDeep } from 'lodash';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import DynamicFields from 'ee/security_configuration/components/dynamic_fields.vue';
-import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
+import { visitUrl } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import configureSastMutation from '~/security_configuration/graphql/configure_sast.mutation.graphql';
 import { toSastCiConfigurationEntityInput } from './utils';
@@ -62,7 +62,7 @@ export default {
             throw new Error('SAST merge request creation mutation failed');
           }
 
-          redirectTo(successPath); // eslint-disable-line import/no-deprecated
+          visitUrl(successPath);
         })
         .catch((error) => {
           this.isSubmitting = false;

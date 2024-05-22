@@ -10,7 +10,7 @@ import { TYPENAME_USER, TYPENAME_VULNERABILITY } from '~/graphql_shared/constant
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import download from '~/lib/utils/downloader';
-import { redirectTo, visitUrl } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
+import { visitUrl } from '~/lib/utils/url_utility';
 import UsersCache from '~/lib/utils/users_cache';
 import { __, s__ } from '~/locale';
 import { REPORT_TYPE_SAST } from '~/vue_shared/security_reports/constants';
@@ -269,7 +269,7 @@ export default {
         .then(({ data }) => {
           const mergeRequestPath = data.merge_request_links.at(-1).merge_request_path;
 
-          redirectTo(mergeRequestPath); // eslint-disable-line import/no-deprecated
+          visitUrl(mergeRequestPath);
         })
         .catch(() => {
           this.isProcessingAction = false;

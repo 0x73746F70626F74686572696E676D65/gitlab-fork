@@ -2,7 +2,7 @@
 import { GlButton } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import IssuableCreate from '~/vue_shared/issuable/create/components/issuable_create_root.vue';
-import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
+import { visitUrl } from '~/lib/utils/url_utility';
 import { TYPE_TEST_CASE } from '~/issues/constants';
 
 import { s__ } from '~/locale';
@@ -60,7 +60,7 @@ export default {
             });
             return;
           }
-          redirectTo(this.projectTestCasesPath); // eslint-disable-line import/no-deprecated
+          visitUrl(this.projectTestCasesPath);
         })
         .catch((error) => {
           createAlert({
