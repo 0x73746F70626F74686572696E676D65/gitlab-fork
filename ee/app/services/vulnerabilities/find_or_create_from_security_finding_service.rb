@@ -3,18 +3,14 @@
 module Vulnerabilities
   class FindOrCreateFromSecurityFindingService < ::BaseProjectService
     def initialize(
-      project:, current_user:, params:, state:, present_on_default_branch:,
-      skip_permission_check: false)
+      project:, current_user:, params:, state:, present_on_default_branch:)
       super(project: project, current_user: current_user, params: params)
       @state = state
       @present_on_default_branch = present_on_default_branch
-      @skip_permission_check = skip_permission_check
     end
 
     def execute
-      if !@skip_permission_check && !can?(@current_user, :read_security_resource, @project)
-        raise Gitlab::Access::AccessDeniedError
-      end
+      raise Gitlab::Access::AccessDeniedError unless can?(@current_user, :read_security_resource, @project)
 
       with_vulnerability_finding do |vulnerability_finding|
         ServiceResponse.success(payload: { vulnerability: find_or_create_vulnerability(vulnerability_finding) })
@@ -32,8 +28,7 @@ module Vulnerabilities
           state: @state,
           present_on_default_branch: @present_on_default_branch,
           comment: params[:comment],
-          dismissal_reason: params[:dismissal_reason],
-          skip_permission_check: @skip_permission_check
+          dismissal_reason: params[:dismissal_reason]
         ).execute
       else
         vulnerability = Vulnerability.find(vulnerability_finding.vulnerability_id)
