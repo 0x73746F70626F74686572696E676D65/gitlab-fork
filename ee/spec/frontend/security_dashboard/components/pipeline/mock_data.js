@@ -454,6 +454,7 @@ export const pipelineSecurityReportFinding = {
   descriptionHtml: 'description <strong>html</strong>',
   severity: 'HIGH',
   solution: 'Some solution',
+  solutionHtml: 'Some solution <strong>html</strong>',
   reportType: 'reportType',
   falsePositive: false,
   dismissalReason: null,
