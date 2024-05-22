@@ -39019,7 +39019,7 @@ msgstr ""
 msgid "Preferences|Enable Gitpod integration"
 msgstr ""
 
-msgid "Preferences|Enable Zoekt code search"
+msgid "Preferences|Enable exact code search"
 msgstr ""
 
 msgid "Preferences|Enable extension marketplace"
@@ -39035,6 +39035,9 @@ msgid "Preferences|Enable integrated code intelligence on code views"
 msgstr ""
 
 msgid "Preferences|Enable keyboard shortcuts"
+msgstr ""
+
+msgid "Preferences|Exact code search"
 msgstr ""
 
 msgid "Preferences|Failed to save preferences."
@@ -39109,7 +39112,7 @@ msgstr ""
 msgid "Preferences|Turns on or off the ability to follow or be followed by other users."
 msgstr ""
 
-msgid "Preferences|Turns on or off the preference to search with Zoekt instead of Elasticsearch."
+msgid "Preferences|Use exact code search instead of advanced search to search for code in GitLab."
 msgstr ""
 
 msgid "Preferences|Use relative times"
