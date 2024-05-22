@@ -24,7 +24,7 @@ import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import download from '~/lib/utils/downloader';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import * as urlUtility from '~/lib/utils/url_utility';
+import { visitUrl } from '~/lib/utils/url_utility';
 import {
   getVulnerabilityStatusMutationResponse,
   dismissalDescriptions,
@@ -44,6 +44,10 @@ const vulnerabilityStateEntries = Object.entries(VULNERABILITY_STATE_OBJECTS);
 const mockAxios = new MockAdapter(axios);
 jest.mock('~/alert');
 jest.mock('~/lib/utils/downloader');
+jest.mock('~/lib/utils/url_utility', () => ({
+  ...jest.requireActual('~/lib/utils/url_utility'),
+  visitUrl: jest.fn(),
+}));
 
 describe('Vulnerability Header', () => {
   let wrapper;
@@ -418,7 +422,6 @@ describe('Vulnerability Header', () => {
         createWrapper({ vulnerability: getVulnerability(vulnerability) });
         await waitForPromises();
         const mergeRequestPath = '/group/project/merge_request/123';
-        const spy = jest.spyOn(urlUtility, 'redirectTo');
         mockAxios.onPost(vulnerability.createMrUrl).reply(HTTP_STATUS_OK, {
           merge_request_path: mergeRequestPath,
           merge_request_links: [{ merge_request_path: mergeRequestPath }],
@@ -426,7 +429,7 @@ describe('Vulnerability Header', () => {
         await clickButton('create-merge-request');
         await waitForPromises();
 
-        expect(spy).toHaveBeenCalledWith(mergeRequestPath);
+        expect(visitUrl).toHaveBeenCalledWith(mergeRequestPath);
         expect(mockAxios.history.post).toHaveLength(1);
         expect(JSON.parse(mockAxios.history.post[0].data)).toMatchObject({
           vulnerability_feedback: {
@@ -493,7 +496,6 @@ describe('Vulnerability Header', () => {
     });
 
     describe('resolve with AI button', () => {
-      let visitUrlMock;
       let mockSubscription;
       let subscriptionSpy;
 
@@ -531,7 +533,6 @@ describe('Vulnerability Header', () => {
 
       beforeEach(() => {
         gon.current_user_id = 1;
-        visitUrlMock = jest.spyOn(urlUtility, 'visitUrl').mockReturnValue({});
       });
 
       it('passes the experiment badge, tooltip, and tanuki icon', () => {
@@ -564,17 +565,17 @@ describe('Vulnerability Header', () => {
 
         await sendSubscriptionMessage(MOCK_SUBSCRIPTION_RESPONSE);
         expect(resolveAIButton.props('loading')).toBe(true);
-        expect(visitUrlMock).toHaveBeenCalledTimes(1);
+        expect(visitUrl).toHaveBeenCalledTimes(1);
       });
 
       it('redirects after it receives the AI response', async () => {
         await createWrapperAndClickButton();
         await waitForSubscriptionToBeReady();
-        expect(visitUrlMock).not.toHaveBeenCalled();
+        expect(visitUrl).not.toHaveBeenCalled();
 
         await sendSubscriptionMessage(MOCK_SUBSCRIPTION_RESPONSE);
-        expect(visitUrlMock).toHaveBeenCalledTimes(1);
-        expect(visitUrlMock).toHaveBeenCalledWith(MOCK_SUBSCRIPTION_RESPONSE.content);
+        expect(visitUrl).toHaveBeenCalledTimes(1);
+        expect(visitUrl).toHaveBeenCalledWith(MOCK_SUBSCRIPTION_RESPONSE.content);
       });
 
       it('calls the mutation with the correct input', async () => {
@@ -600,7 +601,7 @@ describe('Vulnerability Header', () => {
           await sendSubscriptionMessage(subscriptionMessage);
 
           expect(findSplitButton().props('loading')).toBe(false);
-          expect(visitUrlMock).not.toHaveBeenCalled();
+          expect(visitUrl).not.toHaveBeenCalled();
           expect(createAlert.mock.calls[0][0].message.toString()).toContain(expectedError);
         },
       );

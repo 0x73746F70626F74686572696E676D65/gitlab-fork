@@ -7,11 +7,15 @@ import { createAlert } from '~/alert';
 import { TYPE_ISSUE } from '~/issues/constants';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK, HTTP_STATUS_SERVICE_UNAVAILABLE } from '~/lib/utils/http_status';
-import * as urlUtility from '~/lib/utils/url_utility';
+import { visitUrl } from '~/lib/utils/url_utility';
 import RelatedIssuesBlock from '~/related_issues/components/related_issues_block.vue';
 import { PathIdSeparator } from '~/related_issues/constants';
 
 jest.mock('~/alert');
+jest.mock('~/lib/utils/url_utility', () => ({
+  ...jest.requireActual('~/lib/utils/url_utility'),
+  visitUrl: jest.fn(),
+}));
 
 const mockAxios = new MockAdapter(axios);
 
@@ -285,10 +289,7 @@ describe('Vulnerability related issues component', () => {
   });
 
   describe('when linked issue is not yet created', () => {
-    let redirectToSpy;
-
     beforeEach(async () => {
-      redirectToSpy = jest.spyOn(urlUtility, 'redirectTo').mockImplementation(() => {});
       mockAxios.onGet(propsData.endpoint).replyOnce(HTTP_STATUS_OK, [issue1, issue2]);
       createWrapper({ stubs: { RelatedIssuesBlock } });
       await axios.waitForAll();
@@ -300,9 +301,7 @@ describe('Vulnerability related issues component', () => {
 
     it('calls new issue endpoint on click', () => {
       findCreateIssueButton().vm.$emit('click');
-      expect(redirectToSpy).toHaveBeenCalledWith(newIssueUrl, {
-        params: { vulnerability_id: vulnerabilityId },
-      });
+      expect(visitUrl).toHaveBeenCalledWith(newIssueUrl);
     });
   });
 

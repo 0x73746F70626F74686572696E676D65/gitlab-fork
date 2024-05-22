@@ -3,7 +3,7 @@ import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import setWindowLocation from 'helpers/set_window_location_helper';
-import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
+import { visitUrl } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 import MembersFilteredSearchBar from '~/members/components/filter_sort/members_filtered_search_bar.vue';
 import { MEMBER_TYPES } from '~/members/constants';
@@ -16,7 +16,7 @@ jest.mock('~/lib/utils/url_utility', () => {
   return {
     __esModule: true,
     ...urlUtility,
-    redirectTo: jest.fn(),
+    visitUrl: jest.fn(),
   };
 });
 
@@ -88,7 +88,7 @@ describe('MembersFilteredSearchBar', () => {
         { type: FILTERED_SEARCH_TOKEN_ENTERPRISE.type, value: { data: true, operator: '=' } },
       ]);
 
-      expect(redirectTo).toHaveBeenCalledWith('https://localhost/?enterprise=true'); // eslint-disable-line import/no-deprecated
+      expect(visitUrl).toHaveBeenCalledWith('https://localhost/?enterprise=true');
     });
   });
 
@@ -120,7 +120,7 @@ describe('MembersFilteredSearchBar', () => {
             },
           ]);
 
-          expect(redirectTo).toHaveBeenCalledWith('https://localhost/?user_type=service_account'); // eslint-disable-line import/no-deprecated
+          expect(visitUrl).toHaveBeenCalledWith('https://localhost/?user_type=service_account');
         });
       });
     });

@@ -4,7 +4,7 @@ import ClipboardJS from 'clipboard';
 import { merge } from 'lodash';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
+import { visitUrl } from '~/lib/utils/url_utility';
 import SourceEditor from '~/vue_shared/components/source_editor.vue';
 
 jest.mock('clipboard', () =>
@@ -19,7 +19,7 @@ jest.mock('~/lib/utils/url_utility', () => {
   return {
     ...urlUtility,
     getBaseURL: jest.fn().mockReturnValue('http://gitlab.local/'),
-    redirectTo: jest.fn(),
+    visitUrl: jest.fn(),
   };
 });
 
@@ -86,8 +86,8 @@ describe('EE - SecurityConfigurationSnippetModal', () => {
     expect(ClipboardJS).toHaveBeenCalledWith('#copy-yaml-snippet-and-edit-button', {
       text: expect.any(Function),
     });
-    // eslint-disable-next-line import/no-deprecated
-    expect(redirectTo).toHaveBeenCalledWith(
+
+    expect(visitUrl).toHaveBeenCalledWith(
       `http://gitlab.local${gitlabCiYamlEditPath}?code_snippet_copied_from=${redirectParam}`,
     );
   });
