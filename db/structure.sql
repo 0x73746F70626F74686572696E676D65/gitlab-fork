@@ -881,6 +881,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_c17a166692a2() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."group_id" IS NULL THEN
+  SELECT "namespace_id"
+  INTO NEW."group_id"
+  FROM "audit_events_external_audit_event_destinations"
+  WHERE "audit_events_external_audit_event_destinations"."id" = NEW."external_audit_event_destination_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_fb587b1ae7ad() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -5319,6 +5335,7 @@ CREATE TABLE audit_events_streaming_headers (
     key text NOT NULL,
     value text NOT NULL,
     active boolean DEFAULT true NOT NULL,
+    group_id bigint,
     CONSTRAINT check_53c3152034 CHECK ((char_length(key) <= 255)),
     CONSTRAINT check_ac213cca22 CHECK ((char_length(value) <= 255))
 );
@@ -24636,6 +24653,8 @@ CREATE INDEX index_audit_events_instance_namespace_filters_on_namespace_id ON au
 
 CREATE INDEX index_audit_events_on_entity_id_and_entity_type_and_created_at ON ONLY audit_events USING btree (entity_id, entity_type, created_at, id);
 
+CREATE INDEX index_audit_events_streaming_headers_on_group_id ON audit_events_streaming_headers USING btree (group_id);
+
 CREATE INDEX index_authentication_events_on_provider ON authentication_events USING btree (provider);
 
 CREATE INDEX index_authentication_events_on_user_and_ip_address_and_result ON authentication_events USING btree (user_id, ip_address, result);
@@ -29976,6 +29995,8 @@ CREATE TRIGGER trigger_94514aeadc50 BEFORE INSERT OR UPDATE ON deployment_approv
 
 CREATE TRIGGER trigger_b4520c29ea74 BEFORE INSERT OR UPDATE ON approval_merge_request_rule_sources FOR EACH ROW EXECUTE FUNCTION trigger_b4520c29ea74();
 
+CREATE TRIGGER trigger_c17a166692a2 BEFORE INSERT OR UPDATE ON audit_events_streaming_headers FOR EACH ROW EXECUTE FUNCTION trigger_c17a166692a2();
+
 CREATE TRIGGER trigger_catalog_resource_sync_event_on_project_update AFTER UPDATE ON projects FOR EACH ROW WHEN ((((old.name)::text IS DISTINCT FROM (new.name)::text) OR (old.description IS DISTINCT FROM new.description) OR (old.visibility_level IS DISTINCT FROM new.visibility_level))) EXECUTE FUNCTION insert_catalog_resource_sync_event();
 
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
@@ -30118,6 +30139,9 @@ ALTER TABLE ONLY remote_development_namespace_cluster_agent_mappings
 
 ALTER TABLE ONLY member_approvals
     ADD CONSTRAINT fk_1383c72212 FOREIGN KEY (member_namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY audit_events_streaming_headers
+    ADD CONSTRAINT fk_1413743b7d FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY approval_group_rules
     ADD CONSTRAINT fk_1485c451e3 FOREIGN KEY (scan_result_policy_id) REFERENCES scan_result_policies(id) ON DELETE CASCADE;
