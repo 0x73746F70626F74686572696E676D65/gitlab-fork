@@ -366,24 +366,28 @@ RSpec.describe GroupsController, type: :request, feature_category: :groups_and_p
     context 'setting enable_auto_assign_gitlab_duo_pro_seats' do
       let(:params) { { group: { enable_auto_assign_gitlab_duo_pro_seats: true } } }
 
-      context 'when on SM' do
+      context 'when on SM', :with_cloud_connector do
         before do
           stub_saas_features(gitlab_com_subscriptions: false)
+          ::CloudConnector::AvailableServices.clear_memoization(:access_data_reader)
         end
 
-        it 'does not change the column' do
-          expect(group.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+        context 'when feature flag is disabled' do
+          it 'does not change the column' do
+            expect(group.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
 
-          subject
+            subject
 
-          expect(response).to have_gitlab_http_status(:found)
-          expect(group.reload.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+            expect(response).to have_gitlab_http_status(:found)
+            expect(group.reload.enable_auto_assign_gitlab_duo_pro_seats?).to be_falsy
+          end
         end
       end
 
-      context 'when on .com' do
+      context 'when on .com', :saas do
         before do
           stub_saas_features(gitlab_com_subscriptions: true)
+          ::CloudConnector::AvailableServices.clear_memoization(:access_data_reader)
         end
 
         context 'when group is not a root' do

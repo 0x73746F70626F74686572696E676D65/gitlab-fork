@@ -988,7 +988,7 @@ module EE
     end
 
     def code_suggestions_purchased?
-      ::GitlabSubscriptions::AddOnPurchase.active.for_gitlab_duo_pro.exists?(namespace_id: id)
+      ::CloudConnector::AvailableServices.find_by_name(:code_suggestions).purchased?(self)
     end
 
     # Disable personal access tokens for enterprise users of this group
