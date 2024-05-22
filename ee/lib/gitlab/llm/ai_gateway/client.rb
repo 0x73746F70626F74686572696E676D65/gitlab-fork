@@ -23,12 +23,6 @@ module Gitlab
 
         ConnectionError = Class.new(StandardError)
 
-        # TODO: will be updated/removed after all occurrences of `CloudConnector::AccessService` are replaced
-        # with `CloudConnector::AvailableServices` for all features: Duo Chat, Code Suggestions, X-Ray, DocsClient
-        def self.access_token(scopes:)
-          ::CloudConnector::AccessService.new.access_token(audience: JWT_AUDIENCE, scopes: scopes)
-        end
-
         def initialize(user, tracking_context: {})
           @user = user
           @tracking_context = tracking_context
