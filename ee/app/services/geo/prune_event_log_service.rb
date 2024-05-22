@@ -48,9 +48,9 @@ module Geo
 
       if deleted > 0
         log_info('Rows pruned from Geo Event log',
-                 relation: relation.name,
-                 rows_deleted: deleted,
-                 limit: limit)
+          relation: relation.name,
+          rows_deleted: deleted,
+          limit: limit)
       end
 
       deleted

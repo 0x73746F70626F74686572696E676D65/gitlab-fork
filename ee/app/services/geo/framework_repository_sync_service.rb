@@ -121,7 +121,7 @@ module Geo
       set_reschedule_sync unless persisted
 
       log_info("Finished #{replicable_name} sync",
-               download_time_s: download_time_in_seconds)
+        download_time_s: download_time_in_seconds)
     end
 
     def start_registry_sync!

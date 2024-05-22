@@ -17,7 +17,7 @@ class AddPartialIndexProjectRepositoryVerification < ActiveRecord::Migration[4.2
     )
 
     add_concurrent_index(:project_registry,
-    [:project_id],
+      [:project_id],
       name: WIKI_INDEX_NAME,
       where: 'wiki_verification_checksum_sha IS NULL AND last_wiki_verification_failure IS NULL'
     )
