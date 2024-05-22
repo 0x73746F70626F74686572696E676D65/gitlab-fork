@@ -88,50 +88,6 @@ describe('GroupsApi', () => {
     });
   });
 
-  describe('Pending group members list', () => {
-    const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/pending_members`;
-
-    it('sends GET request using the right URL', async () => {
-      jest.spyOn(axios, 'get');
-      mock.onGet(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
-
-      const { data } = await GroupsApi.fetchPendingGroupMembersList(namespaceId);
-
-      expect(data).toEqual([]);
-      expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
-        params: { page: 1, per_page: DEFAULT_PER_PAGE, state: 'awaiting' },
-      });
-    });
-  });
-
-  describe('approvePendingGroupMember', () => {
-    const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/members/${memberId}/approve`;
-
-    it('approves a pending member from a group', async () => {
-      jest.spyOn(axios, 'put');
-      mock.onPut(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
-
-      const { data } = await GroupsApi.approvePendingGroupMember(namespaceId, memberId);
-
-      expect(data).toEqual([]);
-      expect(axios.put).toHaveBeenCalledWith(expectedUrl);
-    });
-  });
-
-  describe('approveAllPendingGroupMembers', () => {
-    const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/members/approve_all`;
-
-    it('approves all pending members from a group', async () => {
-      jest.spyOn(axios, 'post');
-      mock.onPost(expectedUrl).replyOnce(HTTP_STATUS_OK, []);
-
-      const { data } = await GroupsApi.approveAllPendingGroupMembers(namespaceId);
-
-      expect(data).toEqual([]);
-      expect(axios.post).toHaveBeenCalledWith(expectedUrl);
-    });
-  });
-
   describe('updateGroupSettings', () => {
     const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}`;
 

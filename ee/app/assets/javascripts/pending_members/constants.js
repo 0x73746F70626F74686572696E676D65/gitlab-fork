@@ -24,3 +24,5 @@ export const APPROVAL_ERROR_MESSAGE = s__('Billing|An error occurred while appro
 export const ALL_MEMBERS_APPROVAL_ERROR_MESSAGE = s__(
   'Billing|An error occurred while approving all members',
 );
+
+export const PER_PAGE = 10;

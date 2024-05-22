@@ -1,0 +1,4 @@
+mutation approvePendingMember($namespaceId: ID, $id: ID, $namespaceName: String) {
+  approvePendingGroupMember(namespaceId: $namespaceId, id: $id, namespaceName: $namespaceName)
+    @client
+}

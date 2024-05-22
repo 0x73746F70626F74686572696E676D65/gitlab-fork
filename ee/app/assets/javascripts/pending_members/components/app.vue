@@ -1,6 +1,4 @@
 <script>
-// eslint-disable-next-line no-restricted-imports
-import { mapActions, mapState, mapGetters } from 'vuex';
 import {
   GlAlert,
   GlAvatarLabeled,
@@ -8,7 +6,7 @@ import {
   GlBadge,
   GlButton,
   GlEmptyState,
-  GlPagination,
+  GlKeysetPagination,
   GlModal,
   GlModalDirective,
   GlLoadingIcon,
@@ -23,7 +21,16 @@ import {
   LABEL_APPROVE_ALL,
   LABEL_CONFIRM,
   LABEL_CONFIRM_APPROVE,
+  PENDING_MEMBERS_LIST_ERROR,
+  APPROVAL_ERROR_MESSAGE,
+  APPROVAL_SUCCESSFUL_MESSAGE,
+  PER_PAGE,
+  ALL_MEMBERS_APPROVAL_SUCCESSFUL_MESSAGE,
+  ALL_MEMBERS_APPROVAL_ERROR_MESSAGE,
 } from 'ee/pending_members/constants';
+import pendingMembersQuery from './pending_members.query.graphql';
+import approvePendingGroupMemberMutation from './approve_pending_member.mutation.graphql';
+import approveAllPendingGroupMembersMutation from './approve_all_pending_members.mutation.graphql';
 
 export default {
   name: 'PendingMembersApp',
@@ -34,7 +41,7 @@ export default {
     GlBadge,
     GlButton,
     GlEmptyState,
-    GlPagination,
+    GlKeysetPagination,
     GlModal,
     GlLoadingIcon,
   },
@@ -57,29 +64,50 @@ export default {
         count,
       ),
   },
+  inject: ['namespaceName', 'namespaceId', 'userCapSet'],
+  data() {
+    return {
+      hasError: false,
+      alertMessage: null,
+      alertVariant: null,
+      approveAllMembersLoading: false,
+      rawPendingMembers: { nodes: [] },
+      loadingPendingMembers: [],
+      cursor: {
+        first: PER_PAGE,
+        after: null,
+      },
+    };
+  },
+  apollo: {
+    rawPendingMembers: {
+      query: pendingMembersQuery,
+      variables() {
+        return {
+          groupPath: this.namespaceName,
+          ...this.cursor,
+        };
+      },
+      update(data) {
+        const pendingMembers = data?.group?.pendingMembers;
+
+        return {
+          nodes: pendingMembers?.nodes || [],
+          pageInfo: pendingMembers?.pageInfo || {},
+        };
+      },
+      error() {
+        this.hasError = true;
+        this.alertMessage = PENDING_MEMBERS_LIST_ERROR;
+        this.alertVariant = 'danger';
+      },
+    },
+  },
   computed: {
-    ...mapState([
-      'isLoading',
-      'alertMessage',
-      'alertVariant',
-      'page',
-      'perPage',
-      'total',
-      'namespaceName',
-      'namespaceId',
-      'approveAllMembersLoading',
-      'approveAllMembersDisabled',
-      'userCapSet',
-      'members',
-    ]),
-    ...mapGetters(['tableItems']),
-    currentPage: {
-      get() {
-        return this.page;
-      },
-      set(val) {
-        this.setCurrentPage(val);
-      },
+    showPagination() {
+      return (
+        this.pendingMembersPageInfo?.hasPreviousPage || this.pendingMembersPageInfo?.hasNextPage
+      );
     },
     approveAllPopoverTitle() {
       return this.$options.i18n.labelConfirmApprove(this.total);
@@ -90,18 +118,27 @@ export default {
       }
       return this.$options.i18n.labelConfirmApproveAll(this.total);
     },
-  },
-  created() {
-    this.fetchPendingMembersList();
+    pendingMembers() {
+      return this.rawPendingMembers.nodes
+        .map((member) => {
+          return {
+            ...member,
+            loading: this.loadingPendingMembers.includes(member.id),
+          };
+        })
+        .filter((member) => member.invited || !member.approved);
+    },
+    total() {
+      return this.pendingMembers.length;
+    },
+    isLoading() {
+      return this.$apollo.queries.rawPendingMembers.loading;
+    },
+    pendingMembersPageInfo() {
+      return this.rawPendingMembers?.pageInfo;
+    },
   },
   methods: {
-    ...mapActions([
-      'fetchPendingMembersList',
-      'setCurrentPage',
-      'approveMember',
-      'approveAllMembers',
-      'dismissAlert',
-    ]),
     avatarLabel(member) {
       if (member.invited) {
         return member.email;
@@ -113,6 +150,93 @@ export default {
         user: member.name || member.email,
       });
     },
+    setMemberAsLoading(id) {
+      this.loadingPendingMembers.push(id);
+    },
+    resetMemberLoading(id) {
+      this.loadingPendingMembers = this.loadingPendingMembers.filter((m) => m !== id);
+    },
+    showAlert({ memberId, alertMessage, alertVariant }) {
+      if (memberId) {
+        const member = this.rawPendingMembers.nodes.find((m) => m.id === memberId);
+        this.alertMessage = sprintf(alertMessage, {
+          user: member.name || member.email,
+        });
+      } else {
+        this.alertMessage = alertMessage;
+      }
+
+      this.alertVariant = alertVariant;
+    },
+    nextPage() {
+      this.cursor = {
+        first: PER_PAGE,
+        after: this.pendingMembersPageInfo.endCursor,
+      };
+    },
+    prevPage() {
+      this.cursor = {
+        last: PER_PAGE,
+        before: this.pendingMembersPageInfo.startCursor,
+      };
+    },
+    async approveMember(id) {
+      this.setMemberAsLoading(id);
+
+      try {
+        await this.$apollo.mutate({
+          mutation: approvePendingGroupMemberMutation,
+          variables: {
+            namespaceId: this.namespaceId,
+            namespaceName: this.namespaceName,
+            id,
+          },
+          refetchQueries: [pendingMembersQuery],
+        });
+        this.showAlert({
+          memberId: id,
+          alertMessage: APPROVAL_SUCCESSFUL_MESSAGE,
+          alertVariant: 'info',
+        });
+      } catch (error) {
+        this.showAlert({
+          memberId: id,
+          alertMessage: APPROVAL_ERROR_MESSAGE,
+          alertVariant: 'danger',
+        });
+      } finally {
+        this.resetMemberLoading(id);
+      }
+
+      this.loadingPendingMembers = this.loadingPendingMembers.filter((m) => m !== id);
+    },
+    async approveAllPendingMembers() {
+      this.loadingPendingMembers = this.rawPendingMembers.nodes.map((m) => m.id);
+      try {
+        await this.$apollo.mutate({
+          mutation: approveAllPendingGroupMembersMutation,
+          variables: {
+            namespaceId: this.namespaceId,
+          },
+          refetchQueries: [pendingMembersQuery],
+        });
+        this.showAlert({
+          alertMessage: ALL_MEMBERS_APPROVAL_SUCCESSFUL_MESSAGE,
+          alertVariant: 'info',
+        });
+      } catch (error) {
+        this.showAlert({
+          alertMessage: ALL_MEMBERS_APPROVAL_ERROR_MESSAGE,
+          alertVariant: 'danger',
+        });
+      } finally {
+        this.loadingPendingMembers = [];
+      }
+    },
+    dismissAlert() {
+      this.alertMessage = null;
+      this.alertVariant = null;
+    },
   },
   avatarSize: AVATAR_SIZE,
   AWAITING_MEMBER_SIGNUP_TEXT,
@@ -123,6 +247,7 @@ export default {
   EmptyTodosSvg,
 };
 </script>
+
 <template>
   <div>
     <div class="gl-display-flex gl-justify-content-space-between">
@@ -131,7 +256,6 @@ export default {
         <gl-button
           v-gl-modal-directive="`approve-all-confirmation-modal`"
           :loading="approveAllMembersLoading"
-          :disabled="approveAllMembersDisabled"
           data-testid="approve-all-button"
         >
           {{ $options.LABEL_APPROVE_ALL }}
@@ -141,7 +265,7 @@ export default {
           :title="approveAllPopoverTitle"
           no-fade
           data-testid="approve-all-modal"
-          @primary="approveAllMembers"
+          @primary="approveAllPendingMembers"
         >
           <p>{{ approveAllPopoverBody }}</p>
         </gl-modal>
@@ -157,22 +281,22 @@ export default {
           {{ alertMessage }}
         </gl-alert>
         <gl-empty-state
-          v-if="!tableItems.length"
+          v-if="!pendingMembers.length && !hasError"
           :title="s__('PendingMembers|There are no pending members left to approve. High five!')"
           :svg-path="$options.EmptyTodosSvg"
           :svg-height="220"
           class="gl-py-8"
         />
         <div
-          v-for="item in tableItems"
+          v-for="item in pendingMembers"
           v-else
           :key="item.id"
           class="gl-p-5 gl-border-0 gl-border-b-1! gl-border-gray-100 gl-border-solid gl-display-flex gl-justify-content-space-between"
           data-testid="pending-members"
         >
-          <gl-avatar-link target="blank" :href="item.web_url" :alt="item.name">
+          <gl-avatar-link target="blank" :href="item.avatarUrl" :alt="item.name">
             <gl-avatar-labeled
-              :src="item.avatar_url"
+              :src="item.avatarUrl"
               :size="$options.avatarSize"
               :label="avatarLabel(item)"
             >
@@ -202,14 +326,13 @@ export default {
         </div>
       </div>
     </template>
-
-    <gl-pagination
-      v-if="currentPage"
-      v-model="currentPage"
-      :per-page="perPage"
-      :total-items="total"
-      align="center"
-      class="gl-mt-5"
-    />
+    <div v-if="showPagination" class="gl-text-center gl-mt-5">
+      <gl-keyset-pagination
+        v-if="showPagination"
+        v-bind="pendingMembersPageInfo"
+        @prev="prevPage"
+        @next="nextPage"
+      />
+    </div>
   </div>
 </template>
