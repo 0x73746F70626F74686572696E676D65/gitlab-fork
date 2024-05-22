@@ -40,6 +40,10 @@ module CodeSuggestions
 
     attr_reader :current_user, :params, :unsafe_passthrough_params, :prefix, :suffix, :intent
 
+    def anthropic_model
+      Feature.enabled?(:claude_3_code_generation_haiku, current_user) ? 'claude-3-haiku-20240307' : ANTHROPIC_MODEL
+    end
+
     def language
       CodeSuggestions::ProgrammingLanguage.detect_from_filename(params.dig(:current_file, :file_name))
     end
@@ -50,7 +54,7 @@ module CodeSuggestions
         prefix: prefix,
         instruction: instruction,
         project: project,
-        model_name: ANTHROPIC_MODEL,
+        model_name: anthropic_model,
         current_user: current_user
       )
     end

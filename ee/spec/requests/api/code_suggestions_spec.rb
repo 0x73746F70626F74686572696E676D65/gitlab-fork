@@ -38,6 +38,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     allow_next_instance_of(API::Helpers::GlobalIds::Generator) do |generator|
       allow(generator).to receive(:generate).with(authorized_user).and_return([global_instance_id, global_user_id])
     end
+
+    stub_feature_flags(claude_3_code_generation_haiku: false)
   end
 
   shared_examples 'a response' do |case_name|
