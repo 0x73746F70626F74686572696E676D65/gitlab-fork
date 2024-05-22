@@ -111,6 +111,21 @@ RSpec.describe WorkItems::CreateService, feature_category: :team_planning do
   context 'for legacy epics' do
     include_context 'with container for work items service', :group
 
+    let_it_be(:parent) { create(:work_item, :epic_with_legacy_epic, namespace: group) }
+    let_it_be(:other_child_epic) { create(:work_item, :epic_with_legacy_epic, namespace: group) }
+    let_it_be(:other_child_issue) { create(:work_item, namespace: group) }
+    let_it_be(:parent_link_epic) do
+      create(:parent_link, work_item_parent: parent, work_item: other_child_epic, relative_position: 500)
+    end
+
+    let_it_be(:parent_link_issue) do
+      create(:parent_link, work_item_parent: parent, work_item: other_child_issue, relative_position: 600)
+    end
+
+    let_it_be(:epic_issue) do
+      create(:epic_issue, epic: parent.synced_epic, issue: other_child_issue, relative_position: 600)
+    end
+
     let(:epic) { Epic.last }
     let(:type) { WorkItems::Type.default_by_type(:epic) }
 
@@ -125,7 +140,8 @@ RSpec.describe WorkItems::CreateService, feature_category: :team_planning do
         color_widget: {
           color: '#FF0000'
         },
-        start_and_due_date_widget: { start_date: start_date, due_date: due_date }
+        start_and_due_date_widget: { start_date: start_date, due_date: due_date },
+        hierarchy_widget: { parent: parent }
       }
     end
 
@@ -141,8 +157,32 @@ RSpec.describe WorkItems::CreateService, feature_category: :team_planning do
 
     it_behaves_like 'syncs all data from a work_item to an epic'
 
+    context 'when creating an epic work item' do
+      it 'creates the epic with correct relative_position' do
+        work_item = service_result.payload[:work_item]
+
+        expect(work_item.reload.parent_link.relative_position).to eq(work_item.synced_epic.relative_position)
+      end
+    end
+
+    context 'when creating an issue with a synced epic as parent' do
+      let(:type) { WorkItems::Type.default_by_type(:issue) }
+
+      it 'creates the work item and the EpicIssue with the correct relative_position' do
+        expect { service_result }
+          .to change { EpicIssue.count }.by(1)
+          .and change { WorkItems::ParentLink.count }.by(1)
+
+        work_item = service_result.payload[:work_item]
+
+        expect(work_item.parent_link.relative_position).to eq(work_item.epic_issue.relative_position)
+      end
+    end
+
     context 'when not creating an epic work item' do
       let(:type) { WorkItems::Type.default_by_type(:task) }
+
+      let_it_be(:parent) { nil }
 
       it 'only creates a work item' do
         expect { service_result }
