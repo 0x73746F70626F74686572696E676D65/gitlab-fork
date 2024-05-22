@@ -22,7 +22,7 @@ module EE
             },
             credit_card_verification_check_for_reuse: { threshold: 10, interval: 1.hour },
             code_suggestions_api_endpoint: { threshold: 60, interval: 1.minute },
-            code_suggestions_direct_access: { threshold: 10, interval: 5.minutes },
+            code_suggestions_direct_access: { threshold: 50, interval: 1.minute },
             code_suggestions_x_ray_scan: { threshold: 60, interval: 1.minute },
             soft_phone_verification_transactions_limit: { threshold: 16_000, interval: 1.day },
             hard_phone_verification_transactions_limit: { threshold: 20_000, interval: 1.day }
