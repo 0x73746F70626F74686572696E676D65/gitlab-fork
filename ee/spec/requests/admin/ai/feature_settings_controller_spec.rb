@@ -67,7 +67,7 @@ RSpec.describe Admin::Ai::FeatureSettingsController, :enable_admin_mode, feature
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(response.body).to match(
-        /Code Generations.+Self-Hosted Model \(Mistral\)/m
+        /Code Generations.+Self-Hosted Model \(mistral-7b-ollama-api\)/m
       )
       expect(response.body).to match(
         /Code Completions.+GitLab AI Vendor/m

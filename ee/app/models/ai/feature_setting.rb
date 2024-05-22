@@ -31,7 +31,7 @@ module Ai
       title = PROVIDER_TITLES[provider]
       return title unless self_hosted?
 
-      "#{title} (#{self_hosted_model.model.titleize})"
+      "#{title} (#{self_hosted_model.name})"
     end
   end
 end
