@@ -27754,6 +27754,9 @@ msgstr ""
 msgid "Integrations|Group-level integration management"
 msgstr ""
 
+msgid "Integrations|Groups and projects in this list no longer require commits to be signed."
+msgstr ""
+
 msgid "Integrations|Includes Standard, plus the entire commit message, commit hash, and issue IDs"
 msgstr ""
 
@@ -27779,9 +27782,6 @@ msgid "Integrations|Notification settings"
 msgstr ""
 
 msgid "Integrations|Perform common tasks with slash commands."
-msgstr ""
-
-msgid "Integrations|Projects in this list no longer require commits to be signed."
 msgstr ""
 
 msgid "Integrations|Projects using custom settings"
