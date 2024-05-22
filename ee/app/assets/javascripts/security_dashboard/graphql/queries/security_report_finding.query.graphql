@@ -15,6 +15,7 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
         state
         severity
         solution
+        solutionHtml
         reportType
         falsePositive
         dismissalReason

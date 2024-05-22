@@ -1,9 +1,19 @@
 <script>
 import { GlIcon, GlCard } from '@gitlab/ui';
+import SafeHtml from '~/vue_shared/directives/safe_html';
+import { renderGFM } from '~/behaviors/markdown/render_gfm';
 
 export default {
+  directives: {
+    SafeHtml,
+  },
   components: { GlIcon, GlCard },
   props: {
+    solutionHtml: {
+      type: String,
+      default: null,
+      required: false,
+    },
     solution: {
       type: String,
       default: '',
@@ -31,18 +41,28 @@ export default {
       return Boolean(this.mergeRequest?.id);
     },
   },
+  mounted() {
+    renderGFM(this.$refs.markdownContent);
+  },
 };
 </script>
 
 <template>
-  <gl-card v-if="solutionText" class="gl-my-6">
-    <template v-if="solutionText" #default>
-      <div class="gl-display-flex gl-align-items-center">
+  <gl-card v-if="solutionHtml || solutionText" class="gl-my-6">
+    <template #default>
+      <div class="gl-display-flex gl-align-items-flex-start">
         <div class="gl-pr-5 gl-display-flex gl-align-items-center gl-justify-content-end gl-pl-0">
-          <gl-icon class="gl-mr-5" name="bulb" />
+          <gl-icon class="gl-mr-3" name="bulb" />
           <strong data-testid="solution-title">{{ s__('ciReport|Solution') }}:</strong>
         </div>
-        <span class="flex-shrink-1 gl-pl-0" data-testid="solution-text">{{ solutionText }}</span>
+        <span
+          v-if="solutionHtml"
+          ref="markdownContent"
+          v-safe-html="solutionHtml"
+          class="md"
+          data-testid="solution-html"
+        ></span>
+        <span v-else data-testid="solution-text">{{ solutionText }}</span>
       </div>
     </template>
     <template v-if="showCreateMergeRequestMessage" #footer>
