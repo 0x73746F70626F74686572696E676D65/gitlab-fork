@@ -1,5 +1,5 @@
 - add_page_specific_style 'page_bundles/labels'
-- options = Ai::SelfHostedModel.all.map { |model| [model.model.humanize, model.id] }
+- options = Ai::SelfHostedModel.all.map { |model| ["#{model.name} (#{model.model.humanize})", model.id] }
 - feature_name = feature.titleize
 - provider_field_name = 'feature_setting[provider]'
 

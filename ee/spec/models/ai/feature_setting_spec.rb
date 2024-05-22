@@ -14,7 +14,7 @@ RSpec.describe Ai::FeatureSetting, feature_category: :custom_models do
     let(:feature_setting) { build(:ai_feature_setting) }
 
     it { expect(feature_setting).to validate_presence_of(:self_hosted_model) }
-    it { expect(feature_setting.provider_title).to eq('Self-Hosted Model (Mistral)') }
+    it { expect(feature_setting.provider_title).to eq('Self-Hosted Model (mistral-7b-ollama-api)') }
   end
 
   context 'when feature setting is vendored' do
