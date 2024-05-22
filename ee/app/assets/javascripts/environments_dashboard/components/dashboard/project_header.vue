@@ -77,7 +77,7 @@ export default {
         :title="$options.moreActionsText"
         icon="ellipsis_v"
         class="gl-text-gray-500"
-        toggle-class="gl-display-flex gl-align-items-center gl-px-3! gl-bg-transparent gl-shadow-none!"
+        toggle-class="gl-display-flex gl-align-items-center gl-px-3! gl-bg-transparent !gl-shadow-none"
         no-caret
       >
         <gl-disclosure-dropdown-item data-testid="remove-project-button" @action="onRemove()">

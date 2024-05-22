@@ -235,7 +235,7 @@ export default {
           size="small"
           icon="ellipsis_v"
           class="gl-display-none gl-md-display-inline-flex!"
-          toggle-class="gl-border-0! gl-shadow-none!"
+          toggle-class="gl-border-0! !gl-shadow-none"
           :toggle-text="$options.i18n.moreActions"
           :title="$options.i18n.moreActions"
         >
