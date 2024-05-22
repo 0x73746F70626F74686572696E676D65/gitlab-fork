@@ -61,8 +61,8 @@ module Types
       description: 'Scan File Path used as input for the scanner.'
 
     field :validation_started_at, Types::TimeType,
-          null: true,
-          description: 'Site profile validation start time.'
+      null: true,
+      description: 'Site profile validation start time.'
 
     def target_url
       object.dast_site.url

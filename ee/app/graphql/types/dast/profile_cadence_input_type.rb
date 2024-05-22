@@ -7,12 +7,12 @@ module Types
       description 'Represents DAST Profile Cadence.'
 
       argument :unit, ::Types::Dast::ProfileCadenceUnitEnum,
-            required: false,
-            description: 'Unit for the duration of DAST Profile Cadence.'
+        required: false,
+        description: 'Unit for the duration of DAST Profile Cadence.'
 
       argument :duration, GraphQL::Types::Int,
-            required: false,
-            description: 'Duration of the DAST Profile Cadence.'
+        required: false,
+        description: 'Duration of the DAST Profile Cadence.'
     end
   end
 end

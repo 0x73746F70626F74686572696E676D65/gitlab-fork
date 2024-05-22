@@ -8,8 +8,8 @@ module Types
 
       ::Deployments::Approval.statuses.each_key do |status|
         value status.upcase,
-              description: "A deployment approval that is #{status.tr('_', ' ')}.",
-              value: status
+          description: "A deployment approval that is #{status.tr('_', ' ')}.",
+          value: status
       end
     end
   end

@@ -35,13 +35,13 @@ module Types
         null: true, description: 'Relative web path to the edit page of a profile.'
 
       field :dast_pre_scan_verification,
-            ::Types::Dast::PreScanVerificationType,
-            null: true,
-            description: 'DAST Pre Scan Verification associated with the site profile. Will always return `null` ' \
-                         'if `dast_on_demand_scans_scheduler` feature flag is disabled.'
+        ::Types::Dast::PreScanVerificationType,
+        null: true,
+        description: 'DAST Pre Scan Verification associated with the site profile. Will always return `null` ' \
+                     'if `dast_on_demand_scans_scheduler` feature flag is disabled.'
 
       field :tag_list, [GraphQL::Types::String],
-            null: true, description: 'Runner tags associated with the profile.'
+        null: true, description: 'Runner tags associated with the profile.'
 
       def edit_path
         Gitlab::Routing.url_helpers.edit_project_on_demand_scan_path(object.project, object)
