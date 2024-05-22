@@ -1,8 +1,13 @@
-import { GlAlert } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
+import { GlAlert, GlTabs, GlTab, GlBadge } from '@gitlab/ui';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+
+import {
+  AGENT_MAPPING_STATUS_MAPPED,
+  AGENT_MAPPING_STATUS_UNMAPPED,
+} from 'ee/workspaces/agent_mapping/constants';
 import AgentMapping from 'ee_component/workspaces/agent_mapping/components/agent_mapping.vue';
-import AgentsTable from 'ee_component/workspaces/agent_mapping/components/agents_table.vue';
-import GetAvailableAgentsQuery from 'ee_component/workspaces/agent_mapping/components/get_available_agents_query.vue';
+import GetAgentsWithMappingStatusQuery from 'ee_component/workspaces/agent_mapping/components/get_agents_with_mapping_status_query.vue';
 import { stubComponent } from 'helpers/stub_component';
 
 describe('workspaces/agent_mapping/components/agent_mapping.vue', () => {
@@ -10,22 +15,29 @@ describe('workspaces/agent_mapping/components/agent_mapping.vue', () => {
   const NAMESPACE = 'foo/bar';
 
   const buildWrapper = ({ mappedAgentsQueryState = {} } = {}) => {
-    wrapper = shallowMount(AgentMapping, {
+    wrapper = shallowMountExtended(AgentMapping, {
       provide: {
         namespace: NAMESPACE,
       },
       stubs: {
-        GetAvailableAgentsQuery: stubComponent(GetAvailableAgentsQuery, {
+        GetAgentsWithMappingStatusQuery: stubComponent(GetAgentsWithMappingStatusQuery, {
           render() {
             return this.$scopedSlots.default?.(mappedAgentsQueryState);
           },
         }),
+        GlTabs,
+        GlTab,
+        GlBadge,
       },
     });
   };
-  const findGetAvailableAgentsQuery = () => wrapper.findComponent(GetAvailableAgentsQuery);
-  const findAgentsTable = () => wrapper.findComponent(AgentsTable);
+  const findGetAgentsWithMappingStatusQuery = () =>
+    wrapper.findComponent(GetAgentsWithMappingStatusQuery);
+  const findAllowedAgentsTable = () => wrapper.findByTestId('allowed-agents-table');
+  const findAllAgentsTable = () => wrapper.findByTestId('all-agents-table');
   const findErrorAlert = () => wrapper.findComponent(GlAlert);
+  const findAllowedAgentsTab = () => wrapper.findByTestId('allowed-agents-tab');
+  const findAllAgentsTab = () => wrapper.findByTestId('all-agents-tab');
 
   describe('default', () => {
     beforeEach(() => {
@@ -38,61 +50,141 @@ describe('workspaces/agent_mapping/components/agent_mapping.vue', () => {
   });
 
   describe('available agents table', () => {
-    it('renders GetAvailableAgentsQuery component and passes namespace path', () => {
+    it('renders GetAgentsWithMappingStatusQuery component and passes namespace path', () => {
       buildWrapper();
 
-      expect(findGetAvailableAgentsQuery().props('namespace')).toBe(NAMESPACE);
+      expect(findGetAgentsWithMappingStatusQuery().props('namespace')).toBe(NAMESPACE);
     });
 
-    describe('when GetAvailableAgentsQuery component emits results event', () => {
+    describe('when GetAgentsWithMappingStatusQuery component emits result event', () => {
       let agents;
+      let allowedAgents;
 
-      beforeEach(() => {
+      beforeEach(async () => {
         buildWrapper();
 
-        agents = [{}];
-        findGetAvailableAgentsQuery().vm.$emit('result', { agents });
+        agents = [
+          {
+            id: 'agent-1',
+            name: 'agent one',
+            mappingStatus: AGENT_MAPPING_STATUS_MAPPED,
+          },
+          {
+            id: 'agent-2',
+            name: 'agent two',
+            mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED,
+          },
+          {
+            id: 'agent-3',
+            name: 'agent three',
+            mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED,
+          },
+        ];
+        allowedAgents = agents.filter(
+          (agent) => agent.mappingStatus === AGENT_MAPPING_STATUS_MAPPED,
+        );
+        findGetAgentsWithMappingStatusQuery().vm.$emit('result', { agents });
+        await nextTick();
       });
 
-      it('passes query result to the AgentsTable component', () => {
-        expect(findAgentsTable().props('agents')).toBe(agents);
+      it('displays the number of mapped agents in the Allowed Agents Tab', () => {
+        expect(findAllowedAgentsTab().findComponent(GlBadge).text()).toContain(
+          allowedAgents.length.toString(),
+        );
+      });
+
+      it('displays the number of all unmapped agents in the All Agents Tab', () => {
+        expect(findAllAgentsTab().findComponent(GlBadge).text()).toContain(
+          agents.length.toString(),
+        );
+      });
+
+      it('passes allowed agents to the allowed agents table', () => {
+        expect(findAllowedAgentsTable().props('agents')).toEqual(allowedAgents);
+      });
+
+      it('passes all agents to the all agents table', () => {
+        expect(findAllAgentsTable().props('agents')).toEqual(agents);
+      });
+
+      it('sets displayMappingStatus on all agents table', () => {
+        expect(findAllAgentsTable().props('displayMappingStatus')).toBe(true);
+      });
+
+      describe('when there are unmapped agents but not mapped agents', () => {
+        beforeEach(async () => {
+          buildWrapper();
+
+          agents = [
+            {
+              id: 'agent-2',
+              name: 'agent two',
+              mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED,
+            },
+            {
+              id: 'agent-3',
+              name: 'agent three',
+              mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED,
+            },
+          ];
+          findGetAgentsWithMappingStatusQuery().vm.$emit('result', { agents });
+          await nextTick();
+        });
+
+        it('passes a "no allowed agents" empty message to the allowed agents table', () => {
+          expect(findAllowedAgentsTable().props('emptyStateMessage')).toBe(
+            'This group has no available agents. Select the <strong>All agents</strong> tab and allow at least one agent.',
+          );
+        });
+      });
+
+      describe('when there are no agents', () => {
+        beforeEach(async () => {
+          buildWrapper();
+
+          agents = [];
+          findGetAgentsWithMappingStatusQuery().vm.$emit('result', { agents });
+          await nextTick();
+        });
+
+        it('passes a "not agents" empty message to the "allowed" and "all agents" tables', () => {
+          expect(findAllowedAgentsTable().props('emptyStateMessage')).toBe(
+            'This group has no agents. Start by creating an agent.',
+          );
+          expect(findAllAgentsTable().props('emptyStateMessage')).toBe(
+            'This group has no agents. Start by creating an agent.',
+          );
+        });
       });
     });
 
-    describe('when GetAvailableAgentsQuery component emits error event', () => {
+    describe('when GetAgentsWithMappingStatusQuery component emits error event', () => {
       beforeEach(() => {
         buildWrapper();
 
-        findGetAvailableAgentsQuery().vm.$emit('error');
+        findGetAgentsWithMappingStatusQuery().vm.$emit('error');
       });
 
       it('displays error as a danger alert', () => {
         expect(findErrorAlert().text()).toContain('Could not load available agents');
       });
 
-      it('does not render AgentsTable component', () => {
-        expect(findAgentsTable().exists()).toBe(false);
+      it('does not render any table', () => {
+        expect(findAllowedAgentsTable().exists()).toBe(false);
+        expect(findAllAgentsTable().exists()).toBe(false);
       });
     });
 
     it('renders AgentsTable component', () => {
       buildWrapper();
 
-      expect(findAgentsTable().exists()).toBe(true);
+      expect(findAllowedAgentsTable().exists()).toBe(true);
     });
 
-    it('provides empty state message to the AgentsTable component', () => {
-      buildWrapper();
-
-      expect(findAgentsTable().props('emptyStateMessage')).toBe(
-        'This group has no available agents. Select the All agents tab and allow at least one agent.',
-      );
-    });
-
-    it('provides loading state from the GetAvailableAgentsQuery to the AgentsTable component', () => {
+    it('provides loading state from the GetAgentsWithMappingStatusQuery to the AgentsTable component', () => {
       buildWrapper({ mappedAgentsQueryState: { loading: true } });
 
-      expect(findAgentsTable().props('isLoading')).toBe(true);
+      expect(findAllowedAgentsTable().props('isLoading')).toBe(true);
     });
   });
 });

@@ -7685,6 +7685,9 @@ msgstr ""
 msgid "Autosave|Note"
 msgstr ""
 
+msgid "Availability"
+msgstr ""
+
 msgid "Available"
 msgstr ""
 
@@ -59250,6 +59253,12 @@ msgstr ""
 msgid "Workspaces|Agents connect workspaces to your Kubernetes cluster. To create a workspace with an allowed agent, group members must have at least the Developer role."
 msgstr ""
 
+msgid "Workspaces|All agents"
+msgstr ""
+
+msgid "Workspaces|Allowed Agents"
+msgstr ""
+
 msgid "Workspaces|Cancel"
 msgstr ""
 
@@ -59352,7 +59361,10 @@ msgstr ""
 msgid "Workspaces|The branch, tag, or commit hash GitLab uses to create your workspace."
 msgstr ""
 
-msgid "Workspaces|This group has no available agents. Select the All agents tab and allow at least one agent."
+msgid "Workspaces|This group has no agents. Start by creating an agent."
+msgstr ""
+
+msgid "Workspaces|This group has no available agents. Select the %{strongStart}All agents%{strongEnd} tab and allow at least one agent."
 msgstr ""
 
 msgid "Workspaces|To create a workspace, add a devfile to this project. A devfile is a configuration file for your workspace."
@@ -60695,6 +60707,9 @@ msgid "added a %{link_type} link"
 msgstr ""
 
 msgid "added a Zoom call to this issue"
+msgstr ""
+
+msgid "agents"
 msgstr ""
 
 msgid "ago"

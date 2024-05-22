@@ -1,12 +1,14 @@
 <script>
-import { GlAlert } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { GlAlert, GlTabs, GlTab, GlBadge } from '@gitlab/ui';
+import { s__, sprintf } from '~/locale';
+import { AGENT_MAPPING_STATUS_MAPPED } from '../constants';
 import AgentsTable from './agents_table.vue';
-import GetAvailableAgentsQuery from './get_available_agents_query.vue';
+import GetAgentsWithMappingStatusQuery from './get_agents_with_mapping_status_query.vue';
 
 const NO_ALLOWED_AGENTS_MESSAGE = s__(
-  'Workspaces|This group has no available agents. Select the All agents tab and allow at least one agent.',
+  'Workspaces|This group has no available agents. Select the %{strongStart}All agents%{strongEnd} tab and allow at least one agent.',
 );
+const NO_AGENTS_MESSAGE = s__('Workspaces|This group has no agents. Start by creating an agent.');
 const ERROR_LOADING_AVAILABLE_AGENTS_MESSAGE = s__(
   'Workspaces|Could not load available agents. Refresh the page to try again.',
 );
@@ -14,8 +16,11 @@ const ERROR_LOADING_AVAILABLE_AGENTS_MESSAGE = s__(
 export default {
   components: {
     GlAlert,
+    GlBadge,
+    GlTabs,
+    GlTab,
     AgentsTable,
-    GetAvailableAgentsQuery,
+    GetAgentsWithMappingStatusQuery,
   },
   inject: {
     namespace: {
@@ -28,35 +33,74 @@ export default {
       errorMessage: '',
     };
   },
+  computed: {
+    allowedAgents() {
+      return this.agents.filter((agent) => agent.mappingStatus === AGENT_MAPPING_STATUS_MAPPED);
+    },
+    allowedAgentsTableEmptyMessage() {
+      return this.agents.length
+        ? sprintf(
+            NO_ALLOWED_AGENTS_MESSAGE,
+            { strongStart: '<strong>', strongEnd: '</strong>' },
+            false,
+          )
+        : NO_AGENTS_MESSAGE;
+    },
+  },
   methods: {
-    onGetAvailableAgentsQueryResult({ agents }) {
+    onQueryResult({ agents }) {
       this.agents = agents;
     },
-    onGetAvailableAgentsQueryError() {
+    onErrorResult() {
       this.errorMessage = ERROR_LOADING_AVAILABLE_AGENTS_MESSAGE;
     },
   },
-  NO_ALLOWED_AGENTS_MESSAGE,
+  NO_AGENTS_MESSAGE,
 };
 </script>
 <template>
-  <div>
-    <get-available-agents-query
-      :namespace="namespace"
-      @result="onGetAvailableAgentsQueryResult"
-      @error="onGetAvailableAgentsQueryError"
-    >
-      <template #default="{ loading }">
-        <gl-alert v-if="errorMessage" variant="danger" :dismissible="false">
+  <get-agents-with-mapping-status-query
+    :namespace="namespace"
+    @result="onQueryResult"
+    @error="onErrorResult"
+  >
+    <template #default="{ loading }">
+      <div>
+        <gl-alert v-if="errorMessage" class="mb-3" variant="danger" :dismissible="false">
           {{ errorMessage }}
         </gl-alert>
-        <agents-table
-          v-else
-          :agents="agents"
-          :is-loading="loading"
-          :empty-state-message="$options.NO_ALLOWED_AGENTS_MESSAGE"
-        />
-      </template>
-    </get-available-agents-query>
-  </div>
+        <gl-tabs lazy>
+          <gl-tab data-testid="allowed-agents-tab">
+            <template #title>
+              <span>{{ s__('Workspaces|Allowed Agents') }}</span>
+              <gl-badge size="sm" class="gl-tab-counter-badge">{{ allowedAgents.length }}</gl-badge>
+              <span class="sr-only">{{ __('agents') }}</span>
+            </template>
+            <agents-table
+              v-if="!errorMessage"
+              data-testid="allowed-agents-table"
+              :agents="allowedAgents"
+              :is-loading="loading"
+              :empty-state-message="allowedAgentsTableEmptyMessage"
+            />
+          </gl-tab>
+          <gl-tab data-testid="all-agents-tab">
+            <template #title>
+              <span>{{ s__('Workspaces|All agents') }}</span>
+              <gl-badge size="sm" class="gl-tab-counter-badge">{{ agents.length }}</gl-badge>
+              <span class="sr-only">{{ __('agents') }}</span>
+            </template>
+            <agents-table
+              v-if="!errorMessage"
+              data-testid="all-agents-table"
+              :agents="agents"
+              :is-loading="loading"
+              display-mapping-status
+              :empty-state-message="$options.NO_AGENTS_MESSAGE"
+            />
+          </gl-tab>
+        </gl-tabs>
+      </div>
+    </template>
+  </get-agents-with-mapping-status-query>
 </template>
