@@ -23,7 +23,7 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
 
     include_context 'with ai features enabled for group'
 
-    it_behaves_like 'delegates AI request to Workhorse' do
+    context 'when delegates AI request to Workhorse' do
       let(:header) do
         {
           'Authorization' => ['Bearer access token'],
@@ -61,6 +61,8 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
         {
           'URL' => "https://cloud.gitlab.com/ai/v1/proxy/vertex-ai/v1/projects/PROJECT/locations/LOCATION/publishers/google/models/codechat-bison:predict",
           'Header' => header,
+          'AllowRedirects' => false,
+          'Method' => 'POST',
           'Body' => {
             instances: [{
               messages: [{
@@ -84,6 +86,19 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
         allow_next_instance_of(::Gitlab::Llm::VertexAi::Configuration) do |instance|
           allow(instance).to receive(:access_token).and_return('access token')
         end
+      end
+
+      it 'responds with Workhorse send-url headers' do
+        make_request
+
+        expect(response.body).to eq('""')
+        expect(response).to have_gitlab_http_status(:ok)
+
+        send_url_prefix, encoded_data = response.headers['Gitlab-Workhorse-Send-Data'].split(':')
+        data = Gitlab::Json.parse(Base64.urlsafe_decode64(encoded_data))
+
+        expect(send_url_prefix).to eq('send-url')
+        expect(data).to include(expected_params)
       end
     end
 
