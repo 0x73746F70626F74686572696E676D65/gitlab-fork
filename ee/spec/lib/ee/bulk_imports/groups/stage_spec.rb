@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe BulkImports::Groups::Stage do
+RSpec.describe BulkImports::Groups::Stage, feature_category: :importers do
   let(:entity) { create(:bulk_import_entity) }
   let(:expected_pipelines) do
     [
@@ -28,19 +28,11 @@ RSpec.describe BulkImports::Groups::Stage do
       it 'includes EE pipelines' do
         expect(subject.pipelines).to include(*expected_pipelines)
       end
-
-      it 'overrides the CE stage value for the EntityFinisher Pipeline' do
-        expect(subject.pipelines.last).to eq({ stage: 4, pipeline: BulkImports::Common::Pipelines::EntityFinisher })
-      end
     end
 
     context 'when source is not enterprise' do
       it 'does not include EE pipelines' do
         expect(subject.pipelines).not_to include(*expected_pipelines)
-      end
-
-      it 'does not override the CE stage value for the EntityFinisher Pipeline' do
-        expect(subject.pipelines.last).to eq({ stage: 3, pipeline: BulkImports::Common::Pipelines::EntityFinisher })
       end
     end
   end

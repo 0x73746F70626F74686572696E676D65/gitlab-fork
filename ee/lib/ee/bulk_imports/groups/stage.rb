@@ -27,10 +27,6 @@ module EE
             wiki: {
               pipeline: ::BulkImports::Common::Pipelines::WikiPipeline,
               stage: 2
-            },
-            # Override the CE stage value for the EntityFinisher Pipeline
-            finisher: {
-              stage: 4
             }
           }
         end
