@@ -918,6 +918,37 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     end
 
     context 'when authorized' do
+      shared_examples_for 'user request with code suggestions allowed' do
+        context 'when token creation succeeds' do
+          before do
+            allow_next_instance_of(Gitlab::Llm::AiGateway::CodeSuggestionsClient) do |client|
+              allow(client).to receive(:direct_access_token).and_return({ status: :success, token: token })
+            end
+          end
+
+          it 'returns direct access details', :freeze_time do
+            post_api
+
+            expect(response).to have_gitlab_http_status(:created)
+            expect(json_response).to match(expected_response)
+          end
+        end
+
+        context 'when token creation fails' do
+          before do
+            allow_next_instance_of(Gitlab::Llm::AiGateway::CodeSuggestionsClient) do |client|
+              allow(client).to receive(:direct_access_token).and_return({ status: :error, message: 'an error' })
+            end
+          end
+
+          it 'returns an error' do
+            post_api
+
+            expect(response).to have_gitlab_http_status(:service_unavailable)
+          end
+        end
+      end
+
       let(:current_user) { authorized_user }
       let(:expected_expiration) { Time.now.to_i + 3600 }
       let(:headers) { {} }
@@ -931,11 +962,12 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         }
       end
 
+      let(:token) { 'user token' }
       let(:expected_response) do
         {
           'base_url' => 'https://cloud.gitlab.com/ai',
           'expires_at' => expected_expiration,
-          'token' => an_instance_of(String),
+          'token' => token,
           'headers' => base_headers.merge(headers)
         }
       end
@@ -943,6 +975,12 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       it_behaves_like 'rate limited and tracked endpoint',
         { rate_limit_key: :code_suggestions_direct_access,
           event_name: 'code_suggestions_direct_access_rate_limit_exceeded' } do
+        before do
+          allow_next_instance_of(Gitlab::Llm::AiGateway::CodeSuggestionsClient) do |client|
+            allow(client).to receive(:direct_access_token).and_return({ status: :success, token: token })
+          end
+        end
+
         def request
           post api('/code_suggestions/direct_access', current_user)
         end
@@ -967,12 +1005,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           )
         end
 
-        it 'returns direct access details', :freeze_time do
-          post_api
-
-          expect(response).to have_gitlab_http_status(:created)
-          expect(json_response).to match(expected_response)
-        end
+        it_behaves_like 'user request with code suggestions allowed'
       end
 
       context 'when not SaaS' do
@@ -981,12 +1014,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         let(:expected_expiration) { active_token.expires_at.to_i }
         let(:gitlab_realm) { 'self-managed' }
 
-        it 'returns direct access details', :freeze_time do
-          post_api
-
-          expect(response).to have_gitlab_http_status(:created)
-          expect(json_response).to match(expected_response)
-        end
+        it_behaves_like 'user request with code suggestions allowed'
       end
 
       context 'when code_suggestions_direct_completions flag is disabled' do

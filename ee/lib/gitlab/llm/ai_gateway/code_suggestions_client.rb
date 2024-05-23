@@ -8,9 +8,11 @@ module Gitlab
         include ::API::Helpers::CloudConnector
 
         COMPLETION_CHECK_TIMEOUT = 3.seconds
+        DEFAULT_TIMEOUT = 30.seconds
 
         def initialize(user)
           @user = user
+          @logger = Gitlab::Llm::Logger.build
         end
 
         def test_completion
@@ -32,9 +34,39 @@ module Gitlab
           err.message
         end
 
+        def direct_access_token
+          return error('Missing instance token') unless access_token
+
+          logger.info(message: "Creating user access token")
+          response = Gitlab::HTTP.post(
+            Gitlab::AiGateway.access_token_url,
+            headers: request_headers,
+            body: nil,
+            timeout: DEFAULT_TIMEOUT,
+            allow_local_requests: true,
+            stream_body: false
+          )
+          return error('Token creation failed') unless response.success?
+          return error('Token is missing in response') unless response['token'].present?
+
+          success(token: response['token'])
+        end
+
         private
 
-        attr_reader :user
+        attr_reader :user, :logger
+
+        def error(message)
+          {
+            message: message,
+            status: :error
+          }
+        end
+
+        def success(pass_back = {})
+          pass_back[:status] = :success
+          pass_back
+        end
 
         def request_headers
           {
