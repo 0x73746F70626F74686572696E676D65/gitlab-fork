@@ -663,8 +663,6 @@ and the pipeline is for either:
 
 **Related topics**:
 
-- You can use the [`workflow:rules` templates](workflow.md#workflowrules-templates) to import
-  a preconfigured `workflow: rules` entry.
 - [Common `if` clauses for `workflow:rules`](workflow.md#common-if-clauses-for-workflowrules).
 - [Use `rules` to run merge request pipelines](../pipelines/merge_request_pipelines.md#add-jobs-to-merge-request-pipelines).
 
