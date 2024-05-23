@@ -32,6 +32,7 @@ module Integrations
         section: SECTION_TYPE_CONFIGURATION,
         title: -> { s_('GoogleCloud|Google Cloud project ID') },
         label_description: -> { s_('GoogleCloud|Project with the Artifact Registry repository.') },
+        description: -> { _('ID of the Google Cloud project.') },
         help: -> { artifact_registry_project_id_help }
 
       field :artifact_registry_repositories,
@@ -42,12 +43,14 @@ module Integrations
           s_('GoogleCloud|Can be up to 63 lowercase letters, numbers, or hyphens. ' \
              'Must start with a letter and end with a letter or number. ' \
              'Repository must be Docker format and Standard mode.')
-        }
+        },
+        description: -> { _('Repository of Artifact Registry.') }
 
       field :artifact_registry_location,
         required: true,
         section: SECTION_TYPE_CONFIGURATION,
-        title: -> { s_('GoogleCloud|Repository location') }
+        title: -> { s_('GoogleCloud|Repository location') },
+        description: 'Location of the Artifact Registry repository.'
 
       alias_method :artifact_registry_repository, :artifact_registry_repositories
 
