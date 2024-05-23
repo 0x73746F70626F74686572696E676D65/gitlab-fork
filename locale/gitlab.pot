@@ -19382,9 +19382,6 @@ msgstr ""
 msgid "Edit Slack integration"
 msgstr ""
 
-msgid "Edit Snippet"
-msgstr ""
-
 msgid "Edit System Hook"
 msgstr ""
 
@@ -19470,6 +19467,9 @@ msgid "Edit release"
 msgstr ""
 
 msgid "Edit single file"
+msgstr ""
+
+msgid "Edit snippet"
 msgstr ""
 
 msgid "Edit table"
