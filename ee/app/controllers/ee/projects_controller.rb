@@ -30,7 +30,7 @@ module EE
       result = ::Projects::RestoreService.new(project, current_user, {}).execute
 
       if result[:status] == :success
-        flash[:notice] = _("Project '%{project_name}' is restored.") % { project_name: project.full_name }
+        flash[:notice] = format(_("Project '%{project_name}' has been successfully restored."), project_name: project.full_name)
 
         redirect_to(edit_project_path(project))
       else
