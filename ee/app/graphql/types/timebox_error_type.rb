@@ -7,10 +7,10 @@ module Types
     description 'Explains why we could not generate a timebox report.'
 
     field :code, ::Types::TimeboxErrorReasonEnum,
-          null: true,
-          description: 'Machine readable code, categorizing the error.'
+      null: true,
+      description: 'Machine readable code, categorizing the error.'
     field :message, ::GraphQL::Types::String,
-          null: true,
-          description: 'Human readable message explaining what happened.'
+      null: true,
+      description: 'Human readable message explaining what happened.'
   end
 end

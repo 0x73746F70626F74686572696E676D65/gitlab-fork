@@ -12,17 +12,17 @@ module Types
       implements OrchestrationPolicyType
 
       field :all_group_approvers, [::Types::SecurityOrchestration::ApprovalGroupType],
-            null: true,
-            description: 'All potential approvers of the group type, including groups inaccessible to the user.'
+        null: true,
+        description: 'All potential approvers of the group type, including groups inaccessible to the user.'
       field :deprecated_properties, [::GraphQL::Types::String], null: true,
-            description: 'All deprecated properties in the policy.',
-            alpha: { milestone: '16.10' }
+        description: 'All deprecated properties in the policy.',
+        alpha: { milestone: '16.10' }
       field :role_approvers, [::Types::MemberAccessLevelNameEnum],
-            null: true,
-            description: 'Approvers of the role type. Users belonging to these role(s) alone will be approvers.'
+        null: true,
+        description: 'Approvers of the role type. Users belonging to these role(s) alone will be approvers.'
       field :source, Types::SecurityOrchestration::SecurityPolicySourceType,
-            null: false,
-            description: 'Source of the policy. Its fields depend on the source type.'
+        null: false,
+        description: 'Source of the policy. Its fields depend on the source type.'
       field :user_approvers, [::Types::UserType], null: true, description: 'Approvers of the user type.'
     end
     # rubocop: enable Graphql/AuthorizeTypes

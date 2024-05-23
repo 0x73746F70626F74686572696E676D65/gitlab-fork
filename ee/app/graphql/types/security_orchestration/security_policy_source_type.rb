@@ -7,7 +7,7 @@ module Types
       description 'Represents a policy source. Its fields depend on the source type.'
 
       possible_types SecurityOrchestration::GroupSecurityPolicySourceType,
-                     SecurityOrchestration::ProjectSecurityPolicySourceType
+        SecurityOrchestration::ProjectSecurityPolicySourceType
 
       def self.resolve_type(object, context)
         if object[:namespace].present?
