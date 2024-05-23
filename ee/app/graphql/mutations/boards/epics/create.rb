@@ -45,8 +45,8 @@ module Mutations
 
         def mutation_response(service_response)
           {
-              epic: service_response.success? ? service_response.payload : nil,
-              errors: Array.wrap(service_response.errors)
+            epic: service_response.success? ? service_response.payload : nil,
+            errors: Array.wrap(service_response.errors)
           }
         end
 

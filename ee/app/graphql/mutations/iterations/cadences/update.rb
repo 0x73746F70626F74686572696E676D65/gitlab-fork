@@ -56,8 +56,8 @@ module Mutations
           response_object = response.success? ? response.payload[:iteration_cadence] : nil
 
           {
-              iteration_cadence: response_object,
-              errors: response.errors
+            iteration_cadence: response_object,
+            errors: response.errors
           }
         end
       end

@@ -63,8 +63,8 @@ module Mutations
         response_errors = response.error? ? (response.payload[:errors] || response.message) : []
 
         {
-            iteration: response_object,
-            errors: response_errors
+          iteration: response_object,
+          errors: response_errors
         }
       end
 
