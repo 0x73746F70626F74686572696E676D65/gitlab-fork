@@ -1,6 +1,6 @@
 ---
 description: User clicks Duo Pro trial on billing page
-category: InternalEventTracking
+internal_events: true
 action: click_duo_pro_trial_billing_page
 identifiers:
   - namespace

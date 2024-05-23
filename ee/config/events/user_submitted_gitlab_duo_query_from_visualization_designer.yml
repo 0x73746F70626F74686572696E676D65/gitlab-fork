@@ -1,11 +1,7 @@
 ---
 description: Triggered when a user submits a GitLab Duo natural language query from the Product Analytics visualization designer.
-category: InternalEventTracking
+internal_events: true
 action: user_submitted_gitlab_duo_query_from_visualization_designer
-label_description:
-property_description:
-value_description:
-extra_properties:
 identifiers:
   - project
   - user

@@ -1,6 +1,6 @@
 ---
 description: Render Duo Pro lead page
-category: InternalEventTracking
+internal_events: true
 action: render_duo_pro_lead_page
 identifiers:
   - namespace
