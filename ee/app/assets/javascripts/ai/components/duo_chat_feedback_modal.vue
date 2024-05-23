@@ -108,6 +108,7 @@ export default {
       <gl-form-textarea
         v-model="extendedFeedback"
         :placeholder="$options.i18n.MODAL_MORE_PLACEHOLDER"
+        no-resize
       />
     </gl-form-group>
   </gl-modal>

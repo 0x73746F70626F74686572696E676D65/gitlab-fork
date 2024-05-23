@@ -393,6 +393,7 @@ export default {
           id="cadence-description"
           v-model="description"
           data-testid="iteration-cadence-description-field"
+          no-resize
         />
       </gl-form-group>
 

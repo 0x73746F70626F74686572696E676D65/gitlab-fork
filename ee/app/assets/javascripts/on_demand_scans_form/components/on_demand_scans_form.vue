@@ -384,6 +384,7 @@ export default {
               data-testid="dast-scan-description-input"
               :placeholder="$options.i18n.scanConfigurationDescriptionPlaceholder"
               name="description"
+              no-resize
               :state="form.fields.description.state"
             />
           </gl-form-group>

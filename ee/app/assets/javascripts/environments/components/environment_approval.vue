@@ -379,6 +379,7 @@ export default {
                 v-model="comment"
                 :placeholder="$options.i18n.description"
                 :state="isCommentValid"
+                no-resize
               />
             </gl-form-group>
             <span

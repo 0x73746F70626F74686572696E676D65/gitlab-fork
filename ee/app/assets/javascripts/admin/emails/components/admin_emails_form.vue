@@ -158,6 +158,7 @@ export default {
           :value="value"
           :state="validation.state"
           :name="$options.fields.body.inputAttrs.name"
+          no-resize
           @input="input"
           @blur="blur"
         />

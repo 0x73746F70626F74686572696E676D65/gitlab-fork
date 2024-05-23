@@ -340,6 +340,7 @@ export default {
           v-if="showSecretAccessKey"
           v-model="secretAccessKey"
           rows="16"
+          no-resize
           :formatter="secretAccessKeyFormatter"
           class="gl-h-auto!"
           data-testid="secret-access-key"

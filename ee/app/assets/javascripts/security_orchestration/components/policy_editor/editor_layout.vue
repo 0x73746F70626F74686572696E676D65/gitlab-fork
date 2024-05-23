@@ -290,6 +290,7 @@ export default {
                 id="policyDescription"
                 :disabled="hasParsingError"
                 :value="policy.description"
+                no-resize
                 @input="updateProperty('description', $event)"
               />
             </gl-form-group>

@@ -202,6 +202,7 @@ export default {
         :placeholder="s__('Analytics|Example: Number of users over time, grouped weekly')"
         :submit-on-enter="true"
         :state="isValid"
+        no-resize
         class="gl-w-full gl-md-max-w-70p gl-lg-w-30p gl-min-w-20"
         data-testid="generate-cube-query-prompt-input"
         @submit="generateAiQuery"
