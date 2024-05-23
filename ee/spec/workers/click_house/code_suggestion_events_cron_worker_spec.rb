@@ -46,22 +46,19 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
     end
 
     context 'when data is present' do
-      before do
-        Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', { user: build_stubbed(:user, id: 1) })
-        Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', { user: build_stubbed(:user, id: 2) })
-        Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', { user: build_stubbed(:user, id: 3) })
-      end
+      let!(:usage1) { build(:code_suggestions_usage).tap(&:store) }
+      let!(:usage2) { build(:code_suggestions_usage).tap(&:store) }
+      let!(:usage3) { build(:code_suggestions_usage).tap(&:store) }
 
       it 'inserts all rows' do
         status = job.perform
 
         expect(status).to eq({ status: :processed, inserted_rows: 3 })
 
-        event = Gitlab::Tracking::AiTracking::EVENTS['code_suggestions_requested']
         expect(inserted_records).to match([
-          hash_including('user_id' => 1, 'event' => event),
-          hash_including('user_id' => 2, 'event' => event),
-          hash_including('user_id' => 3, 'event' => event)
+          hash_including('user_id' => usage1.user.id),
+          hash_including('user_id' => usage2.user.id),
+          hash_including('user_id' => usage3.user.id)
         ])
       end
 
@@ -100,8 +97,8 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
           expect(status).to eq({ status: :over_time, inserted_rows: 2 })
 
           expect(inserted_records).to match([
-            hash_including('user_id' => 1),
-            hash_including('user_id' => 2)
+            hash_including('user_id' => usage1.user.id),
+            hash_including('user_id' => usage2.user.id)
           ])
         end
       end

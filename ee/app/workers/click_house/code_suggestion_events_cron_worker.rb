@@ -21,7 +21,7 @@ module ClickHouse
     }.freeze
 
     INSERT_QUERY = <<~SQL.squish
-      INSERT INTO code_suggestion_usages (user_id, timestamp, event)
+      INSERT INTO code_suggestion_usages (#{CSV_MAPPING.keys.join(', ')})
       SETTINGS async_insert=1, wait_for_async_insert=1 FORMAT CSV
     SQL
 
@@ -79,7 +79,8 @@ module ClickHouse
     def build_row(hash)
       return unless CSV_MAPPING.keys.all? { |key| hash[key] }
 
-      hash[:timestamp] = DateTime.parse(hash[:timestamp]).to_f
+      # Legacy data format. Remove with next deploy.
+      hash[:timestamp] = hash[:timestamp].is_a?(String) ? DateTime.parse(hash[:timestamp]).to_f : hash[:timestamp]
       hash
     end
 
