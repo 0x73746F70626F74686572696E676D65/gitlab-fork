@@ -180,16 +180,6 @@ RSpec.describe WorkItems::ParentLinks::ReorderService, feature_category: :portfo
         it_behaves_like 'only changes work item'
       end
 
-      context 'when synced epic for the adjacent work item does not exist' do
-        let(:synced_moving_object) { nil }
-
-        before do
-          top_adjacent.synced_epic.update_columns(issue_id: nil)
-        end
-
-        it_behaves_like 'reorders the hierarchy'
-      end
-
       it_behaves_like 'when saving fails', Epic, expect_error_log: true, expect_error_message: true
       it_behaves_like 'when saving fails', WorkItems::ParentLink
     end
@@ -233,16 +223,6 @@ RSpec.describe WorkItems::ParentLinks::ReorderService, feature_category: :portfo
       context 'when synced EpicIssue for the moving work item do not exist' do
         let(:synced_moving_object) { nil }
         let_it_be_with_reload(:epic_issue) { nil }
-
-        it_behaves_like 'reorders the hierarchy'
-      end
-
-      context 'when synced epic for the adjacent work item does not exist' do
-        let(:synced_moving_object) { nil }
-
-        before do
-          top_adjacent.synced_epic.update_columns(issue_id: nil)
-        end
 
         it_behaves_like 'reorders the hierarchy'
       end

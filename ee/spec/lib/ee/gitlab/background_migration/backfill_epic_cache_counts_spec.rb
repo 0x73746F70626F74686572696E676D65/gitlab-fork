@@ -2,7 +2,9 @@
 require 'spec_helper'
 
 # rubocop:disable RSpec/MultipleMemoizedHelpers
-RSpec.describe Gitlab::BackgroundMigration::BackfillEpicCacheCounts, :migration do
+# provide schema version before not null constraint is introduced on epics.issue_id
+RSpec.describe Gitlab::BackgroundMigration::BackfillEpicCacheCounts, :migration, schema: 20240508085441,
+  feature_category: :team_planning do
   let(:users) { table(:users) }
   let(:namespaces) { table(:namespaces) }
   let(:projects) { table(:projects) }
