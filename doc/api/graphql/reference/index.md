@@ -27543,6 +27543,7 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="projectdependenciescomponentnames"></a>`componentNames` | [`[String!]`](#string) | Filter dependencies by component names. |
 | <a id="projectdependenciespackagemanagers"></a>`packageManagers` | [`[PackageManager!]`](#packagemanager) | Filter dependencies by package managers. |
 | <a id="projectdependenciessort"></a>`sort` | [`DependencySort`](#dependencysort) | Sort dependencies by given criteria. |
+| <a id="projectdependenciessourcetypes"></a>`sourceTypes` | [`[SbomSourceType!]`](#sbomsourcetype) | Filter dependencies by source type. |
 
 ##### `Project.deployment`
 
@@ -34736,6 +34737,17 @@ Size of UI component in SAST configuration page.
 | <a id="sastuicomponentsizelarge"></a>`LARGE` | Size of UI component in SAST configuration page is large. |
 | <a id="sastuicomponentsizemedium"></a>`MEDIUM` | Size of UI component in SAST configuration page is medium. |
 | <a id="sastuicomponentsizesmall"></a>`SMALL` | Size of UI component in SAST configuration page is small. |
+
+### `SbomSourceType`
+
+Values for sbom source types.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="sbomsourcetypecontainer_scanning"></a>`CONTAINER_SCANNING` | Source Type: container_scanning. |
+| <a id="sbomsourcetypecontainer_scanning_for_registry"></a>`CONTAINER_SCANNING_FOR_REGISTRY` | Source Type: container_scanning_for_registry. |
+| <a id="sbomsourcetypedependency_scanning"></a>`DEPENDENCY_SCANNING` | Source Type: dependency_scanning. |
+| <a id="sbomsourcetypenil_source"></a>`NIL_SOURCE` | Enum source nil. |
 
 ### `ScanStatus`
 

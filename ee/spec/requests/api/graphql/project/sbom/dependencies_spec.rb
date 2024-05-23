@@ -208,4 +208,18 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
       expect(names).to eq([component_name])
     end
   end
+
+  context 'with source_types as an argument' do
+    let!(:registry_occurrence) { create(:sbom_occurrence, :registry_occurrence, project: project) }
+    let(:query) { pagination_query({ source_types: [:CONTAINER_SCANNING_FOR_REGISTRY] }) }
+
+    it 'filters records based on the package manager name' do
+      subject
+
+      result = graphql_data_at(:project, :dependencies, :nodes)
+      names = result.pluck('name')
+
+      expect(names).to eq([registry_occurrence.name])
+    end
+  end
 end

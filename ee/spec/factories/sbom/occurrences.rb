@@ -19,6 +19,13 @@ FactoryBot.define do
       end
     end
 
+    trait :registry_occurrence do
+      source do
+        association :sbom_source, source_type: :container_scanning_for_registry, packager_name: packager_name,
+          operating_system: { 'name' => 'debian', 'version' => '9' }
+      end
+    end
+
     trait :with_vulnerabilities do
       vulnerability_count { 2 }
       vulnerabilities { build_list(:vulnerability, vulnerability_count) }

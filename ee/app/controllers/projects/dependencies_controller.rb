@@ -59,7 +59,12 @@ module Projects
     end
 
     def dependency_list_params
-      params.permit(:sort_by, :sort, :filter, :page, :per_page)
+      params.permit(:sort_by, :sort, :filter, :page, :per_page, source_types: []).with_defaults(
+        source_types: default_source_type_filters)
+    end
+
+    def default_source_type_filters
+      ::Sbom::Source::DEFAULT_SOURCES.keys + [nil]
     end
 
     def report_service

@@ -283,6 +283,15 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.filter_by_source_types' do
+    let_it_be(:container_scanning_occurrence) { create(:sbom_occurrence, :os_occurrence) }
+    let_it_be(:dependency_scanning_occurrence) { create(:sbom_occurrence) }
+
+    it 'returns records filtered by source name' do
+      expect(described_class.filter_by_source_types([:container_scanning])).to eq([container_scanning_occurrence])
+    end
+  end
+
   describe '.by_licenses' do
     using RSpec::Parameterized::TableSyntax
 

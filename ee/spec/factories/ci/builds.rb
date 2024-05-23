@@ -206,6 +206,12 @@ FactoryBot.define do
       end
     end
 
+    trait :cyclonedx_container_scanning do
+      after(:build) do |build|
+        build.job_artifacts << build(:ee_ci_job_artifact, :cyclonedx_container_scanning, job: build)
+      end
+    end
+
     trait :cyclonedx_pypi_only do
       after(:build) do |build|
         build.job_artifacts << build(:ee_ci_job_artifact, :cyclonedx_pypi_only, job: build)

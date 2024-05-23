@@ -208,6 +208,31 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
                 expect(json_response['dependencies']).to match_array(hash_including('occurrence_id' => occurrence.id))
               end
             end
+
+            context 'with source types filter' do
+              let_it_be(:os_occurrence) { create(:sbom_occurrence, :os_occurrence, project: project) }
+              let_it_be(:registry_occurrence) { create(:sbom_occurrence, :registry_occurrence, project: project) }
+
+              context 'when source_types param is present' do
+                let(:params) { { source_types: [:container_scanning_for_registry] } }
+
+                it 'returns data based on filtered sbom occurrences' do
+                  expect(json_response['dependencies']).to match_array(
+                    hash_including('occurrence_id' => registry_occurrence.id))
+                end
+              end
+
+              context 'when source_types param is empty' do
+                let(:params) { { source_types: [] } }
+
+                it 'returns data based on DEFAULT_SOURCES' do
+                  expect(json_response['dependencies']).to match_array([
+                    hash_including('occurrence_id' => os_occurrence.id),
+                    hash_including('occurrence_id' => occurrence.id)
+                  ])
+                end
+              end
+            end
           end
         end
 

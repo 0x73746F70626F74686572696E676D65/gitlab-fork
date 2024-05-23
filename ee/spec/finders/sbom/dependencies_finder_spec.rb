@@ -234,6 +234,34 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
         expect(dependencies).to match_array([occurrence_1, occurrence_2, occurrence_3])
       end
     end
+
+    context 'when filtered by source types' do
+      let_it_be(:occurrence_cs) do
+        create(:sbom_occurrence, :os_occurrence, project: project)
+      end
+
+      let_it_be(:params) do
+        {
+          source_types: ['container_scanning']
+        }
+      end
+
+      it 'returns only records corresponding to the filter' do
+        expect(dependencies.map(&:id)).to match_array([occurrence_cs.id])
+      end
+
+      context 'when source type nil_source is also present' do
+        let_it_be(:params) do
+          {
+            source_types: %w[container_scanning nil_source]
+          }
+        end
+
+        it 'returns records with nil type' do
+          expect(dependencies.map(&:id)).to match_array([occurrence_cs.id, occurrence_3.id])
+        end
+      end
+    end
   end
 
   context 'with group' do
