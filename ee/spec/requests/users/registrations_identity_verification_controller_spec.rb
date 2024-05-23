@@ -137,7 +137,6 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     it_behaves_like 'it requires a valid verification_user_id'
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
-    it_behaves_like 'it loads reCAPTCHA'
 
     it 'renders template show with layout minimal' do
       do_request

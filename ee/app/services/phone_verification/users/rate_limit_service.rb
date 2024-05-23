@@ -7,17 +7,6 @@
 module PhoneVerification
   module Users
     class RateLimitService
-      def self.verification_attempts_limit_exceeded?(user)
-        return false unless Feature.enabled?(:arkose_labs_phone_verification_challenge)
-
-        ::Gitlab::ApplicationRateLimiter.peek(:phone_verification_challenge, scope: user)
-      end
-
-      def self.increase_verification_attempts(user)
-        Feature.enabled?(:arkose_labs_phone_verification_challenge) &&
-          ::Gitlab::ApplicationRateLimiter.throttled?(:phone_verification_challenge, scope: user)
-      end
-
       def self.daily_transaction_soft_limit_exceeded?
         return false unless Feature.enabled?(:soft_limit_daily_phone_verifications)
 

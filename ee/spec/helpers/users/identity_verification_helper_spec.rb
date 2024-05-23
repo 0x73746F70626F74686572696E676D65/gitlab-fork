@@ -80,8 +80,6 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
           mock_offer_phone_number_exemption
         )
 
-        allow(helper).to receive(:show_recaptcha_challenge?).and_return(true)
-
         allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return('api-key')
         allow(::Arkose::Settings).to receive(:arkose_labs_domain).and_return('domain')
       end
@@ -153,40 +151,6 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_re
       it 'returns a specific message' do
         expect(message).to eq(format(s_("IdentityVerification|You've reached the maximum amount of resends. " \
                                         'Wait %{interval} and try again.'), { interval: 'about 1 hour' }))
-      end
-    end
-  end
-
-  describe '#show_recaptcha_challenge' do
-    subject(:show_recaptcha) { helper.show_recaptcha_challenge? }
-
-    before do
-      allow(Gitlab::Recaptcha).to receive(:enabled?).and_return(recaptcha_enabled)
-
-      allow(PhoneVerification::Users::RateLimitService)
-        .to receive(:daily_transaction_soft_limit_exceeded?).and_return(daily_limit_reached)
-    end
-
-    context 'when reCAPTCHA is not enabled' do
-      let(:recaptcha_enabled) { false }
-      let(:daily_limit_reached) { false }
-
-      it { is_expected.to be_falsey }
-    end
-
-    context 'when reCAPTCHA is enabled' do
-      let(:recaptcha_enabled) { true }
-
-      context 'and daily limit is not reached' do
-        let(:daily_limit_reached) { false }
-
-        it { is_expected.to be_falsey }
-      end
-
-      context 'and daily limit is reached' do
-        let(:daily_limit_reached) { true }
-
-        it { is_expected.to be_truthy }
       end
     end
   end

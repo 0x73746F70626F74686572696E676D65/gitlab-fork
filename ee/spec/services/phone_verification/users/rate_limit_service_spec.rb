@@ -7,66 +7,6 @@ RSpec.describe PhoneVerification::Users::RateLimitService, feature_category: :sy
 
   let_it_be(:user) { build(:user) }
 
-  describe '.verification_attempts_limit_exceeded?' do
-    subject(:result) { described_class.verification_attempts_limit_exceeded?(user) }
-
-    before do
-      allow(Gitlab::ApplicationRateLimiter)
-        .to receive(:peek)
-        .with(:phone_verification_challenge, scope: user)
-        .and_return(exceeded)
-    end
-
-    context 'when limit has been exceeded' do
-      let(:exceeded) { true }
-
-      it { is_expected.to eq true }
-    end
-
-    context 'when limit has not been exceeded' do
-      let(:exceeded) { false }
-
-      it { is_expected.to eq false }
-    end
-
-    context 'when arkose_labs_phone_verification_challenge is disabled' do
-      let(:exceeded) { true }
-
-      before do
-        stub_feature_flags(arkose_labs_phone_verification_challenge: false)
-      end
-
-      it 'returns false', :aggregate_failures do
-        expect(Gitlab::ApplicationRateLimiter).not_to receive(:peek)
-        expect(result).to eq false
-      end
-    end
-  end
-
-  describe '.increase_verification_attempts' do
-    subject(:increase_attempts) { described_class.increase_verification_attempts(user) }
-
-    it 'calls throttled?' do
-      expect(::Gitlab::ApplicationRateLimiter)
-        .to receive(:throttled?)
-        .with(:phone_verification_challenge, scope: user)
-
-      increase_attempts
-    end
-
-    context 'when arkose_labs_phone_verification_challenge is disabled' do
-      before do
-        stub_feature_flags(arkose_labs_phone_verification_challenge: false)
-      end
-
-      it 'does not call throttled?', :aggregate_failures do
-        expect(Gitlab::ApplicationRateLimiter).not_to receive(:throttled?)
-
-        increase_attempts
-      end
-    end
-  end
-
   describe 'daily transactions limit exceeded checks' do
     shared_examples 'it returns the correct result' do |rate_limit_name, feature_flag_name|
       before do

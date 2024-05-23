@@ -7,14 +7,13 @@ module Users
     include ActionView::Helpers::DateHelper
     include IdentityVerificationHelper
     include ::Gitlab::RackLoadBalancingHelpers
-    include Recaptcha::Adapters::ControllerMethods
 
     EVENT_CATEGORIES = %i[email phone credit_card error toggle_phone_exemption].freeze
     PHONE_VERIFICATION_ACTIONS = %i[send_phone_verification_code verify_phone_verification_code].freeze
     CREDIT_CARD_VERIFICATION_ACTIONS = %i[verify_credit_card].freeze
 
     before_action :require_verification_user!, except: [:restricted]
-    before_action :load_captcha, :redirect_banned_user, only: [:show]
+    before_action :redirect_banned_user, only: [:show]
     before_action :ensure_verification_method_attempt_allowed!,
       only: PHONE_VERIFICATION_ACTIONS + CREDIT_CARD_VERIFICATION_ACTIONS
     before_action :ensure_phone_challenge_completed!, only: [:send_phone_verification_code]
@@ -204,10 +203,6 @@ module Users
 
     def verify_phone_verification_code_params
       required_params.permit(:verification_code)
-    end
-
-    def load_captcha
-      show_recaptcha_challenge? && Gitlab::Recaptcha.load_configurations!
     end
 
     def arkose_labs_enabled?(user: nil)
