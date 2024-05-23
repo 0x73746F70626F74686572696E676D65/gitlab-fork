@@ -37,7 +37,7 @@ describe('ProviderSelectionView', () => {
   const findSelfManagedProviderCard = () => wrapper.findComponent(SelfManagedProviderCard);
   const findGitLabManagedProviderCard = () => wrapper.findComponent(GitLabManagedProviderCard);
 
-  const createWrapper = (apolloMock = mockApolloSuccess) => {
+  const createWrapper = (apolloMock = mockApolloSuccess, provide = {}) => {
     wrapper = shallowMountExtended(ProviderSelectionView, {
       apolloProvider: createMockApollo([[initializeProductAnalyticsMutation, apolloMock]]),
       propsData: {
@@ -45,9 +45,11 @@ describe('ProviderSelectionView', () => {
       },
       provide: {
         analyticsSettingsPath: '/settings/analytics',
-        namespaceFullPath: 'group/project',
+        canSelectGitlabManagedProvider: true,
         chartEmptyStateIllustrationPath: '/path/to/illustration.svg',
+        namespaceFullPath: 'group/project',
         projectLevelAnalyticsProviderSettings: {},
+        ...provide,
       },
       stubs: {
         GlSprintf,
@@ -80,6 +82,20 @@ describe('ProviderSelectionView', () => {
       expect(findHelpLink().attributes('href')).toBe(
         '/help/user/product_analytics/index#onboard-a-gitLab-project',
       );
+    });
+  });
+
+  describe('when GitLab-managed provider is unavailable', () => {
+    beforeEach(() => {
+      createWrapper(mockApolloSuccess, { canSelectGitlabManagedProvider: false });
+    });
+
+    it('does not render a title mentioning options', () => {
+      expect(wrapper.text()).not.toContain('Select an option');
+    });
+
+    it('does not render the GitLab-managed provider card', () => {
+      expect(findGitLabManagedProviderCard().exists()).toBe(false);
     });
   });
 

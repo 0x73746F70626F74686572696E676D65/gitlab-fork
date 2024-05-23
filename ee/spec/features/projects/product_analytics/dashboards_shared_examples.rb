@@ -141,38 +141,28 @@ RSpec.shared_examples 'product analytics dashboards' do
               click_link _('Set up')
             end
 
-            it 'renders the onboarding empty state' do
+            it 'renders the provider selection view' do
               expect(page).to have_content(s_('ProductAnalytics|Analyze your product with Product Analytics'))
+              expect(page).to have_content(s_('ProductAnalytics|Self-managed provider'))
             end
 
-            it 'renders the creating instance loading screen and then the setup page' do
-              click_button s_('ProductAnalytics|Set up product analytics')
+            context 'and selecting a self-managed provider' do
+              it 'renders the creating instance loading screen and then the instrumentation setup page' do
+                click_button s_('ProductAnalytics|Connect your own provider')
 
-              expect(page).to have_content(s_('ProductAnalytics|Creating your product analytics instance...'))
+                expect(page).to have_content(s_('ProductAnalytics|Creating your product analytics instance...'))
 
-              wait_for_requests
+                wait_for_requests
 
-              project.project_setting.update!(project_settings)
-              project.reload
+                project.project_setting.update!(project_settings)
+                project.reload
 
-              stub_cube_proxy_zero_count
-              ::ProductAnalytics::InitializeStackService.new(container: project).unlock!
+                stub_cube_proxy_zero_count
+                ::ProductAnalytics::InitializeStackService.new(container: project).unlock!
 
-              travel_to(1.minute.from_now) do
-                expect(page).to have_content(s_('ProductAnalytics|Instrument your application'))
-              end
-            end
-
-            context 'and a new instance is already being intialized' do
-              before do
-                ::ProductAnalytics::InitializeStackService.new(container: project).lock!
-              end
-
-              it 'renders an error alert when setting up a new instance' do
-                click_button s_('ProductAnalytics|Set up product analytics')
-
-                expect(find_by_testid('alert-danger'))
-                  .to have_text(/Product analytics initialization is already (completed|in progress)/)
+                travel_to(1.minute.from_now) do
+                  expect(page).to have_content(s_('ProductAnalytics|Instrument your application'))
+                end
               end
             end
           end
