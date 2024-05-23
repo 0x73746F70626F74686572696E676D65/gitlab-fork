@@ -10,6 +10,7 @@ module EE
           super + [:ai_features]
         end
 
+        mount_mutation ::Mutations::Ci::Catalog::VerifiedNamespace::Create
         mount_mutation ::Mutations::Ci::ProjectSubscriptions::Create
         mount_mutation ::Mutations::Ci::ProjectSubscriptions::Delete
         mount_mutation ::Mutations::ComplianceManagement::Frameworks::Destroy

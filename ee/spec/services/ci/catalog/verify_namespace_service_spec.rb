@@ -39,6 +39,19 @@ RSpec.describe Ci::Catalog::VerifyNamespaceService, feature_category: :pipeline_
 
         expect(response.message).to eq('Please pass in the root namespace.')
       end
+
+      context 'when unknown verification level is being set' do
+        it 'is not valid' do
+          response = described_class.new(subgroup, 'unknown').execute
+
+          expected_string =
+            'Please pass in the root namespace., ' \
+              'Please pass in a valid verification level: gitlab_maintained, ' \
+              'gitlab_partner_maintained, verified_creator_maintained, unverified.'
+
+          expect(response.message).to eq(expected_string)
+        end
+      end
     end
 
     context 'when root namespace is passed' do
@@ -47,7 +60,7 @@ RSpec.describe Ci::Catalog::VerifyNamespaceService, feature_category: :pipeline_
           response = described_class.new(group, 'unknown').execute
 
           expect(response.message).to eq('Please pass in a valid verification level: gitlab_maintained, ' \
-                                         'gitlab_partner_maintained, verified_creator_maintained, unverified.')
+            'gitlab_partner_maintained, verified_creator_maintained, unverified.')
         end
       end
 
