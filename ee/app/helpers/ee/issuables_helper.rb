@@ -42,15 +42,15 @@ module EE
 
       if project && can?(current_user, :create_saved_replies, project)
         template_paths << {
-          text: _('Manage project comment templates'),
-          path: project_comment_templates_path(project)
+          text: _('Project comment templates'),
+          href: project_comment_templates_path(project)
         }
       end
 
       if group && can?(current_user, :create_saved_replies, group)
         template_paths << {
-          text: _('Manage group comment templates'),
-          path: group_comment_templates_path(group)
+          text: _('Group comment templates'),
+          href: group_comment_templates_path(group)
         }
       end
 

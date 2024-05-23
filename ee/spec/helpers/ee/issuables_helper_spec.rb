@@ -193,8 +193,8 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
       it 'returns array with group comment templates path' do
         expect(helper.new_comment_template_paths(group).size).to eq(2)
         expect(helper.new_comment_template_paths(group).last).to eq({
-          text: "Manage group comment templates",
-          path: group_comment_templates_path(group)
+          text: "Group comment templates",
+          href: group_comment_templates_path(group)
         })
       end
     end
@@ -220,8 +220,8 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
         it 'returns array with project comment templates path' do
           expect(helper.new_comment_template_paths(group, project).size).to eq(3)
           expect(helper.new_comment_template_paths(group, project)).to include({
-            text: "Manage project comment templates",
-            path: project_comment_templates_path(project)
+            text: "Project comment templates",
+            href: project_comment_templates_path(project)
           })
         end
       end
