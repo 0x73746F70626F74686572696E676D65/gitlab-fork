@@ -47,8 +47,7 @@ RSpec.describe API::Todos, feature_category: :team_planning do
 
         create_todo_for_new_epic
 
-        # Additional query due to authorization check on new group
-        expect { get api('/todos', personal_access_token: pat) }.not_to exceed_query_limit(control).with_threshold(1)
+        expect { get api('/todos', personal_access_token: pat) }.not_to exceed_query_limit(control)
       end
 
       it 'includes the Epic Todo in the response' do
