@@ -8,12 +8,7 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { contentTop, isMetaClick } from '~/lib/utils/common_utils';
 import { DEFAULT_SORTING_OPTION } from '~/observability/constants';
 import axios from '~/lib/utils/axios_utils';
-import {
-  queryToFilterObj,
-  filterObjToQuery,
-  filterObjToFilterToken,
-  filterTokensToFilterObj,
-} from './filter_bar/filters';
+import { queryToFilterObj, filterObjToQuery } from './filter_bar/filters';
 import TracingTableList from './tracing_table.vue';
 import FilteredSearch from './filter_bar/tracing_filtered_search.vue';
 import TracingAnalytics from './tracing_analytics.vue';
@@ -65,9 +60,6 @@ export default {
         ...filterQuery,
         sortBy: this.sortBy,
       };
-    },
-    initialFilterValue() {
-      return filterObjToFilterToken(this.filters);
     },
   },
   created() {
@@ -144,8 +136,8 @@ export default {
       const external = isMetaClick(clickEvent);
       visitUrl(joinPaths(window.location.pathname, traceId), external);
     },
-    handleFilters(filterTokens) {
-      this.filters = filterTokensToFilterObj(filterTokens);
+    handleFilters(filters) {
+      this.filters = filters;
       this.nextPageToken = null;
       this.traces = [];
       this.analytics = [];
@@ -175,10 +167,10 @@ export default {
   <div class="gl-px-8">
     <url-sync :query="query" />
     <filtered-search
-      :initial-filters="initialFilterValue"
+      :attributes-filters="filters"
       :observability-client="observabilityClient"
       :initial-sort="sortBy"
-      @submit="handleFilters"
+      @filter="handleFilters"
       @sort="onSort"
     />
 
