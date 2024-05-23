@@ -30180,9 +30180,6 @@ msgstr ""
 msgid "Last edited %{date}"
 msgstr ""
 
-msgid "Last edited by %{link_start}%{avatar} %{name}%{link_end}"
-msgstr ""
-
 msgid "Last event"
 msgstr ""
 
@@ -58756,6 +58753,9 @@ msgid "Wiki|Edit template"
 msgstr ""
 
 msgid "Wiki|Edit wiki sidebar"
+msgstr ""
+
+msgid "Wiki|Last edited by %{link_start}%{span_start}%{name}%{span_end}%{link_end}"
 msgstr ""
 
 msgid "Wiki|New page"
