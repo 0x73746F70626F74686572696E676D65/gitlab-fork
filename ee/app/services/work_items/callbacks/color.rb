@@ -33,7 +33,6 @@ module WorkItems
 
         if color.valid?
           work_item.color = color
-          synced_epic_params[:color] = ::Gitlab::Color.of(params[:color])
         else
           raise_error(color.errors.full_messages.join(', '))
         end

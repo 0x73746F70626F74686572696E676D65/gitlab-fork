@@ -157,6 +157,18 @@ RSpec.describe WorkItems::CreateService, feature_category: :team_planning do
 
     it_behaves_like 'syncs all data from a work_item to an epic'
 
+    context 'when creating the epic with only title and description' do
+      let(:widget_params) do
+        {
+          description_widget: {
+            description: 'new description'
+          }
+        }
+      end
+
+      it_behaves_like 'syncs all data from a work_item to an epic'
+    end
+
     context 'when creating an epic work item' do
       it 'creates the epic with correct relative_position' do
         work_item = service_result.payload[:work_item]
