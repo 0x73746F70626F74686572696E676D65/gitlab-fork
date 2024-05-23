@@ -21,6 +21,7 @@ mutation dismissFinding(
               username
               webUrl
             }
+            id
             comment
             createdAt
             toState

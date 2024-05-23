@@ -616,6 +616,7 @@ export const securityFindingDismissMutationResponse = {
           id: 1,
           stateTransitions: {
             nodes: {
+              id: 'gid://gitlab/Vulnerabilities::StateTransition/1',
               author: null,
               comment: '',
               createdAt: '',
@@ -640,6 +641,7 @@ export const securityFindingRevertToDetectedMutationResponse = {
           id: 1,
           stateTransitions: {
             nodes: {
+              id: 'gid://gitlab/Vulnerabilities::StateTransition/1',
               author: null,
               comment: '',
               createdAt: '',
