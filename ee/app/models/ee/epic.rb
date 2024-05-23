@@ -109,7 +109,7 @@ module EE
       end
 
       scope :with_web_entity_associations, -> { preload(:author, group: [:ip_restrictions, :route]) }
-      scope :with_api_entity_associations, -> { preload(:author, :labels, :parent, group: :route) }
+      scope :with_api_entity_associations, -> { preload(:author, :labels, :parent, group: [:saml_provider, :route]) }
       scope :preload_for_indexing, -> do
         includes(:author, :labels, :group, :start_date_sourcing_epic, :due_date_sourcing_epic,
           :start_date_sourcing_milestone, :due_date_sourcing_milestone)
