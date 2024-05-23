@@ -1,7 +1,6 @@
 ---
 title: AI impact analytics
 description: Visualize the relation between AI usage and SDLC trends.
-version: "2"
 status: beta
 panels:
   - title: 'Metric trends for %{namespaceType}: %{namespaceName}'

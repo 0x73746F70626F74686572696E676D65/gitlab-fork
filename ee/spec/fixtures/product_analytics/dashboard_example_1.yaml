@@ -1,5 +1,5 @@
 ---
-version: '2'
+version: '1'
 title: Dashboard Example 1
 description: North Star Metrics across all departments for the last 3 quarters.
 panels:

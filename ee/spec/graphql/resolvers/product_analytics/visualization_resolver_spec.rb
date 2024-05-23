@@ -30,8 +30,8 @@ RSpec.describe Resolvers::ProductAnalytics::VisualizationResolver do
         end
       end
 
-      it 'returns nil' do
-        expect(subject).to be_nil
+      it 'raises an error' do
+        expect(subject).to be_a(Gitlab::Graphql::Errors::ResourceNotAvailable)
       end
     end
   end

@@ -2,10 +2,7 @@ import { GlIcon, GlTruncateText } from '@gitlab/ui';
 import { visitUrl } from '~/lib/utils/url_utility';
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import {
-  mockInvalidDashboardErrors,
-  TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE,
-} from '../../mock_data';
+import { TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE } from '../../mock_data';
 
 jest.mock('ee/analytics/analytics_dashboards/api/dashboards_api');
 
@@ -29,12 +26,6 @@ const BETA_DASHBOARD = {
   slug: '/slug',
   status: 'beta',
 };
-const INVALID_DASHBOARD = {
-  title: 'title',
-  description: 'description',
-  slug: '/slug',
-  errors: mockInvalidDashboardErrors,
-};
 
 describe('DashboardsListItem', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
@@ -47,7 +38,6 @@ describe('DashboardsListItem', () => {
   const findRouterLink = () => wrapper.findByTestId('dashboard-router-link');
   const findDescriptionTruncate = () => wrapper.findComponent(GlTruncateText);
   const findBetaBadge = () => wrapper.findByTestId('dashboard-beta-badge');
-  const findErrorsBadge = () => wrapper.findByTestId('dashboard-errors-badge');
 
   const $router = {
     push: jest.fn(),
@@ -96,10 +86,6 @@ describe('DashboardsListItem', () => {
       expect(findBetaBadge().exists()).toBe(false);
     });
 
-    it('does not render errors badge', () => {
-      expect(findErrorsBadge().exists()).toBe(false);
-    });
-
     it('routes to the dashboard when a list item is clicked', async () => {
       await findListItem().trigger('click');
 
@@ -140,20 +126,6 @@ describe('DashboardsListItem', () => {
 
     it('renders the `Beta` badge', () => {
       expect(findBetaBadge().exists()).toBe(true);
-    });
-  });
-
-  describe('with an invalid dashboard', () => {
-    beforeEach(() => {
-      createWrapper(INVALID_DASHBOARD);
-    });
-
-    it('renders the errors badge', () => {
-      expect(findErrorsBadge().props()).toMatchObject({
-        icon: 'error',
-        variant: 'danger',
-      });
-      expect(findErrorsBadge().text()).toBe('Contains errors');
     });
   });
 });

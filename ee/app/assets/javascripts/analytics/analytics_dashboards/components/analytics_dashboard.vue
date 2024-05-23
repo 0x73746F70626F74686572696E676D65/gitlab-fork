@@ -1,5 +1,5 @@
 <script>
-import { GlEmptyState, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
+import { GlEmptyState, GlSkeletonLoader } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { createAlert } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
@@ -55,7 +55,6 @@ export default {
     ValueStreamFeedbackBanner,
     GlEmptyState,
     GlSkeletonLoader,
-    GlAlert,
   },
   mixins: [InternalEvents.mixin(), glFeatureFlagsMixin()],
   inject: {
@@ -114,7 +113,7 @@ export default {
       backUrl: this.$router.resolve('/').href,
       changesSaved: false,
       alert: null,
-      hasDashboardLoadError: false,
+      hasDashboardError: false,
       savedPanels: null,
     };
   },
@@ -135,12 +134,6 @@ export default {
     },
     showDashboardFilters() {
       return !HIDE_DASHBOARD_FILTERS.includes(this.currentDashboard?.slug);
-    },
-    invalidDashboardErrors() {
-      return this.currentDashboard?.errors ?? [];
-    },
-    hasDashboardError() {
-      return this.hasDashboardLoadError || this.invalidDashboardErrors.length > 0;
     },
   },
   watch: {
@@ -209,10 +202,12 @@ export default {
           title: s__('Analytics|Failed to load dashboard'),
           message,
           messageLinks: {
-            link: this.$options.troubleshootingUrl,
+            link: helpPagePath('user/analytics/analytics_dashboards', {
+              anchor: '#troubleshooting',
+            }),
           },
         });
-        this.hasDashboardLoadError = true;
+        this.hasDashboardError = true;
       },
     },
     availableVisualizations: {
@@ -349,31 +344,12 @@ export default {
       return `panel-${slug.replaceAll('_', '-')}`;
     },
   },
-  troubleshootingUrl: helpPagePath('user/analytics/analytics_dashboards', {
-    anchor: '#troubleshooting',
-  }),
 };
 </script>
 
 <template>
   <div>
     <template v-if="currentDashboard">
-      <gl-alert
-        v-if="invalidDashboardErrors.length > 0"
-        data-testid="analytics-dashboard-invalid-config-errors"
-        class="gl-mt-4"
-        :title="s__('Analytics|Invalid dashboard configuration')"
-        :primary-button-text="__('Learn more')"
-        :primary-button-link="$options.troubleshootingUrl"
-        :dismissible="false"
-        variant="danger"
-      >
-        <ul class="gl-m-0">
-          <li v-for="errorMessage in invalidDashboardErrors" :key="errorMessage">
-            {{ errorMessage }}
-          </li>
-        </ul>
-      </gl-alert>
       <value-stream-feedback-banner v-if="showValueStreamFeedbackBanner" />
       <product-analytics-feedback-banner v-if="showProductAnalyticsFeedbackBanner" />
       <customizable-dashboard

@@ -5,6 +5,5 @@ fragment CustomizableDashboardsFragment on CustomizableDashboardConnection {
     description
     userDefined
     status
-    errors
   }
 }
