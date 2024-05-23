@@ -10,7 +10,6 @@ RSpec.describe 'Analytics Dashboard - Product Analytics', :js, feature_category:
   let_it_be(:project) { create(:project, :repository, group: group) }
 
   before do
-    stub_feature_flags(ai_impact_analytics_dashboard: false)
     sign_in(user)
     allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
     project.reload
@@ -58,7 +57,6 @@ RSpec.describe 'Analytics Dashboard - Value Streams Dashboard', :js, feature_cat
       let_it_be(:environment) { create(:environment, :production, project: project) }
 
       before do
-        stub_feature_flags(ai_impact_analytics_dashboard: false)
         stub_licensed_features(
           combined_project_analytics_dashboards: true, project_level_analytics_dashboard: true,
           dora4_analytics: true, security_dashboard: true, cycle_analytics_for_projects: true,

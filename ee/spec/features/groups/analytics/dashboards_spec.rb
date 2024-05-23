@@ -25,7 +25,6 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :value_stream_manag
 
     context 'with group_level_analytics_dashboard license' do
       before do
-        stub_feature_flags(ai_impact_analytics_dashboard: false)
         stub_licensed_features(group_level_analytics_dashboard: true, dora4_analytics: true, security_dashboard: true,
           cycle_analytics_for_groups: true)
 

@@ -19,7 +19,6 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
       allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: false)
-      stub_feature_flags(ai_impact_analytics_dashboard: false)
       project.project_setting.update!(product_analytics_instrumentation_key: "key")
       allow_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
         allow(instance).to receive(:execute).and_return(ServiceResponse.success(payload: {
@@ -61,6 +60,16 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
           expect(result).to eq(project.product_analytics_dashboards(user))
           expect(result.size).to eq(1)
           expect(result.first.title).to eq("Dashboard Example 1")
+        end
+      end
+
+      context 'when clickhouse is configured' do
+        before do
+          allow(Gitlab::ClickHouse).to receive(:globally_enabled_for_analytics?).and_return(true)
+        end
+
+        it 'contains the AI impact dashboard' do
+          expect(result.map(&:slug)).to include(ProductAnalytics::Dashboard::AI_IMPACT_DASHBOARD_NAME)
         end
       end
 

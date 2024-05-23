@@ -16,6 +16,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
   end
 
   before do
+    allow(Gitlab::ClickHouse).to receive(:globally_enabled_for_analytics?).and_return(true)
     stub_licensed_features(
       product_analytics: true,
       project_level_analytics_dashboard: true,
@@ -319,9 +320,9 @@ description: with missing properties
         expect(subject.schema_version).to eq('2')
       end
 
-      context 'when feature is not available' do
+      context 'when clickhouse is not enabled' do
         before do
-          stub_feature_flags(ai_impact_analytics_dashboard: false)
+          allow(Gitlab::ClickHouse).to receive(:globally_enabled_for_analytics?).and_return(false)
         end
 
         it { is_expected.to be_nil }
@@ -337,9 +338,9 @@ description: with missing properties
         expect(subject.schema_version).to eq('2')
       end
 
-      context 'when feature is not available' do
+      context 'when clickhouse is not enabled' do
         before do
-          stub_feature_flags(ai_impact_analytics_dashboard: false)
+          allow(Gitlab::ClickHouse).to receive(:globally_enabled_for_analytics?).and_return(false)
         end
 
         it { is_expected.to be_nil }
