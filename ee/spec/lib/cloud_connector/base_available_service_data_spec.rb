@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe CloudConnector::BaseAvailableServiceData, feature_category: :cloud_connector do
   let_it_be(:cut_off_date) { 1.day.ago }
-  let_it_be(:purchased_add_ons) { %w[code_suggestions] }
+  let_it_be(:purchased_add_ons) { %w[duo_pro] }
 
   describe '#free_access?' do
     subject(:free_access) { described_class.new(:duo_chat, cut_off_date, nil).free_access? }
@@ -72,6 +72,12 @@ RSpec.describe CloudConnector::BaseAvailableServiceData, feature_category: :clou
       end
 
       include_examples 'when the user has an active assigned seat'
+
+      context 'when provided add-on name is code_suggestions' do
+        let_it_be(:purchased_add_ons) { %w[code_suggestions] }
+
+        include_examples 'when the user has an active assigned seat'
+      end
     end
 
     context 'when the user has an expired assigned duo pro seat' do
@@ -126,6 +132,12 @@ RSpec.describe CloudConnector::BaseAvailableServiceData, feature_category: :clou
       let(:namespace) { create(:group, parent: active_gitlab_purchase.namespace) }
 
       it { is_expected.to be true }
+
+      context 'when provided add-on name is code_suggestions' do
+        let_it_be(:purchased_add_ons) { %w[code_suggestions] }
+
+        it { is_expected.to be true }
+      end
     end
 
     context 'when the add_on is purchased but expired' do

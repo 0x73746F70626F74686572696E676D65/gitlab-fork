@@ -16,7 +16,7 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
     # Unit primitives from different services can be bundled and sold together under same add-on.
     # The same UP can be also bundled with different add-ons.
     bundled_with:
-      code_suggestions:
+      duo_pro:
         # The smallest logical feature that a permission/access scope can govern. Currently,
         # we have duo_chat and code_suggestions as UP. In the next iteration, we could split duo_chat to smaller
         # unit_primitives. At the moment, unit_primitive name is used as a scope when ServiceToken is being issued
@@ -25,7 +25,7 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
   duo_chat:
     backend: 'gitlab-ai-gateway'
     bundled_with:
-      code_suggestions:
+      duo_pro:
         unit_primitives:
           - duo_chat
           - documentation_search

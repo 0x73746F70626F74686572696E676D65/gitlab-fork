@@ -9,7 +9,7 @@ module CloudConnector
     def initialize(name, cut_off_date, add_on_names)
       @name = name
       @cut_off_date = cut_off_date
-      @add_on_names = add_on_names
+      @add_on_names = map_duo_pro(add_on_names)
     end
 
     # Returns whether the service is free to access (no addon purchases is required)
@@ -51,6 +51,11 @@ module CloudConnector
     end
 
     private
+
+    # TODO: We shold remove this when https://gitlab.com/gitlab-org/gitlab/-/issues/458745 is done
+    def map_duo_pro(add_on_names)
+      add_on_names&.map { |add_on| add_on == 'duo_pro' ? 'code_suggestions' : add_on } || []
+    end
 
     def add_on_purchases_assigned_to(user)
       cache_key = format(GitlabSubscriptions::UserAddOnAssignment::USER_ADD_ON_ASSIGNMENT_CACHE_KEY, user_id: user.id)
