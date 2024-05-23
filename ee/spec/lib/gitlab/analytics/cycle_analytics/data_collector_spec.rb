@@ -685,11 +685,11 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector, feature_categor
       let_it_be(:project2) { create(:project, :repository, group: group) }
       let_it_be(:stage) do
         create(:cycle_analytics_stage,
-               name: 'My Stage',
-               namespace: group,
-               start_event_identifier: :merge_request_created,
-               end_event_identifier: :merge_request_merged
-              )
+          name: 'My Stage',
+          namespace: group,
+          start_event_identifier: :merge_request_created,
+          end_event_identifier: :merge_request_merged
+        )
       end
 
       let(:merge_request) { project2.merge_requests.first }

@@ -164,8 +164,8 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, feature_category: :syste
 
         let(:provision_response) do
           ::EE::Gitlab::Scim::ProvisioningResponse.new(identity: nil,
-                                                       status: :error,
-                                                       message: "Extern uid can't be blank")
+            status: :error,
+            message: "Extern uid can't be blank")
         end
 
         it 'does not return nil result' do
@@ -211,8 +211,8 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, feature_category: :syste
 
         let(:provision_response) do
           ::EE::Gitlab::Scim::ProvisioningResponse.new(identity: nil,
-                                                       status: :error,
-                                                       message: "Extern uid can't be blank")
+            status: :error,
+            message: "Extern uid can't be blank")
         end
 
         it 'does not return nil result' do

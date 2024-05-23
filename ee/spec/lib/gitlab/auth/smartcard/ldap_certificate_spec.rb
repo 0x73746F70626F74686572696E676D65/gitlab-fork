@@ -13,9 +13,9 @@ RSpec.describe Gitlab::Auth::Smartcard::LdapCertificate, feature_category: :syst
   let(:issuer) { instance_double(OpenSSL::X509::Name, to_s: 'issuer_dn') }
   let(:openssl_certificate) do
     instance_double(OpenSSL::X509::Certificate,
-                    { issuer: issuer,
-                      serial: 42,
-                      subject: subject_ldap_dn })
+      { issuer: issuer,
+        serial: 42,
+        subject: subject_ldap_dn })
   end
 
   let(:ldap_provider) { 'ldapmain' }
@@ -125,7 +125,7 @@ RSpec.describe Gitlab::Auth::Smartcard::LdapCertificate, feature_category: :syst
           expect(ldap_connection).to have_received(:search).with(
             a_hash_including(
               filter: Net::LDAP::Filter.ex('userCertificate:certificateExactMatch',
-                                           "{ serialNumber 42, issuer \"issuer_dn\" }")
+                "{ serialNumber 42, issuer \"issuer_dn\" }")
             )
           ).at_least(:once)
         end

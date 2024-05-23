@@ -219,7 +219,7 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
       for_defined_days_back do
         user = create(:user)
         project = create(:project, :repository_private, :github_imported,
-                          :test_repo, creator: user)
+          :test_repo, creator: user)
         merge_request = create(:merge_request, source_project: project)
         overridden_merge_request = create(:merge_request, source_project: project, target_branch: "override")
         project_rule = create(:approval_project_rule, project: project)

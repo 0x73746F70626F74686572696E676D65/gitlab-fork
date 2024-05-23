@@ -67,9 +67,9 @@ RSpec.describe Gitlab::Auth::Smartcard::Certificate do
       let_it_be(:user) { create(:user, email: 'gitlab-user@random-corp.org') }
       let_it_be(:old_identity) do
         create(:smartcard_identity,
-               subject: 'old_subject',
-               issuer: 'old_issuer_dn',
-               user: user)
+          subject: 'old_subject',
+          issuer: 'old_issuer_dn',
+          user: user)
       end
 
       it_behaves_like 'an existing user'

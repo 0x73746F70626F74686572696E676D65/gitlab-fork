@@ -12,7 +12,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::IdentityLinker do
   let(:session) { {} }
   let(:oauth) do
     OmniAuth::AuthHash.new(provider: provider, uid: uid,
-                           info: { email: user.email }, extra: { response_object: saml_response })
+      info: { email: user.email }, extra: { response_object: saml_response })
   end
 
   subject(:identity_linker) { described_class.new(user, oauth, session, saml_provider) }

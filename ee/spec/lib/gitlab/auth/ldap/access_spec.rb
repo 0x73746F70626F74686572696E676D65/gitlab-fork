@@ -340,8 +340,8 @@ RSpec.describe Gitlab::Auth::Ldap::Access, feature_category: :system_access do
 
         it "doesn't trigger a sync when there are no links for the provider" do
           _another_provider = create(:ldap_group_link,
-                                     cn: 'Group1',
-                                     provider: 'not-this-ldap')
+            cn: 'Group1',
+            provider: 'not-this-ldap')
 
           expect(LdapGroupSyncWorker).not_to receive(:perform_async)
 
