@@ -32,8 +32,8 @@ module Mutations
 
         def mutation_response(list_object, errors)
           {
-              list: list_object,
-              errors: errors
+            list: list_object,
+            errors: errors
           }
         end
 
