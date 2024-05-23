@@ -9,7 +9,7 @@ import SelfManagedProviderCard from './self_managed_provider_card.vue';
 import GitlabManagedProviderCard from './gitlab_managed_provider_card.vue';
 
 export default {
-  name: 'ProviderSelectionPage',
+  name: 'ProviderSelectionView',
   components: {
     GitlabManagedProviderCard,
     GlEmptyState,
@@ -20,6 +20,7 @@ export default {
   },
   inject: {
     analyticsSettingsPath: {},
+    canSelectGitlabManagedProvider: {},
     namespaceFullPath: {},
     projectLevelAnalyticsProviderSettings: {},
   },
@@ -119,14 +120,14 @@ export default {
           </template>
         </gl-sprintf>
       </p>
-      <h2>{{ __('Select an option') }}</h2>
+      <h2 v-if="canSelectGitlabManagedProvider">{{ __('Select an option') }}</h2>
       <div class="gl-display-flex gl-flex-wrap gl-md-flex-nowrap gl-gap-5">
         <self-managed-provider-card
           :project-analytics-settings-path="projectAnalyticsSettingsPath"
           @confirm="onConfirm"
           @open-settings="openSettings"
         />
-        <gitlab-managed-provider-card @confirm="onConfirm" />
+        <gitlab-managed-provider-card v-if="canSelectGitlabManagedProvider" @confirm="onConfirm" />
       </div>
     </section>
   </section>

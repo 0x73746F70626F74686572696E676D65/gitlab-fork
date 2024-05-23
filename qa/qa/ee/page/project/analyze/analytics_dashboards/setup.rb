@@ -7,10 +7,6 @@ module QA
         module Analyze
           module AnalyticsDashboards
             class Setup < QA::Page::Base
-              view 'ee/app/assets/javascripts/product_analytics/onboarding/components/onboarding_empty_state.vue' do
-                element 'setup-product-analytics-button'
-              end
-
               view 'ee/app/assets/javascripts/product_analytics/onboarding/' \
                    'components/instrumentation_instructions_sdk_details.vue' do
                 element 'sdk-application-id-container'
@@ -28,10 +24,6 @@ module QA
 
               def connect_your_own_provider
                 click_element('connect-your-own-provider-btn')
-              end
-
-              def click_set_up_product_analytics
-                click_element('setup-product-analytics-button')
               end
 
               def wait_for_sdk_containers

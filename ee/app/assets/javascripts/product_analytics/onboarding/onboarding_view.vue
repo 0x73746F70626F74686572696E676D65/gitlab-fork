@@ -15,11 +15,9 @@ export default {
     GlLoadingIcon,
     OnboardingState,
     ProviderSelectionView,
-    OnboardingEmptyState: () => import('./components/onboarding_empty_state.vue'),
     OnboardingSetup: () => import('ee/product_analytics/onboarding/onboarding_setup.vue'),
   },
   inject: {
-    canSelectGitlabManagedProvider: {},
     dashboardsPath: {},
   },
   data() {
@@ -76,20 +74,12 @@ export default {
 
     <gl-loading-icon v-if="!state" size="lg" class="gl-my-7" />
 
-    <template v-else-if="showProviderSetup">
-      <provider-selection-view
-        v-if="canSelectGitlabManagedProvider"
-        :loading-instance="loadingInstance"
-        @initialized="onInitialized"
-        @error="showError($event)"
-      />
-      <onboarding-empty-state
-        v-else
-        :loading-instance="loadingInstance"
-        @initialized="onInitialized"
-        @error="showError($event)"
-      />
-    </template>
+    <provider-selection-view
+      v-else-if="showProviderSetup"
+      :loading-instance="loadingInstance"
+      @initialized="onInitialized"
+      @error="showError($event)"
+    />
 
     <onboarding-setup
       v-else-if="showInstrumentationSetup"
