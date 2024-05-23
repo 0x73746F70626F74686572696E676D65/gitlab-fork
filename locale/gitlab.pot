@@ -28485,9 +28485,6 @@ msgstr ""
 msgid "IssueBoards|Create new board"
 msgstr ""
 
-msgid "IssueBoards|Delete board"
-msgstr ""
-
 msgid "IssueBoards|No matching boards found"
 msgstr ""
 

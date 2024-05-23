@@ -63,11 +63,12 @@ RSpec.describe 'epic boards', :js, feature_category: :portfolio_management do
           expect(page).to have_content(epic_board.name)
           expect(page).to have_content(epic_board2.name)
         end
-
-        click_button 'Delete board'
       end
 
-      click_button 'Delete'
+      find_by_testid('boards-config-button').click
+      find_by_testid('delete-board-button').click
+      find_by_testid('save-changes-button').click
+
       wait_for_requests
 
       in_boards_switcher_dropdown do
