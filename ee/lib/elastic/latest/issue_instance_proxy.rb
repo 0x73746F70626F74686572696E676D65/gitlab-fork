@@ -3,7 +3,7 @@
 module Elastic
   module Latest
     class IssueInstanceProxy < ApplicationInstanceProxy
-      SCHEMA_VERSION = 23_12
+      SCHEMA_VERSION = 24_05
       OPTIONAL_FIELDS = %w[embedding embedding_version].freeze
 
       def as_indexed_json(options = {})
@@ -40,6 +40,8 @@ module Elastic
         if ::Elastic::DataMigrationService.migration_has_finished?(:add_work_item_type_id_to_issues)
           data['work_item_type_id'] = target.work_item_type_id
         end
+
+        data['routing'] = es_parent if ::Elastic::DataMigrationService.migration_has_finished?(:add_routing_to_issues)
 
         data.merge(generic_attributes)
       end

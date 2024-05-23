@@ -41,6 +41,7 @@ module Elastic
         indexes :label_ids, type: :keyword
         indexes :hashed_root_namespace_id, type: :integer
         indexes :work_item_type_id, type: :integer
+        indexes :routing, type: :keyword
 
         indexes :schema_version, type: :short
 
