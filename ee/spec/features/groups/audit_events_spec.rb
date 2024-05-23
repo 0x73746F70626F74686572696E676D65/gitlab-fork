@@ -13,6 +13,7 @@ RSpec.describe 'Groups > Audit Events', :js, feature_category: :audit_events do
   before do
     group.add_owner(user)
     group.add_developer(alex)
+    stub_feature_flags(show_role_details_in_drawer: false)
     sign_in(user)
   end
 

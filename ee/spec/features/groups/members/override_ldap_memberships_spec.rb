@@ -23,6 +23,7 @@ RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access lev
     # We need to actually activate the LDAP config otherwise `Group#ldap_synced?` will always be false!
     allow(Gitlab.config.ldap).to receive_messages(enabled: true)
 
+    stub_feature_flags(show_role_details_in_drawer: false)
     sign_in(owner)
   end
 
