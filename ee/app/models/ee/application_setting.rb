@@ -193,6 +193,10 @@ module EE
 
       validates :zoekt_settings, json_schema: { filename: 'application_setting_zoekt_settings' }
 
+      validates :security_policy_scheduled_scans_max_concurrency,
+        presence: true,
+        numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
       after_commit :update_personal_access_tokens_lifetime, if: :saved_change_to_max_personal_access_token_lifetime?
       after_commit :resume_elasticsearch_indexing
     end
@@ -246,6 +250,7 @@ module EE
           secret_detection_token_revocation_url: nil,
           secret_detection_token_revocation_token: nil,
           secret_detection_revocation_token_types_url: nil,
+          security_policy_scheduled_scans_max_concurrency: 100,
           max_number_of_repository_downloads: 0,
           max_number_of_repository_downloads_within_time_period: 0,
           git_rate_limit_users_allowlist: [],
