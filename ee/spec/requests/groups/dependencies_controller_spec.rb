@@ -128,8 +128,14 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
 
           context 'with existing dependencies' do
             let_it_be(:project) { create(:project, group: group) }
-            let_it_be(:sbom_occurrence_npm) { create(:sbom_occurrence, :mit, :npm, project: project) }
-            let_it_be(:sbom_occurrence_bundler) { create(:sbom_occurrence, :apache_2, :bundler, project: project) }
+            let_it_be(:sbom_occurrence_npm) do
+              create(:sbom_occurrence, :mit, :npm, highest_severity: 'low', project: project)
+            end
+
+            let_it_be(:sbom_occurrence_bundler) do
+              create(:sbom_occurrence, :apache_2, :bundler, highest_severity: 'high', project: project)
+            end
+
             let_it_be(:archived_occurrence) do
               create(:sbom_occurrence, project: create(:project, :archived, group: group))
             end
@@ -198,6 +204,28 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               expect(recording).not_to exceed_all_query_limit(1).for_model(::Sbom::Component)
               expect(recording).not_to exceed_all_query_limit(1).for_model(::Sbom::ComponentVersion)
               expect(recording).not_to exceed_all_query_limit(1).for_model(::Sbom::Source)
+            end
+
+            context 'when sorted by severity in ascending order' do
+              let(:params) { { group_id: group.to_param, sort_by: 'severity', sort: 'asc' } }
+
+              it 'returns sorted list' do
+                subject
+
+                expect(json_response['dependencies'].first['name']).to eq(sbom_occurrence_npm.name)
+                expect(json_response['dependencies'].last['name']).to eq(sbom_occurrence_bundler.name)
+              end
+            end
+
+            context 'when sorted by packager in descending order' do
+              let(:params) { { group_id: group.to_param, sort_by: 'severity', sort: 'desc' } }
+
+              it 'returns sorted list' do
+                subject
+
+                expect(json_response['dependencies'].first['name']).to eq(sbom_occurrence_bundler.name)
+                expect(json_response['dependencies'].last['name']).to eq(sbom_occurrence_npm.name)
+              end
             end
 
             context 'when using old query' do

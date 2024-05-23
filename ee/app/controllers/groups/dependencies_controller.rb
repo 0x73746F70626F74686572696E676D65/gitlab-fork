@@ -87,20 +87,24 @@ module Groups
     end
 
     def dependencies_finder_params
-      if below_group_limit?
-        params.permit(
-          :page,
-          :per_page,
-          :sort,
-          :sort_by,
-          component_names: [],
-          licenses: [],
-          package_managers: [],
-          project_ids: []
-        )
-      else
-        params.permit(:page, :per_page, :sort, :sort_by)
-      end
+      finder_params = if below_group_limit?
+                        params.permit(
+                          :page,
+                          :per_page,
+                          :sort,
+                          :sort_by,
+                          component_names: [],
+                          licenses: [],
+                          package_managers: [],
+                          project_ids: []
+                        )
+                      else
+                        params.permit(:page, :per_page, :sort, :sort_by)
+                      end
+
+      finder_params[:sort_by] = map_sort_by(finder_params[:sort_by]) if using_new_query?
+
+      finder_params
     end
 
     def dependencies_serializer
@@ -125,6 +129,15 @@ module Groups
         format.json do
           render json: { message: message }, status: status
         end
+      end
+    end
+
+    def map_sort_by(sort_by)
+      case sort_by
+      when 'severity'
+        :highest_severity
+      else
+        sort_by&.to_sym
       end
     end
 
