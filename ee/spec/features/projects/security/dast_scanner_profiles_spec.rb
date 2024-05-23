@@ -13,23 +13,22 @@ RSpec.describe 'User sees Scanner profile', feature_category: :dynamic_applicati
     sign_in(user)
   end
 
-  context 'when feature is available' do
+  context 'when feature is available', :js do
     before do
       stub_licensed_features(security_on_demand_scans: true)
       visit(profile_form_path)
     end
 
     it 'shows the form' do
-      expect(page).to have_gitlab_http_status(:ok)
       expect(page).to have_content("New scanner profile")
     end
 
-    it 'on submit', :js do
+    it 'on submit' do
       fill_in_profile_form
       expect(page).to have_current_path(profile_library_path, ignore_query: true)
     end
 
-    it 'on cancel', :js do
+    it 'on cancel' do
       click_button 'Cancel'
       expect(page).to have_current_path(profile_library_path, ignore_query: true)
     end

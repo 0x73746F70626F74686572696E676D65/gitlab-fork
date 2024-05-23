@@ -17,11 +17,12 @@ RSpec.shared_examples 'Insights page' do
         stub_licensed_features(insights: true, dora4_analytics: true)
       end
 
-      it 'has correct title' do
-        visit route
-
-        expect(page).to have_gitlab_http_status(:ok)
-        expect(page).to have_content('Insights')
+      it 'has correct title', :js do
+        visit path
+        wait_for_requests
+        page.within(".insights-container") do
+          expect(page).to have_content('Insights')
+        end
       end
 
       context 'navigation' do
