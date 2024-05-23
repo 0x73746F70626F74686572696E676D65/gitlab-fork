@@ -42,8 +42,15 @@ RSpec.describe DeploymentPolicy, feature_category: :continuous_delivery do
         :protected_environment,
         :maintainers_can_deploy,
         name: environment.name,
-        project: project,
-        required_approval_count: 1
+        project: project
+      )
+    end
+
+    let!(:approval_rule) do
+      create(
+        :protected_environment_approval_rule,
+        access_level: Gitlab::Access::MAINTAINER,
+        protected_environment: protected_environment
       )
     end
 

@@ -14,6 +14,15 @@ RSpec.describe Ci::PipelineProcessing::AtomicProcessingService, feature_category
     context 'when protected environments are defined', :sidekiq_inline do
       let(:staging_job) { create_build('staging:deploy', environment: 'staging', user: user) }
       let(:production_job) { create_build('production:deploy', environment: 'production', user: user) }
+      let(:approval_rules) do
+        [
+          build(
+            :protected_environment_approval_rule,
+            :maintainer_access,
+            required_approvals: 2
+          )
+        ]
+      end
 
       before do
         stub_licensed_features(protected_environments: true)
@@ -25,7 +34,16 @@ RSpec.describe Ci::PipelineProcessing::AtomicProcessingService, feature_category
 
         # Protection for the production environment (with Deployment Approvals)
         production = create(:environment, name: 'production', project: project)
-        create(:protected_environment, name: 'production', project: project, authorize_user_to_deploy: user, required_approval_count: 1)
+
+        create(
+          :protected_environment,
+          :maintainers_can_deploy,
+          name: 'production',
+          authorize_user_to_deploy: user,
+          project: project,
+          approval_rules: approval_rules
+        )
+
         create(:deployment, environment: production, deployable: production_job, project: project)
       end
 

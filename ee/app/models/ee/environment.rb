@@ -89,12 +89,9 @@ module EE
 
     def required_approval_count
       return 0 unless protected?
+      return 0 unless has_approval_rules?
 
-      if has_approval_rules?
-        associated_approval_rules.sum(&:required_approvals)
-      else
-        associated_protected_environments.map(&:required_approval_count).max
-      end
+      associated_approval_rules.sum(&:required_approvals)
     end
 
     def has_approval_rules?

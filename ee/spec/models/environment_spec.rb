@@ -278,38 +278,18 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching, feature_categ
         stub_licensed_features(protected_environments: true)
       end
 
-      context 'with unified access level' do
-        before do
-          create(:protected_environment, name: environment.name, project: project, required_approval_count: required_approval_count)
+      let!(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
+
+      context 'with some approvals required' do
+        let!(:approval_rule) do
+          create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)
         end
 
-        context 'with some approvals required' do
-          let(:required_approval_count) { 1 }
-
-          it { is_expected.to be_truthy }
-        end
-
-        context 'with no approvals required' do
-          let(:required_approval_count) { 0 }
-
-          it { is_expected.to be_falsey }
-        end
+        it { is_expected.to be_truthy }
       end
 
-      context 'with multi access levels' do
-        let!(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
-
-        context 'with some approvals required' do
-          let!(:approval_rule) do
-            create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)
-          end
-
-          it { is_expected.to be_truthy }
-        end
-
-        context 'with no approvals required' do
-          it { is_expected.to be_falsey }
-        end
+      context 'with no approvals required' do
+        it { is_expected.to be_falsey }
       end
     end
 
@@ -342,27 +322,10 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching, feature_categ
         it { is_expected.to eq(0) }
       end
 
-      context 'with unified approval setting' do
-        context 'with one associated protected environment' do
-          before do
-            create(:protected_environment, name: environment.name, project: project, required_approval_count: 3)
-          end
+      context 'with no multiple approval rules' do
+        let_it_be(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
 
-          it 'returns the required_approval_count of the protected environment' do
-            expect(subject).to eq(3)
-          end
-        end
-
-        context 'with multiple associated protected environments' do
-          before do
-            create(:protected_environment, name: environment.name, project: project, required_approval_count: 3)
-            create(:protected_environment, name: environment.tier, project: nil, group: project.group, required_approval_count: 5)
-          end
-
-          it 'returns the highest required_approval_count of the protected environments' do
-            expect(subject).to eq(5)
-          end
-        end
+        it { is_expected.to eq(0) }
       end
 
       context 'with multiple approval rules' do
