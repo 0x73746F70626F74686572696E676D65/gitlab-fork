@@ -54,14 +54,22 @@ describe('TracingListFilteredSearch', () => {
     const filterTokens = filterObjToFilterToken(filterObj);
     await findFilteredSearch().vm.$emit('onFilter', filterTokens);
 
-    expect(wrapper.emitted('filter')).toEqual([[filterObj]]);
+    expect(wrapper.emitted('filter')).toEqual([
+      [
+        {
+          attributes: filterObj,
+        },
+      ],
+    ]);
     expect(findFilteredSearch().props('initialFilterValue')).toEqual(filterTokens);
   });
 
   it('sets the default period filter if not specified', async () => {
     await findFilteredSearch().vm.$emit('onFilter', filterObjToFilterToken({}));
 
-    expect(wrapper.emitted('filter')).toEqual([[{ period: [{ operator: '=', value: '1h' }] }]]);
+    expect(wrapper.emitted('filter')).toEqual([
+      [{ attributes: { period: [{ operator: '=', value: '1h' }] } }],
+    ]);
   });
 
   describe('sorting', () => {

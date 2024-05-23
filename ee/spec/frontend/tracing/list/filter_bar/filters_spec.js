@@ -19,32 +19,34 @@ describe('utils', () => {
     '&search=searchquery';
 
   const filterObj = {
-    period: [{ operator: '=', value: '1h' }],
-    service: [
-      { operator: '=', value: 'accountingservice' },
-      { operator: '!=', value: 'adservice' },
-    ],
-    operation: [
-      { operator: '=', value: 'orders receive' },
-      { operator: '!=', value: 'orders receive' },
-    ],
-    traceId: [
-      { operator: '=', value: '9609bf00-4b68-f86c-abe2-5e23d0089c83' },
-      { operator: '!=', value: '9609bf00-4b68-f86c-abe2-5e23d0089c83' },
-    ],
-    durationMs: [
-      { operator: '>', value: '100' },
-      { operator: '<', value: '1000' },
-    ],
-    attribute: [
-      { operator: '=', value: 'foo=bar' },
-      { operator: '=', value: 'baz=bar' },
-    ],
-    status: [
-      { operator: '=', value: 'ok' },
-      { operator: '!=', value: 'error' },
-    ],
-    search: [{ value: 'searchquery' }],
+    attributes: {
+      period: [{ operator: '=', value: '1h' }],
+      service: [
+        { operator: '=', value: 'accountingservice' },
+        { operator: '!=', value: 'adservice' },
+      ],
+      operation: [
+        { operator: '=', value: 'orders receive' },
+        { operator: '!=', value: 'orders receive' },
+      ],
+      traceId: [
+        { operator: '=', value: '9609bf00-4b68-f86c-abe2-5e23d0089c83' },
+        { operator: '!=', value: '9609bf00-4b68-f86c-abe2-5e23d0089c83' },
+      ],
+      durationMs: [
+        { operator: '>', value: '100' },
+        { operator: '<', value: '1000' },
+      ],
+      attribute: [
+        { operator: '=', value: 'foo=bar' },
+        { operator: '=', value: 'baz=bar' },
+      ],
+      status: [
+        { operator: '=', value: 'ok' },
+        { operator: '!=', value: 'error' },
+      ],
+      search: [{ value: 'searchquery' }],
+    },
   };
 
   const queryObj = {
@@ -67,7 +69,7 @@ describe('utils', () => {
     trace_id: ['9609bf00-4b68-f86c-abe2-5e23d0089c83'],
   };
 
-  const filterTokens = [
+  const attributesFilterTokens = [
     { type: 'period', value: { data: '1h', operator: '=' } },
     { type: 'service-name', value: { data: 'accountingservice', operator: '=' } },
     { type: 'service-name', value: { data: 'adservice', operator: '!=' } },
@@ -97,8 +99,10 @@ describe('utils', () => {
 
     it('should add the default period filter if not specified', () => {
       expect(queryToFilterObj('service[]=accountingservice')).toEqual({
-        period: [{ operator: '=', value: '1h' }],
-        service: [{ operator: '=', value: 'accountingservice' }],
+        attributes: {
+          period: [{ operator: '=', value: '1h' }],
+          service: [{ operator: '=', value: 'accountingservice' }],
+        },
       });
     });
 
@@ -106,7 +110,9 @@ describe('utils', () => {
       'handles valid periods',
       (value) => {
         expect(queryToFilterObj(`period[]=${value}`)).toEqual({
-          period: [{ operator: '=', value }],
+          attributes: {
+            period: [{ operator: '=', value }],
+          },
         });
       },
     );
@@ -115,7 +121,9 @@ describe('utils', () => {
       'ignores invalid period',
       (val) => {
         expect(queryToFilterObj(`period[]=${val}`)).toEqual({
-          period: [{ operator: '=', value: '1h' }],
+          attributes: {
+            period: [{ operator: '=', value: '1h' }],
+          },
         });
       },
     );
@@ -129,13 +137,13 @@ describe('utils', () => {
 
   describe('filterObjToFilterToken', () => {
     it('should convert filter object to filter tokens', () => {
-      expect(filterObjToFilterToken(filterObj)).toEqual(filterTokens);
+      expect(filterObjToFilterToken(filterObj.attributes)).toEqual(attributesFilterTokens);
     });
   });
 
   describe('filterTokensToFilterObj', () => {
     it('should convert filter tokens to filter object', () => {
-      expect(filterTokensToFilterObj(filterTokens)).toEqual(filterObj);
+      expect(filterTokensToFilterObj(attributesFilterTokens)).toEqual(filterObj.attributes);
     });
 
     it('should add the default period filter it not specified', () => {

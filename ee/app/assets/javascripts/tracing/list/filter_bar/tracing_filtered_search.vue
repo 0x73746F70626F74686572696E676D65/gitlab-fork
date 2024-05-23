@@ -136,7 +136,9 @@ export default {
       this.submitFilter();
     },
     submitFilter() {
-      this.$emit('filter', filterTokensToFilterObj(this.attributesFilterValue));
+      this.$emit('filter', {
+        attributes: filterTokensToFilterObj(this.attributesFilterValue),
+      });
     },
   },
 };

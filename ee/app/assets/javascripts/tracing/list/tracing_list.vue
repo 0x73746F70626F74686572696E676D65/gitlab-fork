@@ -167,7 +167,7 @@ export default {
   <div class="gl-px-8">
     <url-sync :query="query" />
     <filtered-search
-      :attributes-filters="filters"
+      :attributes-filters="filters.attributes"
       :observability-client="observabilityClient"
       :initial-sort="sortBy"
       @filter="handleFilters"
