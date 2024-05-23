@@ -28,18 +28,10 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
       :maintainers_can_deploy,
       name: environment.name,
       project: project,
-      **access_level_setting
+      approval_rules: approval_rules
     )
   end
 
-  let(:access_level_setting) { unified_access_level }
-
-  # Unified Access Level setting (MVC version)
-  let(:unified_access_level) { { required_approval_count: required_approval_count } }
-  let(:required_approval_count) { 2 }
-
-  # Multi Access Level setting (extended MVC)
-  let(:multi_access_level) { { approval_rules: approval_rules } }
   let(:approval_rules) { [build(:protected_environment_approval_rule, :maintainer_access)] }
 
   before do
@@ -187,6 +179,16 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
     context 'when user already approved' do
       let(:comment) { 'Original comment' }
 
+      let(:approval_rules) do
+        [
+          build(
+            :protected_environment_approval_rule,
+            :maintainer_access,
+            required_approvals: 2
+          )
+        ]
+      end
+
       before do
         service.execute(deployment, :approved)
       end
@@ -214,57 +216,6 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
 
             expect(service.execute(deployment, status)[:approval].comment).to eq('Changed comment')
           end
-        end
-      end
-    end
-
-    context 'processing the build with unified access level' do
-      context 'when build is nil' do
-        before do
-          deployment.deployable = nil
-        end
-
-        it 'does not raise an error' do
-          expect { subject }.not_to raise_error
-        end
-      end
-
-      context 'when deployment was rejected' do
-        let(:status) { 'rejected' }
-
-        it 'drops the build' do
-          subject
-
-          expect(deployment.deployable.status).to eq('failed')
-          expect(deployment.deployable.failure_reason).to eq('deployment_rejected')
-        end
-      end
-
-      context 'when no additional approvals are required' do
-        let(:required_approval_count) { 1 }
-
-        it 'enqueues the build' do
-          expect { subject }.to change { deployment.deployable.status }.from('manual').to('pending')
-        end
-
-        it 'keeps the deployment blocked' do
-          expect { subject }.not_to change { deployment.status }
-        end
-
-        context 'when deployable is bridge job' do
-          let(:job) { create(:ci_bridge, :manual, project: project) }
-
-          it 'enqueues the bridge' do
-            expect { subject }.to change { deployment.deployable.status }.from('manual').to('pending')
-          end
-        end
-      end
-
-      context 'when additional approvals are required' do
-        let(:required_approval_count) { 2 }
-
-        it 'does not change the build' do
-          expect { subject }.not_to change { deployment.deployable.reload.status }
         end
       end
     end
@@ -338,9 +289,7 @@ RSpec.describe Deployments::ApprovalService, feature_category: :continuous_deliv
       end
 
       context 'when deployment approval is not configured' do
-        before do
-          protected_environment.update_column(:required_approval_count, 0)
-        end
+        let(:approval_rules) { [] }
 
         include_examples 'error', message: 'Deployment approvals is not configured for this environment.'
       end

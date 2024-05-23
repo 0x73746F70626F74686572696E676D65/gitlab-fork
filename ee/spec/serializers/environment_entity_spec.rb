@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EnvironmentEntity do
+RSpec.describe EnvironmentEntity, feature_category: :environment_management do
   let(:user) { create(:user) }
   let(:environment) { create(:environment, project: project) }
   let(:project) { create(:project) }
@@ -78,9 +78,25 @@ RSpec.describe EnvironmentEntity do
     end
 
     context 'required_approval_count' do
+      let(:approval_rules) do
+        [
+          build(
+            :protected_environment_approval_rule,
+            :maintainer_access,
+            required_approvals: 2
+          )
+        ]
+      end
+
       before do
         stub_licensed_features(protected_environments: true)
-        create(:protected_environment, name: environment.name, project: project, required_approval_count: 2)
+
+        create(
+          :protected_environment,
+          name: environment.name,
+          project: project,
+          approval_rules: approval_rules
+        )
       end
 
       it 'exposes required_approval_count' do

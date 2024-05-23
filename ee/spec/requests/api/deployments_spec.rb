@@ -27,8 +27,12 @@ RSpec.describe API::Deployments, feature_category: :continuous_delivery do
     end
 
     let!(:approval_rule) do
-      create(:protected_environment_approval_rule,
-             group: security_group, protected_environment: group_protected_environment, required_approvals: 2)
+      create(
+        :protected_environment_approval_rule,
+        group: security_group,
+        protected_environment: group_protected_environment,
+        required_approvals: 2
+      )
     end
   end
 
@@ -347,8 +351,22 @@ RSpec.describe API::Deployments, feature_category: :continuous_delivery do
     let(:deployment) { create(:deployment, :blocked, project: project, environment: environment, deployable: create(:ci_build, :manual, project: project)) }
     let(:path) { "/projects/#{project.id}/deployments/#{deployment.id}/approval" }
 
+    let!(:approval_rules) do
+      [create(
+        :protected_environment_approval_rule,
+        :maintainer_access,
+        required_approvals: 2
+      )]
+    end
+
     before do
-      create(:protected_environment, :maintainers_can_deploy, project: environment.project, name: environment.name, required_approval_count: 1)
+      create(
+        :protected_environment,
+        :maintainers_can_deploy,
+        project: environment.project,
+        name: environment.name,
+        approval_rules: approval_rules
+      )
     end
 
     context 'when user is authorized to read project' do

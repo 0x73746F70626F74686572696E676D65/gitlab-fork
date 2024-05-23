@@ -9,7 +9,26 @@ RSpec.describe DeploymentEntity do
 
   let(:deployment) { create(:deployment, :blocked, project: project, environment: environment) }
   let(:environment) { create(:environment, project: project) }
-  let!(:protected_environment) { create(:protected_environment, name: environment.name, project: project, required_approval_count: 3) }
+
+  let(:approval_rules) do
+    [
+      build(
+        :protected_environment_approval_rule,
+        :maintainer_access,
+        required_approvals: 3
+      )
+    ]
+  end
+
+  let!(:protected_environment) do
+    create(
+      :protected_environment,
+      :maintainers_can_deploy,
+      name: environment.name,
+      project: project,
+      approval_rules: approval_rules
+    )
+  end
 
   subject { described_class.new(deployment, request: request).as_json }
 
@@ -50,18 +69,15 @@ RSpec.describe DeploymentEntity do
   end
 
   describe '#has_approval_rules' do
-    context 'when configured with unified rules' do
+    context 'when configured without approval rules' do
+      let(:approval_rules) { [] }
+
       it 'returns false' do
         expect(subject[:has_approval_rules]).to be(false)
       end
     end
 
     context 'when configured with approval rules' do
-      let!(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
-      let!(:approval_maintainer) do
-        create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)
-      end
-
       it 'returns true' do
         expect(subject[:has_approval_rules]).to be(true)
       end

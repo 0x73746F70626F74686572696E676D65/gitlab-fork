@@ -9,14 +9,23 @@ RSpec.describe Deployments::ApprovalWorker, feature_category: :continuous_delive
     let(:deployment) { create(:deployment, status: :blocked, project: project, environment: environment) }
     let(:job_args) { [deployment.id, { user_id: deployment.user.id, status: 'approved' }] }
 
+    let(:approval_rules) do
+      [
+        build(
+          :protected_environment_approval_rule,
+          user_id: deployment.user_id,
+          required_approvals: 1
+        )
+      ]
+    end
+
     before do
       stub_licensed_features(protected_environments: true)
       create(
         :protected_environment,
         name: environment.name,
         project: project,
-        required_approval_count: 1,
-        deploy_access_levels: [build(:protected_environment_deploy_access_level, user: deployment.user)]
+        approval_rules: approval_rules
       )
 
       allow_next_found_instance_of(Ci::Build) do |build|

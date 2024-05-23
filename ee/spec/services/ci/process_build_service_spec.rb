@@ -99,14 +99,6 @@ RSpec.describe Ci::ProcessBuildService, '#execute', feature_category: :continuou
           end
         end
 
-        context 'with unified access level' do
-          before do
-            protected_environment.update!(required_approval_count: 1)
-          end
-
-          it_behaves_like 'blocking deployment job'
-        end
-
         context 'with multi access levels' do
           let!(:approval_rule) do
             create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)

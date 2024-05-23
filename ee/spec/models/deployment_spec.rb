@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Deployment do
+RSpec.describe Deployment, feature_category: :continuous_delivery do
   it { is_expected.to have_many(:approvals) }
   it { is_expected.to delegate_method(:needs_approval?).to(:environment) }
 
@@ -37,8 +37,24 @@ RSpec.describe Deployment do
     let(:environment) { create(:environment, project: project) }
     let(:deployment) { create(:deployment, :blocked, project: project, environment: environment) }
 
+    let(:approval_rules) do
+      [
+        build(
+          :protected_environment_approval_rule,
+          :maintainer_access,
+          required_approvals: 3
+        )
+      ]
+    end
+
     let(:protected_environment) do
-      create(:protected_environment, name: environment.name, project: project, required_approval_count: 3)
+      create(
+        :protected_environment,
+        :maintainers_can_deploy,
+        name: environment.name,
+        project: project,
+        approval_rules: approval_rules
+      )
     end
 
     context 'when Protected Environments feature is available' do
