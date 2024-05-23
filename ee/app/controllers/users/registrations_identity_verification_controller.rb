@@ -13,8 +13,6 @@ module Users
     before_action :require_unverified_user!, except: [:verification_state, :success, :restricted]
     before_action :require_arkose_verification!, except: [:arkose_labs_challenge, :verify_arkose_labs_session,
       :restricted]
-    before_action :ensure_phone_number_verification_challenge_completed!, only:
-      [:send_phone_verification_code, :verify_phone_verification_code]
 
     def show
       # We need to perform cookie migration for tracking from logged out to log in
@@ -31,7 +29,7 @@ module Users
 
     def verify_arkose_labs_session
       unless verify_arkose_labs_token(user: @user)
-        flash[:alert] = verification_required_message
+        flash[:alert] = s_('IdentityVerification|Complete verification to sign up.')
         return render action: :arkose_labs_challenge
       end
 
@@ -80,14 +78,6 @@ module Users
       experiment(:phone_verification_for_low_risk_users, user: @user).track(:registration_completed)
     end
 
-    def verify_credit_card_captcha
-      unless ensure_challenge_completed(:credit_card)
-        return render status: :bad_request, json: { message: verification_required_message }
-      end
-
-      render json: { status: :success }
-    end
-
     private
 
     override :after_pending_invitations_hook
@@ -113,42 +103,6 @@ module Users
       return if @user.arkose_verified?
 
       redirect_to action: :arkose_labs_challenge
-    end
-
-    def verification_required_message
-      @verification_required_message ||= s_('IdentityVerification|Complete verification to sign up.')
-    end
-
-    def ensure_phone_number_verification_challenge_completed!
-      return if ensure_challenge_completed(:phone)
-
-      render status: :bad_request, json: { message: verification_required_message }
-    end
-
-    def ensure_challenge_completed(category)
-      # save values in variables before increase in attempts
-      recaptcha_shown = show_recaptcha_challenge?
-      arkose_shown = show_arkose_challenge?(@user, category)
-
-      # if total daily attempts reach 16K, show reCAPTCHA on every request
-      if recaptcha_enabled? && recaptcha_shown
-        log_event(:phone, :recaptcha_shown)
-
-        return verify_recaptcha
-      end
-
-      # if user makes more than 2 incorrect verification attempts, show arkose challenge
-      if enable_arkose_challenge?(category)
-        PhoneVerification::Users::RateLimitService.increase_verification_attempts(@user)
-
-        if arkose_shown
-          log_event(:phone, :arkose_challenge_shown)
-
-          return verify_arkose_labs_token
-        end
-      end
-
-      true
     end
 
     def verify_token

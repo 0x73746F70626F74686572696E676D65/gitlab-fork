@@ -24,7 +24,6 @@ describe('Identity Verification Captcha component', () => {
         ...provide,
       },
       propsData: {
-        enableArkoseChallenge: false,
         showArkoseChallenge: false,
         showRecaptchaChallenge: false,
         ...props,
@@ -43,12 +42,9 @@ describe('Identity Verification Captcha component', () => {
     });
   });
 
-  describe('When arkose is enabled and shown', () => {
+  describe('when showArkoseChallenge prop is true', () => {
     beforeEach(() => {
-      createComponent(
-        { arkoseDataExchangePayload: 'payload' },
-        { enableArkoseChallenge: true, showArkoseChallenge: true },
-      );
+      createComponent({ arkoseDataExchangePayload: 'payload' }, { showArkoseChallenge: true });
     });
 
     it('renders arkose', () => {
@@ -86,30 +82,6 @@ describe('Identity Verification Captcha component', () => {
 
       expect(findArkose().props()).toMatchObject({
         resetSession: true,
-      });
-    });
-  });
-
-  describe('when arkose is enabled but not shown', () => {
-    beforeEach(() => {
-      createComponent({}, { enableArkoseChallenge: true, showArkoseChallenge: false });
-    });
-
-    it('does not renders arkose', () => {
-      expect(findArkose().exists()).toBe(false);
-    });
-
-    describe('when verification attempts reach greater than or equal to 3', () => {
-      it('renders arkose', async () => {
-        // setProps is justified here because we are testing the component's
-        // reactive behavior which constitutes an exception
-        // see https://docs.gitlab.com/ee/development/fe_guide/style/vue.html#setting-component-state
-
-        await wrapper.setProps({
-          verificationAttempts: 3,
-        });
-
-        expect(findArkose().exists()).toBe(true);
       });
     });
   });

@@ -60,9 +60,15 @@ module IdentityVerificationHelpers
 
     fill_in 'verification_code', with: email_verification_code
     click_button s_('IdentityVerification|Verify email address')
+
+    expect(page).to have_content(_('Completed'))
   end
 
-  def verify_phone_number
+  def verify_phone_number(solve_arkose_challenge: false)
+    expect(page).to have_content('Send code')
+
+    solve_arkose_verify_challenge if solve_arkose_challenge
+
     phone_number = '400000000'
     verification_code = '4319315'
     stub_telesign_verification

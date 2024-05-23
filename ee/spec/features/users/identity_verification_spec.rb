@@ -10,7 +10,10 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     create(:user, created_at: IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day)
   end
 
+  let(:require_challenge) { true }
+
   before do
+    stub_feature_flags(identity_verification_arkose_challenge: require_challenge)
     stub_saas_features(identity_verification: true)
     stub_application_setting(
       arkose_labs_public_api_key: 'public_key',
@@ -27,9 +30,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   it 'verifies the user' do
     expect_to_see_identity_verification_page
 
-    solve_arkose_verify_challenge
-
-    verify_phone_number
+    verify_phone_number(solve_arkose_challenge: true)
 
     expect(page).to have_content(_('Completed'))
     expect(page).to have_content(_('Next'))
@@ -51,11 +52,23 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     end
   end
 
+  context 'when identity_verification_arkose_challenge is disabled' do
+    let(:require_challenge) { false }
+
+    it 'does not require the user to solve an Arkose challenge' do
+      verify_phone_number
+
+      expect(page).to have_content(_('Completed'))
+    end
+  end
+
   context 'when the user requests a phone verification exemption' do
     it 'verifies the user' do
       expect_to_see_identity_verification_page
 
       request_phone_exemption
+
+      solve_arkose_verify_challenge
 
       verify_credit_card
 

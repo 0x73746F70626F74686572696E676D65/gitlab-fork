@@ -7,7 +7,7 @@
 module Arkose
   class DataExchangePayload
     USE_CASE_SIGN_UP = 'SIGN_UP'
-    USE_CASE_ACTIVE_USER = 'ACTIVE_USER'
+    USE_CASE_IDENTITY_VERIFICATION = 'IDENTITY_VERIFICATION'
 
     # Transparent mode - no challenge shown to the user. Inverse of interactive
     # mode where the user is required to solve a challenge.

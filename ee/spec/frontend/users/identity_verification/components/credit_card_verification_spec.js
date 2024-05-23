@@ -38,10 +38,9 @@ describe('CreditCardVerification', () => {
     wrapper.findByText(s__('IdentityVerification|Verify with a phone number instead?'));
   const findCaptcha = () => wrapper.findComponent(Captcha);
 
-  const createComponent = (providedProps = {}) => {
+  const createComponent = ({ provide, props } = { provide: {}, props: {} }) => {
     wrapper = shallowMountExtended(CreditCardVerification, {
       provide: {
-        creditCardChallengeOnVerify: true,
         creditCardVerifyPath: MOCK_VERIFY_CREDIT_CARD_PATH,
         creditCardVerifyCaptchaPath: MOCK_VERIFY_CAPTCHA_PATH,
         creditCard: {
@@ -49,9 +48,9 @@ describe('CreditCardVerification', () => {
           userId: 927,
         },
         offerPhoneNumberExemption: true,
-        ...providedProps,
+        ...provide,
       },
-      propsData: { completed: false },
+      propsData: { completed: false, ...props },
       stubs: {
         Zuora: stubComponent(Zuora, {
           methods: { submit: zuoraSubmitSpy },
@@ -202,7 +201,7 @@ describe('CreditCardVerification', () => {
       beforeEach(() => {
         axiosMock.onPost(MOCK_VERIFY_CAPTCHA_PATH).reply(HTTP_STATUS_OK);
 
-        createComponent();
+        createComponent({ props: { requireChallenge: true } });
         findSubmitButton().vm.$emit('click');
       });
 
@@ -224,7 +223,7 @@ describe('CreditCardVerification', () => {
           .onPost(MOCK_VERIFY_CAPTCHA_PATH)
           .reply(HTTP_STATUS_INTERNAL_SERVER_ERROR, { message: 'Complete verification' });
 
-        createComponent();
+        createComponent({ props: { requireChallenge: true } });
         findSubmitButton().vm.$emit('click');
       });
 
@@ -237,11 +236,11 @@ describe('CreditCardVerification', () => {
       });
     });
 
-    describe('when creditCardChallengeOnVerify is false', () => {
+    describe('when requireChallenge prop is false', () => {
       beforeEach(() => {
         jest.spyOn(axios, 'post');
 
-        createComponent({ creditCardChallengeOnVerify: false });
+        createComponent();
         findSubmitButton().vm.$emit('click');
       });
 
@@ -275,7 +274,7 @@ describe('CreditCardVerification', () => {
 
   describe('when phone exemption is not offered', () => {
     beforeEach(() => {
-      createComponent({ offerPhoneNumberExemption: false });
+      createComponent({ provide: { offerPhoneNumberExemption: false } });
     });
 
     it('does not show a link to request a phone exemption', () => {
@@ -285,7 +284,7 @@ describe('CreditCardVerification', () => {
 
   describe('when phone exemption is offered', () => {
     beforeEach(() => {
-      createComponent({ offerPhoneNumberExemption: true });
+      createComponent({ provide: { offerPhoneNumberExemption: true } });
     });
 
     it('shows a link to request a phone exemption', () => {
@@ -303,14 +302,14 @@ describe('CreditCardVerification', () => {
     beforeEach(() => {
       axiosMock.onPost(MOCK_VERIFY_CAPTCHA_PATH).reply(HTTP_STATUS_OK);
 
-      createComponent();
+      createComponent({ props: { requireChallenge: true } });
     });
 
     it('renders the identity verification captcha component', () => {
       expect(findCaptcha().exists()).toBe(true);
 
       expect(findCaptcha().props()).toMatchObject({
-        showRecaptchaChallenge: true,
+        showArkoseChallenge: true,
         verificationAttempts: 0,
       });
     });

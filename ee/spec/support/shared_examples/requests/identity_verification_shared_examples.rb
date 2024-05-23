@@ -184,7 +184,7 @@ RSpec.shared_examples 'it verifies reCAPTCHA response' do
         mock_rate_limit(:soft_phone_verification_transactions_limit, :peek, true)
       end
 
-      it_behaves_like 'logs and tracks the event', :phone, :recaptcha_shown
+      it_behaves_like 'logs and tracks the event', :credit_card, :recaptcha_shown
 
       context 'and when reCAPTCHA has not been solved' do
         before do
@@ -263,68 +263,66 @@ RSpec.shared_examples 'it ensures verification attempt is allowed' do |method|
   end
 end
 
-RSpec.shared_examples 'it verifies arkose token before phone verification' do
+RSpec.shared_examples 'it verifies arkose token' do |method|
+  let(:target_user) { nil }
+
   before do
-    stub_feature_flags(soft_limit_daily_phone_verifications: false)
+    # This shared example tests ensure_phone_challenge_completed! and
+    # ensure_credit_card_challenge_completed! before action hooks depending on
+    # the passed `method` param. The following stubs ensure that these before
+    # action hooks don't return early by returning [method] from
+    # user.required_identity_verification_methods to make
+    # `arkose_challenge_required?(method: method)` return true.
+    if target_user
+      allow(target_user).to receive(:required_identity_verification_methods).and_return([method])
+    else
+      allow_next_found_instance_of(User) do |instance|
+        allow(instance).to receive(:required_identity_verification_methods).and_return([method])
+      end
+    end
   end
 
-  context 'when feature flag arkose_labs_phone_verification_challenge is disabled' do
-    before do
-      stub_feature_flags(arkose_labs_phone_verification_challenge: false)
-    end
+  context 'when verification fails' do
+    it 'returns a 400 with an error message', :aggregate_failures do
+      mock_arkose_token_verification(success: false)
 
-    it 'returns 200' do
+      do_request
+
+      expect(response).to have_gitlab_http_status(:bad_request)
+      expect(response.body).to eq(
+        { message: s_('IdentityVerification|Complete verification to proceed.') }.to_json)
+    end
+  end
+
+  context 'when verification succeeds' do
+    it 'returns a 200' do
+      mock_arkose_token_verification(success: true)
+
       do_request
 
       expect(response).to have_gitlab_http_status(:ok)
     end
   end
 
-  context 'when arkose is enabled' do
-    before do
-      mock_rate_limit(:phone_verification_challenge, :peek, false, scope: user)
-    end
+  context 'when Arkose is down' do
+    it 'returns a 200' do
+      mock_arkose_token_verification(success: false, service_down: true)
 
-    it 'increases verification attempts' do
-      mock_rate_limit(:phone_verification_challenge, :throttled?, false, scope: user)
-
-      do_request
-    end
-
-    it 'returns 200' do
       do_request
 
       expect(response).to have_gitlab_http_status(:ok)
     end
+  end
 
-    context 'when phone verification challenge rate-limit has been reached' do
-      before do
-        mock_rate_limit(:phone_verification_challenge, :peek, true, scope: user)
-      end
+  context 'when identity_verification_arkose_challenge is disabled' do
+    before do
+      stub_feature_flags(identity_verification_arkose_challenge: false)
+    end
 
-      it_behaves_like 'logs and tracks the event', :phone, :arkose_challenge_shown
+    it 'skips verification' do
+      expect(Arkose::TokenVerificationService).not_to receive(:new)
 
-      context 'when token verification fails' do
-        it 'returns a 400 with an error message', :aggregate_failures do
-          mock_arkose_token_verification(success: false)
-
-          do_request
-
-          expect(response).to have_gitlab_http_status(:bad_request)
-          expect(response.body).to eq(
-            { message: s_('IdentityVerification|Complete verification to sign up.') }.to_json)
-        end
-      end
-
-      context 'when token verification succeeds' do
-        it 'returns a 200' do
-          mock_arkose_token_verification(success: true)
-
-          do_request
-
-          expect(response).to have_gitlab_http_status(:ok)
-        end
-      end
+      do_request
     end
   end
 end

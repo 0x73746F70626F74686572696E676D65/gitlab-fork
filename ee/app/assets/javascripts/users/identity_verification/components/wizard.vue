@@ -27,6 +27,7 @@ export default {
     return {
       steps: [],
       stepsVerifiedState: {},
+      stepsRequiringChallenge: [],
       loading: true,
     };
   },
@@ -68,9 +69,14 @@ export default {
         this.loading = false;
       }
     },
-    setVerificationState(data) {
-      this.steps = convertArrayToCamelCase(data.verification_methods);
-      this.stepsVerifiedState = convertObjectPropsToCamelCase(data.verification_state);
+    setVerificationState({
+      verification_methods,
+      verification_state,
+      methods_requiring_arkose_challenge: methodsRequiringChallenge,
+    }) {
+      this.steps = convertArrayToCamelCase(verification_methods);
+      this.stepsVerifiedState = convertObjectPropsToCamelCase(verification_state);
+      this.stepsRequiringChallenge = convertArrayToCamelCase(methodsRequiringChallenge || []);
     },
     onStepCompleted(step) {
       this.stepsVerifiedState[step] = true;
@@ -78,6 +84,9 @@ export default {
     methodComponent(method) {
       // eslint-disable-next-line @gitlab/require-i18n-strings
       return `${kebabCase(method)}-verification`;
+    },
+    challengeRequired(method) {
+      return this.stepsRequiringChallenge.includes(method);
     },
     stepTitle(step, number) {
       const { ccStep, phoneStep, emailStep } = this.$options.i18n;
@@ -133,6 +142,7 @@ export default {
         >
           <component
             :is="methodComponent(step)"
+            :require-challenge="challengeRequired(step)"
             @completed="onStepCompleted(step)"
             @exemptionRequested="exemptionRequested"
             @set-verification-state="setVerificationState"

@@ -21,12 +21,18 @@ export default {
   },
   mixins: [Tracking.mixin({ category: EVENT_CATEGORY })],
   inject: [
-    'creditCardChallengeOnVerify',
     'creditCardVerifyPath',
     'creditCardVerifyCaptchaPath',
     'creditCard',
     'offerPhoneNumberExemption',
   ],
+  props: {
+    requireChallenge: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
   data() {
     return {
       currentUserId: this.creditCard.userId,
@@ -37,6 +43,7 @@ export default {
       isRelatedToBannedUser: false,
       disableSubmitButton: false,
       isLoading: false,
+      verificationAttempts: 0,
       captchaData: {},
     };
   },
@@ -95,6 +102,9 @@ export default {
           this.isLoading = false;
         });
     },
+    increaseVerificationAttempts() {
+      this.verificationAttempts += 1;
+    },
     onCaptchaShown() {
       this.disableSubmitButton = true;
     },
@@ -107,7 +117,7 @@ export default {
       this.captchaData = {};
     },
     submit() {
-      if (this.creditCardChallengeOnVerify) {
+      if (this.requireChallenge) {
         this.isLoading = true;
         axios
           .post(this.creditCardVerifyCaptchaPath, this.captchaData)
@@ -119,6 +129,7 @@ export default {
             createAlert({ message: error.response?.data?.message || I18N_GENERIC_ERROR });
           })
           .finally(() => {
+            this.increaseVerificationAttempts();
             this.isLoading = false;
           });
       } else {
@@ -157,7 +168,8 @@ export default {
     </div>
 
     <captcha
-      :show-recaptcha-challenge="creditCardChallengeOnVerify"
+      :show-arkose-challenge="requireChallenge"
+      :verification-attempts="verificationAttempts"
       @captcha-shown="onCaptchaShown"
       @captcha-solved="onCaptchaSolved"
       @captcha-reset="onCaptchaReset"

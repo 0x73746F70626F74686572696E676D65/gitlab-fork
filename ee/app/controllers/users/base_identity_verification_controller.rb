@@ -17,6 +17,8 @@ module Users
     before_action :load_captcha, :redirect_banned_user, only: [:show]
     before_action :ensure_verification_method_attempt_allowed!,
       only: PHONE_VERIFICATION_ACTIONS + CREDIT_CARD_VERIFICATION_ACTIONS
+    before_action :ensure_phone_challenge_completed!, only: [:send_phone_verification_code]
+    before_action :ensure_credit_card_challenge_completed!, only: [:verify_credit_card_captcha]
 
     feature_category :instance_resiliency
 
@@ -62,6 +64,10 @@ module Users
       end
 
       log_event(:phone, :success)
+      render json: { status: :success }
+    end
+
+    def verify_credit_card_captcha
       render json: { status: :success }
     end
 
@@ -132,10 +138,41 @@ module Users
       render status: :bad_request, json: {}
     end
 
+    def ensure_phone_challenge_completed!
+      return unless arkose_challenge_required?(method: 'phone')
+
+      ensure_challenge_completed!
+    end
+
+    def ensure_credit_card_challenge_completed!
+      return unless arkose_challenge_required?(method: 'credit_card')
+
+      ensure_challenge_completed!
+    end
+
+    def ensure_challenge_completed!
+      return if verify_arkose_labs_token
+
+      message = s_('IdentityVerification|Complete verification to proceed.')
+      render status: :bad_request, json: { message: message }
+    end
+
+    def arkose_challenge_required?(method:)
+      return false unless Feature.enabled?(:identity_verification_arkose_challenge, @user, type: :gitlab_com_derisk)
+
+      # Require the user to solve Arkose challenge before allowing phone number
+      # or credit card verification (happens after email verification).
+      # Whichever comes first.
+      @user.required_identity_verification_methods.without('email').index(method) == 0
+    end
+
     def verification_state_json
+      required_methods = @user.required_identity_verification_methods
+
       {
-        verification_methods: @user.required_identity_verification_methods,
-        verification_state: @user.identity_verification_state
+        verification_methods: required_methods,
+        verification_state: @user.identity_verification_state,
+        methods_requiring_arkose_challenge: required_methods.select { |m| arkose_challenge_required?(method: m) }
       }
     end
 
