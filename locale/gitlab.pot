@@ -24610,6 +24610,9 @@ msgstr ""
 msgid "Group '%{group_name}' could not be updated."
 msgstr ""
 
+msgid "Group '%{group_name}' has been successfully restored."
+msgstr ""
+
 msgid "Group '%{group_name}' was successfully updated."
 msgstr ""
 
@@ -40102,13 +40105,13 @@ msgstr ""
 msgid "Project & Group can not be assigned at the same time"
 msgstr ""
 
+msgid "Project '%{project_name}' has been successfully restored."
+msgstr ""
+
 msgid "Project '%{project_name}' is being imported."
 msgstr ""
 
 msgid "Project '%{project_name}' is in the process of being deleted."
-msgstr ""
-
-msgid "Project '%{project_name}' is restored."
 msgstr ""
 
 msgid "Project '%{project_name}' queued for deletion."
