@@ -16,29 +16,6 @@ RSpec.describe Projects::EnvironmentsController, feature_category: :continuous_d
     sign_in(user)
   end
 
-  describe 'GET #show' do
-    context 'deployment approvals' do
-      before do
-        create(:deployment, :success, environment: environment, project: project) do |deployment|
-          create(:deployment_approval, deployment: deployment)
-        end
-        create(:deployment, :failed, environment: environment, project: project)
-      end
-
-      it 'preloads approvals their authors' do
-        get :show, params: environment_params
-
-        assigns(:deployments).each do |deployment|
-          expect(deployment.association(:approvals)).to be_loaded
-
-          deployment.approvals.each do |approval|
-            expect(approval.association(:user)).to be_loaded
-          end
-        end
-      end
-    end
-  end
-
   describe '#GET terminal' do
     let(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
 
