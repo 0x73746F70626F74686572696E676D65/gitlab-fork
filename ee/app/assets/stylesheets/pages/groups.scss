@@ -59,7 +59,9 @@ $max-invite-modal-height: 600px;
 .invite-modal-transition-leave-active {
   transition-property: max-height, opacity;
   transition-timing-function: ease-in-out;
-  @include gl-transition-slow;
+  
+  @apply gl-transition-all;
+  @apply gl-duration-slow;
 
   overflow: hidden;
 }

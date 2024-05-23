@@ -261,7 +261,7 @@ export default {
       >
         <gl-icon
           name="chevron-right"
-          class="gl-transition-medium"
+          class="gl-transition-all"
           :class="{ 'gl-rotate-90': expanded }"
         /><span class="gl-ml-2">{{ title }}</span>
       </gl-button>
