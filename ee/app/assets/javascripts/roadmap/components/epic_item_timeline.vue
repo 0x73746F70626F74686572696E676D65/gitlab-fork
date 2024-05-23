@@ -75,7 +75,7 @@ export default {
         return this.getTimelineBarWidthForMonths();
       }
 
-      return this.getTimelineBarWidthForWeeks();
+      return this.getTimelineBarWidthForWeeks(this.epic);
     },
     isTimelineBarSmall() {
       return this.timelineBarWidth < SMALL_TIMELINE_BAR;
