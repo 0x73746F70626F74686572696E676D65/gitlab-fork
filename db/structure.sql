@@ -21224,6 +21224,12 @@ ALTER TABLE vulnerability_scanners
 ALTER TABLE epics
     ADD CONSTRAINT check_450724d1bb CHECK ((issue_id IS NOT NULL)) NOT VALID;
 
+ALTER TABLE ci_runners
+    ADD CONSTRAINT check_46c685e76f CHECK ((char_length((description)::text) <= 1024)) NOT VALID;
+
+ALTER TABLE ci_runners
+    ADD CONSTRAINT check_91230910ec CHECK ((char_length((name)::text) <= 256)) NOT VALID;
+
 ALTER TABLE sprints
     ADD CONSTRAINT check_ccd8a1eae0 CHECK ((start_date IS NOT NULL)) NOT VALID;
 

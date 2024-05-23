@@ -95,6 +95,7 @@ RSpec.describe AppSec::Dast::Scans::RunService, feature_category: :dynamic_appli
             '/analyze'
           ],
           artifacts: {
+            access: 'developer',
             reports: {
               dast: ['gl-dast-report.json']
             }
