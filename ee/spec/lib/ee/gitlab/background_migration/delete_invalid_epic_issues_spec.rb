@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::BackgroundMigration::DeleteInvalidEpicIssues do
+# provide schema version before not null constraint is introduced on epics.issue_id
+RSpec.describe Gitlab::BackgroundMigration::DeleteInvalidEpicIssues, schema: 20240508085441,
+  feature_category: :team_planning do
   let!(:issue_base_type_enum) { 0 }
   let!(:issue_type_id) { table(:work_item_types).find_by(base_type: issue_base_type_enum).id }
 
