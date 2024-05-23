@@ -30,6 +30,8 @@ actions:
     approvals_required: 1
     user_approvers:
       - the.one
+fallback_behavior:
+  fail: open
 `;
 
 export const mockDefaultBranchesScanResultObject = {
@@ -56,6 +58,9 @@ export const mockDefaultBranchesScanResultObject = {
       id: actionId,
     },
   ],
+  fallback_behavior: {
+    fail: 'open',
+  },
 };
 
 export const mockBotMessageScanResultObject = {
@@ -89,6 +94,8 @@ actions:
     approvals_required: 1
     user_approvers:
       - the.one
+fallback_behavior:
+  fail: open
 `;
 
 export const zeroActionsScanResultManifest = `type: approval_policy
@@ -463,3 +470,6 @@ export const createRequiredApprovers = (count) => {
   }
   return approvers;
 };
+
+export const mockFallbackInvalidScanResultManifest = mockDefaultBranchesScanResultManifest.concat(`fallback_behavior:
+  fail: something_else`);
