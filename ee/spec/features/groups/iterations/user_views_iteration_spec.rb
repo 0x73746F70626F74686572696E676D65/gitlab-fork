@@ -78,7 +78,7 @@ RSpec.describe 'User views iteration', :js, feature_category: :team_planning do
       end
 
       it 'shows iteration cadence title in the breadcrumb' do
-        page.within '[aria-label="Breadcrumbs"]' do
+        within_testid('breadcrumb-links') do
           expect(page).to have_content(manual_cadence.title)
         end
       end

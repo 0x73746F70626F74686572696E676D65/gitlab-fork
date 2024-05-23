@@ -28,13 +28,15 @@ RSpec.describe 'Admin::CredentialsInventory', feature_category: :user_management
       stub_licensed_features(credentials_inventory: true)
     end
 
-    context 'links' do
+    context 'links', :js do
       before do
         visit admin_credentials_path
       end
 
       it 'has Credentials Inventory link in sidebar' do
-        expect(page).to have_link('Credentials', href: admin_credentials_path)
+        within_testid('super-sidebar') do
+          expect(page).to have_link('Credentials', href: admin_credentials_path)
+        end
       end
 
       context 'tabs' do

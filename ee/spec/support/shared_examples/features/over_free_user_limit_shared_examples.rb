@@ -49,7 +49,7 @@ RSpec.shared_examples_for 'over the free user limit alert' do
       context 'when over storage limits' do
         include_context 'with over storage limit setup'
 
-        context 'with storage size check' do
+        context 'with storage size check', :js do
           it 'does not show alerts' do
             stub_feature_flags(free_user_cap_without_storage_check: false)
 

@@ -83,7 +83,7 @@ module QA
             end
 
             def vuln_report_page_exists?
-              find_element('breadcrumb-current-link', wait: 5).text == 'Vulnerability report'
+              find_element('breadcrumb-links', wait: 5).find('li:last-of-type').text == 'Vulnerability report'
             end
 
             def wait_for_vuln_report_to_load

@@ -24,13 +24,15 @@ RSpec.describe 'Groups::Security::Credentials', feature_category: :user_manageme
       stub_licensed_features(credentials_inventory: true, group_saml: true)
     end
 
-    context 'links' do
+    context 'links', :js do
       before do
         visit group_security_credentials_path(group_id: group_id)
       end
 
       it 'has Credentials Inventory link in sidebar' do
-        expect(page).to have_link('Credentials', href: group_security_credentials_path(group_id: group_id))
+        within_testid('super-sidebar') do
+          expect(page).to have_link('Credentials', href: group_security_credentials_path(group_id: group_id))
+        end
       end
 
       context 'tabs' do
