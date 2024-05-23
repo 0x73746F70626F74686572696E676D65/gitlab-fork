@@ -1,6 +1,6 @@
 ---
 description: Group runner provisioned in Google Cloud through GRIT
-category: InternalEventTracking
+internal_events: true
 action: provision_group_runner_on_google_cloud
 identifiers:
   - namespace

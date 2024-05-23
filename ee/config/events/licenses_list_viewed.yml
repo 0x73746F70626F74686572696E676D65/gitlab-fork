@@ -1,6 +1,6 @@
 ---
 description: Counts Licenses List page views
-category: InternalEventTracking
+internal_events: true
 action: licenses_list_viewed
 identifiers:
 - project

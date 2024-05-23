@@ -1,6 +1,6 @@
 ---
 description: Create Duo Pro lead failure
-category: InternalEventTracking
+internal_events: true
 action: duo_pro_lead_creation_failure
 identifiers:
   - namespace

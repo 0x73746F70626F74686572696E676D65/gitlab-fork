@@ -1,6 +1,6 @@
 ---
 description: Number of views of any single analytics dashboard
-category: InternalEventTracking
+internal_events: true
 action: analytics_dashboard_viewed
 identifiers:
 - project

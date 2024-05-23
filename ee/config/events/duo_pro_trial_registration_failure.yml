@@ -1,6 +1,6 @@
 ---
 description: Register Duo Pro trial failure
-category: InternalEventTracking
+internal_events: true
 action: duo_pro_trial_registration_failure
 identifiers:
   - namespace

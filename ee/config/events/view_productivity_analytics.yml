@@ -1,6 +1,6 @@
 ---
 description: Visit to /groups/:group/-/analytics/productivity_analytics
-category: InternalEventTracking
+internal_events: true
 action: view_productivity_analytics
 identifiers:
 - namespace

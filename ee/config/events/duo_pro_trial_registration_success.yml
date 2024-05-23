@@ -1,6 +1,6 @@
 ---
 description: Register Duo Pro trial successfully
-category: InternalEventTracking
+internal_events: true
 action: duo_pro_trial_registration_success
 identifiers:
   - namespace

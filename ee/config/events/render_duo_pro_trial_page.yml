@@ -1,6 +1,6 @@
 ---
 description: Render Duo Pro trial page
-category: InternalEventTracking
+internal_events: true
 action: render_duo_pro_trial_page
 identifiers:
   - namespace
