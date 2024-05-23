@@ -346,6 +346,7 @@ export default {
           v-if="showPrivateKey"
           v-model="privateKey"
           rows="16"
+          no-resize
           :formatter="privateKeyFormatter"
           class="gl-h-auto!"
           data-testid="private-key"

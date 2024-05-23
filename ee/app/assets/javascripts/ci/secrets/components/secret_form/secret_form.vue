@@ -196,6 +196,7 @@ export default {
           v-model="secret.value"
           rows="5"
           max-rows="15"
+          no-resize
           :placeholder="s__('Secrets|Value for the key')"
           :spellcheck="false"
           :state="secret.value === undefined || isValueValid"

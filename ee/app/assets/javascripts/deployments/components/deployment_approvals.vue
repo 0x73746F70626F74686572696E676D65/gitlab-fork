@@ -196,6 +196,7 @@ export default {
             id="deployment-approval-comment"
             v-model="comment"
             :state="approvalValid"
+            no-resize
           />
         </gl-form-group>
         <span

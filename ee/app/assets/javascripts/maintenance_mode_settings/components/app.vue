@@ -58,6 +58,7 @@ export default {
           id="maintenanceBannerMessage"
           v-model="bannerMessage"
           :placeholder="$options.i18n.bannerMessagePlaceholder"
+          no-resize
         />
       </gl-form-group>
       <gl-button variant="confirm" type="submit">{{ $options.i18n.buttonText }}</gl-button>

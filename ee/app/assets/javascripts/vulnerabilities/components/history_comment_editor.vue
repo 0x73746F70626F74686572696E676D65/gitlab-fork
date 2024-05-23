@@ -37,6 +37,7 @@ export default {
       v-model="comment"
       :placeholder="s__('vulnerability|Add a comment')"
       :disabled="isSaving"
+      no-resize
       autofocus
     />
     <div class="mt-3">

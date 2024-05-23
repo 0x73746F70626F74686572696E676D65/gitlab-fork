@@ -328,7 +328,7 @@ export default {
     </gl-form-group>
     <country-or-region-selector :country="country" :state="state" @change="onChange" />
     <gl-form-group :label="$options.i18n.commentLabel" label-size="sm" label-for="comment">
-      <gl-form-textarea v-model="comment" />
+      <gl-form-textarea v-model="comment" no-resize />
     </gl-form-group>
 
     <p class="gl-text-gray-400">
