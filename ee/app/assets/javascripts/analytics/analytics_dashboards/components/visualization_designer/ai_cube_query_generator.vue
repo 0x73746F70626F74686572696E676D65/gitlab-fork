@@ -53,6 +53,8 @@ export default {
       error: null,
       submitting: false,
       clientSubscriptionId: uuidv4(),
+      query: null,
+      correlationId: null,
       skipSubscription: true,
     };
   },
@@ -62,6 +64,16 @@ export default {
     },
     submitButtonIcon() {
       return this.submitting ? undefined : 'tanuki-ai';
+    },
+    hasCompletedGeneration() {
+      return this.correlationId && this.query;
+    },
+  },
+  watch: {
+    hasCompletedGeneration(hasCompleted) {
+      if (hasCompleted) {
+        this.$emit('query-generated', this.query, this.correlationId);
+      }
     },
   },
   methods: {
@@ -80,9 +92,11 @@ export default {
       this.skipSubscription = false;
       this.submitting = true;
       this.error = null;
+      this.correlationId = null;
+      this.query = null;
 
       try {
-        await this.$apollo.mutate({
+        const { correlationId } = await this.$apollo.mutate({
           mutation: generateCubeQuery,
           variables: {
             question: this.prompt,
@@ -91,6 +105,7 @@ export default {
             htmlResponse: false,
           },
         });
+        this.correlationId = correlationId;
       } catch (error) {
         this.handleErrors([error]);
         this.submitting = false;
@@ -149,8 +164,7 @@ export default {
           this.submitting = false;
 
           try {
-            const query = JSON.parse(content);
-            this.$emit('query-generated', query);
+            this.query = JSON.parse(content);
           } catch (error) {
             this.handleErrors([error]);
           }

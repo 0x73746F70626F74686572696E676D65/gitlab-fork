@@ -12,12 +12,14 @@ import {
   PANEL_DISPLAY_TYPE_ITEMS,
   PANEL_VISUALIZATION_HEIGHT,
 } from '../../constants';
+import AiCubeQueryFeedback from './ai_cube_query_feedback.vue';
 
 export default {
   name: 'AnalyticsVisualizationPreview',
   PANEL_DISPLAY_TYPES,
   PANEL_DISPLAY_TYPE_ITEMS,
   components: {
+    AiCubeQueryFeedback,
     GlButton,
     GlButtonGroup,
     GlLoadingIcon,
@@ -55,6 +57,11 @@ export default {
       type: String,
       required: false,
       default: '',
+    },
+    aiPromptCorrelationId: {
+      type: String,
+      required: false,
+      default: null,
     },
   },
   computed: {
@@ -96,22 +103,27 @@ export default {
       </div>
     </div>
     <div v-if="resultSet && isQueryPresent" class="border-light">
-      <div class="container gl-mt-3 gl-mb-3">
-        <div class="row">
-          <div class="col-6">
-            <gl-button-group>
-              <gl-button
-                v-for="buttonDisplayType in $options.PANEL_DISPLAY_TYPE_ITEMS"
-                :key="buttonDisplayType.type"
-                :selected="displayType === buttonDisplayType.type"
-                :icon="buttonDisplayType.icon"
-                :data-testid="`select-${buttonDisplayType.type}-button`"
-                @click="$emit('selectedDisplayType', buttonDisplayType.type)"
-                >{{ buttonDisplayType.title }}</gl-button
-              >
-            </gl-button-group>
-          </div>
+      <div
+        class="gl-my-3 gl-mx-5 gl-gap-5 gl-display-flex gl-flex-wrap-reverse gl-justify-content-space-between gl-align-items-center"
+      >
+        <div>
+          <gl-button-group>
+            <gl-button
+              v-for="buttonDisplayType in $options.PANEL_DISPLAY_TYPE_ITEMS"
+              :key="buttonDisplayType.type"
+              :selected="displayType === buttonDisplayType.type"
+              :icon="buttonDisplayType.icon"
+              :data-testid="`select-${buttonDisplayType.type}-button`"
+              @click="$emit('selectedDisplayType', buttonDisplayType.type)"
+              >{{ buttonDisplayType.title }}</gl-button
+            >
+          </gl-button-group>
         </div>
+        <ai-cube-query-feedback
+          v-if="aiPromptCorrelationId"
+          :correlation-id="aiPromptCorrelationId"
+          class="gl-ml-auto gl-h-full"
+        />
       </div>
       <div
         v-if="displayType === $options.PANEL_DISPLAY_TYPES.DATA"

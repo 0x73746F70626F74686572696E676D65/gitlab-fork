@@ -1,4 +1,5 @@
 import AnalyticsVisualizationPreview from 'ee/analytics/analytics_dashboards/components/visualization_designer/analytics_visualization_preview.vue';
+import AiCubeQueryFeedback from 'ee/analytics/analytics_dashboards/components/visualization_designer/ai_cube_query_feedback.vue';
 
 import {
   PANEL_DISPLAY_TYPES,
@@ -14,6 +15,7 @@ describe('AnalyticsVisualizationPreview', () => {
   const findDataButton = () => wrapper.findByTestId('select-data-button');
   const findVisualizationButton = () => wrapper.findByTestId('select-visualization-button');
   const findCodeButton = () => wrapper.findByTestId('select-code-button');
+  const findAiCubeQueryFeedback = () => wrapper.findComponent(AiCubeQueryFeedback);
 
   const selectDisplayType = jest.fn();
 
@@ -29,6 +31,7 @@ describe('AnalyticsVisualizationPreview', () => {
         loading: false,
         resultSet: { tableColumns: () => [], tablePivot: () => [] },
         resultVisualization,
+        aiPromptCorrelationId: null,
         ...props,
       },
     });
@@ -55,31 +58,63 @@ describe('AnalyticsVisualizationPreview', () => {
   });
 
   describe('when it has a resultSet', () => {
-    beforeEach(() => {
-      createWrapper({
-        isQueryPresent: true,
+    describe('default behaviour', () => {
+      beforeEach(() => {
+        createWrapper({
+          isQueryPresent: true,
+        });
+      });
+
+      it('should render overview buttons', () => {
+        expect(findDataButton().exists()).toBe(true);
+        expect(findVisualizationButton().exists()).toBe(true);
+        expect(findCodeButton().exists()).toBe(true);
+      });
+
+      it('should be able to select data section', () => {
+        findDataButton().vm.$emit('click');
+        expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.DATA]]);
+      });
+
+      it('should be able to select visualization section', () => {
+        findVisualizationButton().vm.$emit('click');
+        expect(wrapper.emitted('selectedDisplayType')).toEqual([
+          [PANEL_DISPLAY_TYPES.VISUALIZATION],
+        ]);
+      });
+
+      it('should be able to select code section', () => {
+        findCodeButton().vm.$emit('click');
+        expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.CODE]]);
       });
     });
 
-    it('should render overview buttons', () => {
-      expect(findDataButton().exists()).toBe(true);
-      expect(findVisualizationButton().exists()).toBe(true);
-      expect(findCodeButton().exists()).toBe(true);
+    describe('when there is an AI prompt correlation id', () => {
+      beforeEach(() => {
+        createWrapper({
+          isQueryPresent: true,
+          aiPromptCorrelationId: 'some-prompt-id',
+        });
+      });
+
+      it('should render the AI cube query feedback component', () => {
+        expect(findAiCubeQueryFeedback().props()).toMatchObject({
+          correlationId: 'some-prompt-id',
+        });
+      });
     });
 
-    it('should be able to select data section', () => {
-      findDataButton().vm.$emit('click');
-      expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.DATA]]);
-    });
+    describe('when there is no AI prompt correlation id', () => {
+      beforeEach(() => {
+        createWrapper({
+          isQueryPresent: true,
+          aiPromptCorrelationId: null,
+        });
+      });
 
-    it('should be able to select visualization section', () => {
-      findVisualizationButton().vm.$emit('click');
-      expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.VISUALIZATION]]);
-    });
-
-    it('should be able to select code section', () => {
-      findCodeButton().vm.$emit('click');
-      expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.CODE]]);
+      it('should not render the AI cube query feedback component', () => {
+        expect(findAiCubeQueryFeedback().exists()).toBe(false);
+      });
     });
   });
 
