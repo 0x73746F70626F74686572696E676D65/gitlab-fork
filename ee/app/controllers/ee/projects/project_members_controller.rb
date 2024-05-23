@@ -23,6 +23,7 @@ module EE
         before_action do
           push_frontend_feature_flag(:show_overage_on_role_promotion)
           push_frontend_feature_flag(:member_promotion_management)
+          push_frontend_feature_flag(:show_role_details_in_drawer, @project)
         end
       end
 

@@ -123,6 +123,7 @@ module QA
     def sign_in(as_admin: false)
       return if Page::Main::Menu.perform(&:signed_in?)
 
+      Runtime::Feature.disable(:show_role_details_in_drawer)
       Runtime::Browser.visit(:gitlab, Page::Main::Login)
       Page::Main::Login.perform do |login|
         as_admin ? login.sign_in_using_admin_credentials : login.sign_in_using_credentials

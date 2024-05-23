@@ -12,6 +12,7 @@ RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events d
 
   before do
     project.add_maintainer(user)
+    stub_feature_flags(show_role_details_in_drawer: false)
     sign_in(user)
   end
 
