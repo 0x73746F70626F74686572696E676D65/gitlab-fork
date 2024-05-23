@@ -16930,6 +16930,9 @@ msgstr ""
 msgid "Days of inactivity before deactivation"
 msgstr ""
 
+msgid "Days of inactivity before removal"
+msgstr ""
+
 msgid "Days to merge"
 msgstr ""
 
@@ -19042,6 +19045,9 @@ msgid "Don't show this again"
 msgstr ""
 
 msgid "Done"
+msgstr ""
+
+msgid "Dormant members"
 msgstr ""
 
 msgid "Dormant users"
@@ -43052,6 +43058,9 @@ msgstr ""
 msgid "Remove description history"
 msgstr ""
 
+msgid "Remove dormant members after a period of inactivity"
+msgstr ""
+
 msgid "Remove due date"
 msgstr ""
 
@@ -43194,6 +43203,9 @@ msgid "Removed an issue from an epic."
 msgstr ""
 
 msgid "Removed link with %{issue_ref}."
+msgstr ""
+
+msgid "Removed members no longer have access to this top-level group, its sub-groups, and their projects."
 msgstr ""
 
 msgid "Removed parent epic %{epic_ref}."
