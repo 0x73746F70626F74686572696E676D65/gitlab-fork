@@ -18,6 +18,9 @@ RSpec.shared_context 'with work item types request context EE' do
           allowedChildTypes {
             nodes { id name }
           }
+          allowedParentTypes {
+            nodes { id name }
+          }
         }
         ... on WorkItemWidgetDefinitionLabels {
           allowsScopedLabels
