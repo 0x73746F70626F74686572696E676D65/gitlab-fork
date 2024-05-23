@@ -2637,7 +2637,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it 'does not proceed to firing any webhooks' do
         allow(grandparent_group).to receive(:execute_hooks)
 
-        grandparent_group.destroy!
+        expect { grandparent_group.destroy! }.to raise_error(ActiveRecord::InvalidForeignKey)
 
         expect(grandparent_group).not_to have_received(:execute_hooks)
       end
