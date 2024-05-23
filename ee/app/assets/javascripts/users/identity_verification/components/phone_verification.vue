@@ -19,16 +19,14 @@ export default {
     VerifyPhoneVerificationCode,
     Captcha,
   },
-  inject: [
-    'verificationStatePath',
-    'phoneNumber',
-    'offerPhoneNumberExemption',
-    'phoneChallengeOnSend',
-    'phoneChallengeOnVerify',
-    'phoneEnableArkoseChallenge',
-    'phoneShowArkoseChallenge',
-    'phoneShowRecaptchaChallenge',
-  ],
+  inject: ['verificationStatePath', 'phoneNumber', 'offerPhoneNumberExemption'],
+  props: {
+    requireChallenge: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
   data() {
     return {
       stepIndex: 1,
@@ -144,11 +142,8 @@ export default {
     >
       <template #captcha>
         <captcha
-          v-if="phoneChallengeOnSend"
           :verification-attempts="verificationAttempts"
-          :enable-arkose-challenge="phoneEnableArkoseChallenge"
-          :show-arkose-challenge="phoneShowArkoseChallenge"
-          :show-recaptcha-challenge="phoneShowRecaptchaChallenge"
+          :show-arkose-challenge="requireChallenge"
           @captcha-shown="onCaptchaShown"
           @captcha-solved="onCaptchaSolved"
           @captcha-reset="onCaptchaReset"
@@ -166,22 +161,8 @@ export default {
       @timer-expired="resetTimer"
       @resent="setSendAllowedOn"
       @back="goToStepOne"
-      @verification-attempt="increaseVerificationAttempts"
       @verified="setVerified"
-    >
-      <template #captcha>
-        <captcha
-          v-if="phoneChallengeOnVerify"
-          :verification-attempts="verificationAttempts"
-          :enable-arkose-challenge="phoneEnableArkoseChallenge"
-          :show-arkose-challenge="phoneShowArkoseChallenge"
-          :show-recaptcha-challenge="phoneShowRecaptchaChallenge"
-          @captcha-shown="onCaptchaShown"
-          @captcha-solved="onCaptchaSolved"
-          @captcha-reset="onCaptchaReset"
-        />
-      </template>
-    </verify-phone-verification-code>
+    />
 
     <gl-button
       v-if="offerPhoneNumberExemption"

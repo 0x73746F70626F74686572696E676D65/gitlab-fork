@@ -224,7 +224,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
     it_behaves_like 'it requires a valid verification_user_id'
 
-    context 'with a unverified user' do
+    context 'with an unverified user' do
       let_it_be(:user) { unconfirmed_user }
 
       before do
@@ -235,28 +235,50 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
         do_request
 
         expect(json_response).to eq({
-          'verification_methods' => ["email"],
-          'verification_state' => { "email" => false }
+          'verification_methods' => user.required_identity_verification_methods,
+          'verification_state' => user.identity_verification_state,
+          'methods_requiring_arkose_challenge' => []
         })
       end
 
       it_behaves_like 'it sets poll interval header'
-    end
 
-    context 'with a verified user' do
-      let_it_be(:user) { confirmed_user }
+      describe 'methods_requiring_arkose_challenge' do
+        subject do
+          do_request
 
-      before do
-        sign_in confirmed_user
-      end
+          json_response['methods_requiring_arkose_challenge']
+        end
 
-      it 'returns verification methods and state' do
-        do_request
+        where(:required_methods, :methods_requiring_challenge) do
+          %w[email]                   | []
+          %w[email phone]             | %w[phone]
+          %w[email phone credit_card] | %w[phone]
+          %w[email credit_card phone] | %w[credit_card]
+          %w[email credit_card]       | %w[credit_card]
+          %w[phone]                   | %w[phone]
+          %w[phone credit_card]       | %w[phone]
+          %w[credit_card phone]       | %w[credit_card]
+          %w[credit_card]             | %w[credit_card]
+        end
 
-        expect(json_response).to eq({
-          'verification_methods' => user.required_identity_verification_methods,
-          'verification_state' => user.identity_verification_state
-        })
+        with_them do
+          before do
+            allow_next_found_instance_of(User) do |instance|
+              allow(instance).to receive(:required_identity_verification_methods).and_return(required_methods)
+            end
+          end
+
+          it { is_expected.to match_array(methods_requiring_challenge) }
+
+          context 'when identity_verification_arkose_challenge is disabled' do
+            before do
+              stub_feature_flags(identity_verification_arkose_challenge: false)
+            end
+
+            it { is_expected.to eq [] }
+          end
+        end
       end
     end
   end
@@ -387,14 +409,14 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     describe 'before action hooks' do
       before do
         mock_send_phone_number_verification_code(success: true)
+        mock_arkose_token_verification(success: true)
       end
 
       it_behaves_like 'it requires a valid verification_user_id'
       it_behaves_like 'it requires an unconfirmed user'
       it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
       it_behaves_like 'it ensures verification attempt is allowed', 'phone'
-      it_behaves_like 'it verifies arkose token before phone verification'
-      it_behaves_like 'it verifies reCAPTCHA response'
+      it_behaves_like 'it verifies arkose token', 'phone'
     end
 
     it_behaves_like 'it successfully sends phone number verification code'
@@ -423,8 +445,6 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       it_behaves_like 'it requires an unconfirmed user'
       it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
       it_behaves_like 'it ensures verification attempt is allowed', 'phone'
-      it_behaves_like 'it verifies arkose token before phone verification'
-      it_behaves_like 'it verifies reCAPTCHA response'
     end
 
     it_behaves_like 'it successfully verifies a phone number verification code'
@@ -700,7 +720,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
     subject(:do_request) { post verify_credit_card_captcha_signup_identity_verification_path }
 
-    it_behaves_like 'it verifies reCAPTCHA response'
+    it_behaves_like 'it verifies arkose token', 'credit_card'
   end
 
   describe 'PATCH toggle_phone_exemption' do

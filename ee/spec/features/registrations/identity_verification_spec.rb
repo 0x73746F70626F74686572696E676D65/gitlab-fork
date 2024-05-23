@@ -167,7 +167,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       verify_email unless skip_email_validation
 
-      verify_phone_number
+      verify_phone_number(solve_arkose_challenge: true)
 
       expect_verification_completed
 
@@ -181,6 +181,8 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
         verify_email unless skip_email_validation
 
         request_phone_exemption
+
+        solve_arkose_verify_challenge
 
         verify_credit_card
 
@@ -216,7 +218,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       verify_email unless skip_email_validation
 
-      verify_phone_number
+      verify_phone_number(solve_arkose_challenge: true)
 
       verify_credit_card
 
@@ -230,6 +232,8 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
         expect_to_see_identity_verification_page
 
         verify_email unless skip_email_validation
+
+        solve_arkose_verify_challenge
 
         verify_credit_card
 
@@ -247,7 +251,10 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
         context 'when all prerequisite verification methods have been completed' do
           before do
             verify_email unless skip_email_validation
-            verify_phone_number
+
+            solve_arkose_verify_challenge
+
+            verify_phone_number(solve_arkose_challenge: true)
           end
 
           it_behaves_like 'does not allow unauthorized access to verification endpoints', [:phone]

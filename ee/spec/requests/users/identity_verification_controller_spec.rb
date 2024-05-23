@@ -83,7 +83,8 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
       expect(json_response).to eq({
         'verification_methods' => ["phone"],
-        'verification_state' => { "phone" => false }
+        'verification_state' => { "phone" => false },
+        'methods_requiring_arkose_challenge' => ["phone"]
       })
     end
   end
@@ -103,31 +104,10 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
         mock_send_phone_number_verification_code(success: true)
       end
 
-      describe 'Arkose session token verification' do
-        context 'when verification fails' do
-          it 'returns a 400 with an error message', :aggregate_failures do
-            mock_arkose_token_verification(success: false)
-
-            do_request
-
-            expect(response).to have_gitlab_http_status(:bad_request)
-            expect(response.body).to eq(
-              { message: s_('IdentityVerification|Complete verification to proceed.') }.to_json)
-          end
-        end
-
-        context 'when verification succeeds' do
-          it 'returns a 200' do
-            mock_arkose_token_verification(success: true)
-
-            do_request
-
-            expect(response).to have_gitlab_http_status(:ok)
-          end
-        end
-      end
-
       it_behaves_like 'it redirects to root_path when user is already verified'
+      it_behaves_like 'it verifies arkose token', 'phone' do
+        let(:target_user) { user }
+      end
 
       it_behaves_like 'it ensures verification attempt is allowed', 'phone' do
         let(:target_user) { user }
@@ -159,6 +139,14 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
     it_behaves_like 'it successfully verifies a phone number verification code'
     it_behaves_like 'it handles failed phone number code verification'
+  end
+
+  describe 'POST verify_credit_card_captcha' do
+    subject(:do_request) { post verify_credit_card_captcha_identity_verification_path }
+
+    it_behaves_like 'it verifies arkose token', 'credit_card' do
+      let(:target_user) { user }
+    end
   end
 
   describe 'GET verify_credit_card' do

@@ -11,11 +11,6 @@ export default {
   },
   inject: ['arkoseConfiguration', 'arkoseDataExchangePayload'],
   props: {
-    enableArkoseChallenge: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     showArkoseChallenge: {
       type: Boolean,
       required: false,
@@ -39,18 +34,8 @@ export default {
     };
   },
   computed: {
-    renderArkoseChallenge() {
-      if (this.enableArkoseChallenge) {
-        return this.showArkoseChallenge || this.verificationAttempts >= 3;
-      }
-
-      return false;
-    },
-    renderRecaptchaChallenge() {
-      return this.showRecaptchaChallenge;
-    },
     renderCaptcha() {
-      return this.renderArkoseChallenge || this.renderRecaptchaChallenge;
+      return this.showArkoseChallenge || this.showRecaptchaChallenge;
     },
     recaptchaSiteKey() {
       return gon.recaptcha_sitekey;
@@ -90,7 +75,7 @@ export default {
 </script>
 <template>
   <div>
-    <div v-if="renderRecaptchaChallenge" class="gl-text-center gl-mt-3">
+    <div v-if="showRecaptchaChallenge" class="gl-text-center gl-mt-3">
       <re-captcha
         :captcha-site-key="recaptchaSiteKey"
         :show-modal="false"
@@ -101,7 +86,7 @@ export default {
     </div>
 
     <phone-verification-arkose-app
-      v-if="renderArkoseChallenge"
+      v-if="showArkoseChallenge"
       :public-key="arkoseConfiguration.apiKey"
       :domain="arkoseConfiguration.domain"
       :data-exchange-payload="arkoseDataExchangePayload"

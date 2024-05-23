@@ -25,7 +25,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
 
     expect_to_see_identity_verification_page
 
-    verify_phone_number
+    verify_phone_number(solve_arkose_challenge: true)
 
     expect_verification_completed
 

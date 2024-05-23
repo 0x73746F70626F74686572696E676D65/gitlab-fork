@@ -34,6 +34,8 @@ describe('IdentityVerificationWizard', () => {
     phoneExemptionPath: '/users/identity_verification/toggle_phone_exemption',
   };
 
+  const verificationStatePath = `${DEFAULT_PROVIDE.verificationStatePath}?no_cache=1`;
+
   const createComponent = ({ provide } = { provide: {} }) => {
     wrapper = shallowMount(IdentityVerificationWizard, {
       provide: { ...DEFAULT_PROVIDE, ...provide },
@@ -48,12 +50,13 @@ describe('IdentityVerificationWizard', () => {
   const buildVerificationStateResponse = (mockState) => ({
     verification_methods: Object.keys(mockState),
     verification_state: mockState,
+    methods_requiring_arkose_challenge: [],
   });
 
   const mockVerificationState = (mockState) => {
-    const url = `${DEFAULT_PROVIDE.verificationStatePath}?no_cache=1`;
-
-    axiosMock.onGet(url).replyOnce(HTTP_STATUS_OK, buildVerificationStateResponse(mockState));
+    axiosMock
+      .onGet(verificationStatePath)
+      .replyOnce(HTTP_STATUS_OK, buildVerificationStateResponse(mockState));
   };
 
   beforeEach(() => {
@@ -95,6 +98,26 @@ describe('IdentityVerificationWizard', () => {
       expect(findSteps().at(0).props('title')).toBe('Step 1: Verify a payment method');
       expect(findSteps().at(1).props('title')).toBe('Step 2: Verify phone number');
       expect(findSteps().at(2).props('title')).toBe('Step 3: Verify email address');
+    });
+  });
+
+  describe('Verification method components requireChallenge prop', () => {
+    beforeEach(async () => {
+      const response = {
+        ...buildVerificationStateResponse({ email: false, credit_card: false, phone: false }),
+        methods_requiring_arkose_challenge: ['credit_card'],
+      };
+
+      axiosMock.onGet(verificationStatePath).replyOnce(HTTP_STATUS_OK, response);
+
+      createComponent();
+      await waitForPromises();
+    });
+
+    it('has the correct value', () => {
+      expect(wrapper.findComponent(EmailVerification).props('requireChallenge')).toBeUndefined();
+      expect(wrapper.findComponent(CreditCardVerification).props('requireChallenge')).toBe(true);
+      expect(wrapper.findComponent(PhoneVerification).props('requireChallenge')).toBe(false);
     });
   });
 

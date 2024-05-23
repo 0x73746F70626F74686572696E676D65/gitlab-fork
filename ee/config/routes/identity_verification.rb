@@ -24,6 +24,7 @@ scope '-', module: :users do
     post :verify_phone_verification_code
     patch :toggle_phone_exemption
     get :verify_credit_card
+    post :verify_credit_card_captcha
     get :success
   end
 end

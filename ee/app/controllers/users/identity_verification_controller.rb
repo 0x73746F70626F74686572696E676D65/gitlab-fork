@@ -2,7 +2,6 @@
 
 module Users
   class IdentityVerificationController < BaseIdentityVerificationController
-    before_action :ensure_challenge_completed!, only: [:send_phone_verification_code]
     before_action :require_unverified_user!, except: [:success]
 
     def show
@@ -21,13 +20,6 @@ module Users
 
     def require_unverified_user!
       redirect_to redirect_path if @user.identity_verified?
-    end
-
-    def ensure_challenge_completed!
-      return if verify_arkose_labs_token
-
-      message = s_('IdentityVerification|Complete verification to proceed.')
-      render status: :bad_request, json: { message: message }
     end
 
     def required_params
