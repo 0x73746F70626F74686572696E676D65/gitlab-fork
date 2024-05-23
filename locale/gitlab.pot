@@ -58620,16 +58620,28 @@ msgstr ""
 msgid "Wiki page was successfully updated."
 msgstr ""
 
-msgid "WikiClone|Clone your wiki"
+msgid "WikiClone|Clone Wiki repository"
+msgstr ""
+
+msgid "WikiClone|Clone repository"
 msgstr ""
 
 msgid "WikiClone|Git Access"
+msgstr ""
+
+msgid "WikiClone|Go to directory"
 msgstr ""
 
 msgid "WikiClone|Install Gollum"
 msgstr ""
 
 msgid "WikiClone|Start Gollum and edit locally"
+msgstr ""
+
+msgid "WikiClone|Step 1: Clone repository"
+msgstr ""
+
+msgid "WikiClone|Step 2: Install and start Gollum"
 msgstr ""
 
 msgid "WikiEdit|There is already a page with the same title in that path."
