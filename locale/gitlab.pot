@@ -26138,6 +26138,9 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
+msgid "ID of the Google Cloud project."
+msgstr ""
+
 msgid "ID portion of the Campfire room URL."
 msgstr ""
 
@@ -43748,6 +43751,9 @@ msgstr ""
 msgid "Repository must contain at least 1 file."
 msgstr ""
 
+msgid "Repository of Artifact Registry."
+msgstr ""
+
 msgid "Repository size is above the limit."
 msgstr ""
 
@@ -52072,6 +52078,9 @@ msgstr ""
 msgid "The Snowplow cookie domain."
 msgstr ""
 
+msgid "The Telegram bot token (for example, `123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)."
+msgstr ""
+
 msgid "The URL of the Jenkins server."
 msgstr ""
 
@@ -55563,6 +55572,9 @@ msgid "Unhappy?"
 msgstr ""
 
 msgid "Unhelpful or irrelevant"
+msgstr ""
+
+msgid "Unique identifier for the target chat or the username of the target channel (in the format `@channelusername`)."
 msgstr ""
 
 msgid "Units|d"
