@@ -1979,6 +1979,9 @@ msgstr ""
 msgid "A project containing issues for each audit inquiry in the HIPAA Audit Protocol published by the U.S. Department of Health & Human Services"
 msgstr ""
 
+msgid "A project containing issues for security and privacy controls published by the U.S. National Institute of Standards and Technology"
+msgstr ""
+
 msgid "A project’s repository name defines its URL (the one you use to access the project via a browser) and its place on the file disk where GitLab is installed. %{link_start}Learn more.%{link_end}"
 msgstr ""
 
@@ -41216,6 +41219,9 @@ msgid "ProjectTemplates|Kotlin Native for Linux"
 msgstr ""
 
 msgid "ProjectTemplates|Laravel Framework"
+msgstr ""
+
+msgid "ProjectTemplates|NIST 800-53r5"
 msgstr ""
 
 msgid "ProjectTemplates|Netlify/GitBook"
