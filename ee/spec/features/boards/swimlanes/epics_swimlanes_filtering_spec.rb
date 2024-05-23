@@ -43,7 +43,6 @@ RSpec.describe 'epics swimlanes filtering', :js, feature_category: :team_plannin
       stub_licensed_features(epics: true, swimlanes: true)
 
       sign_in(user)
-      create(:callout, feature_name: :board_add_new_column_trigger_popover, user: user)
       visit_board_page
 
       load_epic_swimlanes

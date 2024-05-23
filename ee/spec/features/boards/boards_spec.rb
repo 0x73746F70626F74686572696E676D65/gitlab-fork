@@ -12,10 +12,6 @@ RSpec.describe 'Project issue boards', :js, feature_category: :portfolio_managem
   let(:milestone) { create(:milestone, title: "v2.2", project: project) }
   let!(:board_with_milestone) { create(:board, project: project, milestone: milestone) }
 
-  before_all do
-    create(:callout, feature_name: :board_add_new_column_trigger_popover, user: user)
-  end
-
   context 'with group and reporter' do
     let(:group) { create(:group) }
     let(:project) { create(:project, :public, namespace: group) }
@@ -351,7 +347,6 @@ RSpec.describe 'Project issue boards', :js, feature_category: :portfolio_managem
     before_all do
       create(:issue_link, source: issue2, target: issue1, link_type: IssueLink::TYPE_BLOCKS)
       project.add_developer(user)
-      create(:callout, feature_name: :board_add_new_column_trigger_popover, user: user)
     end
 
     before do

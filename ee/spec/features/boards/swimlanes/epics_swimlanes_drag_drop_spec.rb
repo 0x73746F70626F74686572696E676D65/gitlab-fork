@@ -22,7 +22,6 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
 
   before do
     stub_licensed_features(epics: true, swimlanes: true)
-    create(:callout, feature_name: :board_add_new_column_trigger_popover, user: user)
 
     sign_in(user)
     load_board project_boards_path(project)
