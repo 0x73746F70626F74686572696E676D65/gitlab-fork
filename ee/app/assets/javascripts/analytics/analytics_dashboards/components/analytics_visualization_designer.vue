@@ -74,6 +74,7 @@ export default {
       hasTimeDimension: false,
       isSaving: false,
       alert: null,
+      aiPromptCorrelationId: null,
     };
   },
   computed: {
@@ -295,10 +296,11 @@ export default {
         captureError,
       });
     },
-    onQueryGenerated(query) {
+    onQueryGenerated(query, correlationId) {
       this.queryState.query = {
         ...query,
       };
+      this.aiPromptCorrelationId = correlationId;
     },
   },
   i18n: {
@@ -442,6 +444,7 @@ export default {
               :result-set="resultSet ? resultSet : null"
               :result-visualization="resultSet && isQueryPresent ? resultVisualization : null"
               :title="visualizationTitle"
+              :ai-prompt-correlation-id="aiPromptCorrelationId"
               @selectedDisplayType="selectDisplayType"
             />
           </div>

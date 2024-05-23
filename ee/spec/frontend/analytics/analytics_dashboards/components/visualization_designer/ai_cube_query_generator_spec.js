@@ -204,10 +204,13 @@ describe('AiCubeQueryGenerator', () => {
     });
 
     describe('when aiCompletionResponse subscription returns a value', () => {
+      const mockCorrelationId = 'mock-correlation-id';
       beforeEach(() => {
         generateCubeQueryMutationHandlerMock.mockResolvedValue({
           data: { aiAction: { errors: [], __typename: 'AiActionPayload' } },
+          correlationId: mockCorrelationId,
         });
+
         aiResponseSubscriptionHandlerMock.mockResolvedValue({
           data: {
             aiCompletionResponse: {
@@ -219,6 +222,7 @@ describe('AiCubeQueryGenerator', () => {
 
         findGenerateCubeQueryPromptInput().vm.$emit('input', prompt);
         findGenerateCubeQuerySubmitButton().vm.$emit('click');
+
         return waitForPromises();
       });
 
@@ -227,8 +231,11 @@ describe('AiCubeQueryGenerator', () => {
         expect(findGenerateCubeQuerySubmitButton().props('icon')).toBe('tanuki-ai');
       });
 
-      it('emits generated query', () => {
-        expect(wrapper.emitted('query-generated').at(0)).toStrictEqual([generatedQuery]);
+      it('emits generated query and correlationId', () => {
+        expect(wrapper.emitted('query-generated').at(0)).toStrictEqual([
+          generatedQuery,
+          mockCorrelationId,
+        ]);
       });
     });
 
