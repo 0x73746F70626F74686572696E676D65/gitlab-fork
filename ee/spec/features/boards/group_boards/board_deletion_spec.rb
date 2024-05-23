@@ -16,12 +16,13 @@ RSpec.describe 'Group Boards', :js, feature_category: :team_planning do
   end
 
   it 'deletes a group issue board' do
-    click_boards_dropdown
+    find_by_testid('boards-config-button').click
 
     wait_for_requests
 
-    click_button s_('IssueBoards|Delete board')
-    find(:css, '.board-config-modal .js-modal-action-primary').click
+    find_by_testid('delete-board-button').click
+
+    find_by_testid('save-changes-button').click
 
     click_boards_dropdown
 
