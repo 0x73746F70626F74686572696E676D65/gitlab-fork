@@ -108,7 +108,7 @@ export default {
       >
         <gl-icon
           name="chevron-right"
-          class="gl-transition-medium"
+          class="gl-transition-all"
           :class="{ 'gl-rotate-90': isEditing }"
         /><span class="gl-font-lg gl-ml-2">{{ destinationTitle }}</span>
       </gl-button>
