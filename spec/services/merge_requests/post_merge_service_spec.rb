@@ -158,7 +158,7 @@ RSpec.describe MergeRequests::PostMergeService, feature_category: :code_review_w
       it 'performs Pages::DeactivateMrDeploymentWorker asynchronously' do
         expect(Pages::DeactivateMrDeploymentsWorker)
           .to receive(:perform_async)
-          .with(merge_request)
+          .with(merge_request.id)
 
         subject
 
