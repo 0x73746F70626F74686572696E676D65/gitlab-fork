@@ -51790,6 +51790,9 @@ msgstr ""
 msgid "Terraform|Support for periods (`.`) in Terraform state names might break existing states."
 msgstr ""
 
+msgid "Terraform|Support for periods (`.`) in Terraform state names might break existing states. Refer to the %{link_start}troubleshooting%{link_end} to learn more."
+msgstr ""
+
 msgid "Terraform|Terraform init command"
 msgstr ""
 
