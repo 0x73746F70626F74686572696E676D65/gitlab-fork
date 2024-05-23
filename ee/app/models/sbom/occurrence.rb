@@ -96,6 +96,10 @@ module Sbom
       where(component_name: component_names)
     end
 
+    scope :filter_by_source_types, ->(source_types) do
+      left_outer_joins(:source).where(sbom_sources: { source_type: source_types })
+    end
+
     scope :filter_by_search_with_component_and_group, ->(search, component_id, group) do
       relation = includes(project: :namespace).where(component_version_id: component_id, project: group.all_projects)
       if search.present?

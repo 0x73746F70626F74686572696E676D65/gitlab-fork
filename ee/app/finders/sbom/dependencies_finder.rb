@@ -13,7 +13,7 @@ module Sbom
 
     def execute
       @collection = occurrences
-
+      filter_by_source_types
       filter_by_package_managers
       filter_by_component_names
       filter_by_licences
@@ -24,6 +24,14 @@ module Sbom
     private
 
     attr_reader :current_user, :dependable, :params
+
+    def filter_by_source_types
+      return if params[:source_types].blank?
+
+      params[:source_types].map! { |e| e == 'nil_source' ? nil : e }
+
+      @collection = @collection.filter_by_source_types(params[:source_types])
+    end
 
     def filter_by_package_managers
       return if params[:package_managers].blank?

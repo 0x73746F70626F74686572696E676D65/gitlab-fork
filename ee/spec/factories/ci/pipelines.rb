@@ -142,5 +142,13 @@ FactoryBot.define do
         pipeline.builds << build(:ee_ci_build, :corrupted_cyclonedx, pipeline: pipeline, project: pipeline.project)
       end
     end
+
+    trait :with_cyclonedx_container_scanning do
+      status { :success }
+
+      after(:build) do |pipeline, evaluator|
+        pipeline.builds << build(:ee_ci_build, :cyclonedx_container_scanning, pipeline: pipeline, project: pipeline.project)
+      end
+    end
   end
 end
