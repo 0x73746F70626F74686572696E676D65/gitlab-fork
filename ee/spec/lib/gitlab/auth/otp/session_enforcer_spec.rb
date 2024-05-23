@@ -19,8 +19,8 @@ RSpec.describe Gitlab::Auth::Otp::SessionEnforcer, :clean_gitlab_redis_sessions 
       expect(redis).to(
         receive(:setex)
           .with("#{::Gitlab::Redis::Sessions::OTP_SESSIONS_NAMESPACE}:#{key.id}",
-                session_expiry_in_seconds,
-                true)
+            session_expiry_in_seconds,
+            true)
           .once)
 
       described_class.new(key).update_session

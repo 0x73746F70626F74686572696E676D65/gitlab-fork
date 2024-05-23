@@ -101,9 +101,9 @@ RSpec.describe EE::Gitlab::Scim::ParamsParser, feature_category: :system_access 
       }
 
       expect(described_class.new(params).post_params).to eq(email: 'work@example.com',
-                                                            extern_uid: 'test',
-                                                            name: 'Test A. Name',
-                                                            username: 'username')
+        extern_uid: 'test',
+        name: 'Test A. Name',
+        username: 'username')
     end
 
     it 'can construct a name from givenName and familyName' do

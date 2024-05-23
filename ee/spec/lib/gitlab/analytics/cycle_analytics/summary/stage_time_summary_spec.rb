@@ -441,28 +441,28 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
 
       before do
         create(:dora_daily_metrics,
-               environment: environment_1,
-               date: from,
-               lead_time_for_changes_in_seconds: 2.hours,
-               time_to_restore_service_in_seconds: 6.hours,
-               incidents_count: 1,
-               deployment_frequency: 2)
+          environment: environment_1,
+          date: from,
+          lead_time_for_changes_in_seconds: 2.hours,
+          time_to_restore_service_in_seconds: 6.hours,
+          incidents_count: 1,
+          deployment_frequency: 2)
 
         create(:dora_daily_metrics,
-               environment: environment_2,
-               date: from,
-               lead_time_for_changes_in_seconds: 4.hours, # median
-               time_to_restore_service_in_seconds: 8.hours, # median
-               incidents_count: 3,
-               deployment_frequency: 4)
+          environment: environment_2,
+          date: from,
+          lead_time_for_changes_in_seconds: 4.hours, # median
+          time_to_restore_service_in_seconds: 8.hours, # median
+          incidents_count: 3,
+          deployment_frequency: 4)
 
         create(:dora_daily_metrics,
-               environment: environment_3,
-               date: from,
-               lead_time_for_changes_in_seconds: 7.hours,
-               time_to_restore_service_in_seconds: 9.hours,
-               incidents_count: 5,
-               deployment_frequency: 6)
+          environment: environment_3,
+          date: from,
+          lead_time_for_changes_in_seconds: 7.hours,
+          time_to_restore_service_in_seconds: 9.hours,
+          incidents_count: 5,
+          deployment_frequency: 6)
       end
 
       it 'returns 3 metrics' do

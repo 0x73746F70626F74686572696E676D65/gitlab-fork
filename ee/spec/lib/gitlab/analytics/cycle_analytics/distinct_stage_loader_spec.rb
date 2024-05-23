@@ -57,16 +57,16 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DistinctStageLoader, feature_c
   context 'when a subset of in-memory stages are already defined' do
     let_it_be(:cycle_time) do
       create(:cycle_analytics_stage,
-             namespace: group,
-             start_event_identifier: Gitlab::Analytics::CycleAnalytics::Summary::LeadTime.start_event_identifier,
-             end_event_identifier: Gitlab::Analytics::CycleAnalytics::Summary::LeadTime.end_event_identifier)
+        namespace: group,
+        start_event_identifier: Gitlab::Analytics::CycleAnalytics::Summary::LeadTime.start_event_identifier,
+        end_event_identifier: Gitlab::Analytics::CycleAnalytics::Summary::LeadTime.end_event_identifier)
     end
 
     let_it_be(:lead_time) do
       create(:cycle_analytics_stage,
-             namespace: group,
-             start_event_identifier: Gitlab::Analytics::CycleAnalytics::Summary::CycleTime.start_event_identifier,
-             end_event_identifier: Gitlab::Analytics::CycleAnalytics::Summary::CycleTime.end_event_identifier)
+        namespace: group,
+        start_event_identifier: Gitlab::Analytics::CycleAnalytics::Summary::CycleTime.start_event_identifier,
+        end_event_identifier: Gitlab::Analytics::CycleAnalytics::Summary::CycleTime.end_event_identifier)
     end
 
     it 'does not create extra stage event hash records' do
