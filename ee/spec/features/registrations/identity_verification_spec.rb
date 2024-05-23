@@ -252,8 +252,6 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
           before do
             verify_email unless skip_email_validation
 
-            solve_arkose_verify_challenge
-
             verify_phone_number(solve_arkose_challenge: true)
           end
 
