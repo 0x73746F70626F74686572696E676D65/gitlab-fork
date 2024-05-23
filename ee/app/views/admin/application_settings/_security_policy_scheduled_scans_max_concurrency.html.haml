@@ -1,0 +1,5 @@
+- return unless License.current&.ultimate?
+
+.form-group
+  = form.label :security_policy_scheduled_scans_max_concurrency, s_('SecurityOrchestration|Security policy scheduled scans maximum concurrency'), class: 'label-bold'
+  = form.number_field :security_policy_scheduled_scans_max_concurrency, class: 'form-control gl-form-input'

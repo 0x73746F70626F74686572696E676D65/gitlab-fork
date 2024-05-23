@@ -57,6 +57,7 @@ module EE
         :secret_detection_token_revocation_url,
         :secret_detection_token_revocation_token,
         :secret_detection_revocation_token_types_url,
+        :security_policy_scheduled_scans_max_concurrency,
         :shared_runners_minutes,
         :throttle_incident_management_notification_enabled,
         :throttle_incident_management_notification_per_period,
