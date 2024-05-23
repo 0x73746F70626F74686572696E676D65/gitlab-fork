@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Boards, feature_category: :team_planning do
+RSpec.describe API::Boards, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public, maintainers: user) }
   let_it_be(:board_parent) { create(:project, :public, group: group) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
+RSpec.describe 'Scoped issue boards', :js, feature_category: :portfolio_management do
   include MobileHelpers
   include ListboxHelpers
 

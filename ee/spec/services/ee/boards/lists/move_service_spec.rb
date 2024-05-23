@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Boards::Lists::MoveService, feature_category: :team_planning do
+RSpec.describe Boards::Lists::MoveService, feature_category: :portfolio_management do
   describe '#execute' do
     let_it_be(:project) { create(:project) }
     let_it_be(:board) { create(:board, project: project) }
