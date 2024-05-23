@@ -15,6 +15,7 @@ export const DISCOUNT_PROCESSING_TYPE = 'Discount';
 export const VALIDATION_ERROR_CODE = 'VALIDATION_ERROR';
 export const PROMO_CODE_ERROR_ATTRIBUTE = 'promo_code';
 export const INVALID_PROMO_CODE_ERROR_CODE = 'INVALID';
+export const ZUORA_LOCK_ERROR_CODE = 58730050;
 
 export const INVALID_PROMO_CODE_ERROR_MESSAGE = s__(
   'Checkout|Invalid coupon code. Enter a valid coupon code.',
