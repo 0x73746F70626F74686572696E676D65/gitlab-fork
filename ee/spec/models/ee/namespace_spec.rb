@@ -1783,36 +1783,23 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
       it { is_expected.to be false }
     end
 
-    context 'when :saas_user_caps is disabled' do
-      before do
-        stub_feature_flags(saas_user_caps: false)
-      end
+    context 'when the namespace is not a group' do
+      let(:user) { create(:user) }
+      let(:namespace) { user.namespace }
 
       it { is_expected.to be false }
     end
 
-    context 'when :saas_user_caps is enabled' do
+    context 'when Ramon is not available' do
       before do
-        stub_feature_flags(saas_user_caps: true)
         stub_feature_flags(ramon: false)
       end
 
       it { is_expected.to be true }
+    end
 
-      context 'when the namespace is not a group' do
-        let(:user) { create(:user) }
-        let(:namespace) { user.namespace }
-
-        it { is_expected.to be false }
-      end
-
-      context 'when Ramon is available' do
-        before do
-          stub_feature_flags(ramon: true)
-        end
-
-        it { is_expected.to be false }
-      end
+    context 'when Ramon is available' do
+      it { is_expected.to be false }
     end
   end
 

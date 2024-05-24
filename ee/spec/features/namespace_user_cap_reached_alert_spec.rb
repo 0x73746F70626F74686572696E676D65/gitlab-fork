@@ -51,15 +51,6 @@ RSpec.describe 'Namespace user cap reached alert', :feature, :js, :use_clean_rai
       expect_banner_to_be_present
     end
 
-    it 'does not display the banner when the feature flag is off' do
-      stub_feature_flags(saas_user_caps: false)
-      sign_in(owner)
-      visit group_path(group)
-
-      expect_group_page_for(group)
-      expect_banner_to_be_absent
-    end
-
     it 'does not display the banner to a user who is not a group owner' do
       sign_in(developer)
       visit group_path(group)

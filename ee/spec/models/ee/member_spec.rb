@@ -414,94 +414,74 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
       group.add_developer(create(:user))
     end
 
-    context 'when the :saas_user_caps feature flag is disabled' do
+    before do
+      stub_feature_flags(ramon: false)
+    end
+
+    context 'when the user cap has not been reached' do
       before do
-        stub_feature_flags(saas_user_caps: false)
+        group.namespace_settings.update!(new_user_signups_cap: 10)
       end
 
-      it 'sets the group member state to active' do
+      it 'sets the group member to active' do
         group.add_developer(user)
 
         expect(user.group_members.last).to be_active
       end
 
-      it 'sets the project member state to active' do
+      it 'sets the project member to active' do
         project.add_developer(user)
 
         expect(user.project_members.last).to be_active
       end
     end
 
-    context 'when the :saas_user_caps feature flag is enabled for the root group' do
-      before do
-        stub_feature_flags(saas_user_caps: group, ramon: false)
+    context 'when the user cap has been reached' do
+      it 'sets the group member to awaiting' do
+        group.add_developer(user)
+
+        expect(user.group_members.last).to be_awaiting
       end
 
-      context 'when the user cap has not been reached' do
-        before do
-          group.namespace_settings.update!(new_user_signups_cap: 10)
-        end
+      it 'sets the group member to awaiting when added to a subgroup' do
+        subgroup.add_developer(user)
 
+        expect(user.group_members.last).to be_awaiting
+      end
+
+      it 'sets the project member to awaiting' do
+        project.add_developer(user)
+
+        expect(user.project_members.last).to be_awaiting
+      end
+
+      context 'when the user is already an active root group member' do
         it 'sets the group member to active' do
-          group.add_developer(user)
+          create(:group_member, :active, group: group, user: user)
+
+          subgroup.add_owner(user)
 
           expect(user.group_members.last).to be_active
         end
+      end
 
-        it 'sets the project member to active' do
-          project.add_developer(user)
+      context 'when the user is already an active subgroup member' do
+        it 'sets the group member to active' do
+          other_subgroup = create(:group, parent: group)
+          create(:group_member, :active, group: other_subgroup, user: user)
 
-          expect(user.project_members.last).to be_active
+          subgroup.add_developer(user)
+
+          expect(user.group_members.last).to be_active
         end
       end
 
-      context 'when the user cap has been reached' do
-        it 'sets the group member to awaiting' do
-          group.add_developer(user)
+      context 'when the user is already an active project member' do
+        it 'sets the group member to active' do
+          create(:project_member, :active, project: project, user: user)
 
-          expect(user.group_members.last).to be_awaiting
-        end
-
-        it 'sets the group member to awaiting when added to a subgroup' do
-          subgroup.add_developer(user)
-
-          expect(user.group_members.last).to be_awaiting
-        end
-
-        it 'sets the project member to awaiting' do
-          project.add_developer(user)
-
-          expect(user.project_members.last).to be_awaiting
-        end
-
-        context 'when the user is already an active root group member' do
-          it 'sets the group member to active' do
-            create(:group_member, :active, group: group, user: user)
-
-            subgroup.add_owner(user)
-
-            expect(user.group_members.last).to be_active
-          end
-        end
-
-        context 'when the user is already an active subgroup member' do
-          it 'sets the group member to active' do
-            other_subgroup = create(:group, parent: group)
-            create(:group_member, :active, group: other_subgroup, user: user)
-
-            subgroup.add_developer(user)
-
-            expect(user.group_members.last).to be_active
-          end
-        end
-
-        context 'when the user is already an active project member' do
-          it 'sets the group member to active' do
-            create(:project_member, :active, project: project, user: user)
-
-            expect { subgroup.add_owner(user) }.to change { ::Member.with_state(:active).count }.by(1)
-            expect(user.group_members.last).to be_active
-          end
+          expect { subgroup.add_owner(user) }.to change { ::Member.with_state(:active).count }.by(1)
+          expect(user.group_members.last).to be_active
         end
       end
     end
