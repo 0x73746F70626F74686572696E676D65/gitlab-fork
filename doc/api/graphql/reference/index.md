@@ -33881,6 +33881,7 @@ Import source.
 | <a id="importsourcegit"></a>`GIT` | Imported from Git. |
 | <a id="importsourcegitea"></a>`GITEA` | Imported from Gitea. |
 | <a id="importsourcegithub"></a>`GITHUB` | Imported from Github. |
+| <a id="importsourcegitlab_group"></a>`GITLAB_GROUP` | Imported from Gitlab Group. |
 | <a id="importsourcegitlab_migration"></a>`GITLAB_MIGRATION` | Imported from Gitlab Migration. |
 | <a id="importsourcegitlab_project"></a>`GITLAB_PROJECT` | Imported from Gitlab Project. |
 | <a id="importsourcemanifest"></a>`MANIFEST` | Imported from Manifest. |

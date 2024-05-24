@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::ImportExport::Project::RelationFactory do
+RSpec.describe Gitlab::ImportExport::Project::RelationFactory, feature_category: :importers do
   let(:user) { create(:user, admin: true) }
   let_it_be(:project) { create(:project) }
 
@@ -16,6 +16,7 @@ RSpec.describe Gitlab::ImportExport::Project::RelationFactory do
       object_builder: Gitlab::ImportExport::Project::ObjectBuilder,
       user: user,
       importable: project,
+      import_source: :gitlab_project,
       excluded_keys: []
     )
   end
