@@ -13,6 +13,7 @@ import initSettingsPanels from '~/settings_panels';
 import UserCallout from '~/user_callout';
 import mountBranchRules from '~/projects/settings/repository/branch_rules/mount_branch_rules';
 import mountDefaultBranchSelector from '~/projects/settings/mount_default_branch_selector';
+import mountRepositoryMaintenance from '~/projects/settings/repository/maintenance/mount_repository_maintenance';
 import EEMirrorRepos from './ee_mirror_repos';
 
 new UserCallout();
@@ -44,3 +45,4 @@ initSearchSettings();
 
 mountBranchRules(document.getElementById('js-branch-rules'));
 mountDefaultBranchSelector(document.querySelector('.js-select-default-branch'));
+mountRepositoryMaintenance();
