@@ -210,8 +210,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     end
 
     context 'in child metadata' do
-      it 'displays progress of 0% by default, in tree and modal',
-        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/450110' do
+      it 'displays progress of 0% by default, in tree and modal' do
         create_okr('objective', 'Objective 2')
 
         within_testid('work-item-tree') do
@@ -261,8 +260,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       expect(find_by_testid('work-item-tree')).to have_content('Objective 2')
     end
 
-    it 'removes direct child of objective with undoing',
-      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/450038' do
+    it 'removes direct child of objective with undoing' do
       create_okr('objective', 'Objective 2')
 
       find_by_testid('links-child').hover
@@ -287,8 +285,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       end
     end
 
-    it 'removes indirect child of objective with undoing',
-      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/450042' do
+    it 'removes indirect child of objective with undoing' do
       create_okr('objective', 'Objective 2')
 
       within_testid('work-item-tree') do
