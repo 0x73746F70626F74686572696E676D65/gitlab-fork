@@ -121,11 +121,11 @@ export default {
   <div>
     <rules :rules="rules">
       <template #thead="{ name, members, approvalsRequired, branches, actions }">
-        <tr class="d-none d-sm-table-row">
+        <tr class="gl-hidden sm:gl-table-row">
           <th :colspan="firstColumnSpan" :class="firstColumnWidth">
             {{ hasNamedRule ? name : members }}
           </th>
-          <th v-if="hasNamedRule" class="gl-w-1/2 d-none d-sm-table-cell">
+          <th v-if="hasNamedRule" class="gl-w-1/2 gl-hidden sm:gl-table-cell">
             <span>{{ members }}</span>
           </th>
           <th v-if="settings.allowMultiRule && !isBranchRulesEdit">{{ branches }}</th>
