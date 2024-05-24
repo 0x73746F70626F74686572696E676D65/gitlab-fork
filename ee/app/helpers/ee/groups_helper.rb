@@ -14,8 +14,8 @@ module EE
     override :subgroup_creation_data
     def subgroup_creation_data(group)
       super.merge({
-        identity_verification_required: false.to_s,
-        identity_verification_path: '#'
+        identity_verification_required: current_user.requires_identity_verification_to_create_group?(group).to_s,
+        identity_verification_path: identity_verification_path
       })
     end
 

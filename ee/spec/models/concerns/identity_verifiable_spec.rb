@@ -877,6 +877,56 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
   end
 
+  describe '#requires_identity_verification_to_create_group?' do
+    let_it_be(:top_level_group) { build(:group) }
+    let(:group) { top_level_group }
+
+    subject { user.requires_identity_verification_to_create_group?(group) }
+
+    before do
+      allow(user).to receive(:identity_verification_enabled?).and_return(true)
+      allow(user).to receive(:identity_verified?).and_return(false)
+    end
+
+    context 'when the user has created the max number of groups' do
+      before do
+        create_list(:group, IdentityVerifiable::UNVERIFIED_USER_CREATED_GROUP_LIMIT, creator: user)
+      end
+
+      it { is_expected.to eq(true) }
+
+      context 'when the group is a subgroup' do
+        let(:group) { build(:group, parent: top_level_group) }
+
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when the feature is disabled' do
+        before do
+          stub_feature_flags(unverified_account_group_creation_limit: false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when the user is already identity verified' do
+        before do
+          allow(user).to receive(:identity_verified?).and_return(true)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+
+    context 'when the user has not created the max number of groups' do
+      before do
+        create_list(:group, IdentityVerifiable::UNVERIFIED_USER_CREATED_GROUP_LIMIT - 1, creator: user)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
   it 'delegates risk profile methods', :aggregate_failures do
     expect_next_instance_of(IdentityVerification::UserRiskProfile, user) do |instance|
       expect(instance).to receive(:arkose_verified?).ordered

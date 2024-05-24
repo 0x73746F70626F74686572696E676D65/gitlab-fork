@@ -10,6 +10,19 @@ module EE
 
       private
 
+      override :valid?
+      def valid?
+        return false unless super
+        return true unless current_user.requires_identity_verification_to_create_group?(group)
+
+        group.errors.add(
+          :identity_verification,
+          s_('CreateGroup|You have reached the group limit until you verify your account.')
+        )
+
+        false
+      end
+
       def ensure_runner_registration_token_disabled_on_com
         return unless group.parent.nil?
         return if ::Gitlab::CurrentSettings.gitlab_dedicated_instance?
