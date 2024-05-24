@@ -83,7 +83,7 @@ export default {
     const failedTableMetrics = await this.resolveQueries();
     if (failedTableMetrics.length > 0) {
       const errors = [`${DASHBOARD_LOADING_FAILURE}: ${failedTableMetrics.join(', ')}`];
-      this.$emit('set-errors', { errors, fullPanelError: false });
+      this.$emit('set-alerts', { errors });
     }
   },
   created() {

@@ -94,12 +94,12 @@ describe('DoraChart Visualization', () => {
       });
     });
 
-    it('echos `set-errors` event from the comparison chart', () => {
-      const payload = { errors: ['one', 'two'], fullPanelError: true };
-      findChart().vm.$emit('set-errors', payload);
+    it('echos `set-alerts` event from the comparison chart', () => {
+      const payload = { errors: ['one', 'two'] };
+      findChart().vm.$emit('set-alerts', payload);
 
-      expect(wrapper.emitted('set-errors').length).toBe(1);
-      expect(wrapper.emitted('set-errors')[0][0]).toEqual(payload);
+      expect(wrapper.emitted('set-alerts').length).toBe(1);
+      expect(wrapper.emitted('set-alerts')[0][0]).toEqual(payload);
     });
   });
 });

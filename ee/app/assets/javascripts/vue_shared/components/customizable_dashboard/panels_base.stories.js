@@ -1,4 +1,5 @@
 import { s__, __ } from '~/locale';
+import { VARIANT_DANGER, VARIANT_WARNING, VARIANT_INFO } from '~/alert';
 import PanelsBase from './panels_base.vue';
 
 export default {
@@ -26,8 +27,8 @@ Default.args = {
   title: s__('ProductAnalytics|Audience'),
   tooltip: '',
   loading: false,
-  showErrorState: false,
-  errorPopoverTitle: '',
+  showAlertState: false,
+  alertPopoverTitle: '',
   actions: [],
   editing: false,
 };
@@ -41,8 +42,25 @@ Loading.args = {
 export const Error = Template.bind({});
 Error.args = {
   ...Default.args,
-  errorPopoverTitle: __('An error has occurred'),
-  showErrorState: true,
+  alertPopoverTitle: __('An error has occurred'),
+  showAlertState: true,
+  alertVariant: VARIANT_DANGER,
+};
+
+export const Warning = Template.bind({});
+Warning.args = {
+  ...Default.args,
+  alertPopoverTitle: __('This is really just a warning'),
+  showAlertState: true,
+  alertVariant: VARIANT_WARNING,
+};
+
+export const Information = Template.bind({});
+Information.args = {
+  ...Default.args,
+  alertPopoverTitle: __('Some friendly information'),
+  showAlertState: true,
+  alertVariant: VARIANT_INFO,
 };
 
 export const Editing = Template.bind({});

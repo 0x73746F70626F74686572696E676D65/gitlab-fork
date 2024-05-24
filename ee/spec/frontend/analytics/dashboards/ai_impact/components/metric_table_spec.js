@@ -161,10 +161,10 @@ describe('Metric table', () => {
         });
       });
 
-      it('emits `set-errors` with the name of the failed metric', () => {
-        expect(wrapper.emitted('set-errors')).toHaveLength(1);
-        expect(wrapper.emitted('set-errors')[0][0].errors).toHaveLength(1);
-        expect(wrapper.emitted('set-errors')[0][0].errors[0]).toContain(name);
+      it('emits `set-alerts` with the name of the failed metric', () => {
+        expect(wrapper.emitted('set-alerts')).toHaveLength(1);
+        expect(wrapper.emitted('set-alerts')[0][0].errors).toHaveLength(1);
+        expect(wrapper.emitted('set-alerts')[0][0].errors[0]).toContain(name);
       });
     });
 

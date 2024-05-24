@@ -3,6 +3,7 @@ import { GlLink, GlSprintf, GlButton } from '@gitlab/ui';
 import isString from 'lodash/isString';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { isEmptyPanelData } from 'ee/vue_shared/components/customizable_dashboard/utils';
+import { VARIANT_DANGER, VARIANT_WARNING, VARIANT_INFO } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 import { __, s__, sprintf } from '~/locale';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
@@ -71,14 +72,16 @@ export default {
   },
   data() {
     const validationErrors = this.visualization?.errors;
-    const hasValidationErrors = Boolean(validationErrors);
 
     return {
       dataSource: null,
-      errors: validationErrors || [],
-      hasValidationErrors,
-      canRetryError: !hasValidationErrors,
-      fullPanelError: hasValidationErrors,
+      errors: [],
+      warnings: [],
+      alertVariant: null,
+      alertTitle: '',
+      alertDescription: '',
+      validationErrors,
+      canRetryError: false,
       data: null,
       loading: false,
       loadingDelayed: false,
@@ -94,31 +97,25 @@ export default {
     };
   },
   computed: {
+    hasValidationErrors() {
+      return Boolean(this.validationErrors);
+    },
     showEmptyState() {
-      return isEmptyPanelData(this.visualization.type, this.data);
+      return !this.showAlertState && isEmptyPanelData(this.visualization.type, this.data);
     },
-    showErrorPopover() {
-      return this.showErrorState && !this.dropdownOpen;
+    isErrorAlert() {
+      return this.alertVariant === VARIANT_DANGER;
     },
-    showErrorState() {
-      return this.errors.length > 0;
+    showAlertPopover() {
+      return this.showAlertState && !this.dropdownOpen;
     },
-    errorMessages() {
-      return this.errors.filter(isString);
+    showAlertState() {
+      return Boolean(this.alertMessages.length > 0 || this.alertDescription.length);
     },
-    errorPopoverTitle() {
-      return this.hasValidationErrors
-        ? s__('Analytics|Invalid visualization configuration')
-        : s__('Analytics|Failed to fetch data');
-    },
-    errorPopoverMessage() {
-      return this.hasValidationErrors
-        ? s__(
-            'Analytics|Something is wrong with your panel visualization configuration. See %{linkStart}troubleshooting documentation%{linkEnd}.',
-          )
-        : s__(
-            'Analytics|Something went wrong while connecting to your data source. See %{linkStart}troubleshooting documentation%{linkEnd}.',
-          );
+    alertMessages() {
+      if (this.errors.length > 0) return this.errors.filter(isString);
+      if (this.warnings.length > 0) return this.warnings.filter(isString);
+      return [];
     },
     namespace() {
       return this.namespaceFullPath;
@@ -151,6 +148,18 @@ export default {
       return new DataSource({ projectId: this.namespaceId });
     },
     async onVisualizationChange(newViz, oldViz) {
+      if (this.hasValidationErrors) {
+        this.setAlerts({
+          errors: this.validationErrors,
+          canRetry: false,
+          title: s__('Analytics|Invalid visualization configuration'),
+          description: s__(
+            'Analytics|Something is wrong with your panel visualization configuration. See %{linkStart}troubleshooting documentation%{linkEnd}.',
+          ),
+        });
+        return;
+      }
+
       const dataSourceChanged = oldViz && newViz.data.type !== oldViz.data.type;
       if (!this.dataSource || dataSourceChanged) {
         this.loading = true;
@@ -160,14 +169,10 @@ export default {
       this.fetchData();
     },
     async fetchData() {
-      if (this.hasValidationErrors) {
-        return;
-      }
-
       const { queryOverrides, filters } = this;
       const { query } = this.visualization.data;
       this.loading = true;
-      this.clearErrors();
+      this.clearAlerts();
       const requestNumber = this.currentRequestNumber + 1;
       this.currentRequestNumber = requestNumber;
 
@@ -190,8 +195,12 @@ export default {
           this.data = data;
         }
       } catch (error) {
-        this.setErrors({
+        this.setAlerts({
           errors: [error],
+          title: s__('Analytics|Failed to fetch data'),
+          description: s__(
+            'Analytics|Something went wrong while connecting to your data source. See %{linkStart}troubleshooting documentation%{linkEnd}.',
+          ),
 
           // bad or malformed CubeJS query, retry won't fix
           canRetry: !this.isCubeJsBadRequest(error),
@@ -201,17 +210,32 @@ export default {
         this.loadingDelayed = false;
       }
     },
-    clearErrors() {
+    clearAlerts() {
       this.errors = [];
-      this.fullPanelError = false;
+      this.warnings = [];
+      this.alertVariant = null;
+      this.alertDescription = '';
+      this.alertTitle = '';
     },
-    setErrors({ errors, canRetry = true, fullPanelError = true }) {
-      if (!canRetry) this.canRetryError = false;
+    setAlerts({ errors = [], warnings = [], title = '', description = '', canRetry = true }) {
+      this.canRetryError = canRetry;
 
       this.errors = errors;
-      this.fullPanelError = fullPanelError;
+      this.warnings = warnings;
 
-      errors.forEach((error) => Sentry.captureException(error));
+      if (errors.length > 0) {
+        this.alertVariant = VARIANT_DANGER;
+        // Only capture in sentry when we are using the error/danger variant
+        // Warning / Info variants do no correlate to errors
+        errors.forEach((alert) => Sentry.captureException(alert));
+      } else if (warnings.length > 0) {
+        this.alertVariant = VARIANT_WARNING;
+      } else {
+        this.alertVariant = VARIANT_INFO;
+      }
+
+      this.alertDescription = description;
+      this.alertTitle = title;
     },
     isCubeJsBadRequest(error) {
       return Boolean(error.status === HTTP_STATUS_BAD_REQUEST && error.response?.message);
@@ -230,17 +254,14 @@ export default {
     :tooltip="tooltip"
     :loading="loading"
     :loading-delayed="loadingDelayed"
-    :show-error-state="showErrorState"
-    :error-popover-title="errorPopoverTitle"
+    :show-alert-state="showAlertState"
+    :alert-variant="alertVariant"
+    :alert-popover-title="alertTitle"
     :actions="dropdownItems"
     :editing="editing"
   >
     <template #body>
-      <span
-        v-if="showErrorState && fullPanelError"
-        class="gl-text-secondary"
-        data-testid="error-body"
-      >
+      <span v-if="isErrorAlert" class="gl-text-secondary" data-testid="alert-body">
         {{ s__('Analytics|Something went wrong.') }}
       </span>
 
@@ -254,23 +275,21 @@ export default {
         class="gl-overflow-hidden"
         :data="data"
         :options="visualization.options"
-        @set-errors="setErrors"
+        @set-alerts="setAlerts"
         @showTooltip="handleShowTooltip"
       />
     </template>
 
-    <template #error-popover>
-      <gl-sprintf :message="errorPopoverMessage">
+    <template #alert-popover>
+      <gl-sprintf :message="alertDescription">
         <template #link="{ content }">
           <gl-link :href="$options.PANEL_TROUBLESHOOTING_URL" class="gl-font-sm">{{
             content
           }}</gl-link>
         </template>
       </gl-sprintf>
-      <ul v-if="errorMessages.length" data-testid="error-messages">
-        <li v-for="errorMessage in errorMessages" :key="errorMessage">
-          {{ errorMessage }}
-        </li>
+      <ul v-if="alertMessages.length" data-testid="alert-messages">
+        <li v-for="message in alertMessages" :key="message">{{ message }}</li>
       </ul>
       <gl-button v-if="canRetryError" class="gl-display-block gl-mt-3" @click="fetchData">{{
         __('Retry')

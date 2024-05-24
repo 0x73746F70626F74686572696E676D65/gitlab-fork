@@ -77,12 +77,12 @@ describe('AI Impact Table Visualization', () => {
       });
     });
 
-    it('echos `set-errors` event from the metric table', () => {
-      const payload = { errors: ['one', 'two'], fullPanelError: true };
-      findMetricTable().vm.$emit('set-errors', payload);
+    it('echos `set-alerts` event from the metric table', () => {
+      const payload = { errors: ['one', 'two'] };
+      findMetricTable().vm.$emit('set-alerts', payload);
 
-      expect(wrapper.emitted('set-errors').length).toBe(1);
-      expect(wrapper.emitted('set-errors')[0][0]).toEqual(payload);
+      expect(wrapper.emitted('set-alerts').length).toBe(1);
+      expect(wrapper.emitted('set-alerts')[0][0]).toEqual(payload);
     });
   });
 });

@@ -49691,6 +49691,9 @@ msgstr ""
 msgid "Some common domains are not allowed. %{learn_more_link}."
 msgstr ""
 
+msgid "Some friendly information"
+msgstr ""
+
 msgid "Someone edited the %{issuableType} at the same time you did. Review %{linkStart}the %{issuableType}%{linkEnd} and make sure you don't unintentionally overwrite their changes."
 msgstr ""
 
@@ -53376,6 +53379,9 @@ msgid "This is an archived project. Repository and other project resources are r
 msgstr ""
 
 msgid "This is an experimental feature developed by GitLab Incubation Engineering."
+msgstr ""
+
+msgid "This is really just a warning"
 msgstr ""
 
 msgid "This is the highest peak of users on your installation since the license started."
