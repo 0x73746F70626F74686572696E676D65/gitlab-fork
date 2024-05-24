@@ -694,7 +694,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     it 'returns expected hash' do
       expect(subject).to include({
         identity_verification_required: 'false',
-        identity_verification_path: '#'
+        identity_verification_path: identity_verification_path
       })
     end
 
@@ -704,6 +704,18 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
 
     context 'when on .com', :saas do
       it { is_expected.to include(is_saas: 'true') }
+    end
+
+    context 'when the group creation limit is not exceeded' do
+      it { is_expected.to include(identity_verification_required: 'false') }
+    end
+
+    context 'when the group creation limit is exceeded' do
+      before do
+        allow(current_user).to receive(:requires_identity_verification_to_create_group?).and_return(true)
+      end
+
+      it { is_expected.to include(identity_verification_required: 'true') }
     end
   end
 

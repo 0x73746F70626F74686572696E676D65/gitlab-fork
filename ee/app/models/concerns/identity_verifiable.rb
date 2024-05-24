@@ -19,6 +19,7 @@ module IdentityVerifiable
   LOW_RISK_USER_METHODS = %w[email].freeze
   ACTIVE_USER_METHODS = %w[phone].freeze
   IDENTITY_VERIFICATION_RELEASE_DATE = Date.new(2024, 6, 3)
+  UNVERIFIED_USER_CREATED_GROUP_LIMIT = 2
 
   def signup_identity_verification_enabled?
     return false unless ::Gitlab::Saas.feature_available?(:identity_verification)
@@ -175,6 +176,12 @@ module IdentityVerifiable
     prerequisite_methods_state.values.all?
   end
 
+  def requires_identity_verification_to_create_group?(group)
+    return false if group.parent
+
+    reached_top_level_group_limit?
+  end
+
   delegate :arkose_verified?, :assume_low_risk!, :assume_high_risk!, :assumed_high_risk?, to: :risk_profile
   delegate :high_risk?, :medium_risk?, :low_risk?, to: :risk_profile, private: true
 
@@ -274,5 +281,16 @@ module IdentityVerifiable
 
   def identity_verification_exemption_attribute
     custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_EXEMPT).first
+  end
+
+  def created_top_level_group_count
+    created_namespace_details.joins(:namespace).where(namespaces: { parent: nil, type: 'Group' }).count
+  end
+
+  def reached_top_level_group_limit?
+    return false unless ::Feature.enabled?(:unverified_account_group_creation_limit, self, type: :gitlab_com_derisk)
+    return false if identity_verified?
+
+    created_top_level_group_count >= UNVERIFIED_USER_CREATED_GROUP_LIMIT
   end
 end

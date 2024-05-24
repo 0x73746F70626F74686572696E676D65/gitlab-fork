@@ -185,4 +185,73 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
       end
     end
   end
+
+  describe 'identity verification', :js, :saas do
+    let_it_be_with_reload(:user) do
+      create(:user, :with_sign_ins, created_at: IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day)
+    end
+
+    before do
+      sign_in(user)
+      visit new_group_path
+      click_link 'Create group'
+    end
+
+    context 'when the user has reached the maximum number of created groups' do
+      before do
+        create_list(:group, IdentityVerifiable::UNVERIFIED_USER_CREATED_GROUP_LIMIT, creator: user)
+      end
+
+      context 'when the user has not completed identity verification' do
+        it 'renders new group form with validation errors' do
+          fill_in 'Group name', with: 'identity-verification-group'
+          fill_in 'Group URL', with: 'identity_verification_group'
+          click_button 'Create group'
+
+          expect(page).to have_current_path(groups_path, ignore_query: true)
+          expect(page).to have_text('Before you can create additional groups, we need to verify your account.')
+        end
+      end
+
+      context 'when the user has completed identity verification' do
+        before do
+          create(:phone_number_validation, :validated, user: user)
+        end
+
+        it 'creates the group' do
+          fill_in 'Group name', with: 'identity-verification-group'
+          fill_in 'Group URL', with: 'identity_verification_group'
+          click_button 'Create group'
+
+          expect(page).to have_selector 'h1', text: 'identity-verification-group'
+        end
+      end
+
+      context 'when creating a subgroup' do
+        let_it_be(:group) { create(:group, path: 'parent', owners: user) }
+
+        before do
+          visit new_group_path(parent_id: group.id, anchor: 'create-group-pane')
+        end
+
+        it 'creates the group', :js do
+          fill_in 'Subgroup name', with: 'identity-verification-subgroup'
+          click_button 'Create subgroup'
+
+          expect(page).to have_current_path(group_path('parent/identity-verification-subgroup'), ignore_query: true)
+          expect(page).to have_selector 'h1', text: 'identity-verification-subgroup'
+        end
+      end
+    end
+
+    context 'when the user has not reached the maximum number of created groups' do
+      it 'creates the group' do
+        fill_in 'Group name', with: 'identity-verification-group'
+        fill_in 'Group URL', with: 'identity_verification_group'
+        click_button 'Create group'
+
+        expect(page).to have_selector 'h1', text: 'identity-verification-group'
+      end
+    end
+  end
 end

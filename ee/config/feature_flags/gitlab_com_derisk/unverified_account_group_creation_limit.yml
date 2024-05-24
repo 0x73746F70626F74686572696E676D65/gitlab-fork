@@ -1,0 +1,9 @@
+---
+name: unverified_account_group_creation_limit
+feature_issue_url: https://gitlab.com/gitlab-org/modelops/anti-abuse/team-tasks/-/issues/625
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/149622
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/463366
+milestone: '17.1'
+group: group::anti-abuse
+type: gitlab_com_derisk
+default_enabled: false

@@ -45,12 +45,8 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
   end
 
   context 'when created group is a sub-group' do
-    let_it_be(:group) { create(:group) }
+    let_it_be(:group) { create(:group, owners: user) }
     let(:extra_params) { { parent_id: group.id } }
-
-    before_all do
-      group.add_owner(user)
-    end
 
     include_examples 'sends streaming audit event'
 
@@ -60,6 +56,19 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
           expect(created_group.allow_runner_registration_token).to eq true
         end
       end
+    end
+  end
+
+  context 'when user has exceed the group creation limit' do
+    before do
+      allow(user).to receive(:requires_identity_verification_to_create_group?).and_return(true)
+    end
+
+    it 'does not create the group', :aggregate_failures do
+      expect { response }.not_to change { Group.count }
+      expect(response).to be_error
+      expect(response[:group].errors[:identity_verification].first)
+        .to eq(s_('CreateGroup|You have reached the group limit until you verify your account.'))
     end
   end
 

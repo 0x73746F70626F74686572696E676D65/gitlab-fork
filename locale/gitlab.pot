@@ -15361,6 +15361,9 @@ msgstr ""
 msgid "CreateGroup|You don’t have permission to create groups."
 msgstr ""
 
+msgid "CreateGroup|You have reached the group limit until you verify your account."
+msgstr ""
+
 msgid "CreateTag|Tag"
 msgstr ""
 
