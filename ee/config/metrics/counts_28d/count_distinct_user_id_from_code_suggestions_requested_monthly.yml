@@ -6,7 +6,7 @@ product_stage: create
 product_group: code_creation
 performance_indicator_type: []
 value_type: number
-status: active
+status: removed
 milestone: '16.8'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/141643
 time_frame: 28d
@@ -20,3 +20,5 @@ tier:
 events:
 - name: code_suggestions_requested
   unique: user.id
+milestone_removed: '17.1'
+removed_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/153401

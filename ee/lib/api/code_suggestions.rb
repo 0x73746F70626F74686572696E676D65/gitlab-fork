@@ -105,11 +105,6 @@ module API
           body = task.body
           file_too_large! if body.size > MAX_BODY_SIZE
 
-          Gitlab::InternalEvents.track_event(
-            'code_suggestions_requested',
-            user: current_user
-          )
-
           if Gitlab::Tracking::AiTracking.track_via_code_suggestions?('code_suggestions_requested', current_user)
             Gitlab::Tracking::AiTracking.track_event('code_suggestions_requested', user: current_user)
           end
