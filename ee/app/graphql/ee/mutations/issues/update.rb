@@ -10,9 +10,9 @@ module EE
           include ::Mutations::Issues::CommonEEMutationArguments
 
           argument :epic_id, ::Types::GlobalIDType[::Epic],
-                   required: false,
-                   loads: ::Types::EpicType,
-                   description: 'ID of the parent epic. NULL when removing the association.'
+            required: false,
+            loads: ::Types::EpicType,
+            description: 'ID of the parent epic. NULL when removing the association.'
         end
 
         def resolve(**args)

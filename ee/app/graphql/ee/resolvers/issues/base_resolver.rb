@@ -9,35 +9,35 @@ module EE
 
         prepended do
           argument :epic_id, GraphQL::Types::String,
-                   required: false,
-                   description: 'ID of an epic associated with the issues, "none" and "any" values are supported.'
+            required: false,
+            description: 'ID of an epic associated with the issues, "none" and "any" values are supported.'
           argument :epic_wildcard_id, ::Types::EpicWildcardIdEnum,
-                   required: false,
-                   description: 'Filter by epic ID wildcard. Incompatible with epicId.'
+            required: false,
+            description: 'Filter by epic ID wildcard. Incompatible with epicId.'
           argument :include_subepics, GraphQL::Types::Boolean,
-                   required: false,
-                   description: 'Whether to include subepics when filtering issues by epicId.'
+            required: false,
+            description: 'Whether to include subepics when filtering issues by epicId.'
           argument :iteration_id, [::GraphQL::Types::ID, { null: true }],
-                  required: false,
-                  description: 'List of iteration Global IDs applied to the issue.'
+            required: false,
+            description: 'List of iteration Global IDs applied to the issue.'
           argument :iteration_title, GraphQL::Types::String,
-                  required: false,
-                  description: 'Filter by iteration title.'
+            required: false,
+            description: 'Filter by iteration title.'
           argument :iteration_wildcard_id, ::Types::IterationWildcardIdEnum,
-                   required: false,
-                   description: 'Filter by iteration ID wildcard.'
+            required: false,
+            description: 'Filter by iteration ID wildcard.'
           argument :iteration_cadence_id, [::Types::GlobalIDType[::Iterations::Cadence]],
-                   required: false,
-                   description: 'Filter by a list of iteration cadence IDs.'
+            required: false,
+            description: 'Filter by a list of iteration cadence IDs.'
           argument :weight, GraphQL::Types::String,
-                   required: false,
-                   description: 'Weight applied to the issue, "none" and "any" values are supported.'
+            required: false,
+            description: 'Weight applied to the issue, "none" and "any" values are supported.'
           argument :weight_wildcard_id, ::Types::WeightWildcardIdEnum,
-                   required: false,
-                   description: 'Filter by weight ID wildcard. Incompatible with weight.'
+            required: false,
+            description: 'Filter by weight ID wildcard. Incompatible with weight.'
           argument :health_status_filter, ::Types::HealthStatusFilterEnum,
-                   required: false,
-                   description: 'Health status of the issue, "none" and "any" values are supported.'
+            required: false,
+            description: 'Health status of the issue, "none" and "any" values are supported.'
 
           validates mutually_exclusive: [:weight, :weight_wildcard_id]
           validates mutually_exclusive: [:epic_id, :epic_wildcard_id]
