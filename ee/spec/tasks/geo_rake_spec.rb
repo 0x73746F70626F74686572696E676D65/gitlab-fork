@@ -82,11 +82,11 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
   describe 'geo:update_primary_node_url' do
     before do
       allow(GeoNode).to receive(:current_node_url).and_return('https://primary.geo.example.com')
-      stub_current_geo_node(primary_node)
+      stub_current_geo_node(current_node)
     end
 
     context 'when the machine Geo node name is not explicitly configured' do
-      let(:primary_node) { create(:geo_node, :primary, url: 'https://secondary.geo.example.com', name: 'https://secondary.geo.example.com') }
+      let(:current_node) { create(:geo_node, :primary, url: 'https://secondary.geo.example.com', name: 'https://secondary.geo.example.com') }
 
       before do
         # As if Gitlab.config.geo.node_name is defaulting to external_url (this happens in an initializer)
@@ -96,24 +96,47 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
       it 'updates Geo primary node URL and name' do
         run_rake_task('geo:update_primary_node_url')
 
-        expect(primary_node.reload.url).to eq 'https://primary.geo.example.com/'
-        expect(primary_node.name).to eq 'https://primary.geo.example.com/'
+        expect(current_node.reload.url).to eq 'https://primary.geo.example.com/'
+        expect(current_node.name).to eq 'https://primary.geo.example.com/'
       end
     end
 
     context 'when the machine Geo node name is explicitly configured' do
-      let(:node_name) { 'Brazil DC' }
-      let(:primary_node) { create(:geo_node, :primary, url: 'https://secondary.geo.example.com', name: node_name) }
+      context 'when the Geo node is a secondary' do
+        let(:current_node) { create(:geo_node, :secondary) }
 
-      before do
-        allow(GeoNode).to receive(:current_node_name).and_return(node_name)
+        it 'fails' do
+          expect { run_rake_task('geo:update_primary_node_url') }
+            .to output(/This is not a primary node/).to_stdout.and raise_error(SystemExit)
+        end
       end
 
-      it 'updates Geo primary node URL only' do
-        run_rake_task('geo:update_primary_node_url')
+      context 'when the Geo node is a primary' do
+        let(:node_name) { 'Brazil DC' }
+        let(:current_node) { create(:geo_node, :primary, url: 'https://secondary.geo.example.com', name: node_name) }
 
-        expect(primary_node.reload.url).to eq 'https://primary.geo.example.com/'
-        expect(primary_node.name).to eq node_name
+        before do
+          allow(GeoNode).to receive(:current_node_name).and_return(node_name)
+        end
+
+        context 'when the update fails' do
+          it 'fails' do
+            current_node.repos_max_capacity = -1 # Update will fail on validation error
+            allow(Gitlab::Geo).to receive(:primary_node).and_return(current_node)
+
+            expect { run_rake_task('geo:update_primary_node_url') }
+             .to output(/Error saving Geo node/).to_stdout.and raise_error(SystemExit)
+          end
+        end
+
+        context 'when the update succeeds' do
+          it 'updates Geo primary node URL only' do
+            run_rake_task('geo:update_primary_node_url')
+
+            expect(current_node.reload.url).to eq 'https://primary.geo.example.com/'
+            expect(current_node.name).to eq node_name
+          end
+        end
       end
     end
   end
