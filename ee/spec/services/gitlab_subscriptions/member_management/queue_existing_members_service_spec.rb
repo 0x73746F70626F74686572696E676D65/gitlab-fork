@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::MemberManagement::CreateService, feature_category: :groups_and_projects do
+RSpec.describe GitlabSubscriptions::MemberManagement::QueueExistingMembersService, feature_category: :seat_cost_management do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project, :public) }
   let_it_be(:group) { create(:group, :public) }

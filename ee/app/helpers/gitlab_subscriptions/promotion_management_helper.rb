@@ -2,6 +2,6 @@
 
 module GitlabSubscriptions
   module PromotionManagementHelper
-    include ::MemberManagement::PromotionManagementUtils
+    include ::GitlabSubscriptions::MemberManagement::PromotionManagementUtils
   end
 end

@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe MemberManagement::MemberApprovalEntity, feature_category: :seat_cost_management do
+RSpec.describe GitlabSubscriptions::MemberManagement::MemberApprovalEntity,
+  feature_category: :seat_cost_management do
   let(:group) { build_stubbed(:group) }
   let(:pending_member_approval) { build_stubbed(:member_approval, member_namespace: group) }
 

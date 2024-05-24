@@ -2,7 +2,7 @@
 
 module Admin
   class RolePromotionRequestsController < Admin::ApplicationController
-    include ::MemberManagement::PromotionManagementUtils
+    include ::GitlabSubscriptions::MemberManagement::PromotionManagementUtils
 
     feature_category :seat_cost_management
     before_action :verify_role_promotion_requests_enabled!

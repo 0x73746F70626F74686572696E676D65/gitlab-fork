@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MemberManagement::PromotionManagementUtils, feature_category: :consumables_cost_management do
+RSpec.describe GitlabSubscriptions::MemberManagement::PromotionManagementUtils, feature_category: :seat_cost_management do
   include described_class
 
   let(:current_user) { create(:user) }

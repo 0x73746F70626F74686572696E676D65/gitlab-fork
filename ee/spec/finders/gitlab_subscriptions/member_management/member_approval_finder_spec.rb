@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MemberManagement::MemberApprovalFinder, feature_category: :seat_cost_management do
+RSpec.describe GitlabSubscriptions::MemberManagement::MemberApprovalFinder, feature_category: :seat_cost_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }

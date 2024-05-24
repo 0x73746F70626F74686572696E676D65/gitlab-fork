@@ -18,7 +18,7 @@ module EE
     end
 
     def promotion_pending_members_serialized(pending_promotion_members)
-      ::MemberManagement::MemberApprovalSerializer.new.represent(
+      GitlabSubscriptions::MemberManagement::MemberApprovalSerializer.new.represent(
         pending_promotion_members, { current_user: current_user }
       )
     end
