@@ -9590,6 +9590,9 @@ msgstr ""
 msgid "BulkImport|History"
 msgstr ""
 
+msgid "BulkImport|Import completed"
+msgstr ""
+
 msgid "BulkImport|Import failed. '%{path}' already exists. Change the destination and try again."
 msgstr ""
 
@@ -9606,6 +9609,9 @@ msgid "BulkImport|Import groups by direct transfer"
 msgstr ""
 
 msgid "BulkImport|Import is finished. Pick another name for re-import"
+msgstr ""
+
+msgid "BulkImport|Import of %{source_group} from %{hostname}"
 msgstr ""
 
 msgid "BulkImport|Import with projects"
@@ -9704,6 +9710,9 @@ msgstr ""
 msgid "BulkImport|Template / File-based import / Direct transfer"
 msgstr ""
 
+msgid "BulkImport|The import of %{strong_open}%{source_group}%{strong_close} from %{strong_open}%{hostname}%{strong_close} to %{strong_color_open}%{destination_group}%{strong_color_close} is complete. You can view the results of the import."
+msgstr ""
+
 msgid "BulkImport|This %{importable} was imported from another instance."
 msgstr ""
 
@@ -9711,6 +9720,9 @@ msgid "BulkImport|Unsupported GitLab version. Minimum supported version is '%{ve
 msgstr ""
 
 msgid "BulkImport|Update of import statuses with realtime changes failed"
+msgstr ""
+
+msgid "BulkImport|View import results"
 msgstr ""
 
 msgid "BulkImport|Your imported groups and projects will appear here."
