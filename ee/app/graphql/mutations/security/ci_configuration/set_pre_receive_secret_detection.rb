@@ -9,7 +9,7 @@ module Mutations
         include FindsNamespace
 
         description <<~DESC
-          Enable/disable pre-receive secret detection for the given project.
+          Enable/disable secret push protection for the given project.
         DESC
 
         argument :namespace_path, GraphQL::Types::ID,
@@ -18,7 +18,7 @@ module Mutations
 
         argument :enable, GraphQL::Types::Boolean,
           required: true,
-          description: 'Desired status for pre-receive secret detection feature.'
+          description: 'Desired status for secret push protection feature.'
 
         field :pre_receive_secret_detection_enabled, GraphQL::Types::Boolean,
           null: true,

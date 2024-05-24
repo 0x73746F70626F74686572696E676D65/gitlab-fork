@@ -137,12 +137,12 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
       end
     end
 
-    context 'without Pre receive Secret Detection' do
-      it 'shows pre-receive Secret Detection disabled' do
+    context 'without Secret Push Protection' do
+      it 'shows secret push protection disabled' do
         visit_configuration_page
 
         within_pre_receive_secret_detection_card do
-          expect(page).to have_text('Pre-receive Secret Detection')
+          expect(page).to have_text('Secret push protection')
           expect(page).to have_text('Not enabled')
 
           toggle = find_by_testid('toggle-wrapper')
@@ -152,16 +152,16 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
       end
     end
 
-    context 'with Pre receive Secret Detection' do
+    context 'with Secret push protection' do
       before do
         stub_application_setting(pre_receive_secret_detection_enabled: true)
       end
 
-      it 'shows pre-receive Secret Detection' do
+      it 'shows secret push protection' do
         visit_configuration_page
 
         within_pre_receive_secret_detection_card do
-          expect(page).to have_text('Pre-receive Secret Detection')
+          expect(page).to have_text('Secret push protection')
           expect(page).to have_text('Not enabled')
 
           toggle = find_by_testid('toggle-wrapper')

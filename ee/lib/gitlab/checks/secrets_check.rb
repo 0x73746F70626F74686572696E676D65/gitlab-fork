@@ -16,14 +16,14 @@ module Gitlab
       LOG_MESSAGES = {
         secrets_check: 'Detecting secrets...',
         secrets_not_found: 'Secret detection scan completed with no findings.',
-        skip_secret_detection: "\n\nTo skip pre-receive secret detection, add the following Git push option" \
+        skip_secret_detection: "\n\nTo skip secret push protection, add the following Git push option" \
                                "to your push command: `-o secret_detection.skip_all`",
         found_secrets: "\nPUSH BLOCKED: Secrets detected in code changes",
         found_secrets_post_message: "\n\nTo push your changes you must remove the identified secrets.",
         found_secrets_docs_link: "\nFor guidance, see %{path}",
         found_secrets_with_errors: 'Secret detection scan completed with one or more findings ' \
                                    'but some errors occured during the scan.',
-        finding_message_occurrence_header: "\nPre-receive secret detection " \
+        finding_message_occurrence_header: "\nSecret push protection " \
                                            "found the following secrets in commit: %{sha}\n",
         finding_message_occurrence_path: "\n-- %{path}:",
         finding_message_occurrence_line: "%{line_number} | %{description}",
@@ -125,7 +125,7 @@ module Gitlab
       end
 
       def log_audit_event(skip_method)
-        message = "#{_('Pre-receive secret detection skipped via')} #{skip_method}"
+        message = "#{_('Secret push protection skipped via')} #{skip_method}"
 
         audit_context = {
           name: "skip_pre_receive_secret_detection",

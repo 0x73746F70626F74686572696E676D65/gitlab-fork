@@ -1062,7 +1062,7 @@ RSpec.shared_examples 'scan skipped when a commit has special bypass flag' do
 
   it 'creates an audit event' do
     expect { subject.validate! }.to change { AuditEvent.count }.by(1)
-    expect(AuditEvent.last.details[:custom_message]).to eq("Pre-receive secret detection skipped via commit message")
+    expect(AuditEvent.last.details[:custom_message]).to eq("Secret push protection skipped via commit message")
   end
 end
 
@@ -1109,6 +1109,6 @@ RSpec.shared_examples 'scan skipped when secret_detection.skip_all push option i
 
   it 'creates an audit event' do
     expect { subject.validate! }.to change { AuditEvent.count }.by(1)
-    expect(AuditEvent.last.details[:custom_message]).to eq("Pre-receive secret detection skipped via push option")
+    expect(AuditEvent.last.details[:custom_message]).to eq("Secret push protection skipped via push option")
   end
 end
