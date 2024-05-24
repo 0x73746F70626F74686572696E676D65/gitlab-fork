@@ -40390,7 +40390,37 @@ msgstr ""
 msgid "ProjectMaintenance| To ensure that a full backup is available in case changes need to be restored, you should make an %{docs_link_start}export of the project%{docs_link_end}."
 msgstr ""
 
+msgid "ProjectMaintenance|Blob IDs to remove"
+msgstr ""
+
+msgid "ProjectMaintenance|Cancel"
+msgstr ""
+
+msgid "ProjectMaintenance|Enter a list of object IDs to be removed to reduce repository size."
+msgstr ""
+
+msgid "ProjectMaintenance|Enter multiple entries on separate lines."
+msgstr ""
+
+msgid "ProjectMaintenance|Housekeeping will need to be triggered manually afterwards to remove old versions of the file."
+msgstr ""
+
+msgid "ProjectMaintenance|How do I get a list of object IDs?"
+msgstr ""
+
 msgid "ProjectMaintenance|Manage repository storage and cleanup."
+msgstr ""
+
+msgid "ProjectMaintenance|Provide a list of blob object IDs to be removed."
+msgstr ""
+
+msgid "ProjectMaintenance|Remove blobs"
+msgstr ""
+
+msgid "ProjectMaintenance|Removing blobs by ID cannot be undone. Are you sure you want to continue?"
+msgstr ""
+
+msgid "ProjectMaintenance|Yes, remove blobs"
 msgstr ""
 
 msgid "ProjectOverview|Create new fork"
