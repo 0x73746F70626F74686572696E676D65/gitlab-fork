@@ -11224,9 +11224,6 @@ msgstr ""
 msgid "CiVariables|Add variable"
 msgstr ""
 
-msgid "CiVariables|Attributes"
-msgstr ""
-
 msgid "CiVariables|CI/CD Variables"
 msgstr ""
 
