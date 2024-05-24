@@ -15,10 +15,10 @@ RSpec.describe Projects::VariablesController, feature_category: :secrets_managem
     subject(:patch_update) do
       patch :update,
         params: {
-        namespace_id: project.namespace.to_param,
-        project_id: project,
-        variables_attributes: [variable_attributes]
-      },
+          namespace_id: project.namespace.to_param,
+          project_id: project,
+          variables_attributes: [variable_attributes]
+        },
         format: :json
     end
 
