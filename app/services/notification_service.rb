@@ -79,8 +79,6 @@ class NotificationService
     recipients = bot_user.resource_bot_owners.select { |owner| owner.can?(:receive_notifications) }
     resource = bot_user.resource_bot_resource
 
-    return unless resource
-
     recipients.each do |recipient|
       mailer.bot_resource_access_token_about_to_expire_email(
         recipient,
