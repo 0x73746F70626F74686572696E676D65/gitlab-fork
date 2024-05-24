@@ -35,7 +35,7 @@ export default {
         </div>
       </li>
     </ul>
-    <div v-else class="gl-h-full gl-display-flex gl-flex gl-justify-center gl-items-center">
+    <div v-else class="gl-h-full gl-flex gl-justify-center gl-items-center">
       {{ emptyText }}
     </div>
   </div>
