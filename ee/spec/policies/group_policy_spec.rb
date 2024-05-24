@@ -3791,27 +3791,6 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
   end
 
-  describe 'enable_container_scanning_for_registry' do
-    using RSpec::Parameterized::TableSyntax
-
-    where(:container_scanning_for_registry, :current_user, :match_expected_result) do
-      true  | ref(:owner)      | be_allowed(:enable_container_scanning_for_registry)
-      true  | ref(:maintainer) | be_allowed(:enable_container_scanning_for_registry)
-      true  | ref(:developer)  | be_disallowed(:enable_container_scanning_for_registry)
-      false | ref(:owner)      | be_disallowed(:enable_container_scanning_for_registry)
-      false | ref(:maintainer) | be_disallowed(:enable_container_scanning_for_registry)
-      false | ref(:developer)  | be_disallowed(:enable_container_scanning_for_registry)
-    end
-
-    with_them do
-      before do
-        stub_feature_flags(container_scanning_for_registry: container_scanning_for_registry)
-      end
-
-      it { is_expected.to match_expected_result }
-    end
-  end
-
   describe 'admin_licensed_seat' do
     context 'when user is an owner' do
       let(:current_user) { owner }

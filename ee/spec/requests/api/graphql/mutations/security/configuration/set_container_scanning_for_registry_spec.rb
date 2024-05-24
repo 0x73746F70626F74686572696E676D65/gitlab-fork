@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Setting Project and Group Container Scanning for Registry', feature_category: :software_composition_analysis do
+RSpec.describe 'Setting Project Container Scanning for Registry', feature_category: :software_composition_analysis do
   using RSpec::Parameterized::TableSyntax
   include GraphqlHelpers
 
@@ -73,38 +73,6 @@ RSpec.describe 'Setting Project and Group Container Scanning for Registry', feat
 
           expect(security_setting.reload.container_scanning_for_registry_enabled).to eq(false)
         end
-      end
-    end
-  end
-
-  context 'with group' do
-    let(:group) { create(:group) }
-    let(:mutation) do
-      graphql_mutation(
-        mutation_name,
-        namespace_path: group.full_path,
-        enable: enable
-      )
-    end
-
-    context 'when the user does not have permission' do
-      it_behaves_like 'a mutation that returns a top-level access error'
-
-      it 'does not enable container scanning for registry' do
-        expect { post_graphql_mutation(mutation, current_user: current_user) }
-          .not_to change { security_setting.reload.container_scanning_for_registry_enabled }
-      end
-    end
-
-    context 'when the user has permission' do
-      before do
-        group.add_maintainer(current_user)
-      end
-
-      it 'raises ResourceNotAvailable' do
-        post_graphql_mutation(mutation, current_user: current_user)
-
-        expect_graphql_errors_to_include('Setting only available for Project namespaces.')
       end
     end
   end

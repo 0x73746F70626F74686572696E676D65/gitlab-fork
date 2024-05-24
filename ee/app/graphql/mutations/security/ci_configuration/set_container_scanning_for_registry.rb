@@ -9,12 +9,12 @@ module Mutations
         include FindsNamespace
 
         description <<~DESC
-          Enable/disable Container Scanning on Container Registry for the given project or group.
+          Enable/disable Container Scanning on Container Registry for the given project.
         DESC
 
         argument :namespace_path, GraphQL::Types::ID,
           required: true,
-          description: 'Full path of the namespace (project or group).'
+          description: 'Full path of the namespace (project).'
 
         argument :enable, GraphQL::Types::Boolean,
           required: true,
