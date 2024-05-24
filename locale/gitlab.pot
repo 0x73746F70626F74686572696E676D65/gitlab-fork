@@ -20231,6 +20231,9 @@ msgstr ""
 msgid "Environments|How do I grant Kubernetes access?"
 msgstr ""
 
+msgid "Environments|If a Flux resource is specified, its reconciliation status is reflected in GitLab."
+msgstr ""
+
 msgid "Environments|Job"
 msgstr ""
 
@@ -20253,6 +20256,9 @@ msgid "Environments|No deployments yet"
 msgstr ""
 
 msgid "Environments|No results found"
+msgstr ""
+
+msgid "Environments|No selection shows all authorized resources in the cluster. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
 msgid "Environments|Note that this action will stop the environment, but it will %{emphasisStart}not%{emphasisEnd} have an effect on any existing deployment due to no “stop environment action” being defined in the %{ciConfigLinkStart}.gitlab-ci.yml%{ciConfigLinkEnd} file."
