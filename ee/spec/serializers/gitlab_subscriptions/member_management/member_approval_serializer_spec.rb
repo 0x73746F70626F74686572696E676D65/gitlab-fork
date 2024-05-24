@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe MemberManagement::MemberApprovalSerializer, feature_category: :seat_cost_management do
+RSpec.describe GitlabSubscriptions::MemberManagement::MemberApprovalSerializer,
+  feature_category: :seat_cost_management do
   describe '#represent' do
     context 'when there are no member approvals' do
       it 'returns an empty array' do

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-module EE
+module GitlabSubscriptions
   module MemberManagement
-    class CreateService < BaseService
-      include ::MemberManagement::PromotionManagementUtils
+    class QueueExistingMembersService < BaseService
+      include ::GitlabSubscriptions::MemberManagement::PromotionManagementUtils
 
       def initialize(current_user, members, params = {})
         @current_user = current_user

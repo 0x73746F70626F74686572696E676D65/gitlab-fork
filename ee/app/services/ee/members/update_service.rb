@@ -5,7 +5,7 @@ module EE
     module UpdateService
       extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
-      include ::MemberManagement::PromotionManagementUtils
+      include ::GitlabSubscriptions::MemberManagement::PromotionManagementUtils
 
       override :execute
       def execute(members, permission: :update)
@@ -14,7 +14,8 @@ module EE
         members = Array.wrap(members)
         validate_update_permission!(members, permission)
 
-        service_response = MemberManagement::CreateService.new(current_user, members, params).execute
+        service_response = GitlabSubscriptions::MemberManagement::QueueExistingMembersService.new(
+          current_user, members, params).execute
         return service_response if service_response.error?
 
         members_to_update = service_response.payload[:members_to_update]

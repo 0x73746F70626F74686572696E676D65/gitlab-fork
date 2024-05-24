@@ -167,7 +167,7 @@ module EE
       def pending_promotion_members
         return unless can?(current_user, :admin_group_member, group)
 
-        ::MemberManagement::MemberApprovalFinder
+        GitlabSubscriptions::MemberManagement::MemberApprovalFinder
           .new(current_user: current_user, params: params, source: group)
           .execute
           .page(params[:promotion_requests_page])
