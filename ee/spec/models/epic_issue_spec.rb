@@ -214,4 +214,46 @@ RSpec.describe EpicIssue, feature_category: :portfolio_management do
       it { is_expected.to be_truthy }
     end
   end
+
+  describe '#validate_max_children' do
+    let(:epic) { create(:epic) }
+    let(:issue) { create(:issue) }
+    let(:epic_issue) { build(:epic_issue, epic: epic, issue: issue) }
+    let(:error) do
+      _('cannot be linked to the epic. This epic already has maximum number of child issues & epics.')
+    end
+
+    context 'when the epic has not reached the maximum number of children' do
+      it 'does not add an error' do
+        allow(epic).to receive(:max_children_count_achieved?).and_return(false)
+
+        epic_issue.valid?
+
+        expect(epic_issue.errors[:issue]).to be_empty
+      end
+    end
+
+    context 'when the epic has reached the maximum number of children' do
+      it 'adds an error' do
+        allow(epic).to receive(:max_children_count_achieved?).and_return(true)
+
+        epic_issue.valid?
+
+        expect(epic_issue.errors[:issue]).to include(error)
+      end
+    end
+
+    context 'when either epic or issue is nil' do
+      it 'does not add an error' do
+        epic_issue.epic = nil
+        epic_issue.valid?
+        expect(epic_issue.errors[:issue]).not_to include(error)
+
+        epic_issue.epic = epic
+        epic_issue.issue = nil
+        epic_issue.valid?
+        expect(epic_issue.errors[:issue]).not_to include(error)
+      end
+    end
+  end
 end
