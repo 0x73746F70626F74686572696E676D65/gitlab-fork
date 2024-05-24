@@ -4328,6 +4328,9 @@ msgstr ""
 msgid "AdminUsers|Restore user access to the account, including web, Git and API."
 msgstr ""
 
+msgid "AdminUsers|Role Promotions"
+msgstr ""
+
 msgid "AdminUsers|Search by name, email, or username"
 msgstr ""
 
