@@ -15,7 +15,7 @@ module IssueWidgets
 
       has_one :requirement, class_name: 'RequirementsManagement::Requirement'
 
-      scope :for_requirement_iids, -> (requirements_iids) do
+      scope :for_requirement_iids, ->(requirements_iids) do
         with_issue_type(:requirement).joins(:requirement)
           .where(requirement: { iid: requirements_iids })
           .where('requirement.project_id = issues.project_id') # Prevents filtering too many rows by iids. Greatly increases performance.

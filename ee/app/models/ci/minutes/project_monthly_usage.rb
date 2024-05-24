@@ -11,7 +11,7 @@ module Ci
 
       scope :current_month, -> { where(date: beginning_of_month) }
 
-      scope :for_namespace_monthly_usage, -> (namespace_monthly_usage) do
+      scope :for_namespace_monthly_usage, ->(namespace_monthly_usage) do
         all_namespace_ids = namespace_monthly_usage.namespace.self_and_descendant_ids.ids
         where(
           date: namespace_monthly_usage.date,

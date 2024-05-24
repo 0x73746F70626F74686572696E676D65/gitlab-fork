@@ -53,15 +53,15 @@ module ApprovalRuleLike
     scope :with_users, -> { preload(:users, :group_users) }
     scope :regular_or_any_approver, -> { where(rule_type: [:regular, :any_approver]) }
     scope :not_regular_or_any_approver, -> { where.not(rule_type: [:regular, :any_approver]) }
-    scope :for_groups, -> (groups) { joins(:groups).where(approval_project_rules_groups: { group_id: groups }) }
+    scope :for_groups, ->(groups) { joins(:groups).where(approval_project_rules_groups: { group_id: groups }) }
     scope :including_scan_result_policy_read, -> { includes(:scan_result_policy_read) }
     scope :with_scan_result_policy_read, -> { where.not(scan_result_policy_id: nil) }
     scope :exportable, -> { where.not(report_type: %i[scan_finding license_scanning]).or(where(report_type: nil)) } # We are not exporting approval rules that were created from Security Policies
-    scope :for_policy_index, -> (policy_idx) { where(orchestration_policy_idx: policy_idx) }
-    scope :for_policy_configuration, -> (configuration_id) do
+    scope :for_policy_index, ->(policy_idx) { where(orchestration_policy_idx: policy_idx) }
+    scope :for_policy_configuration, ->(configuration_id) do
       where(security_orchestration_policy_configuration_id: configuration_id)
     end
-    scope :by_report_types, -> (report_types) { where(report_type: report_types) }
+    scope :by_report_types, ->(report_types) { where(report_type: report_types) }
   end
 
   def vulnerability_attribute_false_positive

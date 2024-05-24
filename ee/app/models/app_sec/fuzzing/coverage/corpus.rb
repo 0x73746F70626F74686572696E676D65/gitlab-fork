@@ -18,7 +18,7 @@ module AppSec
 
         validates :package_id, uniqueness: true
 
-        scope :by_project_id_and_status_hidden, -> (project_id) do
+        scope :by_project_id_and_status_hidden, ->(project_id) do
           joins(:package).where(package: { project_id: project_id, status: :hidden })
         end
 

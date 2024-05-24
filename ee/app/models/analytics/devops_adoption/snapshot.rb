@@ -32,17 +32,17 @@ class Analytics::DevopsAdoption::Snapshot < ApplicationRecord
   validates(*BOOLEAN_METRICS, inclusion: { in: [true, false] })
   validates(*NUMERIC_METRICS, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true)
 
-  scope :latest_for_namespace_ids, -> (ids) do
+  scope :latest_for_namespace_ids, ->(ids) do
     finalized.for_month(1.month.before(Time.zone.now)).for_namespaces(ids)
   end
 
-  scope :for_month, -> (month_date) { where(end_time: month_date.end_of_month) }
+  scope :for_month, ->(month_date) { where(end_time: month_date.end_of_month) }
   scope :not_finalized, -> { where(arel_table[:recorded_at].lt(arel_table[:end_time])) }
   scope :finalized, -> { where(arel_table[:recorded_at].gteq(arel_table[:end_time])) }
   scope :by_end_time, -> { order(end_time: :desc) }
 
-  scope :for_timespan, -> (from: nil, to: nil) { where(end_time: from..to) }
-  scope :for_namespaces, -> (ids) { where(namespace: ids) }
+  scope :for_timespan, ->(from: nil, to: nil) { where(end_time: from..to) }
+  scope :for_namespaces, ->(ids) { where(namespace: ids) }
 
   def start_time
     end_time.beginning_of_month
