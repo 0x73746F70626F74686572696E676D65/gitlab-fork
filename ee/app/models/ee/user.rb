@@ -665,8 +665,6 @@ module EE
     end
 
     def ai_chat_enabled_namespace_ids
-      return [] unless ::Feature.enabled?(:ai_chat_enabled_namespace_ids)
-
       Rails.cache.fetch(['users', id, GROUP_IDS_WITH_AI_CHAT_ENABLED_CACHE_KEY], expires_in: GROUP_WITH_AI_CHAT_ENABLED_CACHE_PERIOD) do
         groups = member_namespaces.with_ai_supported_plan(:ai_chat)
         groups.pluck(Arel.sql('DISTINCT traversal_ids[1]'))
