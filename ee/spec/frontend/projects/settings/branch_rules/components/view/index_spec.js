@@ -14,14 +14,9 @@ import deleteBranchRuleMutation from '~/projects/settings/branch_rules/mutations
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import {
-  I18N,
-  REQUIRED_ICON,
-  NOT_REQUIRED_ICON,
-  REQUIRED_ICON_CLASS,
-  NOT_REQUIRED_ICON_CLASS,
-} from '~/projects/settings/branch_rules/components/view/constants';
+import { I18N } from '~/projects/settings/branch_rules/components/view/constants';
 import Protection from '~/projects/settings/branch_rules/components/view/protection.vue';
+import ProtectionToggle from '~/projects/settings/branch_rules/components/view/protection_toggle.vue';
 import { sprintf } from '~/locale';
 import {
   deleteBranchRuleMockResponse,
@@ -60,6 +55,7 @@ describe('View branch rules in enterprise edition', () => {
     jest.fn().mockResolvedValue(response);
 
   const createComponent = async (
+    glFeatures = { editBranchRules: true },
     { showApprovers, showStatusChecks, showCodeOwners } = {},
     mockResponse,
     mutationMockResponse,
@@ -85,6 +81,7 @@ describe('View branch rules in enterprise edition', () => {
         showApprovers,
         showStatusChecks,
         showCodeOwners,
+        glFeatures,
       },
     });
 
@@ -99,9 +96,7 @@ describe('View branch rules in enterprise edition', () => {
   const findApprovalsApp = () => wrapper.findComponent(ApprovalRulesApp);
   const findProjectRules = () => wrapper.findComponent(ProjectRules);
   const findStatusChecksTitle = () => wrapper.findByText(I18N.statusChecksTitle);
-  const findCodeOwnerApprovalIcon = () => wrapper.findByTestId('code-owners-icon');
-  const findCodeOwnerApprovalTitle = (title) => wrapper.findByText(title);
-  const findCodeOwnerApprovalDescription = (description) => wrapper.findByText(description);
+  const findProtectionToggles = () => wrapper.findAllComponents(ProtectionToggle);
 
   it('renders a branch protection component for push rules', () => {
     expect(findBranchProtections().at(0).props()).toMatchObject({
@@ -119,28 +114,22 @@ describe('View branch rules in enterprise edition', () => {
 
   describe('Code owner approvals', () => {
     it('does not render a code owner approval section by default', () => {
-      expect(findCodeOwnerApprovalIcon().exists()).toBe(false);
-      expect(findCodeOwnerApprovalTitle(I18N.requiresCodeOwnerApprovalTitle).exists()).toBe(false);
-      expect(
-        findCodeOwnerApprovalDescription(I18N.requiresCodeOwnerApprovalDescription).exists(),
-      ).toBe(false);
+      expect(findProtectionToggles().length).toBe(1);
     });
 
     it.each`
-      codeOwnerApprovalRequired | iconName             | iconClass                  | title                                        | description
-      ${true}                   | ${REQUIRED_ICON}     | ${REQUIRED_ICON_CLASS}     | ${I18N.requiresCodeOwnerApprovalTitle}       | ${I18N.requiresCodeOwnerApprovalDescription}
-      ${false}                  | ${NOT_REQUIRED_ICON} | ${NOT_REQUIRED_ICON_CLASS} | ${I18N.doesNotRequireCodeOwnerApprovalTitle} | ${I18N.doesNotRequireCodeOwnerApprovalDescription}
+      codeOwnerApprovalRequired | iconTitle                                    | description
+      ${true}                   | ${I18N.requiresCodeOwnerApprovalTitle}       | ${I18N.codeOwnerApprovalDescription}
+      ${false}                  | ${I18N.doesNotRequireCodeOwnerApprovalTitle} | ${I18N.codeOwnerApprovalDescription}
     `(
-      'code owners with the correct icon, title and description',
-      async ({ codeOwnerApprovalRequired, iconName, iconClass, title, description }) => {
+      'renders code owners approval section with the correct iconTitle and description',
+      async ({ codeOwnerApprovalRequired, iconTitle, description }) => {
         const mockResponse = branchProtectionsMockResponse;
         mockResponse.data.project.branchRules.nodes[0].branchProtection.codeOwnerApprovalRequired = codeOwnerApprovalRequired;
-        await createComponent({ showCodeOwners: true }, mockResponse);
+        await createComponent({ editBranchRules: true }, { showCodeOwners: true }, mockResponse);
 
-        expect(findCodeOwnerApprovalIcon().props('name')).toBe(iconName);
-        expect(findCodeOwnerApprovalIcon().attributes('class')).toBe(iconClass);
-        expect(findCodeOwnerApprovalTitle(title).exists()).toBe(true);
-        expect(findCodeOwnerApprovalTitle(description).exists()).toBe(true);
+        expect(findProtectionToggles().at(1).props('iconTitle')).toEqual(iconTitle);
+        expect(findProtectionToggles().at(1).props('description')).toEqual(description);
       },
     );
   });
@@ -151,7 +140,7 @@ describe('View branch rules in enterprise edition', () => {
   });
 
   describe('if "showApprovers" is true', () => {
-    beforeEach(() => createComponent({ showApprovers: true }));
+    beforeEach(() => createComponent({}, { showApprovers: true }));
 
     it('sets an approval rules filter', () => {
       expect(store.modules.approvals.actions.setRulesFilter).toHaveBeenCalledWith(
@@ -182,7 +171,7 @@ describe('View branch rules in enterprise edition', () => {
   });
 
   it('renders a branch protection component for status checks  if "showStatusChecks" is true', async () => {
-    await createComponent({ showStatusChecks: true });
+    await createComponent({}, { showStatusChecks: true });
 
     expect(findStatusChecksTitle().exists()).toBe(true);
 
@@ -192,5 +181,23 @@ describe('View branch rules in enterprise edition', () => {
       headerLinkTitle: I18N.statusChecksLinkTitle,
       statusChecks: statusChecksRulesMock,
     });
+  });
+
+  describe('When edit_branch_rules feature flag is disabled', () => {
+    it.each`
+      codeOwnerApprovalRequired | title                                        | description
+      ${true}                   | ${I18N.requiresCodeOwnerApprovalTitle}       | ${I18N.requiresCodeOwnerApprovalDescription}
+      ${false}                  | ${I18N.doesNotRequireCodeOwnerApprovalTitle} | ${I18N.doesNotRequireCodeOwnerApprovalDescription}
+    `(
+      'renders code owners approval section with the correct title and description',
+      async ({ codeOwnerApprovalRequired, title, description }) => {
+        const mockResponse = branchProtectionsMockResponse;
+        mockResponse.data.project.branchRules.nodes[0].branchProtection.codeOwnerApprovalRequired = codeOwnerApprovalRequired;
+        await createComponent({ editBranchRules: false }, { showCodeOwners: true }, mockResponse);
+
+        expect(findProtectionToggles().at(1).props('iconTitle')).toEqual(title);
+        expect(findProtectionToggles().at(1).props('description')).toEqual(description);
+      },
+    );
   });
 });

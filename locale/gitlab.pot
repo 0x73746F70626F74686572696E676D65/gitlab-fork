@@ -9026,6 +9026,9 @@ msgstr ""
 msgid "BranchRules|Allow all users with push access to %{linkStart}force push%{linkEnd}."
 msgstr ""
 
+msgid "BranchRules|Allow force push"
+msgstr ""
+
 msgid "BranchRules|Allowed to force push"
 msgstr ""
 
@@ -9075,6 +9078,9 @@ msgid "BranchRules|Branch rule details"
 msgstr ""
 
 msgid "BranchRules|Cancel"
+msgstr ""
+
+msgid "BranchRules|Changed files listed in %{linkStart}CODEOWNERS%{linkEnd} require an approval for merge requests and will be rejected for code pushes."
 msgstr ""
 
 msgid "BranchRules|Changes require a merge request. The following users can push and merge directly."
@@ -9164,10 +9170,13 @@ msgstr ""
 msgid "BranchRules|Require approval from code owners."
 msgstr ""
 
+msgid "BranchRules|Require code owner approval"
+msgstr ""
+
 msgid "BranchRules|Requires CODEOWNERS approval"
 msgstr ""
 
-msgid "BranchRules|Requires approval from code owners"
+msgid "BranchRules|Requires code owner approval"
 msgstr ""
 
 msgid "BranchRules|Roles"
