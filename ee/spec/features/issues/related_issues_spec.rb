@@ -24,7 +24,7 @@ RSpec.describe 'Related issues', :js, feature_category: :team_planning do
     context 'with "Relates to", "Blocks", "Is blocked by" groupings' do
       def add_linked_issue(issue, radio_input_value)
         click_button 'Add a related issue'
-        fill_in 'Paste issue link', with: "#{issue.to_reference(project)} "
+        fill_in 'Enter issue URL', with: "#{issue.to_reference(project)} "
         find("input[name=\"linked-issue-type-radio\"][value=\"#{radio_input_value}\"]").click
         page.within('.linked-issues-card-body') do
           click_button 'Add'

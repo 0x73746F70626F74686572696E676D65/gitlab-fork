@@ -116,7 +116,7 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
     def add_issues(references)
       find(".related-items-tree-container .js-add-epics-issues-button").click
       find('.related-items-tree-container .js-add-epics-issues-button [data-testid="disclosure-dropdown-item"]', text: 'Add an existing issue').click
-      fill_in 'Paste issue link', with: "#{references} "
+      fill_in 'Enter issue URL', with: "#{references} "
       within '.gl-new-card-add-form' do
         click_button 'Add'
       end
@@ -127,7 +127,7 @@ RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
     def add_epics(references)
       find('.related-items-tree-container .js-add-epics-issues-button').click
       find('.related-items-tree-container .js-add-epics-issues-button [data-testid="disclosure-dropdown-item"]', text: 'Add an existing epic').click
-      fill_in 'Paste epic link', with: "#{references} "
+      fill_in 'Enter epic URL', with: "#{references} "
       within '.gl-new-card-add-form' do
         click_button 'Add'
       end
