@@ -181,6 +181,15 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       }
     end
 
+    let(:source_template) do
+      <<~CONTEXT
+          If GitLab resource of issue or epic type is present and is directly relevant to the question,
+          include the following section at the end of your response:
+          'Sources:' followed by the corresponding GitLab resource link named after the title of the resource.
+          Format the link using Markdown syntax ([title](link)) for it to be clickable.
+      CONTEXT
+    end
+
     before do
       allow(agent).to receive(:provider_prompt_class)
                         .and_return(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
@@ -229,6 +238,26 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
         .to receive(:prompt).once.with(a_hash_including(prompt_options))
 
       agent.prompt
+    end
+
+    context 'when duo_chat_display_source feature flag is enabled' do
+      before do
+        stub_feature_flags(duo_chat_display_source: true)
+      end
+
+      it 'includes source template' do
+        expect(system_prompt(agent)).to include(source_template)
+      end
+    end
+
+    context 'when duo_chat_source feature flag is disabled' do
+      before do
+        stub_feature_flags(duo_chat_display_source: false)
+      end
+
+      it 'does not include source template' do
+        expect(system_prompt(agent)).not_to include(source_template)
+      end
     end
 
     context 'when agent_version is passed' do

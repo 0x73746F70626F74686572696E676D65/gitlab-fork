@@ -29,7 +29,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
         resources: "",
         current_user: user,
         zero_shot_prompt: zero_shot_prompt,
-        system_prompt: system_prompt
+        system_prompt: system_prompt,
+        source_template: "source template"
       }
     end
 

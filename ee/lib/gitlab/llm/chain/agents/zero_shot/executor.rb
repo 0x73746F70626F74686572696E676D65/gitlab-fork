@@ -111,6 +111,7 @@ module Gitlab
                 zero_shot_prompt: zero_shot_prompt,
                 system_prompt: context.agent_version&.prompt,
                 current_resource: current_resource,
+                source_template: source_template,
                 current_code: current_code,
                 resources: available_resources_names
               }
@@ -198,6 +199,17 @@ module Gitlab
               ""
             end
 
+            def source_template
+              return "" unless Feature.enabled?(:duo_chat_display_source, context.current_user)
+
+              <<~CONTEXT
+                  If GitLab resource of issue or epic type is present and is directly relevant to the question,
+                  include the following section at the end of your response:
+                  'Sources:' followed by the corresponding GitLab resource link named after the title of the resource.
+                  Format the link using Markdown syntax ([title](link)) for it to be clickable.
+              CONTEXT
+            end
+
             ZERO_SHOT_PROMPT = <<~PROMPT.freeze
                   Answer the question as accurate as you can.
 
@@ -232,6 +244,8 @@ module Gitlab
                   You have access to the following GitLab resources: %<resources>s.
                   You also have access to all information that can be helpful to someone working in software development of any kind.
                   At the moment, you do not have access to the following GitLab resources: Merge Requests, Pipelines, Vulnerabilities.
+
+                  %<source_template>s
 
                   Avoid asking for more details if you cannot provide an answer anyway.
                   Ask user to leave feedback.
