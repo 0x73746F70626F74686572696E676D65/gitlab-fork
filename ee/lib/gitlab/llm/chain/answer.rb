@@ -6,7 +6,7 @@ module Gitlab
       class Answer
         extend Langsmith::RunHelpers
 
-        attr_accessor :status, :content, :context, :tool, :suggestions, :is_final, :extras
+        attr_accessor :status, :content, :context, :tool, :suggestions, :is_final, :extras, :error_code
         alias_method :is_final?, :is_final
 
         def self.from_response(response_body:, tools:, context:)
@@ -67,8 +67,8 @@ module Gitlab
           s_("AI|I'm sorry, I can't find the answer, but it's my fault, not yours. Please try something different.")
         end
 
-        def self.error_answer(context:, content:)
-          logger.error(message: "Error", error: content)
+        def self.error_answer(context:, content:, error_code: nil)
+          logger.error(message: "Error", error: content, error_code: error_code)
           track_event(context, 'error_answer')
 
           new(
@@ -76,11 +76,14 @@ module Gitlab
             content: content,
             context: context,
             tool: nil,
-            is_final: true
+            is_final: true,
+            error_code: error_code
           )
         end
 
-        def initialize(status:, context:, content:, tool:, suggestions: nil, is_final: false, extras: nil)
+        def initialize(
+          status:, context:, content:, tool:, suggestions: nil, is_final: false, extras: nil,
+          error_code: nil)
           @status = status
           @context = context
           @content = content
@@ -88,6 +91,7 @@ module Gitlab
           @suggestions = suggestions
           @is_final = is_final
           @extras = extras
+          @error_code = error_code
         end
 
         private_class_method def self.logger

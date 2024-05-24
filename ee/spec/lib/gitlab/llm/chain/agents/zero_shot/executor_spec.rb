@@ -366,7 +366,8 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
           answer = agent.execute
 
           expect(answer.is_final).to eq(true)
-          expect(answer.content).to include("GitLab Duo didn't respond")
+          expect(answer.content).to include("I'm sorry, I couldn't respond in time. Please try again.")
+          expect(answer.error_code).to include("A1000")
           expect(Gitlab::ErrorTracking).to have_received(:track_exception).with(error)
         end
       end
@@ -387,7 +388,8 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
           answer = agent.execute
 
           expect(answer.is_final).to eq(true)
-          expect(answer.content).to include("GitLab Duo didn't respond")
+          expect(answer.content).to include("I'm sorry, I couldn't respond in time. Please try again.")
+          expect(answer.error_code).to include("A1000")
           expect(Gitlab::ErrorTracking).to have_received(:track_exception).with(error)
         end
       end

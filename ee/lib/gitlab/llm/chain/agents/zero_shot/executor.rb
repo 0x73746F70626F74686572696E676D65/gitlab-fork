@@ -73,7 +73,8 @@ module Gitlab
               Gitlab::ErrorTracking.track_exception(error)
               Answer.error_answer(
                 context: context,
-                content: _("GitLab Duo didn't respond. Try again? If it fails again, your request might be too large.")
+                content: _("I'm sorry, I couldn't respond in time. Please try again."),
+                error_code: 'A1000'
               )
             rescue Gitlab::Llm::AiGateway::Client::ConnectionError => error
               Gitlab::ErrorTracking.track_exception(error)

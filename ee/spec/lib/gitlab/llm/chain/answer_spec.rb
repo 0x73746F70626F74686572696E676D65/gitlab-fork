@@ -114,13 +114,40 @@ RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :duo_chat do
   end
 
   describe '.error_answer' do
-    subject(:answer) { described_class.error_answer(context: context, content: "error") }
+    subject(:answer) { described_class.error_answer(context: context, content: "error", error_code: error_code) }
 
-    it 'returns final answer with error response' do
-      expect(answer.is_final?).to eq(true)
-      expect(answer.content).to eq("error")
-      expect(answer.tool).to be_nil
-      expect(answer.status).to eq(:error)
+    let(:error_code) { nil }
+
+    context 'when the answer has no error code' do
+      it 'returns final answer with error response' do
+        expect(answer.is_final?).to eq(true)
+        expect(answer.content).to eq("error")
+        expect(answer.tool).to be_nil
+        expect(answer.status).to eq(:error)
+        expect(answer.error_code).to be_nil
+      end
+    end
+
+    context 'when answer has an error code' do
+      let(:error_code) { "A2000" }
+      let(:logger) { instance_double('Gitlab::Llm::Logger') }
+
+      before do
+        allow(Gitlab::Llm::Logger).to receive(:build).and_return(logger)
+        allow(logger).to receive(:error)
+      end
+
+      it 'tracks the error code' do
+        expect(answer.content).to eq("error")
+        expect(answer.status).to eq(:error)
+        expect(answer.error_code).to eq(error_code)
+      end
+
+      it 'logs the error code' do
+        answer
+
+        expect(logger).to have_received(:error).with(message: "Error", error: "error", error_code: error_code)
+      end
     end
 
     it 'tracks a snowplow event' do
