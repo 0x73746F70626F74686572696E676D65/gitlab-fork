@@ -14,7 +14,7 @@ module EE
               title: _('Waiting for approvals'),
               content: format(
                 _("This job deploys to the protected environment \"%{environment}\", which requires approvals. " \
-                  "You can approve or reject the deployment on the environment details page."),
+                  "You can approve or reject the deployment on the deployment details page."),
                 environment: subject.deployment&.environment&.name
               )
             }
@@ -33,11 +33,11 @@ module EE
           end
 
           def action_button_title
-            _('View environment details page')
+            _('View deployment details page')
           end
 
           def action_path
-            project_environment_path(subject.project, subject.deployment&.environment)
+            project_environment_deployment_path(subject.project, subject.deployment&.environment, subject.deployment)
           end
 
           def action_method

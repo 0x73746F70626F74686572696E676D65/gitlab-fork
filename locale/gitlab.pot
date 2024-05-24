@@ -53411,7 +53411,7 @@ msgstr ""
 msgid "This job depends on upstream jobs that need to succeed in order for this job to be triggered"
 msgstr ""
 
-msgid "This job deploys to the protected environment \"%{environment}\", which requires approvals. You can approve or reject the deployment on the environment details page."
+msgid "This job deploys to the protected environment \"%{environment}\", which requires approvals. You can approve or reject the deployment on the deployment details page."
 msgstr ""
 
 msgid "This job does not have a trace."
@@ -57308,6 +57308,9 @@ msgstr ""
 msgid "View deployment"
 msgstr ""
 
+msgid "View deployment details page"
+msgstr ""
+
 msgid "View details"
 msgstr ""
 
@@ -57315,9 +57318,6 @@ msgid "View details: %{details_url}"
 msgstr ""
 
 msgid "View documentation"
-msgstr ""
-
-msgid "View environment details page"
 msgstr ""
 
 msgid "View exposed artifact"
