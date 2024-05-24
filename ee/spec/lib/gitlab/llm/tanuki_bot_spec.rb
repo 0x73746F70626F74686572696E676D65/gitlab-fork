@@ -170,6 +170,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             allow(::Gitlab::Llm::VertexAi::Client).to receive(:new).and_return(vertex_client)
             allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(anthropic_client)
             allow(described_class).to receive(:enabled_for?).and_return(true)
+            stub_feature_flags(ai_claude_3_for_docs: false)
           end
 
           context 'when embeddings table is empty (no embeddings are stored in the table)' do
@@ -189,12 +190,14 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             execute
           end
 
-          it 'calls the duo_chat_documentation pipeline for the emedded content' do
+          it 'calls the duo_chat_documentation pipeline for the embedded content' do
             allow(Banzai).to receive(:render).and_return('absolute_links_content')
 
             expect(anthropic_client).to receive(:stream)
               .with(
-                prompt: a_string_including('absolute_links_content')
+                prompt: a_string_including('absolute_links_content'),
+                model: anything,
+                max_tokens: 256
               ).once.and_return(completion_response)
 
             execute
@@ -220,6 +223,24 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
             allow(anthropic_client).to receive(:stream).once.and_yield({ "error" => { "message" => "some error" } })
 
             execute
+          end
+
+          context 'with ai_claude_3_for_docs enabled' do
+            before do
+              stub_feature_flags(ai_claude_3_for_docs: true)
+              allow(::Gitlab::Llm::AiGateway::Client).to receive(:new).and_return(ai_gateway_client)
+            end
+
+            it 'yields the streamed response to the given block' do
+              embeddings
+
+              allow(ai_gateway_client).to receive(:stream).once
+                                                          .and_yield(answer)
+                                                          .and_return(completion_response)
+              expect(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
+
+              expect { |b| instance.execute(&b) }.to yield_with_args(answer)
+            end
           end
 
           context 'when embedding database does not exist' do
@@ -307,7 +328,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
     describe 'execute with ai_gateway_docs_search enabled' do
       before do
-        stub_feature_flags(ai_gateway_docs_search: true)
+        stub_feature_flags(ai_gateway_docs_search: true, ai_claude_3_for_docs: false)
         allow(License).to receive(:feature_available?).and_return(true)
         allow(logger).to receive(:info_or_debug)
 
@@ -322,7 +343,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
       it 'executes calls and returns ResponseModifier' do
         expect(ai_gateway_client).to receive(:stream)
-          .with(prompt: a_string_including('content'), model: 'claude-2.1')
+          .with(prompt: a_string_including('content'), model: 'claude-2.1', max_tokens: 256)
           .once.and_return(completion_response)
         expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
 
@@ -334,7 +355,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
         expect(ai_gateway_client)
           .to receive(:stream)
-          .with(prompt: a_string_including('content'), model: 'claude-2.1')
+          .with(prompt: a_string_including('content'), model: 'claude-2.1', max_tokens: 256)
           .once
           .and_yield(answer)
           .and_return(completion_response)
@@ -342,6 +363,29 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
         expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
 
         expect { |b| instance.execute(&b) }.to yield_with_args(answer)
+      end
+
+      context 'with ai_claude_3_for_docs enabled' do
+        before do
+          stub_feature_flags(ai_claude_3_for_docs: true)
+        end
+
+        it 'yields the streamed response to the given block' do
+          allow(Banzai).to receive(:render).and_return('absolute_links_content')
+
+          expect(ai_gateway_client)
+            .to receive(:stream)
+            .with(prompt: an_instance_of(Array),
+              model: ::Gitlab::Llm::AiGateway::Client::CLAUDE_3_SONNET,
+              max_tokens: 256)
+            .once
+            .and_yield(answer)
+            .and_return(completion_response)
+
+          expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
+
+          expect { |b| instance.execute(&b) }.to yield_with_args(answer)
+        end
       end
 
       it 'raises an error when request failed' do

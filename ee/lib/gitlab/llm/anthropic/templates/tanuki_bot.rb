@@ -10,25 +10,30 @@ module Gitlab
           }.freeze
           CONTENT_ID_FIELD = 'ATTRS'
 
-          def self.final_prompt(question:, documents:)
-            content = documents.map do |document|
-              <<~PROMPT.strip
-                <quote>
-                CONTENT: #{document[:content]}
-                #{CONTENT_ID_FIELD}: CNT-IDX-#{document[:id]}
-                </quote>
-              PROMPT
-            end.join("\n\n")
+          MAIN_PROMPT = <<~PROMPT
+            Given the following extracted parts of technical documentation enclosed in <quote></quote> XML tags and a question, create a final answer.
+            If you don't know the answer, just say that you don't know. Don't try to make up an answer.
+            At the end of your answer ALWAYS return a "%<content_id>s" part for references and
+            ALWAYS name it %<content_id>s.
 
-            prompt = <<~PROMPT.strip
-              \n\nHuman: Given the following extracted parts of technical documentation enclosed in <quote></quote> XML tags and a question, create a final answer.
-              If you don't know the answer, just say that you don't know. Don't try to make up an answer.
-              At the end of your answer ALWAYS return a "#{CONTENT_ID_FIELD}" part for references and
-              ALWAYS name it #{CONTENT_ID_FIELD}.
+            QUESTION: %<question>s
 
-              QUESTION: #{question}
+            %<content>s
+          PROMPT
 
-              #{content}
+          def self.final_prompt(user, question:, documents:)
+            if Feature.enabled?(:ai_claude_3_for_docs, user)
+              claude_3_prompt(question: question, documents: documents)
+            else
+              prompt(question: question, documents: documents)
+            end
+          end
+
+          def self.prompt(question:, documents:)
+            content = documents_prompt(documents)
+
+            prompt = <<~PROMPT
+              \n\nHuman: #{main_prompt(question: question, content: content)}
 
               Assistant: FINAL ANSWER:
             PROMPT
@@ -36,8 +41,43 @@ module Gitlab
             {
               method: :completions,
               prompt: prompt,
-              options: OPTIONS
+              options: { model: ::Gitlab::Llm::AiGateway::Client::CLAUDE_2_1 }.merge(OPTIONS)
             }
+          end
+
+          def self.claude_3_prompt(question:, documents:)
+            content = documents_prompt(documents)
+
+            conversation = Gitlab::Llm::Chain::Utils::Prompt.role_conversation([
+              Gitlab::Llm::Chain::Utils::Prompt.as_user(main_prompt(question: question,
+                content: content)),
+              Gitlab::Llm::Chain::Utils::Prompt.as_assistant("FINAL ANSWER:")
+            ])
+
+            {
+              prompt: conversation,
+              options: { model: ::Gitlab::Llm::AiGateway::Client::CLAUDE_3_SONNET }.merge(OPTIONS)
+            }
+          end
+
+          def self.main_prompt(question:, content:)
+            format(
+              MAIN_PROMPT,
+              question: question,
+              content: content,
+              content_id: CONTENT_ID_FIELD
+            )
+          end
+
+          def self.documents_prompt(documents)
+            documents.map do |document|
+              <<~PROMPT.strip
+                <quote>
+                CONTENT: #{document[:content]}
+                #{CONTENT_ID_FIELD}: CNT-IDX-#{document[:id]}
+                </quote>
+              PROMPT
+            end.join("\n\n")
           end
         end
       end

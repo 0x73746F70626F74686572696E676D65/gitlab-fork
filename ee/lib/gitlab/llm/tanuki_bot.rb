@@ -127,20 +127,28 @@ module Gitlab
         @ai_gateway_client ||= ::Gitlab::Llm::AiGateway::Client.new(current_user, tracking_context: tracking_context)
       end
 
-      def get_completions(search_documents)
+      def get_completions(search_documents, &block)
+        if Feature.enabled?(:ai_claude_3_for_docs, current_user)
+          get_completions_ai_gateway(search_documents, &block)
+        else
+          get_completions_anthropic(search_documents, &block)
+        end
+      end
+
+      def get_completions_anthropic(search_documents)
         final_prompt = Gitlab::Llm::Anthropic::Templates::TanukiBot
-          .final_prompt(question: question, documents: search_documents)
+            .final_prompt(current_user, question: question, documents: search_documents)
 
         final_prompt_result = anthropic_client.stream(
-          prompt: final_prompt[:prompt]
+          prompt: final_prompt[:prompt], **final_prompt[:options]
         ) do |data|
           logger.info(message: "Streaming error", error: data&.dig("error")) if data&.dig("error")
 
           yield data&.dig("completion").to_s if block_given?
         end
 
-        logger.info_or_debug(current_user,
-          message: "Got Final Result", prompt: final_prompt[:prompt], response: final_prompt_result)
+        logger.info_or_debug(current_user, message: "Got Final Result",
+          prompt: final_prompt[:prompt], response: final_prompt_result)
 
         Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(
           { completion: final_prompt_result }.to_json, current_user
@@ -149,11 +157,10 @@ module Gitlab
 
       def get_completions_ai_gateway(search_documents)
         final_prompt = Gitlab::Llm::Anthropic::Templates::TanukiBot
-          .final_prompt(question: question, documents: search_documents)
+          .final_prompt(current_user, question: question, documents: search_documents)
 
         final_prompt_result = ai_gateway_client.stream(
-          prompt: final_prompt[:prompt],
-          model: 'claude-2.1'
+          prompt: final_prompt[:prompt], **final_prompt[:options]
         ) do |data|
           yield data if block_given?
         end
