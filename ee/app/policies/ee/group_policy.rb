@@ -730,14 +730,6 @@ module EE
         enable :enable_pre_receive_secret_detection
       end
 
-      condition(:container_scanning_for_registry_available) do
-        ::Feature.enabled?(:container_scanning_for_registry)
-      end
-
-      rule { container_scanning_for_registry_available & can?(:maintainer_access) }.policy do
-        enable :enable_container_scanning_for_registry
-      end
-
       rule { can?(:admin_group) }.policy do
         enable :read_web_hook
         enable :admin_web_hook
