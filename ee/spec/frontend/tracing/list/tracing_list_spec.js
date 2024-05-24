@@ -10,6 +10,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import * as urlUtility from '~/lib/utils/url_utility';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { createMockClient } from 'helpers/mock_observability_client';
 import * as commonUtils from '~/lib/utils/common_utils';
@@ -85,10 +86,17 @@ describe('TracingList', () => {
 
   describe('trace list', () => {
     describe('while fetching traces', () => {
+      const { bindInternalEventDocument } = useMockInternalEventsTracking();
+
       beforeEach(async () => {
         observabilityClientMock.fetchTraces.mockReturnValue(new Promise(() => {}));
 
         await mountComponent();
+      });
+
+      it('tracks view_tracing_page', () => {
+        const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+        expect(trackEventSpy).toHaveBeenCalledWith('view_tracing_page', {}, undefined);
       });
 
       it('fetches traces', () => {
