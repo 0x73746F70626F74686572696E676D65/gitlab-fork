@@ -115,7 +115,7 @@ export default {
           :title="$options.i18n.copySubscriptionIdButtonText"
           :aria-label="$options.i18n.copySubscriptionIdButtonText"
           category="tertiary"
-          class="gl-absolute gl-mt-n2 gl-ml-2"
+          class="gl-absolute -gl-mt-2 gl-ml-2"
           size="small"
         />
         <subscription-sync-button v-if="shouldShowDetail(item.detail)" />
