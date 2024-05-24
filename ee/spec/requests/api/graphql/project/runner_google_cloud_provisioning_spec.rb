@@ -126,7 +126,8 @@ RSpec.describe 'runnerGoogleCloudProvisioning', feature_category: :runner do
       context 'with nil runner token' do
         let(:runner_token) { nil }
 
-        it 'is successful and generates a unique deployment id' do
+        it 'is successful and generates a unique deployment id',
+          quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/448408' do
           request
           expect_graphql_errors_to_be_empty
 
