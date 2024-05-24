@@ -39,6 +39,7 @@ describe('OnboardingListItem', () => {
         description:
           'Set up to track how your product is performing and optimize your product and development processes.',
         badgeText: null,
+        badgePopoverText: null,
         to: 'product-analytics-onboarding',
       });
     });
@@ -70,13 +71,37 @@ describe('OnboardingListItem', () => {
 
   describe('badge text', () => {
     it.each`
-      state                       | badgeText
-      ${STATE_WAITING_FOR_EVENTS} | ${'Waiting for events'}
-      ${STATE_LOADING_INSTANCE}   | ${'Loading instance'}
-    `('renders "$badgeText" when the state is "$state"', async ({ state, badgeText }) => {
-      await createWrapper(state);
+      state                       | badgeText               | badgePopoverText
+      ${STATE_WAITING_FOR_EVENTS} | ${'Waiting for events'} | ${'An analytics provider has been successfully created, but it has not received any events yet. To continue with the setup, instrument your application and start sending events.'}
+      ${STATE_LOADING_INSTANCE}   | ${'Loading instance'}   | ${'The system is creating your analytics provider. In the meantime, you can instrument your application.'}
+    `(
+      'renders "$badgeText" with popover "$badgePopoverText" when the state is "$state"',
+      async ({ state, badgeText, badgePopoverText }) => {
+        await createWrapper(state);
 
-      expect(findListItem().props('badgeText')).toBe(badgeText);
-    });
+        expect(findListItem().props()).toMatchObject(
+          expect.objectContaining({
+            badgeText,
+            badgePopoverText,
+          }),
+        );
+      },
+    );
+  });
+
+  describe('action text', () => {
+    it.each`
+      state                       | actionText
+      ${STATE_CREATE_INSTANCE}    | ${'Set up'}
+      ${STATE_WAITING_FOR_EVENTS} | ${'Continue set up'}
+      ${STATE_LOADING_INSTANCE}   | ${'Continue set up'}
+    `(
+      'renders action text "$actionText" when the state is "$state"',
+      async ({ state, actionText }) => {
+        await createWrapper(state);
+
+        expect(findListItem().props('actionText')).toBe(actionText);
+      },
+    );
   });
 });

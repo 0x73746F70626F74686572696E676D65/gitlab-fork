@@ -1,5 +1,6 @@
 <script>
-import { GlIcon, GlBadge, GlButton } from '@gitlab/ui';
+import { uniqueId } from 'lodash';
+import { GlIcon, GlBadge, GlButton, GlPopover } from '@gitlab/ui';
 import { __ } from '~/locale';
 
 export default {
@@ -8,6 +9,7 @@ export default {
     GlButton,
     GlIcon,
     GlBadge,
+    GlPopover,
   },
   props: {
     title: {
@@ -25,8 +27,9 @@ export default {
     badgeText: {
       type: String,
       required: false,
-      default: '',
+      default: null,
     },
+    badgePopoverText: { type: String, required: false, default: null },
     actionText: {
       type: String,
       required: false,
@@ -34,6 +37,7 @@ export default {
     },
   },
   featureAvatarColor: 1,
+  badgeId: uniqueId('badge-'),
 };
 </script>
 
@@ -54,7 +58,12 @@ export default {
         </p>
       </div>
       <div class="gl-float-right">
-        <gl-badge v-if="badgeText">{{ badgeText }}</gl-badge>
+        <template v-if="badgeText">
+          <gl-badge :id="$options.badgeId">{{ badgeText }}</gl-badge>
+          <gl-popover v-if="badgePopoverText" :target="$options.badgeId">{{
+            badgePopoverText
+          }}</gl-popover>
+        </template>
         <gl-button data-testid="setup-button" :to="to">{{ actionText }}</gl-button>
       </div>
     </div>

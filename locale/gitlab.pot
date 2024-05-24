@@ -39310,6 +39310,9 @@ msgstr ""
 msgid "ProductAnalytics|All Sessions Compared"
 msgstr ""
 
+msgid "ProductAnalytics|An analytics provider has been successfully created, but it has not received any events yet. To continue with the setup, instrument your application and start sending events."
+msgstr ""
+
 msgid "ProductAnalytics|An error occurred while fetching data. Refresh the page to try again."
 msgstr ""
 
@@ -39359,6 +39362,9 @@ msgid "ProductAnalytics|Connect your own provider"
 msgstr ""
 
 msgid "ProductAnalytics|Contact our sales team"
+msgstr ""
+
+msgid "ProductAnalytics|Continue set up"
 msgstr ""
 
 msgid "ProductAnalytics|Creating your product analytics instance..."
@@ -39551,6 +39557,9 @@ msgid "ProductAnalytics|The receiver of tracking events"
 msgstr ""
 
 msgid "ProductAnalytics|The sender of tracking events"
+msgstr ""
+
+msgid "ProductAnalytics|The system is creating your analytics provider. In the meantime, you can instrument your application."
 msgstr ""
 
 msgid "ProductAnalytics|Then, return to this page and continue with the setup."

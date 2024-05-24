@@ -1,4 +1,4 @@
-import { GlIcon, GlBadge, GlButton } from '@gitlab/ui';
+import { GlIcon, GlBadge, GlButton, GlPopover } from '@gitlab/ui';
 import FeatureListItem from 'ee/analytics/analytics_dashboards/components/list/feature_list_item.vue';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import { __ } from '~/locale';
@@ -9,6 +9,7 @@ describe('FeatureListItem', () => {
 
   const findIcon = () => wrapper.findComponent(GlIcon);
   const findBadge = () => wrapper.findComponent(GlBadge);
+  const findBadgePopover = () => wrapper.findComponent(GlPopover);
   const findButton = () => wrapper.findComponent(GlButton);
   const findButtonLink = () => findButton().find('a');
 
@@ -72,12 +73,25 @@ describe('FeatureListItem', () => {
     });
   });
 
+  describe('badge popover', () => {
+    beforeEach(() => {
+      createWrapper({ badgeText: 'waiting', badgePopoverText: 'waiting for the foo to bar.' });
+    });
+
+    it('renders a popover with the expected text', () => {
+      const popover = findBadgePopover();
+
+      expect(popover.text()).toBe('waiting for the foo to bar.');
+      expect(popover.props('target')).toBe(findBadge().attributes('id'));
+    });
+  });
+
   describe('action text', () => {
     beforeEach(() => {
       createWrapper({ actionText: 'do something' });
     });
 
-    it('renders a badge with the badge text', () => {
+    it('renders button with the expected text', () => {
       expect(findButton().text()).toBe('do something');
     });
   });
