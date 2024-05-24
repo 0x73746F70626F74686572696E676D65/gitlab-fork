@@ -1,5 +1,5 @@
 <script>
-import { GlCard, GlTable, GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlCard, GlIcon, GlLink, GlSprintf, GlTable } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapState } from 'vuex';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -17,7 +17,7 @@ export const i18n = {
     'StatusCheck|Check for a status response in merge requests. %{linkStart}Learn more%{linkEnd}.',
   ),
   apiHeader: __('API'),
-  branchHeader: __('Target branch'),
+  branchHeader: __('Target branches'),
   actionsHeader: __('Actions'),
   emptyTableText: s__('StatusCheck|No status checks are defined yet.'),
   nameHeader: s__('StatusCheck|Service name'),
@@ -28,10 +28,10 @@ export default {
     Actions,
     Branch,
     GlCard,
-    GlTable,
     GlIcon,
     GlLink,
     GlSprintf,
+    GlTable,
     ModalCreate,
     ModalDelete,
     ModalUpdate,

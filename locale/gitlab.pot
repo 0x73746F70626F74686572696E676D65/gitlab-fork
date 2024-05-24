@@ -51645,6 +51645,9 @@ msgstr ""
 msgid "Target branch: %{target_branch}"
 msgstr ""
 
+msgid "Target branches"
+msgstr ""
+
 msgid "Target project"
 msgstr ""
 

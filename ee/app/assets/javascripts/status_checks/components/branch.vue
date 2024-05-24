@@ -15,7 +15,9 @@ export default {
       return !this.branches?.length;
     },
     branchName() {
-      return this.isAllBranches ? __('All branches') : this.branches[0].name;
+      return this.isAllBranches
+        ? __('All branches')
+        : this.branches.map((branch) => branch.name).join(', ');
     },
   },
 };

@@ -1,5 +1,10 @@
 <script>
-import { GlCollapsibleListbox, GlDropdownDivider, GlDropdownItem } from '@gitlab/ui';
+import {
+  GlCollapsibleListbox,
+  GlDropdownDivider,
+  GlDropdownItem,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 import { debounce } from 'lodash';
 import Api from 'ee/api';
 import { __ } from '~/locale';
@@ -16,6 +21,9 @@ export default {
     GlCollapsibleListbox,
     GlDropdownDivider,
     GlDropdownItem,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     projectId: {
@@ -227,6 +235,7 @@ export default {
 <template>
   <gl-collapsible-listbox
     ref="branches"
+    v-gl-tooltip
     :items="branchesItems"
     block
     :class="{ 'is-invalid': isInvalid }"
@@ -237,6 +246,7 @@ export default {
     searchable
     :searching="searching"
     :selected="selectedBranchName"
+    :title="toggleText"
     @search="handleSearch"
     @select="handleSelect"
   >

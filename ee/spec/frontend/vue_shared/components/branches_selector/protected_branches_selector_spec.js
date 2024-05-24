@@ -73,6 +73,22 @@ describe('Protected Branches Selector', () => {
       expect(findSelectableBranches()).toStrictEqual(branchNames());
       expect(findListbox().props('loading')).toBe(false);
     });
+
+    it('displays the tooltip for a single selection', () => {
+      createComponent({ selectedBranchesNames: ['main'] });
+      expect(findListbox().attributes('title')).toBe('main');
+    });
+
+    it('displays the tooltip for multiple selection', () => {
+      createComponent({
+        multiple: true,
+        selectedBranches: [
+          { id: 1, name: 'main' },
+          { id: 2, name: 'spooky-stuff' },
+        ],
+      });
+      expect(findListbox().attributes('title')).toBe('main, spooky-stuff');
+    });
   });
 
   describe('selected branch', () => {
