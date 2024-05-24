@@ -15571,6 +15571,9 @@ msgstr ""
 msgid "Created At"
 msgstr ""
 
+msgid "Created Date"
+msgstr ""
+
 msgid "Created On"
 msgstr ""
 
@@ -17907,6 +17910,9 @@ msgid "Deployment approvals is not configured for this environment."
 msgstr ""
 
 msgid "Deployment frequency"
+msgstr ""
+
+msgid "Deployment status"
 msgstr ""
 
 msgid "DeploymentApprovals|Allow pipeline triggerer to approve deployment."
@@ -55919,6 +55925,9 @@ msgstr ""
 msgid "Updated %{updated_at} by %{updated_by}"
 msgstr ""
 
+msgid "Updated Date"
+msgstr ""
+
 msgid "Updated at %{updatedAt}"
 msgstr ""
 
@@ -61997,6 +62006,9 @@ msgstr ""
 msgid "locked by %{path_lock_user_name} %{created_at}"
 msgstr ""
 
+msgid "main"
+msgstr ""
+
 msgid "manual"
 msgstr ""
 
@@ -62625,6 +62637,9 @@ msgid "policy"
 msgid_plural "policies"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "prefixed"
+msgstr ""
 
 msgid "previously merged commits"
 msgstr ""
