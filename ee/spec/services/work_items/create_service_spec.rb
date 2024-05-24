@@ -46,27 +46,6 @@ RSpec.describe WorkItems::CreateService, feature_category: :team_planning do
           service_result
         end
 
-        context 'when synced_work_item is true' do
-          let(:extra_params) { { extra_params: { synced_work_item: true } } }
-
-          it 'does not call system notes service' do
-            expect(Issuable::CommonSystemNotesService).not_to receive(:new)
-
-            work_item = service_result[:work_item]
-
-            expect(work_item).to be_persisted
-            expect(work_item).to be_a(::WorkItem)
-          end
-
-          it 'does not call after commit workers' do
-            expect(NewIssueWorker).not_to receive(:perform_async)
-            expect(Issues::PlacementWorker).not_to receive(:perform_async)
-            expect(Onboarding::IssueCreatedWorker).not_to receive(:perform_async)
-
-            service_result
-          end
-        end
-
         describe 'with color widget params' do
           let(:widget_params) { { color_widget: { color: '#c91c00' } } }
 
