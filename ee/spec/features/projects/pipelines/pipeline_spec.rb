@@ -127,6 +127,67 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
       end
     end
 
+    describe 'identity verification requirement', :saas do
+      include IdentityVerificationHelpers
+
+      let_it_be(:user) { create(:user, :identity_verification_eligible) }
+
+      before do
+        stub_saas_features(identity_verification: true)
+
+        stub_feature_flags(
+          ci_require_credit_card_on_free_plan: false,
+          ci_require_credit_card_on_trial_plan: false
+        )
+      end
+
+      shared_examples 'does not show an alert prompting the user to verify their account' do
+        it 'does not show an alert prompting the user to verify their account' do
+          subject
+
+          expect(page).not_to have_content('Before you can run pipelines, we need to verify your account.')
+        end
+      end
+
+      it_behaves_like 'does not show an alert prompting the user to verify their account'
+
+      context 'when pipeline failed with user_not_verified status' do
+        let_it_be(:pipeline) do
+          create(
+            :ci_empty_pipeline,
+            project: project,
+            ref: 'master',
+            status: 'failed',
+            failure_reason: 'user_not_verified',
+            sha: project.commit.id,
+            user: user
+          )
+        end
+
+        it 'prompts the user to verify their account' do
+          subject
+
+          expect(page).to have_content('Before you can run pipelines, we need to verify your account.')
+
+          click_on 'Verify my account'
+
+          wait_for_requests
+
+          expect_to_see_identity_verification_page
+
+          solve_arkose_verify_challenge
+
+          verify_phone_number
+
+          click_link 'Next'
+
+          wait_for_requests
+
+          expect(page).not_to have_content('Before you can run pipelines, we need to verify your account.')
+        end
+      end
+    end
+
     describe 'pipeline stats text' do
       let_it_be_with_reload(:finished_pipeline) do
         create(:ci_pipeline, :success, project: project,

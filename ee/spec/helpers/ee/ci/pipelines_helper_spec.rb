@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Ci::PipelinesHelper do
+RSpec.describe EE::Ci::PipelinesHelper, feature_category: :continuous_integration do
   include Devise::Test::ControllerHelpers
 
   describe '#show_cc_validation_alert?' do
@@ -61,6 +61,16 @@ RSpec.describe EE::Ci::PipelinesHelper do
 
     it 'has the expected keys' do
       expect(data.keys).to include(:identity_verification_required, :identity_verification_path)
+    end
+  end
+
+  describe '#new_pipeline_data' do
+    let_it_be(:project) { build_stubbed(:project) }
+
+    subject(:data) { helper.new_pipeline_data(project) }
+
+    it 'includes identity_verification_path' do
+      expect(data[:identity_verification_path]).to eq identity_verification_path
     end
   end
 end

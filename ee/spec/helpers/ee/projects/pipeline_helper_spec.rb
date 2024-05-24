@@ -285,8 +285,38 @@ RSpec.describe Projects::PipelineHelper, feature_category: :pipeline_composition
         pipeline_iid: pipeline.iid,
         pipelines_path: project_pipelines_path(project),
         identity_verification_required: 'false',
-        identity_verification_path: '#'
+        identity_verification_path: identity_verification_path
       })
+    end
+
+    describe 'identity_verification_required field' do
+      using RSpec::Parameterized::TableSyntax
+
+      let_it_be(:pipeline) { create(:ci_empty_pipeline, project: project, status: 'failed', user: user) }
+
+      subject(:identity_verification_required) { pipeline_header_data[:identity_verification_required] }
+
+      where(:user_not_verified?, :can_run_jobs?, :result) do
+        false | false | false
+        false | true  | false
+        true  | false | true
+        true  | true  | false
+      end
+
+      with_them do
+        before do
+          allow(helper).to receive(:current_user).and_return(user)
+
+          allow(pipeline).to receive(:user_not_verified?).and_return(user_not_verified?)
+
+          init_params = { user: user, project: project }
+          allow_next_instance_of(Users::IdentityVerification::AuthorizeCi, init_params) do |instance|
+            allow(instance).to receive(:user_can_run_jobs?).and_return(can_run_jobs?)
+          end
+        end
+
+        it { is_expected.to eq(result.to_s) }
+      end
     end
   end
 end

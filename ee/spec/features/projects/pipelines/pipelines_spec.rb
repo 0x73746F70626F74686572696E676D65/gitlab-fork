@@ -40,4 +40,53 @@ RSpec.describe 'Pipelines', :js, feature_category: :continuous_integration do
       end
     end
   end
+
+  describe 'POST /:project/-/pipelines' do
+    describe 'identity verification requirement', :js, :saas do
+      include IdentityVerificationHelpers
+
+      let_it_be_with_reload(:user) { create(:user, :identity_verification_eligible) }
+
+      before do
+        stub_saas_features(identity_verification: true)
+
+        stub_feature_flags(
+          ci_require_credit_card_on_free_plan: false,
+          ci_require_credit_card_on_trial_plan: false
+        )
+
+        visit new_project_pipeline_path(project)
+      end
+
+      subject(:run_pipeline) do
+        find_by_testid('run-pipeline-button', text: 'Run pipeline').click
+
+        wait_for_requests
+      end
+
+      it 'prompts the user to verify their account' do
+        expect { run_pipeline }.not_to change { Ci::Pipeline.count }
+
+        expect(page).to have_content('Before you can run pipelines, we need to verify your account.')
+
+        click_on 'Verify my account'
+
+        wait_for_requests
+
+        expect_to_see_identity_verification_page
+
+        solve_arkose_verify_challenge
+
+        verify_phone_number
+
+        click_link 'Next'
+
+        wait_for_requests
+
+        run_pipeline
+
+        expect(page).not_to have_content('Before you can run pipelines, we need to verify your account.')
+      end
+    end
+  end
 end

@@ -54,11 +54,18 @@ module EE
 
       def show_verification_reminder?
         return false unless ::Gitlab.com?
+
         return false unless current_user
         return false if current_user.has_valid_credit_card?
 
         failed_pipeline = current_user.pipelines.user_not_verified.last
-        failed_pipeline.present? && !user_dismissed?('verification_reminder', failed_pipeline.created_at)
+        return false unless failed_pipeline
+
+        project = failed_pipeline.project
+        feature_enabled = ::Feature.enabled?(:ci_require_credit_card_on_free_plan, project) ||
+          ::Feature.enabled?(:ci_require_credit_card_on_trial_plan, project)
+
+        feature_enabled && !user_dismissed?('verification_reminder', failed_pipeline.created_at)
       end
 
       def show_joining_a_project_alert?

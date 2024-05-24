@@ -19,6 +19,13 @@ module EE
           identity_verification_path: '#'
         )
       end
+
+      override :new_pipeline_data
+      def new_pipeline_data(project)
+        super.merge(
+          identity_verification_path: identity_verification_path
+        )
+      end
     end
   end
 end

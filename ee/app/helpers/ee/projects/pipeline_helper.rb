@@ -28,8 +28,8 @@ module EE
       override :js_pipeline_header_data
       def js_pipeline_header_data(project, pipeline)
         super.merge(
-          identity_verification_required: false.to_s,
-          identity_verification_path: '#'
+          identity_verification_required: identity_verification_required?(pipeline).to_s,
+          identity_verification_path: identity_verification_path
         )
       end
 
@@ -75,6 +75,19 @@ module EE
 
       def scanner_for_pipeline(project, pipeline)
         @scanner_for_pipeline ||= ::Gitlab::LicenseScanning.scanner_for_pipeline(project, pipeline)
+      end
+
+      def identity_verification_required?(pipeline)
+        user = pipeline.user
+
+        return false unless user
+        return false if current_user != user
+
+        user_can_run_pipelines = ::Users::IdentityVerification::AuthorizeCi.new(
+          user: current_user, project: pipeline.project
+        ).user_can_run_jobs?
+
+        pipeline.user_not_verified? && !user_can_run_pipelines
       end
     end
   end
