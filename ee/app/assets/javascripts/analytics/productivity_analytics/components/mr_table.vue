@@ -58,12 +58,12 @@ export default {
     <div class="card">
       <div class="card-header border-bottom-0">
         <div role="row" class="gl-responsive-table-row table-row-header d-flex py-0">
-          <div role="rowheader" class="table-section section-50 d-none gl-md-display-flex!">
+          <div role="rowheader" class="table-section section-50 gl-hidden md:gl-flex">
             {{ __('Title') }}
           </div>
           <div role="rowheader" class="table-section section-50">
             <div class="d-flex">
-              <span class="d-none gl-md-display-flex! metric-col">{{ __('Time to merge') }}</span>
+              <span class="gl-hidden md:gl-flex metric-col">{{ __('Time to merge') }}</span>
 
               <gl-collapsible-listbox
                 block

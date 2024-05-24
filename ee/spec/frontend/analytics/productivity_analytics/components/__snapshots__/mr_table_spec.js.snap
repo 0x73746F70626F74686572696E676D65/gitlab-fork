@@ -15,7 +15,7 @@ exports[`MergeRequestTable component matches the snapshot 1`] = `
         role="row"
       >
         <div
-          class="d-none gl-md-display-flex! section-50 table-section"
+          class="gl-hidden md:gl-flex section-50 table-section"
           role="rowheader"
         >
           Title
@@ -28,7 +28,7 @@ exports[`MergeRequestTable component matches the snapshot 1`] = `
             class="d-flex"
           >
             <span
-              class="d-none gl-md-display-flex! metric-col"
+              class="gl-hidden md:gl-flex metric-col"
             >
               Time to merge
             </span>

@@ -9,10 +9,10 @@ export const initDomainVerificationForm = () => {
       const isAutoSslEnabled = parseBoolean(event.target.value);
       document
         .querySelector('.js-shown-unless-auto-ssl')
-        .classList.toggle('gl-display-none', isAutoSslEnabled);
+        .classList.toggle('!gl-hidden', isAutoSslEnabled);
       document
         .querySelector('.js-shown-if-auto-ssl')
-        .classList.toggle('gl-display-none', !isAutoSslEnabled);
+        .classList.toggle('!gl-hidden', !isAutoSslEnabled);
     });
   });
 };

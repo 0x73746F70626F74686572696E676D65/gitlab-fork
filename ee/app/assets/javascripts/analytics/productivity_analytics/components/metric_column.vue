@@ -42,6 +42,6 @@ export default {
       </template>
       <template v-else> &ndash; </template>
     </span>
-    <span v-if="label" class="d-flex d-md-none text-secondary metric-label">{{ label }}</span>
+    <span v-if="label" class="gl-flex md:gl-hidden text-secondary metric-label">{{ label }}</span>
   </div>
 </template>

@@ -160,7 +160,7 @@ export default {
 <template>
   <table class="table m-0 gl-border-t">
     <thead class="thead-white text-nowrap">
-      <tr class="d-md-table-row d-none gl-font-sm">
+      <tr class="gl-hidden md:gl-table-row gl-font-sm">
         <th class="gl-bg-white!"></th>
         <th class="gl-bg-white! gl-pl-0! gl-w-full">{{ s__('MRApprovals|Approvers') }}</th>
         <th class="gl-bg-white! gl-w-full"></th>
@@ -216,7 +216,7 @@ export default {
             <approved-icon class="gl-pl-2" :is-approved="rule.approved" />
           </td>
           <td :colspan="numberOfColumns(rule)" class="gl-pl-0!">
-            <div class="gl-md-display-flex! d-none js-name gl-align-items-center">
+            <div class="gl-hidden md:gl-flex js-name gl-align-items-center">
               <empty-rule-name
                 v-if="rule.type.toLowerCase() === $options.ruleTypeAnyApprover"
                 :eligible-approvers-docs-path="eligibleApproversDocsPath"
@@ -244,7 +244,7 @@ export default {
                 :code-coverage-check-help-page-path="codeCoverageCheckHelpPagePath"
               />
             </div>
-            <div class="d-md-none d-flex flex-column js-summary">
+            <div class="gl-flex md:gl-hidden flex-column js-summary">
               <empty-rule-name
                 v-if="rule.type.toLowerCase() === $options.ruleTypeAnyApprover"
                 :eligible-approvers-docs-path="eligibleApproversDocsPath"
@@ -273,7 +273,7 @@ export default {
           </td>
           <td
             v-if="rule.type.toLowerCase() !== $options.ruleTypeAnyApprover"
-            class="d-md-table-cell d-none gl-min-w-20 js-approvers"
+            class="gl-hidden md:gl-table-cell gl-min-w-20 js-approvers"
           >
             <user-avatar-list
               :items="rule.eligibleApprovers"
@@ -282,10 +282,10 @@ export default {
               class="gl-display-flex gl-flex-wrap gl-gap-y-2"
             />
           </td>
-          <td class="d-md-table-cell w-0 d-none gl-whitespace-nowrap js-pending">
+          <td class="w-0 gl-hidden md:gl-table-cell gl-whitespace-nowrap js-pending">
             <number-of-approvals :rule="rule" />
           </td>
-          <td class="d-md-table-cell d-none js-commented-by">
+          <td class="gl-hidden md:gl-table-cell js-commented-by">
             <user-avatar-list
               :items="rule.commentedBy.nodes"
               :img-size="24"
@@ -293,7 +293,7 @@ export default {
               class="gl-display-flex gl-flex-wrap gl-gap-y-2"
             />
           </td>
-          <td class="d-none d-md-table-cell js-approved-by">
+          <td class="gl-hidden md:gl-table-cell js-approved-by">
             <user-avatar-list
               :items="rule.approvedBy.nodes"
               :img-size="24"

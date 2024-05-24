@@ -156,7 +156,7 @@ export default {
           />
         </div>
 
-        <div class="col-sm-4 pl-0 text-right align-self-center d-none d-sm-block">
+        <div class="col-sm-4 pl-0 text-right align-self-center gl-hidden sm:gl-block">
           <time-ago
             v-if="shouldShowTimeAgo"
             :time="finishedTime"
