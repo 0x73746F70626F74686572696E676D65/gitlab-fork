@@ -2,6 +2,7 @@
   "recommendations": [
     "gitlab.gitlab-workflow",
     "shopify.ruby-lsp",
-    "deque-systems.vscode-axe-linter"
+    "deque-systems.vscode-axe-linter",
+    "EditorConfig.EditorConfig"
   ]
 }
