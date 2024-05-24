@@ -16,7 +16,7 @@ module FilterableByTestReports
       )
     end
 
-    scope :with_last_test_report_state, -> (state) do
+    scope :with_last_test_report_state, ->(state) do
       include_last_test_report_with_state.where(test_reports: { state: state })
     end
 

@@ -26,7 +26,7 @@ module EE
         protected_type = self.model_name.singular
         scope(
           :"#{type}_access_by_user",
-          -> (user) do
+          ->(user) do
             access_level_class.joins(protected_type.to_sym)
               .where("#{protected_type}_id" => self.ids)
               .merge(access_level_class.by_user(user))
@@ -34,7 +34,7 @@ module EE
         )
         scope(
           :"#{type}_access_by_group",
-          -> (group) do
+          ->(group) do
             access_level_class.joins(protected_type.to_sym)
               .where("#{protected_type}_id" => self.ids)
               .merge(access_level_class.by_group(group))

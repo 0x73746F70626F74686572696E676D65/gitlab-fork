@@ -11,8 +11,8 @@ module Ci
       belongs_to :namespace
 
       scope :current_month, -> { where(date: beginning_of_month) }
-      scope :for_namespace, -> (namespace) { where(namespace: namespace) }
-      scope :by_namespace_and_date, -> (namespace, date) {
+      scope :for_namespace, ->(namespace) { where(namespace: namespace) }
+      scope :by_namespace_and_date, ->(namespace, date) {
         where(namespace: namespace, date: date)
       }
 

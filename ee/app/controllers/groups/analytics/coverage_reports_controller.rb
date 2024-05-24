@@ -24,8 +24,8 @@ class Groups::Analytics::CoverageReportsController < Groups::Analytics::Applicat
       {
         date: 'date',
         group_name: 'group_name',
-        project_name: -> (record) { record.project.name },
-        COVERAGE_PARAM => -> (record) { record.data[COVERAGE_PARAM] }
+        project_name: ->(record) { record.project.name },
+        COVERAGE_PARAM => ->(record) { record.data[COVERAGE_PARAM] }
       }
     ).render
   end

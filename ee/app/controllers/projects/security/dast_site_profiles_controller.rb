@@ -41,7 +41,7 @@ module Projects
         @site_profile = run_graphql!(
           query: query,
           context: { current_user: current_user },
-          transform: -> (result) { result.dig('data', 'project', 'dastSiteProfile') }
+          transform: ->(result) { result.dig('data', 'project', 'dastSiteProfile') }
         )
 
         return render_404 unless @site_profile

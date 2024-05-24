@@ -9,16 +9,16 @@ class ApprovalMergeRequestRule < ApplicationRecord
 
   columns_changing_default :vulnerability_states
 
-  scope :not_matching_id, -> (ids) { code_owner.where.not(id: ids) }
-  scope :matching_pattern, -> (pattern) { code_owner.where(name: pattern) }
+  scope :not_matching_id, ->(ids) { code_owner.where.not(id: ids) }
+  scope :matching_pattern, ->(pattern) { code_owner.where(name: pattern) }
 
-  scope :from_project_rule, -> (project_rule) do
+  scope :from_project_rule, ->(project_rule) do
     joins(:approval_merge_request_rule_source)
       .where(
         approval_merge_request_rule_sources: { approval_project_rule_id: project_rule.id }
       )
   end
-  scope :for_unmerged_merge_requests, -> (merge_requests = nil) do
+  scope :for_unmerged_merge_requests, ->(merge_requests = nil) do
     query = joins(:merge_request).where.not(merge_requests: { state_id: MergeRequest.available_states[:merged] })
 
     if merge_requests
@@ -27,7 +27,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
       query
     end
   end
-  scope :for_merge_request_project, -> (project_id) { joins(:merge_request).where(merge_requests: { target_project_id: project_id }) }
+  scope :for_merge_request_project, ->(project_id) { joins(:merge_request).where(merge_requests: { target_project_id: project_id }) }
   scope :code_owner_approval_optional, -> { code_owner.where(approvals_required: 0) }
   scope :code_owner_approval_required, -> { code_owner.where('approvals_required > 0') }
   scope :with_added_approval_rules, -> { left_outer_joins(:approval_merge_request_rule_source).where(approval_merge_request_rule_sources: { approval_merge_request_rule_id: nil }) }

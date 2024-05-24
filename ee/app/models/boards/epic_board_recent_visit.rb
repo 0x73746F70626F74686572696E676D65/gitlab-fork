@@ -12,7 +12,7 @@ module Boards
     validates :group, presence: true
     validates :epic_board, presence: true
 
-    scope :by_user_parent, -> (user, group) { where(user: user, group: group) }
+    scope :by_user_parent, ->(user, group) { where(user: user, group: group) }
 
     def self.board_relation
       :epic_board
