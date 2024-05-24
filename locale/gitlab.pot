@@ -34387,9 +34387,6 @@ msgstr ""
 msgid "No group provided"
 msgstr ""
 
-msgid "No grouping"
-msgstr ""
-
 msgid "No issues found"
 msgstr ""
 
