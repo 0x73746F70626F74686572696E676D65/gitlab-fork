@@ -86,13 +86,13 @@ module Types
       description: 'Number of user notes of the epic.'
 
     field :closed_at, Types::TimeType,
-        null: true, description: 'Timestamp of when the epic was closed.'
+      null: true, description: 'Timestamp of when the epic was closed.'
 
     field :created_at, Types::TimeType,
-        null: true, description: 'Timestamp of when the epic was created.'
+      null: true, description: 'Timestamp of when the epic was created.'
 
     field :updated_at, Types::TimeType,
-        null: true, description: 'Timestamp of when the epic was updated.'
+      null: true, description: 'Timestamp of when the epic was updated.'
 
     field :children, ::Types::EpicType.connection_type,
       null: true,
@@ -104,26 +104,26 @@ module Types
       resolver: Resolvers::BulkLabelsResolver
 
     field :has_children, GraphQL::Types::Boolean,
-        null: false, description: 'Indicates if the epic has children.'
+      null: false, description: 'Indicates if the epic has children.'
 
     field :has_issues, GraphQL::Types::Boolean,
-        null: false, description: 'Indicates if the epic has direct issues.'
+      null: false, description: 'Indicates if the epic has direct issues.'
 
     field :has_parent, GraphQL::Types::Boolean,
-        null: false, method: :has_parent?, description: 'Indicates if the epic has a parent epic.'
+      null: false, method: :has_parent?, description: 'Indicates if the epic has a parent epic.'
 
     field :web_path, GraphQL::Types::String,
-        null: false, method: :group_epic_path, description: 'Web path of the epic.'
+      null: false, method: :group_epic_path, description: 'Web path of the epic.'
 
     field :web_url, GraphQL::Types::String,
-        null: false, method: :group_epic_url, description: 'Web URL of the epic.'
+      null: false, method: :group_epic_url, description: 'Web URL of the epic.'
 
     field :relation_path, GraphQL::Types::String,
-        null: true, method: :group_epic_link_path,
-        description: 'URI path of the epic-issue relationship.'
+      null: true, method: :group_epic_link_path,
+      description: 'URI path of the epic-issue relationship.'
 
     field :relative_position, GraphQL::Types::Int,
-        null: true, description: 'Relative position of the epic in the epic tree.'
+      null: true, description: 'Relative position of the epic in the epic tree.'
 
     field :reference, GraphQL::Types::String,
       null: false, method: :epic_reference,
