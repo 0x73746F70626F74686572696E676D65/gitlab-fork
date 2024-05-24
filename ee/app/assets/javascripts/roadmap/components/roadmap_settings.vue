@@ -29,7 +29,7 @@ export default {
   },
   data() {
     return {
-      headerHeight: '',
+      headerHeight: '0px',
     };
   },
   apollo: {
@@ -47,13 +47,12 @@ export default {
       'isShowingLabels',
     ]),
   },
-  mounted() {
-    this.$nextTick(() => {
-      const { offsetTop = 0 } = this.$root.$el;
-      const clientHeight = this.$parent.$refs?.roadmapFilters?.$el.clientHeight || 0;
-
-      this.headerHeight = `${offsetTop + clientHeight}px`;
-    });
+  watch: {
+    isOpen(newIsOpen) {
+      if (newIsOpen === true) {
+        this.setHeaderHeight();
+      }
+    },
   },
   methods: {
     setLocalSettings(settings) {
@@ -63,6 +62,12 @@ export default {
           input: settings,
         },
       });
+    },
+    setHeaderHeight() {
+      const { offsetTop = 0 } = this.$root.$el;
+      const clientHeight = this.$parent.$refs?.roadmapFilters?.$el.clientHeight || 0;
+
+      this.headerHeight = `${offsetTop + clientHeight}px`;
     },
   },
 };
