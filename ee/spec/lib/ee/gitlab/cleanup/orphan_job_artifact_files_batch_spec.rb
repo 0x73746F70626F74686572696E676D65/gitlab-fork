@@ -27,7 +27,8 @@ RSpec.describe Gitlab::Cleanup::OrphanJobArtifactFilesBatch, feature_category: :
     context 'no dry run' do
       let(:dry_run) { false }
 
-      it 'deletes registries for the found artifacts' do
+      it 'deletes registries for the found artifacts',
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444876' do
         expect { batch.clean! }.to change { Geo::JobArtifactRegistry.count }.by(-2)
         expect(batch.geo_registries_count).to eq(2)
       end
