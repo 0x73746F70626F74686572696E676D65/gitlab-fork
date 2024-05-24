@@ -66,7 +66,8 @@ RSpec.describe 'Query.project(fullPath).pipelines.dastProfile',
         expect(dast_profile_data.first['name']).to eq(dast_profile.name)
       end
 
-      it 'avoids N+1 queries', :aggregate_failures do
+      it 'avoids N+1 queries', :aggregate_failures,
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/449114' do
         control = ActiveRecord::QueryRecorder.new do
           post_graphql(query, current_user: current_user)
         end
