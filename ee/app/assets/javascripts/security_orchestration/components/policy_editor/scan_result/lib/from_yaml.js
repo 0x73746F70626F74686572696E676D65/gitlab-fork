@@ -2,6 +2,7 @@ import { safeLoad } from 'js-yaml';
 import { isBoolean, isEqual, uniqBy } from 'lodash';
 import { addIdsToPolicy, hasInvalidKey, isValidPolicy } from '../../utils';
 import { PRIMARY_POLICY_KEYS } from '../../constants';
+import { OPEN, CLOSED } from '../constants';
 import {
   VALID_APPROVAL_SETTINGS,
   PERMITTED_INVALID_SETTINGS,
@@ -55,7 +56,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'enabled',
       ];
 
-      const { actions, approval_settings: settings = {} } = policy;
+      const { actions, approval_settings: settings = {}, fallback_behavior: fallback } = policy;
 
       // Temporary workaround to allow the rule builder to load with wrongly persisted settings
       const hasInvalidApprovalSettings = hasInvalidKey(settings, [
@@ -71,10 +72,13 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         actions?.length > 2 ||
         (actions?.length && actions.length !== uniqBy(actions, 'type').length);
 
+      const hasInvalidFallbackBehavior = fallback && ![OPEN, CLOSED].includes(fallback.fail);
+
       return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
         !hasInvalidApprovalSettings &&
         !hasInvalidSettingStructure &&
-        !hasInvalidActions
+        !hasInvalidActions &&
+        !hasInvalidFallbackBehavior
         ? policy
         : { error: true };
     }
