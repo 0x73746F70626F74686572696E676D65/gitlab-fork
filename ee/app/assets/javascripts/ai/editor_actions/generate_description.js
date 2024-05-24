@@ -53,7 +53,7 @@ function initDescriptionModal() {
 
 export const generateDescriptionAction = () => ({
   title: s__('AI|Generate issue description'),
-  description: s__('AI|Creates issue description based on a short prompt'),
+  description: s__('AI|Create issue description based on a short prompt'),
   handler() {
     initDescriptionModal();
 

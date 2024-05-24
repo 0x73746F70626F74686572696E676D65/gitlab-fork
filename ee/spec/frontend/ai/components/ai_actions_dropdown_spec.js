@@ -81,7 +81,7 @@ describe('AI actions dropdown component', () => {
   it('passes down correct actions', () => {
     const actions = createActions();
     createWrapper(actions);
-    const [{ items }] = findDropdown().props('items');
+    const items = findDropdown().props('items');
     expect(items).toHaveLength(actions.length);
     expect(items[0].text).toBe(actions[0].title);
   });
