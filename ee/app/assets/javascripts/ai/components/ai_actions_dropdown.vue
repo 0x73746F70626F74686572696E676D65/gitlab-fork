@@ -63,12 +63,7 @@ export default {
           },
         };
       });
-      return [
-        {
-          name: __('AI actions'),
-          items,
-        },
-      ];
+      return items;
     },
   },
   apollo: {
@@ -167,21 +162,21 @@ export default {
 <template>
   <gl-disclosure-dropdown
     :items="availableActions"
-    placement="right"
+    placement="bottom-start"
     class="comment-template-dropdown"
     no-caret
   >
     <template #toggle>
       <gl-button
         v-gl-tooltip
-        :title="__('AI actions')"
-        :aria-label="__('AI actions')"
+        :title="__('GitLab Duo')"
+        :aria-label="__('GitLab Duo')"
         category="tertiary"
         size="small"
         class="gl-mr-2 gl-px-2!"
       >
         <gl-loading-icon v-if="loading" />
-        <gl-icon v-else name="tanuki" />
+        <gl-icon v-else name="tanuki-ai" />
       </gl-button>
     </template>
     <template #list-item="{ item }">

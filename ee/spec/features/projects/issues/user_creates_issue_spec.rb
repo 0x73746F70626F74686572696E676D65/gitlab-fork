@@ -26,8 +26,8 @@ RSpec.describe "User creates issue", :js, :saas, feature_category: :team_plannin
       visit(new_project_issue_path(project))
     end
 
-    it 'has the AI actions button' do
-      expect(page).to have_button('AI actions')
+    it 'has the GitLab Duo button' do
+      expect(page).to have_button('GitLab Duo')
     end
   end
 
@@ -39,8 +39,8 @@ RSpec.describe "User creates issue", :js, :saas, feature_category: :team_plannin
       visit(new_project_issue_path(project))
     end
 
-    it 'does not have the AI actions button' do
-      expect(page).not_to have_button('AI actions')
+    it 'does not have the GitLab Duo button' do
+      expect(page).not_to have_button('GitLab Duo')
     end
   end
 
