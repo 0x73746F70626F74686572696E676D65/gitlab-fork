@@ -201,6 +201,21 @@ RSpec.describe EE::Users::CalloutsHelper do
         it { is_expected.to eq(false) }
       end
     end
+
+    context 'when both ci_require_credit_card_on_free_plan and ci_require_credit_card_on_trial_plan are disabled' do
+      before do
+        stub_feature_flags(
+          ci_require_credit_card_on_free_plan: false,
+          ci_require_credit_card_on_trial_plan: false
+        )
+
+        allow(Gitlab).to receive(:com?).and_return(true)
+        allow(helper).to receive(:current_user).and_return(user)
+        create(:ci_pipeline, user: user, failure_reason: :user_not_verified)
+      end
+
+      it { is_expected.to eq(false) }
+    end
   end
 
   describe '#web_hook_disabled_dismissed?', feature_category: :webhooks do
