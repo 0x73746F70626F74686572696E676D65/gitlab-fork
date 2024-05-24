@@ -5,8 +5,8 @@ module Search
     class DestroyExpiredSubscriptionService
       include ::Gitlab::ExclusiveLeaseHelpers
 
-      MAX_NAMESPACES_TO_REMOVE = 1000
-      DELETE_BATCH_SIZE = 100
+      MAX_NAMESPACES_TO_REMOVE = 200
+      DELETE_BATCH_SIZE = 50
       DELAY_INTERVAL = 5.minutes
 
       def execute
