@@ -60,5 +60,34 @@ namespace :gitlab do
               "  gitlab-rake gitlab:geo:check".color(:red)
       end
     end
+
+    desc 'Gitlab | Geo | Prevent updates to primary site'
+    task prevent_updates_to_primary_site: :environment do
+      abort 'This command is only available on a primary node' unless ::Gitlab::Geo.primary?
+
+      # TODO: Support sharded Sidekiq https://gitlab.com/gitlab-org/gitlab/-/issues/461530
+      # rubocop:disable Cop/RedisQueueUsage -- this is for the purpose of aborting a Rake task if unsafe
+      if Gitlab::Redis::Queues.instances.size > 1 && Gitlab::SidekiqSharding::Router.enabled?
+        abort 'This command does not support sharded Sidekiq'
+      end
+      # rubocop:enable Cop/RedisQueueUsage
+
+      Gitlab::Geo::GeoTasks.enable_maintenance_mode
+      Gitlab::Geo::GeoTasks.drain_non_geo_queues
+    end
+
+    desc 'Gitlab | Geo | Wait until replicated and verified'
+    task wait_until_replicated_and_verified: :environment do
+      abort 'This command is only available on a secondary node' unless ::Gitlab::Geo.secondary?
+
+      # TODO: Support sharded Sidekiq https://gitlab.com/gitlab-org/gitlab/-/issues/461530
+      # rubocop:disable Cop/RedisQueueUsage -- this is for the purpose of aborting a Rake task if unsafe
+      if Gitlab::Redis::Queues.instances.size > 1 && Gitlab::SidekiqSharding::Router.enabled?
+        abort 'This command does not support sharded Sidekiq'
+      end
+      # rubocop:enable Cop/RedisQueueUsage
+
+      Gitlab::Geo::GeoTasks.wait_until_replicated_and_verified
+    end
   end
 end

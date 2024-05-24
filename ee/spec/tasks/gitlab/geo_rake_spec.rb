@@ -104,4 +104,103 @@ RSpec.describe 'gitlab:geo rake tasks', :geo, :silence_stdout, feature_category:
       end
     end
   end
+
+  describe 'gitlab:geo:prevent_updates_to_primary_site' do
+    let(:run_task) do
+      run_rake_task('gitlab:geo:prevent_updates_to_primary_site')
+    end
+
+    context 'on a primary site' do
+      before do
+        stub_primary_node
+
+        allow(Gitlab::SidekiqSharding::Router).to receive(:enabled?).and_return(sidekiq_sharded)
+      end
+
+      context 'when Sidekiq is not sharded' do
+        let(:sidekiq_sharded) { false }
+
+        it 'enables maintenance mode and drains non-Geo queues' do
+          expect(Gitlab::Geo::GeoTasks).to receive(:enable_maintenance_mode)
+          expect(Gitlab::Geo::GeoTasks).to receive(:drain_non_geo_queues)
+
+          run_task
+        end
+      end
+
+      context 'when Sidekiq is sharded' do
+        let(:sidekiq_sharded) { true }
+
+        it 'aborts' do
+          instances = instance_double(Array, size: 2)
+          allow(Gitlab::Redis::Queues).to receive(:instances).and_return(instances)
+
+          expect { run_task }.to abort_execution.with_message(/This command does not support sharded Sidekiq/)
+        end
+      end
+    end
+
+    context 'on a secondary site' do
+      it 'aborts' do
+        stub_secondary_node
+
+        expect { run_task }.to abort_execution.with_message(/This command is only available on a primary node/)
+      end
+    end
+
+    context 'on a site without Geo enabled' do
+      it 'aborts' do
+        expect { run_task }.to abort_execution.with_message(/This command is only available on a primary node/)
+      end
+    end
+  end
+
+  describe 'gitlab:geo:wait_until_replicated_and_verified' do
+    let(:run_task) do
+      run_rake_task('gitlab:geo:wait_until_replicated_and_verified')
+    end
+
+    context 'on a primary site' do
+      it 'aborts' do
+        stub_primary_node
+
+        expect { run_task }.to abort_execution.with_message(/This command is only available on a secondary node/)
+      end
+    end
+
+    context 'on a secondary site' do
+      before do
+        stub_secondary_node
+
+        allow(Gitlab::SidekiqSharding::Router).to receive(:enabled?).and_return(sidekiq_sharded)
+      end
+
+      context 'when Sidekiq is not sharded' do
+        let(:sidekiq_sharded) { false }
+
+        it 'waits until everything is replicated and verified' do
+          expect(Gitlab::Geo::GeoTasks).to receive(:wait_until_replicated_and_verified)
+
+          run_task
+        end
+      end
+
+      context 'when Sidekiq is sharded' do
+        let(:sidekiq_sharded) { true }
+
+        it 'aborts' do
+          instances = instance_double(Array, size: 2)
+          allow(Gitlab::Redis::Queues).to receive(:instances).and_return(instances)
+
+          expect { run_task }.to abort_execution.with_message(/This command does not support sharded Sidekiq/)
+        end
+      end
+    end
+
+    context 'on a site without Geo enabled' do
+      it 'aborts' do
+        expect { run_task }.to abort_execution.with_message(/This command is only available on a secondary node/)
+      end
+    end
+  end
 end

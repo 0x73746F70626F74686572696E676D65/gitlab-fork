@@ -49,6 +49,13 @@ module Gitlab
         checks_status.compact.all?(100)
       end
 
+      def print_counts_row(description:, failed:, succeeded:, total:, percentage:)
+        print "#{description}: ".rjust(GEO_STATUS_COLUMN_WIDTH)
+        print "failed #{failed}".color(:red), ' / ' if failed.present? && failed > 0
+        print "succeeded #{succeeded || 0} / total #{total || 0} "
+        puts  using_percentage(percentage)
+      end
+
       private
 
       def replication_and_verification_checks_status
@@ -199,13 +206,6 @@ module Gitlab
             percentage: current_node_status.verified_in_percentage_for(replicator_class)
           )
         end
-      end
-
-      def print_counts_row(description:, failed:, succeeded:, total:, percentage:)
-        print "#{description}: ".rjust(GEO_STATUS_COLUMN_WIDTH)
-        print "failed #{failed}".color(:red), ' / ' if failed.present? && failed > 0
-        print "succeeded #{succeeded || 0} / total #{total || 0} "
-        puts  using_percentage(percentage)
       end
 
       def using_percentage(value)
