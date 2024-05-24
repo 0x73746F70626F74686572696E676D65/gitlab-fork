@@ -528,7 +528,7 @@ module EE
       return false unless ::Gitlab.com?
       return false if ramon?
 
-      ::Feature.enabled?(:saas_user_caps, root_ancestor)
+      true
     end
 
     def ramon?

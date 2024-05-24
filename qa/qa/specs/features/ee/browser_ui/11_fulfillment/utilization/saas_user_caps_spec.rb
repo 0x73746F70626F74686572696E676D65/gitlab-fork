@@ -4,15 +4,7 @@ module QA
   RSpec.describe 'Fulfillment',
     :requires_admin,
     product_group: :utilization,
-    feature_flag: {
-      name: 'saas_user_caps',
-      scope: :group
-    },
-    only: { pipeline: %i[staging staging-canary] },
-    quarantine: {
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/438744',
-      type: :investigating
-    } do
+    only: { pipeline: %i[staging staging-canary] } do
     describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:hash) { SecureRandom.hex(8) }
@@ -27,8 +19,6 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:saas_user_caps, group: group)
-
         Flow::Login.sign_in_as_admin
         group.visit!
         Page::Group::Menu.perform(&:go_to_general_settings)
@@ -64,12 +54,15 @@ module QA
             membership_state_count(group, 'active') == 2 && membership_state_count(group, 'awaiting') == 1
           end
 
-          Page::Group::Menu.perform(&:go_to_usage_quotas)
+          Page::Group::Menu.perform(&:go_to_members)
+
+          EE::Page::Group::Members.perform do |members|
+            expect(members).to have_pending_members_alert
+
+            members.click_pending_members
+          end
+
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-            expect { usage_quota.pending_members_alert }
-              .to eventually_match(/You have 1 pending member that needs approval/i)
-                    .within(max_duration: 10, reload_page: page)
-            usage_quota.view_pending_approvals
             expect(usage_quota.pending_members).to match(/#{user_3.name}/)
 
             usage_quota.approve_member
