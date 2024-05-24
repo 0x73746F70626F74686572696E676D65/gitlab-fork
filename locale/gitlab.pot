@@ -23369,9 +23369,6 @@ msgstr ""
 msgid "GitLab Duo could not connect to the AI provider."
 msgstr ""
 
-msgid "GitLab Duo didn't respond. Try again? If it fails again, your request might be too large."
-msgstr ""
-
 msgid "GitLab Enterprise Edition"
 msgstr ""
 
@@ -26124,6 +26121,9 @@ msgid "I'd like to receive updates about GitLab via email"
 msgstr ""
 
 msgid "I'm signing up for GitLab because:"
+msgstr ""
+
+msgid "I'm sorry, I couldn't respond in time. Please try again."
 msgstr ""
 
 msgid "I'm sorry, I was not able to find any documentation to answer your question."
