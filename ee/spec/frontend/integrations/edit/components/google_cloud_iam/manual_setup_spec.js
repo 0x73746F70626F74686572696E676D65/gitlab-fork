@@ -2,7 +2,6 @@ import { GlLink, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { STATE_GUIDED } from 'ee/integrations/edit/components/google_cloud_iam/constants';
 import ManualSetup from 'ee/integrations/edit/components/google_cloud_iam/manual_setup.vue';
-import { getBaseURL } from '~/lib/utils/url_utility';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 
 describe('ManualSetup', () => {
@@ -46,7 +45,7 @@ describe('ManualSetup', () => {
   });
 
   it('renders links to help doc page and corresponding clipboard button', () => {
-    const helpPath = `${getBaseURL()}/help/integration/google_cloud_iam#with-the-google-cloud-cli`;
+    const helpPath = '/help/integration/google_cloud_iam#with-the-google-cloud-cli';
     expect(findLinks().at(2).attributes('href')).toBe(helpPath);
     expect(findClipboardButtons().at(0).props('text')).toBe(helpPath);
   });

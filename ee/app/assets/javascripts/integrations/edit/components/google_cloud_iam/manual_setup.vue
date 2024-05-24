@@ -1,7 +1,6 @@
 <script>
 import { GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { getBaseURL, joinPaths } from '~/lib/utils/url_utility';
 
 import InviteMembersTrigger from '~/invite_members/components/invite_members_trigger.vue';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
@@ -22,12 +21,9 @@ export default {
     },
   },
   STATE_GUIDED,
-  helpURL: joinPaths(
-    getBaseURL(),
-    helpPagePath('integration/google_cloud_iam', {
-      anchor: 'with-the-google-cloud-cli',
-    }),
-  ),
+  helpURL: helpPagePath('integration/google_cloud_iam', {
+    anchor: 'with-the-google-cloud-cli',
+  }),
 };
 </script>
 
