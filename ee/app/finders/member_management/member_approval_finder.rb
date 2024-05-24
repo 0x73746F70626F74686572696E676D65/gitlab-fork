@@ -2,6 +2,8 @@
 
 module MemberManagement
   class MemberApprovalFinder
+    include ::MemberManagement::PromotionManagementUtils
+
     attr_reader :params
 
     def initialize(current_user:, source:, params: {})
@@ -12,7 +14,7 @@ module MemberManagement
 
     def execute
       model = ::Members::MemberApproval
-      return model.none unless feature_and_settings_enabled?
+      return model.none unless promotion_management_applicable?
       return model.none unless allowed_to_query_member_approvals?
 
       model.pending_member_approvals(@member_namespace_id)
@@ -34,11 +36,6 @@ module MemberManagement
         raise ArgumentError, 'Invalid source. Source should be either Group or Project.'
       end
       @source = source
-    end
-
-    def feature_and_settings_enabled?
-      ::Feature.enabled?(:member_promotion_management, type: :wip) &&
-        ::Gitlab::CurrentSettings.enable_member_promotion_management?
     end
 
     def allowed_to_query_member_approvals?

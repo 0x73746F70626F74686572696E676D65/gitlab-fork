@@ -6,7 +6,11 @@ RSpec.describe MemberManagement::MemberApprovalFinder, feature_category: :seat_c
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
+  let_it_be(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
+
   let(:source) { group }
+  let(:feature_flag) { true }
+  let(:feature_settings) { true }
 
   subject(:finder) { described_class.new(current_user: user, params: {}, source: source) }
 
@@ -59,23 +63,34 @@ RSpec.describe MemberManagement::MemberApprovalFinder, feature_category: :seat_c
       end
     end
 
+    shared_examples 'returns empty' do
+      it 'returns empty' do
+        expect(finder.execute).to be_empty
+      end
+    end
+
     before do
-      stub_feature_flags(member_promotion_management: true)
-      stub_application_setting(enable_member_promotion_management: true)
+      stub_feature_flags(member_promotion_management: feature_flag)
+      stub_application_setting(enable_member_promotion_management: feature_settings)
+      allow(License).to receive(:current).and_return(license)
     end
 
     context 'when member promotion management feature is disabled' do
-      it 'returns nil' do
-        stub_feature_flags(member_promotion_management: false)
-        expect(finder.execute).to be_empty
-      end
+      let(:feature_flag) { false }
+
+      it_behaves_like 'returns empty'
     end
 
     context 'when member promotion management is disabled in settings' do
-      it 'returns nil' do
-        stub_application_setting(enable_member_promotion_management: false)
-        expect(finder.execute).to be_empty
-      end
+      let(:feature_settings) { false }
+
+      it_behaves_like 'returns empty'
+    end
+
+    context 'when license is not Ultimate' do
+      let(:license) { create(:license, plan: License::STARTER_PLAN) }
+
+      it_behaves_like 'returns empty'
     end
 
     context 'when group is provided' do

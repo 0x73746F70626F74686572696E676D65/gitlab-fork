@@ -91,12 +91,17 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
         create_list(:member_approval, 2, :for_group_member, member_namespace: group)
       end
 
-      context 'with member_promotion management feature enabled' do
-        before do
-          stub_feature_flags(member_promotion_management: true)
-          stub_application_setting(enable_member_promotion_management: true)
-        end
+      let(:feature_flag) { true }
+      let(:feature_settings) { true }
+      let_it_be(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
 
+      before do
+        stub_feature_flags(member_promotion_management: feature_flag)
+        stub_application_setting(enable_member_promotion_management: feature_settings)
+        allow(License).to receive(:current).and_return(license)
+      end
+
+      context 'with member_promotion management feature enabled' do
         context 'when user can admin group' do
           it 'assigns @pending_promotion_members with the correct pending members' do
             request
@@ -131,16 +136,30 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
         end
       end
 
-      context 'with member_promotion management feature disabled' do
-        before do
-          stub_feature_flags(member_promotion_management: false)
-        end
-
-        it 'assigns @pending_promotion_members as empty' do
+      shared_examples "empty response" do
+        it 'assigns @pending_promotion_members be empty' do
           request
 
           expect(assigns(:pending_promotion_members)).to be_empty
         end
+      end
+
+      context 'with member_promotion management feature disabled' do
+        let(:feature_flag) { false }
+
+        it_behaves_like "empty response"
+      end
+
+      context 'with member_promotion management feature setting disabled' do
+        let(:feature_settings) { false }
+
+        it_behaves_like "empty response"
+      end
+
+      context 'when license is not Ultimate' do
+        let(:license) { create(:license, plan: License::STARTER_PLAN) }
+
+        it_behaves_like "empty response"
       end
     end
   end

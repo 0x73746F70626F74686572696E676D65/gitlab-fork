@@ -25,15 +25,21 @@ RSpec.describe Projects::ProjectMembersController, feature_category: :groups_and
         create_list(:member_approval, 2, :for_project_member, member_namespace: project.project_namespace)
       end
 
-      context 'with member_promotion management feature enabled' do
-        before do
-          stub_feature_flags(member_promotion_management: true)
-          stub_application_setting(enable_member_promotion_management: true)
-        end
+      let(:feature_flag) { true }
+      let(:feature_settings) { true }
+      let_it_be(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
 
+      before do
+        stub_feature_flags(member_promotion_management: feature_flag)
+        stub_application_setting(enable_member_promotion_management: feature_settings)
+        allow(License).to receive(:current).and_return(license)
+      end
+
+      context 'with member_promotion management feature enabled' do
         context 'when user can admin project' do
           it 'assigns @pending_promotion_members' do
             make_request
+
             expect(assigns(:pending_promotion_members)).to match_array(pending_member_approvals)
           end
 
@@ -45,6 +51,7 @@ RSpec.describe Projects::ProjectMembersController, feature_category: :groups_and
               stub_const("EE::#{described_class}::MEMBER_PER_PAGE_LIMIT", 1)
 
               make_request
+
               expect(assigns(:pending_promotion_members).size).to eq(1)
               expect(assigns(:pending_promotion_members)).to contain_exactly(pending_member_approvals.second)
             end
@@ -64,16 +71,30 @@ RSpec.describe Projects::ProjectMembersController, feature_category: :groups_and
         end
       end
 
-      context 'with member_promotion management feature disabled' do
-        before do
-          stub_feature_flags(member_promotion_management: false)
-        end
-
+      shared_examples "empty response" do
         it 'assigns @pending_promotion_members be empty' do
           make_request
 
           expect(assigns(:pending_promotion_members)).to be_empty
         end
+      end
+
+      context 'with member_promotion management feature disabled' do
+        let(:feature_flag) { false }
+
+        it_behaves_like "empty response"
+      end
+
+      context 'with member_promotion management feature setting disabled' do
+        let(:feature_settings) { false }
+
+        it_behaves_like "empty response"
+      end
+
+      context 'when license is not Ultimate' do
+        let(:license) { create(:license, plan: License::STARTER_PLAN) }
+
+        it_behaves_like "empty response"
       end
     end
   end
