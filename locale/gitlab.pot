@@ -12079,9 +12079,6 @@ msgstr ""
 msgid "ClusterAgents|The agent version do not match each other across your cluster's pods. This can happen when a new agent version was just deployed and Kubernetes is shutting down the old pods."
 msgstr ""
 
-msgid "ClusterAgents|The pull-based deployment features of the GitLab agent for Kubernetes is deprecated. If you use the agent for pull-based deployments, you should %{linkStart}migrate to Flux%{linkEnd}."
-msgstr ""
-
 msgid "ClusterAgents|This agent has no tokens"
 msgstr ""
 
