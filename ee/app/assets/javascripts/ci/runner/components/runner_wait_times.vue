@@ -119,7 +119,7 @@ export default {
     <div v-if="waitTimeHistoryEnabled">
       <div
         v-if="waitTimeHistoryLoading && !waitTimeHistoryChartData.length"
-        class="gl-py-4 gl--flex-center"
+        class="gl-py-4 gl-flex gl-justify-center gl-items-center"
       >
         <gl-skeleton-loader :equal-width-lines="true" />
       </div>

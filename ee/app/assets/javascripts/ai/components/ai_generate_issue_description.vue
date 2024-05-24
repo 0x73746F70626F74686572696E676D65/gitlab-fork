@@ -178,7 +178,7 @@ export default {
           <gl-badge variant="neutral">{{ $options.i18n.experiment }}</gl-badge>
         </div>
       </template>
-      <div v-if="loading" class="gl-display-flex gl--flex-center">
+      <div v-if="loading" class="gl-display-flex gl-flex gl-justify-center gl-items-center">
         <gl-loading-icon size="md" /><span class="gl-ml-3">{{ loadingText }}</span>
       </div>
       <div v-else>

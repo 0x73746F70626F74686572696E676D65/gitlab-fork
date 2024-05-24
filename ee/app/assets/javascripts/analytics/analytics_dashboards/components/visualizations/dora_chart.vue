@@ -44,7 +44,7 @@ export default {
     #default="{ isProject, isNamespaceLoading, group, project }"
     :full-path="data.namespace"
   >
-    <div v-if="isNamespaceLoading" class="gl--flex-center gl-h-full">
+    <div v-if="isNamespaceLoading" class="gl-flex gl-justify-center gl-items-center gl-h-full">
       <gl-loading-icon size="lg" />
     </div>
     <filterable-comparison-chart
