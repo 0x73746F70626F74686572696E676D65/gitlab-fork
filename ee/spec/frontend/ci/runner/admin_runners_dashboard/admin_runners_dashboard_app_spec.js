@@ -2,6 +2,7 @@ import { GlButton } from '@gitlab/ui';
 
 import AdminRunnersDashboardApp from 'ee/ci/runner/admin_runners_dashboard/admin_runners_dashboard_app.vue';
 import AdminRunnerActiveList from 'ee/ci/runner/admin_runners_dashboard/admin_runners_active_list.vue';
+import AdminRunnersWaitTimes from 'ee/ci/runner/admin_runners_dashboard/admin_runners_wait_times.vue';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -9,7 +10,6 @@ import RunnerDashboardStatOnline from 'ee/ci/runner/components/runner_dashboard_
 import RunnerDashboardStatOffline from 'ee/ci/runner/components/runner_dashboard_stat_offline.vue';
 import RunnerUsage from 'ee/ci/runner/components/runner_usage.vue';
 import RunnerJobFailures from 'ee/ci/runner/components/runner_job_failures.vue';
-import RunnerWaitTimes from 'ee/ci/runner/components/runner_wait_times.vue';
 
 const mockAdminRunnersPath = '/runners/list';
 const mockNewRunnerPath = '/runners/new';
@@ -45,7 +45,7 @@ describe('AdminRunnersDashboardApp', () => {
     expect(wrapper.findComponent(RunnerDashboardStatOnline).exists()).toBe(true);
     expect(wrapper.findComponent(RunnerDashboardStatOffline).exists()).toBe(true);
     expect(wrapper.findComponent(AdminRunnerActiveList).exists()).toBe(true);
-    expect(wrapper.findComponent(RunnerWaitTimes).exists()).toBe(true);
+    expect(wrapper.findComponent(AdminRunnersWaitTimes).exists()).toBe(true);
   });
 
   describe('when clickhouse is available', () => {
