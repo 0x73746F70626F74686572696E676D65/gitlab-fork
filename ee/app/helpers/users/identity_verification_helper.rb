@@ -39,11 +39,6 @@ module Users
       format(message, interval: interval)
     end
 
-    def show_recaptcha_challenge?
-      recaptcha_enabled? &&
-        PhoneVerification::Users::RateLimitService.daily_transaction_soft_limit_exceeded?
-    end
-
     def restricted_country?(country_code, namespace = nil)
       return false unless ::Feature.enabled?(:prevent_registration_from_china, namespace, type: :gitlab_com_derisk)
 

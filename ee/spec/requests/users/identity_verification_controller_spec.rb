@@ -56,7 +56,6 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
     it_behaves_like 'it requires a signed in user'
     it_behaves_like 'it redirects to root_path when user is already verified'
-    it_behaves_like 'it loads reCAPTCHA'
 
     it 'renders show template with minimal layout' do
       do_request
