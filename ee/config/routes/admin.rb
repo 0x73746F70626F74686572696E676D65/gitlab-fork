@@ -43,6 +43,7 @@ namespace :admin do
   end
 
   resource :subscription, only: [:show]
+  resources :role_promotion_requests, only: :index
 
   get 'code_suggestions', to: 'code_suggestions#index'
 
