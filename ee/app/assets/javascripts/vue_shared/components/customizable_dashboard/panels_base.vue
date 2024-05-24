@@ -1,7 +1,9 @@
 <script>
 import { GlDisclosureDropdown, GlIcon, GlLoadingIcon, GlPopover } from '@gitlab/ui';
+import { alertVariantIconMap } from '@gitlab/ui/src/utils/constants';
 import uniqueId from 'lodash/uniqueId';
 import { isObject } from 'lodash';
+import { VARIANT_DANGER, VARIANT_WARNING, VARIANT_INFO } from '~/alert';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
 import { PANEL_POPOVER_DELAY } from './constants';
 
@@ -35,12 +37,18 @@ export default {
       required: false,
       default: false,
     },
-    showErrorState: {
+    showAlertState: {
       type: Boolean,
       required: false,
       default: false,
     },
-    errorPopoverTitle: {
+    alertVariant: {
+      type: String,
+      required: false,
+      default: VARIANT_DANGER,
+      validator: (variant) => [VARIANT_WARNING, VARIANT_DANGER, VARIANT_INFO].includes(variant),
+    },
+    alertPopoverTitle: {
       type: String,
       required: false,
       default: '',
@@ -59,16 +67,37 @@ export default {
   },
   data() {
     return {
-      popoverId: uniqueId('panel-error-popover-'),
+      popoverId: uniqueId('panel-alert-popover-'),
       dropdownOpen: false,
     };
   },
   computed: {
-    showErrorPopover() {
-      return this.showErrorState && !this.dropdownOpen;
+    alertClasses() {
+      const borderColor = this.$options.alertBorderColorMap[this.alertVariant];
+      return `gl-border-t-2 gl-border-t-solid ${borderColor}`;
+    },
+    alertIconClasses() {
+      return this.$options.alertIconClassMap[this.alertVariant];
+    },
+    alertIcon() {
+      return this.$options.alertVariantIconMap[this.alertVariant] ?? alertVariantIconMap.danger;
+    },
+    showAlertPopover() {
+      return this.showAlertState && !this.dropdownOpen;
     },
   },
   PANEL_POPOVER_DELAY,
+  alertVariantIconMap,
+  alertBorderColorMap: {
+    [VARIANT_DANGER]: 'gl-border-t-red-500',
+    [VARIANT_WARNING]: 'gl-border-t-orange-500',
+    [VARIANT_INFO]: 'gl-border-t-blue-500',
+  },
+  alertIconClassMap: {
+    [VARIANT_DANGER]: 'gl-text-red-500',
+    [VARIANT_WARNING]: 'gl-text-orange-500',
+    [VARIANT_INFO]: 'gl-text-blue-500',
+  },
 };
 </script>
 
@@ -76,9 +105,7 @@ export default {
   <div
     :id="popoverId"
     class="grid-stack-item-content gl-border gl-rounded-base gl-p-4 gl-bg-white gl-overflow-visible! gl-h-full"
-    :class="{
-      'gl-border-t-2 gl-border-t-solid gl-border-t-red-500': showErrorState,
-    }"
+    :class="alertClasses"
   >
     <div class="gl-h-full gl-display-flex gl-flex-direction-column">
       <div
@@ -93,10 +120,11 @@ export default {
           class="gl-pb-3 gl-text-truncate"
         >
           <gl-icon
-            v-if="showErrorState"
-            name="warning"
-            class="gl-text-red-500 gl-mr-1"
-            data-testid="panel-title-error-icon"
+            v-if="showAlertState"
+            class="gl-mr-1"
+            :class="alertIconClasses"
+            :name="alertIcon"
+            data-testid="panel-title-alert-icon"
           />
           <strong class="gl-text-gray-700">{{ title }}</strong>
           <template v-if="tooltip">
@@ -154,9 +182,9 @@ export default {
       </div>
 
       <gl-popover
-        v-if="showErrorPopover"
+        v-if="showAlertPopover"
         triggers="hover focus"
-        :title="errorPopoverTitle"
+        :title="alertPopoverTitle"
         :show-close-button="false"
         placement="top"
         :css-classes="['gl-max-w-1/2']"
@@ -164,8 +192,8 @@ export default {
         :delay="$options.PANEL_POPOVER_DELAY"
         boundary="viewport"
       >
-        <!-- @slot The panel error popover body to display when showErrorState is true. -->
-        <slot name="error-popover"></slot>
+        <!-- @slot The panel error popover body to display when showAlertState is true. -->
+        <slot name="alert-popover"></slot>
       </gl-popover>
     </div>
   </div>

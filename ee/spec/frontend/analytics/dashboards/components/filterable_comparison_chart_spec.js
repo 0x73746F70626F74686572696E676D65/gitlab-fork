@@ -74,7 +74,7 @@ describe('FilterableComparisonChart', () => {
     });
 
     it('does not emit an error', () => {
-      expect(wrapper.emitted('set-errors')).toBeUndefined();
+      expect(wrapper.emitted('set-alerts')).toBeUndefined();
     });
 
     it('does not render the chart labels', () => {
@@ -100,9 +100,9 @@ describe('FilterableComparisonChart', () => {
         });
       });
 
-      it('emits the `set-errors` event', () => {
-        expect(wrapper.emitted('set-errors')[0]).toEqual([
-          { errors: ['Failed to load labels matching the filter: test::one, test::two'] },
+      it('emits the `set-alerts` event', () => {
+        expect(wrapper.emitted('set-alerts')[0]).toEqual([
+          { alerts: ['Failed to load labels matching the filter: test::one, test::two'] },
         ]);
       });
 
@@ -213,7 +213,7 @@ describe('FilterableComparisonChart', () => {
     });
 
     it('does not emit an error', () => {
-      expect(wrapper.emitted('set-errors')).toBeUndefined();
+      expect(wrapper.emitted('set-alerts')).toBeUndefined();
     });
   });
 

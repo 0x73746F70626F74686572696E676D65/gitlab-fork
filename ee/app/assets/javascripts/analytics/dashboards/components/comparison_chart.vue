@@ -118,7 +118,7 @@ export default {
         errors.push(`${CHART_LOADING_FAILURE}: ${failedChartMetrics.join(', ')}`);
       }
 
-      this.$emit('set-errors', { errors, fullPanelError: false });
+      this.$emit('set-alerts', { errors });
     }
   },
   created() {

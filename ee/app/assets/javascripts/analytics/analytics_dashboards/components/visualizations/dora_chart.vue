@@ -54,7 +54,7 @@ export default {
       :is-project="isProject"
       :is-loading="isNamespaceLoading"
       :web-url="webUrl(group, project, isProject)"
-      @set-errors="$emit('set-errors', $event)"
+      @set-alerts="$emit('set-alerts', $event)"
     />
   </group-or-project-provider>
 </template>

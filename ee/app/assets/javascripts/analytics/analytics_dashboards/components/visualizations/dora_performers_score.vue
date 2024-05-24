@@ -31,14 +31,14 @@ export default {
   methods: {
     handleResolveNamespace({ isProject = false }) {
       if (isProject) {
-        this.$emit('set-errors', {
+        this.$emit('set-alerts', {
           errors: [DORA_PERFORMERS_SCORE_PROJECT_ERROR],
           canRetry: false,
         });
       }
     },
     handleError(error) {
-      this.$emit('set-errors', { errors: [error] });
+      this.$emit('set-alerts', { errors: [error] });
     },
   },
 };

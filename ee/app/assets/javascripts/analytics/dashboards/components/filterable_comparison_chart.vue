@@ -61,7 +61,7 @@ export default {
       error() {
         this.hasLabelErrors = true;
         const labels = this.filterLabelsQuery.join(', ');
-        this.$emit('set-errors', { errors: [sprintf(DASHBOARD_LABELS_LOAD_ERROR, { labels })] });
+        this.$emit('set-alerts', { alerts: [sprintf(DASHBOARD_LABELS_LOAD_ERROR, { labels })] });
       },
     },
   },

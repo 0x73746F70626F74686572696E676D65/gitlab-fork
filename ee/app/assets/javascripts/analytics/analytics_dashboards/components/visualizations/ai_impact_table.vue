@@ -30,7 +30,7 @@ export default {
       v-else
       :namespace="data.namespace"
       :is-project="isProject"
-      @set-errors="$emit('set-errors', $event)"
+      @set-alerts="$emit('set-alerts', $event)"
     />
   </group-or-project-provider>
 </template>

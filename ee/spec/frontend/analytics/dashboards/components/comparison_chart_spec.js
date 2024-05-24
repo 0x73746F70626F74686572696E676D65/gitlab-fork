@@ -369,14 +369,13 @@ describe('Comparison chart', () => {
       await createWrapper({ apolloProvider: mockApolloProvider });
     });
 
-    it('will emit `set-errors` with the failed metric names', () => {
+    it('will emit `set-alerts` with the failed metric names', () => {
       expect(Sentry.captureException).toHaveBeenCalled();
-      expect(wrapper.emitted('set-errors').length).toBe(1);
-      expect(wrapper.emitted('set-errors')[0][0]).toEqual({
+      expect(wrapper.emitted('set-alerts').length).toBe(1);
+      expect(wrapper.emitted('set-alerts')[0][0]).toEqual({
         errors: expect.arrayContaining([
           'Some metric comparisons failed to load: Deployment frequency',
         ]),
-        fullPanelError: false,
       });
     });
   });
@@ -403,12 +402,11 @@ describe('Comparison chart', () => {
       await createWrapper({ apolloProvider: mockApolloProvider });
     });
 
-    it('will emit `set-errors` with the failed metric names', () => {
+    it('will emit `set-alerts` with the failed metric names', () => {
       expect(Sentry.captureException).toHaveBeenCalled();
-      expect(wrapper.emitted('set-errors').length).toBe(1);
-      expect(wrapper.emitted('set-errors')[0][0]).toEqual({
+      expect(wrapper.emitted('set-alerts').length).toBe(1);
+      expect(wrapper.emitted('set-alerts')[0][0]).toEqual({
         errors: expect.arrayContaining(['Some metric charts failed to load: Deployment frequency']),
-        fullPanelError: false,
       });
     });
   });

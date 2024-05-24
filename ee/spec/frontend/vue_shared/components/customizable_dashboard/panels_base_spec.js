@@ -8,6 +8,7 @@ import {
 } from '@gitlab/ui';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
+import { VARIANT_DANGER, VARIANT_WARNING, VARIANT_INFO } from '~/alert';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
 import { PANEL_POPOVER_DELAY } from 'ee/vue_shared/components/customizable_dashboard/constants';
 
@@ -28,9 +29,9 @@ describe('PanelsBase', () => {
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findLoadingDelayedIndicator = () => wrapper.findByTestId('panel-loading-delayed-indicator');
   const findPanelTitleTooltipIcon = () => wrapper.findByTestId('panel-title-tooltip-icon');
-  const findPanelTitleErrorIcon = () => wrapper.findByTestId('panel-title-error-icon');
+  const findPanelTitleAlertIcon = () => wrapper.findByTestId('panel-title-alert-icon');
   const findPanelTitlePopover = () => wrapper.findByTestId('panel-title-popover');
-  const findPanelErrorPopover = () => wrapper.findComponent(GlPopover);
+  const findPanelAlertPopover = () => wrapper.findComponent(GlPopover);
   const findPanelActionsDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
   const findDropdownItemByText = (text) =>
     findPanelActionsDropdown()
@@ -57,7 +58,7 @@ describe('PanelsBase', () => {
     });
 
     it('does not render an error popover', () => {
-      expect(findPanelErrorPopover().exists()).toBe(false);
+      expect(findPanelAlertPopover().exists()).toBe(false);
     });
 
     it('does not render the tooltip icon', () => {
@@ -149,18 +150,20 @@ describe('PanelsBase', () => {
     });
   });
 
-  describe('when there is a title with an error state', () => {
+  describe('when there is a title with an error alert', () => {
     beforeEach(() => {
       createWrapper({
         props: {
           title: 'Panel Title',
-          showErrorState: true,
+          showAlertState: true,
+          alertVariant: VARIANT_DANGER,
         },
       });
     });
 
     it('renders the panel title error icon', () => {
-      expect(findPanelTitleErrorIcon().exists()).toBe(true);
+      expect(findPanelTitleAlertIcon().exists()).toBe(true);
+      expect(findPanelTitleAlertIcon().attributes('name')).toBe('error');
     });
   });
 
@@ -195,21 +198,21 @@ describe('PanelsBase', () => {
     });
   });
 
-  describe('when there is a error title and the error state is true', () => {
+  describe('when there is an error alert title and the alert state is true', () => {
     beforeEach(() => {
       createWrapper({
         props: {
-          errorPopoverTitle: 'Some error',
-          showErrorState: true,
+          alertPopoverTitle: 'Some error',
+          showAlertState: true,
         },
         slots: {
-          'error-popover': '<div data-testid="error-popover-slot"></div>',
+          'alert-popover': '<div data-testid="alert-popover-slot"></div>',
         },
       });
     });
 
     it('renders the error popover', () => {
-      const popover = findPanelErrorPopover();
+      const popover = findPanelAlertPopover();
       expect(popover.exists()).toBe(true);
       expect(popover.props('title')).toBe('Some error');
 
@@ -219,7 +222,7 @@ describe('PanelsBase', () => {
     });
 
     it('renders the error popover slot', () => {
-      expect(wrapper.findByTestId('error-popover-slot').exists()).toBe(true);
+      expect(wrapper.findByTestId('alert-popover-slot').exists()).toBe(true);
     });
   });
 
@@ -227,18 +230,52 @@ describe('PanelsBase', () => {
     beforeEach(() => {
       createWrapper({
         props: {
-          showErrorState: true,
+          showAlertState: true,
           editing: true,
         },
       });
     });
 
     it('hides the error popover when the dropdown is shown', async () => {
-      expect(findPanelErrorPopover().exists()).toBe(true);
+      expect(findPanelAlertPopover().exists()).toBe(true);
 
       await findPanelActionsDropdown().vm.$emit('shown');
 
-      expect(findPanelErrorPopover().exists()).toBe(false);
+      expect(findPanelAlertPopover().exists()).toBe(false);
+    });
+  });
+
+  describe('Alert variants', () => {
+    describe.each`
+      alertVariant       | borderColor                 | iconName           | iconColor
+      ${VARIANT_DANGER}  | ${'gl-border-t-red-500'}    | ${'error'}         | ${'gl-text-red-500'}
+      ${VARIANT_WARNING} | ${'gl-border-t-orange-500'} | ${'warning'}       | ${'gl-text-orange-500'}
+      ${VARIANT_INFO}    | ${'gl-border-t-blue-500'}   | ${'information-o'} | ${'gl-text-blue-500'}
+    `('when the alert is $alertVariant', ({ alertVariant, borderColor, iconName, iconColor }) => {
+      beforeEach(() => {
+        createWrapper({
+          props: {
+            title: 'Panel title',
+            alertPopoverTitle: 'Some error',
+            showAlertState: true,
+            alertVariant,
+          },
+          slots: {
+            'alert-popover': '<div data-testid="alert-popover-slot"></div>',
+          },
+        });
+      });
+
+      it('sets the panel colors', () => {
+        ['gl-border-t-2', 'gl-border-t-solid', borderColor].forEach((cssClass) => {
+          expect(wrapper.attributes('class')).toContain(cssClass);
+        });
+      });
+
+      it('sets the alert icon', () => {
+        expect(findPanelTitleAlertIcon().attributes('name')).toBe(iconName);
+        expect(findPanelTitleAlertIcon().attributes('class')).toContain(iconColor);
+      });
     });
   });
 });

@@ -1,5 +1,6 @@
 import { GlButton, GlLink, GlSprintf } from '@gitlab/ui';
 import { nextTick } from 'vue';
+import { VARIANT_DANGER, VARIANT_WARNING, VARIANT_INFO } from '~/alert';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import LineChart from 'ee/analytics/analytics_dashboards/components/visualizations/line_chart.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -30,9 +31,9 @@ describe('AnalyticsDashboardPanel', () => {
 
   const findPanelsBase = () => wrapper.findComponent(PanelsBase);
   const findPanelRetryButton = () => wrapper.findComponent(GlButton);
-  const findErrorMessages = () => wrapper.findByTestId('error-messages').findAll('li');
+  const findAlertMessages = () => wrapper.findByTestId('alert-messages').findAll('li');
   const findErrorLink = () => wrapper.findComponent(GlLink);
-  const findErrorBody = () => wrapper.findByTestId('error-body');
+  const findAlertBody = () => wrapper.findByTestId('alert-body');
   const findVisualization = () => wrapper.findComponent(LineChart);
 
   const createWrapper = ({ props = {}, provide = {} } = {}) => {
@@ -61,15 +62,15 @@ describe('AnalyticsDashboardPanel', () => {
   const expectPanelLoaded = () => {
     expect(findPanelsBase().props()).toMatchObject({
       loading: false,
-      showErrorState: false,
+      showAlertState: false,
     });
   };
 
   const expectPanelErrored = () => {
     expect(findPanelsBase().props()).toMatchObject({
       loading: false,
-      showErrorState: true,
-      errorPopoverTitle: 'Failed to fetch data',
+      showAlertState: true,
+      alertPopoverTitle: 'Failed to fetch data',
     });
   };
 
@@ -83,8 +84,8 @@ describe('AnalyticsDashboardPanel', () => {
         title: mockPanel.title,
         tooltip: '',
         loading: true,
-        showErrorState: false,
-        errorPopoverTitle: 'Failed to fetch data',
+        showAlertState: false,
+        alertPopoverTitle: '',
         actions: [
           {
             text: 'Delete',
@@ -141,8 +142,8 @@ describe('AnalyticsDashboardPanel', () => {
     it('sets the error state on the panels base component', () => {
       expect(findPanelsBase().props()).toMatchObject({
         loading: false,
-        showErrorState: true,
-        errorPopoverTitle: 'Invalid visualization configuration',
+        showAlertState: true,
+        alertPopoverTitle: 'Invalid visualization configuration',
       });
     });
 
@@ -157,7 +158,7 @@ describe('AnalyticsDashboardPanel', () => {
     });
 
     it('renders the error messages', () => {
-      const errors = findErrorMessages();
+      const errors = findAlertMessages();
 
       expect(errors).toHaveLength(2);
       expect(errors.at(0).text()).toContain("property '/version' is not: 1");
@@ -182,7 +183,7 @@ describe('AnalyticsDashboardPanel', () => {
       expect(findPanelsBase().props()).toMatchObject({
         loading: true,
         loadingDelayed: false,
-        showErrorState: false,
+        showAlertState: false,
       });
     });
 
@@ -196,7 +197,7 @@ describe('AnalyticsDashboardPanel', () => {
       expect(findPanelsBase().props()).toMatchObject({
         loading: true,
         loadingDelayed: true,
-        showErrorState: false,
+        showAlertState: false,
       });
     });
   });
@@ -232,61 +233,120 @@ describe('AnalyticsDashboardPanel', () => {
         it('sets the tooltip on the panels base component', () => {
           expect(findPanelsBase().props('tooltip')).toBe(tooltip);
         });
-      });
 
-      describe('and the visualization emits an error', () => {
-        const error = 'test error';
-        let captureExceptionSpy;
+        describe('and the visualization emits an error', () => {
+          const error = 'test error';
+          let captureExceptionSpy;
 
-        beforeEach(() => {
-          captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
-        });
+          beforeEach(() => {
+            captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
+          });
 
-        afterEach(() => {
-          captureExceptionSpy.mockRestore();
-        });
+          afterEach(() => {
+            captureExceptionSpy.mockRestore();
+          });
 
-        describe.each`
-          canRetry | fullPanelError
-          ${false} | ${false}
-          ${true}  | ${false}
-          ${false} | ${true}
-          ${true}  | ${true}
-        `(
-          'canRetry: $canRetry, fullPanelError: $fullPanelError',
-          ({ canRetry, fullPanelError }) => {
+          describe('with errors', () => {
             beforeEach(() => {
-              findVisualization().vm.$emit('set-errors', {
+              findVisualization().vm.$emit('set-alerts', {
                 errors: [error],
-                canRetry,
-                fullPanelError,
+                canRetry: false,
+                alertVariant: VARIANT_DANGER,
               });
             });
 
             it('sets the error state on the panels base component', () => {
               expect(findPanelsBase().props()).toMatchObject({
                 loading: false,
-                showErrorState: true,
+                showAlertState: true,
+                alertVariant: VARIANT_DANGER,
               });
             });
 
-            it(`${fullPanelError ? 'hides' : 'shows'} the visualization`, () => {
-              expect(findVisualization().exists()).toBe(!fullPanelError);
+            it('hides the visualization', () => {
+              expect(findVisualization().exists()).toBe(false);
             });
 
-            it(`${fullPanelError ? 'shows' : 'hides'} the error body`, () => {
-              expect(findErrorBody().exists()).toBe(fullPanelError);
+            it('shows the default error body', () => {
+              expect(findAlertBody().text()).toBe('Something went wrong.');
             });
 
             it('logs the error to Sentry', () => {
               expect(captureExceptionSpy).toHaveBeenCalledWith(error);
             });
+          });
+
+          describe('with warnings', () => {
+            beforeEach(() => {
+              findVisualization().vm.$emit('set-alerts', {
+                warnings: [error],
+                canRetry: false,
+              });
+            });
+
+            it('sets the error state on the panels base component', () => {
+              expect(findPanelsBase().props()).toMatchObject({
+                loading: false,
+                showAlertState: true,
+                alertVariant: VARIANT_WARNING,
+              });
+            });
+
+            it('shows visualization', () => {
+              expect(findVisualization().exists()).toBe(true);
+            });
+
+            it('does not show the error body', () => {
+              expect(findAlertBody().exists()).toBe(false);
+            });
+
+            it('does not log to Sentry', () => {
+              expect(captureExceptionSpy).not.toHaveBeenCalled();
+            });
+          });
+
+          describe('with no errors or warnings', () => {
+            beforeEach(() => {
+              findVisualization().vm.$emit('set-alerts', {
+                description: 'This is just information',
+              });
+            });
+
+            it('sets the alert state on the panels base component', () => {
+              expect(findPanelsBase().props()).toMatchObject({
+                loading: false,
+                showAlertState: true,
+                alertVariant: VARIANT_INFO,
+              });
+            });
+
+            it('shows visualization', () => {
+              expect(findVisualization().exists()).toBe(true);
+            });
+
+            it('does not show the error body', () => {
+              expect(findAlertBody().exists()).toBe(false);
+            });
+
+            it('does not log to Sentry', () => {
+              expect(captureExceptionSpy).not.toHaveBeenCalled();
+            });
+          });
+
+          describe.each`
+            canRetry
+            ${false}
+            ${true}
+          `('canRetry: $canRetry', ({ canRetry }) => {
+            beforeEach(() => {
+              findVisualization().vm.$emit('set-alerts', { errors: [error], canRetry });
+            });
 
             it(`${canRetry ? 'renders' : 'does not render'} a retry button`, () => {
               expect(findPanelRetryButton().exists()).toBe(canRetry);
             });
-          },
-        );
+          });
+        });
       });
     });
 
