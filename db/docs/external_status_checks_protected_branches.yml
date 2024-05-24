@@ -7,7 +7,7 @@ feature_categories:
 description: Keeps relation between protected branches and external status checks
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/62186
 milestone: '14.0'
-gitlab_schema: gitlab_main
+gitlab_schema: gitlab_main_cell
 desired_sharding_key:
   project_id:
     references: projects
