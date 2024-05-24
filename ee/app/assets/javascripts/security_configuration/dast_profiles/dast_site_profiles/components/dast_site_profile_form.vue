@@ -461,7 +461,7 @@ export default {
 
     <dast-site-auth-section
       v-model="authSection"
-      class="gl-mt-n3"
+      class="-gl-mt-3"
       :is-target-api="isTargetAPI"
       :disabled="isPolicyProfile"
       :show-validation="form.showValidation"

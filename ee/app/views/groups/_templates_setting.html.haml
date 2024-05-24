@@ -13,5 +13,5 @@
     = gitlab_ui_form_for @group, url: group_path, html: { class: 'fieldset-form' } do |f|
       = form_errors(@group)
       .js-vue-project-select{ data: { label: _('Select a template repository'), input_name: 'group[file_template_project_id]', input_id: 'group[file_template_project_id]', group_id: @group.id, with_shared: true.to_s, selected: @group.checked_file_template_project_id } }
-      %p.gl-mt-n5= s_('Create common files more quickly, and standardize their format.')
+      %p.-gl-mt-5= s_('Create common files more quickly, and standardize their format.')
       = f.submit _('Save changes'), pajamas_button: true, data: { testid: 'save-changes-button' }

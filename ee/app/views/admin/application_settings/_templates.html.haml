@@ -20,5 +20,5 @@
           order_by: 'last_activity_at',
           with_shared: true.to_s,
           selected: @application_setting.file_template_project_id } }
-        %p.gl-mt-n5= s_('TemplateRepository|Create common files more quickly, and standardize their format.')
+        %p.-gl-mt-5= s_('TemplateRepository|Create common files more quickly, and standardize their format.')
         = f.submit _('Save changes'), pajamas_button: true

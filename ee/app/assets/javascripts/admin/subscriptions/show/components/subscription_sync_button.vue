@@ -28,7 +28,7 @@ export default {
 <template>
   <gl-button
     :id="$options.SYNC_BUTTON_ID"
-    class="gl-absolute gl-mt-n2 gl-ml-2"
+    class="gl-absolute -gl-mt-2 gl-ml-2"
     category="tertiary"
     :title="$options.i18n.syncSubscriptionButtonText"
     size="small"

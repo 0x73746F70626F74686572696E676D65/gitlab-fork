@@ -111,7 +111,7 @@ export default {
           @close-button-clicked="dismiss"
         >
           <div v-outside="() => dismiss()">
-            <p class="gl-mb-2 gl-mt-n3">
+            <p class="gl-mb-2 -gl-mt-3">
               <gl-icon name="tanuki-ai" class="gl-mr-2" />
               <strong>{{ __('Introducing: Summarize code changes') }}</strong>
             </p>
