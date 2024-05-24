@@ -4,6 +4,7 @@ import { throttle } from 'lodash';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { visitUrl, joinPaths, queryToObject } from '~/lib/utils/url_utility';
+import { InternalEvents } from '~/tracking';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { contentTop, isMetaClick } from '~/lib/utils/common_utils';
 import { DEFAULT_SORTING_OPTION } from '~/observability/constants';
@@ -31,6 +32,7 @@ export default {
     GlInfiniteScroll,
     TracingAnalytics,
   },
+  mixins: [InternalEvents.mixin()],
   i18n: {
     infiniteScrollLegend: s__(`Tracing|Showing %{count} traces`),
   },
@@ -76,6 +78,7 @@ export default {
   },
   mounted() {
     this.resize();
+    this.trackEvent('view_tracing_page');
     this.resizeThrottled = throttle(() => {
       this.resize();
     }, 400);
