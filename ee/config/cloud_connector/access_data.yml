@@ -35,6 +35,7 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
       duo_enterprise:
         unit_primitives:
           - analyze_ci_job_failure
+          - categorize_duo_chat_question
           - documentation_search
           - duo_chat
           - explain_code
@@ -42,6 +43,7 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
           - fill_in_merge_request_template
           - generate_commit_message
           - generate_cube_query
+          - generate_issue_description
           - resolve_vulnerability
           - review_merge_request
           - summarize_issue_discussions

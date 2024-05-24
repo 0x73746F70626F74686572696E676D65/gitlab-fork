@@ -10,7 +10,9 @@ RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :ai_abstr
   let(:model_config) { instance_double('Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat', host: host) }
   let(:unit_primitive) { 'explain_vulnerability' }
 
-  subject(:configuration) { described_class.new(model_config: model_config, user: user, unit_primitive: unit_primitive) } # rubocop:disable Layout/LineLength -- follow-up
+  subject(:configuration) do
+    described_class.new(model_config: model_config, user: user, unit_primitive: unit_primitive)
+  end
 
   before do
     stub_ee_application_setting(vertex_ai_host: host)

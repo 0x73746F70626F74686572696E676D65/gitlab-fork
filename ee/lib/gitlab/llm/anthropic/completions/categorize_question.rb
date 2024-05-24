@@ -24,7 +24,8 @@ module Gitlab
           PERMITTED_KEYS = REQUIRED_KEYS + OPTIONAL_KEYS
 
           def execute
-            @ai_client = ::Gitlab::Llm::Anthropic::Client.new(user, tracking_context: tracking_context)
+            @ai_client = ::Gitlab::Llm::Anthropic::Client.new(user,
+              unit_primitive: 'categorize_duo_chat_question', tracking_context: tracking_context)
             @storage = ::Gitlab::Llm::ChatStorage.new(user)
             @messages = @storage.messages_up_to(options[:message_id])
             @logger = Gitlab::Llm::Logger.build

@@ -41,7 +41,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
           container: project,
           resource: issue1,
           current_user: user,
-          ai_request: ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
+          ai_request: ::Gitlab::Llm::Chain::Requests::Anthropic.new(user, unit_primitive: 'duo_chat')
         )
       end
 

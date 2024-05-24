@@ -7,7 +7,7 @@ RSpec.describe Gitlab::Llm::Chain::Requests::Anthropic, feature_category: :duo_c
 
   describe 'initializer' do
     it 'initializes the anthropic client' do
-      request = described_class.new(user)
+      request = described_class.new(user, unit_primitive: 'duo_chat')
 
       expect(request.ai_client.class).to eq(::Gitlab::Llm::Anthropic::Client)
     end
@@ -16,7 +16,7 @@ RSpec.describe Gitlab::Llm::Chain::Requests::Anthropic, feature_category: :duo_c
   describe '#request' do
     subject(:request) { instance.request(params) }
 
-    let(:instance) { described_class.new(user) }
+    let(:instance) { described_class.new(user, unit_primitive: 'duo_chat') }
     let(:logger) { instance_double(Gitlab::Llm::Logger) }
     let(:ai_client) { double }
     let(:response) { { "completion" => "Hello World " } }
