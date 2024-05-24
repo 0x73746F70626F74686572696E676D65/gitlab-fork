@@ -394,10 +394,11 @@ The following package managers use lockfiles that GitLab analyzers are capable o
     </tr>
     <tr>
       <td>pnpm</td>
-      <td>v5, v6</td>
+      <td>v5, v6, v9</td>
       <td>
         <a href="https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/master/qa/fixtures/js-pnpm/default/pnpm-lock.yaml#L1">7.x</a>,
         <a href="https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/master/scanner/parser/pnpm/fixtures/v6/simple/pnpm-lock.yaml#L1">8.x</a>
+        <a href="https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium/-/blob/master/scanner/parser/pnpm/fixtures/v9/simple/pnpm-lock.yaml#L1">9.x</a>
       </td>
     </tr>
     <tr>
