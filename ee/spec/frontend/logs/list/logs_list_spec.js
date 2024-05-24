@@ -1,6 +1,7 @@
 import { GlLoadingIcon, GlInfiniteScroll, GlSprintf } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import LogsTable from 'ee/logs/list/logs_table.vue';
+import LogsVolume from 'ee/logs/list/logs_volume.vue';
 import LogsDrawer from 'ee/logs/list/logs_drawer.vue';
 import LogsFilteredSearch from 'ee/logs/list/filter_bar/logs_filtered_search.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -10,7 +11,8 @@ import { createAlert } from '~/alert';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { createMockClient } from 'helpers/mock_observability_client';
-import { mockLogs } from './mock_data';
+import * as commonUtils from '~/lib/utils/common_utils';
+import { mockLogs, mockMetadata } from './mock_data';
 
 jest.mock('~/alert');
 
@@ -34,6 +36,8 @@ describe('LogsList', () => {
   const getDrawerSelectedLog = () => findDrawer().props('log');
 
   const findUrlSync = () => wrapper.findComponent(UrlSync);
+  const findFilteredSearch = () => wrapper.findComponent(LogsFilteredSearch);
+  const findLogsVolumeChart = () => wrapper.findComponent(LogsVolume);
 
   const mountComponent = async () => {
     wrapper = shallowMountExtended(LogsList, {
@@ -53,11 +57,14 @@ describe('LogsList', () => {
       logs: mockLogs,
       nextPageToken: 'page-2',
     });
+    observabilityClientMock.fetchLogsSearchMetadata.mockResolvedValue(mockMetadata);
   });
 
   it('renders the loading indicator while fetching logs data', () => {
     mountComponent();
 
+    expect(findFilteredSearch().exists()).toBe(true);
+    expect(findLogsVolumeChart().props('loading')).toBe(true);
     expect(findLoadingIcon().exists()).toBe(true);
     expect(findLogsTable().exists()).toBe(false);
     expect(observabilityClientMock.fetchLogs).toHaveBeenCalled();
@@ -400,8 +407,6 @@ describe('LogsList', () => {
       await mountComponent();
     });
 
-    const findFilteredSearch = () => wrapper.findComponent(LogsFilteredSearch);
-
     it('renders the FilteredSearch component', () => {
       expect(findFilteredSearch().exists()).toBe(true);
     });
@@ -414,6 +419,10 @@ describe('LogsList', () => {
       });
 
       expect(findFilteredSearch().props('attributesFilters')).toEqual(attributesFiltersObj);
+    });
+
+    it('passes metadata to the filtered search', () => {
+      expect(findFilteredSearch().props('searchMetadata')).toEqual(mockMetadata.summary);
     });
 
     it('renders UrlSync and sets query prop', () => {
@@ -564,8 +573,8 @@ describe('LogsList', () => {
 
     describe('when filter changes', () => {
       beforeEach(async () => {
-        observabilityClientMock.fetchLogs.mockReset();
-        observabilityClientMock.fetchLogsSearchMetadata.mockReset();
+        observabilityClientMock.fetchLogs.mockClear();
+        observabilityClientMock.fetchLogsSearchMetadata.mockClear();
 
         await findFilteredSearch().vm.$emit('filter', {
           dateRange: { value: '7d' },
@@ -624,6 +633,51 @@ describe('LogsList', () => {
           spanId: null,
           traceFlags: null,
           traceId: null,
+        });
+      });
+    });
+
+    describe('logs volume chart', () => {
+      it('renders the volume component', () => {
+        expect(findLogsVolumeChart().exists()).toBe(true);
+      });
+
+      it('sets logsCount prop to severity_numbers_counts', () => {
+        expect(findLogsVolumeChart().props('logsCount')).toBe(mockMetadata.severity_numbers_counts);
+      });
+
+      describe('chart height', () => {
+        const mountWithSize = async (contentTop, innerHeight) => {
+          jest.spyOn(commonUtils, 'contentTop').mockReturnValue(contentTop);
+          window.innerHeight = innerHeight;
+
+          await mountComponent();
+        };
+        it('sets the chart height to 20% of the container height', async () => {
+          await mountWithSize(200, 1000);
+
+          expect(findLogsVolumeChart().props('height')).toBe(160);
+          expect(findInfiniteScrolling().props('maxListHeight')).toBe(550);
+        });
+
+        it('sets the min height to 100px', async () => {
+          await mountWithSize(20, 200);
+
+          expect(findLogsVolumeChart().props('height')).toBe(100);
+        });
+
+        it('resize the chart on window resize', async () => {
+          await mountWithSize(200, 1000);
+
+          expect(findLogsVolumeChart().props('height')).toBe(160);
+
+          jest.spyOn(commonUtils, 'contentTop').mockReturnValue(200);
+          window.innerHeight = 800;
+          window.dispatchEvent(new Event('resize'));
+
+          await nextTick();
+
+          expect(findLogsVolumeChart().props('height')).toBe(120);
         });
       });
     });
