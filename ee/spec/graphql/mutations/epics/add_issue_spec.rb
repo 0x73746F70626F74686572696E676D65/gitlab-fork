@@ -30,6 +30,22 @@ RSpec.describe Mutations::Epics::AddIssue, feature_category: :portfolio_manageme
         group.add_guest(user)
       end
 
+      context 'when the epic has reached max child limit' do
+        let(:expected_error) do
+          _('cannot be linked to the epic. This epic already has maximum number of child issues & epics.')
+        end
+
+        before do
+          stub_const("EE::Epic::MAX_CHILDREN_COUNT", 2)
+        end
+
+        it 'raises an error' do
+          create_list(:epic, 2, parent: epic, group: group)
+
+          expect(subject[:errors][0]).to include(expected_error)
+        end
+      end
+
       it 'adds the issue to the epic' do
         expect(subject[:epic_issue]).to eq(issue)
         expect(subject[:epic_issue].epic).to eq(epic)

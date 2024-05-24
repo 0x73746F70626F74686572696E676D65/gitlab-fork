@@ -719,11 +719,15 @@ module EE
       end
     end
 
+    def max_children_count_achieved?
+      (children.count + issues.count) >= MAX_CHILDREN_COUNT
+    end
+
     def validate_children_count
       return unless parent_id.present? && parent_id_changed?
-      return unless ::Epic.in_parents(parent_id).count >= MAX_CHILDREN_COUNT
+      return unless parent.max_children_count_achieved?
 
-      errors.add(:parent, _('You cannot add any more epics. This epic already has maximum number of child epics.'))
+      errors.add(:parent, _('You cannot add any more epics. This epic already has maximum number of child issues & epics.'))
     end
 
     def supports_confidentiality?

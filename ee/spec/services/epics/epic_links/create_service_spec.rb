@@ -212,7 +212,7 @@ RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_man
             context 'when total children count after adding would exceed limit' do
               let(:expected_error) do
                 "You cannot add any more epics. This epic already has maximum "\
-                "number of child epics."
+                "number of child issues & epics."
               end
 
               let(:expected_code) { 409 }

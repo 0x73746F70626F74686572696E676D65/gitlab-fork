@@ -55,6 +55,11 @@ module EE
 
         return unless epic
 
+        if epic.max_children_count_achieved?
+          raise ::Issues::BaseService::EpicAssignmentError,
+            _('You cannot add any more issues. This epic already has maximum number of child issues & epics.')
+        end
+
         unless can?(current_user, :read_epic, epic) && can?(current_user, :admin_issue_relation, issue)
           raise ::Gitlab::Access::AccessDeniedError
         end

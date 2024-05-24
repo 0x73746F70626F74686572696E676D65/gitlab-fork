@@ -216,8 +216,10 @@ RSpec.describe Epic, feature_category: :portfolio_management do
       let_it_be(:parent_epic) { create(:epic, group: group) }
       let_it_be(:child_epic1) { create(:epic, group: group, parent: parent_epic) }
       let_it_be(:child_epic2) { create(:epic, group: group, parent: parent_epic) }
+      let_it_be(:child_issue) { create(:issue, project: project, title: "Child") }
+      let_it_be(:epic_issue) { create(:epic_issue, epic: parent_epic, issue: child_issue) }
 
-      let(:error) { "You cannot add any more epics. This epic already has maximum number of child epics." }
+      let(:error) { _('You cannot add any more epics. This epic already has maximum number of child issues & epics.') }
 
       subject(:epic) { build(:epic, group: group, parent: parent_epic) }
 
@@ -225,7 +227,7 @@ RSpec.describe Epic, feature_category: :portfolio_management do
 
       context 'when child count limit was reached' do
         before do
-          stub_const("EE::#{described_class}::MAX_CHILDREN_COUNT", 1)
+          stub_const("EE::#{described_class}::MAX_CHILDREN_COUNT", 2)
         end
 
         it 'is not valid' do
@@ -285,6 +287,33 @@ RSpec.describe Epic, feature_category: :portfolio_management do
             expect(epic.errors[:parent]).to include(expected_error)
           end
         end
+      end
+    end
+  end
+
+  describe '#max_children_count_achieved?' do
+    let_it_be(:parent_epic) { create(:epic, group: group) }
+    let_it_be(:child_epic1) { create(:epic, group: group, parent: parent_epic) }
+    let_it_be(:child_epic2) { create(:epic, group: group, parent: parent_epic) }
+    let_it_be(:child_issue1) { create(:issue, project: project, title: "Child") }
+    let_it_be(:epic_issue) { create(:epic_issue, epic: parent_epic, issue: child_issue1) }
+
+    before do
+      stub_const("EE::#{described_class}::MAX_CHILDREN_COUNT", 4)
+    end
+
+    context 'when the epic has fewer than MAX_CHILDREN_COUNT children' do
+      it 'returns false' do
+        expect(parent_epic.max_children_count_achieved?).to be_falsey
+      end
+    end
+
+    context 'when the epic has exactly MAX_CHILDREN_COUNT children' do
+      it 'returns true' do
+        child_issue2 = create(:issue, project: project, title: "Child")
+        create(:epic_issue, epic: parent_epic, issue: child_issue2)
+
+        expect(parent_epic.max_children_count_achieved?).to be_truthy
       end
     end
   end

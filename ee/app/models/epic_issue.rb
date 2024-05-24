@@ -25,6 +25,7 @@ class EpicIssue < ApplicationRecord
   validate :check_existing_parent_link, unless: :work_item_syncing?
   after_destroy :set_epic_id_to_update_cache
   after_save :set_epic_id_to_update_cache
+  validate :validate_max_children
 
   def epic_tree_root?
     false
@@ -65,5 +66,13 @@ class EpicIssue < ApplicationRecord
     return unless existing_parent_epic && existing_parent_epic.work_item_parent_id != epic.issue_id
 
     errors.add(:issue, _('already assigned to an epic'))
+  end
+
+  def validate_max_children
+    return unless epic && issue
+
+    if epic.max_children_count_achieved?
+      errors.add(:issue, _('cannot be linked to the epic. This epic already has maximum number of child issues & epics.'))
+    end
   end
 end
