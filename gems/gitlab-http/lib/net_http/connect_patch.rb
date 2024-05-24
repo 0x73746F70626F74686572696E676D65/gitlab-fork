@@ -1,9 +1,36 @@
 # frozen_string_literal: true
 
+# This patches Net::HTTP#connect to handle the hostname override patch,
+# which is needed for Server Side Request Forgery (SSRF)
+# protection. This stopped working in net-http v0.2.2 due to
+# https://github.com/ruby/net-http/pull/36.
+# https://github.com/ruby/net-http/issues/141 is outstanding to make
+# this less hacky, but for now we restore the previous behavior by
+# setting the SNI hostname with the hostname override, if available.
 require 'net/http'
 
 module Net
   class HTTP < Protocol
+    # rubocop:disable Cop/LineBreakAroundConditionalBlock -- This is upstream code
+    # rubocop:disable Layout/ArgumentAlignment -- This is upstream code
+    # rubocop:disable Layout/AssignmentIndentation -- This is upstream code
+    # rubocop:disable Layout/LineEndStringConcatenationIndentation -- This is upstream code
+    # rubocop:disable Layout/MultilineOperationIndentation -- This is upstream code
+    # rubocop:disable Layout/SpaceInsideBlockBraces -- This is upstream code
+    # rubocop:disable Lint/UnusedBlockArgument -- This is upstream code
+    # rubocop:disable Metrics/AbcSize -- This is upstream code
+    # rubocop:disable Metrics/CyclomaticComplexity -- This is upstream code
+    # rubocop:disable Metrics/PerceivedComplexity -- This is upstream code
+    # rubocop:disable Naming/RescuedExceptionsVariableName -- This is upstream code
+    # rubocop:disable Style/AndOr -- This is upstream code
+    # rubocop:disable Style/BlockDelimiters -- This is upstream code
+    # rubocop:disable Style/EmptyLiteral -- This is upstream code
+    # rubocop:disable Style/IfUnlessModifier -- This is upstream code
+    # rubocop:disable Style/LineEndConcatenation -- This is upstream code
+    # rubocop:disable Style/MultilineIfThen -- This is upstream code
+    # rubocop:disable Style/Next -- This is upstream code
+    # rubocop:disable Style/RescueStandardError -- This is upstream code
+    # rubocop:disable Style/StringConcatenation -- This is upstream code
     def connect
       if use_ssl?
         # reference early to load OpenSSL before connecting,
@@ -72,8 +99,11 @@ module Net
         # to IP address
         verify_hostname = @ssl_context.verify_hostname
 
+        # This hack would not be needed with https://github.com/ruby/net-http/issues/141
+        address_to_verify = hostname_override || @address
+
         # Server Name Indication (SNI) RFC 3546/6066
-        case @address
+        case address_to_verify
         when Resolv::IPv4::Regex, Resolv::IPv6::Regex
           # don't set SNI, as IP addresses in SNI is not valid
           # per RFC 6066, section 3.
@@ -81,7 +111,7 @@ module Net
           # Avoid openssl warning
           @ssl_context.verify_hostname = false
         else
-          ssl_host_address = @address
+          ssl_host_address = address_to_verify
         end
 
         debug "starting SSL for #{conn_addr}:#{conn_port}..."
@@ -113,5 +143,25 @@ module Net
       raise
     end
     private :connect
+    # rubocop:enable Cop/LineBreakAroundConditionalBlock
+    # rubocop:enable Layout/ArgumentAlignment
+    # rubocop:enable Layout/AssignmentIndentation
+    # rubocop:enable Layout/LineEndStringConcatenationIndentation
+    # rubocop:enable Layout/MultilineOperationIndentation
+    # rubocop:enable Layout/SpaceInsideBlockBraces
+    # rubocop:enable Lint/UnusedBlockArgument
+    # rubocop:enable Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity
+    # rubocop:enable Metrics/PerceivedComplexity
+    # rubocop:enable Naming/RescuedExceptionsVariableName
+    # rubocop:enable Style/AndOr
+    # rubocop:enable Style/BlockDelimiters
+    # rubocop:enable Style/EmptyLiteral
+    # rubocop:enable Style/IfUnlessModifier
+    # rubocop:enable Style/LineEndConcatenation
+    # rubocop:enable Style/MultilineIfThen
+    # rubocop:enable Style/Next
+    # rubocop:enable Style/RescueStandardError
+    # rubocop:enable Style/StringConcatenation
   end
 end
