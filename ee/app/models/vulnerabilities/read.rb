@@ -34,8 +34,8 @@ module Vulnerabilities
     enum severity: ::Enums::Vulnerability.severity_levels, _prefix: :severity
     enum owasp_top_10: ::Enums::Vulnerability.owasp_top_10
 
-    scope :by_uuid, -> (uuids) { where(uuid: uuids) }
-    scope :by_vulnerabilities, -> (vulnerabilities) { where(vulnerability: vulnerabilities) }
+    scope :by_uuid, ->(uuids) { where(uuid: uuids) }
+    scope :by_vulnerabilities, ->(vulnerabilities) { where(vulnerability: vulnerabilities) }
 
     scope :order_severity_asc, -> { reorder(severity: :asc, vulnerability_id: :desc) }
     scope :order_severity_desc, -> { reorder(severity: :desc, vulnerability_id: :desc) }
@@ -45,9 +45,9 @@ module Vulnerabilities
     scope :order_severity_asc_traversal_ids_asc, -> { reorder(severity: :asc, traversal_ids: :asc, vulnerability_id: :asc) }
     scope :order_severity_desc_traversal_ids_desc, -> { reorder(severity: :desc, traversal_ids: :desc, vulnerability_id: :desc) }
 
-    scope :by_group, -> (group) { traversal_ids_gteq(group.traversal_ids).traversal_ids_lt(group.next_traversal_ids) }
-    scope :traversal_ids_gteq, -> (traversal_ids) { where(arel_table[:traversal_ids].gteq(traversal_ids)) }
-    scope :traversal_ids_lt, -> (traversal_ids) { where(arel_table[:traversal_ids].lt(traversal_ids)) }
+    scope :by_group, ->(group) { traversal_ids_gteq(group.traversal_ids).traversal_ids_lt(group.next_traversal_ids) }
+    scope :traversal_ids_gteq, ->(traversal_ids) { where(arel_table[:traversal_ids].gteq(traversal_ids)) }
+    scope :traversal_ids_lt, ->(traversal_ids) { where(arel_table[:traversal_ids].lt(traversal_ids)) }
     scope :unarchived, -> { where(archived: false) }
     scope :order_traversal_ids_asc, -> do
       reorder(Gitlab::Pagination::Keyset::Order.build([
@@ -62,25 +62,25 @@ module Vulnerabilities
         )
       ]))
     end
-    scope :by_projects, -> (values) { where(project_id: values) }
-    scope :by_scanner, -> (scanner) { where(scanner: scanner) }
-    scope :by_scanner_ids, -> (scanner_ids) { where(scanner_id: scanner_ids) }
+    scope :by_projects, ->(values) { where(project_id: values) }
+    scope :by_scanner, ->(scanner) { where(scanner: scanner) }
+    scope :by_scanner_ids, ->(scanner_ids) { where(scanner_id: scanner_ids) }
     scope :grouped_by_severity, -> { reorder(severity: :desc).group(:severity) }
-    scope :with_report_types, -> (report_types) { where(report_type: report_types) }
-    scope :with_severities, -> (severities) { where(severity: severities) }
-    scope :with_states, -> (states) { where(state: states) }
-    scope :with_owasp_top_10, -> (owasp_top_10) { where(owasp_top_10: owasp_top_10) }
-    scope :with_container_image, -> (images) { where(location_image: images) }
-    scope :with_container_image_starting_with, -> (image) { where(arel_table[:location_image].matches("#{image}%")) }
-    scope :with_cluster_agent_ids, -> (agent_ids) { where(cluster_agent_id: agent_ids) }
-    scope :with_resolution, -> (has_resolution = true) { where(resolved_on_default_branch: has_resolution) }
-    scope :with_issues, -> (has_issues = true) { where(has_issues: has_issues) }
-    scope :with_merge_request, -> (has_merge_request = true) { where(has_merge_request: has_merge_request) }
-    scope :with_remediations, -> (has_remediations = true) { where(has_remediations: has_remediations) }
-    scope :with_scanner_external_ids, -> (scanner_external_ids) { joins(:scanner).merge(::Vulnerabilities::Scanner.with_external_id(scanner_external_ids)) }
+    scope :with_report_types, ->(report_types) { where(report_type: report_types) }
+    scope :with_severities, ->(severities) { where(severity: severities) }
+    scope :with_states, ->(states) { where(state: states) }
+    scope :with_owasp_top_10, ->(owasp_top_10) { where(owasp_top_10: owasp_top_10) }
+    scope :with_container_image, ->(images) { where(location_image: images) }
+    scope :with_container_image_starting_with, ->(image) { where(arel_table[:location_image].matches("#{image}%")) }
+    scope :with_cluster_agent_ids, ->(agent_ids) { where(cluster_agent_id: agent_ids) }
+    scope :with_resolution, ->(has_resolution = true) { where(resolved_on_default_branch: has_resolution) }
+    scope :with_issues, ->(has_issues = true) { where(has_issues: has_issues) }
+    scope :with_merge_request, ->(has_merge_request = true) { where(has_merge_request: has_merge_request) }
+    scope :with_remediations, ->(has_remediations = true) { where(has_remediations: has_remediations) }
+    scope :with_scanner_external_ids, ->(scanner_external_ids) { joins(:scanner).merge(::Vulnerabilities::Scanner.with_external_id(scanner_external_ids)) }
     scope :with_findings_scanner_and_identifiers, -> { includes(vulnerability: { findings: [:scanner, :identifiers, { finding_identifiers: :identifier }] }) }
     scope :resolved_on_default_branch, -> { where('resolved_on_default_branch IS TRUE') }
-    scope :with_dismissal_reason, -> (dismissal_reason) { where(dismissal_reason: dismissal_reason) }
+    scope :with_dismissal_reason, ->(dismissal_reason) { where(dismissal_reason: dismissal_reason) }
     scope :with_export_entities, -> do
       preload(
         vulnerability: [

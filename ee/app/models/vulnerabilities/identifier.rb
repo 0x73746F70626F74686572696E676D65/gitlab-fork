@@ -26,9 +26,9 @@ module Vulnerabilities
     validates :name, presence: true
     validates :url, url: { schemes: %w[http https ftp], allow_nil: true }
 
-    scope :by_projects, -> (values) { where(project_id: values) }
-    scope :with_fingerprint, -> (fingerprints) { where(fingerprint: fingerprints) }
-    scope :with_external_type, -> (external_type) { where('LOWER(external_type) = LOWER(?)', external_type) }
+    scope :by_projects, ->(values) { where(project_id: values) }
+    scope :with_fingerprint, ->(fingerprints) { where(fingerprint: fingerprints) }
+    scope :with_external_type, ->(external_type) { where('LOWER(external_type) = LOWER(?)', external_type) }
     scope :select_primary_finding_vulnerability_ids, -> {
       joins(:primary_findings).select('vulnerability_occurrences.vulnerability_id AS vulnerability_id')
     }

@@ -21,9 +21,9 @@ module Vulnerabilities
     enum letter_grade: Vulnerabilities::Statistic.letter_grades
 
     scope :older_than, ->(days:) { where('"vulnerability_historical_statistics"."date" < now() - interval ?', "#{days} days") }
-    scope :between_dates, -> (start_date, end_date) { where(arel_table[:date].between(start_date..end_date)) }
-    scope :for_project, -> (project) { where(project: project) }
-    scope :by_projects, -> (values) { where(project_id: values) }
+    scope :between_dates, ->(start_date, end_date) { where(arel_table[:date].between(start_date..end_date)) }
+    scope :for_project, ->(project) { where(project: project) }
+    scope :by_projects, ->(values) { where(project_id: values) }
     scope :aggregated_by_date, -> do
       select(
         arel_table[:date],
@@ -31,7 +31,7 @@ module Vulnerabilities
         *::Enums::Vulnerability.severity_levels.map { |severity, _| arel_table[severity].sum.as(severity.to_s) }
       )
     end
-    scope :grouped_by_date, -> (sort = :asc) do
+    scope :grouped_by_date, ->(sort = :asc) do
       group(:date)
         .order(date: sort)
     end

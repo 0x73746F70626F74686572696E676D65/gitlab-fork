@@ -7,8 +7,8 @@ module SCA
     attr_reader :project
 
     SORT_DIRECTION = {
-      asc: -> (items) { items },
-      desc: -> (items) { items.reverse }
+      asc: ->(items) { items },
+      desc: ->(items) { items.reverse }
     }.with_indifferent_access
 
     def initialize(project, pipeline)

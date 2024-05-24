@@ -16,7 +16,7 @@ module Security
     validates :url, presence: true, length: { maximum: 512 }
     validates :logo_url, length: { maximum: 512 }
 
-    scope :for_project, -> (project, only_enabled: false) do
+    scope :for_project, ->(project, only_enabled: false) do
       joins("LEFT OUTER JOIN security_trainings st ON st.provider_id = security_training_providers.id AND st.project_id = #{project.id}")
         .select(default_select_columns)
         .select('CASE WHEN st.id IS NULL THEN false ELSE true END AS is_enabled')

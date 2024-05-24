@@ -25,8 +25,8 @@ module Security
 
     partitioned_by :partition_number,
       strategy: :sliding_list,
-      next_partition_if: -> (partition) { partition_full?(partition) },
-      detach_partition_if: -> (partition) { detach_partition?(partition.value) }
+      next_partition_if: ->(partition) { partition_full?(partition) },
+      detach_partition_if: ->(partition) { detach_partition?(partition.value) }
 
     belongs_to :scan, inverse_of: :findings, optional: false
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner', inverse_of: :security_findings, optional: false
@@ -57,19 +57,19 @@ module Security
     validates :uuid, presence: true
     validates :finding_data, json_schema: { filename: "security_finding_data" }
 
-    scope :by_uuid, -> (uuids) { where(uuid: uuids) }
-    scope :by_build_ids, -> (build_ids) { joins(:scan).merge(Security::Scan.by_build_ids(build_ids)) }
-    scope :by_project_fingerprints, -> (fingerprints) { where(project_fingerprint: fingerprints) }
-    scope :by_severity_levels, -> (severity_levels) { where(severity: severity_levels) }
-    scope :by_confidence_levels, -> (confidence_levels) { where(confidence: confidence_levels) }
-    scope :by_report_types, -> (report_types) { joins(:scan).merge(Scan.by_scan_types(report_types)) }
-    scope :by_scan, -> (scans) { where(scan: scans) }
-    scope :by_scanners, -> (scanners) { where(scanner: scanners) }
-    scope :by_partition_number, -> (partition_number) { where(partition_number: partition_number) }
-    scope :by_project_id_and_pipeline_ids, -> (project_id, pipeline_ids) do
+    scope :by_uuid, ->(uuids) { where(uuid: uuids) }
+    scope :by_build_ids, ->(build_ids) { joins(:scan).merge(Security::Scan.by_build_ids(build_ids)) }
+    scope :by_project_fingerprints, ->(fingerprints) { where(project_fingerprint: fingerprints) }
+    scope :by_severity_levels, ->(severity_levels) { where(severity: severity_levels) }
+    scope :by_confidence_levels, ->(confidence_levels) { where(confidence: confidence_levels) }
+    scope :by_report_types, ->(report_types) { joins(:scan).merge(Scan.by_scan_types(report_types)) }
+    scope :by_scan, ->(scans) { where(scan: scans) }
+    scope :by_scanners, ->(scanners) { where(scanner: scanners) }
+    scope :by_partition_number, ->(partition_number) { where(partition_number: partition_number) }
+    scope :by_project_id_and_pipeline_ids, ->(project_id, pipeline_ids) do
       joins(:scan).merge(Security::Scan.succeeded.by_project(project_id).by_pipeline_ids(pipeline_ids))
     end
-    scope :by_state, -> (states) do
+    scope :by_state, ->(states) do
       states = Array(states).map(&:to_s)
 
       relation = where(
@@ -105,7 +105,7 @@ module Security
       )
     end
 
-    scope :ordered, -> (severity_order = nil) do
+    scope :ordered, ->(severity_order = nil) do
       order = severity_order == 'severity_asc' ? :asc : :desc
 
       order(severity: order, id: :asc)
