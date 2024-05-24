@@ -41,30 +41,30 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, time_travel_to: '2021-
 
   before_all do
     create(:dora_daily_metrics,
-           deployment_frequency: 5,
-           lead_time_for_changes_in_seconds: 100,
-           environment: environment1,
-           date: date1)
+      deployment_frequency: 5,
+      lead_time_for_changes_in_seconds: 100,
+      environment: environment1,
+      date: date1)
 
     create(:dora_daily_metrics,
-           deployment_frequency: 20,
-           lead_time_for_changes_in_seconds: 10000,
-           incidents_count: 5,
-           environment: environment2,
-           date: date1)
+      deployment_frequency: 20,
+      lead_time_for_changes_in_seconds: 10000,
+      incidents_count: 5,
+      environment: environment2,
+      date: date1)
 
     create(:dora_daily_metrics,
-           deployment_frequency: 50,
-           lead_time_for_changes_in_seconds: 20000,
-           incidents_count: 15,
-           environment: environment1,
-           date: date2)
+      deployment_frequency: 50,
+      lead_time_for_changes_in_seconds: 20000,
+      incidents_count: 15,
+      environment: environment1,
+      date: date2)
 
     create(:dora_daily_metrics,
-           deployment_frequency: 100,
-           lead_time_for_changes_in_seconds: 40000,
-           environment: environment3,
-           date: date2)
+      deployment_frequency: 100,
+      lead_time_for_changes_in_seconds: 40000,
+      environment: environment3,
+      date: date2)
   end
 
   shared_examples 'serialized_data examples' do

@@ -92,9 +92,9 @@ RSpec.describe Gitlab::Insights::Loader do
       stub_licensed_features(dora4_analytics: true)
 
       create(:dora_daily_metrics,
-             time_to_restore_service_in_seconds: 2.days.seconds.to_i,
-             environment: environment,
-             date: Date.today)
+        time_to_restore_service_in_seconds: 2.days.seconds.to_i,
+        environment: environment,
+        date: Date.today)
     end
 
     it 'returns the serialized data' do

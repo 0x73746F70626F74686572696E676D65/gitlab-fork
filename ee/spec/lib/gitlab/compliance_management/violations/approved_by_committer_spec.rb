@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::ComplianceManagement::Violations::ApprovedByCommitter,
-feature_category: :compliance_management do
+  feature_category: :compliance_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:user2) { create(:user) }
   let_it_be(:user3) { create(:user) }

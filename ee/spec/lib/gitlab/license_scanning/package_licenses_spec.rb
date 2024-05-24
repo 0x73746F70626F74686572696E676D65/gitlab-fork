@@ -431,8 +431,8 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
         before do
           create(:software_license, :user_entered, spdx_identifier: 'CUSTOM-0.1')
           create(:pm_package, name: "beego_custom",
-             purl_type: "golang",
-             other_licenses: [{ license_names: ['CUSTOM-0.1'], versions: ["v1.10.0"] }])
+            purl_type: "golang",
+            other_licenses: [{ license_names: ['CUSTOM-0.1'], versions: ["v1.10.0"] }])
         end
 
         let_it_be(:components_to_fetch) do
