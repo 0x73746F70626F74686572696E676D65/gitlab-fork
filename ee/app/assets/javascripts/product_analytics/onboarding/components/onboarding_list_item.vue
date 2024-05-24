@@ -1,7 +1,12 @@
 <script>
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import AnalyticsFeatureListItem from 'ee/analytics/analytics_dashboards/components/list/feature_list_item.vue';
-import { STATE_COMPLETE, STATE_WAITING_FOR_EVENTS, STATE_LOADING_INSTANCE } from '../constants';
+import {
+  STATE_COMPLETE,
+  STATE_WAITING_FOR_EVENTS,
+  STATE_LOADING_INSTANCE,
+  STATE_CREATE_INSTANCE,
+} from '../constants';
 
 import OnboardingState from './onboarding_state.vue';
 
@@ -20,15 +25,30 @@ export default {
     needsSetup() {
       return this.state && this.state !== STATE_COMPLETE;
     },
-    badgeText() {
+    badge() {
       switch (this.state) {
         case STATE_WAITING_FOR_EVENTS:
-          return s__('ProductAnalytics|Waiting for events');
+          return {
+            text: s__('ProductAnalytics|Waiting for events'),
+            popoverText: s__(
+              'ProductAnalytics|An analytics provider has been successfully created, but it has not received any events yet. To continue with the setup, instrument your application and start sending events.',
+            ),
+          };
         case STATE_LOADING_INSTANCE:
-          return s__('ProductAnalytics|Loading instance');
+          return {
+            text: s__('ProductAnalytics|Loading instance'),
+            popoverText: s__(
+              'ProductAnalytics|The system is creating your analytics provider. In the meantime, you can instrument your application.',
+            ),
+          };
         default:
-          return null;
+          return {};
       }
+    },
+    actionText() {
+      return this.state === STATE_CREATE_INSTANCE
+        ? __('Set up')
+        : s__('ProductAnalytics|Continue set up');
     },
   },
   methods: {
@@ -57,8 +77,10 @@ export default {
           'ProductAnalytics|Set up to track how your product is performing and optimize your product and development processes.',
         )
       "
-      :badge-text="badgeText"
+      :badge-text="badge.text"
+      :badge-popover-text="badge.popoverText"
       :to="$options.onboardingRoute"
+      :action-text="actionText"
     />
   </onboarding-state>
 </template>

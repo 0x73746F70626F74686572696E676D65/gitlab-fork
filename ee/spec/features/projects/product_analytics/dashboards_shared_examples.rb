@@ -186,7 +186,7 @@ RSpec.shared_examples 'product analytics dashboards' do
 
               visit_page
               wait_for_requests
-              click_link _('Set up')
+              click_link _('Continue set up')
             end
 
             it 'renders the loading view' do
