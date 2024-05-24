@@ -395,7 +395,7 @@
 {"name":"nap","version":"1.1.0","platform":"ruby","checksum":"949691660f9d041d75be611bb2a8d2fd559c467537deac241f4097d9b5eea576"},
 {"name":"neighbor","version":"0.3.2","platform":"ruby","checksum":"b795bbcc24b1b9ae82d9f7e97a3461b0b3607d24a85a7acbed776bd498e7eba8"},
 {"name":"nenv","version":"0.3.0","platform":"ruby","checksum":"d9de6d8fb7072228463bf61843159419c969edb34b3cef51832b516ae7972765"},
-{"name":"net-http","version":"0.1.1","platform":"ruby","checksum":"75a4e109b6f9af32fad0e98a6180c47aceb415927ca3bd70c8fc3e7dbbabbe86"},
+{"name":"net-http","version":"0.4.1","platform":"ruby","checksum":"a96efc5ea18bcb9715e24dda4159d10f67ff0345c8a980d04630028055b2c282"},
 {"name":"net-http-persistent","version":"4.0.1","platform":"ruby","checksum":"2752f4cce05fd1c45e0537c6f3a98fa5a4899efd5f88e63c104ed5f05cbddef9"},
 {"name":"net-imap","version":"0.3.4","platform":"ruby","checksum":"a82a59e2a429433dc54cae5a8b2979ffe49da8c66085740811bfa337dc3729b5"},
 {"name":"net-ldap","version":"0.17.1","platform":"ruby","checksum":"52571b55f9157120833ac1667f2969ce0139251811d0a9b64657c1c135069cf9"},

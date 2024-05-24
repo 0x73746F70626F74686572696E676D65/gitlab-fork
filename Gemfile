@@ -684,7 +684,7 @@ gem 'telesignenterprise', '~> 2.2' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'net-protocol', '~> 0.1.3' # rubocop:todo Gemfile/MissingFeatureCategory
 # Lock this until we make DNS rebinding work with the updated net-http:
 # https://gitlab.com/gitlab-org/gitlab/-/issues/413528
-gem 'net-http', '= 0.1.1' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'net-http', '= 0.4.1', feature_category: :shared
 
 gem 'duo_api', '~> 1.3' # rubocop:todo Gemfile/MissingFeatureCategory
 
