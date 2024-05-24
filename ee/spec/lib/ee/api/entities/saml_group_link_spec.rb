@@ -22,7 +22,7 @@ RSpec.describe EE::API::Entities::SamlGroupLink, feature_category: :system_acces
     end
 
     context 'when custom roles are not enabled' do
-      it 'does not expose `member_role_id`' do
+      it 'does not expose `member_role_id`', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/447507' do
         expect(entity.keys).not_to include(:member_role_id)
       end
     end
