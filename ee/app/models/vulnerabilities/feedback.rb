@@ -49,8 +49,8 @@ module Vulnerabilities
 
     scope :with_associations, -> { includes(:pipeline, :issue, :merge_request, :author, :comment_author) }
     scope :with_merge_request, -> { includes(merge_request: [:author]) }
-    scope :by_finding_uuid, -> (uuids) { where(finding_uuid: uuids) }
-    scope :by_projects, -> (project) { where(project: project) }
+    scope :by_finding_uuid, ->(uuids) { where(finding_uuid: uuids) }
+    scope :by_projects, ->(project) { where(project: project) }
     scope :order_by_id_asc, -> { order(id: :asc) }
 
     scope :preload_author, -> { preload(:author) }

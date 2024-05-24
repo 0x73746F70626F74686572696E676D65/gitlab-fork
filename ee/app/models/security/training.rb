@@ -13,7 +13,7 @@ module Security
 
     before_destroy :prevent_deleting_primary
 
-    scope :not_including, -> (training) { where.not(id: training.id) }
+    scope :not_including, ->(training) { where.not(id: training.id) }
 
     private
 

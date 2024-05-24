@@ -21,8 +21,8 @@ module Vulnerabilities
     before_save :assign_letter_grade
 
     scope :for_project, ->(project) { where(project_id: project) }
-    scope :by_projects, -> (values) { where(project_id: values) }
-    scope :by_grade, -> (grade) { where(letter_grade: grade) }
+    scope :by_projects, ->(values) { where(project_id: values) }
+    scope :by_grade, ->(grade) { where(letter_grade: grade) }
 
     class << self
       # Takes an object which responds to `#[]` method call

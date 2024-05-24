@@ -21,7 +21,7 @@ module Vulnerabilities
     validates :file, presence: true
     validates :checksum, presence: true
 
-    scope :by_checksum, -> (checksum) { where(checksum: checksum) }
+    scope :by_checksum, ->(checksum) { where(checksum: checksum) }
 
     def diff
       @diff ||= file.read

@@ -24,8 +24,8 @@ module Vulnerabilities
       },
       if: :created?
 
-    scope :by_link_type, -> (link_type) { link_type ? where(link_type: link_type.downcase) : all }
-    scope :for_issue, -> (issue) { where(issue_id: issue) }
+    scope :by_link_type, ->(link_type) { link_type ? where(link_type: link_type.downcase) : all }
+    scope :for_issue, ->(issue) { where(issue_id: issue) }
     scope :with_associations, -> { preload(:issue, vulnerability: [:project]) }
     scope :with_issues, -> { includes(:issue) }
     scope :by_vulnerability, ->(values) { where(vulnerability_id: values) }

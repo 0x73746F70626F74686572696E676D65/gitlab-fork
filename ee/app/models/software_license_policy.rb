@@ -35,8 +35,8 @@ class SoftwareLicensePolicy < ApplicationRecord
   validates :software_license, uniqueness: { scope: [:project_id, :scan_result_policy_id] }
 
   scope :ordered, -> { SoftwareLicensePolicy.includes(:software_license).order("software_licenses.name ASC") }
-  scope :for_project, -> (project) { where(project: project) }
-  scope :for_scan_result_policy_read, -> (scan_result_policy_id) { where(scan_result_policy_id: scan_result_policy_id) }
+  scope :for_project, ->(project) { where(project: project) }
+  scope :for_scan_result_policy_read, ->(scan_result_policy_id) { where(scan_result_policy_id: scan_result_policy_id) }
   scope :with_license, -> { joins(:software_license) }
   scope :including_license, -> { includes(:software_license) }
   scope :including_scan_result_policy_read, -> { includes(:scan_result_policy_read) }
@@ -48,11 +48,11 @@ class SoftwareLicensePolicy < ApplicationRecord
       .where(scan_result_policy_read: { match_on_inclusion_license: false })
   end
 
-  scope :with_license_by_name, -> (license_name) do
+  scope :with_license_by_name, ->(license_name) do
     with_license.where(SoftwareLicense.arel_table[:name].lower.in(Array(license_name).map(&:downcase)))
   end
 
-  scope :by_spdx, -> (spdx_identifier) do
+  scope :by_spdx, ->(spdx_identifier) do
     with_license.where(software_licenses: { spdx_identifier: spdx_identifier })
   end
 

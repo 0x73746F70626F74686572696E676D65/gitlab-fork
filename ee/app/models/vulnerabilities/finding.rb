@@ -103,28 +103,28 @@ module Vulnerabilities
 
     delegate :name, :external_id, to: :scanner, prefix: true, allow_nil: true
 
-    scope :report_type, -> (type) { where(report_type: report_types[type]) }
+    scope :report_type, ->(type) { where(report_type: report_types[type]) }
     scope :ordered, -> { order(severity: :desc, confidence: :desc, id: :asc) }
 
-    scope :by_vulnerability, -> (vulnerability_id) { where(vulnerability: vulnerability_id) }
-    scope :ids_by_vulnerability, -> (vulnerability_id) { by_vulnerability(vulnerability_id).pluck(:id) }
-    scope :by_report_types, -> (values) { where(report_type: values) }
-    scope :by_projects, -> (values) { where(project_id: values) }
-    scope :by_scanners, -> (values) { where(scanner_id: values) }
-    scope :by_severities, -> (values) { where(severity: values) }
-    scope :by_confidences, -> (values) { where(confidence: values) }
-    scope :by_location_fingerprints, -> (values) { where(location_fingerprint: values) }
-    scope :by_project_fingerprints, -> (values) { where(project_fingerprint: values) }
-    scope :by_uuid, -> (uuids) { where(uuid: uuids) }
-    scope :excluding_uuids, -> (uuids) { where.not(uuid: uuids) }
+    scope :by_vulnerability, ->(vulnerability_id) { where(vulnerability: vulnerability_id) }
+    scope :ids_by_vulnerability, ->(vulnerability_id) { by_vulnerability(vulnerability_id).pluck(:id) }
+    scope :by_report_types, ->(values) { where(report_type: values) }
+    scope :by_projects, ->(values) { where(project_id: values) }
+    scope :by_scanners, ->(values) { where(scanner_id: values) }
+    scope :by_severities, ->(values) { where(severity: values) }
+    scope :by_confidences, ->(values) { where(confidence: values) }
+    scope :by_location_fingerprints, ->(values) { where(location_fingerprint: values) }
+    scope :by_project_fingerprints, ->(values) { where(project_fingerprint: values) }
+    scope :by_uuid, ->(uuids) { where(uuid: uuids) }
+    scope :excluding_uuids, ->(uuids) { where.not(uuid: uuids) }
     scope :eager_load_comparison_entities, -> { includes(:scanner, :primary_identifier) }
-    scope :by_primary_identifiers, -> (identifier_ids) { where(primary_identifier: identifier_ids) }
+    scope :by_primary_identifiers, ->(identifier_ids) { where(primary_identifier: identifier_ids) }
 
     scope :all_preloaded, -> do
       preload(:scanner, :identifiers, :feedbacks, project: [:namespace, :project_feature])
     end
 
-    scope :with_false_positive, -> (false_positive) do
+    scope :with_false_positive, ->(false_positive) do
       flags = ::Vulnerabilities::Flag.arel_table
 
       where(
@@ -133,7 +133,7 @@ module Vulnerabilities
       )
     end
 
-    scope :with_fix_available, -> (fix_available) do
+    scope :with_fix_available, ->(fix_available) do
       remediation = ::Vulnerabilities::FindingRemediation.arel_table
       solution_query = where(fix_available ? 'solution IS NOT NULL' : 'solution IS NULL')
       exist_query = where(
@@ -146,15 +146,15 @@ module Vulnerabilities
 
     scope :scoped_project, -> { where('vulnerability_occurrences.project_id = projects.id') }
     scope :eager_load_vulnerability_flags, -> { includes(:vulnerability_flags) }
-    scope :by_location_image, -> (images) do
+    scope :by_location_image, ->(images) do
       where(report_type: REPORT_TYPES_WITH_LOCATION_IMAGE)
         .where("vulnerability_occurrences.location -> 'image' ?| array[:images]", images: images)
     end
-    scope :by_location_cluster, -> (cluster_ids) do
+    scope :by_location_cluster, ->(cluster_ids) do
       where(report_type: 'cluster_image_scanning')
         .where("vulnerability_occurrences.location -> 'kubernetes_resource' -> 'cluster_id' ?| array[:cluster_ids]", cluster_ids: cluster_ids)
     end
-    scope :by_location_cluster_agent, -> (agent_ids) do
+    scope :by_location_cluster_agent, ->(agent_ids) do
       where(report_type: 'cluster_image_scanning')
         .where("vulnerability_occurrences.location -> 'kubernetes_resource' -> 'agent_id' ?| array[:agent_ids]", agent_ids: agent_ids)
     end

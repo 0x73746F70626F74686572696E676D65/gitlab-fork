@@ -17,10 +17,10 @@ module Vulnerabilities
     validates :name, presence: true
     validates :vendor, length: { maximum: 255, allow_nil: false }
 
-    scope :with_external_id, -> (external_ids) { where(external_id: external_ids) }
+    scope :with_external_id, ->(external_ids) { where(external_id: external_ids) }
 
-    scope :for_projects, -> (project_ids) { where(project_id: project_ids) }
-    scope :by_projects, -> (values) { where(project_id: values) }
+    scope :for_projects, ->(project_ids) { where(project_id: project_ids) }
+    scope :by_projects, ->(values) { where(project_id: values) }
     scope :with_report_type, -> do
       lateral = Vulnerabilities::Finding.where(Vulnerabilities::Finding.arel_table[:scanner_id].eq(arel_table[:id])).select(:report_type).limit(1)
 
