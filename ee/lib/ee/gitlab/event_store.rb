@@ -63,6 +63,7 @@ module EE
           subscribe_to_epic_events(store)
           subscribe_to_external_issue_links_events(store)
           subscribe_to_work_item_events(store)
+          subscribe_to_milestone_events(store)
         end
 
         def register_threat_insights_subscribers(store)
@@ -128,6 +129,14 @@ module EE
                       ::Group.actor_from_id(event.data[:namespace_id])) &&
                     ::Epic.find_by_issue_id(event.data[:id]).present?
                 }
+        end
+
+        def subscribe_to_milestone_events(store)
+          store.subscribe ::WorkItems::RolledupDates::UpdateMilestoneRelatedWorkItemDatesEventHandler,
+            to: ::Milestones::MilestoneUpdatedEvent,
+            if: ->(event) {
+              ::WorkItems::RolledupDates::UpdateMilestoneRelatedWorkItemDatesEventHandler.can_handle?(event)
+            }
         end
       end
     end
