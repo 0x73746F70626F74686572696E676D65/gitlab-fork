@@ -39,7 +39,8 @@ RSpec.describe Gitlab::EventStore, feature_category: :shared do
         MergeRequests::ExternalStatusCheckPassedEvent,
         Packages::PackageCreatedEvent,
         Projects::ProjectCreatedEvent,
-        Projects::ProjectDeletedEvent
+        Projects::ProjectDeletedEvent,
+        ::Milestones::MilestoneUpdatedEvent
       ])
     end
   end
