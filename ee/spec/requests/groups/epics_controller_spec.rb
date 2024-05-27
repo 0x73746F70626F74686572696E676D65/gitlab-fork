@@ -16,7 +16,7 @@ RSpec.describe Groups::EpicsController, feature_category: :portfolio_management 
     context 'for summarize notes feature' do
       before do
         allow(Ability).to receive(:allowed?).and_call_original
-        allow(Ability).to receive(:allowed?).with(user, :summarize_notes, epic).and_return(summarize_notes_enabled)
+        allow(Ability).to receive(:allowed?).with(user, :summarize_comments, epic).and_return(summarize_notes_enabled)
       end
 
       context 'when feature is available set' do

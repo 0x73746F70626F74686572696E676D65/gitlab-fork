@@ -26,8 +26,8 @@ module EE
         before_action only: :show do
           push_licensed_feature(:escalation_policies, project)
 
-          if can?(current_user, :summarize_notes, issue)
-            push_licensed_feature(:summarize_notes, project)
+          if can?(current_user, :summarize_comments, issue)
+            push_licensed_feature(:summarize_comments, project)
           end
         end
 

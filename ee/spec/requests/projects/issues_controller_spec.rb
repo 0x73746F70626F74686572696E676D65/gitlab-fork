@@ -81,39 +81,39 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
 
         context 'when feature is available' do
           before do
-            allow(Ability).to receive(:allowed?).with(user, :summarize_notes, issue).and_return(true)
-            stub_licensed_features(summarize_notes: true)
+            allow(Ability).to receive(:allowed?).with(user, :summarize_comments, issue).and_return(true)
+            stub_licensed_features(summarize_comments: true)
           end
 
           it 'exposes the required feature flags' do
             get_show
 
-            expect(response.body).to have_pushed_licensed_features(summarizeNotes: true)
+            expect(response.body).to have_pushed_licensed_features(summarizeComments: true)
           end
         end
 
         context 'when feature is not available' do
           before do
-            allow(Ability).to receive(:allowed?).with(user, :summarize_notes, issue).and_return(false)
+            allow(Ability).to receive(:allowed?).with(user, :summarize_comments, issue).and_return(false)
           end
 
           it 'does not push licensed feature' do
             get_show
 
-            expect(response.body).not_to have_pushed_licensed_features(summarizeNotes: true)
+            expect(response.body).not_to have_pushed_licensed_features(summarizeComments: true)
           end
         end
       end
 
       context 'when user is not a member' do
         before do
-          stub_licensed_features(summarize_notes: true)
+          stub_licensed_features(summarize_comments: true)
         end
 
         it 'does not push licensed feature' do
           get_show
 
-          expect(response.body).not_to have_pushed_licensed_features(summarizeNotes: true)
+          expect(response.body).not_to have_pushed_licensed_features(summarizeComments: true)
         end
       end
     end

@@ -19,7 +19,7 @@ RSpec.describe Llm::GenerateSummaryService, :saas, feature_category: :ai_abstrac
       group.add_guest(user)
 
       allow(Ability).to receive(:allowed?).and_call_original
-      allow(Ability).to receive(:allowed?).with(user, :summarize_notes, resource).and_return(summarize_notes_enabled)
+      allow(Ability).to receive(:allowed?).with(user, :summarize_comments, resource).and_return(summarize_notes_enabled)
     end
 
     subject { described_class.new(current_user, resource, {}).execute }
