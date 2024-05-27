@@ -32042,6 +32042,15 @@ msgstr ""
 msgid "Members|Remove group"
 msgstr ""
 
+msgid "Members|Requested By"
+msgstr ""
+
+msgid "Members|Requested On"
+msgstr ""
+
+msgid "Members|Requested Role"
+msgstr ""
+
 msgid "Members|Revert to LDAP synced settings"
 msgstr ""
 
