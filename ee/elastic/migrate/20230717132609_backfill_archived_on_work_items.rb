@@ -16,3 +16,5 @@ class BackfillArchivedOnWorkItems < Elastic::Migration
     'archived'
   end
 end
+
+BackfillArchivedOnWorkItems.prepend ::Elastic::MigrationObsolete
