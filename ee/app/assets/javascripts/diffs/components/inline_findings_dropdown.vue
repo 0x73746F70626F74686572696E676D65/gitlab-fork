@@ -76,7 +76,10 @@ export default {
           ><span
             class="gl-font-weight-bold gl-text-transform-capitalize gl-text-black-normal gl-align-self-center"
             >{{ item.severity }}: </span
-          ><gl-truncate class="gl-align-self-center" :text="firstSentence(item.text)" />
+          ><gl-truncate
+            class="findings-dropdown-truncate gl-align-self-center"
+            :text="firstSentence(item.text)"
+          />
           <gl-badge
             v-if="findingsStatus(item)"
             variant="neutral"
