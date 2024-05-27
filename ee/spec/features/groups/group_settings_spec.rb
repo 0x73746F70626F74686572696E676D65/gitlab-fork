@@ -221,7 +221,7 @@ RSpec.describe 'Edit group settings', :js, feature_category: :groups_and_project
       it 'deletes the project immediately', :sidekiq_inline do
         expect { remove_with_confirm('Delete group', group.path) }.to change { Group.count }.by(-1)
 
-        expect(page).to have_content "scheduled for deletion"
+        expect(page).to have_content "is being deleted"
       end
 
       def remove_with_confirm(button_text, confirm_with, confirm_button_text = 'Confirm')

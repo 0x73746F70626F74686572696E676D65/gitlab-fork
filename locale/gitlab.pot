@@ -24685,9 +24685,6 @@ msgstr ""
 msgid "Group %{group_name} was exported successfully."
 msgstr ""
 
-msgid "Group %{group_name} was scheduled for deletion."
-msgstr ""
-
 msgid "Group %{group_name} was successfully created."
 msgstr ""
 
@@ -24695,6 +24692,9 @@ msgid "Group '%{group_name}' could not be updated."
 msgstr ""
 
 msgid "Group '%{group_name}' has been successfully restored."
+msgstr ""
+
+msgid "Group '%{group_name}' is being deleted."
 msgstr ""
 
 msgid "Group '%{group_name}' was successfully updated."
@@ -40264,10 +40264,10 @@ msgstr ""
 msgid "Project '%{project_name}' has been successfully restored."
 msgstr ""
 
-msgid "Project '%{project_name}' is being imported."
+msgid "Project '%{project_name}' is being deleted."
 msgstr ""
 
-msgid "Project '%{project_name}' is in the process of being deleted."
+msgid "Project '%{project_name}' is being imported."
 msgstr ""
 
 msgid "Project '%{project_name}' queued for deletion."

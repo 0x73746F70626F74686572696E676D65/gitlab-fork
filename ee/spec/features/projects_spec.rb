@@ -17,7 +17,7 @@ RSpec.describe 'Project', :js, feature_category: :groups_and_projects do
     it 'deletes the project immediately', :sidekiq_inline do
       expect { remove_with_confirm('Delete project', project.path_with_namespace, 'Yes, delete project') }.to change { Project.count }.by(-1)
 
-      expect(page).to have_content "Project '#{project.full_name}' is in the process of being deleted."
+      expect(page).to have_content "Project '#{project.full_name}' is being deleted."
       expect(Project.all.count).to be_zero
     end
 
