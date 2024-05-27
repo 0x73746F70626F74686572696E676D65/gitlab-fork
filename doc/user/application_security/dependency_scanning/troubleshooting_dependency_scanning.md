@@ -198,7 +198,7 @@ and [issue 437278](https://gitlab.com/gitlab-org/gitlab/-/issues/437278).
 
 ## Setting build constraints when scanning Go projects
 
-Dependency scanning runs within a `linux/amd64` container. As a result, the build list generated
+Dependency scanning runs in a `linux/amd64` container. As a result, the build list generated
 for a Go project contains dependencies that are compatible with this environment. If your deployment environment is not
 `linux/amd64`, the final list of dependencies might contain additional incompatible
 modules. The dependency list might also omit modules that are only compatible with your deployment environment. To prevent
