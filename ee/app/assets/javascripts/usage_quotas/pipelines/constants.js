@@ -64,9 +64,9 @@ export const LABEL_BUY_ADDITIONAL_MINUTES = s__('UsageQuota|Buy additional compu
 export const LABEL_CI_MINUTES_DISABLED = s__(
   'UsageQuota|%{linkStart}Instance runners%{linkEnd} are disabled, so there are no limits set on pipeline usage',
 );
-export const ADDITIONAL_MINUTES_HELP_LINK = helpPagePath('ci/pipelines/cicd_minutes', {
+export const ADDITIONAL_MINUTES_HELP_LINK = helpPagePath('ci/pipelines/compute_minutes', {
   anchor: 'purchase-additional-units-of-compute',
 });
 export const SHARED_RUNNERS_DOC_LINK = helpPagePath('ci/runners/index.md');
-export const CI_MINUTES_HELP_LINK = helpPagePath('ci/pipelines/cicd_minutes');
+export const CI_MINUTES_HELP_LINK = helpPagePath('ci/pipelines/compute_minutes');
 export const CI_MINUTES_HELP_LINK_LABEL = __('Instance runners help link');
