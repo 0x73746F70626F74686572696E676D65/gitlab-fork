@@ -233,7 +233,6 @@ RSpec.describe 'SAML provider settings', feature_category: :system_access do
             click_link 'Sign in with single sign-on'
 
             expect(page).to have_current_path group_path(group), ignore_query: true
-            expect(page).to have_content('Already signed in')
           end
         end
       end

@@ -39,13 +39,6 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
     redirect_to after_sign_in_path_for(current_user)
   end
 
-  override :redirect_identity_exists
-  def redirect_identity_exists
-    flash[:notice] = "Already signed in with SAML for #{@unauthenticated_group.name}"
-
-    redirect_to after_sign_in_path_for(current_user)
-  end
-
   override :redirect_identity_link_failed
   def redirect_identity_link_failed(error_message)
     flash[:alert] = format(

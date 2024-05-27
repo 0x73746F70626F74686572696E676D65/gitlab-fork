@@ -69,7 +69,7 @@ module QA
 
           page.visit managed_group_url
 
-          expect(page).to have_content("Already signed in with SAML for #{group.path}")
+          expect(page.current_url).to include(group.full_path)
         end
       end
 
