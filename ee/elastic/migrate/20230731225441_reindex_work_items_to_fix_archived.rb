@@ -11,3 +11,5 @@ class ReindexWorkItemsToFixArchived < Elastic::Migration
   NEW_SCHEMA_VERSION = 23_08
   UPDATE_BATCH_SIZE = 100
 end
+
+ReindexWorkItemsToFixArchived.prepend ::Elastic::MigrationObsolete
