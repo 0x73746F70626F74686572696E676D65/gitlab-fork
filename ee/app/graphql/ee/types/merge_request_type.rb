@@ -17,6 +17,11 @@ module EE
           null: true,
           description: 'Number of merge requests in the merge train.'
 
+        field :merge_train_index, GraphQL::Types::Int,
+          null: true,
+          description: 'Zero-based position of the merge request in the merge train. ' \
+            'Returns `null` if the merge request is not in a merge train.'
+
         field :has_security_reports, GraphQL::Types::Boolean,
           null: false, calls_gitaly: true,
           method: :has_security_reports?,
@@ -29,15 +34,15 @@ module EE
 
         field :approval_state, ::Types::MergeRequests::ApprovalStateType,
           null: false,
-          description: 'Information relating to rules that must be satisfied to merge this merge request.'
+          description: 'Information relating to rules that must be satisfied to merge the merge request.'
 
         field :suggested_reviewers, ::Types::AppliedMl::SuggestedReviewersType,
           null: true,
           alpha: { milestone: '15.4' },
           description: 'Suggested reviewers for merge request. ' \
-                       'Returns `null` if `suggested_reviewers` feature flag is disabled. ' \
-                       'This flag is disabled by default and only available on GitLab.com ' \
-                       'because the feature is experimental and is subject to change without notice.'
+            'Returns `null` if `suggested_reviewers` feature flag is disabled. ' \
+            'This flag is disabled by default and only available on GitLab.com ' \
+            'because the feature is experimental and is subject to change without notice.'
 
         field :blocking_merge_requests, ::Types::MergeRequests::BlockingMergeRequestsType,
           null: true,
@@ -49,7 +54,7 @@ module EE
           null: true,
           alpha: { milestone: '16.2' },
           extras: [:lookahead],
-          description: 'Diff versions of a merge request'
+          description: 'Diff versions of a merge request.'
 
         field :finding_reports_comparer,
           type: ::Types::Security::FindingReportsComparerType,
@@ -63,7 +68,7 @@ module EE
           null: true,
           alpha: { milestone: '17.0' },
           description: 'Policy violations reported on the merge request. ' \
-                       'Returns `null` if `save_policy_violation_data` feature flag is disabled.',
+            'Returns `null` if `save_policy_violation_data` feature flag is disabled.',
           resolver: ::Resolvers::SecurityOrchestration::PolicyViolationsResolver
       end
 
@@ -71,6 +76,12 @@ module EE
         return unless object.target_project.merge_trains_enabled?
 
         object.merge_train.car_count
+      end
+
+      def merge_train_index
+        return unless object.target_project.merge_trains_enabled?
+
+        object.merge_train_car&.index
       end
 
       def suggested_reviewers
@@ -83,8 +94,7 @@ module EE
         object
       end
 
-      # rubocop:disable CodeReuse/ActiveRecord
-      # Cop is disabled because we only want to call `includes` in this class.
+      # rubocop:disable CodeReuse/ActiveRecord -- Cop is disabled because we only want to call `includes` in this class.
       def merge_request_diffs(lookahead:)
         # We include `merge_request` by default because of policy check in `MergeRequestDiffType`
         # which can result to N+1.
