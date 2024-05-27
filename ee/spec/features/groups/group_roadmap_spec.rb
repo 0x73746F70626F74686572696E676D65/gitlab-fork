@@ -295,32 +295,32 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
             page.within('.roadmap-container .epics-list-section') do
               expect(page).to have_selector('.epics-list-item .epic-title', count: 3)
               expect(epic_titles).to eq([
-                                          closed_epic.title,
+                closed_epic.title,
                                           epic_with_critical.title,
                                           epic_with_bug.title
-                                        ])
+              ])
 
               expand_epic_at(0)
 
               expect(page).to have_selector('.epics-list-item .epic-title', count: 4)
               expect(epic_titles).to eq([
-                                          closed_epic.title,
+                closed_epic.title,
                                           epic_with_critical.title,
                                           epic_with_bug.title,
                                           sub_epic.title
-                                        ])
+              ])
             end
 
             page.within('.roadmap-container .epics-list-section') do
               expand_epic_at(0)
               expect(page).to have_selector('.epics-list-item .epic-title', count: 5)
               expect(epic_titles).to eq([
-                                          closed_epic.title,
+                closed_epic.title,
                                           epic_with_critical.title,
                                           epic_with_bug.title,
                                           sub_epic.title,
                                           sub_sub_epic.title
-                                        ])
+              ])
             end
           end
         end
@@ -386,25 +386,25 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         page.within('.roadmap-container .epics-list-section') do
           expect(page).to have_selector('.epics-list-item .epic-title', count: 5)
           expect(epic_titles).to eq([
-                                      closed_epic.title,
+            closed_epic.title,
                                       epic_with_critical.title,
                                       parent_epic1.title,
                                       parent_epic2.title,
                                       epic_with_bug.title
-                                    ])
+          ])
 
           expand_epic_at(0)
 
           expect(page).to have_selector('.epics-list-item .epic-title', count: 7)
           expect(epic_titles).to eq([
-                                      closed_epic.title,
+            closed_epic.title,
                                       epic_with_critical.title,
                                       parent_epic1.title,
                                       child_epic1.title,
                                       child_epic2.title,
                                       parent_epic2.title,
                                       epic_with_bug.title
-                                    ])
+          ])
         end
 
         toggle_sort_direction
@@ -412,25 +412,25 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
         page.within('.roadmap-container .epics-list-section') do
           expect(page).to have_selector('.epics-list-item .epic-title', count: 5)
           expect(epic_titles).to eq([
-                                      epic_with_bug.title,
+            epic_with_bug.title,
                                       parent_epic2.title,
                                       parent_epic1.title,
                                       closed_epic.title,
                                       epic_with_critical.title
-                                    ])
+          ])
 
           expand_epic_at(2)
 
           expect(page).to have_selector('.epics-list-item .epic-title', count: 7)
           expect(epic_titles).to eq([
-                                      epic_with_bug.title,
+            epic_with_bug.title,
                                       parent_epic2.title,
                                       parent_epic1.title,
                                       child_epic2.title,
                                       child_epic1.title,
                                       closed_epic.title,
                                       epic_with_critical.title
-                                    ])
+          ])
         end
       end
 

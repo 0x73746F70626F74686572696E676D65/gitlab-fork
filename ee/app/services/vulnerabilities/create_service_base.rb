@@ -37,7 +37,7 @@ module Vulnerabilities
     def initialize_vulnerability(vulnerability_hash)
       attributes = vulnerability_hash
         .slice(*%i[
-                 description
+          description
                  state
                  severity
                  confidence
@@ -45,7 +45,7 @@ module Vulnerabilities
                  confirmed_at
                  resolved_at
                  dismissed_at
-               ])
+        ])
         .merge(
           project: @project,
           author: @author,

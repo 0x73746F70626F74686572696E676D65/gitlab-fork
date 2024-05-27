@@ -18,15 +18,15 @@ RSpec.describe SearchController, '(JavaScript fixtures)', type: :controller do
     let(:project) { create(:project, :public, :repository, namespace: namespace, path: 'search-project') }
     let(:blobs) do
       Kaminari.paginate_array([
-                                Gitlab::Search::FoundBlob.new(
-                                  path: 'CHANGELOG',
-                                  basename: 'CHANGELOG',
-                                  ref: 'master',
-                                  data: "hello\nworld\nfoo\nbar # this is the highlight\nbaz\nboo\nbat",
-                                  project: project,
-                                  project_id: project.id,
-                                  startline: 2,
-                                  highlight_line: 4),
+        Gitlab::Search::FoundBlob.new(
+          path: 'CHANGELOG',
+          basename: 'CHANGELOG',
+          ref: 'master',
+          data: "hello\nworld\nfoo\nbar # this is the highlight\nbaz\nboo\nbat",
+          project: project,
+          project_id: project.id,
+          startline: 2,
+          highlight_line: 4),
                                 Gitlab::Search::FoundBlob.new(
                                   path: 'CONTRIBUTING',
                                   basename: 'CONTRIBUTING',
@@ -45,7 +45,7 @@ RSpec.describe SearchController, '(JavaScript fixtures)', type: :controller do
                                   project_id: project.id,
                                   startline: 2,
                                   highlight_line: 2)
-                              ],
+      ],
         total_count: 3,
         limit: 3,
         offset: 0)

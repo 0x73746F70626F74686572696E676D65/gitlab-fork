@@ -40,17 +40,17 @@ RSpec.describe Resolvers::Analytics::ContributionAnalytics::ContributionsResolve
           contributions = resolve_contributions(args)
 
           expect(contributions).to eq([
-                                        {
-                                          user: user,
-                                          issues_closed: 0,
-                                          issues_created: 1,
-                                          merge_requests_approved: 0,
-                                          merge_requests_closed: 0,
-                                          merge_requests_created: 0,
-                                          merge_requests_merged: 0,
-                                          push: 1,
-                                          total_events: 2
-                                        },
+            {
+              user: user,
+              issues_closed: 0,
+              issues_created: 1,
+              merge_requests_approved: 0,
+              merge_requests_closed: 0,
+              merge_requests_created: 0,
+              merge_requests_merged: 0,
+              push: 1,
+              total_events: 2
+            },
                                         {
                                           user: another_user,
                                           issues_closed: 0,
@@ -62,7 +62,7 @@ RSpec.describe Resolvers::Analytics::ContributionAnalytics::ContributionsResolve
                                           push: 1,
                                           total_events: 1
                                         }
-                                      ])
+          ])
         end
 
         context 'when the date range is too wide' do

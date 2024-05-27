@@ -34,9 +34,9 @@ module Autocomplete
       return invited_groups if with_project_access?(project)
 
       Group.from_union([
-                         invited_groups.public_to_user(current_user),
+        invited_groups.public_to_user(current_user),
                          invited_groups.for_authorized_group_members(current_user)
-                       ])
+      ])
     end
 
     def with_project_access?(project)
