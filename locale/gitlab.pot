@@ -9212,7 +9212,7 @@ msgstr ""
 msgid "BranchRules|Update target branch"
 msgstr ""
 
-msgid "BranchRules|Users"
+msgid "BranchRules|Users & groups"
 msgstr ""
 
 msgid "BranchRules|View details"

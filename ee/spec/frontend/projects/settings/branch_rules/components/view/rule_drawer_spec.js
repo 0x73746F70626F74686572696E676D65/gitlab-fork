@@ -7,7 +7,8 @@ import { allowedToMergeDrawerProps } from './mock_data';
 describe('Edit Rule Drawer', () => {
   let wrapper;
 
-  const findItemsSelector = () => wrapper.findComponent(ItemsSelector);
+  const findUsersSelector = () => wrapper.findByTestId('users-selector');
+  const findGroupsSelector = () => wrapper.findByTestId('groups-selector');
   const findSaveButton = () => wrapper.findByText('Save changes');
 
   const createComponent = (props = allowedToMergeDrawerProps) => {
@@ -24,7 +25,7 @@ describe('Edit Rule Drawer', () => {
   });
 
   it('Renders Item Selector with  users', () => {
-    expect(findItemsSelector().props('items')).toMatchObject([
+    expect(findUsersSelector().props('items')).toMatchObject([
       {
         __typename: 'UserCore',
         avatarUrl: 'test.com/user.png',
@@ -36,8 +37,12 @@ describe('Edit Rule Drawer', () => {
     ]);
   });
 
+  it('Renders Item Selector with groups', () => {
+    expect(findGroupsSelector().props('items')).toMatchObject([]);
+  });
+
   it('enables the save button when users or groups are selected', async () => {
-    findItemsSelector().vm.$emit('change', ['some data']);
+    findUsersSelector().vm.$emit('change', ['some data']);
     await nextTick();
     expect(findSaveButton().attributes('disabled')).toBeUndefined();
   });

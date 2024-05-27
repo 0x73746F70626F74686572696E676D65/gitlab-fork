@@ -143,6 +143,10 @@ export const branchProtectionsMockResponse = {
     project: {
       id: 'gid://gitlab/Project/6',
       __typename: 'Project',
+      group: {
+        id: 'gid://gitlab/Group/1',
+        __typename: 'Group',
+      },
       branchRules: {
         __typename: 'BranchRuleConnection',
         nodes: [
@@ -213,6 +217,10 @@ export const predefinedBranchRulesMockResponse = {
     project: {
       id: 'gid://gitlab/Project/1',
       __typename: 'Project',
+      group: {
+        id: 'gid://gitlab/Group/1',
+        __typename: 'Group',
+      },
       branchRules: {
         __typename: 'BranchRuleConnection',
         nodes: [

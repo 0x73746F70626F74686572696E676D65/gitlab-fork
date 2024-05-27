@@ -1,6 +1,9 @@
 query getBranchRulesDetailsEE($projectPath: ID!) {
   project(fullPath: $projectPath) {
     id
+    group {
+      id
+    }
     branchRules {
       nodes {
         name
@@ -15,7 +18,9 @@ query getBranchRulesDetailsEE($projectPath: ID!) {
                 accessLevelDescription
                 group {
                   id
+                  name
                   avatarUrl
+                  webUrl
                 }
                 user {
                   id
@@ -34,7 +39,9 @@ query getBranchRulesDetailsEE($projectPath: ID!) {
                 accessLevelDescription
                 group {
                   id
+                  name
                   avatarUrl
+                  webUrl
                 }
                 user {
                   id
