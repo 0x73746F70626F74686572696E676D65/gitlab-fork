@@ -34,7 +34,7 @@ module QA
       end
 
       it(
-        'searches public project and finds a blob as an non-member user',
+        'searches public project and finds a blob as an non-member user', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348063'
       ) do
         successful_search(non_member_api_client)
