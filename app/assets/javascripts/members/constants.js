@@ -7,7 +7,7 @@ import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/consta
 export const EE_GROUPS_APP_OPTIONS = {};
 export const EE_PROJECTS_APP_OPTIONS = {};
 
-export const EE_ACTION_BUTTONS = {};
+export const ACTION_BUTTONS = {};
 
 export const FIELD_KEY_ACCOUNT = 'account';
 export const FIELD_KEY_SOURCE = 'source';

@@ -62,7 +62,7 @@ export const MEMBER_TYPES = Object.freeze({
 });
 
 // eslint-disable-next-line import/export
-export const EE_ACTION_BUTTONS = {
+export const ACTION_BUTTONS = {
   [MEMBER_TYPES.banned]: 'banned-action-buttons',
 };
 
