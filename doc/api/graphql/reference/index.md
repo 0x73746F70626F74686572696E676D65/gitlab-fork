@@ -9472,7 +9472,7 @@ Input type: `VerifiedNamespaceCreateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationverifiednamespacecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationverifiednamespacecreatenamespacepath"></a>`namespacePath` | [`ID!`](#id) | Root namespace path. |
-| <a id="mutationverifiednamespacecreateverificationlevel"></a>`verificationLevel` | [`String!`](#string) | Verification level used to indicate the verification for namespace given by Gitlab. |
+| <a id="mutationverifiednamespacecreateverificationlevel"></a>`verificationLevel` | [`CiCatalogResourceVerificationLevel!`](#cicatalogresourceverificationlevel) | Verification level used to indicate the verification for namespace given by Gitlab. |
 
 #### Fields
 

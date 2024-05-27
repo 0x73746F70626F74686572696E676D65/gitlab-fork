@@ -22,7 +22,7 @@ module Mutations
             description: 'Root namespace path.'
 
           argument :verification_level,
-            type: ::GraphQL::Types::String,
+            Types::Ci::Catalog::Resources::VerificationLevelEnum,
             required: true,
             description: 'Verification level used to indicate the verification for namespace given by Gitlab.'
 
