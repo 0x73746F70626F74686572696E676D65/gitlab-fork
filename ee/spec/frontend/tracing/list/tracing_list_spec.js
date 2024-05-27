@@ -1,7 +1,6 @@
 import { GlLoadingIcon, GlInfiniteScroll, GlSprintf } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import TracingAnalytics from 'ee/tracing/list/tracing_analytics.vue';
-import { filterObjToFilterToken } from 'ee/tracing/list/filter_bar/filters';
 import FilteredSearch from 'ee/tracing/list/filter_bar/tracing_filtered_search.vue';
 import TracingTableList from 'ee/tracing/list/tracing_table.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -35,7 +34,7 @@ describe('TracingList', () => {
     await waitForPromises();
   };
   const setFilters = async (filters) => {
-    findFilteredSearch().vm.$emit('submit', filterObjToFilterToken(filters));
+    findFilteredSearch().vm.$emit('filter', filters);
     await waitForPromises();
   };
 
@@ -245,20 +244,18 @@ describe('TracingList', () => {
     });
 
     it('renders FilteredSeach with initial filters and sort order parsed from window.location', () => {
-      expect(findFilteredSearch().props('initialFilters')).toEqual(
-        filterObjToFilterToken({
-          period: [{ operator: '=', value: '4h' }],
-          service: [
-            { operator: '=', value: 'loadgenerator' },
-            { operator: '=', value: 'test-service' },
-          ],
-          operation: [{ operator: '=', value: 'test-op' }],
-          traceId: [{ operator: '=', value: 'test_trace' }],
-          durationMs: [{ operator: '>', value: '100' }],
-          attribute: [{ operator: '=', value: 'foo=bar' }],
-          status: [{ operator: '=', value: 'ok' }],
-        }),
-      );
+      expect(findFilteredSearch().props('attributesFilters')).toEqual({
+        period: [{ operator: '=', value: '4h' }],
+        service: [
+          { operator: '=', value: 'loadgenerator' },
+          { operator: '=', value: 'test-service' },
+        ],
+        operation: [{ operator: '=', value: 'test-op' }],
+        traceId: [{ operator: '=', value: 'test_trace' }],
+        durationMs: [{ operator: '>', value: '100' }],
+        attribute: [{ operator: '=', value: 'foo=bar' }],
+        status: [{ operator: '=', value: 'ok' }],
+      });
       expect(findFilteredSearch().props('initialSort')).toBe('duration_desc');
     });
 
@@ -273,11 +270,9 @@ describe('TracingList', () => {
       setWindowLocation('?sortBy=duration_desc');
       await mountComponent();
 
-      expect(findFilteredSearch().props('initialFilters')).toEqual(
-        filterObjToFilterToken({
-          period: [{ operator: '=', value: '1h' }],
-        }),
-      );
+      expect(findFilteredSearch().props('attributesFilters')).toEqual({
+        period: [{ operator: '=', value: '1h' }],
+      });
     });
 
     it('renders UrlSync and sets query prop', () => {
@@ -402,77 +397,15 @@ describe('TracingList', () => {
         });
       });
 
-      it('updates FilteredSearch initialFilters', () => {
-        expect(findFilteredSearch().props('initialFilters')).toEqual(
-          filterObjToFilterToken({
-            period: [{ operator: '=', value: '12h' }],
-            service: [{ operator: '=', value: 'frontend' }],
-            operation: [{ operator: '=', value: 'op' }],
-            traceId: [{ operator: '=', value: 'another_trace' }],
-            durationMs: [{ operator: '>', value: '200' }],
-            attribute: [{ operator: '=', value: 'foo=baz' }],
-            status: [{ operator: '=', value: 'error' }],
-          }),
-        );
-      });
-
-      it('sets the 1h period filter if not specified otherwise', async () => {
-        await setFilters({});
-
-        const expectedFilters = {
-          period: [{ operator: '=', value: '1h' }],
-          service: undefined,
-          operation: undefined,
-          traceId: undefined,
-          durationMs: undefined,
-          attribute: undefined,
-          status: undefined,
-        };
-
-        expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
-          filters: { ...expectedFilters },
-          pageSize: 50,
-          pageToken: null,
-          sortBy: 'duration_desc',
-          abortController: expect.any(AbortController),
-        });
-        expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenLastCalledWith({
-          filters: { ...expectedFilters },
-          abortController: expect.any(AbortController),
-        });
-
-        expect(findFilteredSearch().props('initialFilters')).toEqual(
-          filterObjToFilterToken({
-            period: [{ operator: '=', value: '1h' }],
-            service: null,
-            operation: null,
-            traceId: null,
-            durationMs: null,
-            attribute: null,
-            status: null,
-          }),
-        );
-
-        expect(findUrlSync().props('query')).toEqual({
-          attribute: null,
-          durationMs: null,
-          'filtered-search-term': null,
-          'gt[durationMs]': null,
-          'lt[durationMs]': null,
-          'not[attribute]': null,
-          'not[durationMs]': null,
-          'not[filtered-search-term]': null,
-          'not[operation]': null,
-          'not[period]': null,
-          'not[service]': null,
-          'not[trace_id]': null,
-          'not[status]': null,
-          operation: null,
-          period: ['1h'],
-          service: null,
-          sortBy: 'duration_desc',
-          trace_id: null,
-          status: null,
+      it('updates FilteredSearch attributesFilters', () => {
+        expect(findFilteredSearch().props('attributesFilters')).toEqual({
+          period: [{ operator: '=', value: '12h' }],
+          service: [{ operator: '=', value: 'frontend' }],
+          operation: [{ operator: '=', value: 'op' }],
+          traceId: [{ operator: '=', value: 'another_trace' }],
+          durationMs: [{ operator: '>', value: '200' }],
+          attribute: [{ operator: '=', value: 'foo=baz' }],
+          status: [{ operator: '=', value: 'error' }],
         });
       });
     });

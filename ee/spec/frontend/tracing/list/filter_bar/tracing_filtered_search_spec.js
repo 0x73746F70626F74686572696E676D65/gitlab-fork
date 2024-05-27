@@ -7,24 +7,27 @@ import AttributeSearchToken from 'ee/tracing/list/filter_bar/attribute_search_to
 import TracingListFilteredSearch from 'ee/tracing/list/filter_bar/tracing_filtered_search.vue';
 import TracingBaseSearchToken from 'ee/tracing/list/filter_bar/tracing_base_search_token.vue';
 import { createMockClient } from 'helpers/mock_observability_client';
+import { filterObjToFilterToken } from 'ee/tracing/list/filter_bar/filters';
 
 describe('TracingListFilteredSearch', () => {
   let wrapper;
   let observabilityClientMock;
 
-  const initialFilters = [
-    { type: 'period', value: '1h' },
-    { type: 'service_name', value: 'example-service' },
-  ];
+  const defaultProps = {
+    attributesFilters: {
+      period: [{ operator: '=', value: '1h' }],
+      service: [{ operator: '=', value: 'example-service' }],
+    },
+    initialSort: 'duration_desc',
+  };
 
   beforeEach(() => {
     observabilityClientMock = createMockClient();
 
     wrapper = shallowMountExtended(TracingListFilteredSearch, {
       propsData: {
-        initialFilters,
+        ...defaultProps,
         observabilityClient: observabilityClientMock,
-        initialSort: 'duration_desc',
       },
     });
   });
@@ -36,20 +39,29 @@ describe('TracingListFilteredSearch', () => {
     expect(wrapper.exists()).toBe(true);
   });
 
-  it('sets initialFilters prop correctly', () => {
-    expect(findFilteredSearch().props('initialFilterValue')).toEqual(initialFilters);
+  it('sets filtered-search initialFilterValue prop correctly', () => {
+    expect(findFilteredSearch().props('initialFilterValue')).toEqual(
+      filterObjToFilterToken(defaultProps.attributesFilters),
+    );
   });
 
-  it('emits submit event on filtered search filter', () => {
-    findFilteredSearch().vm.$emit('onFilter', { filters: [{ type: 'period', value: '1h' }] });
+  it('emits submit event on filtered search filter', async () => {
+    const filterObj = {
+      period: [{ operator: '=', value: '24h' }],
+      service: [{ operator: '=', value: 'some-service' }],
+    };
 
-    expect(wrapper.emitted('submit')).toStrictEqual([
-      [
-        {
-          filters: [{ type: 'period', value: '1h' }],
-        },
-      ],
-    ]);
+    const filterTokens = filterObjToFilterToken(filterObj);
+    await findFilteredSearch().vm.$emit('onFilter', filterTokens);
+
+    expect(wrapper.emitted('filter')).toEqual([[filterObj]]);
+    expect(findFilteredSearch().props('initialFilterValue')).toEqual(filterTokens);
+  });
+
+  it('sets the default period filter if not specified', async () => {
+    await findFilteredSearch().vm.$emit('onFilter', filterObjToFilterToken({}));
+
+    expect(wrapper.emitted('filter')).toEqual([[{ period: [{ operator: '=', value: '1h' }] }]]);
   });
 
   describe('sorting', () => {

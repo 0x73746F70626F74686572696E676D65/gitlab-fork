@@ -14,6 +14,8 @@ import {
   STATUS_FILTER_TOKEN_TYPE,
   PERIOD_FILTER_OPTIONS,
   MAX_PERIOD_DAYS,
+  filterObjToFilterToken,
+  filterTokensToFilterObj,
 } from './filters';
 import ServiceToken from './service_search_token.vue';
 import OperationToken from './operation_search_token.vue';
@@ -28,10 +30,10 @@ export default {
     searchInputPlaceholder: s__('Tracing|Filter traces'),
   },
   props: {
-    initialFilters: {
-      type: Array,
+    attributesFilters: {
+      type: Object,
       required: false,
-      default: () => [],
+      default: () => {},
     },
     observabilityClient: {
       required: true,
@@ -41,6 +43,11 @@ export default {
       required: true,
       type: String,
     },
+  },
+  data() {
+    return {
+      attributesFilterValue: filterObjToFilterToken(this.attributesFilters),
+    };
   },
   computed: {
     sortOptions() {
@@ -123,6 +130,15 @@ export default {
       ];
     },
   },
+  methods: {
+    onAttributesFilters(attributesFilters) {
+      this.attributesFilterValue = attributesFilters;
+      this.submitFilter();
+    },
+    submitFilter() {
+      this.$emit('filter', filterTokensToFilterObj(this.attributesFilterValue));
+    },
+  },
 };
 </script>
 
@@ -134,11 +150,11 @@ export default {
       namespace="tracing-list-filtered-search"
       :search-input-placeholder="$options.i18n.searchInputPlaceholder"
       :tokens="availableTokens"
-      :initial-filter-value="initialFilters"
+      :initial-filter-value="attributesFilterValue"
       terms-as-tokens
       :sort-options="sortOptions"
       sync-filter-and-sort
-      @onFilter="$emit('submit', $event)"
+      @onFilter="onAttributesFilters"
       @onSort="$emit('sort', $event)"
     />
   </div>
