@@ -9,7 +9,7 @@ import { copySubscriptionIdButtonText, detailsLabels, subscriptionTypes } from '
 
 const placeholderHeightFactor = 32;
 const placeholderWidth = 180;
-const DEFAULT_TD_CLASSES = 'gl-border-none! gl-h-7 gl-line-height-normal! gl-p-0!';
+const DEFAULT_TD_CLASSES = 'gl-border-none! gl-h-7 gl-leading-normal! gl-p-0!';
 const itemDetailTestId = (v, k, item) => ({ 'data-testid': `${slugify(item.detail || '')}` });
 
 export default {

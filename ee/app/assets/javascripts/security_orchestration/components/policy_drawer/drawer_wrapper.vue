@@ -105,7 +105,7 @@ export default {
   >
     <template v-if="policy" #title>
       <gl-truncate
-        class="gl-font-size-h2 gl-font-weight-bold gl-line-height-24 gl-max-w-34"
+        class="gl-font-size-h2 gl-font-weight-bold gl-leading-24 gl-max-w-34"
         :text="policy.name"
         with-tooltip
       />

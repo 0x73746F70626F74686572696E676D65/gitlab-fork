@@ -83,7 +83,7 @@ export default {
       </gl-button>
 
       <gl-collapse v-model="isExpanded" class="gl-ml-5 gl-pl-2">
-        <h4 class="gl-font-base gl-line-height-20 gl-mt-5 gl-mb-3">
+        <h4 class="gl-font-base gl-leading-20 gl-mt-5 gl-mb-3">
           {{ $options.i18n.promoTitle }}
         </h4>
         <div class="gl-display-flex">

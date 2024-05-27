@@ -219,7 +219,7 @@ export default {
           >
             <span
               data-testid="color-header-title"
-              class="gl-flex-grow-1 gl-font-weight-bold gl-font-sm gl-pr-2 gl-line-height-normal"
+              class="gl-flex-grow-1 gl-font-weight-bold gl-font-sm gl-pr-2 gl-leading-normal"
             >
               {{ __('Select a color') }}
             </span>

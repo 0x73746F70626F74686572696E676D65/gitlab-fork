@@ -143,10 +143,10 @@ export default {
       class="gl-display-grid scan-reports-summary-grid gl-align-items-center gl-gap-y-2 gl-my-3"
     >
       <template v-for="[scanType, scanSummary] in formattedSummary">
-        <div :key="scanType" class="gl-line-height-24">
+        <div :key="scanType" class="gl-leading-24">
           {{ scanType }}
         </div>
-        <div :key="`${scanType}-count`" class="gl-line-height-24">
+        <div :key="`${scanType}-count`" class="gl-leading-24">
           <gl-sprintf :message="$options.i18n.vulnerabilities(scanSummary.vulnerabilitiesCount)" />
         </div>
         <div

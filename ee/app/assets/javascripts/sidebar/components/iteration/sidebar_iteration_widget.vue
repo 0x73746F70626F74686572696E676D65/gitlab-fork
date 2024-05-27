@@ -77,7 +77,7 @@ export default {
         {{ getCadenceTitle(currentAttribute) }}
       </p>
       <gl-link
-        class="gl-text-gray-900! gl-line-height-20"
+        class="gl-text-gray-900! gl-leading-20"
         :href="attributeUrl"
         data-testid="iteration-link"
       >

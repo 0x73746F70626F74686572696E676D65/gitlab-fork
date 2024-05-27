@@ -89,10 +89,7 @@ export default {
       v-if="loading"
       class="gl-animate-skeleton-loader gl-max-w-26 gl-h-7 gl-rounded-base gl-my-3"
     ></div>
-    <div
-      v-else
-      class="gl-font-size-h-display gl-font-weight-bold gl-line-height-ratio-1000 gl-my-3"
-    >
+    <div v-else class="gl-font-size-h-display gl-font-weight-bold gl-leading-1 gl-my-3">
       <number-to-human-size label-class="gl-font-lg" :value="usedStorage" plain-zero />
       <template v-if="totalStorageAvailable">
         /

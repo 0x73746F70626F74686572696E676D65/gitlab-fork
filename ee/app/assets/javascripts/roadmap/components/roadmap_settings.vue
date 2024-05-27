@@ -82,7 +82,7 @@ export default {
     @close="$emit('toggleSettings', $event)"
   >
     <template #title>
-      <h2 class="gl-my-0 gl-font-size-h2 gl-line-height-24">{{ __('Roadmap settings') }}</h2>
+      <h2 class="gl-my-0 gl-font-size-h2 gl-leading-24">{{ __('Roadmap settings') }}</h2>
     </template>
     <template #default>
       <roadmap-daterange @setDateRange="setLocalSettings" />

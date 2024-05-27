@@ -115,7 +115,7 @@ export default {
     active
   >
     <gl-form class="gl-pt-3" @submit.prevent="updateServiceLevelAgreementSettings">
-      <p class="gl-line-height-20">
+      <p class="gl-leading-20">
         {{ $options.i18n.description }}
       </p>
       <gl-form-checkbox v-model="enabled" class="gl-my-4">
@@ -141,7 +141,7 @@ export default {
           />
           <gl-form-select
             v-model="unit"
-            class="gl-w-auto gl-ml-3 gl-line-height-normal gl-border-gray-400"
+            class="gl-w-auto gl-ml-3 gl-leading-normal gl-border-gray-400"
             :options="$options.selectOptions"
           />
         </div>

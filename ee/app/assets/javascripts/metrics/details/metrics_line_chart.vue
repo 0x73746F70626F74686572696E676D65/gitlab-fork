@@ -120,7 +120,7 @@ export default {
           data-testid="metric-tooltip-content"
           class="gl-display-flex gl-justify-content-space-between gl-font-sm gl-mb-1"
         >
-          <gl-chart-series-label :color="metric.color" class="gl-line-height-normal gl-mr-7">
+          <gl-chart-series-label :color="metric.color" class="gl-leading-normal gl-mr-7">
             <div v-for="attr in metric.attributes" :key="attr.key + attr.value">
               <span class="gl-font-weight-bold">{{ attr.key }}: </span>{{ attr.value }}
             </div>

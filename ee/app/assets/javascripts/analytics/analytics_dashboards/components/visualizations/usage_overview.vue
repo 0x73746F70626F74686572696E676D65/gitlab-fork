@@ -82,7 +82,7 @@ export default {
         :alt="avatarAltText"
       />
 
-      <div class="gl-line-height-20">
+      <div class="gl-leading-20">
         <span
           class="gl-display-block gl-mb-1 gl-font-base gl-font-weight-normal gl-text-gray-700"
           >{{ data.namespace.namespaceType }}</span

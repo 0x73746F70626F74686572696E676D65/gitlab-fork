@@ -22,7 +22,7 @@ export default {
 };
 </script>
 <template>
-  <div v-if="shouldShowPerformanceStat" class="gl-line-height-normal gl-p-2">
+  <div v-if="shouldShowPerformanceStat" class="gl-leading-normal gl-p-2">
     <div class="gl-mb-4">
       <span class="gl-text-gray-700">{{ s__('Runners|Runners performance') }}</span>
     </div>

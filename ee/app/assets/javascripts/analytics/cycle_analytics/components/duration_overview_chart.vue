@@ -204,7 +204,7 @@ export default {
         <div
           v-for="metric in tooltipContent"
           :key="metric.seriesId"
-          class="gl-display-flex gl-justify-content-space-between gl-line-height-24 gl-min-w-20"
+          class="gl-display-flex gl-justify-content-space-between gl-leading-24 gl-min-w-20"
           :class="{ 'gl-font-weight-bold': activeDataSeries === metric.seriesId }"
         >
           <gl-chart-series-label class="gl-mr-7" :color="metric.color">

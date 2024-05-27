@@ -138,7 +138,7 @@ export default {
     </gl-alert>
     <div class="gl-display-flex gl-md-flex-direction-row row-content-block gl-border-0">
       <div class="gl-display-flex gl-flex-direction-column">
-        <label data-testid="dropdown-label" class="gl-line-height-normal">
+        <label data-testid="dropdown-label" class="gl-leading-normal">
           {{ $options.i18n.groupByText }}
         </label>
         <gl-disclosure-dropdown
@@ -149,7 +149,7 @@ export default {
         />
       </div>
       <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-2">
-        <label for="target-branch-input" class="gl-line-height-normal">
+        <label for="target-branch-input" class="gl-leading-normal">
           {{ $options.i18n.filterByText }}
         </label>
         <filters

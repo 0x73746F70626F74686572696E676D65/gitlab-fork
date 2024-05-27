@@ -57,7 +57,7 @@ export default {
           </gl-link>
         </div>
       </div>
-      <div class="gl-font-size-h-display gl-font-weight-bold gl-line-height-ratio-1000 gl-my-3">
+      <div class="gl-font-size-h-display gl-font-weight-bold gl-leading-1 gl-my-3">
         <number-to-human-size
           label-class="gl-font-lg"
           :value="Number(purchasedStorage)"

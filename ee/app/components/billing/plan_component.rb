@@ -47,7 +47,7 @@ module Billing
     def header_classes
       return "gl-border-none gl-bg-none gl-p-0 gl-h-0\!" if trial?
 
-      "gl-text-center gl-border-none gl-p-0 gl-line-height-28 #{plan.header_classes}"
+      "gl-text-center gl-border-none gl-p-0 gl-leading-28 #{plan.header_classes}"
     end
 
     def header_text

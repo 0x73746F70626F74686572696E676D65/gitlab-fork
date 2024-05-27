@@ -53,7 +53,7 @@ export default {
         <strong class="gl-text-gray-300">
           {{ title }}
         </strong>
-        <p class="gl-line-height-normal gl-m-0 gl-text-gray-300">
+        <p class="gl-leading-normal gl-m-0 gl-text-gray-300">
           {{ description }}
         </p>
       </div>

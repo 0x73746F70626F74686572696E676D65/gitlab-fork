@@ -175,7 +175,7 @@ export default {
       </div>
     </div>
     <gl-popover :target="getAuthorPopoverTarget()" placement="top">
-      <div class="gl-line-height-normal gl-display-flex">
+      <div class="gl-leading-normal gl-display-flex">
         <div class="gl-p-2 gl-flex-shrink-1">
           <gl-avatar :entity-name="author.name" :alt="author.name" :src="author.avatarUrl" />
         </div>
@@ -190,7 +190,7 @@ export default {
       :target="legacyReferencePopoverId"
       placement="top"
     >
-      <span class="gl-line-height-20">
+      <span class="gl-leading-20">
         <gl-sprintf :message="$options.i18n.legacyReferencePopoverText">
           <template #id>{{ reference }}</template>
           <template #link="{ content }">

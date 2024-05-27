@@ -71,7 +71,7 @@ export default {
         @dismiss="$emit('dismiss-alert')"
       />
 
-      <p class="gl-text-gray-500 gl-line-height-20 gl-border-0 gl-mb-0">
+      <p class="gl-text-gray-500 gl-leading-20 gl-border-0 gl-mb-0">
         {{ $options.i18n.preScanVerificationSidebarInfo }}
       </p>
 
