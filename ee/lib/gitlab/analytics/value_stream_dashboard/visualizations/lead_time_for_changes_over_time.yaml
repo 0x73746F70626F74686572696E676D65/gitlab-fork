@@ -1,0 +1,11 @@
+---
+version: 1
+type: SingleStat
+data:
+  type: dora_metrics_over_time
+  query:
+    metric: lead_time_for_changes
+    date_range: last_180_days
+options:
+  unit: days
+  decimalPlaces: 1

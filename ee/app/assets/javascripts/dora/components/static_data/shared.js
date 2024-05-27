@@ -22,13 +22,21 @@ const startOfToday = getStartOfDay(new Date(), { utc: true });
 
 // We use this date as the "to" parameter for the API. This allows
 // us to get DORA 4 metrics about the current day.
-const startOfTomorrow = dayAfter(startOfToday, { utc: true });
+export const startOfTomorrow = dayAfter(startOfToday, { utc: true });
 
 const lastWeek = nDaysBefore(startOfTomorrow, 7, { utc: true });
 const lastMonth = nMonthsBefore(startOfTomorrow, 1, { utc: true });
 const last90Days = nDaysBefore(startOfTomorrow, 90, { utc: true });
 const last180Days = nDaysBefore(startOfTomorrow, 180, { utc: true });
-const apiDateFormatString = 'isoDateTime';
+
+export const DORA_METRIC_QUERY_RANGES = {
+  LAST_WEEK: lastWeek,
+  LAST_MONTH: lastMonth,
+  LAST_90_DAYS: last90Days,
+  LAST_180_DAYS: last180Days,
+};
+
+export const apiDateFormatString = 'isoDateTime';
 const sharedRequestParams = {
   interval: 'daily',
   end_date: dateFormat(startOfTomorrow, apiDateFormatString, true),

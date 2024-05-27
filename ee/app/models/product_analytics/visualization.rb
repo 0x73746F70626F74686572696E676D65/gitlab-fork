@@ -28,7 +28,15 @@ module ProductAnalytics
     ].freeze
 
     VALUE_STREAM_DASHBOARD_PATH = 'ee/lib/gitlab/analytics/value_stream_dashboard/visualizations'
-    VALUE_STREAM_DASHBOARD_VISUALIZATIONS = %w[dora_chart usage_overview dora_performers_score].freeze
+    VALUE_STREAM_DASHBOARD_VISUALIZATIONS = %w[
+      dora_chart
+      usage_overview
+      dora_performers_score
+      deployment_frequency_over_time
+      lead_time_for_changes_over_time
+      time_to_restore_service_over_time
+      change_failure_rate_over_time
+    ].freeze
 
     AI_IMPACT_DASHBOARD_PATH = 'ee/lib/gitlab/analytics/ai_impact_dashboard/visualizations'
     AI_IMPACT_DASHBOARD_VISUALIZATIONS = %w[ai_impact_table].freeze
