@@ -865,6 +865,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_8ac78f164b2d() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."namespace_id" IS NULL THEN
+  SELECT "namespace_id"
+  INTO NEW."namespace_id"
+  FROM "projects"
+  WHERE "projects"."id" = NEW."project_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_8e66b994e8f0() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -882,22 +898,6 @@ END
 $$;
 
 CREATE FUNCTION trigger_8fbb044c64ad() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-IF NEW."namespace_id" IS NULL THEN
-  SELECT "namespace_id"
-  INTO NEW."namespace_id"
-  FROM "projects"
-  WHERE "projects"."id" = NEW."project_id";
-END IF;
-
-RETURN NEW;
-
-END
-$$;
-
-CREATE FUNCTION trigger_8ac78f164b2d() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -30223,11 +30223,11 @@ CREATE TRIGGER trigger_56d49f4ed623 BEFORE INSERT OR UPDATE ON workspace_variabl
 
 CREATE TRIGGER trigger_7a8b08eed782 BEFORE INSERT OR UPDATE ON boards_epic_board_positions FOR EACH ROW EXECUTE FUNCTION trigger_7a8b08eed782();
 
+CREATE TRIGGER trigger_8ac78f164b2d BEFORE INSERT OR UPDATE ON design_management_repositories FOR EACH ROW EXECUTE FUNCTION trigger_8ac78f164b2d();
+
 CREATE TRIGGER trigger_8e66b994e8f0 BEFORE INSERT OR UPDATE ON audit_events_streaming_event_type_filters FOR EACH ROW EXECUTE FUNCTION trigger_8e66b994e8f0();
 
 CREATE TRIGGER trigger_8fbb044c64ad BEFORE INSERT OR UPDATE ON design_management_designs FOR EACH ROW EXECUTE FUNCTION trigger_8fbb044c64ad();
-
-CREATE TRIGGER trigger_8ac78f164b2d BEFORE INSERT OR UPDATE ON design_management_repositories FOR EACH ROW EXECUTE FUNCTION trigger_8ac78f164b2d();
 
 CREATE TRIGGER trigger_94514aeadc50 BEFORE INSERT OR UPDATE ON deployment_approvals FOR EACH ROW EXECUTE FUNCTION trigger_94514aeadc50();
 
