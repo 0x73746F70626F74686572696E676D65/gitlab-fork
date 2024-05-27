@@ -10,3 +10,5 @@ class ReindexWorkItemToFixLabelIds < Elastic::Migration
   DOCUMENT_TYPE = WorkItem
   NEW_SCHEMA_VERSION = 23_09
 end
+
+ReindexWorkItemToFixLabelIds.prepend ::Elastic::MigrationObsolete
