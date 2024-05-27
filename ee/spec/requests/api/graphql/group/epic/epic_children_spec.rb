@@ -118,7 +118,7 @@ RSpec.describe 'Getting children of an epic', feature_category: :portfolio_manag
         it 'excludes children from descendant and ancestor groups' do
           post_graphql(
             query(params: { iid: epic.iid },
-                  children_params: { include_descendant_groups: false, include_ancestor_groups: false }),
+              children_params: { include_descendant_groups: false, include_ancestor_groups: false }),
             current_user: user)
 
           expect(epic_node_array('children')).to include(

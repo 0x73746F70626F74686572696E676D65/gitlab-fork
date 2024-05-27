@@ -16,8 +16,8 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
   let_it_be(:label) { create(:group_label, group: group) }
   let_it_be_with_reload(:epic) do
     create(:labeled_epic,
-           group: group, state: :closed, created_at: 3.days.ago, updated_at: 2.days.ago,
-           start_date: 2.days.ago, end_date: 4.days.ago, labels: [label])
+      group: group, state: :closed, created_at: 3.days.ago, updated_at: 2.days.ago,
+      start_date: 2.days.ago, end_date: 4.days.ago, labels: [label])
   end
 
   # similar to GET /groups/:id/epics
@@ -41,8 +41,8 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
 
     def query(params = {})
       graphql_query_for("group", { "fullPath" => group.full_path },
-                        ['epicsEnabled',
-                         query_graphql_field("epics", params, epic_node)]
+        ['epicsEnabled',
+         query_graphql_field("epics", params, epic_node)]
       )
     end
 
@@ -403,7 +403,7 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
       graphql_query_for('group', { 'fullPath' => group.full_path },
         ['epicsEnabled',
         query_graphql_field('epic', { iid: epic.iid },
-        all_graphql_fields_for('Epic', excluded: %w[runners ciQueueingHistory]))]
+          all_graphql_fields_for('Epic', excluded: %w[runners ciQueueingHistory]))]
       )
     end
 
@@ -570,7 +570,7 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
     let(:default_project_for_issue_creation) { epic_data['defaultProjectForIssueCreation'] }
     let(:query) do
       graphql_query_for('group', { 'fullPath' => group.full_path },
-                         query_graphql_field('epic', { iid: epic.iid }, 'defaultProjectForIssueCreation { id }')
+        query_graphql_field('epic', { iid: epic.iid }, 'defaultProjectForIssueCreation { id }')
       )
     end
 

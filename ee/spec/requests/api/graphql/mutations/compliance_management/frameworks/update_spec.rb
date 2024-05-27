@@ -36,7 +36,7 @@ RSpec.describe 'Update a compliance framework', feature_category: :compliance_ma
     end
 
     it_behaves_like 'a mutation that returns top-level errors',
-                    errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
+      errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
   end
 
   context 'feature is licensed but disabled' do
@@ -45,7 +45,7 @@ RSpec.describe 'Update a compliance framework', feature_category: :compliance_ma
     end
 
     it_behaves_like 'a mutation that returns top-level errors',
-                    errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
+      errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
   end
 
   context 'feature is licensed' do
@@ -104,7 +104,7 @@ RSpec.describe 'Update a compliance framework', feature_category: :compliance_ma
         end
 
         it_behaves_like 'a mutation that returns top-level errors',
-                        errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
+          errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
       end
     end
 

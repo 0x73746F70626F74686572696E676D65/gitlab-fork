@@ -79,8 +79,8 @@ RSpec.describe 'Query.project.mergeRequest.approvalState', feature_category: :so
 
     let(:approval_state) do
       graphql_data_at(:project,
-                      :merge_request,
-                      :approval_state)
+        :merge_request,
+        :approval_state)
     end
 
     before do
