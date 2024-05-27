@@ -256,7 +256,7 @@ export default {
           <div
             v-for="{ seriesId, seriesName, color, value } in tooltip.scores"
             :key="seriesId"
-            class="gl-display-flex gl-justify-content-space-between gl-line-height-24 gl-min-w-20"
+            class="gl-display-flex gl-justify-content-space-between gl-leading-24 gl-min-w-20"
           >
             <gl-chart-series-label class="gl-mr-7 gl-font-sm" :color="color">
               {{ seriesName }}

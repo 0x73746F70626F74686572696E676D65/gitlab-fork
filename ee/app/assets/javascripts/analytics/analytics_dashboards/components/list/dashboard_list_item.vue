@@ -68,13 +68,13 @@ export default {
             v-if="dashboard.redirect"
             data-testid="dashboard-redirect-link"
             :href="redirectHref"
-            class="gl-font-weight-bold gl-line-height-normal gl-text-decoration-none!"
+            class="gl-font-weight-bold gl-leading-normal gl-text-decoration-none!"
             >{{ dashboard.title }}</gl-link
           >
           <router-link
             v-else
             data-testid="dashboard-router-link"
-            class="gl-font-weight-bold gl-line-height-normal"
+            class="gl-font-weight-bold gl-leading-normal"
             :to="dashboard.slug"
             >{{ dashboard.title }}</router-link
           >
@@ -88,7 +88,7 @@ export default {
           </gl-badge>
         </div>
         <gl-truncate-text
-          class="gl-line-height-normal gl-text-gray-500"
+          class="gl-leading-normal gl-text-gray-500"
           :toggle-button-props="$options.truncateTextToggleButtonProps"
         >
           {{ dashboard.description }}

@@ -137,7 +137,7 @@ export default {
         data-testid="workspaces-dropdown-group"
       >
         <template #group-label>
-          <span class="gl-display-flex gl-font-base gl-line-height-1">{{
+          <span class="gl-display-flex gl-font-base gl-leading-1">{{
             $options.i18n.workspacesGroupLabel
           }}</span>
         </template>

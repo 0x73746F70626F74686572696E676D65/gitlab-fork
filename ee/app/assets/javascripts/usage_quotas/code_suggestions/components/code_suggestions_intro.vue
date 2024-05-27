@@ -50,10 +50,7 @@ export default {
 <template>
   <gl-empty-state :svg-path="$options.emptyStateSvgUrl">
     <template #title>
-      <h1
-        v-safe-html="$options.i18n.title"
-        class="gl-font-size-h-display gl-line-height-36 h4"
-      ></h1>
+      <h1 v-safe-html="$options.i18n.title" class="gl-font-size-h-display gl-leading-36 h4"></h1>
     </template>
     <template #description>
       <gl-sprintf :message="$options.i18n.description">

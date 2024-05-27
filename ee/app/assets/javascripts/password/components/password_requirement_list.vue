@@ -108,7 +108,7 @@ export default {
     <div
       v-for="(rule, index) in ruleList"
       :key="rule.text"
-      class="gl-line-height-28 gl-display-flex gl-align-items-center"
+      class="gl-leading-28 gl-display-flex gl-align-items-center"
       aria-live="polite"
     >
       <span

@@ -156,7 +156,7 @@ export default {
       <div
         v-if="hasProgress"
         ref="progressTooltip"
-        class="gl-display-flex gl-align-items-center gl-gap-2 gl-justify-content-start gl-cursor-help gl-line-height-normal gl-min-w-10 gl-max-w-26"
+        class="gl-display-flex gl-align-items-center gl-gap-2 gl-justify-content-start gl-cursor-help gl-leading-normal gl-min-w-10 gl-max-w-26"
         data-testid="item-progress"
       >
         <gl-icon name="progress" />

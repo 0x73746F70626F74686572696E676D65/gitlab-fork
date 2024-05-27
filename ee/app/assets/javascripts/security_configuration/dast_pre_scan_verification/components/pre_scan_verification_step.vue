@@ -68,7 +68,7 @@ export default {
         <p class="gl-text-gray-500 gl-font-weight-bold gl-m-0 gl-mb-2">{{ step.header }}</p>
         <p
           data-testid="pre-scan-step-text"
-          class="gl-m-0 gl-line-height-normal"
+          class="gl-m-0 gl-leading-normal"
           :class="descriptionTextCssClass"
         >
           {{ step.text }}

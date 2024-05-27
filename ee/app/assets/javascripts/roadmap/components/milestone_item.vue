@@ -136,7 +136,7 @@ export default {
         placement="left"
         :title="milestone.title"
       >
-        <div class="milestone-item-type gl-line-height-normal">
+        <div class="milestone-item-type gl-leading-normal">
           <gl-icon :name="typeIcon" class="gl-align-middle" />
           <span class="d-inline-block gl-align-middle">{{ milestoneType }}</span>
         </div>

@@ -313,7 +313,7 @@ export default {
               >
             </gl-sprintf>
           </h2>
-          <p class="gl-font-sm gl-line-height-20">
+          <p class="gl-font-sm gl-leading-20">
             <gl-sprintf :message="$options.i18n.legacyReferenceDeprecationText">
               <template #id>{{ reference }}</template>
               <template #link="{ content }">

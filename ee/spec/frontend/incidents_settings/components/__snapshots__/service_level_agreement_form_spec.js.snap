@@ -10,7 +10,7 @@ exports[`Alert integration settings form should match the default snapshot 1`] =
     class="gl-pt-3"
   >
     <p
-      class="gl-line-height-20"
+      class="gl-leading-20"
     >
       Introduce a countdown timer in incident issues to better track Service Level Agreements (SLAs). The timer starts automatically when the incident is created, and sets a time limit for resolving the incident. When activated, the time to SLA countdown appears on all new incidents.
     </p>
@@ -50,7 +50,7 @@ exports[`Alert integration settings form should match the default snapshot 1`] =
           width="xs"
         />
         <gl-form-select-stub
-          class="gl-border-gray-400 gl-line-height-normal gl-ml-3 gl-w-auto"
+          class="gl-border-gray-400 gl-leading-normal gl-ml-3 gl-w-auto"
           options="[object Object],[object Object]"
           value="minutes"
         />
