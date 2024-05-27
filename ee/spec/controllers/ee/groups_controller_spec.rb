@@ -254,7 +254,7 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
               delete :destroy, params: { id: group.to_param, permanently_remove: true }
 
               expect(response).to redirect_to(root_path)
-              expect(flash[:alert]).to include "Group '#{group.name}' was scheduled for deletion."
+              expect(flash[:toast]).to include "Group '#{group.name}' is being deleted."
             end
           end
 
@@ -284,7 +284,7 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
           subject
 
           expect(response).to redirect_to(root_path)
-          expect(flash[:alert]).to include "Group '#{group.name}' was scheduled for deletion."
+          expect(flash[:toast]).to include "Group '#{group.name}' is being deleted."
         end
       end
     end
