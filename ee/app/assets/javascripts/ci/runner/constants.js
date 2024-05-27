@@ -32,6 +32,6 @@ export const I18N_P99 = s__('Runners|99th percentile');
 // hardcoded because is located at https://gitlab.com/gitlab-org/gitlab-runner
 const RUNNER_HELP_PATH = `${DOCS_URL}/runner`;
 
-export const RUNNER_INSTALL_HELP_PATH = `${RUNNER_HELP_PATH}/install/`;
+export const RUNNER_UPGRADE_HELP_PATH = `${RUNNER_HELP_PATH}/install/#upgrading-gitlab-runner`;
 
 export const RUNNER_VERSION_HELP_PATH = `${RUNNER_HELP_PATH}#gitlab-runner-versions`;

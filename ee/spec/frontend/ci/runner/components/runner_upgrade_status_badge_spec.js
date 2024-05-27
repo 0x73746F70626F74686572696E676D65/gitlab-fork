@@ -8,7 +8,7 @@ import {
   UPGRADE_STATUS_NOT_AVAILABLE,
   I18N_UPGRADE_STATUS_AVAILABLE,
   I18N_UPGRADE_STATUS_RECOMMENDED,
-  RUNNER_INSTALL_HELP_PATH,
+  RUNNER_UPGRADE_HELP_PATH,
   RUNNER_VERSION_HELP_PATH,
 } from 'ee/ci/runner/constants';
 
@@ -75,7 +75,7 @@ describe('RunnerUpgradeStatusBadge', () => {
             findPopover()
               .findAllComponents(GlLink)
               .wrappers.map((c) => c.attributes('href')),
-          ).toEqual([RUNNER_INSTALL_HELP_PATH, RUNNER_VERSION_HELP_PATH]);
+          ).toEqual([RUNNER_UPGRADE_HELP_PATH, RUNNER_VERSION_HELP_PATH]);
         },
       );
 
