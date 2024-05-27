@@ -441,7 +441,7 @@ export default {
         >{{ s__('Analytics|Edit') }}</gl-button
       >
     </section>
-    <div class="gl-mx-n3">
+    <div class="-gl-mx-3">
       <div class="gl-display-flex">
         <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1">
           <section

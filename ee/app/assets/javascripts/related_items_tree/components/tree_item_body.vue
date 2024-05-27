@@ -213,7 +213,7 @@ export default {
 <template>
   <div class="sortable-row gl-flex-grow-1">
     <div
-      class="item-body gl-display-flex gl-align-items-center gl-pl-3 gl-pr-2 gl-py-2 gl-mx-n2"
+      class="item-body gl-display-flex gl-align-items-center gl-pl-3 gl-pr-2 gl-py-2 -gl-mx-2"
       :class="{
         'item-logged-out': !userSignedIn,
         'item-closed': isClosed,
