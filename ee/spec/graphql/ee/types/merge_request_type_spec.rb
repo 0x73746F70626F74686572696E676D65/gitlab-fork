@@ -5,7 +5,13 @@ require 'spec_helper'
 RSpec.describe GitlabSchema.types['MergeRequest'], feature_category: :code_review_workflow do
   include GraphqlHelpers
 
-  it { expect(described_class).to have_graphql_fields(:approvals_required, :merge_trains_count, :approval_state, :finding_reports_comparer).at_least }
+  it 'exposes the expected fields' do
+    expect(described_class).to have_graphql_fields(
+      :approvals_required, :merge_trains_count, :merge_train_index,
+      :approval_state, :finding_reports_comparer
+    ).at_least
+  end
+
   it { expect(described_class).to have_graphql_field(:approved, complexity: 2, calls_gitaly?: true) }
   it { expect(described_class).to have_graphql_field(:approvals_left, complexity: 2, calls_gitaly?: true) }
   it { expect(described_class).to have_graphql_field(:has_security_reports, calls_gitaly?: true) }
@@ -15,26 +21,56 @@ RSpec.describe GitlabSchema.types['MergeRequest'], feature_category: :code_revie
   it { expect(described_class).to have_graphql_field(:merge_request_diffs) }
   it { expect(described_class).to have_graphql_field(:policy_violations) }
 
-  describe '#merge_trains_count', feature_category: :merge_trains do
+  shared_context 'with a merge train' do
     let_it_be(:project) { create(:project, :public) }
-    let_it_be(:merge_request) { create(:merge_request, :with_merged_metrics, target_project: project, source_project: project) }
+    let_it_be(:merge_request) { create(:merge_request, :on_train, target_project: project, source_project: project) }
     let_it_be(:current_user) { create :admin }
+  end
 
+  shared_context 'with a merge train and merge trains enabled' do
+    include_context 'with a merge train'
+
+    before do
+      allow(project).to receive(:merge_trains_enabled?).and_return(true)
+    end
+  end
+
+  describe '#merge_trains_count', feature_category: :merge_trains do
     subject(:resulting_count) { resolve_field(:merge_trains_count, merge_request, current_user: current_user) }
 
     context 'when merge trains are disabled' do
+      include_context 'with a merge train'
+
       it 'the count is null' do
         expect(resulting_count).to be_nil
       end
     end
 
     context 'when merge trains are enabled' do
-      before do
-        allow(project).to receive(:merge_trains_enabled?).and_return(true)
-      end
+      include_context 'with a merge train and merge trains enabled'
 
       it 'gets the count' do
-        expect(resulting_count).to be_zero
+        expect(resulting_count).to be 1
+      end
+    end
+  end
+
+  describe '#merge_train_index', feature_category: :merge_trains do
+    subject(:resulting_index) { resolve_field(:merge_train_index, merge_request, current_user: current_user) }
+
+    context 'when merge trains are disabled' do
+      include_context 'with a merge train'
+
+      it 'the count is null' do
+        expect(resulting_index).to be_nil
+      end
+    end
+
+    context 'when merge trains are enabled' do
+      include_context 'with a merge train and merge trains enabled'
+
+      it 'gets the count' do
+        expect(resulting_index).to be_zero
       end
     end
   end
