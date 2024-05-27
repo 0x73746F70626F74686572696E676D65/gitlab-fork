@@ -198,8 +198,7 @@ module Elastic
       end
 
       def archived_filter_applicable?(options)
-        !options[:include_archived] && options[:search_scope] != 'project' &&
-          ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_on_work_items)
+        !options[:include_archived] && options[:search_scope] != 'project'
       end
     end
   end
