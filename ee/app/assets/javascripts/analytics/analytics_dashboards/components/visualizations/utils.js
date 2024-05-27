@@ -1,5 +1,5 @@
 import { isNumeric } from '~/lib/utils/number_utils';
-import { formatNumber } from '~/locale';
+import { formatNumber, n__, __ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 
 function isIsoDateString(dateString) {
@@ -30,3 +30,16 @@ export function formatVisualizationTooltipTitle(title, params) {
 
   return title;
 }
+
+export const humanizeDisplayUnit = ({ unit, data = 0 }) => {
+  switch (unit) {
+    case 'days':
+      return n__('day', 'days', data);
+    case 'per_day':
+      return __('/day');
+    case 'percent':
+      return '%';
+    default:
+      return unit;
+  }
+};

@@ -1,6 +1,7 @@
 import {
   formatVisualizationTooltipTitle,
   formatVisualizationValue,
+  humanizeDisplayUnit,
 } from 'ee/analytics/analytics_dashboards/components/visualizations/utils';
 
 describe('visualization utils', () => {
@@ -75,6 +76,19 @@ describe('visualization utils', () => {
 
         expect(formatVisualizationTooltipTitle(title, params)).toEqual(title);
       });
+    });
+  });
+
+  describe('humanizeDisplayUnit', () => {
+    it.each`
+      unit            | data   | result
+      ${'days'}       | ${0.8} | ${'days'}
+      ${'days'}       | ${1}   | ${'day'}
+      ${'per_day'}    | ${1}   | ${'/day'}
+      ${'percent'}    | ${1}   | ${'%'}
+      ${'per_second'} | ${1}   | ${'per_second'}
+    `('returns $result when data=$data and unit=$unit', ({ unit, data, result }) => {
+      expect(humanizeDisplayUnit({ data, unit })).toBe(result);
     });
   });
 });

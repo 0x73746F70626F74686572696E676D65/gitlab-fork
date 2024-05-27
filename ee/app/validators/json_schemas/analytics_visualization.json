@@ -44,7 +44,8 @@
           "enum": [
             "cube_analytics",
             "value_stream",
-            "usage_overview"
+            "usage_overview",
+            "dora_metrics_over_time"
           ]
         },
         "query": {

@@ -1,5 +1,6 @@
 <script>
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
+import { humanizeDisplayUnit } from './utils';
 
 export default {
   name: 'SingleStat',
@@ -26,6 +27,13 @@ export default {
       // Only set the decimals places if this has data
       return (this.data && parseInt(this.options.decimalPlaces, 10)) || 0;
     },
+    humanizedUnit() {
+      const {
+        data,
+        options: { unit },
+      } = this;
+      return humanizeDisplayUnit({ data, unit });
+    },
   },
 };
 </script>
@@ -39,7 +47,7 @@ export default {
       :meta-text="options.metaText"
       :meta-icon="options.metaIcon"
       :title-icon="options.titleIcon"
-      :unit="options.unit"
+      :unit="humanizedUnit"
       :animation-decimal-places="decimalPlaces"
       :should-animate="true"
       :use-delimiters="true"
