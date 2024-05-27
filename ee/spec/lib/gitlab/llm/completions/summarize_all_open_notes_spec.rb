@@ -123,7 +123,7 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
       allow(group.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_saas_features(gitlab_duo_saas_only: true)
       stub_licensed_features(
-        summarize_notes: true,
+        summarize_comments: true,
         ai_features: true,
         epics: true,
         experimental_features: true,

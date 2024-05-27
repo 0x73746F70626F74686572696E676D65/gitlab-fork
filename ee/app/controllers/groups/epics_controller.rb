@@ -129,6 +129,6 @@ class Groups::EpicsController < Groups::ApplicationController
   end
 
   def set_summarize_notes_feature_flag
-    push_force_frontend_feature_flag(:summarize_comments, can?(current_user, :summarize_notes, epic))
+    push_force_frontend_feature_flag(:summarize_comments, can?(current_user, :summarize_comments, epic))
   end
 end

@@ -29,7 +29,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
 
     before do
       stub_application_setting(check_namespace_plan: true)
-      stub_licensed_features(summarize_notes: true, ai_features: true, experimental_features: true, ai_chat: true)
+      stub_licensed_features(summarize_comments: true, ai_features: true, experimental_features: true, ai_chat: true)
 
       group.add_developer(user)
       group.update!(experiment_features_enabled: true)
@@ -60,7 +60,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
 
           context 'when no permissions to use ai features' do
             before do
-              stub_licensed_features(summarize_notes: false, ai_features: false)
+              stub_licensed_features(summarize_comments: false, ai_features: false)
             end
 
             it 'responds with error' do

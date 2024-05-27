@@ -25,7 +25,7 @@ class EpicPolicy < BasePolicy
   condition(:summarize_notes_enabled, scope: :subject) do
     ::Gitlab::Llm::FeatureAuthorizer.new(
       container: subject.group,
-      feature_name: :summarize_notes
+      feature_name: :summarize_comments
     ).allowed?
   end
 
@@ -112,7 +112,7 @@ class EpicPolicy < BasePolicy
   end
 
   rule { summarize_notes_enabled & can?(:read_epic) }.policy do
-    enable :summarize_notes
+    enable :summarize_comments
   end
 
   rule { relations_for_non_members_available & ~anonymous & can?(:read_epic) }.policy do

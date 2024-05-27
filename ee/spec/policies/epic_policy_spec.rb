@@ -400,7 +400,7 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
     end
   end
 
-  describe 'summarize_notes' do
+  describe 'summarize_comments' do
     let_it_be(:group) { create(:group, :private) }
 
     let(:authorizer) { instance_double(::Gitlab::Llm::FeatureAuthorizer) }
@@ -420,11 +420,11 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
           group.add_guest(user)
         end
 
-        it { is_expected.to be_allowed(:summarize_notes) }
+        it { is_expected.to be_allowed(:summarize_comments) }
       end
 
       context "when user cannot read epic" do
-        it { is_expected.to be_disallowed(:summarize_notes) }
+        it { is_expected.to be_disallowed(:summarize_comments) }
       end
     end
 

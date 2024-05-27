@@ -29,7 +29,7 @@ RSpec.describe IssuePolicy, feature_category: :team_planning do
     described_class.new(user, issue)
   end
 
-  describe 'summarize_notes' do
+  describe 'summarize_comments' do
     context "when feature is authorized" do
       before do
         allow(authorizer).to receive(:allowed?).and_return(true)
@@ -40,11 +40,11 @@ RSpec.describe IssuePolicy, feature_category: :team_planning do
           project.add_guest(user)
         end
 
-        it { is_expected.to be_allowed(:summarize_notes) }
+        it { is_expected.to be_allowed(:summarize_comments) }
       end
 
       context 'when user cannot read issue' do
-        it { is_expected.to be_disallowed(:summarize_notes) }
+        it { is_expected.to be_disallowed(:summarize_comments) }
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe IssuePolicy, feature_category: :team_planning do
         allow(authorizer).to receive(:allowed?).and_return(false)
       end
 
-      it { is_expected.to be_disallowed(:summarize_notes) }
+      it { is_expected.to be_disallowed(:summarize_comments) }
     end
   end
 

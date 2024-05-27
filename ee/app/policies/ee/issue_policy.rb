@@ -15,7 +15,7 @@ module EE
       condition(:summarize_notes_enabled) do
         ::Gitlab::Llm::FeatureAuthorizer.new(
           container: subject_container,
-          feature_name: :summarize_notes
+          feature_name: :summarize_comments
         ).allowed?
       end
 
@@ -42,7 +42,7 @@ module EE
 
       rule do
         summarize_notes_enabled & can?(:read_issue)
-      end.enable :summarize_notes
+      end.enable :summarize_comments
 
       rule { relations_for_non_members_available & ~member_or_support_bot }.policy do
         prevent :admin_issue_relation
