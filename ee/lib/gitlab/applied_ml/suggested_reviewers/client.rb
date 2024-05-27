@@ -131,7 +131,7 @@ module Gitlab
         def credentials
           ssl_creds = GRPC::Core::ChannelCredentials.new(certs)
 
-          auth_header = { "authorization": "Bearer #{token}" }
+          auth_header = { authorization: "Bearer #{token}" }
           auth_proc = proc { auth_header }
           call_creds = GRPC::Core::CallCredentials.new(auth_proc)
 

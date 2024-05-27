@@ -24,14 +24,14 @@ RSpec.describe Admin::AuditLogsController, feature_category: :audit_events do
           serializer = instance_spy(AuditEventSerializer)
           allow(AuditEventSerializer).to receive(:new).and_return(serializer)
 
-          get :index, params: { 'entity_type': 'User' }
+          get :index, params: { entity_type: 'User' }
 
           expect(serializer).to have_received(:represent).with(kind_of(Kaminari::PaginatableWithoutCount))
         end
       end
 
       it_behaves_like 'tracking unique visits', :index do
-        let(:request_params) { { 'entity_type': 'User' } }
+        let(:request_params) { { entity_type: 'User' } }
         let(:target_id) { 'i_compliance_audit_events' }
       end
 
@@ -75,7 +75,7 @@ RSpec.describe Admin::AuditLogsController, feature_category: :audit_events do
 
         with_them do
           it 'returns an error' do
-            get :index, params: { 'created_before': created_before, 'created_after': created_after }
+            get :index, params: { created_before: created_before, created_after: created_after }
 
             expect(response).to have_gitlab_http_status(:bad_request)
             expect(flash[:alert]).to eq 'Invalid date format. Please use UTC format as YYYY-MM-DD'
@@ -84,7 +84,7 @@ RSpec.describe Admin::AuditLogsController, feature_category: :audit_events do
       end
 
       context 'when date range is greater than limit' do
-        subject { get :index, params: { 'created_before': created_before, 'created_after': created_after } }
+        subject { get :index, params: { created_before: created_before, created_after: created_after } }
 
         it_behaves_like 'a date range error is returned'
       end
@@ -98,7 +98,7 @@ RSpec.describe Admin::AuditLogsController, feature_category: :audit_events do
       it 'finds the user by id when provided with a entity_id' do
         allow(User).to receive(:find_by_id).and_return(admin)
 
-        get :index, params: { 'entity_type': 'User', 'entity_id': '1' }
+        get :index, params: { entity_type: 'User', entity_id: '1' }
 
         expect(User).to have_received(:find_by_id).with('1')
       end
@@ -106,7 +106,7 @@ RSpec.describe Admin::AuditLogsController, feature_category: :audit_events do
       it 'finds the user by username when provided with a entity_username' do
         allow(User).to receive(:find_by_username).and_return(admin)
 
-        get :index, params: { 'entity_type': 'User', 'entity_username': 'abc' }
+        get :index, params: { entity_type: 'User', entity_username: 'abc' }
 
         # find_by_username gets called in thee controller and in the AuditEvent model
         expect(User).to have_received(:find_by_username).twice.with('abc')

@@ -130,10 +130,10 @@ module Elastic
 
       def noteable_type_to_feature
         {
-          'Issue': :issues,
-          'MergeRequest': :merge_requests,
-          'Snippet': :snippets,
-          'Commit': :repository
+          Issue: :issues,
+          MergeRequest: :merge_requests,
+          Snippet: :snippets,
+          Commit: :repository
         }
       end
 
