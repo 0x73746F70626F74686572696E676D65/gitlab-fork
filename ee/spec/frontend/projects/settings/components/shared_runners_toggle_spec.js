@@ -3,6 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import MockAxiosAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import CcValidationRequiredAlert from 'ee_component/billings/components/cc_validation_required_alert.vue';
+import IdentityVerificationRequiredAlert from 'ee_component/vue_shared/components/pipeline_account_verification_alert.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
@@ -12,7 +13,10 @@ import {
   HTTP_STATUS_UNAUTHORIZED,
 } from '~/lib/utils/http_status';
 import SharedRunnersToggleComponent from '~/projects/settings/components/shared_runners_toggle.vue';
-import { CC_VALIDATION_REQUIRED_ERROR } from '~/projects/settings/constants';
+import {
+  CC_VALIDATION_REQUIRED_ERROR,
+  IDENTITY_VERIFICATION_REQUIRED_ERROR,
+} from '~/projects/settings/constants';
 
 const TEST_UPDATE_PATH = '/test/update_shared_runners';
 
@@ -22,6 +26,10 @@ describe('projects/settings/components/shared_runners', () => {
 
   const createComponent = (props = {}) => {
     wrapper = shallowMount(SharedRunnersToggleComponent, {
+      provide: {
+        identityVerificationPath: '/-/identity_verification',
+        identityVerificationRequired: true,
+      },
       propsData: {
         isEnabled: false,
         isDisabledAndUnoverridable: false,
@@ -35,6 +43,8 @@ describe('projects/settings/components/shared_runners', () => {
 
   const findSharedRunnersToggle = () => wrapper.findComponent(GlToggle);
   const findCcValidationRequiredAlert = () => wrapper.findComponent(CcValidationRequiredAlert);
+  const findIdentityVerificationRequiredAlert = () =>
+    wrapper.findComponent(IdentityVerificationRequiredAlert);
   const findGenericAlert = () => wrapper.findComponent(GlAlert);
   const getToggleValue = () => findSharedRunnersToggle().props('value');
   const isToggleDisabled = () => findSharedRunnersToggle().props('disabled');
@@ -119,6 +129,68 @@ describe('projects/settings/components/shared_runners', () => {
         await waitForPromises();
 
         expect(findCcValidationRequiredAlert().exists()).toBe(false);
+        expect(findGenericAlert().exists()).toBe(true);
+        expect(findGenericAlert().text()).toBe(
+          'An error occurred while updating the configuration.',
+        );
+      });
+    });
+  });
+
+  describe('Identity Verification requirement', () => {
+    beforeEach(() => {
+      createComponent({
+        isEnabled: false,
+      });
+    });
+
+    describe('when user is not identity verified', () => {
+      beforeEach(() => {
+        mockAxios
+          .onPost(TEST_UPDATE_PATH)
+          .reply(HTTP_STATUS_UNAUTHORIZED, { error: IDENTITY_VERIFICATION_REQUIRED_ERROR });
+      });
+
+      it('should show identity verification required alert', async () => {
+        findSharedRunnersToggle().vm.$emit('change', true);
+        await waitForPromises();
+
+        expect(findCcValidationRequiredAlert().exists()).toBe(false);
+        expect(findIdentityVerificationRequiredAlert().exists()).toBe(true);
+        expect(findIdentityVerificationRequiredAlert().props().title).toBe(
+          SharedRunnersToggleComponent.i18n.REQUIRES_IDENTITY_VERIFICATION_TEXT,
+        );
+      });
+    });
+
+    describe('when user is identity verified', () => {
+      it('should not show identity verification required alert after toggling on and off', async () => {
+        findSharedRunnersToggle().vm.$emit('change', true);
+        await waitForPromises();
+
+        expect(mockAxios.history.post[0].data).toBeUndefined();
+        expect(mockAxios.history.post).toHaveLength(1);
+        expect(findIdentityVerificationRequiredAlert().exists()).toBe(false);
+
+        findSharedRunnersToggle().vm.$emit('change', false);
+        await waitForPromises();
+
+        expect(mockAxios.history.post[1].data).toBeUndefined();
+        expect(mockAxios.history.post).toHaveLength(2);
+        expect(findIdentityVerificationRequiredAlert().exists()).toBe(false);
+      });
+    });
+
+    describe('when toggling fails for some other reason', () => {
+      beforeEach(() => {
+        mockAxios.onPost(TEST_UPDATE_PATH).reply(HTTP_STATUS_INTERNAL_SERVER_ERROR);
+      });
+
+      it('should show a generic alert instead', async () => {
+        findSharedRunnersToggle().vm.$emit('change', true);
+        await waitForPromises();
+
+        expect(findIdentityVerificationRequiredAlert().exists()).toBe(false);
         expect(findGenericAlert().exists()).toBe(true);
         expect(findGenericAlert().text()).toBe(
           'An error occurred while updating the configuration.',

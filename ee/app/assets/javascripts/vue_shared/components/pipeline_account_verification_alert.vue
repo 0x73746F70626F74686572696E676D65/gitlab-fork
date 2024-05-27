@@ -2,18 +2,27 @@
 import { GlAlert } from '@gitlab/ui';
 import { s__ } from '~/locale';
 
+const DEFAULT_TITLE = s__(
+  'IdentityVerification|Before you can run pipelines, we need to verify your account.',
+);
+
 export default {
   components: { GlAlert },
   i18n: {
-    title: s__(
-      'IdentityVerification|Before you can run pipelines, we need to verify your account.',
-    ),
+    title: DEFAULT_TITLE,
     description: s__(
       `IdentityVerification|We won't ask you for this information again. It will never be used for marketing purposes.`,
     ),
     buttonText: s__('IdentityVerification|Verify my account'),
   },
   inject: ['identityVerificationRequired', 'identityVerificationPath'],
+  props: {
+    title: {
+      type: String,
+      required: false,
+      default: DEFAULT_TITLE,
+    },
+  },
   data() {
     return {
       isVisible: true,
@@ -30,7 +39,7 @@ export default {
 <template>
   <gl-alert
     v-if="identityVerificationRequired && isVisible"
-    :title="$options.i18n.title"
+    :title="title"
     :primary-button-text="$options.i18n.buttonText"
     :primary-button-link="identityVerificationPath"
     variant="danger"
