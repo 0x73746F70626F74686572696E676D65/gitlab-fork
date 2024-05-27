@@ -37,11 +37,11 @@ module Projects
         CsvBuilder::SingleBatch.new(
           @scanned_resources,
           {
-            'Method': 'request_method',
-            'Scheme': 'url_scheme',
-            'Host': 'url_host',
-            'Port': 'url_port',
-            'Path': 'url_path',
+            Method: 'request_method',
+            Scheme: 'url_scheme',
+            Host: 'url_host',
+            Port: 'url_port',
+            Path: 'url_path',
             'Query String': 'url_query'
           }
         ).render

@@ -129,128 +129,128 @@ module Billing
     def plans_data
       {
         'free' => {
-          "header_text": s_("BillingPlans|Your current plan"),
-          "header_classes": "gl-bg-gray-100",
-          "elevator_pitch": s_("BillingPlans|Use GitLab for personal projects"),
-          "features_elevator_pitch": s_("BillingPlans|Free forever features:"),
-          "features": [
+          header_text: s_("BillingPlans|Your current plan"),
+          header_classes: "gl-bg-gray-100",
+          elevator_pitch: s_("BillingPlans|Use GitLab for personal projects"),
+          features_elevator_pitch: s_("BillingPlans|Free forever features:"),
+          features: [
             {
-              "title": s_("BillingPlans|5GB storage")
+              title: s_("BillingPlans|5GB storage")
             },
             {
-              "title": s_("BillingPlans|10GB transfer per month")
+              title: s_("BillingPlans|10GB transfer per month")
             },
             {
-              "title": s_("BillingPlans|400 CI/CD minutes per month")
+              title: s_("BillingPlans|400 CI/CD minutes per month")
             },
             {
-              "title": s_("BillingPlans|5 users per top-level group")
+              title: s_("BillingPlans|5 users per top-level group")
             }
           ]
         },
         'premium' => {
-          "card_body_border_classes": "gl-border-purple-500\!",
-          "header_text": s_("BillingPlans|Recommended"),
-          "header_classes": "gl-text-white gl-bg-purple-500",
-          "elevator_pitch": s_("BillingPlans|For scaling organizations and multi-team usage"),
-          "features_elevator_pitch": s_("BillingPlans|Everything from Free, plus:"),
-          "features": [
+          card_body_border_classes: "gl-border-purple-500\!",
+          header_text: s_("BillingPlans|Recommended"),
+          header_classes: "gl-text-white gl-bg-purple-500",
+          elevator_pitch: s_("BillingPlans|For scaling organizations and multi-team usage"),
+          features_elevator_pitch: s_("BillingPlans|Everything from Free, plus:"),
+          features: [
             {
-              "title": s_("BillingPlans|Code Ownership and Protected Branches")
+              title: s_("BillingPlans|Code Ownership and Protected Branches")
             },
             {
-              "title": s_("BillingPlans|Merge Request Approval Rules")
+              title: s_("BillingPlans|Merge Request Approval Rules")
             },
             {
-              "title": s_("BillingPlans|Enterprise Agile Planning")
+              title: s_("BillingPlans|Enterprise Agile Planning")
             },
             {
-              "title": s_("BillingPlans|Advanced CI/CD")
+              title: s_("BillingPlans|Advanced CI/CD")
             },
             {
-              "title": s_("BillingPlans|Support")
+              title: s_("BillingPlans|Support")
             },
             {
-              "title": s_("BillingPlans|Enterprise User and Incident Management")
+              title: s_("BillingPlans|Enterprise User and Incident Management")
             },
             {
-              "title": s_("BillingPlans|50GB storage")
+              title: s_("BillingPlans|50GB storage")
             },
             {
-              "title": s_("BillingPlans|100GB transfer per month")
+              title: s_("BillingPlans|100GB transfer per month")
             },
             {
-              "title": s_("BillingPlans|10,000 CI/CD minutes per month")
+              title: s_("BillingPlans|10,000 CI/CD minutes per month")
             }
           ],
-          "cta_text": s_("BillingPlans|Upgrade to Premium"),
-          "cta_category": {
+          cta_text: s_("BillingPlans|Upgrade to Premium"),
+          cta_category: {
             free: "primary",
             trial: 'secondary'
           },
-          "cta_data": {
-            "testid": "upgrade-to-premium"
+          cta_data: {
+            testid: "upgrade-to-premium"
           }
         },
         'ultimate' => {
-          "header_classes": "gl-bg-none",
-          "card_body_border_classes": "gl-rounded-top-right-base gl-rounded-top-left-base",
-          "elevator_pitch": s_("BillingPlans|For enterprises looking to deliver software faster"),
-          "features_elevator_pitch": s_("BillingPlans|Everything from Premium, plus:"),
-          "features": [
+          header_classes: "gl-bg-none",
+          card_body_border_classes: "gl-rounded-top-right-base gl-rounded-top-left-base",
+          elevator_pitch: s_("BillingPlans|For enterprises looking to deliver software faster"),
+          features_elevator_pitch: s_("BillingPlans|Everything from Premium, plus:"),
+          features: [
             {
-              "title": s_("BillingPlans|Suggested Reviewers")
+              title: s_("BillingPlans|Suggested Reviewers")
             },
             {
-              "title": s_("BillingPlans|Dynamic Application Security Testing")
+              title: s_("BillingPlans|Dynamic Application Security Testing")
             },
             {
-              "title": s_("BillingPlans|Security Dashboards")
+              title: s_("BillingPlans|Security Dashboards")
             },
             {
-              "title": s_("BillingPlans|Vulnerability Management")
+              title: s_("BillingPlans|Vulnerability Management")
             },
             {
-              "title": s_("BillingPlans|Dependency Scanning")
+              title: s_("BillingPlans|Dependency Scanning")
             },
             {
-              "title": s_("BillingPlans|Container Scanning")
+              title: s_("BillingPlans|Container Scanning")
             },
             {
-              "title": s_("BillingPlans|Static Application Security Testing")
+              title: s_("BillingPlans|Static Application Security Testing")
             },
             {
-              "title": s_("BillingPlans|Multi-Level Epics")
+              title: s_("BillingPlans|Multi-Level Epics")
             },
             {
-              "title": s_("BillingPlans|Portfolio Management")
+              title: s_("BillingPlans|Portfolio Management")
             },
             {
-              "title": s_("BillingPlans|Custom Roles")
+              title: s_("BillingPlans|Custom Roles")
             },
             {
-              "title": s_("BillingPlans|Value Stream Management")
+              title: s_("BillingPlans|Value Stream Management")
             },
             {
-              "title": s_("BillingPlans|250GB storage")
+              title: s_("BillingPlans|250GB storage")
             },
             {
-              "title": s_("BillingPlans|500GB transfer per month")
+              title: s_("BillingPlans|500GB transfer per month")
             },
             {
-              "title": s_("BillingPlans|50,000 CI/CD minutes per month")
+              title: s_("BillingPlans|50,000 CI/CD minutes per month")
             },
             {
-              "title": s_("BillingPlans|Free guest users")
+              title: s_("BillingPlans|Free guest users")
             }
           ],
-          "cta_text": s_("BillingPlans|Upgrade to Ultimate"),
-          "cta_category": {
+          cta_text: s_("BillingPlans|Upgrade to Ultimate"),
+          cta_category: {
             free: "secondary",
             trial: 'primary'
           },
-          "cta_data": {
-            "testid": "upgrade-to-ultimate"
+          cta_data: {
+            testid: "upgrade-to-ultimate"
           }
         }
       }

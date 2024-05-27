@@ -9,9 +9,9 @@ class Gitlab::Seeder::MergeRequestPredictions
       next if mr.predictions.present?
 
       suggestion = {
-        "top_n": TOP_N_SUGGESTED_USERS,
-        "version": VERSION,
-        "reviewers": mr.project.team.users.sample(TOP_N_SUGGESTED_USERS).map(&:username)
+        top_n: TOP_N_SUGGESTED_USERS,
+        version: VERSION,
+        reviewers: mr.project.team.users.sample(TOP_N_SUGGESTED_USERS).map(&:username)
       }
 
       mr.build_predictions
