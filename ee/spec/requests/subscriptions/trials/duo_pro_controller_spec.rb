@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category: :purchase do
+RSpec.describe Subscriptions::Trials::DuoProController, :saas, :unlimited_max_formatted_output_length, feature_category: :purchase do
   let_it_be(:user) { create(:user) }
   let_it_be(:user_without_eligible_groups) { create(:user) }
   let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
@@ -69,7 +69,7 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
       context 'when on the trial step' do
         let(:base_params) { { step: 'trial' } }
 
-        it { is_expected.to render_select_namespace }
+        it { is_expected.to render_select_namespace_duo }
 
         context 'with tracking page render' do
           it_behaves_like 'internal event tracking' do
@@ -111,7 +111,8 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
     let(:trial_params) do
       {
         namespace_id: group.id.to_s,
-        trial_entity: '_trial_entity_'
+        trial_entity: '_trial_entity_',
+        organization_id: anything
       }.with_indifferent_access
     end
 
@@ -199,9 +200,8 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
           let(:namespace) { build_stubbed(:namespace) }
           let(:payload) { { namespace: namespace.id } }
 
-          it 'renders the select namespace form again with trial creation errors only',
-            quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/452319' do
-            expect(post_create).to render_select_namespace
+          it 'renders the select namespace form again with trial creation errors only' do
+            expect(post_create).to render_select_namespace_duo
 
             expect(response.body).to include(_('your GitLab Duo Pro trial could not be created'))
           end
@@ -212,7 +212,7 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
           let(:namespace) { build_stubbed(:namespace) }
           let(:payload) { { namespace_id: namespace.id } }
 
-          it { is_expected.to render_select_namespace }
+          it { is_expected.to render_select_namespace_duo }
         end
       end
 
@@ -270,7 +270,7 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, feature_category:
     end
   end
 
-  RSpec::Matchers.define :render_select_namespace do
+  RSpec::Matchers.define :render_select_namespace_duo do
     match do |response|
       expect(response).to have_gitlab_http_status(:ok)
 

@@ -214,7 +214,8 @@ module Features
       trial_user_params = {
         namespace_id: namespace_id,
         gitlab_com_trial: true,
-        sync_to_gl: true
+        sync_to_gl: true,
+        organization_id: anything
       }.merge(extra_params)
 
       service_params = {

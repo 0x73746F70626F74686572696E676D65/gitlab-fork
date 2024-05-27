@@ -67,7 +67,8 @@ module Registrations
       params.require(:group).permit(
         :name,
         :path,
-        :visibility_level
+        :visibility_level,
+        :organization_id
       ).merge(setup_for_company: user.setup_for_company)
     end
 

@@ -172,7 +172,10 @@ class SubscriptionsController < ApplicationController
     name = Namespace.clean_name(params[:setup_for_company] ? customer_params[:company] : current_user.name)
     path = Namespace.clean_path(name)
 
-    response = Groups::CreateService.new(current_user, name: name, path: path).execute
+    response = Groups::CreateService.new(
+      current_user, name: name, path: path, organization_id: Current.organization_id
+    ).execute
+
     response[:group]
   end
 

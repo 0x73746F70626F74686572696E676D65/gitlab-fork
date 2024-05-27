@@ -322,7 +322,7 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
       it { is_expected.to have_gitlab_http_status(:unauthorized) }
     end
 
-    context 'with authorized user' do
+    context 'with authorized user', :with_current_organization do
       let_it_be(:service_response) { { success: true, data: 'foo' } }
       let_it_be(:group) { create(:group) }
 
@@ -337,6 +337,12 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
       end
 
       it 'creates subscription idempotently' do
+        expect(Groups::CreateService).to receive(:new).with(
+          user,
+          name: params[:customer][:company],
+          path: Namespace.clean_path(params[:customer][:company]),
+          organization_id: Current.organization_id
+        )
         expect_next_instance_of(GitlabSubscriptions::CreateService,
           user,
           group: group,
