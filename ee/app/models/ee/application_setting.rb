@@ -325,9 +325,9 @@ module EE
       return ::Project.where(id: ElasticsearchIndexedProject.select(:project_id)) if ignore_namespaces
 
       union = ::Gitlab::SQL::Union.new([
-                                         ::Project.where(namespace_id: elasticsearch_limited_namespaces.select(:id)),
+        ::Project.where(namespace_id: elasticsearch_limited_namespaces.select(:id)),
                                          ::Project.where(id: ElasticsearchIndexedProject.select(:project_id))
-                                       ]).to_sql
+      ]).to_sql
 
       ::Project.from("(#{union}) projects")
     end

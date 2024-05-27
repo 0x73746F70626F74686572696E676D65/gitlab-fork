@@ -85,9 +85,9 @@ class ProtectedEnvironment < ApplicationRecord
       tiers = environments.map(&:tier)
 
       from_union([
-                   where(project: project_id, name: names),
+        where(project: project_id, name: names),
                    where(group: group_ids, name: tiers)
-                 ])
+      ])
     end
   end
 
