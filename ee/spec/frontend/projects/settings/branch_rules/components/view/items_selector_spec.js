@@ -49,9 +49,7 @@ describe('Items selector component', () => {
   it('emits the change event with the updated selectedItems when an item is deleted', async () => {
     createComponent();
     const listSelectorComponent = wrapper.findComponent(ListSelector);
-
     await listSelectorComponent.vm.$emit('delete', '123');
-
     expect(wrapper.emitted('change')).toEqual([[items.slice(1)]]);
   });
 });
