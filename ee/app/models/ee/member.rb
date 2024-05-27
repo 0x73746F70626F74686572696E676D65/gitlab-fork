@@ -149,7 +149,7 @@ module EE
     def is_using_seat
       return user.using_gitlab_com_seat?(source) if ::Gitlab.com?
 
-      user.using_license_seat?
+      user&.using_license_seat?
     end
     # rubocop: enable Naming/PredicateName
 

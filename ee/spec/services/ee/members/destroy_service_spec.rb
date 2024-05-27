@@ -124,6 +124,12 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
             expect(project_1_participant.reload.is_removed).to eq(true)
             expect(project_2_participant.reload.is_removed).to eq(true)
           end
+
+          it 'calls the reset callout service for the namespace' do
+            expect(::Groups::ResetSeatCalloutsWorker).to receive(:perform_async).with(group)
+
+            destroy_service.execute(member)
+          end
         end
 
         context 'when project member is removed' do
@@ -136,6 +142,12 @@ RSpec.describe Members::DestroyService, feature_category: :groups_and_projects d
 
             expect(project_1_participant.reload.is_removed).to eq(true)
             expect(project_2_participant.reload.is_removed).to eq(false)
+          end
+
+          it 'calls the reset callout service for the namespace' do
+            expect(::Groups::ResetSeatCalloutsWorker).to receive(:perform_async).with(group)
+
+            destroy_service.execute(project_member)
           end
         end
       end

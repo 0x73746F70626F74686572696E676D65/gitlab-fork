@@ -250,6 +250,14 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
         expect(user).not_to receive(:using_gitlab_com_seat?)
         expect(member.is_using_seat).to be_truthy
       end
+
+      context 'when the member is nil' do
+        let_it_be(:member) { build(:group_member, :invited) }
+
+        it 'returns false' do
+          expect(member.is_using_seat).to be_falsey
+        end
+      end
     end
   end
 
