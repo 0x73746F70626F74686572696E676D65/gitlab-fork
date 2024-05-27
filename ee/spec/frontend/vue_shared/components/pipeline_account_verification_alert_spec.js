@@ -4,13 +4,17 @@ import { nextTick } from 'vue';
 import PipelineAccountVerificationAlert from 'ee/vue_shared/components/pipeline_account_verification_alert.vue';
 
 describe('Identity verification needed to run pipelines alert', () => {
+  const DEFAULT_PROVIDES = { identityVerificationRequired: true };
+
   let wrapper;
 
-  const createWrapper = ({ identityVerificationRequired = true } = {}) => {
+  const createWrapper = ({ props, provide } = { props: {}, provide: {} }) => {
     wrapper = shallowMount(PipelineAccountVerificationAlert, {
+      propsData: props,
       provide: {
-        identityVerificationRequired,
         identityVerificationPath: 'identity/verification/path',
+        ...DEFAULT_PROVIDES,
+        ...provide,
       },
     });
   };
@@ -19,7 +23,7 @@ describe('Identity verification needed to run pipelines alert', () => {
 
   describe('when identity verification is not required', () => {
     it('does not show alert', () => {
-      createWrapper({ identityVerificationRequired: false });
+      createWrapper({ provide: { identityVerificationRequired: false } });
 
       expect(findAlert().exists()).toBe(false);
     });
@@ -50,6 +54,16 @@ describe('Identity verification needed to run pipelines alert', () => {
       await nextTick();
 
       expect(findAlert().exists()).toBe(false);
+    });
+  });
+
+  describe('custom title', () => {
+    it('shows alert with expected props', () => {
+      createWrapper({ props: { title: 'Custom title' } });
+
+      expect(findAlert().props()).toMatchObject({
+        title: 'Custom title',
+      });
     });
   });
 });

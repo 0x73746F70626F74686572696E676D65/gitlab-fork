@@ -142,6 +142,10 @@ RSpec.describe EE::Ci::RunnersHelper, feature_category: :fleet_visibility do
       expect(user).to receive(:has_required_credit_card_to_enable_shared_runners?).with(project).and_return(valid_card)
     end
 
+    it 'includes identity_verification_path' do
+      expect(subject[:identity_verification_path]).to eq identity_verification_path
+    end
+
     context 'when user has a valid credit card' do
       it 'return is_credit_card_validation_required as "false"' do
         expect(subject[:is_credit_card_validation_required]).to eq('false')

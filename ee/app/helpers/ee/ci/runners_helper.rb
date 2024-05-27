@@ -33,7 +33,10 @@ module EE
 
       override :toggle_shared_runners_settings_data
       def toggle_shared_runners_settings_data(project)
-        super.merge(is_credit_card_validation_required: validate_credit_card?(project).to_s)
+        super.merge(
+          is_credit_card_validation_required: validate_credit_card?(project).to_s,
+          identity_verification_path: identity_verification_path
+        )
       end
 
       def validate_credit_card?(project)
