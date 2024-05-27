@@ -57,10 +57,10 @@ RSpec.describe 'Create test case', feature_category: :quality_management do
       end
 
       it_behaves_like 'a mutation that returns top-level errors',
-                      errors: [
-                        'The resource that you are attempting to access does not exist '\
-                        'or you don\'t have permission to perform this action'
-                      ]
+        errors: [
+          'The resource that you are attempting to access does not exist '\
+          'or you don\'t have permission to perform this action'
+        ]
     end
 
     context 'when quality management feature is available' do
@@ -128,10 +128,10 @@ RSpec.describe 'Create test case', feature_category: :quality_management do
         end
 
         it_behaves_like 'a mutation that returns top-level errors',
-                        errors: [
-                          'The resource that you are attempting to access does not exist '\
-                          'or you don\'t have permission to perform this action'
-                        ]
+          errors: [
+            'The resource that you are attempting to access does not exist '\
+            'or you don\'t have permission to perform this action'
+          ]
       end
     end
   end

@@ -62,7 +62,7 @@ RSpec.describe "Lock/unlock project's file path", feature_category: :source_code
       end
 
       it_behaves_like 'a mutation that returns errors in the response',
-                      errors: ['You have no permissions']
+        errors: ['You have no permissions']
     end
   end
 end

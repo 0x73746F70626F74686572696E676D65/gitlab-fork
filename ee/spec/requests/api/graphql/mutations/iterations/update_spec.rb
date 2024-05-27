@@ -162,7 +162,7 @@ RSpec.describe 'Updating an Iteration', feature_category: :team_planning do
           let_it_be(:another_iteration) { create(:iteration, iterations_cadence: cadence, start_date: start_date.strftime('%F'), due_date: end_date.strftime('%F')) }
 
           it_behaves_like 'a mutation that returns errors in the response',
-                          errors: ["Dates cannot overlap with other existing Iterations within this iterations cadence"]
+            errors: ["Dates cannot overlap with other existing Iterations within this iterations cadence"]
         end
       end
 
@@ -182,7 +182,7 @@ RSpec.describe 'Updating an Iteration', feature_category: :team_planning do
         let(:attributes) { {} }
 
         it_behaves_like 'a mutation that returns top-level errors',
-                        errors: ['The list of iteration attributes is empty']
+          errors: ['The list of iteration attributes is empty']
 
         it 'does not update the iteration' do
           expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(subject_iteration, :title)

@@ -11,8 +11,8 @@ RSpec.describe 'Initialize Product Analytics', feature_category: :product_analyt
 
   let(:mutation) do
     graphql_mutation(:project_initialize_product_analytics,
-                     { projectPath: project.full_path },
-                     'project { id }, errors')
+      { projectPath: project.full_path },
+      'project { id }, errors')
   end
 
   def mutation_response
@@ -49,14 +49,14 @@ RSpec.describe 'Initialize Product Analytics', feature_category: :product_analyt
           end
 
           it_behaves_like 'a mutation that returns errors in the response',
-                          errors: ['Product analytics initialization is already in progress']
+            errors: ['Product analytics initialization is already in progress']
         end
       end
 
       context 'when user is not a project member' do
         it_behaves_like 'a mutation that returns top-level errors',
-                        errors: ['The resource that you are attempting to access does not exist '\
-                                 'or you don\'t have permission to perform this action']
+          errors: ['The resource that you are attempting to access does not exist '\
+                   'or you don\'t have permission to perform this action']
       end
     end
 
@@ -68,7 +68,7 @@ RSpec.describe 'Initialize Product Analytics', feature_category: :product_analyt
       end
 
       it_behaves_like 'a mutation that returns errors in the response',
-                      errors: ['Product analytics is disabled']
+        errors: ['Product analytics is disabled']
     end
   end
 end

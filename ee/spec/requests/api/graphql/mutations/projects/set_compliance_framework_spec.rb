@@ -37,8 +37,8 @@ RSpec.describe 'Set project compliance framework', feature_category: :compliance
       end
 
       it_behaves_like 'a mutation that returns top-level errors',
-                      errors: ['The resource that you are attempting to access does not exist '\
-                               'or you don\'t have permission to perform this action']
+        errors: ['The resource that you are attempting to access does not exist '\
+                 'or you don\'t have permission to perform this action']
     end
 
     context 'when feature is available' do

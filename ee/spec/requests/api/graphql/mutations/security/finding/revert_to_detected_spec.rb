@@ -93,9 +93,9 @@ RSpec.describe Mutations::Security::Finding::RevertToDetected, feature_category:
         context 'when there is a dismissal feedback' do
           let_it_be(:dismissal_feedback) do
             create(:vulnerability_feedback,
-                   :dismissal,
-                   finding_uuid: security_finding.uuid,
-                   project: security_finding.project)
+              :dismissal,
+              finding_uuid: security_finding.uuid,
+              project: security_finding.project)
           end
 
           context 'when there is no vulnerability' do

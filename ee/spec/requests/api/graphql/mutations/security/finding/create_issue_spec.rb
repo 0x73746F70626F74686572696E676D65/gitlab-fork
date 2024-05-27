@@ -94,18 +94,18 @@ RSpec.describe 'Creating an Issue from a Security::Finding', feature_category: :
       end
 
       it_behaves_like 'a mutation that returns top-level errors',
-                      errors: ['The resource that you are attempting to access does not '\
-               'exist or you don\'t have permission to perform this action']
+        errors: ['The resource that you are attempting to access does not '\
+ 'exist or you don\'t have permission to perform this action']
     end
   end
 
   def insert_security_findings
     report.findings.map do |finding|
       create(:security_finding,
-             severity: finding.severity,
-             confidence: finding.confidence,
-             uuid: finding.uuid,
-             scan: scan)
+        severity: finding.severity,
+        confidence: finding.confidence,
+        uuid: finding.uuid,
+        scan: scan)
     end
   end
 end
