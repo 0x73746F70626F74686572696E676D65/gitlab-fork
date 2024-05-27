@@ -28,6 +28,22 @@ module Arkose
       response["error"]
     end
 
+    # Arkose can opt to not show a challenge ("Transparent mode") to the user if
+    # they are deemed safe. When this happens `solved` is still `true`
+    # (challenge_solved? => true) even though the user didn't actually solve a
+    # challenge.
+    #
+    # Here, we want to know if the user was shown and solved a challenge-not
+    # "Transparent mode".
+    def interactive_challenge_solved?
+      challenge_shown? && challenge_solved?
+    end
+
+    def challenge_shown?
+      suppressed = response&.dig('session_details', 'suppressed')
+      suppressed.nil? ? false : !suppressed
+    end
+
     def challenge_solved?
       solved = response&.dig('session_details', 'solved')
       solved.nil? ? true : solved

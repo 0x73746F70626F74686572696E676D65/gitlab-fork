@@ -403,12 +403,12 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
     before do
       stub_session(session_data: { verification_user_id: user.id })
+      mock_arkose_token_verification(success: true)
     end
 
     describe 'before action hooks' do
       before do
         mock_send_phone_number_verification_code(success: true)
-        mock_arkose_token_verification(success: true)
       end
 
       it_behaves_like 'it requires a valid verification_user_id'
@@ -485,14 +485,11 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
 
     let(:params) { { arkose_labs_token: 'fake-token' } }
     let(:do_request) { post verify_arkose_labs_session_signup_identity_verification_path, params: params }
-    let(:service_response) { successful_verification_response }
 
     before do
       stub_session(session_data: { verification_user_id: user.id })
 
-      allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
-        allow(instance).to receive(:execute).and_return(service_response)
-      end
+      mock_arkose_token_verification(success: true)
     end
 
     it_behaves_like 'it requires a valid verification_user_id', :redirect
@@ -521,15 +518,15 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       end
 
       context 'when it succeeds' do
-        before do
-          mock_arkose_token_verification(success: true)
-        end
-
         it 'redirects to show action' do
+          mock_arkose_token_verification(success: true)
+
           do_request
 
           expect(response).to redirect_to(signup_identity_verification_path)
         end
+
+        it_behaves_like 'sets arkose_challenge_solved session variable'
 
         describe 'phone verification service daily transaction limit check' do
           it 'is executed' do

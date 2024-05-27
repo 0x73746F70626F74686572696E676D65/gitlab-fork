@@ -5,17 +5,43 @@ require 'support/helpers/listbox_helpers'
 module IdentityVerificationHelpers
   include ListboxHelpers
 
-  def stub_arkose_token_verification(risk: :low, response: {})
+  def stub_arkose_token_verification(
+    risk: :low, token_verification_response: :success, challenge_shown: false, service_down: false
+  )
+
+    success_response = {
+      session_risk: { risk_band: risk.capitalize },
+      session_details: { suppressed: !challenge_shown }
+    }
+
+    error_response = { error: "DENIED ACCESS" }
+    return_error = token_verification_response == :failed
+
     stub_request(:post, 'https://verify-api.arkoselabs.com/api/v4/verify/')
     .to_return(
       status: 200,
-      body: response.present? ? response.to_json : { session_risk: { risk_band: risk.capitalize } }.to_json,
+      body: return_error ? error_response.to_json : success_response.to_json,
       headers: { content_type: 'application/json' }
     )
+
+    status_indicator = service_down ? 'critical' : 'none'
+
+    stub_request(:get, "https://status.arkoselabs.com/api/v2/status.json")
+      .with(
+        headers: {
+          'Accept' => '*/*',
+          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+          'User-Agent' => 'Ruby'
+        })
+      .to_return(
+        status: 200,
+        body: { status: { indicator: status_indicator } }.to_json,
+        headers: { 'Content-Type' => 'application/json' }
+      )
   end
 
-  def solve_arkose_verify_challenge(risk: :low, response: {})
-    stub_arkose_token_verification(risk: risk, response: response)
+  def solve_arkose_verify_challenge(**opts)
+    stub_arkose_token_verification(**opts)
 
     selector = '[data-testid="arkose-labs-token-input"]'
     page.execute_script("document.querySelector('#{selector}').value='mock_arkose_labs_session_token'")
@@ -64,18 +90,18 @@ module IdentityVerificationHelpers
     expect(page).to have_content(_('Completed'))
   end
 
-  def verify_phone_number(solve_arkose_challenge: false)
+  def send_phone_number_verification_code(solve_arkose_challenge: false, **arkose_opts)
+    mock_phone_number = '400000000'
+
     expect(page).to have_content('Send code')
 
-    solve_arkose_verify_challenge if solve_arkose_challenge
+    solve_arkose_verify_challenge(**arkose_opts) if solve_arkose_challenge
 
-    phone_number = '400000000'
-    verification_code = '4319315'
     stub_telesign_verification
 
     select_from_listbox('🇦🇺 Australia (+61)', from: '🇺🇸 United States of America (+1)')
 
-    fill_in 'phone_number', with: phone_number
+    fill_in 'phone_number', with: mock_phone_number
     click_button s_('IdentityVerification|Send code')
 
     content = format(
@@ -84,8 +110,15 @@ module IdentityVerificationHelpers
     )
 
     expect(page).to have_content(content)
+  end
 
-    fill_in 'verification_code', with: verification_code
+  def verify_phone_number(solve_arkose_challenge: false)
+    send_phone_number_verification_code(solve_arkose_challenge: solve_arkose_challenge)
+
+    mock_verification_code = '4319315'
+
+    fill_in 'verification_code', with: mock_verification_code
+
     click_button s_('IdentityVerification|Verify phone number')
   end
 

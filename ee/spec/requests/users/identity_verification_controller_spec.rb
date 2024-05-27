@@ -98,6 +98,10 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
     subject(:do_request) { post send_phone_verification_code_identity_verification_path(params) }
 
+    before do
+      mock_arkose_token_verification(success: true)
+    end
+
     describe 'before action hooks' do
       before do
         mock_send_phone_number_verification_code(success: true)

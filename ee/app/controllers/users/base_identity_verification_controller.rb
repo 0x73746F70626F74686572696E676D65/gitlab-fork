@@ -150,14 +150,17 @@ module Users
     end
 
     def ensure_challenge_completed!
-      return if verify_arkose_labs_token
-
-      message = s_('IdentityVerification|Complete verification to proceed.')
-      render status: :bad_request, json: { message: message }
+      if verify_arkose_labs_token
+        session[:arkose_challenge_solved] = true if arkose_challenge_solved?
+      else
+        message = s_('IdentityVerification|Complete verification to proceed.')
+        render status: :bad_request, json: { message: message }
+      end
     end
 
     def arkose_challenge_required?(method:)
       return false unless Feature.enabled?(:identity_verification_arkose_challenge, @user, type: :gitlab_com_derisk)
+      return false if session[:arkose_challenge_solved]
 
       # Require the user to solve Arkose challenge before allowing phone number
       # or credit card verification (happens after email verification).
