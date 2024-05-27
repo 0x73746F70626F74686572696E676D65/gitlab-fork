@@ -89,7 +89,8 @@ module Subscriptions
       end
 
       def trial_params
-        params.permit(:namespace_id, :trial_entity, :glm_source, :glm_content).to_h
+        params.permit(:new_group_name, :namespace_id, :trial_entity, :glm_source, :glm_content)
+        .with_defaults(organization_id: Current.organization_id).to_h
       end
 
       def success_flash_message

@@ -72,7 +72,8 @@ RSpec.describe Subscriptions::TrialsController, feature_category: :purchase do
     let(:trial_params) do
       {
         namespace_id: non_existing_record_id.to_s,
-        trial_entity: '_trial_entity_'
+        trial_entity: '_trial_entity_',
+        organization_id: nil
       }.with_indifferent_access
     end
 

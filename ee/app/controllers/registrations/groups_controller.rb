@@ -40,7 +40,8 @@ module Registrations
                         Registrations::StandardNamespaceCreateService
                       end
 
-      result = service_class.new(current_user, params).execute
+      service_params = params.with_defaults(organization_id: Current.organization_id)
+      result = service_class.new(current_user, service_params).execute
 
       if result.success?
         actions_after_success(result.payload)
