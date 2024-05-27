@@ -17273,6 +17273,24 @@ CREATE TABLE user_audit_events (
 )
 PARTITION BY RANGE (created_at);
 
+CREATE TABLE user_broadcast_message_dismissals (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    broadcast_message_id bigint NOT NULL,
+    expires_at timestamp with time zone,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
+CREATE SEQUENCE user_broadcast_message_dismissals_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE user_broadcast_message_dismissals_id_seq OWNED BY user_broadcast_message_dismissals.id;
+
 CREATE TABLE user_callouts (
     id integer NOT NULL,
     feature_name integer NOT NULL,
@@ -20235,6 +20253,8 @@ ALTER TABLE ONLY user_achievements ALTER COLUMN id SET DEFAULT nextval('user_ach
 
 ALTER TABLE ONLY user_agent_details ALTER COLUMN id SET DEFAULT nextval('user_agent_details_id_seq'::regclass);
 
+ALTER TABLE ONLY user_broadcast_message_dismissals ALTER COLUMN id SET DEFAULT nextval('user_broadcast_message_dismissals_id_seq'::regclass);
+
 ALTER TABLE ONLY user_callouts ALTER COLUMN id SET DEFAULT nextval('user_callouts_id_seq'::regclass);
 
 ALTER TABLE ONLY user_canonical_emails ALTER COLUMN id SET DEFAULT nextval('user_canonical_emails_id_seq'::regclass);
@@ -22863,6 +22883,9 @@ ALTER TABLE ONLY user_agent_details
 ALTER TABLE ONLY user_audit_events
     ADD CONSTRAINT user_audit_events_pkey PRIMARY KEY (id, created_at);
 
+ALTER TABLE ONLY user_broadcast_message_dismissals
+    ADD CONSTRAINT user_broadcast_message_dismissals_pkey PRIMARY KEY (id);
+
 ALTER TABLE ONLY user_callouts
     ADD CONSTRAINT user_callouts_pkey PRIMARY KEY (id);
 
@@ -24924,6 +24947,8 @@ CREATE INDEX index_boards_on_iteration_id ON boards USING btree (iteration_id);
 CREATE INDEX index_boards_on_milestone_id ON boards USING btree (milestone_id);
 
 CREATE INDEX index_boards_on_project_id ON boards USING btree (project_id);
+
+CREATE UNIQUE INDEX index_broadcast_dismissals_on_user_id_and_broadcast_message_id ON user_broadcast_message_dismissals USING btree (user_id, broadcast_message_id);
 
 CREATE INDEX index_broadcast_message_on_ends_at_and_broadcast_type_and_id ON broadcast_messages USING btree (ends_at, broadcast_type, id);
 
@@ -27911,6 +27936,8 @@ CREATE INDEX index_user_achievements_on_user_id_revoked_by_is_null ON user_achie
 
 CREATE INDEX index_user_agent_details_on_subject_id_and_subject_type ON user_agent_details USING btree (subject_id, subject_type);
 
+CREATE INDEX index_user_broadcast_message_dismissals_on_broadcast_message_id ON user_broadcast_message_dismissals USING btree (broadcast_message_id);
+
 CREATE UNIQUE INDEX index_user_callouts_on_user_id_and_feature_name ON user_callouts USING btree (user_id, feature_name);
 
 CREATE INDEX index_user_canonical_emails_on_canonical_email ON user_canonical_emails USING btree (canonical_email);
@@ -30617,6 +30644,9 @@ ALTER TABLE ONLY project_export_jobs
 ALTER TABLE ONLY dependency_list_exports
     ADD CONSTRAINT fk_5b3d11e1ef FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
 
+ALTER TABLE ONLY user_broadcast_message_dismissals
+    ADD CONSTRAINT fk_5c0cfb74ce FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY dast_scanner_profiles_builds
     ADD CONSTRAINT fk_5d46286ad3 FOREIGN KEY (dast_scanner_profile_id) REFERENCES dast_scanner_profiles(id) ON DELETE CASCADE;
 
@@ -31138,6 +31168,9 @@ ALTER TABLE ONLY sbom_occurrences_vulnerabilities
 
 ALTER TABLE ONLY issues
     ADD CONSTRAINT fk_c78fbacd64 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY user_broadcast_message_dismissals
+    ADD CONSTRAINT fk_c7cbf5566d FOREIGN KEY (broadcast_message_id) REFERENCES broadcast_messages(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY agent_activity_events
     ADD CONSTRAINT fk_c815368376 FOREIGN KEY (agent_id) REFERENCES cluster_agents(id) ON DELETE CASCADE;
