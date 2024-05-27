@@ -5,7 +5,7 @@ module RemoteDevelopment
     extend ActiveSupport::Concern
 
     included do
-      rule { owner | admin }.enable :admin_remote_development_cluster_agent_mapping
+      rule { can?(:owner_access) }.enable :admin_remote_development_cluster_agent_mapping
     end
   end
 end
