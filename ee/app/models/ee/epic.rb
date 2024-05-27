@@ -28,7 +28,7 @@ module EE
 
       DEFAULT_COLOR = ::Gitlab::Color.of('#1068bf')
       MAX_HIERARCHY_DEPTH = 7
-      MAX_CHILDREN_COUNT = 100
+      MAX_CHILDREN_COUNT = 5000
 
       attribute :color, ::Gitlab::Database::Type::Color.new, default: DEFAULT_COLOR
       validates :color, color: true, presence: true
