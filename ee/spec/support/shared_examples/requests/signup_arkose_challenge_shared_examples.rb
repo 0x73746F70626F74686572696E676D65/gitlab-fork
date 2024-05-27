@@ -61,6 +61,12 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
     it "records the user's data from Arkose Labs" do
       expect { create_user }.to change { UserCustomAttribute.count }.from(0)
     end
+
+    it 'sets arkose_challenge_solved session variable to true' do
+      create_user
+
+      expect(request.session[:arkose_challenge_solved]).to eq true
+    end
   end
 
   context 'when verification fails' do

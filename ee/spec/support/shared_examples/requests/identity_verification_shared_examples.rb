@@ -1,15 +1,26 @@
 # frozen_string_literal: true
 
-def mock_arkose_token_verification(success:, service_down: false)
+def mock_arkose_token_verification(success:, challenge_shown: true, service_down: false)
   allow(::Arkose::Settings).to receive(:enabled?).and_return(true)
 
-  success_response = ServiceResponse.success(
-    payload: {
-      response:
-        Arkose::VerifyResponse.new(
-          Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json')))
-        )
-    })
+  response = Gitlab::Json.parse(
+    File.read(
+      Rails.root.join(
+        # Arkose can opt to not show a challenge ("Transparent mode") to the user if
+        # they are deemed safe. When this happens `solved` is still `true` even
+        # though the user didn't actually solve a challenge.
+        #
+        # Here, we default to a solved, shown challenge (suppressed field is
+        # false) and use "Transparent mode" response when challenge_shown param
+        # is false
+        #
+        # See Arkose::VerifyResponse#interactive_challenge_solved?
+        "ee/spec/fixtures/arkose/successfully_solved_#{challenge_shown ? '' : 'transparent_'}ec_response.json"
+      )
+    )
+  )
+
+  success_response = ServiceResponse.success(payload: { response: Arkose::VerifyResponse.new(response) })
   failed_response = ServiceResponse.error(message: "DENIED ACCESS")
 
   allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
@@ -263,6 +274,30 @@ RSpec.shared_examples 'it ensures verification attempt is allowed' do |method|
   end
 end
 
+RSpec.shared_examples 'sets arkose_challenge_solved session variable' do
+  describe 'arkose_shown_challenge_solved session variable' do
+    before do
+      mock_arkose_token_verification(success: true, challenge_shown: shown_challenge_solved)
+
+      do_request
+    end
+
+    subject { request.session[:arkose_challenge_solved] }
+
+    context 'when user solved a shown challenge' do
+      let(:shown_challenge_solved) { true }
+
+      it { is_expected.to eq true }
+    end
+
+    context 'when user solved a challenge that was not shown' do
+      let(:shown_challenge_solved) { false }
+
+      it { is_expected.to be_nil }
+    end
+  end
+end
+
 RSpec.shared_examples 'it verifies arkose token' do |method|
   let(:target_user) { nil }
 
@@ -302,6 +337,8 @@ RSpec.shared_examples 'it verifies arkose token' do |method|
 
       expect(response).to have_gitlab_http_status(:ok)
     end
+
+    it_behaves_like 'sets arkose_challenge_solved session variable'
   end
 
   context 'when Arkose is down' do

@@ -88,7 +88,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
     )
 
     registers_from_invite(group: group) do
-      solve_arkose_verify_challenge(risk: :medium, response: {})
+      solve_arkose_verify_challenge(risk: :medium)
     end
   end
 

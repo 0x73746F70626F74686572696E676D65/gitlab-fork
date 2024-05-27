@@ -28,6 +28,12 @@ module Arkose
       end
     end
 
+    def arkose_challenge_solved?
+      return false unless arkose_labs_verify_response
+
+      arkose_labs_verify_response.interactive_challenge_solved?
+    end
+
     def log_challenge_skipped
       ::Gitlab::AppLogger.info(
         message: 'Sign-up verification skipped',

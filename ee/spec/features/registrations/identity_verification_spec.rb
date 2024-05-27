@@ -15,30 +15,16 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       telesign_customer_xid: 'customer_id',
       telesign_api_key: 'private_key'
     )
-
-    stub_request(:get, "https://status.arkoselabs.com/api/v2/status.json")
-      .with(
-        headers: {
-          'Accept' => '*/*',
-          'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-          'User-Agent' => 'Ruby'
-        })
-      .to_return(
-        status: 200,
-        body: { status: { indicator: arkose_status_indicator } }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
   end
 
   let(:user_email) { 'onboardinguser@example.com' }
   let(:new_user) { build(:user, email: user_email) }
   let(:user) { User.find_by_email(user_email) }
-  let(:arkose_status_indicator) { 'none' }
 
   shared_examples 'does not allow unauthorized access to verification endpoints' do |protected_endpoints|
     # Normally, users cannot trigger requests to endpoints of verification
     # methods in later steps by only using the UI (e.g. if the current step is
-    # email verification. Phone and credit card steps cannot be interacted
+    # email verification, phone and credit card steps cannot be interacted
     # with). However, there is nothing stopping users from manually or
     # programatically sending requests to these endpoints.
     #
@@ -91,8 +77,10 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     end
   end
 
-  shared_examples 'registering a low risk user with identity verification' do |flow: :others|
-    let(:risk) { :low }
+  shared_examples 'registering a low risk user with identity verification' do |flow: :standard|
+    before do
+      sign_up(flow: flow, arkose: { risk: :low })
+    end
 
     it 'verifies the user' do
       expect_to_see_identity_verification_page
@@ -158,9 +146,13 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   end
 
   shared_examples 'registering a medium risk user with identity verification' do
-    |skip_email_validation: false, flow: :others|
+    |flow: :standard, skip_email_validation: false|
 
-    let(:risk) { :medium }
+    let(:challenge_shown) { false }
+
+    before do
+      sign_up(flow: flow, arkose: { risk: :medium, challenge_shown: challenge_shown })
+    end
 
     it 'verifies the user' do
       expect_to_see_identity_verification_page
@@ -195,6 +187,20 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       end
     end
 
+    context 'when user solved an Arkose challenge during signup' do
+      let(:challenge_shown) { true }
+
+      it 'does not require an Arkose challenge before phone verification' do
+        expect_to_see_identity_verification_page
+
+        verify_email unless skip_email_validation
+
+        verify_phone_number
+
+        expect_verification_completed
+      end
+    end
+
     unless flow == :saml
       describe 'access to verification endpoints' do
         it_behaves_like 'does not allow unauthorized access to verification endpoints', [:credit_card]
@@ -209,9 +215,11 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   end
 
   shared_examples 'registering a high risk user with identity verification' do
-    |skip_email_validation: false, flow: :others|
+    |flow: :standard, skip_email_validation: false|
 
-    let(:risk) { :high }
+    before do
+      sign_up(flow: flow, arkose: { risk: :high })
+    end
 
     it 'verifies the user' do
       expect_to_see_identity_verification_page
@@ -273,10 +281,10 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     end
   end
 
-  shared_examples 'allows the user to complete registration when Arkose is down' do
-    let(:risk) { nil }
-    let(:arkose_token_verification_response) { { error: "DENIED ACCESS" } }
-    let(:arkose_status_indicator) { 'critical' }
+  shared_examples 'allows the user to complete registration when Arkose is down' do |flow: :standard|
+    before do
+      sign_up(flow: flow, arkose: { token_verification_response: :failed, service_down: true })
+    end
 
     it 'allows the user to complete the registration' do
       expect_to_see_identity_verification_page
@@ -295,20 +303,12 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     end
 
     context 'when Arkose is up' do
-      before do
-        sign_up
-      end
-
       it_behaves_like 'registering a low risk user with identity verification'
       it_behaves_like 'registering a medium risk user with identity verification'
       it_behaves_like 'registering a high risk user with identity verification'
     end
 
-    it_behaves_like 'allows the user to complete registration when Arkose is down' do
-      before do
-        sign_up(arkose_verify_response: arkose_token_verification_response)
-      end
-    end
+    it_behaves_like 'allows the user to complete registration when Arkose is down'
   end
 
   describe 'Invite flow' do
@@ -319,12 +319,10 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     end
 
     context 'when Arkose is up' do
-      before do
-        sign_up(invite: true)
-      end
-
       context 'when the user is low risk' do
-        let(:risk) { :low }
+        before do
+          sign_up(flow: :invite, arkose: { risk: :low })
+        end
 
         it 'does not verify the user and lands on group page' do
           expect(page).to have_current_path(group_path(invitation.group))
@@ -334,17 +332,15 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
         end
       end
 
-      it_behaves_like 'registering a medium risk user with identity verification', skip_email_validation: true
-      it_behaves_like 'registering a high risk user with identity verification', skip_email_validation: true
+      it_behaves_like 'registering a medium risk user with identity verification',
+        flow: :invite, skip_email_validation: true
+      it_behaves_like 'registering a high risk user with identity verification',
+        flow: :invite, skip_email_validation: true
     end
 
     context 'when Arkose is down' do
-      let(:risk) { nil }
-      let(:arkose_token_verification_response) { { error: "DENIED ACCESS" } }
-      let(:arkose_status_indicator) { 'critical' }
-
       before do
-        sign_up(invite: true, arkose_verify_response: arkose_token_verification_response)
+        sign_up(flow: :invite, arkose: { token_verification_response: :failed, service_down: true })
       end
 
       it 'allows the user to complete registration' do
@@ -362,35 +358,15 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     end
 
     context 'when Arkose is up' do
-      before do
-        trial_sign_up
-      end
-
-      it_behaves_like 'registering a low risk user with identity verification'
-      it_behaves_like 'registering a medium risk user with identity verification'
-      it_behaves_like 'registering a high risk user with identity verification'
+      it_behaves_like 'registering a low risk user with identity verification', flow: :trial
+      it_behaves_like 'registering a medium risk user with identity verification', flow: :trial
+      it_behaves_like 'registering a high risk user with identity verification', flow: :trial
     end
 
-    it_behaves_like 'allows the user to complete registration when Arkose is down' do
-      before do
-        trial_sign_up(arkose_verify_response: arkose_token_verification_response)
-      end
-    end
+    it_behaves_like 'allows the user to complete registration when Arkose is down', flow: :trial
   end
 
   describe 'SAML flow' do
-    let(:provider) { 'google_oauth2' }
-
-    before do
-      stub_arkose_token_verification(response: arkose_token_verification_response)
-
-      mock_auth_hash(provider, 'external_uid', user_email)
-      stub_omniauth_setting(block_auto_created_users: false)
-
-      visit new_user_registration_path
-      saml_sign_up
-    end
-
     around do |example|
       with_omniauth_full_host { example.run }
     end
@@ -403,7 +379,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       it_behaves_like 'registering a high risk user with identity verification', flow: :saml
     end
 
-    it_behaves_like 'allows the user to complete registration when Arkose is down'
+    it_behaves_like 'allows the user to complete registration when Arkose is down', flow: :saml
   end
 
   describe 'Subscription flow', :saas do
@@ -414,31 +390,22 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     end
 
     context 'when Arkose is up' do
-      before do
-        sign_up
-      end
-
       it_behaves_like 'registering a low risk user with identity verification'
       it_behaves_like 'registering a medium risk user with identity verification'
       it_behaves_like 'registering a high risk user with identity verification'
     end
 
-    it_behaves_like 'allows the user to complete registration when Arkose is down' do
-      before do
-        sign_up(arkose_verify_response: arkose_token_verification_response)
-      end
-    end
+    it_behaves_like 'allows the user to complete registration when Arkose is down'
   end
 
   describe 'user that already went through identity verification' do
     context 'when the user is medium risk but phone verification feature-flag is turned off' do
-      let(:risk) { :medium }
-
       before do
         stub_feature_flags(identity_verification_phone_number: false)
 
         visit new_user_registration_path
-        sign_up
+
+        sign_up(arkose: { risk: :medium })
       end
 
       it 'verifies the user with email only' do
@@ -465,19 +432,28 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
   private
 
-  def sign_up(invite: false, arkose_verify_response: {})
-    fill_in_sign_up_form(new_user, invite: invite) do
-      solve_arkose_verify_challenge(risk: risk, response: arkose_verify_response)
-    end
-  end
+  def sign_up(flow: :standard, **opts)
+    invite = flow == :invite
+    trial = flow == :trial
+    saml = flow == :saml
 
-  def saml_sign_up
-    click_button Gitlab::Auth::OAuth::Provider.label_for(provider)
-  end
+    if saml
+      provider = 'google_oauth2'
 
-  def trial_sign_up(arkose_verify_response: {})
-    fill_in_sign_up_form(new_user, 'Continue') do
-      solve_arkose_verify_challenge(risk: risk, response: arkose_verify_response)
+      stub_arkose_token_verification(**opts[:arkose])
+
+      mock_auth_hash(provider, 'external_uid', user_email)
+      stub_omniauth_setting(block_auto_created_users: false)
+
+      visit new_user_registration_path
+
+      click_button Gitlab::Auth::OAuth::Provider.label_for(provider)
+    else
+      submit_button_text = trial ? 'Continue' : 'Register'
+
+      fill_in_sign_up_form(new_user, submit_button_text, invite: invite) do
+        solve_arkose_verify_challenge(**opts[:arkose])
+      end
     end
   end
 

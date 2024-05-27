@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Arkose::VerifyResponse, feature_category: :instance_resiliency do
+  using RSpec::Parameterized::TableSyntax
+
   def parse_json(file_path)
     Gitlab::Json.parse(File.read(Rails.root.join(file_path)))
   end
@@ -84,6 +86,44 @@ RSpec.describe Arkose::VerifyResponse, feature_category: :instance_resiliency do
     end
   end
 
+  describe '#interactive_challenge_solved?' do
+    let(:response) { described_class.new(Gitlab::Json.parse("{}")) }
+
+    subject { response.interactive_challenge_solved? }
+
+    where(:shown, :solved, :result) do
+      false | false | false
+      true  | false | false
+      false | true  | false
+      true  | true  | true
+    end
+
+    with_them do
+      before do
+        allow(response).to receive(:challenge_shown?).and_return(shown)
+        allow(response).to receive(:challenge_solved?).and_return(solved)
+      end
+
+      it { is_expected.to eq result }
+    end
+  end
+
+  describe '#challenge_shown?' do
+    subject { described_class.new(json_response).challenge_shown? }
+
+    context 'when response does not contain session_details.suppressed data' do
+      let(:json_response) { Gitlab::Json.parse("{}") }
+
+      it { is_expected.to eq false }
+    end
+
+    context 'when response contains session_details.suppressed data' do
+      let(:json_response) { low_risk_response }
+
+      it { is_expected.to eq true }
+    end
+  end
+
   describe '#low_risk?' do
     subject { described_class.new(json_response).low_risk? }
 
@@ -129,8 +169,6 @@ RSpec.describe Arkose::VerifyResponse, feature_category: :instance_resiliency do
   end
 
   describe 'other methods' do
-    using RSpec::Parameterized::TableSyntax
-
     subject(:response) { described_class.new(json_response) }
 
     context 'when response has the correct data' do
