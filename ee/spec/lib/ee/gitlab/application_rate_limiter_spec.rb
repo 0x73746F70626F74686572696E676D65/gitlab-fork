@@ -25,7 +25,7 @@ RSpec.describe EE::Gitlab::ApplicationRateLimiter do
 
       it 'includes values for code_suggestions_direct_access' do
         values = rate_limits[:code_suggestions_direct_access]
-        expect(values).to eq(threshold: 10, interval: 5.minutes)
+        expect(values).to eq(threshold: 50, interval: 1.minute)
       end
 
       it 'includes values for code_suggestions_x_ray_scan' do
