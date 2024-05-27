@@ -33148,6 +33148,9 @@ msgstr ""
 msgid "MlModelRegistry|Create model version & import artifacts"
 msgstr ""
 
+msgid "MlModelRegistry|Create model, version & import artifacts"
+msgstr ""
+
 msgid "MlModelRegistry|Creating models is also possible through the MLflow client. %{linkStart}Follow the documentation to learn more.%{linkEnd}"
 msgstr ""
 
@@ -33178,7 +33181,13 @@ msgstr ""
 msgid "MlModelRegistry|Enter some description"
 msgstr ""
 
+msgid "MlModelRegistry|Enter some model description"
+msgstr ""
+
 msgid "MlModelRegistry|Error creating model version and uploading artifacts. Please try again."
+msgstr ""
+
+msgid "MlModelRegistry|Error creating model, version and uploading artifacts. Please try again."
 msgstr ""
 
 msgid "MlModelRegistry|Error importing artifact. Please try again."
@@ -33202,16 +33211,25 @@ msgstr ""
 msgid "MlModelRegistry|For example 1.0.0"
 msgstr ""
 
+msgid "MlModelRegistry|For example my-model"
+msgstr ""
+
 msgid "MlModelRegistry|ID"
 msgstr ""
 
 msgid "MlModelRegistry|Info"
 msgstr ""
 
+msgid "MlModelRegistry|Initial version name. Must be a semantic version."
+msgstr ""
+
 msgid "MlModelRegistry|Latest version"
 msgstr ""
 
 msgid "MlModelRegistry|Leave empty to auto increment."
+msgstr ""
+
+msgid "MlModelRegistry|Leave empty to skip version creation."
 msgstr ""
 
 msgid "MlModelRegistry|MLflow run ID"
@@ -33224,6 +33242,15 @@ msgid "MlModelRegistry|Metadata"
 msgstr ""
 
 msgid "MlModelRegistry|Model deleted successfully"
+msgstr ""
+
+msgid "MlModelRegistry|Model has been created but version or artifacts could not be uploaded. Try creating model version."
+msgstr ""
+
+msgid "MlModelRegistry|Model name"
+msgstr ""
+
+msgid "MlModelRegistry|Model name must not contain spaces or upper case letter."
 msgstr ""
 
 msgid "MlModelRegistry|Model performance"
@@ -33275,6 +33302,9 @@ msgid "MlModelRegistry|Triggered by"
 msgstr ""
 
 msgid "MlModelRegistry|Use versions to track performance, parameters, and metadata"
+msgstr ""
+
+msgid "MlModelRegistry|Version Description"
 msgstr ""
 
 msgid "MlModelRegistry|Version candidates"
