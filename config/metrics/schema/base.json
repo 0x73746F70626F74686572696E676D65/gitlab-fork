@@ -113,10 +113,6 @@
     "data_category": {
       "type": "string",
       "enum": [
-        "Operational",
-        "Optional",
-        "Subscription",
-        "Standard",
         "operational",
         "optional",
         "subscription",
