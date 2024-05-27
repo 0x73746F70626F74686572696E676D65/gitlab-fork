@@ -61138,6 +61138,9 @@ msgstr ""
 msgid "ciReport|Container Scanning"
 msgstr ""
 
+msgid "ciReport|Container Scanning for Registry"
+msgstr ""
+
 msgid "ciReport|Container scanning"
 msgstr ""
 

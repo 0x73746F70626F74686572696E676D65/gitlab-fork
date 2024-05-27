@@ -30,6 +30,10 @@ export const REPORT_TYPES_DEFAULT = {
   secret_detection: s__('ciReport|Secret Detection'),
 };
 
+export const REPORT_TYPES_CONTAINER_SCANNING_FOR_REGISTRY = {
+  container_scanning_for_registry: s__('ciReport|Container Scanning for Registry'),
+};
+
 export const REPORT_TYPES_WITH_CLUSTER_IMAGE = {
   ...REPORT_TYPES_DEFAULT,
   cluster_image_scanning: s__('ciReport|Cluster Image Scanning'),
