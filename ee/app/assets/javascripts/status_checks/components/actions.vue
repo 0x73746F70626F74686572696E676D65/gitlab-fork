@@ -24,7 +24,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-my-n3! gl-pr-5 gl-text-right">
+  <div class="!-gl-my-3 gl-pr-5 gl-text-right">
     <gl-button
       v-gl-tooltip
       category="tertiary"

@@ -82,7 +82,7 @@ export default {
       <rule-input :rule="rule" :is-mr-edit="isMrEdit" />
     </td>
     <td class="gl-md-pl-0! gl-md-pr-0!" :data-label="$options.TABLE_HEADERS.actions">
-      <div class="gl-my-n3! gl-px-5 gl-text-right">
+      <div class="!-gl-my-3 gl-px-5 gl-text-right">
         <gl-button
           v-if="!allowMultiRule && canEdit"
           v-gl-tooltip

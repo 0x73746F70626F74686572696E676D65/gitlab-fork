@@ -153,7 +153,7 @@ export default {
               :items="rule.approvers"
               :img-size="24"
               :empty-text="__('Approvers from private group(s) not shown')"
-              class="gl-my-n2!"
+              class="!-gl-my-2"
             />
           </td>
           <td
