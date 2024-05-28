@@ -1,8 +1,6 @@
 ---
 key_path: usage_activity_by_stage_monthly.release.protected_environment_approval_rules_average_required_approvals
 description: Count average of required approvals in protected environments that has one or more required approvals (for multiple approval rules)
-product_section: ops
-product_stage: deploy
 product_group: environments
 value_type: number
 status: active
