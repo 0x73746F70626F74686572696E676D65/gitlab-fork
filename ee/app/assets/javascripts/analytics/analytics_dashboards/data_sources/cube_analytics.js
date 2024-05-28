@@ -87,19 +87,30 @@ const convertToSingleValue = (resultSet, query) => {
   return row[measure] ?? 0;
 };
 
-const getQueryTableKey = (query) => query.measures[0].split('.')[0].toLowerCase();
+const getTableName = (query) => query.measures[0].split('.')[0];
+const getQueryTableKey = (query) => getTableName(query).toLowerCase();
+
+const getDynamicSchemaDateRangeDimension = (query) => {
+  const tableName = getTableName(query);
+
+  return `${tableName}.date`;
+};
+
+const getDateRangeDimension = (query) => {
+  const tableKey = getQueryTableKey(query);
+
+  return DATE_RANGE_FILTER_DIMENSIONS[tableKey] ?? getDynamicSchemaDateRangeDimension(query);
+};
 
 const buildDateRangeFilter = (query, queryOverrides, { startDate, endDate }) => {
   if (!startDate && !endDate) return {};
-
-  const tableKey = getQueryTableKey(query);
 
   return {
     filters: [
       ...(query.filters ?? []),
       ...(queryOverrides.filters ?? []),
       {
-        member: DATE_RANGE_FILTER_DIMENSIONS[tableKey],
+        member: getDateRangeDimension(query),
         operator: 'inDateRange',
         values: [pikadayToString(startDate), pikadayToString(endDate)],
       },

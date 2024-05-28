@@ -258,6 +258,7 @@ describe('Cube Analytics Data Source', () => {
       type               | queryMeasurement                 | expectedDimension
       ${'TrackedEvents'} | ${'TrackedEvents.pageViewCount'} | ${'TrackedEvents.derivedTstamp'}
       ${'Sessions'}      | ${'Sessions.pageViewCount'}      | ${'Sessions.startAt'}
+      ${'DynamicSchema'} | ${'DynamicSchema.count'}         | ${'DynamicSchema.date'}
     `(
       'loads the query with date range filters for "$type"',
       async ({ queryMeasurement, expectedDimension }) => {
