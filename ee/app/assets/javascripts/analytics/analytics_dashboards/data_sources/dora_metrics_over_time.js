@@ -32,28 +32,25 @@ const fetchDoraMetricsQuery = async ({ metric, namespace, startDate, endDate }) 
   return scaledValueForDisplay(metricValue, units);
 };
 
-export default class DoraMetricsOverTimeDataSource {
-  // eslint-disable-next-line class-methods-use-this
-  async fetch({
+export default async function fetch({
+  namespace,
+  query: { metric, date_range: dateRange = LAST_180_DAYS },
+  queryOverrides: { date_range: dateRangeOverride = null, ...overridesRest } = {},
+}) {
+  const dateRangeKey = dateRangeOverride
+    ? dateRangeOverride.toUpperCase()
+    : dateRange.toUpperCase();
+
+  // Default to 180 days if an invalid date range is given
+  const startDate = DORA_METRIC_QUERY_RANGES[dateRangeKey]
+    ? DORA_METRIC_QUERY_RANGES[dateRangeKey]
+    : DORA_METRIC_QUERY_RANGES[LAST_180_DAYS];
+
+  return fetchDoraMetricsQuery({
+    startDate,
+    endDate: startOfTomorrow,
+    metric,
     namespace,
-    query: { metric, date_range: dateRange = LAST_180_DAYS },
-    queryOverrides: { date_range: dateRangeOverride = null, ...overridesRest } = {},
-  }) {
-    const dateRangeKey = dateRangeOverride
-      ? dateRangeOverride.toUpperCase()
-      : dateRange.toUpperCase();
-
-    // Default to 180 days if an invalid date range is given
-    const startDate = DORA_METRIC_QUERY_RANGES[dateRangeKey]
-      ? DORA_METRIC_QUERY_RANGES[dateRangeKey]
-      : DORA_METRIC_QUERY_RANGES[LAST_180_DAYS];
-
-    return fetchDoraMetricsQuery({
-      startDate,
-      endDate: startOfTomorrow,
-      metric,
-      namespace,
-      ...overridesRest,
-    });
-  }
+    ...overridesRest,
+  });
 }

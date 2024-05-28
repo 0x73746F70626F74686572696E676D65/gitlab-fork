@@ -13,16 +13,7 @@ import { mockPanel, invalidVisualization } from '../mock_data';
 
 const mockFetch = jest.fn().mockResolvedValue([]);
 jest.mock('ee/analytics/analytics_dashboards/data_sources', () => ({
-  cube_analytics: jest.fn().mockReturnValue({
-    default: jest.fn().mockImplementation(() => ({
-      fetch: mockFetch,
-    })),
-  }),
-  value_stream: jest.fn().mockReturnValue({
-    default: jest.fn().mockImplementation(() => ({
-      fetch: jest.fn(),
-    })),
-  }),
+  cube_analytics: jest.fn().mockImplementation(() => Promise.resolve({ default: mockFetch })),
 }));
 
 describe('AnalyticsDashboardPanel', () => {
@@ -99,22 +90,6 @@ describe('AnalyticsDashboardPanel', () => {
 
     it('fetches from the data source', () => {
       expect(dataSources.cube_analytics).toHaveBeenCalled();
-    });
-
-    describe('when the visualization changes to a different data type', () => {
-      beforeEach(() => {
-        wrapper.setProps({
-          visualization: {
-            data: {
-              type: 'value_stream',
-            },
-          },
-        });
-      });
-
-      it('should create a new data source', () => {
-        expect(dataSources.value_stream).toHaveBeenCalled();
-      });
     });
   });
 
@@ -463,6 +438,8 @@ describe('AnalyticsDashboardPanel', () => {
       await nextTick();
       wrapper.setProps({ filters: { startDate: new Date() } });
       await nextTick();
+
+      await waitForPromises();
 
       // resolve the requests out of order
       requests[2](secondRequestData);
