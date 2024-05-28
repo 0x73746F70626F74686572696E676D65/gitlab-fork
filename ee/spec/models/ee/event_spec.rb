@@ -9,7 +9,7 @@ RSpec.describe Event do
     let_it_be(:guest) { create(:user) }
     let_it_be(:reporter) { create(:user) }
     let_it_be(:author) { create(:author) }
-    let_it_be(:admin) { create(:admin, :without_default_org) }
+    let_it_be(:admin) { create(:admin) }
 
     let(:users) { [non_member, member, reporter, guest, author, admin] }
 

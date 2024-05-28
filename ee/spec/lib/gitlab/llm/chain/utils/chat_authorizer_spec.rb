@@ -203,6 +203,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
         let(:container) { create(:group) }
 
         before do
+          allow(user).to receive(:can?).with(:admin_organization, nil).and_call_original
           allow(user).to receive(:can?).with(:admin_all_resources).and_call_original
         end
 
