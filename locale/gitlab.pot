@@ -4109,6 +4109,9 @@ msgstr ""
 msgid "AdminUsers|Activate user %{username}?"
 msgstr ""
 
+msgid "AdminUsers|Active"
+msgstr ""
+
 msgid "AdminUsers|Adjust the user cap setting on your instance"
 msgstr ""
 
