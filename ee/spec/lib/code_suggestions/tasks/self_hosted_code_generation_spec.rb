@@ -34,7 +34,8 @@ RSpec.describe CodeSuggestions::Tasks::SelfHostedCodeGeneration, feature_categor
       current_file: current_file,
       generation_type: 'empty_function',
       model_endpoint: code_generations_feature_setting.self_hosted_model.endpoint,
-      model_name: code_generations_feature_setting.self_hosted_model.model
+      model_name: code_generations_feature_setting.self_hosted_model.model,
+      model_api_key: nil
     }
   end
 
@@ -72,6 +73,28 @@ RSpec.describe CodeSuggestions::Tasks::SelfHostedCodeGeneration, feature_categor
       end
 
       it 'calls Mistral' do
+        task.body
+
+        expect(CodeSuggestions::Prompts::CodeGeneration::MistralMessages).to have_received(:new).with(params)
+      end
+    end
+
+    context 'with a model api key present' do
+      let(:params) do
+        {
+          current_file: current_file,
+          generation_type: 'empty_function',
+          model_endpoint: code_generations_feature_setting.self_hosted_model.endpoint,
+          model_name: code_generations_feature_setting.self_hosted_model.model,
+          model_api_key: 'api_token_123'
+        }
+      end
+
+      before do
+        code_generations_feature_setting.self_hosted_model.update!(api_token: 'api_token_123')
+      end
+
+      it 'calls Mistral with the api key' do
         task.body
 
         expect(CodeSuggestions::Prompts::CodeGeneration::MistralMessages).to have_received(:new).with(params)

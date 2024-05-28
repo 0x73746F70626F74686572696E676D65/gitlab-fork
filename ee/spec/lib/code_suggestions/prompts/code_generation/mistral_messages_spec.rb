@@ -29,6 +29,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::MistralMessages, featur
 
   let(:file_name) { 'hello.rb' }
   let(:model_name) { 'mistral' }
+  let(:model_api_key) { 'model_api_key_123' }
   let(:comment) { 'Generate the best possible code based on instructions.' }
   let(:instruction) { instance_double(CodeSuggestions::Instruction, instruction: comment, trigger_type: 'comment') }
 
@@ -50,7 +51,8 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::MistralMessages, featur
       instruction: instruction,
       current_file: unsafe_params['current_file'].with_indifferent_access,
       model_name: model_name,
-      model_endpoint: 'http://localhost:11434/v1'
+      model_endpoint: 'http://localhost:11434/v1',
+      model_api_key: model_api_key
     }
   end
 
@@ -70,7 +72,8 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::MistralMessages, featur
         model_provider: described_class::MODEL_PROVIDER,
         model_name: model_name,
         prompt_version: prompt_version,
-        model_endpoint: 'http://localhost:11434/v1'
+        model_endpoint: 'http://localhost:11434/v1',
+        model_api_key: 'model_api_key_123'
       }
     end
 
@@ -123,8 +126,27 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::MistralMessages, featur
     end
 
     context 'when instruction is present' do
-      it 'returns expected request params' do
-        expect(mistral_prompt.request_params).to eq(request_params.merge(prompt: expected_prompt))
+      context 'with a model api key present' do
+        it 'returns expected request params' do
+          expect(mistral_prompt.request_params).to eq(request_params.merge(prompt: expected_prompt))
+        end
+      end
+
+      context 'without a model api key present' do
+        let(:model_api_key) { nil }
+
+        let(:request_params) do
+          {
+            model_provider: described_class::MODEL_PROVIDER,
+            model_name: model_name,
+            prompt_version: prompt_version,
+            model_endpoint: 'http://localhost:11434/v1'
+          }
+        end
+
+        it 'returns expected request params' do
+          expect(mistral_prompt.request_params).to eq(request_params.merge(prompt: expected_prompt))
+        end
       end
     end
   end

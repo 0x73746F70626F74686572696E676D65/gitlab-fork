@@ -15,6 +15,7 @@ module CodeSuggestions
             model_endpoint: params[:model_endpoint]
           }.tap do |opts|
             opts[:model_name] = params[:model_name] if params[:model_name].present?
+            opts[:model_api_key] = params[:model_api_key] if params[:model_api_key].present?
           end
         end
 

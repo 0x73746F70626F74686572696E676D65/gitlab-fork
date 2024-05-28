@@ -26,7 +26,8 @@ module CodeSuggestions
 
         super.merge({
           model_name: self_hosted_model.model,
-          model_endpoint: self_hosted_model.endpoint
+          model_endpoint: self_hosted_model.endpoint,
+          model_api_key: self_hosted_model.api_token
         })
       end
 
