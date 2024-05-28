@@ -63,6 +63,7 @@ module Security
           name: "#{container.name} - Security policy project",
           description: "This project is automatically generated to manage security policies for the project.",
           namespace_id: namespace_id,
+          organization_id: namespace.organization_id,
           initialize_with_readme: true,
           container_registry_enabled: false,
           packages_enabled: false,

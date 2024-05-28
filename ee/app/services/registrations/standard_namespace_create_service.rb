@@ -47,7 +47,10 @@ module Registrations
     end
 
     def project_params(*extra)
-      params.require(:project).permit(project_params_attributes + extra).merge(namespace_id: group.id)
+      params
+        .require(:project)
+        .permit(project_params_attributes + extra)
+        .merge(namespace_id: group.id, organization_id: group.organization_id)
     end
 
     def project_params_attributes
