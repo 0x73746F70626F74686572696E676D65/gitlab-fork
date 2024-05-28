@@ -6575,7 +6575,7 @@ msgstr ""
 msgid "ApprovalRule|Increase quality and maintain standards."
 msgstr ""
 
-msgid "ApprovalRule|Learn more about merge request approval rules."
+msgid "ApprovalRule|Learn more about merge request approval rules"
 msgstr ""
 
 msgid "ApprovalRule|Less than"
