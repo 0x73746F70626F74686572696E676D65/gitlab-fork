@@ -5,6 +5,7 @@ module Gitlab
     module Completions
       class Chat < Base
         include Langsmith::RunHelpers
+        include ::Gitlab::Utils::StrongMemoize
 
         attr_reader :context
 
@@ -101,26 +102,12 @@ module Gitlab
             stream_response_handler = ::Gitlab::Llm::ResponseService.new(context, response_options)
           end
 
-          command = slash_command_for_prompt_message
-          if command
-            Gitlab::Tracking.event(
-              self.class.to_s,
-              'process_gitlab_duo_slash_command',
-              label: command.name,
-              property: prompt_message.request_id,
-              namespace: context.container,
-              user: user,
-              value: command.user_input.present? ? 1 : 0
-            )
+          return execute_with_slash_command_tool(stream_response_handler) if slash_command
 
-            return command.tool::Executor.new(
-              context: context,
-              options: { input: options[:content] },
-              stream_response_handler: stream_response_handler,
-              command: command
-            ).execute
-          end
+          execute_with_tool_chosen_by_ai(response_handler, stream_response_handler)
+        end
 
+        def execute_with_tool_chosen_by_ai(response_handler, stream_response_handler)
           Gitlab::Llm::Chain::Agents::ZeroShot::Executor.new(
             user_input: prompt_message.content,
             tools: tools,
@@ -130,11 +117,31 @@ module Gitlab
           ).execute
         end
 
-        def slash_command_for_prompt_message
+        def execute_with_slash_command_tool(stream_response_handler)
+          Gitlab::Tracking.event(
+            self.class.to_s,
+            'process_gitlab_duo_slash_command',
+            label: slash_command.name,
+            property: prompt_message.request_id,
+            namespace: context.container,
+            user: user,
+            value: slash_command.user_input.present? ? 1 : 0
+          )
+
+          slash_command.tool::Executor.new(
+            context: context,
+            options: { input: options[:content] },
+            stream_response_handler: stream_response_handler,
+            command: slash_command
+          ).execute
+        end
+
+        def slash_command
           return unless prompt_message.slash_command?
 
           Gitlab::Llm::Chain::SlashCommand.for(message: prompt_message, tools: COMMAND_TOOLS)
         end
+        strong_memoize_attr :slash_command
       end
     end
   end
