@@ -38,28 +38,26 @@ function activateNextStep(parent, _, { cache }) {
   const newIndex = currentIndex + 1;
   const activeStep = stepList[newIndex];
 
-  if (gon.features?.keyContactsManagementV2) {
-    const currentFurthest = cache.readQuery({ query: furthestAccessedStepQuery });
-    const furthestAccessedStep = getFurthestAccessedStep(newIndex, stepList, currentFurthest);
+  const currentFurthest = cache.readQuery({ query: furthestAccessedStepQuery });
+  const furthestAccessedStep = getFurthestAccessedStep(newIndex, stepList, currentFurthest);
 
-    const data = produce(sourceData, (draftData) => {
-      draftData.furthestAccessedStep = {
-        __typename: STEP_TYPE,
-        id: furthestAccessedStep.id,
-      };
-    });
+  const furthestStepData = produce(sourceData, (draftData) => {
+    draftData.furthestAccessedStep = {
+      __typename: STEP_TYPE,
+      id: furthestAccessedStep.id,
+    };
+  });
 
-    cache.writeQuery({ query: furthestAccessedStepQuery, data });
-  }
+  cache.writeQuery({ query: furthestAccessedStepQuery, data: furthestStepData });
 
-  const data = produce(sourceData, (draftData) => {
+  const activeStepData = produce(sourceData, (draftData) => {
     draftData.activeStep = {
       __typename: STEP_TYPE,
       id: activeStep.id,
     };
   });
 
-  return cache.writeQuery({ query: activeStepQuery, data });
+  return cache.writeQuery({ query: activeStepQuery, data: activeStepData });
 }
 
 export default {

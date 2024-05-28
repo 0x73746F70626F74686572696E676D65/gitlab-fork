@@ -4,7 +4,8 @@ import VueApollo from 'vue-apollo';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import { mockTracking } from 'helpers/tracking_helper';
-import { QSR_RECONCILIATION_PATH, STEPS } from 'ee/subscriptions/constants';
+import furthestAccessedStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/furthest_accessed_step.query.graphql';
+import { QSR_RECONCILIATION_PATH, STEPS, STEP_BILLING_ADDRESS } from 'ee/subscriptions/constants';
 import Component from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
 import { PurchaseEvent, NEW_GROUP } from 'ee/subscriptions/new/constants';
 import createStore from 'ee/subscriptions/new/store';
@@ -61,6 +62,10 @@ describe('Subscription Details', () => {
     const mockHandler = billableMembersCountMock || defaultBillableMembersCountMock;
     const handlers = [[getBillableMembersCountQuery, mockHandler]];
     const apolloProvider = createMockApolloProvider(STEPS, 1, {}, handlers);
+    apolloProvider.clients.defaultClient.cache.writeQuery({
+      query: furthestAccessedStepQuery,
+      data: { furthestAccessedStep: STEPS.find((step) => step.id === STEP_BILLING_ADDRESS) },
+    });
 
     wrapper = mountExtended(Component, {
       store,

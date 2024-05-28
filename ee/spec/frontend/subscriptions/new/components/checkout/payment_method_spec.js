@@ -8,7 +8,8 @@ import axios from '~/lib/utils/axios_utils';
 import Api from 'ee/api';
 import Zuora from 'ee/subscriptions/new/components/checkout/zuora.vue';
 import { mockTracking } from 'helpers/tracking_helper';
-import { STEPS } from 'ee/subscriptions/constants';
+import furthestAccessedStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/furthest_accessed_step.query.graphql';
+import { STEPS, STEP_CONFIRM_ORDER } from 'ee/subscriptions/constants';
 import PaymentMethod from 'ee/subscriptions/new/components/checkout/payment_method.vue';
 import createStore from 'ee/subscriptions/new/store';
 import * as types from 'ee/subscriptions/new/store/mutation_types';
@@ -39,8 +40,14 @@ describe('Payment Method', () => {
       credit_card_expiration_year: 2009,
     });
 
+    const apolloProvider = createMockApolloProvider(STEPS);
+    apolloProvider.clients.defaultClient.cache.writeQuery({
+      query: furthestAccessedStepQuery,
+      data: { furthestAccessedStep: STEPS.find((step) => step.id === STEP_CONFIRM_ORDER) },
+    });
+
     wrapper = mount(PaymentMethod, {
-      apolloProvider: createMockApolloProvider(STEPS),
+      apolloProvider,
       store,
       stubs: {
         Zuora: stubComponent(Zuora),

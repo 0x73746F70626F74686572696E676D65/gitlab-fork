@@ -98,7 +98,7 @@ describe('Billing Address', () => {
       ${true}              | ${mockBillingAccount} | ${'Contact information'} | ${false}
       ${false}             | ${null}               | ${'Billing address'}     | ${true}
     `(
-      'when billingAccount exists is $billingAccountExists and keyContactsManagementV2 flag is true',
+      'when billingAccount exists is $billingAccountExists',
       ({ billingAccountData, stepTitle, showAddress }) => {
         const handler = jest
           .fn()
@@ -112,7 +112,6 @@ describe('Billing Address', () => {
           wrapper = createComponent({
             store,
             apolloProvider: mockApolloProvider,
-            glFeatures: { keyContactsManagementV2: true },
           });
           await waitForPromises();
         });
@@ -147,59 +146,6 @@ describe('Billing Address', () => {
 
         it(`${showAddress ? 'does not show' : 'shows'} edit on Customers Portal button`, () => {
           expect(findEditOnCDotButton().exists()).toBe(!showAddress);
-        });
-      },
-    );
-
-    describe.each`
-      billingAccountExists | billingAccountData    | stepTitle                | showAddress
-      ${true}              | ${mockBillingAccount} | ${'Contact information'} | ${false}
-      ${false}             | ${null}               | ${'Billing address'}     | ${true}
-    `(
-      'when billingAccount exists is $billingAccountExists and keyContactsManagementV2 flag is false',
-      ({ billingAccountData, stepTitle, showAddress }) => {
-        beforeEach(async () => {
-          mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
-            [
-              getBillingAccountQuery,
-              jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-            ],
-          ]);
-
-          wrapper = createComponent({
-            store,
-            apolloProvider: mockApolloProvider,
-            glFeatures: { keyContactsManagementV2: false },
-          });
-          await waitForPromises();
-        });
-
-        it('should load the countries', () => {
-          expect(actionMocks.fetchCountries).toHaveBeenCalled();
-        });
-
-        it('shows step component', () => {
-          expect(findStep().exists()).toBe(true);
-        });
-
-        it('passes correct step title', () => {
-          expect(findStep().props('title')).toEqual(stepTitle);
-        });
-
-        it(`${showAddress ? 'shows' : 'does not show'} address form`, () => {
-          expect(findAddressForm().exists()).toBe(showAddress);
-        });
-
-        it('does not show manage contact message alert', () => {
-          expect(findManageContactsAlert().exists()).toBe(!showAddress);
-        });
-
-        it('does not show billing account details', () => {
-          expect(findBillingAccountDetails().exists()).toBe(false);
-        });
-
-        it('does not show edit on Customers Portal button', () => {
-          expect(findEditOnCDotButton().exists()).toBe(false);
         });
       },
     );
@@ -245,7 +191,6 @@ describe('Billing Address', () => {
       wrapper = createComponent({
         store,
         apolloProvider: mockApolloProvider,
-        glFeatures: { keyContactsManagementV2: true },
       });
       await waitForPromises();
     });
@@ -343,7 +288,6 @@ describe('Billing Address', () => {
         wrapper = createComponent({
           store,
           apolloProvider: mockApolloProvider,
-          glFeatures: { keyContactsManagementV2: true },
         });
 
         await waitForPromises();
@@ -485,7 +429,7 @@ describe('Billing Address', () => {
       ${true}              | ${null}               | ${false}
       ${false}             | ${null}               | ${false}
     `(
-      'when billingAccount exists is $billingAccountExists and billingAccountData is $billingAccountData and keyContactsManagementV2 is true',
+      'when billingAccount exists is $billingAccountExists and billingAccountData is $billingAccountData',
       ({ billingAccountData, showButton }) => {
         beforeEach(async () => {
           mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
@@ -498,7 +442,6 @@ describe('Billing Address', () => {
           wrapper = createComponent({
             store,
             apolloProvider: mockApolloProvider,
-            glFeatures: { keyContactsManagementV2: true },
           });
 
           await waitForPromises();
@@ -524,7 +467,6 @@ describe('Billing Address', () => {
       wrapper = createComponent({
         store,
         apolloProvider: mockApolloProvider,
-        glFeatures: { keyContactsManagementV2: true },
       });
 
       await waitForPromises();
@@ -532,41 +474,6 @@ describe('Billing Address', () => {
       expect(findEditOnCDotButton().text()).toEqual('Edit in Customers Portal');
       expect(findEditOnCDotButton().href).toEqual(gon.billing_accounts_url);
     });
-
-    describe.each`
-      billingAccountExists | billingAccountData
-      ${true}              | ${mockBillingAccount}
-      ${true}              | ${null}
-      ${false}             | ${null}
-      ${false}             | ${mockBillingAccount}
-    `(
-      'when billingAccount exists is $billingAccountExists and billingAccountData is $billingAccountData and keyContactsManagementV2 is false',
-      ({ billingAccountData }) => {
-        beforeEach(async () => {
-          mockApolloProvider.clients[CUSTOMERSDOT_CLIENT] = createMockClient([
-            [
-              getBillingAccountQuery,
-              jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-            ],
-          ]);
-
-          wrapper = createComponent({
-            store,
-            apolloProvider: mockApolloProvider,
-            glFeatures: { keyContactsManagementV2: false },
-          });
-
-          await waitForPromises();
-
-          await activateNextStep();
-          await activateNextStep();
-        });
-
-        it('does not show edit on Customers Portal button', () => {
-          expect(findEditOnCDotButton().exists()).toBe(false);
-        });
-      },
-    );
   });
 
   describe('when getBillingAccountQuery responds with error', () => {

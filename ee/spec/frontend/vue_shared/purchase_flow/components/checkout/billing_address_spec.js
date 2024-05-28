@@ -81,12 +81,12 @@ describe('Billing Address', () => {
     ${true}              | ${mockBillingAccount} | ${'Contact information'} | ${false}
     ${false}             | ${null}               | ${'Billing address'}     | ${true}
   `(
-    'when billingAccount exists is $billingAccountExists and keyContactsManagementV2 flag true',
+    'when billingAccount exists is $billingAccountExists',
     ({ billingAccountData, stepTitle, showAddress }) => {
       const handler = jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } });
 
       beforeEach(async () => {
-        await createComponent({}, handler, { keyContactsManagementV2: true });
+        await createComponent({}, handler);
       });
 
       it('calls getBillingAccountQuery', () => {
@@ -119,47 +119,6 @@ describe('Billing Address', () => {
     },
   );
 
-  describe.each`
-    billingAccountExists | billingAccountData    | stepTitle                | showAddress
-    ${true}              | ${mockBillingAccount} | ${'Contact information'} | ${false}
-    ${false}             | ${null}               | ${'Billing address'}     | ${true}
-  `(
-    'when  billingAccount exists is $billingAccountExists',
-    ({ billingAccountData, stepTitle, showAddress }) => {
-      beforeEach(async () => {
-        await createComponent(
-          {},
-          jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-          { keyContactsManagementV2: false },
-        );
-      });
-
-      it('shows step component', () => {
-        expect(findStep().exists()).toBe(true);
-      });
-
-      it('passes correct step title', () => {
-        expect(findStep().props('title')).toEqual(stepTitle);
-      });
-
-      it(`${showAddress ? 'shows' : 'does not show'} address form`, () => {
-        expect(findAddressForm().exists()).toBe(showAddress);
-      });
-
-      it(`${showAddress ? 'does not show' : 'shows'} manage contact alert`, () => {
-        expect(findManageContactsAlert().exists()).toBe(!showAddress);
-      });
-
-      it('does not show billing account details', () => {
-        expect(findBillingAccountDetails().exists()).toBe(false);
-      });
-
-      it('does not show edit on Customers Portal button', () => {
-        expect(findEditOnCDotButton().exists()).toBe(false);
-      });
-    },
-  );
-
   describe('manage contacts', () => {
     beforeEach(async () => {
       await createComponent(
@@ -188,7 +147,6 @@ describe('Billing Address', () => {
       await createComponent(
         {},
         jest.fn().mockResolvedValue({ data: { billingAccount: mockBillingAccount } }),
-        { keyContactsManagementV2: true },
       );
     });
 
@@ -353,13 +311,12 @@ describe('Billing Address', () => {
       ${true}              | ${null}               | ${false}
       ${false}             | ${null}               | ${false}
     `(
-      'when billingAccount exists is $billingAccountExists and billingAccountData is $billingAccountData and keyContactsManagementV2 flag is true',
+      'when billingAccount exists is $billingAccountExists and billingAccountData is $billingAccountData',
       ({ billingAccountData, showButton }) => {
         beforeEach(async () => {
           await createComponent(
             {},
             jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-            { keyContactsManagementV2: true },
           );
 
           await waitForPromises();
@@ -375,7 +332,6 @@ describe('Billing Address', () => {
       await createComponent(
         {},
         jest.fn().mockResolvedValue({ data: { billingAccount: mockBillingAccount } }),
-        { keyContactsManagementV2: true },
       );
 
       await waitForPromises();
@@ -383,31 +339,6 @@ describe('Billing Address', () => {
       expect(findEditOnCDotButton().text()).toEqual('Edit in Customers Portal');
       expect(findEditOnCDotButton().href).toEqual(gon.billing_accounts_url);
     });
-
-    describe.each`
-      billingAccountExists | billingAccountData
-      ${true}              | ${mockBillingAccount}
-      ${true}              | ${null}
-      ${false}             | ${null}
-      ${false}             | ${mockBillingAccount}
-    `(
-      'when billingAccount exists is $billingAccountExists and billingAccountData is $billingAccountData and keyContactsManagementV2 flag is false',
-      ({ billingAccountData }) => {
-        beforeEach(async () => {
-          await createComponent(
-            {},
-            jest.fn().mockResolvedValue({ data: { billingAccount: billingAccountData } }),
-            { keyContactsManagementV2: false },
-          );
-
-          await waitForPromises();
-        });
-
-        it('does not show edit on Customers Portal button', () => {
-          expect(findEditOnCDotButton().exists()).toBe(false);
-        });
-      },
-    );
   });
 
   describe('when the mutation fails', () => {

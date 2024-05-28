@@ -83,11 +83,7 @@ describe('ee/vue_shared/purchase_flow/graphql/resolvers', () => {
     });
 
     describe('activateNextStep', () => {
-      describe('furthest accessed step with keyContactsManagementV2 feature flag', () => {
-        beforeEach(() => {
-          gon.features = { keyContactsManagementV2: true };
-        });
-
+      describe('furthest accessed step', () => {
         it('updates to the next step', async () => {
           const mockApollo = createMockApolloProvider(STEPS, 0);
           mockApolloClient = mockApollo.clients.defaultClient;
@@ -99,76 +95,54 @@ describe('ee/vue_shared/purchase_flow/graphql/resolvers', () => {
         });
       });
 
-      describe('furthest accessed step without keyContactsManagementV2 feature flag', () => {
-        beforeEach(() => {
-          gon.features = { keyContactsManagementV2: false };
+      it('updates the active step to the next', async () => {
+        const mockApollo = createMockApolloProvider(STEPS, 0);
+        mockApolloClient = mockApollo.clients.defaultClient;
+        await mockApolloClient.mutate({
+          mutation: activateNextStepMutation,
         });
-
-        it('does not update to the next step', async () => {
-          const mockApollo = createMockApolloProvider(STEPS, 0);
-          mockApolloClient = mockApollo.clients.defaultClient;
-          await mockApolloClient.mutate({
-            mutation: activateNextStepMutation,
-          });
-          const queryResult = await mockApolloClient.query({ query: furthestAccessedStepQuery });
-          expect(queryResult.data.furthestAccessedStep).toMatchObject({ id: STEPS[0].id });
-        });
+        const queryResult = await mockApolloClient.query({ query: activeStepQuery });
+        expect(queryResult.data.activeStep).toMatchObject({ id: STEPS[1].id });
       });
 
-      describe.each([[true], [false]])('when keyContactsManagementV2 is %s', (enabled) => {
-        beforeEach(() => {
-          gon.features = { keyContactsManagementV2: enabled };
+      it('does not update the furthest accessed step when next is an earlier step', async () => {
+        const mockApollo = createMockApolloProvider(STEPS, 2);
+        mockApolloClient = mockApollo.clients.defaultClient;
+
+        await mockApolloClient.mutate({
+          mutation: updateStepMutation,
+          variables: { id: STEPS[0].id },
+        });
+        await mockApolloClient.mutate({
+          mutation: activateNextStepMutation,
         });
 
-        it('updates the active step to the next', async () => {
-          const mockApollo = createMockApolloProvider(STEPS, 0);
-          mockApolloClient = mockApollo.clients.defaultClient;
-          await mockApolloClient.mutate({
+        const queryResult = await mockApolloClient.query({ query: furthestAccessedStepQuery });
+        expect(queryResult.data.furthestAccessedStep).toMatchObject({ id: STEPS[2].id });
+      });
+
+      it('throws an error when out of bounds', async () => {
+        const mockApollo = createMockApolloProvider(STEPS, 2);
+        mockApolloClient = mockApollo.clients.defaultClient;
+
+        await mockApolloClient
+          .mutate({
             mutation: activateNextStepMutation,
+          })
+          .catch((e) => {
+            expect(e instanceof Error).toBe(true);
           });
-          const queryResult = await mockApolloClient.query({ query: activeStepQuery });
-          expect(queryResult.data.activeStep).toMatchObject({ id: STEPS[1].id });
-        });
+      });
 
-        it('does not update the furthest accessed step when next is an earlier step', async () => {
-          const mockApollo = createMockApolloProvider(STEPS, 2);
-          mockApolloClient = mockApollo.clients.defaultClient;
-
-          await mockApolloClient.mutate({
-            mutation: updateStepMutation,
-            variables: { id: STEPS[0].id },
-          });
-          await mockApolloClient.mutate({
+      it('throws an error when cache is not initiated properly', async () => {
+        mockApolloClient.clearStore();
+        await mockApolloClient
+          .mutate({
             mutation: activateNextStepMutation,
+          })
+          .catch((e) => {
+            expect(e instanceof Error).toBe(true);
           });
-
-          const queryResult = await mockApolloClient.query({ query: furthestAccessedStepQuery });
-          expect(queryResult.data.furthestAccessedStep).toMatchObject({ id: STEPS[2].id });
-        });
-
-        it('throws an error when out of bounds', async () => {
-          const mockApollo = createMockApolloProvider(STEPS, 2);
-          mockApolloClient = mockApollo.clients.defaultClient;
-
-          await mockApolloClient
-            .mutate({
-              mutation: activateNextStepMutation,
-            })
-            .catch((e) => {
-              expect(e instanceof Error).toBe(true);
-            });
-        });
-
-        it('throws an error when cache is not initiated properly', async () => {
-          mockApolloClient.clearStore();
-          await mockApolloClient
-            .mutate({
-              mutation: activateNextStepMutation,
-            })
-            .catch((e) => {
-              expect(e instanceof Error).toBe(true);
-            });
-        });
       });
     });
   });

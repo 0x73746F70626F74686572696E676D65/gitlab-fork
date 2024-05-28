@@ -124,7 +124,7 @@ export default {
       return Boolean(this.billingAccount?.zuoraAccountName);
     },
     shouldShowBillingAccountDetails() {
-      return this.glFeatures?.keyContactsManagementV2 && this.shouldShowManageContacts;
+      return this.shouldShowManageContacts;
     },
     stepTitle() {
       return this.shouldShowManageContacts
