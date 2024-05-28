@@ -12,6 +12,68 @@ RSpec.describe 'Secure-Binaries.gitlab-ci.yml' do
     let(:secure_binaries_analyzers) { secure_binaries["variables"]["SECURE_BINARIES_ANALYZERS"].split(%r{\s*,\s*}) }
     let(:secure_analyzers_prefix) { secure_binaries["variables"]["SECURE_ANALYZERS_PREFIX"] }
 
+    context 'when compared to API-Security template' do
+      let(:api_security_template) { Gitlab::Template::GitlabCiYmlTemplate.find('API-Security') }
+      let(:api_security) { YAML.safe_load(api_security_template.content) }
+      let(:api_security_image_prefix) { api_security["variables"]["SECURE_ANALYZERS_PREFIX"] }
+      let(:api_security_image_version) { api_security["variables"]["APISEC_VERSION"] }
+      let(:api_security_image_name) { api_security["variables"]["APISEC_IMAGE"] }
+
+      it 'includes the same API Security image prefix' do
+        expect(secure_analyzers_prefix).to eq(api_security_image_prefix)
+      end
+
+      it 'includes the API Security image name in secure binary analyzers' do
+        expect(secure_binaries_analyzers).to include(api_security_image_name)
+      end
+
+      it 'includes a job named after the API Security image name' do
+        expect(secure_binaries.has_key?(api_security_image_name)).to be true
+      end
+
+      it 'includes the same API Security image version' do
+        version = secure_binaries[api_security_image_name]["variables"]["SECURE_BINARIES_ANALYZER_VERSION"]
+        expect(version).to eq(api_security_image_version)
+      end
+
+      it 'filters the secure binary analyzers by the API Security image name' do
+        only_variables = secure_binaries[api_security_image_name]["only"]["variables"][0]
+        filter_expr = "$SECURE_BINARIES_ANALYZERS =~ /\\b#{api_security_image_name}\\b/"
+        expect(only_variables).to include(filter_expr)
+      end
+    end
+
+    context 'when compared to API-Security.latest template' do
+      let(:api_security_latest_template) { Gitlab::Template::GitlabCiYmlTemplate.find('API-Security.latest') }
+      let(:api_security_latest) { YAML.safe_load(api_security_latest_template.content) }
+      let(:api_security_latest_image_prefix) { api_security_latest["variables"]["SECURE_ANALYZERS_PREFIX"] }
+      let(:api_security_latest_image_version) { api_security_latest["variables"]["APISEC_VERSION"] }
+      let(:api_security_latest_image_name) { api_security_latest["variables"]["APISEC_IMAGE"] }
+
+      it 'includes the same API Security image prefix' do
+        expect(secure_analyzers_prefix).to eq(api_security_latest_image_prefix)
+      end
+
+      it 'includes the API Security image name in secure binary analyzers' do
+        expect(secure_binaries_analyzers).to include(api_security_latest_image_name)
+      end
+
+      it 'includes a job named after the API Security image name' do
+        expect(secure_binaries.has_key?(api_security_latest_image_name)).to be true
+      end
+
+      it 'includes the same API Security image version' do
+        version = secure_binaries[api_security_latest_image_name]["variables"]["SECURE_BINARIES_ANALYZER_VERSION"]
+        expect(version).to eq(api_security_latest_image_version)
+      end
+
+      it 'filters the secure binary analyzers by the API Security image name' do
+        only_variables = secure_binaries[api_security_latest_image_name]["only"]["variables"][0]
+        filter_expr = "$SECURE_BINARIES_ANALYZERS =~ /\\b#{api_security_latest_image_name}\\b/"
+        expect(only_variables).to include(filter_expr)
+      end
+    end
+
     context 'when compared to DAST-API template' do
       let(:dast_api_template) { Gitlab::Template::GitlabCiYmlTemplate.find('DAST-API') }
       let(:dast_api) { YAML.safe_load(dast_api_template.content) }
