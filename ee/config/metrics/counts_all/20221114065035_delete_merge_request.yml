@@ -1,8 +1,6 @@
 ---
 key_path: counts.delete_merge_request
 description: "Count of event triggered on successful merge request deletion"
-product_section: sec
-product_stage: govern
 product_group: compliance
 value_type: number
 status: active

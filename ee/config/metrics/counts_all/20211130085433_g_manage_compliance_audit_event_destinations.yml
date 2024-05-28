@@ -1,8 +1,6 @@
 ---
 key_path: usage_activity_by_stage.manage.audit_event_destinations
 description: "Count of audit event streaming destinations"
-product_section: sec
-product_stage: govern
 product_group: compliance
 value_type: number
 status: active

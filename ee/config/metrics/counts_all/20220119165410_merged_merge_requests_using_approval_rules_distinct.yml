@@ -1,8 +1,6 @@
 ---
 key_path: counts.merged_merge_requests_using_approval_rules_distinct
 description: Count of distinct merge requests merged using approval rules
-product_section: sec
-product_stage: govern
 product_group: compliance
 value_type: number
 status: active

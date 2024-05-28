@@ -1,8 +1,6 @@
 ---
 key_path: counts.set_runner_associated_projects
 description: "Count of event triggered on successful assignment of associated projects to a CI runner"
-product_section: sec
-product_stage: govern
 product_group: compliance
 value_type: number
 status: active

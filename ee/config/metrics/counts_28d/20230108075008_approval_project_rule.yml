@@ -1,8 +1,6 @@
 ---
 key_path: redis_hll_counters.approval_project_rule.approval_project_rule_created_monthly
 description: "Count of approval project rules"
-product_section: sec
-product_stage: govern
 product_group: compliance
 value_type: number
 status: active
