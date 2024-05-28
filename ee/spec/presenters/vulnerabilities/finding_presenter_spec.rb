@@ -44,7 +44,7 @@ RSpec.describe Vulnerabilities::FindingPresenter, feature_category: :vulnerabili
 
     context 'without a sha' do
       before do
-        occurrence.sha = nil
+        allow(occurrence).to receive(:sha).and_return(nil)
       end
 
       it { is_expected.to be_blank }
