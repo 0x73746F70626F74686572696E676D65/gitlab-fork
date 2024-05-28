@@ -3,14 +3,51 @@
 require 'spec_helper'
 
 RSpec.describe SoftwareLicensePolicy, feature_category: :software_composition_analysis do
-  subject { build(:software_license_policy) }
+  let(:software_license_policy) { build(:software_license_policy) }
+
+  subject { software_license_policy }
 
   describe 'validations' do
     it { is_expected.to include_module(Presentable) }
-    it { is_expected.to validate_presence_of(:software_license) }
     it { is_expected.to validate_presence_of(:project) }
     it { is_expected.to validate_presence_of(:classification) }
-    it { is_expected.to validate_uniqueness_of(:software_license).scoped_to([:project_id, :scan_result_policy_id]).with_message(/has already been taken/) }
+
+    context 'when not associated with a software_license or custom_software_license' do
+      let(:software_license_policy) { build(:software_license_policy, software_license: nil, custom_software_license: nil) }
+
+      it { is_expected.not_to be_valid }
+    end
+
+    context 'when associated with a software_license' do
+      let(:software_license_policy) { build(:software_license_policy, software_license: build(:software_license), custom_software_license: nil) }
+
+      it { is_expected.to be_valid }
+
+      it { is_expected.to validate_uniqueness_of(:software_license).scoped_to([:project_id, :scan_result_policy_id]).with_message(/has already been taken/) }
+    end
+
+    context 'when associated with a custom_software_license' do
+      let_it_be(:project) { create(:project) }
+      let_it_be(:custom_software_license) { create(:custom_software_license) }
+      let_it_be(:software_license_policy) { build(:software_license_policy, project: project, software_license: nil, custom_software_license: custom_software_license) }
+
+      it { is_expected.to be_valid }
+
+      context 'when uniqueness is enforced' do
+        let!(:software_license_policy) { create(:software_license_policy, project: project, software_license: nil, custom_software_license: custom_software_license) }
+
+        context 'with same custom_license, project, and scan_result_policy' do
+          let(:message) { 'Custom software license has already been taken' }
+
+          it 'disallows on create' do
+            another_software_license_policy = build(:software_license_policy, project: project, software_license: nil, custom_software_license: custom_software_license)
+
+            expect(another_software_license_policy).not_to be_valid
+            expect(another_software_license_policy.errors.full_messages).to include(message)
+          end
+        end
+      end
+    end
   end
 
   describe ".with_license_by_name" do
