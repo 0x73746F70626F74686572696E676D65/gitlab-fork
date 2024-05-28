@@ -1,8 +1,6 @@
 ---
 key_path: counts.count_total_user_feedback_gitlab_duo_query_in_visualization_designer_unhelpful_monthly
 description: Monthly count of user feedback "unhelpful" GitLab Duo generated product analytics queries within the visualization designer
-product_section: analytics
-product_stage: monitor
 product_group: product_analytics
 performance_indicator_type: []
 value_type: number
