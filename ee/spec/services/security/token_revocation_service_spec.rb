@@ -8,24 +8,24 @@ RSpec.describe Security::TokenRevocationService, '#execute', feature_category: :
 
   let_it_be(:revocable_keys) do
     [{
-      'type': 'aws_key_id',
-      'token': 'AKIASOMEAWSACCESSKEY',
-      'location': 'https://mywebsite.com/some-repo/blob/abcdefghijklmnop/compromisedfile.java'
+      type: 'aws_key_id',
+      token: 'AKIASOMEAWSACCESSKEY',
+      location: 'https://mywebsite.com/some-repo/blob/abcdefghijklmnop/compromisedfile.java'
      },
      {
-        'type': 'aws_secret',
-        'token': 'some_aws_secret_key_some_aws_secret_key_',
-        'location': 'https://mywebsite.com/some-repo/blob/abcdefghijklmnop/compromisedfile.java'
+        type: 'aws_secret',
+        token: 'some_aws_secret_key_some_aws_secret_key_',
+        location: 'https://mywebsite.com/some-repo/blob/abcdefghijklmnop/compromisedfile.java'
      },
      {
-        'type': 'aws_secret',
-        'token': 'another_aws_secret_key_another_secret_key',
-        'location': 'https://mywebsite.com/some-repo/blob/abcdefghijklmnop/compromisedfile.java'
+        type: 'aws_secret',
+        token: 'another_aws_secret_key_another_secret_key',
+        location: 'https://mywebsite.com/some-repo/blob/abcdefghijklmnop/compromisedfile.java'
      }]
   end
 
   let_it_be(:revocable_external_token_types) do
-    { 'types': %w[aws_key_id aws_secret gcp_key_id gcp_secret] }
+    { types: %w[aws_key_id aws_secret gcp_key_id gcp_secret] }
   end
 
   subject { described_class.new(revocable_keys: revocable_keys).execute }
@@ -46,16 +46,16 @@ RSpec.describe Security::TokenRevocationService, '#execute', feature_category: :
     let_it_be(:revocable_keys) do
       [
         {
-          'type': 'gitleaks_rule_id_gitlab_personal_access_token',
-          'token': glpat_token.token,
-          'location': 'https://example.com/some-repo/blob/abcdefghijklmnop/compromisedfile1.java#L21',
-          'vulnerability': vulnerability
+          type: 'gitleaks_rule_id_gitlab_personal_access_token',
+          token: glpat_token.token,
+          location: 'https://example.com/some-repo/blob/abcdefghijklmnop/compromisedfile1.java#L21',
+          vulnerability: vulnerability
         },
         {
-          'type': 'gitleaks_rule_id_gitlab_personal_access_token',
-          'token': glpat_token.token,
-          'location': 'https://example.com/some-repo/blob/abcdefghijklmnop/compromisedfile1.java#L41',
-          'vulnerability': vulnerability
+          type: 'gitleaks_rule_id_gitlab_personal_access_token',
+          token: glpat_token.token,
+          location: 'https://example.com/some-repo/blob/abcdefghijklmnop/compromisedfile1.java#L41',
+          vulnerability: vulnerability
         }
       ]
     end
@@ -176,7 +176,7 @@ RSpec.describe Security::TokenRevocationService, '#execute', feature_category: :
 
       context 'when there is no token to be revoked' do
         let_it_be(:revocable_external_token_types) do
-          { 'types': %w[] }
+          { types: %w[] }
         end
 
         specify { expect(subject).to eql({ status: :success }) }

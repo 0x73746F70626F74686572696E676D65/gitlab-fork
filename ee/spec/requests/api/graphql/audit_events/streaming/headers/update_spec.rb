@@ -19,17 +19,17 @@ RSpec.describe 'Update an external audit event destination header', feature_cate
 
   let(:input) do
     {
-      'headerId': header.to_gid,
-      'key': 'new-key',
-      'value': 'new-value'
+      headerId: header.to_gid,
+      key: 'new-key',
+      value: 'new-value'
     }
   end
 
   let(:invalid_input) do
     {
-      'headerId': header.to_gid,
-      'key': '',
-      'value': 'bar'
+      headerId: header.to_gid,
+      key: '',
+      value: 'bar'
     }
   end
 
@@ -82,8 +82,8 @@ RSpec.describe 'Update an external audit event destination header', feature_cate
       context 'when only active attribute is updated' do
         let(:input) do
           {
-            'headerId': header.to_gid,
-            'active': false
+            headerId: header.to_gid,
+            active: false
           }
         end
 

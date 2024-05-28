@@ -36,9 +36,9 @@ module SubscriptionPortalHelpers
     stub_full_request(graphql_url, method: :post)
       .with(body: /eligibleForSeatUsageAlerts/)
     .to_return(status: 200, body: {
-      "data": {
-        "subscription": {
-          "eligibleForSeatUsageAlerts": eligible
+      data: {
+        subscription: {
+          eligibleForSeatUsageAlerts: eligible
         }
       }
     }.to_json, headers: { 'Content-Type' => 'application/json' })
@@ -48,9 +48,9 @@ module SubscriptionPortalHelpers
     stub_full_request(graphql_url, method: :post)
       .with(body: /eligibleForSeatReconciliation/)
     .to_return(status: 200, body: {
-      "data": {
-        "reconciliation": {
-          "eligibleForSeatReconciliation": eligible
+      data: {
+        reconciliation: {
+          eligibleForSeatReconciliation: eligible
         }
       }
     }.to_json, headers: { 'Content-Type' => 'application/json' })
@@ -62,11 +62,11 @@ module SubscriptionPortalHelpers
         body: "{\"operationName\":\"getSubscriptionData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getSubscriptionData($namespaceId: ID!) {\\n  subscription(namespaceId: $namespaceId) {\\n    canAddSeats\\n    canRenew\\n    nextTermStartDate\\n    __typename\\n  }\\n}\\n\"}"
       )
       .to_return(status: 200, body: {
-        "data": {
-          "subscription": {
-            "canAddSeats": can_add_seats,
-            "canRenew": can_renew,
-            "nextTermStartDate": next_term_start_date
+        data: {
+          subscription: {
+            canAddSeats: can_add_seats,
+            canRenew: can_renew,
+            nextTermStartDate: next_term_start_date
           }
         }
       }.to_json)
@@ -78,15 +78,15 @@ module SubscriptionPortalHelpers
         body: "{\"operationName\":\"getSubscriptionPermissionsData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getSubscriptionPermissionsData($namespaceId: ID, $subscriptionName: String) {\\n  subscription(namespaceId: $namespaceId, subscriptionName: $subscriptionName) {\\n    canAddSeats\\n    canAddDuoProSeats\\n    canRenew\\n    communityPlan\\n    __typename\\n  }\\n  userActionAccess(namespaceId: $namespaceId, subscriptionName: $subscriptionName) {\\n    limitedAccessReason\\n    __typename\\n  }\\n}\\n\"}"
       )
       .to_return(status: 200, body: {
-        "data": {
-          "subscription": {
-            "canAddSeats": can_add_seats,
-            "canAddDuoProSeats": can_add_duo_pro_seats,
-            "canRenew": can_renew,
-            "communityPlan": community_plan
+        data: {
+          subscription: {
+            canAddSeats: can_add_seats,
+            canAddDuoProSeats: can_add_duo_pro_seats,
+            canRenew: can_renew,
+            communityPlan: community_plan
           },
-          "userActionAccess": {
-            "limitedAccessReason": reason
+          userActionAccess: {
+            limitedAccessReason: reason
           }
         }
       }.to_json, headers: { 'Content-Type' => 'application/json' })
@@ -110,16 +110,16 @@ module SubscriptionPortalHelpers
 
   def stubbed_invoice_preview_response_body
     {
-      "data": {
-        "invoicePreview": {
-          "invoice": {
-            "amountWithoutTax": 228
+      data: {
+        invoicePreview: {
+          invoice: {
+            amountWithoutTax: 228
           },
-          "invoiceItem": [
+          invoiceItem: [
             {
-              "chargeAmount": 228,
-              "processingType": "Charge",
-              "unitPrice": 228
+              chargeAmount: 228,
+              processingType: "Charge",
+              unitPrice: 228
             }
           ],
           metaData: {
@@ -136,9 +136,9 @@ module SubscriptionPortalHelpers
         body: "{\"operationName\":\"getTemporaryExtensionData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getTemporaryExtensionData($namespaceId: ID!) {\\n  temporaryExtension(namespaceId: $namespaceId) {\\n    endDate\\n    __typename\\n  }\\n}\\n\"}"
       )
       .to_return(status: 200, body: {
-        "data": {
-          "temporaryExtension": {
-            "endDate": (Date.current + 2.weeks).strftime('%F')
+        data: {
+          temporaryExtension: {
+            endDate: (Date.current + 2.weeks).strftime('%F')
           }
         }
       }.to_json)
@@ -146,32 +146,32 @@ module SubscriptionPortalHelpers
 
   def stub_get_billing_account(has_billing_account: false)
     contact = {
-      "id": 1,
-      "workEmail": "example@gitlab.com",
-      "firstName": "Lucille",
-      "lastName": "Bluth",
-      "address1": "1 Lucille Lane",
-      "address2": "",
-      "city": "Newport Coast",
-      "state": "California",
-      "postalCode": "92606",
-      "country": "United States"
+      id: 1,
+      workEmail: "example@gitlab.com",
+      firstName: "Lucille",
+      lastName: "Bluth",
+      address1: "1 Lucille Lane",
+      address2: "",
+      city: "Newport Coast",
+      state: "California",
+      postalCode: "92606",
+      country: "United States"
     }
 
     billing_account = if has_billing_account
                         {
-                          "zuoraAccountName": "My Account",
-                          "zuoraAccountVatId": "A012345",
-                          "vatFieldVisible": true,
-                          "billingAccountCustomers": [{
-                            "id": contact['id'],
-                            "firstName": contact['firstName'],
-                            "lastName": contact['lastName'],
-                            "fullName": "#{contact['firstName']} #{contact['lastName']}",
-                            "email": contact['workEmail']
+                          zuoraAccountName: "My Account",
+                          zuoraAccountVatId: "A012345",
+                          vatFieldVisible: true,
+                          billingAccountCustomers: [{
+                            id: contact['id'],
+                            firstName: contact['firstName'],
+                            lastName: contact['lastName'],
+                            fullName: "#{contact['firstName']} #{contact['lastName']}",
+                            email: contact['workEmail']
                           }],
-                          "soldToContact": contact,
-                          "billToContact": contact
+                          soldToContact: contact,
+                          billToContact: contact
                         }
                       else
                         {}
@@ -180,8 +180,8 @@ module SubscriptionPortalHelpers
     stub_full_request(graphql_url, method: :post)
       .with(body: /getBillingAccount/)
       .to_return(status: 200, body: {
-        "data": {
-          "billingAccount": billing_account
+        data: {
+          billingAccount: billing_account
         }
       }.to_json)
   end

@@ -15,15 +15,15 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
 
   let(:input) do
     {
-      'groupPath': group.full_path,
-      'destinationUrl': destination_url
+      groupPath: group.full_path,
+      destinationUrl: destination_url
     }
   end
 
   let(:invalid_input) do
     {
-      'groupPath': group.full_path,
-      'destinationUrl': 'ftp://gitlab.com/example/testendpoint'
+      groupPath: group.full_path,
+      destinationUrl: 'ftp://gitlab.com/example/testendpoint'
     }
   end
 
@@ -82,9 +82,9 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
 
         let(:input) do
           {
-            'groupPath': group.full_path,
-            'destinationUrl': destination_url,
-            'name': name
+            groupPath: group.full_path,
+            destinationUrl: destination_url,
+            name: name
           }
         end
 
@@ -107,9 +107,9 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
 
         let(:input) do
           {
-            'groupPath': group.full_path,
-            'destinationUrl': destination_url,
-            'verificationToken': verification_token
+            groupPath: group.full_path,
+            destinationUrl: destination_url,
+            verificationToken: verification_token
           }
         end
 
@@ -131,9 +131,9 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
           context 'when verification token is too short' do
             let(:invalid_input) do
               {
-                'groupPath': group.full_path,
-                'destinationUrl': destination_url,
-                'verificationToken': 'a'
+                groupPath: group.full_path,
+                destinationUrl: destination_url,
+                verificationToken: 'a'
               }
             end
 
@@ -150,9 +150,9 @@ RSpec.describe 'Create an external audit event destination', feature_category: :
           context 'when verification token is too long' do
             let(:invalid_input) do
               {
-                'groupPath': group.full_path,
-                'destinationUrl': destination_url,
-                'verificationToken': 'a' * 25
+                groupPath: group.full_path,
+                destinationUrl: destination_url,
+                verificationToken: 'a' * 25
               }
             end
 

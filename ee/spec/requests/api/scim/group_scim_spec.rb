@@ -308,7 +308,7 @@ RSpec.describe API::Scim::GroupScim, feature_category: :system_access do
       it_behaves_like 'SCIM token authenticated'
 
       it 'responds with 404 for a non existent group' do
-        params = { Operations: [{ 'op': 'Replace', 'path': 'id', 'value': 'new_uid' }] }.to_query
+        params = { Operations: [{ op: 'Replace', path: 'id', value: 'new_uid' }] }.to_query
 
         patch scim_api("scim/v2/groups/#{non_existing_record_id}/Users/#{identity.extern_uid}?#{params}")
 
@@ -318,7 +318,7 @@ RSpec.describe API::Scim::GroupScim, feature_category: :system_access do
       it 'responds with 404 for a group with no SAML SSO configuration' do
         group.saml_provider.destroy!
 
-        params = { Operations: [{ 'op': 'Replace', 'path': 'id', 'value': 'new_uid' }] }.to_query
+        params = { Operations: [{ op: 'Replace', path: 'id', value: 'new_uid' }] }.to_query
 
         call_patch_api(params)
 
@@ -332,7 +332,7 @@ RSpec.describe API::Scim::GroupScim, feature_category: :system_access do
       end
 
       it 'deactivates the scim_identity' do
-        params = { Operations: [{ 'op': 'Replace', 'path': 'active', 'value': 'False' }] }.to_query
+        params = { Operations: [{ op: 'Replace', path: 'active', value: 'False' }] }.to_query
 
         call_patch_api(params)
 
@@ -340,7 +340,7 @@ RSpec.describe API::Scim::GroupScim, feature_category: :system_access do
       end
 
       context 'with owner' do
-        params = { Operations: [{ 'op': 'Replace', 'path': 'active', 'value': 'False' }] }.to_query
+        params = { Operations: [{ op: 'Replace', path: 'active', value: 'False' }] }.to_query
 
         before do
           group.add_owner(user)
@@ -361,7 +361,7 @@ RSpec.describe API::Scim::GroupScim, feature_category: :system_access do
       end
 
       context 'when reprovisioning user' do
-        let_it_be(:params) { { Operations: [{ 'op': 'Replace', 'path': 'active', 'value': 'true' }] }.to_query }
+        let_it_be(:params) { { Operations: [{ op: 'Replace', path: 'active', value: 'true' }] }.to_query }
 
         it 'activates the scim_identity' do
           identity.update!(active: false)
@@ -381,7 +381,7 @@ RSpec.describe API::Scim::GroupScim, feature_category: :system_access do
       context 'when existing user' do
         context 'with extern UID' do
           before do
-            params = { Operations: [{ 'op': 'Replace', 'path': 'id', 'value': 'new_uid' }] }.to_query
+            params = { Operations: [{ op: 'Replace', path: 'id', value: 'new_uid' }] }.to_query
 
             call_patch_api(params)
           end
@@ -398,7 +398,7 @@ RSpec.describe API::Scim::GroupScim, feature_category: :system_access do
         context 'with user attributes' do
           context 'with name' do
             before do
-              params = { Operations: [{ 'op': 'Replace', 'path': 'name.formatted', 'value': 'new_name' }] }.to_query
+              params = { Operations: [{ op: 'Replace', path: 'name.formatted', value: 'new_name' }] }.to_query
 
               call_patch_api(params)
             end
@@ -421,9 +421,9 @@ RSpec.describe API::Scim::GroupScim, feature_category: :system_access do
               params = {
                 Operations: [
                   {
-                    'op': 'Replace',
-                    'path': 'emails[type eq "work"].value',
-                    'value': 'new@mail.com'
+                    op: 'Replace',
+                    path: 'emails[type eq "work"].value',
+                    value: 'new@mail.com'
                   }
                 ]
               }.to_query
@@ -442,7 +442,7 @@ RSpec.describe API::Scim::GroupScim, feature_category: :system_access do
 
           context 'with userName' do
             before do
-              params = { Operations: [{ 'op': 'Replace', 'path': 'userName', 'value': 'new_username' }] }.to_query
+              params = { Operations: [{ op: 'Replace', path: 'userName', value: 'new_username' }] }.to_query
 
               call_patch_api(params)
             end

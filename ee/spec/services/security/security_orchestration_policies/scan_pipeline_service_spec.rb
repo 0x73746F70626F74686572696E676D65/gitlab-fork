@@ -35,7 +35,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService,
           template = ::TemplateFinder.build(:gitlab_ci_ymls, nil, name: job_template).execute
           jobs = Gitlab::Ci::Config.new(template.content).jobs.keys
           jobs.each do |job|
-            pipeline_scan_jobs.append("#{job.to_s.tr('_', '-')}-#{index}".to_sym)
+            pipeline_scan_jobs.append(:"#{job.to_s.tr('_', '-')}-#{index}")
           end
         end
 

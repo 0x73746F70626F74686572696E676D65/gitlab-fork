@@ -13,9 +13,9 @@ RSpec.describe 'Update an external audit event destination', feature_category: :
 
   let(:input) do
     {
-      'id': GitlabSchema.id_from_object(destination).to_s,
-      'destinationUrl': "https://example.com/new",
-      'name': "New Destination"
+      id: GitlabSchema.id_from_object(destination).to_s,
+      destinationUrl: "https://example.com/new",
+      name: "New Destination"
     }
   end
 
@@ -84,8 +84,8 @@ RSpec.describe 'Update an external audit event destination', feature_category: :
       context 'when there is no change in values' do
         let(:input) do
           {
-            'id': GitlabSchema.id_from_object(destination).to_s,
-            'destinationUrl': destination.reload.destination_url
+            id: GitlabSchema.id_from_object(destination).to_s,
+            destinationUrl: destination.reload.destination_url
           }
         end
 

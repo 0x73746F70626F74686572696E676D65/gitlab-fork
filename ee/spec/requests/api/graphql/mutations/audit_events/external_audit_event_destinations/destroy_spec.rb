@@ -13,7 +13,7 @@ RSpec.describe 'Destroy an external audit event destination', feature_category: 
 
   let(:input) do
     {
-      'id': GitlabSchema.id_from_object(destination).to_s
+      id: GitlabSchema.id_from_object(destination).to_s
     }
   end
 
