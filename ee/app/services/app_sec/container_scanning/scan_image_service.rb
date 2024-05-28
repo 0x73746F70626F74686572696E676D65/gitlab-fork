@@ -32,7 +32,7 @@ module AppSec
               SECURE_LOG_LEVEL: debug
               REGISTRY_TRIGGERED: true
               CS_DISABLE_DEPENDENCY_LIST: true
-              CI_IMAGE: '#{image}'
+              CS_IMAGE: '#{image}'
         YAML
       end
     end
