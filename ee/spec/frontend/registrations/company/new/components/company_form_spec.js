@@ -62,11 +62,13 @@ describe('CompanyForm', () => {
     });
 
     it('displays correct text on submit button', () => {
-      expect(findSubmitButton().text()).toBe('Continue');
+      expect(findSubmitButton().text()).toBe('Start free GitLab Ultimate trial');
     });
 
-    it('displays correct footer text', () => {
-      expect(findFooterDescriptionText().exists()).toBe(false);
+    it('displays correct subtext under submit button', () => {
+      expect(findFooterDescriptionText().text()).toBe(
+        "You don't need a credit card to start a trial. After the 30-day trial period, your account automatically becomes a GitLab Free account. You can use your GitLab Free account forever, or upgrade to a paid tier.",
+      );
     });
   });
 

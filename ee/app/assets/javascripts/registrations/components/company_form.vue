@@ -15,6 +15,7 @@ import {
   TRIAL_COMPANY_SIZE_PROMPT,
   TRIAL_PHONE_DESCRIPTION,
   TRIAL_FORM_SUBMIT_TEXT,
+  TRIAL_FOOTER_DESCRIPTION,
   TRIAL_DESCRIPTION,
   TRIAL_REGISTRATION_DESCRIPTION,
   TRIAL_REGISTRATION_FOOTER_DESCRIPTION,
@@ -72,6 +73,11 @@ export default {
         ? this.$options.i18n.formSubmitText.trial
         : this.$options.i18n.formSubmitText.registration;
     },
+    footerText() {
+      return this.trial
+        ? this.$options.i18n.footerDescription.trial
+        : this.$options.i18n.footerDescription.registration;
+    },
   },
   methods: {
     trackCompanyForm() {
@@ -92,10 +98,13 @@ export default {
       trial: TRIAL_DESCRIPTION,
       registration: TRIAL_REGISTRATION_DESCRIPTION,
     },
-    footerDescription: TRIAL_REGISTRATION_FOOTER_DESCRIPTION,
     formSubmitText: {
       trial: TRIAL_FORM_SUBMIT_TEXT,
       registration: TRIAL_REGISTRATION_FORM_SUBMIT_TEXT,
+    },
+    footerDescription: {
+      trial: TRIAL_FOOTER_DESCRIPTION,
+      registration: TRIAL_REGISTRATION_FOOTER_DESCRIPTION,
     },
   },
 };
@@ -188,15 +197,11 @@ export default {
         data-testid="website_url"
       />
     </gl-form-group>
-    <gl-button type="submit" variant="confirm">
+    <gl-button type="submit" variant="confirm" class="gl-w-full">
       {{ submitButtonText }}
     </gl-button>
-    <gl-form-text
-      v-if="!trial"
-      data-testid="footer_description_text"
-      class="gl-mt-3 gl-text-gray-500"
-    >
-      {{ $options.i18n.footerDescription }}
+    <gl-form-text data-testid="footer_description_text" class="gl-mt-3 gl-text-gray-500">
+      {{ footerText }}
     </gl-form-text>
   </gl-form>
 </template>
