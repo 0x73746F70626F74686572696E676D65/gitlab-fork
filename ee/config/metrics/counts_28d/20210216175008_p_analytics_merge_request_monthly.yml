@@ -3,8 +3,6 @@ data_category: optional
 key_path: redis_hll_counters.analytics.p_analytics_merge_request_monthly
 description: Unique visitors to /:group/:project/-/analytics/merge_request_analytics
   by month
-product_section: dev
-product_stage: manage
 product_group: optimize
 value_type: number
 status: active
