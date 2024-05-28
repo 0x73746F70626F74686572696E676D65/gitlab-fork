@@ -82,7 +82,7 @@ const uniqueProjectDownloadLimitEnabled =
   gon.licensed_features?.uniqueProjectDownloadLimit;
 
 // eslint-disable-next-line import/export
-export const EE_GROUPS_APP_OPTIONS = uniqueProjectDownloadLimitEnabled
+export const GROUPS_APP_OPTIONS = uniqueProjectDownloadLimitEnabled
   ? {
       ...APP_OPTIONS_BASE,
       [MEMBERS_TAB_TYPES.banned]: {
@@ -93,7 +93,7 @@ export const EE_GROUPS_APP_OPTIONS = uniqueProjectDownloadLimitEnabled
   : APP_OPTIONS_BASE;
 
 // eslint-disable-next-line import/export
-export const EE_PROJECTS_APP_OPTIONS = APP_OPTIONS_BASE;
+export const PROJECTS_APP_OPTIONS = APP_OPTIONS_BASE;
 
 export const GUEST_OVERAGE_MODAL_FIELDS = Object.freeze({
   TITLE: __('You are about to incur additional charges'),

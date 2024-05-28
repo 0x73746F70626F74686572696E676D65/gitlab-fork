@@ -1,4 +1,4 @@
-import { EE_PROJECTS_APP_OPTIONS, MEMBERS_TAB_TYPES } from 'ee_else_ce/members/constants';
+import { PROJECTS_APP_OPTIONS, MEMBERS_TAB_TYPES } from 'ee_else_ce/members/constants';
 import initImportProjectMembersTrigger from '~/invite_members/init_import_project_members_trigger';
 import initImportProjectMembersModal from '~/invite_members/init_import_project_members_modal';
 import initInviteGroupTrigger from '~/invite_members/init_invite_group_trigger';
@@ -53,5 +53,5 @@ initMembersApp(document.querySelector('.js-project-members-list-app'), {
     tableFields: SHARED_FIELDS.concat('requested'),
     requestFormatter: projectMemberRequestFormatter,
   },
-  ...EE_PROJECTS_APP_OPTIONS,
+  ...PROJECTS_APP_OPTIONS,
 });
