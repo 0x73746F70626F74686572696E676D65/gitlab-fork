@@ -41,6 +41,82 @@ RSpec.describe Members::Groups::CreatorService, feature_category: :groups_and_pr
           expect(member.access_level).to eq(access_level)
         end
       end
+
+      context 'with a custom role' do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        context 'with a single group link' do
+          let_it_be(:role) { create(:member_role, :developer, :admin_vulnerability, namespace: group) }
+          let_it_be(:invited_user) { create(:user) }
+
+          subject(:member) do
+            described_class.add_member(
+              group,
+              invited_user,
+              :developer,
+              current_user: current_user,
+              member_role_id: role.id
+            )
+          end
+
+          it 'creates the membership' do
+            expect(member).to be_present
+            expect(member).to be_persisted
+            expect(member.user).to eq(invited_user)
+            expect(member.member_role).to eq(role)
+            expect(member.access_level).to eq(Member::DEVELOPER)
+          end
+        end
+
+        context 'with multiple group links in a complex nested group hierarchy' do
+          let_it_be(:gitlab) { create(:group, name: "gitlab-org") }
+          let_it_be(:secure) { create(:group, parent: gitlab, name: "secure") }
+          let_it_be(:managers) { create(:group, parent: secure, name: "managers") }
+          let_it_be(:security_products) { create(:group, parent: gitlab, name: "security products") }
+          let_it_be(:analyzers) { create(:group, parent: security_products, name: "analyzers") }
+
+          let_it_be(:manager) { create(:user) }
+          let_it_be(:developer) { create(:user) }
+          let_it_be(:gitlab_member) { create(:group_member, :developer, user: manager, source: gitlab) }
+          let_it_be(:managers_member) { create(:group_member, :owner, user: manager, source: managers) }
+          let_it_be(:role) { create(:member_role, :developer, :admin_vulnerability, namespace: gitlab) }
+
+          subject(:member) do
+            described_class.add_member(
+              analyzers,
+              developer,
+              :developer,
+              current_user: manager,
+              member_role_id: role.id
+            )
+          end
+
+          before_all do
+            create(:group_group_link, {
+              shared_group: managers,
+              shared_with_group: gitlab,
+              group_access: Gitlab::Access::DEVELOPER
+            })
+            create(:group_group_link, {
+              shared_group: analyzers,
+              shared_with_group: managers,
+              group_access: Gitlab::Access::OWNER
+            })
+          end
+
+          it 'creates the membership', :aggregate_failures do
+            expect(member).to be_present
+            expect(member).to be_valid
+            expect(member.errors.full_messages).to be_empty
+            expect(member).to be_persisted
+            expect(member.user).to eq(developer)
+            expect(member.member_role).to eq(role)
+            expect(member.access_level).to eq(Member::DEVELOPER)
+          end
+        end
+      end
     end
 
     context 'for free user limit considerations', :saas do

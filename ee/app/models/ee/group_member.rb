@@ -90,6 +90,7 @@ module EE
 
     def custom_role_abilities_too_high?(current_user, member_role_id)
       return false unless member_role_id
+      return false if ::Gitlab::Access::OWNER == group.max_member_access_for_user(current_user)
 
       current_member = group.highest_group_member(current_user)
 
