@@ -59355,6 +59355,9 @@ msgstr ""
 msgid "WorkItem|Search existing items, paste URL, or enter reference ID"
 msgstr ""
 
+msgid "WorkItem|Select a project"
+msgstr ""
+
 msgid "WorkItem|Select type"
 msgstr ""
 
