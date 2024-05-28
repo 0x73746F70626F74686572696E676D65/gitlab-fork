@@ -31897,8 +31897,16 @@ msgstr ""
 msgid "Members of a group may only view projects they have permission to access"
 msgstr ""
 
+msgid "MembersOverage|Continue with overages"
+msgstr ""
+
 msgid "MembersOverage|If you continue, the %{groupName} group will have %{quantity} seat in use and will be billed for the overage."
 msgid_plural "MembersOverage|If you continue, the %{groupName} group will have %{quantity} seats in use and will be billed for the overage."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "MembersOverage|If you continue, the %{groupName} group will have %{seatCount} seat in use and will be billed for the overage."
+msgid_plural "MembersOverage|If you continue, the %{groupName} group will have %{seatCount} seats in use and will be billed for the overage."
 msgstr[0] ""
 msgstr[1] ""
 

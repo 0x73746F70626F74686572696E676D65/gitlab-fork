@@ -8,6 +8,7 @@ query getBillableUsersCount(
 ) {
   group(fullPath: $fullPath) {
     id
+    name
     gitlabSubscriptionsPreviewBillableUserChange(
       addGroupId: $addGroupId
       addUserEmails: $addUserEmails
