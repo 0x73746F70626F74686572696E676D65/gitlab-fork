@@ -360,7 +360,7 @@ export default {
           <blockquote
             v-if="approval.comment"
             :key="`comment-${index}`"
-            class="gl-border-l-1 gl-border-l-solid gl-border-gray-200 gl-pl-2 gl-overflow-wrap-break"
+            class="gl-border-l-1 gl-border-l-solid gl-border-gray-200 gl-pl-2 gl-break-words"
           >
             {{ approval.comment }}
           </blockquote>

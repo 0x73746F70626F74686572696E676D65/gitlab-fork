@@ -253,7 +253,7 @@ export default {
 
     <p class="form-text gl-text-center">{{ $options.i18n.urlHeader }}</p>
 
-    <p class="form-text gl-text-center monospace gl-overflow-wrap-break">
+    <p class="form-text gl-text-center monospace gl-break-words">
       {{ rootUrl }}<span data-testid="url-group-path">{{ urlGroupPath }}</span
       ><span>{{ $options.i18n.urlSlash }}</span
       ><span data-testid="url-project-path">{{ projectPath }}</span>
