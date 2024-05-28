@@ -1,8 +1,6 @@
 ---
 key_path: counts.count_total_insights_merge_request_chart_item_clicked_weekly
 description: Weekly count of Insights merge request chart item clicked occurrences.
-product_section: dev
-product_stage: plan
 product_group: optimize
 performance_indicator_type: []
 value_type: number

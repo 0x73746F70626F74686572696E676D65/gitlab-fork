@@ -1,8 +1,6 @@
 ---
 key_path: count_distinct_user_id_from_value_streams_dashboard_time_to_restore_service_link_clicked_7d
 description: Count of unique users that clicked on the Value Streams Dashboard's "Time to Restore Service" drill-down link in the last 7 days.
-product_section: dev
-product_stage: plan
 product_group: optimize
 performance_indicator_type: []
 value_type: number

@@ -1,8 +1,6 @@
 ---
 key_path: count_distinct_user_id_from_insights_chart_item_clicked_7d
 description: Count of unique users that clicked on any Insights chart item in the last 7 days.
-product_section: dev
-product_stage: plan
 product_group: optimize
 performance_indicator_type: []
 value_type: number

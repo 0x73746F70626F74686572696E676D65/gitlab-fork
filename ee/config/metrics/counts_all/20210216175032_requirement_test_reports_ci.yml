@@ -2,8 +2,6 @@
 data_category: operational
 key_path: counts.requirement_test_reports_ci
 description: Count of requirement test reports created from CI
-product_section: dev
-product_stage: plan
 product_group: product_planning
 value_type: number
 status: active

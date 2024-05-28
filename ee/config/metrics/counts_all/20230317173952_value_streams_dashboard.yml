@@ -1,8 +1,6 @@
 ---
 key_path: analytics_counts_visits.g_metrics_comparison_page
 description: 'Total number of visits to value stream dashboards page'
-product_section: dev
-product_stage: plan
 product_group: optimize
 value_type: number
 status: removed
