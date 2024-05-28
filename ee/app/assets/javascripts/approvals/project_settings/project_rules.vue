@@ -156,7 +156,7 @@ export default {
                 :items="rule.eligibleApprovers"
                 :img-size="24"
                 empty-text=""
-                class="gl-my-n2!"
+                class="!-gl-my-2"
               />
             </td>
             <td
