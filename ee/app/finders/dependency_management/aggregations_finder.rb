@@ -5,7 +5,7 @@ module DependencyManagement
   class AggregationsFinder
     DEFAULT_PAGE_SIZE = 20
     MAX_PAGE_SIZE = 20
-    DEFAULT_ORDERINGS = { component_id: :asc, component_version_id: :asc }.freeze
+    DEFAULT_SORT_COLUMNS = %i[component_id component_version_id].freeze
     SUPPORTED_SORT_COLUMNS = %i[highest_severity].freeze
 
     def initialize(namespace, params: {})
@@ -82,11 +82,13 @@ module DependencyManagement
     end
 
     def orderings
-      return DEFAULT_ORDERINGS unless sort_by.present?
+      default_orderings = DEFAULT_SORT_COLUMNS.index_with { sort_direction }
+
+      return default_orderings unless sort_by.present?
 
       # The `sort_by` column must come first in the `ORDER BY` statement.
       # Create a new hash to ensure that it is in the front when enumerating.
-      Hash[sort_by => sort_direction, **DEFAULT_ORDERINGS]
+      Hash[sort_by => sort_direction, **default_orderings]
     end
 
     def sort_by
@@ -98,7 +100,7 @@ module DependencyManagement
     end
 
     def sort_direction
-      params[:sort]&.downcase&.to_sym == :desc ? :desc : :asc
+      params[:sort]&.downcase&.to_sym == :asc ? :asc : :desc
     end
   end
   # rubocop:enable CodeReuse/ActiveRecord
