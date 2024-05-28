@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe CustomersDot::ProxyController, type: :request, feature_category: :customersdot_application do
+RSpec.describe CustomersDot::ProxyController, type: :request, feature_category: :customersdot_and_quote_to_cash_integrations do
   describe 'POST graphql' do
     let_it_be(:customers_dot) { ::Gitlab::Routing.url_helpers.subscription_portal_graphql_url }
     let_it_be(:default_headers) { { 'Content-Type' => 'application/json' } }

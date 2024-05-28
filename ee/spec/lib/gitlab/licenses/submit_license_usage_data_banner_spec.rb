@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Licenses::SubmitLicenseUsageDataBanner, feature_category: :sm_provisioning do
+RSpec.describe Gitlab::Licenses::SubmitLicenseUsageDataBanner, feature_category: :plan_provisioning do
   include ActionView::Helpers::SanitizeHelper
 
   let_it_be(:feature_name) { described_class::SUBMIT_LICENSE_USAGE_DATA_BANNER }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe UserHighestRole, feature_category: :sm_provisioning do
+RSpec.describe UserHighestRole, feature_category: :plan_provisioning do
   describe 'validations' do
     it do
       is_expected.to validate_inclusion_of(:highest_access_level)

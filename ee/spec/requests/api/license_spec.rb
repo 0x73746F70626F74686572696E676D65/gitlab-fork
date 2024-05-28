@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::License, :aggregate_failures, api: true, feature_category: :sm_provisioning do
+RSpec.describe API::License, :aggregate_failures, api: true, feature_category: :plan_provisioning do
   include ApiHelpers
 
   let(:gl_license)  { build(:gitlab_license) }

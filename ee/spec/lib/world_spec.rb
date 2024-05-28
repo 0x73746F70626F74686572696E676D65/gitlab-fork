@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe World, feature_category: :purchase do
+RSpec.describe World, feature_category: :subscription_management do
   describe '.country_deny_list' do
     # this spec exists to catch relevant changes in the gem's upstream data
     it 'ensures the items in the country deny list map to real country objects' do

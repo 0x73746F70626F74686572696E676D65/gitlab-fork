@@ -16,7 +16,7 @@ class Groups::BillingsController < Groups::ApplicationController
 
   layout 'group_settings'
 
-  feature_category :purchase
+  feature_category :subscription_management
   urgency :low
 
   def index

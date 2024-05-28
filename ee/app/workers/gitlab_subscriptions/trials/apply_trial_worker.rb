@@ -14,7 +14,7 @@ module GitlabSubscriptions
       # a HTTP POST request to ::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_URL
       worker_has_external_dependencies!
 
-      feature_category :purchase
+      feature_category :plan_provisioning
 
       def perform(current_user_id, trial_user_information)
         service = GitlabSubscriptions::Trials::ApplyTrialService

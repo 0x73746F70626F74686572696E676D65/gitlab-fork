@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Duo Pro trial lead submission and creation with one eligible namespace', :saas_trial, :js, feature_category: :purchase do
+RSpec.describe 'Duo Pro trial lead submission and creation with one eligible namespace', :saas_trial, :js, feature_category: :acquisition do
   include SubscriptionPortalHelpers
 
   # rubocop:disable Gitlab/RSpec/AvoidSetup -- to skip registration and creating group

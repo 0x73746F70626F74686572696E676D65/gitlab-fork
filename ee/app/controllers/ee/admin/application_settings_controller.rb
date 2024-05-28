@@ -27,7 +27,7 @@ module EE
 
         before_action :push_disable_private_profiles_feature, only: [:general]
 
-        feature_category :sm_provisioning, [:seat_link_payload]
+        feature_category :plan_provisioning, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
         feature_category :global_search, [:advanced_search]
         feature_category :software_composition_analysis, [:security_and_compliance]

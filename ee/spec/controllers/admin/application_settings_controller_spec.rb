@@ -606,7 +606,7 @@ RSpec.describe Admin::ApplicationSettingsController do
     end
   end
 
-  describe 'GET #seat_link_payload', feature_category: :sm_provisioning do
+  describe 'GET #seat_link_payload', feature_category: :plan_provisioning do
     context 'when a non-admin user attempts a request' do
       before do
         sign_in(create(:user))

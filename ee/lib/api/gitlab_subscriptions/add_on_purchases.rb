@@ -3,7 +3,7 @@
 module API
   module GitlabSubscriptions
     class AddOnPurchases < ::API::Base
-      feature_category :purchase
+      feature_category :subscription_management
       urgency :low
 
       before do

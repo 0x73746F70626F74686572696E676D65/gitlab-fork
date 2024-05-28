@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'subscriptions/groups/edit', feature_category: :purchase do
+RSpec.describe 'subscriptions/groups/edit', feature_category: :subscription_management do
   let(:group) { build_stubbed(:group) }
   let(:user) { build_stubbed(:user) }
   let(:quantity) { '1' }

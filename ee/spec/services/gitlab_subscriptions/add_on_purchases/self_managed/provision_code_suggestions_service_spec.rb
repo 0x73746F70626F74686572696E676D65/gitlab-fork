@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSuggestionsService,
-  :aggregate_failures, feature_category: :sm_provisioning do
+  :aggregate_failures, feature_category: :plan_provisioning do
   describe '#execute' do
     let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
     let_it_be(:namespace) { nil }

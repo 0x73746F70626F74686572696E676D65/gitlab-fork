@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'license metadata tags', feature_category: :sm_provisioning do
+RSpec.describe 'license metadata tags', feature_category: :plan_provisioning do
   it 'applies the with_license metadata tag by default' do |example|
     expect(example.metadata[:with_license]).to eq(true)
   end

@@ -14,7 +14,7 @@
   :tags: []
 - :name: cronjob:active_user_count_threshold
   :worker_name: ActiveUserCountThresholdWorker
-  :feature_category: :sm_provisioning
+  :feature_category: :plan_provisioning
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -338,7 +338,7 @@
   :tags: []
 - :name: cronjob:gitlab_subscriptions_notify_seats_exceeded_batch
   :worker_name: GitlabSubscriptions::NotifySeatsExceededBatchWorker
-  :feature_category: :purchase
+  :feature_category: :subscription_management
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -446,7 +446,7 @@
   :tags: []
 - :name: cronjob:licenses_reset_submit_license_usage_data_banner
   :worker_name: Licenses::ResetSubmitLicenseUsageDataBannerWorker
-  :feature_category: :sm_provisioning
+  :feature_category: :plan_provisioning
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -554,7 +554,7 @@
   :tags: []
 - :name: cronjob:sync_seat_link
   :worker_name: SyncSeatLinkWorker
-  :feature_category: :sm_provisioning
+  :feature_category: :plan_provisioning
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -1436,7 +1436,7 @@
   :tags: []
 - :name: gitlab_subscriptions_trials_apply_trial
   :worker_name: GitlabSubscriptions::Trials::ApplyTrialWorker
-  :feature_category: :purchase
+  :feature_category: :plan_provisioning
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -1751,7 +1751,7 @@
   :tags: []
 - :name: namespaces_sync_namespace_name
   :worker_name: Namespaces::SyncNamespaceNameWorker
-  :feature_category: :saas_provisioning
+  :feature_category: :plan_provisioning
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -2255,7 +2255,7 @@
   :tags: []
 - :name: sync_seat_link_request
   :worker_name: SyncSeatLinkRequestWorker
-  :feature_category: :sm_provisioning
+  :feature_category: :plan_provisioning
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown

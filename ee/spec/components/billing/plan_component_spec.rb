@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require "spec_helper"
 
-RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component, feature_category: :purchase do
+RSpec.describe Billing::PlanComponent, :aggregate_failures, type: :component, feature_category: :subscription_management do
   include SubscriptionPortalHelpers
 
   let(:namespace) { build(:group) }

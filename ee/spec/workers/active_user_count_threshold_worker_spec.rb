@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ActiveUserCountThresholdWorker, feature_category: :sm_provisioning do
+RSpec.describe ActiveUserCountThresholdWorker, feature_category: :plan_provisioning do
   using RSpec::Parameterized::TableSyntax
 
   subject { described_class.new }

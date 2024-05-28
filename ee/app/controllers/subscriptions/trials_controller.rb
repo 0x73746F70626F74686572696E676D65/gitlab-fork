@@ -13,7 +13,7 @@ module Subscriptions
     before_action :check_feature_available!
     before_action :authenticate_user!
 
-    feature_category :purchase
+    feature_category :plan_provisioning
     urgency :low
 
     def new

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::Trials::CreateDuoProService, feature_category: :purchase do
+RSpec.describe GitlabSubscriptions::Trials::CreateDuoProService, feature_category: :plan_provisioning do
   include TrialHelpers
 
   let_it_be(:user, reload: true) { create(:user, preferred_language: 'en') }

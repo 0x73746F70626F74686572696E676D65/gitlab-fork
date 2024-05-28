@@ -4,7 +4,7 @@ require 'spec_helper'
 
 require_migration!
 
-RSpec.describe InsertNewUltimateTrialPlanIntoPlans, feature_category: :saas_provisioning do
+RSpec.describe InsertNewUltimateTrialPlanIntoPlans, feature_category: :plan_provisioning do
   describe '#up' do
     it 'adds a new entry to the plans table' do
       expect(new_plan).to be_nil

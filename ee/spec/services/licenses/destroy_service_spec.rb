@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Licenses::DestroyService, feature_category: :purchase do
+RSpec.describe Licenses::DestroyService, feature_category: :plan_provisioning do
   subject(:destroy_license) { destroy_with(user) }
 
   let(:license) { create(:license) }

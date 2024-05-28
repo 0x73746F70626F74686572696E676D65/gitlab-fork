@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'duo_pro:bulk_user_assignment', feature_category: :saas_provisioning do
+RSpec.describe 'duo_pro:bulk_user_assignment', feature_category: :plan_provisioning do
   let(:csv_file_path) { 'spec/fixtures/duo_pro/bulk_user_assignment.csv' }
 
   before do

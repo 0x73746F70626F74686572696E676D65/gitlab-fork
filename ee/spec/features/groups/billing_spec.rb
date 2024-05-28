@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :purchase do
+RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :subscription_management do
   include StubRequests
   include SubscriptionPortalHelpers
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ci::Minutes, :aggregate_failures, feature_category: :purchase do
+RSpec.describe API::Ci::Minutes, :aggregate_failures, feature_category: :subscription_management do
   shared_examples 'not found error' do
     it 'returns an error' do
       subject

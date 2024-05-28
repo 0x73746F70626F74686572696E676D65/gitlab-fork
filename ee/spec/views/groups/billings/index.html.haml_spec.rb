@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_category: :purchase do
+RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_category: :subscription_management do
   include SubscriptionPortalHelpers
 
   let_it_be(:user) { create(:user) }
