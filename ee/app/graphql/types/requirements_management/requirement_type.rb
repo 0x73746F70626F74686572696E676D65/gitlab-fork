@@ -12,11 +12,11 @@ module Types
 
       field :id, GraphQL::Types::ID, null: false, description: 'ID of the requirement.'
 
-      field :iid, GraphQL::Types::ID, null: false,
+      field :iid, GraphQL::Types::String, null: false,
         description: 'Internal ID of the requirement.',
         deprecated: { reason: 'Use work_item_iid instead', milestone: '15.8' }
 
-      field :work_item_iid, GraphQL::Types::ID, null: false,
+      field :work_item_iid, GraphQL::Types::String, null: false,
         method: :work_item_iid,
         description: 'Work item IID of the requirement, '\
                      'will replace current IID as identifier soon.'

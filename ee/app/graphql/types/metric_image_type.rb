@@ -10,7 +10,7 @@ module Types
     field :id, GraphQL::Types::ID, null: false,
       description: 'ID of the metric upload.'
 
-    field :iid, GraphQL::Types::ID, null: false,
+    field :iid, GraphQL::Types::String, null: false,
       description: 'Internal ID of the metric upload.'
 
     field :url, GraphQL::Types::String, null: false,

@@ -29,7 +29,7 @@ module Types
 
     field :id, GraphQL::Types::ID, null: false, description: 'ID of the epic.'
 
-    field :iid, GraphQL::Types::ID, null: false, description: 'Internal ID of the epic.'
+    field :iid, GraphQL::Types::String, null: false, description: 'Internal ID of the epic.'
 
     field :state, EpicStateEnum, null: false, description: 'State of the epic.'
 
