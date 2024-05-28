@@ -41,91 +41,103 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariables, :rd_
       {
         key: "gl_token",
         value: "example-pat-value",
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_FILE,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:file],
         workspace_id: workspace_id
       },
       {
         key: "gl_git_credential_store.sh",
         value: git_credential_store_script,
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_FILE,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:file],
         workspace_id: workspace_id
       },
       {
         key: "GIT_CONFIG_COUNT",
         value: "3",
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
         workspace_id: workspace_id
       },
       {
         key: "GIT_CONFIG_KEY_0",
         value: "credential.helper",
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
         workspace_id: workspace_id
       },
       {
         key: "GIT_CONFIG_VALUE_0",
         value: "/.workspace-data/variables/file/gl_git_credential_store.sh",
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
         workspace_id: workspace_id
       },
       {
         key: "GIT_CONFIG_KEY_1",
         value: "user.name",
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
         workspace_id: workspace_id
       },
       {
         key: "GIT_CONFIG_VALUE_1",
         value: "example.user.name",
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
         workspace_id: workspace_id
       },
       {
         key: "GIT_CONFIG_KEY_2",
         value: "user.email",
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
         workspace_id: workspace_id
       },
       {
         key: "GIT_CONFIG_VALUE_2",
         value: "example@user.email",
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
         workspace_id: workspace_id
       },
       {
         key: "GL_GIT_CREDENTIAL_STORE_FILE_PATH",
         value: "/.workspace-data/variables/file/gl_git_credential_store.sh",
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
         workspace_id: workspace_id
       },
       {
         key: "GL_TOKEN_FILE_PATH",
         value: "/.workspace-data/variables/file/gl_token",
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
         workspace_id: workspace_id
       },
       {
         key: "GL_WORKSPACE_DOMAIN_TEMPLATE",
         value: "${PORT}-name.example.dns.zone",
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
         workspace_id: workspace_id
       },
       {
         key: "GL_EDITOR_EXTENSIONS_GALLERY_SERVICE_URL",
         value: vscode_extensions_gallery_service_url,
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
         workspace_id: workspace_id
       },
       {
         key: "GL_EDITOR_EXTENSIONS_GALLERY_ITEM_URL",
         value: vscode_extensions_gallery_item_url,
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
         workspace_id: workspace_id
       },
       {
         key: "GL_EDITOR_EXTENSIONS_GALLERY_RESOURCE_URL_TEMPLATE",
         value: vscode_extensions_gallery_resource_url_template,
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
+        workspace_id: workspace_id
+      },
+      {
+        key: "VAR1",
+        value: "value 1",
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment],
+        workspace_id: workspace_id
+      },
+      {
+        key: "/path/to/file",
+        value: "value 2",
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:file],
         workspace_id: workspace_id
       }
     ]
@@ -145,7 +157,19 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariables, :rd_
           item_url: vscode_extensions_gallery_item_url,
           resource_url_template: vscode_extensions_gallery_resource_url_template
         }
-      }
+      },
+      variables: [
+        {
+          key: "VAR1",
+          value: "value 1",
+          type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment]
+        },
+        {
+          key: "/path/to/file",
+          value: "value 2",
+          type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:file]
+        }
+      ]
     )
   end
 

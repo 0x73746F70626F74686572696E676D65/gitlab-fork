@@ -4,13 +4,14 @@ require 'spec_helper'
 
 RSpec.describe RemoteDevelopment::WorkspaceVariable, feature_category: :remote_development do
   let(:key) { 'key_1' }
-  let(:value) { 'value_1' }
-  let(:variable_type_env_var) { RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR }
-  let(:variable_type_file) { RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_FILE }
+  let(:current_value) { 'value_1' }
+  let(:value) { current_value }
+  let(:variable_type_environment) { RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment] }
+  let(:variable_type_file) { RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:file] }
   let(:variable_type) { variable_type_file }
   let(:variable_type_values) do
     [
-      variable_type_env_var,
+      variable_type_environment,
       variable_type_file
     ]
   end
@@ -40,14 +41,22 @@ RSpec.describe RemoteDevelopment::WorkspaceVariable, feature_category: :remote_d
     it 'can be decrypted' do
       expect(workspace_variable.value).to eq(value)
     end
+
+    describe 'can be empty' do
+      let(:current_value) { '' }
+
+      it 'is saved' do
+        expect(workspace_variable.value).to eq(value)
+      end
+    end
   end
 
   describe 'scopes' do
-    describe 'with_variable_type_env_var' do
-      let(:variable_type) { variable_type_env_var }
+    describe 'with_variable_type_environment' do
+      let(:variable_type) { variable_type_environment }
 
       it 'returns the record' do
-        expect(described_class.with_variable_type_env_var).to eq([workspace_variable])
+        expect(described_class.with_variable_type_environment).to eq([workspace_variable])
       end
     end
 

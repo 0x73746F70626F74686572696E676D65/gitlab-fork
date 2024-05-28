@@ -15,11 +15,11 @@ module RemoteDevelopment
     ].freeze
 
     def show
-      flag = params[:flag]
+      flag = permitted_params[:flag]
 
       return render json: { enabled: false } unless ALLOWED_FLAGS.include?(flag.to_s)
 
-      namespace_id = params[:namespace_id]
+      namespace_id = permitted_params[:namespace_id]
       namespace = ::Namespace.find_by_id(namespace_id)
 
       return render json: { enabled: false } unless namespace
@@ -29,6 +29,12 @@ module RemoteDevelopment
       rescue Feature::InvalidFeatureFlagError
         render json: { enabled: false }
       end
+    end
+
+    private
+
+    def permitted_params
+      params.permit(:flag, :namespace_id)
     end
   end
 end

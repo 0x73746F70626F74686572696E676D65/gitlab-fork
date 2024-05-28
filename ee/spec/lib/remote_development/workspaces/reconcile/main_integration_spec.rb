@@ -513,7 +513,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
           previous_actual_state: RemoteDevelopment::Workspaces::States::STOPPING,
           current_actual_state: RemoteDevelopment::Workspaces::States::STOPPED,
           workspace_exists: false,
-          workspace_variables_env_var: {},
+          workspace_variables_environment: {},
           workspace_variables_file: {}
         )
       end

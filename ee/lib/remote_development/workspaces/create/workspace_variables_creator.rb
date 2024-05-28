@@ -13,19 +13,27 @@ module RemoteDevelopment
             workspace: RemoteDevelopment::Workspace => workspace,
             personal_access_token: PersonalAccessToken => personal_access_token,
             current_user: User => user,
-            settings: Hash => settings
+            settings: Hash => settings,
+            params: Hash => params
           }
-          workspace_variables_params = WorkspaceVariables.variables(
+          params => {
+            variables: Array => user_provided_variables
+          }
+          # When we have the ability to define variables for workspaces
+          # at project/group/instance level, add them here.
+          variables = user_provided_variables
+          workspace_variables = WorkspaceVariables.variables(
             name: workspace.name,
             dns_zone: workspace.dns_zone,
             personal_access_token_value: personal_access_token.token,
             user_name: user.name,
             user_email: user.email,
             workspace_id: workspace.id,
-            settings: settings
+            settings: settings,
+            variables: variables
           )
 
-          workspace_variables_params.each do |workspace_variable_params|
+          workspace_variables.each do |workspace_variable_params|
             workspace_variable = RemoteDevelopment::WorkspaceVariable.new(workspace_variable_params)
             workspace_variable.save
 

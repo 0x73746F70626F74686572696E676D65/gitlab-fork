@@ -54,7 +54,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
             previous_actual_state: previous_actual_state,
             current_actual_state: current_actual_state,
             workspace_exists: workspace_exists,
-            workspace_variables_env_var: {},
+            workspace_variables_environment: {},
             workspace_variables_file: {}
           )
           workspace_agent_info_hash.fetch(:latest_k8s_deployment_info).to_h

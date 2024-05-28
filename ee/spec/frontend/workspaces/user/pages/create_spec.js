@@ -14,6 +14,7 @@ import {
 import RefSelector from '~/ref/components/ref_selector.vue';
 import SearchProjectsListbox from 'ee/workspaces/user/components/search_projects_listbox.vue';
 import GetProjectDetailsQuery from 'ee/workspaces/common/components/get_project_details_query.vue';
+import WorkspaceVariables from 'ee/workspaces/user/components/workspace_variables.vue';
 import WorkspaceCreate, { devfileHelpPath, i18n } from 'ee/workspaces/user/pages/create.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
@@ -23,6 +24,7 @@ import {
   DEFAULT_DESIRED_STATE,
   DEFAULT_EDITOR,
   ROUTES,
+  WORKSPACE_VARIABLE_INPUT_TYPE_ENUM,
   WORKSPACES_LIST_PAGE_SIZE,
 } from 'ee/workspaces/user/constants';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -205,6 +207,7 @@ describe('workspaces/user/pages/create.vue', () => {
     findClusterAgentsFormSelect().vm.$emit('input', selectedClusterAgentIDFixture);
   const submitCreateWorkspaceForm = () =>
     wrapper.findComponent(GlForm).vm.$emit('submit', { preventDefault: jest.fn() });
+  const findWorkspaceVariables = () => wrapper.findComponent(WorkspaceVariables);
 
   beforeEach(() => {
     buildMockApollo();
@@ -331,6 +334,13 @@ describe('workspaces/user/pages/create.vue', () => {
       });
     });
 
+    it('renders workspace variables component', () => {
+      expect(findWorkspaceVariables().props()).toMatchObject({
+        variables: [],
+        showValidations: false,
+      });
+    });
+
     describe('when selecting a project again', () => {
       beforeEach(async () => {
         await selectProject({ nameWithNamespace: 'New Project', fullPath: 'new-project' });
@@ -367,6 +377,7 @@ describe('workspaces/user/pages/create.vue', () => {
             devfilePath,
             maxHoursBeforeTermination,
             devfileRef,
+            variables: findWorkspaceVariables().props().variables,
           },
         });
       });
@@ -375,6 +386,33 @@ describe('workspaces/user/pages/create.vue', () => {
         await submitCreateWorkspaceForm();
 
         expect(findCreateWorkspaceButton().props().loading).toBe(true);
+      });
+
+      it('displays workspace variables validations', async () => {
+        expect(findWorkspaceVariables().props().showValidations).toBe(false);
+
+        await submitCreateWorkspaceForm();
+
+        expect(findWorkspaceVariables().props().showValidations).toBe(true);
+      });
+
+      describe('when workspace variables are not valid', () => {
+        it('does not submit the Create Workspace mutation', async () => {
+          const variables = [
+            {
+              key: '',
+              value: '',
+              type: WORKSPACE_VARIABLE_INPUT_TYPE_ENUM.env,
+              valid: false,
+            },
+          ];
+
+          await findWorkspaceVariables().vm.$emit('input', variables);
+
+          await submitCreateWorkspaceForm();
+
+          expect(workspaceCreateMutationHandler).not.toHaveBeenCalled();
+        });
       });
 
       describe('when the workspaceCreate mutation succeeds', () => {

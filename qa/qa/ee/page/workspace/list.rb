@@ -35,6 +35,7 @@ module QA
             QA::EE::Page::Workspace::New.perform do |new|
               new.select_devfile_project(project)
               new.select_cluster_agent(agent)
+              new.add_new_variable('VAR1', 'value 1')
               new.save_workspace
             end
             Support::WaitForRequests.wait_for_requests(skip_finished_loading_check: true)

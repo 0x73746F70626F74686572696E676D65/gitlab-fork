@@ -26,25 +26,42 @@ module RemoteDevelopment
             path: String => workspace_root,
           }
           params => {
-            project: Project => project,
+            desired_state: String => desired_state,
+            editor: String => editor,
+            max_hours_before_termination: Integer => max_hours_before_termination,
+            devfile_ref: String => devfile_ref,
+            devfile_path: String => devfile_path,
             agent: Clusters::Agent => agent,
+            user: User => user,
+            project: Project => project,
           }
           project_dir = "#{workspace_root}/#{project.path}"
 
-          workspace = RemoteDevelopment::Workspace.new(params)
+          workspace = RemoteDevelopment::Workspace.new
           workspace.name = workspace_name
           workspace.namespace = workspace_namespace
-          workspace.personal_access_token = personal_access_token
-          workspace.devfile = devfile_yaml
-          workspace.processed_devfile = YAML.dump(processed_devfile.deep_stringify_keys)
+          workspace.desired_state = desired_state
           workspace.actual_state = CREATION_REQUESTED
           workspace.config_version = RemoteDevelopment::Workspaces::ConfigVersion::LATEST_VERSION
+          workspace.editor = editor
+          workspace.max_hours_before_termination = max_hours_before_termination
+          workspace.devfile_ref = devfile_ref
+          workspace.devfile_path = devfile_path
+          workspace.devfile = devfile_yaml
+          workspace.processed_devfile = YAML.dump(processed_devfile.deep_stringify_keys)
 
           set_workspace_url(
             workspace: workspace,
             agent_dns_zone: agent.remote_development_agent_config.dns_zone,
             project_dir: project_dir
           )
+
+          # associations for workspace
+          workspace.user = user
+          workspace.project = project
+          workspace.agent = agent
+          workspace.personal_access_token = personal_access_token
+
           workspace.save
 
           if workspace.errors.present?

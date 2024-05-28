@@ -2,7 +2,7 @@
 
 require_relative '../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
+RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category: :remote_development do
   let(:context_passed_along_steps) { {} }
 
   let(:rop_steps) do
@@ -30,7 +30,6 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
       end
     end
 
-    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
     # rubocop:disable Layout/LineLength -- we want to avoid excessive wrapping for RSpec::Parameterized Nested Array Style so we can have formatting consistency between entries
     where(:case_name, :result_for_step, :expected_response) do
       [
@@ -43,7 +42,7 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
           {
             status: :success,
             payload: lazy { ok_message_content }
-          },
+          }
         ],
         [
           "when Updater returns AgentConfigUpdateSkippedBecauseNoConfigFileEntryFound",
@@ -58,6 +57,7 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
         ]
       ]
     end
+    # rubocop:enable Layout/LineLength
     with_them do
       it_behaves_like "rop invocation with successful response"
     end
@@ -81,8 +81,6 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
       end
     end
 
-    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
-    # rubocop:disable Layout/LineLength -- we want to avoid excessive wrapping for RSpec::Parameterized Nested Array Style so we can have formatting consistency between entries
     where(:case_name, :err_result_for_step, :expected_response) do
       [
         [
@@ -95,7 +93,7 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
             status: :error,
             message: lazy { "License check failed: #{error_details}" },
             reason: :forbidden
-          },
+          }
         ],
         [
           "when Updater returns AgentConfigUpdateFailed",
@@ -107,7 +105,7 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
             status: :error,
             message: lazy { "Agent config update failed: #{error_details}" },
             reason: :bad_request
-          },
+          }
         ],
         [
           "when an unmatched error is returned, an exception is raised",
@@ -119,8 +117,6 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
         ]
       ]
     end
-    # rubocop:enable Style/TrailingCommaInArrayLiteral
-    # rubocop:enable Layout/LineLength
 
     with_them do
       it_behaves_like "rop invocation with error response"

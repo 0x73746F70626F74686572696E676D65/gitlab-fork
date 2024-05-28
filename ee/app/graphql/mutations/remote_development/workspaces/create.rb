@@ -51,6 +51,12 @@ module Mutations
           required: true,
           description: 'Project repo git path containing the devfile used to configure the workspace.'
 
+        argument :variables, [::Types::RemoteDevelopment::WorkspaceVariableInput],
+          required: false,
+          default_value: [],
+          replace_null_with_default: true,
+          description: 'Variables to inject into the workspace.'
+
         def resolve(args)
           unless License.feature_available?(:remote_development)
             raise_resource_not_available_error!("'remote_development' licensed feature is not available")
@@ -110,7 +116,13 @@ module Mutations
           track_usage_event(:users_creating_workspaces, current_user.id)
 
           service = ::RemoteDevelopment::Workspaces::CreateService.new(current_user: current_user)
-          params = args.merge(agent: agent, user: current_user, project: project)
+          variables = args.fetch(:variables, []).map(&:to_h)
+          params = args.merge(
+            agent: agent,
+            user: current_user,
+            project: project,
+            variables: variables
+          )
           response = service.execute(params: params)
 
           response_object = response.success? ? response.payload[:workspace] : nil

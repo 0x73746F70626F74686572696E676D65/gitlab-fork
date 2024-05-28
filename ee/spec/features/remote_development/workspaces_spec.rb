@@ -22,6 +22,8 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
   let_it_be(:agent_token) { create(:cluster_agent_token, agent: agent, created_by_user: user) }
 
   let(:reconcile_url) { capybara_url(api('/internal/kubernetes/modules/remote_development/reconcile', user)) }
+  let(:variable_key) { "VAR1" }
+  let(:variable_value) { "value 1" }
 
   before do
     stub_licensed_features(remote_development: true)
@@ -57,6 +59,9 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
       # noinspection RubyMismatchedArgumentType -- Rubymine is finding the wrong `select`
       select agent.name, from: 'Cluster agent'
       fill_in 'Workspace automatically terminates after', with: '20'
+      click_button 'Add variable'
+      fill_in 'Variable Key', with: variable_key
+      fill_in 'Variable Value', with: variable_value
       click_button 'Create workspace'
 
       # We look for the project GID because that's all we know about the workspace at this point. For the new UI,

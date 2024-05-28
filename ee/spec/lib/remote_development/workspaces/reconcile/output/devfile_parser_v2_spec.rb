@@ -27,7 +27,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParserV2
   end
 
   let(:domain_template) { "{{.port}}-#{workspace.name}.#{workspace.dns_zone}" }
-  let(:env_var_secret_name) { "#{workspace.name}-env-var" }
+  let(:environment_secret_name) { "#{workspace.name}-env-var" }
   let(:file_secret_name) { "#{workspace.name}-file" }
   let(:egress_ip_rules) { RemoteDevelopment::AgentConfig::Updater::NETWORK_POLICY_EGRESS_DEFAULT }
 
@@ -35,7 +35,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParserV2
     YAML.load_stream(
       create_config_to_apply_v2(
         workspace: workspace,
-        workspace_variables_env_var: {},
+        workspace_variables_environment: {},
         workspace_variables_file: {},
         started: true,
         include_inventory: false,
@@ -64,7 +64,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParserV2
         'workspaces.gitlab.com/host-template' => domain_template,
         'workspaces.gitlab.com/id' => workspace.id
       },
-      env_secret_names: [env_var_secret_name],
+      env_secret_names: [environment_secret_name],
       file_secret_names: [file_secret_name],
       logger: logger
     )
@@ -94,7 +94,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParserV2
         domain_template: "",
         labels: {},
         annotations: {},
-        env_secret_names: [env_var_secret_name],
+        env_secret_names: [environment_secret_name],
         file_secret_names: [file_secret_name],
         logger: logger
       )

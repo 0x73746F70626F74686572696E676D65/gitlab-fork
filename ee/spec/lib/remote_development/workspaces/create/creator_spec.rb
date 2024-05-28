@@ -6,7 +6,7 @@ require 'spec_helper'
 # rubocop:disable Rails/SaveBang -- method shadowing
 
 Messages = RemoteDevelopment::Messages
-RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
+RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_category: :remote_development do
   let(:rop_steps) do
     [
       [RemoteDevelopment::Workspaces::Create::PersonalAccessTokenCreator, :and_then],
@@ -82,8 +82,6 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
       end
     end
 
-    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
-    # rubocop:disable Layout/LineLength -- we want to avoid excessive wrapping for RSpec::Parameterized Nested Array Style so we can have formatting consistency between entries
     where(:case_name, :err_result_for_step, :expected_response) do
       [
         [
@@ -112,8 +110,6 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
         ]
       ]
     end
-    # rubocop:enable Style/TrailingCommaInArrayLiteral
-    # rubocop:enable Layout/LineLength
     # rubocop:enable Rails/SaveBang
     with_them do
       it_behaves_like "rop invocation with error response"

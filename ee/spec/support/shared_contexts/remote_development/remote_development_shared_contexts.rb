@@ -10,7 +10,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     current_actual_state:,
     # NOTE: workspace_exists is whether the workspace exists in the cluster at the time of the current_actual_state.
     workspace_exists:,
-    workspace_variables_env_var: nil,
+    workspace_variables_environment: nil,
     workspace_variables_file: nil,
     resource_version: '1',
     dns_zone: 'workspaces.localdev.me',
@@ -241,19 +241,17 @@ RSpec.shared_context 'with remote development shared fixtures' do
         #     updatedReplicas: 1
         # STATUS_YAML
       else
-        # rubocop:todo Layout/LineEndStringConcatenationIndentation -- make this cop accept standard 2-character indentation
         msg =
           'Unsupported state transition passed for create_workspace_agent_info_hash fixture creation: ' \
             "actual_state: #{previous_actual_state} -> #{current_actual_state}, " \
             "existing_workspace: #{workspace_exists}"
-        # rubocop:enable Layout/LineEndStringConcatenationIndentation
         raise RemoteDevelopment::AgentInfoStatusFixtureNotImplementedError, msg
       end
     # rubocop:enable Lint/DuplicateBranch
 
     config_to_apply_yaml = create_config_to_apply(
       workspace: workspace,
-      workspace_variables_env_var: workspace_variables_env_var,
+      workspace_variables_environment: workspace_variables_environment,
       workspace_variables_file: workspace_variables_file,
       started: started,
       include_inventory: false,
@@ -304,7 +302,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
   def create_config_to_apply_v3(
     workspace:,
     started:,
-    workspace_variables_env_var: nil,
+    workspace_variables_environment: nil,
     workspace_variables_file: nil,
     include_inventory: true,
     include_network_policy: true,
@@ -380,12 +378,12 @@ RSpec.shared_context 'with remote development shared fixtures' do
       agent_id: workspace.agent.id
     )
 
-    workspace_secret_env_var = workspace_secret_env_var(
+    workspace_secret_environment = workspace_secret_environment(
       workspace_name: workspace.name,
       workspace_namespace: workspace.namespace,
       labels: labels,
       annotations: secrets_annotations,
-      workspace_variables_env_var: workspace_variables_env_var || get_workspace_variables_env_var(
+      workspace_variables_environment: workspace_variables_environment || get_workspace_variables_environment(
         workspace_variables: workspace.workspace_variables
       )
     )
@@ -416,7 +414,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     resources << workspace_network_policy if include_network_policy
     resources << workspace_resource_quota if include_all_resources && !max_resources_per_workspace.blank?
     resources << workspace_secrets_inventory if include_all_resources && include_inventory
-    resources << workspace_secret_env_var if include_all_resources
+    resources << workspace_secret_environment if include_all_resources
     resources << workspace_secret_file if include_all_resources
 
     resources.map do |resource|
@@ -427,7 +425,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
   def create_config_to_apply_v2(
     workspace:,
     started:,
-    workspace_variables_env_var: nil,
+    workspace_variables_environment: nil,
     workspace_variables_file: nil,
     include_inventory: true,
     include_network_policy: true,
@@ -494,12 +492,12 @@ RSpec.shared_context 'with remote development shared fixtures' do
       agent_id: workspace.agent.id
     )
 
-    workspace_secret_env_var = workspace_secret_env_var(
+    workspace_secret_environment = workspace_secret_environment(
       workspace_name: workspace.name,
       workspace_namespace: workspace.namespace,
       labels: labels,
       annotations: secrets_annotations,
-      workspace_variables_env_var: workspace_variables_env_var || get_workspace_variables_env_var(
+      workspace_variables_environment: workspace_variables_environment || get_workspace_variables_environment(
         workspace_variables: workspace.workspace_variables
       )
     )
@@ -521,7 +519,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     resources << workspace_pvc
     resources << workspace_network_policy if include_network_policy
     resources << workspace_secrets_inventory if include_all_resources && include_inventory
-    resources << workspace_secret_env_var if include_all_resources
+    resources << workspace_secret_environment if include_all_resources
     resources << workspace_secret_file if include_all_resources
 
     resources.map do |resource|
@@ -1035,30 +1033,13 @@ RSpec.shared_context 'with remote development shared fixtures' do
     }
   end
 
-  def workspace_secret_env_var(
+  def workspace_secret_environment(
     workspace_name:,
     workspace_namespace:,
     labels:,
     annotations:,
-    workspace_variables_env_var:
+    workspace_variables_environment:
   )
-    git_config_count = workspace_variables_env_var.fetch('GIT_CONFIG_COUNT', '')
-    git_config_key_0 = workspace_variables_env_var.fetch('GIT_CONFIG_KEY_0', '')
-    git_config_value_0 = workspace_variables_env_var.fetch('GIT_CONFIG_VALUE_0', '')
-    git_config_key_1 = workspace_variables_env_var.fetch('GIT_CONFIG_KEY_1', '')
-    git_config_value_1 = workspace_variables_env_var.fetch('GIT_CONFIG_VALUE_1', '')
-    git_config_key_2 = workspace_variables_env_var.fetch('GIT_CONFIG_KEY_2', '')
-    git_config_value_2 = workspace_variables_env_var.fetch('GIT_CONFIG_VALUE_2', '')
-    gl_git_credential_store_file_path = workspace_variables_env_var.fetch('GL_GIT_CREDENTIAL_STORE_FILE_PATH', '')
-    gl_token_file_path = workspace_variables_env_var.fetch('GL_TOKEN_FILE_PATH', '')
-    gl_workspace_domain_template = workspace_variables_env_var.fetch('GL_WORKSPACE_DOMAIN_TEMPLATE', '')
-    gl_editor_extensions_gallery_service_url =
-      workspace_variables_env_var.fetch('GL_EDITOR_EXTENSIONS_GALLERY_SERVICE_URL', '')
-    gl_editor_extensions_gallery_item_url =
-      workspace_variables_env_var.fetch('GL_EDITOR_EXTENSIONS_GALLERY_ITEM_URL', '')
-    gl_editor_extensions_gallery_resource_url_template =
-      workspace_variables_env_var.fetch('GL_EDITOR_EXTENSIONS_GALLERY_RESOURCE_URL_TEMPLATE', '')
-
     # TODO: figure out why there is flakiness in the order of the environment variables -- https://gitlab.com/gitlab-org/gitlab/-/issues/451934
     {
       kind: "Secret",
@@ -1069,22 +1050,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
         labels: labels,
         annotations: annotations
       },
-      data: {
-        GIT_CONFIG_COUNT: Base64.strict_encode64(git_config_count).to_s,
-        GIT_CONFIG_KEY_0: Base64.strict_encode64(git_config_key_0).to_s,
-        GIT_CONFIG_VALUE_0: Base64.strict_encode64(git_config_value_0).to_s,
-        GIT_CONFIG_KEY_1: Base64.strict_encode64(git_config_key_1).to_s,
-        GIT_CONFIG_VALUE_1: Base64.strict_encode64(git_config_value_1).to_s,
-        GIT_CONFIG_KEY_2: Base64.strict_encode64(git_config_key_2).to_s,
-        GIT_CONFIG_VALUE_2: Base64.strict_encode64(git_config_value_2).to_s,
-        GL_GIT_CREDENTIAL_STORE_FILE_PATH: Base64.strict_encode64(gl_git_credential_store_file_path).to_s,
-        GL_TOKEN_FILE_PATH: Base64.strict_encode64(gl_token_file_path).to_s,
-        GL_WORKSPACE_DOMAIN_TEMPLATE: Base64.strict_encode64(gl_workspace_domain_template).to_s,
-        GL_EDITOR_EXTENSIONS_GALLERY_SERVICE_URL: Base64.strict_encode64(gl_editor_extensions_gallery_service_url).to_s,
-        GL_EDITOR_EXTENSIONS_GALLERY_ITEM_URL: Base64.strict_encode64(gl_editor_extensions_gallery_item_url).to_s,
-        GL_EDITOR_EXTENSIONS_GALLERY_RESOURCE_URL_TEMPLATE:
-          Base64.strict_encode64(gl_editor_extensions_gallery_resource_url_template).to_s
-      }
+      data: workspace_variables_environment.transform_values { |v| Base64.strict_encode64(v).to_s }
     }
   end
 
@@ -1095,8 +1061,6 @@ RSpec.shared_context 'with remote development shared fixtures' do
     annotations:,
     workspace_variables_file:
   )
-    gl_git_credential_store = workspace_variables_file.fetch('gl_git_credential_store.sh', '')
-    gl_token = workspace_variables_file.fetch('gl_token', '')
     {
       kind: "Secret",
       apiVersion: "v1",
@@ -1106,15 +1070,12 @@ RSpec.shared_context 'with remote development shared fixtures' do
         labels: labels,
         annotations: annotations
       },
-      data: {
-        gl_token: Base64.strict_encode64(gl_token).to_s,
-        "gl_git_credential_store.sh": Base64.strict_encode64(gl_git_credential_store).to_s
-      }
+      data: workspace_variables_file.transform_values { |v| Base64.strict_encode64(v).to_s }
     }
   end
 
-  def get_workspace_variables_env_var(workspace_variables:)
-    workspace_variables.with_variable_type_env_var.each_with_object({}) do |workspace_variable, hash|
+  def get_workspace_variables_environment(workspace_variables:)
+    workspace_variables.with_variable_type_environment.each_with_object({}) do |workspace_variable, hash|
       hash[workspace_variable.key] = workspace_variable.value
     end
   end
@@ -1129,7 +1090,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     "{{.port}}-#{workspace_name}.#{dns_zone}"
   end
 
-  def get_workspace_host_template_env_var(workspace_name, dns_zone)
+  def get_workspace_host_template_environment(workspace_name, dns_zone)
     "${PORT}-#{workspace_name}.#{dns_zone}"
   end
 
