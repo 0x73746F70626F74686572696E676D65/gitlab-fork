@@ -88,6 +88,22 @@ RSpec.describe Auth::MemberRoleAbilityLoader, feature_category: :system_access d
             ability: :read_code
           ).has_ability?).to be false
         end
+
+        context 'when called with a Ci::Runner' do
+          subject(:loader) { described_class.new(user: user, resource: runner, ability: :read_vulnerability) }
+
+          context 'with a project runner' do
+            let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
+
+            it { expect(loader.has_ability?).to be true }
+          end
+
+          context 'with a group runner' do
+            let_it_be(:runner) { create(:ci_runner, :group, groups: [group]) }
+
+            it { expect(loader.has_ability?).to be true }
+          end
+        end
       end
 
       context 'when the permission is disabled' do

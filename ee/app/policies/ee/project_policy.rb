@@ -234,7 +234,7 @@ module EE
       MemberRole.all_customizable_project_permissions.each do |ability|
         desc "Custom role on project that enables #{ability.to_s.tr('_', ' ')}"
         condition("custom_role_enables_#{ability}".to_sym) do
-          ::Auth::MemberRoleAbilityLoader.allowed?(@user, @subject, ability)
+          ::Authz::CustomAbility.allowed?(@user, ability, @subject)
         end
       end
 
@@ -912,15 +912,7 @@ module EE
         enable :enable_container_scanning_for_registry
       end
 
-      condition(:role_enables_admin_web_hook) do
-        ::Auth::MemberRoleAbilityLoader.new(
-          user: @user,
-          resource: @subject,
-          ability: :admin_web_hook
-        ).has_ability?
-      end
-
-      rule { custom_roles_allowed & role_enables_admin_web_hook }.policy do
+      rule { custom_role_enables_admin_web_hook }.policy do
         enable :read_web_hook
         enable :admin_web_hook
       end

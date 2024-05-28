@@ -22,11 +22,7 @@ module ComplianceManagement
 
     desc "Custom role on group that enables managing compliance framework"
     condition(:role_enables_admin_compliance_framework) do
-      ::Auth::MemberRoleAbilityLoader.new(
-        user: @user,
-        resource: @subject.namespace,
-        ability: :admin_compliance_framework
-      ).has_ability?
+      ::Authz::CustomAbility.allowed?(@user, :admin_compliance_framework, @subject.namespace)
     end
 
     condition(:custom_ability_compliance_enabled) do
