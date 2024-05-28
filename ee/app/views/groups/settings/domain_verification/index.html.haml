@@ -41,7 +41,7 @@
               %td{ class: '!gl-align-middle', data: { label: _('Verifications status') } }
                 = domain.verified? ? _('Verified') : _('Unverified')
               %td{ data: { label: _('Actions') } }
-                .btn-group.gl-float-right.-gl-mt-2.gl-mb-n2{ class: 'gl-text-left! gl-pl-0!' }
+                .btn-group.gl-float-right.-gl-mt-2.-gl-mb-2{ class: 'gl-text-left! gl-pl-0!' }
                   - if can_verify_group_domain?(domain)
                     = render Pajamas::ButtonComponent.new(icon: "redo", href: verify_group_settings_domain_verification_path(@group, domain), button_options: { data: { method: :post } })
                   = render Pajamas::ButtonComponent.new(icon: "pencil", href: group_settings_domain_verification_path(@group, domain))

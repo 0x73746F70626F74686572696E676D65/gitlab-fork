@@ -2,7 +2,7 @@
 - pricing_page_link = link_to s_("BillingPlans|Pricing page"), Gitlab::Saas.about_pricing_url
 
 - if namespace.trial_active?
-  .billing-plan-divider.gl-mx-auto.gl-text-left.gl-mb-n3.gl-mt-5
+  .billing-plan-divider.gl-mx-auto.gl-text-left.-gl-mb-3.gl-mt-5
     = render Pajamas::AlertComponent.new(variant: :warning,
           title: html_escape(s_("BillingPlans|Your GitLab.com %{plan} trial will %{strong_open}expire after %{expiration_date}%{strong_close}.")) % { plan: namespace.gitlab_subscription&.plan_title&.remove(' Trial'), expiration_date: namespace.trial_ends_on, strong_open: '<strong>'.html_safe, strong_close: '</strong>'.html_safe }) do |c|
       = c.with_body do
