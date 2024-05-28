@@ -1,8 +1,6 @@
 ---
 key_path: license_subscription_id
 description: Licese zuora_subscription_id
-product_section: fulfillment
-product_stage: fulfillment
 product_group: provision
 value_type: string
 status: active

@@ -1,8 +1,6 @@
 ---
 key_path: counts.count_total_duo_pro_lead_creation_success
 description: Total count of creations Duo Pro lead successfully
-product_section: growth
-product_stage: growth
 product_group: acquisition
 performance_indicator_type: []
 value_type: number

@@ -1,8 +1,6 @@
 ---
 key_path: counts.count_total_click_duo_pro_trial_billing_page
 description: Total count of clicks Duo Pro trial on billing page
-product_section: growth
-product_stage: growth
 product_group: acquisition
 performance_indicator_type: []
 value_type: number

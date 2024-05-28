@@ -1,8 +1,6 @@
 ---
 key_path: license_id
 description: The ID of the license
-product_section: fulfillment
-product_stage: fulfillment
 product_group: provision
 value_type: number
 status: active

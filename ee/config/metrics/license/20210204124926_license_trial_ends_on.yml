@@ -1,8 +1,6 @@
 ---
 key_path: license_trial_ends_on
 description: Date the trial license ends on
-product_section: fulfillment
-product_stage: fulfillment
 product_group: provision
 value_type: string
 status: active

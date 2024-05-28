@@ -1,8 +1,6 @@
 ---
 key_path: counts.count_total_render_duo_pro_lead_page
 description: Total count of renders Duo Pro lead page
-product_section: growth
-product_stage: growth
 product_group: acquisition
 performance_indicator_type: []
 value_type: number
