@@ -217,6 +217,27 @@ RSpec.describe API::ProtectedBranches, feature_category: :source_code_management
           expect(response).to have_gitlab_http_status(:ok)
         end
       end
+
+      context 'with blocking approval policy' do
+        let(:params) { { allow_force_push: true } }
+        let!(:read) { create(:scan_result_policy_read, :blocking_protected_branches, project: project) }
+
+        subject(:update_branch) { patch api(route, user), params: params }
+
+        before do
+          stub_licensed_features(security_orchestration_policies: true)
+        end
+
+        it 'updates attributes other than name' do
+          expect { update_branch }.to change { protected_branch.reload.allow_force_push }.to(true)
+        end
+
+        it 'responds with 2xx' do
+          update_branch
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
     end
 
     context 'when authenticated as a developer' do
