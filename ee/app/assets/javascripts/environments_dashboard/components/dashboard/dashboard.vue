@@ -15,6 +15,7 @@ import { isEmpty } from 'lodash';
 import { mapState, mapActions } from 'vuex';
 import { __, s__ } from '~/locale';
 import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 import Environment from './environment.vue';
 import ProjectHeader from './project_header.vue';
 
@@ -38,6 +39,7 @@ export default {
   ),
 
   components: {
+    PageHeading,
     Environment,
     GlButton,
     GlDashboardSkeleton,
@@ -165,21 +167,17 @@ export default {
 <template>
   <div class="environments-dashboard">
     <template v-if="showDashboard">
-      <div class="page-title-holder gl-display-flex gl-align-items-center">
-        <h1
-          class="page-title gl-font-size-h-display gl-whitespace-nowrap gl-flex-grow-1"
-          data-testid="dashboard-title"
-        >
-          {{ $options.dashboardHeader }}
-        </h1>
-        <gl-button
-          v-gl-modal="$options.modalId"
-          data-testid="add-projects-button"
-          variant="confirm"
-        >
-          {{ $options.addProjectsButton }}
-        </gl-button>
-      </div>
+      <page-heading :heading="$options.dashboardHeader">
+        <template #actions>
+          <gl-button
+            v-gl-modal="$options.modalId"
+            data-testid="add-projects-button"
+            variant="confirm"
+          >
+            {{ $options.addProjectsButton }}
+          </gl-button>
+        </template>
+      </page-heading>
       <p class="gl-mt-3 gl-mb-6" data-testid="page-limits-message">
         <gl-sprintf :message="$options.informationText">
           <template #link="{ content }">

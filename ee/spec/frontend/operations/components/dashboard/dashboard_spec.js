@@ -11,6 +11,7 @@ import ProjectSelector from '~/vue_shared/components/project_selector/project_se
 import createStore from 'ee/vue_shared/dashboards/store';
 import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import { mockProjectData, mockText } from '../../mock_data';
 
@@ -38,7 +39,11 @@ describe('dashboard component', () => {
         operationsDashboardHelpPath,
       },
       state,
-      stubs: { GlModal: true, GlLink: true },
+      stubs: {
+        GlModal: true,
+        GlLink: true,
+        PageHeading,
+      },
     });
 
   const findModal = () => wrapper.findComponent(GlModal);
@@ -94,7 +99,7 @@ describe('dashboard component', () => {
 
     describe('dashboard layout', () => {
       it('renders dashboard title', () => {
-        const dashboardTitle = wrapper.findByTestId('dashboard-title');
+        const dashboardTitle = wrapper.findByTestId('page-heading');
 
         expect(dashboardTitle.text()).toEqual(mockText.DASHBOARD_TITLE);
       });

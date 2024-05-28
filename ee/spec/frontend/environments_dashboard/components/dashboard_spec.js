@@ -9,6 +9,7 @@ import ProjectHeader from 'ee/environments_dashboard/components/dashboard/projec
 import { getStoreConfig } from 'ee/vue_shared/dashboards/store/index';
 import state from 'ee/vue_shared/dashboards/store/state';
 import { trimText } from 'helpers/text_helper';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
 
 import environment from './mock_environment.json';
@@ -53,7 +54,10 @@ describe('dashboard', () => {
     wrapper = shallowMountExtended(component, {
       propsData,
       store,
-      stubs: { GlSprintf },
+      stubs: {
+        GlSprintf,
+        PageHeading,
+      },
     });
   });
 
@@ -62,7 +66,7 @@ describe('dashboard', () => {
   });
 
   const findPagination = () => wrapper.findComponent(GlPagination);
-  const findDashboardTitle = () => wrapper.findByTestId('dashboard-title');
+  const findDashboardTitle = () => wrapper.findByTestId('page-heading');
   const findPageLimitsMessage = () => wrapper.findByTestId('page-limits-message');
 
   describe('empty state', () => {
