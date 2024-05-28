@@ -380,7 +380,7 @@ export default {
       data-testid="add-on-eligible-users-table"
     >
       <template #table-busy>
-        <div class="gl-ml-n4 gl-pt-3">
+        <div class="-gl-ml-4 gl-pt-3">
           <gl-skeleton-loader>
             <rect x="0" y="0" width="60" height="3" rx="1" />
             <rect x="126" y="0" width="60" height="3" rx="1" />
