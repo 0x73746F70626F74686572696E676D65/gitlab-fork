@@ -14,6 +14,7 @@ export const DRAG_DELAY = 100;
  */
 export const defaultSortableOptions = {
   animation: 200,
+  forceFallback: true,
   fallbackClass: DRAG_CLASS,
   fallbackOnBody: true,
   ghostClass: 'is-ghost',
