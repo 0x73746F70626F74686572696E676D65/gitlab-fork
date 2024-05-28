@@ -9,6 +9,10 @@ describe('Dora Metrics Over Time Data Source', () => {
 
   const query = { metric: 'lead_time_for_changes', date_range: LAST_180_DAYS };
   const namespace = 'cool namespace';
+  const defaultParams = {
+    namespace,
+    query,
+  };
 
   const mockResolvedQuery = (dora = mockDoraMetricsResponseData) =>
     jest.spyOn(defaultClient, 'query').mockResolvedValueOnce({ data: { group: { dora } } });
@@ -49,8 +53,7 @@ describe('Dora Metrics Over Time Data Source', () => {
       it('can override the date range', async () => {
         mockResolvedQuery();
         res = await dataSource.fetch({
-          namespace,
-          query,
+          ...defaultParams,
           queryOverrides: { date_range: LAST_WEEK },
         });
 
@@ -58,6 +61,21 @@ describe('Dora Metrics Over Time Data Source', () => {
           startDate: new Date('2020-06-30'),
           endDate: new Date('2020-07-07'),
           fullPath: 'cool namespace',
+          interval: 'ALL',
+        });
+      });
+
+      it('can override the namespace', async () => {
+        mockResolvedQuery();
+        res = await dataSource.fetch({
+          ...defaultParams,
+          queryOverrides: { date_range: LAST_WEEK, namespace: 'cool-namespace/sub-namespace' },
+        });
+
+        expectQueryWithVariables({
+          startDate: new Date('2020-06-30'),
+          endDate: new Date('2020-07-07'),
+          fullPath: 'cool-namespace/sub-namespace',
           interval: 'ALL',
         });
       });
