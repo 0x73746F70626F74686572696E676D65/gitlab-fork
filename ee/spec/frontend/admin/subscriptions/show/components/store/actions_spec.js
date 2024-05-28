@@ -12,6 +12,8 @@ import { subscriptionSyncStatus } from 'ee/admin/subscriptions/show/constants';
 import createState from 'ee/admin/subscriptions/show/store/state';
 import * as types from 'ee/admin/subscriptions/show/store/mutation_types';
 
+jest.mock('~/lib/utils/url_utility'); // Necessary to mock visitUrl
+
 describe('Admin Subscriptions Show Actions', () => {
   let state;
   let axiosMock;

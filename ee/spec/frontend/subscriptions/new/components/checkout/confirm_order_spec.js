@@ -17,6 +17,7 @@ import {
   HTTP_STATUS_UNAUTHORIZED,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
 } from '~/lib/utils/http_status';
+import { visitUrl } from '~/lib/utils/url_utility';
 import waitForPromises from 'helpers/wait_for_promises';
 import createStore from 'ee/subscriptions/new/store';
 import { mockInvoicePreviewBronze } from 'ee_jest/subscriptions/mock_data';
@@ -24,6 +25,7 @@ import PrivacyAndTermsConfirm from 'ee/subscriptions/shared/components/privacy_a
 
 jest.mock('~/alert');
 jest.mock('uuid');
+jest.mock('~/lib/utils/url_utility');
 
 describe('Confirm Order', () => {
   Vue.use(Vuex);
@@ -296,7 +298,7 @@ describe('Confirm Order', () => {
       });
 
       it('redirects to appropriate location', () => {
-        expect(window.location.assign).toHaveBeenCalledWith(location);
+        expect(visitUrl).toHaveBeenCalledWith(location);
       });
 
       it('does not change the idempotency key', () => {
