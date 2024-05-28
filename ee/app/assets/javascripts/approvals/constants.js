@@ -108,7 +108,7 @@ export const MR_APPROVALS_PROMO_TRACKING_EVENTS = {
 };
 export const MR_APPROVALS_PROMO_I18N = {
   accordionTitle: s__('ApprovalRule|Approval rules'),
-  learnMore: s__('ApprovalRule|Learn more about merge request approval rules.'),
+  learnMore: __('Learn more'),
   promoTitle: s__("ApprovalRule|Improve your organization's code review with required approvals."),
   summary: __('Approvals are optional.'),
   tryNow: s__('ApprovalRule|Try for free'),

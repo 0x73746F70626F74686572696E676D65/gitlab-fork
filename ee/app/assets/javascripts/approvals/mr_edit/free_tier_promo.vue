@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlLink, GlCollapse } from '@gitlab/ui';
+import { GlButton, GlLink, GlCollapse, GlCard } from '@gitlab/ui';
 import Tracking from '~/tracking';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import {
@@ -16,6 +16,7 @@ export default {
     GlLink,
     LocalStorageSync,
     GlCollapse,
+    GlCard,
   },
   mixins: [trackingMixin],
   inject: ['learnMorePath', 'promoImageAlt', 'promoImagePath', 'tryNowPath'],
@@ -82,41 +83,43 @@ export default {
         {{ $options.i18n.accordionTitle }}
       </gl-button>
 
-      <gl-collapse v-model="isExpanded" class="gl-ml-5 gl-pl-2">
-        <h4 class="gl-font-base gl-leading-20 gl-mt-5 gl-mb-3">
-          {{ $options.i18n.promoTitle }}
-        </h4>
-        <div class="gl-display-flex">
-          <div class="gl-flex-grow-1 gl-max-w-62 gl-mr-5">
-            <ul class="gl-list-inside gl-p-0 gl-mb-3">
-              <li v-for="(statement, index) in $options.i18n.valueStatements" :key="index">
-                {{ statement }}
-              </li>
-            </ul>
-            <p>
-              <gl-link
-                :href="learnMorePath"
-                target="_blank"
-                :data-track-action="$options.trackingEvents.learnMoreClick.action"
-                :data-track-label="$options.trackingEvents.learnMoreClick.label"
-              >
-                {{ $options.i18n.learnMore }}
-              </gl-link>
-            </p>
-            <gl-button
-              category="primary"
-              variant="confirm"
-              :href="tryNowPath"
-              target="_blank"
-              :data-track-action="$options.trackingEvents.tryNowClick.action"
-              :data-track-label="$options.trackingEvents.tryNowClick.label"
-              >{{ $options.i18n.tryNow }}</gl-button
-            >
+      <gl-collapse v-model="isExpanded">
+        <gl-card class="gl-new-card" data-testid="mr-approval-rules">
+          <div class="gl-flex gl-items-start gl-gap-6">
+            <img :src="promoImagePath" :alt="promoImageAlt" class="svg" />
+
+            <div class="gl-grow">
+              <h4 class="gl-text-base gl-line-height-20 gl-mt-0 gl-mb-3">
+                {{ $options.i18n.promoTitle }}
+              </h4>
+              <ul class="gl-list-inside gl-p-0 gl-mb-3">
+                <li v-for="(statement, index) in $options.i18n.valueStatements" :key="index">
+                  {{ statement }}
+                </li>
+              </ul>
+              <div class="gl-flex gl-items-center gl-gap-4">
+                <gl-button
+                  category="primary"
+                  variant="confirm"
+                  :href="tryNowPath"
+                  target="_blank"
+                  :aria-label="s__('ApprovalRule|Learn more about merge request approval rules')"
+                  :data-track-action="$options.trackingEvents.tryNowClick.action"
+                  :data-track-label="$options.trackingEvents.tryNowClick.label"
+                  >{{ $options.i18n.tryNow }}</gl-button
+                >
+                <gl-link
+                  :href="learnMorePath"
+                  target="_blank"
+                  :data-track-action="$options.trackingEvents.learnMoreClick.action"
+                  :data-track-label="$options.trackingEvents.learnMoreClick.label"
+                >
+                  {{ $options.i18n.learnMore }}
+                </gl-link>
+              </div>
+            </div>
           </div>
-          <div class="gl-flex-grow-0 gl-w-full gl-max-w-26 gl-display-none gl-md-display-block">
-            <img :src="promoImagePath" :alt="promoImageAlt" class="svg gl-w-full" />
-          </div>
-        </div>
+        </gl-card>
       </gl-collapse>
     </template>
   </div>
