@@ -133,14 +133,6 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
       end
     end
 
-    context 'when approval_policy_parent_child_pipeline is disabled' do
-      before do
-        stub_feature_flags(approval_policy_parent_child_pipeline: false)
-      end
-
-      it_behaves_like 'updates approvals'
-    end
-
     context 'when pipeline is a child pipeline' do
       let_it_be(:child_pipeline) { create(:ci_pipeline, project: project, source: :parent_pipeline) }
 
@@ -148,14 +140,6 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
 
       before do
         create_source_pipeline(pipeline, child_pipeline)
-      end
-
-      context 'when approval_policy_parent_child_pipeline is disabled' do
-        before do
-          stub_feature_flags(approval_policy_parent_child_pipeline: false)
-        end
-
-        it_behaves_like 'does not update approvals'
       end
 
       context 'when both parent and child pipeline does not have security_findings that violate policy' do

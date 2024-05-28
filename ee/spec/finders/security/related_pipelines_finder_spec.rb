@@ -112,18 +112,6 @@ RSpec.describe Security::RelatedPipelinesFinder, feature_category: :security_pol
           child_pipeline_1.id, child_pipeline_2.id, child_pipeline_3.id
         )
       }
-
-      context 'when approval_policy_parent_child_pipeline is disabled' do
-        before do
-          stub_feature_flags(approval_policy_parent_child_pipeline: false)
-        end
-
-        it {
-          is_expected.to contain_exactly(
-            pipeline.id, web_pipeline.id, security_policy_pipeline.id, merge_request_pipeline_2.id
-          )
-        }
-      end
     end
 
     context 'with limit' do

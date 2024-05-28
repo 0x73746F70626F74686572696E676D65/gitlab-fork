@@ -1,9 +1,0 @@
----
-name: approval_policy_parent_child_pipeline
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/428591
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/147710
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/451597
-milestone: '16.11'
-group: group::security policies
-type: beta
-default_enabled: true

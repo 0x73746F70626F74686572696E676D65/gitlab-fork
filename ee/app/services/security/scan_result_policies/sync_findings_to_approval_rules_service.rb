@@ -5,7 +5,7 @@ module Security
     class SyncFindingsToApprovalRulesService
       def initialize(pipeline)
         @project = pipeline.project
-        @pipeline = if pipeline.child? && Feature.enabled?(:approval_policy_parent_child_pipeline, project)
+        @pipeline = if pipeline.child?
                       pipeline.root_ancestor
                     else
                       pipeline
@@ -51,13 +51,7 @@ module Security
       end
 
       def pipeline_has_security_findings?
-        return pipeline.has_security_findings_in_self_and_descendants? if approval_policy_parent_child_pipeline_enabled?
-
-        pipeline.has_security_findings?
-      end
-
-      def approval_policy_parent_child_pipeline_enabled?
-        Feature.enabled?(:approval_policy_parent_child_pipeline, project)
+        pipeline.has_security_findings_in_self_and_descendants?
       end
 
       def update_approvals(merge_request)
