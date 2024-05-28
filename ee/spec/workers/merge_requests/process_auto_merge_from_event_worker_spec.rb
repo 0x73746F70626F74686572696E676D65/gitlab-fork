@@ -71,4 +71,8 @@ RSpec.describe MergeRequests::ProcessAutoMergeFromEventWorker, feature_category:
   it_behaves_like 'process auto merge from event worker' do
     let(:event) { ::MergeRequests::OverrideRequestedChangesStateEvent.new(data: data) }
   end
+
+  it_behaves_like 'process auto merge from event worker' do
+    let(:event) { ::MergeRequests::DiscussionsResolvedEvent.new(data: data) }
+  end
 end

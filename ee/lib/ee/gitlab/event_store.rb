@@ -36,6 +36,8 @@ module EE
           store.subscribe ::MergeRequests::ProcessAutoMergeFromEventWorker,
             to: ::MergeRequests::OverrideRequestedChangesStateEvent
           store.subscribe ::MergeRequests::ProcessAutoMergeFromEventWorker, to: ::MergeRequests::ApprovedEvent
+          store.subscribe ::MergeRequests::ProcessAutoMergeFromEventWorker,
+            to: ::MergeRequests::DiscussionsResolvedEvent
           store.subscribe ::MergeRequests::ProcessAutoMergeFromEventWorker, to: ::MergeRequests::DraftStateChangeEvent
           store.subscribe ::Search::ElasticDefaultBranchChangedWorker,
             to: ::Repositories::DefaultBranchChangedEvent,
