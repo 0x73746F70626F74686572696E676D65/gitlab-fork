@@ -2,8 +2,6 @@
 data_category: optional
 key_path: redis_hll_counters.epics_usage.g_project_management_users_updating_fixed_epic_start_date_monthly
 description: Counts of MAU manually updating fixed start date
-product_section: dev
-product_stage: plan
 product_group: product_planning
 value_type: number
 status: active

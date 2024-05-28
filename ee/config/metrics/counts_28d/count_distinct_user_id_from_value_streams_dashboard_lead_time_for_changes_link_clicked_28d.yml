@@ -1,8 +1,6 @@
 ---
 key_path: count_distinct_user_id_from_value_streams_dashboard_lead_time_for_changes_link_clicked_28d
 description: Count of unique users that clicked on the Value Streams Dashboard's "Lead Time for Changes" drill-down link in the last 28 days.
-product_section: dev
-product_stage: plan
 product_group: optimize
 performance_indicator_type: []
 value_type: number

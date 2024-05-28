@@ -5,8 +5,6 @@ data_category: optional
 # allow data aggregation.
 key_path: redis_hll_counters.epics_usage.g_project_management_users_setting_epic_confidential_weekly
 description: Count of WAU making epics confidential
-product_section: dev
-product_stage: plan
 product_group: product_planning
 value_type: number
 status: active
