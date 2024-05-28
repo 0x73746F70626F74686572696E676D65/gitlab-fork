@@ -49,7 +49,7 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
   describe 'GET projects/:id/product_analytics/request/load' do
     let(:request) do
       post api("/projects/#{project.id}/product_analytics/request/load", current_user),
-               params: { query: { measures: ['TrackedEvents.count'] }, 'queryType': 'multi' }
+               params: { query: { measures: ['TrackedEvents.count'] }, queryType: 'multi' }
     end
 
     it_behaves_like 'well behaved cube query'
@@ -58,7 +58,7 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
   describe 'GET projects/:id/product_analytics/request/dry-run' do
     let(:request) do
       post api("/projects/#{project.id}/product_analytics/request/dry-run", current_user),
-           params: { query: { measures: ['TrackedEvents.count'] }, 'queryType': 'multi' }
+           params: { query: { measures: ['TrackedEvents.count'] }, queryType: 'multi' }
     end
 
     it_behaves_like 'well behaved cube query'

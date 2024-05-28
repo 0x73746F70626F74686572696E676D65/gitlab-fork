@@ -297,7 +297,7 @@ RSpec.describe API::Scim::InstanceScim, feature_category: :system_access do
         let(:new_extern_uid) { 'new_extern_uid' }
         let(:params) do
           {
-            Operations: [{ 'op': 'Replace', 'path': 'id', 'value': new_extern_uid }]
+            Operations: [{ op: 'Replace', path: 'id', value: new_extern_uid }]
           }.to_query
         end
 
@@ -313,9 +313,9 @@ RSpec.describe API::Scim::InstanceScim, feature_category: :system_access do
         let(:params) do
           {
             Operations: [
-              { 'op': 'Replace', 'path': 'name.formatted', 'value': 'new_name' },
-              { 'op': 'Replace', 'path': 'emails[type eq "work"].value', 'value': 'new@mail.com' },
-              { 'op': 'Replace', 'path': 'userName', 'value': 'new_username' }
+              { op: 'Replace', path: 'name.formatted', value: 'new_name' },
+              { op: 'Replace', path: 'emails[type eq "work"].value', value: 'new@mail.com' },
+              { op: 'Replace', path: 'userName', value: 'new_username' }
 
             ]
           }.to_query
@@ -347,7 +347,7 @@ RSpec.describe API::Scim::InstanceScim, feature_category: :system_access do
         let(:new_extern_uid) { 'new_extern_uid' }
         let(:params) do
           {
-            Operations: [{ 'op': 'Replace', 'path': 'id', 'value': new_extern_uid }]
+            Operations: [{ op: 'Replace', path: 'id', value: new_extern_uid }]
           }.to_query
         end
 
@@ -368,7 +368,7 @@ RSpec.describe API::Scim::InstanceScim, feature_category: :system_access do
       context 'when deprovision fails' do
         let(:params) do
           {
-            Operations: [{ 'op': 'Replace', 'path': 'active', 'value': 'false' }]
+            Operations: [{ op: 'Replace', path: 'active', value: 'false' }]
           }.to_query
         end
 
@@ -388,7 +388,7 @@ RSpec.describe API::Scim::InstanceScim, feature_category: :system_access do
       context 'when reprovision fails' do
         let(:params) do
           {
-            Operations: [{ 'op': 'Replace', 'path': 'active', 'value': 'true' }]
+            Operations: [{ op: 'Replace', path: 'active', value: 'true' }]
           }.to_query
         end
 
@@ -410,7 +410,7 @@ RSpec.describe API::Scim::InstanceScim, feature_category: :system_access do
       context 'when param values deactivate scim identity' do
         let(:params) do
           {
-            Operations: [{ 'op': 'Replace', 'path': 'active', 'value': 'False' }]
+            Operations: [{ op: 'Replace', path: 'active', value: 'False' }]
           }.to_query
         end
 
@@ -426,7 +426,7 @@ RSpec.describe API::Scim::InstanceScim, feature_category: :system_access do
       context 'when param values reactivate scim identity' do
         let(:params) do
           {
-            Operations: [{ 'op': 'Replace', 'path': 'active', 'value': 'true' }]
+            Operations: [{ op: 'Replace', path: 'active', value: 'true' }]
           }.to_query
         end
 

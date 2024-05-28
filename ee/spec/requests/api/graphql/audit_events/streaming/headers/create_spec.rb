@@ -15,17 +15,17 @@ RSpec.describe 'Create an external audit event destination header', feature_cate
 
   let(:input) do
     {
-      'destinationId': destination.to_gid,
-      'key': 'foo',
-      'value': 'bar'
+      destinationId: destination.to_gid,
+      key: 'foo',
+      value: 'bar'
     }
   end
 
   let(:invalid_input) do
     {
-      'destinationId': destination.to_gid,
-      'key': '',
-      'value': 'bar'
+      destinationId: destination.to_gid,
+      key: '',
+      value: 'bar'
     }
   end
 

@@ -208,8 +208,8 @@ RSpec.describe Elastic::DataMigrationService, :elastic, :clean_gitlab_redis_shar
 
   describe '.migration_halted_uncached?' do
     let(:migration) { subject.migrations.last }
-    let(:halted_response) { { '_source': { 'state': { halted: true } } }.with_indifferent_access }
-    let(:not_halted_response) { { '_source': { 'state': { halted: false } } }.with_indifferent_access }
+    let(:halted_response) { { _source: { state: { halted: true } } }.with_indifferent_access }
+    let(:not_halted_response) { { _source: { state: { halted: false } } }.with_indifferent_access }
 
     it 'returns true if migration has been halted' do
       allow(migration).to receive(:load_from_index).and_return(not_halted_response)
@@ -241,7 +241,7 @@ RSpec.describe Elastic::DataMigrationService, :elastic, :clean_gitlab_redis_shar
 
   describe '.halted_migration' do
     let(:migration) { subject.migrations.last }
-    let(:halted_response) { { '_source': { 'state': { halted: true } } }.with_indifferent_access }
+    let(:halted_response) { { _source: { state: { halted: true } } }.with_indifferent_access }
 
     before do
       allow(Rails).to receive(:cache).and_return(ActiveSupport::Cache::MemoryStore.new)

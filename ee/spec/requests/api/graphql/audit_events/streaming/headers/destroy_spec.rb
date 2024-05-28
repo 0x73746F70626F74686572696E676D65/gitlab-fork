@@ -15,7 +15,7 @@ RSpec.describe 'Destroy an external audit event destination header', feature_cat
   let(:mutation_response) { graphql_mutation_response(:audit_events_streaming_headers_destroy) }
 
   let(:input) do
-    { 'headerId': header.to_gid }
+    { headerId: header.to_gid }
   end
 
   shared_examples 'a mutation that does not destroy a header' do
