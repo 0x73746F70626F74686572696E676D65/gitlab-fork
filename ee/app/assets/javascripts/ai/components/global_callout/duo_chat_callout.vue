@@ -2,7 +2,7 @@
 import { GlPopover, GlLink } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
-import DUO_CHAT_ILLUSTRATION from './callout_illustration.svg?url';
+import DUO_CHAT_ILLUSTRATION from './popover-gradient.svg?url';
 
 export const DUO_CHAT_GLOBAL_BUTTON_CSS_CLASS = 'js-tanuki-bot-chat-toggle';
 
@@ -109,13 +109,3 @@ export default {
     </template>
   </user-callout-dismisser>
 </template>
-<style lang="scss">
-.duo-chat-callout-popover {
-  z-index: 1001;
-
-  &.bs-popover-bottom > .arrow::after {
-    border-bottom-color: #c4bae2;
-    top: 1px;
-  }
-}
-</style>

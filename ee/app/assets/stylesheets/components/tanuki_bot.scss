@@ -3,3 +3,18 @@
     width: $gl-drawer-width;
   }
 }
+
+$popover-arrow-color: #c4bae2;
+
+.duo-chat-callout-popover {
+  width: $gl-spacing-scale-48;
+
+  &.bs-popover-bottom {
+    .arrow {
+      &::after {
+        border-bottom-color: $popover-arrow-color;
+        top: 1px;
+      }
+    }
+  }
+}
