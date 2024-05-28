@@ -4,15 +4,17 @@ module EE
   module ProtectedBranches
     module RenamingBlockedByPolicy
       def execute(protected_branch, skip_authorization: false)
-        raise ::Gitlab::Access::AccessDeniedError if renaming? && blocked?(protected_branch)
+        raise ::Gitlab::Access::AccessDeniedError if renaming?(protected_branch) && blocked?(protected_branch)
 
         super
       end
 
       private
 
-      def renaming?
-        params.key?(:name)
+      def renaming?(protected_branch)
+        return false unless params[:name]
+
+        protected_branch.name != params[:name]
       end
 
       def blocked?(protected_branch)
