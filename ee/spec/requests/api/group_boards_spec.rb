@@ -36,10 +36,10 @@ RSpec.describe API::GroupBoards, feature_category: :portfolio_management do
 
   let_it_be(:board) do
     create(:board, group: board_parent,
-                   milestone: milestone,
-                   assignee: user,
-                   label_ids: [board_label.id],
-                   lists: [dev_list, test_list])
+      milestone: milestone,
+      assignee: user,
+      label_ids: [board_label.id],
+      lists: [dev_list, test_list])
   end
 
   it_behaves_like 'group and project boards', "/groups/:id/boards", true

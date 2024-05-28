@@ -72,7 +72,7 @@ RSpec.describe API::GroupClusters, feature_category: :deployment_management do
     context 'With a GCP cluster' do
       let(:cluster) do
         create(:cluster, :group, :provided_by_gcp,
-               groups: [group])
+          groups: [group])
       end
 
       it 'updates the environment scope' do
@@ -83,7 +83,7 @@ RSpec.describe API::GroupClusters, feature_category: :deployment_management do
     context 'With an user cluster' do
       let(:cluster) do
         create(:cluster, :group, :provided_by_user,
-               groups: [group])
+          groups: [group])
       end
 
       it 'updates the environment scope' do

@@ -14,7 +14,7 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
   shared_examples 'restricted email error' do |message, code|
     it 'returns an http error response and the validation message' do
       post api(url, admin, admin_mode: true),
-      params: { email: invite_email, access_level: Member::MAINTAINER }
+        params: { email: invite_email, access_level: Member::MAINTAINER }
 
       expect(response).to have_gitlab_http_status(code)
       expect(json_response['message'][invite_email]).to eq message
@@ -166,7 +166,7 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
 
       subject(:post_invitations) do
         post api(url, admin, admin_mode: true),
-             params: { email: invite_email, access_level: Member::MAINTAINER }
+          params: { email: invite_email, access_level: Member::MAINTAINER }
       end
 
       shared_examples 'does not add members' do
@@ -238,8 +238,8 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
       context 'when group has no parent' do
         it 'return success' do
           post api(url, admin, admin_mode: true),
-               params: { email: invite_email,
-                         access_level: Member::MINIMAL_ACCESS }
+            params: { email: invite_email,
+                      access_level: Member::MINIMAL_ACCESS }
 
           expect(response).to have_gitlab_http_status(:created)
           expect(json_response['status']).to eq("success")
@@ -252,8 +252,8 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
 
         it 'return error' do
           post api(url, admin, admin_mode: true),
-               params: { email: invite_email,
-                         access_level: Member::MINIMAL_ACCESS }
+            params: { email: invite_email,
+                      access_level: Member::MINIMAL_ACCESS }
 
           expect(json_response['status']).to eq 'error'
           expect(json_response['message'][invite_email]).to include('Access level is not included in the list')

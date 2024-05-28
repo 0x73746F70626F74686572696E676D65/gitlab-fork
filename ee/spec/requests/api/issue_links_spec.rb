@@ -13,7 +13,7 @@ RSpec.describe API::IssueLinks, feature_category: :team_planning do
       context 'when feature is enabled' do
         it 'returns 201 status and contains the expected link response' do
           post api("/projects/#{project.id}/issues/#{issue.iid}/links", user),
-               params: { target_project_id: project.id, target_issue_iid: target_issue.iid, link_type: 'blocks' }
+            params: { target_project_id: project.id, target_issue_iid: target_issue.iid, link_type: 'blocks' }
 
           expect(response).to have_gitlab_http_status(:created)
           expect(response).to match_response_schema('public_api/v4/issue_link')
@@ -24,7 +24,7 @@ RSpec.describe API::IssueLinks, feature_category: :team_planning do
 
         it 'returns 201 status for is_blocked_by link and contains the expected link response' do
           post api("/projects/#{project.id}/issues/#{issue.iid}/links", user),
-               params: { target_project_id: project.id, target_issue_iid: target_issue.iid, link_type: 'is_blocked_by' }
+            params: { target_project_id: project.id, target_issue_iid: target_issue.iid, link_type: 'is_blocked_by' }
 
           expect(response).to have_gitlab_http_status(:created)
           expect(response).to match_response_schema('public_api/v4/issue_link')
@@ -43,7 +43,7 @@ RSpec.describe API::IssueLinks, feature_category: :team_planning do
 
         it 'returns 403' do
           post api("/projects/#{project.id}/issues/#{issue.iid}/links", user),
-               params: { target_project_id: project.id, target_issue_iid: target_issue.iid, link_type: 'blocks' }
+            params: { target_project_id: project.id, target_issue_iid: target_issue.iid, link_type: 'blocks' }
 
           expect(response).to have_gitlab_http_status(:forbidden)
         end

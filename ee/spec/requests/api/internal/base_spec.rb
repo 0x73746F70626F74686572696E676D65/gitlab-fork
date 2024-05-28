@@ -325,7 +325,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
         let_it_be(:fork_network) { create(:fork_network, root_project: project) }
         let_it_be(:fork_network_member) do
           create(:fork_network_member, project: project_fork,
-                 fork_network: fork_network, forked_from_project: project)
+            fork_network: fork_network, forked_from_project: project)
         end
 
         before_all do
@@ -447,7 +447,7 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
         let_it_be(:fork_network) { create(:fork_network, root_project: project) }
         let_it_be(:fork_network_member) do
           create(:fork_network_member, project: project_fork,
-                 fork_network: fork_network, forked_from_project: project)
+            fork_network: fork_network, forked_from_project: project)
         end
 
         before do
@@ -727,13 +727,13 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
       it 'returns an error message when the expiry date exceeds the max token lifetime', :freeze_time do
         max_expiry_date = Date.current + instance_level_max_personal_access_token_lifetime
         post api('/internal/personal_access_token'),
-             params: {
-               key_id: key.id,
-               name: 'newtoken',
-               scopes: %w[read_api read_repository],
-               expires_at: max_expiry_date + 1
-             },
-             headers: gitlab_shell_internal_api_request_header
+          params: {
+            key_id: key.id,
+            name: 'newtoken',
+            scopes: %w[read_api read_repository],
+            expires_at: max_expiry_date + 1
+          },
+          headers: gitlab_shell_internal_api_request_header
 
         aggregate_failures do
           expect(json_response['success']).to eq(false)
@@ -746,13 +746,13 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
         token_size = (PersonalAccessToken.token_prefix || '').size + 20
 
         post api('/internal/personal_access_token'),
-             params: {
-               key_id: key.id,
-               name: 'newtoken',
-               scopes: %w[read_api read_repository],
-               expires_at: expires_at
-             },
-             headers: gitlab_shell_internal_api_request_header
+          params: {
+            key_id: key.id,
+            name: 'newtoken',
+            scopes: %w[read_api read_repository],
+            expires_at: expires_at
+          },
+          headers: gitlab_shell_internal_api_request_header
 
         aggregate_failures do
           expect(json_response['success']).to eq(true)
@@ -777,8 +777,8 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
 
     subject do
       post api('/internal/two_factor_manual_otp_check'),
-           params: { key_id: key_id, otp_attempt: otp },
-           headers: gitlab_shell_internal_api_request_header
+        params: { key_id: key_id, otp_attempt: otp },
+        headers: gitlab_shell_internal_api_request_header
     end
 
     it_behaves_like 'actor key validations'
@@ -926,8 +926,8 @@ RSpec.describe API::Internal::Base, feature_category: :source_code_management do
 
     subject do
       post api('/internal/two_factor_push_otp_check'),
-           params: { key_id: key_id, otp_attempt: otp },
-           headers: gitlab_shell_internal_api_request_header
+        params: { key_id: key_id, otp_attempt: otp },
+        headers: gitlab_shell_internal_api_request_header
     end
 
     it_behaves_like 'actor key validations'

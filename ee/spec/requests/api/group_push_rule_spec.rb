@@ -51,8 +51,8 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', :aggregate_failures, api: tr
   shared_context 'licensed features available' do
     before do
       stub_licensed_features(push_rules: true,
-                             commit_committer_check: true,
-                             reject_unsigned_commits: true)
+        commit_committer_check: true,
+        reject_unsigned_commits: true)
     end
   end
 
