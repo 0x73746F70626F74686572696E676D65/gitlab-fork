@@ -8,7 +8,7 @@ import LdapOverrideConfirmationModal from 'ee/members/components/modals/ldap_ove
 import { LDAP_OVERRIDE_CONFIRMATION_MODAL_ID } from 'ee/members/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import { member } from 'jest/members/mock_data';
-import { MEMBER_TYPES } from '~/members/constants';
+import { MEMBERS_TAB_TYPES } from '~/members/constants';
 
 Vue.use(Vuex);
 
@@ -33,7 +33,7 @@ describe('LdapOverrideConfirmationModal', () => {
 
     return new Vuex.Store({
       modules: {
-        [MEMBER_TYPES.user]: {
+        [MEMBERS_TAB_TYPES.user]: {
           namespaced: true,
           state: {
             memberToOverride: member,
@@ -50,7 +50,7 @@ describe('LdapOverrideConfirmationModal', () => {
     wrapper = mount(LdapOverrideConfirmationModal, {
       store: createStore(state),
       provide: {
-        namespace: MEMBER_TYPES.user,
+        namespace: MEMBERS_TAB_TYPES.user,
       },
       attrs: {
         static: true,

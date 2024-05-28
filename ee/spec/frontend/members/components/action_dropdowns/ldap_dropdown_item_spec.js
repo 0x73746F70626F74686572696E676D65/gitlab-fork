@@ -5,7 +5,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import LdapDropdownFooter from 'ee/members/components/action_dropdowns/ldap_dropdown_footer.vue';
 import waitForPromises from 'helpers/wait_for_promises';
-import { MEMBER_TYPES } from '~/members/constants';
+import { MEMBERS_TAB_TYPES } from '~/members/constants';
 
 Vue.use(Vuex);
 
@@ -23,7 +23,7 @@ describe('LdapDropdownFooter', () => {
 
     return new Vuex.Store({
       modules: {
-        [MEMBER_TYPES.user]: {
+        [MEMBERS_TAB_TYPES.user]: {
           namespaced: true,
           actions,
         },
@@ -39,7 +39,7 @@ describe('LdapDropdownFooter', () => {
       },
       store: createStore(),
       provide: {
-        namespace: MEMBER_TYPES.user,
+        namespace: MEMBERS_TAB_TYPES.user,
       },
       mocks: {
         $toast,

@@ -2,7 +2,7 @@ import { GlDatepicker } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { member } from 'jest/members/mock_data';
 import ExpirationDatepicker from '~/members/components/table/expiration_datepicker.vue';
-import { MEMBER_TYPES } from '~/members/constants';
+import { MEMBERS_TAB_TYPES } from '~/members/constants';
 
 describe('ExpirationDatepicker', () => {
   let wrapper;
@@ -10,7 +10,7 @@ describe('ExpirationDatepicker', () => {
   const createComponent = (propsData = {}) => {
     wrapper = mount(ExpirationDatepicker, {
       provide: {
-        namespace: MEMBER_TYPES.user,
+        namespace: MEMBERS_TAB_TYPES.user,
       },
       propsData,
     });

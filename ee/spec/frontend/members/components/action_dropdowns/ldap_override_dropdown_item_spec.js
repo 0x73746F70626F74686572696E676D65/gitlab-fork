@@ -5,7 +5,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import LdapOverrideDropdownItem from 'ee/members/components/action_dropdowns/ldap_override_dropdown_item.vue';
 import { member } from 'jest/members/mock_data';
-import { MEMBER_TYPES } from '~/members/constants';
+import { MEMBERS_TAB_TYPES } from '~/members/constants';
 
 Vue.use(Vuex);
 
@@ -21,7 +21,7 @@ describe('LdapOverrideDropdownItem', () => {
 
     return new Vuex.Store({
       modules: {
-        [MEMBER_TYPES.user]: {
+        [MEMBERS_TAB_TYPES.user]: {
           namespaced: true,
           actions,
         },
@@ -37,7 +37,7 @@ describe('LdapOverrideDropdownItem', () => {
       },
       store: createStore(),
       provide: {
-        namespace: MEMBER_TYPES.user,
+        namespace: MEMBERS_TAB_TYPES.user,
       },
       slots: {
         default: text,

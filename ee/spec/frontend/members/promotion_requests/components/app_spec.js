@@ -4,7 +4,7 @@ import Vuex from 'vuex';
 import { GlTableLite } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import PromotionRequestsApp from 'ee/members/promotion_requests/components/app.vue';
-import { MEMBER_TYPES, TAB_QUERY_PARAM_VALUES } from 'ee_else_ce/members/constants';
+import { MEMBERS_TAB_TYPES, TAB_QUERY_PARAM_VALUES } from 'ee_else_ce/members/constants';
 import initStore from 'ee/members/promotion_requests/store/index';
 import MembersPagination from '~/members/components/table/members_pagination.vue';
 import UserAvatar from '~/members/components/avatars/user_avatar.vue';
@@ -20,13 +20,13 @@ describe('PromotionRequestsApp', () => {
   const createComponent = ({ pagination = mockPagination } = {}) => {
     const store = new Vuex.Store({
       modules: {
-        [MEMBER_TYPES.promotionRequest]: initStore({ data: mockData, pagination }),
+        [MEMBERS_TAB_TYPES.promotionRequest]: initStore({ data: mockData, pagination }),
       },
     });
 
     wrapper = mountExtended(PromotionRequestsApp, {
       propsData: {
-        namespace: MEMBER_TYPES.promotionRequest,
+        namespace: MEMBERS_TAB_TYPES.promotionRequest,
         tabQueryParamValue: TAB_QUERY_PARAM_VALUES.promotionRequest,
       },
       provide: { canManageMembers: false },

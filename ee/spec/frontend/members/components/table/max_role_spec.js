@@ -8,7 +8,7 @@ import ManageRolesDropdownFooter from 'ee/members/components/action_dropdowns/ma
 import { guestOverageConfirmAction } from 'ee/members/guest_overage_confirm_action';
 import waitForPromises from 'helpers/wait_for_promises';
 import MaxRole from '~/members/components/table/max_role.vue';
-import { MEMBER_TYPES } from '~/members/constants';
+import { MEMBERS_TAB_TYPES } from '~/members/constants';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__ } from '~/locale';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
@@ -33,7 +33,7 @@ describe('MaxRole', () => {
 
     return new Vuex.Store({
       modules: {
-        [MEMBER_TYPES.user]: { namespaced: true, actions },
+        [MEMBERS_TAB_TYPES.user]: { namespaced: true, actions },
       },
     });
   };
@@ -41,7 +41,7 @@ describe('MaxRole', () => {
   const createComponent = (propsData = {}, store = createStore()) => {
     wrapper = mountExtended(MaxRole, {
       provide: {
-        namespace: MEMBER_TYPES.user,
+        namespace: MEMBERS_TAB_TYPES.user,
         group: {
           name: 'groupname',
           path: '/grouppath/',

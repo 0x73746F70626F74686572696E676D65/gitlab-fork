@@ -1,6 +1,6 @@
 <script>
 import CEMembersTableCell from '~/members/components/table/members_table_cell.vue';
-import { MEMBER_TYPES } from 'ee_else_ce/members/constants';
+import { MEMBERS_TAB_TYPES } from 'ee_else_ce/members/constants';
 import { canDisableTwoFactor, canOverride, canUnban } from '../../utils';
 
 export default {
@@ -25,8 +25,8 @@ export default {
   },
   methods: {
     memberType(ceMemberType) {
-      if (this.namespace === MEMBER_TYPES.banned && this.member.banned) {
-        return MEMBER_TYPES.banned;
+      if (this.namespace === MEMBERS_TAB_TYPES.banned && this.member.banned) {
+        return MEMBERS_TAB_TYPES.banned;
       }
 
       return ceMemberType;

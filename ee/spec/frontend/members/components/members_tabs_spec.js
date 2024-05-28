@@ -7,7 +7,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import MembersApp from '~/members/components/app.vue';
 import MembersTabs from '~/members/components/members_tabs.vue';
 import { TABS } from 'ee_else_ce/members/tabs_metadata';
-import { MEMBER_TYPES, TAB_QUERY_PARAM_VALUES } from 'ee_else_ce/members/constants';
+import { MEMBERS_TAB_TYPES, TAB_QUERY_PARAM_VALUES } from 'ee_else_ce/members/constants';
 import setWindowLocation from 'helpers/set_window_location_helper';
 
 describe('MembersTabs', () => {
@@ -19,7 +19,7 @@ describe('MembersTabs', () => {
   const createComponent = ({ totalItems = 10 } = {}) => {
     const store = new Vuex.Store({
       modules: {
-        [MEMBER_TYPES.user]: {
+        [MEMBERS_TAB_TYPES.user]: {
           namespaced: true,
           state: {
             pagination: {
@@ -31,7 +31,7 @@ describe('MembersTabs', () => {
             },
           },
         },
-        [MEMBER_TYPES.promotionRequest]: {
+        [MEMBERS_TAB_TYPES.promotionRequest]: {
           namespaced: true,
           state: {
             pagination: {
@@ -40,7 +40,7 @@ describe('MembersTabs', () => {
             },
           },
         },
-        [MEMBER_TYPES.banned]: {
+        [MEMBERS_TAB_TYPES.banned]: {
           namespaced: true,
           state: {
             pagination: {
@@ -87,12 +87,14 @@ describe('MembersTabs', () => {
     it('renders `MembersApp` and passes `namespace` and `tabQueryParamValue` props', () => {
       const membersApps = wrapper.findAllComponents(MembersApp).wrappers;
 
-      expect(membersApps[0].props('namespace')).toBe(MEMBER_TYPES.user);
-      expect(membersApps[1].props('namespace')).toBe(MEMBER_TYPES.banned);
+      expect(membersApps[0].props('namespace')).toBe(MEMBERS_TAB_TYPES.user);
+      expect(membersApps[1].props('namespace')).toBe(MEMBERS_TAB_TYPES.banned);
     });
 
     it('renders the custom component for Promotion Requests', () => {
-      const promotionsTabMeta = TABS.find((tab) => tab.namespace === MEMBER_TYPES.promotionRequest);
+      const promotionsTabMeta = TABS.find(
+        (tab) => tab.namespace === MEMBERS_TAB_TYPES.promotionRequest,
+      );
       expect(wrapper.findComponent(promotionsTabMeta.component).exists()).toBe(true);
     });
   });
