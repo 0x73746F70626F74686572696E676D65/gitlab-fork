@@ -6,6 +6,8 @@ module Security
       def execute
         validate_access!
 
+        return error(_("Security policy project is already assigned.")) if policy_project_assigned?
+
         if policy_project_inherited?
           return error(_("You don't need to link the security policy projects from the group. " \
                          "All policies in the security policy projects are inherited already."))
@@ -124,6 +126,18 @@ module Security
 
         ::Security::UnassignRedundantPolicyConfigurationsWorker
           .perform_async(container.id, policy_project_id, current_user.id)
+      end
+
+      def policy_project_assigned?
+        attrs = if project_container?
+                  { project_id: container.id, security_policy_management_project_id: policy_project_id }
+                else
+                  { namespace_id: container.id, security_policy_management_project_id: policy_project_id }
+                end
+
+        # rubocop:disable CodeReuse/ActiveRecord -- Not suitable for a scope
+        Security::OrchestrationPolicyConfiguration.exists?(attrs)
+        # rubocop:enable CodeReuse/ActiveRecord
       end
 
       def policy_project_inherited?
