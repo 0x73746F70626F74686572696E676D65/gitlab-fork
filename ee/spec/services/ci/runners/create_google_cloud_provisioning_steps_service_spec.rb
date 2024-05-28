@@ -71,13 +71,15 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
         let(:current_user) { container_owner }
         let(:runner_token) { nil }
 
-        it 'is successful and generates a unique deployment id',
-          quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/446109' do
+        it 'is successful and generates a unique deployment id' do
+          # NOTE: use a known tricky token value instead of generating random ones
+          expect(Devise).to receive(:friendly_token).with(Ci::Runner::RUNNER_SHORT_SHA_LENGTH).and_return('v__x-zP-')
+
           expect(execute).to be_success
 
           steps = execute.payload[:provisioning_steps]
           expect(steps).to match([
-            a_hash_including(instructions: /name = "grit-[A-Za-z0-9_\-]{8}"/),
+            a_hash_including(instructions: /name = "grit-v--x-zp"/),
             an_instance_of(Hash)
           ])
         end
