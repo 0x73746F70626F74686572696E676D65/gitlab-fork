@@ -8,7 +8,7 @@ class Admin::LicensesController < Admin::ApplicationController
 
   respond_to :html
 
-  feature_category :sm_provisioning
+  feature_category :plan_provisioning
   urgency :low
 
   def create

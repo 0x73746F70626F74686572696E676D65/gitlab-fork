@@ -6,7 +6,7 @@ module Namespaces
 
     data_consistency :always
 
-    feature_category :saas_provisioning
+    feature_category :plan_provisioning
 
     deduplicate :until_executing
     idempotent!

@@ -19,7 +19,7 @@ class SubscriptionsController < ApplicationController
 
   before_action :load_eligible_groups, only: :new
 
-  feature_category :purchase
+  feature_category :subscription_management
   urgency :low
 
   def new

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'subscriptions/trials/duo_pro/_select_namespace_form.html.haml', feature_category: :purchase do
+RSpec.describe 'subscriptions/trials/duo_pro/_select_namespace_form.html.haml', feature_category: :subscription_management do
   let(:user) { build_stubbed(:user) }
   let(:group) { build_stubbed(:group) }
 

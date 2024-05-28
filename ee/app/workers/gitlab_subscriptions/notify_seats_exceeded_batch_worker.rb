@@ -12,7 +12,7 @@ module GitlabSubscriptions
     data_consistency :sticky
     worker_has_external_dependencies!
 
-    feature_category :purchase
+    feature_category :subscription_management
 
     def perform
       GitlabSubscriptions::NotifySeatsExceededBatchService.execute

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::DuoProTrialEligibleNamespacesFinder, feature_category: :purchase do
+RSpec.describe Users::DuoProTrialEligibleNamespacesFinder, feature_category: :subscription_management do
   describe '#execute', :saas do
     let_it_be(:user) { create :user }
     let_it_be(:namespace_with_paid_plan) { create(:group_with_plan, name: 'Zed', plan: :ultimate_plan) }

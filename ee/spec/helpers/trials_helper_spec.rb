@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TrialsHelper, feature_category: :purchase do
+RSpec.describe TrialsHelper, feature_category: :subscription_management do
   using RSpec::Parameterized::TableSyntax
 
   describe '#create_lead_form_data' do

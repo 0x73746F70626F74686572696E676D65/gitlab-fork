@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::BilledUsersFinder, feature_category: :purchase do
+RSpec.describe Namespaces::BilledUsersFinder, feature_category: :subscription_management do
   describe '#execute' do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, namespace: group) }

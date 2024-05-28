@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TrialRegistrationsHelper, feature_category: :purchase do
+RSpec.describe TrialRegistrationsHelper, feature_category: :subscription_management do
   using RSpec::Parameterized::TableSyntax
 
   describe '#social_signin_enabled?' do

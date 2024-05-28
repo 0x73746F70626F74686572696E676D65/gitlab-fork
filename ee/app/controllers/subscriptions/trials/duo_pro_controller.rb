@@ -15,7 +15,7 @@ module Subscriptions
       skip_before_action :set_confirm_warning
       before_action :check_feature_available!
 
-      feature_category :purchase
+      feature_category :subscription_management
       urgency :low
 
       def new

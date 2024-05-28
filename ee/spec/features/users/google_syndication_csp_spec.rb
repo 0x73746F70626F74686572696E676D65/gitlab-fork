@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Google Syndication content security policy', feature_category: :purchase do
+RSpec.describe 'Google Syndication content security policy', feature_category: :subscription_management do
   include ContentSecurityPolicyHelpers
 
   let_it_be(:connect_src) { 'https://other-cdn.test' }

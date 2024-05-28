@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe License, feature_category: :sm_provisioning do
+RSpec.describe License, feature_category: :plan_provisioning do
   using RSpec::Parameterized::TableSyntax
 
   subject(:license) { build(:license, data: gl_license.export) }

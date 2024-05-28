@@ -6,7 +6,7 @@ module Subscriptions
     before_action :authenticate_user!
     before_action :verify_namespace!
 
-    feature_category :purchase
+    feature_category :subscription_management
     urgency :low
 
     def create

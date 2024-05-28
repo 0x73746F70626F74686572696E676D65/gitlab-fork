@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Projects::RemovePaidFeaturesService, feature_category: :saas_provisioning do
+RSpec.describe EE::Projects::RemovePaidFeaturesService, feature_category: :plan_provisioning do
   include EE::GeoHelpers
 
   subject(:execute_transfer) { service.execute(target_namespace) }

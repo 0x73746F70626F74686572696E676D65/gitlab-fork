@@ -3,7 +3,7 @@
 module API
   module Ci
     class Minutes < ::API::Base
-      feature_category :purchase
+      feature_category :subscription_management
       urgency :low
 
       CI_MINUTES_TAGS = %w[ci_minutes].freeze

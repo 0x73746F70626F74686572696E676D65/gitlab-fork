@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial Sign In', feature_category: :purchase do
+RSpec.describe 'Trial Sign In', feature_category: :subscription_management do
   let(:user) { create(:user) }
 
   describe 'on GitLab.com' do

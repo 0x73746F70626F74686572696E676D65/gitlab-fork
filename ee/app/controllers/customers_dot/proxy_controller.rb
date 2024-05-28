@@ -5,7 +5,7 @@ module CustomersDot
     skip_before_action :authenticate_user!
     skip_before_action :verify_authenticity_token
 
-    feature_category :purchase
+    feature_category :subscription_management
     urgency :low
 
     def graphql

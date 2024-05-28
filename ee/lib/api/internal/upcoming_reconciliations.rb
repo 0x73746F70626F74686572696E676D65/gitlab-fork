@@ -8,7 +8,7 @@ module API
         authenticated_as_admin!
       end
 
-      feature_category :purchase
+      feature_category :subscription_management
       urgency :low
 
       namespace :internal do

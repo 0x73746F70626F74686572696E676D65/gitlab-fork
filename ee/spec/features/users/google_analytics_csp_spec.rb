@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Google Analytics 4 content security policy', feature_category: :purchase do
+RSpec.describe 'Google Analytics 4 content security policy', feature_category: :subscription_management do
   include ContentSecurityPolicyHelpers
 
   subject(:csp_header) { response_headers['Content-Security-Policy'] }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::SeatUsageExportService, feature_category: :purchase do
+RSpec.describe Groups::SeatUsageExportService, feature_category: :plan_provisioning do
   describe '#execute', :aggregate_failures do
     let(:group) { create(:group, :private) }
     let(:owner) { create(:user, name: 'Owner', username: 'owner', state: 'active') }

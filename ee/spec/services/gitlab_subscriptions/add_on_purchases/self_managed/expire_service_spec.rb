@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ExpireService, :aggregate_failures, feature_category: :sm_provisioning do
+RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ExpireService, :aggregate_failures, feature_category: :plan_provisioning do
   describe '#execute' do
     let!(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase) }
 

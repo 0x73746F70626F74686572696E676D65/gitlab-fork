@@ -5,7 +5,7 @@ class SyncSeatLinkRequestWorker
 
   data_consistency :always
 
-  feature_category :sm_provisioning
+  feature_category :plan_provisioning
 
   # Retry for up to approximately 2 days
   sidekiq_options retry: 20

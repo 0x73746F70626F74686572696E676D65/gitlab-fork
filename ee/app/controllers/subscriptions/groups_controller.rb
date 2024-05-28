@@ -9,7 +9,7 @@ module Subscriptions
     before_action :find_group
     before_action :authorize_admin_group!
 
-    feature_category :purchase
+    feature_category :subscription_management
     urgency :low
 
     def edit; end

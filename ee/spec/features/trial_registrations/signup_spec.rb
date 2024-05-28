@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial Sign Up', :saas, feature_category: :purchase do
+RSpec.describe 'Trial Sign Up', :saas, feature_category: :acquisition do
   before do
     stub_application_setting(require_admin_approval_after_user_signup: false)
   end

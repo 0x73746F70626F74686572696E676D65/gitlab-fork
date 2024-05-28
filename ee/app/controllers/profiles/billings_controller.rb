@@ -3,7 +3,7 @@
 class Profiles::BillingsController < Profiles::ApplicationController
   before_action :verify_namespace_plan_check_enabled
 
-  feature_category :purchase
+  feature_category :subscription_management
   urgency :low
 
   def index

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'subscriptions/trials/duo_pro/_advantages_list.html.haml', feature_category: :purchase do
+RSpec.describe 'subscriptions/trials/duo_pro/_advantages_list.html.haml', feature_category: :subscription_management do
   it 'renders the list' do
     render 'subscriptions/trials/duo_pro/advantages_list'
 

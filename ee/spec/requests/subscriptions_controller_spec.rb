@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SubscriptionsController, :clean_gitlab_redis_sessions, feature_category: :purchase do
+RSpec.describe SubscriptionsController, :clean_gitlab_redis_sessions, feature_category: :subscription_management do
   include SessionHelpers
 
   shared_examples 'requires authentication' do

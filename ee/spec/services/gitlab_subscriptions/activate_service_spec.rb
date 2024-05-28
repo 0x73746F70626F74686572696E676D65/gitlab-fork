@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::ActivateService, feature_category: :sm_provisioning do
+RSpec.describe GitlabSubscriptions::ActivateService, feature_category: :plan_provisioning do
   subject(:execute_service) { described_class.new.execute(activation_code) }
 
   let!(:application_settings) { create(:application_setting) }

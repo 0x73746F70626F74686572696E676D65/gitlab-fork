@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe DependencyProxy::Packages::Setting, type: :model, feature_category: :dependency_proxy do
+RSpec.describe DependencyProxy::Packages::Setting, type: :model, feature_category: :virtual_registry do
   using RSpec::Parameterized::TableSyntax
 
   describe 'relationships' do
