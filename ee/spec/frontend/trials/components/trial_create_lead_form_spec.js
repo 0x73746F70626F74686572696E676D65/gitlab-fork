@@ -70,7 +70,7 @@ describe('TrialCreateLeadForm', () => {
     });
   });
 
-  it('has the "Continue" text on the submit button', () => {
+  it('has the "Start free GitLab Ultimate trial" text on the submit button', () => {
     wrapper = createComponent();
 
     expect(findButton().text()).toBe(TRIAL_FORM_SUBMIT_TEXT);

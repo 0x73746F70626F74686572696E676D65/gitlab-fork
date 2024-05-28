@@ -149,7 +149,7 @@ module Features
         )
       end
 
-      click_button 'Continue'
+      click_button 'Start free GitLab Ultimate trial'
 
       wait_for_requests
     end
