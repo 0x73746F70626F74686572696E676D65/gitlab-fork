@@ -76,7 +76,7 @@ module EE
         ::SystemNoteService.override_requested_changes(merge_request, current_user, override_requested_changes.last)
         trigger_merge_request_status_updated(merge_request)
 
-        return unless ::Feature.enabled?(:additional_merge_when_checks_ready, merge_request.project)
+        return unless ::Feature.enabled?(:merge_when_checks_pass, merge_request.project)
 
         ::Gitlab::EventStore.publish(
           ::MergeRequests::OverrideRequestedChangesStateEvent.new(

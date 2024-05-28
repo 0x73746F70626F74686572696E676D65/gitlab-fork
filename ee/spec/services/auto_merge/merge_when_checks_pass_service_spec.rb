@@ -16,11 +16,9 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
     subject { service.available_for?(mr_merge_if_green_enabled) }
 
     let(:feature_flag) { true }
-    let(:additional_checks_flag) { true }
 
     before do
-      stub_feature_flags(merge_when_checks_pass: feature_flag,
-        additional_merge_when_checks_ready: additional_checks_flag)
+      stub_feature_flags(merge_when_checks_pass: feature_flag)
     end
 
     context 'when immediately mergeable' do
@@ -70,10 +68,10 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
 
       it { is_expected.to eq true }
 
-      context 'when additional merge when checks flag is off' do
-        let(:additional_checks_flag) { false }
+      context 'when merge_when_checks_pass flag is off' do
+        let(:feature_flag) { false }
 
-        it { is_expected.to eq true }
+        it { is_expected.to eq false }
       end
     end
 
@@ -84,8 +82,8 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
 
       it { is_expected.to eq true }
 
-      context 'when additional merge when checks flag is off' do
-        let(:additional_checks_flag) { false }
+      context 'when merge_when_checks_pass flag is off' do
+        let(:feature_flag) { false }
 
         it { is_expected.to eq false }
       end
@@ -100,8 +98,8 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
 
       it { is_expected.to eq true }
 
-      context 'when additional merge when checks flag is off' do
-        let(:additional_checks_flag) { false }
+      context 'when merge_when_checks_pass flag is off' do
+        let(:feature_flag) { false }
 
         it { is_expected.to eq false }
       end
@@ -116,8 +114,8 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
 
       it { is_expected.to eq true }
 
-      context 'when additional merge when checks flag is off' do
-        let(:additional_checks_flag) { false }
+      context 'when merge_when_checks_pass flag is off' do
+        let(:feature_flag) { false }
 
         it { is_expected.to eq false }
       end
@@ -135,10 +133,10 @@ RSpec.describe AutoMerge::MergeWhenChecksPassService, feature_category: :code_re
 
       it { is_expected.to eq true }
 
-      context 'when additional merge when checks flag is off' do
-        let(:additional_checks_flag) { false }
+      context 'when merge_when_checks_pass flag is off' do
+        let(:feature_flag) { false }
 
-        it { is_expected.to eq true }
+        it { is_expected.to eq false }
       end
     end
 

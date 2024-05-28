@@ -230,7 +230,7 @@ RSpec.describe MergeRequests::PostMergeService, feature_category: :code_review_w
         subject
       end
 
-      context 'when additional_merge_when_checks_ready is enabled' do
+      context 'when merge_when_checks_pass is enabled' do
         it 'sends an unblocked event for the first blocked merge request' do
           expect { subject }.to publish_event(MergeRequests::UnblockedStateEvent).with({
             current_user_id: current_user.id,
@@ -253,9 +253,9 @@ RSpec.describe MergeRequests::PostMergeService, feature_category: :code_review_w
       end
     end
 
-    context 'when additional_merge_when_checks_ready is disabled' do
+    context 'when merge_when_checks_pass is disabled' do
       before do
-        stub_feature_flags(additional_merge_when_checks_ready: false)
+        stub_feature_flags(merge_when_checks_pass: false)
       end
 
       it 'does sends an unblocked events' do

@@ -1187,7 +1187,7 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
         stub_licensed_features(blocking_merge_requests: true)
       end
 
-      context 'when merge_when_checks_pass and additional_merge_when_checks_ready are enabled' do
+      context 'when merge_when_checks_pass is enabled' do
         let(:service) do
           described_class.new(
             container: project,
@@ -1205,9 +1205,9 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
         end
       end
 
-      context 'when merge_when_checks_pass and additional_merge_when_checks_ready are disabled' do
+      context 'when merge_when_checks_pass id disabled' do
         before do
-          stub_feature_flags(merge_when_checks_pass: false, additional_merge_when_checks_ready: false)
+          stub_feature_flags(merge_when_checks_pass: false)
         end
 
         it_behaves_like 'failed command', 'Could not apply merge command.'
