@@ -110,6 +110,7 @@ describe('RelatedItemsTree', () => {
                 expect.objectContaining({
                   animation: '200',
                   delay: '100',
+                  forcefallback: 'true',
                   fallbackclass: 'is-dragging',
                   ghostclass: 'is-ghost',
                   group: 'gl-new-card-body',
