@@ -35,6 +35,7 @@ module EE
           group.update_personal_access_tokens_lifetime
         end
 
+        update_cascading_settings if ::Feature.enabled?(:cascade_duo_features_enabled_setting, group)
         activate_pending_members
       end
 
@@ -141,6 +142,14 @@ module EE
         @ip_restriction_update_service&.log_audit_event # rubocop:disable Gitlab/ModuleWithInstanceVariables
 
         Audit::GroupChangesAuditor.new(current_user, group).execute
+      end
+
+      def update_cascading_settings
+        settings = group.namespace_settings
+
+        if settings.previous_changes.include?(:duo_features_enabled)
+          ::Namespaces::CascadeDuoFeaturesEnabledWorker.perform_async(group.id)
+        end
       end
 
       def activate_pending_members
