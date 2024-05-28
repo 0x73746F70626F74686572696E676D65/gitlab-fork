@@ -100,7 +100,7 @@ module DependencyManagement
     end
 
     def sort_direction
-      params[:sort]&.downcase&.to_sym == :asc ? :asc : :desc
+      params[:sort]&.downcase&.to_sym == :desc ? :desc : :asc
     end
   end
   # rubocop:enable CodeReuse/ActiveRecord

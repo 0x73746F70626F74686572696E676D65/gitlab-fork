@@ -129,11 +129,14 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
           context 'with existing dependencies' do
             let_it_be(:project) { create(:project, group: group) }
             let_it_be(:sbom_occurrence_npm) do
-              create(:sbom_occurrence, :mit, :npm, highest_severity: 'low', project: project)
+              component = create(:sbom_component, name: 'a')
+              create(:sbom_occurrence, :mit, :npm, highest_severity: 'low', component: component, project: project)
             end
 
             let_it_be(:sbom_occurrence_bundler) do
-              create(:sbom_occurrence, :apache_2, :bundler, highest_severity: 'high', project: project)
+              component = create(:sbom_component, name: 'b')
+              create(:sbom_occurrence, :apache_2, :bundler, highest_severity: 'high', component: component,
+                project: project)
             end
 
             let_it_be(:archived_occurrence) do
@@ -217,7 +220,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               end
             end
 
-            context 'when sorted by packager in descending order' do
+            context 'when sorted by severity in descending order' do
               let(:params) { { group_id: group.to_param, sort_by: 'severity', sort: 'desc' } }
 
               it 'returns sorted list' do
