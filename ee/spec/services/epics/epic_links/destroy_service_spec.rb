@@ -17,8 +17,8 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
     end
 
     shared_examples 'returns success' do
-      it 'removes epic relationship' do
-        expect { destroy_link }.to change { parent_epic.children.count }.by(-1)
+      it 'removes epic relationship and sets new updated_at' do
+        expect { destroy_link }.to change { parent_epic.children.count }.by(-1).and change { child_epic.updated_at }
 
         expect(parent_epic.reload.children).not_to include(child_epic)
       end
@@ -156,8 +156,8 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
 
           before_all do
             child_epic_group.add_reporter(user)
-            child_epic.update!(issue_id: child.id)
-            parent_epic.update!(issue_id: parent.id)
+            child_epic.update!(issue_id: child.id, updated_at: child.updated_at)
+            parent_epic.update!(issue_id: parent.id, updated_at: parent.updated_at)
           end
 
           it 'removes epic relationship and destroy work item parent link' do
@@ -185,7 +185,7 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
 
           context 'when removing child epic fails' do
             before do
-              allow(child_epic).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new(child_epic), 'error')
+              allow(child_epic).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new(child_epic), 'error')
             end
 
             it 'raises an error and does not remove relationships' do
@@ -234,6 +234,9 @@ RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_ma
                 .to change { parent_epic.children.count }.by(-1)
                 .and(not_change { WorkItems::ParentLink.count })
                 .and(not_change { Note.count })
+
+              expect(parent_epic.updated_at).to eq(parent_epic.work_item.updated_at)
+              expect(child_epic.updated_at).to eq(child_epic.work_item.updated_at)
             end
 
             it 'does not call Epics::UpdateDatesService' do

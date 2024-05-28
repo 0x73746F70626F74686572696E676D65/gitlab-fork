@@ -19,7 +19,15 @@ module Epics
 
       def remove_relation
         ::ApplicationRecord.transaction do
-          child_epic.update!({ parent_id: nil, updated_by: current_user })
+          # When we're syncing from the work item, we destroy the `WorkItems::ParentLink` record.
+          # On the epic side we modify the `Epic` record, and it would set a new `updated_at`. This would lead
+          # to WorkItem.updated_at and Epic.updated_at being out of sync.
+          #
+          # When syncing the work item from the epic side, we update the work_item.updated_at when the Note gets
+          # created. This is to have consistency with the previous behaviour.
+          child_epic.assign_attributes(parent_id: nil, updated_by: current_user)
+          child_epic.save!(touch: synced_epic ? false : true)
+
           destroy_work_item_parent_link!
         end
       end
