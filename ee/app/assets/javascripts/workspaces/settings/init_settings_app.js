@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
+import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import App from './pages/app.vue';
 
 Vue.use(VueApollo);
@@ -19,7 +19,7 @@ const initWorkspacesSettingsApp = () => {
     return null;
   }
 
-  const { namespace } = convertObjectPropsToCamelCase(el.dataset);
+  const { namespace, canAdminClusterAgentMapping } = convertObjectPropsToCamelCase(el.dataset);
 
   return new Vue({
     el,
@@ -27,6 +27,7 @@ const initWorkspacesSettingsApp = () => {
     apolloProvider: createApolloProvider(),
     provide: {
       namespace,
+      canAdminClusterAgentMapping: parseBoolean(canAdminClusterAgentMapping),
     },
     render: (createElement) => createElement(App),
   });

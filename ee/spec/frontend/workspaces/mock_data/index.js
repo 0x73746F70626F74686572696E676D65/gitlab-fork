@@ -1,6 +1,10 @@
 import { cloneDeep } from 'lodash';
 import { TEST_HOST } from 'helpers/test_constants';
 import { WORKSPACE_DESIRED_STATES, WORKSPACE_STATES } from 'ee/workspaces/common/constants';
+import {
+  AGENT_MAPPING_STATUS_MAPPED,
+  AGENT_MAPPING_STATUS_UNMAPPED,
+} from 'ee/workspaces/agent_mapping/constants';
 
 export const WORKSPACE = {
   __typename: 'Workspace',
@@ -402,3 +406,33 @@ export const WORKSPACE_UPDATE_MUTATION_RESULT = {
     },
   },
 };
+
+export const CREATE_CLUSTER_AGENT_MAPPING_MUTATION_RESULT = {
+  data: {
+    namespaceCreateRemoteDevelopmentClusterAgentMapping: {
+      clientMutationId: null,
+    },
+  },
+};
+
+export const DELETE_CLUSTER_AGENT_MAPPING_MUTATION_RESULT = {
+  data: {
+    namespaceDeleteRemoteDevelopmentClusterAgentMapping: {
+      clientMutationId: null,
+    },
+  },
+};
+
+export const MAPPED_CLUSTER_AGENT = {
+  id: 'gid://gitlab/Clusters::Agent/1',
+  name: 'rootgroup-agent',
+  mappingStatus: AGENT_MAPPING_STATUS_MAPPED,
+};
+
+export const UNMAPPED_CLUSTER_AGENT = {
+  id: 'gid://gitlab/Clusters::Agent/2',
+  name: 'rootgroup-agent-2',
+  mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED,
+};
+
+export const NAMESPACE_ID = 'gid://gitlab/Group/81';

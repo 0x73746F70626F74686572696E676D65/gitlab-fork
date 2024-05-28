@@ -34,7 +34,11 @@ export default {
           return;
         }
 
-        const { remoteDevelopmentClusterAgents, clusterAgents } = result.data.group;
+        const {
+          remoteDevelopmentClusterAgents,
+          clusterAgents,
+          id: namespaceId,
+        } = result.data.group;
 
         const agents =
           clusterAgents?.nodes.map(({ id, name }) => {
@@ -51,7 +55,7 @@ export default {
             };
           }) || [];
 
-        this.$emit('result', { agents });
+        this.$emit('result', { namespaceId, agents });
       },
     },
   },

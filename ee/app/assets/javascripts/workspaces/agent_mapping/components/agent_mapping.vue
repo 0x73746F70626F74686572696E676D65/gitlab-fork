@@ -31,6 +31,7 @@ export default {
     return {
       agents: [],
       errorMessage: '',
+      namespaceId: '',
     };
   },
   computed: {
@@ -48,7 +49,8 @@ export default {
     },
   },
   methods: {
-    onQueryResult({ agents }) {
+    onQueryResult({ agents, namespaceId }) {
+      this.namespaceId = namespaceId;
       this.agents = agents;
     },
     onErrorResult() {
@@ -80,6 +82,7 @@ export default {
               v-if="!errorMessage"
               data-testid="allowed-agents-table"
               :agents="allowedAgents"
+              :namespace-id="namespaceId"
               :is-loading="loading"
               :empty-state-message="allowedAgentsTableEmptyMessage"
             />
@@ -93,9 +96,10 @@ export default {
             <agents-table
               v-if="!errorMessage"
               data-testid="all-agents-table"
-              :agents="agents"
-              :is-loading="loading"
               display-mapping-status
+              :agents="agents"
+              :namespace-id="namespaceId"
+              :is-loading="loading"
               :empty-state-message="$options.NO_AGENTS_MESSAGE"
             />
           </gl-tab>
