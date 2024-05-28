@@ -6,6 +6,12 @@ module WorkItems
 
     private
 
+    BASE_ATTRIBUTE_PARAMS = %i[
+      iid author_id created_at updated_at title title_html description description_html
+      confidential state_id last_edited_by_id last_edited_at external_key updated_by_id
+      closed_at closed_by_id imported_from
+    ].freeze
+
     def create_epic_for!(work_item)
       return true unless work_item.namespace.work_item_sync_to_epic_enabled?
 
@@ -22,7 +28,8 @@ module WorkItems
       return true unless epic
       return true unless epic.group.work_item_sync_to_epic_enabled?
 
-      epic.update!(update_params(work_item))
+      epic.assign_attributes(update_params(work_item))
+      epic.save!(touch: false)
     rescue StandardError => error
       handle_error!(:update, error, work_item)
     end
@@ -30,11 +37,9 @@ module WorkItems
     def create_params(work_item)
       epic_params = {}
 
-      epic_params[:author] = work_item.author
       epic_params[:group] = work_item.namespace
       epic_params[:issue_id] = work_item.id
       epic_params[:iid] = work_item.iid
-      epic_params[:created_at] = work_item.created_at
 
       parent_link = WorkItems::ParentLink.find_by_work_item_id(work_item.id)
 
@@ -44,42 +49,33 @@ module WorkItems
       end
 
       epic_params
-        .merge(callback_params)
         .merge(base_attributes_params(work_item))
+        .merge(color_params(work_item))
+        .merge(date_params(work_item))
     end
 
     def update_params(work_item)
-      callback_params
+      {}
         .merge(base_attributes_params(work_item))
+        .merge(color_params(work_item))
+        .merge(date_params(work_item))
     end
 
     def base_attributes_params(work_item)
-      base_params = {}
-
-      if params.has_key?(:title)
-        base_params[:title] = params[:title]
-        base_params[:title_html] = work_item.title_html
-      end
-
-      base_params[:confidential] = params[:confidential] if params.has_key?(:confidential)
-      base_params[:updated_by] = work_item.updated_by
-      base_params[:updated_at] = work_item.updated_at
-      base_params[:external_key] = params[:external_key] if params[:external_key]
-
-      if work_item.edited?
-        base_params[:last_edited_at] = work_item.last_edited_at
-        base_params[:last_edited_by] = work_item.last_edited_by
-      end
-
-      base_params
+      BASE_ATTRIBUTE_PARAMS.index_with { |attr| work_item[attr] }
     end
 
-    def callback_params
-      callbacks.reduce({}) do |params, callback|
-        next params unless callback.synced_epic_params.present?
+    def color_params(work_item)
+      return {} unless work_item.color
 
-        params.merge!(callback.synced_epic_params)
-      end
+      { color: work_item.color.color }
+    end
+
+    def date_params(work_item)
+      {
+        start_date: work_item.start_date,
+        due_date: work_item.due_date
+      }
     end
 
     def handle_error!(action, error, work_item)

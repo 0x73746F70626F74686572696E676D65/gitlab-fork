@@ -326,6 +326,18 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
 
       it_behaves_like 'syncs all data from a work_item to an epic'
 
+      context 'when only providing title and description' do
+        let(:widget_params) do
+          {
+            description_widget: {
+              description: 'new description'
+            }
+          }
+        end
+
+        it_behaves_like 'syncs all data from a work_item to an epic'
+      end
+
       it 'syncs the data to the epic', :aggregate_failures do
         update_work_item
 
@@ -371,7 +383,7 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
       context 'when updating the epic fails' do
         before do
           allow_next_found_instance_of(Epic) do |epic|
-            allow(epic).to receive(:update!).and_raise(ActiveRecord::RecordInvalid.new)
+            allow(epic).to receive(:save!).and_raise(ActiveRecord::RecordInvalid.new)
           end
         end
 
