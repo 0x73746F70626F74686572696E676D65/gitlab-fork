@@ -1,8 +1,6 @@
 ---
 key_path: usage_activity_by_stage.secure.user_cluster_image_scanning_scans
 description: Number of users who have run a Cluster image scan
-product_section: sec
-product_stage: secure
 product_group: composition_analysis
 value_type: number
 status: removed
