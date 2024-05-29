@@ -111,10 +111,10 @@ module AppSec
         def build_auditors!
           @auditors = [
             AppSec::Dast::Profiles::Audit::UpdateService.new(container: project, current_user: current_user, params: {
-            dast_profile: dast_profile,
-            new_params: dast_profile_params,
-            old_params: dast_profile.attributes.symbolize_keys
-          })
+              dast_profile: dast_profile,
+              new_params: dast_profile_params,
+              old_params: dast_profile.attributes.symbolize_keys
+            })
           ]
 
           if schedule_input_params && schedule

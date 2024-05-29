@@ -3,10 +3,10 @@
 module EE
   module GeoHelper
     STATUS_ICON_NAMES_BY_STATE = {
-        synced: 'check-circle-filled',
-        pending: 'status_pending',
-        failed: 'status_failed',
-        never: 'status_notfound'
+      synced: 'check-circle-filled',
+      pending: 'status_pending',
+      failed: 'status_failed',
+      never: 'status_notfound'
     }.freeze
 
     def self.current_node_human_status

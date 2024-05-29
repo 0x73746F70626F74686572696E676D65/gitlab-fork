@@ -46,10 +46,10 @@ module EE
           usage_data = super
 
           usage_data[:advanced_search] = {
-              distribution: add_metric("AdvancedSearch::DistributionMetric"),
-              version: add_metric("AdvancedSearch::VersionMetric"),
-              build_type: add_metric("AdvancedSearch::BuildTypeMetric"),
-              lucene_version: add_metric("AdvancedSearch::LuceneVersionMetric")
+            distribution: add_metric("AdvancedSearch::DistributionMetric"),
+            version: add_metric("AdvancedSearch::VersionMetric"),
+            build_type: add_metric("AdvancedSearch::BuildTypeMetric"),
+            lucene_version: add_metric("AdvancedSearch::LuceneVersionMetric")
           }
 
           usage_data
@@ -177,31 +177,31 @@ module EE
           return super unless ::Gitlab::Geo.enabled?
 
           super.merge({
-                      geo_secondary_web_oauth_users: distinct_count(
-                        OauthAccessGrant
-                            .where(time_period)
-                            .where(
-                              application_id: GeoNode.secondary_nodes.select(:oauth_application_id)
-                            ),
-                        :resource_owner_id
-                      ),
-                      # rubocop: disable UsageData/LargeTable
-                      # These fields are pre-calculated on the secondary for transmission and storage on the primary.
-                      # This will end up as an array of hashes with the data from GeoNodeStatus, see
-                      # https://docs.gitlab.com/ee/api/geo_nodes.html#retrieve-status-about-a-specific-geo-node for what
-                      # that inner hash may contain
-                      # For Example:
-                      # geo_node_usage: [
-                      #   {
-                      #     repositories_count: 10,
-                      #     ... other geo node status fields
-                      #   }
-                      # ]
-                      geo_node_usage: GeoNodeStatus.for_active_secondaries.map do |node|
-                        GeoNodeStatus::RESOURCE_STATUS_FIELDS.index_with { |field| node[field] }
-                      end
-                    # rubocop: enable UsageData/LargeTable
-                  })
+            geo_secondary_web_oauth_users: distinct_count(
+              OauthAccessGrant
+                  .where(time_period)
+                  .where(
+                    application_id: GeoNode.secondary_nodes.select(:oauth_application_id)
+                  ),
+              :resource_owner_id
+            ),
+            # rubocop: disable UsageData/LargeTable
+            # These fields are pre-calculated on the secondary for transmission and storage on the primary.
+            # This will end up as an array of hashes with the data from GeoNodeStatus, see
+            # https://docs.gitlab.com/ee/api/geo_nodes.html#retrieve-status-about-a-specific-geo-node for what
+            # that inner hash may contain
+            # For Example:
+            # geo_node_usage: [
+            #   {
+            #     repositories_count: 10,
+            #     ... other geo node status fields
+            #   }
+            # ]
+            geo_node_usage: GeoNodeStatus.for_active_secondaries.map do |node|
+                              GeoNodeStatus::RESOURCE_STATUS_FIELDS.index_with { |field| node[field] }
+                            end
+            # rubocop: enable UsageData/LargeTable
+          })
         end
         # rubocop:enable CodeReuse/ActiveRecord
 

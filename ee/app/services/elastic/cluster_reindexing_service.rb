@@ -6,9 +6,9 @@ module Elastic
     include Gitlab::Loggable
 
     INITIAL_INDEX_OPTIONS = { # Optimized for writes
-        refresh_interval: '10s',
-        number_of_replicas: 0,
-        translog: { durability: 'async' }
+      refresh_interval: '10s',
+      number_of_replicas: 0,
+      translog: { durability: 'async' }
     }.freeze
 
     DELETE_ORIGINAL_INDEX_AFTER = 14.days

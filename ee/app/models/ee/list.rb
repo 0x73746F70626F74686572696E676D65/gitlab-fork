@@ -34,9 +34,9 @@ module EE
       base.validates :max_issue_count, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
       base.validates :max_issue_weight, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
       base.validates :limit_metric, inclusion: {
-          in: LIMIT_METRIC_TYPES,
-          allow_blank: true,
-          allow_nil: true
+        in: LIMIT_METRIC_TYPES,
+        allow_blank: true,
+        allow_nil: true
       }
       base.validates :list_type,
         exclusion: { in: %w[assignee], message: ->(_object, _data) { _('Assignee lists not available with your current license') } },

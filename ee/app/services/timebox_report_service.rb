@@ -254,7 +254,7 @@ class TimeboxReportService
       .where({
         "#{timebox_fk}": timebox.id,
         action: :add
-       })
+      })
       .where('created_at <= ?', end_time)
   end
   # rubocop: enable CodeReuse/ActiveRecord

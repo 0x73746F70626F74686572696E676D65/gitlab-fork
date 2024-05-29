@@ -33,8 +33,8 @@ module Iterations
         ::ServiceResponse.success(message: _('New iteration created'), payload: { iteration: iteration })
       else
         ::ServiceResponse.error(message: _('Error creating new iteration'), payload: {
-                                  errors: iteration.errors.full_messages
-                                })
+          errors: iteration.errors.full_messages
+        })
       end
     rescue ActiveRecord::RecordNotFound => e
       ::ServiceResponse.error(message: _('Iterations cadence not found'),
