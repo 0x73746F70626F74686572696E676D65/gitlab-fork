@@ -6,6 +6,16 @@
 module Gitlab
   module Ci
     module Ansi2html
+      # Timestamp line prefix format:
+      # <timestamp> <stream number><stream type><full line type>
+      # - timestamp: UTC RFC3339 timestamp
+      # - stream number: 1 byte (2 hex chars) stream number
+      # - stream type: E/O (Err or Out)
+      # - full line type: `+` if line is continuation of previous line, ` ` otherwise
+      TIMESTAMP_REGEX = /(\d{4}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]\.[0-9]{6}Z) [0-9a-f]{2}[EO][+ ]/
+      RFC3339_DATETIME_LENGTH = 27
+      TIMESTAMP_PREFIX_LENGTH = RFC3339_DATETIME_LENGTH + 5
+
       # keys represent the trailing digit in color changing command (30-37, 40-47, 90-97. 100-107)
       COLOR = {
         0 => 'black', # not that this is gray in the intense color table
@@ -57,31 +67,7 @@ module Gitlab
 
           start_offset = @offset
 
-          stream.each_line do |line|
-            line = encode_utf8_no_detect(line)
-            s = StringScanner.new(line)
-
-            until s.eos?
-
-              if s.scan(Gitlab::Regex.build_trace_section_regex)
-                handle_section(s)
-              elsif s.scan(/\e([@-_])(.*?)([@-~])/)
-                handle_sequence(s)
-              elsif s.scan(/\e(([@-_])(.*?)?)?$/)
-                break
-              elsif s.scan(/</)
-                write_in_tag '&lt;'
-              elsif s.scan(/\r?\n/)
-                handle_new_line
-              else
-                write_in_tag s.scan(/./m)
-              end
-
-              @offset += s.matched_size
-            end
-          end
-
-          close_open_tags
+          process_stream_with_lookahead(stream)
 
           Ansi2html::Result.new(
             html: @out.force_encoding(Encoding.default_external),
@@ -99,6 +85,97 @@ module Gitlab
         end
 
         private
+
+        def process_stream_with_lookahead(stream)
+          # We process lines with 1-line look-back, so that we can process line continuations
+          previous_line = nil
+
+          stream.each_line do |line|
+            line = encode_utf8_no_detect(line)
+            handle_line(previous_line, line)
+            previous_line = line
+          end
+
+          handle_line(previous_line, nil) if previous_line
+
+          close_open_tags
+        end
+
+        def handle_line(line, next_line)
+          if line.nil?
+            # First line, initialize check for timestamps
+            @has_timestamps = next_line.match?(TIMESTAMP_REGEX)
+            return
+          end
+
+          is_continued =
+            @has_timestamps && next_line&.at(TIMESTAMP_PREFIX_LENGTH - 1) == '+' && has_timestamp_prefix?(next_line)
+
+          # Continued lines contain an ignored \n character at the end, so we can chop it off
+          line.delete_suffix!("\n") if is_continued
+
+          if @current_line_buffer.nil?
+            @current_line_buffer = line
+          else
+            # Ignore timestamp from continued line
+            @current_line_buffer << line[TIMESTAMP_PREFIX_LENGTH..]
+          end
+
+          return if is_continued
+
+          consume_line(@current_line_buffer)
+          @current_line_buffer = nil
+        end
+
+        def consume_line(line)
+          scanner = StringScanner.new(line)
+          last_offset = nil
+          line_start_offset = @offset
+
+          # Consume tokens until end of string or no more progress
+          until scanner.eos? || @offset == last_offset
+            last_offset = @offset
+            consume_token(scanner, @offset == line_start_offset)
+          end
+        end
+
+        def consume_token(scanner, at_line_start)
+          return if at_line_start && skip_timestamp(scanner) # Avoid regex on timestamps
+
+          if scanner.scan(Gitlab::Regex.build_trace_section_regex)
+            handle_section(scanner)
+          elsif scanner.scan(/\e([@-_])(.*?)([@-~])/)
+            handle_sequence(scanner)
+          elsif scanner.scan(/\e(([@-_])(.*?)?)?$/)
+            return
+          elsif scanner.scan('<')
+            write_in_tag '&lt;'
+          elsif scanner.scan(/\r?\n/)
+            handle_new_line
+          else
+            write_in_tag scanner.scan(/./m)
+          end
+
+          @offset += scanner.matched_size
+        end
+
+        def has_timestamp_prefix?(line)
+          # Avoid regex on timestamps for performance
+          return unless @has_timestamps && line && line.length >= TIMESTAMP_PREFIX_LENGTH
+
+          line[RFC3339_DATETIME_LENGTH - 1] == 'Z' &&
+            line[4] == '-' && line[7] == '-' && line[10] == 'T' && line[13] == ':'
+        end
+
+        def skip_timestamp(scanner)
+          return unless @has_timestamps
+
+          line = scanner.peek(TIMESTAMP_PREFIX_LENGTH + 1)
+          return unless has_timestamp_prefix?(line)
+
+          scanner.pos += TIMESTAMP_PREFIX_LENGTH
+          @offset += TIMESTAMP_PREFIX_LENGTH
+        end
 
         def handle_new_line
           write_in_tag %(<br/>)
@@ -246,6 +323,8 @@ module Gitlab
           @out = +''
           @sections = []
           @lineno_in_section = 0
+          @current_line_buffer = nil
+          @has_timestamps = nil
           reset
         end
 
