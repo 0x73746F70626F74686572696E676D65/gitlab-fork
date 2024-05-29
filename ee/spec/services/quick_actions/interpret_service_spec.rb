@@ -17,8 +17,8 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
 
   before do
     stub_licensed_features(multiple_issue_assignees: true,
-                           multiple_merge_request_reviewers: true,
-                           multiple_merge_request_assignees: true)
+      multiple_merge_request_reviewers: true,
+      multiple_merge_request_assignees: true)
 
     project.add_developer(current_user)
     project.add_developer(developer)
