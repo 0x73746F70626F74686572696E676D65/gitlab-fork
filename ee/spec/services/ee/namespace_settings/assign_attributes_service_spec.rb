@@ -62,7 +62,7 @@ RSpec.describe EE::NamespaceSettings::AssignAttributesService, feature_category:
       end
     end
 
-    context 'when service_access_tokens_expiration_efnroced param present' do
+    context 'when service_access_tokens_expiration_enforced param present' do
       let(:params) { { service_access_tokens_expiration_enforced: false } }
 
       before_all do

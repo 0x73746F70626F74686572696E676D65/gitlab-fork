@@ -532,6 +532,91 @@ RSpec.describe Groups::UpdateService, '#execute', feature_category: :groups_and_
     end
   end
 
+  context 'when updating duo_features_enabled' do
+    let_it_be_with_reload(:user) { create(:user) }
+    let_it_be_with_reload(:group) { create(:group, :public) }
+    let(:params) { { duo_features_enabled: false } }
+
+    context 'as a normal user' do
+      before_all do
+        group.add_maintainer(user)
+      end
+
+      it 'does not change settings' do
+        expect { update_group(group, user, params) }
+          .not_to(change { group.namespace_settings.duo_features_enabled })
+      end
+    end
+
+    context 'as a group owner' do
+      before_all do
+        group.add_owner(user)
+      end
+
+      it 'changes settings' do
+        expect { update_group(group, user, params) }
+          .to(change { group.namespace_settings.duo_features_enabled }.to(false))
+      end
+
+      context 'group has subgroups' do
+        let(:subgroup) { create(:group, parent: group) }
+
+        context 'when the cascade duo features flag is on' do
+          it 'runs worker that sets subgroup duo_features_enabled to match group', :sidekiq_inline do
+            subgroup.namespace_settings.update!(duo_features_enabled: true)
+
+            update_group(group, user, params)
+
+            expect(subgroup.reload.namespace_settings.reload.duo_features_enabled).to eq false
+          end
+        end
+
+        context 'when the cascade duo features flag is off' do
+          before do
+            stub_feature_flags(cascade_duo_features_enabled_setting: false)
+          end
+
+          it 'does not run worker that sets subgroup duo_features_enabled to match group', :sidekiq_inline do
+            subgroup.namespace_settings.update!(duo_features_enabled: true)
+
+            update_group(group, user, params)
+
+            expect(subgroup.reload.namespace_settings.reload.duo_features_enabled).to eq true
+          end
+        end
+      end
+    end
+  end
+
+  context 'when updating lock_duo_features_enabled' do
+    let_it_be_with_reload(:user) { create(:user) }
+    let_it_be_with_reload(:group) { create(:group, :public) }
+
+    let(:params) { { lock_duo_features_enabled: true } }
+
+    context 'as a normal user' do
+      before_all do
+        group.add_maintainer(user)
+      end
+
+      it 'does not change settings' do
+        expect { update_group(group, user, params) }
+         .not_to(change { group.namespace_settings.lock_duo_features_enabled })
+      end
+    end
+
+    context 'as a group owner' do
+      before_all do
+        group.add_owner(user)
+      end
+
+      it 'changes the group settings' do
+        expect { update_group(group, user, params) }
+          .to(change { group.namespace_settings.lock_duo_features_enabled }.to(true))
+      end
+    end
+  end
+
   def update_group(group, user, opts)
     Groups::UpdateService.new(group, user, opts).execute
   end

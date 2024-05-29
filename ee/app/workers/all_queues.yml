@@ -1740,6 +1740,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: namespaces_cascade_duo_features_enabled
+  :worker_name: Namespaces::CascadeDuoFeaturesEnabledWorker
+  :feature_category: :ai_abstraction_layer
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :memory
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: namespaces_free_user_cap_group_over_limit_notification
   :worker_name: Namespaces::FreeUserCap::GroupOverLimitNotificationWorker
   :feature_category: :user_management

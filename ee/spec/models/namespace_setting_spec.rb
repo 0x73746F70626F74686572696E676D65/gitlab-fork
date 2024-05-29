@@ -144,6 +144,15 @@ RSpec.describe NamespaceSetting, feature_category: :groups_and_projects, type: :
     end
   end
 
+  describe '.duo_features_set' do
+    let_it_be(:setting_1) { create(:namespace_settings, duo_features_enabled: true) }
+    let_it_be(:setting_2) { create(:namespace_settings, duo_features_enabled: false) }
+
+    subject { described_class.duo_features_set(true) }
+
+    it { is_expected.to contain_exactly(setting_1) }
+  end
+
   describe '#prevent_forking_outside_group?' do
     context 'with feature available' do
       before do

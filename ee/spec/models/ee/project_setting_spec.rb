@@ -33,6 +33,15 @@ RSpec.describe ProjectSetting, feature_category: :groups_and_projects do
     it { is_expected.to contain_exactly(setting_1) }
   end
 
+  describe '.duo_features_set' do
+    let_it_be(:setting_1) { create(:project_setting, duo_features_enabled: true) }
+    let_it_be(:setting_2) { create(:project_setting, duo_features_enabled: false) }
+
+    subject { described_class.duo_features_set(true) }
+
+    it { is_expected.to contain_exactly(setting_1) }
+  end
+
   describe 'validations' do
     context 'when enabling only_mirror_protected_branches and mirror_branch_regex' do
       it 'is invalid' do
