@@ -420,7 +420,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     resources << workspace_secret_file if include_all_resources
 
     resources.map do |resource|
-      YAML.dump(resource.deep_stringify_keys)
+      YAML.dump(Gitlab::Utils.deep_sort_hash(resource).deep_stringify_keys)
     end.join
   end
 
@@ -525,7 +525,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     resources << workspace_secret_file if include_all_resources
 
     resources.map do |resource|
-      YAML.dump(resource.deep_stringify_keys)
+      YAML.dump(Gitlab::Utils.deep_sort_hash(resource).deep_stringify_keys)
     end.join
   end
 
