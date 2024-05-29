@@ -7,6 +7,7 @@ import { contentTop } from '~/lib/utils/common_utils';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { queryToObject } from '~/lib/utils/url_utility';
+import axios from '~/lib/utils/axios_utils';
 import LogsTable from './logs_table.vue';
 import LogsDrawer from './logs_drawer.vue';
 import LogsFilteredSearch from './filter_bar/logs_filtered_search.vue';
@@ -42,6 +43,8 @@ export default {
     return {
       loadingLogs: false,
       loadingMetadata: false,
+      fetchLogsAbortController: null,
+      fetchMetatadataAbortController: null,
       logs: [],
       metadata: {},
       filters: queryToFilterObj(window.location.search),
@@ -85,17 +88,25 @@ export default {
   },
   methods: {
     async fetchLogs() {
-      this.loadingLogs = true;
+      if (this.fetchLogsAbortController) {
+        this.fetchLogsAbortController.abort();
+        this.fetchLogsAbortController = null;
+      }
       try {
+        this.loadingLogs = true;
+        this.fetchLogsAbortController = new AbortController();
         const { logs, nextPageToken } = await this.observabilityClient.fetchLogs({
           pageToken: this.nextPageToken,
           pageSize: PAGE_SIZE,
           filters: this.filters,
+          abortController: this.fetchLogsAbortController,
         });
         this.logs = [...this.logs, ...logs];
         if (nextPageToken) {
           this.nextPageToken = nextPageToken;
         }
+        this.fetchLogsAbortController = null;
+        this.loadingLogs = false;
         if (this.shouldOpenDrawer) {
           this.shouldOpenDrawer = false;
           const [selectedFingerprint] = this.filters.attributes?.fingerprint || [];
@@ -103,26 +114,36 @@ export default {
             this.selectLog(selectedFingerprint?.value);
           }
         }
-      } catch {
-        createAlert({
-          message: s__('ObservabilityLogs|Failed to load logs.'),
-        });
-      } finally {
-        this.loadingLogs = false;
+      } catch (e) {
+        if (!axios.isCancel(e)) {
+          this.loadingLogs = false;
+          createAlert({
+            message: s__('ObservabilityLogs|Failed to load logs.'),
+          });
+        }
       }
     },
     async fetchMetadata() {
-      this.loadingMetadata = true;
+      if (this.fetchMetatadataAbortController) {
+        this.fetchMetatadataAbortController.abort();
+        this.fetchMetatadataAbortController = null;
+      }
       try {
+        this.loadingMetadata = true;
+        this.fetchMetatadataAbortController = new AbortController();
         this.metadata = await this.observabilityClient.fetchLogsSearchMetadata({
           filters: this.filters,
+          abortController: this.fetchMetatadataAbortController,
         });
-      } catch {
-        createAlert({
-          message: s__('ObservabilityLogs|Failed to load metadata.'),
-        });
-      } finally {
+        this.fetchMetatadataAbortController = null;
         this.loadingMetadata = false;
+      } catch (e) {
+        if (!axios.isCancel(e)) {
+          this.loadingMetadata = false;
+          createAlert({
+            message: s__('ObservabilityLogs|Failed to load metadata.'),
+          });
+        }
       }
     },
     onToggleDrawer({ fingerprint }) {

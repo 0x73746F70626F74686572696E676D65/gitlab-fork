@@ -12,8 +12,10 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import { createMockClient } from 'helpers/mock_observability_client';
 import * as commonUtils from '~/lib/utils/common_utils';
+import axios from '~/lib/utils/axios_utils';
 import { mockLogs, mockMetadata } from './mock_data';
 
+jest.mock('~/lib/utils/axios_utils');
 jest.mock('~/alert');
 
 describe('LogsList', () => {
@@ -36,8 +38,13 @@ describe('LogsList', () => {
   const getDrawerSelectedLog = () => findDrawer().props('log');
 
   const findUrlSync = () => wrapper.findComponent(UrlSync);
-  const findFilteredSearch = () => wrapper.findComponent(LogsFilteredSearch);
   const findLogsVolumeChart = () => wrapper.findComponent(LogsVolume);
+
+  const findFilteredSearch = () => wrapper.findComponent(LogsFilteredSearch);
+  const setFilters = async (filters = { dateRange: {}, attributes: {} }) => {
+    await findFilteredSearch().vm.$emit('filter', filters);
+    await waitForPromises();
+  };
 
   const mountComponent = async () => {
     wrapper = shallowMountExtended(LogsList, {
@@ -282,6 +289,7 @@ describe('LogsList', () => {
           pageSize: 100,
           pageToken: 'page-2',
           filters: { dateRange: { value: '1h' }, attributes: {} },
+          abortController: expect.any(AbortController),
         });
 
         expect(findInfiniteScrolling().props('fetchedItems')).toBe(
@@ -296,6 +304,7 @@ describe('LogsList', () => {
         expect(observabilityClientMock.fetchLogs).toHaveBeenLastCalledWith({
           pageSize: 100,
           pageToken: null,
+          abortController: expect.any(AbortController),
           filters: { dateRange: { value: '1h' }, attributes: {} },
         });
 
@@ -310,6 +319,7 @@ describe('LogsList', () => {
           pageSize: 100,
           pageToken: 'page-2',
           filters: { dateRange: { value: '1h' }, attributes: {} },
+          abortController: expect.any(AbortController),
         });
 
         await bottomReached();
@@ -319,6 +329,7 @@ describe('LogsList', () => {
           pageSize: 100,
           pageToken: 'page-2',
           filters: { dateRange: { value: '1h' }, attributes: {} },
+          abortController: expect.any(AbortController),
         });
       });
 
@@ -463,12 +474,14 @@ describe('LogsList', () => {
       };
       expect(observabilityClientMock.fetchLogs).toHaveBeenCalledWith({
         filters,
+        abortController: expect.any(AbortController),
         pageSize: 100,
         pageToken: null,
       });
 
       expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenCalledWith({
         filters,
+        abortController: expect.any(AbortController),
       });
     });
 
@@ -494,9 +507,11 @@ describe('LogsList', () => {
           filters,
           pageSize: 100,
           pageToken: null,
+          abortController: expect.any(AbortController),
         });
         expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenCalledWith({
           filters,
+          abortController: expect.any(AbortController),
         });
       });
     });
@@ -523,9 +538,11 @@ describe('LogsList', () => {
           filters,
           pageSize: 100,
           pageToken: null,
+          abortController: expect.any(AbortController),
         });
         expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenCalledWith({
           filters,
+          abortController: expect.any(AbortController),
         });
       });
 
@@ -576,11 +593,10 @@ describe('LogsList', () => {
         observabilityClientMock.fetchLogs.mockClear();
         observabilityClientMock.fetchLogsSearchMetadata.mockClear();
 
-        await findFilteredSearch().vm.$emit('filter', {
+        await setFilters({
           dateRange: { value: '7d' },
           attributes: { search: [{ value: 'some-log' }] },
         });
-        await waitForPromises();
       });
 
       it('fetches logs and metadata with the updated filters', () => {
@@ -595,10 +611,12 @@ describe('LogsList', () => {
           filters,
           pageSize: 100,
           pageToken: null,
+          abortController: expect.any(AbortController),
         });
         expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenCalledTimes(1);
         expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenLastCalledWith({
           filters,
+          abortController: expect.any(AbortController),
         });
       });
 
@@ -680,6 +698,44 @@ describe('LogsList', () => {
           expect(findLogsVolumeChart().props('height')).toBe(120);
         });
       });
+    });
+  });
+
+  describe('cancelling pending requests', () => {
+    let abortSpy;
+    beforeEach(async () => {
+      axios.isCancel = jest.fn().mockReturnValue(true);
+      abortSpy = jest.spyOn(AbortController.prototype, 'abort');
+
+      await mountComponent();
+
+      observabilityClientMock.fetchLogsSearchMetadata.mockReturnValue(new Promise(() => {}));
+      observabilityClientMock.fetchLogs.mockReturnValue(new Promise(() => {}));
+    });
+
+    it('cancels pending requests', async () => {
+      expect(abortSpy).not.toHaveBeenCalled();
+
+      await setFilters();
+      await setFilters();
+
+      // cancel fetchLogs and fetchAnalytics
+      expect(abortSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not show any alert', async () => {
+      observabilityClientMock.fetchLogs.mockRejectedValue('cancelled');
+      observabilityClientMock.fetchLogsSearchMetadata.mockRejectedValue('cancelled');
+
+      await setFilters();
+
+      expect(createAlert).not.toHaveBeenCalled();
+    });
+
+    it('does not hide the loading indicator', async () => {
+      await setFilters();
+
+      expect(findLoadingIcon().exists()).toBe(true);
     });
   });
 });
