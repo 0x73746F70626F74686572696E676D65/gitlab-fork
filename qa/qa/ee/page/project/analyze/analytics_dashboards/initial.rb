@@ -12,6 +12,9 @@ module QA
               end
 
               def click_set_up
+                # need to refresh page due to https://gitlab.com/gitlab-org/analytics-section/product-analytics/devkit/-/issues/41
+                wait_for_set_up_button
+                page.refresh
                 wait_for_set_up_button
                 click_element('setup-button')
               end
