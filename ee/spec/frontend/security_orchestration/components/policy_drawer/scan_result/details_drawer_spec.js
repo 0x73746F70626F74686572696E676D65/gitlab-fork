@@ -7,6 +7,8 @@ import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import Approvals from 'ee/security_orchestration/components/policy_drawer/scan_result/policy_approvals.vue';
 import Settings from 'ee/security_orchestration/components/policy_drawer/scan_result/policy_settings.vue';
 import {
+  disabledSendBotMessageActionScanResultManifest,
+  enabledSendBotMessageActionScanResultManifest,
   mockProjectScanResultPolicy,
   mockProjectWithAllApproverTypesScanResultPolicy,
   mockApprovalSettingsScanResultPolicy,
@@ -20,6 +22,7 @@ describe('DetailsDrawer component', () => {
   const findPolicyDrawerLayout = () => wrapper.findComponent(PolicyDrawerLayout);
   const findToggleList = () => wrapper.findComponent(ToggleList);
   const findSettings = () => wrapper.findComponent(Settings);
+  const findBotMessage = () => wrapper.findByTestId('policy-bot-message');
 
   const factory = ({ propsData } = {}) => {
     wrapper = shallowMountExtended(DetailsDrawer, {
@@ -81,6 +84,37 @@ describe('DetailsDrawer component', () => {
       it('should not render branch exceptions list without exceptions', () => {
         factory({ propsData: { policy: mockProjectWithAllApproverTypesScanResultPolicy } });
         expect(findToggleList().exists()).toBe(false);
+      });
+    });
+
+    describe('send bot message', () => {
+      it('hides the text when it is disabled', () => {
+        factory({
+          propsData: {
+            policy: {
+              ...mockProjectWithAllApproverTypesScanResultPolicy,
+              yaml: disabledSendBotMessageActionScanResultManifest,
+            },
+          },
+        });
+        expect(findBotMessage().exists()).toBe(false);
+      });
+
+      it('shows the message when the action is not included', () => {
+        factory({ propsData: { policy: mockProjectScanResultPolicy } });
+        expect(findBotMessage().text()).toBe('Send a bot message when the conditions match.');
+      });
+
+      it('shows the message when the action is enabled', () => {
+        factory({
+          propsData: {
+            policy: {
+              ...mockProjectWithAllApproverTypesScanResultPolicy,
+              yaml: enabledSendBotMessageActionScanResultManifest,
+            },
+          },
+        });
+        expect(findBotMessage().text()).toBe('Send a bot message when the conditions match.');
       });
     });
   });

@@ -1,7 +1,7 @@
 <script>
 import { s__, __ } from '~/locale';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
-import { fromYaml } from '../../policy_editor/scan_result/lib';
+import { BOT_MESSAGE_TYPE, fromYaml } from '../../policy_editor/scan_result/lib';
 import { SUMMARY_TITLE } from '../constants';
 import InfoRow from '../info_row.vue';
 import DrawerLayout from '../drawer_layout.vue';
@@ -29,8 +29,14 @@ export default {
     },
   },
   computed: {
+    actions() {
+      return this.parsedYaml?.actions;
+    },
+    description() {
+      return this.parsedYaml?.description;
+    },
     humanizedRules() {
-      return humanizeRules(this.parsedYaml.rules);
+      return humanizeRules(this.parsedYaml?.rules);
     },
     parsedYaml() {
       try {
@@ -40,7 +46,7 @@ export default {
       }
     },
     requireApproval() {
-      return this.parsedYaml?.actions?.find((action) => action.type === 'require_approval');
+      return this.actions?.find((action) => action.type === 'require_approval');
     },
     policyScope() {
       return this.policy?.policyScope;
@@ -63,6 +69,9 @@ export default {
     settings() {
       return this.parsedYaml?.approval_settings || {};
     },
+    shouldRenderBotMessage() {
+      return !this.actions.some(({ type, enabled }) => type === BOT_MESSAGE_TYPE && !enabled);
+    },
   },
   methods: {
     capitalizedCriteriaMessage(message) {
@@ -78,7 +87,7 @@ export default {
 <template>
   <drawer-layout
     key="scan_result_policy"
-    :description="parsedYaml.description"
+    :description="description"
     :policy="policy"
     :policy-scope="policyScope"
     :type="$options.i18n.scanResult"
@@ -107,6 +116,9 @@ export default {
               {{ criteria }}
             </li>
           </ul>
+          <div v-if="shouldRenderBotMessage" class="gl-mt-5" data-testid="policy-bot-message">
+            {{ s__('SecurityOrchestration|Send a bot message when the conditions match.') }}
+          </div>
           <settings :settings="settings" />
         </div>
       </info-row>

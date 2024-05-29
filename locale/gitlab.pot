@@ -47391,6 +47391,9 @@ msgstr ""
 msgid "SecurityOrchestration|Select users"
 msgstr ""
 
+msgid "SecurityOrchestration|Send a bot message when the conditions match."
+msgstr ""
+
 msgid "SecurityOrchestration|Send bot message"
 msgstr ""
 

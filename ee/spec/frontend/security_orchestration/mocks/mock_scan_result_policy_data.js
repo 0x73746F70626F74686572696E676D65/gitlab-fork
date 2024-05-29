@@ -148,6 +148,18 @@ export const duplicateActionsScanResultManifest = zeroActionsScanResultManifest.
     approvals_required: 1
 `);
 
+export const enabledSendBotMessageActionScanResultManifest = zeroActionsScanResultManifest.concat(`
+actions:
+  - type: send_bot_message
+    enabled: true
+`);
+
+export const disabledSendBotMessageActionScanResultManifest = zeroActionsScanResultManifest.concat(`
+actions:
+  - type: send_bot_message
+    enabled: false
+`);
+
 export const mockDeprecatedScanResultObject = {
   type: 'scan_result_policy',
   name: 'critical vulnerability CS approvals',

@@ -26,7 +26,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="Boolean(settingsList.length)" class="gl-pt-4">
+  <div v-if="Boolean(settingsList.length)" class="gl-mt-5">
     <h5>{{ $options.i18n.title }}</h5>
     <ul>
       <li v-for="setting in settingsList" :key="setting">
