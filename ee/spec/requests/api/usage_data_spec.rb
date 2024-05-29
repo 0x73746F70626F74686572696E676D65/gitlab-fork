@@ -21,7 +21,7 @@ RSpec.describe API::UsageData, feature_category: :service_ping do
           }
         end
 
-        let(:event_name) { 'code_suggestions_shown' }
+        let(:event_name) { 'code_suggestion_shown_in_ide' }
 
         it 'triggers AI tracking' do
           expect(Gitlab::Tracking::AiTracking).to receive(:track_event)

@@ -5,10 +5,10 @@ module Ai
     self.table_name = 'code_suggestions_usages'
 
     EVENTS = {
-      'code_suggestions_requested' => 1,
-      'code_suggestions_shown' => 2,
-      'code_suggestions_accepted' => 3,
-      'code_suggestions_rejected' => 4
+      'code_suggestions_requested' => 1, # old event name
+      'code_suggestion_shown_in_ide' => 2,
+      'code_suggestion_accepted_in_ide' => 3,
+      'code_suggestion_rejected_in_ide' => 4
     }.freeze
 
     attr_accessor :event, :user

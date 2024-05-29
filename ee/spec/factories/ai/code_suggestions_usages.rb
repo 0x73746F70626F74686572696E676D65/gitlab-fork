@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :code_suggestions_usage, class: '::Ai::CodeSuggestionsUsage' do
-    event { 'code_suggestions_shown' }
+    event { 'code_suggestion_shown_in_ide' }
     user { build_stubbed(:user) }
 
     to_create(&:store)
@@ -21,15 +21,15 @@ FactoryBot.define do
     end
 
     trait :shown do
-      event { 'code_suggestions_shown' }
+      event { 'code_suggestion_shown_in_ide' }
     end
 
     trait :accepted do
-      event { 'code_suggestions_accepted' }
+      event { 'code_suggestion_accepted_in_ide' }
     end
 
     trait :rejected do
-      event { 'code_suggestions_rejected' }
+      event { 'code_suggestion_rejected_in_ide' }
     end
   end
 end
