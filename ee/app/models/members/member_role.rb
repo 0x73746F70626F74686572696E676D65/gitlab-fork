@@ -117,10 +117,14 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     end
   end
 
-  def enabled_permissions
-    MemberRole.all_customizable_permissions.keys.filter do |permission|
+  def enabled_permission_items
+    MemberRole.all_customizable_permissions.filter do |permission|
       attributes[permission.to_s] && self.class.permission_enabled?(permission)
     end
+  end
+
+  def enabled_permissions
+    enabled_permission_items.keys
   end
 
   private

@@ -46,7 +46,13 @@ module EE
           member_role_id: member_role.id,
           name: member_role.name,
           description: member_role.description,
-          occupies_seat: member_role.occupies_seat
+          occupies_seat: member_role.occupies_seat,
+          permissions: member_role.enabled_permission_items.values.map do |permission|
+            {
+              name: permission[:name].humanize,
+              description: permission[:description]
+            }
+          end
         }
       end
     end

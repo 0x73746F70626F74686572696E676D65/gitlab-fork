@@ -12,6 +12,7 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
   let_it_be(:subgroup) { create(:group, parent: root_group) }
   let_it_be(:member_root, reload: true) { create(:group_member, :reporter, group: root_group, user: user) }
   let_it_be(:member_subgroup, reload: true) { create(:group_member, :reporter, group: subgroup, user: user) }
+  let_it_be(:permissions) { [{ name: 'Read code', description: match(/.+/) }] }
 
   let(:current_user) { user }
 
@@ -89,13 +90,15 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
               member_role_id: member_role_reporter.id,
               name: 'reporter plus',
               description: 'My custom role',
-              occupies_seat: true
+              occupies_seat: true,
+              permissions: permissions
             }, {
               base_access_level: Gitlab::Access::REPORTER,
               member_role_id: member_role_reporter_instance.id,
               name: 'reporter plus (instance-level)',
               description: nil,
-              occupies_seat: true
+              occupies_seat: true,
+              permissions: permissions
             }
           ]
         )
@@ -115,27 +118,31 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
               member_role_id: member_role_reporter.id,
               name: 'reporter plus',
               description: 'My custom role',
-              occupies_seat: true
+              occupies_seat: true,
+              permissions: permissions
             },
             {
               base_access_level: Gitlab::Access::GUEST,
               member_role_id: member_role_guest.id,
               name: 'guest plus',
               description: nil,
-              occupies_seat: false
+              occupies_seat: false,
+              permissions: permissions
             },
             {
               base_access_level: Gitlab::Access::GUEST,
               member_role_id: member_role_instance.id,
               name: 'guest plus (instance-level)',
               description: nil,
-              occupies_seat: false
+              occupies_seat: false,
+              permissions: permissions
             }, {
               base_access_level: Gitlab::Access::REPORTER,
               member_role_id: member_role_reporter_instance.id,
               name: 'reporter plus (instance-level)',
               description: nil,
-              occupies_seat: true
+              occupies_seat: true,
+              permissions: permissions
             }
           ]
         )

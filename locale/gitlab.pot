@@ -31768,6 +31768,9 @@ msgstr ""
 msgid "MemberRole|Base role"
 msgstr ""
 
+msgid "MemberRole|Base role: %{role}"
+msgstr ""
+
 msgid "MemberRole|Cannot create a member role with no enabled permissions"
 msgstr ""
 
