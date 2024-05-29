@@ -2,6 +2,10 @@
 
 module GitlabSubscriptions
   class AddOnPurchase < ApplicationRecord
+    include EachBatch
+
+    CLEANUP_DELAY_PERIOD = 14.days
+
     belongs_to :add_on, foreign_key: :subscription_add_on_id, inverse_of: :add_on_purchases
     belongs_to :namespace, optional: true
     has_many :assigned_users, class_name: 'GitlabSubscriptions::UserAddOnAssignment', inverse_of: :add_on_purchase
@@ -17,6 +21,7 @@ module GitlabSubscriptions
       length: { maximum: 255 }
 
     scope :active, -> { where('expires_on >= ?', Date.current) }
+    scope :ready_for_cleanup, -> { where('expires_on < ?', CLEANUP_DELAY_PERIOD.ago.to_date) }
     scope :trial, -> { where(trial: true) }
     scope :by_add_on_name, ->(name) { joins(:add_on).where(add_on: { name: name }) }
     scope :by_namespace_id, ->(namespace_id) { where(namespace_id: namespace_id) }

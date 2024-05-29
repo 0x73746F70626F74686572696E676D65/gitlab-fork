@@ -5,6 +5,12 @@ require 'spec_helper'
 RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provisioning do
   subject { build(:gitlab_subscription_add_on_purchase) }
 
+  it { is_expected.to include_module(EachBatch) }
+
+  describe 'constants' do
+    it { expect(described_class::CLEANUP_DELAY_PERIOD).to be_a(ActiveSupport::Duration) }
+  end
+
   describe 'associations' do
     it { is_expected.to belong_to(:add_on).with_foreign_key(:subscription_add_on_id).inverse_of(:add_on_purchases) }
     it { is_expected.to belong_to(:namespace).optional(true) }
@@ -148,6 +154,34 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :saas_provi
             active_product_analytics_purchase_as_maintainer, active_product_analytics_purchase_unrelated
           ]
         )
+      end
+    end
+
+    describe '.ready_for_cleanup' do
+      let(:add_on) { create(:gitlab_subscription_add_on) }
+      let(:active_add_on_purchase) do
+        create(
+          :gitlab_subscription_add_on_purchase,
+          add_on: add_on,
+          expires_on: Date.current
+        )
+      end
+
+      let(:ready_for_clean_up_add_on_purchase) do
+        create(
+          :gitlab_subscription_add_on_purchase,
+          add_on: add_on,
+          expires_on: (described_class::CLEANUP_DELAY_PERIOD + 1.day).ago.to_date
+        )
+      end
+
+      before do
+        active_add_on_purchase
+        ready_for_clean_up_add_on_purchase
+      end
+
+      it 'returns all ready for cleanup add on purchases' do
+        expect(described_class.ready_for_cleanup).to match_array(ready_for_clean_up_add_on_purchase)
       end
     end
 
