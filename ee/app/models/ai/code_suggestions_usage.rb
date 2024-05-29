@@ -12,19 +12,26 @@ module Ai
       'code_suggestion_direct_access_token_refresh' => 5
     }.freeze
 
-    attr_accessor :event, :user
+    attr_accessor :event, :user, :language, :suggestion_size, :unique_tracking_id
 
     attribute :timestamp, :datetime, default: -> { DateTime.current }
+    attribute :language, :string, default: -> { '' }
+    attribute :suggestion_size, :integer, default: -> { 0 }
+    attribute :unique_tracking_id, :string, default: -> { '' }
 
     validates :event, inclusion: { in: EVENTS.keys }
     validates :user, presence: true
     validates :timestamp, presence: true
+    validates :suggestion_size, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
     def to_clickhouse_csv_row
       {
         event: EVENTS[event],
         timestamp: timestamp.to_f,
-        user_id: user&.id
+        user_id: user&.id,
+        unique_tracking_id: unique_tracking_id,
+        suggestion_size: suggestion_size,
+        language: language
       }
     end
   end
