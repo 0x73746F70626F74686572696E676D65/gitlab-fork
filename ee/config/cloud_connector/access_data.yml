@@ -29,13 +29,22 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
         unit_primitives:
           - duo_chat
           - documentation_search
-  ai_gateway_proxy:
+  anthropic_proxy:
+    backend: 'gitlab-ai-gateway'
+    bundled_with:
+      duo_enterprise:
+        unit_primitives:
+          - categorize_duo_chat_question
+          - documentation_search
+          - explain_vulnerability
+          - generate_issue_description
+          - summarize_issue_discussions
+  vertex_ai_proxy:
     backend: 'gitlab-ai-gateway'
     bundled_with:
       duo_enterprise:
         unit_primitives:
           - analyze_ci_job_failure
-          - categorize_duo_chat_question
           - documentation_search
           - duo_chat
           - explain_code
@@ -43,7 +52,6 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
           - fill_in_merge_request_template
           - generate_commit_message
           - generate_cube_query
-          - generate_issue_description
           - resolve_vulnerability
           - review_merge_request
           - summarize_issue_discussions

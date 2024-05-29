@@ -34,7 +34,7 @@ module Gitlab
 
         def access_token
           if ::Feature.enabled?(:use_ai_gateway_proxy, user)
-            return ::CloudConnector::AvailableServices.find_by_name(:ai_gateway_proxy).access_token(user)
+            return ::CloudConnector::AvailableServices.find_by_name(:vertex_ai_proxy).access_token(user)
           end
 
           TokenLoader.new.current_token
