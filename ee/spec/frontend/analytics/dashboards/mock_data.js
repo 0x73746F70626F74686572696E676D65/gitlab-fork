@@ -697,6 +697,7 @@ export const filterLabelsGroupQuery = `query ($fullPath: ID!) {
     id
     label_0: labels(
       searchTerm: "zero"
+      searchIn: [TITLE]
       includeAncestorGroups: true
       includeDescendantGroups: true
     ) {
@@ -708,6 +709,7 @@ export const filterLabelsGroupQuery = `query ($fullPath: ID!) {
     }
     label_1: labels(
       searchTerm: "one"
+      searchIn: [TITLE]
       includeAncestorGroups: true
       includeDescendantGroups: true
     ) {
@@ -724,14 +726,22 @@ export const filterLabelsGroupQuery = `query ($fullPath: ID!) {
 export const filterLabelsProjectQuery = `query ($fullPath: ID!) {
   namespace: project(fullPath: $fullPath) {
     id
-    label_0: labels(searchTerm: "zero", includeAncestorGroups: true) {
+    label_0: labels(
+      searchTerm: "zero"
+      searchIn: [TITLE]
+      includeAncestorGroups: true
+    ) {
       nodes {
         id
         title
         color
       }
     }
-    label_1: labels(searchTerm: "one", includeAncestorGroups: true) {
+    label_1: labels(
+      searchTerm: "one"
+      searchIn: [TITLE]
+      includeAncestorGroups: true
+    ) {
       nodes {
         id
         title
