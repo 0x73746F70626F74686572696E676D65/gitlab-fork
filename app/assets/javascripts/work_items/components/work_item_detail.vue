@@ -460,6 +460,13 @@ export default {
       </section>
       <section :class="workItemBodyClass">
         <work-item-loading v-if="workItemLoading" />
+        <gl-empty-state
+          v-if="error"
+          :title="$options.i18n.fetchErrorTitle"
+          :description="error"
+          :svg-path="noAccessSvgPath"
+          :svg-height="null"
+        />
         <template v-else>
           <div class="gl-sm-display-none! gl-display-flex">
             <gl-button
@@ -640,13 +647,6 @@ export default {
               @error="updateError = $event"
               @has-notes="updateHasNotes"
               @openReportAbuse="openReportAbuseDrawer"
-            />
-            <gl-empty-state
-              v-if="error"
-              :title="$options.i18n.fetchErrorTitle"
-              :description="error"
-              :svg-path="noAccessSvgPath"
-              :svg-height="null"
             />
           </div>
         </template>
