@@ -28,11 +28,15 @@ module EE
       if integration.is_a?(::Integrations::GoogleCloudPlatform::ArtifactRegistry)
         form_data.merge!(
           artifact_registry_path: project_google_cloud_artifact_registry_index_path(project),
-          personal_access_tokens_path: user_settings_personal_access_tokens_path,
           operating: integration.operating?.to_s
         )
 
-        unless project.google_cloud_platform_workload_identity_federation_integration&.operating?
+        if project.google_cloud_platform_workload_identity_federation_integration&.operating?
+          form_data.merge!(
+            workload_identity_federation_project_number: project.google_cloud_platform_workload_identity_federation_integration.workload_identity_federation_project_number,
+            workload_identity_pool_id: project.google_cloud_platform_workload_identity_federation_integration.workload_identity_pool_id
+          )
+        else
           form_data.merge!(
             editable: 'false',
             workload_identity_federation_path: edit_project_settings_integration_path(
