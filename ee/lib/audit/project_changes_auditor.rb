@@ -111,6 +111,7 @@ module Audit
       audit_compliance_framework_changes
       audit_project_setting_changes
       audit_project_ci_cd_setting_changes
+      audit_analytics_setting_changes
     end
 
     private
@@ -131,6 +132,10 @@ module Audit
         message: merge_method_message
       }
       ::Gitlab::Audit::Auditor.audit(audit_context)
+    end
+
+    def audit_analytics_setting_changes
+      Audit::ProjectAnalyticsChangesAuditor.new(@current_user, model.project_setting, model).execute
     end
 
     def audit_project_feature_changes
