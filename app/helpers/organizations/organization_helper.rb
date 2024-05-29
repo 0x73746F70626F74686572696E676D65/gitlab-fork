@@ -52,23 +52,14 @@ module Organizations
 
     def organization_groups_new_app_data(organization)
       {
-        base_path: root_url,
-        groups_and_projects_organization_path:
-          groups_and_projects_organization_path(organization, { display: 'groups' }),
-        groups_organization_path: groups_organization_path(organization),
-        mattermost_enabled: Gitlab.config.mattermost.enabled,
-        available_visibility_levels: available_visibility_levels(Group),
-        restricted_visibility_levels: restricted_visibility_levels,
-        default_visibility_level: default_group_visibility,
-        path_maxlength: ::Namespace::URL_MAX_LENGTH,
-        path_pattern: Gitlab::PathRegex::NAMESPACE_FORMAT_REGEX_JS
-      }.to_json
+        default_visibility_level: default_group_visibility
+      }.merge(shared_organization_groups_app_data(organization)).to_json
     end
 
-    def organization_groups_edit_app_data(group)
+    def organization_groups_edit_app_data(organization, group)
       {
-        group: group.slice(:full_name)
-      }.to_json
+        group: group.slice(:id, :full_name, :name, :visibility_level, :path)
+      }.merge(shared_organization_groups_app_data(organization)).to_json
     end
 
     def admin_organizations_index_app_data
@@ -118,6 +109,19 @@ module Organizations
       {
         new_organization_url: new_organization_path,
         organizations_empty_state_svg_path: image_path('illustrations/empty-state/empty-organizations-md.svg')
+      }
+    end
+
+    def shared_organization_groups_app_data(organization)
+      {
+        base_path: root_url,
+        groups_and_projects_organization_path:
+          groups_and_projects_organization_path(organization, { display: 'groups' }),
+        groups_organization_path: groups_organization_path(organization),
+        available_visibility_levels: available_visibility_levels(Group),
+        restricted_visibility_levels: restricted_visibility_levels,
+        path_maxlength: ::Namespace::URL_MAX_LENGTH,
+        path_pattern: Gitlab::PathRegex::NAMESPACE_FORMAT_REGEX_JS
       }
     end
 
