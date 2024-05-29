@@ -13708,7 +13708,8 @@ CREATE TABLE path_locks (
     project_id integer,
     user_id integer,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
+    updated_at timestamp without time zone NOT NULL,
+    CONSTRAINT check_e1de2eb0f1 CHECK ((project_id IS NOT NULL))
 );
 
 CREATE SEQUENCE path_locks_id_seq
