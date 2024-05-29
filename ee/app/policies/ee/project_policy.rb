@@ -314,6 +314,10 @@ module EE
         enable :admin_push_rules
       end
 
+      rule { custom_role_enables_admin_integrations }.policy do
+        enable :admin_integrations
+      end
+
       condition(:ci_cancellation_maintainers_only, scope: :subject) do
         project.ci_cancellation_restriction.maintainers_only_allowed?
       end

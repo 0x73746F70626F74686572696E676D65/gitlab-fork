@@ -3014,6 +3014,13 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         it_behaves_like 'custom roles abilities'
       end
     end
+
+    context 'for a custom role with the `admin_integrations` ability' do
+      let(:member_role_abilities) { { admin_integrations: true } }
+      let(:allowed_abilities) { [:admin_integrations] }
+
+      it_behaves_like 'custom roles abilities'
+    end
   end
 
   describe 'permissions for suggested reviewers bot', :saas do

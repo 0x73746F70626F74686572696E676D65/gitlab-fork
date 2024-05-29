@@ -549,6 +549,10 @@ module EE
         enable :admin_push_rules
       end
 
+      rule { custom_role_enables_admin_integrations }.policy do
+        enable :admin_integrations
+      end
+
       rule { can?(:admin_group) | can?(:admin_compliance_framework) | can?(:manage_deploy_tokens) | can?(:manage_merge_request_settings) }.policy do
         enable :view_edit_page
       end

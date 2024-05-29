@@ -23,6 +23,9 @@ module EE
             ],
             ci_cd_menu_item: [
               :admin_cicd_variables
+            ],
+            integrations_menu_item: [
+              :admin_integrations
             ]
           }.freeze
 
