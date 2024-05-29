@@ -1,38 +1,35 @@
 <script>
-import { GlButtonGroup, GlButton, GlDisclosureDropdown } from '@gitlab/ui';
+import {
+  GlButtonGroup,
+  GlButton,
+  GlDisclosureDropdown,
+  GlDisclosureDropdownItem,
+} from '@gitlab/ui';
 import { __, s__ } from '~/locale';
-import { sprintfWorkItem } from '~/work_items/constants';
+import { sprintfWorkItem, WORK_ITEM_TYPE_ENUM_OBJECTIVE } from '~/work_items/constants';
 
 export default {
+  WORK_ITEM_TYPE_ENUM_OBJECTIVE,
   i18n: {
     newIssueLabel: __('New issue'),
     toggleSrText: __('Issue type'),
+    newObjectiveLabel: sprintfWorkItem(s__('WorkItem|New %{workItemType}')),
   },
   components: {
     GlDisclosureDropdown,
+    GlDisclosureDropdownItem,
     GlButton,
     GlButtonGroup,
+    CreateWorkItemModal: () => import('~/work_items/components/create_work_item_modal.vue'),
   },
   inject: ['newIssuePath'],
-  props: {
-    workItemType: {
-      type: String,
-      required: true,
-    },
-  },
-  computed: {
-    items() {
-      return [
-        {
-          text: this.$options.i18n.newIssueLabel,
-          href: this.newIssuePath,
-        },
-        {
-          text: sprintfWorkItem(s__('WorkItem|New %{workItemType}'), this.workItemType),
-          action: () => this.$emit('select-new-work-item'),
-        },
-      ];
-    },
+  data() {
+    return {
+      newIssueItem: {
+        text: this.$options.i18n.newIssueLabel,
+        href: this.newIssuePath,
+      },
+    };
   },
 };
 </script>
@@ -47,7 +44,13 @@ export default {
       placement="right"
       text-sr-only
       variant="confirm"
-      :items="items"
-    />
+    >
+      <gl-disclosure-dropdown-item :item="newIssueItem" />
+      <create-work-item-modal
+        :work-item-type-name="$options.WORK_ITEM_TYPE_ENUM_OBJECTIVE"
+        as-dropdown-item
+        @workItemCreated="$emit('workItemCreated')"
+      />
+    </gl-disclosure-dropdown>
   </gl-button-group>
 </template>

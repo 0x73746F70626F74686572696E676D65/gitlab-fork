@@ -1,7 +1,8 @@
 import { GlButton, GlDisclosureDropdown, GlDisclosureDropdownItem } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import NewIssueDropdown from 'ee/issues/list/components/new_issue_dropdown.vue';
-import { WORK_ITEM_TYPE_VALUE_OBJECTIVE } from '~/work_items/constants';
+import CreateWorkItemModal from '~/work_items/components/create_work_item_modal.vue';
+import { WORK_ITEM_TYPE_ENUM_OBJECTIVE } from '~/work_items/constants';
 
 const NEW_ISSUE_PATH = 'mushroom-kingdom/~/issues/new';
 
@@ -10,11 +11,11 @@ describe('NewIssueDropdown component', () => {
 
   const createComponent = () => {
     return mount(NewIssueDropdown, {
-      propsData: {
-        workItemType: WORK_ITEM_TYPE_VALUE_OBJECTIVE,
-      },
       provide: {
         newIssuePath: NEW_ISSUE_PATH,
+      },
+      stubs: {
+        CreateWorkItemModal,
       },
     });
   };
@@ -23,6 +24,7 @@ describe('NewIssueDropdown component', () => {
   const findDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
   const findDropdownItem = (index) =>
     findDropdown().findAllComponents(GlDisclosureDropdownItem).at(index);
+  const findCreateWorkItemModal = () => wrapper.findComponent(CreateWorkItemModal);
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -34,19 +36,16 @@ describe('NewIssueDropdown component', () => {
   });
 
   it('renders dropdown with New Issue item', () => {
-    expect(findDropdownItem(0).props('item').text).toBe('New issue');
-    expect(findDropdownItem(0).props('item').href).toBe(NEW_ISSUE_PATH);
+    expect(findDropdownItem(0).props().item).toMatchObject({
+      text: 'New issue',
+      href: NEW_ISSUE_PATH,
+    });
   });
 
-  it('renders dropdown with new work item text', () => {
-    expect(findDropdownItem(1).props('item').text).toBe('New objective');
-  });
-
-  describe('when new work item is clicked', () => {
-    it('emits `select-new-work-item` event', () => {
-      findDropdownItem(1).find('button').trigger('click');
-
-      expect(wrapper.emitted('select-new-work-item')).toEqual([[]]);
+  it('renders findCreateWorkItemModal as dropdown item for objectives', () => {
+    expect(findCreateWorkItemModal().props()).toMatchObject({
+      asDropdownItem: true,
+      workItemTypeName: WORK_ITEM_TYPE_ENUM_OBJECTIVE,
     });
   });
 });
