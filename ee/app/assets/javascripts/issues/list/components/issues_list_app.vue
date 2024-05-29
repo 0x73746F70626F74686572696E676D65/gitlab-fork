@@ -24,9 +24,7 @@ import {
   WORK_ITEM_TYPE_ENUM_EPIC,
   WORK_ITEM_TYPE_ENUM_OBJECTIVE,
   WORK_ITEM_TYPE_ENUM_KEY_RESULT,
-  WORK_ITEM_TYPE_VALUE_OBJECTIVE,
 } from '~/work_items/constants';
-import CreateWorkItemForm from 'ee/work_items/components/create_work_item_form.vue';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_EPIC } from '~/graphql_shared/constants';
 import searchIterationsQuery from '../queries/search_iterations.query.graphql';
@@ -45,10 +43,8 @@ const ChildEpicIssueIndicator = () =>
   import('ee/issuable/child_epic_issue_indicator/components/child_epic_issue_indicator.vue');
 
 export default {
-  WORK_ITEM_TYPE_VALUE_OBJECTIVE,
   name: 'IssuesListAppEE',
   components: {
-    CreateWorkItemForm,
     IssuesListApp,
     NewIssueDropdown,
     ChildEpicIssueIndicator,
@@ -64,11 +60,6 @@ export default {
     'hasOkrsFeature',
     'isProject',
   ],
-  data() {
-    return {
-      showObjectiveCreationForm: false,
-    };
-  },
   computed: {
     namespace() {
       return this.isProject ? WORKSPACE_PROJECT : WORKSPACE_GROUP;
@@ -151,6 +142,10 @@ export default {
     },
   },
   methods: {
+    refetchIssuables() {
+      this.$refs.issuesListApp.$apollo.queries.issues.refetch();
+      this.$refs.issuesListApp.$apollo.queries.issuesCounts.refetch();
+    },
     fetchIterations(search) {
       const id = Number(search);
       const variables =
@@ -166,20 +161,6 @@ export default {
           variables,
         })
         .then(({ data }) => data[this.namespace]?.iterations.nodes);
-    },
-    handleObjectiveCreationSuccess({ workItem }) {
-      if (workItem.id) {
-        // Refresh results on list
-        this.showObjectiveCreationForm = false;
-        this.$refs.issuesListApp.$apollo.queries.issues.refetch();
-        this.$refs.issuesListApp.$apollo.queries.issuesCounts.refetch();
-      }
-    },
-    showForm() {
-      this.showObjectiveCreationForm = true;
-    },
-    hideForm() {
-      this.showObjectiveCreationForm = false;
     },
     hasFilteredEpicId(apiFilterParams) {
       return Boolean(apiFilterParams.epicId);
@@ -205,17 +186,7 @@ export default {
     :ee-search-tokens="searchTokens"
   >
     <template v-if="isOkrsEnabled" #new-issuable-button>
-      <new-issue-dropdown
-        :work-item-type="$options.WORK_ITEM_TYPE_VALUE_OBJECTIVE"
-        @select-new-work-item="showForm"
-      />
-    </template>
-    <template v-if="showObjectiveCreationForm && isOkrsEnabled" #list-body>
-      <create-work-item-form
-        :work-item-type="$options.WORK_ITEM_TYPE_VALUE_OBJECTIVE"
-        @created="handleObjectiveCreationSuccess"
-        @hide="hideForm"
-      />
+      <new-issue-dropdown @workItemCreated="refetchIssuables" />
     </template>
     <template #title-icons="{ issuable, apiFilterParams }">
       <child-epic-issue-indicator

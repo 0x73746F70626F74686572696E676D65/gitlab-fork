@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { cloneDeep } from 'lodash';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import getIssuesQuery from 'ee_else_ce/issues/list/queries/get_issues.query.graphql';
 import getIssuesCountsQuery from 'ee_else_ce/issues/list/queries/get_issues_counts.query.graphql';
@@ -45,7 +45,6 @@ import {
 import BlockingIssuesCount from 'ee/issues/components/blocking_issues_count.vue';
 import IssuesListApp from 'ee/issues/list/components/issues_list_app.vue';
 import NewIssueDropdown from 'ee/issues/list/components/new_issue_dropdown.vue';
-import CreateWorkItemForm from 'ee/work_items/components/create_work_item_form.vue';
 import searchEpicsQuery from 'ee/vue_shared/components/filtered_search_bar/queries/search_epics.query.graphql';
 import ChildEpicIssueIndicator from 'ee/issuable/child_epic_issue_indicator/components/child_epic_issue_indicator.vue';
 import { mockGroupEpicsQueryResponse } from 'ee_jest/vue_shared/components/filtered_search_bar/mock_data';
@@ -103,7 +102,6 @@ describe('EE IssuesListApp component', () => {
 
   const findIssuableList = () => wrapper.findComponent(IssuableList);
   const findIssueListApp = () => wrapper.findComponent(CEIssuesListApp);
-  const findCreateWorkItemForm = () => wrapper.findComponent(CreateWorkItemForm);
   const findNewIssueDropdown = () => wrapper.findComponent(NewIssueDropdown);
   const findChildEpicIssueIndicator = () => wrapper.findComponent(ChildEpicIssueIndicator);
 
@@ -318,7 +316,7 @@ describe('EE IssuesListApp component', () => {
       });
 
       it('renders', () => {
-        expect(findNewIssueDropdown().props()).toEqual({ workItemType: 'Objective' });
+        expect(findNewIssueDropdown().exists()).toBe(true);
       });
     });
 
@@ -332,54 +330,6 @@ describe('EE IssuesListApp component', () => {
 
       it('does not render', () => {
         expect(findNewIssueDropdown().exists()).toBe(false);
-      });
-    });
-  });
-
-  describe('CreateWorkItemForm component', () => {
-    describe('when okrs is enabled', () => {
-      beforeEach(() => {
-        wrapper = mountComponent({
-          provide: { hasOkrsFeature: true },
-          okrsMvc: true,
-        });
-      });
-
-      it('does not render initially', () => {
-        expect(findCreateWorkItemForm().exists()).toBe(false);
-      });
-
-      describe('when "New Objective" button is clicked', () => {
-        beforeEach(() => {
-          findNewIssueDropdown().vm.$emit('select-new-work-item');
-        });
-
-        it('renders', () => {
-          expect(findCreateWorkItemForm().props()).toEqual({
-            isGroup: false,
-            workItemType: 'Objective',
-          });
-        });
-
-        it('hides form when "hide" event is emitted', async () => {
-          findCreateWorkItemForm().vm.$emit('hide');
-          await nextTick();
-
-          expect(findCreateWorkItemForm().exists()).toBe(false);
-        });
-      });
-    });
-
-    describe('when okrs is disabled', () => {
-      beforeEach(() => {
-        wrapper = mountComponent({
-          provide: { hasOkrsFeature: false },
-          okrsMvc: false,
-        });
-      });
-
-      it('does not render', () => {
-        expect(findCreateWorkItemForm().exists()).toBe(false);
       });
     });
   });
