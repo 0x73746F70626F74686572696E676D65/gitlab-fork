@@ -18440,6 +18440,9 @@ msgstr ""
 msgid "Developer"
 msgstr ""
 
+msgid "Development widget is not enabled for this work item type"
+msgstr ""
+
 msgid "Devfile"
 msgstr ""
 
