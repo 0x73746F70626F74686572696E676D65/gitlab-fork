@@ -18,8 +18,11 @@ describe('MetricsComponent', () => {
   let wrapper;
   let observabilityClientMock;
 
+  const mockAvailableAttributes = ['attr-1', 'attr-2', 'attr-3'];
+
   const mockResponse = {
     metrics: [...mockMetrics],
+    all_available_attributes: mockAvailableAttributes,
   };
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
@@ -112,10 +115,9 @@ describe('MetricsComponent', () => {
 
       expect(tokens).toBeDefined();
       expect(tokens.options).toEqual([
-        { title: 'attribute_a', value: 'attribute_a' },
-        { title: 'attribute_b', value: 'attribute_b' },
-        { title: 'attribute_c', value: 'attribute_c' },
-        { title: 'attribute_d', value: 'attribute_d' },
+        { title: 'attr-1', value: 'attr-1' },
+        { title: 'attr-2', value: 'attr-2' },
+        { title: 'attr-3', value: 'attr-3' },
       ]);
     });
 
