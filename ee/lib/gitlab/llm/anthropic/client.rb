@@ -92,7 +92,7 @@ module Gitlab
 
         def api_key
           if ::Feature.enabled?(:use_ai_gateway_proxy, user)
-            return ::CloudConnector::AvailableServices.find_by_name(:ai_gateway_proxy).access_token(user)
+            return ::CloudConnector::AvailableServices.find_by_name(:anthropic_proxy).access_token(user)
           end
 
           @api_key ||= ::Gitlab::CurrentSettings.anthropic_api_key
