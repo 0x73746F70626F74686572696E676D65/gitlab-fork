@@ -725,7 +725,7 @@ RSpec.shared_examples 'migration deletes documents based on schema version' do
             migration.migrate
             break if migration.completed?
 
-            sleep 0.01
+            sleep 0.02
           end
 
           migration.migrate # To set a pristine state

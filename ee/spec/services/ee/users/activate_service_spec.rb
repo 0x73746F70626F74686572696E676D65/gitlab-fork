@@ -28,6 +28,7 @@ RSpec.describe Users::ActivateService, feature_category: :user_management do
             details: {
               author_class: 'User',
               author_name: current_user.name,
+              event_name: 'user_activate',
               custom_message: 'Activated user',
               target_details: user.username,
               target_id: user.id,

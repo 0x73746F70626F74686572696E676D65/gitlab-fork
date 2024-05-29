@@ -42,6 +42,7 @@ RSpec.describe Users::CreateService, feature_category: :user_management do
               author_class: 'User',
               author_name: current_user.name,
               custom_message: "User #{user.username} created",
+              event_name: "user_created",
               target_id: user.id,
               target_type: 'User',
               target_details: user.full_path,

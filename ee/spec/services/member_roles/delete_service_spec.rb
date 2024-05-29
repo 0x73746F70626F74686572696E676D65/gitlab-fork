@@ -53,6 +53,7 @@ RSpec.describe MemberRoles::DeleteService, feature_category: :system_access do
                 author_name: user.name,
                 target_id: member_role.id,
                 target_type: member_role.class.name,
+                event_name: "member_role_deleted",
                 target_details: {
                   name: member_role.name,
                   description: member_role.description,

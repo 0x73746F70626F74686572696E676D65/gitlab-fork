@@ -212,6 +212,7 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
           audit_event_params.tap do |param|
             param[:details].merge!(
               change: 'name',
+              event_name: 'project_name_updated',
               from: old_name,
               to: project.full_name,
               custom_message: "Changed name from #{old_name} to #{project.full_name}"
@@ -235,6 +236,7 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
           audit_event_params.tap do |param|
             param[:details].merge!(
               change: 'path',
+              event_name: 'project_path_updated',
               from: project.old_path_with_namespace,
               to: project.full_path,
               custom_message: "Changed path from #{project.old_path_with_namespace} to #{project.full_path}"
@@ -261,6 +263,7 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
         let(:attributes) do
           audit_event_params.tap do |param|
             param[:details].merge!(
+              event_name: 'project_default_branch_updated',
               from: project.previous_default_branch,
               to: project.default_branch,
               custom_message: format(Projects::UpdateService::DEFAULT_BRANCH_CHANGE_AUDIT_MESSAGE, project.previous_default_branch, project.default_branch)
@@ -284,6 +287,7 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
           audit_event_params.tap do |param|
             param[:details].merge!(
               change: 'visibility_level',
+              event_name: 'project_visibility_level_updated',
               from: 'Private',
               to: 'Internal',
               custom_message: "Changed visibility_level from Private to Internal"

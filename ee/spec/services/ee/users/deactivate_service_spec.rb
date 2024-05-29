@@ -28,6 +28,7 @@ RSpec.describe Users::DeactivateService, feature_category: :user_management do
             details: {
               author_class: 'User',
               author_name: current_user.name,
+              event_name: 'user_deactivate',
               custom_message: 'Deactivated user',
               target_details: user.username,
               target_id: user.id,

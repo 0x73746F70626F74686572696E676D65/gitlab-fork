@@ -128,6 +128,7 @@ RSpec.describe Releases::UpdateService, feature_category: :release_orchestration
           details: {
             author_name: user.name,
             author_class: 'User',
+            event_name: "release_updated",
             target_id: release.id,
             target_type: 'Release',
             target_details: "Updated name",

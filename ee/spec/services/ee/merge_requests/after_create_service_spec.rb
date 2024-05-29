@@ -210,6 +210,7 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
             entity_type: 'Project',
             details: {
               author_name: project_bot.name,
+              event_name: 'merge_request_created_by_project_bot',
               target_id: merge_request.id,
               target_type: 'MergeRequest',
               target_details: {

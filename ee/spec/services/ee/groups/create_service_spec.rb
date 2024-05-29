@@ -33,6 +33,7 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
           entity_type: 'Group',
           details: {
             author_name: user.name,
+            event_name: "group_created",
             target_id: created_group.id,
             target_type: 'Group',
             target_details: created_group.full_path,

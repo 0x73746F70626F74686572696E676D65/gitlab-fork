@@ -32,6 +32,7 @@ RSpec.describe Projects::UnlinkForkService, :use_clean_rails_memory_store_cachin
                                                      author_class: user.class.name,
                                                      author_name: user.name,
                                                      custom_message: "Project unlinked from #{project.name}",
+                                                     event_name: 'project_fork_relationship_removed',
                                                      target_details: forked_project.name,
                                                      target_id: forked_project.id,
                                                      target_type: forked_project.class.name
@@ -68,6 +69,7 @@ RSpec.describe Projects::UnlinkForkService, :use_clean_rails_memory_store_cachin
                                                        author_class: user.class.name,
                                                        author_name: user.name,
                                                        custom_message: "Project unlinked from ",
+                                                       event_name: 'project_fork_relationship_removed',
                                                        target_details: forked_project.name,
                                                        target_id: forked_project.id,
                                                        target_type: forked_project.class.name

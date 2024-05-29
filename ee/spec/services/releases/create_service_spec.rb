@@ -80,6 +80,7 @@ RSpec.describe Releases::CreateService, feature_category: :release_orchestration
           details: {
             author_name: user.name,
             author_class: 'User',
+            event_name: 'release_created',
             target_id: release.id,
             target_type: 'Release',
             target_details: release.name,

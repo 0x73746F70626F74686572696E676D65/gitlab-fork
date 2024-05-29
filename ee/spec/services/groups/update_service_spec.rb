@@ -42,7 +42,8 @@ RSpec.describe Groups::UpdateService, '#execute', feature_category: :groups_and_
               change: 'visibility',
               from: 'Public',
               to: 'Private',
-              custom_message: "Changed visibility from Public to Private"
+              custom_message: "Changed visibility from Public to Private",
+              event_name: 'group_visibility_level_updated'
             )
           end
         end
@@ -67,6 +68,7 @@ RSpec.describe Groups::UpdateService, '#execute', feature_category: :groups_and_
           let(:attributes) do
             audit_event_params.tap do |param|
               param[:details].merge!(
+                event_name: 'ip_restrictions_changed',
                 custom_message: "Group IP restrictions updated from '' to '192.168.0.0/24,10.0.0.0/8'"
               )
             end

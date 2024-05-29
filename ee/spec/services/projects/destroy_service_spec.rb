@@ -195,6 +195,7 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
             details: {
               remove: 'project',
               author_name: user.name,
+              event_name: 'project_destroyed',
               target_id: project.id,
               target_type: 'Project',
               target_details: project.full_path,
@@ -231,6 +232,7 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
             details: {
               remove: 'project',
               author_name: user.name,
+              event_name: 'project_destroyed',
               target_id: project.id,
               target_type: 'Project',
               target_details: project.full_path,

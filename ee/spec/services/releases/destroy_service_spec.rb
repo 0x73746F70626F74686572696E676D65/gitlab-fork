@@ -31,6 +31,7 @@ RSpec.describe Releases::DestroyService, feature_category: :release_orchestratio
           details: {
             author_name: user.name,
             author_class: 'User',
+            event_name: 'release_deleted_audit_event',
             target_id: release.id,
             target_type: 'Release',
             target_details: release.name,

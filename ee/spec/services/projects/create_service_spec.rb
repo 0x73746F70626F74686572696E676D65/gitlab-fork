@@ -435,6 +435,7 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
           entity_type: 'Project',
           details: {
             author_name: user.name,
+            event_name: "project_created",
             target_id: created_project.id,
             target_type: 'Project',
             target_details: created_project.full_path,

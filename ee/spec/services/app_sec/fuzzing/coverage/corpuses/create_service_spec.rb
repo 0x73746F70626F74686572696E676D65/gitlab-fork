@@ -55,6 +55,7 @@ RSpec.describe AppSec::Fuzzing::Coverage::Corpuses::CreateService do
         expect(audit_event.details).to eq({
           author_name: developer.name,
           author_class: developer.class.name,
+          event_name: "coverage_fuzzing_corpus_create",
           custom_message: 'Added Coverage Fuzzing Corpus',
           target_id: corpus.id,
           target_type: 'AppSec::Fuzzing::Coverage::Corpus',

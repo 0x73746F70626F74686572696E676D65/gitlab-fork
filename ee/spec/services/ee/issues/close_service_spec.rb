@@ -25,6 +25,7 @@ RSpec.describe Issues::CloseService, feature_category: :team_planning do
             entity_type: 'Project',
             details: {
               author_name: project_bot.name,
+              event_name: "issue_closed_by_project_bot",
               target_id: issue.id,
               target_type: 'Issue',
               target_details: {
