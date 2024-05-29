@@ -23,7 +23,7 @@ import {
 import { NEW_DASHBOARD_SLUG } from 'ee/vue_shared/components/customizable_dashboard/constants';
 
 import { mockMetaData, TEST_CUSTOM_DASHBOARDS_PROJECT } from '../mock_data';
-import { BuilderComponent, QueryBuilder } from '../stubs';
+import { BuilderComponent, getQueryBuilderStub } from '../stubs';
 
 jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_action');
 
@@ -49,6 +49,7 @@ describe('AnalyticsVisualizationDesigner', () => {
 
   const findTitleFormGroup = () => wrapper.findByTestId('visualization-title-form-group');
   const findTitleInput = () => wrapper.findByTestId('visualization-title-input');
+  const findFilteredSearch = () => wrapper.findByTestId('visualization-filtered-search');
   const findMeasureSelector = () => wrapper.findByTestId('panel-measure-selector');
   const findDimensionSelector = () => wrapper.findByTestId('panel-dimension-selector');
   const findSaveButton = () => wrapper.findByTestId('visualization-save-btn');
@@ -66,6 +67,14 @@ describe('AnalyticsVisualizationDesigner', () => {
 
   const setMeasurement = (type = '', subType = '') => {
     findMeasureSelector().vm.$emit('measureSelected', type, subType);
+
+    if (type && subType) {
+      findQueryBuilder().vm.$emit('vizStateChange', {
+        query: {
+          measures: [`${type}.${subType}`],
+        },
+      });
+    }
   };
 
   const setVisualizationType = (type = '') => {
@@ -84,7 +93,10 @@ describe('AnalyticsVisualizationDesigner', () => {
     await waitForPromises();
   };
 
-  const createWrapper = (sourceDashboardSlug = '', options = { provide: {} }) => {
+  const createWrapper = (
+    sourceDashboardSlug = '',
+    options = { provide: {}, queryBuilderData: {} },
+  ) => {
     const mocks = {
       $toast: {
         show: showToast,
@@ -103,7 +115,7 @@ describe('AnalyticsVisualizationDesigner', () => {
       stubs: {
         RouterView: true,
         BuilderComponent,
-        QueryBuilder,
+        QueryBuilder: getQueryBuilderStub(options.queryBuilderData),
         GlSprintf,
         VisualizationTypeSelector: stubComponent(VisualizationTypeSelector, {
           template: `<div><button>Dropdown</button></div>`,
@@ -113,6 +125,10 @@ describe('AnalyticsVisualizationDesigner', () => {
       provide: {
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
         aiGenerateCubeQueryEnabled: false,
+        glFeatures: {
+          analyticsVisualizationDesignerFiltering: false,
+          ...(options.provide.glFeatures || {}),
+        },
         ...options.provide,
       },
     });
@@ -125,73 +141,88 @@ describe('AnalyticsVisualizationDesigner', () => {
   describe('when mounted', () => {
     beforeEach(() => {
       __setMockMetadata(jest.fn().mockImplementation(() => mockMetaData));
-      createWrapper();
     });
 
-    it('renders the page title', () => {
-      expect(findPageTitle().text()).toBe('Create your visualization');
-    });
+    describe.each([true, false])(
+      'when the "analytics_visualization_designer_filtering" feature flag is "%s"',
+      (isEnabled) => {
+        beforeEach(() => {
+          createWrapper('', {
+            provide: {
+              glFeatures: {
+                analyticsVisualizationDesignerFiltering: isEnabled,
+              },
+            },
+          });
+        });
 
-    it('renders the page description with a link to user documentation', () => {
-      expect(findPageDescription().text()).toContain(
-        'Use the visualization designer to create custom visualizations. After you save a visualization, you can add it to a dashboard.',
-      );
+        it('renders the page title', () => {
+          expect(findPageTitle().text()).toBe('Create your visualization');
+        });
 
-      expect(findPageDescriptionLink().text()).toBe('Learn more');
-      expect(findPageDescriptionLink().attributes('href')).toBe(
-        helpPagePath('user/analytics/analytics_dashboards', {
-          anchor: 'visualization-designer',
-        }),
-      );
-    });
+        it('renders the page description with a link to user documentation', () => {
+          expect(findPageDescription().text()).toContain(
+            'Use the visualization designer to create custom visualizations. After you save a visualization, you can add it to a dashboard.',
+          );
 
-    it('renders title input', () => {
-      expect(findTitleInput().exists()).toBe(true);
-    });
+          expect(findPageDescriptionLink().text()).toBe('Learn more');
+          expect(findPageDescriptionLink().attributes('href')).toBe(
+            helpPagePath('user/analytics/analytics_dashboards', {
+              anchor: 'visualization-designer',
+            }),
+          );
+        });
 
-    it('does not render dimension selector', () => {
-      expect(findDimensionSelector().exists()).toBe(false);
-    });
+        it('renders title input', () => {
+          expect(findTitleInput().exists()).toBe(true);
+        });
 
-    it('render a cancel button that routes to the dashboard listing page', async () => {
-      const button = wrapper.findByText('Cancel');
+        it('does not render dimension selector', () => {
+          expect(findDimensionSelector().exists()).toBe(false);
+        });
 
-      expect(button.attributes('category')).toBe('secondary');
+        it('render a cancel button that routes to the dashboard listing page', async () => {
+          const button = wrapper.findByText('Cancel');
 
-      await button.vm.$emit('click');
+          expect(button.attributes('category')).toBe('secondary');
 
-      expect(routerPush).toHaveBeenCalledWith('/');
-    });
+          await button.vm.$emit('click');
 
-    it(`tracks the "${EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER}" event`, () => {
-      expect(trackingSpy).toHaveBeenCalledWith(
-        undefined,
-        EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER,
-        expect.any(Object),
-      );
-    });
+          expect(routerPush).toHaveBeenCalledWith('/');
+        });
 
-    describe('beforeDestroy', () => {
-      it('should dismiss the alert', async () => {
-        await setVisualizationTitle('New Title');
-        await findSaveButton().vm.$emit('click');
+        it(`tracks the "${EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER}" event`, () => {
+          expect(trackingSpy).toHaveBeenCalledWith(
+            undefined,
+            EVENT_LABEL_USER_VIEWED_VISUALIZATION_DESIGNER,
+            expect.any(Object),
+          );
+        });
 
-        wrapper.destroy();
+        describe('beforeDestroy', () => {
+          it('should dismiss the alert', async () => {
+            await setVisualizationTitle('New Title');
+            await findSaveButton().vm.$emit('click');
 
-        await nextTick();
+            wrapper.destroy();
 
-        expect(mockAlertDismiss).toHaveBeenCalled();
-      });
-    });
+            await nextTick();
+
+            expect(mockAlertDismiss).toHaveBeenCalled();
+          });
+        });
+      },
+    );
   });
 
   describe('query builder', () => {
     beforeEach(() => {
       __setMockMetadata(jest.fn().mockImplementation(() => mockMetaData));
-      createWrapper();
     });
 
     it('shows an alert when a query error occurs', () => {
+      createWrapper();
+
       const error = new Error();
       findQueryBuilder().vm.$emit('queryStatus', { error });
 
@@ -199,6 +230,43 @@ describe('AnalyticsVisualizationDesigner', () => {
         message: 'An error occurred while loading data',
         captureError: true,
         error,
+      });
+    });
+
+    describe('when "analytics_visualization_designer_filtering" is disabled', () => {
+      beforeEach(() => {
+        createWrapper('', {
+          provide: {
+            glFeatures: {
+              analyticsVisualizationDesignerFiltering: false,
+            },
+          },
+        });
+      });
+
+      it('renders the measure selector', () => {
+        expect(findMeasureSelector().exists()).toBe(true);
+        expect(findFilteredSearch().exists()).toBe(false);
+      });
+    });
+
+    describe('when "analytics_visualization_designer_filtering" is enabled', () => {
+      beforeEach(() => {
+        createWrapper('', {
+          provide: {
+            glFeatures: {
+              analyticsVisualizationDesignerFiltering: true,
+            },
+          },
+          queryBuilderData: {
+            availableMeasures: mockMetaData.cubes.at(0).availableMeasures,
+          },
+        });
+      });
+
+      it('renders the filtered search', () => {
+        expect(findFilteredSearch().exists()).toBe(true);
+        expect(findMeasureSelector().exists()).toBe(false);
       });
     });
   });

@@ -10,6 +10,7 @@ import { slugify } from '~/lib/utils/text_utility';
 import { HTTP_STATUS_CREATED } from '~/lib/utils/http_status';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { InternalEvents } from '~/tracking';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { createCubeApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { getVisualizationOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_designer_options';
@@ -30,6 +31,7 @@ import DimensionSelector from './visualization_designer/selectors/product_analyt
 import VisualizationPreview from './visualization_designer/analytics_visualization_preview.vue';
 import VisualizationTypeSelector from './visualization_designer/analytics_visualization_type_selector.vue';
 import AiCubeQueryGenerator from './visualization_designer/ai_cube_query_generator.vue';
+import VisualizationFilteredSearch from './visualization_designer/filters/visualization_filtered_search.vue';
 
 export default {
   name: 'AnalyticsVisualizationDesigner',
@@ -43,10 +45,11 @@ export default {
     GlSprintf,
     MeasureSelector,
     DimensionSelector,
+    VisualizationFilteredSearch,
     VisualizationTypeSelector,
     VisualizationPreview,
   },
-  mixins: [InternalEvents.mixin()],
+  mixins: [InternalEvents.mixin(), glFeatureFlagsMixin()],
   inject: {
     aiGenerateCubeQueryEnabled: {
       type: Boolean,
@@ -121,6 +124,9 @@ export default {
     showDimensionSelector() {
       return Boolean(this.queryState.query?.measures?.length);
     },
+    filteringUiEnabled() {
+      return this.glFeatures.analyticsVisualizationDesignerFiltering;
+    },
   },
   beforeDestroy() {
     this.alert?.dismiss();
@@ -150,6 +156,9 @@ export default {
       this.hasTimeDimension = Boolean(state.query.timeDimensions?.length);
       this.queryState.query = state.query;
     },
+    onFilterChange(query) {
+      this.queryState.query = { ...query };
+    },
     measureUpdated(measureType, measureSubType) {
       this.queryState.measureType = measureType;
       this.queryState.measureSubType = measureSubType;
@@ -178,7 +187,7 @@ export default {
       }
     },
     getMetricsValidationError() {
-      if (!this.queryState.measureSubType) {
+      if (!this.queryState.query?.measures?.length) {
         return s__('Analytics|Select a measurement');
       }
       return null;
@@ -386,7 +395,7 @@ export default {
         :wrap-with-query-renderer="true"
         :disable-heuristics="true"
         data-testid="query-builder"
-        class="gl-display-flex"
+        class="gl-display-flex gl-flex-wrap"
         @queryStatus="onQueryStatusChange"
         @vizStateChange="onVizStateChange"
       >
@@ -404,9 +413,18 @@ export default {
             setFilters,
             addFilters,
             setSegments,
+            availableMeasures,
           }"
         >
-          <div class="gl-pr-4 gl-pb-5 gl-border-r">
+          <visualization-filtered-search
+            v-if="filteringUiEnabled"
+            :query="queryState.query"
+            :available-measures="availableMeasures"
+            data-testid="visualization-filtered-search"
+            @input="onFilterChange"
+            @submit="onFilterChange"
+          />
+          <div v-else class="gl-pr-4 gl-pb-5 gl-border-r">
             <measure-selector
               :query="queryState.query"
               :measures="measures"

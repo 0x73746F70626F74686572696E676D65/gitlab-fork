@@ -594,6 +594,23 @@ export const mockMetaData = {
         },
       ],
       segments: [],
+      availableMeasures: [
+        {
+          name: 'TrackedEvents.count',
+          title: 'Tracked Events Count',
+          shortTitle: 'Count',
+          cumulativeTotal: false,
+          cumulative: false,
+          type: 'number',
+          aggType: 'count',
+          drillMembers: ['TrackedEvents.eventId', 'TrackedEvents.pageTitle'],
+          drillMembersGrouped: {
+            measures: [],
+            dimensions: ['TrackedEvents.eventId', 'TrackedEvents.pageTitle'],
+          },
+          isVisible: true,
+        },
+      ],
     },
   ],
 };
