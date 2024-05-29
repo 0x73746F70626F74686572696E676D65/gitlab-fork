@@ -57618,6 +57618,9 @@ msgstr ""
 msgid "Visibility level"
 msgstr ""
 
+msgid "Visibility level not allowed"
+msgstr ""
+
 msgid "Visibility level:"
 msgstr ""
 
@@ -57658,6 +57661,15 @@ msgid "VisibilityLevel|The project can be accessed by any logged in user except 
 msgstr ""
 
 msgid "VisibilityLevel|The project can be accessed without any authentication."
+msgstr ""
+
+msgid "VisibilityLevel|This visibility level has been restricted by your administrator."
+msgstr ""
+
+msgid "VisibilityLevel|This visibility level is not allowed because a child of %{group_name} has a less restrictive visibility level. %{learn_more_link_start}Learn more%{learn_more_link_end}."
+msgstr ""
+
+msgid "VisibilityLevel|This visibility level is not allowed because the parent group has a more restrictive visibility level."
 msgstr ""
 
 msgid "VisibilityLevel|Unknown"
