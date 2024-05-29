@@ -41,7 +41,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
     page.within('.related-items-tree-container') do
       click_button 'Add'
       click_button button_name
-      fill_in "Paste issue link", with: '#'
+      fill_in "Enter issue URL", with: '#'
       wait_for_requests
     end
   end
@@ -52,7 +52,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
     page.within('.related-items-tree-container') do
       click_button 'Add'
       click_button button_name
-      fill_in "Paste epic link", with: '&'
+      fill_in "Enter epic URL", with: '&'
       wait_for_requests
     end
   end
