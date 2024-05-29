@@ -13,7 +13,6 @@ RSpec.describe CiMinutesUsageMailer do
     it { is_expected.to bcc_to recipients }
     it { is_expected.to have_body_text group_path(namespace) }
     it { is_expected.to have_body_text body_text }
-    it { is_expected.to have_body_text buy_minutes_subscriptions_url(selected_group: namespace.id) }
   end
 
   describe '#notify' do
@@ -27,11 +26,15 @@ RSpec.describe CiMinutesUsageMailer do
 
     context 'when it is a group' do
       it_behaves_like 'mail format'
+
+      it { is_expected.to have_body_text buy_minutes_subscriptions_url(selected_group: namespace.id) }
     end
 
     context 'when it is a namespace' do
       it_behaves_like 'mail format' do
         let(:namespace) { create(:namespace) }
+
+        it { is_expected.to have_body_text ::Gitlab::Routing.url_helpers.subscription_portal_more_minutes_url }
       end
     end
   end
@@ -53,6 +56,8 @@ RSpec.describe CiMinutesUsageMailer do
     context 'when it is a namespace' do
       it_behaves_like 'mail format' do
         let(:namespace) { create(:namespace) }
+
+        it { is_expected.to have_body_text ::Gitlab::Routing.url_helpers.subscription_portal_more_minutes_url }
       end
     end
   end

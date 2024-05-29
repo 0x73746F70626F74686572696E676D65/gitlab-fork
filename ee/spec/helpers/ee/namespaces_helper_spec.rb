@@ -102,20 +102,19 @@ RSpec.describe EE::NamespacesHelper, feature_category: :groups_and_projects do
   end
 
   describe '#buy_additional_minutes_path', feature_category: :consumables_cost_management do
-    subject { helper.buy_additional_minutes_path(namespace) }
-
     let(:namespace) { build_stubbed(:group) }
 
-    it { is_expected.to eq get_buy_minutes_path(namespace) }
+    subject { helper.buy_additional_minutes_path(namespace) }
+
+    it { is_expected.to eql get_buy_minutes_path(namespace) }
 
     context 'when called for a personal namespace' do
-      let(:user) { create(:user) }
-      let(:personal_namespace) { build_stubbed(:user_namespace) }
+      let(:namespace) { build_stubbed(:user_namespace) }
 
       it 'returns the default purchase' do
         more_minutes_url = ::Gitlab::Routing.url_helpers.subscription_portal_more_minutes_url
 
-        expect(helper.buy_additional_minutes_path(personal_namespace)).to eq more_minutes_url
+        expect(helper.buy_additional_minutes_path(namespace)).to eq more_minutes_url
       end
     end
 
@@ -127,6 +126,27 @@ RSpec.describe EE::NamespacesHelper, feature_category: :groups_and_projects do
         link = helper.buy_additional_minutes_path(subgroup)
         expect(link).to eq get_buy_minutes_path(group)
       end
+    end
+  end
+
+  describe '#buy_additional_minutes_url', feature_category: :consumables_cost_management do
+    subject { helper.buy_additional_minutes_url(namespace) }
+
+    let(:namespace) { build_stubbed(:group) }
+
+    it { is_expected.to eq buy_minutes_subscriptions_url(selected_group: namespace.id) }
+
+    context 'when called for a personal namespace' do
+      let(:namespace) { build_stubbed(:user_namespace) }
+
+      it { is_expected.to eq ::Gitlab::Routing.url_helpers.subscription_portal_more_minutes_url }
+    end
+
+    context 'when called from a subgroup' do
+      let(:group) { build_stubbed(:group) }
+      let(:namespace) { build_stubbed(:group, parent: group) }
+
+      it { is_expected.to eq buy_minutes_subscriptions_url(selected_group: group.id) }
     end
   end
 
