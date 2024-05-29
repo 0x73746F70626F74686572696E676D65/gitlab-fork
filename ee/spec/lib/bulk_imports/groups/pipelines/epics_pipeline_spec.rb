@@ -22,14 +22,35 @@ RSpec.describe BulkImports::Groups::Pipelines::EpicsPipeline, feature_category: 
   let_it_be(:context) { BulkImports::Pipeline::Context.new(tracker) }
 
   let(:tmpdir) { Dir.mktmpdir }
+  let(:licensed_epics) { true }
+  let(:licensed_subepics) { true }
 
   before do
     FileUtils.copy_file(filepath, File.join(tmpdir, 'epics.ndjson.gz'))
-    stub_licensed_features(epics: true, subepics: true)
+    stub_licensed_features(epics: licensed_epics, subepics: licensed_subepics)
     group.add_owner(user)
   end
 
-  subject { described_class.new(context) }
+  subject(:pipeline) { described_class.new(context) }
+
+  shared_examples 'successfully imports' do
+    it 'imports group epics into destination group' do
+      pipeline.run
+      group.reload
+
+      expect(group.epics.count).to eq(6)
+      expect(group.work_items.count).to eq(6)
+      expect(WorkItems::ParentLink.count).to eq(4)
+      expect(Epic.where.not(parent_id: nil).count).to eq(4)
+
+      group.epics.each do |epic|
+        expect(epic.work_item).not_to be_nil
+
+        diff = Gitlab::EpicWorkItemSync::Diff.new(epic, epic.work_item, strict_equal: true)
+        expect(diff.attributes).to be_empty
+      end
+    end
+  end
 
   describe '#run', :clean_gitlab_redis_shared_state, :aggregate_failures do
     before do
@@ -38,38 +59,43 @@ RSpec.describe BulkImports::Groups::Pipelines::EpicsPipeline, feature_category: 
         allow(service).to receive(:execute)
       end
 
-      allow(subject).to receive(:set_source_objects_counter)
+      allow(pipeline).to receive(:set_source_objects_counter)
     end
 
     context 'when epic work item is created along epic object' do
-      before do
-        subject.run
-        group.reload
+      it_behaves_like 'successfully imports'
+
+      context 'when epics are licensed but not subepics' do
+        let(:licensed_epics) { true }
+        let(:licensed_subepics) { false }
+
+        it_behaves_like 'successfully imports'
       end
 
-      it 'imports group epics into destination group' do
-        expect(group.epics.count).to eq(6)
-        expect(group.work_items.count).to eq(6)
+      context 'when neither epics or subepics are licensed' do
+        let(:licensed_epics) { false }
+        let(:licensed_subepics) { false }
 
-        group.epics.each do |epic|
-          expect(epic.work_item).not_to be_nil
-
-          diff = Gitlab::EpicWorkItemSync::Diff.new(epic, epic.work_item, strict_equal: true)
-          expect(diff.attributes).to be_empty
-        end
+        it_behaves_like 'successfully imports'
       end
 
       it 'imports epic award emoji' do
+        pipeline.run
+
         expect(group.epics.first.award_emoji.first.name).to eq('thumbsup')
       end
 
       it 'imports epic notes' do
+        pipeline.run
+
         expect(group.epics.first.state).to eq('opened')
         expect(group.epics.first.notes.count).to eq(4)
         expect(group.epics.first.notes.first.award_emoji.first.name).to eq('drum')
       end
 
       it 'imports epic labels' do
+        pipeline.run
+
         label = group.epics.first.labels.first
 
         expect(group.epics.first.labels.count).to eq(1)
@@ -79,6 +105,8 @@ RSpec.describe BulkImports::Groups::Pipelines::EpicsPipeline, feature_category: 
       end
 
       it 'imports epic system note metadata' do
+        pipeline.run
+
         note = group.epics.find_by_title('system notes').notes.first
 
         expect(note.system).to eq(true)
