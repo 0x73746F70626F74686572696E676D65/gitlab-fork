@@ -45,8 +45,6 @@ module Gitlab
       class Converter
         include EncodingHelper
 
-        attr_accessor :offset, :n_open_tags, :fg_color, :bg_color, :style_mask, :sections, :lineno_in_section
-
         STATE_PARAMS = [:offset, :n_open_tags, :fg_color, :bg_color, :style_mask, :sections, :lineno_in_section].freeze
 
         def convert(stream, new_state)
@@ -85,6 +83,8 @@ module Gitlab
         end
 
         private
+
+        attr_accessor :offset, :n_open_tags, :fg_color, :bg_color, :style_mask, :sections, :lineno_in_section
 
         def process_stream_with_lookahead(stream)
           # We process lines with 1-line look-back, so that we can process line continuations
