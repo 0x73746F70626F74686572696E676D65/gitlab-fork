@@ -39990,6 +39990,9 @@ msgstr ""
 msgid "Profiles|Do not show on profile"
 msgstr ""
 
+msgid "Profiles|Don't display activity-related personal information on your profile."
+msgstr ""
+
 msgid "Profiles|Don't display activity-related personal information on your profile. %{private_profile_help_link_start}Learn more%{private_profile_help_link_end}."
 msgstr ""
 
@@ -49107,6 +49110,9 @@ msgid "Setting"
 msgstr ""
 
 msgid "Setting enforced"
+msgstr ""
+
+msgid "Setting locked. Profiles are required to be public in this instance."
 msgstr ""
 
 msgid "Settings"

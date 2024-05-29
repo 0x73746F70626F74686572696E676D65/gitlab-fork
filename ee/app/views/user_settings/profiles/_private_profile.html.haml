@@ -1,0 +1,11 @@
+- form = local_assigns.fetch(:form)
+
+- if can?(current_user, :make_profile_private, user)
+  = render_ce 'user_settings/profiles/private_profile', form: form
+- else
+  = form.gitlab_ui_checkbox_component :private_profile, checkbox_options: { disabled: true } do |c|
+    - c.with_label do
+      = s_("Profiles|Don't display activity-related personal information on your profile.")
+      = sprite_icon('lock')
+    - c.with_help_text do
+      = _('Setting locked. Profiles are required to be public in this instance.')
