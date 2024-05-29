@@ -320,5 +320,7 @@ RSpec.describe Resolvers::VulnerabilitiesResolver, feature_category: :vulnerabil
           vuln_read_with_owasp_top_10_second.vulnerability)
       end
     end
+
+    it_behaves_like 'vulnerability filterable', :params
   end
 end

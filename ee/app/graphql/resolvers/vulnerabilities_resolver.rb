@@ -26,7 +26,9 @@ module Resolvers
     argument :owasp_top_ten, [Types::VulnerabilityOwaspTop10Enum],
       required: false,
       as: :owasp_top_10,
-      description: 'Filter vulnerabilities by OWASP Top 10 category.'
+      description: 'Filter vulnerabilities by OWASP Top 10 category. Wildcard value "NONE" also supported ' \
+                   'when feature flag `owasp_top_10_null_filtering` is enabled. ' \
+                   '"NONE" wildcard cannot be combined with other OWASP top 10 values.'
 
     argument :scanner, [GraphQL::Types::String],
       required: false,
@@ -81,6 +83,8 @@ module Resolvers
 
     def resolve_with_lookahead(**args)
       return Vulnerability.none unless vulnerable
+
+      validate_filters(args)
 
       args[:scanner_id] = resolve_gids(args[:scanner_id], ::Vulnerabilities::Scanner) if args[:scanner_id]
 
