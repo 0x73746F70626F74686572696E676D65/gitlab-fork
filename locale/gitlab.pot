@@ -25573,6 +25573,9 @@ msgstr ""
 msgid "Groups|Changing group URL can have unintended side effects."
 msgstr ""
 
+msgid "Groups|Changing group URL can have unintended side effects. %{linkStart}Learn more%{linkEnd}."
+msgstr ""
+
 msgid "Groups|Checking group URL availability..."
 msgstr ""
 
