@@ -65,6 +65,7 @@ RSpec.describe Geo::ContainerRepositorySyncService, :geo, feature_category: :geo
     it 'tracks exception' do
       error = StandardError.new('Sync Error')
 
+      stub_registry_replication_config(enabled: true, primary_api_url: 'https://foo')
       allow_any_instance_of(Geo::ContainerRepositorySync)
         .to receive(:execute).and_raise(error)
 
@@ -73,7 +74,8 @@ RSpec.describe Geo::ContainerRepositorySyncService, :geo, feature_category: :geo
         {
           container_repository_name: container_repository.name,
           project_path: container_repository.project.full_path,
-          project_id: container_repository.project_id
+          project_id: container_repository.project_id,
+          primary_api_url: 'https://foo'
         }
       )
 
