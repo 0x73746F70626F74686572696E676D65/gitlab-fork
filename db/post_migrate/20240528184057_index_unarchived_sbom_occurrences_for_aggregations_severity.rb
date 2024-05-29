@@ -8,7 +8,7 @@ class IndexUnarchivedSbomOccurrencesForAggregationsSeverity < Gitlab::Database::
   disable_ddl_transaction!
 
   def up
-    add_concurrent_index :sbom_occurrences, [:highest_severity, :component_version_id, :traversal_ids],
+    add_concurrent_index :sbom_occurrences, [:traversal_ids, :highest_severity, :component_id, :component_version_id],
       where: 'archived = false',
       name: INDEX_NAME
   end
