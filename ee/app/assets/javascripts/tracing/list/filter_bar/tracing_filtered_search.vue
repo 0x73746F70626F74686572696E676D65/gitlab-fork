@@ -2,20 +2,19 @@
 import { s__ } from '~/locale';
 import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
-import DateRangeToken from '~/vue_shared/components/filtered_search_bar/tokens/daterange_token.vue';
+import DateRangeFilter from '~/observability/components/date_range_filter.vue';
 import { SORTING_OPTIONS } from '~/observability/constants';
 import {
-  PERIOD_FILTER_TOKEN_TYPE,
   SERVICE_NAME_FILTER_TOKEN_TYPE,
   OPERATION_FILTER_TOKEN_TYPE,
   TRACE_ID_FILTER_TOKEN_TYPE,
   DURATION_MS_FILTER_TOKEN_TYPE,
   ATTRIBUTE_FILTER_TOKEN_TYPE,
   STATUS_FILTER_TOKEN_TYPE,
-  PERIOD_FILTER_OPTIONS,
-  MAX_PERIOD_DAYS,
   filterObjToFilterToken,
   filterTokensToFilterObj,
+  MAX_PERIOD_DAYS,
+  PERIOD_FILTER_OPTIONS,
 } from './filters';
 import ServiceToken from './service_search_token.vue';
 import OperationToken from './operation_search_token.vue';
@@ -25,6 +24,7 @@ import BaseSearchToken from './tracing_base_search_token.vue';
 export default {
   components: {
     FilteredSearch,
+    DateRangeFilter,
   },
   i18n: {
     searchInputPlaceholder: s__('Tracing|Filter traces'),
@@ -34,6 +34,10 @@ export default {
       type: Object,
       required: false,
       default: () => {},
+    },
+    dateRangeFilter: {
+      type: Object,
+      required: true,
     },
     observabilityClient: {
       required: true,
@@ -47,6 +51,7 @@ export default {
   data() {
     return {
       attributesFilterValue: filterObjToFilterToken(this.attributesFilters),
+      dateRangeFilterValue: this.dateRangeFilter,
     };
   },
   computed: {
@@ -72,16 +77,6 @@ export default {
     },
     availableTokens() {
       return [
-        {
-          title: s__('Tracing|Time range'),
-          icon: 'clock',
-          type: PERIOD_FILTER_TOKEN_TYPE,
-          token: DateRangeToken,
-          operators: OPERATORS_IS,
-          unique: true,
-          options: PERIOD_FILTER_OPTIONS,
-          maxDateRange: MAX_PERIOD_DAYS,
-        },
         {
           title: s__('Tracing|Service'),
           type: SERVICE_NAME_FILTER_TOKEN_TYPE,
@@ -135,17 +130,26 @@ export default {
       this.attributesFilterValue = attributesFilters;
       this.submitFilter();
     },
+    onDateRangeSelected(dateRangeFilter) {
+      this.dateRangeFilterValue = dateRangeFilter;
+      this.submitFilter();
+    },
     submitFilter() {
       this.$emit('filter', {
         attributes: filterTokensToFilterObj(this.attributesFilterValue),
+        dateRange: this.dateRangeFilterValue,
       });
     },
   },
+  MAX_PERIOD_DAYS,
+  PERIOD_FILTER_OPTIONS,
 };
 </script>
 
 <template>
-  <div class="vue-filtered-search-bar-container gl-border-t-none gl-my-6">
+  <div
+    class="gl-py-5 gl-px-3 gl-bg-gray-10 gl-border-b-1 gl-border-b-solid gl-border-t-1 gl-border-t-solid gl-border-gray-100"
+  >
     <filtered-search
       recent-searches-storage-key="recent-tracing-filter-search"
       :initial-sort-by="initialSort"
@@ -158,6 +162,15 @@ export default {
       sync-filter-and-sort
       @onFilter="onAttributesFilters"
       @onSort="$emit('sort', $event)"
+    />
+
+    <hr class="gl-my-3" />
+
+    <date-range-filter
+      :selected="dateRangeFilterValue"
+      :max-date-range="$options.MAX_PERIOD_DAYS"
+      :date-options="$options.PERIOD_FILTER_OPTIONS"
+      @onDateRangeSelected="onDateRangeSelected"
     />
   </div>
 </template>

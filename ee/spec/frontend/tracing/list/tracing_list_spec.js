@@ -33,8 +33,8 @@ describe('TracingList', () => {
     findInfiniteScrolling().vm.$emit('bottomReached');
     await waitForPromises();
   };
-  const setFilters = async (attributesFilters) => {
-    findFilteredSearch().vm.$emit('filter', { attributes: attributesFilters });
+  const setFilters = async (filters) => {
+    findFilteredSearch().vm.$emit('filter', filters);
     await waitForPromises();
   };
 
@@ -227,7 +227,9 @@ describe('TracingList', () => {
     beforeEach(async () => {
       setWindowLocation(
         '?sortBy=duration_desc' +
-          '&period[]=4h' +
+          '&date_range=custom' +
+          '&date_end=2020-01-02T00%3A00%3A00.000Z' +
+          '&date_start=2020-01-01T00%3A00%3A00.000Z' +
           '&status[]=ok' +
           '&service[]=loadgenerator' +
           '&service[]=test-service' +
@@ -238,41 +240,37 @@ describe('TracingList', () => {
       );
       await mountComponent();
     });
+    const attributesFilterObj = {
+      service: [
+        { operator: '=', value: 'loadgenerator' },
+        { operator: '=', value: 'test-service' },
+      ],
+      operation: [{ operator: '=', value: 'test-op' }],
+      traceId: [{ operator: '=', value: 'test_trace' }],
+      durationMs: [{ operator: '>', value: '100' }],
+      attribute: [{ operator: '=', value: 'foo=bar' }],
+      status: [{ operator: '=', value: 'ok' }],
+    };
 
     it('sets the client prop', () => {
       expect(findFilteredSearch().props('observabilityClient')).toBe(observabilityClientMock);
     });
 
-    it('renders FilteredSeach filters and sort order parsed from window.location', () => {
-      expect(findFilteredSearch().props('attributesFilters')).toEqual({
-        period: [{ operator: '=', value: '4h' }],
-        service: [
-          { operator: '=', value: 'loadgenerator' },
-          { operator: '=', value: 'test-service' },
-        ],
-        operation: [{ operator: '=', value: 'test-op' }],
-        traceId: [{ operator: '=', value: 'test_trace' }],
-        durationMs: [{ operator: '>', value: '100' }],
-        attribute: [{ operator: '=', value: 'foo=bar' }],
-        status: [{ operator: '=', value: 'ok' }],
+    it('initialises filtered-search props with values from query', () => {
+      expect(findFilteredSearch().props('attributesFilters')).toEqual(attributesFilterObj);
+      expect(findFilteredSearch().props('dateRangeFilter')).toEqual({
+        endDate: new Date('2020-01-02T00:00:00.000Z'),
+        startDate: new Date('2020-01-01T00:00:00.000Z'),
+        value: 'custom',
       });
       expect(findFilteredSearch().props('initialSort')).toBe('duration_desc');
     });
 
     it('sets FilteredSearch initialSort the default sort order if not specified in the query', async () => {
-      setWindowLocation('?period[]=4h');
+      setWindowLocation('?');
       await mountComponent();
 
       expect(findFilteredSearch().props('initialSort')).toBe('timestamp_desc');
-    });
-
-    it('defaults to 1h period filter if not specified in the query params', async () => {
-      setWindowLocation('?sortBy=duration_desc');
-      await mountComponent();
-
-      expect(findFilteredSearch().props('attributesFilters')).toEqual({
-        period: [{ operator: '=', value: '1h' }],
-      });
     });
 
     it('renders UrlSync and sets query prop', () => {
@@ -286,36 +284,66 @@ describe('TracingList', () => {
         'not[durationMs]': null,
         'not[filtered-search-term]': null,
         'not[operation]': null,
-        'not[period]': null,
         'not[service]': null,
         'not[trace_id]': null,
         'not[status]': null,
         operation: ['test-op'],
-        period: ['4h'],
         status: ['ok'],
         service: ['loadgenerator', 'test-service'],
         sortBy: 'duration_desc',
         trace_id: ['test_trace'],
+        date_range: 'custom',
+        date_end: '2020-01-02T00:00:00.000Z',
+        date_start: '2020-01-01T00:00:00.000Z',
+      });
+    });
+
+    describe('if no date range is provided', () => {
+      beforeEach(async () => {
+        observabilityClientMock.fetchTraces.mockClear();
+        observabilityClientMock.fetchTracesAnalytics.mockClear();
+        setWindowLocation('?sortBy=duration_desc');
+
+        await mountComponent();
+      });
+
+      it('sets data-range-filter prop to the default date range', () => {
+        expect(findFilteredSearch().props('dateRangeFilter')).toEqual({ value: '1h' });
+      });
+
+      it('fetches data with default time range filter', () => {
+        const filters = {
+          dateRange: {
+            value: '1h',
+          },
+          attributes: {},
+        };
+        expect(observabilityClientMock.fetchTraces).toHaveBeenCalledWith({
+          filters,
+          pageSize: 50,
+          pageToken: null,
+          sortBy: 'duration_desc',
+          abortController: expect.any(AbortController),
+        });
+        expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenCalledWith({
+          filters,
+          abortController: expect.any(AbortController),
+        });
       });
     });
 
     it('fetches traces and analytics with options', () => {
       const expectedFilters = {
-        period: [{ operator: '=', value: '4h' }],
-        service: [
-          { operator: '=', value: 'loadgenerator' },
-          { operator: '=', value: 'test-service' },
-        ],
-        operation: [{ operator: '=', value: 'test-op' }],
-        traceId: [{ operator: '=', value: 'test_trace' }],
-        durationMs: [{ operator: '>', value: '100' }],
-        attribute: [{ operator: '=', value: 'foo=bar' }],
-        status: [{ operator: '=', value: 'ok' }],
-        search: undefined,
+        attributes: attributesFilterObj,
+        dateRange: {
+          value: 'custom',
+          startDate: new Date('2020-01-01'),
+          endDate: new Date('2020-01-02'),
+        },
       };
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: {
-          attributes: expectedFilters,
+          ...expectedFilters,
         },
         pageSize: 50,
         pageToken: null,
@@ -324,7 +352,7 @@ describe('TracingList', () => {
       });
       expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenLastCalledWith({
         filters: {
-          attributes: expectedFilters,
+          ...expectedFilters,
         },
         abortController: expect.any(AbortController),
       });
@@ -335,13 +363,17 @@ describe('TracingList', () => {
         observabilityClientMock.fetchTracesAnalytics.mockReset();
         observabilityClientMock.fetchTracesAnalytics.mockReturnValue(mockAnalytics);
         await setFilters({
-          period: [{ operator: '=', value: '12h' }],
-          service: [{ operator: '=', value: 'frontend' }],
-          operation: [{ operator: '=', value: 'op' }],
-          traceId: [{ operator: '=', value: 'another_trace' }],
-          durationMs: [{ operator: '>', value: '200' }],
-          attribute: [{ operator: '=', value: 'foo=baz' }],
-          status: [{ operator: '=', value: 'error' }],
+          attributes: {
+            service: [{ operator: '=', value: 'frontend' }],
+            operation: [{ operator: '=', value: 'op' }],
+            traceId: [{ operator: '=', value: 'another_trace' }],
+            durationMs: [{ operator: '>', value: '200' }],
+            attribute: [{ operator: '=', value: 'foo=baz' }],
+            status: [{ operator: '=', value: 'error' }],
+          },
+          dateRange: {
+            value: '7d',
+          },
         });
       });
 
@@ -356,32 +388,37 @@ describe('TracingList', () => {
           'not[durationMs]': null,
           'not[filtered-search-term]': null,
           'not[operation]': null,
-          'not[period]': null,
           'not[service]': null,
           'not[trace_id]': null,
           'not[status]': null,
           operation: ['op'],
-          period: ['12h'],
           service: ['frontend'],
           sortBy: 'duration_desc',
           trace_id: ['another_trace'],
           status: ['error'],
+          date_end: undefined,
+          date_range: '7d',
+          date_start: undefined,
         });
       });
 
       it('fetches traces and analytics with updated filters', () => {
         const expectedFilters = {
-          period: [{ operator: '=', value: '12h' }],
-          service: [{ operator: '=', value: 'frontend' }],
-          operation: [{ operator: '=', value: 'op' }],
-          traceId: [{ operator: '=', value: 'another_trace' }],
-          durationMs: [{ operator: '>', value: '200' }],
-          attribute: [{ operator: '=', value: 'foo=baz' }],
-          status: [{ operator: '=', value: 'error' }],
+          attributes: {
+            service: [{ operator: '=', value: 'frontend' }],
+            operation: [{ operator: '=', value: 'op' }],
+            traceId: [{ operator: '=', value: 'another_trace' }],
+            durationMs: [{ operator: '>', value: '200' }],
+            attribute: [{ operator: '=', value: 'foo=baz' }],
+            status: [{ operator: '=', value: 'error' }],
+          },
+          dateRange: {
+            value: '7d',
+          },
         };
         expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
           filters: {
-            attributes: expectedFilters,
+            ...expectedFilters,
           },
           pageSize: 50,
           pageToken: null,
@@ -391,15 +428,15 @@ describe('TracingList', () => {
 
         expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenLastCalledWith({
           filters: {
-            attributes: expectedFilters,
+            ...expectedFilters,
           },
           abortController: expect.any(AbortController),
         });
       });
 
-      it('updates FilteredSearch attributesFilters', () => {
+      it('updates the filtered search props', () => {
+        expect(findFilteredSearch().props('dateRangeFilter')).toEqual({ value: '7d' });
         expect(findFilteredSearch().props('attributesFilters')).toEqual({
-          period: [{ operator: '=', value: '12h' }],
           service: [{ operator: '=', value: 'frontend' }],
           operation: [{ operator: '=', value: 'op' }],
           traceId: [{ operator: '=', value: 'another_trace' }],
@@ -467,17 +504,7 @@ describe('TracingList', () => {
 
       it('fetches traces with new sort order', () => {
         expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
-          filters: {
-            attributes: {
-              attribute: undefined,
-              durationMs: undefined,
-              operation: undefined,
-              period: [{ operator: '=', value: '1h' }],
-              search: undefined,
-              service: undefined,
-              traceId: undefined,
-            },
-          },
+          filters: { attributes: {}, dateRange: { value: '1h' } },
           pageSize: 50,
           pageToken: null,
           sortBy: 'timestamp_asc',
@@ -500,7 +527,7 @@ describe('TracingList', () => {
       findInfiniteScrolling().find('[data-testid="tracing-infinite-scrolling-legend"]');
 
     beforeEach(async () => {
-      setWindowLocation('?period[]=12h&service[]=loadgenerator&sortBy=duration_desc');
+      setWindowLocation('?date_range=12h&service[]=loadgenerator&sortBy=duration_desc');
       await mountComponent();
     });
 
@@ -526,10 +553,12 @@ describe('TracingList', () => {
             attribute: undefined,
             durationMs: undefined,
             operation: undefined,
-            period: [{ operator: '=', value: '12h' }],
             search: undefined,
             service: [{ operator: '=', value: 'loadgenerator' }],
             traceId: undefined,
+          },
+          dateRange: {
+            value: '12h',
           },
         },
         pageSize: 50,
@@ -569,10 +598,12 @@ describe('TracingList', () => {
             attribute: undefined,
             durationMs: undefined,
             operation: undefined,
-            period: [{ operator: '=', value: '12h' }],
             search: undefined,
             service: [{ operator: '=', value: 'loadgenerator' }],
             traceId: undefined,
+          },
+          dateRange: {
+            value: '12h',
           },
         },
         pageSize: 50,
@@ -609,27 +640,26 @@ describe('TracingList', () => {
       });
       await bottomReached();
 
-      await setFilters({ period: [{ operator: '=', value: '4h' }] });
+      await setFilters({ durationMs: [{ operator: '>', value: '100' }] });
 
       const expectedFilters = {
         attribute: undefined,
-        durationMs: undefined,
+        durationMs: [{ operator: '>', value: '100' }],
         operation: undefined,
-        period: [{ operator: '=', value: '4h' }],
         search: undefined,
         service: undefined,
         traceId: undefined,
       };
 
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
-        filters: { attributes: expectedFilters },
+        filters: { ...expectedFilters },
         pageSize: 50,
         pageToken: null,
         sortBy: 'duration_desc',
         abortController: expect.any(AbortController),
       });
       expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenCalledWith({
-        filters: { attributes: expectedFilters },
+        filters: { ...expectedFilters },
         abortController: expect.any(AbortController),
       });
 
@@ -653,10 +683,12 @@ describe('TracingList', () => {
             attribute: undefined,
             durationMs: undefined,
             operation: undefined,
-            period: [{ operator: '=', value: '12h' }],
             search: undefined,
             service: [{ operator: '=', value: 'loadgenerator' }],
             traceId: undefined,
+          },
+          dateRange: {
+            value: '12h',
           },
         },
         pageSize: 50,

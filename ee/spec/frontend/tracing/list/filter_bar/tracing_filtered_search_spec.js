@@ -1,6 +1,6 @@
+import { nextTick } from 'vue';
 import OperationToken from 'ee/tracing/list/filter_bar/operation_search_token.vue';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
-import DateRangeToken from '~/vue_shared/components/filtered_search_bar/tokens/daterange_token.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ServiceToken from 'ee/tracing/list/filter_bar/service_search_token.vue';
 import AttributeSearchToken from 'ee/tracing/list/filter_bar/attribute_search_token.vue';
@@ -8,14 +8,19 @@ import TracingListFilteredSearch from 'ee/tracing/list/filter_bar/tracing_filter
 import TracingBaseSearchToken from 'ee/tracing/list/filter_bar/tracing_base_search_token.vue';
 import { createMockClient } from 'helpers/mock_observability_client';
 import { filterObjToFilterToken } from 'ee/tracing/list/filter_bar/filters';
+import DateRangeFilter from '~/observability/components/date_range_filter.vue';
 
 describe('TracingListFilteredSearch', () => {
   let wrapper;
   let observabilityClientMock;
 
   const defaultProps = {
+    dateRangeFilter: {
+      endDate: new Date('2020-07-06T00:00:00.000Z'),
+      startDarte: new Date('2020-07-05T23:00:00.000Z'),
+      value: '1h',
+    },
     attributesFilters: {
-      period: [{ operator: '=', value: '1h' }],
       service: [{ operator: '=', value: 'example-service' }],
     },
     initialSort: 'duration_desc',
@@ -32,44 +37,72 @@ describe('TracingListFilteredSearch', () => {
     });
   });
 
+  const findDateRangeFilter = () => wrapper.findComponent(DateRangeFilter);
   const findFilteredSearch = () => wrapper.findComponent(FilteredSearch);
   const getTokens = () => findFilteredSearch().props('tokens');
 
-  it('renders the component', () => {
-    expect(wrapper.exists()).toBe(true);
+  describe('date range filter', () => {
+    it('renders the date range filter', () => {
+      expect(findDateRangeFilter().exists()).toBe(true);
+    });
+
+    it('sets the selected date range', () => {
+      expect(findDateRangeFilter().props('selected')).toEqual(defaultProps.dateRangeFilter);
+    });
+
+    it('emits the filter event when the date range is changed', async () => {
+      const dateRange = {
+        value: '24h',
+        startDate: new Date('2022-01-01'),
+        endDate: new Date('2022-01-02'),
+      };
+
+      findDateRangeFilter().vm.$emit('onDateRangeSelected', dateRange);
+      await nextTick();
+
+      expect(wrapper.emitted('filter')).toEqual([
+        [
+          {
+            dateRange,
+            attributes: expect.any(Object),
+          },
+        ],
+      ]);
+      expect(findDateRangeFilter().props('selected')).toEqual(dateRange);
+    });
   });
 
-  it('sets filtered-search initialFilterValue prop correctly', () => {
-    expect(findFilteredSearch().props('initialFilterValue')).toEqual(
-      filterObjToFilterToken(defaultProps.attributesFilters),
-    );
-  });
+  describe('attributes filters', () => {
+    it('renders the FilteredSearch', () => {
+      expect(findFilteredSearch().exists()).toBe(true);
+    });
 
-  it('emits submit event on filtered search filter', async () => {
-    const filterObj = {
-      period: [{ operator: '=', value: '24h' }],
-      service: [{ operator: '=', value: 'some-service' }],
-    };
+    it('sets the initial attributes filter by converting it to tokens', () => {
+      expect(findFilteredSearch().props('initialFilterValue')).toEqual(
+        filterObjToFilterToken(defaultProps.attributesFilters),
+      );
+    });
 
-    const filterTokens = filterObjToFilterToken(filterObj);
-    await findFilteredSearch().vm.$emit('onFilter', filterTokens);
+    it('emits the filter event when the search is submitted', async () => {
+      const filterObj = {
+        service: [{ operator: '=', value: 'some-service' }],
+      };
 
-    expect(wrapper.emitted('filter')).toEqual([
-      [
-        {
-          attributes: filterObj,
-        },
-      ],
-    ]);
-    expect(findFilteredSearch().props('initialFilterValue')).toEqual(filterTokens);
-  });
+      const filterTokens = filterObjToFilterToken(filterObj);
 
-  it('sets the default period filter if not specified', async () => {
-    await findFilteredSearch().vm.$emit('onFilter', filterObjToFilterToken({}));
+      findFilteredSearch().vm.$emit('onFilter', filterTokens);
+      await nextTick();
 
-    expect(wrapper.emitted('filter')).toEqual([
-      [{ attributes: { period: [{ operator: '=', value: '1h' }] } }],
-    ]);
+      expect(wrapper.emitted('filter')).toEqual([
+        [
+          {
+            dateRange: expect.any(Object),
+            attributes: filterObj,
+          },
+        ],
+      ]);
+      expect(findFilteredSearch().props('initialFilterValue')).toEqual(filterTokens);
+    });
   });
 
   describe('sorting', () => {
@@ -85,23 +118,6 @@ describe('TracingListFilteredSearch', () => {
   });
 
   describe('tokens', () => {
-    it('configure the date range token', () => {
-      const tokens = getTokens();
-      const token = tokens.find((t) => t.type === 'period');
-      expect(token.token).toBe(DateRangeToken);
-      expect(token.maxDateRange).toBe(7);
-      expect(token.options.map(({ value }) => value)).toEqual([
-        '5m',
-        '15m',
-        '30m',
-        '1h',
-        '4h',
-        '12h',
-        '24h',
-        '7d',
-      ]);
-    });
-
     it('configure the attribute token', () => {
       const tokens = getTokens();
       const attributeToken = tokens.find((t) => t.type === 'attribute');

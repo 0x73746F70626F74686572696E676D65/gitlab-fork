@@ -39,7 +39,7 @@ export default {
   },
   data() {
     const query = window.location.search;
-    const { sortBy, ...filterQuery } = queryToObject(query, { gatherArrays: true });
+    const { sortBy } = queryToObject(query, { gatherArrays: true });
 
     return {
       loadingTraces: false,
@@ -48,7 +48,7 @@ export default {
       fetchAnalyticsAbortController: null,
       traces: [],
       analytics: [],
-      filters: queryToFilterObj(filterQuery),
+      filters: queryToFilterObj(query),
       nextPageToken: null,
       sortBy: sortBy || DEFAULT_SORTING_OPTION,
       listHeight: 0,
@@ -167,10 +167,11 @@ export default {
 </script>
 
 <template>
-  <div class="gl-px-8">
+  <div class="gl-px-4">
     <url-sync :query="query" />
     <filtered-search
       :attributes-filters="filters.attributes"
+      :date-range-filter="filters.dateRange"
       :observability-client="observabilityClient"
       :initial-sort="sortBy"
       @filter="handleFilters"
