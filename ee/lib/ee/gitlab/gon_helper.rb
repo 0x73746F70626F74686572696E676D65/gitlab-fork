@@ -21,15 +21,13 @@ module EE
           push_to_gon_attributes('ai', 'chat', ai_chat)
         end
 
-        if ::Gitlab.com?
-          gon.subscriptions_url                = ::Gitlab::Routing.url_helpers.subscription_portal_url
-          gon.subscriptions_legacy_sign_in_url = ::Gitlab::Routing.url_helpers.subscription_portal_legacy_sign_in_url
-          gon.billing_accounts_url             = ::Gitlab::Routing.url_helpers.subscription_portal_billing_accounts_url
-          gon.payment_form_url                 = ::Gitlab::Routing.url_helpers.subscription_portal_payment_form_url
-          gon.payment_validation_form_id       = ::Gitlab::SubscriptionPortal::PAYMENT_VALIDATION_FORM_ID
-        end
+        return unless ::Gitlab.com?
 
-        push_frontend_feature_flag(:key_contacts_management_v2, current_user, type: :gitlab_com_derisk)
+        gon.subscriptions_url                = ::Gitlab::Routing.url_helpers.subscription_portal_url
+        gon.subscriptions_legacy_sign_in_url = ::Gitlab::Routing.url_helpers.subscription_portal_legacy_sign_in_url
+        gon.billing_accounts_url             = ::Gitlab::Routing.url_helpers.subscription_portal_billing_accounts_url
+        gon.payment_form_url                 = ::Gitlab::Routing.url_helpers.subscription_portal_payment_form_url
+        gon.payment_validation_form_id       = ::Gitlab::SubscriptionPortal::PAYMENT_VALIDATION_FORM_ID
       end
 
       # Exposes if a licensed feature is available.

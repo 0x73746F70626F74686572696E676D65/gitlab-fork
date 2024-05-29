@@ -63,9 +63,6 @@ export default {
     },
     furthestAccessedStep: {
       query: furthestAccessedStepQuery,
-      skip() {
-        return !gon.features?.keyContactsManagementV2;
-      },
       error(error) {
         this.handleError(error);
       },
@@ -80,7 +77,7 @@ export default {
     },
     isFinished() {
       // Only mark step finished if we've already navigated to it
-      if (gon.features?.keyContactsManagementV2 && this.furthestStepIndex < 1) {
+      if (this.furthestStepIndex < 1) {
         return false;
       }
 

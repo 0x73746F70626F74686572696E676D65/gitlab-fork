@@ -47,10 +47,6 @@ describe('Step', () => {
     });
   }
 
-  beforeEach(() => {
-    gon.features = { keyContactsManagementV2: false };
-  });
-
   afterEach(() => {
     createAlert.mockClear();
   });
@@ -222,30 +218,21 @@ describe('Step', () => {
       });
     });
 
-    describe.each([
-      [true, false],
-      [false, true],
-    ])('when keyContactsManagementV2 is %s', (enabled, isFinished) => {
+    describe('when step is valid but comes after furthestAccessedStep', () => {
       beforeEach(() => {
-        gon.features = { keyContactsManagementV2: enabled };
+        const mockApollo = createMockApolloProvider(STEPS, 0);
+        createComponent({
+          propsData: { stepId: STEPS[2].id, isValid: true },
+          apolloProvider: mockApollo,
+        });
       });
 
-      describe('when step is valid but comes after furthestAccessedStep', () => {
-        beforeEach(() => {
-          const mockApollo = createMockApolloProvider(STEPS, 0);
-          createComponent({
-            propsData: { stepId: STEPS[2].id, isValid: true },
-            apolloProvider: mockApollo,
-          });
-        });
+      it('has isEditable prop set to false', () => {
+        expect(findStepHeader().props('isEditable')).toBe(false);
+      });
 
-        it('has isEditable prop set to false', () => {
-          expect(findStepHeader().props('isEditable')).toBe(false);
-        });
-
-        it(`has isFinished prop set to ${isFinished}`, () => {
-          expect(findStepHeader().props('isFinished')).toBe(isFinished);
-        });
+      it('has isFinished prop set to false', () => {
+        expect(findStepHeader().props('isFinished')).toBe(false);
       });
     });
   });

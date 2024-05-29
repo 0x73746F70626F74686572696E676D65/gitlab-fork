@@ -6,7 +6,7 @@ import {
   stateData as initialStateData,
 } from 'ee_jest/subscriptions/mock_data';
 import { gitLabResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
-import { STEPS } from 'ee/subscriptions/constants';
+import { STEPS, STEP_CONFIRM_ORDER } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import PaymentMethod from 'ee/vue_shared/purchase_flow/components/checkout/payment_method.vue';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
@@ -46,6 +46,7 @@ describe('Payment Method', () => {
         creditCardExpirationMonth: 12,
         creditCardExpirationYear: 2009,
       },
+      furthestAccessedStep: STEPS.find((step) => step.id === STEP_CONFIRM_ORDER),
     });
   });
 
