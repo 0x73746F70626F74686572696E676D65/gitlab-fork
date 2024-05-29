@@ -100,6 +100,14 @@ module Vulnerabilities
       end
     end
 
+    scope :by_group_using_nested_loop, ->(group) do
+      where(traversal_ids: all_vulnerable_traversal_ids_for(group))
+    end
+
+    def self.all_vulnerable_traversal_ids_for(group)
+      by_group(group).unarchived.loose_index_scan(column: :traversal_ids)
+    end
+
     def self.order_by(method)
       case method.to_s
       when 'severity_desc' then order_severity_desc
