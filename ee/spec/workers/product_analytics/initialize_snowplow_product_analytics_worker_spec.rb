@@ -15,7 +15,6 @@ RSpec.describe ProductAnalytics::InitializeSnowplowProductAnalyticsWorker, featu
     allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
     stub_licensed_features(product_analytics: true)
     stub_application_setting(product_analytics_configurator_connection_string: 'https://gl-product-analytics-configurator.gl.com:4567')
-    stub_feature_flags(product_analytics_dashboards: true)
   end
 
   shared_examples 'a worker that did not make any HTTP calls' do
@@ -77,14 +76,6 @@ RSpec.describe ProductAnalytics::InitializeSnowplowProductAnalyticsWorker, featu
       expect(Gitlab::ErrorTracking).to receive(:track_and_raise_exception).twice.and_call_original
       expect { worker }.to raise_error(RuntimeError)
     end
-  end
-
-  context 'when product_analytics_dashboards feature flag is disabled' do
-    before do
-      stub_feature_flags(product_analytics_dashboards: false)
-    end
-
-    it_behaves_like 'a worker that did not make any HTTP calls'
   end
 
   context 'when feature is not licensed' do

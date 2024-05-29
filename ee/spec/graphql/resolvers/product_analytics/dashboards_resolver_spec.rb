@@ -64,16 +64,6 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
         end
       end
 
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(product_analytics_dashboards: false)
-        end
-
-        it 'contains only user defined dashboards' do
-          expect(result.size).to eq(1)
-        end
-      end
-
       context 'when slug matches existing dashboard' do
         context 'when it\'s a custom dashboard' do
           let(:slug) { 'dashboard_example_1' }
@@ -81,17 +71,6 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
           it 'contains only one dashboard and it is the one with the matching slug' do
             expect(result.size).to eq(1)
             expect(result.first.slug).to eq(slug)
-          end
-
-          context 'when feature flag is disabled' do
-            before do
-              stub_feature_flags(product_analytics_dashboards: false)
-            end
-
-            it 'still returns the dashboard' do
-              expect(result.size).to eq(1)
-              expect(result.first.slug).to eq(slug)
-            end
           end
 
           context 'when product analytics toggle is disabled' do
@@ -112,16 +91,6 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
           it 'contains only one dashboard and it is the one with the matching slug' do
             expect(result.size).to eq(1)
             expect(result.first.slug).to eq(slug)
-          end
-
-          context 'when feature flag is disabled' do
-            before do
-              stub_feature_flags(product_analytics_dashboards: false)
-            end
-
-            it 'is empty' do
-              expect(result.size).to eq(0)
-            end
           end
         end
       end

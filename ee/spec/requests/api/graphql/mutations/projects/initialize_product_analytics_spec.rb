@@ -63,7 +63,6 @@ RSpec.describe 'Initialize Product Analytics', feature_category: :product_analyt
     context 'when product analytics is disabled' do
       before do
         project.add_maintainer(current_user)
-        stub_feature_flags(product_analytics_dashboards: false)
         stub_application_setting(product_analytics_enabled: false)
       end
 

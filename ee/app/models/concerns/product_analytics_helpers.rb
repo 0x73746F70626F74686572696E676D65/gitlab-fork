@@ -11,7 +11,6 @@ module ProductAnalyticsHelpers
 
     return false unless is_a?(Project)
     return false unless licensed_feature_available?(:product_analytics)
-    return false unless ::Feature.enabled?(:product_analytics_dashboards, self)
 
     root_group = group&.root_ancestor
     return false unless root_group.present?

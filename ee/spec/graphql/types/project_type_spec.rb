@@ -58,7 +58,6 @@ RSpec.describe GitlabSchema.types['Project'] do
           project.project_setting.update!(product_analytics_instrumentation_key: project_instrumentation_key)
 
           stub_application_setting(product_analytics_enabled: can_read_product_analytics)
-          stub_feature_flags(product_analytics_dashboards: can_read_product_analytics)
           stub_licensed_features(product_analytics: can_read_product_analytics)
         end
 

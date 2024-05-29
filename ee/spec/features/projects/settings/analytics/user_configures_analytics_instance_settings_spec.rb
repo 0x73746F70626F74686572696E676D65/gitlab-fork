@@ -17,7 +17,7 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
     before do
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: false)
-      stub_feature_flags(product_analytics_admin_settings: true, product_analytics_dashboards: true)
+      stub_feature_flags(product_analytics_admin_settings: true)
 
       visit project_settings_analytics_path(project)
     end
@@ -33,7 +33,7 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
         product_analytics_enabled: false
       )
       stub_licensed_features(product_analytics: false)
-      stub_feature_flags(product_analytics_admin_settings: true, product_analytics_dashboards: true)
+      stub_feature_flags(product_analytics_admin_settings: true)
 
       visit project_settings_analytics_path(project)
     end
@@ -43,26 +43,17 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
     end
   end
 
-  context 'without correct feature flags enabled' do
-    where(:product_analytics_admin_settings, :product_analytics_dashboards) do
-      true | false
-      false | true
-      false | false
+  context 'without correct feature flag enabled' do
+    before do
+      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
+      stub_licensed_features(product_analytics: true)
+      stub_feature_flags(product_analytics_admin_settings: false)
+
+      visit project_settings_analytics_path(project)
     end
 
-    with_them do
-      before do
-        allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-        stub_licensed_features(product_analytics: true)
-        stub_feature_flags(product_analytics_admin_settings: product_analytics_admin_settings,
-          product_analytics_dashboards: product_analytics_dashboards)
-
-        visit project_settings_analytics_path(project)
-      end
-
-      it 'does not show product analytics configuration options' do
-        expect(page).not_to have_content s_('Product analytics')
-      end
+    it 'does not show product analytics configuration options' do
+      expect(page).not_to have_content s_('Product analytics')
     end
   end
 
@@ -85,7 +76,7 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
       allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true)
-      stub_feature_flags(product_analytics_admin_settings: true, product_analytics_dashboards: true)
+      stub_feature_flags(product_analytics_admin_settings: true)
       visit project_settings_analytics_path(project)
       project.reload
     end

@@ -76,7 +76,6 @@ module Analytics
 
     def product_analytics_enabled?(project)
       ::ProductAnalytics::Settings.for_project(project).enabled? &&
-        ::Feature.enabled?(:product_analytics_dashboards, project) &&
         project.licensed_feature_available?(:product_analytics) &&
         can?(current_user, :read_product_analytics, project)
     end
