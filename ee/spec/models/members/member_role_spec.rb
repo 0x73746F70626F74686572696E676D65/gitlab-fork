@@ -392,11 +392,15 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
     end
   end
 
-  describe '#enabled_permissions' do
+  describe '#enabled_permission_items' do
     let(:member_role) { build_stubbed(:member_role, read_code: true, read_vulnerability: true, read_dependency: false) }
 
-    it 'returns the list of enabled abilities' do
-      expect(member_role.enabled_permissions).to match_array([:read_code, :read_vulnerability])
+    it 'returns the list of enabled permissions' do
+      expect(member_role.enabled_permission_items).to match_array([
+        [:read_code, hash_including(:name, :description)],
+        [:read_vulnerability,
+          hash_including(:name, :description)]
+      ])
     end
 
     context 'when a permission is behind a disabled feature flag' do
@@ -406,8 +410,16 @@ RSpec.describe ::MemberRole, feature_category: :system_access do
       end
 
       it 'does not include the ability' do
-        expect(member_role.enabled_permissions).not_to include(:read_vulnerability)
+        expect(member_role.enabled_permission_items).not_to include(:read_vulnerability)
       end
+    end
+  end
+
+  describe '#enabled_permissions' do
+    let(:member_role) { build_stubbed(:member_role, read_code: true, read_vulnerability: true, read_dependency: false) }
+
+    it 'returns the list of enabled permission keys' do
+      expect(member_role.enabled_permissions).to match_array([:read_code, :read_vulnerability])
     end
   end
 
