@@ -5,6 +5,7 @@ import GroupRunnersDashboardApp from 'ee/ci/runner/group_runners_dashboard/group
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import GroupRunnersActiveList from 'ee/ci/runner/group_runners_dashboard/group_runners_active_list.vue';
+import GroupRunnersWaitTimes from 'ee/ci/runner/group_runners_dashboard/group_runners_wait_times.vue';
 
 const mockGroupPath = 'group';
 const mockGroupRunnersPath = '/group/-/runners';
@@ -12,6 +13,9 @@ const mockNewRunnerPath = '/runners/new';
 
 describe('GroupRunnersDashboardApp', () => {
   let wrapper;
+
+  const findGroupRunnersActiveList = () => wrapper.findComponent(GroupRunnersActiveList);
+  const findGroupRunnersWaitTimes = () => wrapper.findComponent(GroupRunnersWaitTimes);
 
   const createComponent = (options) => {
     wrapper = shallowMountExtended(GroupRunnersDashboardApp, {
@@ -39,7 +43,10 @@ describe('GroupRunnersDashboardApp', () => {
   });
 
   it('shows dashboard panels', () => {
-    expect(wrapper.findComponent(GroupRunnersActiveList).props()).toEqual({
+    expect(findGroupRunnersActiveList().props()).toEqual({
+      groupFullPath: mockGroupPath,
+    });
+    expect(findGroupRunnersWaitTimes().props()).toEqual({
       groupFullPath: mockGroupPath,
     });
   });

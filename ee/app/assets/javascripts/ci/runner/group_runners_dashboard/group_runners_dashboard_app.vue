@@ -2,12 +2,14 @@
 import { GlButton } from '@gitlab/ui';
 import RunnerListHeader from '~/ci/runner/components/runner_list_header.vue';
 
-import GroupRunnerActiveList from './group_runners_active_list.vue';
+import GroupRunnersActiveList from './group_runners_active_list.vue';
+import GroupRunnersWaitTimes from './group_runners_wait_times.vue';
 
 export default {
   components: {
     GlButton,
-    GroupRunnerActiveList,
+    GroupRunnersActiveList,
+    GroupRunnersWaitTimes,
     RunnerListHeader,
   },
   inject: {
@@ -49,6 +51,7 @@ export default {
       {{ s__('Runners|Use the dashboard to view performance statistics of your runner fleet.') }}
     </p>
 
-    <group-runner-active-list :group-full-path="groupFullPath" />
+    <group-runners-active-list :group-full-path="groupFullPath" class="gl-mb-4" />
+    <group-runners-wait-times :group-full-path="groupFullPath" />
   </div>
 </template>

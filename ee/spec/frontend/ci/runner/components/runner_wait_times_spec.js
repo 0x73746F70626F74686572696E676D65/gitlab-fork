@@ -1,4 +1,4 @@
-import { GlSprintf, GlLink, GlLoadingIcon, GlSkeletonLoader } from '@gitlab/ui';
+import { GlLink, GlLoadingIcon, GlSkeletonLoader, GlEmptyState } from '@gitlab/ui';
 import { GlSingleStat, GlLineChart } from '@gitlab/ui/dist/charts';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { useFakeDate } from 'helpers/fake_date';
@@ -9,13 +9,13 @@ import { I18N_MEDIAN, I18N_P75, I18N_P90, I18N_P99 } from 'ee/ci/runner/constant
 
 import HelpPopover from '~/vue_shared/components/help_popover.vue';
 
-import { runnersWaitTimes, runnerWaitTimeHistory } from '../mock_data';
-
-const waitTimes = runnersWaitTimes.data.runners.jobsStatistics.queuedDuration;
-const waitTimeHistory = runnerWaitTimeHistory.data.ciQueueingHistory.timeSeries;
+import { queuedDuration as waitTimes, timeSeries as waitTimeHistory } from '../mock_data';
 
 jest.mock('~/alert');
 jest.mock('~/ci/runner/sentry_utils');
+
+const waitTimesPopoverDescription = 'Popover description';
+const waitTimeHistoryEmptyStateDescription = 'Empty state description';
 
 describe('RunnerActiveList', () => {
   let wrapper;
@@ -24,6 +24,7 @@ describe('RunnerActiveList', () => {
   const findHelpPopover = () => wrapper.findComponent(HelpPopover);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findGlEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findChart = () => wrapper.findComponent(GlLineChart);
 
   const getStatData = () =>
@@ -32,10 +33,11 @@ describe('RunnerActiveList', () => {
   const createComponent = ({ props, ...options } = {}) => {
     wrapper = shallowMountExtended(RunnerWaitTimes, {
       propsData: {
+        waitTimesPopoverDescription,
+        waitTimeHistoryEmptyStateDescription,
         waitTimeHistoryEnabled: true,
         ...props,
       },
-      stubs: { GlSprintf },
       ...options,
     });
   };
@@ -61,6 +63,7 @@ describe('RunnerActiveList', () => {
     });
 
     it('shows help popover with link', () => {
+      expect(findHelpPopover().text()).toContain(waitTimesPopoverDescription);
       expect(findHelpPopover().findComponent(GlLink).exists()).toBe(true);
     });
 
@@ -129,6 +132,20 @@ describe('RunnerActiveList', () => {
       });
 
       expect(findChart().text()).toContain('1,234.57');
+    });
+  });
+
+  describe('When wait times are empty', () => {
+    beforeEach(() => {
+      createComponent({
+        props: { waitTimeHistory: [] },
+      });
+    });
+
+    it('shows an empty state', () => {
+      expect(findGlEmptyState().props('description')).toContain(
+        waitTimeHistoryEmptyStateDescription,
+      );
     });
   });
 

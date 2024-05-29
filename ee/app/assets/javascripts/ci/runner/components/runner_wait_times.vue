@@ -1,5 +1,5 @@
 <script>
-import { GlEmptyState, GlLink, GlLoadingIcon, GlSkeletonLoader, GlSprintf } from '@gitlab/ui';
+import { GlEmptyState, GlLink, GlLoadingIcon, GlSkeletonLoader } from '@gitlab/ui';
 import { GlSingleStat, GlLineChart } from '@gitlab/ui/dist/charts';
 import CHART_EMPTY_STATE_SVG_URL from '@gitlab/svgs/dist/illustrations/empty-state/empty-pipeline-md.svg?url';
 import HelpPopover from '~/vue_shared/components/help_popover.vue';
@@ -22,11 +22,14 @@ export default {
     GlLink,
     GlLoadingIcon,
     GlSkeletonLoader,
-    GlSprintf,
     GlSingleStat,
     GlLineChart,
   },
   props: {
+    waitTimesPopoverDescription: {
+      type: String,
+      required: true,
+    },
     waitTimes: {
       type: Object,
       required: false,
@@ -38,6 +41,10 @@ export default {
       default: false,
     },
 
+    waitTimeHistoryEmptyStateDescription: {
+      type: String,
+      required: true,
+    },
     waitTimeHistoryEnabled: {
       type: Boolean,
       required: false,
@@ -91,17 +98,10 @@ export default {
       <h2 class="gl-font-lg gl-mt-0">
         {{ s__('Runners|Wait time to pick a job') }}
         <help-popover trigger-class="gl-align-baseline">
-          <gl-sprintf
-            :message="
-              s__(
-                'Runners|The time it takes for an instance runner to pick up a job. Jobs waiting for runners are in the pending state. %{linkStart}How is this calculated?%{linkEnd}',
-              )
-            "
-          >
-            <template #link="{ content }">
-              <gl-link :href="$options.jobDurationHelpPagePath">{{ content }}</gl-link>
-            </template>
-          </gl-sprintf>
+          {{ waitTimesPopoverDescription }}
+          <gl-link :href="$options.jobDurationHelpPagePath">{{
+            s__('Runners|How is this calculated?')
+          }}</gl-link>
         </help-popover>
       </h2>
       <gl-loading-icon v-if="waitTimesLoading || waitTimeHistoryLoading" class="gl-ml-auto" />
@@ -126,7 +126,7 @@ export default {
       <gl-empty-state
         v-else-if="!waitTimeHistoryChartData.length"
         :svg-path="$options.CHART_EMPTY_STATE_SVG_URL"
-        :description="s__('Runners|No jobs have been run by instance runners in the past 3 hours.')"
+        :description="waitTimeHistoryEmptyStateDescription"
       />
       <gl-line-chart
         v-else
