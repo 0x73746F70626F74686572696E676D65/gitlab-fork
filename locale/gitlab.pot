@@ -40518,10 +40518,10 @@ msgstr ""
 msgid "ProjectList|Yours"
 msgstr ""
 
-msgid "ProjectMaintenance| To ensure that a full backup is available in case changes need to be restored, you should make an %{docs_link_start}export of the project%{docs_link_end}."
+msgid "ProjectMaintenance|Blob IDs to remove"
 msgstr ""
 
-msgid "ProjectMaintenance|Blob IDs to remove"
+msgid "ProjectMaintenance|Blobs removed"
 msgstr ""
 
 msgid "ProjectMaintenance|Cancel"
@@ -40531,6 +40531,12 @@ msgid "ProjectMaintenance|Enter a list of object IDs to be removed to reduce rep
 msgstr ""
 
 msgid "ProjectMaintenance|Enter multiple entries on separate lines."
+msgstr ""
+
+msgid "ProjectMaintenance|Enter the following to confirm:"
+msgstr ""
+
+msgid "ProjectMaintenance|Go to housekeeping"
 msgstr ""
 
 msgid "ProjectMaintenance|Housekeeping will need to be triggered manually afterwards to remove old versions of the file."
@@ -40549,6 +40555,15 @@ msgid "ProjectMaintenance|Remove blobs"
 msgstr ""
 
 msgid "ProjectMaintenance|Removing blobs by ID cannot be undone. Are you sure you want to continue?"
+msgstr ""
+
+msgid "ProjectMaintenance|Run housekeeping to remove old versions from repository."
+msgstr ""
+
+msgid "ProjectMaintenance|Something went wrong while removing blobs."
+msgstr ""
+
+msgid "ProjectMaintenance|To ensure that a full backup is available in case changes need to be restored, you should make an %{docs_link_start}export of the project%{docs_link_end}."
 msgstr ""
 
 msgid "ProjectMaintenance|Yes, remove blobs"
