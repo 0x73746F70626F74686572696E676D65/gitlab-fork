@@ -33348,6 +33348,9 @@ msgstr ""
 msgid "MlModelRegistry|Triggered by"
 msgstr ""
 
+msgid "MlModelRegistry|Upload files under path: "
+msgstr ""
+
 msgid "MlModelRegistry|Use versions to track performance, parameters, and metadata"
 msgstr ""
 
