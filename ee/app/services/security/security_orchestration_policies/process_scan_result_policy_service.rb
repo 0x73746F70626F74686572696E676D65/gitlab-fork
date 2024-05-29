@@ -76,7 +76,7 @@ module Security
         create_software_license_params(rule, scan_result_policy_read).each do |params|
           ::SoftwareLicensePolicies::CreateService
             .new(project, author, params)
-            .execute(is_scan_result_policy: true)
+            .execute
         end
       end
 
