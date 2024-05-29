@@ -737,6 +737,53 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     end
   end
 
+  describe '.by_group_using_nested_loop' do
+    let_it_be(:parent_group) { create(:group) }
+    let_it_be(:child_group) { create(:group, parent: parent_group) }
+    let_it_be(:project_on_parent) { create(:project, group: parent_group) }
+    let_it_be(:project_on_child) { create(:project, group: child_group) }
+    let_it_be(:vulnerability_read_on_parent) { create(:vulnerability_read, project: project_on_parent) }
+    let_it_be(:vulnerability_read_on_child) { create(:vulnerability_read, project: project_on_child) }
+
+    context 'when the parent group is given' do
+      subject(:vulnerability_reads) { described_class.by_group_using_nested_loop(parent_group) }
+
+      it 'returns all the vulnerability read records associated with the groups in hierarchy' do
+        expect(vulnerability_reads).to match_array([vulnerability_read_on_parent, vulnerability_read_on_child])
+      end
+    end
+
+    context 'when the child group is given' do
+      subject(:vulnerability_reads) { described_class.by_group_using_nested_loop(child_group) }
+
+      it 'returns all the vulnerability read records associated with the group' do
+        expect(vulnerability_reads).to match_array([vulnerability_read_on_child])
+      end
+    end
+  end
+
+  describe '.all_vulnerable_traversal_ids_for' do
+    let(:parent_group) { create(:group) }
+    let(:child_group_1) { create(:group, parent: parent_group) }
+    let(:child_group_2) { create(:group, parent: parent_group) }
+    let(:project_on_parent) { create(:project, group: parent_group) }
+    let(:project_on_child_1) { create(:project, group: child_group_1) }
+    let(:project_on_child_2) { create(:project, :archived, group: child_group_2) }
+
+    subject(:traversal_ids) { described_class.all_vulnerable_traversal_ids_for(parent_group).pluck(:traversal_ids) }
+
+    before do
+      create(:vulnerability_read, project: project_on_parent)
+      create(:vulnerability_read, project: project_on_child_1)
+      create(:vulnerability_read, project: project_on_child_1)
+      create(:vulnerability_read, project: project_on_child_2)
+    end
+
+    it 'returns all the traversal IDs for non-archived records' do
+      expect(traversal_ids).to match_array([parent_group.traversal_ids, child_group_1.traversal_ids])
+    end
+  end
+
   private
 
   def create_vulnerability(severity: 7, confidence: 7, report_type: 0)
