@@ -8,12 +8,23 @@ RSpec.describe ::EE::API::Entities::DeploymentExtended do
   describe '#as_json' do
     let(:deployment) { create(:deployment, :blocked) }
 
+    let(:protected_environment) do
+      create(:protected_environment, project_id: deployment.environment.project_id, name: deployment.environment.name)
+    end
+
+    let(:deployment_approval) do
+      create(:deployment_approval, :approved, deployment: deployment, approval_rule: protected_environment_approval_rule)
+    end
+
+    let(:protected_environment_approval_rule) do
+      create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment, required_approvals: 2)
+    end
+
     before do
       stub_licensed_features(protected_environments: true)
-      # To avoid confusion, we test aginst multiple approval rules instead of unified approval setting.
-      protected_environment = create(:protected_environment, project_id: deployment.environment.project_id, name: deployment.environment.name)
-      create(:deployment_approval, :approved, deployment: deployment)
-      create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment, required_approvals: 2)
+      protected_environment
+      deployment_approval
+      protected_environment_approval_rule
     end
 
     it 'includes fields from deployment entity' do

@@ -27,11 +27,9 @@ module EE
     end
 
     def pending_approval_count
-      required_approval_count = environment.required_approval_count
+      return 0 unless environment.protected?
 
-      return 0 unless required_approval_count > 0
-
-      [required_approval_count - approvals.length, 0].max
+      approval_summary.total_pending_approval_count
     end
 
     def approval_summary
