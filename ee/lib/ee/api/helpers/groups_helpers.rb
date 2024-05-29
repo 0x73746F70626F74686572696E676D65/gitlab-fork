@@ -59,6 +59,7 @@ module EE
 
           params :optional_group_list_params_ee do
             optional :repository_storage, type: String, desc: 'Filter by repository storage used by the group'
+            optional :marked_for_deletion_on, type: Date, desc: 'Date when the group was marked for deletion'
           end
         end
       end

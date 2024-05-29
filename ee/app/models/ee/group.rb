@@ -120,6 +120,13 @@ module EE
       scope :with_deletion_schedule, -> { preload(deletion_schedule: :deleting_user) }
       scope :with_deletion_schedule_only, -> { preload(:deletion_schedule) }
 
+      scope :by_marked_for_deletion_on, ->(marked_for_deletion_on) do
+        raise ArgumentError, "marked_for_deletion_on cannot be blank" unless marked_for_deletion_on.present?
+
+        joins(:deletion_schedule)
+          .where(group_deletion_schedules: { marked_for_deletion_on: marked_for_deletion_on })
+      end
+
       scope :with_saml_provider, -> { preload(:saml_provider) }
       scope :with_saml_group_links, -> { joins(:saml_group_links) }
 

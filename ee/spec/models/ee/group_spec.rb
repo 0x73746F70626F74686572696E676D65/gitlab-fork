@@ -125,6 +125,23 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
     end
 
+    describe '.by_marked_for_deletion_on' do
+      let_it_be(:group_marked_for_deletion) { create(:group_with_deletion_schedule, marked_for_deletion_on: Date.parse('2024-01-01')) }
+      let_it_be(:group_not_marked_for_deletion) { create(:group) }
+
+      context 'when marked_for_deletion_on is present' do
+        it 'returns groups marked for deletion on the specified date' do
+          expect(described_class.by_marked_for_deletion_on(Date.parse('2024-01-01'))).to contain_exactly(group_marked_for_deletion)
+        end
+      end
+
+      context 'when marked_for_deletion_on is not present' do
+        it 'raise an error' do
+          expect { described_class.by_marked_for_deletion_on(nil) }.to raise_error(ArgumentError, 'marked_for_deletion_on cannot be blank')
+        end
+      end
+    end
+
     describe '.for_epics' do
       let_it_be(:epic1) { create(:epic) }
       let_it_be(:epic2) { create(:epic) }
