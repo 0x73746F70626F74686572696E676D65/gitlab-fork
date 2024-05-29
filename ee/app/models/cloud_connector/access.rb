@@ -9,7 +9,7 @@ module CloudConnector
     after_save :clear_available_services_cache!
 
     def clear_available_services_cache!
-      Rails.cache.delete(::CloudConnector::AvailableServices::CLOUD_CONNECTOR_SERVICES_KEY)
+      ::CloudConnector::AvailableServices.clear_memoization(:available_services)
     end
   end
 end

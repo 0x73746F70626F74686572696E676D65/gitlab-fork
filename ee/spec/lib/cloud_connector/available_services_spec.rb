@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe CloudConnector::AvailableServices, feature_category: :cloud_connector do
   before do
     described_class.clear_memoization(:access_data_reader)
+    described_class.clear_memoization(:available_services)
   end
 
   context 'when .com', :saas do
@@ -21,7 +22,7 @@ RSpec.describe CloudConnector::AvailableServices, feature_category: :cloud_conne
     end
   end
 
-  describe '.find_by_name', :redis do
+  describe '.find_by_name' do
     it 'reads available service' do
       available_services = { duo_chat: CloudConnector::BaseAvailableServiceData.new(:duo_chat, nil, nil) }
       expect(described_class.access_data_reader).to receive(:read_available_services).and_return(available_services)
@@ -43,7 +44,7 @@ RSpec.describe CloudConnector::AvailableServices, feature_category: :cloud_conne
     end
   end
 
-  describe '#available_services', :redis do
+  describe '#available_services' do
     subject(:available_services) { described_class.available_services }
 
     it 'caches the available services' do

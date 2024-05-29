@@ -4,8 +4,6 @@ module CloudConnector
   class AvailableServices
     extend Gitlab::Utils::StrongMemoize
 
-    CLOUD_CONNECTOR_SERVICES_KEY = 'cloud-connector:services'
-
     class << self
       def find_by_name(name)
         service_data_map = available_services
@@ -16,7 +14,7 @@ module CloudConnector
       end
 
       def available_services
-        Rails.cache.fetch(CLOUD_CONNECTOR_SERVICES_KEY) do
+        strong_memoize(:available_services) do # rubocop:disable Gitlab/StrongMemoizeAttr -- class method
           access_data_reader.read_available_services
         end
       end
