@@ -35,6 +35,11 @@ export default {
       type: Array,
       required: true,
     },
+    namespaceId: {
+      type: String,
+      required: false,
+      default: '',
+    },
     emptyStateMessage: {
       type: String,
       required: true,

@@ -1,16 +1,13 @@
 import { nextTick } from 'vue';
 import { GlAlert, GlTabs, GlTab, GlBadge } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-
-import {
-  AGENT_MAPPING_STATUS_MAPPED,
-  AGENT_MAPPING_STATUS_UNMAPPED,
-} from 'ee/workspaces/agent_mapping/constants';
 import AgentMapping from 'ee_component/workspaces/agent_mapping/components/agent_mapping.vue';
 import GetAgentsWithMappingStatusQuery from 'ee_component/workspaces/agent_mapping/components/get_agents_with_mapping_status_query.vue';
+import { AGENT_MAPPING_STATUS_MAPPED } from 'ee/workspaces/agent_mapping/constants';
 import { stubComponent } from 'helpers/stub_component';
+import { NAMESPACE_ID, MAPPED_CLUSTER_AGENT, UNMAPPED_CLUSTER_AGENT } from '../../mock_data';
 
-describe('workspaces/agent_mapping/components/agent_mapping.vue', () => {
+describe('workspaces/agent_mapping/components/agent_mapping', () => {
   let wrapper;
   const NAMESPACE = 'foo/bar';
 
@@ -38,6 +35,12 @@ describe('workspaces/agent_mapping/components/agent_mapping.vue', () => {
   const findErrorAlert = () => wrapper.findComponent(GlAlert);
   const findAllowedAgentsTab = () => wrapper.findByTestId('allowed-agents-tab');
   const findAllAgentsTab = () => wrapper.findByTestId('all-agents-tab');
+  const triggerQueryResultEvent = (result) => {
+    findGetAgentsWithMappingStatusQuery().vm.$emit('result', {
+      namespaceId: NAMESPACE_ID,
+      ...result,
+    });
+  };
 
   describe('default', () => {
     beforeEach(() => {
@@ -64,26 +67,18 @@ describe('workspaces/agent_mapping/components/agent_mapping.vue', () => {
         buildWrapper();
 
         agents = [
+          MAPPED_CLUSTER_AGENT,
+          UNMAPPED_CLUSTER_AGENT,
           {
-            id: 'agent-1',
-            name: 'agent one',
-            mappingStatus: AGENT_MAPPING_STATUS_MAPPED,
-          },
-          {
-            id: 'agent-2',
-            name: 'agent two',
-            mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED,
-          },
-          {
+            ...UNMAPPED_CLUSTER_AGENT,
             id: 'agent-3',
             name: 'agent three',
-            mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED,
           },
         ];
         allowedAgents = agents.filter(
           (agent) => agent.mappingStatus === AGENT_MAPPING_STATUS_MAPPED,
         );
-        findGetAgentsWithMappingStatusQuery().vm.$emit('result', { agents });
+        triggerQueryResultEvent({ agents });
         await nextTick();
       });
 
@@ -97,6 +92,11 @@ describe('workspaces/agent_mapping/components/agent_mapping.vue', () => {
         expect(findAllAgentsTab().findComponent(GlBadge).text()).toContain(
           agents.length.toString(),
         );
+      });
+
+      it('passes namespaceId to all tables', () => {
+        expect(findAllowedAgentsTable().props('namespaceId')).toEqual(NAMESPACE_ID);
+        expect(findAllAgentsTable().props('namespaceId')).toEqual(NAMESPACE_ID);
       });
 
       it('passes allowed agents to the allowed agents table', () => {
@@ -116,18 +116,14 @@ describe('workspaces/agent_mapping/components/agent_mapping.vue', () => {
           buildWrapper();
 
           agents = [
+            UNMAPPED_CLUSTER_AGENT,
             {
-              id: 'agent-2',
-              name: 'agent two',
-              mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED,
-            },
-            {
+              ...UNMAPPED_CLUSTER_AGENT,
               id: 'agent-3',
               name: 'agent three',
-              mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED,
             },
           ];
-          findGetAgentsWithMappingStatusQuery().vm.$emit('result', { agents });
+          triggerQueryResultEvent({ agents });
           await nextTick();
         });
 
@@ -143,7 +139,7 @@ describe('workspaces/agent_mapping/components/agent_mapping.vue', () => {
           buildWrapper();
 
           agents = [];
-          findGetAgentsWithMappingStatusQuery().vm.$emit('result', { agents });
+          triggerQueryResultEvent({ agents });
           await nextTick();
         });
 
