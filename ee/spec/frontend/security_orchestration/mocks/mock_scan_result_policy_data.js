@@ -11,7 +11,7 @@
 import { POLICY_SCOPE_MOCK } from 'ee_jest/security_orchestration/mocks/mock_apollo';
 import { actionId, ruleId } from './mock_data';
 
-export const mockDefaultBranchesScanResultManifest = `type: approval_policy
+export const mockNoFallbackScanResultManifest = `type: approval_policy
 name: critical vulnerability CS approvals
 description: This policy enforces critical vulnerability CS approvals
 enabled: true
@@ -30,9 +30,11 @@ actions:
     approvals_required: 1
     user_approvers:
       - the.one
-fallback_behavior:
-  fail: open
 `;
+
+export const mockDefaultBranchesScanResultManifest = mockNoFallbackScanResultManifest.concat(`fallback_behavior:
+  fail: open
+`);
 
 export const mockDefaultBranchesScanResultObject = {
   type: 'approval_policy',

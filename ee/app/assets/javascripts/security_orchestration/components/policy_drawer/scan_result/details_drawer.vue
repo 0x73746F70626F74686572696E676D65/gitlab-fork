@@ -37,7 +37,7 @@ export default {
       return this.parsedYaml?.description;
     },
     fallbackBehaviorText() {
-      switch (this.parsedYaml.fallback_behavior.fail) {
+      switch (this.parsedYaml?.fallback_behavior?.fail) {
         case 'open':
           return s__(
             'ScanResultPolicy|Fail open: Allow the merge request to proceed, even if not all criteria are met',
