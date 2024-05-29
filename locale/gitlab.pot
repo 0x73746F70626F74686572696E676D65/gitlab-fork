@@ -55985,6 +55985,12 @@ msgstr ""
 msgid "UpdateProject|Cannot rename project, the container registry path rename validation failed: %{error}"
 msgstr ""
 
+msgid "UpdateProject|Changing the ci_pipeline_variables_minimum_override_role to the owner role is not allowed"
+msgstr ""
+
+msgid "UpdateProject|Changing the restrict_user_defined_variables or ci_pipeline_variables_minimum_override_role is not allowed"
+msgstr ""
+
 msgid "UpdateProject|Could not set the default branch"
 msgstr ""
 

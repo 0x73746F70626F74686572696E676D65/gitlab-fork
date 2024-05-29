@@ -14470,7 +14470,8 @@ CREATE TABLE project_ci_cd_settings (
     inbound_job_token_scope_enabled boolean DEFAULT true NOT NULL,
     forward_deployment_rollback_allowed boolean DEFAULT true NOT NULL,
     merge_trains_skip_train_allowed boolean DEFAULT false NOT NULL,
-    restrict_pipeline_cancellation_role smallint DEFAULT 0 NOT NULL
+    restrict_pipeline_cancellation_role smallint DEFAULT 0 NOT NULL,
+    pipeline_variables_minimum_override_role smallint DEFAULT 3 NOT NULL
 );
 
 CREATE SEQUENCE project_ci_cd_settings_id_seq
