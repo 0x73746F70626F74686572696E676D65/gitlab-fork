@@ -31,7 +31,7 @@ const mockRunnerUsage = [
       adminUrl: '/admin/runners/1',
       __typename: 'CiRunner',
     },
-    ciMinutesUsed: 2002,
+    ciMinutesUsed: '111222333444555666777888999', // tests support for BigInt parsing
     __typename: 'CiRunnerUsage',
   },
   {
@@ -88,9 +88,9 @@ describe('RunnerUsage', () => {
   let wrapper;
   let mockToast;
 
-  const runnerUsageHandler = jest.fn();
-  const runnerUsageByProjectHandler = jest.fn();
-  const runnerUsageExportHandler = jest.fn();
+  let runnerUsageHandler;
+  let runnerUsageByProjectHandler;
+  let runnerUsageExportHandler;
 
   const findButton = () => wrapper.findComponent(GlButton);
   const findTopRunners = () => wrapper.findByTestId('top-runners-table').findAll('tr');
@@ -106,13 +106,6 @@ describe('RunnerUsage', () => {
 
     mockToast = jest.fn();
 
-    runnerUsageHandler.mockResolvedValue({
-      data: { runnerUsage: mockRunnerUsage },
-    });
-    runnerUsageByProjectHandler.mockResolvedValue({
-      data: { runnerUsageByProject: mockRunnerUsageByProject },
-    });
-
     wrapper = mountFn(RunnerUsage, {
       apolloProvider: createMockApollo([
         [RunnerUsageQuery, runnerUsageHandler],
@@ -126,14 +119,18 @@ describe('RunnerUsage', () => {
   };
 
   beforeEach(() => {
-    runnerUsageHandler.mockReset();
-    runnerUsageByProjectHandler.mockReset();
-    runnerUsageExportHandler.mockReset();
-
-    createWrapper();
+    runnerUsageHandler = jest.fn().mockResolvedValue({
+      data: { runnerUsage: mockRunnerUsage },
+    });
+    runnerUsageByProjectHandler = jest.fn().mockResolvedValue({
+      data: { runnerUsageByProject: mockRunnerUsageByProject },
+    });
+    runnerUsageExportHandler = jest.fn();
   });
 
   it('renders button', () => {
+    createWrapper();
+
     expect(findButton().text()).toBe('Export as CSV');
   });
 
@@ -178,7 +175,7 @@ describe('RunnerUsage', () => {
     expect(header).toContain('Usage (min)');
 
     expect(row1).toContain('#1 (sha1) - Runner 1');
-    expect(row1).toContain('2,002');
+    expect(row1).toContain('111,222,333,444,555,666,777,888,999');
 
     expect(row2).toContain('#2 (sha2) - Runner 2');
     expect(row2).toContain('2,001');
@@ -187,7 +184,33 @@ describe('RunnerUsage', () => {
     expect(row3).toContain('2,000');
   });
 
+  it('shows empty results', async () => {
+    runnerUsageHandler.mockResolvedValue({
+      data: {
+        runnerUsage: [{ runner: null, ciMinutesUsed: null, __typename: 'CiRunnerUsage' }],
+      },
+    });
+    runnerUsageByProjectHandler.mockResolvedValue({
+      data: {
+        runnerUsageByProject: [
+          { project: null, ciMinutesUsed: null, __typename: 'CiRunnerUsageByProject' },
+        ],
+      },
+    });
+
+    createWrapper({ mountFn: mountExtended });
+    await waitForPromises();
+
+    const [, projectRow] = findTopProjects().wrappers.map((w) => w.text());
+    expect(projectRow).toBe('Other projects -');
+
+    const [, runnerRow] = findTopRunners().wrappers.map((w) => w.text());
+    expect(runnerRow).toBe('Other runners -');
+  });
+
   it('calls mutation on button click', async () => {
+    createWrapper();
+
     runnerUsageExportHandler.mockReturnValue(new Promise(() => {}));
 
     await clickButton();
@@ -200,6 +223,7 @@ describe('RunnerUsage', () => {
 
   describe('when user does not confirm', () => {
     beforeEach(() => {
+      createWrapper();
       confirmAction.mockReturnValue(false);
     });
 
@@ -212,6 +236,8 @@ describe('RunnerUsage', () => {
   });
 
   it('handles successful result', async () => {
+    createWrapper();
+
     runnerUsageExportHandler.mockResolvedValue({
       data: { runnersExportUsage: { errors: [] } },
     });
@@ -223,6 +249,10 @@ describe('RunnerUsage', () => {
   });
 
   describe('when an error occurs', () => {
+    beforeEach(() => {
+      createWrapper();
+    });
+
     it('handles network error', async () => {
       runnerUsageExportHandler.mockRejectedValue(new Error('Network error'));
 

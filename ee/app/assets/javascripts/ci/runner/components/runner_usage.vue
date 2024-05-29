@@ -45,7 +45,14 @@ export default {
     },
   },
   methods: {
-    formatNumber,
+    formatBigIntString(value) {
+      try {
+        const n = BigInt(value);
+        return formatNumber(n);
+      } catch {
+        return '-';
+      }
+    },
     runnerName(runner) {
       const { id: graphqlId, shortSha, description } = runner;
       const id = getIdFromGraphQLId(graphqlId);
@@ -117,7 +124,7 @@ export default {
       key: 'ciMinutesUsed',
       label: s__('Runners|Usage (min)'),
       thClass: [...thClass, 'gl-text-right'],
-      tdClass: 'gl-text-right',
+      tdClass: 'gl-text-right gl-break-all',
     },
   ],
   topProjectsFields: [
@@ -130,7 +137,7 @@ export default {
       key: 'ciMinutesUsed',
       label: s__('Runners|Usage (min)'),
       thClass: [...thClass, 'gl-text-right'],
-      tdClass: 'gl-text-right',
+      tdClass: 'gl-text-right gl-break-all',
     },
   ],
 };
@@ -174,7 +181,9 @@ export default {
           </div>
           <template v-else> {{ s__('Runners|Other projects') }} </template>
         </template>
-        <template #cell(ciMinutesUsed)="{ value }">{{ formatNumber(value) }}</template>
+        <template #cell(ciMinutesUsed)="{ item }">{{
+          formatBigIntString(item.ciMinutesUsed)
+        }}</template>
       </gl-table-lite>
 
       <gl-table-lite
@@ -194,7 +203,9 @@ export default {
             <template v-else> {{ s__('Runners|Other runners') }} </template>
           </div>
         </template>
-        <template #cell(ciMinutesUsed)="{ value }">{{ formatNumber(value) }}</template>
+        <template #cell(ciMinutesUsed)="{ item }">{{
+          formatBigIntString(item.ciMinutesUsed)
+        }}</template>
       </gl-table-lite>
     </div>
   </div>
