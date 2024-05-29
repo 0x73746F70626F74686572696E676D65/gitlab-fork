@@ -14,7 +14,7 @@ RSpec.describe 'VerifiedNamespaceCreate', feature_category: :pipeline_compositio
     graphql_mutation(
       :verified_namespace_create,
       namespace_path: root_namespace.full_path,
-      verification_level: 'gitlab_maintained'
+      verification_level: 'GITLAB_MAINTAINED'
     )
   end
 
@@ -59,13 +59,6 @@ RSpec.describe 'VerifiedNamespaceCreate', feature_category: :pipeline_compositio
         end
 
         context 'with invalid arguments' do
-          let(:invalid_path_error) { 'Please pass in the root namespace.' }
-          let(:invalid_verification_level_error) do
-            'Please pass in a valid verification level: ' \
-              'gitlab_maintained, gitlab_partner_maintained, ' \
-              'verified_creator_maintained, unverified.'
-          end
-
           context 'with invalid verification level' do
             let(:mutation) do
               graphql_mutation(
@@ -80,19 +73,20 @@ RSpec.describe 'VerifiedNamespaceCreate', feature_category: :pipeline_compositio
                 post_graphql_mutation(mutation, current_user: current_user)
               end.not_to change { Ci::Catalog::VerifiedNamespace.all.count }
 
-              expect(mutation_response['errors']).to match_array([invalid_verification_level_error])
+              expect { mutation_response }.to raise_error(GraphqlHelpers::NoData)
               expect(group_project_resource.reload.verification_level).to eq('unverified')
             end
           end
 
           context 'with invalid namespace path' do
+            let(:invalid_path_error) { 'Please pass in the root namespace.' }
             let(:subgroup) { create(:group, parent: root_namespace) }
 
             let(:mutation) do
               graphql_mutation(
                 :verified_namespace_create,
                 namespace_path: subgroup.full_path,
-                verification_level: 'gitlab_maintained'
+                verification_level: 'GITLAB_MAINTAINED'
               )
             end
 
@@ -117,17 +111,22 @@ RSpec.describe 'VerifiedNamespaceCreate', feature_category: :pipeline_compositio
               )
             end
 
+            let(:error_message) do
+              'Variable $verifiedNamespaceCreateInput of type ' \
+                'VerifiedNamespaceCreateInput! was provided invalid value for verificationLevel'
+            end
+
             it 'returns multiple errors' do
               expect do
                 post_graphql_mutation(mutation, current_user: current_user)
               end.not_to change { Ci::Catalog::VerifiedNamespace.all.count }
 
-              expected_string =
-                'Please pass in the root namespace., ' \
-                  'Please pass in a valid verification level: gitlab_maintained, ' \
-                  'gitlab_partner_maintained, verified_creator_maintained, unverified.'
+              expect do
+                mutation_response
+              end.to raise_error(GraphqlHelpers::NoData) { |error|
+                expect(error.message).to include(error_message)
+              }
 
-              expect(mutation_response['errors']).to eq([expected_string])
               expect(group_project_resource.reload.verification_level).to eq('unverified')
             end
           end
@@ -142,6 +141,7 @@ RSpec.describe 'VerifiedNamespaceCreate', feature_category: :pipeline_compositio
 
       it 'returns an error' do
         post_graphql_mutation(mutation, current_user: current_user)
+
         expect(mutation_response[
           'errors'
         ]).to eq(["Can't perform this action on a non-Gitlab.com instance."])
