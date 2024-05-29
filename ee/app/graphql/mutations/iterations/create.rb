@@ -10,35 +10,35 @@ module Mutations
       authorize :create_iteration
 
       field :iteration,
-            Types::IterationType,
-            null: true,
-            description: 'Created iteration.'
+        Types::IterationType,
+        null: true,
+        description: 'Created iteration.'
 
       argument :iterations_cadence_id,
-               ::Types::GlobalIDType[::Iterations::Cadence],
-               prepare: ->(gid, _) { gid.model_id },
-               required: false,
-               description: 'Global ID of the iteration cadence to be assigned to the new iteration.'
+        ::Types::GlobalIDType[::Iterations::Cadence],
+        prepare: ->(gid, _) { gid.model_id },
+        required: false,
+        description: 'Global ID of the iteration cadence to be assigned to the new iteration.'
 
       argument :title,
-               GraphQL::Types::String,
-               required: false,
-               description: 'Title of the iteration.'
+        GraphQL::Types::String,
+        required: false,
+        description: 'Title of the iteration.'
 
       argument :description,
-               GraphQL::Types::String,
-               required: false,
-               description: 'Description of the iteration.'
+        GraphQL::Types::String,
+        required: false,
+        description: 'Description of the iteration.'
 
       argument :start_date,
-               GraphQL::Types::String,
-               required: false,
-               description: 'Start date of the iteration.'
+        GraphQL::Types::String,
+        required: false,
+        description: 'Start date of the iteration.'
 
       argument :due_date,
-               GraphQL::Types::String,
-               required: false,
-               description: 'End date of the iteration.'
+        GraphQL::Types::String,
+        required: false,
+        description: 'End date of the iteration.'
 
       def resolve(args)
         parent = authorized_resource_parent_find!(args)

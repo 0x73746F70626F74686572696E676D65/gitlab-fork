@@ -13,40 +13,40 @@ module Mutations
       authorize :admin_iteration
 
       field :iteration,
-            Types::IterationType,
-            null: true,
-            description: 'Updated iteration.'
+        Types::IterationType,
+        null: true,
+        description: 'Updated iteration.'
 
       argument :group_path, GraphQL::Types::ID,
-               required: true,
-               description: 'Group of the iteration.'
+        required: true,
+        description: 'Group of the iteration.'
 
       # rubocop:disable Graphql/IDType
       argument :id,
-               GraphQL::Types::ID,
-               required: true,
-               description: 'Global ID of the iteration.'
+        GraphQL::Types::ID,
+        required: true,
+        description: 'Global ID of the iteration.'
       # rubocop:enable Graphql/IDType
 
       argument :title,
-               GraphQL::Types::String,
-               required: false,
-               description: 'Title of the iteration.'
+        GraphQL::Types::String,
+        required: false,
+        description: 'Title of the iteration.'
 
       argument :description,
-               GraphQL::Types::String,
-               required: false,
-               description: 'Description of the iteration.'
+        GraphQL::Types::String,
+        required: false,
+        description: 'Description of the iteration.'
 
       argument :start_date,
-               GraphQL::Types::String,
-               required: false,
-               description: 'Start date of the iteration.'
+        GraphQL::Types::String,
+        required: false,
+        description: 'Start date of the iteration.'
 
       argument :due_date,
-               GraphQL::Types::String,
-               required: false,
-               description: 'End date of the iteration.'
+        GraphQL::Types::String,
+        required: false,
+        description: 'End date of the iteration.'
 
       def resolve(args)
         validate_arguments!(args)

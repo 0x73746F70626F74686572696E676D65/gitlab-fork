@@ -9,19 +9,19 @@ module Mutations
         authorize :admin_vulnerability
 
         field :security_finding,
-              ::Types::PipelineSecurityReportFindingType,
-              null: true,
-              description: 'Finding reverted to detected.'
+          ::Types::PipelineSecurityReportFindingType,
+          null: true,
+          description: 'Finding reverted to detected.'
 
         argument :uuid,
-                 GraphQL::Types::String,
-                 required: true,
-                 description: 'UUID of the finding to be dismissed.'
+          GraphQL::Types::String,
+          required: true,
+          description: 'UUID of the finding to be dismissed.'
 
         argument :comment,
-                 GraphQL::Types::String,
-                 required: false,
-                 description: 'Comment that explains why finding was reverted to detected status.'
+          GraphQL::Types::String,
+          required: false,
+          description: 'Comment that explains why finding was reverted to detected status.'
 
         def resolve(uuid:, comment: nil)
           security_finding = authorized_find!(uuid: uuid)

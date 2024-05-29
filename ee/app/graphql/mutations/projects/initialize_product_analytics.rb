@@ -10,12 +10,12 @@ module Mutations
       authorize :developer_access
 
       argument :project_path, GraphQL::Types::ID,
-               required: true,
-               description: 'Full path of the project to initialize.'
+        required: true,
+        description: 'Full path of the project to initialize.'
 
       field :project, Types::ProjectType,
-            null: true,
-            description: 'Project on which the initialization took place.'
+        null: true,
+        description: 'Project on which the initialization took place.'
 
       def resolve(project_path:)
         project = authorized_find!(project_path)

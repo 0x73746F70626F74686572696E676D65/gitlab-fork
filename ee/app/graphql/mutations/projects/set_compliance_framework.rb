@@ -9,17 +9,17 @@ module Mutations
       authorize :admin_compliance_framework
 
       argument :project_id, Types::GlobalIDType[::Project],
-               required: true,
-               description: 'ID of the project to change the compliance framework of.'
+        required: true,
+        description: 'ID of the project to change the compliance framework of.'
 
       argument :compliance_framework_id, Types::GlobalIDType[::ComplianceManagement::Framework],
-               required: false,
-               description: 'ID of the compliance framework to assign to the project. Set to `null` to unset.'
+        required: false,
+        description: 'ID of the compliance framework to assign to the project. Set to `null` to unset.'
 
       field :project,
-            Types::ProjectType,
-            null: true,
-            description: "Project after mutation."
+        Types::ProjectType,
+        null: true,
+        description: "Project after mutation."
 
       def resolve(project_id:, compliance_framework_id:)
         project = GitlabSchema.find_by_gid(project_id).sync
