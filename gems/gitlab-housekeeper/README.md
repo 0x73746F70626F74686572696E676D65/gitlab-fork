@@ -169,3 +169,19 @@ Some best practices to consider when using a once-off keep:
 1. Consider adding a link back to this MR in the description of your generated
    MRs. This allows reviewers to understand where this work comes from and can
    also help if they want to contribute improvements to an ongoing group of MRs.
+
+## Using Housekeeper in other projects
+
+Right now we do not publish housekeeper to RubyGems. We have published it once
+to hold the name but it's not up to date.
+
+In order to use Housekeeper in another project you would need to add the
+following to your `Gemfile` and run `bundle install`:
+
+```
+gem 'gitlab-housekeeper', git: 'https://gitlab.com/gitlab-org/gitlab.git', branch: 'master', glob: 'gems/gitlab-housekeeper/*.gemspec'
+```
+
+After that you can just run `bundle exec gitlab-housekeeper`. Housekeeper
+defaults to loading all keeps in the `./keeps` directory so you would also
+create that directory in your project and put your keeps there.
