@@ -146,7 +146,7 @@ module Gitlab
             handle_section(scanner)
           elsif scanner.scan(/\e([@-_])(.*?)([@-~])/)
             handle_sequence(scanner)
-          elsif scanner.scan(/\e(([@-_])(.*?)?)?$/)
+          elsif scanner.scan(/\e(?:[@-_].*?)?$/)
             return
           elsif scanner.scan('<')
             write_in_tag '&lt;'
