@@ -13,6 +13,10 @@ module EE
           def find_groups(params, parent_id = nil)
             params.delete(:repository_storage) unless can?(current_user, :change_repository_storage)
 
+            unless License.feature_available?(:adjourned_deletion_for_projects_and_groups)
+              params.delete(:marked_for_deletion_on)
+            end
+
             super(params, parent_id)
           end
 
