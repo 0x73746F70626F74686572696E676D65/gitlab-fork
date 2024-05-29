@@ -9722,9 +9722,9 @@ Input type: `WorkItemAddClosingMergeRequestInput`
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="mutationworkitemaddclosingmergerequestclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
-| <a id="mutationworkitemaddclosingmergerequestcontextnamespacepath"></a>`contextNamespacePath` | [`ID!`](#id) | Full path of the context namespace (project or group). Only project full paths are used to find a merge request using a short reference syntax like `!1`. |
+| <a id="mutationworkitemaddclosingmergerequestcontextnamespacepath"></a>`contextNamespacePath` | [`ID`](#id) | Full path of the context namespace (project or group). Only project full paths are used to find a merge request using a short reference syntax like `!1`. Ignored for full references and URLs. Defaults to the namespace of the work item if not provided. |
 | <a id="mutationworkitemaddclosingmergerequestid"></a>`id` | [`WorkItemID!`](#workitemid) | Global ID of the work item. |
-| <a id="mutationworkitemaddclosingmergerequestmergerequestreference"></a>`mergeRequestReference` | [`String!`](#string) | Merge request short reference. Example: `!1`. |
+| <a id="mutationworkitemaddclosingmergerequestmergerequestreference"></a>`mergeRequestReference` | [`String!`](#string) | Merge request reference (short, full or URL). Example: `!1`, `project_full_path!1` or `https://gitlab.com/gitlab-org/gitlab/-/merge_requests/1`. |
 
 #### Fields
 
