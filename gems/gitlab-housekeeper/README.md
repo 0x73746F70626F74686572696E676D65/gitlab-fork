@@ -4,6 +4,10 @@ Check out [the original
 blueprint](https://docs.gitlab.com/ee/architecture/blueprints/gitlab_housekeeper/)
 for the motivation behind the `gitlab-housekeeper`.
 
+Also watch [this walkthrough video](https://youtu.be/KNJPVx8izAc) for an
+overview on how to create your first Keep as well as the philosophy behind
+`gitlab-housekeeper`.
+
 This is a gem which can be run locally or in CI to do static and dynamic
 analysis of the GitLab codebase and, using a list of predefined "keeps", it will
 automatically create merge requests for things that developers would have
