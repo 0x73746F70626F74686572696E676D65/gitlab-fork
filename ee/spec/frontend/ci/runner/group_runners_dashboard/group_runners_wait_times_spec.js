@@ -2,11 +2,11 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
-import AdminRunnersWaitTimes from 'ee/ci/runner/admin_runners_dashboard/admin_runners_wait_times.vue';
+import GroupRunnersWaitTimes from 'ee/ci/runner/group_runners_dashboard/group_runners_wait_times.vue';
 
 import RunnerWaitTimes from 'ee/ci/runner/components/runner_wait_times.vue';
-import runnerWaitTimesQuery from 'ee/ci/runner/graphql/performance/runner_wait_times.query.graphql';
-import runnerWaitTimeHistoryQuery from 'ee/ci/runner/graphql/performance/runner_wait_time_history.query.graphql';
+import groupRunnerWaitTimesQuery from 'ee/ci/runner/graphql/performance/group_runner_wait_times.query.graphql';
+import groupRunnerWaitTimeHistoryQuery from 'ee/ci/runner/graphql/performance/group_runner_wait_time_history.query.graphql';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -18,47 +18,60 @@ jest.mock('~/ci/runner/sentry_utils');
 
 Vue.use(VueApollo);
 
-const runnersWaitTimes = {
+const mockGroupPath = '/group/-/runners';
+
+const groupRunnersWaitTimes = {
   data: {
-    runners: {
-      jobsStatistics: {
-        queuedDuration,
-        __typename: 'CiJobsStatistics',
+    group: {
+      id: 'group1',
+      runners: {
+        jobsStatistics: {
+          queuedDuration,
+          __typename: 'CiJobsStatistics',
+        },
+        __typename: 'CiRunnerConnection',
       },
-      __typename: 'CiRunnerConnection',
+      __typename: 'Group',
     },
   },
 };
 
-const runnerWaitTimeHistory = {
+const groupRunnersWaitTimeHistory = {
   data: {
-    ciQueueingHistory: {
-      timeSeries,
+    group: {
+      id: 'group1',
+      ciQueueingHistory: {
+        timeSeries,
+      },
+      __typename: 'Group',
     },
   },
 };
 
 describe('RunnerActiveList', () => {
   let wrapper;
-  let runnerWaitTimesHandler;
-  let runnerWaitTimeHistoryHandler;
+  let groupRunnerWaitTimesHandler;
+  let groupRunnerWaitTimeHistoryHandler;
 
   const findRunnerWaitTimes = () => wrapper.findComponent(RunnerWaitTimes);
 
   const createComponent = (options = {}) => {
-    wrapper = shallowMountExtended(AdminRunnersWaitTimes, {
+    wrapper = shallowMountExtended(GroupRunnersWaitTimes, {
       apolloProvider: createMockApollo([
-        [runnerWaitTimesQuery, runnerWaitTimesHandler],
-        [runnerWaitTimeHistoryQuery, runnerWaitTimeHistoryHandler],
+        [groupRunnerWaitTimesQuery, groupRunnerWaitTimesHandler],
+        [groupRunnerWaitTimeHistoryQuery, groupRunnerWaitTimeHistoryHandler],
       ]),
+      props: {
+        groupFullPath: mockGroupPath,
+      },
       provide: { clickhouseCiAnalyticsAvailable: true },
       ...options,
     });
   };
 
   beforeEach(() => {
-    runnerWaitTimesHandler = jest.fn().mockResolvedValue(new Promise(() => {}));
-    runnerWaitTimeHistoryHandler = jest.fn().mockResolvedValue(new Promise(() => {}));
+    groupRunnerWaitTimesHandler = jest.fn().mockResolvedValue(new Promise(() => {}));
+    groupRunnerWaitTimeHistoryHandler = jest.fn().mockResolvedValue(new Promise(() => {}));
   });
 
   describe('When loading data', () => {
@@ -80,12 +93,12 @@ describe('RunnerActiveList', () => {
     });
 
     it('requests wait times', () => {
-      expect(runnerWaitTimesHandler).toHaveBeenCalledTimes(1);
+      expect(groupRunnerWaitTimesHandler).toHaveBeenCalledTimes(1);
     });
 
     it('requests wait time history', () => {
-      expect(runnerWaitTimeHistoryHandler).toHaveBeenCalledTimes(1);
-      expect(runnerWaitTimeHistoryHandler).toHaveBeenCalledWith({
+      expect(groupRunnerWaitTimeHistoryHandler).toHaveBeenCalledTimes(1);
+      expect(groupRunnerWaitTimeHistoryHandler).toHaveBeenCalledWith({
         fromTime: expect.any(String),
         toTime: expect.any(String),
       });
@@ -94,8 +107,8 @@ describe('RunnerActiveList', () => {
 
   describe('When wait times are loaded', () => {
     beforeEach(async () => {
-      runnerWaitTimesHandler.mockResolvedValue(runnersWaitTimes);
-      runnerWaitTimeHistoryHandler.mockResolvedValue(runnerWaitTimeHistory);
+      groupRunnerWaitTimesHandler.mockResolvedValue(groupRunnersWaitTimes);
+      groupRunnerWaitTimeHistoryHandler.mockResolvedValue(groupRunnersWaitTimeHistory);
 
       createComponent();
       await waitForPromises();
@@ -117,18 +130,18 @@ describe('RunnerActiveList', () => {
 
   describe('When ClickHouse is not configured', () => {
     beforeEach(async () => {
-      runnerWaitTimesHandler.mockResolvedValue(runnersWaitTimes);
+      groupRunnerWaitTimesHandler.mockResolvedValue(groupRunnersWaitTimes);
 
       createComponent({ provide: { clickhouseCiAnalyticsAvailable: false } });
       await waitForPromises();
     });
 
     it('request wait times', () => {
-      expect(runnerWaitTimesHandler).toHaveBeenCalledTimes(1);
+      expect(groupRunnerWaitTimesHandler).toHaveBeenCalledTimes(1);
     });
 
     it('does not request wait time history', () => {
-      expect(runnerWaitTimeHistoryHandler).toHaveBeenCalledTimes(0);
+      expect(groupRunnerWaitTimeHistoryHandler).toHaveBeenCalledTimes(0);
     });
 
     it('shows wait time data without history', () => {
