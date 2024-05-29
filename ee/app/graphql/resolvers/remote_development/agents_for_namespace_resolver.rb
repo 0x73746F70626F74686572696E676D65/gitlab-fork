@@ -26,8 +26,11 @@ module Resolvers
 
         ::RemoteDevelopment::ClusterAgentsFinder.execute(
           namespace: @object,
-          filter: args[:filter].downcase.to_sym
+          filter: args[:filter].downcase.to_sym,
+          user: current_user
         )
+      rescue Gitlab::Access::AccessDeniedError
+        raise_resource_not_available_error!
       end
     end
   end
