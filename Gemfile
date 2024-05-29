@@ -682,9 +682,10 @@ gem 'telesignenterprise', '~> 2.2' # rubocop:todo Gemfile/MissingFeatureCategory
 # BufferedIO patch
 # Updating this version will require updating scripts/allowed_warnings.txt
 gem 'net-protocol', '~> 0.1.3' # rubocop:todo Gemfile/MissingFeatureCategory
-# Lock this until we make DNS rebinding work with the updated net-http:
-# https://gitlab.com/gitlab-org/gitlab/-/issues/413528
-gem 'net-http', '= 0.1.1' # rubocop:todo Gemfile/MissingFeatureCategory
+
+# This is locked to 0.4.1 because we patch Net::HTTP#connect in
+# gems/gitlab-http/lib/net_http/connect_patch.rb.
+gem 'net-http', '= 0.4.1', feature_category: :shared
 
 gem 'duo_api', '~> 1.3' # rubocop:todo Gemfile/MissingFeatureCategory
 

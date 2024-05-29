@@ -48,6 +48,7 @@ PATH
       concurrent-ruby (~> 1.2)
       httparty (~> 0.21.0)
       ipaddress (~> 0.8.3)
+      net-http (= 0.4.1)
       railties (~> 7)
 
 PATH
@@ -1115,8 +1116,7 @@ GEM
     neighbor (0.3.2)
       activerecord (>= 6.1)
     nenv (0.3.0)
-    net-http (0.1.1)
-      net-protocol
+    net-http (0.4.1)
       uri
     net-http-persistent (4.0.1)
       connection_pool (~> 2.2)
@@ -2095,7 +2095,7 @@ DEPENDENCIES
   minitest (~> 5.11.0)
   multi_json (~> 1.14.1)
   neighbor (~> 0.3.2)
-  net-http (= 0.1.1)
+  net-http (= 0.4.1)
   net-ldap (~> 0.17.1)
   net-ntp
   net-protocol (~> 0.1.3)
