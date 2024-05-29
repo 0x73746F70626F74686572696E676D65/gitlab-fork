@@ -85,7 +85,9 @@ module Organizations
 
     def organization_activity_app_data(organization)
       {
-        organization_activity_path: activity_organization_path(organization, { format: :json })
+        organization_activity_path: activity_organization_path(organization, { format: :json }),
+        organization_activity_event_types: organization_activity_event_types,
+        organization_activity_all_event: EventFilter::ALL
       }.to_json
     end
 
@@ -133,5 +135,40 @@ module Organizations
     def association_counts(organization)
       Organizations::OrganizationAssociationCounter.new(organization: organization, current_user: current_user).execute
     end
+
+    def organization_activity_event_types
+      [
+        {
+          title: _('Comments'),
+          value: EventFilter::COMMENTS
+        },
+        {
+          title: _('Designs'),
+          value: EventFilter::DESIGNS
+        },
+        {
+          title: _('Issue events'),
+          value: EventFilter::ISSUE
+        },
+        {
+          title: _('Merge events'),
+          value: EventFilter::MERGED
+        },
+        {
+          title: _('Push events'),
+          value: EventFilter::PUSH
+        },
+        {
+          title: _('Team'),
+          value: EventFilter::TEAM
+        },
+        {
+          title: _('Wiki'),
+          value: EventFilter::WIKI
+        }
+      ]
+    end
   end
 end
+
+Organizations::OrganizationHelper.prepend_mod_with('Organizations::OrganizationHelper')
