@@ -11,8 +11,10 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   end
 
   let(:require_challenge) { true }
+  let(:require_iv_for_old_users) { false }
 
   before do
+    stub_feature_flags(require_identity_verification_for_old_users: require_iv_for_old_users)
     stub_feature_flags(identity_verification_arkose_challenge: require_challenge)
     stub_saas_features(identity_verification: true)
     stub_application_setting(
@@ -27,28 +29,40 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     visit identity_verification_path
   end
 
-  it 'verifies the user' do
-    expect_to_see_identity_verification_page
+  shared_examples 'verifies the user' do
+    specify do
+      expect_to_see_identity_verification_page
 
-    verify_phone_number(solve_arkose_challenge: true)
+      verify_phone_number(solve_arkose_challenge: true)
 
-    expect(page).to have_content(_('Completed'))
-    expect(page).to have_content(_('Next'))
+      expect(page).to have_content(_('Completed'))
+      expect(page).to have_content(_('Next'))
 
-    click_link 'Next'
+      click_link 'Next'
 
-    wait_for_requests
+      wait_for_requests
 
-    expect_to_see_dashboard_page
+      expect_to_see_dashboard_page
+    end
   end
+
+  it_behaves_like 'verifies the user'
 
   context 'when the user was created before the feature relase date' do
     let_it_be(:user) do
       create(:user, created_at: IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE - 1.day)
     end
 
-    it 'does not verify the user' do
-      expect_to_see_dashboard_page
+    context 'when identity verification is required for old users' do
+      let(:require_iv_for_old_users) { true }
+
+      it_behaves_like 'verifies the user'
+    end
+
+    context 'when identity verification is not required for old users' do
+      it 'does not verify the user' do
+        expect_to_see_dashboard_page
+      end
     end
   end
 

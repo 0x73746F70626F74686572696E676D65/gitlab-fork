@@ -70,7 +70,7 @@ module IdentityVerifiable
   def identity_verified?
     return true unless identity_verification_enabled?
     return false unless active_user?
-    return true if created_at < IDENTITY_VERIFICATION_RELEASE_DATE
+    return true unless created_after_require_identity_verification_release_day?
 
     # Allow an existing credit card validation to override the identity verification state if
     # credit_card is not a required verification method.
@@ -292,5 +292,11 @@ module IdentityVerifiable
     return false if identity_verified?
 
     created_top_level_group_count >= UNVERIFIED_USER_CREATED_GROUP_LIMIT
+  end
+
+  def created_after_require_identity_verification_release_day?
+    return true if ::Feature.enabled?(:require_identity_verification_for_old_users, self)
+
+    created_at >= IDENTITY_VERIFICATION_RELEASE_DATE
   end
 end
