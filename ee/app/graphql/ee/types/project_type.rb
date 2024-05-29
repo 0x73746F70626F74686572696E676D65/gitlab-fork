@@ -289,6 +289,11 @@ module EE
           extension ::Gitlab::Graphql::Limit::FieldCallCount, limit: 1
         end
 
+        field :product_analytics_settings,
+          description: 'Project-level settings for product analytics.',
+          null: true,
+          resolver: ::Resolvers::Analytics::ProductAnalytics::ProjectSettingsResolver
+
         field :tracking_key, GraphQL::Types::String,
           null: true,
           description: 'Tracking key assigned to the project.',
