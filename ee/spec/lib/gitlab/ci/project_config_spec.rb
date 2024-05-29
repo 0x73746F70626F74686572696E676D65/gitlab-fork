@@ -245,22 +245,12 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
           end
 
           context 'when the policy should not be enforced to the pipeline source' do
-            context 'when pipeline source is :parent_pipeline' do
-              let(:source) { :parent_pipeline }
+            Enums::Ci::Pipeline.dangling_sources.except(:security_orchestration_policy).each_key do |source|
+              context "when pipeline source is #{source}" do
+                let(:source) { source }
 
-              it_behaves_like 'does not include security policies default pipeline configuration content'
-            end
-
-            context 'when pipeline source is :ondemand_dast_scan' do
-              let(:source) { :ondemand_dast_scan }
-
-              it_behaves_like 'does not include security policies default pipeline configuration content'
-            end
-
-            context 'when pipeline source is :container_registry_push' do
-              let(:source) { :container_registry_push }
-
-              it_behaves_like 'does not include security policies default pipeline configuration content'
+                it_behaves_like 'does not include security policies default pipeline configuration content'
+              end
             end
           end
         end
