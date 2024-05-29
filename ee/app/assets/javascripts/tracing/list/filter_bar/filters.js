@@ -88,45 +88,52 @@ export function queryToFilterObj(query) {
   } = filter;
   const search = filter[FILTERED_SEARCH_TERM];
   return {
-    period: isValidPeriodFilter(period) ? period : DEFAULT_PERIOD_FILTER,
-    service,
-    operation,
-    traceId,
-    durationMs,
-    search,
-    attribute,
-    status,
+    attributes: {
+      period: isValidPeriodFilter(period) ? period : DEFAULT_PERIOD_FILTER,
+      service,
+      operation,
+      traceId,
+      durationMs,
+      search,
+      attribute,
+      status,
+    },
   };
 }
 
-export function filterObjToQuery(filters) {
-  return filterToQueryObject(
-    {
-      period: filters.period,
-      service: filters.service,
-      operation: filters.operation,
-      trace_id: filters.traceId,
-      durationMs: filters.durationMs,
-      attribute: filters.attribute,
-      status: filters.status,
-      [FILTERED_SEARCH_TERM]: filters.search,
-    },
-    {
-      filteredSearchTermKey: 'search',
-      customOperators: [
+export function filterObjToQuery({ attributes }) {
+  const attributesFilters = attributes
+    ? filterToQueryObject(
         {
-          operator: '>',
-          prefix: 'gt',
-          applyOnlyToKey: 'durationMs',
+          period: attributes.period,
+          service: attributes.service,
+          operation: attributes.operation,
+          trace_id: attributes.traceId,
+          durationMs: attributes.durationMs,
+          attribute: attributes.attribute,
+          status: attributes.status,
+          [FILTERED_SEARCH_TERM]: attributes.search,
         },
         {
-          operator: '<',
-          prefix: 'lt',
-          applyOnlyToKey: 'durationMs',
+          filteredSearchTermKey: 'search',
+          customOperators: [
+            {
+              operator: '>',
+              prefix: 'gt',
+              applyOnlyToKey: 'durationMs',
+            },
+            {
+              operator: '<',
+              prefix: 'lt',
+              applyOnlyToKey: 'durationMs',
+            },
+          ],
         },
-      ],
-    },
-  );
+      )
+    : {};
+  return {
+    ...attributesFilters,
+  };
 }
 
 export function filterObjToFilterToken(filters) {

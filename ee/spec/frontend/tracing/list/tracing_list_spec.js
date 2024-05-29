@@ -33,8 +33,8 @@ describe('TracingList', () => {
     findInfiniteScrolling().vm.$emit('bottomReached');
     await waitForPromises();
   };
-  const setFilters = async (filters) => {
-    findFilteredSearch().vm.$emit('filter', filters);
+  const setFilters = async (attributesFilters) => {
+    findFilteredSearch().vm.$emit('filter', { attributes: attributesFilters });
     await waitForPromises();
   };
 
@@ -243,7 +243,7 @@ describe('TracingList', () => {
       expect(findFilteredSearch().props('observabilityClient')).toBe(observabilityClientMock);
     });
 
-    it('renders FilteredSeach with initial filters and sort order parsed from window.location', () => {
+    it('renders FilteredSeach filters and sort order parsed from window.location', () => {
       expect(findFilteredSearch().props('attributesFilters')).toEqual({
         period: [{ operator: '=', value: '4h' }],
         service: [
@@ -315,7 +315,7 @@ describe('TracingList', () => {
       };
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: {
-          ...expectedFilters,
+          attributes: expectedFilters,
         },
         pageSize: 50,
         pageToken: null,
@@ -324,7 +324,7 @@ describe('TracingList', () => {
       });
       expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenLastCalledWith({
         filters: {
-          ...expectedFilters,
+          attributes: expectedFilters,
         },
         abortController: expect.any(AbortController),
       });
@@ -381,7 +381,7 @@ describe('TracingList', () => {
         };
         expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
           filters: {
-            ...expectedFilters,
+            attributes: expectedFilters,
           },
           pageSize: 50,
           pageToken: null,
@@ -391,7 +391,7 @@ describe('TracingList', () => {
 
         expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenLastCalledWith({
           filters: {
-            ...expectedFilters,
+            attributes: expectedFilters,
           },
           abortController: expect.any(AbortController),
         });
@@ -468,13 +468,15 @@ describe('TracingList', () => {
       it('fetches traces with new sort order', () => {
         expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
           filters: {
-            attribute: undefined,
-            durationMs: undefined,
-            operation: undefined,
-            period: [{ operator: '=', value: '1h' }],
-            search: undefined,
-            service: undefined,
-            traceId: undefined,
+            attributes: {
+              attribute: undefined,
+              durationMs: undefined,
+              operation: undefined,
+              period: [{ operator: '=', value: '1h' }],
+              search: undefined,
+              service: undefined,
+              traceId: undefined,
+            },
           },
           pageSize: 50,
           pageToken: null,
@@ -520,13 +522,15 @@ describe('TracingList', () => {
 
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: {
-          attribute: undefined,
-          durationMs: undefined,
-          operation: undefined,
-          period: [{ operator: '=', value: '12h' }],
-          search: undefined,
-          service: [{ operator: '=', value: 'loadgenerator' }],
-          traceId: undefined,
+          attributes: {
+            attribute: undefined,
+            durationMs: undefined,
+            operation: undefined,
+            period: [{ operator: '=', value: '12h' }],
+            search: undefined,
+            service: [{ operator: '=', value: 'loadgenerator' }],
+            traceId: undefined,
+          },
         },
         pageSize: 50,
         pageToken: 'page-2',
@@ -561,13 +565,15 @@ describe('TracingList', () => {
 
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: {
-          attribute: undefined,
-          durationMs: undefined,
-          operation: undefined,
-          period: [{ operator: '=', value: '12h' }],
-          search: undefined,
-          service: [{ operator: '=', value: 'loadgenerator' }],
-          traceId: undefined,
+          attributes: {
+            attribute: undefined,
+            durationMs: undefined,
+            operation: undefined,
+            period: [{ operator: '=', value: '12h' }],
+            search: undefined,
+            service: [{ operator: '=', value: 'loadgenerator' }],
+            traceId: undefined,
+          },
         },
         pageSize: 50,
         pageToken: 'page-2',
@@ -616,14 +622,14 @@ describe('TracingList', () => {
       };
 
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
-        filters: { ...expectedFilters },
+        filters: { attributes: expectedFilters },
         pageSize: 50,
         pageToken: null,
         sortBy: 'duration_desc',
         abortController: expect.any(AbortController),
       });
       expect(observabilityClientMock.fetchTracesAnalytics).toHaveBeenCalledWith({
-        filters: { ...expectedFilters },
+        filters: { attributes: expectedFilters },
         abortController: expect.any(AbortController),
       });
 
@@ -643,13 +649,15 @@ describe('TracingList', () => {
 
       expect(observabilityClientMock.fetchTraces).toHaveBeenLastCalledWith({
         filters: {
-          attribute: undefined,
-          durationMs: undefined,
-          operation: undefined,
-          period: [{ operator: '=', value: '12h' }],
-          search: undefined,
-          service: [{ operator: '=', value: 'loadgenerator' }],
-          traceId: undefined,
+          attributes: {
+            attribute: undefined,
+            durationMs: undefined,
+            operation: undefined,
+            period: [{ operator: '=', value: '12h' }],
+            search: undefined,
+            service: [{ operator: '=', value: 'loadgenerator' }],
+            traceId: undefined,
+          },
         },
         pageSize: 50,
         pageToken: null,
