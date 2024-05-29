@@ -77,4 +77,25 @@ RSpec.describe Members::MemberApproval, feature_category: :groups_and_projects d
       end
     end
   end
+
+  describe '#pending_member_approvals_with_max_new_access_level' do
+    let_it_be(:project_member_pending_dev) { create(:member_approval, :for_project_member) }
+    let_it_be(:project_member_pending_maintainer) do
+      create(:member_approval, user: project_member_pending_dev.user, new_access_level: Gitlab::Access::MAINTAINER)
+    end
+
+    let_it_be(:group_member_pending_dev) { create(:member_approval, :for_group_member) }
+    let_it_be(:group_member_pending_owner) do
+      create(:member_approval, :for_group_member, user: group_member_pending_dev.user,
+        new_access_level: Gitlab::Access::OWNER)
+    end
+
+    let_it_be(:denied_approval_dev) { create(:member_approval, :for_group_member, status: :denied) }
+
+    it 'returns records corresponding to pending users with max new_access_level' do
+      expect(described_class.pending_member_approvals_with_max_new_access_level).to contain_exactly(
+        project_member_pending_maintainer, group_member_pending_owner
+      )
+    end
+  end
 end
