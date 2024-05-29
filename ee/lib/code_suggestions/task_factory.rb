@@ -11,6 +11,7 @@ module CodeSuggestions
     def initialize(current_user, params:, unsafe_passthrough_params: {})
       @current_user = current_user
       @params = params
+      @params = params.except(:user_instruction, :context) if Feature.disabled?(:code_suggestions_context, current_user)
       @unsafe_passthrough_params = unsafe_passthrough_params
 
       @prefix = params.dig(:current_file, :content_above_cursor)
@@ -21,7 +22,7 @@ module CodeSuggestions
     def task
       file_content = CodeSuggestions::FileContent.new(language, prefix, suffix)
       instruction = CodeSuggestions::InstructionsExtractor
-        .new(file_content, intent, params[:generation_type]).extract
+        .new(file_content, intent, params[:generation_type], params[:user_instruction]).extract
 
       unless instruction
         return CodeSuggestions::Tasks::CodeCompletion.new(

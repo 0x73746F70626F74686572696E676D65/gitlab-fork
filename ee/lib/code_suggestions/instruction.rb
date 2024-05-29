@@ -19,24 +19,25 @@ module CodeSuggestions
 
     attr_reader :trigger_type, :instruction
 
-    def initialize(trigger_type:)
-      @trigger_type = trigger_type
-      @instruction = instruction_from_trigger_type(trigger_type)
+    def self.from_trigger_type(trigger_type)
+      instruction =
+        case trigger_type
+        when EMPTY_FUNCTION_TRIGGER
+          EMPTY_FUNCTION_INSTRUCTION
+        when SMALL_FILE_TRIGGER
+          SMALL_FILE_INSTRUCTION
+        when COMMENT_TRIGGER
+          ''
+        else
+          raise ArgumentError, "Unknwown trigger type #{trigger_type}"
+        end
+
+      new(trigger_type: trigger_type, instruction: instruction)
     end
 
-    private
-
-    def instruction_from_trigger_type(type)
-      case type
-      when EMPTY_FUNCTION_TRIGGER
-        EMPTY_FUNCTION_INSTRUCTION
-      when SMALL_FILE_TRIGGER
-        SMALL_FILE_INSTRUCTION
-      when COMMENT_TRIGGER
-        ''
-      else
-        raise ArgumentError, "Unknwown trigger type #{type}"
-      end
+    def initialize(trigger_type: nil, instruction: nil)
+      @trigger_type = trigger_type
+      @instruction = instruction
     end
   end
 end

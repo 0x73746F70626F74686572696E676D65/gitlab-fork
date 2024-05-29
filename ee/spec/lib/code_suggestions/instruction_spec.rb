@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe CodeSuggestions::Instruction, feature_category: :code_suggestions do
   describe '#instruction' do
-    subject(:instruction) { described_class.new(trigger_type: type).instruction }
+    subject(:instruction) { described_class.from_trigger_type(type).instruction }
 
     using RSpec::Parameterized::TableSyntax
 

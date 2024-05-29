@@ -15,25 +15,28 @@ module CodeSuggestions
 
     EMPTY_LINES_LIMIT = 1
 
-    def initialize(file_content, intent, generation_type = nil)
+    def initialize(file_content, intent, generation_type = nil, user_instruction = nil)
       @file_content = file_content
       @language = file_content.language
       @intent = intent
       @generation_type = generation_type
+      @user_instruction = user_instruction
     end
 
     def extract
       return if intent == INTENT_COMPLETION
 
+      return Instruction.new(instruction: user_instruction) if user_instruction.present?
+
       type = instruction_type
       return unless type
 
-      Instruction.new(trigger_type: type)
+      Instruction.from_trigger_type(type)
     end
 
     private
 
-    attr_reader :language, :file_content, :intent, :generation_type
+    attr_reader :language, :file_content, :intent, :generation_type, :user_instruction
 
     def comment(lines)
       comment_block = []

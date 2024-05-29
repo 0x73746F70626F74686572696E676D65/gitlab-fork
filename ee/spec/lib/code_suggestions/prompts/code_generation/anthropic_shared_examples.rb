@@ -24,6 +24,7 @@ RSpec.shared_examples 'anthropic prompt' do
   let(:file_name) { 'main.go' }
   let(:model_name) { 'claude-3-sonnet-20240229' }
   let(:comment) { 'Generate the best possible code based on instructions.' }
+  let(:context) { nil }
   let(:instruction) { instance_double(CodeSuggestions::Instruction, instruction: comment, trigger_type: 'comment') }
 
   let(:unsafe_params) do
@@ -41,7 +42,8 @@ RSpec.shared_examples 'anthropic prompt' do
       prefix: prefix,
       instruction: instruction,
       current_file: unsafe_params['current_file'].with_indifferent_access,
-      model_name: model_name
+      model_name: model_name,
+      context: context
     }
   end
 
@@ -91,6 +93,7 @@ RSpec.shared_examples 'anthropic prompt' do
           </existing_code>
 
           The existing code is provided in <existing_code></existing_code> tags.
+
 
           The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
           In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -153,6 +156,7 @@ RSpec.shared_examples 'anthropic prompt' do
 
           The existing code is provided in <existing_code></existing_code> tags.
 
+
           The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
           In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
           likely new code to generate at the cursor position to fulfill the instructions.
@@ -183,7 +187,7 @@ RSpec.shared_examples 'anthropic prompt' do
         expect(subject.request_params).to eq(request_params.merge(prompt: expected_prompt))
       end
 
-      context 'with XRay data available' do
+      context 'with X-Ray data available' do
         let_it_be(:current_user) { create(:user) }
 
         let(:xray) { create(:xray_report, payload: payload) }
@@ -242,6 +246,7 @@ RSpec.shared_examples 'anthropic prompt' do
             </existing_code>
 
             The existing code is provided in <existing_code></existing_code> tags.
+
             #{expected_libs}
             The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -289,7 +294,7 @@ RSpec.shared_examples 'anthropic prompt' do
           end
         end
 
-        it 'fetches xray data' do
+        it 'fetches X-Ray data' do
           subject.request_params
 
           expect(::Projects::XrayReport).to have_received(:for_project).with(xray.project)
@@ -320,7 +325,7 @@ RSpec.shared_examples 'anthropic prompt' do
           end
         end
 
-        context 'when XRay data exceeds maximum limit' do
+        context 'when X-Ray data exceeds maximum limit' do
           let(:expected_libs) do
             <<~LIBS
               <libs>
@@ -344,6 +349,119 @@ RSpec.shared_examples 'anthropic prompt' do
           end
         end
       end
+
+      context 'when context is available' do
+        let(:main_go_content) do
+          <<~CONTENT
+          package main
+
+          func main()
+            fullName("John", "Doe")
+          }
+          CONTENT
+        end
+
+        let(:full_name_func_content) do
+          <<~CONTENT
+          func fullName(first, last string) {
+            fmt.Println(first, last)
+          }
+          CONTENT
+        end
+
+        let(:context) do
+          [
+            { type: 'file', name: 'main.go', content: main_go_content },
+            { type: 'snippet', name: 'fullName', content: full_name_func_content }
+          ]
+        end
+
+        let(:system_prompt) do
+          <<~PROMPT.chomp
+            You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Go code inside the
+            file 'main.go' based on instructions from the user.
+            Here are a few examples of successfully generated code:
+
+            <examples>
+
+              <example>
+              H: <existing_code>
+                   func hello() {
+                 </existing_code>
+
+              A: func hello() {<new_code>fmt.Println(\"hello\")</new_code>
+              </example>
+
+            </examples>
+
+            <existing_code>
+            package main
+
+            import "fmt"
+
+            func main() {
+            {{cursor}}
+            </existing_code>
+
+            The existing code is provided in <existing_code></existing_code> tags.
+            Here are some files and code snippets that could be related to the current code.
+            The files provided in <related_files><related_files> tags.
+            The code snippets provided in <related_snippets><related_snippets> tags.
+            Please use existing functions from these files and code snippets if possible when suggesting new code.
+
+            <related_files>
+            <file_content file_name="main.go">
+            package main
+
+            func main()
+              fullName("John", "Doe")
+            }
+
+            </file_content>
+
+            </related_files>
+
+            <related_snippets>
+            <snippet_content name="fullName">
+            func fullName(first, last string) {
+              fmt.Println(first, last)
+            }
+
+            </snippet_content>
+
+            </related_snippets>
+
+
+            The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
+            In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
+            likely new code to generate at the cursor position to fulfill the instructions.
+
+            The comment directly before the {{cursor}} position is the instruction,
+            all other comments are not instructions.
+
+            When generating the new code, please ensure the following:
+            1. It is valid Go code.
+            2. It matches the existing code's variable, parameter and function names.
+            3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
+            4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
+            5. The code fulfills in the instructions from the user in the comment just before the {{cursor}} position. All other comments are not instructions.
+            6. Do not add any comments that duplicates any of the already existing comments, including the comment with instructions.
+
+            Return new code enclosed in <new_code></new_code> tags. We will then insert this at the {{cursor}} position.
+            If you are not able to write code based on the given instructions return an empty result like <new_code></new_code>.
+          PROMPT
+        end
+
+        it 'returns expected request params' do
+          request_params = {
+            model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+            model_name: model_name,
+            prompt_version: prompt_version
+          }
+
+          expect(subject.request_params).to eq(request_params.merge(prompt: expected_prompt))
+        end
+      end
     end
 
     context 'when prefix is blank' do
@@ -353,6 +471,7 @@ RSpec.shared_examples 'anthropic prompt' do
         <<~PROMPT.chomp
           You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Go code inside the
           file 'main.go' based on instructions from the user.
+
 
 
 
@@ -401,6 +520,7 @@ RSpec.shared_examples 'anthropic prompt' do
           </existing_code>
 
           The existing code is provided in <existing_code></existing_code> tags.
+
 
           The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
           In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -457,6 +577,7 @@ RSpec.shared_examples 'anthropic prompt' do
 
           The existing code is provided in <existing_code></existing_code> tags.
 
+
           The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
           In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
           likely new code to generate at the cursor position to fulfill the instructions.
@@ -507,6 +628,7 @@ RSpec.shared_examples 'anthropic prompt' do
           </existing_code>
 
           The existing code is provided in <existing_code></existing_code> tags.
+
 
           The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
           In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
