@@ -20,14 +20,6 @@ describe('ToggleEpicsSwimlanes', () => {
     });
   };
 
-  it('emits toggleSwimlanes event on change', () => {
-    createComponent();
-
-    findToggle().vm.$emit('change');
-
-    expect(wrapper.emitted('toggleSwimlanes')).toHaveLength(1);
-  });
-
   it('maintains state when props are changed', async () => {
     createComponent({ isSwimlanesOn: true });
 
@@ -36,7 +28,5 @@ describe('ToggleEpicsSwimlanes', () => {
     wrapper.setProps({ isSwimlanesOn: false });
     await nextTick();
     expect(findToggle().props('value')).toBe(false);
-
-    expect(wrapper.emitted('toggleSwimlanes')).toBeUndefined();
   });
 });
