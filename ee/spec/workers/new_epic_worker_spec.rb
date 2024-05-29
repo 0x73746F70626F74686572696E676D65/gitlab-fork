@@ -120,6 +120,7 @@ RSpec.describe NewEpicWorker, feature_category: :portfolio_management do
                 entity_type: 'Group',
                 details: {
                   author_name: project_bot.name,
+                  event_name: "epic_created_by_project_bot",
                   target_id: epic.id,
                   target_type: 'Epic',
                   target_details: {

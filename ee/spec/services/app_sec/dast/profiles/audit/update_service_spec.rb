@@ -26,6 +26,7 @@ RSpec.describe AppSec::Dast::Profiles::Audit::UpdateService do
       expect(audit_event.details).to eq({
         author_name: user.name,
         author_class: user.class.name,
+        event_name: 'dast_profile_update',
         custom_message: 'Changed DAST profile name from Old name to New name',
         target_id: dast_profile.id,
         target_type: 'Dast::Profile',

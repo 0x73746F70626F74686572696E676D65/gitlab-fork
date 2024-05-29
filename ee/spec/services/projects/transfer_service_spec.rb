@@ -28,6 +28,7 @@ RSpec.describe Projects::TransferService, feature_category: :groups_and_projects
            entity_type: 'Project',
            details: {
              change: 'namespace',
+             event_name: "project_namespace_updated",
              from: project.old_path_with_namespace,
              to: project.full_path,
              author_name: user.name,

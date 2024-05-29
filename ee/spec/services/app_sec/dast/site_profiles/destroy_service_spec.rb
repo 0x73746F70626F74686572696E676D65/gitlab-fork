@@ -65,6 +65,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::DestroyService do
           expect(audit_event.details).to eq({
             author_name: user.name,
             author_class: user.class.name,
+            event_name: 'dast_site_profile_destroy',
             custom_message: 'Removed DAST site profile',
             target_id: profile.id,
             target_type: 'DastSiteProfile',

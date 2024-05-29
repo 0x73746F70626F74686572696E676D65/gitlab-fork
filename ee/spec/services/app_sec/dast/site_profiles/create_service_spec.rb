@@ -91,6 +91,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::CreateService do
           expect(audit_event.details).to eq({
             author_name: user.name,
             author_class: user.class.name,
+            event_name: 'dast_site_profile_create',
             custom_message: 'Added DAST site profile',
             target_id: profile.id,
             target_type: 'DastSiteProfile',

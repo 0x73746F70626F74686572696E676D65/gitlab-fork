@@ -136,6 +136,7 @@ RSpec.describe Epics::ReopenService, feature_category: :portfolio_management do
                   entity_type: 'Group',
                   details: {
                     author_name: user.name,
+                    event_name: "epic_reopened_by_project_bot",
                     target_id: epic.id,
                     target_type: 'Epic',
                     target_details: {

@@ -67,6 +67,7 @@ RSpec.describe MemberRoles::UpdateService, feature_category: :system_access do
               entity_type: group.class.name,
               details: {
                 author_name: user.name,
+                event_name: 'member_role_updated',
                 target_id: member_role.id,
                 target_type: member_role.class.name,
                 target_details: {

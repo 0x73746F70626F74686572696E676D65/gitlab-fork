@@ -61,6 +61,7 @@ RSpec.describe Groups::SshCertificates::CreateService, '#execute', feature_categ
           details: {
             author_class: 'User',
             author_name: current_user.name,
+            event_name: 'create_ssh_certificate',
             custom_message: "Created SSH certificate with id #{group.ssh_certificates.first.id} and title #{title}",
             target_details: group.ssh_certificates.first.title,
             target_id: group.ssh_certificates.first.id,

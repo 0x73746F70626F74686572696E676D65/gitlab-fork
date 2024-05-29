@@ -31,6 +31,7 @@ RSpec.describe Projects::GroupLinks::DestroyService, feature_category: :groups_a
              remove: 'project_access',
              author_name: user.name,
              author_class: 'User',
+             event_name: "project_group_link_deleted",
              target_id: project.id,
              target_type: 'Project',
              target_details: project.full_path,

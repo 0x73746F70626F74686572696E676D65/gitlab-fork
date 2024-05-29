@@ -28,6 +28,7 @@ RSpec.describe Users::BanService, feature_category: :user_management do
             details: {
               author_class: 'User',
               author_name: current_user.name,
+              event_name: "ban_user",
               custom_message: 'Banned user',
               target_details: user.username,
               target_id: user.id,

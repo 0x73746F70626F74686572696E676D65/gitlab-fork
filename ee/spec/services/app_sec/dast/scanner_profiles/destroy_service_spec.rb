@@ -66,6 +66,7 @@ RSpec.describe AppSec::Dast::ScannerProfiles::DestroyService, :dynamic_analysis,
           expect(audit_event.details).to eq({
             author_name: user.name,
             author_class: user.class.name,
+            event_name: 'dast_scanner_profile_destroy',
             custom_message: 'Removed DAST scanner profile',
             target_id: profile.id,
             target_type: 'DastScannerProfile',

@@ -69,6 +69,7 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
               entity_type: audit_entity_type,
               details: {
                 author_name: user.name,
+                event_name: "member_role_created",
                 target_id: operation.id,
                 target_type: operation.class.name,
                 target_details: {

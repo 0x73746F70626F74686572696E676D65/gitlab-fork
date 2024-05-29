@@ -39,11 +39,17 @@ RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store, feature_c
         it 'creates an event' do
           protected_branch.update_attribute(setting, true)
           expect { service.execute }.to change(AuditEvent, :count).by(1)
+          settings_to_event_names = {
+            allow_force_push: "protected_branch_allow_force_push_updated",
+            code_owner_approval_required: "protected_branch_code_owner_approval_required_updated"
+          }
+          event_name = settings_to_event_names[setting]
 
           event = AuditEvent.last
           expect(event.details).to eq({ change: change_text,
                                         author_name: author.name,
                                         author_class: author.class.name,
+                                        event_name: event_name,
                                         target_id: protected_branch.id,
                                         entity_path: entity.full_path,
                                         target_type: 'ProtectedBranch',
@@ -99,6 +105,7 @@ RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store, feature_c
           expect(event.details).to eq({ change: change_text,
                                         from: from,
                                         to: to,
+                                        event_name: "protected_branch_updated",
                                         target_id: protected_branch.id,
                                         target_type: "ProtectedBranch",
                                         target_details: protected_branch.name,

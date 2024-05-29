@@ -29,7 +29,7 @@ RSpec.describe PersonalAccessTokens::RevokeService, feature_category: :system_ac
           .with(hash_including(
             name: 'personal_access_token_revoked',
             message: "Revoked personal access token with id #{token.id}",
-            additional_details: { revocation_source: expected_source }
+            additional_details: { revocation_source: expected_source, event_name: "personal_access_token_revoked" }
           ))
       end
     end
@@ -44,7 +44,7 @@ RSpec.describe PersonalAccessTokens::RevokeService, feature_category: :system_ac
           .with(hash_including(
             name: 'personal_access_token_revoked',
             message: start_with("Attempted to revoke personal access token with id #{token.id}"),
-            additional_details: { revocation_source: expected_source }
+            additional_details: { revocation_source: expected_source, event_name: "personal_access_token_revoked" }
           ))
       end
     end

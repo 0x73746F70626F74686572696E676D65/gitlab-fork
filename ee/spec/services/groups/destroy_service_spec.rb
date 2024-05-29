@@ -27,6 +27,7 @@ RSpec.describe Groups::DestroyService, feature_category: :groups_and_projects do
              remove: 'group',
              author_name: user.name,
              author_class: user.class.name,
+             event_name: "group_destroyed",
              target_id: group.id,
              target_type: 'Group',
              target_details: group.full_path,

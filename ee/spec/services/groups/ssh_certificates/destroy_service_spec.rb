@@ -48,6 +48,7 @@ RSpec.describe Groups::SshCertificates::DestroyService, '#execute', feature_cate
           details: {
             author_class: 'User',
             author_name: current_user.name,
+            event_name: "delete_ssh_certificate",
             custom_message: "Deleted SSH certificate with id #{ssh_certificate.id} and title #{ssh_certificate.title}",
             target_details: ssh_certificate.title,
             target_id: ssh_certificate.id,

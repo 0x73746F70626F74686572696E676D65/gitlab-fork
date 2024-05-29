@@ -26,6 +26,7 @@ RSpec.describe MergeRequests::ReopenService, feature_category: :code_review_work
             entity_type: 'Project',
             details: {
               author_name: project_bot.name,
+              event_name: 'merge_request_reopened_by_project_bot',
               target_id: merge_request.id,
               target_type: 'MergeRequest',
               target_details: {
