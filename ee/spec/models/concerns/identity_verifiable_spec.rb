@@ -158,12 +158,34 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       end
     end
 
-    context 'when the user was created before the release date' do
-      let_it_be(:user) do
-        create(:user, :with_sign_ins, created_at: described_class::IDENTITY_VERIFICATION_RELEASE_DATE - 1.day)
+    describe 'created_at relative to release date' do
+      where(:require_for_old_users?, :old_user?, :result) do
+        false | false | false
+        false | true  | true
+        true  | false | false
+        true  | true  | false
       end
 
-      it { is_expected.to eq true }
+      with_them do
+        before do
+          allow(user).to receive(:identity_verification_enabled?).and_return(true)
+          allow(user).to receive(:active_user?).and_return(true)
+          allow(user).to receive(:identity_verification_state).and_return({ phone: false })
+
+          stub_feature_flags(require_identity_verification_for_old_users: require_for_old_users?)
+
+          created_at =
+            if old_user?
+              described_class::IDENTITY_VERIFICATION_RELEASE_DATE - 1.day
+            else
+              described_class::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day
+            end
+
+          allow(user).to receive(:created_at).and_return(created_at)
+        end
+
+        it { is_expected.to eq(result) }
+      end
     end
   end
 
