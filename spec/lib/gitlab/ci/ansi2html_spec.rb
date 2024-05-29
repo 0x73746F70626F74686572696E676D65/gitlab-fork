@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'fast_spec_helper'
+require 'oj'
 
-RSpec.describe Gitlab::Ci::Ansi2html do
+RSpec.describe Gitlab::Ci::Ansi2html, feature_category: :continuous_integration do
   subject { described_class }
 
   it "prints non-ansi as-is" do
