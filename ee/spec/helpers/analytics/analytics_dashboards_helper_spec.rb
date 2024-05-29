@@ -29,18 +29,16 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
     context 'for project' do
       where(
         :product_analytics_enabled_setting,
-        :feature_flag_enabled,
         :licensed_feature_enabled,
         :user_has_permission,
         :user_can_admin_project,
         :enabled
       ) do
-        true  | true | true | true | true | true
-        true  | true | true | true | false | true
-        false | true | true | true | true | false
-        true  | false | true | true | true | false
-        true  | true | false | true | true | false
-        true  | true | true | false | true | false
+        true  | true | true | true | true
+        true  | true | true | false | true
+        false | true | true | true | false
+        true  | false | true | true | false
+        true  | true | false | true | false
       end
 
       with_them do
@@ -49,7 +47,6 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
           stub_application_setting(product_analytics_enabled: product_analytics_enabled_setting)
 
-          stub_feature_flags(product_analytics_dashboards: feature_flag_enabled)
           stub_licensed_features(product_analytics: licensed_feature_enabled)
 
           allow(helper).to receive(:can?).with(user, :read_product_analytics, project).and_return(user_has_permission)
@@ -267,7 +264,6 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
           stub_application_setting(product_analytics_configurator_connection_string: 'https://configurator.example.com')
           stub_application_setting(product_analytics_enabled: can_read_product_analytics)
-          stub_feature_flags(product_analytics_dashboards: can_read_product_analytics)
           stub_licensed_features(product_analytics: can_read_product_analytics)
           allow(helper).to receive(:can?).with(user, :read_product_analytics,
             project).and_return(can_read_product_analytics)
@@ -300,7 +296,6 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           project.project_setting.update!(product_analytics_instrumentation_key: 'snowplow-key')
           stub_application_setting(product_analytics_configurator_connection_string: 'https://configurator.example.com')
           stub_application_setting(product_analytics_enabled: true)
-          stub_feature_flags(product_analytics_dashboards: true)
           stub_licensed_features(product_analytics: true)
           allow(helper).to receive(:can?).with(user, :read_product_analytics,
             is_project ? project : group).and_return(true)
@@ -478,7 +473,6 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
         stub_application_setting(product_analytics_enabled: can_read_product_analytics)
 
-        stub_feature_flags(product_analytics_dashboards: can_read_product_analytics)
         stub_licensed_features(product_analytics: can_read_product_analytics)
 
         allow(helper).to receive(:can?).with(user, :read_product_analytics,

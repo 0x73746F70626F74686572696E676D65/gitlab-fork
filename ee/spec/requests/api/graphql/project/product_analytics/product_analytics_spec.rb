@@ -32,26 +32,26 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
 
     using RSpec::Parameterized::TableSyntax
 
-    where(:licensed, :enabled, :user_role, :snowplow_instrumentation_key, :output) do
-      true  | true | :developer | nil | nil
-      true  | true | :developer | 'snowplow_key' | 'snowplow_key'
-      true  | false | :developer | nil | nil
-      false | true | :developer | nil | nil
-      false | false | :developer | nil | nil
-      true  | true | :maintainer | nil | nil
-      true  | true | :maintainer | 'snowplow_key' | 'snowplow_key'
-      true  | false | :maintainer | nil | nil
-      false | true | :maintainer | nil | nil
-      false | false | :maintainer | nil | nil
-      true  | true | :owner | nil | nil
-      true  | true | :owner | 'snowplow_key' | 'snowplow_key'
-      true  | false | :owner | nil | nil
-      false | true | :owner | nil | nil
-      false | false | :owner | nil | nil
-      true  | true | :guest | nil | nil
-      true  | false | :guest | nil | nil
-      false | true | :guest | nil | nil
-      false | false | :guest | nil | nil
+    where(:licensed, :user_role, :snowplow_instrumentation_key, :output) do
+      true  | :developer | nil | nil
+      true  | :developer | 'snowplow_key' | 'snowplow_key'
+      true  | :developer | nil | nil
+      false | :developer | nil | nil
+      false | :developer | nil | nil
+      true  | :maintainer | nil | nil
+      true  | :maintainer | 'snowplow_key' | 'snowplow_key'
+      true  | :maintainer | nil | nil
+      false | :maintainer | nil | nil
+      false | :maintainer | nil | nil
+      true  | :owner | nil | nil
+      true  | :owner | 'snowplow_key' | 'snowplow_key'
+      true  | :owner | nil | nil
+      false | :owner | nil | nil
+      false | :owner | nil | nil
+      true  | :guest | nil | nil
+      true  | :guest | nil | nil
+      false | :guest | nil | nil
+      false | :guest | nil | nil
     end
 
     with_them do
@@ -59,7 +59,6 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
         allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
         allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_licensed_features(product_analytics: licensed)
-        stub_feature_flags(product_analytics_dashboards: enabled)
         project.add_role(user, user_role) # rubocop:disable RSpec/BeforeAllRoleAssignment
         project.project_setting.update!(product_analytics_instrumentation_key: snowplow_instrumentation_key)
         project.reload
@@ -101,7 +100,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true)
       stub_application_setting(product_analytics_enabled: true)
-      stub_feature_flags(product_analytics_dashboards: true, product_analytics_billing_override: false)
+      stub_feature_flags(product_analytics_billing_override: false)
       allow_next_instance_of(ProjectSetting) do |instance|
         allow(instance).to receive(:product_analytics_instrumentation_key).and_return('test key')
       end

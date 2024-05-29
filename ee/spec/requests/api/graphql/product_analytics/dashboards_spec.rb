@@ -99,19 +99,6 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
         end
       end
 
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(product_analytics_dashboards: false)
-        end
-
-        it 'returns value stream and custom dashboards' do
-          post_graphql(query, current_user: user)
-
-          expect(graphql_data_at(resource_parent_type, :customizable_dashboards, :nodes).pluck('title'))
-            .to match_array(["Value Streams Dashboard", "Dashboard Example 1"])
-        end
-      end
-
       it_behaves_like 'list dashboards without analytics dashboards license'
     end
   end

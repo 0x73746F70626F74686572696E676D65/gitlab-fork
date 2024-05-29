@@ -10,7 +10,6 @@ RSpec.describe ProductAnalytics::Panel, feature_category: :product_analytics_dat
 
   before do
     stub_licensed_features(product_analytics: true)
-    stub_feature_flags(product_analytics_dashboards: true)
     project.project_setting.update!(product_analytics_instrumentation_key: "key")
     allow_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
       allow(instance).to receive(:execute).and_return(ServiceResponse.success(payload: {

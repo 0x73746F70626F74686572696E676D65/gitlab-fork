@@ -190,15 +190,14 @@ RSpec.describe Git::BranchPushService, feature_category: :source_code_management
 
       let(:group) { create(:group) }
 
-      where(:flag_enabled, :default_branch, :licence_available, :called) do
-        true  | 'master' | true  | true
-        true  | 'master' | false | false
-        true  | 'other'  | true  | false
-        true  | 'other'  | false | false
-        false | 'master' | true  | false
-        false | 'master' | false | false
-        false | 'other'  | true  | false
-        false | 'other'  | false | false
+      where(:default_branch, :licence_available, :called) do
+        'master' | true  | true
+        'master' | false | false
+        'other'  | true  | false
+        'other'  | false | false
+        'master' | false | false
+        'other'  | true  | false
+        'other'  | false | false
       end
 
       before do
@@ -209,7 +208,6 @@ RSpec.describe Git::BranchPushService, feature_category: :source_code_management
           experiment_features_enabled: true,
           product_analytics_enabled: true
         )
-        stub_feature_flags(product_analytics_dashboards: flag_enabled)
         stub_licensed_features(product_analytics: licence_available)
         allow(project).to receive(:default_branch).and_return(default_branch)
       end
