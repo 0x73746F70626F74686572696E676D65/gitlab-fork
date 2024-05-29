@@ -24,12 +24,12 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :system_acces
 
   let_it_be(:saml_identity_one) do
     create(:identity, user_id: guest_user_1.id, provider: 'group_saml',
-                      saml_provider_id: saml_provider.id, extern_uid: 'saml-uid-1')
+      saml_provider_id: saml_provider.id, extern_uid: 'saml-uid-1')
   end
 
   let_it_be(:saml_identity_two) do
     create(:identity, user_id: owner.id, provider: 'group_saml',
-                      saml_provider_id: saml_provider.id, extern_uid: 'saml-uid-2')
+      saml_provider_id: saml_provider.id, extern_uid: 'saml-uid-2')
   end
 
   let_it_be(:scim_identity_one) do
@@ -42,7 +42,7 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :system_acces
 
   let_it_be(:saml_identity_with_dot) do
     create(:identity, user_id: guest_user_2.id, provider: 'group_saml',
-                      saml_provider_id: saml_provider.id, extern_uid: 'saml-test@gmail.com')
+      saml_provider_id: saml_provider.id, extern_uid: 'saml-test@gmail.com')
   end
 
   let_it_be(:scim_identity_with_dot) do
@@ -53,7 +53,7 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :system_acces
     using RSpec::Parameterized::TableSyntax
 
     where(:provider_type, :provider_extern_uid_1, :provider_extern_uid_2, :provider_extern_uid_with_dot, :identity_type,
-:validation_error) do
+      :validation_error) do
       "saml" | "saml-uid-1" | "saml-uid-2" | "saml-test@gmail.com" | Identity | "SAML NameID can't be blank"
       "scim" | "scim-uid-1" | "scim-uid-2" | "scim-test@gmail.com" | ScimIdentity | "Extern uid can't be blank"
     end
@@ -140,7 +140,7 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :system_acces
       context "when PATCH uid" do
         subject(:patch_identities) do
           patch api("/groups/#{group.id}/#{provider_type}/#{uid}", current_user),
-          params: { extern_uid: extern_uid }
+            params: { extern_uid: extern_uid }
         end
 
         context "when user is not a group owner" do
@@ -187,7 +187,7 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :system_acces
 
               it "updates the identity record" do
                 patch api("/groups/#{group.id}/#{provider_type}/#{uid}", current_user),
-                params: { extern_uid: extern_uid }
+                  params: { extern_uid: extern_uid }
 
                 expect(response).to have_gitlab_http_status(:ok)
 
@@ -213,7 +213,7 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :system_acces
             it "does not update any other param" do
               expect do
                 patch api("/groups/#{group.id}/#{provider_type}/#{scim_identity_one.extern_uid}", current_user),
-                params: { active: false }
+                  params: { active: false }
 
                 expect(json_response['error']).to eq("extern_uid is missing")
               end.not_to change(scim_identity_one, :active)

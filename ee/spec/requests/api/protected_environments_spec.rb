@@ -14,12 +14,12 @@ RSpec.describe API::ProtectedEnvironments, feature_category: :continuous_deliver
 
   let!(:project_protected_environment) do
     create(:protected_environment, :maintainers_can_deploy, :project_level,
-           project: project, name: protected_environment_name, required_approval_count: 1)
+      project: project, name: protected_environment_name, required_approval_count: 1)
   end
 
   let!(:group_protected_environment) do
     create(:protected_environment, :maintainers_can_deploy, :group_level,
-           group: group, name: group_protected_environment_name, required_approval_count: 2)
+      group: group, name: group_protected_environment_name, required_approval_count: 2)
   end
 
   shared_examples 'requests for non-maintainers' do

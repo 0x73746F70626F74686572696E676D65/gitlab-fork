@@ -11,9 +11,9 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
 
   before do
     stub_licensed_features(push_rules: push_rules_enabled,
-                           commit_committer_check: ccc_enabled,
-                           commit_committer_name_check: ccnc_enabled,
-                           reject_unsigned_commits: ruc_enabled)
+      commit_committer_check: ccc_enabled,
+      commit_committer_name_check: ccnc_enabled,
+      reject_unsigned_commits: ruc_enabled)
     project.add_maintainer(user)
     project.add_developer(user3)
   end

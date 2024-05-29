@@ -131,8 +131,8 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
     context 'with external authorization' do
       let(:project) do
         create(:project,
-               namespace: user.namespace,
-               external_authorization_classification_label: 'the-label')
+          namespace: user.namespace,
+          external_authorization_classification_label: 'the-label')
       end
 
       before do

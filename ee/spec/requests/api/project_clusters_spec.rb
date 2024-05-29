@@ -79,7 +79,7 @@ RSpec.describe API::ProjectClusters, feature_category: :deployment_management do
     context 'when another cluster exists' do
       before do
         create(:cluster, :provided_by_gcp, :project,
-               projects: [project])
+          projects: [project])
 
         post api("/projects/#{project.id}/clusters/user", current_user), params: cluster_params
       end
@@ -116,7 +116,7 @@ RSpec.describe API::ProjectClusters, feature_category: :deployment_management do
     context 'With a GCP cluster' do
       let(:cluster) do
         create(:cluster, :project, :provided_by_gcp,
-               projects: [project])
+          projects: [project])
       end
 
       it 'updates the environment scope' do
@@ -127,7 +127,7 @@ RSpec.describe API::ProjectClusters, feature_category: :deployment_management do
     context 'With an user cluster' do
       let(:cluster) do
         create(:cluster, :project, :provided_by_user,
-               projects: [project])
+          projects: [project])
       end
 
       it 'updates the environment scope' do

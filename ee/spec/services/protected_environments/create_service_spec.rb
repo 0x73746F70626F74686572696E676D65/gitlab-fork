@@ -8,7 +8,7 @@ RSpec.describe ProtectedEnvironments::CreateService, '#execute', feature_categor
 
   let(:params) do
     attributes_for(:protected_environment,
-                   deploy_access_levels_attributes: [{ access_level: maintainer_access }])
+      deploy_access_levels_attributes: [{ access_level: maintainer_access }])
   end
 
   subject { described_class.new(container: project, current_user: user, params: params).execute }
@@ -59,7 +59,7 @@ RSpec.describe ProtectedEnvironments::CreateService, '#execute', feature_categor
     context 'multiple deploy access levels' do
       let(:params) do
         attributes_for(:protected_environment,
-                       deploy_access_levels_attributes: [{ group_id: group.id, user_id: user_to_add.id }])
+          deploy_access_levels_attributes: [{ group_id: group.id, user_id: user_to_add.id }])
       end
 
       it_behaves_like 'invalid multiple deployment access levels' do
@@ -73,7 +73,7 @@ RSpec.describe ProtectedEnvironments::CreateService, '#execute', feature_categor
   context 'deploy access level by group' do
     let(:params) do
       attributes_for(:protected_environment,
-                     deploy_access_levels_attributes: [{ group_id: group.id }])
+        deploy_access_levels_attributes: [{ group_id: group.id }])
     end
 
     it_behaves_like 'invalid protected environment group' do
@@ -92,7 +92,7 @@ RSpec.describe ProtectedEnvironments::CreateService, '#execute', feature_categor
   context 'deploy access level by user' do
     let(:params) do
       attributes_for(:protected_environment,
-                     deploy_access_levels_attributes: [{ user_id: user_to_add.id }])
+        deploy_access_levels_attributes: [{ user_id: user_to_add.id }])
     end
 
     it_behaves_like 'invalid protected environment user' do
