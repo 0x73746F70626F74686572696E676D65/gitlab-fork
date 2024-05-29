@@ -12,6 +12,7 @@ import { humanizeRules } from './utils';
 
 export default {
   i18n: {
+    fallbackTitle: s__('SecurityOrchestration|Fallback behavior in case of policy failure'),
     summary: SUMMARY_TITLE,
     scanResult: s__('SecurityOrchestration|Merge request approval'),
   },
@@ -34,6 +35,20 @@ export default {
     },
     description() {
       return this.parsedYaml?.description;
+    },
+    fallbackBehaviorText() {
+      switch (this.parsedYaml.fallback_behavior.fail) {
+        case 'open':
+          return s__(
+            'ScanResultPolicy|Fail open: Allow the merge request to proceed, even if not all criteria are met',
+          );
+        case 'closed':
+          return s__(
+            'ScanResultPolicy|Fail closed: Block the merge request until all criteria are met',
+          );
+        default:
+          return null;
+      }
     },
     humanizedRules() {
       return humanizeRules(this.parsedYaml?.rules);
@@ -121,6 +136,16 @@ export default {
           </div>
           <settings :settings="settings" />
         </div>
+      </info-row>
+    </template>
+
+    <template #additional-details>
+      <info-row
+        v-if="fallbackBehaviorText"
+        :label="$options.i18n.fallbackTitle"
+        data-testid="additional-details"
+      >
+        {{ fallbackBehaviorText }}
       </info-row>
     </template>
   </drawer-layout>

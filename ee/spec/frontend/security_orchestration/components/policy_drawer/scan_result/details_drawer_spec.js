@@ -12,11 +12,13 @@ import {
   mockProjectScanResultPolicy,
   mockProjectWithAllApproverTypesScanResultPolicy,
   mockApprovalSettingsScanResultPolicy,
-} from '../../../mocks/mock_scan_result_policy_data';
+  mockProjectFallbackClosedScanResultManifest,
+} from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
 
 describe('DetailsDrawer component', () => {
   let wrapper;
 
+  const findAdditionalDetails = () => wrapper.findByTestId('additional-details');
   const findSummary = () => wrapper.findByTestId('policy-summary');
   const findPolicyApprovals = () => wrapper.findComponent(Approvals);
   const findPolicyDrawerLayout = () => wrapper.findComponent(PolicyDrawerLayout);
@@ -24,9 +26,12 @@ describe('DetailsDrawer component', () => {
   const findSettings = () => wrapper.findComponent(Settings);
   const findBotMessage = () => wrapper.findByTestId('policy-bot-message');
 
-  const factory = ({ propsData } = {}) => {
+  const factory = ({ props } = {}) => {
     wrapper = shallowMountExtended(DetailsDrawer, {
-      propsData,
+      propsData: {
+        policy: mockProjectScanResultPolicy,
+        ...props,
+      },
       provide: { namespaceType: NAMESPACE_TYPES.PROJECT },
       stubs: {
         PolicyDrawerLayout,
@@ -36,12 +41,12 @@ describe('DetailsDrawer component', () => {
 
   describe('policy drawer layout props', () => {
     it('passes the policy to the PolicyDrawerLayout component', () => {
-      factory({ propsData: { policy: mockProjectScanResultPolicy } });
+      factory();
       expect(findPolicyDrawerLayout().props('policy')).toBe(mockProjectScanResultPolicy);
     });
 
     it('passes the description to the PolicyDrawerLayout component', () => {
-      factory({ propsData: { policy: mockProjectScanResultPolicy } });
+      factory();
       expect(findPolicyDrawerLayout().props('description')).toBe(
         'This policy enforces critical vulnerability CS approvals',
       );
@@ -50,27 +55,27 @@ describe('DetailsDrawer component', () => {
 
   describe('summary', () => {
     it('renders the policy summary', () => {
-      factory({ propsData: { policy: mockProjectScanResultPolicy } });
+      factory();
       expect(findSummary().exists()).toBe(true);
     });
 
     describe('settings', () => {
       it('passes the settings to the "Settings" component if settings are present', () => {
-        factory({ propsData: { policy: mockApprovalSettingsScanResultPolicy } });
+        factory({ props: { policy: mockApprovalSettingsScanResultPolicy } });
         expect(findSettings().props('settings')).toEqual(
           mockApprovalSettingsScanResultPolicy.approval_settings,
         );
       });
 
       it('passes the empty object to the "Settings" component if no settings are present', () => {
-        factory({ propsData: { policy: mockProjectScanResultPolicy } });
+        factory();
         expect(findSettings().props('settings')).toEqual({});
       });
     });
 
     describe('approvals', () => {
       it('renders the "Approvals" component correctly', () => {
-        factory({ propsData: { policy: mockProjectWithAllApproverTypesScanResultPolicy } });
+        factory({ props: { policy: mockProjectWithAllApproverTypesScanResultPolicy } });
         expect(findPolicyApprovals().exists()).toBe(true);
         expect(findPolicyApprovals().props('approvers')).toStrictEqual([
           ...mockProjectWithAllApproverTypesScanResultPolicy.allGroupApprovers,
@@ -82,7 +87,7 @@ describe('DetailsDrawer component', () => {
       });
 
       it('should not render branch exceptions list without exceptions', () => {
-        factory({ propsData: { policy: mockProjectWithAllApproverTypesScanResultPolicy } });
+        factory({ props: { policy: mockProjectWithAllApproverTypesScanResultPolicy } });
         expect(findToggleList().exists()).toBe(false);
       });
     });
@@ -90,7 +95,7 @@ describe('DetailsDrawer component', () => {
     describe('send bot message', () => {
       it('hides the text when it is disabled', () => {
         factory({
-          propsData: {
+          props: {
             policy: {
               ...mockProjectWithAllApproverTypesScanResultPolicy,
               yaml: disabledSendBotMessageActionScanResultManifest,
@@ -101,13 +106,13 @@ describe('DetailsDrawer component', () => {
       });
 
       it('shows the message when the action is not included', () => {
-        factory({ propsData: { policy: mockProjectScanResultPolicy } });
+        factory({ props: { policy: mockProjectScanResultPolicy } });
         expect(findBotMessage().text()).toBe('Send a bot message when the conditions match.');
       });
 
       it('shows the message when the action is enabled', () => {
         factory({
-          propsData: {
+          props: {
             policy: {
               ...mockProjectWithAllApproverTypesScanResultPolicy,
               yaml: enabledSendBotMessageActionScanResultManifest,
@@ -116,6 +121,41 @@ describe('DetailsDrawer component', () => {
         });
         expect(findBotMessage().text()).toBe('Send a bot message when the conditions match.');
       });
+    });
+  });
+
+  describe('fallback behavior', () => {
+    it('does not render the fallback behavior section if the policy does not have the fallback behavior property', () => {
+      factory({
+        props: {
+          policy: {
+            ...mockProjectScanResultPolicy,
+            yaml: mockProjectWithAllApproverTypesScanResultPolicy,
+          },
+        },
+      });
+      expect(findAdditionalDetails().exists()).toBe(false);
+    });
+
+    it('renders the open fallback behavior', () => {
+      factory();
+      expect(findAdditionalDetails().text()).toBe(
+        'Fail open: Allow the merge request to proceed, even if not all criteria are met',
+      );
+    });
+
+    it('renders the closed fallback behavior', () => {
+      factory({
+        props: {
+          policy: {
+            ...mockProjectScanResultPolicy,
+            yaml: mockProjectFallbackClosedScanResultManifest,
+          },
+        },
+      });
+      expect(findAdditionalDetails().text()).toBe(
+        'Fail closed: Block the merge request until all criteria are met',
+      );
     });
   });
 });

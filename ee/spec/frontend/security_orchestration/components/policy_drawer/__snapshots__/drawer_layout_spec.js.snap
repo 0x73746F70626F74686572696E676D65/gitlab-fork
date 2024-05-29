@@ -2,15 +2,11 @@
 
 exports[`DrawerLayout component enabled policy matches the snapshots 1`] = `
 <div>
-  <div
-    data-testid="policy-summary"
+  <span
+    data-testid="summary-text"
   >
-    <span
-      data-testid="summary-text"
-    >
-      Summary
-    </span>
-  </div>
+    Summary
+  </span>
   <info-row-stub
     data-testid="policy-type"
     label="Policy Type"
@@ -57,15 +53,11 @@ exports[`DrawerLayout component enabled policy matches the snapshots 1`] = `
 
 exports[`DrawerLayout component not enabled policy matches the snapshots 1`] = `
 <div>
-  <div
-    data-testid="policy-summary"
+  <span
+    data-testid="summary-text"
   >
-    <span
-      data-testid="summary-text"
-    >
-      Summary
-    </span>
-  </div>
+    Summary
+  </span>
   <info-row-stub
     data-testid="policy-type"
     label="Policy Type"
