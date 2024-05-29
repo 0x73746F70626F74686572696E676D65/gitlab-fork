@@ -13,6 +13,7 @@ import {
   mockProjectWithAllApproverTypesScanResultPolicy,
   mockApprovalSettingsScanResultPolicy,
   mockProjectFallbackClosedScanResultManifest,
+  mockNoFallbackScanResultManifest,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
 
 describe('DetailsDrawer component', () => {
@@ -130,7 +131,7 @@ describe('DetailsDrawer component', () => {
         props: {
           policy: {
             ...mockProjectScanResultPolicy,
-            yaml: mockProjectWithAllApproverTypesScanResultPolicy,
+            yaml: mockNoFallbackScanResultManifest,
           },
         },
       });
