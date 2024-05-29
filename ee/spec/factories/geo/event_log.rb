@@ -11,10 +11,6 @@ FactoryBot.define do
     end
   end
 
-  factory :geo_repositories_changed_event, class: 'Geo::RepositoriesChangedEvent' do
-    geo_node
-  end
-
   factory :geo_cache_invalidation_event, class: 'Geo::CacheInvalidationEvent' do
     sequence(:key) { |n| "cache-key-#{n}" }
   end

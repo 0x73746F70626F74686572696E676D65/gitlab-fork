@@ -5,7 +5,6 @@ require 'spec_helper'
 RSpec.describe Geo::EventLog, type: :model, feature_category: :geo_replication do
   describe 'relationships' do
     it { is_expected.to belong_to(:cache_invalidation_event).class_name('Geo::CacheInvalidationEvent').with_foreign_key('cache_invalidation_event_id') }
-    it { is_expected.to belong_to(:repositories_changed_event).class_name('Geo::RepositoriesChangedEvent').with_foreign_key('repositories_changed_event_id') }
   end
 
   describe '.next_unprocessed_event' do
@@ -42,13 +41,6 @@ RSpec.describe Geo::EventLog, type: :model, feature_category: :geo_replication d
       expect(subject.event).to be_nil
     end
 
-    it 'returns repositories_changed_event when set' do
-      repositories_changed_event = build(:geo_repositories_changed_event)
-      subject.repositories_changed_event = repositories_changed_event
-
-      expect(subject.event).to eq repositories_changed_event
-    end
-
     it 'returns cache_invalidation_event when set' do
       cache_invalidation_event = build(:geo_cache_invalidation_event)
       subject.cache_invalidation_event = cache_invalidation_event
@@ -63,8 +55,8 @@ RSpec.describe Geo::EventLog, type: :model, feature_category: :geo_replication d
     end
 
     it 'returns nil when an event does not respond to project_id' do
-      repositories_changed_event = build(:geo_repositories_changed_event)
-      subject.repositories_changed_event = repositories_changed_event
+      cache_invalidation_event = build(:geo_cache_invalidation_event)
+      subject.cache_invalidation_event = cache_invalidation_event
 
       expect(subject.project_id).to be_nil
     end
