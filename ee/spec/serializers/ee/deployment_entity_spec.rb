@@ -34,7 +34,7 @@ RSpec.describe DeploymentEntity do
 
   before do
     stub_licensed_features(protected_environments: true)
-    create(:deployment_approval, deployment: deployment)
+    create(:deployment_approval, deployment: deployment, approval_rule: approval_rules.first)
   end
 
   describe '#pending_approval_count' do

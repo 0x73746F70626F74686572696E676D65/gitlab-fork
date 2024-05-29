@@ -3,28 +3,85 @@
 require 'spec_helper'
 
 RSpec.describe Deployment, feature_category: :continuous_delivery do
+  let_it_be(:user1) { create(:user) }
+  let_it_be(:user2) { create(:user) }
+  let_it_be(:project) { create(:project, :repository) }
+
+  let(:environment) { create(:environment, project: project) }
+  let(:deployment) { create(:deployment, :blocked, project: project, environment: environment) }
+
+  let!(:protected_environment) do
+    create(
+      :protected_environment,
+      :maintainers_can_deploy,
+      name: environment.name,
+      project: project,
+      approval_rules: [approval_rule1, approval_rule2]
+    )
+  end
+
+  let!(:group1) { create(:group, name: 'group1') }
+  let!(:group2) { create(:group, name: 'group2') }
+
+  let!(:approval_rule1) do
+    create(
+      :protected_environment_approval_rule,
+      group: group1,
+      required_approvals: 1
+    )
+  end
+
+  let!(:approval_rule2) do
+    create(
+      :protected_environment_approval_rule,
+      group: group2,
+      required_approvals: 1
+    )
+  end
+
+  before do
+    deployment
+    protected_environment
+    group1.add_maintainer(user1)
+    group2.add_maintainer(user2)
+  end
+
   it { is_expected.to have_many(:approvals) }
   it { is_expected.to delegate_method(:needs_approval?).to(:environment) }
 
   describe '#waiting_for_approval?' do
     subject { deployment.waiting_for_approval? }
 
-    let_it_be(:project) { create(:project, :repository) }
-
-    let(:environment) { create(:environment, project: project) }
-    let(:deployment) { create(:deployment, :blocked, project: project, environment: environment) }
-
-    context 'when pending approval count is positive' do
+    context 'when Protected Environments feature is available' do
       before do
-        allow(deployment).to receive(:pending_approval_count).and_return(1)
+        stub_licensed_features(protected_environments: true)
       end
 
-      it { is_expected.to eq(true) }
+      context 'when pending approval count is positive' do
+        it { is_expected.to eq(true) }
+      end
+
+      context 'when pending approval count is zero' do
+        before do
+          create(
+            :deployment_approval,
+            deployment: deployment,
+            approval_rule_id: approval_rule1.id
+          )
+          create(
+            :deployment_approval,
+            deployment: deployment,
+            approval_rule_id: approval_rule2.id
+          )
+        end
+
+        it { is_expected.to eq(false) }
+      end
     end
 
-    context 'when pending approval count is zero' do
+    context 'when Protected Environments feature is not available' do
       before do
-        allow(deployment).to receive(:pending_approval_count).and_return(0)
+        stub_licensed_features(protected_environments: false)
       end
 
       it { is_expected.to eq(false) }
@@ -32,31 +89,6 @@ RSpec.describe Deployment, feature_category: :continuous_delivery do
   end
 
   describe '#pending_approval_count' do
-    let_it_be(:project) { create(:project, :repository) }
-
-    let(:environment) { create(:environment, project: project) }
-    let(:deployment) { create(:deployment, :blocked, project: project, environment: environment) }
-
-    let(:approval_rules) do
-      [
-        build(
-          :protected_environment_approval_rule,
-          :maintainer_access,
-          required_approvals: 3
-        )
-      ]
-    end
-
-    let(:protected_environment) do
-      create(
-        :protected_environment,
-        :maintainers_can_deploy,
-        name: environment.name,
-        project: project,
-        approval_rules: approval_rules
-      )
-    end
-
     context 'when Protected Environments feature is available' do
       before do
         stub_licensed_features(protected_environments: true)
@@ -65,23 +97,61 @@ RSpec.describe Deployment, feature_category: :continuous_delivery do
 
       context 'with no approvals' do
         it 'returns the number of approvals required by the environment' do
-          expect(deployment.pending_approval_count).to eq(3)
+          expect(deployment.pending_approval_count).to eq(2)
         end
       end
 
       context 'with some approvals' do
         before do
-          create(:deployment_approval, deployment: deployment)
+          create(
+            :deployment_approval,
+            deployment: deployment,
+            approval_rule_id: approval_rule1.id
+          )
         end
 
         it 'returns the number of pending approvals' do
-          expect(deployment.pending_approval_count).to eq(2)
+          expect(deployment.pending_approval_count).to eq(1)
+        end
+      end
+
+      # In this case we have 2 separate rules that need to be satisfied.
+      # We want to make sure that we get enough approvals per rule, not just a
+      # a sum of all approvals.
+      context 'when sum is enough but not all rules are satisfied' do
+        before do
+          create(
+            :deployment_approval,
+            deployment: deployment,
+            approval_rule_id: approval_rule1.id
+          )
+
+          create(
+            :deployment_approval,
+            deployment: deployment,
+            approval_rule_id: approval_rule1.id
+          )
+        end
+
+        it 'returns the number of pending approvals' do
+          expect(deployment.pending_approval_count).to eq(1)
         end
       end
 
       context 'with all approvals satisfied' do
+        let(:approval_rules) { [approval_rule1, app] }
+
         before do
-          create_list(:deployment_approval, 3, deployment: deployment)
+          create(
+            :deployment_approval,
+            deployment: deployment,
+            approval_rule_id: approval_rule1.id
+          )
+          create(
+            :deployment_approval,
+            deployment: deployment,
+            approval_rule_id: approval_rule2.id
+          )
         end
 
         it 'returns zero' do
@@ -91,7 +161,7 @@ RSpec.describe Deployment, feature_category: :continuous_delivery do
 
       context 'with a protected environment that does not require approval' do
         let(:protected_environment) do
-          create(:protected_environment, name: environment.name, project: project, required_approval_count: 0)
+          create(:protected_environment, name: environment.name, project: project)
         end
 
         let(:deployment) { create(:deployment, :success, project: project, environment: environment) }
