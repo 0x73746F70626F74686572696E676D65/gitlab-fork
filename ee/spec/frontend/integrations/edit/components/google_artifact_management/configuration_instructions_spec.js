@@ -30,15 +30,15 @@ describe('ConfigurationInstructions', () => {
     });
   };
 
-  it('renders header', () => {
+  beforeEach(() => {
     createComponent();
+  });
 
+  it('renders header', () => {
     expect(findHeader().text()).toBe('2. Set up permissions');
   });
 
   it('renders link to OIDC custom claims', () => {
-    createComponent();
-
     expect(findLinks().at(0).attributes()).toMatchObject({
       href: '/help/integration/google_cloud_iam#oidc-custom-claims',
       target: '_blank',
@@ -46,8 +46,6 @@ describe('ConfigurationInstructions', () => {
   });
 
   it('renders link to Google Artifact Registry roles', () => {
-    createComponent();
-
     expect(findLinks().at(1).attributes()).toMatchObject({
       href: 'https://cloud.google.com/artifact-registry/docs/access-control#roles',
       target: '_blank',
@@ -55,8 +53,6 @@ describe('ConfigurationInstructions', () => {
   });
 
   it('renders link to Google Cloud CLI installation', () => {
-    createComponent();
-
     expect(findLinks().at(2).attributes()).toMatchObject({
       href: 'https://cloud.google.com/sdk/docs/install',
       target: '_blank',
@@ -64,8 +60,6 @@ describe('ConfigurationInstructions', () => {
   });
 
   it('renders link to Google Cloud IAM permissions', () => {
-    createComponent();
-
     expect(findLinks().at(3).attributes()).toMatchObject({
       href:
         'https://cloud.google.com/iam/docs/granting-changing-revoking-access#required-permissions',
@@ -73,23 +67,22 @@ describe('ConfigurationInstructions', () => {
     });
   });
 
-  it('renders link to personal access tokens path', () => {
-    createComponent();
-
-    expect(findLinks().at(4).attributes()).toMatchObject({
-      href: '/path/to/personal/access/tokens',
-      target: '_blank',
-    });
+  it('renders text to update your_google_cloud_project_id', () => {
+    expect(wrapper.text()).toContain(
+      'Replace <your_google_cloud_project_id> with your Google Cloud project ID.',
+    );
   });
 
   it('renders code instruction with copy button', () => {
-    createComponent();
-    const instructions = `curl --request GET \\
---header "PRIVATE-TOKEN: <your_access_token>" \\
---data 'google_cloud_artifact_registry_project_id=<your_google_cloud_project_id>' \\
---data 'enable_google_cloud_artifact_registry=true' \\
---url "https://gitlab.com/api/v4/projects/1/google_cloud/setup/integrations.sh" \\
-| bash`;
+    const instructions = `# Grant the Artifact Registry Reader role to GitLab users with at least the Guest role
+gcloud projects add-iam-policy-binding '<your_google_cloud_project_id>' \\
+  --member='principalSet://iam.googleapis.com/projects/1234/locations/global/workloadIdentityPools/testing/attribute.guest_access/true' \\
+  --role='roles/artifactregistry.reader'
+
+# Grant the Artifact Registry Writer role to GitLab users with at least the Developer role
+gcloud projects add-iam-policy-binding '<your_google_cloud_project_id>' \\
+  --member='principalSet://iam.googleapis.com/projects/1234/locations/global/workloadIdentityPools/testing/attribute.developer_access/true' \\
+  --role='roles/artifactregistry.writer'`;
 
     expect(findClipboardButton().props()).toMatchObject({
       title: 'Copy command',
@@ -100,16 +93,35 @@ describe('ConfigurationInstructions', () => {
       language: 'powershell',
       code: instructions,
     });
+    expect(findCodeBlockHighlighted().attributes()).toMatchObject({
+      tabindex: '0',
+      role: 'group',
+      'aria-label': 'Instructions',
+    });
   });
 
-  it('renders code instruction with id passed', () => {
-    createComponent({ id: 'project-id' });
+  describe('when id is passed as prop', () => {
+    beforeEach(() => {
+      createComponent({ id: 'project-id' });
+    });
 
-    expect(findCodeBlockHighlighted().props('code')).toBe(`curl --request GET \\
---header "PRIVATE-TOKEN: <your_access_token>" \\
---data 'google_cloud_artifact_registry_project_id=project-id' \\
---data 'enable_google_cloud_artifact_registry=true' \\
---url "https://gitlab.com/api/v4/projects/1/google_cloud/setup/integrations.sh" \\
-| bash`);
+    it('hides text to update your_google_cloud_project_id', () => {
+      expect(wrapper.text()).not.toContain(
+        'Replace <your_google_cloud_project_id> with your Google Cloud project ID.',
+      );
+    });
+
+    it('renders code instruction with id passed', () => {
+      expect(findCodeBlockHighlighted().props('code'))
+        .toBe(`# Grant the Artifact Registry Reader role to GitLab users with at least the Guest role
+gcloud projects add-iam-policy-binding project-id \\
+  --member='principalSet://iam.googleapis.com/projects/1234/locations/global/workloadIdentityPools/testing/attribute.guest_access/true' \\
+  --role='roles/artifactregistry.reader'
+
+# Grant the Artifact Registry Writer role to GitLab users with at least the Developer role
+gcloud projects add-iam-policy-binding project-id \\
+  --member='principalSet://iam.googleapis.com/projects/1234/locations/global/workloadIdentityPools/testing/attribute.developer_access/true' \\
+  --role='roles/artifactregistry.writer'`);
+    });
   });
 });

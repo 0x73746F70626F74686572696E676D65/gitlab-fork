@@ -24349,6 +24349,9 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Image"
 msgstr ""
 
+msgid "GoogleArtifactRegistry|Instructions"
+msgstr ""
+
 msgid "GoogleArtifactRegistry|Interact with them from your CI/CD pipeline. %{link_start}Learn more%{link_end}."
 msgstr ""
 
@@ -24374,9 +24377,6 @@ msgid "GoogleArtifactRegistry|Project ID"
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Project ID: %{projectId}"
-msgstr ""
-
-msgid "GoogleArtifactRegistry|Replace %{codeStart}your_access_token%{codeEnd} with a new %{linkStart}personal access token%{linkEnd} with the %{strongStart}read_api%{strongEnd} scope. This token gets information from your Google Cloud IAM integration in GitLab."
 msgstr ""
 
 msgid "GoogleArtifactRegistry|Replace %{codeStart}your_google_cloud_project_id%{codeEnd} with your Google Cloud project ID."

@@ -61,28 +61,51 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
       context 'with Google Artifact Registry integration' do
         let_it_be_with_refind(:integration) { create(:google_cloud_platform_artifact_registry_integration, project: project) }
 
-        shared_examples 'excludes wlif related fields' do
+        shared_examples 'active iam integration' do
           it 'is editable' do
             is_expected.to include(editable: 'true')
           end
 
-          it 'does not include wlif related fields' do
-            is_expected.not_to include(
-              workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
+          it 'does not include workload_identity_federation_path field' do
+            is_expected.not_to include(:workload_identity_federation_path)
+          end
+
+          it 'includes wlif fields' do
+            is_expected.to include(
+              workload_identity_federation_project_number: project.google_cloud_platform_workload_identity_federation_integration.workload_identity_federation_project_number,
+              workload_identity_pool_id: project.google_cloud_platform_workload_identity_federation_integration.workload_identity_pool_id
             )
           end
         end
 
-        context 'when Google Cloud IAM integration does not exist' do
-          it 'includes Google Artifact Registry fields' do
+        shared_examples 'inactive iam integration' do
+          it 'is not-editable' do
+            is_expected.to include(editable: 'false')
+          end
+
+          it 'includes workload_identity_federation_path field' do
             is_expected.to include(
-              artifact_registry_path: project_google_cloud_artifact_registry_index_path(project),
-              personal_access_tokens_path: user_settings_personal_access_tokens_path,
-              operating: 'true',
-              editable: 'false',
               workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
             )
           end
+
+          it 'does not includes wlif fields' do
+            is_expected.not_to include(
+              :workload_identity_federation_project_number,
+              :workload_identity_pool_id
+            )
+          end
+        end
+
+        it 'includes Google Artifact Registry fields' do
+          is_expected.to include(
+            artifact_registry_path: project_google_cloud_artifact_registry_index_path(project),
+            operating: 'true'
+          )
+        end
+
+        context 'when Google Cloud IAM integration does not exist' do
+          it_behaves_like 'inactive iam integration'
         end
 
         context 'with active Google Cloud IAM integration' do
@@ -90,7 +113,7 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
             create(:google_cloud_platform_workload_identity_federation_integration, project: project)
           end
 
-          it_behaves_like 'excludes wlif related fields'
+          it_behaves_like 'active iam integration'
         end
 
         context 'with inactive Google Cloud IAM integration' do
@@ -98,12 +121,7 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
             create(:google_cloud_platform_workload_identity_federation_integration, project: project, active: false)
           end
 
-          it 'includes Google Artifact Registry fields' do
-            is_expected.to include(
-              editable: 'false',
-              workload_identity_federation_path: edit_project_settings_integration_path(project, :google_cloud_platform_workload_identity_federation)
-            )
-          end
+          it_behaves_like 'inactive iam integration'
         end
       end
 

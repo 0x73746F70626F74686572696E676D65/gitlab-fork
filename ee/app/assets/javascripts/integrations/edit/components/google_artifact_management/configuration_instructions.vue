@@ -26,19 +26,28 @@ export default {
     projectId() {
       return this.propsSource.projectId;
     },
-    personalAccessTokensPath() {
-      return this.propsSource.personalAccessTokensPath;
-    },
     googleCloudProjectId() {
-      return this.id || '<your_google_cloud_project_id>';
+      return this.id || "'<your_google_cloud_project_id>'";
+    },
+    workloadIdentityFederationProjectNumber() {
+      return this.propsSource.googleArtifactManagementProps
+        ?.workloadIdentityFederationProjectNumber;
+    },
+    workloadIdentityPoolId() {
+      return this.propsSource.googleArtifactManagementProps?.workloadIdentityPoolId;
     },
     instructions() {
-      return `curl --request GET \\
---header "PRIVATE-TOKEN: <your_access_token>" \\
---data 'google_cloud_artifact_registry_project_id=${this.googleCloudProjectId}' \\
---data 'enable_google_cloud_artifact_registry=true' \\
---url "https://gitlab.com/api/v4/projects/${this.projectId}/google_cloud/setup/integrations.sh" \\
-| bash`;
+      const workloadIdentityBasePath = `principalSet://iam.googleapis.com/projects/${this.workloadIdentityFederationProjectNumber}/locations/global/workloadIdentityPools/${this.workloadIdentityPoolId}`;
+
+      return `# Grant the Artifact Registry Reader role to GitLab users with at least the Guest role
+gcloud projects add-iam-policy-binding ${this.googleCloudProjectId} \\
+  --member='${workloadIdentityBasePath}/attribute.guest_access/true' \\
+  --role='roles/artifactregistry.reader'
+
+# Grant the Artifact Registry Writer role to GitLab users with at least the Developer role
+gcloud projects add-iam-policy-binding ${this.googleCloudProjectId} \\
+  --member='${workloadIdentityBasePath}/attribute.developer_access/true' \\
+  --role='roles/artifactregistry.writer'`;
     },
     hasId() {
       return Boolean(this.id);
@@ -81,7 +90,7 @@ export default {
         </template>
       </gl-sprintf>
     </p>
-    <ul>
+    <ol>
       <li>
         <gl-sprintf
           :message="
@@ -115,53 +124,42 @@ export default {
           </template>
         </gl-sprintf>
       </li>
-    </ul>
-    <p>
-      {{
-        s__(
-          'GoogleArtifactRegistry|Run the following command to grant roles in your Google Cloud project. You might be prompted to sign into Google.',
-        )
-      }}
-    </p>
-    <ul>
       <li>
-        <gl-sprintf
-          :message="
-            s__(
-              'GoogleArtifactRegistry|Replace %{codeStart}your_access_token%{codeEnd} with a new %{linkStart}personal access token%{linkEnd} with the %{strongStart}read_api%{strongEnd} scope. This token gets information from your Google Cloud IAM integration in GitLab.',
-            )
-          "
-          ><template #code="{ content }">
-            <code>&lt;{{ content }}&gt;</code>
-          </template>
-          <template #strong="{ content }">
-            <strong>{{ content }}</strong>
-          </template>
-          <template #link="{ content }">
-            <gl-link :href="personalAccessTokensPath" target="_blank">{{ content }}</gl-link>
-          </template>
-        </gl-sprintf>
+        {{
+          s__(
+            'GoogleArtifactRegistry|Run the following command to grant roles in your Google Cloud project. You might be prompted to sign into Google.',
+          )
+        }}
+        <ul v-if="!hasId" class="gl-pl-5">
+          <li>
+            <gl-sprintf
+              :message="
+                s__(
+                  'GoogleArtifactRegistry|Replace %{codeStart}your_google_cloud_project_id%{codeEnd} with your Google Cloud project ID.',
+                )
+              "
+              ><template #code="{ content }">
+                <code>&lt;{{ content }}&gt;</code>
+              </template>
+            </gl-sprintf>
+          </li>
+        </ul>
       </li>
-      <li v-if="!hasId">
-        <gl-sprintf
-          :message="
-            s__(
-              'GoogleArtifactRegistry|Replace %{codeStart}your_google_cloud_project_id%{codeEnd} with your Google Cloud project ID.',
-            )
-          "
-          ><template #code="{ content }">
-            <code>&lt;{{ content }}&gt;</code>
-          </template>
-        </gl-sprintf>
-      </li>
-    </ul>
+    </ol>
     <div class="gl-relative">
       <clipboard-button
         :title="s__('GoogleArtifactRegistry|Copy command')"
         :text="instructions"
         class="gl-absolute gl-top-3 gl-right-3 gl-z-1"
       />
-      <code-block-highlighted class="gl-border gl-p-4" language="powershell" :code="instructions" />
+      <code-block-highlighted
+        class="gl-border gl-p-4"
+        language="powershell"
+        :code="instructions"
+        tabindex="0"
+        role="group"
+        :aria-label="s__('GoogleArtifactRegistry|Instructions')"
+      />
     </div>
     <gl-sprintf
       :message="
