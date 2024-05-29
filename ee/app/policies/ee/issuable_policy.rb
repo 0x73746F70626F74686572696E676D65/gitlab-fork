@@ -22,7 +22,7 @@ module EE
         enable :upload_issuable_metric_image
       end
 
-      rule { is_author | can?(:create_issue) & can?(:update_issue) }.policy do
+      rule { is_author | (can?(:create_issue) & can?(:update_issue)) }.policy do
         enable :update_issuable_metric_image
         enable :destroy_issuable_metric_image
       end

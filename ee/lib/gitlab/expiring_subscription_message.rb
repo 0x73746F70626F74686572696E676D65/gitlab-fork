@@ -117,7 +117,7 @@ module Gitlab
     def namespace_expiring_message
       message = []
 
-      message << _('Your %{strong}%{plan_name}%{strong_close} subscription for %{strong}%{namespace_name}%{strong_close} will expire on %{strong}%{expires_on}%{strong_close}.') % { expires_on: subscribable.expires_at.iso8601, plan_name: plan_name, strong: strong, strong_close: strong_close, namespace_name: namespace.name }
+      message << (_('Your %{strong}%{plan_name}%{strong_close} subscription for %{strong}%{namespace_name}%{strong_close} will expire on %{strong}%{expires_on}%{strong_close}.') % { expires_on: subscribable.expires_at.iso8601, plan_name: plan_name, strong: strong, strong_close: strong_close, namespace_name: namespace.name })
 
       message << expiring_features_message
 
