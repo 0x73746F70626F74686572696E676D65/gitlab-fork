@@ -4703,6 +4703,9 @@ msgstr ""
 msgid "AiImpactAnalytics|Monthly user engagement with AI Code Suggestions. Percentage ratio calculated as monthly unique Code Suggestions users / total monthly unique code contributors."
 msgstr ""
 
+msgid "AiImpactAnalytics|Usage rate for Code Suggestions is calculated with data starting on %{startDate}"
+msgstr ""
+
 msgid "Akismet"
 msgstr ""
 

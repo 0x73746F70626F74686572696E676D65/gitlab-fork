@@ -195,7 +195,10 @@ export default {
       });
       return {
         ...timePeriod,
-        ...extractGraphqlAiData(responseData),
+        ...extractGraphqlAiData({
+          ...responseData,
+          timePeriodEnd: timePeriod.end,
+        }),
       };
     },
     formatNumber,
