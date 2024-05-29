@@ -6,6 +6,7 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
   let_it_be(:organization) { create(:organization) }
   let_it_be(:user) { create(:user) }
   let(:group) { create(:group, organization: organization) }
+  let(:subgroup) { create(:group, :private, parent: group) }
   let(:service_account_user) { create(:user, :service_account) }
 
   before do
@@ -17,6 +18,61 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
     subject(:perform_request) { post api("/groups/#{group_id}/service_accounts", user), params: params }
 
     let_it_be(:params) { {} }
+
+    context 'when Self-managed' do
+      before do
+        stub_licensed_features(service_accounts: true)
+        allow(License).to receive(:current).and_return(license)
+      end
+
+      context 'when the feature is licensed' do
+        let(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
+
+        context 'when current user is an admin', :enable_admin_mode do
+          let_it_be(:user) { create(:admin) }
+
+          context 'when the group exists' do
+            let(:group_id) { group.id }
+
+            it "creates user with service_account user type" do
+              perform_request
+
+              expect(response).to have_gitlab_http_status(:created)
+              expect(json_response.keys).to match_array(%w[id name username])
+
+              user = User.find(json_response['id'])
+
+              expect(user.username).to start_with("service_account_group_#{group_id}")
+              expect(user.namespace.organization).to eq(organization)
+              expect(user.user_type).to eq('service_account')
+            end
+
+            context 'for subgroup' do
+              let(:group_id) { subgroup.id }
+
+              it 'returns error' do
+                perform_request
+
+                expect(response).to have_gitlab_http_status(:bad_request)
+                expect(json_response['message']).to include(
+                  s_('ServiceAccount|User does not have permission to create a service account in this namespace.')
+                )
+              end
+            end
+          end
+
+          context 'when the group does not exist' do
+            let(:group_id) { non_existing_record_id }
+
+            it "returns error" do
+              perform_request
+
+              expect(response).to have_gitlab_http_status(:not_found)
+            end
+          end
+        end
+      end
+    end
 
     context 'when on GitLab.com', :saas do
       before do
@@ -36,13 +92,17 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
           context 'when the group exists' do
             let(:group_id) { group.id }
 
-            it "creates user with user type service_account_user" do
+            it "creates user with service_account user type" do
               perform_request
 
               expect(response).to have_gitlab_http_status(:created)
-              expect(json_response['username']).to start_with("service_account_group_#{group_id}")
               expect(json_response.keys).to match_array(%w[id name username])
-              expect(User.find(json_response['id']).namespace.organization).to eq(organization)
+
+              user = User.find(json_response['id'])
+
+              expect(user.username).to start_with("service_account_group_#{group_id}")
+              expect(user.namespace.organization).to eq(organization)
+              expect(user.user_type).to eq('service_account')
             end
 
             context 'when params are provided' do
@@ -86,6 +146,19 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
               perform_request
 
               expect(response).to have_gitlab_http_status(:bad_request)
+            end
+
+            context 'for subgroup' do
+              let(:group_id) { subgroup.id }
+
+              it 'returns error' do
+                perform_request
+
+                expect(response).to have_gitlab_http_status(:bad_request)
+                expect(json_response['message']).to include(
+                  s_('ServiceAccount|User does not have permission to create a service account in this namespace.')
+                )
+              end
             end
           end
 

@@ -3082,6 +3082,16 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
           it { is_expected.to be_allowed(:admin_service_accounts) }
           it { is_expected.to be_allowed(:admin_service_account_member) }
           it { is_expected.to be_disallowed(:create_service_account) }
+
+          context 'for subgroup' do
+            let_it_be(:subgroup) { create(:group, :private, parent: group) }
+
+            subject { described_class.new(current_user, subgroup) }
+
+            it { is_expected.to be_allowed(:admin_service_accounts) }
+            it { is_expected.to be_allowed(:admin_service_account_member) }
+            it { is_expected.to be_disallowed(:create_service_account) }
+          end
         end
 
         context 'when the user is an instance admin' do
@@ -3091,6 +3101,16 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
             it { is_expected.to be_allowed(:admin_service_accounts) }
             it { is_expected.to be_allowed(:admin_service_account_member) }
             it { is_expected.to be_allowed(:create_service_account) }
+
+            context 'for subgroup' do
+              let_it_be(:subgroup) { create(:group, :private, parent: group) }
+
+              subject { described_class.new(current_user, subgroup) }
+
+              it { is_expected.to be_allowed(:admin_service_accounts) }
+              it { is_expected.to be_allowed(:admin_service_account_member) }
+              it { is_expected.to be_disallowed(:create_service_account) }
+            end
           end
 
           context 'when admin mode is not enabled' do
@@ -3129,6 +3149,16 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
             it { is_expected.to be_allowed(:admin_service_accounts) }
             it { is_expected.to be_allowed(:admin_service_account_member) }
             it { is_expected.to be_allowed(:create_service_account) }
+
+            context 'for subgroup' do
+              let_it_be(:subgroup) { create(:group, :private, parent: group) }
+
+              subject { described_class.new(current_user, subgroup) }
+
+              it { is_expected.to be_allowed(:admin_service_accounts) }
+              it { is_expected.to be_allowed(:admin_service_account_member) }
+              it { is_expected.to be_disallowed(:create_service_account) }
+            end
           end
 
           context 'when the user is an instance admin' do
@@ -3138,6 +3168,16 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
               it { is_expected.to be_allowed(:admin_service_accounts) }
               it { is_expected.to be_allowed(:admin_service_account_member) }
               it { is_expected.to be_allowed(:create_service_account) }
+
+              context 'for subgroup' do
+                let_it_be(:subgroup) { create(:group, :private, parent: group) }
+
+                subject { described_class.new(current_user, subgroup) }
+
+                it { is_expected.to be_allowed(:admin_service_accounts) }
+                it { is_expected.to be_allowed(:admin_service_account_member) }
+                it { is_expected.to be_disallowed(:create_service_account) }
+              end
             end
 
             context 'when admin mode is not enabled' do

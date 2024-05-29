@@ -16,8 +16,13 @@ RSpec.describe Namespaces::ServiceAccounts::CreateService, feature_category: :us
 
   let_it_be(:organization) { create(:organization) }
   let_it_be(:group) { create(:group) }
+  let_it_be(:subgroup) { create(:group, :private, parent: group) }
 
-  subject(:service) { described_class.new(current_user, { organization_id: organization.id, namespace_id: group.id }) }
+  let(:namespace_id) { group.id }
+
+  subject(:service) do
+    described_class.new(current_user, { organization_id: organization.id, namespace_id: namespace_id })
+  end
 
   context 'when self-managed' do
     before do
@@ -52,7 +57,13 @@ RSpec.describe Namespaces::ServiceAccounts::CreateService, feature_category: :us
         end
 
         context 'when the group is invalid' do
-          subject(:service) { described_class.new(current_user, { namespace_id: non_existing_record_id }) }
+          let(:namespace_id) { non_existing_record_id }
+
+          it_behaves_like 'service account creation failure'
+        end
+
+        context 'when the group is subgroup' do
+          let(:namespace_id) { subgroup.id }
 
           it_behaves_like 'service account creation failure'
         end
@@ -92,7 +103,13 @@ RSpec.describe Namespaces::ServiceAccounts::CreateService, feature_category: :us
           end
 
           context 'when the group is invalid' do
-            subject(:service) { described_class.new(current_user, { namespace_id: non_existing_record_id }) }
+            let(:namespace_id) { non_existing_record_id }
+
+            it_behaves_like 'service account creation failure'
+          end
+
+          context 'when the group is subgroup' do
+            let(:namespace_id) { subgroup.id }
 
             it_behaves_like 'service account creation failure'
           end
@@ -144,7 +161,13 @@ RSpec.describe Namespaces::ServiceAccounts::CreateService, feature_category: :us
         end
 
         context 'when the group is invalid' do
-          subject(:service) { described_class.new(current_user, { namespace_id: non_existing_record_id }) }
+          let(:namespace_id) { non_existing_record_id }
+
+          it_behaves_like 'service account creation failure'
+        end
+
+        context 'when the group is subgroup' do
+          let(:namespace_id) { subgroup.id }
 
           it_behaves_like 'service account creation failure'
         end
@@ -186,7 +209,13 @@ RSpec.describe Namespaces::ServiceAccounts::CreateService, feature_category: :us
           end
 
           context 'when the group is invalid' do
-            subject(:service) { described_class.new(current_user, { namespace_id: non_existing_record_id }) }
+            let(:namespace_id) { non_existing_record_id }
+
+            it_behaves_like 'service account creation failure'
+          end
+
+          context 'when the group is subgroup' do
+            let(:namespace_id) { subgroup.id }
 
             it_behaves_like 'service account creation failure'
           end
