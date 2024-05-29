@@ -2,8 +2,6 @@
 data_category: optional
 key_path: analytics_unique_visits.g_analytics_contribution
 description: Removed as duplicate of redis_hll_counters.analytics.g_analytics_contribution_weekly
-product_section: dev
-product_stage: manage
 product_group: optimize
 value_type: number
 status: removed

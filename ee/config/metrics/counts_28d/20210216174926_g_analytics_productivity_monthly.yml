@@ -3,8 +3,6 @@ data_category: optional
 key_path: redis_hll_counters.analytics.g_analytics_productivity_monthly
 description: Unique visitors to /groups/:group/-/analytics/productivity_analytics
   by month
-product_section: dev
-product_stage: manage
 product_group: optimize
 value_type: number
 status: active
