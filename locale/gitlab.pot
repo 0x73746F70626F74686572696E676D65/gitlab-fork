@@ -14437,6 +14437,9 @@ msgstr ""
 msgid "Contribution analytics"
 msgstr ""
 
+msgid "Contribution type"
+msgstr ""
+
 msgid "ContributionAnalytics|%{createdCount} created, %{closedCount} closed."
 msgstr ""
 

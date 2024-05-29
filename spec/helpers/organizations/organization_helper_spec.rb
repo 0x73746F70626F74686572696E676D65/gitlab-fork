@@ -361,16 +361,54 @@ RSpec.describe Organizations::OrganizationHelper, feature_category: :cell do
   end
 
   describe '#organization_activity_app_data' do
+    let_it_be(:expected_event_types) do
+      [
+        {
+          'title' => 'Comments',
+          'value' => EventFilter::COMMENTS
+        },
+        {
+          'title' => 'Designs',
+          'value' => EventFilter::DESIGNS
+        },
+        {
+          'title' => 'Issue events',
+          'value' => EventFilter::ISSUE
+        },
+        {
+          'title' => 'Merge events',
+          'value' => EventFilter::MERGED
+        },
+        {
+          'title' => 'Push events',
+          'value' => EventFilter::PUSH
+        },
+        {
+          'title' => 'Team',
+          'value' => EventFilter::TEAM
+        },
+        {
+          'title' => 'Wiki',
+          'value' => EventFilter::WIKI
+        }
+      ]
+    end
+
     before do
       allow(helper).to receive(:activity_organization_path)
         .with(organization, { format: :json })
         .and_return(activity_organization_path)
+
+      allow(helper).to receive(:organization_activity_event_types)
+        .and_return(expected_event_types)
     end
 
     it 'returns expected data object' do
       expect(Gitlab::Json.parse(helper.organization_activity_app_data(organization))).to eq(
         {
-          'organization_activity_path' => activity_organization_path
+          'organization_activity_path' => activity_organization_path,
+          'organization_activity_event_types' => expected_event_types,
+          'organization_activity_all_event' => EventFilter::ALL
         }
       )
     end
