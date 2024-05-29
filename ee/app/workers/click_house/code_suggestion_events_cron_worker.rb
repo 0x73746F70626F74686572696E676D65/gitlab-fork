@@ -14,14 +14,8 @@ module ClickHouse
     MAX_RUNTIME = 200.seconds
     BATCH_SIZE = 1000
 
-    CSV_MAPPING = {
-      user_id: :user_id,
-      timestamp: :timestamp,
-      event: :event
-    }.freeze
-
-    INSERT_QUERY = <<~SQL.squish
-      INSERT INTO code_suggestion_usages (#{CSV_MAPPING.keys.join(', ')})
+    INSERT_QUERY_TEMPLATE = <<~SQL.squish
+      INSERT INTO code_suggestion_usages (%{fields})
       SETTINGS async_insert=1, wait_for_async_insert=1 FORMAT CSV
     SQL
 
@@ -31,7 +25,7 @@ module ClickHouse
       connection.ping # ensure CH is available
 
       status, inserted_rows = loop_with_runtime_limit(MAX_RUNTIME) do
-        insert_rows(build_rows)
+        process_next_batch
       end
 
       log_extra_metadata_on_done(:result, {
@@ -68,31 +62,33 @@ module ClickHouse
         Feature.enabled?(:code_suggestion_events_in_click_house)
     end
 
-    def build_rows
-      # Using LPOP which is not crash-safe. There is a small chance for data loss
-      # if ClickHouse is down or the worker crashes before the INSERT.
-      ClickHouse::WriteBuffer.pop_events(BATCH_SIZE).filter_map do |hash|
-        build_row(hash)
+    def process_next_batch
+      next_batch.group_by(&:keys).sum do |keys, rows|
+        insert_rows(rows, mapping: build_csv_mapping(keys))
       end
     end
 
-    def build_row(hash)
-      return unless CSV_MAPPING.keys.all? { |key| hash[key] }
-
-      # Legacy data format. Remove with next deploy.
-      hash[:timestamp] = hash[:timestamp].is_a?(String) ? DateTime.parse(hash[:timestamp]).to_f : hash[:timestamp]
-      hash
+    def next_batch
+      ClickHouse::WriteBuffer.pop_events(BATCH_SIZE)
     end
 
-    def insert_rows(rows)
-      CsvBuilder::Gzip.new(rows, CSV_MAPPING).render do |tempfile, rows_written|
+    def build_csv_mapping(keys)
+      keys.to_h { |key| [key.to_sym, key.to_sym] }
+    end
+
+    def insert_rows(rows, mapping:)
+      CsvBuilder::Gzip.new(rows, mapping).render do |tempfile, rows_written|
         if rows_written == 0
           0
         else
-          connection.insert_csv(INSERT_QUERY, File.open(tempfile.path))
+          connection.insert_csv(prepare_insert_statement(mapping), File.open(tempfile.path))
           rows.size
         end
       end
+    end
+
+    def prepare_insert_statement(mapping)
+      format(INSERT_QUERY_TEMPLATE, fields: mapping.keys.join(', '))
     end
 
     def connection
