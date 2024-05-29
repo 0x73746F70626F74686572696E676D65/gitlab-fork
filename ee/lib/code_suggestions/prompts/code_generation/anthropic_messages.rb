@@ -11,6 +11,7 @@ module CodeSuggestions
         MAX_INPUT_CHARS = 50000
         MAX_LIBS_COUNT = 50 # this is arbitrary number to keep prompt reasonably concise
         GATEWAY_PROMPT_VERSION = 3
+        CONTENT_TYPES = { file: 'file', snippet: 'snippet' }.freeze
 
         def request_params
           {
@@ -39,6 +40,7 @@ module CodeSuggestions
             #{examples_section}
             #{existing_code_block}
             #{existing_code_instruction}
+            #{context_block}
             #{libraries_block}
             The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -68,6 +70,44 @@ module CodeSuggestions
           return unless params[:prefix].present?
 
           "The existing code is provided in <existing_code></existing_code> tags."
+        end
+
+        def context_block
+          return unless params[:context].present?
+
+          related_files = []
+          related_snippets = []
+
+          params[:context].each do |context|
+            if context[:type] == CONTENT_TYPES[:file]
+              related_files << <<~FILE_CONTENT
+              <file_content file_name="#{context[:name]}">
+              #{context[:content]}
+              </file_content>
+              FILE_CONTENT
+            elsif context[:type] == CONTENT_TYPES[:snippet]
+              related_snippets << <<~SNIPPET_CONTENT
+              <snippet_content name="#{context[:name]}">
+              #{context[:content]}
+              </snippet_content>
+              SNIPPET_CONTENT
+            end
+          end
+
+          <<~CONTENT
+          Here are some files and code snippets that could be related to the current code.
+          The files provided in <related_files><related_files> tags.
+          The code snippets provided in <related_snippets><related_snippets> tags.
+          Please use existing functions from these files and code snippets if possible when suggesting new code.
+
+          <related_files>
+          #{related_files.join("\n")}
+          </related_files>
+
+          <related_snippets>
+          #{related_snippets.join("\n")}
+          </related_snippets>
+          CONTENT
         end
 
         def instructions

@@ -14,6 +14,9 @@ module API
     MAX_BODY_SIZE = 500_000
     MAX_CONTENT_SIZE = 400_000
 
+    MAX_CONTEXT_COUNT = 10
+    MAX_CONTEXT_NAME_SIZE = 255
+
     allow_access_with_scope :ai_features
 
     before do
@@ -81,6 +84,18 @@ module API
           optional :stream, type: Boolean, default: false, desc: 'The option to stream code completion response'
           optional :project_path, type: String, desc: 'The path of the project',
             documentation: { example: 'namespace/project' }
+          optional :user_instruction, type: String, limit: MAX_BODY_SIZE,
+            desc: 'Additional instructions provided by a user'
+          optional :context, type: Array, allow_blank: false, limit: MAX_CONTEXT_COUNT,
+            desc: 'List of related context parts' do
+            requires :type, type: String,
+              values: ::CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages::CONTENT_TYPES.values,
+              desc: 'The type of a related part of context'
+            requires :name, type: String, limit: MAX_CONTEXT_NAME_SIZE, allow_blank: false,
+              desc: 'The name of a related part of context'
+            requires :content, type: String, limit: MAX_BODY_SIZE, allow_blank: false,
+              desc: 'The content of a part of context'
+          end
         end
         post do
           token = ::CloudConnector::AvailableServices.find_by_name(:code_suggestions).access_token(current_user)

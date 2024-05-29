@@ -26,9 +26,10 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
     let(:file_content) { CodeSuggestions::FileContent.new(language, content, suffix) }
     let(:intent) { nil }
     let(:generation_type) { nil }
+    let(:user_instruction) { nil }
 
     subject do
-      described_class.new(file_content, intent, generation_type).extract
+      described_class.new(file_content, intent, generation_type, user_instruction).extract
     end
 
     context 'when content is nil' do
@@ -90,7 +91,7 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
       end
     end
 
-    context 'when there is not instruction' do
+    context 'when there is no instruction' do
       let(:content) do
         <<~CODE
           full_name()
@@ -120,6 +121,16 @@ RSpec.describe CodeSuggestions::InstructionsExtractor, feature_category: :code_s
           let(:instruction) { '' }
           let(:trigger_type) { 'comment' }
         end
+      end
+    end
+
+    context 'when there is a user instruction' do
+      let(:content) { '' }
+      let(:user_instruction) { 'Generate me a hello world function' }
+
+      it_behaves_like 'extracted instruction' do
+        let(:instruction) { user_instruction }
+        let(:trigger_type) { nil }
       end
     end
 

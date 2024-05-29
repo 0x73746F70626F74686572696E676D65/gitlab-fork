@@ -365,15 +365,169 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         context 'when passing project_path parameter' do
           let(:additional_params) { { project_path: 'group/test-project' } }
 
-          it 'project_path stream into TaskFactory.new' do
+          it 'passes project_path into TaskFactory.new' do
             expect(::CodeSuggestions::TaskFactory).to receive(:new)
-                                                        .with(
-                                                          current_user,
-                                                          params: hash_including(project_path: 'group/test-project'),
-                                                          unsafe_passthrough_params: kind_of(Hash)
-                                                        ).and_call_original
+              .with(
+                current_user,
+                params: hash_including(project_path: 'group/test-project'),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
 
             post_api
+          end
+        end
+
+        context 'when passing user_instruction parameter' do
+          let(:additional_params) { { user_instruction: 'Generate tests for this file' } }
+
+          it 'passes user_instruction into TaskFactory.new' do
+            expect(::CodeSuggestions::TaskFactory).to receive(:new)
+              .with(
+                current_user,
+                params: hash_including(user_instruction: 'Generate tests for this file'),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
+
+            post_api
+          end
+        end
+
+        context 'when passing context parameter' do
+          let(:additional_params) do
+            {
+              context: [
+                {
+                  type: 'file',
+                  name: 'main.go',
+                  content: 'package main\nfunc main()\n{\n}\n'
+                },
+                {
+                  type: 'snippet',
+                  name: 'fullName',
+                  content: 'func fullName(first, last string) {\nfmt.Println(first, last)\n}'
+                }
+              ]
+            }
+          end
+
+          it 'passes context into TaskFactory.new' do
+            expect(::CodeSuggestions::TaskFactory).to receive(:new)
+              .with(
+                current_user,
+                params: hash_including(context: additional_params[:context]),
+                unsafe_passthrough_params: kind_of(Hash)
+              ).and_call_original
+
+            post_api
+          end
+
+          context 'when context is blank' do
+            let(:additional_params) { { context: [] } }
+
+            it 'responds with bad request' do
+              post_api
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(response.body).to eq({ error: "context is empty" }.to_json)
+            end
+          end
+
+          context 'when context missing a content' do
+            let(:additional_params) do
+              {
+                context: [
+                  {
+                    type: 'file',
+                    name: 'main.go'
+                  }
+                ]
+              }
+            end
+
+            it 'responds with bad request' do
+              post_api
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(response.body)
+                .to eq({ error: "context[0][content] is missing, context[0][content] is empty" }.to_json)
+            end
+          end
+
+          context 'when context has more than 10 items' do
+            let(:additional_params) do
+              {
+                context: (1..11).map { |i| { type: 'snippet', name: "func#{i}", content: "func func#{i}() {}" } }
+              }
+            end
+
+            it 'responds with bad request' do
+              post_api
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(response.body)
+                .to eq({ error: "context context must be less than 10 characters" }.to_json)
+            end
+          end
+
+          context 'when context missing a type' do
+            let(:additional_params) do
+              {
+                context: [
+                  {
+                    name: 'main.go',
+                    content: 'package main\nfunc main()\n{\n}\n'
+                  }
+                ]
+              }
+            end
+
+            it 'responds with bad request' do
+              post_api
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(response.body).to eq({ error: "context[0][type] is missing" }.to_json)
+            end
+          end
+
+          context 'when context missing a name' do
+            let(:additional_params) do
+              {
+                context: [
+                  {
+                    type: 'file',
+                    content: 'package main\nfunc main()\n{\n}\n'
+                  }
+                ]
+              }
+            end
+
+            it 'responds with bad request' do
+              post_api
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(response.body).to eq({ error: "context[0][name] is missing, context[0][name] is empty" }.to_json)
+            end
+          end
+
+          context 'when context type is incorrect' do
+            let(:additional_params) do
+              {
+                context: [
+                  {
+                    type: 'unknown',
+                    name: 'main.go',
+                    content: 'package main\nfunc main()\n{\n}\n'
+                  }
+                ]
+              }
+            end
+
+            it 'responds with bad request' do
+              post_api
+
+              expect(response).to have_gitlab_http_status(:bad_request)
+              expect(response.body).to eq({ error: "context[0][type] does not have a valid value" }.to_json)
+            end
           end
         end
       end
@@ -466,6 +620,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                 </existing_code>
 
                 The existing code is provided in <existing_code></existing_code> tags.
+
 
                 The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
                 In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -627,6 +782,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                 </existing_code>
 
                 The existing code is provided in <existing_code></existing_code> tags.
+
 
                 The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
                 In your process, first, review the existing code to understand its logic and format. Then, try to determine the most

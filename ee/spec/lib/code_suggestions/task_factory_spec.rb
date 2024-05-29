@@ -10,6 +10,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
     let(:file_name) { 'python.py' }
     let(:prefix) { 'some prefix' }
     let(:suffix) { 'some suffix' }
+    let(:user_instruction) { nil }
     let(:params) do
       {
         current_file: {
@@ -17,7 +18,13 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
           content_above_cursor: prefix,
           content_below_cursor: suffix
         },
-        generation_type: 'empty_function'
+        generation_type: 'empty_function',
+        user_instruction: user_instruction,
+        context: {
+          type: 'file',
+          name: 'main.go',
+          content: 'package main'
+        }
       }
     end
 
@@ -34,7 +41,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
     it 'calls instructions extractor with expected params' do
       expect(CodeSuggestions::InstructionsExtractor)
         .to receive(:new)
-        .with(an_instance_of(CodeSuggestions::FileContent), nil, 'empty_function')
+        .with(an_instance_of(CodeSuggestions::FileContent), nil, 'empty_function', user_instruction)
         .and_call_original
 
       get_task
@@ -114,11 +121,17 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
           get_task
 
           expect(::ProjectsFinder).to have_received(:new)
-                                        .with(
-                                          current_user: current_user,
-                                          params: { full_paths: [expected_project.full_path] }
-                                        )
+            .with(
+              current_user: current_user,
+              params: { full_paths: [expected_project.full_path] }
+            )
         end
+      end
+
+      context 'with user_instruction param' do
+        let(:user_instruction) { 'Some user instruction' }
+
+        it_behaves_like 'correct task initializer'
       end
 
       context 'when on a self managed instance' do
@@ -144,6 +157,27 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
         end
 
         let(:expected_model) { 'claude-3-haiku-20240307' }
+
+        it_behaves_like 'correct task initializer'
+      end
+
+      context 'when code_suggestions_context feature flag is off' do
+        let(:expected_params) do
+          {
+            params: params.except(:user_instruction, :context).merge(
+              instruction: instruction,
+              prefix: prefix,
+              project: expected_project,
+              model_name: described_class::ANTHROPIC_MODEL,
+              current_user: current_user
+            ),
+            unsafe_passthrough_params: {}
+          }
+        end
+
+        before do
+          stub_feature_flags(code_suggestions_context: false)
+        end
 
         it_behaves_like 'correct task initializer'
       end

@@ -1,0 +1,9 @@
+---
+name: code_suggestions_context
+feature_issue_url: https://gitlab.com/gitlab-org/editor-extensions/gitlab-lsp/-/issues/208
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/153264
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/462750
+milestone: '17.1'
+group: group::code creation
+type: wip
+default_enabled: false
