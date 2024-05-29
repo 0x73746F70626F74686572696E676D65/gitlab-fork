@@ -30,13 +30,32 @@ module BulkImports
         # we need to handle epics slightly differently because Epics::CreateService accounts for creating the
         # respective epic work item as well as some other associations.
         epic = ::Epics::CreateService.new(
-          group: epic_object.group, current_user: current_user,
-          params: epic_work_item_params_from_epic(epic_object)
+          group: epic_object.group, current_user: current_user, params: {}
         ).send(:create, epic_object) # rubocop: disable GitlabSecurity/PublicSend -- using the service to create the epic
 
         raise(ActiveRecord::RecordInvalid, epic) if epic.invalid?
 
+        handle_parent_link(epic)
+
         epic
+      end
+
+      def handle_parent_link(epic)
+        # We need to create WorkItems::ParentLinks as we don't create them in the service since we don't pass
+        # the `parent_id`.
+        # This is especially important when the source and target group are on different licenses.
+        # e.g. A group with sub-epics exports to a group without sub-epics.
+        # We still want to retain the relationships.
+        return unless epic.issue_id
+        return unless epic.parent_id && epic.parent.issue_id
+
+        existing_parent_link = epic.work_item&.parent_link
+        return if existing_parent_link.present?
+
+        ::WorkItems::ParentLinks::CreateService.new(
+          epic.parent.work_item, current_user,
+          { target_issuable: epic.work_item, synced_work_item: true, relative_position: epic.relative_position }
+        ).execute
       end
 
       def handle_epic_issue(relation_object)
@@ -54,26 +73,6 @@ module BulkImports
         end
 
         relation_object
-      end
-
-      def epic_work_item_params_from_epic(epic)
-        params = ::Epics::SyncAsWorkItem::ALLOWED_PARAMS.index_with { |attr| epic[attr] }
-        # when importing epics we need to make sure we create the work item first but with the epic's IID
-        params[:color] = epic.color unless epic.color.to_s == ::Epic::DEFAULT_COLOR.to_s
-
-        params[:start_date] = epic.start_date_fixed
-        params[:start_date_is_fixed] = epic.start_date_is_fixed || false
-        params[:due_date] = epic.due_date_fixed
-        params[:due_date_is_fixed] = epic.due_date_is_fixed || false
-
-        # force the work_item_parent_links record to be created, by forcing the parent related params, that will be
-        # handled by Epics::CreateService and EpicLinks::CreateService
-        if epic.parent_id || epic.parent
-          params[:parent_id] = epic.parent_id
-          params[:parent] = epic.parent
-        end
-
-        params
       end
     end
   end
