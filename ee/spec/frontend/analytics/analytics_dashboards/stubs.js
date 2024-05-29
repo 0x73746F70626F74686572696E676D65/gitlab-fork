@@ -9,7 +9,7 @@ export const BuilderComponent = {
   template: '<div><slot></slot></div>',
 };
 
-export const QueryBuilder = {
+export const getQueryBuilderStub = (mockData) => ({
   data() {
     return {
       loading: false,
@@ -17,6 +17,7 @@ export const QueryBuilder = {
       measures: [],
       dimensions: [],
       timeDimensions: [],
+      availableMeasures: [],
       setMeasures: () => {},
       setFilters: () => {},
       addFilters: () => {},
@@ -25,12 +26,13 @@ export const QueryBuilder = {
       setTimeDimensions: () => {},
       removeTimeDimensions: () => {},
       setSegments: () => {},
+      ...mockData,
     };
   },
   template: `
     <builder-component>
-      <slot name="builder" v-bind="{measures, dimensions, timeDimensions, setTimeDimensions, removeTimeDimensions, removeDimensions, addDimensions, filters, setMeasures, setFilters, addFilters, setSegments}"></slot>
+      <slot name="builder" v-bind="{measures, dimensions, timeDimensions, availableMeasures, setTimeDimensions, removeTimeDimensions, removeDimensions, addDimensions, filters, setMeasures, setFilters, addFilters, setSegments }"></slot>
       <slot v-bind="{loading}"></slot>
     </builder-component>
   `,
-};
+});

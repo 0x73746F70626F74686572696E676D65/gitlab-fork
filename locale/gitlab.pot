@@ -6037,6 +6037,9 @@ msgstr ""
 msgid "Analytics|Something went wrong."
 msgstr ""
 
+msgid "Analytics|Start by choosing a measure"
+msgstr ""
+
 msgid "Analytics|Start by choosing a metric"
 msgstr ""
 
@@ -39580,6 +39583,9 @@ msgid "ProductAnalytics|Loading instance"
 msgstr ""
 
 msgid "ProductAnalytics|Manage your own analytics provider to process, store, and query analytics data."
+msgstr ""
+
+msgid "ProductAnalytics|Measure"
 msgstr ""
 
 msgid "ProductAnalytics|Measure All tracked Events"
