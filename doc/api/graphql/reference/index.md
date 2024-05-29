@@ -34522,6 +34522,8 @@ Possible filter types for remote development cluster agents in a namespace.
 | Value | Description |
 | ----- | ----------- |
 | <a id="namespaceclusteragentfilteravailable"></a>`AVAILABLE` | Cluster agents in the namespace that can be used for hosting workspaces. |
+| <a id="namespaceclusteragentfilterdirectly_mapped"></a>`DIRECTLY_MAPPED` | Cluster agents that are directly mapped to the given namespace. |
+| <a id="namespaceclusteragentfilterunmapped"></a>`UNMAPPED` | Cluster agents within a namespace that are not directly mapped to it. |
 
 ### `NamespaceProjectSort`
 

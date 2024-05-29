@@ -3,28 +3,29 @@
 require 'spec_helper'
 require_relative './shared'
 
-RSpec.describe 'Query.namespace.remote_development_cluster_agents(filter: AVAILABLE)',
+RSpec.describe 'Query.namespace.remote_development_cluster_agents(filter: UNMAPPED)',
   feature_category: :remote_development do
   include GraphqlHelpers
   include StubFeatureFlags
 
   let_it_be(:user) { create(:user) }
   let_it_be(:current_user) { user }
-  # Setup cluster and user such that the user has the bare minimum permissions
-  # to be able to receive the agent when calling the API i.e. the user has Developer access
-  # to the agent project ONLY (and not a group-level access)
-  let_it_be(:agent) do
+  let_it_be(:mapped_agent) do
     create(:ee_cluster_agent, :in_group, :with_remote_development_agent_config).tap do |agent|
-      agent.project.add_developer(user)
+      agent.project.namespace.add_maintainer(user)
     end
   end
 
-  let_it_be(:namespace) { agent.project.namespace }
+  let_it_be(:unmapped_agent) do
+    create(:ee_cluster_agent, :with_remote_development_agent_config, project: mapped_agent.project)
+  end
+
+  let_it_be(:namespace) { mapped_agent.project.namespace }
   let_it_be(:namespace_agent_mapping) do
     create(
       :remote_development_namespace_cluster_agent_mapping,
       user: user,
-      agent: agent,
+      agent: mapped_agent,
       namespace: namespace
     )
   end
@@ -44,7 +45,7 @@ RSpec.describe 'Query.namespace.remote_development_cluster_agents(filter: AVAILA
       { full_path: namespace.full_path },
       query_graphql_field(
         :remote_development_cluster_agents,
-        { filter: :AVAILABLE },
+        { filter: :UNMAPPED },
         fields
       )
     )
@@ -57,18 +58,18 @@ RSpec.describe 'Query.namespace.remote_development_cluster_agents(filter: AVAILA
   end
 
   context 'when the params are valid' do
-    it 'returns a cluster agent' do
+    it 'returns cluster agents that are not mapped to the namespace' do
       post_graphql(query, current_user: current_user)
 
-      expect(agent_names_in_response).to eq([agent.name])
+      expect(agent_names_in_response).to eq([unmapped_agent.name])
     end
   end
 
   include_examples "checks for remote_development licensed feature"
   include_examples "checks whether the feature flag is enabled"
 
-  context 'when the provided namespace is not a group namespace' do
-    let(:namespace) { agent.project.project_namespace }
+  context 'when the passed namespace is not a group' do
+    let(:namespace) { mapped_agent.project.project_namespace }
 
     it 'returns an error' do
       post_graphql(query, current_user: current_user)
@@ -77,19 +78,19 @@ RSpec.describe 'Query.namespace.remote_development_cluster_agents(filter: AVAILA
     end
   end
 
-  context 'when user does not have access to the project' do
+  context 'when user does not have access to view the mappings' do
     # simulate test conditions by creating the maximum privileged user that does/should
     # not have the permission to access the agent
     let(:current_user) do
       create(:user).tap do |user|
-        agent.project.add_reporter(user)
+        namespace.add_developer(user)
       end
     end
 
-    it 'skips agents for which the user does not have access' do
+    it 'returns an error' do
       post_graphql(query, current_user: current_user)
 
-      expect(agent_names_in_response).to eq([])
+      expect_graphql_errors_to_include "does not exist or you don't have permission to perform this action"
     end
   end
 end

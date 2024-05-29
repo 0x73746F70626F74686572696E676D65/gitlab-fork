@@ -51,6 +51,42 @@ RSpec.describe RemoteDevelopment::GroupPolicy, feature_category: :remote_develop
     end
   end
 
+  describe ':read_remote_development_cluster_agent_mapping' do
+    let(:ability) { :read_remote_development_cluster_agent_mapping }
+
+    # rubocop:disable Layout/LineLength -- TableSyntax should not be split across lines
+    where(:policy_class, :user, :result) do
+      # In the future, there is a possibility that a common policy module may have to be mixed in to multiple
+      # target policy types for ex. ProjectNamespacePolicy or UserNamespacePolicy. As a result, the policy_class
+      # has been parameterized to accommodate different values that may exist in the future
+      #
+      # See the following issues for more details:
+      #   - https://gitlab.com/gitlab-org/gitlab/-/issues/417894
+      #   - https://gitlab.com/gitlab-org/gitlab/-/issues/454934#note_1867678918
+      GroupPolicy | ref(:guest)                   | false
+      GroupPolicy | ref(:reporter)                | false
+      GroupPolicy | ref(:developer)               | false
+      GroupPolicy | ref(:maintainer)              | true
+      GroupPolicy | ref(:owner)                   | true
+      GroupPolicy | ref(:admin_in_admin_mode)     | true
+      GroupPolicy | ref(:admin_in_non_admin_mode) | true # Even though admin_mode is false, admins are still considered group owners due to: `condition(:owner) { access_level >= GroupMember::OWNER }`
+    end
+    # rubocop:enable Layout/LineLength
+
+    with_them do
+      subject(:policy) { policy_class.new(user, group) }
+
+      before do
+        enable_admin_mode!(admin_in_admin_mode) if user == admin_in_admin_mode
+
+        debug = false # Set to true to enable debugging of policies, but change back to false before committing
+        debug_policies(user, group, policy_class, ability) if debug
+      end
+
+      it { expect(policy.allowed?(ability)).to eq(result) }
+    end
+  end
+
   # NOTE: Leaving this method here for future use. You can also set GITLAB_DEBUG_POLICIES=1. For more details, see:
   #       https://docs.gitlab.com/ee/development/permissions/custom_roles.html#refactoring-abilities
   # This may be generalized in the future for use across all policy specs
