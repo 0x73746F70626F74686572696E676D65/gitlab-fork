@@ -6,11 +6,13 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::FindConfi
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:user) { create(:user, developer_of: project) }
-  let(:pipeline) { build(:ci_pipeline, project: project, ref: 'master', user: user) }
+  let(:pipeline) { build(:ci_pipeline, source: source, project: project, ref: 'master', user: user) }
+  let(:source) { 'push' }
 
   let(:execution_policy_dry_run) { nil }
   let(:command) do
     Gitlab::Ci::Pipeline::Chain::Command.new(
+      source: pipeline.source,
       project: project,
       current_user: user,
       origin_ref: pipeline.ref,
@@ -44,10 +46,19 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::FindConfi
       expect(command.execution_policy_pipelines.size).to eq(2)
     end
 
+    it 'passes pipeline source to execution policy pipelines' do
+      step.perform!
+
+      command.execution_policy_pipelines.each do |pipeline|
+        expect(pipeline.source).to eq(source)
+      end
+    end
+
     context 'with merge_request parameter set on the command' do
       let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
       let(:command) do
         Gitlab::Ci::Pipeline::Chain::Command.new(
+          source: pipeline.source,
           project: project,
           current_user: user,
           origin_ref: merge_request.ref_path,
@@ -129,6 +140,20 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::FindConfi
         step.perform!
 
         expect(command.execution_policy_pipelines).to be_nil
+      end
+    end
+
+    context 'when policy should not be enforced for a source' do
+      Enums::Ci::Pipeline.dangling_sources.each_key do |source|
+        context "when source is #{source}" do
+          let(:source) { source }
+
+          it 'does not set execution_policy_pipelines' do
+            step.perform!
+
+            expect(command.execution_policy_pipelines).to be_nil
+          end
+        end
       end
     end
 
