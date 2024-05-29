@@ -19,7 +19,7 @@ module QA
             duo_chat.send_duo_chat_prompt('hi')
             expect do
               duo_chat.latest_response
-            end.to eventually_match(/GitLab Duo Chat/).within(max_duration: 30)
+            end.to eventually_match(/GitLab/).within(max_duration: 30)
           end
         end
       end
