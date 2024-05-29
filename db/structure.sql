@@ -243,7 +243,7 @@ CREATE TABLE projects (
     suggestion_commit_message character varying(255),
     project_namespace_id bigint,
     hidden boolean DEFAULT false NOT NULL,
-    organization_id bigint DEFAULT 1
+    organization_id bigint
 );
 
 CREATE FUNCTION find_projects_by_id(projects_id bigint) RETURNS projects
