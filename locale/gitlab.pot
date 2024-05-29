@@ -53368,6 +53368,9 @@ msgstr ""
 msgid "This code snippet contains everything reflected in the configuration form. Copy and paste it into %{linkStart}.gitlab-ci.yml%{linkEnd} file and save your changes. Future %{scanType} scans will use these settings."
 msgstr ""
 
+msgid "This command is used for explaining vulnerabilities and can only be invoked from a vulnerability detail page."
+msgstr ""
+
 msgid "This comment changed after you started editing it. Review the %{startTag}updated comment%{endTag} to ensure information is not lost."
 msgstr ""
 
@@ -53480,6 +53483,9 @@ msgid "This epic cannot be added. You don't have access to perform this action."
 msgstr ""
 
 msgid "This epic does not exist or you don't have sufficient permission."
+msgstr ""
+
+msgid "This feature is not enabled yet."
 msgstr ""
 
 msgid "This feature is only allowed in groups or projects that enable this feature."
@@ -57759,6 +57765,9 @@ msgid "Vulnerability"
 msgstr ""
 
 msgid "Vulnerability Report"
+msgstr ""
+
+msgid "Vulnerability explanation currently only supports vulnerabilities reported by SAST."
 msgstr ""
 
 msgid "Vulnerability remediated. Review before resolving."
