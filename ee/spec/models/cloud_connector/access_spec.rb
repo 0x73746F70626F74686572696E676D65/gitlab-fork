@@ -22,19 +22,20 @@ RSpec.describe CloudConnector::Access, models: true, feature_category: :cloud_co
     end
   end
 
-  describe '#clear_available_services_cache!', :use_clean_rails_memory_store_caching do
-    let(:cache_key) { CloudConnector::AvailableServices::CLOUD_CONNECTOR_SERVICES_KEY }
-
-    before do
-      Rails.cache.write(cache_key, double)
-    end
-
+  describe '#clear_available_services_cache!' do
     it 'clears cache' do
-      access = create(:cloud_connector_access)
+      expect(CloudConnector::AvailableServices.access_data_reader)
+        .to receive(:read_available_services).and_call_original.twice
 
+      # Get service catalog and memoize the result
+      CloudConnector::AvailableServices.available_services
+
+      # Expire the memoization
+      access = create(:cloud_connector_access)
       access.clear_available_services_cache!
 
-      expect(Rails.cache.read(cache_key)).to be_nil
+      # Get service catalog and memoize the result, again.
+      CloudConnector::AvailableServices.available_services
     end
   end
 end
