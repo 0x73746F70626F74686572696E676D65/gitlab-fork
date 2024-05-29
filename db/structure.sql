@@ -12417,7 +12417,8 @@ CREATE TABLE notes (
     id bigint NOT NULL,
     namespace_id bigint,
     imported smallint DEFAULT 0 NOT NULL,
-    imported_from smallint DEFAULT 0 NOT NULL
+    imported_from smallint DEFAULT 0 NOT NULL,
+    CONSTRAINT check_1244cbd7d0 CHECK ((noteable_type IS NOT NULL))
 );
 
 CREATE SEQUENCE notes_id_seq
@@ -21290,9 +21291,6 @@ ALTER TABLE ONLY chat_names
 
 ALTER TABLE ONLY chat_teams
     ADD CONSTRAINT chat_teams_pkey PRIMARY KEY (id);
-
-ALTER TABLE notes
-    ADD CONSTRAINT check_1244cbd7d0 CHECK ((noteable_type IS NOT NULL)) NOT VALID;
 
 ALTER TABLE workspaces
     ADD CONSTRAINT check_2a89035b04 CHECK ((personal_access_token_id IS NOT NULL)) NOT VALID;
