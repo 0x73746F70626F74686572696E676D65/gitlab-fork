@@ -27861,6 +27861,8 @@ CREATE INDEX index_subscription_add_on_purchases_on_subscription_add_on_id ON su
 
 CREATE UNIQUE INDEX index_subscription_add_ons_on_name ON subscription_add_ons USING btree (name);
 
+CREATE INDEX index_subscription_addon_purchases_on_expires_on ON subscription_add_on_purchases USING btree (expires_on);
+
 CREATE INDEX index_subscription_user_add_on_assignments_on_user_id ON subscription_user_add_on_assignments USING btree (user_id);
 
 CREATE INDEX index_subscriptions_on_project_id ON subscriptions USING btree (project_id);
