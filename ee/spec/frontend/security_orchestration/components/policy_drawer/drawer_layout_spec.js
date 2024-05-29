@@ -45,6 +45,7 @@ describe('DrawerLayout component', () => {
       },
       scopedSlots: {
         summary: `<span data-testid="summary-text">Summary</span>`,
+        additionalDetails: `<span data-testid="additional-details">More</span>`,
       },
       stubs: {
         GlSprintf,

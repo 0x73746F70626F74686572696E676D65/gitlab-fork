@@ -89,9 +89,7 @@ export default {
 
 <template>
   <div>
-    <div data-testid="policy-summary">
-      <slot name="summary"></slot>
-    </div>
+    <slot name="summary"></slot>
 
     <info-row data-testid="policy-type" :label="$options.i18n.policyTypeTitle">
       {{ type }}
@@ -126,6 +124,8 @@ export default {
         <span v-else>{{ typeLabel }}</span>
       </div>
     </info-row>
+
+    <slot name="additional-details"></slot>
 
     <info-row :label="$options.i18n.statusTitle">
       <div v-if="policy.enabled" class="gl-text-green-500" data-testid="enabled-status-text">

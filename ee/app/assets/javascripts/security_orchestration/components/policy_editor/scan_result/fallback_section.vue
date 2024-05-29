@@ -13,7 +13,9 @@ export default {
     closedText: s__('ScanResultPolicy|Fail closed'),
     closedHelpText: s__('ScanResultPolicy|Block the merge request until all criteria are met'),
     openText: s__('ScanResultPolicy|Fail open'),
-    openHelpText: s__('ScanResultPolicy|Allow the merge request to be merged'),
+    openHelpText: s__(
+      'ScanResultPolicy|Allow the merge request to proceed, even if not all criteria are met',
+    ),
     popoverTitle: s__('ScanResultPolicy|Failure cases:'),
     popoverDesc: [
       s__(
