@@ -11247,7 +11247,8 @@ CREATE TABLE member_approvals (
     old_access_level integer,
     status smallint DEFAULT 0 NOT NULL,
     user_id bigint NOT NULL,
-    member_role_id bigint
+    member_role_id bigint,
+    metadata jsonb DEFAULT '{}'::jsonb NOT NULL
 );
 
 CREATE SEQUENCE member_approvals_id_seq
