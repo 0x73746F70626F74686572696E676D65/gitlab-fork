@@ -496,12 +496,12 @@ class License < MainClusterwide::ApplicationRecord
 
   # See comment for `prior_historical_max`.
   def previous_started_at
-    (License.current&.starts_at || starts_at - 1.year).beginning_of_day
+    (License.current&.starts_at || (starts_at - 1.year)).beginning_of_day
   end
 
   # See comment for `prior_historical_max`.
   def previous_expired_at
-    (License.current&.expires_at || expires_at && expires_at - 1.year || starts_at).end_of_day
+    (License.current&.expires_at || (expires_at && (expires_at - 1.year)) || starts_at).end_of_day
   end
 
   def restricted_user_count_with_threshold
@@ -591,7 +591,7 @@ class License < MainClusterwide::ApplicationRecord
   end
 
   def starts_at_for_historical_data
-    (starts_at || Time.current - 1.year).beginning_of_day
+    (starts_at || (Time.current - 1.year)).beginning_of_day
   end
 
   def expires_at_for_historical_data

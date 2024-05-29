@@ -63,7 +63,7 @@ module Vulnerabilities
         finding_id: finding.id
       )
 
-      vulnerability.save && vulnerability.findings << finding
+      vulnerability.save && (vulnerability.findings << finding)
       create_state_transition_if_needed(vulnerability, from_state) if @state
     end
 

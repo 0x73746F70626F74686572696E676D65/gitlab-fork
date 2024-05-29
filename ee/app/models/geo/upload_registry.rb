@@ -42,7 +42,7 @@ class Geo::UploadRegistry < Geo::BaseRegistry
   end
 
   def file
-    upload&.path || s_('Removed upload with id %{id}') % { id: file_id }
+    upload&.path || (s_('Removed upload with id %{id}') % { id: file_id })
   end
 
   def project

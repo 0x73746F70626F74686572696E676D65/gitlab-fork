@@ -182,7 +182,7 @@ module Iterations
 
         if open_due_date < Date.current
           intermediate_iterations = ((Date.current - open_start_date) / duration_in_days).floor
-          hypothetical_last_due_date = open_start_date + intermediate_iterations * duration_in_days - 1
+          hypothetical_last_due_date = open_start_date + (intermediate_iterations * duration_in_days) - 1
 
           open_start_date = hypothetical_last_due_date.next_occurring(start_weekday)
         end
