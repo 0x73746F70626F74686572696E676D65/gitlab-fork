@@ -5,10 +5,6 @@ class ApprovalMergeRequestRule < ApplicationRecord
   include ApprovalRuleLike
   include UsageStatistics
 
-  include SafelyChangeColumnDefault
-
-  columns_changing_default :vulnerability_states
-
   scope :not_matching_id, ->(ids) { code_owner.where.not(id: ids) }
   scope :matching_pattern, ->(pattern) { code_owner.where(name: pattern) }
 

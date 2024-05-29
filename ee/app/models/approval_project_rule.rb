@@ -5,10 +5,6 @@ class ApprovalProjectRule < ApplicationRecord
   include Auditable
   extend ::Gitlab::Utils::Override
 
-  include SafelyChangeColumnDefault
-
-  columns_changing_default :vulnerability_states
-
   UNSUPPORTED_SCANNER = 'cluster_image_scanning'
   SUPPORTED_SCANNERS = (::EE::Enums::Ci::JobArtifact.security_report_file_types - [UNSUPPORTED_SCANNER]).freeze
   DEFAULT_SEVERITIES = %w[unknown high critical].freeze
