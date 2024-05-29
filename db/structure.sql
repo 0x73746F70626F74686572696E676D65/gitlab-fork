@@ -977,6 +977,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_dbdd61a66a91() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."agent_project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."agent_project_id"
+  FROM "cluster_agents"
+  WHERE "cluster_agents"."id" = NEW."agent_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_fb587b1ae7ad() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -3576,6 +3592,7 @@ CREATE TABLE agent_activity_events (
     level smallint NOT NULL,
     sha bytea,
     detail text,
+    agent_project_id bigint,
     CONSTRAINT check_068205e735 CHECK ((char_length(detail) <= 255))
 );
 
@@ -24751,6 +24768,8 @@ CREATE UNIQUE INDEX index_activity_pub_releases_sub_on_project_id_sub_url ON act
 
 CREATE INDEX index_agent_activity_events_on_agent_id_and_recorded_at_and_id ON agent_activity_events USING btree (agent_id, recorded_at, id);
 
+CREATE INDEX index_agent_activity_events_on_agent_project_id ON agent_activity_events USING btree (agent_project_id);
+
 CREATE INDEX index_agent_activity_events_on_agent_token_id ON agent_activity_events USING btree (agent_token_id) WHERE (agent_token_id IS NOT NULL);
 
 CREATE INDEX index_agent_activity_events_on_merge_request_id ON agent_activity_events USING btree (merge_request_id) WHERE (merge_request_id IS NOT NULL);
@@ -30293,6 +30312,8 @@ CREATE TRIGGER trigger_c9090feed334 BEFORE INSERT OR UPDATE ON boards_epic_lists
 
 CREATE TRIGGER trigger_catalog_resource_sync_event_on_project_update AFTER UPDATE ON projects FOR EACH ROW WHEN ((((old.name)::text IS DISTINCT FROM (new.name)::text) OR (old.description IS DISTINCT FROM new.description) OR (old.visibility_level IS DISTINCT FROM new.visibility_level))) EXECUTE FUNCTION insert_catalog_resource_sync_event();
 
+CREATE TRIGGER trigger_dbdd61a66a91 BEFORE INSERT OR UPDATE ON agent_activity_events FOR EACH ROW EXECUTE FUNCTION trigger_dbdd61a66a91();
+
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
 
 CREATE TRIGGER trigger_fb587b1ae7ad BEFORE INSERT OR UPDATE ON merge_requests FOR EACH ROW EXECUTE FUNCTION trigger_fb587b1ae7ad();
@@ -31053,6 +31074,9 @@ ALTER TABLE ONLY milestones
 
 ALTER TABLE ONLY work_item_parent_links
     ADD CONSTRAINT fk_9be5ef5f80 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY agent_activity_events
+    ADD CONSTRAINT fk_9c07afa098 FOREIGN KEY (agent_project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY issues
     ADD CONSTRAINT fk_9c4516d665 FOREIGN KEY (duplicated_to_id) REFERENCES issues(id) ON DELETE SET NULL;
