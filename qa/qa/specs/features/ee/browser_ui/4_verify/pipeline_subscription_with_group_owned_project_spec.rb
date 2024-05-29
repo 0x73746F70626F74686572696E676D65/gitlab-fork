@@ -21,13 +21,7 @@ module QA
           group: group)
       end
 
-      let!(:runner) do
-        Resource::GroupRunner.fabricate! do |runner|
-          runner.group = group
-          runner.name = executor
-          runner.tags = [executor]
-        end
-      end
+      let!(:runner) { create(:group_runner, group: group, name: executor, tags: [executor]) }
 
       before do
         [downstream_project, upstream_project].each do |project|
