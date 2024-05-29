@@ -9584,9 +9584,6 @@ msgstr ""
 msgid "BulkImport|Direct transfer"
 msgstr ""
 
-msgid "BulkImport|Direct transfer history"
-msgstr ""
-
 msgid "BulkImport|Direct transfer maximum download file size (MiB)"
 msgstr ""
 
@@ -9651,6 +9648,12 @@ msgid "BulkImport|Last imported to %{link}"
 msgstr ""
 
 msgid "BulkImport|Maximum download file size when importing from source GitLab instances by direct transfer."
+msgstr ""
+
+msgid "BulkImport|Migration details"
+msgstr ""
+
+msgid "BulkImport|Migration history"
 msgstr ""
 
 msgid "BulkImport|Name already exists."
@@ -26926,7 +26929,7 @@ msgstr ""
 msgid "Import|Partially completed"
 msgstr ""
 
-msgid "Import|See failures"
+msgid "Import|Show errors"
 msgstr ""
 
 msgid "Import|The repository could not be imported."
