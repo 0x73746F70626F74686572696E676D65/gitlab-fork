@@ -2,6 +2,7 @@
 
 class CiMinutesUsageMailer < ApplicationMailer
   helper EmailsHelper
+  helper NamespacesHelper
 
   layout 'mailer'
 

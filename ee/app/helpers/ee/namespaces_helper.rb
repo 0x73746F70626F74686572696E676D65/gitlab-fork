@@ -16,6 +16,12 @@ module EE
       buy_minutes_subscriptions_path(selected_group: namespace.root_ancestor.id)
     end
 
+    def buy_additional_minutes_url(namespace)
+      return more_minutes_url if use_customers_dot_for_addon_path?(namespace)
+
+      buy_minutes_subscriptions_url(selected_group: namespace.root_ancestor.id)
+    end
+
     def buy_addon_target_attr(namespace)
       use_customers_dot_for_addon_path?(namespace) ? '_blank' : '_self'
     end
