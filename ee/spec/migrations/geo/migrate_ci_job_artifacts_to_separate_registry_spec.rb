@@ -14,11 +14,17 @@ RSpec.describe MigrateCiJobArtifactsToSeparateRegistry, :geo, feature_category: 
     file_registry.create!(file_id: 4, file_type: 'job_artifact', success: false, bytes: 4096, sha256: '2' * 64)
   end
 
+  def migrate_and_reset_registry_columns!
+    migrate!
+
+    [file_registry, job_artifact_registry].each(&:reset_column_information)
+  end
+
   describe '#up' do
     it 'migrates all job artifacts to its own data table' do
       expect(file_registry.all.count).to eq(4)
 
-      migrate!
+      migrate_and_reset_registry_columns!
 
       expect(file_registry.all.count).to eq(4)
       expect(job_artifact_registry.all.count).to eq(3)
@@ -30,7 +36,7 @@ RSpec.describe MigrateCiJobArtifactsToSeparateRegistry, :geo, feature_category: 
     end
 
     it 'creates a new artifact with the trigger' do
-      migrate!
+      migrate_and_reset_registry_columns!
 
       expect(job_artifact_registry.all.count).to eq(3)
 
@@ -41,7 +47,7 @@ RSpec.describe MigrateCiJobArtifactsToSeparateRegistry, :geo, feature_category: 
     end
 
     it 'updates a new artifact with the trigger' do
-      migrate!
+      migrate_and_reset_registry_columns!
 
       expect(job_artifact_registry.all.count).to eq(3)
 
@@ -54,7 +60,7 @@ RSpec.describe MigrateCiJobArtifactsToSeparateRegistry, :geo, feature_category: 
     end
 
     it 'creates a new artifact using the next ID' do
-      migrate!
+      migrate_and_reset_registry_columns!
 
       max_id = job_artifact_registry.maximum(:id)
       last_id = job_artifact_registry.create!(artifact_id: 5, success: true).id
@@ -65,7 +71,7 @@ RSpec.describe MigrateCiJobArtifactsToSeparateRegistry, :geo, feature_category: 
 
   describe '#down' do
     it 'rolls back data properly' do
-      migrate!
+      migrate_and_reset_registry_columns!
 
       expect(file_registry.all.count).to eq(4)
       expect(job_artifact_registry.all.count).to eq(3)
