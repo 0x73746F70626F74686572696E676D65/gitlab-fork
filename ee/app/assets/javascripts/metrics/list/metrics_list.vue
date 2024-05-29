@@ -43,6 +43,7 @@ export default {
     return {
       loading: false,
       metrics: [],
+      allAttributes: [],
       filters: queryToFilterObj(window.location.search),
     };
   },
@@ -57,14 +58,10 @@ export default {
       return filterObjToFilterToken(this.filters);
     },
     availableAttributes() {
-      const attributes = Array.from(
-        new Set(this.metrics.flatMap((metric) => metric.attributes)),
-      ).map((attribute) => ({
+      return this.allAttributes.map((attribute) => ({
         value: attribute,
         title: attribute,
       }));
-      attributes.sort();
-      return attributes;
     },
     tokens() {
       return [
@@ -85,11 +82,15 @@ export default {
     async fetchMetrics() {
       this.loading = true;
       try {
-        const { metrics } = await this.observabilityClient.fetchMetrics({
+        const {
+          metrics,
+          all_available_attributes: allAttributes = [],
+        } = await this.observabilityClient.fetchMetrics({
           filters: this.filters,
           limit: LIST_SEARCH_LIMIT,
         });
         this.metrics = metrics;
+        this.allAttributes = allAttributes;
       } catch (e) {
         createAlert({
           message: s__('ObservabilityMetrics|Failed to load metrics.'),
@@ -118,6 +119,7 @@ export default {
     onFilter(filterTokens) {
       this.filters = filterTokensToFilterObj(filterTokens);
       this.metrics = [];
+      this.allAttributes = [];
 
       this.fetchMetrics();
     },
