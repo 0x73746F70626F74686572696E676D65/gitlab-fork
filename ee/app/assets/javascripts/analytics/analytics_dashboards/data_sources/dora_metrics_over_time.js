@@ -37,7 +37,7 @@ export default class DoraMetricsOverTimeDataSource {
   async fetch({
     namespace,
     query: { metric, date_range: dateRange = LAST_180_DAYS },
-    queryOverrides: { date_range: dateRangeOverride = null } = {},
+    queryOverrides: { date_range: dateRangeOverride = null, ...overridesRest } = {},
   }) {
     const dateRangeKey = dateRangeOverride
       ? dateRangeOverride.toUpperCase()
@@ -53,6 +53,7 @@ export default class DoraMetricsOverTimeDataSource {
       endDate: startOfTomorrow,
       metric,
       namespace,
+      ...overridesRest,
     });
   }
 }
