@@ -15,8 +15,6 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { I18N } from '~/projects/settings/branch_rules/components/view/constants';
-import Protection from '~/projects/settings/branch_rules/components/view/protection.vue';
-import ProtectionToggle from '~/projects/settings/branch_rules/components/view/protection_toggle.vue';
 import { sprintf } from '~/locale';
 import {
   deleteBranchRuleMockResponse,
@@ -92,21 +90,23 @@ describe('View branch rules in enterprise edition', () => {
 
   afterEach(() => axiosMock.restore());
 
-  const findBranchProtections = () => wrapper.findAllComponents(Protection);
+  const findAllowedToMerge = () => wrapper.findByTestId('allowed-to-merge-content');
+  const findAllowedToPush = () => wrapper.findByTestId('allowed-to-push-content');
+  const findStatusChecks = () => wrapper.findByTestId('status-checks-content');
   const findApprovalsApp = () => wrapper.findComponent(ApprovalRulesApp);
   const findProjectRules = () => wrapper.findComponent(ProjectRules);
   const findStatusChecksTitle = () => wrapper.findByText(I18N.statusChecksTitle);
-  const findProtectionToggles = () => wrapper.findAllComponents(ProtectionToggle);
+  const findCodeOwnersToggle = () => wrapper.findByTestId('code-owners-content');
 
   it('renders a branch protection component for push rules', () => {
-    expect(findBranchProtections().at(0).props()).toMatchObject({
+    expect(findAllowedToPush().props()).toMatchObject({
       header: sprintf(I18N.allowedToPushHeader, { total: 2 }),
       ...protectionMockProps,
     });
   });
 
   it('renders a branch protection component for merge rules', () => {
-    expect(findBranchProtections().at(1).props()).toMatchObject({
+    expect(findAllowedToMerge().props()).toMatchObject({
       header: sprintf(I18N.allowedToMergeHeader, { total: 2 }),
       ...protectionMockProps,
     });
@@ -114,7 +114,7 @@ describe('View branch rules in enterprise edition', () => {
 
   describe('Code owner approvals', () => {
     it('does not render a code owner approval section by default', () => {
-      expect(findProtectionToggles().length).toBe(1);
+      expect(findCodeOwnersToggle().exists()).toBe(false);
     });
 
     it.each`
@@ -128,8 +128,8 @@ describe('View branch rules in enterprise edition', () => {
         mockResponse.data.project.branchRules.nodes[0].branchProtection.codeOwnerApprovalRequired = codeOwnerApprovalRequired;
         await createComponent({ editBranchRules: true }, { showCodeOwners: true }, mockResponse);
 
-        expect(findProtectionToggles().at(1).props('iconTitle')).toEqual(iconTitle);
-        expect(findProtectionToggles().at(1).props('description')).toEqual(description);
+        expect(findCodeOwnersToggle().props('iconTitle')).toEqual(iconTitle);
+        expect(findCodeOwnersToggle().props('description')).toEqual(description);
       },
     );
   });
@@ -175,7 +175,7 @@ describe('View branch rules in enterprise edition', () => {
 
     expect(findStatusChecksTitle().exists()).toBe(true);
 
-    expect(findBranchProtections().at(2).props()).toMatchObject({
+    expect(findStatusChecks().props()).toMatchObject({
       header: sprintf(I18N.statusChecksHeader, { total: statusChecksRulesMock.length }),
       headerLinkHref: statusChecksPath,
       headerLinkTitle: I18N.statusChecksLinkTitle,
@@ -195,8 +195,8 @@ describe('View branch rules in enterprise edition', () => {
         mockResponse.data.project.branchRules.nodes[0].branchProtection.codeOwnerApprovalRequired = codeOwnerApprovalRequired;
         await createComponent({ editBranchRules: false }, { showCodeOwners: true }, mockResponse);
 
-        expect(findProtectionToggles().at(1).props('iconTitle')).toEqual(title);
-        expect(findProtectionToggles().at(1).props('description')).toEqual(description);
+        expect(findCodeOwnersToggle().props('iconTitle')).toEqual(title);
+        expect(findCodeOwnersToggle().props('description')).toEqual(description);
       },
     );
   });
