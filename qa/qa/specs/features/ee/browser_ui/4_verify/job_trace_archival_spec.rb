@@ -5,14 +5,7 @@ module QA
       let(:executor) { "qa-runner-#{Time.now.to_i}" }
       let(:pipeline_job_name) { 'test-archival' }
       let(:project) { create(:project, name: 'geo-project-with-archived-traces') }
-
-      let!(:runner) do
-        Resource::ProjectRunner.fabricate! do |runner|
-          runner.project = project
-          runner.name = executor
-          runner.tags = [executor]
-        end
-      end
+      let!(:runner) { create(:project_runner, project: project, name: executor, tags: [executor]) }
 
       let!(:commit) do
         create(:commit, project: project, commit_message: 'Add .gitlab-ci.yml', actions: [
