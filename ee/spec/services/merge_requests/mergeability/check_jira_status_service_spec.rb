@@ -8,7 +8,8 @@ RSpec.describe MergeRequests::Mergeability::CheckJiraStatusService, feature_cate
   let_it_be(:jira_integration) { create(:jira_integration) }
   let_it_be(:project) { build(:project) }
   let_it_be(:merge_request) { build(:merge_request, source_project: project) }
-  let(:params) { {} }
+  let(:params) { { skip_jira_check: skip_check } }
+  let(:skip_check) { false }
 
   it_behaves_like 'mergeability check service', :jira_association_missing,
     'Checks whether the title or description references a Jira issue.'
@@ -72,8 +73,20 @@ RSpec.describe MergeRequests::Mergeability::CheckJiraStatusService, feature_cate
   end
 
   describe '#skip?' do
-    it 'returns false' do
-      expect(check_jira_status.skip?).to eq false
+    context 'when skip check param is true' do
+      let(:skip_check) { true }
+
+      it 'returns true' do
+        expect(check_jira_status.skip?).to eq true
+      end
+    end
+
+    context 'when skip check param is false' do
+      let(:skip_check) { false }
+
+      it 'returns false' do
+        expect(check_jira_status.skip?).to eq false
+      end
     end
   end
 

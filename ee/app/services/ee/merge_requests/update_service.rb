@@ -10,6 +10,7 @@ module EE
         super
 
         handle_override_requested_changes(merge_request, merge_request.previous_changes)
+        handle_title_and_desc_edits(merge_request, merge_request.previous_changes.keys)
       end
 
       private
@@ -80,6 +81,22 @@ module EE
 
         ::Gitlab::EventStore.publish(
           ::MergeRequests::OverrideRequestedChangesStateEvent.new(
+            data: { current_user_id: current_user.id, merge_request_id: merge_request.id }
+          )
+        )
+      end
+
+      def handle_title_and_desc_edits(merge_request, changed_fields)
+        return unless ::Feature.enabled?(:merge_when_checks_pass, merge_request.project)
+
+        fields = %w[title description]
+
+        return unless changed_fields.any? { |field| fields.include?(field) }
+
+        return unless merge_request.has_jira_issue_keys?
+
+        ::Gitlab::EventStore.publish(
+          ::MergeRequests::JiraTitleDescriptionUpdateEvent.new(
             data: { current_user_id: current_user.id, merge_request_id: merge_request.id }
           )
         )

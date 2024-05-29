@@ -7,25 +7,6 @@ describe('getStateKey', () => {
     commitsCount: 2,
   };
 
-  describe('jiraAssociationMissing', () => {
-    const createContext = (enforced, hasIssues) => ({
-      ...canMergeContext,
-      jiraAssociation: {
-        enforced,
-        issue_keys: hasIssues ? [1] : [],
-      },
-    });
-
-    it.each`
-      scenario                     | enforced | hasIssues | state
-      ${'enforced without issues'} | ${true}  | ${false}  | ${'jiraAssociationMissing'}
-    `('when $scenario, state should equal $state', ({ enforced, hasIssues, state }) => {
-      const bound = getStateKey.bind(createContext(enforced, hasIssues));
-
-      expect(bound()).toBe(state);
-    });
-  });
-
   describe('AutoMergeStrategy "merge_when_checks_pass"', () => {
     const createContext = (detailedMergeStatus, preferredAutoMergeStrategy, autoMergeEnabled) => ({
       ...canMergeContext,
