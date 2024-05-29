@@ -119,7 +119,7 @@ RSpec.describe Projects::AuditEventsController, feature_category: :audit_events 
 
         with_them do
           it 'returns an error' do
-            get :index, params: { project_id: project.to_param, namespace_id: project.namespace.to_param, 'created_before': created_before, 'created_after': created_after }
+            get :index, params: { project_id: project.to_param, namespace_id: project.namespace.to_param, created_before: created_before, created_after: created_after }
 
             expect(response).to have_gitlab_http_status(:bad_request)
             expect(flash[:alert]).to eq 'Invalid date format. Please use UTC format as YYYY-MM-DD'
@@ -128,7 +128,7 @@ RSpec.describe Projects::AuditEventsController, feature_category: :audit_events 
       end
 
       context 'when date range is greater than limit' do
-        subject { get :index, params: { project_id: project.to_param, namespace_id: project.namespace.to_param, 'created_before': created_before, 'created_after': created_after } }
+        subject { get :index, params: { project_id: project.to_param, namespace_id: project.namespace.to_param, created_before: created_before, created_after: created_after } }
 
         it_behaves_like 'a date range error is returned'
       end
