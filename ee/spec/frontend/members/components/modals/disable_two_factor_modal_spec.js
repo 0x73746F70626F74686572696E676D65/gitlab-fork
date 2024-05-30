@@ -5,7 +5,7 @@ import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import DisableTwoFactorModal from 'ee/members/components/modals/disable_two_factor_modal.vue';
-import { MEMBER_TYPES } from '~/members/constants';
+import { MEMBERS_TAB_TYPES } from '~/members/constants';
 import {
   DISABLE_TWO_FACTOR_MODAL_ID,
   I18N_CANCEL,
@@ -31,7 +31,7 @@ describe('DisableTwoFactorModal', () => {
   const createStore = (state = {}) => {
     return new Vuex.Store({
       modules: {
-        [MEMBER_TYPES.user]: {
+        [MEMBERS_TAB_TYPES.user]: {
           namespaced: true,
           state: {
             disableTwoFactorPath,
@@ -52,7 +52,7 @@ describe('DisableTwoFactorModal', () => {
     wrapper = mount(DisableTwoFactorModal, {
       store: createStore(state),
       provide: {
-        namespace: MEMBER_TYPES.user,
+        namespace: MEMBERS_TAB_TYPES.user,
       },
       attrs: {
         static: true,

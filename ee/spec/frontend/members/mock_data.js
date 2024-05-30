@@ -1,5 +1,5 @@
 import { member, dataAttribute as CEDataAttribute } from 'jest/members/mock_data';
-import { MEMBER_TYPES } from 'ee/members/constants';
+import { MEMBERS_TAB_TYPES } from 'ee/members/constants';
 import {
   data as promotionRequestsData,
   pagination as promotionRequestsPagination,
@@ -38,7 +38,7 @@ export const upgradedMember = {
 // eslint-disable-next-line import/export
 export const dataAttribute = JSON.stringify({
   ...JSON.parse(CEDataAttribute),
-  [MEMBER_TYPES.promotionRequest]: {
+  [MEMBERS_TAB_TYPES.promotionRequest]: {
     data: promotionRequestsData,
     pagination: promotionRequestsPagination,
   },

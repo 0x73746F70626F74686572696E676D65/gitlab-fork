@@ -5,7 +5,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import BanMemberDropdownItem from 'ee/members/components/action_dropdowns/ban_member_dropdown_item.vue';
 import { member } from 'jest/members/mock_data';
-import { MEMBER_TYPES } from '~/members/constants';
+import { MEMBERS_TAB_TYPES } from '~/members/constants';
 
 jest.mock('~/lib/utils/csrf', () => ({ token: 'mock-csrf-token' }));
 
@@ -19,7 +19,7 @@ describe('BanMemberDropdownItem', () => {
   const createStore = () => {
     return new Vuex.Store({
       modules: {
-        [MEMBER_TYPES.user]: {
+        [MEMBERS_TAB_TYPES.user]: {
           namespaced: true,
           state: { memberPath: `${DEFAULT_MEMBERS_PATH}/:id` },
         },
@@ -30,7 +30,7 @@ describe('BanMemberDropdownItem', () => {
   const createComponent = () => {
     wrapper = shallowMount(BanMemberDropdownItem, {
       store: createStore(),
-      provide: { namespace: MEMBER_TYPES.user },
+      provide: { namespace: MEMBERS_TAB_TYPES.user },
       slots: { default: 'Dropdown item text' },
       propsData: { member },
     });

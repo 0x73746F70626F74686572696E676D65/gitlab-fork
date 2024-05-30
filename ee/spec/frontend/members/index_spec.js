@@ -1,4 +1,4 @@
-import { MEMBER_TYPES } from 'ee/members/constants';
+import { MEMBERS_TAB_TYPES } from 'ee/members/constants';
 import promotionRequestsTabStore from 'ee/members/promotion_requests/store';
 import { dataAttribute } from 'ee_jest/members/mock_data';
 import { initMembersApp } from '~/members/index';
@@ -16,8 +16,8 @@ describe('initMembersApp', () => {
 
   const setup = () => {
     vm = initMembersApp(el, {
-      [MEMBER_TYPES.user]: {},
-      [MEMBER_TYPES.promotionRequest]: {},
+      [MEMBERS_TAB_TYPES.user]: {},
+      [MEMBERS_TAB_TYPES.promotionRequest]: {},
     });
   };
 
@@ -33,7 +33,7 @@ describe('initMembersApp', () => {
   it('sets `disableTwoFactorPath` in Vuex store', () => {
     setup();
 
-    expect(vm.$store.state[MEMBER_TYPES.user].disableTwoFactorPath).toBe(
+    expect(vm.$store.state[MEMBERS_TAB_TYPES.user].disableTwoFactorPath).toBe(
       '/groups/ldap-group/-/two_factor_auth',
     );
   });
@@ -41,7 +41,7 @@ describe('initMembersApp', () => {
   it('sets `ldapOverridePath` in Vuex store', () => {
     setup();
 
-    expect(vm.$store.state[MEMBER_TYPES.user].ldapOverridePath).toBe(
+    expect(vm.$store.state[MEMBERS_TAB_TYPES.user].ldapOverridePath).toBe(
       '/groups/ldap-group/-/group_members/:id/override',
     );
   });
@@ -52,7 +52,7 @@ describe('initMembersApp', () => {
       setup();
 
       expect(promotionRequestsTabStore).toHaveBeenCalledWith(
-        parsedData[MEMBER_TYPES.promotionRequest],
+        parsedData[MEMBERS_TAB_TYPES.promotionRequest],
       );
     });
   });

@@ -8,7 +8,7 @@ import {
   directMember,
   bannedMember,
 } from 'ee_else_ce_jest/members/mock_data';
-import { MEMBER_TYPES } from 'ee_else_ce/members/constants';
+import { MEMBERS_TAB_TYPES } from 'ee_else_ce/members/constants';
 
 describe('MemberTableCell', () => {
   const WrappedComponent = {
@@ -53,7 +53,7 @@ describe('MemberTableCell', () => {
       provide: {
         sourceId: 1,
         currentUserId: 1,
-        namespace: MEMBER_TYPES.user,
+        namespace: MEMBERS_TAB_TYPES.user,
         canManageMembers: true,
         ...provide,
       },
@@ -161,21 +161,21 @@ describe('MemberTableCell', () => {
 
   describe('memberType', () => {
     it('has memberType value from CE when user is not banned', () => {
-      createComponent({ member: directMember }, { namespace: MEMBER_TYPES.banned });
+      createComponent({ member: directMember }, { namespace: MEMBERS_TAB_TYPES.banned });
 
-      expect(findWrappedComponent().props('memberType')).not.toEqual(MEMBER_TYPES.banned);
+      expect(findWrappedComponent().props('memberType')).not.toEqual(MEMBERS_TAB_TYPES.banned);
     });
 
     it('has memberType value from CE when namespace is not banned', () => {
       createComponent({ member: directMember });
 
-      expect(findWrappedComponent().props('memberType')).not.toEqual(MEMBER_TYPES.banned);
+      expect(findWrappedComponent().props('memberType')).not.toEqual(MEMBERS_TAB_TYPES.banned);
     });
 
-    it('is `MEMBER_TYPES.banned` when namespace is `MEMBER_TYPES.banned` and user is banned', () => {
-      createComponent({ member: bannedMember }, { namespace: MEMBER_TYPES.banned });
+    it('is `MEMBERS_TAB_TYPES.banned` when namespace is `MEMBERS_TAB_TYPES.banned` and user is banned', () => {
+      createComponent({ member: bannedMember }, { namespace: MEMBERS_TAB_TYPES.banned });
 
-      expect(findWrappedComponent().props('memberType')).toEqual(MEMBER_TYPES.banned);
+      expect(findWrappedComponent().props('memberType')).toEqual(MEMBERS_TAB_TYPES.banned);
     });
   });
 });

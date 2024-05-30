@@ -4,7 +4,7 @@ import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import BannedActionButtons from 'ee/members/components/action_buttons/banned_action_buttons.vue';
-import { MEMBER_TYPES } from '~/members/constants';
+import { MEMBERS_TAB_TYPES } from '~/members/constants';
 import { assertProps } from 'helpers/assert_props';
 import { bannedMember as member } from '../../mock_data';
 
@@ -22,7 +22,7 @@ describe('BannedActionButtons', () => {
   const createStore = (state = {}) => {
     return new Vuex.Store({
       modules: {
-        [MEMBER_TYPES.banned]: {
+        [MEMBERS_TAB_TYPES.banned]: {
           namespaced: true,
           state: {
             memberPath: `${DEFAULT_MEMBERS_PATH}/:id`,
@@ -37,7 +37,7 @@ describe('BannedActionButtons', () => {
     wrapper = shallowMount(BannedActionButtons, {
       store: createStore(),
       provide: {
-        namespace: MEMBER_TYPES.banned,
+        namespace: MEMBERS_TAB_TYPES.banned,
       },
       propsData: {
         ...defaultProps,

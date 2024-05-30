@@ -5,7 +5,7 @@ import { __, n__, s__, sprintf } from '~/locale';
 import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import {
   AVAILABLE_FILTERED_SEARCH_TOKENS as AVAILABLE_FILTERED_SEARCH_TOKENS_CE,
-  MEMBER_TYPES as MEMBER_TYPES_CE,
+  MEMBERS_TAB_TYPES as MEMBERS_TAB_TYPES_CE,
   TAB_QUERY_PARAM_VALUES as CE_TAB_QUERY_PARAM_VALUES,
 } from '~/members/constants';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -55,15 +55,15 @@ export const AVAILABLE_FILTERED_SEARCH_TOKENS = [
 ];
 
 // eslint-disable-next-line import/export
-export const MEMBER_TYPES = Object.freeze({
-  ...MEMBER_TYPES_CE,
+export const MEMBERS_TAB_TYPES = Object.freeze({
+  ...MEMBERS_TAB_TYPES_CE,
   promotionRequest: 'promotionRequest',
   banned: 'banned',
 });
 
 // eslint-disable-next-line import/export
-export const EE_ACTION_BUTTONS = {
-  [MEMBER_TYPES.banned]: 'banned-action-buttons',
+export const ACTION_BUTTONS = {
+  [MEMBERS_TAB_TYPES.banned]: 'banned-action-buttons',
 };
 
 // eslint-disable-next-line import/export
@@ -74,7 +74,7 @@ export const TAB_QUERY_PARAM_VALUES = Object.freeze({
 });
 
 const APP_OPTIONS_BASE = {
-  [MEMBER_TYPES.promotionRequest]: gon.features?.memberPromotionManagement,
+  [MEMBERS_TAB_TYPES.promotionRequest]: gon.features?.memberPromotionManagement,
 };
 
 const uniqueProjectDownloadLimitEnabled =
@@ -82,10 +82,10 @@ const uniqueProjectDownloadLimitEnabled =
   gon.licensed_features?.uniqueProjectDownloadLimit;
 
 // eslint-disable-next-line import/export
-export const EE_GROUPS_APP_OPTIONS = uniqueProjectDownloadLimitEnabled
+export const GROUPS_APP_OPTIONS = uniqueProjectDownloadLimitEnabled
   ? {
       ...APP_OPTIONS_BASE,
-      [MEMBER_TYPES.banned]: {
+      [MEMBERS_TAB_TYPES.banned]: {
         tableFields: ['account', 'actions'],
         requestFormatter: groupMemberRequestFormatter,
       },
@@ -93,7 +93,7 @@ export const EE_GROUPS_APP_OPTIONS = uniqueProjectDownloadLimitEnabled
   : APP_OPTIONS_BASE;
 
 // eslint-disable-next-line import/export
-export const EE_PROJECTS_APP_OPTIONS = APP_OPTIONS_BASE;
+export const PROJECTS_APP_OPTIONS = APP_OPTIONS_BASE;
 
 export const GUEST_OVERAGE_MODAL_FIELDS = Object.freeze({
   TITLE: __('You are about to incur additional charges'),

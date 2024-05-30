@@ -10,7 +10,7 @@ import {
   bannedMember,
 } from 'ee_jest/members/mock_data';
 import MembersTable from '~/members/components/table/members_table.vue';
-import { MEMBER_TYPES, TAB_QUERY_PARAM_VALUES } from '~/members/constants';
+import { MEMBERS_TAB_TYPES, TAB_QUERY_PARAM_VALUES } from '~/members/constants';
 
 Vue.use(Vuex);
 
@@ -20,7 +20,7 @@ describe('MemberList', () => {
   const createStore = (state = {}) => {
     return new Vuex.Store({
       modules: {
-        [MEMBER_TYPES.user]: {
+        [MEMBERS_TAB_TYPES.user]: {
           namespaced: true,
           state: {
             members: [],
@@ -46,7 +46,7 @@ describe('MemberList', () => {
       provide: {
         sourceId: 1,
         currentUserId: 1,
-        namespace: MEMBER_TYPES.user,
+        namespace: MEMBERS_TAB_TYPES.user,
         canManageMembers: true,
       },
       stubs: [

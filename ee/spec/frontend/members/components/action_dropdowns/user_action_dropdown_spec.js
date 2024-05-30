@@ -7,7 +7,7 @@ import { member } from 'jest/members/mock_data';
 import { sprintf } from '~/locale';
 import UserActionDropdown from '~/members/components/action_dropdowns/user_action_dropdown.vue';
 import { I18N } from '~/members/components/action_dropdowns/constants';
-import { MEMBER_TYPES } from '~/members/constants';
+import { MEMBERS_TAB_TYPES } from '~/members/constants';
 import { stubComponent } from 'helpers/stub_component';
 
 describe('UserActionDropdown', () => {
@@ -19,7 +19,7 @@ describe('UserActionDropdown', () => {
         BanMemberDropdownItem: stubComponent(BanMemberDropdownItem),
       },
       provide: {
-        namespace: MEMBER_TYPES.user,
+        namespace: MEMBERS_TAB_TYPES.user,
       },
       propsData: {
         member,
