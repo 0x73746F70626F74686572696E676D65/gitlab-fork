@@ -16,7 +16,7 @@
                 .text-muted
                   = group.description
           .template-subgroup-project-count
-            = gl_badge_tag projects.count, nil, { class: 'gl-font-weight-bold' }
+            = gl_badge_tag projects.count, nil, { class: 'gl-font-bold' }
 
         - projects.each do |project|
           .template-option.gl-align-items-center{ data: { testid: 'template-option-container' } }

@@ -15,7 +15,7 @@
     = render Billing::PlanComponent.with_collection(plans_data, namespace: namespace, current_plan: current_plan)
   - if namespace.never_had_trial?
     .gl-text-left.gl-my-9.gl-mx-auto.gl-p-6.gl-bg-gray-10.gl-rounded-base.gl-border.billing-plan-divider
-      .gl-mb-2.gl-font-lg.gl-font-weight-bold
+      .gl-mb-2.gl-font-lg.gl-font-bold
         = s_("BillingPlans|Ready to explore the value of paid features today?")
       .gl-mb-5
         = s_("BillingPlans|Start a free Ultimate trial. No credit card required.")
@@ -43,6 +43,6 @@
     = image_tag("marketing/ubs.svg", alt: 'Ubs', title: 'Ubs', class: logo_classes)
   - image_alt = s_('InProductMarketing|Team members collaborating')
   = image_tag 'marketing/free-trial-team-members.png', alt: image_alt, title: image_alt, width: 210, height: 90, class: 'gl-mb-3'
-  .gl-font-size-h1.gl-font-weight-bold.gl-leading-24.gl-mb-5
+  .gl-font-size-h1.gl-font-bold.gl-leading-24.gl-mb-5
     = s_("BillingPlans|Have a question? We're here to help.")
   .js-hand-raise-lead-button{ data: free_plan_billing_hand_raise_props(namespace, glm_content: 'billing-group') }

@@ -13,7 +13,7 @@
 
 - content_for :omniauth_providers_top do
   .gl-pt-5.gl-max-w-75
-    %label.gl-font-weight-normal
+    %label.gl-font-normal
       = _('Sign up for your free trial with:')
     .gl-display-flex.gl-gap-3
       - popular_enabled_button_based_providers.each do |provider|
@@ -22,7 +22,7 @@
           provider: provider,
           tracking_label: preregistration_tracking_label
 
-  .gl-my-5.gl-font-weight-bold.gl-max-w-75
+  .gl-my-5.gl-font-bold.gl-max-w-75
     = _('Or create your own GitLab account')
 
 .row.marketing-styling
@@ -37,7 +37,7 @@
     .signup-box
       = render 'signup_box', tracking_label: preregistration_tracking_label
 
-      .additional-links.gl-mt-6.gl-font-weight-bold
+      .additional-links.gl-mt-6.gl-font-bold
         = render 'devise/shared/sign_in_link',
           wrapper_class: '',
           tracking_action: 'click_sign_in_from_registration_page',
@@ -57,7 +57,7 @@
       s_('InProductMarketing|Build in security'),
       s_('InProductMarketing|Improve collaboration and visibility')]
 
-      %h2.gl-font-size-h2-xl.gl-font-weight-normal.gl-mb-6= s_('InProductMarketing|No credit card required.')
+      %h2.gl-font-size-h2-xl.gl-font-normal.gl-mb-6= s_('InProductMarketing|No credit card required.')
 
       %ul.gl-pl-0.gl-mb-7.gl-pl-0.gl-text-gray-800.check-mark-text
         - ultimate_trial_value_props.each do |value_prop|
