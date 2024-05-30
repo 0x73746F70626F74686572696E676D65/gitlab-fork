@@ -15,7 +15,6 @@ module Gitlab
         imported_from
         last_edited_at
         last_edited_by_id
-        lock_version
         state_id
         title
         updated_by_id
@@ -39,6 +38,7 @@ module Gitlab
         check_base_attributes
         check_updated_at
         check_namespace
+
         check_color
         check_parent
         check_child_issues
