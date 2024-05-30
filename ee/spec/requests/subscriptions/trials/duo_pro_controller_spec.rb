@@ -6,7 +6,8 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, :unlimited_max_fo
   let_it_be(:user) { create(:user) }
   let_it_be(:user_without_eligible_groups) { create(:user) }
   let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
-  let_it_be(:another_group) { create(:group_with_plan, plan: :ultimate_plan) }
+  let_it_be(:another_free_group) { create(:group) }
+  let_it_be(:another_ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
 
   let(:duo_pro_trials_feature_flag) { true }
   let(:subscriptions_trials_saas_feature) { true }
@@ -23,6 +24,36 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, :unlimited_max_fo
       subscriptions_trials: subscriptions_trials_saas_feature,
       marketing_google_tag_manager: false
     )
+  end
+
+  shared_examples 'namespace is not eligible for trial' do
+    context 'when free group owner' do
+      let(:base_params) { { namespace_id: another_free_group.id } }
+
+      it 'returns forbidden' do
+        another_free_group.add_owner(user)
+
+        is_expected.to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'when ultimate group developer' do
+      let(:base_params) { { namespace_id: another_ultimate_group.id } }
+
+      it 'returns forbidden' do
+        another_ultimate_group.add_developer(user)
+
+        is_expected.to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
+
+  shared_examples 'no eligible namespaces' do
+    before do
+      login_as(user_without_eligible_groups)
+    end
+
+    it { is_expected.to have_gitlab_http_status(:forbidden) }
   end
 
   describe 'GET new' do
@@ -47,9 +78,10 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, :unlimited_max_fo
       context 'with tracking page render' do
         it_behaves_like 'internal event tracking' do
           let(:event) { 'render_duo_pro_lead_page' }
+          let(:namespace) { group }
 
           subject(:track_event) do
-            get new_trials_duo_pro_path, params: { namespace_id: another_group.id }
+            get new_trials_duo_pro_path, params: { namespace_id: group.id }
           end
         end
       end
@@ -82,15 +114,11 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, :unlimited_max_fo
           end
         end
       end
+
+      it_behaves_like 'namespace is not eligible for trial'
     end
 
-    context 'when authenticated as a user with no eligible namespaces' do
-      before do
-        login_as(user_without_eligible_groups)
-      end
-
-      it { is_expected.to have_gitlab_http_status(:not_found) }
-    end
+    it_behaves_like 'no eligible namespaces'
   end
 
   describe 'POST create' do
@@ -227,15 +255,11 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, :unlimited_max_fo
 
         it { is_expected.to have_gitlab_http_status(:not_found) }
       end
+
+      it_behaves_like 'namespace is not eligible for trial'
     end
 
-    context 'when authenticated as a user with no eligible namespaces' do
-      before do
-        login_as(user_without_eligible_groups)
-      end
-
-      it { is_expected.to have_gitlab_http_status(:not_found) }
-    end
+    it_behaves_like 'no eligible namespaces'
   end
 
   def expect_create_success(namespace)
