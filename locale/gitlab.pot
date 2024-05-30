@@ -30279,9 +30279,6 @@ msgstr ""
 msgid "Last contact"
 msgstr ""
 
-msgid "Last edited %{date}"
-msgstr ""
-
 msgid "Last event"
 msgstr ""
 
