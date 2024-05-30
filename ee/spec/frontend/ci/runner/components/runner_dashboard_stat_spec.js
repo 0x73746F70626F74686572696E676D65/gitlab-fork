@@ -1,6 +1,7 @@
 import { stubComponent } from 'helpers/stub_component';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
+import { INSTANCE_TYPE, GROUP_TYPE } from '~/ci/runner/constants';
 import RunnerCount from '~/ci/runner/components/stat/runner_count.vue';
 
 import RunnerDashboardStat from 'ee_component/ci/runner/components/runner_dashboard_stat.vue';
@@ -13,6 +14,7 @@ describe('RunnerDashboardStat', () => {
   const createComponent = ({ props, count, ...options } = {}) => {
     wrapper = shallowMountExtended(RunnerDashboardStat, {
       propsData: {
+        scope: INSTANCE_TYPE,
         variables: {},
         ...props,
       },
@@ -56,8 +58,18 @@ describe('RunnerDashboardStat', () => {
     });
 
     expect(findRunnerCount().props()).toMatchObject({
-      scope: 'INSTANCE_TYPE',
+      scope: INSTANCE_TYPE,
       variables: mockVariables,
     });
+  });
+
+  it('filters using runner scope', () => {
+    createComponent({
+      props: {
+        scope: GROUP_TYPE,
+      },
+    });
+
+    expect(findRunnerCount().props('scope')).toBe(GROUP_TYPE);
   });
 });

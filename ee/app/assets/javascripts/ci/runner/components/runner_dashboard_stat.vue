@@ -1,6 +1,6 @@
 <script>
 import { formatNumber } from '~/locale';
-import { INSTANCE_TYPE } from '~/ci/runner/constants';
+import { INSTANCE_TYPE, GROUP_TYPE } from '~/ci/runner/constants';
 import RunnerCount from '~/ci/runner/components/stat/runner_count.vue';
 
 export default {
@@ -9,6 +9,11 @@ export default {
     RunnerCount,
   },
   props: {
+    scope: {
+      type: String,
+      required: true,
+      validator: (val) => [INSTANCE_TYPE, GROUP_TYPE].includes(val),
+    },
     variables: {
       type: Object,
       required: true,
@@ -31,7 +36,7 @@ export default {
     <h2 class="gl-font-lg gl-mt-0">
       <slot name="title"></slot>
     </h2>
-    <runner-count #default="{ count }" :scope="$options.INSTANCE_TYPE" :variables="variables">
+    <runner-count #default="{ count }" :scope="scope" :variables="variables">
       <span class="gl-font-weight-bold gl-font-size-h-display">{{ formattedValue(count) }}</span>
     </runner-count>
   </div>

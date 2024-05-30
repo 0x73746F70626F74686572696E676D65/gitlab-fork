@@ -1,8 +1,9 @@
 <script>
 import { GlButton } from '@gitlab/ui';
+import { INSTANCE_TYPE, STATUS_ONLINE, STATUS_OFFLINE } from '~/ci/runner/constants';
 import RunnerListHeader from '~/ci/runner/components/runner_list_header.vue';
-import RunnerDashboardStatOnline from '../components/runner_dashboard_stat_online.vue';
-import RunnerDashboardStatOffline from '../components/runner_dashboard_stat_offline.vue';
+
+import RunnerDashboardStatStatus from '../components/runner_dashboard_stat_status.vue';
 import RunnerUsage from '../components/runner_usage.vue';
 import RunnerJobFailures from '../components/runner_job_failures.vue';
 
@@ -15,8 +16,7 @@ export default {
     AdminRunnersActiveList,
     AdminRunnersWaitTimes,
     RunnerListHeader,
-    RunnerDashboardStatOnline,
-    RunnerDashboardStatOffline,
+    RunnerDashboardStatStatus,
     RunnerUsage,
     RunnerJobFailures,
   },
@@ -35,6 +35,9 @@ export default {
       required: true,
     },
   },
+  INSTANCE_TYPE,
+  STATUS_ONLINE,
+  STATUS_OFFLINE,
 };
 </script>
 <template>
@@ -55,13 +58,21 @@ export default {
       {{ s__('Runners|Use the dashboard to view performance statistics of your runner fleet.') }}
     </p>
 
-    <div class="gl-sm-display-flex gl-gap-x-4 gl-justify-content-space-between">
-      <div class="gl-sm-display-flex gl-gap-x-4 gl-justify-content-space-between gl-w-full">
+    <div class="sm:gl-flex gl-gap-x-4 gl-justify-between">
+      <div class="sm:gl-flex gl-gap-x-4 gl-justify-between gl-w-full">
         <div
-          class="runners-dashboard-two-thirds-gap-4 gl-display-flex gl-gap-4 gl-justify-content-space-between gl-mb-4 gl-flex-wrap"
+          class="runners-dashboard-two-thirds-gap-4 gl-display-flex gl-gap-4 gl-justify-between gl-mb-4 gl-flex-wrap"
         >
-          <runner-dashboard-stat-online class="runners-dashboard-half-gap-4" />
-          <runner-dashboard-stat-offline class="runners-dashboard-half-gap-4" />
+          <runner-dashboard-stat-status
+            :status="$options.STATUS_ONLINE"
+            :scope="$options.INSTANCE_TYPE"
+            class="runners-dashboard-half-gap-4"
+          />
+          <runner-dashboard-stat-status
+            :status="$options.STATUS_OFFLINE"
+            :scope="$options.INSTANCE_TYPE"
+            class="runners-dashboard-half-gap-4"
+          />
 
           <!-- we use job failures as fallback, when clickhouse is not available -->
           <runner-usage v-if="clickhouseCiAnalyticsAvailable" class="gl-flex-basis-full" />
