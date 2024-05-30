@@ -140,9 +140,9 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
         })
       end
 
-      context 'when additional_merge_when_checks_ready ff is off' do
+      context 'when merge_when_checks_pass ff is off' do
         before do
-          stub_feature_flags(additional_merge_when_checks_ready: false)
+          stub_feature_flags(merge_when_checks_pass: false)
         end
 
         it 'does not publish a OverrideRequestedChanges state event' do

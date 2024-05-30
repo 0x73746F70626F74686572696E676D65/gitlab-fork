@@ -84,9 +84,9 @@ RSpec.describe MergeRequests::StatusCheckResponse, type: :model, feature_categor
           end
         end
 
-        context 'when feature flag additional_merge_when_checks_ready is disabled' do
+        context 'when feature flag merge_when_checks_pass is disabled' do
           before do
-            stub_feature_flags(additional_merge_when_checks_ready: false)
+            stub_feature_flags(merge_when_checks_pass: false)
           end
 
           it 'does not send a status passed event' do
