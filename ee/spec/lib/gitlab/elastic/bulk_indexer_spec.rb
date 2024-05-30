@@ -91,7 +91,7 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
       expect(indexer.failures).to be_empty
     end
 
-    it 'calls bulk with an index request' do
+    it 'calls bulk with an update request' do
       set_bulk_limit(indexer, 1)
       indexer.process(issue_as_ref)
       allow(es_client).to receive(:bulk).and_return({})
@@ -99,7 +99,7 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
       indexer.process(issue_as_ref)
 
       expected_op_hash = {
-        index: {
+        update: {
           _index: issue_as_ref.index_name,
           _type: nil,
           _id: issue.id.to_s,
@@ -107,7 +107,7 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
         }
       }.with_indifferent_access
 
-      expect(es_client).to have_received(:bulk).with(valid_request(:index, expected_op_hash, issue_as_json))
+      expect(es_client).to have_received(:bulk).with(valid_request(:update, expected_op_hash, issue_as_json))
     end
 
     context 'when ref operation is upsert' do
@@ -145,6 +145,30 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
           .and_raise ::Elastic::Latest::DocumentShouldBeDeletedFromIndexError.new(rec.class.name, rec.id)
 
         expect(indexer.process(issue_as_ref)).to eq(bytesize)
+      end
+
+      context 'when routing is not set in as_indexed_json' do
+        before do
+          original_as_indexed_json = issue_as_ref.as_indexed_json
+          allow(issue_as_ref).to receive(:as_indexed_json).and_return(original_as_indexed_json.except('routing'))
+        end
+
+        it 'tracks an exception' do
+          expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception)
+            .with(Gitlab::Elastic::BulkIndexer::RoutingMissingError, ref: issue_as_ref.serialize)
+
+          indexer.process(issue_as_ref)
+        end
+
+        context 'when reference does not have routing' do
+          it 'does not track an exception' do
+            allow(issue_as_ref).to receive(:routing).and_return(nil)
+
+            expect(Gitlab::ErrorTracking).not_to receive(:track_and_raise_for_dev_exception)
+
+            indexer.process(issue_as_ref)
+          end
+        end
       end
     end
 

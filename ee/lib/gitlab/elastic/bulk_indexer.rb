@@ -15,6 +15,8 @@ module Gitlab
     class BulkIndexer
       include ::Elasticsearch::Model::Client::ClassMethods
 
+      RoutingMissingError = Class.new(StandardError)
+
       attr_reader :logger, :failures
 
       # body - array of json formatted index operation requests awaiting submission to elasticsearch in bulk
@@ -167,7 +169,11 @@ module Gitlab
       end
 
       def upsert_operation(ref)
-        [{ update: build_op(ref) }, { doc: ref.as_indexed_json, doc_as_upsert: true }]
+        index_json = ref.as_indexed_json
+
+        track_routing_missing_error(ref) if ref.routing && !index_json.key?('routing')
+
+        [{ update: build_op(ref) }, { doc: index_json, doc_as_upsert: true }]
       end
 
       def delete_operation(ref, index_name: nil)
@@ -202,6 +208,11 @@ module Gitlab
         end
       rescue StandardError => err
         logger.error(message: 'delete_from_rollover_failure', error_class: err.class.to_s, error_message: err.message)
+      end
+
+      def track_routing_missing_error(ref)
+        message = 'Routing field must be present when using upsert for reference with routing'
+        Gitlab::ErrorTracking.track_and_raise_for_dev_exception(RoutingMissingError.new(message), ref: ref.serialize)
       end
     end
   end

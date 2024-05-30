@@ -117,7 +117,7 @@ module Gitlab
       end
 
       def operation
-        database_record.present? ? :index : :delete
+        database_record.present? ? index_operation : :delete
       end
       strong_memoize_attr :operation
 
@@ -139,6 +139,19 @@ module Gitlab
 
       def klass_proxy
         klass.__elasticsearch__
+      end
+
+      private
+
+      def index_operation
+        return :upsert if klass == Issue && issue_upsert?
+
+        :index
+      end
+
+      def issue_upsert?
+        Feature.enabled?(:elaticsearch_issue_upsert, type: :gitlab_com_derisk) &&
+          ::Elastic::DataMigrationService.migration_has_finished?(:add_routing_to_issues)
       end
     end
   end
