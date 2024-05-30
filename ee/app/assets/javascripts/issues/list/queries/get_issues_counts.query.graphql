@@ -20,6 +20,7 @@ query getIssuesCountEE(
   $epicWildcardId: EpicWildcardId
   $iterationId: [ID]
   $iterationWildcardId: IterationWildcardId
+  $iterationCadenceId: [IterationsCadenceID!]
   $weight: String
   $weightWildcardId: WeightWildcardId
   $healthStatusFilter: HealthStatusFilter
@@ -55,6 +56,7 @@ query getIssuesCountEE(
       epicWildcardId: $epicWildcardId
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
+      iterationCadenceId: $iterationCadenceId
       weight: $weight
       weightWildcardId: $weightWildcardId
       healthStatusFilter: $healthStatusFilter
@@ -90,6 +92,7 @@ query getIssuesCountEE(
       epicWildcardId: $epicWildcardId
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
+      iterationCadenceId: $iterationCadenceId
       weight: $weight
       weightWildcardId: $weightWildcardId
       healthStatusFilter: $healthStatusFilter
@@ -125,6 +128,7 @@ query getIssuesCountEE(
       epicWildcardId: $epicWildcardId
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
+      iterationCadenceId: $iterationCadenceId
       weight: $weight
       weightWildcardId: $weightWildcardId
       healthStatusFilter: $healthStatusFilter
@@ -164,6 +168,7 @@ query getIssuesCountEE(
       epicWildcardId: $epicWildcardId
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
+      iterationCadenceId: $iterationCadenceId
       weight: $weight
       weightWildcardId: $weightWildcardId
       healthStatusFilter: $healthStatusFilter
@@ -200,6 +205,7 @@ query getIssuesCountEE(
       epicWildcardId: $epicWildcardId
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
+      iterationCadenceId: $iterationCadenceId
       weight: $weight
       weightWildcardId: $weightWildcardId
       healthStatusFilter: $healthStatusFilter
@@ -236,6 +242,7 @@ query getIssuesCountEE(
       epicWildcardId: $epicWildcardId
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
+      iterationCadenceId: $iterationCadenceId
       weight: $weight
       weightWildcardId: $weightWildcardId
       healthStatusFilter: $healthStatusFilter

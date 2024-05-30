@@ -4,10 +4,12 @@ import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/util
 import { createAlert } from '~/alert';
 import { TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { __ } from '~/locale';
 import { OPERATOR_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
+import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteration_cadences.query.graphql';
 import { DEFAULT_CADENCES, DEFAULT_ITERATIONS } from '../constants';
 
 export default {
@@ -47,6 +49,9 @@ export default {
         ? DEFAULT_CADENCES
         : [];
     },
+    namespace() {
+      return this.config.isProject ? WORKSPACE_PROJECT : WORKSPACE_GROUP;
+    },
   },
   methods: {
     getActiveIteration(iterations, data) {
@@ -64,11 +69,35 @@ export default {
     groupIterationsByCadence(iterations) {
       return groupByIterationCadences(iterations);
     },
+    fetchIterationCadences(searchTerm) {
+      const id = Number(searchTerm);
+      let variables = {
+        fullPath: this.config.fullPath,
+        title: searchTerm,
+        isProject: this.config.isProject,
+      };
+
+      if (!Number.isNaN(id) && searchTerm !== '') {
+        variables = {
+          fullPath: this.config.fullPath,
+          id: convertToGraphQLId(TYPENAME_ITERATIONS_CADENCE, id),
+          isProject: this.config.isProject,
+        };
+      }
+
+      return this.$apollo
+        .query({
+          query: searchIterationCadencesQuery,
+          variables,
+        })
+        .then(({ data }) => {
+          return data[this.namespace]?.iterationCadences?.nodes;
+        });
+    },
     fetchIterations(searchTerm) {
       this.loading = true;
       if (searchTerm?.includes('&')) {
-        this.config
-          .fetchIterationCadences(this.getIterationCadenceId(searchTerm))
+        this.fetchIterationCadences(this.getIterationCadenceId(searchTerm))
           .then((response) => {
             this.iterations = [
               {
@@ -97,7 +126,7 @@ export default {
       }
     },
     getId(option) {
-      return getIdFromGraphQLId(option.id).toString();
+      return getIdFromGraphQLId(option.id ?? option.iterationCadence?.id).toString();
     },
     getIterationCadenceId(input) {
       return input.split('&')[1];

@@ -98,7 +98,8 @@ export default {
           token: IterationToken,
           fetchIterations: this.fetchIterations,
           recentSuggestionsStorageKey: `${this.fullPath}-issues-recent-tokens-iteration`,
-          hideDefaultCadenceOptions: true,
+          fullPath: this.fullPath,
+          isProject: this.isProject,
         });
       }
 

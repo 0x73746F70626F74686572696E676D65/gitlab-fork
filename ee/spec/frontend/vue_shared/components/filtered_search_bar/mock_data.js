@@ -28,6 +28,8 @@ export const mockIterationToken = {
   unique: true,
   token: IterationToken,
   fetchIterations: () => Promise.resolve(),
+  fullPath: 'gitlab-org',
+  isProject: false,
 };
 
 export const mockIterations = [
@@ -41,6 +43,31 @@ export const mockIterations = [
     },
   },
 ];
+export const mockIterationCadence = {
+  __typename: 'IterationCadence',
+  active: true,
+  id: `gid://gitlab/Iterations::Cadence/72`,
+  title: 'Cadence 1',
+  automatic: false,
+  rollOver: false,
+  durationInWeeks: 2,
+  description: null,
+  startDate: '2024-06-28',
+  iterationsInAdvance: 0,
+};
+
+export const groupCadencesResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/1',
+      iterationCadences: {
+        nodes: [mockIterationCadence],
+        __typename: 'IterationCadenceConnection',
+      },
+      __typename: 'Group',
+    },
+  },
+};
 
 export const mockEpicToken = {
   type: TOKEN_TYPE_EPIC,
