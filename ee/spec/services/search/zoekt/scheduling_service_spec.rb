@@ -108,13 +108,9 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
     end
 
     context 'when on .com', :saas do
-      let_it_be_with_reload(:group) { create(:group) }
+      let_it_be(:group) { create(:group) }
       let_it_be(:subscription) { create(:gitlab_subscription, namespace: group) }
       let_it_be(:root_storage_statistics) { create(:namespace_root_storage_statistics, namespace: group) }
-
-      before do
-        group.update!(experiment_features_enabled: true)
-      end
 
       it 'returns false if there are unassigned namespaces' do
         create(:zoekt_enabled_namespace)
@@ -156,7 +152,6 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
           create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
 
           group2 = create(:group)
-          group2.update!(experiment_features_enabled: true)
           ns2 = create(:zoekt_enabled_namespace, search: false, namespace: group2,
             created_at: rollout_cutoff, updated_at: rollout_cutoff)
           create(:zoekt_index, :ready, zoekt_enabled_namespace: ns2)
@@ -172,68 +167,6 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
         create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
 
         expect { execute_task }.not_to change { ns.reload.search }
-      end
-
-      context 'when namespace_settings.experiment_features_enabled is true' do
-        before do
-          group.update!(experiment_features_enabled: true)
-        end
-
-        context 'when enabled_namespace record created before the DOT_COM_ROLLOUT_CUTOFF_DATE' do
-          it 'enables search for the enabled namespaces' do
-            rollout_cutoff = described_class::DOT_COM_ROLLOUT_CUTOFF_DATE - 1.week
-            ns = create(:zoekt_enabled_namespace, namespace: group, search: false,
-              created_at: rollout_cutoff, updated_at: rollout_cutoff)
-            create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
-
-            expect { execute_task }.to change { ns.reload.search }
-          end
-        end
-
-        context 'when enabled_namespace record created after the DOT_COM_ROLLOUT_CUTOFF_DATE' do
-          it 'enables search for the enabled namespaces' do
-            travel_to(described_class::DOT_COM_ROLLOUT_CUTOFF_DATE + 1.week) do
-              created_date = described_class::DOT_COM_ROLLOUT_CUTOFF_DATE + 3.days
-
-              ns = create(:zoekt_enabled_namespace, namespace: group, search: false,
-                created_at: created_date, updated_at: created_date)
-              create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
-
-              expect { execute_task }.to change { ns.reload.search }
-            end
-          end
-        end
-      end
-
-      context 'when namespace_settings.experiment_features_enabled is false' do
-        before do
-          group.update!(experiment_features_enabled: false)
-        end
-
-        context 'when enabled_namespace record created before the DOT_COM_ROLLOUT_CUTOFF_DATE' do
-          it 'enables search for the enabled namespaces' do
-            rollout_cutoff = described_class::DOT_COM_ROLLOUT_CUTOFF_DATE - 1.week
-            ns = create(:zoekt_enabled_namespace, namespace: group, search: false,
-              created_at: rollout_cutoff, updated_at: rollout_cutoff)
-            create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
-
-            expect { execute_task }.to change { ns.reload.search }
-          end
-        end
-
-        context 'when enabled_namespace record created after the DOT_COM_ROLLOUT_CUTOFF_DATE' do
-          it 'skips the enabled namespaces' do
-            travel_to(described_class::DOT_COM_ROLLOUT_CUTOFF_DATE + 1.week) do
-              created_date = described_class::DOT_COM_ROLLOUT_CUTOFF_DATE + 3.days
-
-              ns = create(:zoekt_enabled_namespace, namespace: group, search: false,
-                created_at: created_date, updated_at: created_date)
-              create(:zoekt_index, :ready, zoekt_enabled_namespace: ns)
-
-              expect { execute_task }.not_to change { ns.reload.search }
-            end
-          end
-        end
       end
 
       it 'assigns namespaces to a node' do
