@@ -51,6 +51,11 @@ module Search
   end
 
   RSpec.configure do |config|
+    config.before do
+      # This feature flag is by default disabled and should be used to disable Zoekt search for SaaS customers on demand
+      stub_feature_flags(disable_zoekt_search_for_saas: false)
+    end
+
     config.around(:each, :zoekt) do |example|
       node = Search::Zoekt::TestHelpers.ensure_zoekt_node!
       node.backoff.remove_backoff!
