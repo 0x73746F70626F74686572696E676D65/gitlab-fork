@@ -19,6 +19,7 @@ To set up your self-hosted model deployment infrastructure:
 1. Install the GitLab AI Gateway.
 
 - [Installation video guide](https://youtu.be/UNmD9-sgUvw)
+- [Installation video guide (French version)](https://www.youtube.com/watch?v=aU5vnzO-MSM)
 
 ## Step 1: Install LLM serving infrastructure
 
