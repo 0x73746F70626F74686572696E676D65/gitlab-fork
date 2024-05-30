@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe ::EE::API::Entities::BillableMembership, feature_category: :seat_cost_management do
-  let_it_be_with_reload(:membership) { create(:group_member, :developer) }
   let(:entity) do
     {
       id: membership.id,
@@ -15,12 +14,15 @@ RSpec.describe ::EE::API::Entities::BillableMembership, feature_category: :seat_
       access_level: {
         string_value: 'Developer',
         integer_value: 30,
-        custom_role: nil
+        custom_role: custom_role
       }
     }
   end
 
   context 'without custom role' do
+    let(:membership) { create(:group_member, :developer) }
+    let(:custom_role) { nil }
+
     subject(:entity_representation) { described_class.new(membership).as_json }
 
     it 'exposes the expected attributes' do
@@ -29,17 +31,14 @@ RSpec.describe ::EE::API::Entities::BillableMembership, feature_category: :seat_
   end
 
   context 'with custom role' do
-    let(:role) { create(:member_role, :instance) }
-    let(:custom_role_entity) { entity.deep_merge(access_level: { custom_role: { id: role.id, name: role.name } }) }
+    let(:role) { create(:member_role, :developer, admin_merge_request: true) }
+    let(:membership) { create(:group_member, :developer, member_role: role) }
+    let(:custom_role) { { id: role.id, name: role.name } }
 
-    before do
-      membership.update!(member_role: role)
-    end
-
-    subject(:entity_representation) { described_class.new(membership.reload).as_json }
+    subject(:entity_representation) { described_class.new(membership).as_json }
 
     it 'exposes the expected attributes' do
-      expect(entity_representation).to eq custom_role_entity
+      expect(entity_representation).to eq entity
     end
   end
 end
