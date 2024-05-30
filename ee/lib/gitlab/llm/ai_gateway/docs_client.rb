@@ -22,7 +22,7 @@ module Gitlab
         def search(query:, **options)
           return unless enabled?
 
-          perform_search_request(query: query, options: options.except(:stream))
+          perform_search_request(query: query, options: options)
         end
 
         private
