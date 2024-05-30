@@ -72,7 +72,7 @@
                 = _('Enter the password for password-protected Elasticsearch servers.')
 
             .form-group
-              = f.label :elasticsearch_shards, _('Number of Elasticsearch shards and replicas per index:'), class: 'gl-font-weight-bold'
+              = f.label :elasticsearch_shards, _('Number of Elasticsearch shards and replicas per index:'), class: 'gl-font-bold'
 
             %table.table
               %thead
@@ -278,7 +278,7 @@
             .gl-display-flex.gl-flex-direction-column
               .gl-display-flex.gl-align-items-center
                 = sprite_icon('clock', size: 16, css_class: 'gl-text-gray-700')
-                .gl-font-size-h1.gl-font-weight-bold.gl-m-0.gl-ml-3{ data: { testid: 'initial_queue_size' } }
+                .gl-font-size-h1.gl-font-bold.gl-m-0.gl-ml-3{ data: { testid: 'initial_queue_size' } }
                   = @initial_queue_size
               .gl-mt-3.gl-text-transform-uppercase
                 = s_('GlobalSearch|Initial indexing queue length')
@@ -290,7 +290,7 @@
             .gl-display-flex.gl-flex-direction-column
               .gl-display-flex.gl-align-items-center
                 = sprite_icon('retry', size: 16, css_class: 'gl-text-gray-700')
-                .gl-font-size-h1.gl-font-weight-bold.gl-m-0.gl-ml-3{ data: { testid: 'incremental_queue_size' } }
+                .gl-font-size-h1.gl-font-bold.gl-m-0.gl-ml-3{ data: { testid: 'incremental_queue_size' } }
                   = @incremental_queue_size
               .gl-mt-3.gl-text-transform-uppercase
                 = s_('GlobalSearch|Incremental indexing queue length')
@@ -304,7 +304,7 @@
               .gl-display-flex.gl-flex-direction-column
                 .gl-display-flex.gl-align-items-center
                   = sprite_icon('project', size: 16, css_class: 'gl-text-gray-700')
-                  .gl-font-size-h1.gl-font-weight-bold.gl-m-0.gl-ml-3{ data: { testid: 'projects_not_indexed_size' } }
+                  .gl-font-size-h1.gl-font-bold.gl-m-0.gl-ml-3{ data: { testid: 'projects_not_indexed_size' } }
                     = @projects_not_indexed_count
                 .gl-mt-3.gl-text-transform-uppercase
                   = s_('GlobalSearch|projects not indexed')

@@ -8,7 +8,7 @@
     %p.gl-new-card-description
 
   - c.with_body do
-    %p.gl-font-weight-bold= _('This group has been scheduled for permanent deletion on %{date}') %{ date: date }
+    %p.gl-font-bold= _('This group has been scheduled for permanent deletion on %{date}') %{ date: date }
     %p
       = _("Restoring the group will prevent the group, its subgroups and projects from being deleted on this date.")
     %p

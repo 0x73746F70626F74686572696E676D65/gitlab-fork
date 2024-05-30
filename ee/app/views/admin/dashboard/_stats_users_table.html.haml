@@ -1,4 +1,4 @@
-%p.gl-font-weight-bold.gl-mt-7
+%p.gl-font-bold.gl-mt-7
   = s_('AdminArea|Breakdown of Billable users')
 
 %table.gl-table.gl-text-gray-500.gl-w-full
@@ -40,7 +40,7 @@
       = @users_statistics&.with_highest_role_owner
   = render_if_exists 'admin/dashboard/billable_users_row'
 
-%p.gl-font-weight-bold.gl-mt-8
+%p.gl-font-bold.gl-mt-8
   = s_('AdminArea|Breakdown of Non-Billable users')
 %table.gl-table.gl-text-gray-500.gl-w-full
   %tr

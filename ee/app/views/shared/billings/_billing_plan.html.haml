@@ -8,7 +8,7 @@
 
 .card-wrapper{ data: { testid: "plan-card-#{plan.code}" } }
   .card{ class: ("card-active" if is_current || show_deprecated_plan) }
-    .card-header.gl-leading-normal.gl-py-5.gl-font-weight-bold
+    .card-header.gl-leading-normal.gl-py-5.gl-font-bold
       = plan_name
 
     .card-body
@@ -31,7 +31,7 @@
           - plan_feature_list(plan).each do |feature|
             - feature_class = "gl-p-0!"
             - if feature.highlight
-              - feature_class += " gl-font-weight-bold"
+              - feature_class += " gl-font-bold"
             %li{ class: "#{feature_class}" }
               = feature.title
           %li.gl-p-0.gl-pt-3
