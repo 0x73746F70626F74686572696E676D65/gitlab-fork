@@ -55,7 +55,7 @@ export default {
     },
 
     time() {
-      return this.state === 'detected'
+      return this.state === 'detected' && !this.isVulnerabilityScanner
         ? this.vulnerability.pipeline?.createdAt
         : this.vulnerability[`${this.state}At`];
     },
@@ -63,6 +63,9 @@ export default {
     statusText() {
       switch (this.state) {
         case 'detected':
+          if (this.isVulnerabilityScanner) {
+            return s__('VulnerabilityManagement|%{statusStart}Detected%{statusEnd} · %{timeago}');
+          }
           return s__(
             'VulnerabilityManagement|%{statusStart}Detected%{statusEnd} · %{timeago} in pipeline %{pipelineLink}',
           );
@@ -98,6 +101,9 @@ export default {
 
     dismissalReasonText() {
       return DISMISSAL_REASONS[this.dismissalReason];
+    },
+    isVulnerabilityScanner() {
+      return this.vulnerability.scanner?.isVulnerabilityScanner;
     },
   },
 };

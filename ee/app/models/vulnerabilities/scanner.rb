@@ -32,5 +32,9 @@ module Vulnerabilities
     def report_type
       self[:report_type] || scan_type
     end
+
+    def vulnerability_scanner?
+      external_id == Gitlab::VulnerabilityScanning::SecurityScanner::EXTERNAL_ID
+    end
   end
 end

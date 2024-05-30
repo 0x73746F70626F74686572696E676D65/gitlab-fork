@@ -57744,6 +57744,9 @@ msgstr ""
 msgid "VulnerabilityManagement|%{statusStart}Confirmed%{statusEnd} · %{timeago} by %{user}"
 msgstr ""
 
+msgid "VulnerabilityManagement|%{statusStart}Detected%{statusEnd} · %{timeago}"
+msgstr ""
+
 msgid "VulnerabilityManagement|%{statusStart}Detected%{statusEnd} · %{timeago} in pipeline %{pipelineLink}"
 msgstr ""
 
