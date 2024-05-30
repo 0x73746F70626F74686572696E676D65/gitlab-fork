@@ -1,0 +1,9 @@
+---
+name: add_gitlab_tier_cookie
+feature_issue_url: https://gitlab.com/gitlab-com/marketing/digital-experience/buyer-experience/-/issues/2875
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/151323
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/462434
+milestone: '17.1'
+group: group::dex
+type: gitlab_com_derisk
+default_enabled: false

@@ -33,10 +33,15 @@ module EE
       EE_ALL_PLANS = (EE_DEFAULT_PLANS + PAID_HOSTED_PLANS).freeze
       PLANS_ELIGIBLE_FOR_TRIAL = EE_DEFAULT_PLANS
       TOP_PLANS = [GOLD, ULTIMATE, OPEN_SOURCE].freeze
+      CURRENT_ACTIVE_PLANS = [FREE, PREMIUM, ULTIMATE].freeze
 
       has_many :hosted_subscriptions, class_name: 'GitlabSubscription', foreign_key: 'hosted_plan_id'
 
       EE::Plan.private_constant :EE_ALL_PLANS, :EE_DEFAULT_PLANS
+
+      scope :with_subscriptions, -> { joins(:hosted_subscriptions) }
+      scope :by_namespace, ->(namespace) { where(gitlab_subscriptions: { namespace_id: namespace }) }
+      scope :by_distinct_names, ->(names) { by_name(names).distinct }
     end
 
     class_methods do
@@ -67,9 +72,9 @@ module EE
         namespaces = Array(namespaces)
 
         ::Plan
-          .joins(:hosted_subscriptions)
-          .where(name: PAID_HOSTED_PLANS)
-          .where(gitlab_subscriptions: { namespace_id: namespaces })
+          .with_subscriptions
+          .by_name(PAID_HOSTED_PLANS)
+          .by_namespace(namespaces)
           .distinct
           .allow_cross_joins_across_databases(url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/422013')
       end

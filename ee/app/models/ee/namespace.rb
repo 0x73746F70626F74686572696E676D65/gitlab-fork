@@ -108,8 +108,8 @@ module EE
 
       scope :with_feature_available_in_plan, ->(feature) do
         plans = GitlabSubscriptions::Features.saas_plans_with_feature(feature)
-        matcher = ::Plan.where(name: plans)
-          .joins(:hosted_subscriptions)
+        matcher = ::Plan.by_name(plans)
+          .with_subscriptions
           .where("gitlab_subscriptions.namespace_id = namespaces.id")
           .select('1')
         where("EXISTS (?)", matcher)
