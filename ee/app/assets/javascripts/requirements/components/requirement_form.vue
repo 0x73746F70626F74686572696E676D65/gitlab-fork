@@ -242,9 +242,9 @@ export default {
   >
     <template #title>
       <h4 v-if="isCreate" class="gl-m-0" data-testid="new-requirement-title">
-        {{ __('New Requirement') }}
+        {{ __('New requirement') }}
       </h4>
-      <div v-else class="gl-display-flex gl-align-items-center">
+      <div v-else class="gl-flex gl-items-center">
         <strong class="gl-text-gray-500">{{ reference }}</strong>
         <requirement-status-badge
           v-if="testReport"
@@ -277,7 +277,7 @@ export default {
         <gl-form-checkbox v-if="!isCreate" v-model="satisfied" class="gl-mt-6">{{
           __('Satisfied')
         }}</gl-form-checkbox>
-        <div class="gl-display-flex requirement-form-actions gl-mt-6">
+        <div class="requirement-form-actions gl-flex gl-gap-3">
           <gl-button
             :disabled="
               requirementRequestActive ||
