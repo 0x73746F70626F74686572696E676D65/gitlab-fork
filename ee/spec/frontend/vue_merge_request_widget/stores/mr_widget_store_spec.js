@@ -1,5 +1,7 @@
+import getStateQueryResponse from 'test_fixtures/graphql/merge_requests/get_state.query.graphql.json';
 import MergeRequestStore from 'ee/vue_merge_request_widget/stores/mr_widget_store';
 import mockData from 'ee_jest/vue_merge_request_widget/mock_data';
+
 import { convertToCamelCase } from '~/lib/utils/text_utility';
 import { stateKey } from '~/vue_merge_request_widget/stores/state_maps';
 import {
@@ -43,33 +45,34 @@ describe('MergeRequestStore', () => {
         expect(store.mergePipelinesEnabled).toBe(false);
       });
     });
+  });
 
-    describe('mergeTrainsCount', () => {
-      it('should set mergeTrainsCount when merge_trains_count is provided', () => {
-        store.setData({ ...mockData, merge_trains_count: 3 });
+  describe('setGraphqlData', () => {
+    const { mergeRequest } = getStateQueryResponse.data.project;
 
-        expect(store.mergeTrainsCount).toBe(3);
+    it('sets mergeTrainsCount and mergeTrainIndex', () => {
+      store.setGraphqlData({
+        mergeRequest: {
+          ...mergeRequest,
+          mergeTrainsCount: 2,
+          mergeTrainIndex: 1,
+        },
       });
 
-      it('should set mergeTrainsCount = 0 when merge_trains_count is not provided', () => {
-        store.setData({ ...mockData, merge_trains_count: undefined });
-
-        expect(store.mergeTrainsCount).toBe(0);
-      });
+      expect(store.mergeTrainsCount).toBe(2);
+      expect(store.mergeTrainIndex).toBe(1);
     });
+  });
 
-    describe('mergeTrainIndex', () => {
-      it('should set mergeTrainIndex when merge_train_index is provided', () => {
-        store.setData({ ...mockData, merge_train_index: 3 });
-
-        expect(store.mergeTrainIndex).toBe(3);
+  describe('setGraphqlSubscriptionData', () => {
+    it('sets mergeTrainsCount and mergeTrainIndex', () => {
+      store.setGraphqlSubscriptionData({
+        mergeTrainsCount: 2,
+        mergeTrainIndex: 1,
       });
 
-      it('should not set mergeTrainIndex when merge_train_index is not provided', () => {
-        store.setData({ ...mockData, merge_train_index: undefined });
-
-        expect(store.mergeTrainIndex).toBeUndefined();
-      });
+      expect(store.mergeTrainsCount).toBe(2);
+      expect(store.mergeTrainIndex).toBe(1);
     });
   });
 

@@ -8,12 +8,11 @@ describe('MergeTrainPositionIndicator', () => {
 
   const findLink = () => wrapper.findComponent(GlLink);
 
-  const createComponent = (propsData, mergeTrainsViz = false) => {
+  const createComponent = (props, mergeTrainsViz = false) => {
     wrapper = shallowMount(MergeTrainPositionIndicator, {
       propsData: {
         mergeTrainsPath: 'namespace/project/-/merge_trains',
-        mergeTrainsCount: 0,
-        ...propsData,
+        ...props,
       },
       provide: {
         glFeatures: {
@@ -24,7 +23,7 @@ describe('MergeTrainPositionIndicator', () => {
   };
 
   describe('with mergeTrainsViz enabled', () => {
-    it('should render the correct message', () => {
+    it('should show message when position is higher than 1', () => {
       createComponent(
         {
           mergeTrainIndex: 3,
@@ -39,7 +38,7 @@ describe('MergeTrainPositionIndicator', () => {
       expect(findLink().attributes('href')).toBe('namespace/project/-/merge_trains');
     });
 
-    it('should change the merge train message when the position is 1', () => {
+    it('should show message when the position is 1', () => {
       createComponent({ mergeTrainIndex: 0, mergeTrainsCount: 0 }, true);
 
       expect(trimText(wrapper.text())).toBe(
@@ -47,10 +46,22 @@ describe('MergeTrainPositionIndicator', () => {
       );
       expect(findLink().attributes('href')).toBe('namespace/project/-/merge_trains');
     });
+
+    it('should not render when merge request is not in train', () => {
+      createComponent(
+        {
+          mergeTrainIndex: null,
+          mergeTrainsCount: 1,
+        },
+        true,
+      );
+
+      expect(wrapper.text()).toBe('');
+    });
   });
 
   describe('with mergeTrainsViz disabled', () => {
-    it('should render the correct message', () => {
+    it('should show message when position is higher than 1', () => {
       createComponent({ mergeTrainIndex: 3 });
 
       expect(trimText(wrapper.text())).toBe(
@@ -59,13 +70,25 @@ describe('MergeTrainPositionIndicator', () => {
       expect(findLink().exists()).toBe(false);
     });
 
-    it('should change the merge train message when the position is 1', () => {
+    it('should show message when the position is 1', () => {
       createComponent({ mergeTrainIndex: 0 });
 
       expect(trimText(wrapper.text())).toBe(
         'A new merge train has started and this merge request is the first of the queue.',
       );
       expect(findLink().exists()).toBe(false);
+    });
+
+    it('should not render when merge request is not in train', () => {
+      createComponent(
+        {
+          mergeTrainIndex: null,
+          mergeTrainsCount: 1,
+        },
+        true,
+      );
+
+      expect(wrapper.text()).toBe('');
     });
   });
 });
