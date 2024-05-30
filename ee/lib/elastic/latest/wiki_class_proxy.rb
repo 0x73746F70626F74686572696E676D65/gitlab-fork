@@ -55,7 +55,7 @@ module Elastic
           count_only: options[:count_only]
         )
         bool_expr[:must_not] << { term: { wiki_access_level: Featurable::DISABLED } }
-        bool_expr[:must] << { terms: { language: Wiki::VALID_USER_MARKUPS.values.pluck(:name) } } # rubocop: disable CodeReuse/ActiveRecord -- It is not an ActiveRecord
+        bool_expr[:filter] << { terms: { language: Wiki::MARKUPS.values.pluck(:name) } } # rubocop: disable CodeReuse/ActiveRecord -- It is not an ActiveRecord
 
         if search_scope == 'project' && options[:repository_id].present?
           query_hash = add_filter(query_hash, :query, :bool, :filter) do
