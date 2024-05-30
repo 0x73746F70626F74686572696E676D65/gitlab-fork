@@ -47,13 +47,27 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     this.initGeo(data);
 
     this.mergePipelinesEnabled = Boolean(data.merge_pipelines_enabled);
-    this.mergeTrainsCount = data.merge_trains_count || 0;
-    this.mergeTrainIndex = data.merge_train_index;
     this.mergeTrainsSkipAllowed = data.merge_trains_skip_train_allowed;
     this.policyViolation = data.policy_violation;
     this.jiraAssociation = data.jira_associations || {};
 
     super.setData(data, isRebased);
+  }
+
+  setGraphqlData(project) {
+    super.setGraphqlData(project);
+
+    const { mergeRequest } = project;
+
+    this.mergeTrainsCount = mergeRequest.mergeTrainsCount;
+    this.mergeTrainIndex = mergeRequest.mergeTrainIndex;
+  }
+
+  setGraphqlSubscriptionData(data) {
+    super.setGraphqlSubscriptionData(data);
+
+    this.mergeTrainsCount = data.mergeTrainsCount;
+    this.mergeTrainIndex = data.mergeTrainIndex;
   }
 
   setPaths(data) {

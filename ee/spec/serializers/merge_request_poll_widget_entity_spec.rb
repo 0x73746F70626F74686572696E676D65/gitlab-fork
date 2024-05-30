@@ -24,17 +24,7 @@ RSpec.describe MergeRequestPollWidgetEntity, feature_category: :merge_trains do
     end
 
     it 'has merge train entity' do
-      expect(entity).to include(:merge_trains_count)
-      expect(entity).to include(:merge_train_index)
       expect(entity).to include(:merge_trains_skip_train_allowed)
-    end
-
-    context 'when the merge request is not on a merge train' do
-      let!(:merge_train) {}
-
-      it 'does not have merge train index' do
-        expect(entity).not_to include(:merge_train_index)
-      end
     end
   end
 
