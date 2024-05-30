@@ -10,7 +10,14 @@ module Users
 
     EVENT_CATEGORIES = %i[email phone credit_card error toggle_phone_exemption].freeze
     PHONE_VERIFICATION_ACTIONS = %i[send_phone_verification_code verify_phone_verification_code].freeze
-    CREDIT_CARD_VERIFICATION_ACTIONS = %i[verify_credit_card].freeze
+    # ensure_verification_method_attempt_allowed! is called before
+    # verify_credit_card_captcha instead of verify_credit_card because when
+    # verify_credit_card is hit the credit card verification process is already
+    # done and User#verification_method_allowed?(method: 'credit_card') will
+    # return false causing the hook to return a 400 error.
+    # verify_credit_card_captcha, on the other hand, is hit before the actual
+    # credit card verification process starts.
+    CREDIT_CARD_VERIFICATION_ACTIONS = %i[verify_credit_card_captcha].freeze
 
     before_action :require_verification_user!, except: [:restricted]
     before_action :redirect_banned_user, only: [:show]

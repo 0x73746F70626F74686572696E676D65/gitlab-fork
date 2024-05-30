@@ -235,19 +235,6 @@ describe('CreditCardVerification', () => {
         });
       });
     });
-
-    describe('when requireChallenge prop is false', () => {
-      beforeEach(() => {
-        jest.spyOn(axios, 'post');
-
-        createComponent();
-        findSubmitButton().vm.$emit('click');
-      });
-
-      it('does not send a captcha verification request', () => {
-        expect(axios.post.mock.calls).toHaveLength(0);
-      });
-    });
   });
 
   describe('submit button loading state', () => {

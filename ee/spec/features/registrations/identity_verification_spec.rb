@@ -57,7 +57,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       phone_send_code_path = send_phone_verification_code_signup_identity_verification_path
       phone_verify_code_path = verify_phone_verification_code_signup_identity_verification_path
-      credit_card_verify_path = verify_credit_card_signup_identity_verification_path
+      credit_card_verify_captcha_path = verify_credit_card_captcha_signup_identity_verification_path
 
       verification_endpoint_requests = {
         phone: [
@@ -65,7 +65,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
           -> { send_request(session, :post, phone_verify_code_path, headers: headers) }
         ],
         credit_card: [
-          -> { send_request(session, :get, credit_card_verify_path, headers: {}) }
+          -> { send_request(session, :post, credit_card_verify_captcha_path, headers: headers) }
         ]
       }
 
