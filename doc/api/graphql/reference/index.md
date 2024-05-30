@@ -17692,7 +17692,7 @@ CI/CD variables for a GitLab instance.
 | <a id="cijobretried"></a>`retried` | [`Boolean`](#boolean) | Indicates that the job has been retried. |
 | <a id="cijobretryable"></a>`retryable` | [`Boolean!`](#boolean) | Indicates the job can be retried. |
 | <a id="cijobrunner"></a>`runner` | [`CiRunner`](#cirunner) | Runner assigned to execute the job. |
-| <a id="cijobrunnermanager"></a>`runnerManager` **{warning-solid}** | [`CiRunnerManager`](#cirunnermanager) | **Introduced** in GitLab 15.11. **Status**: Experiment. Runner manager assigned to the job. |
+| <a id="cijobrunnermanager"></a>`runnerManager` | [`CiRunnerManager`](#cirunnermanager) | Runner manager assigned to the job. |
 | <a id="cijobscheduled"></a>`scheduled` | [`Boolean!`](#boolean) | Indicates the job is scheduled. |
 | <a id="cijobscheduledat"></a>`scheduledAt` | [`Time`](#time) | Schedule for the build. |
 | <a id="cijobschedulingtype"></a>`schedulingType` | [`String`](#string) | Type of job scheduling. Value is `dag` if the job uses the `needs` keyword, and `stage` otherwise. |
@@ -17907,10 +17907,6 @@ four standard [pagination arguments](#pagination-arguments):
 ##### `CiRunner.managers`
 
 Runner managers associated with the runner configuration.
-
-DETAILS:
-**Introduced** in GitLab 15.10.
-**Status**: Experiment.
 
 Returns [`CiRunnerManagerConnection`](#cirunnermanagerconnection).
 
