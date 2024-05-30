@@ -6,7 +6,6 @@ import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { n__, sprintf } from '~/locale';
 import Tracking from '~/tracking';
-import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import { PQL_MODAL_ID } from 'ee/hand_raise_leads/hand_raise_lead/constants';
 import { POPOVER, RESIZE_EVENT } from './constants';
@@ -18,7 +17,7 @@ const {
   resizeEventDebounceMS,
   disabledBreakpoints,
 } = POPOVER;
-const trackingMixin = Tracking.mixin({ experiment: 'trial_discover_page' });
+const trackingMixin = Tracking.mixin();
 
 export default {
   components: {
@@ -26,7 +25,6 @@ export default {
     GlButton,
     GlPopover,
     GlSprintf,
-    GitlabExperiment,
   },
   mixins: [trackingMixin],
   inject: {
@@ -100,7 +98,6 @@ export default {
         category: this.trialPopoverCategory,
         action,
         label,
-        experiment: 'trial_discover_page',
       };
     },
   },
@@ -145,7 +142,7 @@ export default {
     @shown="onShown"
   >
     <template #title>
-      <div :class="{ 'gl-font-size-h2': !isTrialActive }">
+      <div class="gl-font-size-h2">
         {{ popoverTitle }}
       </div>
     </template>
@@ -182,22 +179,19 @@ export default {
         :cta-tracking="handRaiseLeadBtnTracking"
       />
 
-      <gitlab-experiment name="trial_discover_page">
-        <template #candidate>
-          <gl-button
-            :href="trialDiscoverPagePath"
-            variant="link"
-            size="small"
-            class="gl-mt-3"
-            block
-            data-testid="learn-about-features-btn"
-            :title="$options.i18n.learnAboutButtonTitle"
-            @click="trackPageAction('learnAboutFeaturesClick')"
-          >
-            <span class="gl-font-sm">{{ $options.i18n.learnAboutButtonTitle }}</span>
-          </gl-button>
-        </template>
-      </gitlab-experiment>
+      <gl-button
+        :href="trialDiscoverPagePath"
+        category="tertiary"
+        variant="confirm"
+        size="small"
+        class="gl-mt-3"
+        block
+        data-testid="learn-about-features-btn"
+        :title="$options.i18n.learnAboutButtonTitle"
+        @click="trackPageAction('learnAboutFeaturesClick')"
+      >
+        <span class="gl-font-sm">{{ $options.i18n.learnAboutButtonTitle }}</span>
+      </gl-button>
     </div>
   </gl-popover>
 </template>

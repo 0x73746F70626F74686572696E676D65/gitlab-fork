@@ -59,22 +59,22 @@ RSpec.describe 'groups/discovers/show', :saas, :aggregate_failures, feature_cate
       render
 
       tracking_labels.each do |label|
-        expect_to_have_experiment_tracking(action: 'click_video_link_trial_active', label: label)
-        expect_to_have_experiment_tracking(action: 'click_documentation_link_trial_active', label: label)
+        expect_to_have_tracking(action: 'click_video_link_trial_active', label: label)
+        expect_to_have_tracking(action: 'click_documentation_link_trial_active', label: label)
       end
     end
 
     it 'has tracking for Free guest users' do
       render
 
-      expect_to_have_experiment_tracking(action: 'click_calculate_seats_trial_active', label: :free_guests_feature)
-      expect_to_have_experiment_tracking(action: 'click_documentation_link_trial_active', label: :free_guests_feature)
+      expect_to_have_tracking(action: 'click_calculate_seats_trial_active', label: :free_guests_feature)
+      expect_to_have_tracking(action: 'click_documentation_link_trial_active', label: :free_guests_feature)
     end
 
     it 'has tracking for page actions' do
       render
 
-      expect_to_have_experiment_tracking(action: 'click_compare_plans', label: :trial_active)
+      expect_to_have_tracking(action: 'click_compare_plans', label: :trial_active)
       expect_to_have_hand_raise_lead_tracking
     end
   end
@@ -88,29 +88,28 @@ RSpec.describe 'groups/discovers/show', :saas, :aggregate_failures, feature_cate
       render
 
       tracking_labels.each do |label|
-        expect_to_have_experiment_tracking(action: 'click_video_link_trial_expired', label: label)
-        expect_to_have_experiment_tracking(action: 'click_documentation_link_trial_expired', label: label)
+        expect_to_have_tracking(action: 'click_video_link_trial_expired', label: label)
+        expect_to_have_tracking(action: 'click_documentation_link_trial_expired', label: label)
       end
     end
 
     it 'has tracking for Free guest users' do
       render
 
-      expect_to_have_experiment_tracking(action: 'click_calculate_seats_trial_expired', label: :free_guests_feature)
-      expect_to_have_experiment_tracking(action: 'click_documentation_link_trial_expired', label: :free_guests_feature)
+      expect_to_have_tracking(action: 'click_calculate_seats_trial_expired', label: :free_guests_feature)
+      expect_to_have_tracking(action: 'click_documentation_link_trial_expired', label: :free_guests_feature)
     end
 
     it 'has tracking for page actions' do
       render
 
-      expect_to_have_experiment_tracking(action: 'click_compare_plans', label: :trial_expired)
+      expect_to_have_tracking(action: 'click_compare_plans', label: :trial_expired)
       expect_to_have_hand_raise_lead_tracking(label: :trial_expired)
     end
   end
 
-  def expect_to_have_experiment_tracking(action:, label: nil)
+  def expect_to_have_tracking(action:, label: nil)
     css = "[data-track-action='#{action}']"
-    css += "[data-track-experiment='trial_discover_page']"
     css += "[data-track-label='#{label}']" if label
 
     expect(rendered).to have_css(css)
@@ -118,9 +117,8 @@ RSpec.describe 'groups/discovers/show', :saas, :aggregate_failures, feature_cate
 
   def expect_to_have_hand_raise_lead_tracking(label: :trial_active)
     tracking = {
-      track_action: 'click_contact_sales',
-      track_label: label,
-      track_experiment: :trial_discover_page
+      action: 'click_contact_sales',
+      label: label
     }.to_json
 
     expect(rendered).to have_css("[data-cta-tracking='#{tracking}']")

@@ -28,9 +28,8 @@ RSpec.describe Subscriptions::HandRaiseLeadsHelper, feature_category: :acquisiti
       result = {
         glm_content: 'trial_discover_page',
         cta_tracking: {
-          track_action: 'click_contact_sales',
-          track_label: 'trial_expired',
-          track_experiment: :trial_discover_page
+          action: 'click_contact_sales',
+          label: 'trial_expired'
         }.to_json,
         button_attributes: {
           variant: 'confirm',

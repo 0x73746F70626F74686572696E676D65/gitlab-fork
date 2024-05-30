@@ -1,9 +1,0 @@
----
-name: trial_discover_page
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/412715
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/142824
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/439391
-milestone: '16.9'
-type: experiment
-group: group::activation
-default_enabled: false

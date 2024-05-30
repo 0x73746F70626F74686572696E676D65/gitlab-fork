@@ -3,9 +3,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { WIDGET } from 'ee/contextual_sidebar/components/constants';
 import TrialStatusWidget from 'ee/contextual_sidebar/components/trial_status_widget.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
-import { stubExperiments } from 'helpers/experimentation_helper';
 import { __ } from '~/locale';
-import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 
 describe('TrialStatusWidget component', () => {
   let wrapper;
@@ -26,11 +24,10 @@ describe('TrialStatusWidget component', () => {
         navIconImagePath: 'illustrations/gitlab_logo.svg',
         percentageComplete: 10,
         planName: 'Ultimate',
-        plansHref: 'billing/path-for/group',
         trialDiscoverPagePath: 'discover-path',
         ...providers,
       },
-      stubs: { GitlabExperiment, GlButton },
+      stubs: { GlButton },
     });
   };
 
@@ -96,19 +93,25 @@ describe('TrialStatusWidget component', () => {
     it('does not render Trial twice if the plan name includes "Trial"', () => {
       wrapper = createComponent({ planName: 'Ultimate Trial' });
 
-      expect(wrapper.text()).toMatchInterpolatedText('Ultimate Trial Day 10/30');
+      expect(wrapper.text()).toMatchInterpolatedText(
+        'Ultimate Trial Day 10/30 Learn about features',
+      );
     });
 
     it('shows the expected day 1 text', () => {
       wrapper = createComponent({ trialDaysUsed: 1 });
 
-      expect(wrapper.text()).toMatchInterpolatedText('Ultimate Trial Day 1/30');
+      expect(wrapper.text()).toMatchInterpolatedText(
+        'Ultimate Trial Day 1/30 Learn about features',
+      );
     });
 
     it('shows the expected last day text', () => {
       wrapper = createComponent({ trialDaysUsed: 30 });
 
-      expect(wrapper.text()).toMatchInterpolatedText('Ultimate Trial Day 30/30');
+      expect(wrapper.text()).toMatchInterpolatedText(
+        'Ultimate Trial Day 30/30 Learn about features',
+      );
     });
   });
 
@@ -122,77 +125,39 @@ describe('TrialStatusWidget component', () => {
     });
   });
 
-  describe('trial_discover_page experiment', () => {
-    describe('when experiment is control', () => {
-      beforeEach(() => {
-        stubExperiments({ trial_discover_page: 'control' });
-      });
+  describe('with link to trial discover page', () => {
+    it('renders the link', () => {
+      wrapper = createComponent();
 
-      describe('when trial is active', () => {
-        it('does not render link to discover page', () => {
-          wrapper = createComponent();
+      expect(wrapper.text()).toContain(__('Learn about features'));
+      expect(findLearnAboutFeaturesBtn().exists()).toBe(true);
+      expect(findLearnAboutFeaturesBtn().attributes('href')).toBe('discover-path');
+    });
 
-          expect(wrapper.text()).not.toContain(__('Learn about features'));
-          expect(findLearnAboutFeaturesBtn().exists()).toBe(false);
-        });
-      });
+    describe('when trial is active', () => {
+      it('tracks clicking learn about features button', async () => {
+        wrapper = createComponent();
 
-      describe('when trial is expired', () => {
-        it('does not render link to discover page', () => {
-          wrapper = createComponent({ percentageComplete: 110 });
+        const { category } = trackingEvents.activeTrialOptions;
+        await findLearnAboutFeaturesBtn().trigger('click');
 
-          expect(wrapper.text()).not.toContain(__('Learn about features'));
-          expect(findLearnAboutFeaturesBtn().exists()).toBe(false);
+        expect(trackingSpy).toHaveBeenCalledWith(category, trackingEvents.action, {
+          category,
+          label: 'learn_about_features',
         });
       });
     });
 
-    describe('when experiment is candidate', () => {
-      beforeEach(() => {
-        stubExperiments({ trial_discover_page: 'candidate' });
-      });
+    describe('when trial is expired', () => {
+      it('tracks clicking learn about features link', async () => {
+        wrapper = createComponent({ percentageComplete: 110 });
 
-      describe('when trial is active', () => {
-        it('renders link to discover page', () => {
-          wrapper = createComponent();
+        const { category } = trackingEvents.trialEndedOptions;
+        await findLearnAboutFeaturesBtn().trigger('click');
 
-          expect(wrapper.text()).toContain(__('Learn about features'));
-          expect(findLearnAboutFeaturesBtn().exists()).toBe(true);
-          expect(findLearnAboutFeaturesBtn().attributes('href')).toBe('discover-path');
-        });
-
-        it('tracks clicking learn about features button', async () => {
-          wrapper = createComponent();
-
-          const { category } = trackingEvents.activeTrialOptions;
-          await findLearnAboutFeaturesBtn().trigger('click');
-
-          expect(trackingSpy).toHaveBeenCalledWith(category, trackingEvents.action, {
-            category,
-            label: 'learn_about_features',
-          });
-        });
-      });
-
-      describe('when trial is expired', () => {
-        it('renders link to discover page', () => {
-          wrapper = createComponent({ percentageComplete: 110 });
-
-          expect(wrapper.text()).toContain(__('Learn about features'));
-          expect(findLearnAboutFeaturesBtn().exists()).toBe(true);
-          expect(findLearnAboutFeaturesBtn().attributes('href')).toBe('discover-path');
-        });
-
-        it('tracks clicking learn about features link', async () => {
-          wrapper = createComponent({ percentageComplete: 110 });
-
-          const { category } = trackingEvents.trialEndedOptions;
-          await findLearnAboutFeaturesBtn().trigger('click');
-
-          expect(trackingSpy).toHaveBeenCalledWith(category, trackingEvents.action, {
-            category,
-            label: 'learn_about_features',
-          });
+        expect(trackingSpy).toHaveBeenCalledWith(category, trackingEvents.action, {
+          category,
+          label: 'learn_about_features',
         });
       });
     });
