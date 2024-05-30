@@ -27,8 +27,8 @@ module Ci
 
       def execute
         result = ::Ci::Runners::GetUsageByProjectService.new(current_user, runner_type: runner_type,
-          from_date: from_date, to_date: to_date, max_project_count: max_project_count,
-          group_by_columns: [:status, :runner_type]).execute
+          from_date: from_date, to_date: to_date, max_item_count: max_project_count,
+          additional_group_by_columns: %i[status runner_type]).execute
 
         return result unless result.success?
 
@@ -39,7 +39,7 @@ module Ci
 
         # rubocop: disable CodeReuse/ActiveRecord -- This is an enumerable
         # rubocop: disable Database/AvoidUsingPluckWithoutLimit -- This is an enumerable
-        export_status[:projects_written] = rows.pluck('grouped_project_id').compact.sort.uniq.count
+        export_status[:projects_written] = rows.pluck('project_id_bucket').compact.sort.uniq.count
         # rubocop: enable Database/AvoidUsingPluckWithoutLimit
         # rubocop: enable CodeReuse/ActiveRecord
         export_status[:projects_expected] =
@@ -58,7 +58,7 @@ module Ci
 
       def header_to_value_hash
         {
-          'Project ID' => 'grouped_project_id',
+          'Project ID' => 'project_id_bucket',
           'Project path' => 'project_path',
           'Status' => 'status',
           'Runner type' => 'runner_type',
@@ -70,7 +70,7 @@ module Ci
 
       def transform_rows(result)
         # rubocop: disable CodeReuse/ActiveRecord -- This is a ClickHouse query
-        ids = result.pluck('grouped_project_id') # rubocop: disable Database/AvoidUsingPluckWithoutLimit -- The limit is already implemented in the ClickHouse query
+        ids = result.pluck('project_id_bucket') # rubocop: disable Database/AvoidUsingPluckWithoutLimit -- The limit is already implemented in the ClickHouse query
         # rubocop: enable CodeReuse/ActiveRecord
         return result if ids.empty?
 
@@ -80,7 +80,7 @@ module Ci
         runner_types_by_value = Ci::Runner.runner_types.to_h.invert
         # Annotate rows with project paths, human-readable durations, etc.
         result.each do |row|
-          row['project_path'] = projects[row['grouped_project_id']&.to_i]
+          row['project_path'] = projects[row['project_id_bucket']&.to_i]
           row['runner_type'] = runner_types_by_value[row['runner_type']&.to_i]
           row['total_duration_human_readable'] =
             ActiveSupport::Duration.build(row['total_duration_in_mins'] * 60).inspect

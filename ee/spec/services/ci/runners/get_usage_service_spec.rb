@@ -2,8 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Runners::GetUsageService, :click_house, :enable_admin_mode,
-  feature_category: :fleet_visibility do
+RSpec.describe Ci::Runners::GetUsageService, :click_house, :enable_admin_mode, feature_category: :fleet_visibility do
   let_it_be(:project) { create(:project) }
   let_it_be(:instance_runners) { create_list(:ci_runner, 3, :instance, :with_runner_manager) }
   let_it_be(:group) { create(:group) }
@@ -25,10 +24,10 @@ RSpec.describe Ci::Runners::GetUsageService, :click_house, :enable_admin_mode,
   let(:runner_type) { nil }
   let(:from_date) { Date.new(2023, 12, 1) }
   let(:to_date) { Date.new(2023, 12, 31) }
-  let(:max_runners_count) { 50 }
+  let(:max_item_count) { 50 }
   let(:service) do
     described_class.new(user, runner_type: runner_type, from_date: from_date, to_date: to_date,
-      max_runners_count: max_runners_count)
+      max_item_count: max_item_count)
   end
 
   let(:result) { service.execute }
@@ -65,22 +64,22 @@ RSpec.describe Ci::Runners::GetUsageService, :click_house, :enable_admin_mode,
 
   it 'exports usage data by runner' do
     is_expected.to eq(
-      [{ "runner_id" => group_runner.id, "count_builds" => 5, "total_duration_in_mins" => 500 }] +
-        instance_runners.each_with_index.map do |runner, index|
-          { "runner_id" => runner.id, "count_builds" => index + 1, "total_duration_in_mins" => 10 * (index + 1) }
-        end.reverse
+      [{ 'runner_id_bucket' => group_runner.id, 'count_builds' => 5, 'total_duration_in_mins' => 500 }] +
+      instance_runners.each_with_index.map do |runner, index|
+        { 'runner_id_bucket' => runner.id, 'count_builds' => index + 1, 'total_duration_in_mins' => 10 * (index + 1) }
+      end.reverse
     )
   end
 
-  context "when max_runners_count doesn't fit all projects" do
-    let(:max_runners_count) { 2 }
+  context 'when the number of runners exceeds max_item_count' do
+    let(:max_item_count) { 2 }
 
-    it 'exports usage data for the 2 top projects plus aggregate for other projects' do
-      is_expected.to eq(
-        [{ "runner_id" => group_runner.id, "count_builds" => 5, "total_duration_in_mins" => 500 },
-          { "runner_id" => instance_runners.last.id, "count_builds" => 3, "total_duration_in_mins" => 30 },
-          { "runner_id" => nil, "count_builds" => 3, "total_duration_in_mins" => 30 }]
-      )
+    it 'exports usage data for the 2 top runners plus aggregate for other projects' do
+      is_expected.to eq([
+        { 'runner_id_bucket' => group_runner.id, 'count_builds' => 5, 'total_duration_in_mins' => 500 },
+        { 'runner_id_bucket' => instance_runners.last.id, 'count_builds' => 3, 'total_duration_in_mins' => 30 },
+        { 'runner_id_bucket' => nil, 'count_builds' => 3, 'total_duration_in_mins' => 30 }
+      ])
     end
   end
 
@@ -89,7 +88,7 @@ RSpec.describe Ci::Runners::GetUsageService, :click_house, :enable_admin_mode,
 
     it 'exports usage data for runners of specified type' do
       is_expected.to eq(
-        [{ "runner_id" => group_runner.id, "count_builds" => 5, "total_duration_in_mins" => 500 }]
+        [{ 'runner_id_bucket' => group_runner.id, 'count_builds' => 5, 'total_duration_in_mins' => 500 }]
       )
     end
   end
@@ -116,7 +115,9 @@ RSpec.describe Ci::Runners::GetUsageService, :click_house, :enable_admin_mode,
     let(:builds) { [build_before, build_in_range, build_overflowing_the_range, build_after] }
 
     it 'only exports usage data for builds created in the date range' do
-      is_expected.to eq([{ "runner_id" => group_runner.id, "count_builds" => 2, "total_duration_in_mins" => 172 }])
+      is_expected.to contain_exactly(
+        { 'runner_id_bucket' => group_runner.id, 'count_builds' => 2, 'total_duration_in_mins' => 172 }
+      )
     end
   end
 

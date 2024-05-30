@@ -29,11 +29,11 @@ RSpec.describe Ci::Runners::GetUsageByProjectService, :click_house, :enable_admi
   let(:runner_type) { nil }
   let(:from_date) { Date.new(2023, 12, 1) }
   let(:to_date) { Date.new(2023, 12, 31) }
-  let(:max_project_count) { 50 }
-  let(:group_by_columns) { [] }
+  let(:max_item_count) { 50 }
+  let(:additional_group_by_columns) { [] }
   let(:service) do
     described_class.new(user, runner_type: runner_type, from_date: from_date, to_date: to_date,
-      group_by_columns: group_by_columns, max_project_count: max_project_count)
+      additional_group_by_columns: additional_group_by_columns, max_item_count: max_item_count)
   end
 
   let(:result) { service.execute }
@@ -74,51 +74,49 @@ RSpec.describe Ci::Runners::GetUsageByProjectService, :click_house, :enable_admi
   end
 
   it 'exports usage data' do
-    is_expected.to eq(
-      [{ "grouped_project_id" => builds.last.project.id, "count_builds" => 4, "total_duration_in_mins" => 140 },
-        { "grouped_project_id" => builds[3].project.id, "count_builds" => 1, "total_duration_in_mins" => 17 },
-        { "grouped_project_id" => builds[2].project.id, "count_builds" => 1, "total_duration_in_mins" => 16 },
-        { "grouped_project_id" => builds[1].project.id, "count_builds" => 1, "total_duration_in_mins" => 15 },
-        { "grouped_project_id" => builds[0].project.id, "count_builds" => 1, "total_duration_in_mins" => 14 }]
-    )
+    is_expected.to eq([
+      { 'project_id_bucket' => builds.last.project.id, 'count_builds' => 4, 'total_duration_in_mins' => 140 },
+      { 'project_id_bucket' => builds[3].project.id, 'count_builds' => 1, 'total_duration_in_mins' => 17 },
+      { 'project_id_bucket' => builds[2].project.id, 'count_builds' => 1, 'total_duration_in_mins' => 16 },
+      { 'project_id_bucket' => builds[1].project.id, 'count_builds' => 1, 'total_duration_in_mins' => 15 },
+      { 'project_id_bucket' => builds[0].project.id, 'count_builds' => 1, 'total_duration_in_mins' => 14 }
+    ])
   end
 
-  context 'when group_by_columns specified' do
-    let(:group_by_columns) { [:status, :runner_type] }
+  context 'when additional_group_by_columns specified' do
+    let(:additional_group_by_columns) { [:status, :runner_type] }
 
     it 'exports usage data grouped by status and runner_type' do
-      is_expected.to eq(
-        [
-          { "grouped_project_id" => builds.last.project.id, "status" => "failed", "runner_type" => 2,
-            "count_builds" => 1, "total_duration_in_mins" => 120 },
-          { "grouped_project_id" => builds[3].project.id, "status" => "skipped", "runner_type" => 1,
-            "count_builds" => 1, "total_duration_in_mins" => 17 },
-          { "grouped_project_id" => builds[2].project.id, "status" => "canceled", "runner_type" => 1,
-            "count_builds" => 1, "total_duration_in_mins" => 16 },
-          { "grouped_project_id" => builds[1].project.id, "status" => "failed", "runner_type" => 1, "count_builds" => 1,
-            "total_duration_in_mins" => 15 },
-          { "grouped_project_id" => builds[0].project.id, "status" => "success", "runner_type" => 1,
-            "count_builds" => 1, "total_duration_in_mins" => 14 },
-          { "grouped_project_id" => builds.last.project.id, "status" => "failed", "runner_type" => 1,
-            "count_builds" => 1, "total_duration_in_mins" => 10 },
-          { "grouped_project_id" => builds.last.project.id, "status" => "success", "runner_type" => 1,
-            "count_builds" => 1, "total_duration_in_mins" => 7 },
-          { "grouped_project_id" => builds.last.project.id, "status" => "canceled", "runner_type" => 2,
-            "count_builds" => 1, "total_duration_in_mins" => 3 }
-        ]
-      )
+      is_expected.to eq([
+        { 'project_id_bucket' => builds.last.project.id, 'status' => 'failed', 'runner_type' => 2,
+          'count_builds' => 1, 'total_duration_in_mins' => 120 },
+        { 'project_id_bucket' => builds[3].project.id, 'status' => 'skipped', 'runner_type' => 1,
+          'count_builds' => 1, 'total_duration_in_mins' => 17 },
+        { 'project_id_bucket' => builds[2].project.id, 'status' => 'canceled', 'runner_type' => 1,
+          'count_builds' => 1, 'total_duration_in_mins' => 16 },
+        { 'project_id_bucket' => builds[1].project.id, 'status' => 'failed', 'runner_type' => 1, 'count_builds' => 1,
+          'total_duration_in_mins' => 15 },
+        { 'project_id_bucket' => builds[0].project.id, 'status' => 'success', 'runner_type' => 1,
+          'count_builds' => 1, 'total_duration_in_mins' => 14 },
+        { 'project_id_bucket' => builds.last.project.id, 'status' => 'failed', 'runner_type' => 1,
+          'count_builds' => 1, 'total_duration_in_mins' => 10 },
+        { 'project_id_bucket' => builds.last.project.id, 'status' => 'success', 'runner_type' => 1,
+          'count_builds' => 1, 'total_duration_in_mins' => 7 },
+        { 'project_id_bucket' => builds.last.project.id, 'status' => 'canceled', 'runner_type' => 2,
+          'count_builds' => 1, 'total_duration_in_mins' => 3 }
+      ])
     end
   end
 
-  context "when max_project_count doesn't fit all projects" do
-    let(:max_project_count) { 2 }
+  context 'when the number of projects exceeds max_item_count' do
+    let(:max_item_count) { 2 }
 
     it 'exports usage data for the 2 top projects plus aggregate for other projects' do
-      is_expected.to eq(
-        [{ "grouped_project_id" => builds.last.project.id, "count_builds" => 4, "total_duration_in_mins" => 140 },
-          { "grouped_project_id" => builds[3].project.id, "count_builds" => 1, "total_duration_in_mins" => 17 },
-          { "grouped_project_id" => nil, "count_builds" => 3, "total_duration_in_mins" => 45 }]
-      )
+      is_expected.to eq([
+        { 'project_id_bucket' => builds.last.project.id, 'count_builds' => 4, 'total_duration_in_mins' => 140 },
+        { 'project_id_bucket' => builds[3].project.id, 'count_builds' => 1, 'total_duration_in_mins' => 17 },
+        { 'project_id_bucket' => nil, 'count_builds' => 3, 'total_duration_in_mins' => 45 }
+      ])
     end
   end
 
@@ -126,8 +124,8 @@ RSpec.describe Ci::Runners::GetUsageByProjectService, :click_house, :enable_admi
     let(:runner_type) { :group_type }
 
     it 'exports usage data for runners of specified type' do
-      is_expected.to eq(
-        [{ "grouped_project_id" => builds.last.project.id, "count_builds" => 2, "total_duration_in_mins" => 123 }]
+      is_expected.to contain_exactly(
+        { 'project_id_bucket' => builds.last.project.id, 'count_builds' => 2, 'total_duration_in_mins' => 123 }
       )
     end
   end
@@ -154,7 +152,9 @@ RSpec.describe Ci::Runners::GetUsageByProjectService, :click_house, :enable_admi
     let(:builds) { [build_before, build_in_range, build_overflowing_the_range, build_after] }
 
     it 'only exports usage data for builds created in the date range' do
-      is_expected.to eq([{ "grouped_project_id" => project.id, "count_builds" => 2, "total_duration_in_mins" => 172 }])
+      is_expected.to contain_exactly(
+        { 'project_id_bucket' => project.id, 'count_builds' => 2, 'total_duration_in_mins' => 172 }
+      )
     end
   end
 

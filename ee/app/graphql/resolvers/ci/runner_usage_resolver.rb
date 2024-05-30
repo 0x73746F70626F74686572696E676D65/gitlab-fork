@@ -49,7 +49,7 @@ module Resolvers
           runner_type: runner_type,
           from_date: from_date,
           to_date: to_date,
-          max_runners_count: [MAX_RUNNERS_LIMIT, runners_limit || DEFAULT_RUNNERS_LIMIT].min
+          max_item_count: [MAX_RUNNERS_LIMIT, runners_limit || DEFAULT_RUNNERS_LIMIT].min
         ).execute
 
         raise_resource_not_available_error!(result.message) if result.error?
@@ -62,7 +62,7 @@ module Resolvers
       def prepare_result(payload)
         payload.map do |runner_usage|
           {
-            runner_id: runner_usage['runner_id'],
+            runner_id: runner_usage['runner_id_bucket'],
             ci_minutes_used: runner_usage['total_duration_in_mins'],
             ci_build_count: runner_usage['count_builds']
           }
