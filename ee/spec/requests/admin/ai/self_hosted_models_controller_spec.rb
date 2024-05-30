@@ -11,7 +11,7 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
     stub_ee_application_setting(duo_features_enabled: duo_features_enabled)
   end
 
-  shared_examples 'returns 404 when feature is disabled' do
+  shared_examples 'returns 404' do
     context 'when ai_custom_model feature flag is disabled' do
       before do
         stub_feature_flags(ai_custom_model: false)
@@ -24,36 +24,11 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
       end
     end
 
-    context 'when on gitlab.com' do
-      before do
-        stub_saas_features(gitlab_com_subscriptions: true)
-      end
+    context 'when the user is not authorized' do
+      it 'performs the right authorization correctly' do
+        allow(Ability).to receive(:allowed?).and_call_original
+        expect(Ability).to receive(:allowed?).with(admin, :manage_ai_settings).and_return(false)
 
-      it 'returns 404' do
-        perform_request
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
-    context 'when self_managed_code_suggestions is disabled' do
-      before do
-        stub_feature_flags(self_managed_code_suggestions: false)
-      end
-
-      it 'returns 404' do
-        perform_request
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
-    context 'when current licences is not paid' do
-      before do
-        allow(License).to receive_message_chain(:current, :paid?).and_return(false)
-      end
-
-      it 'returns 404' do
         perform_request
 
         expect(response).to have_gitlab_http_status(:not_found)
@@ -98,7 +73,7 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
       end
     end
 
-    it_behaves_like 'returns 404 when feature is disabled'
+    it_behaves_like 'returns 404'
   end
 
   describe 'GET #edit' do
@@ -145,7 +120,7 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
       end
     end
 
-    it_behaves_like 'returns 404 when feature is disabled'
+    it_behaves_like 'returns 404'
   end
 
   describe 'POST #create' do
@@ -174,7 +149,7 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
       expect(response).to redirect_to(admin_ai_self_hosted_models_url)
     end
 
-    it_behaves_like 'returns 404 when feature is disabled'
+    it_behaves_like 'returns 404'
   end
 
   describe 'PATCH #update' do
@@ -210,7 +185,7 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
       expect(response).to redirect_to(admin_ai_self_hosted_models_url)
     end
 
-    it_behaves_like 'returns 404 when feature is disabled'
+    it_behaves_like 'returns 404'
   end
 
   describe 'DELETE #destroy' do
@@ -227,6 +202,6 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
       expect(response).to redirect_to(admin_ai_self_hosted_models_url)
     end
 
-    it_behaves_like 'returns 404 when feature is disabled'
+    it_behaves_like 'returns 404'
   end
 end

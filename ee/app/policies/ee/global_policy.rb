@@ -97,6 +97,13 @@ module EE
         ::License.feature_available?(:custom_roles)
       end
 
+      condition(:user_allowed_to_manage_ai_settings) do
+        next false unless ::Feature.enabled?(:self_managed_code_suggestions) # Can be removed post-rollout
+        next false if ::Gitlab::Saas.feature_available?(:gitlab_com_subscriptions)
+
+        ::License.current&.paid? # Replace with license :ai_self_hosted_model for GA
+      end
+
       rule { ~anonymous & operations_dashboard_available }.enable :read_operations_dashboard
 
       condition(:remote_development_feature_licensed) do
@@ -120,6 +127,10 @@ module EE
         enable :manage_subscription
         enable :read_jobs_statistics
         enable :read_runner_usage
+      end
+
+      rule { admin & user_allowed_to_manage_ai_settings }.policy do
+        enable :manage_ai_settings
       end
 
       rule { admin & custom_roles_allowed }.policy do
