@@ -19,92 +19,45 @@ RSpec.describe Groups::DiscoversController, :saas, feature_category: :activation
     subject { response }
 
     shared_examples 'unauthorized' do
-      context 'and user is control' do
-        before do
-          stub_experiments(trial_discover_page: :control)
-        end
+      it 'renders index with 404 status code' do
+        get group_discover_path(group)
 
-        it 'renders index with 404 status code' do
-          get group_discover_path(group)
-
-          is_expected.to have_gitlab_http_status(:not_found)
-          is_expected.not_to render_template(:show)
-        end
-      end
-
-      context 'and user is candidate' do
-        before do
-          stub_experiments(trial_discover_page: :candidate)
-        end
-
-        it 'renders index with 404 status code' do
-          get group_discover_path(group)
-
-          is_expected.to have_gitlab_http_status(:not_found)
-          is_expected.not_to render_template(:show)
-        end
+        is_expected.to have_gitlab_http_status(:not_found)
+        is_expected.not_to render_template(:show)
       end
     end
 
-    context 'when trial_discover_page experiment is running' do
+    context 'when user is owner' do
       before do
-        allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|
-          allow(instance).to receive(:execute).and_return([])
-        end
+        sign_in(owner)
       end
 
-      context 'when user is owner' do
-        before do
-          sign_in(owner)
-        end
+      it 'renders index with 200 status code' do
+        get group_discover_path(group)
 
-        context 'and user is control' do
-          before do
-            stub_experiments(trial_discover_page: :control)
-          end
+        is_expected.to have_gitlab_http_status(:ok)
+        is_expected.to render_template(:show)
+      end
+    end
 
-          it 'renders index with 404 status code' do
-            get group_discover_path(group)
-
-            is_expected.to have_gitlab_http_status(:not_found)
-            is_expected.not_to render_template(:show)
-          end
-        end
-
-        context 'and user is candidate' do
-          before do
-            stub_experiments(trial_discover_page: :candidate)
-          end
-
-          it 'renders index with 200 status code' do
-            get group_discover_path(group)
-
-            is_expected.to have_gitlab_http_status(:ok)
-            is_expected.to render_template(:show)
-          end
-        end
+    context 'when user is maintainer' do
+      before do
+        sign_in(maintainer)
       end
 
-      context 'when user is maintainer' do
-        before do
-          sign_in(maintainer)
-        end
+      it_behaves_like 'unauthorized'
+    end
 
-        it_behaves_like 'unauthorized'
+    context 'when user is developer' do
+      before do
+        sign_in(developer)
       end
 
-      context 'when user is developer' do
-        before do
-          sign_in(developer)
-        end
-
-        it_behaves_like 'unauthorized'
-      end
+      it_behaves_like 'unauthorized'
     end
 
     it 'renders 404 when saas feature subscriptions_trials not available' do
       stub_saas_features(subscriptions_trials: false)
-      stub_experiments(trial_discover_page: :candidate)
       sign_in(owner)
 
       get group_discover_path(group)
@@ -119,7 +72,6 @@ RSpec.describe Groups::DiscoversController, :saas, feature_category: :activation
       end
 
       it 'renders page when group has an expired trial' do
-        stub_experiments(trial_discover_page: :candidate)
         group.add_owner(owner)
         sign_in(owner)
 

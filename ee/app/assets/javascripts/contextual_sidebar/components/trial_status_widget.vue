@@ -3,16 +3,13 @@ import { GlLink, GlProgressBar, GlIcon, GlButton } from '@gitlab/ui';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { sprintf } from '~/locale';
 import Tracking from '~/tracking';
-import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
-import { isExperimentVariant } from '~/experimentation/utils';
 import { WIDGET } from './constants';
 
 const { i18n, trackingEvents } = WIDGET;
-const trackingMixin = Tracking.mixin({ experiment: 'trial_discover_page' });
+const trackingMixin = Tracking.mixin();
 
 export default {
   components: {
-    GitlabExperiment,
     GlLink,
     GlProgressBar,
     GlIcon,
@@ -26,16 +23,10 @@ export default {
     navIconImagePath: {},
     percentageComplete: {},
     planName: {},
-    plansHref: {},
     trialDiscoverPagePath: {},
   },
   i18n,
   computed: {
-    widgetLink() {
-      return isExperimentVariant('trial_discover_page', 'candidate')
-        ? this.trialDiscoverPagePath
-        : this.plansHref;
-    },
     isTrialActive() {
       return this.percentageComplete <= 100;
     },
@@ -69,15 +60,15 @@ export default {
 </script>
 
 <template>
-  <gl-link :id="containerId" :title="widgetTitle" :href="widgetLink">
+  <gl-link :id="containerId" :title="widgetTitle" :href="trialDiscoverPagePath">
     <div
       data-testid="trial-widget-menu"
       class="gl-display-flex gl-flex-direction-column gl-align-items-stretch gl-w-full"
       @click="onWidgetClick"
     >
       <div v-if="isTrialActive">
-        <div class="gl-display-flex gl-w-full">
-          <span class="nav-icon-container svg-container gl-mr-3">
+        <div class="gl-display-flex gl-w-full gl-align-items-center">
+          <span class="nav-icon-container svg-container gl-mr-3 gl-mb-1">
             <!-- eslint-disable @gitlab/vue-require-i18n-attribute-strings -->
             <img alt="" :src="navIconImagePath" width="16" class="svg" />
           </span>
@@ -92,44 +83,37 @@ export default {
           <gl-progress-bar :value="percentageComplete" class="gl-flex-grow-1" aria-hidden="true" />
         </div>
 
-        <gitlab-experiment name="trial_discover_page">
-          <template #candidate>
-            <gl-button
-              :href="trialDiscoverPagePath"
-              variant="link"
-              size="small"
-              class="gl-mt-3"
-              data-testid="learn-about-features-btn"
-              :title="$options.i18n.learnAboutButtonTitle"
-              @click.stop="onLearnAboutFeaturesClick()"
-            >
-              {{ $options.i18n.learnAboutButtonTitle }}
-            </gl-button>
-          </template>
-        </gitlab-experiment>
+        <gl-button
+          :href="trialDiscoverPagePath"
+          variant="link"
+          size="small"
+          class="gl-mt-3 gl-text-decoration-underline"
+          data-testid="learn-about-features-btn"
+          :title="$options.i18n.learnAboutButtonTitle"
+          @click.stop="onLearnAboutFeaturesClick()"
+        >
+          {{ $options.i18n.learnAboutButtonTitle }}
+        </gl-button>
       </div>
-      <div v-else class="gl-display-flex gl-gap-5 gl-w-full gl-px-2">
-        <gl-icon name="information-o" class="gl-text-blue-600!" />
+      <div v-else class="gl-display-flex gl-gap-4 gl-w-full gl-px-2">
+        <gl-icon name="information-o" class="gl-text-blue-600! gl-shrink-0" />
         <div>
           <div class="gl-font-weight-bold">
             {{ widgetTitle }}
           </div>
           <div class="gl-mt-3">
             {{ $options.i18n.widgetBodyExpiredTrial }}
-            <gitlab-experiment name="trial_discover_page">
-              <template #candidate>
-                <gl-button
-                  :href="trialDiscoverPagePath"
-                  variant="link"
-                  size="small"
-                  data-testid="learn-about-features-btn"
-                  :title="$options.i18n.learnAboutButtonTitle"
-                  @click.stop="onLearnAboutFeaturesClick()"
-                >
-                  {{ $options.i18n.learnAboutButtonTitle }}
-                </gl-button>
-              </template>
-            </gitlab-experiment>
+            <gl-button
+              :href="trialDiscoverPagePath"
+              class="gl-mb-1 gl-text-black-normal! gl-text-decoration-underline"
+              variant="link"
+              size="small"
+              data-testid="learn-about-features-btn"
+              :title="$options.i18n.learnAboutButtonTitle"
+              @click.stop="onLearnAboutFeaturesClick()"
+            >
+              {{ $options.i18n.learnAboutButtonTitle }}
+            </gl-button>
           </div>
         </div>
       </div>

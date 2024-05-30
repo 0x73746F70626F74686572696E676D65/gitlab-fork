@@ -11,14 +11,14 @@
       .gl-display-flex
         - if item[:video_url].present?
           = render Pajamas::ButtonComponent.new(icon: "live-preview", href: item[:video_url], variant: :link, target: "_blank",
-            button_options: { data: { track_action: "click_video_link_#{group_trial_status(group)}", track_label: item[:tracking_label], track_experiment: :trial_discover_page } })
+            button_options: { data: { track_action: "click_video_link_#{group_trial_status(group)}", track_label: item[:tracking_label]} })
         - else
           = render Pajamas::ButtonComponent.new(href: item[:calculator_url], variant: :link, target: "_blank",
-            button_options: { data: { track_action: "click_calculate_seats_#{group_trial_status(group)}", track_label: item[:tracking_label], track_experiment: :trial_discover_page } }) do
+            button_options: { data: { track_action: "click_calculate_seats_#{group_trial_status(group)}", track_label: item[:tracking_label]} }) do
             = s_("TrialDiscoverPage|Calculate seats")
 
         .gl-px-2
           |
         = render Pajamas::ButtonComponent.new(href: item[:doc_url], variant: :link, target: "_blank",
-          button_options: { data: { track_action: "click_documentation_link_#{group_trial_status(group)}", track_label: item[:tracking_label], track_experiment: :trial_discover_page } }) do
+          button_options: { data: { track_action: "click_documentation_link_#{group_trial_status(group)}", track_label: item[:tracking_label]} }) do
           = s_("TrialDiscoverPage|Documentation")

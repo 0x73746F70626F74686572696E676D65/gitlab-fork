@@ -9,7 +9,6 @@ import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { __ } from '~/locale';
-import { stubExperiments } from 'helpers/experimentation_helper';
 
 Vue.config.ignoredElements = ['gl-emoji'];
 
@@ -144,7 +143,6 @@ describe('TrialStatusPopover component', () => {
           category: trackingEvents.trialEndedCategory,
           action: trackingEvents.contactSalesBtnClick.action,
           label: trackingEvents.contactSalesBtnClick.label,
-          experiment: 'trial_discover_page',
         },
       });
     });
@@ -221,48 +219,22 @@ describe('TrialStatusPopover component', () => {
     });
   });
 
-  describe('trial_discover_page experiment', () => {
-    describe('when experiment is control', () => {
-      beforeEach(() => {
-        stubExperiments({ trial_discover_page: 'control' });
-      });
+  describe('link to trial discover page', () => {
+    it('renders the link', () => {
+      wrapper = createComponent({ providers: { daysRemaining: 5 }, mountFn: mount });
 
-      it('does not render link to discover page', () => {
-        wrapper = createComponent({ providers: { daysRemaining: 5 }, mountFn: mount });
-
-        expect(wrapper.text()).not.toContain(__('Learn about features'));
-        expect(findLearnAboutFeaturesBtn().exists()).toBe(false);
-      });
+      expect(wrapper.text()).toContain(__('Learn about features'));
+      expect(findLearnAboutFeaturesBtn().exists()).toBe(true);
+      expect(findLearnAboutFeaturesBtn().attributes('href')).toBe('discover-path');
     });
 
-    describe('when experiment is candidate', () => {
-      beforeEach(() => {
-        stubExperiments({ trial_discover_page: 'candidate' });
-      });
+    it('tracks click event', () => {
+      wrapper = createComponent({ providers: { daysRemaining: 5 } });
 
-      it('renders link to discover page', () => {
-        wrapper = createComponent({ providers: { daysRemaining: 5 }, mountFn: mount });
+      findLearnAboutFeaturesBtn().vm.$emit('click');
 
-        expect(wrapper.text()).toContain(__('Learn about features'));
-        expect(findLearnAboutFeaturesBtn().exists()).toBe(true);
-        expect(findLearnAboutFeaturesBtn().attributes('href')).toBe('discover-path');
-      });
-
-      it('tracks click event', () => {
-        wrapper = createComponent({ providers: { daysRemaining: 5 } });
-
-        findLearnAboutFeaturesBtn().vm.$emit('click');
-
-        expectTracking(trackingEvents.activeTrialCategory, {
-          ...trackingEvents.learnAboutFeaturesClick,
-          context: {
-            data: {
-              experiment: 'trial_discover_page',
-              variant: 'candidate',
-            },
-            schema: 'iglu:com.gitlab/gitlab_experiment/jsonschema/1-0-0',
-          },
-        });
+      expectTracking(trackingEvents.activeTrialCategory, {
+        ...trackingEvents.learnAboutFeaturesClick,
       });
     });
   });

@@ -12,12 +12,6 @@ RSpec.describe 'Groups > Discovers > Hand Raise Lead', :js, :saas, feature_categ
 
   before do
     stub_saas_features(subscriptions_trials: true)
-    stub_experiments(trial_discover_page: :candidate)
-    # TODO: The below can be removed once trial_discover_page experiment is cleaned up
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/439391
-    allow_next_instance_of(::Groups::DiscoversController) do |instance|
-      allow(instance).to receive(:authorize_discover_page).and_return(true)
-    end
 
     sign_in(user)
 

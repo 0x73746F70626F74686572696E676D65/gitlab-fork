@@ -140,22 +140,6 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
           expect(execute).to be_success
         end
       end
-
-      context 'with trial_discover_page experiment not called' do
-        subject(:service) { described_class.new(user, params) }
-
-        before do
-          stub_saas_features(onboarding: true)
-          user.update!(onboarding_status_initial_registration_type: 'free')
-        end
-
-        it 'does not call the experiment DSL' do
-          allow(service).to receive(:experiment).and_call_original
-          expect(service).not_to receive(:experiment).with(:trial_discover_page, actor: user)
-
-          expect(service.execute).to be_success
-        end
-      end
     end
 
     context 'when the group cannot be created' do
@@ -292,21 +276,6 @@ RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failure
           expect do
             expect(execute).to be_success
           end.to change { Group.count }.by(0).and change { Project.count }
-        end
-      end
-
-      context 'with trial_discover_page experiment called' do
-        subject(:service) { described_class.new(user, params) }
-
-        before do
-          stub_saas_features(onboarding: true)
-        end
-
-        it 'tracks experiment assignment event' do
-          allow(service).to receive(:experiment).and_call_original
-          expect(service).to receive(:experiment).with(:trial_discover_page, actor: user)
-
-          expect(service.execute).to be_success
         end
       end
     end

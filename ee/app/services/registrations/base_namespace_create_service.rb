@@ -23,13 +23,6 @@ module Registrations
       experiment(:signup_intent_step_one, actor: user).track(:assignment, namespace: group)
 
       # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can merely call
-      # a variation of the user.onboarding_status_initial_registration_type == REGISTRATION_TYPE[:trial]
-      # (initial_trial?) here.
-      if onboarding_status.trial_from_the_beginning?
-        experiment(:trial_discover_page, actor: user).track(:assignment, namespace: group)
-      end
-
-      # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can merely call
       # a variation of the user.onboarding_status_registration_type == REGISTRATION_TYPE[:trial] (trial?) here.
       apply_trial if onboarding_status.trial_onboarding_flow?
     end

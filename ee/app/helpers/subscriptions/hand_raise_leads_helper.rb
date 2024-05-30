@@ -19,9 +19,8 @@ module Subscriptions
       {
         glm_content: 'trial_discover_page',
         cta_tracking: {
-          track_action: 'click_contact_sales',
-          track_label: group_trial_status(group),
-          track_experiment: :trial_discover_page
+          action: 'click_contact_sales',
+          label: group_trial_status(group)
         }.to_json,
         button_attributes: {
           variant: 'confirm',
