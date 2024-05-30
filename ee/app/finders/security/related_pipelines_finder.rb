@@ -31,7 +31,6 @@ module Security
 
       # Using map here as `pluck` would not work due to usage of `SELECT max(id)`
       pipeline_ids = pipelines.map(&:id)
-      return pipeline_ids unless Feature.enabled?(:approval_policy_parent_child_pipeline, project)
 
       # rubocop:disable CodeReuse/ActiveRecord -- number of pipelines is limited by source
       Ci::Pipeline
