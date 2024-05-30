@@ -112,6 +112,56 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
         execute
       end
 
+      describe "policy persistence" do
+        let(:persistence_worker) { Security::PersistSecurityPoliciesWorker }
+
+        shared_examples "persist policies" do
+          it "persists policies" do
+            expect(persistence_worker).to receive(:perform_async).with(configuration.id)
+
+            execute
+          end
+        end
+
+        context "with project-level configuration" do
+          include_examples "persist policies"
+
+          context "with feature disabled" do
+            before do
+              stub_feature_flags(security_policies_sync: false)
+            end
+
+            it "does not persist policies" do
+              expect(persistence_worker).not_to receive(:perform_async)
+
+              execute
+            end
+          end
+        end
+
+        context "with group-level configuration" do
+          let_it_be(:group) { create(:group) }
+
+          before do
+            configuration.update!(project_id: nil, namespace_id: group.id)
+          end
+
+          include_examples "persist policies"
+
+          context "with feature disabled" do
+            before do
+              stub_feature_flags(security_policies_sync_group: false)
+            end
+
+            it "does not persist policies" do
+              expect(persistence_worker).not_to receive(:perform_async)
+
+              execute
+            end
+          end
+        end
+      end
+
       shared_examples 'creates new rule schedules' do |expected_schedules:|
         it 'creates a rule schedule for each schedule rule in the scan execution policies' do
           expect { execute }.to change(Security::OrchestrationPolicyRuleSchedule, :count).from(1).to(expected_schedules)

@@ -75,10 +75,6 @@ module EE
           .for_management_project(project)
           .each do |configuration|
           Security::SyncScanPoliciesWorker.perform_async(configuration.id)
-
-          next unless ::Feature.enabled?(:security_policies_sync, project)
-
-          Security::PersistSecurityPoliciesWorker.perform_async(configuration.id)
         end
       end
 

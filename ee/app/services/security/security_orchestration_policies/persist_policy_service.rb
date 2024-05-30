@@ -6,9 +6,15 @@ module Security
       include BaseServiceUtility
       include Gitlab::Loggable
 
-      def initialize(policy_configuration, policies)
+      def initialize(policy_configuration:, policies:, policy_type:)
         @policy_configuration = policy_configuration
         @policies = policies
+
+        @policy_type = case policy_type
+                       when :approval_policy, :scan_result_policy then :approval_policy
+                       when :scan_execution_policy then :scan_execution_policy
+                       else raise ArgumentError, "unrecognized policy_type"
+                       end
       end
 
       def execute
@@ -17,7 +23,8 @@ module Security
             security_orchestration_policy_configuration_id: policy_configuration.id,
             policies: policies))
 
-        existing_policies_with_checksums = policy_configuration.security_policies.index_with(&:checksum)
+        existing_policies = policy_configuration.security_policies.merge(relation_scope)
+        existing_policies_with_checksums = existing_policies.index_with(&:checksum)
         new_policies, outdated_policies, updated_policies = categorize_policies(existing_policies_with_checksums)
 
         ApplicationRecord.transaction do
@@ -33,7 +40,7 @@ module Security
 
       private
 
-      attr_reader :policy_configuration, :policies
+      attr_reader :policy_configuration, :policies, :policy_type
 
       delegate :security_policies, to: :policy_configuration
 
@@ -83,7 +90,14 @@ module Security
       end
 
       def upsert_policy(policy_hash, policy_index)
-        Security::Policy.upsert_policy(security_policies, policy_hash, policy_index, policy_configuration)
+        Security::Policy.upsert_policy(policy_type, security_policies, policy_hash, policy_index, policy_configuration)
+      end
+
+      def relation_scope
+        case policy_type
+        when :approval_policy then Security::Policy.type_approval_policy
+        when :scan_execution_policy then Security::Policy.type_scan_execution_policy
+        end
       end
     end
   end

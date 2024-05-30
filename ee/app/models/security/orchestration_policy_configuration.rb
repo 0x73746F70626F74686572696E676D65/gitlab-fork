@@ -135,6 +135,14 @@ module Security
       end.compact
     end
 
+    def persist_policies?
+      if project?
+        ::Feature.enabled?(:security_policies_sync, project)
+      else
+        ::Feature.enabled?(:security_policies_sync_group, namespace)
+      end
+    end
+
     private
 
     def policy_cache_key

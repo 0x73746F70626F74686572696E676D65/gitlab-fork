@@ -1,6 +1,27 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
+  FactoryBot.define do
+    trait :with_policy_scope do
+      policy_scope do
+        {
+          compliance_frameworks: [
+            { id: 1 },
+            { id: 2 }
+          ],
+          projects: {
+            including: [
+              { id: 1 }
+            ],
+            excluding: [
+              { id: 2 }
+            ]
+          }
+        }
+      end
+    end
+  end
+
   factory :security_policy, class: 'Security::Policy' do
     security_orchestration_policy_configuration
     sequence(:name) { |n| "security-policy-#{n}" }
@@ -17,6 +38,10 @@ FactoryBot.define do
 
     trait :require_approval do
       actions { [{ type: 'require_approval', approvals_required: 1, user_approvers: %w[owner] }] }
+    end
+
+    trait :scan_execution_policy do
+      type { Security::Policy.types[:scan_execution_policy] }
     end
   end
 
@@ -53,25 +78,6 @@ FactoryBot.define do
     trait :with_schedule_and_agent do
       rules { [{ type: 'schedule', agents: { agent.name => { namespaces: namespaces } }, cadence: '30 2 * * *' }] }
       actions { [{ scan: 'container_scanning' }] }
-    end
-
-    trait :with_policy_scope do
-      policy_scope do
-        {
-          compliance_frameworks: [
-            { id: 1 },
-            { id: 2 }
-          ],
-          projects: {
-            including: [
-              { id: 1 }
-            ],
-            excluding: [
-              { id: 2 }
-            ]
-          }
-        }
-      end
     end
   end
 

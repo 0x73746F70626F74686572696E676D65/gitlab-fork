@@ -3,6 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Security::ApprovalPolicyRule, feature_category: :security_policy_management do
+  it_behaves_like 'policy rule' do
+    let(:rule_hash) { build(:scan_result_policy)[:rules].first }
+    let(:policy_type) { :approval_policy }
+  end
+
   describe 'associations' do
     it { is_expected.to belong_to(:security_policy) }
   end

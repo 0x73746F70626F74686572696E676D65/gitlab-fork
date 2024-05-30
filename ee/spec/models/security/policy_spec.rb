@@ -78,37 +78,54 @@ RSpec.describe Security::Policy, feature_category: :security_policy_management d
   end
 
   describe '.upsert_policy' do
-    let(:policy_configuration) { create(:security_orchestration_policy_configuration) }
-    let(:policies) { policy_configuration.security_policies }
-    let(:policy_hash) { build(:scan_result_policy, name: "foobar") }
-    let(:policy_index) { 0 }
+    shared_examples 'upserts policy' do |policy_type, assoc_name|
+      let(:policy_configuration) { create(:security_orchestration_policy_configuration) }
+      let(:policies) { policy_configuration.security_policies.where(type: policy_type) }
+      let(:policy_index) { 0 }
+      let(:upserted_rules) { upserted_policy.association(assoc_name.to_s).load_target }
 
-    subject(:upsert!) { described_class.upsert_policy(policies, policy_hash, policy_index, policy_configuration) }
+      subject(:upsert!) do
+        described_class.upsert_policy(policy_type, policies, policy_hash, policy_index, policy_configuration)
+      end
 
-    context 'when the policy does not exist' do
-      let(:upserted_policy) { policy_configuration.security_policies.last }
+      context 'when the policy does not exist' do
+        let(:upserted_policy) { policy_configuration.security_policies.last }
 
-      it 'creates a new policy' do
-        expect { upsert! }.to change { policies.count }.by(1)
-        expect(upserted_policy.name).to eq(policy_hash[:name])
-        expect(upserted_policy.approval_policy_rules.count).to be(1)
+        it 'creates a new policy' do
+          expect { upsert! }.to change { policies.count }.by(1)
+          expect(upserted_policy.name).to eq(policy_hash[:name])
+          expect(upserted_rules.count).to be(1)
+        end
+      end
+
+      context 'with existing policy' do
+        let!(:existing_policy) do
+          create(:security_policy,
+            policy_type,
+            security_orchestration_policy_configuration: policy_configuration,
+            policy_index: policy_index)
+        end
+
+        let(:upserted_policy) { existing_policy.reload }
+
+        it 'updates the policy' do
+          expect { upsert! }.not_to change { policies.count }
+          expect(upserted_policy).to eq(existing_policy)
+          expect(upserted_policy.name).to eq(policy_hash[:name])
+          expect(upserted_rules.count).to be(1)
+        end
       end
     end
 
-    context 'with existing policy' do
-      let!(:existing_policy) do
-        create(:security_policy,
-          security_orchestration_policy_configuration: policy_configuration,
-          policy_index: policy_index)
+    context "with approval policies" do
+      include_examples 'upserts policy', :approval_policy, :approval_policy_rules do
+        let(:policy_hash) { build(:approval_policy, name: "foobar") }
       end
+    end
 
-      let(:upserted_policy) { existing_policy.reload }
-
-      it 'updates the policy' do
-        expect { upsert! }.not_to change { policies.count }
-        expect(upserted_policy).to eq(existing_policy)
-        expect(upserted_policy.name).to eq(policy_hash[:name])
-        expect(upserted_policy.approval_policy_rules.count).to be(1)
+    context "with scan execution policies" do
+      include_examples 'upserts policy', :scan_execution_policy, :scan_execution_policy_rules do
+        let(:policy_hash) { build(:scan_execution_policy, name: "foobar") }
       end
     end
   end

@@ -12,6 +12,8 @@ module UpdateOrchestrationPolicyConfiguration
       return
     end
 
+    Security::PersistSecurityPoliciesWorker.perform_async(configuration.id) if configuration.persist_policies?
+
     Security::SecurityOrchestrationPolicies::ComplianceFrameworks::SyncService.new(configuration).execute
 
     configuration.active_scan_execution_policies.each_with_index do |policy, policy_index|
