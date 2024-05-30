@@ -29,6 +29,43 @@ RSpec.describe Plan, feature_category: :subscription_management do
     it { is_expected.to eq(%w[default free]) }
   end
 
+  describe '.with_subscriptions' do
+    it 'includes plans that have attached subscriptions', :saas do
+      group = create(:group_with_plan, plan: :free_plan)
+      create(:premium_plan)
+      create(:ultimate_plan)
+
+      expect(described_class.with_subscriptions).to match_array([group.gitlab_subscription.hosted_plan])
+    end
+  end
+
+  describe '.by_namespace' do
+    it 'includes plans that have attached subscriptions', :saas do
+      group = create(:group_with_plan, plan: :free_plan)
+      another_group = create(:group_with_plan, plan: :premium_plan)
+      create(:ultimate_plan)
+
+      expect(described_class.with_subscriptions.by_namespace([another_group, group]))
+        .to match_array([group.gitlab_subscription.hosted_plan, another_group.gitlab_subscription.hosted_plan])
+    end
+  end
+
+  describe '.by_distinct_names' do
+    it 'includes distinct plan names', :saas do
+      free_plan = create(:free_plan)
+      free_group = create(:group_with_plan, plan: :free_plan)
+      another_free_group = create(:group_with_plan, plan: :free_plan)
+      create(:premium_plan)
+      not_found_premium_group = create(:group_with_plan, plan: :premium_plan)
+      ultimate_plan = create(:ultimate_plan)
+      ultimate_group = create(:group_with_plan, plan: :ultimate_plan)
+
+      namespaces = [free_group, another_free_group, not_found_premium_group, ultimate_group]
+      expect(described_class.with_subscriptions.by_namespace(namespaces).by_distinct_names(%w[free ultimate]))
+        .to match_array([free_plan, ultimate_plan])
+    end
+  end
+
   describe '#paid_excluding_trials?' do
     subject { plan.paid_excluding_trials? }
 
