@@ -1,4 +1,5 @@
 import { GlButton } from '@gitlab/ui';
+import { INSTANCE_TYPE, STATUS_ONLINE, STATUS_OFFLINE } from '~/ci/runner/constants';
 
 import AdminRunnersDashboardApp from 'ee/ci/runner/admin_runners_dashboard/admin_runners_dashboard_app.vue';
 import AdminRunnerActiveList from 'ee/ci/runner/admin_runners_dashboard/admin_runners_active_list.vue';
@@ -6,8 +7,7 @@ import AdminRunnersWaitTimes from 'ee/ci/runner/admin_runners_dashboard/admin_ru
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
-import RunnerDashboardStatOnline from 'ee/ci/runner/components/runner_dashboard_stat_online.vue';
-import RunnerDashboardStatOffline from 'ee/ci/runner/components/runner_dashboard_stat_offline.vue';
+import RunnerDashboardStatStatus from 'ee/ci/runner/components/runner_dashboard_stat_status.vue';
 import RunnerUsage from 'ee/ci/runner/components/runner_usage.vue';
 import RunnerJobFailures from 'ee/ci/runner/components/runner_job_failures.vue';
 
@@ -42,8 +42,17 @@ describe('AdminRunnersDashboardApp', () => {
   });
 
   it('shows dashboard panels', () => {
-    expect(wrapper.findComponent(RunnerDashboardStatOnline).exists()).toBe(true);
-    expect(wrapper.findComponent(RunnerDashboardStatOffline).exists()).toBe(true);
+    expect(wrapper.findAllComponents(RunnerDashboardStatStatus).at(0).props()).toEqual({
+      scope: INSTANCE_TYPE,
+      status: STATUS_ONLINE,
+      variables: {},
+    });
+    expect(wrapper.findAllComponents(RunnerDashboardStatStatus).at(1).props()).toEqual({
+      scope: INSTANCE_TYPE,
+      status: STATUS_OFFLINE,
+      variables: {},
+    });
+
     expect(wrapper.findComponent(AdminRunnerActiveList).exists()).toBe(true);
     expect(wrapper.findComponent(AdminRunnersWaitTimes).exists()).toBe(true);
   });

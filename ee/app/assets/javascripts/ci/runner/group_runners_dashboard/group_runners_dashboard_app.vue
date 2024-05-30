@@ -1,7 +1,9 @@
 <script>
 import { GlButton } from '@gitlab/ui';
+import { GROUP_TYPE, STATUS_ONLINE, STATUS_OFFLINE } from '~/ci/runner/constants';
 import RunnerListHeader from '~/ci/runner/components/runner_list_header.vue';
 
+import RunnerDashboardStatStatus from '../components/runner_dashboard_stat_status.vue';
 import GroupRunnersActiveList from './group_runners_active_list.vue';
 import GroupRunnersWaitTimes from './group_runners_wait_times.vue';
 
@@ -11,6 +13,7 @@ export default {
     GroupRunnersActiveList,
     GroupRunnersWaitTimes,
     RunnerListHeader,
+    RunnerDashboardStatStatus,
   },
   inject: {
     clickhouseCiAnalyticsAvailable: {
@@ -31,6 +34,9 @@ export default {
       required: true,
     },
   },
+  GROUP_TYPE,
+  STATUS_ONLINE,
+  STATUS_OFFLINE,
 };
 </script>
 <template>
@@ -50,8 +56,21 @@ export default {
     <p>
       {{ s__('Runners|Use the dashboard to view performance statistics of your runner fleet.') }}
     </p>
-
-    <group-runners-active-list :group-full-path="groupFullPath" class="gl-mb-4" />
+    <div class="gl-sm-display-flex gl-gap-x-4 gl-justify-content-space-between">
+      <runner-dashboard-stat-status
+        :scope="$options.GROUP_TYPE"
+        :status="$options.STATUS_ONLINE"
+        :variables="{ groupFullPath: groupFullPath }"
+        class="runners-dashboard-half-gap-4 gl-mb-4"
+      />
+      <runner-dashboard-stat-status
+        :scope="$options.GROUP_TYPE"
+        :status="$options.STATUS_OFFLINE"
+        :variables="{ groupFullPath: groupFullPath }"
+        class="runners-dashboard-half-gap-4 gl-mb-4"
+      />
+      <group-runners-active-list :group-full-path="groupFullPath" class="gl-mb-4" />
+    </div>
     <group-runners-wait-times :group-full-path="groupFullPath" />
   </div>
 </template>
