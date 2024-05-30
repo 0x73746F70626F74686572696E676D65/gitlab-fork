@@ -460,8 +460,11 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
     end
 
     it 'notifies the admin about the requested membership' do
-      expect(::Notify).to receive(:no_more_seats)
-        .with(owner.id, user.id, project, project_users.map(&:name)).once.and_call_original
+      notification_service = double
+
+      expect(::NotificationService).to receive(:new).and_return(notification_service)
+      expect(notification_service).to receive(:no_more_seats)
+        .with(group, [owner], user, project_users.map(&:name))
 
       execute_service
     end
@@ -474,7 +477,7 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
       let(:invites) { create(:user).id.to_s }
 
       it 'does not notify the admin about the requested membership' do
-        expect(::Notify).not_to receive(:no_more_seats)
+        expect(::NotificationService).not_to receive(:new)
 
         execute_service
       end
@@ -484,7 +487,7 @@ RSpec.describe Members::CreateService, feature_category: :groups_and_projects do
       let(:invites) { ['email@example.com'] }
 
       it 'removes invite emails from the seat check' do
-        expect(::Notify).not_to receive(:no_more_seats).and_call_original
+        expect(::NotificationService).not_to receive(:new)
 
         execute_service
       end

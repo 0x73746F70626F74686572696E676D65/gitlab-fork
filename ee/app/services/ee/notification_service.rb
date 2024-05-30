@@ -99,6 +99,24 @@ module EE
       ::TodoService.new.added_approver(recipients, merge_request)
     end
 
+    def no_more_seats(namespace, recipients, user, requested_member_list)
+      namespace_limit = namespace.namespace_limit
+
+      updated = namespace_limit.with_lock do
+        all_seats_used_notification_at = namespace_limit.last_seat_all_used_seats_notification_at
+
+        next unless all_seats_used_notification_at.nil? || all_seats_used_notification_at < 1.day.ago
+
+        namespace_limit.update!(last_seat_all_used_seats_notification_at: Time.current)
+      end
+
+      return unless updated
+
+      recipients.each do |recipient|
+        ::Notify.no_more_seats(recipient.id, user.id, namespace, requested_member_list).deliver_later
+      end
+    end
+
     private
 
     def oncall_user_removed_recipients(rotation, removed_user)

@@ -81,9 +81,10 @@ module EE
         # rubocop:disable Database/AvoidUsingPluckWithoutLimit, CodeReuse/ActiveRecord -- Limit of 100 is defined in validate_invitable! method
         requested_member_list = ::User.id_in(invited_user_ids).pluck(:name)
         # rubocop:enable Database/AvoidUsingPluckWithoutLimit, CodeReuse/ActiveRecord
-        root_namespace.owners.each do |owner|
-          ::Notify.no_more_seats(owner.id, current_user.id, source, requested_member_list).deliver_now
-        end
+
+        ::NotificationService.new.no_more_seats(
+          root_namespace, root_namespace.owners, current_user, requested_member_list
+        )
       end
 
       def invite_quota_exceeded?

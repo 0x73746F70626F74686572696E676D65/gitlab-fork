@@ -1108,4 +1108,48 @@ RSpec.describe EE::NotificationService, :mailer, feature_category: :team_plannin
       execute
     end
   end
+
+  describe '#no_more_seats' do
+    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:namespace_limit) { create(:namespace_limit, namespace: namespace) }
+    let_it_be(:recipient) { create(:user) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:required_members) { ['Patrick Jane', 'Thomas McAllister'] }
+
+    subject(:execute) { NotificationService.new.no_more_seats(namespace, [recipient], user, required_members) }
+
+    it 'sends emails and update the last_at value' do
+      expect(Notify).to receive(:no_more_seats).with(recipient.id, user.id, namespace, required_members).and_return(mailer)
+
+      expect(mailer).to receive(:deliver_later)
+
+      execute
+    end
+
+    context 'when last_seat_all_used_seats_notification_at is not nil' do
+      let_it_be(:notification_at) { Time.current }
+
+      before do
+        namespace_limit.update!(last_seat_all_used_seats_notification_at: notification_at)
+      end
+
+      it 'does not send email' do
+        expect(Notify).not_to receive(:no_more_seats).with(recipient.id, user.id, namespace, required_members)
+
+        execute
+      end
+
+      context 'when last_seat_all_used_seats_notification_at is more than 1 day ago' do
+        let_it_be(:notification_at) { 2.days.ago }
+
+        it 'sends emails and update the last_at value' do
+          expect(Notify).to receive(:no_more_seats).with(recipient.id, user.id, namespace, required_members).and_return(mailer)
+
+          expect(mailer).to receive(:deliver_later)
+
+          execute
+        end
+      end
+    end
+  end
 end
