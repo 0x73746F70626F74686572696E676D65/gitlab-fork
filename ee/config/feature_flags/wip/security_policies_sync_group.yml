@@ -1,0 +1,9 @@
+---
+name: security_policies_sync_group
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/416262
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/148854
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/454828
+milestone: '16.11'
+group: group::security policies
+type: wip
+default_enabled: false

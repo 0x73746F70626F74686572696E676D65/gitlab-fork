@@ -188,29 +188,6 @@ RSpec.describe MergeRequests::PostMergeService, feature_category: :code_review_w
           subject
         end
       end
-
-      describe 'policy sync' do
-        context 'with feature enabled' do
-          it 'syncs policies' do
-            expect(Security::PersistSecurityPoliciesWorker).to receive(:perform_async).with(policy_configuration.id)
-            expect(Security::PersistSecurityPoliciesWorker).to receive(:perform_async).with(another_policy_configuration.id)
-
-            subject
-          end
-        end
-
-        context 'with feature disabled' do
-          before do
-            stub_feature_flags(security_policies_sync: false)
-          end
-
-          it 'syncs policies' do
-            expect(Security::PersistSecurityPoliciesWorker).not_to receive(:perform_async).with(policy_configuration.id)
-
-            subject
-          end
-        end
-      end
     end
 
     context 'when merge request is a blocker for other merge requests' do

@@ -12,10 +12,21 @@ module Security
     def perform(configuration_id)
       configuration = Security::OrchestrationPolicyConfiguration.find_by_id(configuration_id) || return
 
+      return unless configuration.persist_policies?
+
       configuration.invalidate_policy_yaml_cache
 
-      Security::SecurityOrchestrationPolicies::PersistPolicyService.new(configuration,
-        configuration.active_scan_result_policies).execute
+      Security::SecurityOrchestrationPolicies::PersistPolicyService
+        .new(policy_configuration: configuration,
+          policies: configuration.active_scan_result_policies,
+          policy_type: :approval_policy)
+        .execute
+
+      Security::SecurityOrchestrationPolicies::PersistPolicyService
+        .new(policy_configuration: configuration,
+          policies: configuration.active_scan_execution_policies,
+          policy_type: :scan_execution_policy)
+        .execute
     end
   end
 end

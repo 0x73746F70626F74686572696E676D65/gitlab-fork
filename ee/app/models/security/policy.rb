@@ -8,6 +8,8 @@ module Security
     belongs_to :security_orchestration_policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration'
     has_many :approval_policy_rules, class_name: 'Security::ApprovalPolicyRule', foreign_key: 'security_policy_id',
       inverse_of: :security_policy
+    has_many :scan_execution_policy_rules, class_name: 'Security::ScanExecutionPolicyRule',
+      foreign_key: 'security_policy_id', inverse_of: :security_policy
 
     enum type: { approval_policy: 0, scan_execution_policy: 1 }, _prefix: true
 
@@ -27,9 +29,9 @@ module Security
       Digest::SHA256.hexdigest(policy_hash.to_json)
     end
 
-    def self.attributes_from_policy_hash(policy_hash, policy_configuration)
+    def self.attributes_from_policy_hash(policy_type, policy_hash, policy_configuration)
       {
-        type: :approval_policy,
+        type: policy_type,
         name: policy_hash[:name],
         description: policy_hash[:description],
         enabled: policy_hash[:enabled],
@@ -38,18 +40,22 @@ module Security
         scope: policy_hash.fetch(:policy_scope, {}),
         checksum: checksum(policy_hash),
         security_policy_management_project_id: policy_configuration.security_policy_management_project_id
-      }
+      }.compact
     end
 
-    def self.upsert_policy(policies, policy_hash, policy_index, policy_configuration, policy_type: :approval_policy)
+    def self.rule_attributes_from_rule_hash(policy_type, rule_hash, policy_configuration)
+      Security::PolicyRule.for_policy_type(policy_type).attributes_from_rule_hash(rule_hash, policy_configuration)
+    end
+
+    def self.upsert_policy(policy_type, policies, policy_hash, policy_index, policy_configuration)
       transaction do
         policy = policies.find_or_initialize_by(policy_index: policy_index, type: policy_type)
-        policy.update!(attributes_from_policy_hash(policy_hash, policy_configuration))
+        policy.update!(attributes_from_policy_hash(policy_type, policy_hash, policy_configuration))
 
         policy_hash[:rules].map.with_index do |rule_hash, rule_index|
-          Security::ApprovalPolicyRule
-            .find_or_initialize_by(security_policy_id: policy.id, rule_index: rule_index)
-            .update!(Security::ApprovalPolicyRule.attributes_from_rule_hash(rule_hash, policy_configuration))
+          Security::PolicyRule.for_policy_type(policy_type)
+              .find_or_initialize_by(security_policy_id: policy.id, rule_index: rule_index)
+              .update!(rule_attributes_from_rule_hash(policy_type, rule_hash, policy_configuration))
         end
       end
     end
