@@ -231,7 +231,7 @@ RSpec.describe API::Groups, :aggregate_failures, feature_category: :groups_and_p
         expect(json_response.map { |group| group["marked_for_deletion_on"] }).to contain_exactly(Date.parse('2024-01-01').strftime('%Y-%m-%d'))
       end
 
-      it 'returns all groups when marked_for_deletion_on is not specified' do
+      it 'returns all groups when marked_for_deletion_on is not specified', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/464256' do
         get api("/groups", user)
 
         expect(response).to have_gitlab_http_status(:ok)
