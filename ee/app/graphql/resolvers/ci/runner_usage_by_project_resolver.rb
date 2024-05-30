@@ -44,11 +44,12 @@ module Resolvers
             "'to_date' must be greater than 'from_date' and be within 1 year"
         end
 
-        result = ::Ci::Runners::GetUsageByProjectService.new(current_user,
+        result = ::Ci::Runners::GetUsageByProjectService.new(
+          current_user,
           runner_type: runner_type,
           from_date: from_date,
           to_date: to_date,
-          max_project_count: [MAX_PROJECTS_LIMIT, projects_limit || DEFAULT_PROJECTS_LIMIT].min
+          max_item_count: [MAX_PROJECTS_LIMIT, projects_limit || DEFAULT_PROJECTS_LIMIT].min
         ).execute
 
         raise Gitlab::Graphql::Errors::ArgumentError, result.message if result.error?
@@ -61,7 +62,7 @@ module Resolvers
       def prepare_result(payload)
         payload.map do |project_usage|
           {
-            project_id: project_usage['grouped_project_id'],
+            project_id: project_usage['project_id_bucket'],
             ci_minutes_used: project_usage['total_duration_in_mins'],
             ci_build_count: project_usage['count_builds']
           }
