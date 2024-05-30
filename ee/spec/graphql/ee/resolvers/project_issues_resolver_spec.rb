@@ -127,7 +127,7 @@ RSpec.describe Resolvers::ProjectIssuesResolver do
         end
 
         it 'generates mutually exclusive filter error when wildcard and list are provided' do
-          expect_graphql_error_to_be_created(GraphQL::Schema::Validator::ValidationFailedError, 'only one of [iterationId, iterationWildcardId] arguments is allowed at the same time.') do
+          expect_graphql_error_to_be_created(GraphQL::Schema::Validator::ValidationFailedError, 'Only one of [iterationId, iterationWildcardId] arguments is allowed at the same time.') do
             resolve_issues(iteration_id: [iteration1.to_global_id], iteration_wildcard_id: 'CURRENT')
           end
         end

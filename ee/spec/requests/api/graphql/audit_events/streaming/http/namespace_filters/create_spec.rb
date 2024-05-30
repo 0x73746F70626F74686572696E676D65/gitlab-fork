@@ -168,7 +168,7 @@ RSpec.describe 'Create a namespace filter for group level external audit event d
           }
         end
 
-        let(:error_message) { 'one and only one of groupPath or projectPath is required' }
+        let(:error_message) { 'One and only one of [groupPath, projectPath] arguments is required.' }
 
         it_behaves_like 'does not create namespace filter'
       end
@@ -180,7 +180,7 @@ RSpec.describe 'Create a namespace filter for group level external audit event d
           }
         end
 
-        let(:error_message) { 'one and only one of groupPath or projectPath is required' }
+        let(:error_message) { 'One and only one of [groupPath, projectPath] arguments is required.' }
 
         it_behaves_like 'does not create namespace filter'
       end
