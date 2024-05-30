@@ -89,14 +89,28 @@ describe('Vulnerability status description component', () => {
   });
 
   describe('time ago', () => {
-    it('uses the pipeline created date when the vulnerability state is "detected"', () => {
-      const pipelineDateString = createDate('2001');
-      createWrapper({
-        vulnerability: { state: 'detected', pipeline: { createdAt: pipelineDateString } },
-      });
+    const pipelineDateString = createDate('2001');
+    const detectedAtString = createDate('2002');
 
-      expect(timeAgo().props('time')).toBe(pipelineDateString);
-    });
+    it.each`
+      description                | isVulnerabilityScanner | expectedTime
+      ${'the pipeline created '} | ${false}               | ${pipelineDateString}
+      ${'detection date'}        | ${true}                | ${detectedAtString}
+    `(
+      'uses $description when the vulnerability state is "detected"',
+      ({ isVulnerabilityScanner, expectedTime }) => {
+        createWrapper({
+          vulnerability: {
+            state: 'detected',
+            pipeline: { createdAt: pipelineDateString },
+            detectedAt: detectedAtString,
+            scanner: { isVulnerabilityScanner },
+          },
+        });
+
+        expect(timeAgo().props('time')).toBe(expectedTime);
+      },
+    );
 
     // The .map() is used to output the correct test name by doubling up the parameter, i.e. 'detected' -> ['detected', 'detected'].
     it.each(NON_DETECTED_STATES.map((x) => [x, x]))(
@@ -123,6 +137,20 @@ describe('Vulnerability status description component', () => {
       });
 
       expect(pipelineLink().attributes('href')).toBe('pipeline/url');
+    });
+
+    describe('when vulnerability scanner is true', () => {
+      it('does not include the pipeline link', () => {
+        createWrapper({
+          vulnerability: {
+            state: 'detected',
+            pipeline: { url: 'pipeline/url' },
+            scanner: { isVulnerabilityScanner: true },
+          },
+        });
+
+        expect(pipelineLink().exists()).toBe(false);
+      });
     });
 
     it.each(NON_DETECTED_STATES)(

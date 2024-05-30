@@ -64,4 +64,22 @@ RSpec.describe Vulnerabilities::Scanner, feature_category: :vulnerability_manage
       end
     end
   end
+
+  describe '#vulnerability_scanner?' do
+    let(:scanner) { build(:vulnerabilities_scanner, external_id: external_id) }
+
+    subject { scanner.vulnerability_scanner? }
+
+    context 'with trivy as scanner' do
+      let(:external_id) { 'trivy' }
+
+      it { is_expected.to be false }
+    end
+
+    context 'with gitlab security scanner' do
+      let(:external_id) { Gitlab::VulnerabilityScanning::SecurityScanner::EXTERNAL_ID }
+
+      it { is_expected.to be true }
+    end
+  end
 end
