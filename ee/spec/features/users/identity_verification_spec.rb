@@ -14,6 +14,10 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   let(:require_iv_for_old_users) { false }
 
   before do
+    allow(Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_call_original
+    allow(Gitlab::ApplicationRateLimiter).to receive(:throttled?)
+      .with(:phone_verification_send_code, scope: user).and_return(false)
+
     stub_feature_flags(require_identity_verification_for_old_users: require_iv_for_old_users)
     stub_feature_flags(identity_verification_arkose_challenge: require_challenge)
     stub_saas_features(identity_verification: true)
@@ -94,11 +98,38 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     end
   end
 
+  context 'when the user gets a high risk score from Telesign' do
+    it 'inserts credit card verification requirement before phone number' do
+      expect_to_see_identity_verification_page
+
+      expect(page).to have_content('Step 1: Verify phone number')
+
+      send_phone_number_verification_code(
+        solve_arkose_challenge: true,
+        telesign_opts: { risk_score: ::IdentityVerification::UserRiskProfile::TELESIGN_HIGH_RISK_THRESHOLD + 1 }
+      )
+
+      expect(page).to have_content('Step 1: Verify a payment method')
+
+      verify_credit_card
+
+      expect(page).to have_content(_('Completed'))
+
+      verify_phone_number
+
+      click_link 'Next'
+
+      wait_for_requests
+
+      expect_to_see_dashboard_page
+    end
+  end
+
   context 'when user solved the challenge' do
     it 'does not require the challenge on successive attempts' do
       expect_to_see_identity_verification_page
 
-      send_phone_number_verification_code(solve_arkose_challenge: true, challenge_shown: true)
+      send_phone_number_verification_code(solve_arkose_challenge: true, arkose_opts: { challenge_shown: true })
 
       # Destroy the user's phone_number_validation record so that code send is
       # allowed again immediately instead of having to wait for one minute

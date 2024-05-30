@@ -48,10 +48,10 @@ module IdentityVerificationHelpers
     page.execute_script("document.querySelector('#{selector}').dispatchEvent(new Event('input'))")
   end
 
-  def stub_telesign_verification
+  def stub_telesign_verification(risk_score: ::IdentityVerification::UserRiskProfile::TELESIGN_HIGH_RISK_THRESHOLD)
     allow_next_instance_of(::PhoneVerification::TelesignClient::RiskScoreService) do |service|
       allow(service).to receive(:execute).and_return(
-        ServiceResponse.success(payload: { risk_score: 80 })
+        ServiceResponse.success(payload: { risk_score: risk_score })
       )
     end
 
@@ -90,19 +90,23 @@ module IdentityVerificationHelpers
     expect(page).to have_content(_('Completed'))
   end
 
-  def send_phone_number_verification_code(solve_arkose_challenge: false, **arkose_opts)
-    mock_phone_number = '400000000'
-
+  def send_phone_number_verification_code(solve_arkose_challenge: false, arkose_opts: {}, telesign_opts: {})
     expect(page).to have_content('Send code')
 
     solve_arkose_verify_challenge(**arkose_opts) if solve_arkose_challenge
 
-    stub_telesign_verification
+    stub_telesign_verification(**telesign_opts)
 
-    select_from_listbox('🇦🇺 Australia (+61)', from: '🇺🇸 United States of America (+1)')
+    us_list_item = '🇺🇸 United States of America (+1)'
+    au_list_item = '🇦🇺 Australia (+61)'
+    select_from_listbox(au_list_item, from: us_list_item) if has_content?(us_list_item)
 
-    fill_in 'phone_number', with: mock_phone_number
+    fill_in 'phone_number', with: '400000000'
     click_button s_('IdentityVerification|Send code')
+  end
+
+  def verify_phone_number(solve_arkose_challenge: false, **opts)
+    send_phone_number_verification_code(solve_arkose_challenge: solve_arkose_challenge, **opts)
 
     content = format(
       s_("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
@@ -110,13 +114,8 @@ module IdentityVerificationHelpers
     )
 
     expect(page).to have_content(content)
-  end
-
-  def verify_phone_number(solve_arkose_challenge: false)
-    send_phone_number_verification_code(solve_arkose_challenge: solve_arkose_challenge)
 
     mock_verification_code = '4319315'
-
     fill_in 'verification_code', with: mock_verification_code
 
     click_button s_('IdentityVerification|Verify phone number')
