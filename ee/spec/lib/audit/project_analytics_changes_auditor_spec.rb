@@ -32,6 +32,19 @@ RSpec.describe Audit::ProjectAnalyticsChangesAuditor, feature_category: :product
       end
     end
 
+    context 'when the pointer project is changed' do
+      before do
+        project.build_analytics_dashboards_pointer
+        project.analytics_dashboards_pointer.update!(target_project_id: Project.last.id)
+      end
+
+      it 'adds an audit event', :aggregate_failures do
+        expect { auditor.execute }.to change { AuditEvent.count }.by(1)
+        expect(AuditEvent.last.details)
+          .to include({ change: :analytics_dashboards_pointer, from: nil, to: Project.last.id })
+      end
+    end
+
     context 'when the snowplow configurator connection string is set' do
       before do
         project.project_setting.update!(product_analytics_configurator_connection_string: "http://example.com")

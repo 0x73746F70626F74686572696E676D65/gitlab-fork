@@ -30,6 +30,29 @@ module Audit # rubocop:disable Gitlab/BoundedContexts -- govern::compliance will
 
         ::Gitlab::Audit::Auditor.audit(audit_context)
       end
+
+      audit_pointer_changes
+    end
+
+    private
+
+    def audit_pointer_changes
+      return unless model.project&.analytics_dashboards_pointer&.previous_changes&.any?
+
+      audit_context = {
+        name: 'product_analytics_settings_update',
+        author: @current_user,
+        scope: @project,
+        target: @project,
+        message: "Changed analytics dashboards pointer",
+        additional_details: {
+          change: :analytics_dashboards_pointer,
+          from: model.project.analytics_dashboards_pointer.previous_changes[:target_project_id].first,
+          to: model.project.analytics_dashboards_pointer.previous_changes[:target_project_id].last
+        }
+      }
+
+      ::Gitlab::Audit::Auditor.audit(audit_context)
     end
 
     def details(column)
