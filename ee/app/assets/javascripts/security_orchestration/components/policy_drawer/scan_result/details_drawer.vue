@@ -85,7 +85,7 @@ export default {
       return this.parsedYaml?.approval_settings || {};
     },
     shouldRenderBotMessage() {
-      return !this.actions.some(({ type, enabled }) => type === BOT_MESSAGE_TYPE && !enabled);
+      return !this.actions?.some(({ type, enabled }) => type === BOT_MESSAGE_TYPE && !enabled);
     },
   },
   methods: {

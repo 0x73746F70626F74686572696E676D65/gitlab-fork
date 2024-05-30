@@ -14,6 +14,7 @@ import {
   mockApprovalSettingsScanResultPolicy,
   mockProjectFallbackClosedScanResultManifest,
   mockNoFallbackScanResultManifest,
+  zeroActionsScanResultManifest,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
 
 describe('DetailsDrawer component', () => {
@@ -121,6 +122,18 @@ describe('DetailsDrawer component', () => {
           },
         });
         expect(findBotMessage().text()).toBe('Send a bot message when the conditions match.');
+      });
+
+      it('shows the message when there are zero actions is enabled', () => {
+        factory({
+          props: {
+            policy: {
+              ...mockProjectWithAllApproverTypesScanResultPolicy,
+              yaml: zeroActionsScanResultManifest,
+            },
+          },
+        });
+        expect(findBotMessage().exists()).toBe(true);
       });
     });
   });
