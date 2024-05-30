@@ -9,10 +9,10 @@
     = s_('DuoProTrial|You do not have access to the GitLab Duo Pro trial')
   .gl-mt-3
     = s_('DuoProTrial|To register for a trial of GitLab Duo Pro, you must be an Owner of a top-level group that has an active paid subscription or is on an Ultimate trial.')
-  .gl-mt-3.gl--flex-center.gl-flex-direction-column.gl-sm-flex-direction-row.gl-gap-3
-    .js-go-back.gl-w-full.gl-sm-w-auto
+  .gl-mt-3.gl-flex.gl-items-center.gl-justify-center.gl-flex-col.gl-gap-3{ class: 'sm:gl-flex-row' }
+    .js-go-back.gl-w-full{ class: 'sm:gl-w-auto' }
       = render Pajamas::ButtonComponent.new(variant: :confirm, button_options: { class: 'gl-w-full' }) do
         = _('Go back')
-    %form.gl-w-full.gl-sm-w-auto{ action: destroy_user_session_path, method: :post }
+    %form.gl-w-full{ class: 'sm:gl-w-auto', action: destroy_user_session_path, method: :post }
       = render Pajamas::ButtonComponent.new(type: :submit, button_options: { class: 'gl-w-full' }) do
         = s_('DuoProTrial|Sign in with a different account')
