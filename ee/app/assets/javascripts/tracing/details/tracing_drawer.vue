@@ -105,7 +105,7 @@ export default {
   >
     <template #title>
       <div data-testid="drawer-title">
-        <h2 class="gl-font-size-h2 gl-mt-0 gl-mb-0 gl-overflow-wrap-anywhere">{{ title }}</h2>
+        <h2 class="gl-font-size-h2 gl-mt-0 gl-mb-0 gl-wrap-anywhere">{{ title }}</h2>
       </div>
     </template>
 
@@ -131,7 +131,7 @@ export default {
           :class="{ 'gl-bg-red-100': hasError(line) }"
         >
           <label data-testid="section-line-name">{{ line.name }}</label>
-          <div data-testid="section-line-value" class="gl-overflow-wrap-anywhere">
+          <div data-testid="section-line-value" class="gl-wrap-anywhere">
             <gl-link v-if="isLink(line.value)" :href="line.value" target="_blank">
               {{ line.value }}
             </gl-link>

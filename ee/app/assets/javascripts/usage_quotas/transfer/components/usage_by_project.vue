@@ -20,7 +20,7 @@ export default {
     {
       key: 'project',
       label: __('Project'),
-      tdClass: ['gl-w-full gl-overflow-wrap-anywhere'],
+      tdClass: ['gl-w-full gl-wrap-anywhere'],
       thClass: ['gl-w-full'],
     },
     {

@@ -111,7 +111,7 @@ export default {
           class="gl-py-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-200"
         >
           <label data-testid="section-line-name">{{ line.name }}</label>
-          <div data-testid="section-line-value" class="gl-overflow-wrap-anywhere">
+          <div data-testid="section-line-value" class="gl-wrap-anywhere">
             {{ line.value }}
           </div>
         </div>
