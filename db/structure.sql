@@ -25910,6 +25910,8 @@ CREATE INDEX index_emails_on_created_at_where_confirmed_at_is_null ON emails USI
 
 CREATE UNIQUE INDEX index_emails_on_email ON emails USING btree (email);
 
+CREATE INDEX index_emails_on_email_trigram ON emails USING gin (email gin_trgm_ops);
+
 CREATE INDEX index_emails_on_user_id ON emails USING btree (user_id);
 
 CREATE INDEX index_enabled_clusters_on_id ON clusters USING btree (id) WHERE (enabled = true);
@@ -28136,6 +28138,8 @@ CREATE UNIQUE INDEX index_users_on_email ON users USING btree (email);
 
 CREATE INDEX index_users_on_email_domain_and_id ON users USING btree (lower(split_part((email)::text, '@'::text, 2)), id);
 
+CREATE INDEX index_users_on_email_trigram ON users USING gin (email gin_trgm_ops);
+
 CREATE INDEX index_users_on_feed_token ON users USING btree (feed_token);
 
 CREATE INDEX index_users_on_group_view ON users USING btree (group_view);
@@ -28151,6 +28155,8 @@ CREATE INDEX index_users_on_name ON users USING btree (name);
 CREATE INDEX index_users_on_name_trigram ON users USING gin (name gin_trgm_ops);
 
 CREATE INDEX index_users_on_public_email_excluding_null_and_empty ON users USING btree (public_email) WHERE (((public_email)::text <> ''::text) AND (public_email IS NOT NULL));
+
+CREATE INDEX index_users_on_public_email_trigram ON users USING gin (public_email gin_trgm_ops);
 
 CREATE UNIQUE INDEX index_users_on_reset_password_token ON users USING btree (reset_password_token);
 
