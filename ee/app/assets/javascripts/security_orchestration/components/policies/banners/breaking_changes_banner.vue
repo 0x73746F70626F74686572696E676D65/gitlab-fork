@@ -28,7 +28,7 @@ export default {
       'SecurityOrchestration|match_on_inclusion is replaced by %{linkStart}match_on_inclusion_license%{linkEnd}',
     ),
     newlyDeprecatedChange: s__(
-      'SecurityOrchestration|newly_detected is replaced by %{firstLinkStart}new_needs_triage%{firstLinkEnd} and %{secondLinkStart}new_dismissed%{secondLinkEnd}',
+      'SecurityOrchestration|newly_detected in scan_finding rules is replaced by %{firstLinkStart}new_needs_triage%{firstLinkEnd} and %{secondLinkStart}new_dismissed%{secondLinkEnd}',
     ),
     graphqlChange: s__(
       'SecurityOrchestration|project.networkpolicies will be removed (GraphQL API associated with the network policies)',
