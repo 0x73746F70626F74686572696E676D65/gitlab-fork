@@ -8895,6 +8895,7 @@ CREATE TABLE draft_notes (
     commit_id bytea,
     line_code text,
     internal boolean DEFAULT false NOT NULL,
+    note_type smallint,
     CONSTRAINT check_c497a94a0e CHECK ((char_length(line_code) <= 255))
 );
 
