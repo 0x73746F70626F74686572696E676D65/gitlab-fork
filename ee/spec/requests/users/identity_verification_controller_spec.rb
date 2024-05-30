@@ -147,6 +147,11 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
   describe 'POST verify_credit_card_captcha' do
     subject(:do_request) { post verify_credit_card_captcha_identity_verification_path }
 
+    it_behaves_like 'it ensures verification attempt is allowed', 'credit_card' do
+      let_it_be(:cc) { create(:credit_card_validation, user: user) }
+      let(:target_user) { user }
+    end
+
     it_behaves_like 'it verifies arkose token', 'credit_card' do
       let(:target_user) { user }
     end
@@ -158,11 +163,6 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
     let(:params) { { format: :json } }
 
     subject(:do_request) { get verify_credit_card_identity_verification_path(params) }
-
-    it_behaves_like 'it ensures verification attempt is allowed', 'credit_card' do
-      let_it_be(:cc) { create(:credit_card_validation, user: user) }
-      let(:target_user) { user }
-    end
 
     it_behaves_like 'it redirects to root_path when user is already verified'
     it_behaves_like 'it verifies presence of credit_card_validation record for the user'

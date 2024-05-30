@@ -660,10 +660,6 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       stub_session(session_data: { verification_user_id: user.id })
     end
 
-    it_behaves_like 'it ensures verification attempt is allowed', 'credit_card' do
-      let_it_be(:cc) { create(:credit_card_validation, user: user) }
-    end
-
     it_behaves_like 'it verifies presence of credit_card_validation record for the user'
   end
 
@@ -675,6 +671,10 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     end
 
     subject(:do_request) { post verify_credit_card_captcha_signup_identity_verification_path }
+
+    it_behaves_like 'it ensures verification attempt is allowed', 'credit_card' do
+      let_it_be(:cc) { create(:credit_card_validation, user: user) }
+    end
 
     it_behaves_like 'it verifies arkose token', 'credit_card'
   end

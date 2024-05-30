@@ -117,25 +117,21 @@ export default {
       this.captchaData = {};
     },
     submit() {
-      if (this.requireChallenge) {
-        this.isLoading = true;
-        axios
-          .post(this.creditCardVerifyCaptchaPath, this.captchaData)
-          .then(() => {
-            this.alert?.dismiss();
-            this.$refs.zuora.submit();
-          })
-          .catch((error) => {
-            createAlert({ message: error.response?.data?.message || I18N_GENERIC_ERROR });
-          })
-          .finally(() => {
-            this.increaseVerificationAttempts();
-            this.isLoading = false;
-          });
-      } else {
-        this.alert?.dismiss();
-        this.$refs.zuora.submit();
-      }
+      this.isLoading = true;
+
+      axios
+        .post(this.creditCardVerifyCaptchaPath, this.captchaData)
+        .then(() => {
+          this.alert?.dismiss();
+          this.$refs.zuora.submit();
+        })
+        .catch((error) => {
+          createAlert({ message: error.response?.data?.message || I18N_GENERIC_ERROR });
+        })
+        .finally(() => {
+          this.increaseVerificationAttempts();
+          this.isLoading = false;
+        });
     },
   },
   i18n: {
