@@ -49,8 +49,8 @@ RSpec.describe DependencyManagement::AggregationsFinder, feature_category: :depe
     describe 'pagination' do
       let(:params) { { per_page: 1 } }
 
-      it 'uses per_page to determine page size' do
-        expect(execute.to_a.size).to eq(1)
+      it 'returns per_page + 1 items' do
+        expect(execute.to_a.size).to eq(2)
       end
 
       context 'when per_page is over max page size' do
@@ -61,8 +61,8 @@ RSpec.describe DependencyManagement::AggregationsFinder, feature_category: :depe
           stub_const("#{described_class}::MAX_PAGE_SIZE", max)
         end
 
-        it 'returns max number of items' do
-          expect(execute.to_a.size).to eq(max)
+        it 'returns max number of items + 1' do
+          expect(execute.to_a.size).to eq(max + 1)
         end
       end
     end

@@ -75,9 +75,10 @@ module Groups
 
     def dependencies
       if using_new_query?
-        ::DependencyManagement::AggregationsFinder.new(group, params: dependencies_finder_params).execute
+        ::DependencyManagement::AggregationsFinder.new(group, params: params).execute
           .with_component
           .with_version
+          .keyset_paginate(cursor: params[:cursor], per_page: per_page)
       else
         ::Sbom::DependenciesFinder.new(group, params: dependencies_finder_params).execute
           .with_component
@@ -144,6 +145,10 @@ module Groups
       else
         sort_by&.to_sym
       end
+    end
+
+    def per_page
+      params[:per_page]&.to_i || DependencyManagement::AggregationsFinder::DEFAULT_PAGE_SIZE
     end
 
     def set_below_group_limit

@@ -3,6 +3,8 @@
 module DependencyManagement
   # rubocop:disable CodeReuse/ActiveRecord -- Code won't be reused outside this context
   class AggregationsFinder
+    include Gitlab::Utils::StrongMemoize
+
     DEFAULT_PAGE_SIZE = 20
     MAX_PAGE_SIZE = 20
     DEFAULT_SORT_COLUMNS = %i[component_id component_version_id].freeze
@@ -15,10 +17,6 @@ module DependencyManagement
 
     def execute
       group = distinct_columns.map { |column| "outer_occurrences.#{column}" }
-
-      order = orderings.map do |column, direction|
-        "MIN(outer_occurrences.#{column}) #{direction.to_s.upcase}"
-      end
 
       Sbom::Occurrence.with(namespaces_cte.to_arel)
         .select(
@@ -34,7 +32,7 @@ module DependencyManagement
         )
         .from("(#{outer_occurrences.to_sql}) outer_occurrences, LATERAL (#{counts.to_sql}) counts")
         .group(*group)
-        .order(*order)
+        .order(outer_order)
     end
 
     private
@@ -45,6 +43,22 @@ module DependencyManagement
       orderings.keys
     end
 
+    def outer_order
+      order_definitions = orderings.map do |column, direction|
+        order_expression = Arel.sql("MIN(outer_occurrences.#{column})")
+
+        Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+          attribute_name: column.to_s,
+          column_expression: Arel.sql("outer_occurrences.#{column}"),
+          order_expression: direction == :asc ? order_expression.asc : order_expression.desc,
+          nullable: :not_nullable,
+          order_direction: direction
+        )
+      end
+
+      Gitlab::Pagination::Keyset::Order.build(order_definitions)
+    end
+
     def namespaces_cte
       ::Gitlab::SQL::CTE.new(:namespaces, namespace.self_and_descendants.select(:traversal_ids))
     end
@@ -52,9 +66,25 @@ module DependencyManagement
     def inner_occurrences
       Sbom::Occurrence.where('sbom_occurrences.traversal_ids = namespaces.traversal_ids::bigint[]')
         .unarchived
-        .order(**orderings)
-        .limit(page_size)
+        .order(inner_order)
         .select_distinct(on: distinct_columns)
+        .keyset_paginate(cursor: cursor, per_page: page_size)
+    end
+
+    def inner_order
+      order_definitions = orderings.map do |column, direction|
+        column_expression = Sbom::Occurrence.arel_table[column]
+
+        Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+          attribute_name: column.to_s,
+          column_expression: column_expression,
+          order_expression: direction == :asc ? column_expression.asc : column_expression.desc,
+          nullable: :not_nullable,
+          order_direction: direction
+        )
+      end
+
+      Gitlab::Pagination::Keyset::Order.build(order_definitions)
     end
 
     def outer_occurrences
@@ -65,7 +95,7 @@ module DependencyManagement
       Sbom::Occurrence.select_distinct(on: distinct_columns, table_name: '"inner_occurrences"')
       .from("namespaces, LATERAL (#{inner_occurrences.to_sql}) inner_occurrences")
       .order(*order)
-      .limit(page_size)
+      .limit(page_size + 1)
     end
 
     def counts
@@ -78,7 +108,11 @@ module DependencyManagement
     end
 
     def page_size
-      [params.fetch(:per_page, DEFAULT_PAGE_SIZE), MAX_PAGE_SIZE].min
+      [params.fetch(:per_page, DEFAULT_PAGE_SIZE).to_i, MAX_PAGE_SIZE].min
+    end
+
+    def cursor
+      params[:cursor]
     end
 
     def orderings
@@ -90,14 +124,16 @@ module DependencyManagement
       # Create a new hash to ensure that it is in the front when enumerating.
       Hash[sort_by => sort_direction, **default_orderings]
     end
+    strong_memoize_attr :orderings
 
     def sort_by
-      sort_by = params[:sort_by]&.to_sym
+      sort_by = params[:sort_by]
 
       return unless sort_by && SUPPORTED_SORT_COLUMNS.include?(sort_by)
 
       sort_by
     end
+    strong_memoize_attr :sort_by
 
     def sort_direction
       params[:sort]&.downcase&.to_sym == :desc ? :desc : :asc
