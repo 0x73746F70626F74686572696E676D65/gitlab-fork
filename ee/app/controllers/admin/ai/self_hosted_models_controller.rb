@@ -59,9 +59,8 @@ module Admin
       end
 
       def ensure_feature_enabled!
-        render_404 if gitlab_com_subscription?
-        render_404 unless License.current&.paid? && gitlab_duo_available?
         render_404 unless Feature.enabled?(:ai_custom_model) # rubocop:disable Gitlab/FeatureFlagWithoutActor -- The feature flag is global
+        render_404 unless Ability.allowed?(current_user, :manage_ai_settings)
       end
     end
   end
