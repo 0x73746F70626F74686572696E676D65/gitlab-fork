@@ -13,7 +13,7 @@ module Subscriptions
       layout 'minimal'
 
       skip_before_action :set_confirm_warning
-      before_action :check_feature_available!
+      before_action :check_trial_eligibility!
 
       feature_category :subscription_management
       urgency :low
@@ -61,15 +61,35 @@ module Subscriptions
       def eligible_namespaces
         @eligible_namespaces = Users::DuoProTrialEligibleNamespacesFinder.new(current_user).execute
       end
+      strong_memoize_attr :eligible_namespaces
 
-      def check_feature_available!
-        if Feature.enabled?(:duo_pro_trials, current_user, type: :wip) &&
-            ::Gitlab::Saas.feature_available?(:subscriptions_trials) &&
-            eligible_namespaces.any?
-          return
+      def check_trial_eligibility!
+        if feature_disabled? || saas_feature_unavailable?
+          render_404
+        elsif no_eligible_namespaces? || namespace_not_eligible?
+          render_access_denied
         end
+      end
 
-        render_404
+      def feature_disabled?
+        Feature.disabled?(:duo_pro_trials, current_user, type: :wip)
+      end
+
+      def saas_feature_unavailable?
+        !::Gitlab::Saas.feature_available?(:subscriptions_trials)
+      end
+
+      def no_eligible_namespaces?
+        eligible_namespaces.none?
+      end
+
+      def namespace_not_eligible?
+        params[:namespace_id].present? &&
+          eligible_namespaces.none? { |namespace| namespace.id.to_s == params[:namespace_id] }
+      end
+
+      def render_access_denied
+        render :access_denied, layout: 'errors', status: :forbidden
       end
 
       def namespace
