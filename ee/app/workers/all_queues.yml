@@ -2397,15 +2397,6 @@
   :weight: 1
   :idempotent: true
   :tags: []
-- :name: work_items_rolledup_dates_update_parent_rolledup_dates_event_handler
-  :worker_name: WorkItems::RolledupDates::UpdateParentRolledupDatesEventHandler
-  :feature_category: :portfolio_management
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: work_items_rolledup_dates_update_rolledup_dates
   :worker_name: WorkItems::RolledupDates::UpdateRolledupDatesWorker
   :feature_category: :portfolio_management
