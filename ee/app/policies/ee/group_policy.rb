@@ -287,6 +287,7 @@ module EE
         enable :read_cluster_agent
         enable :read_dependency_proxy
         enable :read_wiki
+        enable :read_billable_member
 
         enable :read_group_all_available_runners
         enable :read_group_runners

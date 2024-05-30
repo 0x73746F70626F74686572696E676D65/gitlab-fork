@@ -8,13 +8,17 @@ RSpec.describe MemberEntity, feature_category: :system_access do
   let(:entity) { described_class.new(member, { current_user: current_user, group: group }) }
   let(:entity_hash) { entity.as_json }
 
+  before do
+    allow(entity).to receive(:can?).and_call_original
+  end
+
   shared_examples 'member.json' do
     it 'matches json schema' do
       expect(entity.to_json).to match_schema('entities/member', dir: 'ee')
     end
 
     it 'correctly exposes `using_license`' do
-      allow(entity).to receive(:can?).with(current_user, :owner_access, group).and_return(true)
+      allow(entity).to receive(:can?).with(current_user, :read_billable_member, group).and_return(true)
       allow(member.user).to receive(:using_gitlab_com_seat?).with(group).and_return(true)
 
       expect(entity_hash[:using_license]).to be(true)
