@@ -236,7 +236,7 @@ export default {
       </template>
     </gl-form-group>
     <gl-collapse :visible="hasSelectedApprovers">
-      <span class="gl-font-weight-bold">{{ $options.i18n.approvalRulesLabel }}</span>
+      <span class="gl-font-bold">{{ $options.i18n.approvalRulesLabel }}</span>
       <div
         data-testid="approval-rules"
         class="protected-environment-approvers gl-display-grid gl-gap-5 gl-align-items-center"

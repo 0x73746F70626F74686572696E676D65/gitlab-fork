@@ -21,7 +21,7 @@ exports[`ResourceLinkItem template matches the snapshot 1`] = `
         />
       </svg>
       <a
-        class="gl-font-weight-normal gl-link sortable-link"
+        class="gl-font-normal gl-link sortable-link"
         href="https://docs.gitlab.com/incident-info"
         rel="noopener noreferrer"
         target="_blank"

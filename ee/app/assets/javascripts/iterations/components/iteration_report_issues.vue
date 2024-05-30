@@ -282,7 +282,7 @@ export default {
       <template #cell(title)="{ item: { iid, labels, title, webUrl } }">
         <div class="gl-text-truncate">
           <gl-link
-            class="gl-text-gray-900 gl-font-weight-bold"
+            class="gl-text-gray-900 gl-font-bold"
             :href="webUrl"
             :title="title"
             data-testid="iteration-issue-link"

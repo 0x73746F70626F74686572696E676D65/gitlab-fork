@@ -84,7 +84,7 @@ describe('Vulnerability status description component', () => {
         isStatusBolded,
       });
 
-      expect(statusEl().classes('gl-font-weight-bold')).toBe(isStatusBolded);
+      expect(statusEl().classes('gl-font-bold')).toBe(isStatusBolded);
     });
   });
 

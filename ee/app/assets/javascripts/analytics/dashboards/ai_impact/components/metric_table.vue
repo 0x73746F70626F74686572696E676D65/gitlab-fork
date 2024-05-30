@@ -214,7 +214,7 @@ export default {
   >
     <template #head(change)="{ field: { label, description } }">
       <div class="gl-mb-2">{{ label }}</div>
-      <div class="gl-font-weight-normal">{{ description }}</div>
+      <div class="gl-font-normal">{{ description }}</div>
     </template>
 
     <template #cell(metric)="{ value: { identifier } }">

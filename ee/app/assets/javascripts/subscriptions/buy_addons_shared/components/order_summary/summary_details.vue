@@ -106,7 +106,7 @@ export default {
 </script>
 <template>
   <div>
-    <div class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-mb-3">
+    <div class="gl-display-flex gl-justify-content-space-between gl-font-bold gl-mb-3">
       <div data-testid="selected-plan">
         {{ selectedPlanText }}
         <span v-if="hasPositiveQuantity" data-testid="quantity">{{
@@ -162,7 +162,7 @@ export default {
         <div data-testid="vat">{{ taxAmount }}</div>
       </div>
     </div>
-    <div class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-font-lg">
+    <div class="gl-display-flex gl-justify-content-space-between gl-font-bold gl-font-lg">
       <div>{{ $options.i18n.total }}</div>
       <div data-testid="total-amount">
         {{ renderedAmount }}

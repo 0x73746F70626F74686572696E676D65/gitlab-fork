@@ -84,7 +84,7 @@ export default {
       <gl-card class="gl-h-full">
         <header>
           <h2 data-testid="users-in-subscription">{{ usersInSubscription }}</h2>
-          <h5 class="gl-font-weight-normal text-uppercase">{{ usersInSubscriptionTitle }}</h5>
+          <h5 class="gl-font-normal text-uppercase">{{ usersInSubscriptionTitle }}</h5>
         </header>
         <p v-if="isUsersInSubscriptionVisible" data-testid="users-in-subscription-desc">
           {{ $options.i18n.usersInSubscriptionText }}
@@ -96,7 +96,7 @@ export default {
       <gl-card class="gl-h-full" data-testid="billable-users">
         <header>
           <h2 data-testid="billable-users-count">{{ billableUsers }}</h2>
-          <h5 class="gl-font-weight-normal text-uppercase">
+          <h5 class="gl-font-normal text-uppercase">
             {{ $options.i18n.billableUsersTitle }}
           </h5>
         </header>
@@ -116,7 +116,7 @@ export default {
       <gl-card class="gl-h-full" data-testid="maximum-users">
         <header>
           <h2>{{ maximumUsers }}</h2>
-          <h5 class="gl-font-weight-normal text-uppercase">
+          <h5 class="gl-font-normal text-uppercase">
             {{ $options.i18n.maximumUsersTitle }}
           </h5>
         </header>
@@ -128,7 +128,7 @@ export default {
       <gl-card class="gl-h-full" data-testid="users-over-license">
         <header>
           <h2>{{ usersOverSubscription }}</h2>
-          <h5 class="gl-font-weight-normal text-uppercase">
+          <h5 class="gl-font-normal text-uppercase">
             {{ $options.i18n.usersOverSubscriptionTitle }}
           </h5>
         </header>

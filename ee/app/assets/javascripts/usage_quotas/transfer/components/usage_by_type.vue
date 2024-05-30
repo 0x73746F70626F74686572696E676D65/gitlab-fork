@@ -153,7 +153,7 @@ export default {
           <p>{{ $options.i18n.description }}</p>
         </div>
         <p
-          class="gl-m-0 gl-font-size-h-display gl-font-weight-bold gl-whitespace-nowrap"
+          class="gl-m-0 gl-font-size-h-display gl-font-bold gl-whitespace-nowrap"
           data-testid="total-egress"
         >
           {{ totalEgressCombinedHumanSize }}
@@ -179,7 +179,7 @@ export default {
         >
           <gl-icon :name="icon" class="gl-mr-4 gl-flex-shrink-0" />
           <div>
-            <p class="gl-font-weight-bold gl-mb-0">
+            <p class="gl-font-bold gl-mb-0">
               {{ label }}
               <gl-link :href="helpPath" target="_blank">
                 <gl-icon name="question-o" :size="12" />

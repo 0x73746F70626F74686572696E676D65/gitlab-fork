@@ -115,7 +115,7 @@ export default {
     >
       <template #header>
         <div class="gl-display-flex gl-align-items-center gl-p-4 gl-min-h-8 gl-border-b">
-          <div class="gl-flex-grow-1 gl-font-weight-bold gl-font-sm gl-pr-2">
+          <div class="gl-flex-grow-1 gl-font-bold gl-font-sm gl-pr-2">
             {{ $options.i18n.header }}
           </div>
 

@@ -113,7 +113,7 @@ exports[`Buy Addons Shared App CI Minutes labels does not show labels if input i
           class="gl-mt-6"
         >
           <div
-            class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+            class="gl-display-flex gl-font-bold gl-justify-content-space-between gl-mb-3"
           >
             <div
               data-testid="selected-plan"
@@ -167,7 +167,7 @@ exports[`Buy Addons Shared App CI Minutes labels does not show labels if input i
             </div>
           </div>
           <div
-            class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+            class="gl-display-flex gl-font-bold gl-font-lg gl-justify-content-space-between"
           >
             <div>
               Total
@@ -193,7 +193,7 @@ exports[`Buy Addons Shared App CI Minutes labels does not show labels if input i
         class="gl-mt-6"
       >
         <div
-          class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+          class="gl-display-flex gl-font-bold gl-justify-content-space-between gl-mb-3"
         >
           <div
             data-testid="selected-plan"
@@ -247,7 +247,7 @@ exports[`Buy Addons Shared App CI Minutes labels does not show labels if input i
           </div>
         </div>
         <div
-          class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+          class="gl-display-flex gl-font-bold gl-font-lg gl-justify-content-space-between"
         >
           <div>
             Total
@@ -382,7 +382,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pa
           quantity-present="true"
         >
           <div
-            class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+            class="gl-display-flex gl-font-bold gl-justify-content-space-between gl-mb-3"
           >
             <div
               data-testid="selected-plan"
@@ -441,7 +441,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pa
             </div>
           </div>
           <div
-            class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+            class="gl-display-flex gl-font-bold gl-font-lg gl-justify-content-space-between"
           >
             <div>
               Total
@@ -468,7 +468,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pa
         quantity-present="true"
       >
         <div
-          class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+          class="gl-display-flex gl-font-bold gl-justify-content-space-between gl-mb-3"
         >
           <div
             data-testid="selected-plan"
@@ -527,7 +527,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pa
           </div>
         </div>
         <div
-          class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+          class="gl-display-flex gl-font-bold gl-font-lg gl-justify-content-space-between"
         >
           <div>
             Total
@@ -662,7 +662,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 2 pa
           quantity-present="true"
         >
           <div
-            class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+            class="gl-display-flex gl-font-bold gl-justify-content-space-between gl-mb-3"
           >
             <div
               data-testid="selected-plan"
@@ -721,7 +721,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 2 pa
             </div>
           </div>
           <div
-            class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+            class="gl-display-flex gl-font-bold gl-font-lg gl-justify-content-space-between"
           >
             <div>
               Total
@@ -748,7 +748,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 2 pa
         quantity-present="true"
       >
         <div
-          class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+          class="gl-display-flex gl-font-bold gl-justify-content-space-between gl-mb-3"
         >
           <div
             data-testid="selected-plan"
@@ -807,7 +807,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 2 pa
           </div>
         </div>
         <div
-          class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+          class="gl-display-flex gl-font-bold gl-font-lg gl-justify-content-space-between"
         >
           <div>
             Total
@@ -924,7 +924,7 @@ exports[`Buy Addons Shared App Storage labels does not show labels if input is i
           class="gl-mt-6"
         >
           <div
-            class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+            class="gl-display-flex gl-font-bold gl-justify-content-space-between gl-mb-3"
           >
             <div
               data-testid="selected-plan"
@@ -991,7 +991,7 @@ exports[`Buy Addons Shared App Storage labels does not show labels if input is i
             </div>
           </div>
           <div
-            class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+            class="gl-display-flex gl-font-bold gl-font-lg gl-justify-content-space-between"
           >
             <div>
               Total
@@ -1017,7 +1017,7 @@ exports[`Buy Addons Shared App Storage labels does not show labels if input is i
         class="gl-mt-6"
       >
         <div
-          class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+          class="gl-display-flex gl-font-bold gl-justify-content-space-between gl-mb-3"
         >
           <div
             data-testid="selected-plan"
@@ -1084,7 +1084,7 @@ exports[`Buy Addons Shared App Storage labels does not show labels if input is i
           </div>
         </div>
         <div
-          class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+          class="gl-display-flex gl-font-bold gl-font-lg gl-justify-content-space-between"
         >
           <div>
             Total
@@ -1206,7 +1206,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 
           quantity-present="true"
         >
           <div
-            class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+            class="gl-display-flex gl-font-bold gl-justify-content-space-between gl-mb-3"
           >
             <div
               data-testid="selected-plan"
@@ -1278,7 +1278,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 
             </div>
           </div>
           <div
-            class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+            class="gl-display-flex gl-font-bold gl-font-lg gl-justify-content-space-between"
           >
             <div>
               Total
@@ -1305,7 +1305,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 
         quantity-present="true"
       >
         <div
-          class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+          class="gl-display-flex gl-font-bold gl-justify-content-space-between gl-mb-3"
         >
           <div
             data-testid="selected-plan"
@@ -1377,7 +1377,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 
           </div>
         </div>
         <div
-          class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+          class="gl-display-flex gl-font-bold gl-font-lg gl-justify-content-space-between"
         >
           <div>
             Total
@@ -1499,7 +1499,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 2 packs
           quantity-present="true"
         >
           <div
-            class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+            class="gl-display-flex gl-font-bold gl-justify-content-space-between gl-mb-3"
           >
             <div
               data-testid="selected-plan"
@@ -1571,7 +1571,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 2 packs
             </div>
           </div>
           <div
-            class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+            class="gl-display-flex gl-font-bold gl-font-lg gl-justify-content-space-between"
           >
             <div>
               Total
@@ -1598,7 +1598,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 2 packs
         quantity-present="true"
       >
         <div
-          class="gl-display-flex gl-font-weight-bold gl-justify-content-space-between gl-mb-3"
+          class="gl-display-flex gl-font-bold gl-justify-content-space-between gl-mb-3"
         >
           <div
             data-testid="selected-plan"
@@ -1670,7 +1670,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 2 packs
           </div>
         </div>
         <div
-          class="gl-display-flex gl-font-lg gl-font-weight-bold gl-justify-content-space-between"
+          class="gl-display-flex gl-font-bold gl-font-lg gl-justify-content-space-between"
         >
           <div>
             Total

@@ -205,7 +205,7 @@ export default {
           v-for="metric in tooltipContent"
           :key="metric.seriesId"
           class="gl-display-flex gl-justify-content-space-between gl-leading-24 gl-min-w-20"
-          :class="{ 'gl-font-weight-bold': activeDataSeries === metric.seriesId }"
+          :class="{ 'gl-font-bold': activeDataSeries === metric.seriesId }"
         >
           <gl-chart-series-label class="gl-mr-7" :color="metric.color">
             {{ metric.label }}

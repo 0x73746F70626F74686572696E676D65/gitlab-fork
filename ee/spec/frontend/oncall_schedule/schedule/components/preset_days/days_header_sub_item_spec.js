@@ -48,12 +48,12 @@ describe('ee/oncall_schedules/components/schedule/components/preset_days/days_he
       expect(findSublabels().at(currentHour).classes()).toStrictEqual([
         'sublabel-value',
         'gl-text-gray-700',
-        'gl-font-weight-normal',
+        'gl-font-normal',
         'gl-text-center',
         'gl-flex-grow-1',
         'gl-flex-basis-0',
         'gl-text-gray-900!',
-        'gl-font-weight-bold',
+        'gl-font-bold',
       ]);
       expect(findDaysHeaderCurrentIndicator().exists()).toBe(true);
     });

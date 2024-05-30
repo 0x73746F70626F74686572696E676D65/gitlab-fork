@@ -5,9 +5,9 @@ import { s__ } from '~/locale';
 import { formatTraceDuration, findRootSpan } from '../trace_utils';
 
 const CARD_CLASS = 'gl-mr-7 gl-w-3/20 gl-min-w-fit';
-const HEADER_CLASS = 'gl-p-2 gl-font-weight-bold gl--flex-center';
+const HEADER_CLASS = 'gl-p-2 gl-font-bold gl--flex-center';
 const BODY_CLASS =
-  'gl--flex-center gl-flex-direction-column gl-my-0 gl-p-4 gl-font-weight-bold gl-text-center gl-flex-grow-1 gl-font-lg';
+  'gl--flex-center gl-flex-direction-column gl-my-0 gl-p-4 gl-font-bold gl-text-center gl-flex-grow-1 gl-font-lg';
 
 export default {
   CARD_CLASS,
@@ -72,7 +72,7 @@ export default {
 
         <template #default>
           <span>{{ traceDate }}</span>
-          <span class="gl-text-secondary gl-font-weight-normal">{{ traceTime }}</span>
+          <span class="gl-text-secondary gl-font-normal">{{ traceTime }}</span>
         </template>
       </gl-card>
 

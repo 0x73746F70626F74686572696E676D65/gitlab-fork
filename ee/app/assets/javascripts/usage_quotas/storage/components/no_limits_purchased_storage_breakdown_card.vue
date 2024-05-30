@@ -44,7 +44,7 @@ export default {
     </gl-skeleton-loader>
     <div v-else>
       <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between">
-        <div class="gl-font-weight-bold" data-testid="purchased-storage-card-title">
+        <div class="gl-font-bold" data-testid="purchased-storage-card-title">
           {{ $options.i18n.PROJECT_ENFORCEMENT_PURCHASE_CARD_TITLE }}
 
           <gl-link
@@ -57,7 +57,7 @@ export default {
           </gl-link>
         </div>
       </div>
-      <div class="gl-font-size-h-display gl-font-weight-bold gl-leading-1 gl-my-3">
+      <div class="gl-font-size-h-display gl-font-bold gl-leading-1 gl-my-3">
         <number-to-human-size
           label-class="gl-font-lg"
           :value="Number(purchasedStorage)"

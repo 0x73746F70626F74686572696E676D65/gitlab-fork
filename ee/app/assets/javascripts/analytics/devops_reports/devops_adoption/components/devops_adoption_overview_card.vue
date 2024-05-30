@@ -63,13 +63,13 @@ export default {
       <gl-icon :name="icon" class="gl-mr-3 gl-text-gray-500" />
       <gl-button
         v-if="displayMeta"
-        class="gl-font-md gl-font-weight-bold"
+        class="gl-font-md gl-font-bold"
         variant="link"
         data-testid="card-title-link"
         @click="trackCardTitleClick"
         >{{ title }}
       </gl-button>
-      <span v-else class="gl-font-md gl-font-weight-bold">{{ title }} </span>
+      <span v-else class="gl-font-md gl-font-bold">{{ title }} </span>
     </div>
     <gl-progress-bar
       :value="adoptedCount"

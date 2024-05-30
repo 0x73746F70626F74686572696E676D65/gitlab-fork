@@ -94,7 +94,7 @@ export default {
       <p>
         <gl-sprintf :message="$options.i18n.immediatelyDeleteModalBody">
           <template #date
-            ><span class="gl-font-weight-bold">{{ group.permanentDeletionDate }}</span></template
+            ><span class="gl-font-bold">{{ group.permanentDeletionDate }}</span></template
           >
         </gl-sprintf>
       </p>

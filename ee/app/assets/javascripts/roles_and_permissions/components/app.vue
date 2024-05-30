@@ -161,7 +161,7 @@ export default {
       </p>
     </header>
 
-    <div class="gl-font-weight-bold gl-mb-4" data-testid="custom-roles-count">
+    <div class="gl-font-bold gl-mb-4" data-testid="custom-roles-count">
       <gl-icon name="shield" class="gl-mr-2" />
       <span>{{ customRolesCount }}</span>
     </div>

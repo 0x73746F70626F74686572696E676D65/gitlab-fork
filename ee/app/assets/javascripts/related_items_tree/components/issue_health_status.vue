@@ -30,7 +30,7 @@ export default {
 <template>
   <gl-badge
     v-gl-tooltip
-    class="gl-font-weight-bold"
+    class="gl-font-bold"
     size="sm"
     :title="__('Health status')"
     :variant="statusClass"

@@ -104,7 +104,7 @@ export default {
       };
     },
     rowClass(item) {
-      return this.isCurrentSubscription(item) ? 'gl-font-weight-bold gl-text-blue-500' : '';
+      return this.isCurrentSubscription(item) ? 'gl-font-bold gl-text-blue-500' : '';
     },
   },
 };

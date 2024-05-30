@@ -69,7 +69,7 @@ export default {
       return this.selected.title;
     },
     milestoneTitleClass() {
-      return this.anyMilestone ? 'gl-text-gray-500' : 'gl-font-weight-bold';
+      return this.anyMilestone ? 'gl-text-gray-500' : 'gl-font-bold';
     },
     isLoading() {
       return this.$apollo.queries.milestones.loading;

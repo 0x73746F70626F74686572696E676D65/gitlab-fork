@@ -178,7 +178,7 @@ export default {
 <template>
   <fieldset v-if="baseRoleAccessLevel">
     <legend class="gl-mb-1 gl-border-b-0 gl-font-base">
-      <span class="gl-font-weight-bold">{{ $options.i18n.customPermissionsLabel }}</span>
+      <span class="gl-font-bold">{{ $options.i18n.customPermissionsLabel }}</span>
       <span
         v-if="hasAvailablePermissions"
         class="gl-text-gray-400 gl-ml-3"

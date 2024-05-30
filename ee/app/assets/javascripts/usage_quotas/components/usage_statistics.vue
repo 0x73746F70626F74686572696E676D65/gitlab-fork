@@ -45,7 +45,7 @@ export default {
   <div>
     <section class="gl-display-flex gl-justify-content-space-between gl-mb-3">
       <section>
-        <p v-if="usageValue" class="gl-font-size-h-display gl-font-weight-bold gl-mb-3">
+        <p v-if="usageValue" class="gl-font-size-h-display gl-font-bold gl-mb-3">
           <span data-testid="usage-value">{{ usageValue }}</span>
           <span v-if="usageUnit" data-testid="usage-unit" class="gl-font-lg">{{ usageUnit }}</span>
           <span v-if="totalValue">

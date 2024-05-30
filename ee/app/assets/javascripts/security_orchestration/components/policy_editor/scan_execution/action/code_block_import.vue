@@ -90,7 +90,7 @@ export default {
 
 <template>
   <div class="gl-display-flex">
-    <label for="code-upload" class="btn btn-default btn-md gl-button gl-mb-0 gl-font-weight-normal">
+    <label for="code-upload" class="btn btn-default btn-md gl-button gl-mb-0 gl-font-normal">
       {{ $options.i18n.uploadFileButtonText }}
     </label>
     <input

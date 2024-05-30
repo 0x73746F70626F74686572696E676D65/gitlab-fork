@@ -29,7 +29,7 @@ exports[`JiraIssuesNote template renders note 1`] = `
         class="gl-align-items-center gl-display-flex gl-mb-3"
       >
         <gl-link-stub
-          class="gl-font-weight-bold gl-mr-2 gl-text-black-normal gl-whitespace-nowrap"
+          class="gl-font-bold gl-mr-2 gl-text-black-normal gl-whitespace-nowrap"
           href="http://127.0.0.1:3000/root"
         >
           Justin Ho

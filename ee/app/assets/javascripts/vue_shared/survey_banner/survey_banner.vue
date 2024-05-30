@@ -95,7 +95,7 @@ export default {
       <p>
         <gl-sprintf :message="description">
           <template #bold="{ content }">
-            <span class="gl-font-weight-bold">{{ content }}</span>
+            <span class="gl-font-bold">{{ content }}</span>
           </template>
         </gl-sprintf>
       </p>

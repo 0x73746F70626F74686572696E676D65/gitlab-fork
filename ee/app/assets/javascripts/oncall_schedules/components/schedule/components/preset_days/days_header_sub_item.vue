@@ -20,7 +20,7 @@ export default {
         return '';
       }
 
-      return 'gl-text-gray-900! gl-font-weight-bold';
+      return 'gl-text-gray-900! gl-font-bold';
     },
   },
 };
@@ -33,7 +33,7 @@ export default {
       :key="hour"
       ref="dailyHourCell"
       :class="getSubItemValueClass(hour)"
-      class="sublabel-value gl-text-gray-700 gl-font-weight-normal gl-text-center gl-flex-grow-1 gl-flex-basis-0"
+      class="sublabel-value gl-text-gray-700 gl-font-normal gl-text-center gl-flex-grow-1 gl-flex-basis-0"
       data-testid="sublabel-value"
       >{{ hour - 1 }}</span
     >

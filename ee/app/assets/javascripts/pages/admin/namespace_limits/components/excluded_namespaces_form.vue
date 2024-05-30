@@ -120,7 +120,7 @@ export default {
       @input="handleEntitySelectInput"
     >
       <template #list-item="{ item }">
-        <span class="gl-display-block gl-font-weight-bold">
+        <span class="gl-display-block gl-font-bold">
           {{ item.full_name }}
         </span>
         <span class="gl-display-block gl-mt-1 gl-text-gray-300">

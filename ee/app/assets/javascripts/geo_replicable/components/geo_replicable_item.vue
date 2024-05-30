@@ -82,7 +82,7 @@ export default {
       data-testid="replicable-item-header"
     >
       <geo-replicable-status :status="syncStatus" />
-      <span class="gl-font-weight-bold">{{ name }}</span>
+      <span class="gl-font-bold">{{ name }}</span>
       <div>
         <gl-button
           data-testid="geo-resync-item"

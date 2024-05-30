@@ -21,7 +21,7 @@ exports[`DevopsAdoptionOverviewChart chart tooltip displays the tooltip informat
       class="gl-mb-3"
     >
       <div
-        class="gl-font-weight-bold"
+        class="gl-font-bold"
       >
         Dev
       </div>
@@ -75,7 +75,7 @@ exports[`DevopsAdoptionOverviewChart chart tooltip displays the tooltip informat
       class="gl-mb-3"
     >
       <div
-        class="gl-font-weight-bold"
+        class="gl-font-bold"
       >
         Sec
       </div>
@@ -130,7 +130,7 @@ exports[`DevopsAdoptionOverviewChart chart tooltip displays the tooltip informat
     </div>
     <div>
       <div
-        class="gl-font-weight-bold"
+        class="gl-font-bold"
       >
         Ops
       </div>

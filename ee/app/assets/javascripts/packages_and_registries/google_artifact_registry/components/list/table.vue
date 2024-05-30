@@ -138,7 +138,7 @@ export default {
         >
           <router-link class="gl-text-body gl-min-w-0" :to="item.name">
             <gl-truncate
-              class="gl-font-weight-bold"
+              class="gl-font-bold"
               position="middle"
               :text="getImageNameAndShortDigest(item)"
               :with-tooltip="true"

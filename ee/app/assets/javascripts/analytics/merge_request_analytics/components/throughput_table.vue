@@ -282,12 +282,9 @@ export default {
           :data-testid="$options.testIds.MERGE_REQUEST_DETAILS"
         >
           <div class="merge-request-title gl-str-truncated">
-            <gl-link
-              :href="item.webUrl"
-              target="_blank"
-              class="gl-font-weight-bold gl-text-gray-900"
-              >{{ item.title }}</gl-link
-            >
+            <gl-link :href="item.webUrl" target="_blank" class="gl-font-bold gl-text-gray-900">{{
+              item.title
+            }}</gl-link>
             <ul class="horizontal-list gl-mt-2 gl-mb-0">
               <li class="gl-mr-3">{{ formatMergeRequestId(item.iid) }}</li>
               <li v-if="hasPipelineNodes(item) && item.pipelines.nodes.length" class="gl-mr-3">
@@ -352,10 +349,10 @@ export default {
 
       <template #cell(line_changes)="{ item }">
         <div :data-testid="$options.testIds.LINE_CHANGES">
-          <span class="gl-font-weight-bold gl-text-green-500">{{
+          <span class="gl-font-bold gl-text-green-500">{{
             formatLineChangeAdditions(item.diffStatsSummary.additions)
           }}</span>
-          <span class="gl-font-weight-bold gl-text-red-500">{{
+          <span class="gl-font-bold gl-text-red-500">{{
             formatLineChangeDeletions(item.diffStatsSummary.deletions)
           }}</span>
         </div>

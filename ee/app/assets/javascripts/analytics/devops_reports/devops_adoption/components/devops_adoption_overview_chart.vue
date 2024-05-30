@@ -156,7 +156,7 @@ export default {
           :key="section.title"
           :class="{ 'gl-mb-3': !lastItemInList(index, tooltipContentData.length) }"
         >
-          <div class="gl-font-weight-bold">{{ section.title }}</div>
+          <div class="gl-font-bold">{{ section.title }}</div>
           <div
             v-if="hasFeaturesAvailable(section)"
             class="gl-display-flex gl-gap-2 gl-flex-direction-column"

@@ -146,7 +146,7 @@ export default {
         <gl-icon name="users" />
         <component
           :is="hasCodeOwners ? 'gl-link' : 'span'"
-          class="gl-font-weight-bold gl-text-black-normal!"
+          class="gl-font-bold gl-text-black-normal!"
           :href="codeOwnersPath"
           data-testid="codeowners-file-link"
           >{{ $options.i18n.title }}

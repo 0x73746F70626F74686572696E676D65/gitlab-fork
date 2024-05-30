@@ -94,7 +94,7 @@ export default {
     <template #header>
       <header class="gl-display-flex gl-align-items-baseline">
         <h1 class="gl-m-0 gl-mr-5 gl-font-lg">{{ s__('CICDAnalytics|Releases') }}</h1>
-        <h2 class="gl-m-0 gl-font-base gl-text-gray-500 gl-font-weight-normal">
+        <h2 class="gl-m-0 gl-font-base gl-text-gray-500 gl-font-normal">
           {{ s__('CICDAnalytics|All time') }}
         </h2>
       </header>

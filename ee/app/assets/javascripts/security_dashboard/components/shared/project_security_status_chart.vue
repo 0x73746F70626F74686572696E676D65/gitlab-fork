@@ -183,18 +183,18 @@ export default {
         >
           <template #title="{ isExpanded, isDisabled }">
             <h5
-              class="gl-display-flex gl-align-items-center gl-font-weight-normal gl-p-0 gl-m-0"
+              class="gl-display-flex gl-align-items-center gl-font-normal gl-p-0 gl-m-0"
               data-testid="vulnerability-severity-groups"
             >
               <span
                 v-gl-tooltip
                 :title="severityGroup.description"
-                class="gl-font-weight-bold gl-mr-5 gl-font-lg"
+                class="gl-font-bold gl-mr-5 gl-font-lg"
                 :class="cssForSeverityGroup(severityGroup)"
               >
                 {{ severityGroup.type }}
               </span>
-              <span :class="{ 'gl-font-weight-bold': isExpanded, 'gl-text-gray-500': isDisabled }">
+              <span :class="{ 'gl-font-bold': isExpanded, 'gl-text-gray-500': isDisabled }">
                 {{ getProjectCountString(severityGroup) }}
               </span>
             </h5>

@@ -85,7 +85,7 @@ export default {
         <gl-link
           :href="linkValue"
           target="_blank"
-          class="sortable-link gl-font-weight-normal"
+          class="sortable-link gl-font-normal"
           @click="trackResourceLinkClick"
           >{{ linkText }}</gl-link
         >

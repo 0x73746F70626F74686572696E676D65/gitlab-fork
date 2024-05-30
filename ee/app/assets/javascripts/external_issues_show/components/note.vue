@@ -71,7 +71,7 @@ export default {
         <div class="gl-display-flex gl-align-items-center gl-mb-3">
           <gl-link
             :href="authorWebUrl"
-            class="gl-text-black-normal gl-font-weight-bold gl-whitespace-nowrap gl-mr-2"
+            class="gl-text-black-normal gl-font-bold gl-whitespace-nowrap gl-mr-2"
           >
             {{ authorName }}
           </gl-link>

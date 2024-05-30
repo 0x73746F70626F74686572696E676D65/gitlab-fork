@@ -274,7 +274,7 @@ export default {
       <template #header>
         <div class="gl-display-flex gl-align-items-flex-start" data-testid="schedule-header">
           <div class="gl-flex-grow-1">
-            <h2 class="gl-font-weight-bold gl-m-0">{{ schedule.name }}</h2>
+            <h2 class="gl-font-bold gl-m-0">{{ schedule.name }}</h2>
             <p class="gl-text-gray-500 gl-m-0">
               {{ scheduleInfo }}
             </p>
@@ -332,7 +332,7 @@ export default {
 
         <div class="gl-display-flex gl-align-items-center gl-mb-3">
           <gl-icon name="calendar" :size="14" class="gl-text-gray-700 gl-mr-2" />
-          <div class="gl-flex-grow-1 gl-text-gray-700 gl-font-weight-bold">{{ scheduleRange }}</div>
+          <div class="gl-flex-grow-1 gl-text-gray-700 gl-font-bold">{{ scheduleRange }}</div>
 
           <gl-collapsible-listbox
             :items="$options.presetListboxItems"

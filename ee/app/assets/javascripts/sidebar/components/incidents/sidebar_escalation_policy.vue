@@ -62,7 +62,7 @@ export default {
     </template>
 
     <template #value="{ attributeTitle }">
-      <gl-link class="gl-text-gray-900! gl-font-weight-bold" :href="policiesPath">
+      <gl-link class="gl-text-gray-900! gl-font-bold" :href="policiesPath">
         {{ attributeTitle }}
       </gl-link>
     </template>

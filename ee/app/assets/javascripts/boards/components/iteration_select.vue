@@ -98,7 +98,7 @@ export default {
       return this.anyIteration ? ANY_ITERATION.title : this.selected.title;
     },
     iterationTitleClass() {
-      return this.anyIteration ? 'gl-text-secondary' : 'gl-font-weight-bold';
+      return this.anyIteration ? 'gl-text-secondary' : 'gl-font-bold';
     },
     isLoading() {
       return this.$apollo.queries.iterations.loading;
@@ -252,7 +252,7 @@ export default {
               </tooltip-on-truncate>
               <span
                 v-if="cadence.secondaryText"
-                class="gl-float-right gl-font-weight-normal gl-flex-shrink-0"
+                class="gl-float-right gl-font-normal gl-flex-shrink-0"
               >
                 <gl-icon name="clock" class="gl-mr-2" />
                 {{ cadence.secondaryText }}

@@ -147,7 +147,7 @@ export default {
       <div v-if="!anyAssignee" class="gl-display-flex gl-align-items-center">
         <user-avatar-image :img-src="selected.avatarUrl || selected.avatar_url" :size="32" />
         <div>
-          <div class="gl-font-weight-bold">{{ selected.name }}</div>
+          <div class="gl-font-bold">{{ selected.name }}</div>
           <div>@{{ selected.username }}</div>
         </div>
       </div>

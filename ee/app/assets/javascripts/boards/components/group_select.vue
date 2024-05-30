@@ -147,12 +147,9 @@ export default {
 
 <template>
   <div>
-    <label
-      for="descendant-group-select"
-      class="gl-font-weight-bold gl-mt-3"
-      data-testid="header-label"
-      >{{ $options.i18n.headerTitle }}</label
-    >
+    <label for="descendant-group-select" class="gl-font-bold gl-mt-3" data-testid="header-label">{{
+      $options.i18n.headerTitle
+    }}</label>
     <gl-collapsible-listbox
       id="descendant-group-select"
       block

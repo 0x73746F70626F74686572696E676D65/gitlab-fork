@@ -66,11 +66,11 @@ export default {
     </div>
 
     <div class="hide-collapsed">
-      <div class="gl-leading-20 gl-mb-2 gl-text-gray-900 gl-font-weight-bold">
+      <div class="gl-leading-20 gl-mb-2 gl-text-gray-900 gl-font-bold">
         {{ $options.i18n.dueDateTitle }}
       </div>
       <div class="gl-line-height-14" data-testid="due-date-value">
-        <span v-if="dueDate" class="gl-font-weight-bold">{{ formattedDueDate }}</span>
+        <span v-if="dueDate" class="gl-font-bold">{{ formattedDueDate }}</span>
         <span v-else class="gl-text-gray-500">{{ $options.i18n.none }}</span>
       </div>
     </div>

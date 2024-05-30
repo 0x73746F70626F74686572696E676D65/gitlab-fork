@@ -308,21 +308,21 @@ export default {
         <div>
           <gl-sprintf :message="$options.i18n.environment">
             <template #environment>
-              <span class="gl-font-weight-bold">{{ environment.name }}</span>
+              <span class="gl-font-bold">{{ environment.name }}</span>
             </template>
           </gl-sprintf>
         </div>
         <div v-if="environment.tier">
           <gl-sprintf :message="$options.i18n.tier">
             <template #tier>
-              <span class="gl-font-weight-bold">{{ environment.tier }}</span>
+              <span class="gl-font-bold">{{ environment.tier }}</span>
             </template>
           </gl-sprintf>
         </div>
         <div>
           <gl-sprintf v-if="deployableName" :message="$options.i18n.job">
             <template #jobName>
-              <span class="gl-font-weight-bold">
+              <span class="gl-font-bold">
                 {{ deployableName }}
               </span>
             </template>
@@ -338,7 +338,7 @@ export default {
         <div v-else class="gl-my-4 gl-pt-4">
           <gl-sprintf :message="$options.i18n.current">
             <template #current>
-              <span class="gl-font-weight-bold"> {{ currentApprovals }}/{{ totalApprovals }}</span>
+              <span class="gl-font-bold"> {{ currentApprovals }}/{{ totalApprovals }}</span>
             </template>
           </gl-sprintf>
         </div>

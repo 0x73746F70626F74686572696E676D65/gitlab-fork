@@ -32,7 +32,7 @@ export default {
 <template>
   <div class="gl-display-flex gl-align-items-center">
     <span
-      class="gl-font-weight-bold"
+      class="gl-font-bold"
       :class="replicationStatusUi.color"
       data-testid="replication-status-text"
       >{{ replicationStatusUi.text }}</span

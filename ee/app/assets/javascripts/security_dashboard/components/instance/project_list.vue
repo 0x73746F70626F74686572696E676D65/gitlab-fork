@@ -64,10 +64,10 @@ export default {
 <template>
   <section>
     <h5
-      class="gl-font-weight-bold gl-text-gray-500 gl-border-b-solid gl-border-b-1 gl-border-b-gray-100 gl-mb-5 gl-pb-3"
+      class="gl-font-bold gl-text-gray-500 gl-border-b-solid gl-border-b-1 gl-border-b-gray-100 gl-mb-5 gl-pb-3"
     >
       {{ $options.i18n.projectsAdded }}
-      <gl-badge class="gl-font-weight-bold">{{ projects.length }}</gl-badge>
+      <gl-badge class="gl-font-bold">{{ projects.length }}</gl-badge>
     </h5>
     <gl-loading-icon v-if="isLoadingProjects" size="lg" />
     <ul v-else-if="projects.length" class="gl-p-0">

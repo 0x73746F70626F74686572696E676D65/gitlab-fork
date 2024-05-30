@@ -255,7 +255,7 @@ export default {
     <div class="gl-display-flex gl-align-items-center">
       <gl-button
         variant="link"
-        class="gl-font-weight-bold gl-text-body! gl-py-5! gl-px-3! gl-mr-auto gl-min-w-0"
+        class="gl-font-bold gl-text-body! gl-py-5! gl-px-3! gl-mr-auto gl-min-w-0"
         :aria-expanded="expanded"
         @click="expanded = !expanded"
       >

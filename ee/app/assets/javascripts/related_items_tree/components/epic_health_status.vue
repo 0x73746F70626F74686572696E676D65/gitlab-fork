@@ -26,7 +26,7 @@ export default {
   i18n: {
     epicCountPermissionText,
   },
-  badgeClasses: 'gl-ml-0! gl-mr-2 gl-font-weight-bold',
+  badgeClasses: 'gl-ml-0! gl-mr-2 gl-font-bold',
 };
 </script>
 

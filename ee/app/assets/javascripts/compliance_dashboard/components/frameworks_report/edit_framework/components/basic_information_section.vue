@@ -253,7 +253,7 @@ export default {
       </gl-popover>
     </template>
     <gl-form-checkbox v-model="formData.default" name="default">
-      <span class="gl-font-weight-bold">{{ $options.i18n.setAsDefault }}</span>
+      <span class="gl-font-bold">{{ $options.i18n.setAsDefault }}</span>
       <template #help>
         <div>
           {{ $options.i18n.setAsDefaultDetails }}

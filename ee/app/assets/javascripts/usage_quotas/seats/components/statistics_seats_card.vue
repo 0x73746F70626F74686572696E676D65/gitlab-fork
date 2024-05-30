@@ -187,7 +187,7 @@ export default {
     <div v-else class="gl-flex-grow-1">
       <p
         v-if="shouldRenderSeatsUsedBlock"
-        class="gl-font-size-h-display gl-font-weight-bold gl-mb-3"
+        class="gl-font-size-h-display gl-font-bold gl-mb-3"
         data-testid="seats-used"
       >
         <span class="gl-relative gl-top-1">
@@ -206,7 +206,7 @@ export default {
       </p>
       <p
         v-if="shouldRenderSeatsOwedBlock"
-        class="gl-font-size-h-display gl-font-weight-bold gl-mb-0"
+        class="gl-font-size-h-display gl-font-bold gl-mb-0"
         data-testid="seats-owed"
       >
         <span class="gl-relative gl-top-1">

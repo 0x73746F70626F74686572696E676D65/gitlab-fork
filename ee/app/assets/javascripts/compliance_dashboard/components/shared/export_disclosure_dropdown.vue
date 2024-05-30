@@ -207,7 +207,7 @@ export default {
   >
     <template #header>
       <div class="gl-border-b gl-border-b-gray-200 gl-p-4">
-        <span class="gl-font-weight-bold">
+        <span class="gl-font-bold">
           {{ exportDropdownTitle }}
         </span>
       </div>

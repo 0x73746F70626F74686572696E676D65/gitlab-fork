@@ -111,7 +111,7 @@ export default {
         <gl-icon name="weight" />
         <span data-testid="weight-value" class="gl-font-sm">{{ weight }}</span>
         <gl-tooltip :target="() => $refs.weightData">
-          <span class="gl-font-weight-bold">
+          <span class="gl-font-bold">
             {{ __('Weight') }}
           </span>
         </gl-tooltip>
@@ -125,7 +125,7 @@ export default {
         <gl-icon name="iteration" />
         <span data-testid="iteration-value" class="gl-font-sm">{{ iterationPeriod }}</span>
         <gl-tooltip :target="() => $refs.iterationData">
-          <div data-testid="iteration-title" class="gl-font-weight-bold">
+          <div data-testid="iteration-title" class="gl-font-bold">
             {{ __('Iteration') }}
           </div>
           <div v-if="iterationCadenceTitle" data-testid="iteration-cadence-text">
@@ -148,7 +148,7 @@ export default {
         <gl-icon name="calendar" />
         <span data-testid="dates-value" class="gl-font-sm">{{ workItemTimeframe }}</span>
         <gl-tooltip :target="() => $refs.datesData">
-          <div class="gl-font-weight-bold">
+          <div class="gl-font-bold">
             {{ __('Dates') }}
           </div>
         </gl-tooltip>
@@ -162,11 +162,11 @@ export default {
         <gl-icon name="progress" />
         <span data-testid="progressValue" class="gl-font-sm">{{ progress }}%</span>
         <gl-tooltip :target="() => $refs.progressTooltip">
-          <div data-testid="progressTitle" class="gl-font-weight-bold">
+          <div data-testid="progressTitle" class="gl-font-bold">
             {{ __('Progress') }}
           </div>
           <div v-if="progressLastUpdatedAtInWords" class="text-tertiary">
-            <span data-testid="progressText" class="gl-font-weight-bold">
+            <span data-testid="progressText" class="gl-font-bold">
               {{ __('Last updated') }}
             </span>
             <span data-testid="lastUpdatedInWords">{{ progressLastUpdatedAtInWords }}</span>

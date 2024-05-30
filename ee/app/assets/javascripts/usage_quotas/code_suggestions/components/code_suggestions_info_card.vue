@@ -141,7 +141,7 @@ export default {
     </gl-skeleton-loader>
     <usage-statistics v-else>
       <template #description>
-        <p class="gl-font-weight-bold gl-mb-0" data-testid="title">{{ $options.i18n.title }}</p>
+        <p class="gl-font-bold gl-mb-0" data-testid="title">{{ $options.i18n.title }}</p>
       </template>
       <template #additional-info>
         <p class="gl-mt-5" data-testid="description">

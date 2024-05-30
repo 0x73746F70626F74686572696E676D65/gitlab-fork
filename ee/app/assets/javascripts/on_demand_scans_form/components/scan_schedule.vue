@@ -108,7 +108,7 @@ export default {
       />
       <transition name="fade">
         <gl-form-group v-if="form.isScheduledScan" data-testid="profile-schedule-form-group">
-          <div class="gl-font-weight-bold gl-mb-3">
+          <div class="gl-font-bold gl-mb-3">
             {{ $options.i18n.scanStartTimeLabel }}
           </div>
           <div class="gl-display-flex gl-align-items-center gl-mb-5">
@@ -124,7 +124,7 @@ export default {
             />
           </div>
 
-          <div class="gl-font-weight-bold gl-mb-3">
+          <div class="gl-font-bold gl-mb-3">
             {{ $options.i18n.scanScheduleTimezoneLabel }}
           </div>
 

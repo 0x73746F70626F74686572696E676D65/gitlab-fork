@@ -87,10 +87,10 @@ export default {
       <div>
         <h2 class="gl-mt-0" data-testid="sidebar-title">{{ adherenceCheckName }}</h2>
         <div>
-          <span v-if="isFailedStatus" class="gl-text-red-500 gl-font-weight-bold">
+          <span v-if="isFailedStatus" class="gl-text-red-500 gl-font-bold">
             <gl-icon name="status_failed" /> {{ __('Fail') }}
           </span>
-          <span v-else class="gl-text-green-500 gl-font-weight-bold">
+          <span v-else class="gl-text-green-500 gl-font-bold">
             <gl-icon name="status_success" /> {{ __('Success') }}
           </span>
 
@@ -136,7 +136,7 @@ export default {
           :key="fix.title"
           class="gl-mb-4"
         >
-          <div class="gl-my-2 gl-font-weight-bold">{{ fix.title }}</div>
+          <div class="gl-my-2 gl-font-bold">{{ fix.title }}</div>
           <div class="gl-mb-4">{{ fix.description }}</div>
           <gl-button
             class="gl-my-3"

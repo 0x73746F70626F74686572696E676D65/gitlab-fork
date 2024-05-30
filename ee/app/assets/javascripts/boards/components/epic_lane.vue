@@ -212,7 +212,7 @@ export default {
           />
           <h4
             ref="epicTitle"
-            class="gl-my-0 gl-mr-3 gl-font-weight-bold gl-font-base gl-whitespace-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
+            class="gl-my-0 gl-mr-3 gl-font-bold gl-font-base gl-whitespace-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
           >
             {{ epic.title }}
           </h4>

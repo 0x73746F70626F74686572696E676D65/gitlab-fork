@@ -250,7 +250,7 @@ export default {
               :aria-label="item.title"
               :title="item.title"
               :href="computedPath"
-              class="sortable-link ws-normal gl-font-weight-bold"
+              class="sortable-link ws-normal gl-font-bold"
               >{{ item.title }}</gl-link
             >
           </div>
@@ -260,9 +260,9 @@ export default {
           >
             <span class="gl-mr-4 gl-mb-1">{{ itemHierarchy }}</span>
             <gl-tooltip v-if="isEpic" :target="() => $refs.countBadge">
-              <p v-if="allowSubEpics" class="gl-font-weight-bold gl-m-0">
+              <p v-if="allowSubEpics" class="gl-font-bold gl-m-0">
                 {{ __('Epics') }} &#8226;
-                <span class="gl-text-gray-400 gl-font-weight-normal"
+                <span class="gl-text-gray-400 gl-font-normal"
                   >{{
                     sprintf(__('%{openedEpics} open, %{closedEpics} closed'), {
                       openedEpics: item.descendantCounts && item.descendantCounts.openedEpics,
@@ -271,9 +271,9 @@ export default {
                   }}
                 </span>
               </p>
-              <p class="gl-font-weight-bold gl-m-0">
+              <p class="gl-font-bold gl-m-0">
                 {{ __('Issues') }} &#8226;
-                <span class="gl-text-gray-400 gl-font-weight-normal"
+                <span class="gl-text-gray-400 gl-font-normal"
                   >{{
                     sprintf(__('%{openedIssues} open, %{closedIssues} closed'), {
                       openedIssues: item.descendantCounts && item.descendantCounts.openedIssues,

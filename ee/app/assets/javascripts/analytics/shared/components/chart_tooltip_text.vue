@@ -26,7 +26,7 @@ export default {
         class="gl-display-flex gl-justify-content-space-between"
       >
         <div class="gl-mr-5">{{ metric.title }}</div>
-        <div class="gl-font-weight-bold" data-testid="tooltip-value">{{ metric.value }}</div>
+        <div class="gl-font-bold" data-testid="tooltip-value">{{ metric.value }}</div>
       </div>
     </div>
   </div>

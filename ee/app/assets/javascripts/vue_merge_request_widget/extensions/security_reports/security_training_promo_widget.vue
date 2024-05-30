@@ -44,7 +44,7 @@ export default {
           class="gl-ml-2 gl-mr-4 gl-mt-1 gl-text-gray-600 gl-flex-shrink-0"
         />
         <div>
-          <div class="gl-font-weight-bold">{{ $options.i18n.title }}</div>
+          <div class="gl-font-bold">{{ $options.i18n.title }}</div>
           <p class="gl-mb-3">{{ $options.i18n.content }}</p>
           <div class="gl-display-inline-flex gl-flex-wrap gl-gap-3">
             <gl-button

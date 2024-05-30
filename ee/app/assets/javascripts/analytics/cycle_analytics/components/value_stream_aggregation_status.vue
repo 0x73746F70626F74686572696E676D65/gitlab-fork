@@ -73,7 +73,7 @@ export default {
           <div class="gl-pr-4 gl-pb-4">
             {{ $options.i18n.LAST_UPDATED_TEXT }}
           </div>
-          <div class="gl-pb-4 gl-font-weight-bold">
+          <div class="gl-pb-4 gl-font-bold">
             {{ formattedLastUpdated }}
           </div>
         </div>
@@ -84,7 +84,7 @@ export default {
           <div class="gl-pr-4 gl-pb-4">
             {{ $options.i18n.NEXT_UPDATE_TEXT }}
           </div>
-          <div class="gl-pb-4 gl-font-weight-bold">
+          <div class="gl-pb-4 gl-font-bold">
             {{ formattedNextUpdate }}
           </div>
         </div>

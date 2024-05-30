@@ -134,7 +134,7 @@ export default {
     <span class="gl-border-0 gl-border-r-1 gl-border-gray-100 gl-border-solid gl-pr-5">
       <gl-sprintf :message="__('%{count} selected')">
         <template #count>
-          <span class="gl-font-weight-bold"> {{ selection.length }}</span>
+          <span class="gl-font-bold"> {{ selection.length }}</span>
         </template>
       </gl-sprintf>
     </span>

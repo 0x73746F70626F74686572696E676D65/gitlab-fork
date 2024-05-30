@@ -51,7 +51,7 @@ export default {
     </template>
     <template v-if="showActions" #sub-header>
       <div class="gl-max-w-75">
-        <span data-testid="uri" class="gl-break-all gl-text-black-normal gl-font-weight-bold">
+        <span data-testid="uri" class="gl-break-all gl-text-black-normal gl-font-bold">
           {{ data.uri }}
         </span>
         <clipboard-button
