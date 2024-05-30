@@ -96,13 +96,13 @@ export default {
     </p>
     <gl-card class="gl-text-center">
       <template #header>
-        <span class="gl-font-weight-bold">
+        <span class="gl-font-bold">
           <gl-icon name="users" /> {{ s__('Runners|Instance: Median job queued time') }}
         </span>
       </template>
       <gl-sprintf :message="formattedDuration">
         <template #highlight="{ content }">
-          <span class="gl-font-weight-bold gl-font-size-h-display">{{ content }}</span>
+          <span class="gl-font-bold gl-font-size-h-display">{{ content }}</span>
         </template>
       </gl-sprintf>
     </gl-card>

@@ -90,15 +90,15 @@ export default {
     @canceled="$emit('hide-preview-modal')"
     @change="$emit('hide-preview-modal')"
   >
-    <p class="gl-font-weight-bold">{{ __('Created on') }}</p>
+    <p class="gl-font-bold">{{ __('Created on') }}</p>
     <p data-testid="secret-preview-created-at">{{ formattedCreatedAt }}</p>
-    <p class="gl-font-weight-bold">{{ __('Description') }}</p>
+    <p class="gl-font-bold">{{ __('Description') }}</p>
     <p data-testid="secret-preview-description">{{ description }}</p>
-    <p class="gl-font-weight-bold">{{ __('Environment') }}</p>
+    <p class="gl-font-bold">{{ __('Environment') }}</p>
     <p data-testid="secret-preview-environment">{{ environment }}</p>
-    <p class="gl-font-weight-bold">{{ __('Expiration date') }}</p>
+    <p class="gl-font-bold">{{ __('Expiration date') }}</p>
     <p data-testid="secret-preview-expiration">{{ formattedExpiration }}</p>
-    <p class="gl-font-weight-bold">{{ __('Rotation schedule') }}</p>
+    <p class="gl-font-bold">{{ __('Rotation schedule') }}</p>
     <p data-testid="secret-preview-rotation-period">{{ rotationPeriod }}</p>
   </gl-modal>
 </template>
