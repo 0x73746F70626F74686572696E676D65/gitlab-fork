@@ -225,6 +225,50 @@ RSpec.describe Gitlab::Elastic::DocumentReference, feature_category: :global_sea
     end
   end
 
+  describe '#operation' do
+    context 'for issue' do
+      before do
+        allow(::Elastic::DataMigrationService)
+          .to receive(:migration_has_finished?).with(:add_routing_to_issues).and_return(true)
+      end
+
+      it 'is upsert' do
+        expect(issue_as_ref.operation).to eq(:upsert)
+      end
+
+      it 'is index if the elaticsearch_issue_upsert feature flag is disabled' do
+        stub_feature_flags(elaticsearch_issue_upsert: false)
+
+        expect(issue_as_ref.operation).to eq(:index)
+      end
+
+      it 'is index if routing is not added to the issues index' do
+        allow(::Elastic::DataMigrationService)
+          .to receive(:migration_has_finished?).with(:add_routing_to_issues).and_return(false)
+
+        expect(issue_as_ref.operation).to eq(:index)
+      end
+
+      it 'is delete if the database record does not exist' do
+        allow(issue_as_ref).to receive(:database_record).and_return(nil)
+
+        expect(issue_as_ref.operation).to eq(:delete)
+      end
+    end
+
+    context 'for project' do
+      it 'is index' do
+        expect(project_as_ref.operation).to eq(:index)
+      end
+
+      it 'is delete if the database record does not exist' do
+        allow(project_as_ref).to receive(:database_record).and_return(nil)
+
+        expect(project_as_ref.operation).to eq(:delete)
+      end
+    end
+  end
+
   describe '#index_name' do
     context 'when operation is :delete' do
       it 'is the ref klass index name' do
