@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Govern', product_group: :compliance do
+  RSpec.describe 'Govern', :skip_live_env, product_group: :compliance do
     include Support::API
 
     let(:api_client) { Runtime::API::Client.new(:gitlab) }
