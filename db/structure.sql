@@ -12240,7 +12240,8 @@ CREATE TABLE namespace_limits (
     temporary_storage_increase_ends_on date,
     pre_enforcement_notification_at timestamp with time zone,
     first_enforced_at timestamp with time zone,
-    last_enforced_at timestamp with time zone
+    last_enforced_at timestamp with time zone,
+    last_seat_all_used_seats_notification_at timestamp with time zone
 );
 
 CREATE TABLE namespace_package_settings (
