@@ -192,7 +192,7 @@ export default {
         >{{ __('Edit') }}</gl-button
       >
     </div>
-    <gl-form v-if="isEditing" class="work-item-dropdown">
+    <gl-form v-if="isEditing">
       <div class="gl-display-flex gl-align-items-center">
         <label :for="$options.inputId" class="gl-mb-0">{{ $options.i18n.colorLabel }}</label>
         <gl-loading-icon v-if="isUpdating" size="sm" inline class="gl-ml-3" />
