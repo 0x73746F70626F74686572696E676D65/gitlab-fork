@@ -34117,9 +34117,6 @@ msgstr ""
 msgid "New Protected Branch"
 msgstr ""
 
-msgid "New Requirement"
-msgstr ""
-
 msgid "New Security findings"
 msgstr ""
 
