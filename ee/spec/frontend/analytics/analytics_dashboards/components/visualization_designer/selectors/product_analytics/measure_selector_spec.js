@@ -16,7 +16,7 @@ describe('ProductAnalyticsMeasureSelector', () => {
   const findMeasureSummary = () => wrapper.findByTestId('measure-summary');
   const findBackButton = () => wrapper.findByTestId('measure-back-button');
   const findAllEventsButton = (testId) => wrapper.findByTestId(testId);
-  const getLabelTitle = () => wrapper.findComponent(GlLabel).props('title');
+  const getLabel = () => wrapper.findComponent(GlLabel);
 
   const setMeasures = jest.fn();
   const setFilters = jest.fn();
@@ -53,8 +53,12 @@ describe('ProductAnalyticsMeasureSelector', () => {
 
     expect(setMeasures).toHaveBeenCalledWith([measureFieldName]);
 
-    expect(findMeasureSummary().exists()).toBe(true);
-    expect(getLabelTitle()).toContain(summaryString);
+    expect(findMeasureSummary().exists()).toBe(Boolean(measureFieldName));
+    if (summaryString) {
+      expect(getLabel().props('title')).toContain(summaryString);
+    } else {
+      expect(getLabel().exists()).toBe(false);
+    }
   };
 
   describe('when mounted', () => {
@@ -253,10 +257,12 @@ describe('ProductAnalyticsMeasureSelector', () => {
       ${'Sessions.averagePerUser'}                | ${'sessions'}        | ${'averagePerUser'}
       ${'ReturningUsers.allSessionsCount'}        | ${'returningUsers'}  | ${'allSessionsCount'}
       ${'ReturningUsers.returningUserPercentage'} | ${'returningUsers'}  | ${'returningUserPercentage'}
+      ${undefined}                                | ${''}                | ${''}
     `(
       'selects "$measureType" and "$measureSubType" for "$measure"',
       async ({ measure, measureType, measureSubType }) => {
-        const expectedSummaryString = `${measureType}::${measureSubType}`;
+        const expectedSummaryString =
+          measureType && measureSubType ? `${measureType}::${measureSubType}` : '';
         query.measures[0] = measure;
 
         wrapper.setProps({ query });

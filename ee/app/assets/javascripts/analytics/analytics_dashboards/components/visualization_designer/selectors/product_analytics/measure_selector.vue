@@ -106,7 +106,11 @@ export default {
     },
     selectMeasureFromQuery(query) {
       const measure = query.measures?.at(0);
-      if (!measure) return;
+
+      if (!measure) {
+        this.selectMeasure('', '');
+        return;
+      }
 
       for (const [measureType, subTypes] of Object.entries(this.$options.MEASURE_MAP)) {
         for (const [measureSubtype, measureVal] of Object.entries(subTypes)) {

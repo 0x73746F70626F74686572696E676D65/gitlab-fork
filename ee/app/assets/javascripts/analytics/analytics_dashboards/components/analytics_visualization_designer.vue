@@ -78,6 +78,7 @@ export default {
       isSaving: false,
       alert: null,
       aiPromptCorrelationId: null,
+      aiPrompt: '',
     };
   },
   computed: {
@@ -233,6 +234,8 @@ export default {
 
           this.trackEvent(EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION);
 
+          this.resetToInitialState();
+
           if (this.$route?.params.dashboard) {
             this.routeToDashboard(this.$route?.params.dashboard);
           }
@@ -311,6 +314,13 @@ export default {
       };
       this.aiPromptCorrelationId = correlationId;
     },
+    resetToInitialState() {
+      this.queryState = DEFAULT_VISUALIZATION_QUERY_STATE();
+      this.visualizationTitle = '';
+      this.selectedVisualizationType = '';
+      this.aiPromptCorrelationId = null;
+      this.aiPrompt = '';
+    },
   },
   i18n: {
     saveError: s__('Analytics|Error while saving visualization.'),
@@ -382,6 +392,7 @@ export default {
     </section>
     <ai-cube-query-generator
       v-if="aiGenerateCubeQueryEnabled"
+      v-model="aiPrompt"
       :warn-before-replacing-query="queryStateHasChanges"
       class="gl-mb-4"
       @query-generated="onQueryGenerated"

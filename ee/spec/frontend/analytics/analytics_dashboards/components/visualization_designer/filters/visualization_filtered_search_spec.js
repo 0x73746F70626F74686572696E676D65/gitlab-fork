@@ -43,6 +43,24 @@ describe('ProductAnalyticsVisualizationFilteredSearch', () => {
       expect(filteredSearch.props('clearButtonTitle')).toEqual('Clear');
     });
 
+    describe('when the query changes', () => {
+      beforeEach(() => {
+        wrapper.setProps({ query: { measures: ['TrackedEvents.count'] } });
+      });
+
+      it('updates the filtered search component value', () => {
+        expect(findFilteredSearch().props('value')).toStrictEqual([
+          {
+            type: 'measure',
+            value: {
+              data: 'TrackedEvents.count',
+              operator: '=',
+            },
+          },
+        ]);
+      });
+    });
+
     describe.each(['input', 'submit'])('when filtered-search emits "%s"', (event) => {
       beforeEach(() => {
         findFilteredSearch().vm.$emit(event, [
