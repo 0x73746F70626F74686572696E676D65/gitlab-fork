@@ -17908,10 +17908,6 @@ four standard [pagination arguments](#pagination-arguments):
 
 Runner managers associated with the runner configuration.
 
-DETAILS:
-**Introduced** in GitLab 15.10.
-**Status**: Experiment.
-
 Returns [`CiRunnerManagerConnection`](#cirunnermanagerconnection).
 
 This field returns a [connection](#connections). It accepts the
