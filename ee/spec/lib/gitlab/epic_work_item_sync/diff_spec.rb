@@ -27,7 +27,7 @@ RSpec.describe Gitlab::EpicWorkItemSync::Diff, feature_category: :team_planning 
     describe 'base attributes' do
       context 'when epic and work base attributes are not equal' do
         let(:title) { "Other title" }
-        let(:expected_differences) { %w[title lock_version] }
+        let(:expected_differences) { %w[title] }
 
         before do
           epic.update!(title: title)

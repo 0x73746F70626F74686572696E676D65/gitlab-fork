@@ -20,7 +20,8 @@ RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :tea
         expect(Gitlab::EpicWorkItemSync::Logger).to receive(:info).with(
           message: expected_sync_message,
           epic_id: epic.id,
-          work_item_id: work_item.id
+          work_item_id: work_item.id,
+          event: event.class.name
         )
 
         consume_event(subscriber: described_class, event: event)
@@ -29,7 +30,7 @@ RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :tea
 
     context 'when there is a difference' do
       before do
-        epic.update!(title: "New title")
+        epic.update_column(:title, "New title")
       end
 
       it 'logs a warning' do
@@ -37,7 +38,8 @@ RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :tea
           message: expected_mismatch_message,
           epic_id: epic.id,
           work_item_id: work_item.id,
-          mismatching_attributes: include("title", "lock_version")
+          mismatching_attributes: include("title"),
+          event: event.class.name
         )
 
         consume_event(subscriber: described_class, event: event)
@@ -55,7 +57,8 @@ RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :tea
         expect(Gitlab::EpicWorkItemSync::Logger).to receive(:info).with(
           message: "Epic and WorkItem got deleted while finding mismatching attributes",
           epic_id: epic.id,
-          work_item_id: work_item.id
+          work_item_id: work_item.id,
+          event: event.class.name
         )
 
         consume_event(subscriber: described_class, event: event)
@@ -153,6 +156,16 @@ RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :tea
       let(:expected_sync_message) { "Epic and work item attributes are in sync after update" }
       let(:expected_mismatch_message) { "Epic and work item attributes are not in sync after update" }
     end
+
+    context 'when no epic eixsts for the given id' do
+      let(:epic_event_data) { { id: non_existing_record_id, group_id: group.id } }
+
+      it 'does not calculate the diff' do
+        expect(Gitlab::EpicWorkItemSync::Diff).not_to receive(:new)
+
+        consume_event(subscriber: described_class, event: epic_created_event)
+      end
+    end
   end
 
   context 'for work item events' do
@@ -166,6 +179,16 @@ RSpec.describe WorkItems::ValidateEpicWorkItemSyncWorker, feature_category: :tea
       let(:event) { work_item_updated_event }
       let(:expected_sync_message) { "Epic and work item attributes are in sync after update" }
       let(:expected_mismatch_message) { "Epic and work item attributes are not in sync after update" }
+    end
+
+    context 'when no work item eixsts for the given id' do
+      let(:work_item_event_data) { { id: non_existing_record_id, namespace_id: group.id } }
+
+      it 'does not calculate the diff' do
+        expect(Gitlab::EpicWorkItemSync::Diff).not_to receive(:new)
+
+        consume_event(subscriber: described_class, event: work_item_created_event)
+      end
     end
   end
 end
