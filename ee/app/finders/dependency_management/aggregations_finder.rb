@@ -6,7 +6,7 @@ module DependencyManagement
     DEFAULT_PAGE_SIZE = 20
     MAX_PAGE_SIZE = 20
     DEFAULT_SORT_COLUMNS = %i[component_id component_version_id].freeze
-    SUPPORTED_SORT_COLUMNS = %i[highest_severity].freeze
+    SUPPORTED_SORT_COLUMNS = %i[component_name highest_severity].freeze
 
     def initialize(namespace, params: {})
       @namespace = namespace
