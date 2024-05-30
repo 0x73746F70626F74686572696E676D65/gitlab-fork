@@ -56,11 +56,48 @@ RSpec.describe EE::Ci::PipelinesHelper, feature_category: :continuous_integratio
 
   describe '#pipelines_list_data' do
     let_it_be(:project) { build_stubbed(:project) }
+    let_it_be(:current_user) { build_stubbed(:user) }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(current_user)
+      allow_next_instance_of(::Users::IdentityVerification::AuthorizeCi) do |instance|
+        allow(instance).to receive(:user_can_run_jobs?).and_return(authorized)
+      end
+    end
 
     subject(:data) { helper.pipelines_list_data(project, 'list_url') }
 
-    it 'has the expected keys' do
-      expect(data.keys).to include(:identity_verification_required, :identity_verification_path)
+    context 'when the user is authorized to run jobs' do
+      let(:authorized) { true }
+
+      it 'includes the expected identity verification params' do
+        expect(data).to include(
+          identity_verification_required: 'false',
+          identity_verification_path: identity_verification_path
+        )
+      end
+    end
+
+    context 'when the user is not authorized to run jobs' do
+      let(:authorized) { false }
+
+      it 'includes the expected identity verification params' do
+        expect(data).to include(
+          identity_verification_required: 'true',
+          identity_verification_path: identity_verification_path
+        )
+      end
+    end
+
+    context 'when the user is nil' do
+      let(:current_user) { nil }
+
+      it 'includes the expected identity verification params' do
+        expect(data).to include(
+          identity_verification_required: 'false',
+          identity_verification_path: identity_verification_path
+        )
+      end
     end
   end
 
