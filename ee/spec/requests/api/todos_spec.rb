@@ -40,7 +40,7 @@ RSpec.describe API::Todos, feature_category: :team_planning do
         expect(response).to have_gitlab_http_status(:ok)
       end
 
-      it 'avoids N+1 queries', :request_store do
+      it 'avoids N+1 queries', :request_store, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/448371' do
         create_todo_for_new_epic
 
         control = ActiveRecord::QueryRecorder.new { get api('/todos', personal_access_token: pat) }
