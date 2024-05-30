@@ -68,7 +68,7 @@ export default {
           />
           <gl-link
             :href="project.webUrl"
-            class="gl-font-weight-bold"
+            class="gl-font-bold"
             data-testid="pipelines-quota-tab-project-name"
             >{{ project.nameWithNamespace }}</gl-link
           >

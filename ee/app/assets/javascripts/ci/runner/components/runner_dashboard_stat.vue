@@ -37,7 +37,7 @@ export default {
       <slot name="title"></slot>
     </h2>
     <runner-count #default="{ count }" :scope="scope" :variables="variables">
-      <span class="gl-font-weight-bold gl-font-size-h-display">{{ formattedValue(count) }}</span>
+      <span class="gl-font-bold gl-font-size-h-display">{{ formattedValue(count) }}</span>
     </runner-count>
   </div>
 </template>
