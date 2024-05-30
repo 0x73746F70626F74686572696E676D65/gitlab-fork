@@ -1,16 +1,26 @@
 import { GlFilteredSearchToken, GlFilteredSearchTokenSegment } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
-import { mockIterationToken } from '../mock_data';
+import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteration_cadences.query.graphql';
+import { mockIterationToken, groupCadencesResponse } from '../mock_data';
+
+Vue.use(VueApollo);
 
 jest.mock('~/alert');
 
 describe('IterationToken', () => {
   const id = '123';
   let wrapper;
+
+  const iterationCadencesQueryHandler = jest.fn().mockResolvedValue(groupCadencesResponse);
+  const mockApollo = createMockApollo([
+    [searchIterationCadencesQuery, iterationCadencesQueryHandler],
+  ]);
 
   const createComponent = ({
     config = mockIterationToken,
@@ -20,6 +30,7 @@ describe('IterationToken', () => {
     provide = {},
   } = {}) =>
     mount(IterationToken, {
+      apolloProvider: mockApollo,
       propsData: {
         active,
         config,
@@ -73,15 +84,16 @@ describe('IterationToken', () => {
 
   it('fetches iteration cadences when cadence is set', () => {
     const search = 'Current&1';
-    const fetchIterationCadencesSpy = jest.fn().mockResolvedValue();
 
-    wrapper = createComponent({
-      config: { ...mockIterationToken, fetchIterationCadences: fetchIterationCadencesSpy },
-    });
+    wrapper = createComponent();
 
     wrapper.findComponent(GlFilteredSearchToken).vm.$emit('input', { data: search });
 
-    expect(fetchIterationCadencesSpy).toHaveBeenCalledWith('1');
+    expect(iterationCadencesQueryHandler).toHaveBeenCalledWith({
+      fullPath: mockIterationToken.fullPath,
+      id: 'gid://gitlab/Iterations::Cadence/1',
+      isProject: mockIterationToken.isProject,
+    });
   });
 
   it('renders error message when request fails', async () => {

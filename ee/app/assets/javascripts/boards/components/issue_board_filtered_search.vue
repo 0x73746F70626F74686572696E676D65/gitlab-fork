@@ -43,11 +43,7 @@ export default {
         : this.fullPath.slice(0, this.fullPath.lastIndexOf('/'));
     },
     tokens() {
-      const { fetchIterations, fetchIterationCadences } = issueBoardFilters(
-        this.$apollo,
-        this.fullPath,
-        this.isGroupBoard,
-      );
+      const { fetchIterations } = issueBoardFilters(this.$apollo, this.fullPath, this.isGroupBoard);
 
       const tokens = [
         ...this.tokensCE,
@@ -76,7 +72,8 @@ export default {
                 token: IterationToken,
                 unique: true,
                 fetchIterations,
-                fetchIterationCadences,
+                isProject: !this.isGroupBoard,
+                fullPath: this.fullPath,
               },
             ]
           : []),

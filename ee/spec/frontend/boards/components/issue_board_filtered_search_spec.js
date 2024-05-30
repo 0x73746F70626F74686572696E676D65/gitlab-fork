@@ -14,6 +14,7 @@ describe('IssueBoardFilter', () => {
     wrapper = shallowMount(IssueBoardFilteredSpec, {
       propsData: {
         boardId: 'gid://gitlab/Board/1',
+        filters: {},
       },
       provide: {
         isSignedIn: true,
@@ -32,16 +33,13 @@ describe('IssueBoardFilter', () => {
 
   let fetchLabelsSpy;
   let fetchIterationsSpy;
-  let fetchIterationCadencesSpy;
   beforeEach(() => {
     fetchLabelsSpy = jest.fn();
     fetchIterationsSpy = jest.fn();
-    fetchIterationCadencesSpy = jest.fn();
 
     issueBoardFilters.mockReturnValue({
       fetchLabels: fetchLabelsSpy,
       fetchIterations: fetchIterationsSpy,
-      fetchIterationCadences: fetchIterationCadencesSpy,
     });
   });
 
@@ -55,7 +53,7 @@ describe('IssueBoardFilter', () => {
     });
 
     it('passes the correct tokens to BoardFilteredSearch including epics', () => {
-      const tokens = mockTokens(fetchLabelsSpy, fetchIterationsSpy, fetchIterationCadencesSpy);
+      const tokens = mockTokens(fetchLabelsSpy, fetchIterationsSpy);
 
       expect(wrapper.findComponent(BoardFilteredSearch).props('tokens')).toEqual(
         orderBy(tokens, ['title']),

@@ -27,6 +27,7 @@ query getIssuesEE(
   $epicWildcardId: EpicWildcardId
   $iterationId: [ID]
   $iterationWildcardId: IterationWildcardId
+  $iterationCadenceId: [IterationsCadenceID!]
   $weight: String
   $weightWildcardId: WeightWildcardId
   $healthStatusFilter: HealthStatusFilter
@@ -67,6 +68,7 @@ query getIssuesEE(
       epicWildcardId: $epicWildcardId
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
+      iterationCadenceId: $iterationCadenceId
       weight: $weight
       weightWildcardId: $weightWildcardId
       healthStatusFilter: $healthStatusFilter
@@ -125,6 +127,7 @@ query getIssuesEE(
       epicWildcardId: $epicWildcardId
       iterationId: $iterationId
       iterationWildcardId: $iterationWildcardId
+      iterationCadenceId: $iterationCadenceId
       weight: $weight
       weightWildcardId: $weightWildcardId
       healthStatusFilter: $healthStatusFilter
