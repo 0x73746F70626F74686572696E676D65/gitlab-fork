@@ -56,7 +56,7 @@ RSpec.describe API::Deployments, feature_category: :continuous_delivery do
 
       let!(:deployment_approval) do
         create(:deployment_approval, :approved,
-               user: security_user, approval_rule: approval_rule, deployment: deployment)
+          user: security_user, approval_rule: approval_rule, deployment: deployment)
       end
 
       it 'has approval summary' do

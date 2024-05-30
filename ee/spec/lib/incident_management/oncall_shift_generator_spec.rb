@@ -68,10 +68,10 @@ RSpec.describe IncidentManagement::OncallShiftGenerator do
       let_it_be(:participant) { create(:incident_management_oncall_participant, :with_developer_access, rotation: rotation) }
 
       it_behaves_like 'unsaved shifts',
-       '3 shifts of 5 days, all for the same participant',
-       [[:participant, '2020-12-08 00:00:00 UTC', '2020-12-13 00:00:00 UTC'],
-        [:participant, '2020-12-13 00:00:00 UTC', '2020-12-18 00:00:00 UTC'],
-        [:participant, '2020-12-18 00:00:00 UTC', '2020-12-23 00:00:00 UTC']]
+        '3 shifts of 5 days, all for the same participant',
+        [[:participant, '2020-12-08 00:00:00 UTC', '2020-12-13 00:00:00 UTC'],
+         [:participant, '2020-12-13 00:00:00 UTC', '2020-12-18 00:00:00 UTC'],
+         [:participant, '2020-12-18 00:00:00 UTC', '2020-12-23 00:00:00 UTC']]
 
       context 'when timestamp is at the end of a shift' do
         let(:starts_at) { rotation_start_time + shift_length }
@@ -178,17 +178,17 @@ RSpec.describe IncidentManagement::OncallShiftGenerator do
           end
 
           it_behaves_like 'unsaved shifts',
-          '5 shifts for each participant with overnight shifts',
-          [[:participant1, '2020-12-08 17:00:00 UTC', '2020-12-09 08:00:00 UTC'],
-           [:participant1, '2020-12-09 17:00:00 UTC', '2020-12-10 08:00:00 UTC'],
-           [:participant1, '2020-12-10 17:00:00 UTC', '2020-12-11 08:00:00 UTC'],
-           [:participant1, '2020-12-11 17:00:00 UTC', '2020-12-12 08:00:00 UTC'],
-           [:participant1, '2020-12-12 17:00:00 UTC', '2020-12-13 08:00:00 UTC'],
-           [:participant2, '2020-12-13 17:00:00 UTC', '2020-12-14 08:00:00 UTC'],
-           [:participant2, '2020-12-14 17:00:00 UTC', '2020-12-15 08:00:00 UTC'],
-           [:participant2, '2020-12-15 17:00:00 UTC', '2020-12-16 08:00:00 UTC'],
-           [:participant2, '2020-12-16 17:00:00 UTC', '2020-12-17 08:00:00 UTC'],
-           [:participant2, '2020-12-17 17:00:00 UTC', '2020-12-18 08:00:00 UTC']]
+            '5 shifts for each participant with overnight shifts',
+            [[:participant1, '2020-12-08 17:00:00 UTC', '2020-12-09 08:00:00 UTC'],
+             [:participant1, '2020-12-09 17:00:00 UTC', '2020-12-10 08:00:00 UTC'],
+             [:participant1, '2020-12-10 17:00:00 UTC', '2020-12-11 08:00:00 UTC'],
+             [:participant1, '2020-12-11 17:00:00 UTC', '2020-12-12 08:00:00 UTC'],
+             [:participant1, '2020-12-12 17:00:00 UTC', '2020-12-13 08:00:00 UTC'],
+             [:participant2, '2020-12-13 17:00:00 UTC', '2020-12-14 08:00:00 UTC'],
+             [:participant2, '2020-12-14 17:00:00 UTC', '2020-12-15 08:00:00 UTC'],
+             [:participant2, '2020-12-15 17:00:00 UTC', '2020-12-16 08:00:00 UTC'],
+             [:participant2, '2020-12-16 17:00:00 UTC', '2020-12-17 08:00:00 UTC'],
+             [:participant2, '2020-12-17 17:00:00 UTC', '2020-12-18 08:00:00 UTC']]
         end
       end
 

@@ -11,7 +11,7 @@ RSpec.describe API::ComposerPackages, feature_category: :package_registry do
   let_it_be(:package_name) { 'package-name' }
   let_it_be(:project) do
     create(:project, :custom_repo, files: { 'composer.json' => Gitlab::Json.dump({ name: package_name }) },
-                                   group: group)
+      group: group)
   end
 
   let_it_be(:package) { create(:composer_package, :with_metadatum, name: package_name, project: project) }

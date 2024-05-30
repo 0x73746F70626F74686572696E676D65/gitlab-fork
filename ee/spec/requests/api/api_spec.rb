@@ -12,9 +12,9 @@ RSpec.describe API::API, feature_category: :system_access do
         expect(described_class::LOG_FORMATTER).to receive(:call) do |_severity, _datetime, _, data|
           expect(data.stringify_keys)
             .to include('correlation_id' => an_instance_of(String),
-                        'meta.remote_ip' => an_instance_of(String),
-                        'meta.client_id' => a_string_matching(%r{\Aip/.+}),
-                        'route' => '/api/scim/:version/groups/:group/Users/:id')
+              'meta.remote_ip' => an_instance_of(String),
+              'meta.client_id' => a_string_matching(%r{\Aip/.+}),
+              'route' => '/api/scim/:version/groups/:group/Users/:id')
 
           expect(data.stringify_keys).not_to include('meta.caller_id', 'meta.user')
         end
