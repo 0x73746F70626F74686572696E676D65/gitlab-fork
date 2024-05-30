@@ -7,7 +7,7 @@ RSpec.describe RemoteDevelopment::GroupPolicy, feature_category: :remote_develop
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:group) { create(:group) }
-  let_it_be(:admin_in_non_admin_mode) { create(:admin) }
+  let_it_be(:admin_in_non_admin_mode) { create(:admin, :without_default_org) }
   let_it_be(:admin_in_admin_mode) { create(:admin) }
   let_it_be(:owner) { create(:user, owner_of: [group]) }
   let_it_be(:maintainer) { create(:user, maintainer_of: [group]) }
@@ -33,7 +33,7 @@ RSpec.describe RemoteDevelopment::GroupPolicy, feature_category: :remote_develop
       GroupPolicy | ref(:maintainer)              | false
       GroupPolicy | ref(:owner)                   | true
       GroupPolicy | ref(:admin_in_admin_mode)     | true
-      GroupPolicy | ref(:admin_in_non_admin_mode) | true # Even though admin_mode is false, admins are still considered group owners due to: `condition(:owner) { access_level >= GroupMember::OWNER }`
+      GroupPolicy | ref(:admin_in_non_admin_mode) | false
     end
     # rubocop:enable Layout/LineLength
 
@@ -69,7 +69,7 @@ RSpec.describe RemoteDevelopment::GroupPolicy, feature_category: :remote_develop
       GroupPolicy | ref(:maintainer)              | true
       GroupPolicy | ref(:owner)                   | true
       GroupPolicy | ref(:admin_in_admin_mode)     | true
-      GroupPolicy | ref(:admin_in_non_admin_mode) | true # Even though admin_mode is false, admins are still considered group owners due to: `condition(:owner) { access_level >= GroupMember::OWNER }`
+      GroupPolicy | ref(:admin_in_non_admin_mode) | false
     end
     # rubocop:enable Layout/LineLength
 
