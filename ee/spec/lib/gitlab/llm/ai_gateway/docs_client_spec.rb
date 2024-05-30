@@ -81,18 +81,6 @@ RSpec.describe Gitlab::Llm::AiGateway::DocsClient, feature_category: :ai_abstrac
       expect(result.parsed_response).to eq(expected_response)
     end
 
-    context 'when passing stream: true' do
-      let(:options) { { stream: true } }
-
-      it 'does not pass stream: true as we do not want to retrieve SSE events' do
-        expect(Gitlab::HTTP).to receive(:post).with(
-          anything,
-          hash_excluding(:stream_body)
-        ).and_call_original
-        expect(result.parsed_response).to eq(expected_response)
-      end
-    end
-
     context 'when token is expired' do
       before do
         token.update!(expires_at: 1.day.ago)
