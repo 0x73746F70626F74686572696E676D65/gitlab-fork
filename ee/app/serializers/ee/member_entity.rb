@@ -6,7 +6,7 @@ module EE
 
     prepended do
       expose :using_license do |member|
-        can?(current_user, :owner_access, group) && member.user&.using_gitlab_com_seat?(group)
+        can?(current_user, :read_billable_member, group) && member.user&.using_gitlab_com_seat?(group)
       end
 
       expose :group_sso?, as: :group_sso
