@@ -69,8 +69,11 @@ module Gitlab
             }
           end
 
+          def filename
+            context.current_file[:file_name].to_s
+          end
+
           def language_info
-            filename = context.current_file[:file_name].to_s
             language = ::CodeSuggestions::ProgrammingLanguage.detect_from_filename(filename)
             return '' unless language.name.present?
 
