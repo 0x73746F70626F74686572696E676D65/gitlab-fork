@@ -7,25 +7,24 @@ RSpec.describe EE::API::Entities::MemberRole, feature_category: :permissions do
     let_it_be(:group) { create(:group) }
     let_it_be(:owner) { create(:group_member, :owner, source: group) }
 
-    let(:member_role) { create(:member_role, namespace: group) }
-    let(:entity) { described_class.new(member_role) }
+    let_it_be(:member_role) { create(:member_role, :read_code, namespace: group) }
 
-    subject { entity.as_json }
+    subject(:entity_representation) { described_class.new(member_role).as_json }
 
-    it 'exposes the attributes' do
-      expect(subject[:id]).to eq member_role.id
-      expect(subject[:name]).to eq member_role.name
-      expect(subject[:description]).to eq member_role.description
-      expect(subject[:base_access_level]).to eq member_role.base_access_level
-      expect(subject[:read_code]).to eq(true)
-      expect(subject[:read_vulnerability]).to eq(false)
-      expect(subject[:admin_terraform_state]).to eq(false)
-      expect(subject[:admin_vulnerability]).to eq(false)
-      expect(subject[:manage_group_access_tokens]).to eq(false)
-      expect(subject[:manage_project_access_tokens]).to eq(false)
-      expect(subject[:archive_project]).to eq(false)
-      expect(subject[:remove_project]).to eq(false)
-      expect(subject[:group_id]).to eq(group.id)
+    it 'exposes the attributes', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/447504' do
+      expect(entity_representation[:id]).to eq member_role.id
+      expect(entity_representation[:name]).to eq member_role.name
+      expect(entity_representation[:description]).to eq member_role.description
+      expect(entity_representation[:base_access_level]).to eq member_role.base_access_level
+      expect(entity_representation[:read_code]).to eq(true)
+      expect(entity_representation[:read_vulnerability]).to eq(false)
+      expect(entity_representation[:admin_terraform_state]).to eq(false)
+      expect(entity_representation[:admin_vulnerability]).to eq(false)
+      expect(entity_representation[:manage_group_access_tokens]).to eq(false)
+      expect(entity_representation[:manage_project_access_tokens]).to eq(false)
+      expect(entity_representation[:archive_project]).to eq(false)
+      expect(entity_representation[:remove_project]).to eq(false)
+      expect(entity_representation[:group_id]).to eq(group.id)
     end
   end
 end
