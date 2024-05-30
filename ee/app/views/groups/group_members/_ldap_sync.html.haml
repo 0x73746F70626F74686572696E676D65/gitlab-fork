@@ -9,9 +9,9 @@
       = link_to('LDAP sync', help_page_path('administration/auth/ldap/ldap_synchronization'), target: '_blank', rel: 'noopener noreferrer')
       to update the group member list from your LDAP server.
       It can take up to #{time_interval_in_words(Gitlab.config.ldap['sync_time'])} for the member list to display the following changes:
-      %ul
+      %ul.gl-mt-3
         - @group.ldap_group_links.select(&:active?).each do |ldap_group_link|
-          %li
+          %li.gl-mb-2
             People in
             %code= ldap_group_link.cn ? "cn: #{ldap_group_link.cn}" : "filter: #{ldap_group_link.filter}"
             %br

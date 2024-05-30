@@ -23,7 +23,7 @@ export default {
       alert: null,
       groups: [],
       searching: false,
-      selected: '',
+      selected: null,
     };
   },
   computed: {
@@ -45,11 +45,8 @@ export default {
     this.providerElement.removeEventListener('change', this.onProvideElementChange);
   },
   methods: {
-    handleSelect(selected) {
-      this.selected = selected;
-    },
     onProvideElementChange() {
-      this.selected = '';
+      this.selected = null;
       this.search();
     },
     async search(query = '') {
@@ -75,13 +72,13 @@ export default {
 <template>
   <div>
     <gl-collapsible-listbox
+      v-model="selected"
       :items="groups"
       :no-results-text="$options.i18n.noResultsText"
       searchable
       :searching="searching"
       :toggle-text="toggleText"
       @search="debouncedSearch"
-      @select="handleSelect"
     >
       <template #search-summary-sr-only>
         {{ searchSummarySrText }}

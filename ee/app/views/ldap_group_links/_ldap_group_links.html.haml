@@ -7,4 +7,5 @@
       %ul.content-list
         = render partial: 'ldap_group_links/ldap_group_link', collection: group.ldap_group_links, locals: { group: group }
     - else
-      No LDAP synchronizations
+      %p.gl-my-4
+        No LDAP synchronizations
