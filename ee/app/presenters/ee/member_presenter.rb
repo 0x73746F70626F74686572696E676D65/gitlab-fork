@@ -62,6 +62,12 @@ module EE
       member_role&.description
     end
 
+    def access_level_for_export
+      return human_access unless member_role
+
+      "#{member_role.name} (#{s_('Custom role')})"
+    end
+
     private
 
     def override_member_permission

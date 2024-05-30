@@ -96,6 +96,20 @@ RSpec.describe UserPermissions::ExportService, feature_category: :system_access 
       expect(csv[0]['Last Activity']).to eq('2020-12-16')
     end
 
+    context 'when user has custom role assigned' do
+      it 'displays attributes correctly', :aggregate_failures do
+        role = create(:member_role, base_access_level: Gitlab::Access::OWNER, name: 'Top admin')
+        group_owner.update!(member_role: role)
+
+        row = csv.find { |row| row['Username'] == 'Jessica' }
+
+        expect(row['Path']).to eq(group.full_path)
+        expect(row['Type']).to eq('Group')
+        expect(row['Access Level']).to eq("Top admin (#{_('Custom role')})")
+        expect(row['Last Activity']).to eq('2020-12-16')
+      end
+    end
+
     context 'when user is member of a sub group' do
       let_it_be(:sub_group) { create(:group, parent: group) }
       let_it_be(:sub_group_user) { create(:user, username: 'Oliver', email: 'oliver@test.com', last_activity_on: Date.new(2020, 12, 18)) }

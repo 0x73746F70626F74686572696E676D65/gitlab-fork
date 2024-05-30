@@ -25,7 +25,7 @@ module Groups
           'Name' => ->(member) { member&.user&.name },
           'Access granted' => ->(member) { member.created_at.to_fs(:csv) },
           'Access expires' => ->(member) { member.expires_at },
-          'Max role' => 'human_access',
+          'Max role' => ->(member) { member.present.access_level_for_export },
           'Source' => ->(member) { member_source(member) }
         }
       end
