@@ -47,6 +47,23 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
     end
   end
 
+  describe '#access_level_for_export' do
+    context 'when a member has static role assigned' do
+      it 'returns correct label for default role' do
+        expect(presenter.access_level_for_export).to eq('Reporter')
+      end
+    end
+
+    context 'when a member has custom role assigned' do
+      it 'returns correct label for custom role' do
+        member_role = create(:member_role, :reporter, name: 'Incident Manager')
+        member_root.update!(member_role: member_role)
+
+        expect(presenter.access_level_for_export).to eq('Incident Manager (Custom role)')
+      end
+    end
+  end
+
   describe '#role_type' do
     context 'when a default role is assigned' do
       it "returns 'default'" do

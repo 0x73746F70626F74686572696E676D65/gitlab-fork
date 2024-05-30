@@ -96,7 +96,7 @@ RSpec.describe Groups::Memberships::ExportService, feature_category: :groups_and
           expect(csv.size).to eq(9)
         end
 
-        context 'checking member source' do
+        context 'checking data' do
           let_it_be(:group) { create(:group) }
           let_it_be(:sub_group) { create(:group, parent: group) }
           let_it_be(:descendant_group) { create(:group, parent: sub_group) }
@@ -105,37 +105,43 @@ RSpec.describe Groups::Memberships::ExportService, feature_category: :groups_and
           let_it_be(:inherited_user) { create(:user, username: 'Bob', name: 'Bob') }
           let_it_be(:descendant_user) { create(:user, username: 'John', name: 'John') }
 
+          let_it_be(:member_role) { create(:member_role, :developer, name: 'Incident Manager') }
+
           before_all do
             create(:group_member, :owner, group: group, user: direct_user)
-            create(:group_member, group: sub_group, user: inherited_user)
-            create(:group_member, group: descendant_group, user: descendant_user)
+            create(:group_member, :developer, group: sub_group, user: inherited_user)
+            create(:group_member,
+              :developer, group: descendant_group, user: descendant_user, member_role: member_role)
           end
 
           let_it_be(:subgroup_service) { described_class.new(container: sub_group, current_user: direct_user) }
 
           subject(:csv) { CSV.parse(subgroup_service.execute.payload, headers: true) }
 
-          it 'has correct source for direct member', :aggregate_failures do
+          it 'has correct data for direct member', :aggregate_failures do
             row = csv.find { |row| row['Username'] == 'Alice' }
 
             expect(row[0]).to eq('Alice')
             expect(row[1]).to eq('Alice')
+            expect(row[4]).to eq('Owner')
             expect(row[5]).to eq('Inherited member')
           end
 
-          it 'has correct source for inherited member', :aggregate_failures do
+          it 'has correct data for inherited member', :aggregate_failures do
             row = csv.find { |row| row['Username'] == 'Bob' }
 
             expect(row[0]).to eq('Bob')
             expect(row[1]).to eq('Bob')
+            expect(row[4]).to eq('Developer')
             expect(row[5]).to eq('Direct member')
           end
 
-          it 'has correct source for descendant member', :aggregate_failures do
+          it 'has correct data for descendant member', :aggregate_failures do
             row = csv.find { |row| row['Username'] == 'John' }
 
             expect(row[0]).to eq('John')
             expect(row[1]).to eq('John')
+            expect(row[4]).to eq('Incident Manager (Custom role)')
             expect(row[5]).to eq('Descendant member')
           end
         end
