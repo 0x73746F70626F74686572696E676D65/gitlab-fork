@@ -507,7 +507,6 @@ Style/InlineDisableAnnotation:
     - 'app/models/snippet.rb'
     - 'app/models/subscription.rb'
     - 'app/models/todo.rb'
-    - 'app/models/token_with_iv.rb'
     - 'app/models/upload.rb'
     - 'app/models/user.rb'
     - 'app/models/user_agent_detail.rb'

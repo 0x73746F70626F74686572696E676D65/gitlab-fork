@@ -4586,7 +4586,6 @@ RSpec/FeatureCategory:
     - 'spec/models/term_agreement_spec.rb'
     - 'spec/models/time_tracking/timelog_category_spec.rb'
     - 'spec/models/todo_spec.rb'
-    - 'spec/models/token_with_iv_spec.rb'
     - 'spec/models/trending_project_spec.rb'
     - 'spec/models/upload_spec.rb'
     - 'spec/models/uploads/fog_spec.rb'
