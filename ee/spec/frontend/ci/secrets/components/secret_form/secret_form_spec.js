@@ -10,7 +10,7 @@ import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_help
 import CiEnvironmentsDropdown from '~/ci/common/private/ci_environments_dropdown';
 import SecretForm from 'ee/ci/secrets/components/secret_form/secret_form.vue';
 import SecretPreviewModal from 'ee/ci/secrets/components/secret_form/secret_preview_modal.vue';
-import { mockProjectSecret } from '../../mock_data';
+import { mockProjectSecret, mockSecretId } from '../../mock_data';
 
 jest.mock('~/alert');
 Vue.use(VueApollo);
@@ -297,7 +297,7 @@ describe('SecretForm component', () => {
 
         expect(mockRouter.push).toHaveBeenCalledWith({
           name: DETAILS_ROUTE_NAME,
-          params: { key: 'SECRET_KEY' },
+          params: { id: mockSecretId },
         });
       });
     });

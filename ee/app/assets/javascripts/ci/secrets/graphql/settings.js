@@ -1,5 +1,7 @@
+import { dateAndTimeToISOString } from '~/lib/utils/datetime_utility';
+import { mockProjectSecretsData } from '../mock_data';
 import getSecretsQuery from './queries/client/get_secrets.query.graphql';
-import getSecretDetails from './queries/client/get_secret_details.query.graphql';
+import getSecretDetailsQuery from './queries/client/get_secret_details.query.graphql';
 
 export const cacheConfig = {
   typePolicies: {
@@ -53,28 +55,45 @@ export const resolvers = {
 
       return clientSidePaginate(sourceData, offset, limit);
     },
+    secret({ fullPath }, { id }, { cache }) {
+      const sourceData = cache.readQuery({
+        query: getSecretDetailsQuery,
+        variables: { fullPath, id },
+      });
+
+      if (sourceData) {
+        return sourceData;
+      }
+
+      return mockProjectSecretsData[id - 1] || mockProjectSecretsData[0];
+    },
   },
   Mutation: {
     createSecret: async (_, { fullPath, secret }, { cache }) => {
+      const id = mockProjectSecretsData.length + 1;
       cache.writeQuery({
-        query: getSecretDetails,
+        query: getSecretDetailsQuery,
+        variables: { fullPath, id },
         data: {
-          fullPath,
-          secret: {
-            ...secret,
+          project: {
+            id: 'gid://gitlab/Project/19',
+            fullPath,
+            secret: {
+              ...secret,
+              id,
+              createdAt: dateAndTimeToISOString(new Date(), '00:00'),
+              expiration: dateAndTimeToISOString(secret.expiration, '00:00'),
+            },
           },
         },
       });
 
       const mockGraphQLResponse = {
-        project: {
-          secret: {
-            errors: [],
-            nodes: {
-              ...secret,
-            },
-          },
+        secret: {
+          ...secret,
+          id,
         },
+        errors: [],
       };
 
       // simulate mock fetch to test loading icon behavior
