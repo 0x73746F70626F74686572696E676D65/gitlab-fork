@@ -134,14 +134,14 @@ RSpec.describe 'Query.ciRunnerUsageByProject', :click_house, feature_category: :
 
       expected_result = top_runners.each_with_index.flat_map do |runner, index|
         {
-          "runner" => a_graphql_entity_for(runner, :description),
-          "ciMinutesUsed" => 20 * (index + 1),
-          "ciBuildCount" => index + 1
+          'runner' => a_graphql_entity_for(runner, :description),
+          'ciMinutesUsed' => (20 * (index + 1)).to_s,
+          'ciBuildCount' => (index + 1).to_s
         }
       end.reverse + [{
-        "runner" => nil,
-        "ciMinutesUsed" => other_runners.count * 3 * 2,
-        "ciBuildCount" => other_runners.count * 3
+        'runner' => nil,
+        'ciMinutesUsed' => (other_runners.count * 3 * 2).to_s,
+        'ciBuildCount' => (other_runners.count * 3).to_s
       }]
 
       expect(runner_usage).to match(expected_result)
@@ -175,13 +175,11 @@ RSpec.describe 'Query.ciRunnerUsageByProject', :click_house, feature_category: :
     end
     insert_ci_builds_to_click_house(builds)
 
-    expect(runner_usage).to match([
-      {
-        "runner" => a_graphql_entity_for(instance_runners.first, :description),
-        "ciMinutesUsed" => 5,
-        "ciBuildCount" => 2
-      }
-    ])
+    expect(runner_usage).to contain_exactly({
+      'runner' => a_graphql_entity_for(instance_runners.first, :description),
+      'ciMinutesUsed' => '5',
+      'ciBuildCount' => '2'
+    })
   end
 
   context 'when from_date and to_date are not specified' do
@@ -206,13 +204,11 @@ RSpec.describe 'Query.ciRunnerUsageByProject', :click_house, feature_category: :
       end
       insert_ci_builds_to_click_house(builds)
 
-      expect(runner_usage).to match([
-        {
-          "runner" => a_graphql_entity_for(instance_runners.first, :description),
-          "ciMinutesUsed" => 5,
-          "ciBuildCount" => 2
-        }
-      ])
+      expect(runner_usage).to contain_exactly({
+        'runner' => a_graphql_entity_for(instance_runners.first, :description),
+        'ciMinutesUsed' => '5',
+        'ciBuildCount' => '2'
+      })
     end
   end
 
@@ -227,13 +223,11 @@ RSpec.describe 'Query.ciRunnerUsageByProject', :click_house, feature_category: :
 
       insert_ci_builds_to_click_house(builds)
 
-      expect(runner_usage).to match([
-        {
-          "runner" => a_graphql_entity_for(group_runner, :description),
-          "ciMinutesUsed" => 33,
-          "ciBuildCount" => 1
-        }
-      ])
+      expect(runner_usage).to contain_exactly({
+        'runner' => a_graphql_entity_for(group_runner, :description),
+        'ciMinutesUsed' => '33',
+        'ciBuildCount' => '1'
+      })
     end
   end
 
