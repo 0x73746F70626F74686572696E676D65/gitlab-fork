@@ -252,10 +252,7 @@ description: with missing properties
       expect(dashboard).to be_a(described_class)
       expect(dashboard.title).to eq('Value Streams Dashboard')
       expect(dashboard.slug).to eq('value_streams_dashboard')
-      expect(dashboard.description).to eq(
-        'The Value Streams Dashboard allows all stakeholders from executives ' \
-        'to individual contributors to identify trends, patterns, and ' \
-        'opportunities for software development improvements.')
+      expect(dashboard.description).to eq('Track key DevSecOps metrics throughout the development lifecycle.')
       expect(dashboard.schema_version).to eq(nil)
     end
 

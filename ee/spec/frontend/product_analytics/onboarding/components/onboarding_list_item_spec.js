@@ -37,7 +37,7 @@ describe('OnboardingListItem', () => {
       expect(findListItem().props()).toMatchObject({
         title: 'Product Analytics',
         description:
-          'Set up to track how your product is performing and optimize your product and development processes.',
+          'Track the performance of your product, and optimize your product and development processes.',
         badgeText: null,
         badgePopoverText: null,
         to: 'product-analytics-onboarding',
