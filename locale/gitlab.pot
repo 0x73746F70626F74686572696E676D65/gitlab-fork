@@ -62532,6 +62532,9 @@ msgstr ""
 msgid "mrWidget|Merge failed."
 msgstr ""
 
+msgid "mrWidget|Merge request was removed from the merge train."
+msgstr ""
+
 msgid "mrWidget|Merged by"
 msgstr ""
 
