@@ -102,7 +102,7 @@ export default {
       />
 
       <div class="gl-leading-20">
-        <span class="gl-display-block gl-mb-1 gl-font-base gl-font-normal gl-text-gray-700">{{
+        <span class="gl-block gl-mb-1 gl-font-base gl-font-normal gl-text-gray-700">{{
           data.namespace.namespaceType
         }}</span>
         <div class="gl-display-flex gl-align-items-center gl-gap-2">

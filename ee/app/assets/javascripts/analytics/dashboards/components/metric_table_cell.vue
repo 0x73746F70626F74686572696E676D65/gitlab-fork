@@ -75,7 +75,7 @@ export default {
     />
     <gl-popover :target="popoverTarget" :title="metric.label" show-close-button>
       {{ tooltip.description }}
-      <gl-link :href="tooltip.docsLink" class="gl-display-block gl-mt-2 gl-font-sm" target="_blank">
+      <gl-link :href="tooltip.docsLink" class="gl-block gl-mt-2 gl-font-sm" target="_blank">
         {{ $options.i18n.docsLabel }}
         <gl-icon name="external-link" class="gl-align-middle" />
       </gl-link>

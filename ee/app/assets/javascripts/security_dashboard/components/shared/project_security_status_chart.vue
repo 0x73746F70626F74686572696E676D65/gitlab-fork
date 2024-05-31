@@ -214,7 +214,7 @@ export default {
                 <span
                   v-if="project.mostSevereVulnerability"
                   ref="mostSevereCount"
-                  class="gl-display-block text-lowercase"
+                  class="gl-block text-lowercase"
                   :class="cssForMostSevereVulnerability(project.mostSevereVulnerability)"
                   >{{ project.mostSevereVulnerability.count }}
                   {{ severityText(project.mostSevereVulnerability.level) }}

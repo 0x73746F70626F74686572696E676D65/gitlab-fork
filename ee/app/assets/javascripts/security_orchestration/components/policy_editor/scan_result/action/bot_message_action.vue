@@ -34,7 +34,7 @@ export default {
           </template>
         </gl-sprintf>
         <gl-link
-          class="gl-display-block gl-mt-5 gl-min-w-fit"
+          class="gl-block gl-mt-5 gl-min-w-fit"
           :href="$options.documentationLink"
           target="_blank"
         >

@@ -24,7 +24,7 @@ export default {
       class="gl-align-items-center"
     >
       <template #title>
-        <h5 class="gl-display-block gl-font-lg gl-my-4">
+        <h5 class="gl-block gl-font-lg gl-my-4">
           {{ $options.i18n.testRuns.title }}
         </h5>
       </template>

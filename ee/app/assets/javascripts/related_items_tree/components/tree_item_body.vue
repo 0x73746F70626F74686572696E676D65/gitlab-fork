@@ -224,7 +224,7 @@ export default {
           <div class="item-title gl-display-flex gl-mb-0 gl-py-1">
             <gl-icon
               ref="stateIconMd"
-              class="gl-display-block gl-mr-3"
+              class="gl-block gl-mr-3"
               :class="stateIconClass"
               :name="stateIconName"
               :aria-label="stateText"

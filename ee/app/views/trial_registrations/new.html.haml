@@ -28,8 +28,8 @@
 .row.marketing-styling
   .col-md-8.gl-display-flex.gl-flex-direction-column.gl-pl-120
     %h1.gl-mt-0
-      - upper_tag = tag.span(class: 'gl-text-size-h2-xl')
-      - lower_tag = tag.span(class: 'gl-display-block')
+      - upper_tag = tag.span(class: 'gl-font-size-h2-xl')
+      - lower_tag = tag.span(class: 'gl-block')
       = safe_format(s_('InProductMarketing|%{upper_start}Free 30-day trial%{upper_end} %{lower_start}GitLab Ultimate%{lower_end}'),
         tag_pair(upper_tag, :upper_start, :upper_end),
         tag_pair(lower_tag, :lower_start, :lower_end))
