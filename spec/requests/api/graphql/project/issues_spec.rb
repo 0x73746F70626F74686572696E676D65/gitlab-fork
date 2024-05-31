@@ -80,8 +80,7 @@ RSpec.describe 'getting an issue list for a project', feature_category: :team_pl
   # All new specs should be added to the shared example if the change also
   # affects the `issues` query at the root level of the API.
   # Shared example also used in spec/requests/api/graphql/issues_spec.rb
-  it_behaves_like 'graphql issue list request spec',
-    quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/448559' do
+  it_behaves_like 'graphql issue list request spec' do
     let_it_be(:external_user) { create(:user) }
 
     let(:public_projects) { [project] }
