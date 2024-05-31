@@ -15,6 +15,8 @@ module AppSec
         project = Project.find_by_id(project_id)
         return unless project
 
+        return if daily_limit_reached_for?(project)
+
         user = User.find_by_id(user_id)
         return unless user
 
@@ -34,6 +36,13 @@ module AppSec
               CS_DISABLE_DEPENDENCY_LIST: true
               CS_IMAGE: '#{image}'
         YAML
+      end
+
+      private
+
+      def daily_limit_reached_for?(project)
+        Gitlab::ApplicationRateLimiter.throttled?(
+          :container_scanning_for_registry_scans, scope: project)
       end
     end
   end
