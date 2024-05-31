@@ -42,7 +42,7 @@ export default {
 </script>
 
 <template>
-  <span class="gl-display-inline-flex gl-ml-2 js-help">
+  <span class="gl-inline-flex gl-ml-2 js-help">
     <gl-icon
       :id="popoverId"
       :name="iconName"

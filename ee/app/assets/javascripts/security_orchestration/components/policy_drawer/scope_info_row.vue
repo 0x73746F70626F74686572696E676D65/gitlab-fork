@@ -111,7 +111,7 @@ export default {
       <p v-if="showDefaultText" class="gl-m-0" data-testid="default-project-text">
         {{ $options.i18n.defaultProjectText }}
       </p>
-      <div v-else class="gl-display-inline-flex gl-gap-3 gl-flex-wrap">
+      <div v-else class="gl-inline-flex gl-gap-3 gl-flex-wrap">
         <template v-if="policyScopeHasComplianceFrameworks">
           <compliance-frameworks-toggle-list
             :compliance-frameworks="policyScopeComplianceFrameworks"

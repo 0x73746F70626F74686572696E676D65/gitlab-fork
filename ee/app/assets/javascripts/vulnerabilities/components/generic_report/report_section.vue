@@ -49,7 +49,7 @@ export default {
 <template>
   <section v-if="hasDetails">
     <header
-      class="gl-display-inline-flex gl-align-items-center gl-font-size-h3 gl-cursor-pointer"
+      class="gl-inline-flex gl-align-items-center gl-font-size-h3 gl-cursor-pointer"
       @click="toggleShowSection"
     >
       <gl-icon name="chevron-lg-right" class="gl-mr-2" :class="{ 'gl-rotate-90': showSection }" />
