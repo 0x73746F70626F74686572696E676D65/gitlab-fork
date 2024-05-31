@@ -1,6 +1,6 @@
 ---
 title: Value Streams Dashboard
-description: The Value Streams Dashboard allows all stakeholders from executives to individual contributors to identify trends, patterns, and opportunities for software development improvements.
+description: Track key DevSecOps metrics throughout the development lifecycle.
 panels:
   - id: 1
     visualization: dora_chart

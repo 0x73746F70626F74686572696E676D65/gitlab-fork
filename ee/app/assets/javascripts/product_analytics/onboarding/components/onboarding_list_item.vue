@@ -74,7 +74,7 @@ export default {
       :title="__('Product Analytics')"
       :description="
         s__(
-          'ProductAnalytics|Set up to track how your product is performing and optimize your product and development processes.',
+          'ProductAnalytics|Track the performance of your product, and optimize your product and development processes.',
         )
       "
       :badge-text="badge.text"
