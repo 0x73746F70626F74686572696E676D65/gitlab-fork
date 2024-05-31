@@ -1,5 +1,4 @@
 import { GlAlert, GlModal, GlFormInput } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
@@ -13,7 +12,7 @@ import CustomStageEventField from 'ee/analytics/cycle_analytics/components/creat
 import DefaultStageFields from 'ee/analytics/cycle_analytics/components/create_value_stream_form/default_stage_fields.vue';
 import ValueStreamFormContent from 'ee/analytics/cycle_analytics/components/value_stream_form_content.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   convertObjectPropsToCamelCase,
   convertObjectPropsToSnakeCase,
@@ -82,28 +81,26 @@ describe('ValueStreamFormContent', () => {
     });
 
   const createComponent = ({ props = {}, data = {}, stubs = {}, state = {} } = {}) =>
-    extendedWrapper(
-      shallowMount(ValueStreamFormContent, {
-        store: fakeStore({ state }),
-        data() {
-          return {
-            ...data,
-          };
+    shallowMountExtended(ValueStreamFormContent, {
+      store: fakeStore({ state }),
+      data() {
+        return {
+          ...data,
+        };
+      },
+      propsData: {
+        defaultStageConfig,
+        ...props,
+      },
+      mocks: {
+        $toast: {
+          show: mockToastShow,
         },
-        propsData: {
-          defaultStageConfig,
-          ...props,
-        },
-        mocks: {
-          $toast: {
-            show: mockToastShow,
-          },
-        },
-        stubs: {
-          ...stubs,
-        },
-      }),
-    );
+      },
+      stubs: {
+        ...stubs,
+      },
+    });
 
   const findModal = () => wrapper.findComponent(GlModal);
   const findExtendedFormFields = () => wrapper.findByTestId('extended-form-fields');
