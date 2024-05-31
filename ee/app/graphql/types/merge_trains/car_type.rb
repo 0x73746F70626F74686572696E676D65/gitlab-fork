@@ -32,7 +32,7 @@ module Types
         description: 'Timestamp of when the car was merged.'
       field :pipeline,
         Types::Ci::PipelineType,
-        null: false,
+        null: true,
         description: 'Pipeline of the car.'
       field :status,
         CarStatusEnum,
