@@ -13,6 +13,14 @@ module Admin
     before_action :ensure_feature_available!
 
     def index
+      error = ::Gitlab::Llm::AiGateway::CodeSuggestionsClient.new(current_user).test_completion
+
+      if error.blank?
+        flash[:notice] = _('Code completion test was successful')
+      else
+        flash[:alert] = format(_('Code completion test failed: %{error}'), error: error)
+      end
+
       @subscription_name = License.current.subscription_name
     end
 

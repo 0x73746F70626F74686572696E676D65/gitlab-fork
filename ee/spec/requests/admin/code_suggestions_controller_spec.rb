@@ -15,11 +15,36 @@ RSpec.describe Admin::CodeSuggestionsController, :cloud_licenses, feature_catego
     end
 
     shared_examples 'renders the activation form' do
-      it 'renders the activation form' do
-        get admin_code_suggestions_path
+      context 'when connection check succeeds' do
+        before do
+          allow_next_instance_of(Gitlab::Llm::AiGateway::CodeSuggestionsClient) do |client|
+            allow(client).to receive(:test_completion).and_return(nil)
+          end
+        end
 
-        expect(response).to render_template(:index)
-        expect(response.body).to include('js-code-suggestions-page')
+        it 'renders the activation form' do
+          get admin_code_suggestions_path
+
+          expect(response).to render_template(:index)
+          expect(response.body).to include('js-code-suggestions-page')
+          expect(flash[:notice]).to eq("Code completion test was successful")
+        end
+      end
+
+      context 'when connection check fails' do
+        before do
+          allow_next_instance_of(Gitlab::Llm::AiGateway::CodeSuggestionsClient) do |client|
+            allow(client).to receive(:test_completion).and_return('an error')
+          end
+        end
+
+        it 'renders the activation form with alert message' do
+          get admin_code_suggestions_path
+
+          expect(response).to render_template(:index)
+          expect(response.body).to include('js-code-suggestions-page')
+          expect(flash[:alert]).to eq("Code completion test failed: an error")
+        end
       end
     end
 
