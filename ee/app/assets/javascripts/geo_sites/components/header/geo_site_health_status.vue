@@ -22,7 +22,7 @@ export default {
 </script>
 
 <template>
-  <gl-badge :variant="statusUi.variant" :icon="statusUi.icon" class="gl-font-weight-bold!">
+  <gl-badge :variant="statusUi.variant" :icon="statusUi.icon" class="!gl-font-bold">
     {{ statusUi.text }}
   </gl-badge>
 </template>

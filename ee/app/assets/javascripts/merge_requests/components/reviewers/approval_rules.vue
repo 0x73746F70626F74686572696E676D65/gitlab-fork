@@ -45,12 +45,12 @@ export default {
   fields: [
     {
       key: 'rule_name',
-      thClass: 'gl-text-secondary! gl-font-sm! gl-font-weight-semibold! gl-border-t-0! w-60p',
+      thClass: 'gl-text-secondary! gl-font-sm! !gl-font-semibold gl-border-t-0! w-60p',
       class: 'gl-px-0! gl-py-4!',
     },
     {
       key: 'rule_approvals',
-      thClass: 'gl-text-secondary! gl-font-sm! gl-font-weight-semibold! gl-border-t-0! w-30p',
+      thClass: 'gl-text-secondary! gl-font-sm! !gl-font-semibold gl-border-t-0! w-30p',
       class: 'gl-px-0! gl-py-4!',
     },
   ],
