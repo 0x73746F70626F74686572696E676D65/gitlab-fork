@@ -99,7 +99,9 @@ module EE
         saml_provider.enabled? && saml_provider.enforced_sso?
       end
 
-      condition(:ip_enforcement_prevents_access, scope: :subject) do
+      # NOTE: This condition does not use :subject scope because it needs to be evaluated for each request,
+      # as the request IP can change
+      condition(:ip_enforcement_prevents_access) do
         !::Gitlab::IpRestriction::Enforcer.new(subject).allows_current_ip?
       end
 

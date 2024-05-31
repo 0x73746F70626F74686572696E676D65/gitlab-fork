@@ -632,18 +632,17 @@ module EE
 
       rule { user_banned_from_namespace }.prevent_all
 
-      with_scope :subject
-      condition(:needs_new_sso_session) do
+      condition(:needs_new_sso_session, scope: :subject) do
         ::Gitlab::Auth::GroupSaml::SsoEnforcer.access_restricted?(user: @user, resource: subject)
       end
 
-      with_scope :subject
+      # NOTE: This condition does not use :subject scope because it needs to be evaluated for each request,
+      # as the request IP can change
       condition(:ip_enforcement_prevents_access) do
         !::Gitlab::IpRestriction::Enforcer.new(subject.group).allows_current_ip? if subject.group
       end
 
-      with_scope :global
-      condition(:owner_cannot_destroy_project) do
+      condition(:owner_cannot_destroy_project, scope: :global) do
         ::Gitlab::CurrentSettings.current_application_settings
           .default_project_deletion_protection
       end
