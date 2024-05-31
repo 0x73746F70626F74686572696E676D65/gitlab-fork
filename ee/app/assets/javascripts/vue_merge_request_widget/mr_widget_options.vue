@@ -56,6 +56,12 @@ export default {
       :user-callout-feature-id="mr.suggestPipelineFeatureId"
       @dismiss="dismissSuggestPipelines"
     />
+    <mr-widget-migrate-jenkins
+      v-if="showRenderMigrateFromJenkins"
+      class="mr-widget-workflow"
+      :human-access="formattedHumanAccess"
+      @dismiss="dismissMigrateFromJenkins"
+    />
     <mr-widget-pipeline-container
       v-if="shouldRenderPipelines"
       :mr="mr"
