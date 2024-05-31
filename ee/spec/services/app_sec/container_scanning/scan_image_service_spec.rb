@@ -10,6 +10,10 @@ RSpec.describe AppSec::ContainerScanning::ScanImageService, feature_category: :s
   let(:project_id) { project.id }
   let(:image) { "registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@test:latest" }
 
+  before do
+    allow(Gitlab::ApplicationRateLimiter).to receive(:throttled_request?).and_return(false)
+  end
+
   describe '#pipeline_config' do
     subject(:pipeline_config) do
       described_class.new(
@@ -52,6 +56,14 @@ RSpec.describe AppSec::ContainerScanning::ScanImageService, feature_category: :s
       it 'creates a pipeline' do
         expect { execute }.to change { Ci::Pipeline.count }.by(1)
       end
+    end
+
+    context 'when the project has exceeded the daily scan limit' do
+      before do
+        allow(Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(true)
+      end
+
+      it { is_expected.to be_nil }
     end
   end
 end
