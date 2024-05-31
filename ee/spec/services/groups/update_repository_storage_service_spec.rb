@@ -32,7 +32,7 @@ RSpec.describe Groups::UpdateRepositoryStorageService, feature_category: :groups
     context 'when the move succeeds' do
       it 'moves the repository to the new storage and unmarks the repository as read-only', :aggregate_failures do
         expect(wiki_repository_double).to receive(:replicate)
-          .with(wiki.repository.raw)
+          .with(wiki.repository.raw, partition_hint: "")
         expect(wiki_repository_double).to receive(:checksum)
           .and_return(checksum)
         expect(original_wiki_repository_double).to receive(:remove)
@@ -68,7 +68,7 @@ RSpec.describe Groups::UpdateRepositoryStorageService, feature_category: :groups
     context 'when the move fails' do
       it 'unmarks the repository as read-only without updating the repository storage' do
         expect(wiki_repository_double).to receive(:replicate)
-          .with(wiki.repository.raw)
+          .with(wiki.repository.raw, partition_hint: "")
           .and_raise(Gitlab::Git::CommandError, 'Boom')
         expect(wiki_repository_double).to receive(:remove)
 
@@ -86,7 +86,7 @@ RSpec.describe Groups::UpdateRepositoryStorageService, feature_category: :groups
     context 'when the cleanup fails' do
       it 'sets the correct state' do
         expect(wiki_repository_double).to receive(:replicate)
-          .with(wiki.repository.raw)
+          .with(wiki.repository.raw, partition_hint: "")
         expect(wiki_repository_double).to receive(:checksum)
           .and_return(checksum)
         expect(original_wiki_repository_double).to receive(:remove)
@@ -103,7 +103,7 @@ RSpec.describe Groups::UpdateRepositoryStorageService, feature_category: :groups
     context 'when the checksum does not match' do
       it 'unmarks the repository as read-only without updating the repository storage' do
         expect(wiki_repository_double).to receive(:replicate)
-          .with(wiki.repository.raw)
+          .with(wiki.repository.raw, partition_hint: "")
         expect(wiki_repository_double).to receive(:checksum)
           .and_return('not matching checksum')
         expect(wiki_repository_double).to receive(:remove)
