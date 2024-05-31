@@ -17,7 +17,6 @@ import {
   timeframeEndDate,
 } from '../utils/roadmap_item_utils';
 import epicChildEpics from '../queries/epic_child_epics.query.graphql';
-import groupEpics from '../queries/group_epics.query.graphql';
 import groupEpicsWithColor from '../queries/group_epics_with_color.query.graphql';
 import localRoadmapSettingsQuery from '../queries/local_roadmap_settings.query.graphql';
 
@@ -79,14 +78,11 @@ export default {
       'epicsState',
       'sortedBy',
     ]),
-    epicColorHighlightEnabled() {
-      return Boolean(this.glFeatures.epicColorHighlight);
-    },
     epicsQuery() {
       if (this.epicIid) {
         return epicChildEpics;
       }
-      return this.epicColorHighlightEnabled ? groupEpicsWithColor : groupEpics;
+      return groupEpicsWithColor;
     },
     epicsQueryVariables() {
       let variables = {
@@ -103,7 +99,6 @@ export default {
 
       if (this.epicIid) {
         variables.iid = this.epicIid;
-        variables.withColor = this.epicColorHighlightEnabled;
       } else {
         variables = {
           ...variables,

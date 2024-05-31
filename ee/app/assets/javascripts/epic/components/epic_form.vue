@@ -68,9 +68,6 @@ export default {
     labelIds() {
       return this.labels.map((label) => label.id);
     },
-    isEpicColorEnabled() {
-      return this.glFeatures.epicColorHighlight;
-    },
     autosaveKey() {
       const { pathname, search } = document.location;
       return [pathname, search];
@@ -120,7 +117,7 @@ export default {
         dueDateIsFixed: Boolean(this.dueDateFixed),
       };
 
-      if (this.isEpicColorEnabled && this.color?.color !== '') {
+      if (this.color?.color !== '') {
         input.color = this.color.color;
       }
 
@@ -257,7 +254,6 @@ export default {
       </gl-form-group>
 
       <gl-form-group
-        v-if="isEpicColorEnabled"
         label-for="epic-color"
         :description="$options.i18n.colorHelp"
         :label="__('Color')"

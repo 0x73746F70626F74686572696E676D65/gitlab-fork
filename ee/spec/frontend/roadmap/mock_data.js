@@ -355,6 +355,8 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/marketing/-/epics/2',
     descendantCounts: defaultDescendantCounts,
     hasParent: true,
+    color: '#ff0000',
+    textColor: '#ffffff',
     parent: {
       id: 'gid://gitlab/Epic/40',
       startDate: '2017-12-26',
@@ -379,6 +381,8 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/marketing/-/epics/1',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    color: '#ff0000',
+    textColor: '#ffffff',
     group: mockGroup2,
     ancestors: {
       nodes: [],
@@ -395,6 +399,8 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/12',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    color: '#ff0000',
+    textColor: '#ffffff',
     ancestors: {
       nodes: [],
     },
@@ -410,6 +416,8 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/11',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    color: '#ff0000',
+    textColor: '#ffffff',
     ancestors: {
       nodes: [],
     },
@@ -425,6 +433,8 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/10',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    color: '#ff0000',
+    textColor: '#ffffff',
     ancestors: {
       nodes: [],
     },
@@ -440,6 +450,8 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/8',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    color: '#ff0000',
+    textColor: '#ffffff',
     ancestors: {
       nodes: [],
     },
@@ -455,6 +467,8 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/6',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    color: '#ff0000',
+    textColor: '#ffffff',
     ancestors: {
       nodes: [],
     },
@@ -471,6 +485,8 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/4',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    color: '#ff0000',
+    textColor: '#ffffff',
     ancestors: {
       nodes: [],
     },
@@ -487,6 +503,8 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/3',
     descendantCounts: defaultDescendantCounts,
     hasParent: true,
+    color: '#ff0000',
+    textColor: '#ffffff',
     parent: {
       id: 'gid://gitlab/Epic/40',
       startDate: null,
@@ -512,6 +530,8 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/2',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    color: '#ff0000',
+    textColor: '#ffffff',
     ancestors: {
       nodes: [],
     },
@@ -529,6 +549,8 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/1',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    color: '#ff0000',
+    textColor: '#ffffff',
     ancestors: {
       nodes: [],
     },
@@ -544,6 +566,8 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/marketing/-/epics/22',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    color: '#ff0000',
+    textColor: '#ffffff',
     ancestors: {
       nodes: [],
     },
@@ -644,6 +668,8 @@ export const mockEpicNode1 = {
   hasChildren: false,
   hasParent: false,
   confidential: false,
+  color: '#ff0000',
+  textColor: '#ffffff',
   descendantWeightSum: {
     closedIssues: 3,
     openedIssues: 2,
@@ -680,6 +706,8 @@ export const mockEpicNode2 = {
   confidential: false,
   webUrl: 'http://gdk.test:3000/groups/gitlab-org/marketing/-/epics/2',
   description: '',
+  color: '#ff0000',
+  textColor: '#ffffff',
   descendantWeightSum: {
     closedIssues: 0,
     openedIssues: 1,

@@ -323,49 +323,36 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
     end
 
     describe 'Colors select' do
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(epic_color_highlight: false)
-          visit group_epic_path(group, epic)
-        end
-
-        it 'does not show the color select dropdown' do
-          expect(page).not_to have_selector('[data-testid="colors-select"]')
-        end
+      it 'shows the color select dropdown' do
+        expect(page).to have_selector('[data-testid="colors-select"]')
       end
 
-      context 'when feature flag is enabled' do
-        it 'shows the color select dropdown' do
-          expect(page).to have_selector('[data-testid="colors-select"]')
+      it 'opens dropdown when `Edit` is clicked' do
+        open_colors_dropdown
+
+        expect(page).to have_css('.js-colors-block .js-colors-list')
+      end
+
+      context 'when dropdown is open' do
+        before do
+          open_colors_dropdown
         end
 
-        it 'opens dropdown when `Edit` is clicked' do
+        it 'shows colors within the color dropdown' do
+          page.within('.js-colors-list [data-testid="dropdown-content"]') do
+            expect(page).to have_selector('li', count: 5)
+          end
+        end
+
+        it 'shows checkmark next to color after a new color has been selected' do
+          page.within('.js-colors-list [data-testid="dropdown-content"]') do
+            click_button 'Green'
+          end
+
           open_colors_dropdown
 
-          expect(page).to have_css('.js-colors-block .js-colors-list')
-        end
-
-        context 'when dropdown is open' do
-          before do
-            open_colors_dropdown
-          end
-
-          it 'shows colors within the color dropdown' do
-            page.within('.js-colors-list [data-testid="dropdown-content"]') do
-              expect(page).to have_selector('li', count: 5)
-            end
-          end
-
-          it 'shows checkmark next to color after a new color has been selected' do
-            page.within('.js-colors-list [data-testid="dropdown-content"]') do
-              click_button 'Green'
-            end
-
-            open_colors_dropdown
-
-            page.within('.js-colors-list [data-testid="dropdown-content"]') do
-              expect(find('li', text: 'Green')).to have_selector('.gl-icon', visible: true)
-            end
+          page.within('.js-colors-list [data-testid="dropdown-content"]') do
+            expect(find('li', text: 'Green')).to have_selector('.gl-icon', visible: true)
           end
         end
       end

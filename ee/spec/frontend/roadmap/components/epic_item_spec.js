@@ -194,7 +194,6 @@ describe('EpicItemComponent', () => {
           search: '',
           sort: 'START_DATE_ASC',
           state: 'all',
-          withColor: false,
         });
       });
 

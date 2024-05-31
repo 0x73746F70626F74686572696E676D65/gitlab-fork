@@ -60,9 +60,6 @@ export default {
     fullPath() {
       return this.activeBoardCard?.referencePath?.split('&')[0] || '';
     },
-    isEpicColorEnabled() {
-      return this.glFeatures.epicColorHighlight;
-    },
   },
   methods: {
     handleClose() {
@@ -132,7 +129,6 @@ export default {
         </sidebar-labels-widget>
 
         <color-select-dropdown
-          v-if="isEpicColorEnabled"
           class="block colors js-colors-block"
           :allow-edit="canUpdate"
           :iid="activeBoardCard.iid"

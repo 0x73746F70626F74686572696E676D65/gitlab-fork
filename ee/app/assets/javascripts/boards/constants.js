@@ -14,7 +14,6 @@ import boardListsQuery from './graphql/board_lists.query.graphql';
 import destroyEpicBoardListMutation from './graphql/epic_board_list_destroy.mutation.graphql';
 import updateEpicBoardListMutation from './graphql/epic_board_list_update.mutation.graphql';
 import epicBoardListsQuery from './graphql/epic_board_lists.query.graphql';
-import listEpicsQuery from './graphql/lists_epics.query.graphql';
 import listEpicsWithColorQuery from './graphql/lists_epics_with_color.query.graphql';
 import listDeferredQuery from './graphql/board_lists_deferred.query.graphql';
 import epicListDeferredQuery from './graphql/epic_board_lists_deferred.query.graphql';
@@ -232,7 +231,7 @@ export const listIssuablesQueries = {
     },
   },
   [TYPE_EPIC]: {
-    query: gon?.features?.epicColorHighlight ? listEpicsWithColorQuery : listEpicsQuery,
+    query: listEpicsWithColorQuery,
     moveMutation: epicMoveListMutation,
     createMutation: epicCreateMutation,
     optimisticResponse: {
@@ -266,7 +265,7 @@ export const listIssuablesQueries = {
       title: '',
       webPath: '',
       webUrl: '',
-      ...(gon?.features?.epicColorHighlight ? { color: '' } : {}),
+      color: '',
       __typename: TYPENAME_EPIC,
     },
   },

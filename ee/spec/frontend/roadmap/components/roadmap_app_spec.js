@@ -16,7 +16,6 @@ import { PRESET_TYPES, DATE_RANGES } from 'ee/roadmap/constants';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import epicChildEpicsQuery from 'ee/roadmap/queries/epic_child_epics.query.graphql';
-import groupEpicsQuery from 'ee/roadmap/queries/group_epics.query.graphql';
 import groupEpicsWithColorQuery from 'ee/roadmap/queries/group_epics_with_color.query.graphql';
 
 import {
@@ -34,7 +33,6 @@ Vue.use(VueApollo);
 jest.mock('~/alert');
 
 const childEpicsQueryHandler = jest.fn().mockResolvedValue(mockEpicChildEpicsQueryResponse);
-const groupEpicsQueryHandler = jest.fn().mockResolvedValue(mockGroupEpicsQueryResponse);
 const groupEpicsWithColorQueryHandler = jest.fn().mockResolvedValue(mockGroupEpicsQueryResponse);
 
 describe('RoadmapApp', () => {
@@ -49,10 +47,9 @@ describe('RoadmapApp', () => {
     initialDate: mockTimeframeInitialDate,
   });
 
-  const createComponent = ({ epicIid, epicColorHighlight = false, filterParams = {} } = {}) => {
+  const createComponent = ({ epicIid, filterParams = {} } = {}) => {
     const apolloProvider = createMockApollo([
       [epicChildEpicsQuery, childEpicsQueryHandler],
-      [groupEpicsQuery, groupEpicsQueryHandler],
       [groupEpicsWithColorQuery, groupEpicsWithColorQueryHandler],
     ]);
     setLocalSettingsInCache(apolloProvider, {
@@ -71,9 +68,6 @@ describe('RoadmapApp', () => {
         groupMilestonesPath: '/groups/gitlab-org/-/milestones.json',
         listEpicsPath: '/groups/gitlab-org/-/epics',
         epicIid,
-        glFeatures: {
-          epicColorHighlight,
-        },
       },
       apolloProvider,
     });
@@ -96,9 +90,9 @@ describe('RoadmapApp', () => {
     ({ hasEpics, hasError, showLoading, showRoadmapShell, showEpicsListEmpty, showAlert }) => {
       beforeEach(async () => {
         if (hasError) {
-          groupEpicsQueryHandler.mockRejectedValueOnce('Houston, we have a problem');
+          groupEpicsWithColorQueryHandler.mockRejectedValueOnce('Houston, we have a problem');
         } else if (!hasEpics) {
-          groupEpicsQueryHandler.mockResolvedValueOnce(mockGroupEpicsQueryResponseEmpty);
+          groupEpicsWithColorQueryHandler.mockResolvedValueOnce(mockGroupEpicsQueryResponseEmpty);
         }
         createComponent();
 
@@ -158,7 +152,7 @@ describe('RoadmapApp', () => {
     createComponent();
     await waitForPromises();
 
-    expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+    expect(groupEpicsWithColorQueryHandler).toHaveBeenCalledWith(
       expect.objectContaining({
         first: 50,
         endCursor: '',
@@ -175,7 +169,7 @@ describe('RoadmapApp', () => {
     createComponent({ filterParams: { groupPath, epicIid } });
     await waitForPromises();
 
-    expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+    expect(groupEpicsWithColorQueryHandler).toHaveBeenCalledWith(
       expect.objectContaining({
         groupPath,
         iid: 'Epic 1',
@@ -191,45 +185,23 @@ describe('RoadmapApp', () => {
     expect(childEpicsQueryHandler).toHaveBeenCalledWith(
       expect.objectContaining({
         iid: epicIid,
-        withColor: false,
+        fullPath: 'gitlab-org',
       }),
     );
 
-    expect(groupEpicsQueryHandler).not.toHaveBeenCalled();
+    expect(groupEpicsWithColorQueryHandler).not.toHaveBeenCalled();
   });
 
   it('fetches next page when there is next page and epics list is scrolled to bottom', async () => {
     createComponent();
     await waitForPromises();
-    expect(groupEpicsQueryHandler).toHaveBeenCalledTimes(1);
+    expect(groupEpicsWithColorQueryHandler).toHaveBeenCalledTimes(1);
 
     findRoadmapShell().vm.$emit('scrolledToEnd');
     await waitForPromises();
-    expect(groupEpicsQueryHandler).toHaveBeenCalledTimes(2);
-    expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+    expect(groupEpicsWithColorQueryHandler).toHaveBeenCalledTimes(2);
+    expect(groupEpicsWithColorQueryHandler).toHaveBeenCalledWith(
       expect.objectContaining({ endCursor: mockPageInfo.endCursor }),
     );
-  });
-
-  describe('when epicColorHighlight feature flag is enabled', () => {
-    it('calls group epic with color query if epic iid is not present', async () => {
-      createComponent({ epicColorHighlight: true });
-      await waitForPromises();
-
-      expect(groupEpicsWithColorQueryHandler).toHaveBeenCalled();
-    });
-
-    it('calles child epics query with `withColor` variable if epic iid is present', async () => {
-      const epicIid = '1';
-      createComponent({ epicIid, epicColorHighlight: true });
-      await waitForPromises();
-
-      expect(childEpicsQueryHandler).toHaveBeenCalledWith(
-        expect.objectContaining({
-          iid: epicIid,
-          withColor: true,
-        }),
-      );
-    });
   });
 });

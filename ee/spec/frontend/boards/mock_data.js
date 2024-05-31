@@ -446,6 +446,7 @@ export const rawEpic = {
   hasIssues: true,
   createdAt: '2023-01-20T02:21:29Z',
   closedAt: '2023-01-20T02:21:29Z',
+  color: '#ff0000',
   descendantCounts: {
     openedIssues: 3,
     closedIssues: 2,

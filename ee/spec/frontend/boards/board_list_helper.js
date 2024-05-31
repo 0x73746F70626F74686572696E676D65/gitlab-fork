@@ -9,7 +9,7 @@ import BoardNewItem from '~/boards/components/board_new_item.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import listQuery from 'ee_else_ce/boards/graphql/board_lists_deferred.query.graphql';
 import listIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
-import listEpicsQuery from 'ee/boards/graphql/lists_epics.query.graphql';
+import listEpicsQuery from 'ee/boards/graphql/lists_epics_with_color.query.graphql';
 import epicListDeferredQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
 import {
   mockList,

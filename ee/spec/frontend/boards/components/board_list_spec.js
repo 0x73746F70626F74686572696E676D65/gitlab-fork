@@ -14,7 +14,7 @@ import { TYPE_EPIC, TYPE_ISSUE, WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/iss
 import issueMoveListMutation from 'ee/boards/graphql/issue_move_list.mutation.graphql';
 import epicMoveListMutation from 'ee/boards/graphql/epic_move_list.mutation.graphql';
 import epicCreateMutation from 'ee/boards/graphql/epic_create.mutation.graphql';
-import listEpicsQuery from 'ee/boards/graphql/lists_epics.query.graphql';
+import listEpicsQuery from 'ee/boards/graphql/lists_epics_with_color.query.graphql';
 import { mockList } from 'jest/boards/mock_data';
 import createComponent from '../board_list_helper';
 import {
@@ -245,7 +245,6 @@ describe('BoardList Component', () => {
             isProjectBoard: false,
             isGroupBoard: true,
             isEpicBoard,
-            glFeatures: { epicColorHighlight: false },
           },
           apolloQueryHandlers,
           stubs: {
@@ -289,7 +288,6 @@ describe('BoardList Component', () => {
             isProjectBoard: false,
             isGroupBoard: true,
             isEpicBoard,
-            glFeatures: { epicColorHighlight: false },
           },
           apolloQueryHandlers: [
             [listIssuesQuery, groupIssuesQueryHandlerSuccess],
@@ -323,7 +321,6 @@ describe('BoardList Component', () => {
             isProjectBoard: false,
             isGroupBoard: true,
             isEpicBoard,
-            glFeatures: { epicColorHighlight: false },
           },
           apolloQueryHandlers,
         });
@@ -353,7 +350,6 @@ describe('BoardList Component', () => {
             isProjectBoard: false,
             isGroupBoard: true,
             isEpicBoard,
-            glFeatures: { epicColorHighlight: false },
           },
           apolloQueryHandlers: [
             [listIssuesQuery, groupIssuesQueryHandlerSuccess],
@@ -399,7 +395,6 @@ describe('BoardList Component', () => {
             isProjectBoard: false,
             isGroupBoard: true,
             isEpicBoard,
-            glFeatures: { epicColorHighlight: false },
           },
           apolloQueryHandlers,
           stubs: {
@@ -438,7 +433,6 @@ describe('BoardList Component', () => {
             isProjectBoard: false,
             isGroupBoard: true,
             isEpicBoard,
-            glFeatures: { epicColorHighlight: false },
           },
           apolloQueryHandlers: [
             [listIssuesQuery, groupIssuesQueryHandlerSuccess],

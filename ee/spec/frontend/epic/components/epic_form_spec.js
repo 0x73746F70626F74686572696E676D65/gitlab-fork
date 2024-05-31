@@ -51,9 +51,6 @@ describe('ee/epic/components/epic_form.vue', () => {
         labelsManagePath: TEST_HOST,
         markdownPreviewPath: TEST_HOST,
         markdownDocsPath: TEST_HOST,
-        glFeatures: {
-          epicColorHighlight: true,
-        },
       },
     });
   };
