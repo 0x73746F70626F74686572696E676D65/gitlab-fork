@@ -9,6 +9,10 @@ FactoryBot.define do
     match_on_inclusion_license { true }
     sequence :rule_idx
 
+    trait :prevent_pushing_and_force_pushing do
+      project_approval_settings { { prevent_pushing_and_force_pushing: true } }
+    end
+
     trait :blocking_protected_branches do
       project_approval_settings { { block_branch_modification: true } }
     end

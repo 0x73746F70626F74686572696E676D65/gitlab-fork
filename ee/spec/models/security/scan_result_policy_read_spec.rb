@@ -85,6 +85,17 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
         expect(described_class.blocking_branch_modification).to contain_exactly(blocking_read)
       end
     end
+
+    describe '.prevent_pushing_and_force_pushing' do
+      let_it_be(:non_blocking_read) { create(:scan_result_policy_read) }
+      let_it_be(:blocking_read) do
+        create(:scan_result_policy_read, project_approval_settings: { prevent_pushing_and_force_pushing: true })
+      end
+
+      it 'returns blocking reads' do
+        expect(described_class.prevent_pushing_and_force_pushing).to contain_exactly(blocking_read)
+      end
+    end
   end
 
   describe '#newly_detected?' do
