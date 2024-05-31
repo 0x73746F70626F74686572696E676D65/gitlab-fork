@@ -8,6 +8,15 @@ const putPolicyScopeProjectsToEndOfYaml = (yaml) =>
     .replace('\npolicy_scope:\n  projects:\n    excluding:\n      - id: 1\n      - id: 2', '')
     .concat('policy_scope:\n  projects:\n    excluding:\n      - id: 1\n      - id: 2\n');
 
+const SETTINGS = `approval_settings:
+  block_branch_modification: true
+  prevent_pushing_and_force_pushing: true
+  prevent_approval_by_author: true
+  prevent_approval_by_commit_author: true
+  remove_approvals_with_new_commit: true
+  require_password_to_approve: false
+`;
+
 export const mockScanExecutionActionManifest = `type: scan_execution_policy
 name: ''
 description: ''
@@ -55,10 +64,7 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-approval_settings:
-  block_branch_modification: true
-  prevent_pushing_and_force_pushing: true
-`;
+`.concat(SETTINGS);
 
 export const mockApprovalActionProjectManifest = putPolicyScopeComplianceFrameworksToEndOfYaml(
   mockApprovalActionManifest,
@@ -109,10 +115,7 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-approval_settings:
-  block_branch_modification: true
-  prevent_pushing_and_force_pushing: true
-`,
+`.concat(SETTINGS),
 };
 
 export const EXCLUDING_PROJECTS_PROJECTS_LEVEL_MOCKS = {
