@@ -76,7 +76,7 @@ module IdentityVerifiable
     # credit_card is not a required verification method.
     return true if identity_verification_state.exclude?(VERIFICATION_METHODS[:CREDIT_CARD]) && credit_card_verified?
 
-    identity_verification_state.values.all?
+    identity_verification_state.values.all? || identity_verification_exempt?
   end
 
   def identity_verification_state
@@ -136,7 +136,7 @@ module IdentityVerifiable
     identity_verification_exemption_attribute&.destroy
   end
 
-  def signup_identity_verification_exempt?
+  def identity_verification_exempt?
     return true if identity_verification_exemption_attribute.present?
     return true if enterprise_user?
     return true if belongs_to_paid_namespace?(exclude_trials: true)
@@ -243,7 +243,7 @@ module IdentityVerifiable
   end
 
   def new_user_required_methods
-    return SIGNUP_IDENTITY_VERIFICATION_EXEMPT_METHODS if signup_identity_verification_exempt?
+    return SIGNUP_IDENTITY_VERIFICATION_EXEMPT_METHODS if identity_verification_exempt?
     return PHONE_NUMBER_EXEMPT_METHODS if exempt_from_phone_number_verification?
     return ASSUMED_HIGH_RISK_USER_METHODS if assumed_high_risk? || affected_by_phone_verifications_limit?
     return HIGH_RISK_USER_METHODS if high_risk?
