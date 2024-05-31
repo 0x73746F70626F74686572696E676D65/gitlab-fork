@@ -131,5 +131,21 @@ RSpec.describe ::Search::Zoekt::Index, feature_category: :global_search do
         expect(described_class.searchable).to contain_exactly(zoekt_index_ready)
       end
     end
+
+    describe '#preload_zoekt_enabled_namespace_and_namespace' do
+      it 'preloads the project and avoids N+1 queries' do
+        index = described_class.preload_zoekt_enabled_namespace_and_namespace.first
+        recorder = ActiveRecord::QueryRecorder.new { index.zoekt_enabled_namespace.namespace }
+        expect(recorder.count).to be_zero
+      end
+    end
+
+    describe '#preload_node' do
+      it 'preloads the node and avoids N+1 queries' do
+        index = described_class.preload_node.first
+        recorder = ActiveRecord::QueryRecorder.new { index.node }
+        expect(recorder.count).to be_zero
+      end
+    end
   end
 end

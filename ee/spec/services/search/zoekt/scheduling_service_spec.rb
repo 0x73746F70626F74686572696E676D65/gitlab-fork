@@ -441,4 +441,69 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
       end
     end
   end
+
+  describe '#initial_indexing' do
+    let(:task) { :initial_indexing }
+
+    context 'when feature flag zoekt_initial_indexing_task is disabled' do
+      before do
+        stub_feature_flags(zoekt_initial_indexing_task: false)
+      end
+
+      it 'returns false' do
+        expect(execute_task).to eq(false)
+      end
+    end
+
+    context 'when there are no zoekt_indices in_progress' do
+      let_it_be(:index) { create(:zoekt_index, state: :pending) }
+
+      it 'does not moves the index to initializing and calls NamespaceInitialIndexingWorker on the index' do
+        expect(Search::Zoekt::NamespaceInitialIndexingWorker).to receive(:bulk_perform_in_with_contexts)
+          .with(anything, [index], hash_including(:arguments_proc, :context_proc))
+        expect { execute_task }.not_to change { index.reload.state }
+      end
+    end
+
+    context 'when all zoekt_indices are already in progress' do
+      let_it_be(:idx_in_progress) { create(:zoekt_index, state: :in_progress) }
+      let_it_be(:namespace) { idx_in_progress.zoekt_enabled_namespace.namespace }
+
+      context 'when there are no pending indices' do
+        context 'when zoekt_repositories count is less than all the projects within the namespace' do
+          before do
+            create(:project, namespace: namespace)
+          end
+
+          it 'does not moves the index to initializing' do
+            expect { execute_task }.not_to change { idx_in_progress.reload.state }
+          end
+        end
+
+        context 'when zoekt_repositories count is equal to all the projects within the namespace' do
+          let(:logger) { instance_double(::Search::Zoekt::Logger) }
+          let_it_be(:project) { create(:project, namespace: namespace) }
+
+          before do
+            allow(Search::Zoekt::Logger).to receive(:build).and_return(logger)
+            create(:zoekt_repository, zoekt_index: idx_in_progress, project_id: project.id,
+              project_identifier: project.id)
+          end
+
+          it 'moves the index to initializing and do the logging' do
+            node = idx_in_progress.node
+            expect(logger).to receive(:info).with({ 'class' => described_class.to_s, 'namespace_id' => namespace.id,
+                                                    'message' => 'index moved to initializing',
+                                                    'meta' => { 'zoekt.index_id' => idx_in_progress.id,
+                                                                'zoekt.node_id' => node.id,
+                                                                'zoekt.node_name' => node.metadata['name'] },
+                                                    'repo_count' => idx_in_progress.zoekt_repositories.count,
+                                                    'project_count' => namespace.all_projects.count, 'task' => task }
+            )
+            expect { execute_task }.to change { idx_in_progress.reload.state }.from('in_progress').to('initializing')
+          end
+        end
+      end
+    end
+  end
 end
