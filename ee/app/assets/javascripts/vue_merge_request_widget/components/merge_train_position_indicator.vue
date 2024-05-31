@@ -62,6 +62,16 @@ export default {
       return null;
     },
   },
+  watch: {
+    mergeTrainIndex(newIndex, oldIndex) {
+      const wasInTrain = isNumber(oldIndex);
+      const isInTrain = isNumber(newIndex);
+
+      if (wasInTrain && !isInTrain) {
+        this.$toast?.show(s__('mrWidget|Merge request was removed from the merge train.'));
+      }
+    },
+  },
 };
 </script>
 

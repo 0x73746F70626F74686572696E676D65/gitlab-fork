@@ -59,6 +59,7 @@ module AutoMerge
       super(merge_request, reason) do
         if merge_request.merge_train_car&.destroy
           SystemNoteService.abort_merge_train(merge_request, project, current_user, reason)
+          GraphqlTriggers.merge_request_merge_status_updated(merge_request)
           next_car.outdate_pipeline if next_car && process_next
         end
       end

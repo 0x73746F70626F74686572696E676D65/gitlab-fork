@@ -323,6 +323,13 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       subject
     end
 
+    it 'updates the merge request train position indicator' do
+      expect(GraphqlTriggers)
+        .to receive(:merge_request_merge_status_updated).with(merge_request)
+
+      subject
+    end
+
     it 'generates new todos', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/324122' do
       todos = merge_request.author.reload.todos
       expect { subject }.to change { todos.count }

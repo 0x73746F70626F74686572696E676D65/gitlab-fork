@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import MergeTrainPositionIndicator from 'ee/vue_merge_request_widget/components/merge_train_position_indicator.vue';
@@ -5,6 +6,7 @@ import { trimText } from 'helpers/text_helper';
 
 describe('MergeTrainPositionIndicator', () => {
   let wrapper;
+  let mockToast;
 
   const findLink = () => wrapper.findComponent(GlLink);
 
@@ -17,6 +19,11 @@ describe('MergeTrainPositionIndicator', () => {
       provide: {
         glFeatures: {
           mergeTrainsViz,
+        },
+      },
+      mocks: {
+        $toast: {
+          show: mockToast,
         },
       },
     });
@@ -89,6 +96,38 @@ describe('MergeTrainPositionIndicator', () => {
       );
 
       expect(wrapper.text()).toBe('');
+    });
+  });
+
+  describe('when position in the train changes', () => {
+    beforeEach(() => {
+      mockToast = jest.fn();
+    });
+
+    it.each([0, 1, 2])(
+      'shows a toast when removed from position %d in the train',
+      async (index) => {
+        createComponent({ mergeTrainIndex: index });
+
+        expect(mockToast).not.toHaveBeenCalled();
+
+        wrapper.setProps({ mergeTrainIndex: null });
+        await nextTick();
+
+        expect(mockToast).toHaveBeenCalledTimes(1);
+        expect(mockToast).toHaveBeenCalledWith('Merge request was removed from the merge train.');
+      },
+    );
+
+    it.each([0, 1, 2])('shows no toast when added to train in position %d', async (index) => {
+      createComponent({ mergeTrainIndex: null });
+
+      expect(mockToast).not.toHaveBeenCalled();
+
+      wrapper.setProps({ mergeTrainIndex: index });
+      await nextTick();
+
+      expect(mockToast).not.toHaveBeenCalled();
     });
   });
 });
