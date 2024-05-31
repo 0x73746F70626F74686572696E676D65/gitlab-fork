@@ -45,6 +45,7 @@ module API
         optional :token, type: String, desc: "Secret token to validate received payloads; this will not be returned in the response"
         optional :custom_webhook_template, type: String, desc: "Custom template for the request payload"
         use :url_variables
+        use :custom_headers
       end
     end
 
@@ -148,6 +149,7 @@ module API
 
       namespace ':id/hooks' do
         mount ::API::Hooks::UrlVariables
+        mount ::API::Hooks::CustomHeaders
         mount ::API::Hooks::TriggerTest, with: {
           entity: GroupHook
         }

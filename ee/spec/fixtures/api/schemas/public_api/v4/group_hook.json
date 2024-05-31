@@ -27,6 +27,7 @@
     "disabled_until",
     "url_variables",
     "custom_webhook_template",
+    "custom_headers",
     "resource_access_token_events"
   ],
   "properties": {
@@ -155,6 +156,21 @@
         "string",
         "null"
       ]
+    },
+    "custom_headers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key"
+        ],
+        "properties": {
+          "key": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "additionalProperties": false
