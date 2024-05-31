@@ -12583,6 +12583,12 @@ msgstr ""
 msgid "Code block"
 msgstr ""
 
+msgid "Code completion test failed: %{error}"
+msgstr ""
+
+msgid "Code completion test was successful"
+msgstr ""
+
 msgid "Code coverage statistics for %{ref} %{start_date} - %{end_date}"
 msgstr ""
 
