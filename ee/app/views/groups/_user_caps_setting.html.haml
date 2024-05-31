@@ -1,7 +1,7 @@
 - return unless group.root? && group.user_cap_available?
 
 .form-group
-  = f.label :new_user_signups_cap, _('User cap'), class: 'gl-font-weight-bold'
+  = f.label :new_user_signups_cap, _('User cap'), class: 'gl-font-bold'
   .form-text.text-muted= saas_user_caps_help_text(group)
   = f.number_field :new_user_signups_cap, min: 1,
     class: 'form-control form-control-sm gl-form-input gl-w-full gl-mt-3',

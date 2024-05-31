@@ -2,6 +2,6 @@
 - return if onboarding_status.invite?
 
 .gl-mb-3.js-opt-in-to-email.hidden
-  .gl-font-weight-bold.gl-mb-3
+  .gl-font-bold.gl-mb-3
     = _('Email updates (optional)')
   = f.gitlab_ui_checkbox_component :onboarding_status_email_opt_in, _("I'd like to receive updates about GitLab via email")

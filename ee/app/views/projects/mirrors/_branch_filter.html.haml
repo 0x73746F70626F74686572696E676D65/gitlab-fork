@@ -4,7 +4,7 @@
   .form-group.gl-mt-5
     = label_tag do
       = _('Mirror branches')
-      .gl-font-weight-normal.form-text.text-muted
+      .gl-font-normal.form-text.text-muted
         = _('Choose which branches should be mirrored')
     = render Pajamas::RadioTagComponent.new(name: :mirror_branch_setting,
         label: _('Mirror all branches'),
