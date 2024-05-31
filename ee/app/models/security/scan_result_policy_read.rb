@@ -45,6 +45,9 @@ module Security
     scope :blocking_branch_modification, -> do
       where("project_approval_settings->>'block_branch_modification' = 'true'")
     end
+    scope :prevent_pushing_and_force_pushing, -> do
+      where("project_approval_settings->>'prevent_pushing_and_force_pushing' = 'true'")
+    end
 
     def fail_open?
       fallback_behavior["fail"] == FALLBACK_BEHAVIORS[:open]

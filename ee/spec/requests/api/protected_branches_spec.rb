@@ -238,6 +238,44 @@ RSpec.describe API::ProtectedBranches, feature_category: :source_code_management
           expect(response).to have_gitlab_http_status(:ok)
         end
       end
+
+      context "with approval policy that sets 'prevent_pushing_and_force_pushing'" do
+        let!(:read) { create(:scan_result_policy_read, :prevent_pushing_and_force_pushing, project: project) }
+
+        subject(:update_branch) { patch api(route, user), params: params }
+
+        before do
+          stub_licensed_features(security_orchestration_policies: true)
+        end
+
+        shared_examples 'responds with 403' do
+          specify do
+            update_branch
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+
+        context "when updating 'allow_force_push'" do
+          let(:params) { { allow_force_push: !protected_branch.allow_force_push } }
+
+          include_examples 'responds with 403'
+
+          it 'prohibits updates' do
+            expect { update_branch }.not_to change { protected_branch.allow_force_push }
+          end
+        end
+
+        context 'when updating push access levels' do
+          let(:params) { { allowed_to_push: [{ access_level: 40 }] } }
+
+          include_examples 'responds with 403'
+
+          it 'prohibits updates' do
+            expect { update_branch }.not_to change { protected_branch.push_access_levels }
+          end
+        end
+      end
     end
 
     context 'when authenticated as a developer' do
