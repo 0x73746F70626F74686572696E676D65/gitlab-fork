@@ -1,0 +1,27 @@
+subscription aiCompletionResponseStream(
+  $userId: UserID
+  $resourceId: AiModelID
+  $agentVersionId: AiAgentVersionID
+  $clientSubscriptionId: String
+  $aiAction: AiAction
+) {
+  aiCompletionResponse(
+    userId: $userId
+    resourceId: $resourceId
+    agentVersionId: $agentVersionId
+    aiAction: $aiAction
+    clientSubscriptionId: $clientSubscriptionId
+  ) {
+    id
+    requestId
+    content
+    errors
+    role
+    timestamp
+    type
+    chunkId
+    extras {
+      sources
+    }
+  }
+}

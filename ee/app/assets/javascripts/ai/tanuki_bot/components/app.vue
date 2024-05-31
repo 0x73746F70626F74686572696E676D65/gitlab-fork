@@ -8,6 +8,7 @@ import { renderGFM } from '~/behaviors/markdown/render_gfm';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { helpCenterState } from '~/super_sidebar/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import aiResponseStreamSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response_stream.subscription.graphql';
 import DuoChatCallout from 'ee/ai/components/global_callout/duo_chat_callout.vue';
 import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
@@ -19,7 +20,7 @@ import {
   GENIE_CHAT_CLEAN_MESSAGE,
   GENIE_CHAT_CLEAR_MESSAGE,
 } from 'ee/ai/constants';
-import { TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
+import { TANUKI_BOT_TRACKING_EVENT_NAME, MESSAGE_TYPES } from '../constants';
 
 export default {
   name: 'TanukiBotChatApp',
@@ -62,7 +63,6 @@ export default {
     },
   },
   apollo: {
-    // https://apollo.vuejs.org/guide/apollo/subscriptions.html#simple-subscription
     $subscribe: {
       aiCompletionResponse: {
         query: aiResponseSubscription,
@@ -74,6 +74,9 @@ export default {
         },
         result({ data }) {
           this.addDuoChatMessage(data?.aiCompletionResponse);
+          if (data?.aiCompletionResponse?.role.toLowerCase() === MESSAGE_TYPES.TANUKI) {
+            this.responseCompleted = data?.aiCompletionResponse?.requestId;
+          }
         },
         error(err) {
           this.error = err.toString();
@@ -83,17 +86,18 @@ export default {
         },
       },
       aiCompletionResponseStream: {
-        query: aiResponseSubscription,
+        query: aiResponseStreamSubscription,
         variables() {
           return {
             userId: this.userId,
             resourceId: this.resourceId || this.userId,
             clientSubscriptionId: this.clientSubscriptionId,
-            htmlResponse: false,
           };
         },
         result({ data }) {
-          this.addDuoChatMessage(data?.aiCompletionResponse);
+          if (data?.aiCompletionResponse?.requestId !== this.responseCompleted) {
+            this.addDuoChatMessage(data?.aiCompletionResponse);
+          }
         },
         error(err) {
           this.error = err.toString();
@@ -121,6 +125,7 @@ export default {
       clientSubscriptionId: uuidv4(),
       toolName: i18n.GITLAB_DUO,
       error: '',
+      responseCompleted: undefined,
     };
   },
   computed: {
@@ -136,6 +141,7 @@ export default {
       ].includes(question);
     },
     onSendChatPrompt(question) {
+      this.responseCompleted = undefined;
       if (!this.isClearOrResetMessage(question)) {
         this.setLoading();
       }

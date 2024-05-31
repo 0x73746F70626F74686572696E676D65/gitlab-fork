@@ -55,16 +55,30 @@ export const MOCK_FAILING_USER_MESSAGE = {
   errors: ['Oh darn, you are not allowed to use AI!'],
 };
 
-export const MOCK_CHUNK_MESSAGE = {
-  chunkId: 1,
-  content: 'chunk',
-  role: MESSAGE_TYPES.TANUKI,
-  requestId: '987',
-  errors: [],
-  timestamp: '2021-04-21T12:00:00.000Z',
+export const MOCK_CHUNK_MESSAGE = (content = '', chunkId = 0, requestId = 1) => {
+  return {
+    data: {
+      aiCompletionResponse: {
+        id: '611363bc-c75a-44e2-80cd-f22ab5e665be',
+        requestId,
+        content,
+        errors: [],
+        role: 'ASSISTANT',
+        timestamp: '2024-05-29T17:17:06Z',
+        type: null,
+        chunkId,
+        extras: {
+          sources: null,
+        },
+      },
+    },
+  };
 };
 
-export const GENERATE_MOCK_TANUKI_RES = (body = JSON.stringify(MOCK_TANUKI_MESSAGE)) => {
+export const GENERATE_MOCK_TANUKI_RES = (
+  body = JSON.stringify(MOCK_TANUKI_MESSAGE),
+  requestId = '987',
+) => {
   return {
     data: {
       aiCompletionResponse: {
@@ -72,7 +86,7 @@ export const GENERATE_MOCK_TANUKI_RES = (body = JSON.stringify(MOCK_TANUKI_MESSA
         content: body,
         contentHtml: `<p>${body}</p>`,
         errors: [],
-        requestId: '987',
+        requestId,
         role: MOCK_TANUKI_MESSAGE.role,
         timestamp: '2021-04-21T12:00:00.000Z',
         type: null,

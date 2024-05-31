@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
+import { createMockSubscription } from 'mock-apollo-client';
 import TanukiBotChatApp from 'ee/ai/tanuki_bot/components/app.vue';
 import DuoChatCallout from 'ee/ai/components/global_callout/duo_chat_callout.vue';
 import {
@@ -13,6 +14,7 @@ import {
 } from 'ee/ai/constants';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from 'ee/ai/tanuki_bot/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import aiResponseStreamSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response_stream.subscription.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import duoUserFeedbackMutation from 'ee/ai/graphql/duo_user_feedback.mutation.graphql';
 import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
@@ -29,6 +31,8 @@ import {
   MOCK_TANUKI_SUCCESS_RES,
   MOCK_TANUKI_BOT_MUTATATION_RES,
   MOCK_CHAT_CACHED_MESSAGES_RES,
+  GENERATE_MOCK_TANUKI_RES,
+  MOCK_CHUNK_MESSAGE,
 } from '../mock_data';
 
 Vue.use(Vuex);
@@ -46,7 +50,8 @@ describe('GitLab Duo Chat', () => {
     setLoading: jest.fn(),
   };
 
-  const subscriptionHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_SUCCESS_RES);
+  let aiResponseSubscriptionHandler = jest.fn();
+  let aiResponseStreamSubscriptionHandler = jest.fn();
   const chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
   const duoUserFeedbackMutationHandlerMock = jest.fn().mockResolvedValue({});
   const queryHandlerMock = jest.fn().mockResolvedValue(MOCK_CHAT_CACHED_MESSAGES_RES);
@@ -80,11 +85,20 @@ describe('GitLab Duo Chat', () => {
     });
 
     const apolloProvider = createMockApollo([
-      [aiResponseSubscription, subscriptionHandlerMock],
       [chatMutation, chatMutationHandlerMock],
       [duoUserFeedbackMutation, duoUserFeedbackMutationHandlerMock],
       [getAiMessages, queryHandlerMock],
     ]);
+
+    apolloProvider.defaultClient.setRequestHandler(
+      aiResponseSubscription,
+      aiResponseSubscriptionHandler,
+    );
+
+    apolloProvider.defaultClient.setRequestHandler(
+      aiResponseStreamSubscription,
+      aiResponseStreamSubscriptionHandler,
+    );
 
     wrapper = shallowMountExtended(TanukiBotChatApp, {
       store,
@@ -208,29 +222,17 @@ describe('GitLab Duo Chat', () => {
           },
         );
 
-        it('once response arrives via GraphQL subscription with userId fallback calls addDuoChatMessage', () => {
-          subscriptionHandlerMock.mockClear();
-
+        it('passes correct resourceId or uses userId as a fallback', () => {
           createComponent({
             initialState: { loading: true },
             propsData: { userId: MOCK_USER_ID, resourceId },
           });
 
-          expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(1, {
-            userId: MOCK_USER_ID,
-            aiAction: 'CHAT',
-            htmlResponse: true,
-          });
-          expect(subscriptionHandlerMock).toHaveBeenNthCalledWith(2, {
+          expect(aiResponseStreamSubscriptionHandler).toHaveBeenNthCalledWith(2, {
             userId: MOCK_USER_ID,
             resourceId: expectedResourceId,
-            htmlResponse: false,
             clientSubscriptionId: '123',
           });
-          expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(
-            expect.any(Object),
-            MOCK_TANUKI_SUCCESS_RES.data.aiCompletionResponse,
-          );
         });
       });
 
@@ -329,22 +331,16 @@ describe('GitLab Duo Chat', () => {
   describe('Error conditions', () => {
     const errorText = 'Fancy foo';
 
-    describe.each`
-      mock                       | description
-      ${subscriptionHandlerMock} | ${'subscription'}
-      ${queryHandlerMock}        | ${'querying cached messages'}
-    `('when $description fails', ({ mock }) => {
-      beforeEach(async () => {
-        mock.mockRejectedValue(new Error(errorText));
-        helpCenterState.showTanukiBotChatDrawer = true;
-        createComponent();
-        await waitForPromises();
-      });
+    beforeEach(async () => {
+      queryHandlerMock.mockRejectedValue(new Error(errorText));
+      helpCenterState.showTanukiBotChatDrawer = true;
+      createComponent();
+      await waitForPromises();
+    });
 
-      it('does not call addDuoChatMessage', () => {
-        expect(actionSpies.addDuoChatMessage).not.toHaveBeenCalled();
-        expect(findGlDuoChat().props('error')).toBe(`Error: ${errorText}`);
-      });
+    it('does not call addDuoChatMessage', () => {
+      expect(actionSpies.addDuoChatMessage).not.toHaveBeenCalled();
+      expect(findGlDuoChat().props('error')).toBe(`Error: ${errorText}`);
     });
 
     describe('when mutation fails', () => {
@@ -370,22 +366,105 @@ describe('GitLab Duo Chat', () => {
   });
 
   describe('Subscriptions', () => {
+    let mockSubscriptionComplete;
+    let mockSubscriptionStream;
     beforeEach(() => {
-      createComponent();
+      mockSubscriptionComplete = createMockSubscription();
+      mockSubscriptionStream = createMockSubscription();
+      aiResponseSubscriptionHandler = () => mockSubscriptionComplete;
+      aiResponseStreamSubscriptionHandler = () => mockSubscriptionStream;
     });
+
     afterEach(() => {
       helpCenterState.showTanukiBotChatDrawer = false;
+      if (wrapper) {
+        wrapper.destroy();
+      }
+      jest.clearAllMocks();
     });
 
     it('activates subscriptions when showTanukiBotChatDrawer is true', async () => {
       helpCenterState.showTanukiBotChatDrawer = true;
+      createComponent();
       await waitForPromises();
-      expect(subscriptionHandlerMock).toHaveBeenCalled();
+
+      expect(mockSubscriptionComplete.closed).toBe(false);
+      expect(mockSubscriptionStream.closed).toBe(false);
     });
 
-    it('skips subscriptions when showTanukiBotChatDrawer is false', async () => {
+    it('does not activate subscriptions when showTanukiBotChatDrawer is false', async () => {
+      helpCenterState.showTanukiBotChatDrawer = false;
+      createComponent();
       await waitForPromises();
-      expect(subscriptionHandlerMock).not.toHaveBeenCalled();
+
+      expect(mockSubscriptionComplete.closed).toBe(true);
+      expect(mockSubscriptionStream.closed).toBe(true);
+    });
+
+    it('stops adding new messages when more chunks with the same request ID come in after the full message has already been received', async () => {
+      const requestId = '123';
+      const firstChunk = MOCK_CHUNK_MESSAGE('first chunk', 1, requestId);
+      const secondChunk = MOCK_CHUNK_MESSAGE('second chunk', 2, requestId);
+      const successResponse = GENERATE_MOCK_TANUKI_RES('', requestId);
+
+      helpCenterState.showTanukiBotChatDrawer = true;
+
+      createComponent();
+      await waitForPromises();
+
+      // message chunk streaming in
+      mockSubscriptionStream.next(firstChunk);
+      await waitForPromises();
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledTimes(1);
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(
+        expect.any(Object),
+        firstChunk.data.aiCompletionResponse,
+      );
+
+      // full message being sent
+      mockSubscriptionComplete.next(successResponse);
+      await waitForPromises();
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledTimes(2);
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(
+        expect.any(Object),
+        successResponse.data.aiCompletionResponse,
+      );
+
+      // another chunk with the same request ID
+      mockSubscriptionStream.next(secondChunk);
+      await waitForPromises();
+      // checking that addDuoChatMessage was not called again since full message was already being sent
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledTimes(2);
+    });
+
+    it('continues to invoke addDuoChatMessage when a new message chunk arrives with a distinct request ID, even after a complete message has been received', async () => {
+      const firstChunk = MOCK_CHUNK_MESSAGE('first chunk', 1);
+      const firstChunkNewRequest = MOCK_CHUNK_MESSAGE('first chunk', 2, 2);
+
+      helpCenterState.showTanukiBotChatDrawer = true;
+      createComponent();
+      await waitForPromises();
+
+      // message chunk streaming in
+      mockSubscriptionStream.next(firstChunk);
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(
+        expect.any(Object),
+        firstChunk.data.aiCompletionResponse,
+      );
+
+      // full message being sent
+      mockSubscriptionComplete.next(MOCK_TANUKI_SUCCESS_RES);
+      await waitForPromises();
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledTimes(2);
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(
+        expect.any(Object),
+        MOCK_TANUKI_SUCCESS_RES.data.aiCompletionResponse,
+      );
+
+      // another chunk with a new request ID
+      mockSubscriptionStream.next(firstChunkNewRequest);
+      await waitForPromises();
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledTimes(3);
     });
   });
 });
