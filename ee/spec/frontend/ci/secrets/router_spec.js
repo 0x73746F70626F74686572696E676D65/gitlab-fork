@@ -100,14 +100,14 @@ describe('Secrets router', () => {
     });
 
     it('provides the correct props when visiting the edit form', () => {
-      const route = { name: 'edit', params: { key: 'SECRET_KEY' } };
+      const route = { name: 'edit', params: { id: '123' } };
       createSecretsApp({ route, props });
 
       expect(wrapper.findComponent(SecretFormWrapper).props()).toMatchObject({
         entity,
         fullPath,
         isEditing: true,
-        secretKey: 'SECRET_KEY',
+        secretId: 123,
       });
     });
   });

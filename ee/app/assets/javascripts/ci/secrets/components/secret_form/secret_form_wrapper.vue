@@ -41,8 +41,8 @@ export default {
       required: false,
       default: false,
     },
-    secretKey: {
-      type: String,
+    secretId: {
+      type: Number,
       required: false,
       default: null,
     },
@@ -89,7 +89,9 @@ export default {
     },
     pageTitle() {
       if (this.isEditing) {
-        return sprintf(s__('Secrets|Edit %{key}'), { key: this.secretKey });
+        // TODO: This will be changed to `secret.key` when we develop the Edit form
+        // https://gitlab.com/gitlab-org/gitlab/-/issues/432384#note_1924027555
+        return sprintf(s__('Secrets|Edit %{id}'), { id: this.secretId });
       }
 
       return this.$options.i18n.titleNew;

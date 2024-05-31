@@ -105,7 +105,7 @@ describe('SecretsTable component', () => {
       expect(findSecretDetailsLink().text()).toBe(secret.name);
       expect(findSecretDetailsLink().props('to')).toMatchObject({
         name: DETAILS_ROUTE_NAME,
-        params: { key: secret.key },
+        params: { id: secret.id },
       });
     });
 
@@ -127,7 +127,7 @@ describe('SecretsTable component', () => {
       expect(findSecretActionsCell().props()).toMatchObject({
         detailsRoute: {
           name: EDIT_ROUTE_NAME,
-          params: { key: secret.key },
+          params: { id: secret.id },
         },
       });
     });

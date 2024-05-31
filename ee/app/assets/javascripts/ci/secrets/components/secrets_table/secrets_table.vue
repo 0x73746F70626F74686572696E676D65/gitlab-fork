@@ -88,8 +88,8 @@ export default {
     window.removeEventListener('popstate', this.updateQueryParamsFromUrl);
   },
   methods: {
-    getDetailsRoute: (key) => ({ name: DETAILS_ROUTE_NAME, params: { key } }),
-    getEditRoute: (key) => ({ name: EDIT_ROUTE_NAME, params: { key } }),
+    getDetailsRoute: (id) => ({ name: DETAILS_ROUTE_NAME, params: { id } }),
+    getEditRoute: (id) => ({ name: EDIT_ROUTE_NAME, params: { id } }),
     isScopedLabel(label) {
       return label.includes('::');
     },
@@ -162,10 +162,10 @@ export default {
         </div>
       </template>
       <gl-table-lite :fields="$options.fields" :items="secretsNodes" stacked="md" class="gl-mb-0">
-        <template #cell(name)="{ item: { key, name, labels } }">
+        <template #cell(name)="{ item: { id, name, labels } }">
           <router-link
             data-testid="secret-details-link"
-            :to="getDetailsRoute(key)"
+            :to="getDetailsRoute(id)"
             class="gl-display-block"
           >
             {{ name }}
@@ -189,8 +189,8 @@ export default {
             data-testid="secret-created-at"
           />
         </template>
-        <template #cell(actions)="{ item: { key } }">
-          <secret-actions-cell :details-route="getEditRoute(key)" />
+        <template #cell(actions)="{ item: { id } }">
+          <secret-actions-cell :details-route="getEditRoute(id)" />
         </template>
       </gl-table-lite>
     </gl-card>

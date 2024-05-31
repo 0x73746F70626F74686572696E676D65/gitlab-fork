@@ -74,11 +74,13 @@ const mockSecretsData = [
 ];
 
 export const mockGroupSecretsData = mockSecretsData.map((secret, index) => ({
-  key: `group_secret_${index}`,
   ...secret,
+  id: index + 1,
+  key: secret.name,
 }));
 
 export const mockProjectSecretsData = mockSecretsData.map((secret, index) => ({
-  key: `project_secret_${index}`,
   ...secret,
+  id: index + 1,
+  key: secret.name,
 }));

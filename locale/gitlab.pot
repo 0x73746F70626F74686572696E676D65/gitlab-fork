@@ -46610,7 +46610,7 @@ msgstr ""
 msgid "Secrets|Delete"
 msgstr ""
 
-msgid "Secrets|Edit %{key}"
+msgid "Secrets|Edit %{id}"
 msgstr ""
 
 msgid "Secrets|Edit secret"

@@ -28,7 +28,6 @@ describe('SecretFormWrapper component', () => {
     entity: ENTITY_GROUP,
     fullPath: 'full/path/to/entity',
     isEditing: false,
-    secretKey: 'group_secret_1',
   };
 
   const findEnvironmentsDropdown = () => wrapper.findComponent(CiEnvironmentsDropdown);
@@ -76,9 +75,9 @@ describe('SecretFormWrapper component', () => {
     });
 
     it('shows edit form when editing', () => {
-      createComponent({ props: { isEditing: true } });
+      createComponent({ props: { isEditing: true, secretId: 123 } });
 
-      expect(findPageTitle()).toBe(`Edit group_secret_1`);
+      expect(findPageTitle()).toBe('Edit 123');
     });
   });
 

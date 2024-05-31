@@ -10,12 +10,12 @@ export default {
     GlTab,
   },
   props: {
-    secretKey: {
+    routeName: {
       type: String,
       required: true,
     },
-    routeName: {
-      type: String,
+    secretId: {
+      type: Number,
       required: true,
     },
   },
@@ -25,6 +25,9 @@ export default {
     },
   },
   methods: {
+    goToEdit() {
+      this.$router.push({ name: EDIT_ROUTE_NAME, params: { id: this.secretId } });
+    },
     goTo(name) {
       if (this.routeName !== name) {
         this.$router.push({ name });
@@ -39,17 +42,15 @@ export default {
 <template>
   <div>
     <div class="gl-display-flex gl-justify-content-space-between gl-mt-4">
-      <h1>{{ secretKey }}</h1>
-
+      <h1>{{ secretId }}</h1>
       <gl-button
         icon="pencil"
-        :to="$options.EDIT_ROUTE_NAME"
         :aria-label="__('Edit')"
         class="gl-align-self-start"
         data-testid="edit-secret-button"
+        @click="goToEdit"
       />
     </div>
-
     <gl-tabs :value="tabIndex">
       <gl-tab @click="goTo($options.DETAILS_ROUTE_NAME)">
         <template #title>{{ s__('Secrets|Secret details') }}</template>
