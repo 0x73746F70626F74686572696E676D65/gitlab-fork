@@ -56,7 +56,7 @@ export default {
     <p>
       {{ s__('Runners|Use the dashboard to view performance statistics of your runner fleet.') }}
     </p>
-    <div class="gl-sm-display-flex gl-gap-x-4 gl-justify-content-space-between">
+    <div class="sm:gl-flex gl-gap-x-4 gl-justify-content-space-between">
       <runner-dashboard-stat-status
         :scope="$options.GROUP_TYPE"
         :status="$options.STATUS_ONLINE"

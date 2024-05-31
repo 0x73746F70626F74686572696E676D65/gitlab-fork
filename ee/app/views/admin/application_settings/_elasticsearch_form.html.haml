@@ -325,7 +325,7 @@
                           - if project.description.present?
                             .description
                               = markdown_field(project, :description)
-                        .stats.gl-text-gray-500.gl-flex-shrink-0.gl-display-none.gl-sm-display-flex
+                        .stats.gl-text-gray-500.gl-flex-shrink-0.gl-hidden.sm:gl-flex
                           = gl_badge_tag _('Created %{date} ago') % { date: time_ago_in_words(project.created_at) }
                   - if @projects_not_indexed_count > projects_not_indexed_max_shown
                     %li.project-row.gl-align-items-center{ class: 'gl-display-flex!', data: { testid: 'projects_not_indexed_max_shown'} }

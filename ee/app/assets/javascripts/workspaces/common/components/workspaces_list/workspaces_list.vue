@@ -87,7 +87,7 @@ export default {
       >
         <gl-link
           v-if="!isEmpty"
-          class="gl-mr-5 workspace-list-link gl-display-none gl-sm-display-block"
+          class="gl-mr-5 workspace-list-link gl-hidden sm:gl-block"
           :href="$options.workspacesHelpPath"
           >{{ $options.i18n.learnMoreHelpLink }}</gl-link
         >

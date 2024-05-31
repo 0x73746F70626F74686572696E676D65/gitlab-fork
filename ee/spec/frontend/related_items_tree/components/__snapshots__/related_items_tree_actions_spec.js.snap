@@ -35,7 +35,7 @@ exports[`RelatedItemsTree RelatedItemsTreeActions template renders button group,
     </gl-button-group-stub>
   </div>
   <div
-    class="gl-display-flex gl-mt-3 gl-sm-display-inline-flex gl-sm-ml-auto gl-sm-mt-0"
+    class="gl-flex gl-mt-3 gl-sm-ml-auto gl-sm-mt-0 sm:gl-inline-flex"
   >
     <toggle-labels-stub
       class="gl-ml-0! gl-sm-ml-3!"
