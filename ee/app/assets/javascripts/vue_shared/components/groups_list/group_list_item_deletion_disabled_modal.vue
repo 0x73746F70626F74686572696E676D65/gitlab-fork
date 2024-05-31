@@ -49,7 +49,7 @@ export default {
     <slot name="modal-body">
       <gl-sprintf :message="$options.i18n.topLevelGroupMessage">
         <template #group
-          ><span class="gl-font-weight-bold">{{ group.name }}</span></template
+          ><span class="gl-font-bold">{{ group.name }}</span></template
         >
         <template #link="{ content }">
           <gl-link :href="group.editPath">{{ content }}</gl-link>

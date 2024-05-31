@@ -2,7 +2,7 @@
 
 exports[`StatisticsCard denominator block renders denominator block with all elements when all props are passed 1`] = `
 <p
-  class="gl-font-size-h-display gl-font-weight-bold gl-mb-3"
+  class="gl-font-bold gl-font-size-h-display gl-mb-3"
   data-testid="denominator"
 >
   1,000

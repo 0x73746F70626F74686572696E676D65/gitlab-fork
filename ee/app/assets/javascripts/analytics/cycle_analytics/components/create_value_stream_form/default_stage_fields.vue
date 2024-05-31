@@ -87,7 +87,7 @@ export default {
           class="gl-display-flex gl-align-items-center"
           :data-testid="`stage-start-event-${index}`"
         >
-          <span class="gl-m-0 gl-align-middle gl-mr-2 gl-font-weight-bold">{{
+          <span class="gl-m-0 gl-align-middle gl-mr-2 gl-font-bold">{{
             $options.i18n.DEFAULT_FIELD_START_EVENT_LABEL
           }}</span>
           <gl-form-text class="gl-m-0" tag="span">{{
@@ -98,7 +98,7 @@ export default {
           class="gl-display-flex gl-align-items-center"
           :data-testid="`stage-end-event-${index}`"
         >
-          <span class="gl-m-0 gl-align-middle gl-mr-2 gl-font-weight-bold">{{
+          <span class="gl-m-0 gl-align-middle gl-mr-2 gl-font-bold">{{
             $options.i18n.DEFAULT_FIELD_END_EVENT_LABEL
           }}</span>
           <gl-form-text class="gl-m-0" tag="span">{{

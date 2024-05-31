@@ -138,7 +138,7 @@ export default {
             @click="toggleMilestonesExpanded"
           />
         </span>
-        <div class="gl-overflow-hidden gl-flex-grow-1 gl-ml-2 gl-mr-3 gl-font-weight-bold">
+        <div class="gl-overflow-hidden gl-flex-grow-1 gl-ml-2 gl-mr-3 gl-font-bold">
           {{ __('Milestones') }}
         </div>
         <div

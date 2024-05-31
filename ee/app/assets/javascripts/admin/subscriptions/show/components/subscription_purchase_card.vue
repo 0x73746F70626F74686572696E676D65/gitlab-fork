@@ -16,7 +16,7 @@ export default {
 <template>
   <gl-card>
     <template #header>
-      <h5 class="gl-my-0 gl-font-weight-bold">{{ $options.i18n.title }}</h5>
+      <h5 class="gl-my-0 gl-font-bold">{{ $options.i18n.title }}</h5>
     </template>
     <p>{{ $options.i18n.description }}</p>
     <gl-button

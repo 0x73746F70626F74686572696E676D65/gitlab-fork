@@ -115,12 +115,10 @@ export default {
     <!-- there are cases in which `time` is undefined (e.g.: manually submitted vulnerabilities in "needs triage" state) -->
     <gl-sprintf v-else-if="time" :message="statusText">
       <template #status="{ content }">
-        <span :class="{ 'gl-font-weight-bold': isStatusBolded }" data-testid="status">{{
-          content
-        }}</span>
+        <span :class="{ 'gl-font-bold': isStatusBolded }" data-testid="status">{{ content }}</span>
       </template>
       <template #dismissalReason>
-        <span :class="{ 'gl-font-weight-bold': isStatusBolded }" data-testid="dismissal-reason">{{
+        <span :class="{ 'gl-font-bold': isStatusBolded }" data-testid="dismissal-reason">{{
           dismissalReasonText
         }}</span>
       </template>
@@ -134,7 +132,7 @@ export default {
           :href="user.web_url"
           :data-user-id="user.id"
           :data-username="user.username"
-          class="js-user-link gl-font-weight-bold gl-ml-2"
+          class="js-user-link gl-font-bold gl-ml-2"
         >
           <gl-avatar-labeled :src="user.avatar_url" :label="user.name" :size="24" />
         </gl-avatar-link>

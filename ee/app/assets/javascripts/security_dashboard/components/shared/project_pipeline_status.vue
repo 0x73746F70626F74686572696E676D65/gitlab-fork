@@ -59,7 +59,7 @@ export default {
   >
     <div class="gl-display-flex gl-align-items-center" data-testid="pipeline">
       <div class="gl-mr-3">
-        <span class="gl-font-weight-bold gl-mr-3">{{ $options.i18n.lastUpdated }}</span
+        <span class="gl-font-bold gl-mr-3">{{ $options.i18n.lastUpdated }}</span
         ><span class="gl-whitespace-nowrap">
           <time-ago-tooltip class="gl-pr-3" :time="pipeline.createdAt" /><gl-link
             :href="pipeline.path"
@@ -70,7 +70,7 @@ export default {
       </div>
       <div
         v-if="parsingStatusMessage"
-        class="gl-ml-2 gl-text-orange-400 gl-font-weight-bold"
+        class="gl-ml-2 gl-text-orange-400 gl-font-bold"
         data-testid="parsing-status-notice"
       >
         <gl-icon name="warning" class="gl-mr-3" />{{ parsingStatusMessage }}
@@ -87,7 +87,7 @@ export default {
         data-testid="sbom-pipeline"
       >
         <div>
-          <span class="gl-font-weight-bold gl-mr-3">{{ $options.i18n.sbomLastUpdated }}</span
+          <span class="gl-font-bold gl-mr-3">{{ $options.i18n.sbomLastUpdated }}</span
           ><span class="gl-whitespace-nowrap">
             <time-ago-tooltip class="gl-pr-3" :time="sbomPipeline.createdAt" /><gl-link
               :href="sbomPipeline.path"
@@ -98,7 +98,7 @@ export default {
         </div>
         <div
           v-if="sbomParsingStatusMessage"
-          class="gl-mr-3 gl-ml-2 gl-mt-5 gl-md-mt-0 gl-text-orange-400 gl-font-weight-bold"
+          class="gl-mr-3 gl-ml-2 gl-mt-5 gl-md-mt-0 gl-text-orange-400 gl-font-bold"
           data-testid="parsing-status-notice"
         >
           <gl-icon name="warning" class="gl-mr-3" />{{ sbomParsingStatusMessage }}

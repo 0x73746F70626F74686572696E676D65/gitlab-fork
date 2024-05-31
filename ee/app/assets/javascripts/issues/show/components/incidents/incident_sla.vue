@@ -49,7 +49,7 @@ export default {
 
 <template>
   <div v-if="slaFeatureAvailable && hasData">
-    <span class="gl-font-weight-bold">{{ s__('HighlightBar|Time to SLA:') }}</span>
+    <span class="gl-font-bold">{{ s__('HighlightBar|Time to SLA:') }}</span>
     <span class="gl-whitespace-nowrap">
       <gl-icon name="timer" />
       <service-level-agreement :sla-due-at="slaDueAt" :issue-iid="iid" :project-path="fullPath" />

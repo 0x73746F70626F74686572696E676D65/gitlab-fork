@@ -478,7 +478,7 @@ export default {
         <gl-form-group
           class="gl-pt-3"
           :label="i18n.rollOver.label"
-          label-class="gl-font-weight-bold"
+          label-class="gl-font-bold"
           label-for="cadence-rollover-issues"
           data-testid="cadence-rollover-group"
         >

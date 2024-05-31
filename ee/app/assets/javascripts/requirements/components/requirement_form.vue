@@ -309,7 +309,7 @@ export default {
           <h2 class="gl-font-base">
             <gl-sprintf :message="$options.i18n.legacyReferenceDeprecationTitle">
               <template #legacyId
-                ><span class="gl-font-weight-normal">{{ legacyReference }}</span></template
+                ><span class="gl-font-normal">{{ legacyReference }}</span></template
               >
             </gl-sprintf>
           </h2>

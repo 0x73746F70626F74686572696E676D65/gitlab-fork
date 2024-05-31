@@ -160,7 +160,7 @@ export default {
             <gl-icon :size="12" :name="policyVisibleChevronIcon" />
           </gl-button>
 
-          <h3 class="gl-font-weight-bold gl-font-lg gl-m-0">{{ policy.name }}</h3>
+          <h3 class="gl-font-bold gl-font-lg gl-m-0">{{ policy.name }}</h3>
           <gl-button-group class="gl-ml-auto">
             <gl-button
               v-gl-modal="editPolicyModalId"
@@ -207,7 +207,7 @@ export default {
                     {{ $options.ALERT_STATUSES[rule.status].toLowerCase() }}
                   </template>
                   <template #minutes>
-                    <span class="gl-font-weight-bold">
+                    <span class="gl-font-bold">
                       {{ rule.elapsedTimeMinutes }}&nbsp;{{ $options.i18n.minutes }}
                     </span>
                   </template>
@@ -231,7 +231,7 @@ export default {
                       {{ getActionName(rule) }}
                     </template>
                     <template #forScheduleOrUser>
-                      <span v-if="hasEscalationSchedule(rule)" class="gl-font-weight-bold">
+                      <span v-if="hasEscalationSchedule(rule)" class="gl-font-bold">
                         {{ rule.oncallSchedule.name }}
                       </span>
                       <gl-token

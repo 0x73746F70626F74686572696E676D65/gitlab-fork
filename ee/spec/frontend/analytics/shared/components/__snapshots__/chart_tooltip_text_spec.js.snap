@@ -20,7 +20,7 @@ exports[`ChartTooltipText with tooltipValue data renders the tooltip 1`] = `
         Cool tip
       </div>
       <div
-        class="gl-font-weight-bold"
+        class="gl-font-bold"
         data-testid="tooltip-value"
       >
         10

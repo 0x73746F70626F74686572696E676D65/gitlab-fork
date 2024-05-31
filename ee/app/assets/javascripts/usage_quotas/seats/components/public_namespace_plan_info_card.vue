@@ -81,7 +81,7 @@ export default {
         </gl-button>
       </template>
       <template #description>
-        <p class="gl-font-size-h2 gl-font-weight-bold" data-testid="title">{{ title }}</p>
+        <p class="gl-font-size-h2 gl-font-bold" data-testid="title">{{ title }}</p>
         <p data-testid="free-plan-info">
           {{ $options.i18n.freePlanInfoText }}
         </p>

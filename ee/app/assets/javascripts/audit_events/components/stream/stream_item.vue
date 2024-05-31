@@ -101,7 +101,7 @@ export default {
     <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-py-6">
       <gl-button
         variant="link"
-        class="gl-text-body! gl-font-weight-bold gl-min-w-0"
+        class="gl-text-body! gl-font-bold gl-min-w-0"
         :aria-expanded="isEditing"
         data-testid="toggle-btn"
         @click="toggleEditMode"

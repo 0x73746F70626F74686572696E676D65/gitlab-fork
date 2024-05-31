@@ -79,7 +79,7 @@ export default {
     <gl-tooltip :target="() => $refs.sidebarIcon" placement="left" boundary="viewport">
       <span v-safe-html="tooltipText"></span>
     </gl-tooltip>
-    <div class="title hide-collapsed gl-mb-2 gl-font-weight-bold">{{ __('Ancestors') }}</div>
+    <div class="title hide-collapsed gl-mb-2 gl-font-bold">{{ __('Ancestors') }}</div>
 
     <ul
       v-if="!isFetching && ancestors.length"

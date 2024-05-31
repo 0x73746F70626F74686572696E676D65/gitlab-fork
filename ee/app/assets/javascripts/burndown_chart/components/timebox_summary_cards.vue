@@ -44,16 +44,16 @@ export default {
         <div v-else>
           <span class="gl-border-1 gl-border-r-solid gl-border-gray-100 gl-pr-3 gl-mr-2">
             {{ column.title }}
-            <span class="gl-font-weight-bold"
+            <span class="gl-font-bold"
               >{{ percent(column.value) }}<small class="gl-text-gray-500">%</small></span
             >
           </span>
           <gl-sprintf :message="__('%{count} of %{total}')">
             <template #count>
-              <span class="gl-font-weight-bold">{{ column.value }}</span>
+              <span class="gl-font-bold">{{ column.value }}</span>
             </template>
             <template #total>
-              <span class="gl-font-weight-bold">{{ total }}</span>
+              <span class="gl-font-bold">{{ total }}</span>
             </template>
           </gl-sprintf>
         </div>

@@ -428,7 +428,7 @@ export default {
       </gl-alert>
     </template>
     <template #summary>
-      <span ref="summary-line-1" class="gl-font-weight-bold">
+      <span ref="summary-line-1" class="gl-font-bold">
         {{ selectedPlanTextLine }}
       </span>
       <div v-if="isSetupForCompany" ref="summary-line-2">

@@ -58,7 +58,7 @@ export default {
 <template>
   <gl-card body-class="gl-p-0">
     <template #header>
-      <h5 class="gl-my-0 gl-font-weight-bold">
+      <h5 class="gl-my-0 gl-font-bold">
         {{ $options.i18n.activateSubscription }}
       </h5>
     </template>

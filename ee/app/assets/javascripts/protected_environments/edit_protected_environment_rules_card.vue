@@ -42,7 +42,7 @@ export default {
 <template>
   <div>
     <template v-if="rules.length">
-      <div class="gl-p-5 gl-bg-gray-50 gl-w-full gl-display-flex gl-font-weight-bold">
+      <div class="gl-p-5 gl-bg-gray-50 gl-w-full gl-display-flex gl-font-bold">
         <slot name="card-header"></slot>
       </div>
       <div

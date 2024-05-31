@@ -157,11 +157,7 @@ export default {
           </div>
 
           <div class="gl-display-flex gl-flex-direction-column gl-text-truncate">
-            <gl-truncate
-              class="gl-font-weight-bold gl-text-primary"
-              :text="span.operation"
-              with-tooltip
-            />
+            <gl-truncate class="gl-font-bold gl-text-primary" :text="span.operation" with-tooltip />
             <gl-truncate class="gl-text-secondary" :text="span.service" with-tooltip />
           </div>
         </div>

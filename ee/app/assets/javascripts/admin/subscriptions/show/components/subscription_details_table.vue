@@ -103,7 +103,7 @@ export default {
     :tbody-tr-class="rowClass"
   >
     <template #cell(label)="{ item }">
-      <p class="gl-font-weight-bold" data-testid="details-label">{{ rowLabel(item) }}:</p>
+      <p class="gl-font-bold" data-testid="details-label">{{ rowLabel(item) }}:</p>
     </template>
 
     <template #cell(value)="{ item, value }">

@@ -24,7 +24,7 @@ export default {
 <template>
   <gl-empty-state class="gl-mt-0" :content-class="['gl-text-center']">
     <template #title>
-      <div class="gl-font-weight-bold" data-testid="vsa-no-data-title">{{ title }}</div>
+      <div class="gl-font-bold" data-testid="vsa-no-data-title">{{ title }}</div>
     </template>
     <template #description>
       <div class="gl-text-gray-500" data-testid="vsa-no-data-description">{{ description }}</div>

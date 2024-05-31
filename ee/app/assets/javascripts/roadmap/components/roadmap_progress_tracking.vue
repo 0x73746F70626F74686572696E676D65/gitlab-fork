@@ -51,7 +51,7 @@ export default {
         "
       >
         <template #label>
-          <span class="gl-font-weight-normal">{{ $options.i18n.toggleLabel }}</span>
+          <span class="gl-font-normal">{{ $options.i18n.toggleLabel }}</span>
         </template>
       </gl-toggle>
       <gl-form-radio-group

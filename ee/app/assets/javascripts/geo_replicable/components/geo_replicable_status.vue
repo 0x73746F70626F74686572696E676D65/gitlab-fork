@@ -43,6 +43,6 @@ export default {
     data-testid="replicable-item-status"
   >
     <gl-icon :name="styleProperties.iconName" class="gl-mr-2" />
-    <span class="gl-font-weight-bold gl-font-sm">{{ capitalizedStatus }}</span>
+    <span class="gl-font-bold gl-font-sm">{{ capitalizedStatus }}</span>
   </div>
 </template>

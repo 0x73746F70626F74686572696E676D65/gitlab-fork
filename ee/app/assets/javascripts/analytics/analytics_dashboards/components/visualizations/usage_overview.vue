@@ -83,12 +83,11 @@ export default {
       />
 
       <div class="gl-leading-20">
-        <span
-          class="gl-display-block gl-mb-1 gl-font-base gl-font-weight-normal gl-text-gray-700"
-          >{{ data.namespace.namespaceType }}</span
-        >
+        <span class="gl-display-block gl-mb-1 gl-font-base gl-font-normal gl-text-gray-700">{{
+          data.namespace.namespaceType
+        }}</span>
         <div class="gl-display-flex gl-align-items-center gl-gap-2">
-          <span class="gl-font-size-h2 gl-font-weight-bold gl-text-gray-900 gl-truncate-end">{{
+          <span class="gl-font-size-h2 gl-font-bold gl-text-gray-900 gl-truncate-end">{{
             data.namespace.fullName
           }}</span>
           <gl-icon

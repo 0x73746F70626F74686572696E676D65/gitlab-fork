@@ -159,14 +159,14 @@ export default {
       <div :class="progressBarBlockClasses" data-testid="progress-bar-block">
         <circular-progress-bar class="gl-mx-auto" :percentage="progressPercentage" />
 
-        <div class="gl-mt-5 gl-text-center gl-font-lg gl-font-weight-bold">
+        <div class="gl-mt-5 gl-text-center gl-font-lg gl-font-bold">
           {{ progressBarLabel }}
         </div>
       </div>
     </div>
 
     <div class="gl-mt-6">
-      <h2 class="gl-font-weight-bold gl-font-size-h2">
+      <h2 class="gl-font-bold gl-font-size-h2">
         {{ $options.i18n.addCodeBlockTitle }}
       </h2>
     </div>
@@ -186,7 +186,7 @@ export default {
     </div>
 
     <div class="gl-mt-6">
-      <h2 class="gl-font-weight-bold gl-font-size-h2">
+      <h2 class="gl-font-bold gl-font-size-h2">
         {{ $options.i18n.buildBlockTitle }}
       </h2>
     </div>

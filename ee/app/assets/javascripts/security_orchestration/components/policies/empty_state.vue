@@ -74,7 +74,7 @@ export default {
     title=""
   >
     <template #description>
-      <p class="gl-font-weight-bold">
+      <p class="gl-font-bold">
         {{ emptyStateDescription }}
       </p>
     </template>

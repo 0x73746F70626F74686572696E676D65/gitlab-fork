@@ -211,7 +211,7 @@ export default {
     <template #cell(issueDetails)="{ item }">
       <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1" data-testid="detailsCol">
         <div class="issue-title str-truncated">
-          <gl-link :href="item.webUrl" target="_blank" class="gl-font-weight-bold text-plain">{{
+          <gl-link :href="item.webUrl" target="_blank" class="gl-font-bold text-plain">{{
             item.title
           }}</gl-link>
         </div>

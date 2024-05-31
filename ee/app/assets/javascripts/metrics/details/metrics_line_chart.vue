@@ -122,11 +122,11 @@ export default {
         >
           <gl-chart-series-label :color="metric.color" class="gl-leading-normal gl-mr-7">
             <div v-for="attr in metric.attributes" :key="attr.key + attr.value">
-              <span class="gl-font-weight-bold">{{ attr.key }}: </span>{{ attr.value }}
+              <span class="gl-font-bold">{{ attr.key }}: </span>{{ attr.value }}
             </div>
           </gl-chart-series-label>
 
-          <div data-testid="metric-tooltip-value" class="gl-font-weight-bold">
+          <div data-testid="metric-tooltip-value" class="gl-font-bold">
             {{ metric.value }}
           </div>
         </div>
@@ -135,7 +135,7 @@ export default {
 
     <div
       v-if="cancelled"
-      class="gl-absolute gl-right-0 gl-left-0 gl-top-0 gl-bottom-0 gl-text-center gl-font-weight-bold gl-font-lg gl-py-13"
+      class="gl-absolute gl-right-0 gl-left-0 gl-top-0 gl-bottom-0 gl-text-center gl-font-bold gl-font-lg gl-py-13"
     >
       <span>{{ $options.i18n.cancelledText }}</span>
     </div>

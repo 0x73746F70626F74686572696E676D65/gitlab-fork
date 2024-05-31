@@ -47,7 +47,7 @@ export default {
       :usage-value="`${usageValue}`"
     >
       <template #description>
-        <p class="gl-font-sm gl-font-weight-bold gl-mb-0" data-testid="code-suggestions-info">
+        <p class="gl-font-sm gl-font-bold gl-mb-0" data-testid="code-suggestions-info">
           {{ $options.i18n.codeSuggestionsAssignedInfoText }}
         </p>
       </template>

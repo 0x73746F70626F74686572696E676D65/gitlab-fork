@@ -109,8 +109,8 @@ export default {
         data-testid="geo-replication-details-mobile"
       >
         <template #title="{ translations }">
-          <span class="gl-font-weight-bold">{{ translations.component }}</span>
-          <span class="gl-font-weight-bold">{{ translations.status }}</span>
+          <span class="gl-font-bold">{{ translations.component }}</span>
+          <span class="gl-font-bold">{{ translations.status }}</span>
         </template>
         <template #default="{ item, translations }">
           <div class="gl-mr-5" data-testid="replicable-component">
@@ -125,7 +125,7 @@ export default {
       <div v-if="hasNAVerificationType" class="gl-mt-4">
         <gl-sprintf :message="$options.i18n.naVerificationHelpText">
           <template #bold="{ content }">
-            <span class="gl-font-weight-bold">{{ content }} </span>
+            <span class="gl-font-bold">{{ content }} </span>
           </template>
           <template #link="{ content }">
             <gl-link

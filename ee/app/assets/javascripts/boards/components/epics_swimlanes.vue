@@ -349,7 +349,7 @@ export default {
                   @click="toggleUnassignedLane"
                 />
                 <span
-                  class="gl-mr-3 gl-font-weight-bold gl-whitespace-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
+                  class="gl-mr-3 gl-font-bold gl-whitespace-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
                 >
                   {{ __('Issues with no epic assigned') }}
                 </span>

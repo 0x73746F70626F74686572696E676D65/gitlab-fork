@@ -44,7 +44,7 @@ export default {
 
 <template>
   <span class="timeline-header-item gl-float-left" :style="timelineHeaderStyles">
-    <div class="gl-font-weight-bold gl-text-gray-500 gl-pl-6" data-testid="timeline-header-label">
+    <div class="gl-font-bold gl-text-gray-500 gl-pl-6" data-testid="timeline-header-label">
       {{ timelineHeaderLabel }}
     </div>
     <weeks-header-sub-item :timeframe-item="timeframeItem" />

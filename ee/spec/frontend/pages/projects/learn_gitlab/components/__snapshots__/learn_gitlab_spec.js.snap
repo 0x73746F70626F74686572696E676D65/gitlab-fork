@@ -28,7 +28,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
         style="--gray100: #dcdcde; --logo-url: url(file-mock); --percentage: 25%; --progress-bar-color: #e24329;"
       />
       <div
-        class="gl-font-lg gl-font-weight-bold gl-mt-5 gl-text-center"
+        class="gl-font-bold gl-font-lg gl-mt-5 gl-text-center"
       >
         9 tasks to go
       </div>
@@ -38,7 +38,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
     class="gl-mt-6"
   >
     <h2
-      class="gl-font-size-h2 gl-font-weight-bold"
+      class="gl-font-bold gl-font-size-h2"
     >
       1. Add code to your project
     </h2>
@@ -103,7 +103,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
     class="gl-mt-6"
   >
     <h2
-      class="gl-font-size-h2 gl-font-weight-bold"
+      class="gl-font-bold gl-font-size-h2"
     >
       2. Build
     </h2>

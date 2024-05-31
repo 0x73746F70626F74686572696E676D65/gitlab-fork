@@ -55,7 +55,7 @@ export default {
 </script>
 <template>
   <div>
-    <div class="gl-display-flex gl-justify-content-space-between gl-font-weight-bold gl-mb-3">
+    <div class="gl-display-flex gl-justify-content-space-between gl-font-bold gl-mb-3">
       <div data-testid="selected-plan">
         {{ sprintf($options.i18n.selectedPlanText, { selectedPlanText }) }}
         <span v-if="usersPresent" data-testid="number-of-users">{{
@@ -130,7 +130,7 @@ export default {
       </div>
     </div>
     <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-my-5"></div>
-    <div class="gl-display-flex gl-justify-content-space-between gl-font-lg gl-font-weight-bold">
+    <div class="gl-display-flex gl-justify-content-space-between gl-font-lg gl-font-bold">
       <div>{{ $options.i18n.total }}</div>
       <gl-loading-icon v-if="isInvoicePreviewLoading" inline class="gl-my-auto" />
       <div v-else data-testid="total-amount">

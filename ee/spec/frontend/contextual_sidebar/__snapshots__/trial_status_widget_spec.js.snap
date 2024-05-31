@@ -83,7 +83,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
       />
       <div>
         <div
-          class="gl-font-weight-bold"
+          class="gl-font-bold"
         >
           Your 30-day trial has ended
         </div>

@@ -177,15 +177,13 @@ export default {
         <div data-testid="namespace">
           <template v-if="item.group.latestSnapshot">
             <template v-if="isCurrentGroup(item.group)">
-              <span class="gl-text-gray-500 gl-font-weight-bold">{{
-                item.group.namespace.fullName
-              }}</span>
+              <span class="gl-text-gray-500 gl-font-bold">{{ item.group.namespace.fullName }}</span>
               <gl-badge class="gl-ml-1" variant="info">{{ __('This group') }}</gl-badge>
             </template>
             <gl-link
               v-else
               :href="getGroupAdoptionPath(item.group.namespace.fullPath)"
-              class="gl-text-gray-500 gl-font-weight-bold"
+              class="gl-text-gray-500 gl-font-bold"
             >
               {{ item.group.namespace.fullName }}
             </gl-link>

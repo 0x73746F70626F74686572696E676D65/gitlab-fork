@@ -32,7 +32,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
             />
             IF alert is not acknowledged in
             <span
-              class="gl-font-weight-bold"
+              class="gl-font-bold"
             >
               1 mins
             </span>
@@ -59,7 +59,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
               />
               THEN email on-call user in schedule
               <span
-                class="gl-font-weight-bold"
+                class="gl-font-bold"
               >
                 Schedule to fill in
               </span>
@@ -79,7 +79,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
             />
             IF alert is not resolved in
             <span
-              class="gl-font-weight-bold"
+              class="gl-font-bold"
             >
               2 mins
             </span>
@@ -137,7 +137,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
             />
             IF alert is not resolved in
             <span
-              class="gl-font-weight-bold"
+              class="gl-font-bold"
             >
               4 mins
             </span>

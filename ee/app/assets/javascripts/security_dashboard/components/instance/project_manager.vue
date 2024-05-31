@@ -244,7 +244,7 @@ export default {
   <section class="container">
     <div class="row justify-content-center mt-md-4">
       <div class="col col-lg-7">
-        <h3 class="gl-font-lg gl-font-weight-bold gl-mt-0">
+        <h3 class="gl-font-lg gl-font-bold gl-mt-0">
           {{ s__('SecurityReports|Monitored projects') }}
         </h3>
         <p class="gl-mb-4 gl-pb-3">

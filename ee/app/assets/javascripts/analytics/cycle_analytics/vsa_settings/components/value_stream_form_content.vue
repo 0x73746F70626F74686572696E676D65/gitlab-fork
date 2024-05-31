@@ -432,7 +432,7 @@ export default {
             :key="stage.id"
             data-testid="vsa-hidden-stage"
           >
-            <span class="gl-m-0 gl-align-middle gl-mr-3 gl-font-weight-bold">{{
+            <span class="gl-m-0 gl-align-middle gl-mr-3 gl-font-bold">{{
               recoverStageTitle(stage.name)
             }}</span>
             <gl-button

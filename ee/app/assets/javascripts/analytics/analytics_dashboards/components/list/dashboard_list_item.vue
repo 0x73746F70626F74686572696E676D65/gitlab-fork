@@ -68,13 +68,13 @@ export default {
             v-if="dashboard.redirect"
             data-testid="dashboard-redirect-link"
             :href="redirectHref"
-            class="gl-font-weight-bold gl-leading-normal gl-text-decoration-none!"
+            class="gl-font-bold gl-leading-normal gl-text-decoration-none!"
             >{{ dashboard.title }}</gl-link
           >
           <router-link
             v-else
             data-testid="dashboard-router-link"
-            class="gl-font-weight-bold gl-leading-normal"
+            class="gl-font-bold gl-leading-normal"
             :to="dashboard.slug"
             >{{ dashboard.title }}</router-link
           >

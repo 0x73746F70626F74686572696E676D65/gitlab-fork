@@ -65,7 +65,7 @@ export default {
     <div class="gl-flex-grow-1">
       <h3 class="gl-m-0 gl-mb-1 gl-font-lg">
         {{ $options.i18n.preScanVerificationHeader }}
-        <span class="gl-ml-1 gl-text-gray-500 gl-font-base gl-font-weight-normal">
+        <span class="gl-ml-1 gl-text-gray-500 gl-font-base gl-font-normal">
           {{ $options.i18n.preScanVerificationLabel }}
         </span>
       </h3>

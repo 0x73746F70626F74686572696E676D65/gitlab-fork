@@ -65,7 +65,7 @@ export default {
     </div>
     <div class="gl-pr-4 gl-display-flex gl-align-items-flex-start gl-gap-3">
       <div data-testid="pre-scan-step-content">
-        <p class="gl-text-gray-500 gl-font-weight-bold gl-m-0 gl-mb-2">{{ step.header }}</p>
+        <p class="gl-text-gray-500 gl-font-bold gl-m-0 gl-mb-2">{{ step.header }}</p>
         <p
           data-testid="pre-scan-step-text"
           class="gl-m-0 gl-leading-normal"

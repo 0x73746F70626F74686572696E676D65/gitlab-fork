@@ -74,7 +74,7 @@ export default {
         />
         <span class="!gl-whitespace-nowrap gl-text-truncate gl-display-flex findings-dropdown-width"
           ><span
-            class="gl-font-weight-bold gl-text-transform-capitalize gl-text-black-normal gl-align-self-center"
+            class="gl-font-bold gl-text-transform-capitalize gl-text-black-normal gl-align-self-center"
             >{{ item.severity }}: </span
           ><gl-truncate
             class="findings-dropdown-truncate gl-align-self-center"

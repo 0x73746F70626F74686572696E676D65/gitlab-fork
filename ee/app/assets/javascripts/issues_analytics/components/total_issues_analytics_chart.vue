@@ -289,7 +289,7 @@ export default {
           <gl-chart-series-label class="gl-font-sm" :color="color">
             {{ seriesName }}
           </gl-chart-series-label>
-          <div class="gl-font-weight-bold">{{ value }}</div>
+          <div class="gl-font-bold">{{ value }}</div>
         </div>
       </template>
     </gl-stacked-column-chart>

@@ -56,7 +56,7 @@ export default {
     </gl-button>
     <span data-testid="licenseCheckStatus" class="gl-ml-3">
       <gl-skeleton-loader v-if="isLoading" :aria-label="__('loading')" :lines="1" />
-      <span v-else class="gl-m-0 gl-font-weight-normal">
+      <span v-else class="gl-m-0 gl-font-normal">
         <gl-icon name="information-o" :size="12" class="gl-text-blue-600" />
         <gl-sprintf :message="licenseCheckStatusText">
           <template #docLink="{ content }">

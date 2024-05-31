@@ -100,7 +100,7 @@ export default {
       <div class="gl-display-flex gl-justify-content-space-between">
         <p
           v-if="usageValue"
-          class="gl-font-size-h-display gl-font-weight-bold gl-mb-3"
+          class="gl-font-size-h-display gl-font-bold gl-mb-3"
           data-testid="denominator"
         >
           {{ usageValue }}
@@ -127,7 +127,7 @@ export default {
           </gl-button>
         </div>
       </div>
-      <p v-if="description" class="gl-font-weight-bold gl-mb-0" data-testid="description">
+      <p v-if="description" class="gl-font-bold gl-mb-0" data-testid="description">
         {{ description }}
         <gl-link
           v-if="helpLink"

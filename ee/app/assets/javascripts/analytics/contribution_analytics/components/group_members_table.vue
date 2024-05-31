@@ -44,7 +44,7 @@ export default {
           },
         }"
       >
-        <gl-link :href="webUrl" class="gl-font-weight-bold">{{ name }}</gl-link>
+        <gl-link :href="webUrl" class="gl-font-bold">{{ name }}</gl-link>
       </template>
     </gl-table>
   </div>

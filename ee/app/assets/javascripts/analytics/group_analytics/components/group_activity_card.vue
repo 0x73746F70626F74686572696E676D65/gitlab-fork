@@ -112,7 +112,7 @@ export default {
   >
     <div class="gl-display-flex gl-flex-direction-column gl-pr-9 gl-flex-shrink-0">
       <span>{{ s__('GroupActivityMetrics|Recent activity') }}</span>
-      <span class="gl-font-weight-bold">{{ $options.activityTimeSpan }}</span>
+      <span class="gl-font-bold">{{ $options.activityTimeSpan }}</span>
     </div>
     <div
       v-for="{ key, value, label, link, trackingLabel } in metricsArray"

@@ -56,7 +56,7 @@ export default {
       @click="toggleExpand"
     >
       <div class="gl-flex-grow-1">
-        <div class="gl-font-weight-bold gl-font-size-h2">
+        <div class="gl-font-bold gl-font-size-h2">
           {{ title }}
         </div>
         <span>{{ description }}</span>

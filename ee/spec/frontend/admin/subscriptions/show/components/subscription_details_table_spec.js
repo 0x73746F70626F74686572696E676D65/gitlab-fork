@@ -29,7 +29,7 @@ const licenseDetails = [
   },
 ];
 
-const hasFontWeightBold = (wrapper) => wrapper.classes('gl-font-weight-bold');
+const hasFontWeightBold = (wrapper) => wrapper.classes('gl-font-bold');
 
 describe('Subscription Details Table', () => {
   let wrapper;

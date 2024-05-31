@@ -47,10 +47,10 @@ export default {
       data-testid="replication-details-header"
     >
       <slot name="title" :translations="$options.i18n">
-        <span class="gl-font-weight-bold">{{ $options.i18n.dataType }}</span>
-        <span class="gl-font-weight-bold">{{ $options.i18n.component }}</span>
-        <span class="gl-font-weight-bold">{{ $options.i18n.syncStatus }}</span>
-        <span class="gl-font-weight-bold">{{ $options.i18n.verifStatus }}</span>
+        <span class="gl-font-bold">{{ $options.i18n.dataType }}</span>
+        <span class="gl-font-bold">{{ $options.i18n.component }}</span>
+        <span class="gl-font-bold">{{ $options.i18n.syncStatus }}</span>
+        <span class="gl-font-bold">{{ $options.i18n.verifStatus }}</span>
       </slot>
     </div>
     <div

@@ -84,7 +84,7 @@ export default {
       </template>
       <template v-else>
         <div class="gl-mb-2">{{ label }}</div>
-        <div class="gl-font-weight-normal">{{ formatDate(start) }} - {{ formatDate(end) }}</div>
+        <div class="gl-font-normal">{{ formatDate(start) }} - {{ formatDate(end) }}</div>
       </template>
     </template>
 

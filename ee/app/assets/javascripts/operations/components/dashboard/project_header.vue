@@ -69,7 +69,7 @@ export default {
         data-testid="project-link"
       >
         <span data-testid="project-namespace">{{ project.namespace.name }} /</span>
-        <span class="gl-font-weight-bold" data-testid="project-name"> {{ project.name }}</span>
+        <span class="gl-font-bold" data-testid="project-name"> {{ project.name }}</span>
       </gl-link>
     </div>
     <gl-button

@@ -31,7 +31,7 @@ export default {
     <div v-if="totalSize" class="gl-ml-5">
       <gl-sprintf :message="$options.i18n.totalSize">
         <template #totalSize>
-          <span data-testid="total-size" class="gl-font-weight-bold">{{ formattedFileSize }}</span>
+          <span data-testid="total-size" class="gl-font-bold">{{ formattedFileSize }}</span>
         </template>
       </gl-sprintf>
     </div>

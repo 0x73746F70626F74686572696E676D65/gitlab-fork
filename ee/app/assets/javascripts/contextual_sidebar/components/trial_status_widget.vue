@@ -98,7 +98,7 @@ export default {
       <div v-else class="gl-display-flex gl-gap-4 gl-w-full gl-px-2">
         <gl-icon name="information-o" class="gl-text-blue-600! gl-shrink-0" />
         <div>
-          <div class="gl-font-weight-bold">
+          <div class="gl-font-bold">
             {{ widgetTitle }}
           </div>
           <div class="gl-mt-3">
