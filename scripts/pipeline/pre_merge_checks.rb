@@ -48,11 +48,11 @@ class PreMergeChecks
 
   def api_client
     @api_client ||= begin
-      GitLab.configure do |config|
+      Gitlab.configure do |config|
         config.endpoint = api_endpoint
         config.private_token = ENV.fetch('GITLAB_API_PRIVATE_TOKEN', '')
       end
-      GitLab.client
+      Gitlab.client
     end
   end
 

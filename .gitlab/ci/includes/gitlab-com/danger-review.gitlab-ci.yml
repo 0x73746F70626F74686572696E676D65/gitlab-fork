@@ -12,7 +12,8 @@ danger-review:
   extends:
     - .default-retry
     - .ruby-node-cache
-    - .review:rules:danger
+  # extending from .review:rules:danger doesn't work
+  rules: !reference [.review:rules:danger, rules]
   variables:
     BUNDLE_WITH: "danger"
   before_script:
