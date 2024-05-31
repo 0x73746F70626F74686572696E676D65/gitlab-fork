@@ -58,14 +58,6 @@ RSpec.describe Search::Zoekt::IndexingTaskService, feature_category: :global_sea
             end
           end
 
-          context 'if project has an empty repo' do
-            let_it_be(:project) { create(:project, :empty_repo) }
-
-            it 'does not creates Search::Zoekt::Task record' do
-              expect { service.execute }.not_to change { Search::Zoekt::Task.count }
-            end
-          end
-
           context 'if project does not exists' do
             let_it_be(:project) { create(:project, :empty_repo) }
 

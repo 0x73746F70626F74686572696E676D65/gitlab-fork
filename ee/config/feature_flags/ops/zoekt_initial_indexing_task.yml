@@ -1,0 +1,10 @@
+---
+name: zoekt_initial_indexing_task
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/442883
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/149365
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/463049
+milestone: '17.1'
+group: group::global search
+type: ops
+default_enabled: false
+

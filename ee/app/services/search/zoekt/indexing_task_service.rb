@@ -5,6 +5,10 @@ module Search
     class IndexingTaskService
       REINDEXING_CHANCE_PERCENTAGE = 0.5
 
+      def self.execute(...)
+        new(...).execute
+      end
+
       def initialize(project, task_type, node_id: nil, root_namespace_id: nil, force: false, delay: nil)
         @project = project
         @task_type = task_type.to_sym
@@ -28,10 +32,6 @@ module Search
         end
       end
 
-      def self.execute(...)
-        new(...).execute
-      end
-
       private
 
       attr_reader :project, :node_id, :root_namespace_id, :force, :task_type, :delay
@@ -40,9 +40,7 @@ module Search
         return false if Feature.disabled?(:zoekt_create_indexing_tasks, project)
         # should return true even the project is nil but the task_type is :delete_repo
         return true if task_type == :delete_repo
-
         return false unless project
-        return false if project.empty_repo?
 
         true
       end

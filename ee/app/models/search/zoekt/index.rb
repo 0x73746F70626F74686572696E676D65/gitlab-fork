@@ -21,7 +21,8 @@ module Search
 
       enum state: {
         pending: 0,
-        initializing: 1,
+        in_progress: 1,
+        initializing: 2,
         ready: 10
       }
 
@@ -49,6 +50,9 @@ module Search
         where_not_exists(Repository.non_ready.where(Repository.arel_table[:zoekt_index_id].eq(Index.arel_table[:id])))
           .where_exists(Repository.where(Repository.arel_table[:zoekt_index_id].eq(Index.arel_table[:id])))
       end
+
+      scope :preload_zoekt_enabled_namespace_and_namespace, -> { includes(zoekt_enabled_namespace: :namespace) }
+      scope :preload_node, -> { includes(:node) }
 
       private
 
