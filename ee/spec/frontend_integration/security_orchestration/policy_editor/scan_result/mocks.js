@@ -1,5 +1,14 @@
 import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 
+const SETTINGS = `approval_settings:
+  block_branch_modification: true
+  prevent_pushing_and_force_pushing: true
+  prevent_approval_by_author: true
+  prevent_approval_by_commit_author: true
+  remove_approvals_with_new_commit: true
+  require_password_to_approve: false
+`;
+
 export const USER = {
   id: 2,
   name: 'Name 1',
@@ -28,10 +37,7 @@ actions:
     approvals_required: 2
     role_approvers:
       - developer
-approval_settings:
-  block_branch_modification: true
-  prevent_pushing_and_force_pushing: true
-`;
+`.concat(SETTINGS);
 
 export const mockUserApproversApprovalManifest = `type: approval_policy
 name: ''
@@ -44,10 +50,7 @@ actions:
     approvals_required: 2
     user_approvers_ids:
       - ${USER.id}
-approval_settings:
-  block_branch_modification: true
-  prevent_pushing_and_force_pushing: true
-`;
+`.concat(SETTINGS);
 
 export const mockGroupApproversApprovalManifest = `type: approval_policy
 name: ''
@@ -63,10 +66,7 @@ actions:
     approvals_required: 2
     group_approvers_ids:
       - ${GROUP.id}
-approval_settings:
-  block_branch_modification: true
-  prevent_pushing_and_force_pushing: true
-`;
+`.concat(SETTINGS);
 
 export const mockLicenseApprovalManifest = `type: approval_policy
 name: ''
@@ -81,10 +81,7 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-approval_settings:
-  block_branch_modification: true
-  prevent_pushing_and_force_pushing: true
-`;
+`.concat(SETTINGS);
 
 export const mockSecurityApprovalManifest = `type: approval_policy
 name: ''
@@ -100,10 +97,7 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-approval_settings:
-  block_branch_modification: true
-  prevent_pushing_and_force_pushing: true
-`;
+`.concat(SETTINGS);
 
 export const mockAnyMergeRequestApprovalManifest = `type: approval_policy
 name: ''
@@ -116,11 +110,4 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-approval_settings:
-  block_branch_modification: true
-  prevent_pushing_and_force_pushing: true
-  prevent_approval_by_author: true
-  prevent_approval_by_commit_author: true
-  remove_approvals_with_new_commit: true
-  require_password_to_approve: false
-`;
+`.concat(SETTINGS);

@@ -33,7 +33,6 @@ import { CLOSED } from './constants';
 
 import {
   ACTION_LISTBOX_ITEMS,
-  ANY_MERGE_REQUEST,
   buildAction,
   buildSettingsList,
   createPolicyObject,
@@ -191,10 +190,7 @@ export default {
       return isProject(this.namespaceType);
     },
     settings() {
-      return buildSettingsList({
-        settings: this.policy.approval_settings,
-        hasAnyMergeRequestRule: this.hasMergeRequestRule,
-      });
+      return buildSettingsList({ settings: this.policy.approval_settings });
     },
     originalName() {
       return this.existingPolicy?.name;
@@ -233,9 +229,6 @@ export default {
       return this.policy.actions?.some(
         ({ type, enabled }) => type === BOT_MESSAGE_TYPE && !enabled,
       );
-    },
-    hasMergeRequestRule() {
-      return this.policy.rules?.some(({ type }) => type === ANY_MERGE_REQUEST);
     },
     isActiveRuleMode() {
       return this.mode === EDITOR_MODE_RULE && !this.hasParsingError;

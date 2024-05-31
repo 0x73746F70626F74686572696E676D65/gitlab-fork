@@ -8,6 +8,7 @@ export const PREVENT_APPROVAL_BY_COMMIT_AUTHOR = 'prevent_approval_by_commit_aut
 export const REMOVE_APPROVALS_WITH_NEW_COMMIT = 'remove_approvals_with_new_commit';
 export const REQUIRE_PASSWORD_TO_APPROVE = 'require_password_to_approve';
 
+// This defines behavior for existing policies. They shouldn't automatically opt-in to use this setting.
 export const protectedBranchesConfiguration = {
   [BLOCK_BRANCH_MODIFICATION]: false,
 };
@@ -29,10 +30,11 @@ export const MERGE_REQUEST_CONFIGURATION_KEYS = [
   REQUIRE_PASSWORD_TO_APPROVE,
 ];
 
+// This defines behavior for existing policies. They shouldn't automatically opt-in to use this setting.
 export const mergeRequestConfiguration = {
-  [PREVENT_APPROVAL_BY_AUTHOR]: true,
-  [PREVENT_APPROVAL_BY_COMMIT_AUTHOR]: true,
-  [REMOVE_APPROVALS_WITH_NEW_COMMIT]: true,
+  [PREVENT_APPROVAL_BY_AUTHOR]: false,
+  [PREVENT_APPROVAL_BY_COMMIT_AUTHOR]: false,
+  [REMOVE_APPROVALS_WITH_NEW_COMMIT]: false,
   [REQUIRE_PASSWORD_TO_APPROVE]: false,
 };
 
@@ -95,39 +97,25 @@ export const PERMITTED_INVALID_SETTINGS = {
 
 /**
  * Build settings based on provided flags, scalable for more flags in future
- * @param hasAnyMergeRequestRule
  * @returns {Object} final settings
  */
-const buildConfig = ({ hasAnyMergeRequestRule } = { hasAnyMergeRequestRule: false }) => {
-  const configuration = {
-    ...protectedBranchesConfiguration,
-    ...pushingBranchesConfiguration,
-    ...(hasAnyMergeRequestRule ? mergeRequestConfiguration : {}),
-  };
-
-  return configuration;
-};
+const buildConfig = () => ({
+  ...protectedBranchesConfiguration,
+  ...pushingBranchesConfiguration,
+  ...mergeRequestConfiguration,
+});
 
 /**
  * Map dynamic approval settings to defined list and update only enable property
  * @param settings
- * @param hasAnyMergeRequestRule
  * @returns {Object}
  */
-export const buildSettingsList = (
-  { settings, hasAnyMergeRequestRule } = {
-    settings: {},
-    hasAnyMergeRequestRule: false,
-  },
-) => {
-  const configuration = buildConfig({ hasAnyMergeRequestRule });
+export const buildSettingsList = ({ settings } = { settings: {} }) => {
+  const configuration = buildConfig();
 
   return Object.keys(configuration).reduce((acc, setting) => {
     const hasEnabledProperty = settings ? setting in settings : false;
-    const enabled = hasEnabledProperty ? settings[setting] : configuration[setting];
-
-    acc[setting] = enabled;
-
+    acc[setting] = hasEnabledProperty ? settings[setting] : configuration[setting];
     return acc;
   }, {});
 };

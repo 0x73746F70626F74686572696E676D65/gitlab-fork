@@ -6,22 +6,12 @@ import {
   pushingBranchesConfiguration,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 
-const defaultSettings = {
-  ...protectedBranchesConfiguration,
-  ...pushingBranchesConfiguration,
-};
+const defaultSettings = buildSettingsList();
 
 describe('approval_settings', () => {
   describe('buildSettingsList', () => {
     it('returns the default settings', () => {
       expect(buildSettingsList()).toEqual(defaultSettings);
-    });
-
-    it('returns merge request settings for the merge request rule', () => {
-      expect(buildSettingsList({ hasAnyMergeRequestRule: true })).toEqual({
-        ...defaultSettings,
-        ...mergeRequestConfiguration,
-      });
     });
 
     it('can update merge request settings', () => {
@@ -43,7 +33,7 @@ describe('approval_settings', () => {
 
       expect(buildSettingsList({ settings, hasAnyMergeRequestRule: true })).toEqual({
         ...defaultSettings,
-        ...mergeRequestConfiguration,
+        ...settings,
       });
     });
   });

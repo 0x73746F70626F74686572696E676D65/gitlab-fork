@@ -39,7 +39,14 @@ export const APPROVAL_POLICY_DEFAULT_POLICY = {
   enabled: true,
   rules: [{ type: '', id: 'rule_0' }],
   actions: [{ type: 'require_approval', approvals_required: 1, id: 'action_0' }],
-  approval_settings: { block_branch_modification: true, prevent_pushing_and_force_pushing: true },
+  approval_settings: {
+    block_branch_modification: true,
+    prevent_pushing_and_force_pushing: true,
+    prevent_approval_by_author: true,
+    prevent_approval_by_commit_author: true,
+    remove_approvals_with_new_commit: true,
+    require_password_to_approve: false,
+  },
 };
 
 export const APPROVAL_POLICY_DEFAULT_POLICY_WITH_SCOPE = {

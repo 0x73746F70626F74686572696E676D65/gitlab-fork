@@ -17,7 +17,6 @@ import {
   buildBotMessageAction,
   DISABLED_BOT_MESSAGE_ACTION,
   SCAN_FINDING,
-  ANY_MERGE_REQUEST,
   DEFAULT_SCAN_RESULT_POLICY,
   DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE,
   DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE,
@@ -48,13 +47,14 @@ import {
 } from 'ee_jest/security_orchestration/mocks/mock_data';
 import { visitUrl } from '~/lib/utils/url_utility';
 import {
+  buildSettingsList,
   PERMITTED_INVALID_SETTINGS,
   BLOCK_BRANCH_MODIFICATION,
   PREVENT_PUSHING_AND_FORCE_PUSHING,
   PREVENT_APPROVAL_BY_AUTHOR,
-  protectedBranchesConfiguration,
-  pushingBranchesConfiguration,
-  mergeRequestConfiguration,
+  PREVENT_APPROVAL_BY_COMMIT_AUTHOR,
+  REMOVE_APPROVALS_WITH_NEW_COMMIT,
+  REQUIRE_PASSWORD_TO_APPROVE,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/lib/settings';
 
 import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor/utils';
@@ -311,87 +311,6 @@ describe('EditorComponent', () => {
         await findAllRuleSections().at(0).vm.$emit('remove', 0);
 
         expect(findAllRuleSections()).toHaveLength(initialRuleCount - 1);
-      });
-
-      describe('settings', () => {
-        const defaultProjectApprovalConfiguration = {
-          [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
-          [BLOCK_BRANCH_MODIFICATION]: true,
-        };
-
-        it('updates the settings containing permitted invalid settings', () => {
-          factoryWithExistingPolicy({
-            policy: { approval_settings: PERMITTED_INVALID_SETTINGS },
-          });
-          expect(findPolicyEditorLayout().props('policy')).toEqual(
-            expect.objectContaining({ approval_settings: PERMITTED_INVALID_SETTINGS }),
-          );
-          findAllRuleSections().at(0).vm.$emit('changed', { type: SCAN_FINDING });
-          expect(findPolicyEditorLayout().props('policy')).toEqual(
-            expect.objectContaining({
-              approval_settings: {
-                ...protectedBranchesConfiguration,
-                ...pushingBranchesConfiguration,
-              },
-            }),
-          );
-        });
-
-        it('updates the settings', () => {
-          const newValue = { type: ANY_MERGE_REQUEST };
-          factory();
-          expect(findPolicyEditorLayout().props('policy')).toEqual(
-            expect.objectContaining({
-              approval_settings: defaultProjectApprovalConfiguration,
-            }),
-          );
-          findAllRuleSections().at(0).vm.$emit('changed', newValue);
-          expect(findPolicyEditorLayout().props('policy')).toEqual(
-            expect.objectContaining({
-              approval_settings: {
-                ...defaultProjectApprovalConfiguration,
-                ...mergeRequestConfiguration,
-              },
-            }),
-          );
-        });
-
-        it('updates the settings containing permitted invalid values', () => {
-          factoryWithExistingPolicy({ policy: { approval_settings: PERMITTED_INVALID_SETTINGS } });
-          expect(findPolicyEditorLayout().props('policy')).toEqual(
-            expect.objectContaining({
-              approval_settings: PERMITTED_INVALID_SETTINGS,
-            }),
-          );
-          findAllRuleSections().at(0).vm.$emit('changed', { type: SCAN_FINDING });
-          expect(findPolicyEditorLayout().props('policy')).toEqual(
-            expect.objectContaining({
-              approval_settings: {
-                ...protectedBranchesConfiguration,
-                ...pushingBranchesConfiguration,
-              },
-            }),
-          );
-        });
-
-        it('does update the settings with ANY_MERGE_REQUEST type', () => {
-          const newValue = { type: ANY_MERGE_REQUEST };
-          factory();
-          expect(findPolicyEditorLayout().props('policy')).toEqual(
-            expect.objectContaining({
-              approval_settings: defaultProjectApprovalConfiguration,
-            }),
-          );
-          findAllRuleSections().at(0).vm.$emit('changed', newValue);
-          expect(findPolicyEditorLayout().props('policy')).toEqual(
-            expect.objectContaining({
-              approval_settings: {
-                ...defaultProjectApprovalConfiguration,
-                ...mergeRequestConfiguration,
-              },
-            }),
-          );
-        });
       });
     });
 
@@ -952,6 +871,10 @@ describe('EditorComponent', () => {
       const defaultProjectApprovalConfiguration = {
         [PREVENT_PUSHING_AND_FORCE_PUSHING]: true,
         [BLOCK_BRANCH_MODIFICATION]: true,
+        [PREVENT_APPROVAL_BY_AUTHOR]: true,
+        [PREVENT_APPROVAL_BY_COMMIT_AUTHOR]: true,
+        [REMOVE_APPROVALS_WITH_NEW_COMMIT]: true,
+        [REQUIRE_PASSWORD_TO_APPROVE]: false,
       };
 
       beforeEach(() => {
@@ -965,31 +888,13 @@ describe('EditorComponent', () => {
         );
       });
 
-      it('shows default settings for non-merge request rules', async () => {
-        await findAllRuleSections().at(0).vm.$emit('changed', { type: 'scan_finding' });
-        expect(findSettingsSection().exists()).toBe(true);
-        expect(findSettingsSection().props('settings')).toEqual(
-          defaultProjectApprovalConfiguration,
-        );
-      });
-
-      it('shows the policy for merge request rule in addition to the default settings', async () => {
-        await findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
-        expect(findSettingsSection().props('settings')).toEqual({
-          ...defaultProjectApprovalConfiguration,
-          ...mergeRequestConfiguration,
-        });
-      });
-
-      it('updates the policy for merge request rule', async () => {
+      it('updates the policy when settings change', async () => {
         findAllRuleSections().at(0).vm.$emit('changed', { type: 'any_merge_request' });
         await findSettingsSection().vm.$emit('changed', {
           [PREVENT_APPROVAL_BY_AUTHOR]: false,
         });
         expect(findSettingsSection().props('settings')).toEqual({
-          ...protectedBranchesConfiguration,
-          ...pushingBranchesConfiguration,
-          ...mergeRequestConfiguration,
+          ...buildSettingsList(),
           [PREVENT_APPROVAL_BY_AUTHOR]: false,
         });
       });
@@ -1009,6 +914,19 @@ describe('EditorComponent', () => {
         });
         expect(findPolicyEditorLayout().props('yamlEditorValue')).toContain(
           `${BLOCK_BRANCH_MODIFICATION}: false`,
+        );
+      });
+
+      it('updates the settings containing permitted invalid settings', () => {
+        factoryWithExistingPolicy({ policy: { approval_settings: PERMITTED_INVALID_SETTINGS } });
+        expect(findPolicyEditorLayout().props('policy')).toEqual(
+          expect.objectContaining({ approval_settings: PERMITTED_INVALID_SETTINGS }),
+        );
+        findAllRuleSections().at(0).vm.$emit('changed', { type: SCAN_FINDING });
+        expect(findPolicyEditorLayout().props('policy')).toEqual(
+          expect.objectContaining({
+            approval_settings: buildSettingsList(),
+          }),
         );
       });
     });
