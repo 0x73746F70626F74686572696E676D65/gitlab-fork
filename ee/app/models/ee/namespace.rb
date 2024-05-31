@@ -166,6 +166,7 @@ module EE
         :experiment_features_enabled=,
         :product_analytics_enabled,
         :product_analytics_enabled=,
+        :early_access_program_participant,
         to: :namespace_settings,
         allow_nil: true
       )

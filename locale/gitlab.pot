@@ -25387,6 +25387,9 @@ msgstr ""
 msgid "GroupSettings|Organizations and contacts can be created and associated with issues."
 msgstr ""
 
+msgid "GroupSettings|Participate in the %{link_start}GitLab Early Access Program%{link_end}."
+msgstr ""
+
 msgid "GroupSettings|Please choose a group URL with no special characters or spaces."
 msgstr ""
 

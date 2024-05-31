@@ -161,7 +161,8 @@ RSpec.describe 'Database schema', feature_category: :database do
     approval_project_rules: %w[approval_policy_rule_id],
     approval_merge_request_rules: %w[approval_policy_rule_id],
     scan_result_policy_violations: %w[approval_policy_rule_id],
-    software_license_policies: %w[approval_policy_rule_id]
+    software_license_policies: %w[approval_policy_rule_id],
+    namespace_settings: %w[early_access_program_joined_by_id] # isn't used inside product itself. Only through Snowflake
   }.with_indifferent_access.freeze
 
   context 'for table' do
