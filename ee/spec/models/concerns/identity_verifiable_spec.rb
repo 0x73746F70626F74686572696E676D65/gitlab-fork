@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
+RSpec.describe IdentityVerifiable, :saas, feature_category: :instance_resiliency do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_reload(:user) { create(:user) }
@@ -128,6 +128,14 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       end
 
       it { is_expected.to eq(true) }
+    end
+
+    context 'when the user is exempt from identity verification' do
+      before do
+        allow(user).to receive(:identity_verification_exempt?).and_return(true)
+      end
+
+      it { is_expected.to eq true }
     end
 
     context 'when the user has a pre-existing credit card validation' do
@@ -698,8 +706,8 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
     end
   end
 
-  describe '#signup_identity_verification_exempt?', :saas do
-    subject(:signup_identity_verification_exempt) { user.signup_identity_verification_exempt? }
+  describe '#identity_verification_exempt?' do
+    subject(:identity_verification_exempt) { user.identity_verification_exempt? }
 
     let(:user) { create(:user) }
 

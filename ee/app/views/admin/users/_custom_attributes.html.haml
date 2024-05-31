@@ -16,7 +16,7 @@
     .gl-form-group{ role: 'group' }
       = render Pajamas::AlertComponent.new(variant: :info, dismissible: false, alert_options: { class: 'gl-mb-5' }, title: _('Identity verification exemption')) do |c|
         - c.with_body do
-          - if @user.signup_identity_verification_exempt?
+          - if @user.identity_verification_exempt?
             %p= s_('This user is currently exempt from identity verification. Remove the exemption using the button below.')
             = render Pajamas::ButtonComponent.new(variant: :danger, href: destroy_identity_verification_exemption_admin_user_path(@user), method: :delete) do
               = s_('Remove identity verification exemption')
