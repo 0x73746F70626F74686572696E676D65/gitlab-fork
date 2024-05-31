@@ -20,7 +20,7 @@ module Gitlab
 
                 {
                   prompt: conversation,
-                  options: { model: ::Gitlab::Llm::AiGateway::Client::CLAUDE_3_HAIKU }
+                  options: { model: ::Gitlab::Llm::Anthropic::Client::CLAUDE_3_HAIKU }
                 }
               end
             end

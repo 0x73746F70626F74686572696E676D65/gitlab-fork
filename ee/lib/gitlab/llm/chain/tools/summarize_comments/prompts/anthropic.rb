@@ -19,7 +19,7 @@ module Gitlab
                 Requests::Anthropic.prompt(
                   "\n\nHuman: #{base_prompt}\n\nAssistant:",
                   options: {
-                    model: ::Gitlab::Llm::AiGateway::Client::DEFAULT_INSTANT_MODEL,
+                    model: ::Gitlab::Llm::Anthropic::Client::DEFAULT_INSTANT_MODEL,
                     max_tokens_to_sample: OUTPUT_TOKEN_LIMIT
                   }
                 )

@@ -29,7 +29,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueReader::Prompts::Anthropic, featu
     it "calls with haiku model" do
       model = described_class.prompt(options)[:options][:model]
 
-      expect(model).to eq(::Gitlab::Llm::AiGateway::Client::CLAUDE_3_HAIKU)
+      expect(model).to eq(::Gitlab::Llm::Concerns::AvailableModels::CLAUDE_3_HAIKU)
     end
   end
 

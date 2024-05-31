@@ -28,7 +28,7 @@ module Gitlab
             ai_client.complete(
               prompt: prompt_template.to_prompt,
               max_tokens_to_sample: OUTPUT_TOKEN_LIMIT,
-              model: ::Gitlab::Llm::AiGateway::Client::DEFAULT_INSTANT_MODEL
+              model: ::Gitlab::Llm::Concerns::AvailableModels::DEFAULT_INSTANT_MODEL
             )
           end
 

@@ -123,8 +123,9 @@ module Gitlab
           unit_primitive: 'documentation_search', tracking_context: tracking_context)
       end
 
-      def ai_gateway_client
-        @ai_gateway_client ||= ::Gitlab::Llm::AiGateway::Client.new(current_user, tracking_context: tracking_context)
+      def ai_gateway_request
+        @ai_gateway_request ||= ::Gitlab::Llm::Chain::Requests::AiGateway.new(current_user,
+          tracking_context: tracking_context)
       end
 
       def get_completions(search_documents, &block)
@@ -159,8 +160,8 @@ module Gitlab
         final_prompt = Gitlab::Llm::Anthropic::Templates::TanukiBot
           .final_prompt(current_user, question: question, documents: search_documents)
 
-        final_prompt_result = ai_gateway_client.stream(
-          prompt: final_prompt[:prompt], **final_prompt[:options]
+        final_prompt_result = ai_gateway_request.request(
+          prompt: final_prompt[:prompt], options: final_prompt[:options]
         ) do |data|
           yield data if block_given?
         end

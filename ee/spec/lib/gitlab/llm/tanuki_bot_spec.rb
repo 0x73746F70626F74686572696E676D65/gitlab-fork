@@ -22,7 +22,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let(:vertex_model) { ::Embedding::Vertex::GitlabDocumentation }
     let(:vertex_args) { { content: question } }
     let(:vertex_client) { ::Gitlab::Llm::VertexAi::Client.new(user, unit_primitive: 'documentation_search') }
-    let(:ai_gateway_client) { ::Gitlab::Llm::AiGateway::Client.new(user) }
+    let(:ai_gateway_request) { ::Gitlab::Llm::Chain::Requests::AiGateway.new(user) }
     let(:anthropic_client) { ::Gitlab::Llm::Anthropic::Client.new(user, unit_primitive: 'documentation_search') }
     let(:embedding) { Array.new(1536, 0.5) }
     let(:vertex_embedding) { Array.new(768, 0.5) }
@@ -30,7 +30,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let(:error) { nil }
     let(:vertex_response) { { "predictions" => predictions, "error" => error } }
     let(:attrs) { embeddings.map(&:id).map { |x| "CNT-IDX-#{x}" }.join(", ") }
-    let(:completion_response) { "#{answer} ATTRS: #{attrs}" }
+    let(:completion_response) { { 'response' => "#{answer} ATTRS: #{attrs}" } }
 
     let(:docs_search_client) { ::Gitlab::Llm::AiGateway::DocsClient.new(user) }
     let(:docs_search_args) { { query: question } }
@@ -228,13 +228,13 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
           context 'with ai_claude_3_for_docs enabled' do
             before do
               stub_feature_flags(ai_claude_3_for_docs: true)
-              allow(::Gitlab::Llm::AiGateway::Client).to receive(:new).and_return(ai_gateway_client)
+              allow(::Gitlab::Llm::Chain::Requests::AiGateway).to receive(:new).and_return(ai_gateway_request)
             end
 
             it 'yields the streamed response to the given block' do
               embeddings
 
-              allow(ai_gateway_client).to receive(:stream).once
+              allow(ai_gateway_request).to receive(:request).once
                                                           .and_yield(answer)
                                                           .and_return(completion_response)
               expect(vertex_client).to receive(:text_embeddings).with(**vertex_args).and_return(vertex_response)
@@ -334,16 +334,16 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
         allow(described_class).to receive(:enabled_for?).and_return(true)
 
-        allow(::Gitlab::Llm::AiGateway::Client).to receive(:new).and_return(ai_gateway_client)
+        allow(::Gitlab::Llm::Chain::Requests::AiGateway).to receive(:new).and_return(ai_gateway_request)
         allow(::Gitlab::Llm::AiGateway::DocsClient).to receive(:new).and_return(docs_search_client)
 
-        allow(ai_gateway_client).to receive(:stream).and_return(completion_response)
+        allow(ai_gateway_request).to receive(:request).and_return(completion_response)
         allow(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
       end
 
       it 'executes calls and returns ResponseModifier' do
-        expect(ai_gateway_client).to receive(:stream)
-          .with(prompt: a_string_including('content'), model: 'claude-2.1', max_tokens: 256)
+        expect(ai_gateway_request).to receive(:request)
+          .with(prompt: a_string_including('content'), options: { model: 'claude-2.1', max_tokens: 256 })
           .once.and_return(completion_response)
         expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
 
@@ -353,9 +353,9 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
       it 'yields the streamed response to the given block' do
         allow(Banzai).to receive(:render).and_return('absolute_links_content')
 
-        expect(ai_gateway_client)
-          .to receive(:stream)
-          .with(prompt: a_string_including('content'), model: 'claude-2.1', max_tokens: 256)
+        expect(ai_gateway_request)
+          .to receive(:request)
+          .with(prompt: a_string_including('content'), options: { model: 'claude-2.1', max_tokens: 256 })
           .once
           .and_yield(answer)
           .and_return(completion_response)
@@ -373,11 +373,10 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
         it 'yields the streamed response to the given block' do
           allow(Banzai).to receive(:render).and_return('absolute_links_content')
 
-          expect(ai_gateway_client)
-            .to receive(:stream)
+          expect(ai_gateway_request)
+            .to receive(:request)
             .with(prompt: an_instance_of(Array),
-              model: ::Gitlab::Llm::AiGateway::Client::CLAUDE_3_SONNET,
-              max_tokens: 256)
+              options: { model: ::Gitlab::Llm::Anthropic::Client::CLAUDE_3_SONNET, max_tokens: 256 })
             .once
             .and_yield(answer)
             .and_return(completion_response)
@@ -390,7 +389,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
       it 'raises an error when request failed' do
         expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
-        allow(ai_gateway_client).to receive(:stream).once.and_yield({ "error" => { "message" => "some error" } })
+        allow(ai_gateway_request).to receive(:request).once.and_yield({ "error" => { "message" => "some error" } })
 
         execute
       end
