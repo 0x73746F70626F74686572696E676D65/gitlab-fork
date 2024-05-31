@@ -3,7 +3,7 @@
 import { isEmpty } from 'lodash';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions } from 'vuex';
-import { GlSprintf } from '@gitlab/ui';
+import { GlSprintf, GlLink } from '@gitlab/ui';
 import Alerts from 'ee/vue_shared/dashboards/components/alerts.vue';
 import ProjectPipeline from 'ee/vue_shared/dashboards/components/project_pipeline.vue';
 import TimeAgo from 'ee/vue_shared/dashboards/components/time_ago.vue';
@@ -23,6 +23,7 @@ export default {
     ProjectPipeline,
     TimeAgo,
     GlSprintf,
+    GlLink,
   },
   mixins: [timeagoMixin],
   props: {
@@ -121,9 +122,7 @@ export default {
     >
       <gl-sprintf v-if="project.upgrade_path" :message="$options.unlicensedMessages.canUpgrade">
         <template #link="{ content }">
-          <gl-link :href="project.upgrade_path" target="_blank">
-            {{ content }}
-          </gl-link>
+          <gl-link :href="project.upgrade_path" target="_blank">{{ content }}</gl-link>
         </template>
       </gl-sprintf>
 
