@@ -33252,12 +33252,6 @@ msgstr ""
 msgid "MlModelRegistry|Enter some model description"
 msgstr ""
 
-msgid "MlModelRegistry|Error creating model version and uploading artifacts. Please try again."
-msgstr ""
-
-msgid "MlModelRegistry|Error creating model, version and uploading artifacts. Please try again."
-msgstr ""
-
 msgid "MlModelRegistry|Error importing artifact. Please try again."
 msgstr ""
 
