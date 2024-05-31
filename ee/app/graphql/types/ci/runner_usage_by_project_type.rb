@@ -11,11 +11,11 @@ module Types
       field :project, ::Types::ProjectType,
         null: true, description: 'Project that the usage refers to. Null means "Other projects".'
 
-      field :ci_minutes_used, GraphQL::Types::Int,
-        null: false, description: 'Amount of minutes used during the selected period.'
+      field :ci_minutes_used, GraphQL::Types::BigInt,
+        null: false, description: 'Amount of minutes used during the selected period, encoded as a string.'
 
-      field :ci_build_count, GraphQL::Types::Int,
-        null: false, description: 'Amount of builds executed during the selected period.'
+      field :ci_build_count, GraphQL::Types::BigInt,
+        null: false, description: 'Amount of builds executed during the selected period, encoded as a string.'
 
       def project
         return unless object[:project_id]

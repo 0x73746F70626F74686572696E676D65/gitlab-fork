@@ -11,11 +11,11 @@ module Types
       field :runner, ::Types::Ci::RunnerType,
         null: true, description: 'Runner that the usage refers to. Null means "Other runners".'
 
-      field :ci_minutes_used, GraphQL::Types::Int,
-        null: false, description: 'Amount of minutes used during the selected period.'
+      field :ci_minutes_used, GraphQL::Types::BigInt,
+        null: false, description: 'Amount of minutes used during the selected period, encoded as a string.'
 
-      field :ci_build_count, GraphQL::Types::Int,
-        null: false, description: 'Amount of builds executed during the selected period.'
+      field :ci_build_count, GraphQL::Types::BigInt,
+        null: false, description: 'Amount of builds executed during the selected period, encoded as a string.'
 
       def runner
         return unless object[:runner_id]

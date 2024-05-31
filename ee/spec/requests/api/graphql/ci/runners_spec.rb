@@ -168,7 +168,7 @@ RSpec.describe 'Query', feature_category: :fleet_visibility do
         using RSpec::Parameterized::TableSyntax
 
         before do
-          stub_licensed_features(runner_performance_insights_for_namespace: [group])
+          stub_licensed_features(runner_performance_insights_for_namespace: true)
         end
 
         context 'with direct membership' do

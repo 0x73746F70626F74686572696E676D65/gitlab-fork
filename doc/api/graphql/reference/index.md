@@ -18010,8 +18010,8 @@ Runner usage.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="cirunnerusagecibuildcount"></a>`ciBuildCount` | [`Int!`](#int) | Amount of builds executed during the selected period. |
-| <a id="cirunnerusageciminutesused"></a>`ciMinutesUsed` | [`Int!`](#int) | Amount of minutes used during the selected period. |
+| <a id="cirunnerusagecibuildcount"></a>`ciBuildCount` | [`BigInt!`](#bigint) | Amount of builds executed during the selected period, encoded as a string. |
+| <a id="cirunnerusageciminutesused"></a>`ciMinutesUsed` | [`BigInt!`](#bigint) | Amount of minutes used during the selected period, encoded as a string. |
 | <a id="cirunnerusagerunner"></a>`runner` | [`CiRunner`](#cirunner) | Runner that the usage refers to. Null means "Other runners". |
 
 ### `CiRunnerUsageByProject`
@@ -18022,8 +18022,8 @@ Runner usage in minutes by project.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="cirunnerusagebyprojectcibuildcount"></a>`ciBuildCount` | [`Int!`](#int) | Amount of builds executed during the selected period. |
-| <a id="cirunnerusagebyprojectciminutesused"></a>`ciMinutesUsed` | [`Int!`](#int) | Amount of minutes used during the selected period. |
+| <a id="cirunnerusagebyprojectcibuildcount"></a>`ciBuildCount` | [`BigInt!`](#bigint) | Amount of builds executed during the selected period, encoded as a string. |
+| <a id="cirunnerusagebyprojectciminutesused"></a>`ciMinutesUsed` | [`BigInt!`](#bigint) | Amount of minutes used during the selected period, encoded as a string. |
 | <a id="cirunnerusagebyprojectproject"></a>`project` | [`Project`](#project) | Project that the usage refers to. Null means "Other projects". |
 
 ### `CiSecureFileRegistry`
