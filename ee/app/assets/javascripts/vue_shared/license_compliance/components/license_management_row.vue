@@ -30,7 +30,7 @@ export default {
 
 <template>
   <div class="gl-responsive-table-row flex-md-column align-items-md-stretch p-0">
-    <div class="gl-md-display-flex! gl-align-items-center js-license-row">
+    <div class="md:!gl-flex gl-align-items-center js-license-row">
       <!-- Name-->
       <div class="table-section section-30 section-wrap pr-md-3">
         <div class="table-mobile-header" role="rowheader">

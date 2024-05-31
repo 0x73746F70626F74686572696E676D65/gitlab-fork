@@ -202,7 +202,7 @@ export default {
       key: 'viewDetails',
       label: '',
       thClass: 'gl-display-none',
-      tdClass: 'gl-md-display-none view-details',
+      tdClass: 'md:gl-hidden view-details',
     },
   ],
   i18n: {

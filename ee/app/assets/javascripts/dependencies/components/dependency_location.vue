@@ -80,12 +80,12 @@ export default {
         <gl-icon v-if="isContainerImageDependency" name="container-image" />
         <gl-icon v-else name="doc-text" />
         <gl-truncate
-          class="gl-display-none gl-md-display-inline-flex"
+          class="gl-hidden md:gl-inline-flex"
           position="start"
           :text="locationPath"
           with-tooltip
         />
-        <span class="gl-md-display-none">{{ locationPath }}</span>
+        <span class="md:gl-hidden">{{ locationPath }}</span>
       </component>
       <span v-else>{{ $options.i18n.unknown }}</span>
       <span v-if="isTopLevelDependency">{{ s__('Dependencies|(top level)') }}</span>

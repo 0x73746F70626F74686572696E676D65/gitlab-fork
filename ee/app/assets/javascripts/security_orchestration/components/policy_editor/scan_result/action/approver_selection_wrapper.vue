@@ -135,7 +135,7 @@ export default {
     @remove="handleRemoveApprover"
   >
     <template #content>
-      <gl-form class="gl-display-block gl-md-display-flex! gl-align-items-center" @submit.prevent>
+      <gl-form class="gl-block md:!gl-flex gl-align-items-center" @submit.prevent>
         <div
           class="gl-display-flex gl-align-items-center gl-justify-content-end gl-w-30 gl-mb-3 gl-md-mb-0!"
         >

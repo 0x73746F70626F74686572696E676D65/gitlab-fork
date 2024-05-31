@@ -62,7 +62,7 @@ describe('GeoSiteReplicationDetails', () => {
 
       it('renders mobile replication details with correct visibility class', () => {
         expect(findGeoMobileReplicationDetails().exists()).toBe(true);
-        expect(findGeoMobileReplicationDetails().classes()).toStrictEqual(['gl-md-display-none!']);
+        expect(findGeoMobileReplicationDetails().classes()).toStrictEqual(['md:!gl-hidden']);
       });
 
       it('renders mobile replication details with mobile component slot', () => {
@@ -73,7 +73,7 @@ describe('GeoSiteReplicationDetails', () => {
         expect(findGeoDesktopReplicationDetails().exists()).toBe(true);
         expect(findGeoDesktopReplicationDetails().classes()).toStrictEqual([
           'gl-hidden',
-          'gl-md-display-block',
+          'md:gl-block',
         ]);
       });
 

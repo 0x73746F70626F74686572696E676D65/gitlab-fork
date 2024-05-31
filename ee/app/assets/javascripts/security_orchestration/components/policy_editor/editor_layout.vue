@@ -361,7 +361,7 @@ export default {
     <div
       class="gl-display-flex gl-flex-direction-column gl-align-items-baseline"
       :class="{
-        'gl-md-display-block': !shouldShowRuntimeMessage,
+        'md:gl-block': !shouldShowRuntimeMessage,
         'gl-lg-display-block': shouldShowRuntimeMessage,
       }"
     >

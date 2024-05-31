@@ -120,7 +120,7 @@ export default {
   <div
     class="gl-display-flex gl-gap-6 gl-border-gray-100 gl-border-solid border-radius-default gl-w-full gl-p-6"
   >
-    <div class="gl-flex-shrink-0 gl-display-none gl-md-display-block">
+    <div class="gl-flex-shrink-0 gl-hidden md:gl-block">
       <img class="gl-dark-invert-keep-hue" :src="$options.CloudTanukiIllustrationPath" :alt="''" />
     </div>
     <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-w-full">

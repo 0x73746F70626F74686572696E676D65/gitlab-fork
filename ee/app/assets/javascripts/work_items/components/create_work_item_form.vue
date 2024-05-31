@@ -124,7 +124,7 @@ export default {
     <gl-alert v-if="error" variant="danger" @dismiss="error = null">{{ error }}</gl-alert>
 
     <gl-form
-      class="gl-md-display-flex gl-align-items-flex-start gl-gap-3 gl-border-b gl-border-gray-50 gl-p-5"
+      class="md:gl-flex gl-align-items-flex-start gl-gap-3 gl-border-b gl-border-gray-50 gl-p-5"
       @submit.prevent="createWorkItem"
     >
       <div class="gl-flex-grow-1 gl-mb-3 gl-md-mb-0">

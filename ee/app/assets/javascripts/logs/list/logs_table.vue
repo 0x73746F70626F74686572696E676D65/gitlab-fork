@@ -78,7 +78,7 @@ export default {
 
 <template>
   <div>
-    <h4 class="gl-display-block gl-md-display-none! gl-my-5">{{ $options.i18n.title }}</h4>
+    <h4 class="gl-block md:!gl-hidden gl-my-5">{{ $options.i18n.title }}</h4>
 
     <gl-table
       :items="formattedLogs"

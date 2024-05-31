@@ -153,7 +153,7 @@ export default {
       </gl-button>
     </div>
 
-    <div class="gl-md-display-flex gl-justify-between gl-align-items-flex-start gl-gap-4">
+    <div class="md:gl-flex gl-justify-between gl-align-items-flex-start gl-gap-4">
       <gl-table-lite
         :fields="$options.topProjectsFields"
         :items="topProjects"

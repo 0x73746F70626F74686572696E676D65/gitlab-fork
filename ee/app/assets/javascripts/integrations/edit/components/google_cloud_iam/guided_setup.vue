@@ -139,7 +139,7 @@ curl --request GET \\
         :text="$options.curlLine"
         :title="__('Copy command')"
         category="tertiary"
-        class="gl-display-none gl-md-display-flex position-absolute position-top-0 position-right-0 gl-m-3"
+        class="gl-hidden md:gl-flex position-absolute position-top-0 position-right-0 gl-m-3"
       />
     </div>
     <p>

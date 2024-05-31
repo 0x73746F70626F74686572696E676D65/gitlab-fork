@@ -82,10 +82,7 @@ export default {
         •
       </div>
 
-      <div
-        class="gl-md-display-flex gl-align-items-center gl-mt-5 gl-lg-mt-0"
-        data-testid="sbom-pipeline"
-      >
+      <div class="md:fl-flex gl-align-items-center gl-mt-5 gl-lg-mt-0" data-testid="sbom-pipeline">
         <div>
           <span class="gl-font-bold gl-mr-3">{{ $options.i18n.sbomLastUpdated }}</span
           ><span class="gl-whitespace-nowrap">
