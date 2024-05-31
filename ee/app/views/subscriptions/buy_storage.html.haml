@@ -2,4 +2,9 @@
 - content_for :page_specific_javascripts do
   = render "layouts/one_trust"
 
+- Gitlab::Tracking.event(body_data_page, 'render',
+                         label: 'storage_checkout',
+                         user: current_user,
+                         namespace: @group)
+
 #js-buy-storage{ data: buy_addon_data(@group, @account_id, @active_subscription, 'storage-quota-tab', s_('Checkout|a storage subscription')) }

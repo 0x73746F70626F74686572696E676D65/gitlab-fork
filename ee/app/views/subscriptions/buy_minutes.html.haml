@@ -4,4 +4,9 @@
   = render "layouts/google_tag_manager_head"
 = render "layouts/google_tag_manager_body"
 
+- Gitlab::Tracking.event(body_data_page, 'render',
+                         label: 'minutes_checkout',
+                         user: current_user,
+                         namespace: @group)
+
 #js-buy-minutes{ data: buy_addon_data(@group, @account_id, @active_subscription, 'pipelines-quota-tab', s_('Checkout|CI minutes')) }

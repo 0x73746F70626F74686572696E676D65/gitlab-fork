@@ -22,10 +22,13 @@ end
 
 RSpec.shared_examples_for 'buy minutes addon form data' do |js_selector|
   let_it_be(:group) { create(:group) }
+  let_it_be(:user) { create(:user) }
   let_it_be(:account_id) { '111111111111' }
   let_it_be(:active_subscription) { { name: 'S-000000000' } }
 
   before do
+    allow(view).to receive(:body_data_page).and_return('subscriptions:buy_minutes')
+    allow(view).to receive(:current_user).and_return(user)
     allow(view).to receive(:buy_addon_data).with(@group, @account_id, @active_subscription, 'pipelines-quota-tab', s_('Checkout|CI minutes')).and_return(
       active_subscription: active_subscription,
       group_data: '[{"id":"ci_minutes_plan_id","code":"ci_minutes","price_per_year":10.0}]',
@@ -44,14 +47,29 @@ RSpec.shared_examples_for 'buy minutes addon form data' do |js_selector|
   it { is_expected.to have_selector("#{js_selector}[data-namespace-id='1']") }
   it { is_expected.to have_selector("#{js_selector}[data-source='some_source']") }
   it { is_expected.to have_selector("#{js_selector}[data-redirect-after-success='/groups/my-ci-minutes-group/-/usage_quotas#pipelines-quota-tab']") }
+
+  it 'tracks render event', :snowplow do
+    subject
+
+    expect_snowplow_event(
+      category: 'subscriptions:buy_minutes',
+      action: 'render',
+      label: 'minutes_checkout',
+      user: user,
+      namespace: @group
+    )
+  end
 end
 
 RSpec.shared_examples_for 'buy storage addon form data' do |js_selector|
   let_it_be(:group) { create(:group) }
+  let_it_be(:user) { create(:user) }
   let_it_be(:account_id) { '111111111111' }
   let_it_be(:active_subscription) { { name: 'S-000000000' } }
 
   before do
+    allow(view).to receive(:body_data_page).and_return('subscriptions:buy_storage')
+    allow(view).to receive(:current_user).and_return(user)
     allow(view).to receive(:buy_addon_data).with(@group, @account_id, @active_subscription, 'storage-quota-tab', s_('Checkout|a storage subscription')).and_return(
       active_subscription: active_subscription,
       group_data: '[{"id":"storage_plan_id","code":"storage","price_per_year":10.0}]',
@@ -70,4 +88,16 @@ RSpec.shared_examples_for 'buy storage addon form data' do |js_selector|
   it { is_expected.to have_selector("#{js_selector}[data-namespace-id='2']") }
   it { is_expected.to have_selector("#{js_selector}[data-source='some_source']") }
   it { is_expected.to have_selector("#{js_selector}[data-redirect-after-success='/groups/my-group/-/usage_quotas#storage-quota-tab']") }
+
+  it 'tracks render event', :snowplow do
+    subject
+
+    expect_snowplow_event(
+      category: 'subscriptions:buy_storage',
+      action: 'render',
+      label: 'storage_checkout',
+      user: user,
+      namespace: @group
+    )
+  end
 end
