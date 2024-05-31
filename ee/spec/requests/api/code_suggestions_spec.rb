@@ -577,6 +577,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               <<~PROMPT.chomp
                 You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Python code inside the
                 file 'test.py' based on instructions from the user.
+
                 Here are a few examples of successfully generated code:
 
                 <examples>
@@ -614,13 +615,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                   </example>
 
                 </examples>
-
                 <existing_code>
                 #{prefix}{{cursor}}
                 </existing_code>
-
                 The existing code is provided in <existing_code></existing_code> tags.
-
 
                 The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
                 In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -739,6 +737,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               <<~PROMPT.chomp
                 You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Python code inside the
                 file 'test.py' based on instructions from the user.
+
                 Here are a few examples of successfully generated code:
 
                 <examples>
@@ -776,13 +775,10 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
                   </example>
 
                 </examples>
-
                 <existing_code>
                 #{prefix}{{cursor}}
                 </existing_code>
-
                 The existing code is provided in <existing_code></existing_code> tags.
-
 
                 The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
                 In your process, first, review the existing code to understand its logic and format. Then, try to determine the most

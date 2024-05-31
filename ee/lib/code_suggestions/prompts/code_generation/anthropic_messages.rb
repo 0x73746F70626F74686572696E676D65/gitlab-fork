@@ -37,11 +37,9 @@ module CodeSuggestions
           <<~PROMPT.strip
             You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new #{language.name} code inside the
             file '#{file_path_info}' based on instructions from the user.
-            #{examples_section}
-            #{existing_code_block}
-            #{existing_code_instruction}
-            #{context_block}
-            #{libraries_block}
+
+            #{prompt_enhancement}
+
             The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
             likely new code to generate at the cursor position to fulfill the instructions.
@@ -64,6 +62,16 @@ module CodeSuggestions
 
         def assistant_prompt
           "<new_code>"
+        end
+
+        def prompt_enhancement
+          [
+            examples_section,
+            existing_code_block,
+            existing_code_instruction,
+            context_block,
+            libraries_block
+          ].select(&:present?).map(&:strip).join("\n")
         end
 
         def existing_code_instruction
@@ -121,9 +129,9 @@ module CodeSuggestions
           trimmed_suffix = suffix.to_s.first(MAX_INPUT_CHARS - trimmed_prefix.size)
 
           <<~CODE
-            <existing_code>
-            #{trimmed_prefix}{{cursor}}#{trimmed_suffix}
-            </existing_code>
+          <existing_code>
+          #{trimmed_prefix}{{cursor}}#{trimmed_suffix}
+          </existing_code>
           CODE
         end
 

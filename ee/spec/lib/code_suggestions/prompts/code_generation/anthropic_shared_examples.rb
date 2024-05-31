@@ -69,6 +69,7 @@ RSpec.shared_examples 'anthropic prompt' do
         <<~PROMPT.chomp
           You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Go code inside the
           file 'main.go' based on instructions from the user.
+
           Here are a few examples of successfully generated code:
 
           <examples>
@@ -82,7 +83,6 @@ RSpec.shared_examples 'anthropic prompt' do
             </example>
 
           </examples>
-
           <existing_code>
           package main
 
@@ -91,9 +91,7 @@ RSpec.shared_examples 'anthropic prompt' do
           func main() {
           {{cursor}}
           </existing_code>
-
           The existing code is provided in <existing_code></existing_code> tags.
-
 
           The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
           In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -131,6 +129,7 @@ RSpec.shared_examples 'anthropic prompt' do
         <<~PROMPT.chomp
           You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Go code inside the
           file 'main.go' based on instructions from the user.
+
           Here are a few examples of successfully generated code:
 
           <examples>
@@ -144,7 +143,6 @@ RSpec.shared_examples 'anthropic prompt' do
             </example>
 
           </examples>
-
           <existing_code>
           package main
 
@@ -153,9 +151,7 @@ RSpec.shared_examples 'anthropic prompt' do
           func main() {
           {{cursor}}
           </existing_code>
-
           The existing code is provided in <existing_code></existing_code> tags.
-
 
           The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
           In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -222,6 +218,7 @@ RSpec.shared_examples 'anthropic prompt' do
           <<~PROMPT.chomp
             You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Go code inside the
             file 'main.go' based on instructions from the user.
+
             Here are a few examples of successfully generated code:
 
             <examples>
@@ -235,7 +232,6 @@ RSpec.shared_examples 'anthropic prompt' do
               </example>
 
             </examples>
-
             <existing_code>
             package main
 
@@ -244,9 +240,7 @@ RSpec.shared_examples 'anthropic prompt' do
             func main() {
             {{cursor}}
             </existing_code>
-
             The existing code is provided in <existing_code></existing_code> tags.
-
             #{expected_libs}
             The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -380,6 +374,7 @@ RSpec.shared_examples 'anthropic prompt' do
           <<~PROMPT.chomp
             You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Go code inside the
             file 'main.go' based on instructions from the user.
+
             Here are a few examples of successfully generated code:
 
             <examples>
@@ -393,7 +388,6 @@ RSpec.shared_examples 'anthropic prompt' do
               </example>
 
             </examples>
-
             <existing_code>
             package main
 
@@ -402,7 +396,6 @@ RSpec.shared_examples 'anthropic prompt' do
             func main() {
             {{cursor}}
             </existing_code>
-
             The existing code is provided in <existing_code></existing_code> tags.
             Here are some files and code snippets that could be related to the current code.
             The files provided in <related_files><related_files> tags.
@@ -430,7 +423,6 @@ RSpec.shared_examples 'anthropic prompt' do
             </snippet_content>
 
             </related_snippets>
-
 
             The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
             In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -471,8 +463,6 @@ RSpec.shared_examples 'anthropic prompt' do
         <<~PROMPT.chomp
           You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Go code inside the
           file 'main.go' based on instructions from the user.
-
-
 
 
 
@@ -518,9 +508,7 @@ RSpec.shared_examples 'anthropic prompt' do
           main() {
           {{cursor}}
           </existing_code>
-
           The existing code is provided in <existing_code></existing_code> tags.
-
 
           The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
           In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -574,9 +562,7 @@ RSpec.shared_examples 'anthropic prompt' do
           func main() {
           {{cursor}}
           </existing_code>
-
           The existing code is provided in <existing_code></existing_code> tags.
-
 
           The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
           In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
@@ -626,9 +612,7 @@ RSpec.shared_examples 'anthropic prompt' do
           func main() {
           {{cursor}}
           </existing_code>
-
           The existing code is provided in <existing_code></existing_code> tags.
-
 
           The new code you will generate will start at the position of the cursor, which is currently indicated by the {{cursor}} tag.
           In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
