@@ -59,6 +59,9 @@ RSpec.describe Namespaces::CascadeDuoFeaturesEnabledWorker, type: :worker, featu
         run_worker
       end
 
+      new_subgroup = create(:group, parent: group)
+      create(:project, group: new_subgroup)
+
       expect { run_worker }.not_to exceed_all_query_limit(control)
     end
   end
