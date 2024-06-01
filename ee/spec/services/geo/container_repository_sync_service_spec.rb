@@ -62,6 +62,16 @@ RSpec.describe Geo::ContainerRepositorySyncService, :geo, feature_category: :geo
       expect(registry.reload.failed?).to be_truthy
     end
 
+    it 'fails registry record and saves the error if primary_api_url is not configured' do
+      allow_any_instance_of(Geo::ContainerRepositorySync)
+        .to receive(:execute).and_raise(::GitlabSettings::MissingSetting, "option 'primary_api_url' not defined")
+
+      described_class.new(registry.container_repository).execute
+
+      expect(registry.reload.failed?).to be_truthy
+      expect(registry.reload.last_sync_failure).to include("option 'primary_api_url' not defined")
+    end
+
     it 'tracks exception' do
       error = StandardError.new('Sync Error')
 
