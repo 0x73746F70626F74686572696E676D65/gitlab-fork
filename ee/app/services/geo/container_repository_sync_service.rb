@@ -57,18 +57,18 @@ module Geo
       extra = {
         container_repository_name: container_repository.name,
         project_path: container_repository.project.full_path,
-        project_id: container_repository.project_id
+        project_id: container_repository.project_id,
+        primary_api_url: primary_api_url_for_log
       }
-
-      begin
-        primary_api_url = Gitlab.config&.geo&.registry_replication&.primary_api_url
-        extra[:primary_api_url] = primary_api_url if primary_api_url
-      rescue ::GitlabSettings::MissingSetting
-      end
 
       Gitlab::ErrorTracking.track_exception(error, extra)
 
       registry.failed!(message: message, error: error)
+    end
+
+    def primary_api_url_for_log
+      Gitlab.config&.geo&.registry_replication&.primary_api_url
+    rescue StandardError
     end
 
     def lease_key
