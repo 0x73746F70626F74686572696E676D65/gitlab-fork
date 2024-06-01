@@ -11,6 +11,7 @@ module EE
           class_name: 'Project',
           inverse_of: :organization
         has_many :sbom_occurrences, through: :active_projects, class_name: 'Sbom::Occurrence'
+        has_many :vulnerability_exports, class_name: 'Vulnerabilities::Export'
       end
     end
   end

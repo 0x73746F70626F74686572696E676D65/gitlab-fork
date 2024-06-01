@@ -18174,7 +18174,8 @@ CREATE TABLE vulnerability_exports (
     author_id bigint NOT NULL,
     file_store integer,
     format smallint DEFAULT 0 NOT NULL,
-    group_id integer
+    group_id integer,
+    organization_id bigint DEFAULT 1 NOT NULL
 );
 
 CREATE SEQUENCE vulnerability_exports_id_seq
@@ -28572,6 +28573,8 @@ CREATE INDEX index_vulnerability_exports_on_file_store ON vulnerability_exports 
 
 CREATE INDEX index_vulnerability_exports_on_group_id_not_null ON vulnerability_exports USING btree (group_id) WHERE (group_id IS NOT NULL);
 
+CREATE INDEX index_vulnerability_exports_on_organization_id ON vulnerability_exports USING btree (organization_id);
+
 CREATE INDEX index_vulnerability_exports_on_project_id_not_null ON vulnerability_exports USING btree (project_id) WHERE (project_id IS NOT NULL);
 
 CREATE INDEX index_vulnerability_external_issue_links_on_author_id ON vulnerability_external_issue_links USING btree (author_id);
@@ -31463,6 +31466,9 @@ ALTER TABLE ONLY merge_request_review_llm_summaries
 
 ALTER TABLE ONLY audit_events_streaming_group_namespace_filters
     ADD CONSTRAINT fk_8ed182d7da FOREIGN KEY (external_streaming_destination_id) REFERENCES audit_events_group_external_streaming_destinations(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY vulnerability_exports
+    ADD CONSTRAINT fk_90e75ccdf8 FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY todos
     ADD CONSTRAINT fk_91d1f47b13 FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE;

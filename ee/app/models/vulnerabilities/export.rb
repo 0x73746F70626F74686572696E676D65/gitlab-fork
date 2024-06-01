@@ -9,6 +9,7 @@ module Vulnerabilities
     belongs_to :project
     belongs_to :group
     belongs_to :author, optional: false, class_name: 'User'
+    belongs_to :organization, class_name: 'Organizations::Organization'
 
     mount_file_store_uploader AttachmentUploader
 
