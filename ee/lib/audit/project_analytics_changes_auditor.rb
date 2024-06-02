@@ -3,10 +3,10 @@
 module Audit # rubocop:disable Gitlab/BoundedContexts -- govern::compliance will need to refactor all instances of Audit
   class ProjectAnalyticsChangesAuditor < BaseChangesAuditor
     ATTRIBUTE_NAMES = [
-      :encrypted_product_analytics_configurator_connection_string,
+      :product_analytics_configurator_connection_string,
       :product_analytics_data_collector_host,
       :cube_api_base_url,
-      :encrypted_cube_api_key
+      :cube_api_key
     ].freeze
 
     def initialize(current_user, project_setting, project)
@@ -34,7 +34,7 @@ module Audit # rubocop:disable Gitlab/BoundedContexts -- govern::compliance will
 
     def details(column)
       return { change: column } if
-        [:encrypted_product_analytics_configurator_connection_string, :encrypted_cube_api_key].include?(column)
+        [:product_analytics_configurator_connection_string, :cube_api_key].include?(column)
 
       {
         change: column,

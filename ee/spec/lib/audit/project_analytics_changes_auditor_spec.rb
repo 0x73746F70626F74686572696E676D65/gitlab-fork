@@ -23,7 +23,7 @@ RSpec.describe Audit::ProjectAnalyticsChangesAuditor, feature_category: :product
       it 'adds an audit event', :aggregate_failures do
         expect { auditor.execute }.to change { AuditEvent.count }.by(1)
         expect(AuditEvent.last.details)
-          .to include({ change: :encrypted_cube_api_key })
+          .to include({ change: :cube_api_key })
 
         # 'from' and 'to' should be nil, as their value is encrypted
         # and we should not expose it in the audit logs
@@ -40,7 +40,7 @@ RSpec.describe Audit::ProjectAnalyticsChangesAuditor, feature_category: :product
       it 'adds an audit event', :aggregate_failures do
         expect { auditor.execute }.to change { AuditEvent.count }.by(1)
         expect(AuditEvent.last.details)
-          .to include({ change: :encrypted_product_analytics_configurator_connection_string })
+          .to include({ change: :product_analytics_configurator_connection_string })
 
         # 'from' and 'to' should be nil, as their value is encrypted
         # and we should not expose it in the audit logs
