@@ -11,7 +11,7 @@ RSpec.describe EE::API::Entities::MemberRole, feature_category: :permissions do
 
     subject(:entity_representation) { described_class.new(member_role).as_json }
 
-    it 'exposes the attributes', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/447504' do
+    it 'exposes the attributes' do
       expect(entity_representation[:id]).to eq member_role.id
       expect(entity_representation[:name]).to eq member_role.name
       expect(entity_representation[:description]).to eq member_role.description
