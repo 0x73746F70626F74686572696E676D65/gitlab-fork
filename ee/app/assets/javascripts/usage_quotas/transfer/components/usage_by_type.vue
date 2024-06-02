@@ -25,7 +25,7 @@ export default {
     {
       key: 'transferType',
       label: s__('UsageQuota|Transfer type'),
-      tdClass: ['gl-w-full gl-overflow-wrap-anywhere'],
+      tdClass: ['gl-w-full gl-wrap-anywhere'],
       thClass: ['gl-w-full'],
     },
     {
