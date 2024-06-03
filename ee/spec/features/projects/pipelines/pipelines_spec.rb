@@ -55,6 +55,8 @@ RSpec.describe 'Pipelines', :js, feature_category: :continuous_integration do
           ci_require_credit_card_on_trial_plan: false
         )
 
+        stub_ci_pipeline_to_return_yaml_file
+
         visit new_project_pipeline_path(project)
       end
 
@@ -86,6 +88,18 @@ RSpec.describe 'Pipelines', :js, feature_category: :continuous_integration do
         run_pipeline
 
         expect(page).not_to have_content('Before you can run pipelines, we need to verify your account.')
+      end
+
+      context 'when user is a member of a paid namespace' do
+        before do
+          create(:group_with_plan, plan: :ultimate_plan, developers: user)
+        end
+
+        it 'does not prompt the user to verify their account' do
+          expect { run_pipeline }.to change { Ci::Pipeline.count }.by(1)
+
+          expect(page).not_to have_content('Before you can run pipelines, we need to verify your account.')
+        end
       end
     end
   end
