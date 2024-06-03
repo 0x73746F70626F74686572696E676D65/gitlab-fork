@@ -103,5 +103,42 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
         end
       end
     end
+
+    context 'when data has 2 different sets of fields', :freeze_time do
+      let!(:usage1_hash) do
+        {
+          user_id: 1,
+          timestamp: 1.day.ago.to_f,
+          event: 1
+        }
+      end
+
+      let!(:usage2_hash) do
+        {
+          user_id: 2,
+          timestamp: 2.days.ago.to_f,
+          event: 2,
+          namespace_path: '2/'
+        }
+      end
+
+      before do
+        ::ClickHouse::WriteBuffer.write_event(usage1_hash)
+        ::ClickHouse::WriteBuffer.write_event(usage2_hash)
+      end
+
+      it 'runs separate insert query for each attributes group' do
+        expect(ClickHouse::Client).to receive(:insert_csv).twice.and_call_original
+
+        status = job.perform
+
+        expect(status).to eq({ status: :processed, inserted_rows: 2 })
+
+        expect(inserted_records).to match([
+          hash_including('user_id' => 1),
+          hash_including('user_id' => 2)
+        ])
+      end
+    end
   end
 end
