@@ -61,7 +61,7 @@ RSpec.describe 'Duo Chat', :js, :saas, :clean_gitlab_redis_cache, feature_catego
       end
     end
 
-    it 'stores the chat history' do
+    it 'stores the chat history', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/462445' do
       open_chat
       chat_request(question)
 
