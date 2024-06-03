@@ -18,49 +18,67 @@ RSpec.describe Authz::CustomAbility, feature_category: :system_access do
     let_it_be(:group_runner) { create(:ci_runner, :group, groups: [group]) }
 
     where(:source, :ability, :resource, :expected) do
-      nil | :admin_vulnerability | ref(:group) | false
-      nil | :admin_vulnerability | ref(:project) | false
-      nil | :read_code | ref(:group) | false
-      nil | :read_code | ref(:project) | false
-      nil | :read_dependency | ref(:group) | false
-      nil | :read_dependency | ref(:group_runner) | false
-      nil | :read_dependency | ref(:project) | false
-      nil | :read_dependency | ref(:project_runner) | false
-      nil | :read_vulnerability | ref(:group) | false
-      nil | :read_vulnerability | ref(:project) | false
-      ref(:child_group) | :admin_vulnerability | ref(:child_group) | true
-      ref(:child_group) | :admin_vulnerability | ref(:child_project) | true
-      ref(:child_group) | :admin_vulnerability | ref(:group) | false
-      ref(:child_group) | :admin_vulnerability | ref(:project) | false
-      ref(:child_group) | :admin_vulnerability | ref(:root_group) | false
-      ref(:group) | :admin_vulnerability | ref(:group) | true
-      ref(:group) | :admin_vulnerability | ref(:project) | true
-      ref(:group) | :read_code | ref(:project) | true
-      ref(:group) | :read_code | ref(:project) | true
-      ref(:group) | :read_dependency | ref(:group) | true
-      ref(:group) | :read_dependency | ref(:group_runner) | true
-      ref(:group) | :read_dependency | ref(:project) | true
-      ref(:group) | :read_dependency | ref(:project_runner) | true
-      ref(:group) | :read_vulnerability | ref(:group) | true
-      ref(:group) | :read_vulnerability | ref(:project) | true
-      ref(:project) | :admin_vulnerability | ref(:group) | false
-      ref(:project) | :admin_vulnerability | ref(:project) | true
-      ref(:project) | :read_code | ref(:project) | true
-      ref(:project) | :read_code | ref(:project) | true
-      ref(:project) | :read_dependency | ref(:group) | false
-      ref(:project) | :read_dependency | ref(:group_runner) | false
-      ref(:project) | :read_dependency | ref(:project) | true
-      ref(:project) | :read_dependency | ref(:project_runner) | true
-      ref(:project) | :read_vulnerability | ref(:group) | false
-      ref(:project) | :read_vulnerability | ref(:project) | true
-      ref(:root_group) | :admin_vulnerability | ref(:child_group) | true
-      ref(:root_group) | :admin_vulnerability | ref(:group) | true
-      ref(:root_group) | :admin_vulnerability | ref(:project) | true
-      ref(:root_group) | :admin_vulnerability | "unknown" | false
+      Gitlab::CustomRoles::Definition.all.each do |(name, attrs)| # rubocop:disable Rails/FindEach -- this is not a rails model
+        nil | name | ref(:root_group) | false
+        nil | name | ref(:group) | false
+        nil | name | ref(:child_group) | false
+        nil | name | ref(:project) | false
+        nil | name | ref(:child_project) | false
+        nil | name | ref(:group_runner) | false
+        nil | name | ref(:project_runner) | false
+        nil | name | "unknown" | false
+
+        ref(:root_group) | name | ref(:root_group) | attrs.fetch(:group_ability, true)
+        ref(:root_group) | name | ref(:group) | attrs.fetch(:group_ability, true)
+        ref(:root_group) | name | ref(:child_group) | attrs.fetch(:group_ability, true)
+        ref(:root_group) | name | ref(:project) | attrs.fetch(:project_ability, true)
+        ref(:root_group) | name | ref(:child_project) | attrs.fetch(:project_ability, true)
+        ref(:root_group) | name | ref(:group_runner) | attrs.fetch(:group_ability, true)
+        ref(:root_group) | name | ref(:project_runner) | attrs.fetch(:project_ability, true)
+        ref(:root_group) | name | "unknown" | false
+
+        ref(:group) | name | ref(:root_group) | false
+        ref(:group) | name | ref(:group) | attrs.fetch(:group_ability, true)
+        ref(:group) | name | ref(:child_group) | attrs.fetch(:group_ability, true)
+        ref(:group) | name | ref(:project) | attrs.fetch(:project_ability, true)
+        ref(:group) | name | ref(:child_project) | attrs.fetch(:project_ability, true)
+        ref(:group) | name | ref(:group_runner) | attrs.fetch(:group_ability, true)
+        ref(:group) | name | ref(:project_runner) | attrs.fetch(:project_ability, true)
+        ref(:group) | name | "unknown" | false
+
+        ref(:child_group) | name | ref(:root_group) | false
+        ref(:child_group) | name | ref(:group) | false
+        ref(:child_group) | name | ref(:child_group) | attrs.fetch(:group_ability, true)
+        ref(:child_group) | name | ref(:project) | false
+        ref(:child_group) | name | ref(:child_project) | attrs.fetch(:project_ability, true)
+        ref(:child_group) | name | ref(:group_runner) | false
+        ref(:child_group) | name | ref(:project_runner) | false
+        ref(:child_group) | name | "unknown" | false
+
+        ref(:project) | name | ref(:root_group) | false
+        ref(:project) | name | ref(:group) | false
+        ref(:project) | name | ref(:child_group) | false
+        ref(:project) | name | ref(:project) | attrs.fetch(:project_ability, true)
+        ref(:project) | name | ref(:child_project) | false
+        ref(:project) | name | ref(:group_runner) | false
+        ref(:project) | name | ref(:project_runner) | attrs.fetch(:project_ability, true)
+        ref(:project) | name | "unknown" | false
+
+        ref(:child_project) | name | ref(:root_group) | false
+        ref(:child_project) | name | ref(:group) | false
+        ref(:child_project) | name | ref(:child_group) | false
+        ref(:child_project) | name | ref(:project) | false
+        ref(:child_project) | name | ref(:child_project) | attrs.fetch(:project_ability, true)
+        ref(:child_project) | name | ref(:group_runner) | false
+        ref(:child_project) | name | ref(:project_runner) | false
+        ref(:child_project) | name | "unknown" | false
+      end
+
+      nil | nil | nil | false
     end
 
     with_them do
-      let!(:role) { create(:member_role, :guest, ability, namespace: root_group) }
+      let!(:role) { create(:member_role, :guest, ability, namespace: root_group) if ability }
       let!(:membership_type) { source.is_a?(Project) ? :project_member : :group_member }
       let!(:membership) { create(membership_type, :guest, member_role: role, user: user, source: source) if source }
 
@@ -72,6 +90,10 @@ RSpec.describe Authz::CustomAbility, feature_category: :system_access do
         it { is_expected.to be_allowed(user, ability, resource) }
       else
         it { is_expected.not_to be_allowed(user, ability, resource) }
+      end
+
+      context 'with a nil user' do
+        it { is_expected.not_to be_allowed(nil, ability, resource) }
       end
 
       context 'with `custom_roles` disabled' do
