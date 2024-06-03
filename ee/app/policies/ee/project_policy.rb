@@ -195,7 +195,6 @@ module EE
         @subject.okrs_mvc_feature_flag_enabled? && @subject.feature_available?(:okrs)
       end
 
-      with_scope :subject
       condition(:licensed_cycle_analytics_available, scope: :subject) do
         @subject.feature_available?(:cycle_analytics_for_projects)
       end
@@ -328,7 +327,7 @@ module EE
         ::Gitlab::Llm::StageCheck.available?(@subject.parent, :chat)
       end
 
-      condition(:chat_available_for_user, scope: :global) do
+      condition(:chat_available_for_user, scope: :user) do
         Ability.allowed?(@user, :access_duo_chat)
       end
 
