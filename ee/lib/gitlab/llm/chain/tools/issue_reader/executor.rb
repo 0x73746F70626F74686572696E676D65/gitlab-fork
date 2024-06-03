@@ -17,6 +17,23 @@ module Gitlab
                           'collaboration, discussions, planning and tracking of work.' \
                           'Action Input for this tool should be the original question or issue identifier.'
 
+            EXPERIMENTAL_TOOL_DESCRIPTION = <<~PROMPT
+            This tool retrieves the content of a specific issue
+            ONLY if the user question fulfills the strict usage conditions below.
+
+            **Strict Usage Conditions:**
+            * **Condition 1: Issue ID Provided:** This tool MUST be used ONLY when the user provides a valid issue ID.
+            * **Condition 2: Issue URL Context:** This tool MUST be used ONLY when the user is actively viewing a specific issue URL or a specific URL is provided by the user.
+
+            **Do NOT** attempt to search for or identify issues based on descriptions, keywords, or user questions.
+
+            **Action Input:**
+            * The original question asked by the user.
+
+            **Important:**  Reject any input that does not strictly adhere to the usage conditions above.
+            Return a message stating you are unable to search for issues without a valid identifier.
+            PROMPT
+
             EXAMPLE =
               <<~PROMPT
                 Question: Please identify the author of #123 issue

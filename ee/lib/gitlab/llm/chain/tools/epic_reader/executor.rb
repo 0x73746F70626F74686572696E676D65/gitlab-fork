@@ -16,6 +16,23 @@ module Gitlab
                           'high-level plans and discussions. Epic can contain multiple issues. ' \
                           'Action Input for this tool should be the original question or epic identifier.'
 
+            EXPERIMENTAL_TOOL_DESCRIPTION = <<~PROMPT
+            This tool retrieves the content of a specific epic
+            ONLY if the user question fulfills the strict usage conditions below.
+
+            **Strict Usage Conditions:**
+            * **Condition 1: epic ID Provided:** This tool MUST be used ONLY when the user provides a valid epic ID.
+            * **Condition 2: epic URL Context:** This tool MUST be used ONLY when the user is actively viewing a specific epic URL or a specific URL is provided by the user.
+
+            **Do NOT** attempt to search for or identify epics based on descriptions, keywords, or user questions.
+
+            **Action Input:**
+            * The original question asked by the user.
+
+            **Important:**  Reject any input that does not strictly adhere to the usage conditions above.
+            Return a message stating you are unable to search for epics without a valid identifier.
+            PROMPT
+
             EXAMPLE =
               <<~PROMPT
                 Question: Please identify the author of &123 epic.

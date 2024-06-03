@@ -16,12 +16,12 @@ module Gitlab
 
           delegate :resource, :resource=, to: :context
 
-          def self.full_definition
+          def self.full_definition(use_experimental_prompt: false)
             [
               "<tool>",
               "<tool_name>#{self::NAME}</tool_name>",
               "<description>",
-              description,
+              description(use_experimental_prompt),
               "</description>",
               "<example>",
               self::EXAMPLE,
@@ -85,8 +85,10 @@ module Gitlab
 
           attr_reader :logger, :stream_response_handler
 
-          def self.description
-            self::DESCRIPTION
+          def self.description(use_experimental_prompt)
+            experiment = use_experimental_prompt && defined?(self::EXPERIMENTAL_TOOL_DESCRIPTION)
+
+            experiment ? self::EXPERIMENTAL_TOOL_DESCRIPTION : self::DESCRIPTION
           end
 
           def not_found
