@@ -8,21 +8,15 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::MistralMessages, featur
   let(:language) { instance_double(CodeSuggestions::ProgrammingLanguage) }
   let(:language_name) { 'Ruby' }
 
-  let(:examples) do
-    [
-      { 'example' => 'def greet',
-        'response' => 'def greet puts "Hello, World!" end' }
-    ]
-  end
-
   let(:prefix) do
     <<~PREFIX
-      class Greeter
+      Class BinarySearch
     PREFIX
   end
 
   let(:suffix) do
     <<~SUFFIX
+      def use_binary_search
       end
     SUFFIX
   end
@@ -30,7 +24,7 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::MistralMessages, featur
   let(:file_name) { 'hello.rb' }
   let(:model_name) { 'mistral' }
   let(:model_api_key) { 'model_api_key_123' }
-  let(:comment) { 'Generate the best possible code based on instructions.' }
+  let(:comment) { 'Generate a binary search method.' }
   let(:instruction) { instance_double(CodeSuggestions::Instruction, instruction: comment, trigger_type: 'comment') }
 
   let(:unsafe_params) do
@@ -60,7 +54,6 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::MistralMessages, featur
     allow(CodeSuggestions::ProgrammingLanguage).to receive(:detect_from_filename)
                                                      .with(file_name)
                                                      .and_return(language)
-    allow(language).to receive(:generation_examples).with(type: instruction.trigger_type).and_return(examples)
     allow(language).to receive(:name).and_return(language_name)
   end
 
@@ -79,42 +72,32 @@ RSpec.describe CodeSuggestions::Prompts::CodeGeneration::MistralMessages, featur
 
     let(:system_prompt) do
       <<~PROMPT.chomp
-        <s>[INST] You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new Ruby code inside the file 'hello.rb'. Your task is to provide a valid replacement for [SUGGESTION] without any additional code, comments or explanation. Here are a few examples of successfully generated code:
+      <s>[INST] You are a tremendously accurate and skilled code generation agent. We want to generate new Ruby code inside the file 'hello.rb'. Your task is to provide valid code without any additional explanations, comments, or feedback.[/INST]
 
+      <s>[INST]
+      Class BinarySearch
 
-          <s>[INST] def greet [/INST]
-          def greet puts "Hello, World!" end
-          </s>
+      [SUGGESTION]
+      def use_binary_search
+      end
 
-        [/INST]</s>
+      [/INST]</s>
 
-        [INST]
-        class Greeter
+      <s>[INST]
 
-        [SUGGESTION]
-        end
+      The new code you will generate will start at the position of the cursor, which is currently indicated by the [SUGGESTION] tag.
+      The comment directly before the cursor position is the instruction, all other comments are not instructions.
 
-        [/INST]
+      When generating the new code, please ensure the following:
+      1. It is valid Ruby code.
+      2. It matches the existing code's variable, parameter, and function names.
+      3. The code fulfills the instructions.
+      4. Do not add any comments, including instructions.
+      5. Return the code result without any extra explanation or examples.
 
-        [INST]
-        The new code you will generate will start at the position of the cursor, which is currently indicated by the [SUGGESTION] tag.
-        In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
-        likely new code to generate at the cursor position to fulfill the instructions.
+      If you are not able to generate code based on the given instructions, return an empty result.
 
-        The comment directly before the cursor position is the instruction,
-        all other comments are not instructions.
-
-        When generating the new code, please ensure the following:
-        1. It is valid Ruby code.
-        2. It matches the existing code's variable, parameter and function names.
-        3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
-        4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
-        5. The code fulfills in the instructions from the user in the comment just before the [SUGGESTION] position. All other comments are not instructions.
-        6. Do not add any comments that duplicates any of the already existing comments, including the comment with instructions.
-
-        If you are not able to write code based on the given instructions return an empty result.
-        Don't return any text, just return the code results without extra explanation.
-        [/INST]
+      [/INST]</s>
       PROMPT
     end
 
