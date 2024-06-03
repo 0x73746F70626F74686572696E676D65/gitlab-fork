@@ -17,6 +17,8 @@ module MergeTrains
     idempotent!
 
     def perform(target_project_id, target_branch)
+      Gitlab::QueryLimiting.disable!('https://gitlab.com/gitlab-org/gitlab/-/issues/464678')
+
       ::MergeTrains::RefreshService
         .new(target_project_id, target_branch)
         .execute
