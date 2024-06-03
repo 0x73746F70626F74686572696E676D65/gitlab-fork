@@ -183,6 +183,17 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
         end
       end
     end
+
+    context 'when feature flag disable_zoekt_search_for_saas is enabled' do
+      before do
+        stub_feature_flags(disable_zoekt_search_for_saas: true)
+      end
+
+      it 'does not search with Zoekt' do
+        expect(service.use_zoekt?).to eq(false)
+        expect(service.execute).not_to be_kind_of(::Search::Zoekt::SearchResults)
+      end
+    end
   end
 
   context 'when a multiple projects provided' do
