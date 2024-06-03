@@ -14,7 +14,7 @@ module Groups
     def perform(group_id, current_user_id)
       @group = Group.find_by_id(group_id)
       @current_user = User.find_by_id(current_user_id)
-      @response = Groups::Memberships::ExportService.new(container: @group, current_user: @current_user).execute
+      @response = Namespaces::Export::LimitedDataService.new(container: @group, current_user: @current_user).execute
 
       send_email if @response.success?
     end

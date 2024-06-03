@@ -1,19 +1,9 @@
 # frozen_string_literal: true
 
-module Groups
-  module Memberships
-    class ExportService < ::BaseContainerService
-      def execute
-        return ServiceResponse.error(message: 'Not available') unless current_user.can?(:export_group_memberships, container)
-
-        ServiceResponse.success(payload: csv_builder.render)
-      end
-
+module Namespaces
+  module Export
+    class LimitedDataService < BaseService
       private
-
-      def csv_builder
-        @csv_builder ||= CsvBuilder.new(data, header_to_value_hash)
-      end
 
       def data
         GroupMembersFinder.new(container, current_user).execute(include_relations: [:descendants, :direct, :inherited])
@@ -28,13 +18,6 @@ module Groups
           'Max role' => ->(member) { member.present.access_level_for_export },
           'Source' => ->(member) { member_source(member) }
         }
-      end
-
-      def member_source(member)
-        return 'Direct member' if member.source == container
-        return 'Inherited member' if container.ancestor_ids.include?(member.source_id)
-
-        'Descendant member'
       end
     end
   end
