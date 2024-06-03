@@ -443,9 +443,10 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_helpers, :silence
     it 'outputs pending migrations' do
       pending_migration = ::Elastic::DataMigrationService.migrations.last
       obsolete_migration = ::Elastic::DataMigrationService.migrations.first
-      pending_migration.save!(completed: false)
-      obsolete_migration.save!(completed: false)
 
+      allow(pending_migration).to receive(:completed?).and_return(false)
+      allow(obsolete_migration).to receive(:completed?).and_return(false)
+      allow(obsolete_migration).to receive(:obsolete?).and_return(true)
       allow(::Elastic::DataMigrationService).to receive(:pending_migrations)
         .and_return([pending_migration, obsolete_migration])
 
