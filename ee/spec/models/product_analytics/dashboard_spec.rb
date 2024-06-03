@@ -23,6 +23,16 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
     )
   end
 
+  shared_examples 'returns the value streams dashboard' do
+    it 'returns the value streams dashboard' do
+      expect(dashboard).to be_a(described_class)
+      expect(dashboard.title).to eq('Value Streams Dashboard')
+      expect(dashboard.slug).to eq('value_streams_dashboard')
+      expect(dashboard.description).to eq('Track key DevSecOps metrics throughout the development lifecycle.')
+      expect(dashboard.schema_version).to eq(nil)
+    end
+  end
+
   describe '#errors' do
     let(:dashboard) do
       described_class.new(
@@ -245,15 +255,28 @@ description: with missing properties
   end
 
   describe '.value_stream_dashboard' do
-    subject { described_class.value_stream_dashboard(project, config_project) }
+    context 'for groups' do
+      let(:dashboard) { described_class.value_stream_dashboard(group, config_project) }
 
-    it 'returns the value stream dashboard' do
-      dashboard = subject
-      expect(dashboard).to be_a(described_class)
-      expect(dashboard.title).to eq('Value Streams Dashboard')
-      expect(dashboard.slug).to eq('value_streams_dashboard')
-      expect(dashboard.description).to eq('Track key DevSecOps metrics throughout the development lifecycle.')
-      expect(dashboard.schema_version).to eq(nil)
+      it_behaves_like 'returns the value streams dashboard'
+
+      it 'returns the correct panels' do
+        expect(dashboard.panels.size).to eq(3)
+        expect(dashboard.panels.map { |panel| panel.visualization.type }).to eq(
+          %w[DORAChart UsageOverview DoraPerformersScore]
+        )
+      end
+    end
+
+    context 'for projects' do
+      let(:dashboard) { described_class.value_stream_dashboard(project, config_project) }
+
+      it_behaves_like 'returns the value streams dashboard'
+
+      it 'returns the correct panels' do
+        expect(dashboard.panels.size).to eq(2)
+        expect(dashboard.panels.map { |panel| panel.visualization.type }).to eq(%w[DORAChart UsageOverview])
+      end
     end
 
     context 'with the project_analytics_dashboard_dynamic_vsd feature flag disabled' do
@@ -270,12 +293,15 @@ description: with missing properties
       end
 
       context 'for groups' do
-        it 'returns the value streams dashboard' do
-          dashboard = described_class.value_stream_dashboard(group, config_project)
+        let(:dashboard) { described_class.value_stream_dashboard(group, config_project) }
 
-          expect(dashboard).to be_a(described_class)
-          expect(dashboard.title).to eq('Value Streams Dashboard')
-          expect(dashboard.slug).to eq('value_streams_dashboard')
+        it_behaves_like 'returns the value streams dashboard'
+
+        it 'returns the correct panels' do
+          expect(dashboard.panels.size).to eq(3)
+          expect(dashboard.panels.map { |panel| panel.visualization.type }).to eq(
+            %w[DORAChart UsageOverview DoraPerformersScore]
+          )
         end
       end
     end

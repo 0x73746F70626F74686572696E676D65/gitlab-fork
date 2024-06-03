@@ -94,14 +94,9 @@ RSpec.describe 'Analytics Dashboard - Value Streams Dashboard', :js, feature_cat
           let(:panel_title) { "#{project.name} project" }
         end
 
-        it 'renders the dora performers score with an error' do
+        it 'does not render dora performers score panel' do
           # Currently not supported at the project level
-          dora_performers_score = find_by_testid('panel-dora-performers-score')
-          expect(dora_performers_score).to be_visible
-
-          panel_title = format(_("DORA performers score for %{name} project"), name: project.name)
-          expect(dora_performers_score).to have_content panel_title
-          expect(dora_performers_score).to have_content _("Something went wrong.")
+          expect(page).not_to have_selector("[data-testid='panel-dora-performers-score']")
         end
 
         it_behaves_like 'does not render contributor count'

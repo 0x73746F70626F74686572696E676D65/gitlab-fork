@@ -10,7 +10,8 @@ module ProductAnalytics
     DASHBOARD_ROOT_LOCATION = '.gitlab/analytics/dashboards'
 
     PRODUCT_ANALYTICS_DASHBOARDS_LIST = %w[audience behavior].freeze
-    VALUE_STREAM_DASHBOARD_NAME = 'value_streams_dashboard'
+    VALUE_STREAMS_DASHBOARD_NAME = 'value_streams_dashboard'
+    PROJECT_VALUE_STREAMS_DASHBOARD_NAME = 'project_value_streams_dashboard'
     SCHEMA_PATH = 'ee/app/validators/json_schemas/analytics_dashboard.json'
 
     def self.for(container:, user:)
@@ -106,14 +107,16 @@ module ProductAnalytics
     def self.value_stream_dashboard(container, config_project)
       return unless container.value_streams_dashboard_available?
 
+      config_file_name = container.is_a?(Group) ? VALUE_STREAMS_DASHBOARD_NAME : PROJECT_VALUE_STREAMS_DASHBOARD_NAME
+
       config =
         load_yaml_dashboard_config(
-          VALUE_STREAM_DASHBOARD_NAME,
+          config_file_name,
           'ee/lib/gitlab/analytics/value_stream_dashboard/dashboards'
         )
 
       new(
-        slug: VALUE_STREAM_DASHBOARD_NAME,
+        slug: VALUE_STREAMS_DASHBOARD_NAME,
         container: container,
         config: config,
         config_project: config_project,
