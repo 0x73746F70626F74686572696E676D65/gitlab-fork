@@ -70,11 +70,16 @@ module Elastic
     end
 
     def should_requeue?(records_count:, failures_count:)
+      return false unless re_enqueue_enabled?
       return false unless records_count
       return false if failures_count > 0
       return false unless Gitlab::CurrentSettings.elasticsearch_requeue_workers?
 
       records_count > 0
+    end
+
+    def re_enqueue_enabled?
+      true
     end
 
     def logger

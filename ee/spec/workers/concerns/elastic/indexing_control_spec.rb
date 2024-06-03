@@ -50,6 +50,7 @@ RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
         ElasticIndexingControlWorker,
         ElasticNamespaceRolloutWorker,
         PauseControl::ResumeWorker,
+        Search::ElasticIndexEmbeddingBulkCronWorker,
         Search::Zoekt::DefaultBranchChangedWorker
       ]
 
