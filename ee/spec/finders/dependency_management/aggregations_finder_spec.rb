@@ -66,5 +66,35 @@ RSpec.describe DependencyManagement::AggregationsFinder, feature_category: :depe
         end
       end
     end
+
+    context 'when sorting by highest_severity' do
+      let_it_be(:project) { target_projects.first }
+      let_it_be(:low) { create(:sbom_occurrence, highest_severity: 'low', project: project) }
+      let_it_be(:medium) { create(:sbom_occurrence, highest_severity: 'medium', project: project) }
+      let_it_be(:high) { create(:sbom_occurrence, highest_severity: 'high', project: project) }
+      let_it_be(:critical) { create(:sbom_occurrence, highest_severity: 'critical', project: project) }
+
+      let(:params) { { sort_by: 'highest_severity', sort: direction } }
+
+      before_all do
+        Sbom::Occurrence.id_in(target_occurrences.map(&:id)).delete_all
+      end
+
+      context 'in ascending order' do
+        let(:direction) { :asc }
+
+        it 'returns occurrences in ascending order of severity' do
+          expect(execute.to_a).to eq([low, medium, high, critical])
+        end
+      end
+
+      context 'in descending order' do
+        let(:direction) { :desc }
+
+        it 'returns occurrences in descending order of severity' do
+          expect(execute.to_a).to eq([critical, high, medium, low])
+        end
+      end
+    end
   end
 end
