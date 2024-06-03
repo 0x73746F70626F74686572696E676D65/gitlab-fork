@@ -131,6 +131,18 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
           worker.perform(shard_number)
         end
       end
+
+      context 'when re_enqueue_enabled? is disabled' do
+        before do
+          allow(worker).to receive(:re_enqueue_enabled?).and_return(false)
+        end
+
+        it 'does not requeue the worker' do
+          expect(described_class).not_to receive(:perform_in).with(described_class::RESCHEDULE_INTERVAL, shard_number)
+
+          worker.perform(shard_number)
+        end
+      end
     end
 
     context 'when there are no records in the queue' do
