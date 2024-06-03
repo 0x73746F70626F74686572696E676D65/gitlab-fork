@@ -1,8 +1,6 @@
 ---
 key_path: counts.count_total_value_streams_dashboard_median_time_to_merge_link_clicked_weekly
 description: Weekly count of clicks on the Value Streams Dashboard's 'Median time to merge' drill-down link
-product_section: dev
-product_stage: plan
 product_group: optimize
 performance_indicator_type: []
 value_type: number
