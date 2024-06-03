@@ -57,9 +57,9 @@ RSpec.describe SearchController, '(JavaScript fixtures)', type: :controller do
       end
 
       get :show, params: {
-          search: 'Send',
-          project_id: project.id,
-          scope: :blobs
+        search: 'Send',
+        project_id: project.id,
+        scope: :blobs
       }
 
       expect(response).to be_successful

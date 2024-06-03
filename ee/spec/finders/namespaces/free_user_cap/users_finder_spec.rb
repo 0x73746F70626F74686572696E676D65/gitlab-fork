@@ -28,12 +28,12 @@ RSpec.describe Namespaces::FreeUserCap::UsersFinder, feature_category: :seat_cos
 
       expect(instance.count)
         .to eq({
-                 group_member_user_ids: 2,
-                 project_member_user_ids: 2,
-                 shared_group_user_ids: 1,
-                 shared_project_user_ids: 1,
-                 user_ids: 5
-               })
+          group_member_user_ids: 2,
+          project_member_user_ids: 2,
+          shared_group_user_ids: 1,
+          shared_project_user_ids: 1,
+          user_ids: 5
+        })
     end
   end
 
@@ -41,12 +41,12 @@ RSpec.describe Namespaces::FreeUserCap::UsersFinder, feature_category: :seat_cos
     it 'provides number of users' do
       expect(described_class.count(group, limit))
         .to eq({
-                 group_member_user_ids: 2,
-                 project_member_user_ids: 2,
-                 shared_group_user_ids: 1,
-                 shared_project_user_ids: 1,
-                 user_ids: 5
-               })
+          group_member_user_ids: 2,
+          project_member_user_ids: 2,
+          shared_group_user_ids: 1,
+          shared_project_user_ids: 1,
+          user_ids: 5
+        })
     end
 
     context 'with limit considerations that affect query invocation', :aggregate_failures do
@@ -68,10 +68,10 @@ RSpec.describe Namespaces::FreeUserCap::UsersFinder, feature_category: :seat_cos
 
           expect(described_class.count(group, 3))
             .to eq({
-                     group_member_user_ids: 2,
-                     project_member_user_ids: 2,
-                     user_ids: 4
-                   })
+              group_member_user_ids: 2,
+              project_member_user_ids: 2,
+              user_ids: 4
+            })
         end
 
         it 'performs all queries except invited groups to projects' do
@@ -82,11 +82,11 @@ RSpec.describe Namespaces::FreeUserCap::UsersFinder, feature_category: :seat_cos
 
           expect(described_class.count(group, 5))
             .to eq({
-                     group_member_user_ids: 2,
-                     project_member_user_ids: 2,
-                     shared_group_user_ids: 1,
-                     user_ids: 5
-                   })
+              group_member_user_ids: 2,
+              project_member_user_ids: 2,
+              shared_group_user_ids: 1,
+              user_ids: 5
+            })
         end
       end
 
@@ -103,12 +103,12 @@ RSpec.describe Namespaces::FreeUserCap::UsersFinder, feature_category: :seat_cos
 
           expect(described_class.count(group, 6))
             .to eq({
-                     group_member_user_ids: 2,
-                     project_member_user_ids: 2,
-                     shared_group_user_ids: 1,
-                     shared_project_user_ids: 2,
-                     user_ids: 6
-                   })
+              group_member_user_ids: 2,
+              project_member_user_ids: 2,
+              shared_group_user_ids: 1,
+              shared_project_user_ids: 2,
+              user_ids: 6
+            })
         end
       end
     end
