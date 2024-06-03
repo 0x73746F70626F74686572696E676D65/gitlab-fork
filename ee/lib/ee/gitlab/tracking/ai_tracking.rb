@@ -8,7 +8,6 @@ module EE
 
         override :track_event
         def track_event(event_name, context_hash = {})
-          return unless ::Feature.enabled?(:ai_tracking_data_gathering) # rubocop:disable Gitlab/FeatureFlagWithoutActor -- this is an ops flag.
           return unless ::Gitlab::ClickHouse.globally_enabled_for_analytics?
 
           Ai::CodeSuggestionsUsage.new(**context_hash.merge(event: event_name)).store
