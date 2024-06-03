@@ -35371,7 +35371,6 @@ Name of the feature that the callout is for.
 | <a id="usercalloutfeaturenameenumgke_cluster_integration"></a>`GKE_CLUSTER_INTEGRATION` | Callout feature name for gke_cluster_integration. |
 | <a id="usercalloutfeaturenameenumgold_trial_billings"></a>`GOLD_TRIAL_BILLINGS` | Callout feature name for gold_trial_billings. |
 | <a id="usercalloutfeaturenameenumjoining_a_project_alert"></a>`JOINING_A_PROJECT_ALERT` | Callout feature name for joining_a_project_alert. |
-| <a id="usercalloutfeaturenameenummerge_request_settings_moved_callout"></a>`MERGE_REQUEST_SETTINGS_MOVED_CALLOUT` | Callout feature name for merge_request_settings_moved_callout. |
 | <a id="usercalloutfeaturenameenummr_experience_survey"></a>`MR_EXPERIENCE_SURVEY` | Callout feature name for mr_experience_survey. |
 | <a id="usercalloutfeaturenameenumnamespace_over_storage_users_combined_alert"></a>`NAMESPACE_OVER_STORAGE_USERS_COMBINED_ALERT` | Callout feature name for namespace_over_storage_users_combined_alert. |
 | <a id="usercalloutfeaturenameenumnamespace_storage_limit_alert_alert_threshold"></a>`NAMESPACE_STORAGE_LIMIT_ALERT_ALERT_THRESHOLD` | Callout feature name for namespace_storage_limit_alert_alert_threshold. |
