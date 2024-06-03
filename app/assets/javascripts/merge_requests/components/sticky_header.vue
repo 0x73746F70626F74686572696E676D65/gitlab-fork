@@ -228,7 +228,7 @@ export default {
               <gl-link
                 :href="tab[2]"
                 :data-action="tab[0]"
-                class="gl-outline-0! gl-py-4!"
+                class="!gl-outline-none gl-py-4!"
                 @click="visitTab"
               >
                 {{ tab[1] }}
