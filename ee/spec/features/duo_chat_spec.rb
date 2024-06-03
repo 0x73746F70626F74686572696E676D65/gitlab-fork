@@ -74,7 +74,7 @@ RSpec.describe 'Duo Chat', :js, :saas, :clean_gitlab_redis_cache, feature_catego
       end
     end
 
-    it 'syncs the chat on a second tab' do
+    it 'syncs the chat on a second tab', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/462446' do
       second_window = page.open_new_window
 
       within_window second_window do
