@@ -30,9 +30,10 @@ module Resolvers
       argument :runners_limit, GraphQL::Types::Int,
         required: false,
         default_value: DEFAULT_RUNNERS_LIMIT,
-        description: 'Maximum number of runners to return. ' \
-                     'Other runners will be aggregated to a `runner: null` entry. ' \
-                     "Defaults to #{DEFAULT_RUNNERS_LIMIT} if unspecified. Maximum of #{MAX_RUNNERS_LIMIT}."
+        description:
+          'Maximum number of runners to return. ' \
+          'Other runners will be aggregated to a `runner: null` entry. ' \
+          "Defaults to #{DEFAULT_RUNNERS_LIMIT} if unspecified. Maximum of #{MAX_RUNNERS_LIMIT}."
 
       def resolve(from_date: nil, to_date: nil, runner_type: nil, runners_limit: nil)
         authorize! :global

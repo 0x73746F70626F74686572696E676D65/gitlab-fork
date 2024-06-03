@@ -525,7 +525,12 @@ module EE
         enable :modify_product_analytics_settings
         enable :admin_push_rules
         enable :manage_deploy_tokens
+        enable :read_runner_usage
       end
+
+      rule { ~runner_performance_insights_available }.prevent :read_runner_usage
+
+      rule { ~clickhouse_main_database_available }.prevent :read_runner_usage
 
       rule { license_scanning_enabled & can?(:maintainer_access) }.enable :admin_software_license_policy
 
@@ -915,6 +920,16 @@ module EE
       rule { custom_role_enables_admin_web_hook }.policy do
         enable :read_web_hook
         enable :admin_web_hook
+      end
+
+      with_scope :subject
+      condition(:runner_performance_insights_available) do
+        @subject.group&.licensed_feature_available?(:runner_performance_insights_for_namespace)
+      end
+
+      with_scope :global
+      condition(:clickhouse_main_database_available) do
+        ::Gitlab::ClickHouse.configured?
       end
     end
 
