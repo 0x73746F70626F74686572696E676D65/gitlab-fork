@@ -13,7 +13,6 @@ import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { isProject, isGroup } from 'ee/security_orchestration/components/utils';
 import PolicyPopover from 'ee/security_orchestration/components/policy_popover.vue';
 import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
@@ -118,11 +117,10 @@ export default {
         this.showLinkedSppItemsError = true;
       },
       skip() {
-        return this.shouldSkipDependenciesCheck;
+        return this.isGroupLevel;
       },
     },
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: ['existingPolicy', 'namespacePath', 'rootNamespacePath', 'namespaceType'],
   props: {
     policyScope: {
@@ -172,9 +170,6 @@ export default {
     },
     isProjectLevel() {
       return isProject(this.namespaceType);
-    },
-    shouldSkipDependenciesCheck() {
-      return this.isGroupLevel || !this.glFeatures.securityPoliciesPolicyScopeProject;
     },
     groupProjectsFullPath() {
       return this.isGroupLevel ? this.namespacePath : this.rootNamespacePath;

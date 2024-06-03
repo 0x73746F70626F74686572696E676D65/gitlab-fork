@@ -122,7 +122,7 @@ export default {
         return [...linkedProjects, ...linkedNamespaces];
       },
       skip() {
-        return this.shouldSkipDependenciesCheck;
+        return this.isGroup;
       },
     },
     scanExecutionPolicies: {
@@ -210,9 +210,6 @@ export default {
     pipelineExecutionPolicyEnabled() {
       return this.customCiToggleEnabled && this.glFeatures.pipelineExecutionPolicyType;
     },
-    shouldSkipDependenciesCheck() {
-      return this.isGroup || !this.glFeatures.securityPoliciesPolicyScopeProject;
-    },
     showLoader() {
       return this.$apollo.queries.linkedSppItems?.loading && this.isProject;
     },
@@ -259,9 +256,6 @@ export default {
     hasSelectedPolicy() {
       return Boolean(this.selectedPolicy);
     },
-    showPolicyScope() {
-      return this.isGroup || this.glFeatures.securityPoliciesPolicyScopeProject;
-    },
     typeLabel() {
       if (this.isGroup) {
         return this.$options.i18n.groupTypeLabel;
@@ -280,7 +274,7 @@ export default {
       );
     },
     fields() {
-      const fields = [
+      return [
         {
           key: 'status',
           label: '',
@@ -290,7 +284,7 @@ export default {
         {
           key: 'name',
           label: __('Name'),
-          thClass: this.showPolicyScope ? 'gl-w-3/10' : 'gl-w-1/2',
+          thClass: 'gl-w-3/10',
           sortable: true,
         },
         {
@@ -306,24 +300,17 @@ export default {
           tdAttr: { 'data-testid': 'policy-source-cell' },
         },
         {
+          key: 'scope',
+          label: s__('SecurityOrchestration|Scope'),
+          sortable: true,
+          tdAttr: { 'data-testid': 'policy-scope-cell' },
+        },
+        {
           key: 'updatedAt',
           label: __('Last modified'),
           sortable: true,
         },
       ];
-
-      if (this.showPolicyScope) {
-        const insertIndex = fields.length - 1;
-
-        fields.splice(insertIndex, 0, {
-          key: 'scope',
-          label: s__('SecurityOrchestration|Scope'),
-          sortable: true,
-          tdAttr: { 'data-testid': 'policy-scope-cell' },
-        });
-      }
-
-      return fields;
     },
   },
   watch: {
@@ -487,7 +474,7 @@ export default {
         <span v-else class="gl-whitespace-nowrap">{{ typeLabel }}</span>
       </template>
 
-      <template v-if="showPolicyScope" #cell(scope)="{ item: { policyScope } }">
+      <template #cell(scope)="{ item: { policyScope } }">
         <list-component-scope
           :policy-scope="policyScope"
           :linked-spp-items="linkedSppItems"

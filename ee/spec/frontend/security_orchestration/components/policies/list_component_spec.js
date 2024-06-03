@@ -457,9 +457,6 @@ describe('List component', () => {
       mountShallowWrapper({
         provide: {
           namespaceType: NAMESPACE_TYPES.GROUP,
-          glFeatures: {
-            securityPoliciesPolicyScope: true,
-          },
         },
       });
 
@@ -468,57 +465,19 @@ describe('List component', () => {
       expect(findPoliciesTable().props('fields')[4]).toEqual(SCOPE_HEADER_FIELD);
     });
 
-    it('renders scope column on project level', async () => {
-      mountShallowWrapper({
-        provide: {
-          namespaceType: NAMESPACE_TYPES.PROJECT,
-          glFeatures: {
-            securityPoliciesPolicyScopeProject: true,
-          },
-        },
-      });
-
-      await waitForPromises();
-
-      expect(findPoliciesTable().props('fields')[4]).toEqual(SCOPE_HEADER_FIELD);
-    });
-
-    it('renders policy scope column inside table on group level', async () => {
-      mountWrapper({
-        provide: {
-          namespaceType: NAMESPACE_TYPES.GROUP,
-          glFeatures: {
-            securityPoliciesPolicyScope: true,
-          },
-        },
-      });
-
-      await waitForPromises();
-
-      expect(findPolicyScopeCells()).toHaveLength(4);
-      expect(findListComponentScope().exists()).toBe(true);
-    });
-
-    it.each`
-      securityPoliciesPolicyScopeProject | expectedLength
-      ${true}                            | ${4}
-      ${false}                           | ${0}
-    `(
-      'renders policy scope column inside table on project level when ff enabled',
-      async ({ securityPoliciesPolicyScopeProject, expectedLength }) => {
+    it.each([NAMESPACE_TYPES.GROUP, NAMESPACE_TYPES.PROJECT])(
+      'renders policy scope column inside table',
+      async (namespaceType) => {
         mountWrapper({
           provide: {
-            namespaceType: NAMESPACE_TYPES.PROJECT,
-            glFeatures: {
-              securityPoliciesPolicyScopeProject,
-            },
+            namespaceType,
           },
         });
 
         await waitForPromises();
 
-        expect(findPolicyScopeCells()).toHaveLength(expectedLength);
-        expect(findListComponentScope().exists()).toBe(securityPoliciesPolicyScopeProject);
+        expect(findPolicyScopeCells()).toHaveLength(4);
+        expect(findListComponentScope().exists()).toBe(true);
       },
     );
   });

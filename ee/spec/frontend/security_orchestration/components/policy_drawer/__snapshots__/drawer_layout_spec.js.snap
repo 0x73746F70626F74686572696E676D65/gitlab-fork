@@ -22,6 +22,9 @@ exports[`DrawerLayout component enabled policy matches the snapshots 1`] = `
       This policy enforces pipeline configuration to have a job with DAST scan
     </div>
   </info-row-stub>
+  <scope-info-row-stub
+    policyscope="[object Object]"
+  />
   <info-row-stub
     label="Source"
   >
@@ -74,6 +77,9 @@ exports[`DrawerLayout component not enabled policy matches the snapshots 1`] = `
       No description
     </div>
   </info-row-stub>
+  <scope-info-row-stub
+    policyscope="[object Object]"
+  />
   <info-row-stub
     label="Source"
   >

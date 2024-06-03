@@ -17,7 +17,7 @@ describe('DetailsDrawer component', () => {
   const factory = ({ propsData } = {}) => {
     wrapper = mountExtended(DetailsDrawer, {
       propsData,
-      provide: { namespaceType: NAMESPACE_TYPES.PROJECT },
+      provide: { namespaceType: NAMESPACE_TYPES.PROJECT, namespacePath: 'gitlab-org' },
     });
   };
 

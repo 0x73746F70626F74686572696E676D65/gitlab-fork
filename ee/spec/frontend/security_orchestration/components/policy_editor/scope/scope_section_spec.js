@@ -309,9 +309,6 @@ describe('PolicyScope', () => {
         createComponent({
           provide: {
             namespaceType: NAMESPACE_TYPES.PROJECT,
-            glFeatures: {
-              securityPoliciesPolicyScopeProject: true,
-            },
             ...provide,
           },
           handler: createHandler({
@@ -396,9 +393,6 @@ describe('PolicyScope', () => {
       createComponent({
         provide: {
           namespaceType: NAMESPACE_TYPES.PROJECT,
-          glFeatures: {
-            securityPoliciesPolicyScopeProject: true,
-          },
         },
       });
 
@@ -421,9 +415,6 @@ describe('PolicyScope', () => {
       createComponent({
         provide: {
           namespaceType: NAMESPACE_TYPES.PROJECT,
-          glFeatures: {
-            securityPoliciesPolicyScopeProject: true,
-          },
         },
         handler: mockLinkedSppItemsResponse({
           projects: [
@@ -448,9 +439,6 @@ describe('PolicyScope', () => {
       createComponent({
         provide: {
           namespaceType: NAMESPACE_TYPES.PROJECT,
-          glFeatures: {
-            securityPoliciesPolicyScopeProject: true,
-          },
         },
       });
 
@@ -462,9 +450,6 @@ describe('PolicyScope', () => {
       createComponent({
         provide: {
           namespaceType: NAMESPACE_TYPES.PROJECT,
-          glFeatures: {
-            securityPoliciesPolicyScopeProject: true,
-          },
         },
         handler: jest.fn().mockRejectedValue({}),
       });
@@ -482,9 +467,6 @@ describe('PolicyScope', () => {
       createComponent({
         provide: {
           namespaceType: NAMESPACE_TYPES.PROJECT,
-          glFeatures: {
-            securityPoliciesPolicyScopeProject: true,
-          },
         },
         handler: mockLinkedSppItemsResponse({
           projects: [
@@ -514,22 +496,6 @@ describe('PolicyScope', () => {
 
       expect(wrapper.emitted('changed')).toBeUndefined();
     });
-
-    it('does not check dependencies on project level when ff is disabled', async () => {
-      createComponent({
-        provide: {
-          namespaceType: NAMESPACE_TYPES.PROJECT,
-          glFeatures: {
-            securityPoliciesPolicyScopeProject: false,
-          },
-        },
-      });
-
-      await waitForPromises();
-
-      expect(requestHandler).toHaveBeenCalledTimes(0);
-      expect(findLoader().exists()).toBe(false);
-    });
   });
 
   describe('namespace', () => {
@@ -543,9 +509,6 @@ describe('PolicyScope', () => {
         createComponent({
           provide: {
             namespaceType,
-            glFeatures: {
-              securityPoliciesPolicyScopeProject: true,
-            },
           },
           handler: mockLinkedSppItemsResponse({
             projects: [

@@ -11,7 +11,6 @@ module Projects
       before_action :validate_policy_configuration, only: :edit
 
       before_action do
-        push_frontend_feature_flag(:security_policies_policy_scope_project, project)
         push_frontend_feature_flag(:compliance_pipeline_in_policies, project)
         push_frontend_feature_flag(:pipeline_execution_policy_type, project.group) if project.group
         push_frontend_feature_flag(:approval_policy_disable_bot_comment, project)
