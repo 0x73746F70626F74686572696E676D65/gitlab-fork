@@ -1,13 +1,17 @@
 <script>
-import PipelineStage from './pipeline_stage.vue';
+import LegacyPipelineStage from './legacy_pipeline_stage.vue';
 /**
- * Renders the pipeline stages portion of the pipeline mini graph.
+ * Renders the pipeline stages portion of the legacy pipeline mini graph.
  */
 export default {
   components: {
-    PipelineStage,
+    LegacyPipelineStage,
   },
   props: {
+    stages: {
+      type: Array,
+      required: true,
+    },
     updateDropdown: {
       type: Boolean,
       required: false,
@@ -17,15 +21,6 @@ export default {
       type: Boolean,
       required: false,
       default: false,
-    },
-    pipelineEtag: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    stages: {
-      type: Array,
-      required: true,
     },
   },
 };
@@ -37,10 +32,10 @@ export default {
       :key="stage.name"
       class="pipeline-mini-graph-stage-container dropdown gl-display-inline-flex gl-mr-2 gl-my-2 gl-align-middle"
     >
-      <pipeline-stage
-        :stage-id="stage.id"
+      <legacy-pipeline-stage
+        :stage="stage"
+        :update-dropdown="updateDropdown"
         :is-merge-train="isMergeTrain"
-        :pipeline-etag="pipelineEtag"
         @miniGraphStageClick="$emit('miniGraphStageClick')"
       />
     </div>
