@@ -2,8 +2,6 @@
 data_category: optional
 key_path: redis_hll_counters.epics_usage.g_project_management_users_removing_epic_emoji_monthly
 description: Counts of MAU removing emoji on epic
-product_section: dev
-product_stage: plan
 product_group: product_planning
 value_type: number
 status: active

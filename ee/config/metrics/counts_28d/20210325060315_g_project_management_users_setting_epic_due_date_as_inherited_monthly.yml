@@ -2,8 +2,6 @@
 data_category: optional
 key_path: redis_hll_counters.epics_usage.g_project_management_users_setting_epic_due_date_as_inherited_monthly
 description: Counts of MAU setting epic due date as inherited
-product_section: dev
-product_stage: plan
 product_group: product_planning
 value_type: number
 status: active

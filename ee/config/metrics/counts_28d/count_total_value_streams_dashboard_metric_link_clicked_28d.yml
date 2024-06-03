@@ -1,8 +1,6 @@
 ---
 key_path: count_total_value_streams_dashboard_metric_link_clicked_28d
 description: Total count of users that clicked on any drill-down link on the Value Streams Dashboard in the last 28 days.
-product_section: dev
-product_stage: plan
 product_group: optimize
 performance_indicator_type: []
 value_type: number
