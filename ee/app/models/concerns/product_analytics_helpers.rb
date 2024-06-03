@@ -14,7 +14,6 @@ module ProductAnalyticsHelpers
 
     root_group = group&.root_ancestor
     return false unless root_group.present?
-    return false unless Feature.enabled?(:product_analytics_beta_optin, root_group)
 
     true
   end

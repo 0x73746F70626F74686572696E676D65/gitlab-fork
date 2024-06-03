@@ -49,20 +49,6 @@ RSpec.describe NamespaceSetting, feature_category: :groups_and_projects, type: :
         expect(subject).to be_valid
       end
 
-      context 'when product analytics beta optin flag is disabled and product analytics was enabled' do
-        before do
-          subject.update!(experiment_features_enabled: true, product_analytics_enabled: true)
-          stub_feature_flags(product_analytics_beta_optin: false)
-        end
-
-        it 'allows changing experiment_features_enabled to true', :aggregate_failures do
-          subject.update!(experiment_features_enabled: false)
-          subject[attr] = !subject[attr]
-
-          expect(subject).to be_valid
-        end
-      end
-
       context 'when experiment settings are not allowed' do
         before do
           allow(subject).to receive(:experiment_settings_allowed?).and_return(false)
