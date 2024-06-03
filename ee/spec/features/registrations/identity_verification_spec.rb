@@ -336,6 +336,22 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
         flow: :invite, skip_email_validation: true
       it_behaves_like 'registering a high risk user with identity verification',
         flow: :invite, skip_email_validation: true
+
+      context 'when invite is from a paid namespace', :saas do
+        let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
+
+        let(:invitation) do
+          create(:group_member, :invited, :developer, invite_email: user_email, group: ultimate_group)
+        end
+
+        before do
+          sign_up(flow: :invite, arkose: { risk: :medium })
+        end
+
+        it 'does not require identity verification' do
+          expect_to_see_dashboard_page
+        end
+      end
     end
 
     context 'when Arkose is down' do

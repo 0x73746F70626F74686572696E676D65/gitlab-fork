@@ -213,6 +213,19 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
         end
       end
 
+      context 'when user is a member of a paid namespace' do
+        before do
+          create(:group_with_plan, plan: :ultimate_plan, developers: user)
+        end
+
+        it 'creates the group' do
+          fill_in 'Group name', with: 'Paid user group'
+          click_button 'Create group'
+
+          expect(page).to have_selector 'h1', text: 'Paid user group'
+        end
+      end
+
       context 'when the user has completed identity verification' do
         before do
           create(:phone_number_validation, :validated, user: user)
