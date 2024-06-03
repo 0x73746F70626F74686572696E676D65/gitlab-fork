@@ -334,6 +334,7 @@ RSpec.describe ::Search::RakeTaskExecutorService, :silence_stdout, feature_categ
       user_1 = create(:user)
       user_2 = create(:user)
       expect(Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(user_1, user_2).once
+      expect(logger).to receive(:info).with(/Indexing users/).twice
 
       task
     end
@@ -400,6 +401,7 @@ RSpec.describe ::Search::RakeTaskExecutorService, :silence_stdout, feature_categ
     let!(:epic) { create(:epic) }
 
     it 'calls maintain_indexed_group_associations for groups' do
+      expect(logger).to receive(:info).with(/Indexing epics/).twice
       expect(Elastic::ProcessInitialBookkeepingService).to receive(:maintain_indexed_group_associations!)
         .with(epic.group)
 
@@ -419,6 +421,7 @@ RSpec.describe ::Search::RakeTaskExecutorService, :silence_stdout, feature_categ
       end
 
       it 'does not call maintain_indexed_group_associations for groups that should not be indexed' do
+        expect(logger).to receive(:info).with(/Indexing epics/).twice
         expect(Elastic::ProcessBookkeepingService).to receive(:maintain_indexed_group_associations!)
           .with(group1, group3)
 

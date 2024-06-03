@@ -167,7 +167,6 @@ module Search
     end
 
     def index_users
-      logger = Logger.new($stdout)
       logger.info("Indexing users...")
 
       User.each_batch do |users|
@@ -195,7 +194,6 @@ module Search
     end
 
     def index_epics
-      logger = Logger.new($stdout)
       logger.info("Indexing epics...")
 
       groups = if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
