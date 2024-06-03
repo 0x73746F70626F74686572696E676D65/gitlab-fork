@@ -125,7 +125,6 @@ e2e:package-and-test-ee:
   extends:
     - .e2e-trigger-base
     - .qa:rules:package-and-test-ee
-  allow_failure: true
   needs:
     - build-qa-image
     - trigger-omnibus
