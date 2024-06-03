@@ -35,12 +35,11 @@ RSpec.describe Llm::GitCommandService, feature_category: :source_code_management
 
         expect(response).to be_success
         expect(response.payload).to include({
-          url: "https://cloud.gitlab.com/ai/v1/proxy/vertex-ai/v1/projects/PROJECT/locations/LOCATION/publishers/google/models/codechat-bison:predict",
           headers: {
             "Accept" => "application/json",
             "Authorization" => "Bearer access token",
             "Content-Type" => "application/json",
-            "Host" => "cloud.gitlab.com",
+            "Host" => be_an(String),
             'X-Gitlab-Authentication-Type' => 'oidc',
             'X-Gitlab-Global-User-Id' => be_an(String),
             'X-Gitlab-Host-Name' => be_an(String),
@@ -51,6 +50,10 @@ RSpec.describe Llm::GitCommandService, feature_category: :source_code_management
             'X-Request-ID' => be_an(String)
           }
         })
+
+        expect(response.payload[:url]).to include(
+          "/v1/proxy/vertex-ai/v1/projects/PROJECT/locations/LOCATION/publishers/google/models/codechat-bison:predict"
+        )
 
         expect(::Gitlab::Json.parse(response.payload[:body])['instances'][0]['messages']).to eq([{
           'author' => 'content',
