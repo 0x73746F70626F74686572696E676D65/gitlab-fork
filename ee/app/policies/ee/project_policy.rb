@@ -632,7 +632,7 @@ module EE
 
       rule { user_banned_from_namespace }.prevent_all
 
-      condition(:needs_new_sso_session, scope: :subject) do
+      condition(:needs_new_sso_session) do
         ::Gitlab::Auth::GroupSaml::SsoEnforcer.access_restricted?(user: @user, resource: subject)
       end
 
