@@ -73,15 +73,11 @@ module AutoMerge
         pipeline = merge_request.diff_head_pipeline
         next false unless pipeline
 
-        if merge_request.auto_merge_when_incomplete_pipeline_succeeds_enabled?
-          # We allow blocked pipelines as well when pipelines are not required
-          # to succeed, because otherwise the only merge action would be an
-          # immediate merge.
-          pipeline.complete? ||
-            (pipeline.blocked? && !merge_request.only_allow_merge_if_pipeline_succeeds?)
-        else
-          pipeline.complete?
-        end
+        # We allow blocked pipelines as well when pipelines are not required
+        # to succeed, because otherwise the only merge action would be an
+        # immediate merge.
+        pipeline.complete? ||
+          (pipeline.blocked? && !merge_request.only_allow_merge_if_pipeline_succeeds?)
       end
     end
 

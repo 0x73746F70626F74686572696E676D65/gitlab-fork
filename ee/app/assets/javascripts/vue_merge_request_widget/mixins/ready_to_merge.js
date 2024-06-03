@@ -106,10 +106,8 @@ export default {
       );
     },
     shouldShowMergeImmediatelyDropdown() {
-      if (window.gon?.features?.autoMergeWhenIncompletePipelineSucceeds) {
-        if (!this.isAutoMergeAvailable || !this.isMergeAllowed) {
-          return false;
-        }
+      if (!this.isAutoMergeAvailable || !this.isMergeAllowed) {
+        return false;
       }
 
       if (
@@ -119,10 +117,7 @@ export default {
         return !this.mr.ffOnlyEnabled || this.mr.ffMergePossible;
       }
 
-      if (window.gon?.features?.autoMergeWhenIncompletePipelineSucceeds) {
-        return true;
-      }
-      return this.isPipelineActive && !this.state.onlyAllowMergeIfPipelineSucceeds;
+      return true;
     },
     shouldDisplayMergeImmediatelyDropdownOptions() {
       return [MT_MERGE_STRATEGY, MTWPS_MERGE_STRATEGY].includes(this.preferredAutoMergeStrategy);

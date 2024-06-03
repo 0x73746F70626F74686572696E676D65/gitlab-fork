@@ -14,10 +14,6 @@ import {
 } from '~/vue_merge_request_widget/constants';
 
 describe('ReadyToMerge', () => {
-  beforeEach(() => {
-    gon.features = { autoMergeWhenIncompletePipelineSucceeds: true };
-  });
-
   let wrapper;
   const showMock = jest.fn();
 
@@ -113,30 +109,6 @@ describe('ReadyToMerge', () => {
     wrapper.findComponent(MergeTrainRestartTrainConfirmationDialog);
 
   describe('Merge Immediately Dropdown', () => {
-    describe('with ff auto_merge_when_incomplete_pipeline_succeeds disabled', () => {
-      beforeEach(() => {
-        gon.features = { autoMergeWhenIncompletePipelineSucceeds: false };
-      });
-
-      it('should return false if no pipeline is active', () => {
-        createComponent({
-          headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: false },
-          onlyAllowMergeIfPipelineSucceeds: false,
-        });
-
-        expect(findMergeImmediatelyDropdown().exists()).toBe(false);
-      });
-
-      it('should return false if "Pipelines must succeed" is enabled for the current project', () => {
-        createComponent({
-          headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: true },
-          onlyAllowMergeIfPipelineSucceeds: true,
-        });
-
-        expect(findMergeImmediatelyDropdown().exists()).toBe(false);
-      });
-    });
-
     it('should return false if auto merge is not available', () => {
       createComponent({
         headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: true },
