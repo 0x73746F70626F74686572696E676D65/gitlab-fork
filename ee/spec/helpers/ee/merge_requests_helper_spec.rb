@@ -230,4 +230,54 @@ RSpec.describe EE::MergeRequestsHelper, feature_category: :code_review_workflow 
       end
     end
   end
+
+  describe '#identity_verification_alert_data' do
+    let_it_be(:current_user) { build_stubbed(:user) }
+    let(:author) { current_user }
+    let(:merge_request) { build_stubbed(:merge_request, author: author) }
+
+    subject { helper.identity_verification_alert_data(merge_request) }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(current_user)
+      allow_next_instance_of(::Users::IdentityVerification::AuthorizeCi) do |instance|
+        allow(instance).to receive(:user_can_run_jobs?).and_return(false)
+      end
+    end
+
+    shared_examples 'returns the correct data' do
+      specify do
+        expected_data = {
+          identity_verification_required: iv_required.to_s,
+          identity_verification_path: identity_verification_path
+        }
+
+        expect(subject).to eq(expected_data)
+      end
+    end
+
+    it_behaves_like 'returns the correct data' do
+      let(:iv_required) { true }
+    end
+
+    context 'when the MR author is not the current user' do
+      let(:author) { build_stubbed(:user) }
+
+      it_behaves_like 'returns the correct data' do
+        let(:iv_required) { false }
+      end
+    end
+
+    context 'when the user is authorized to run jobs' do
+      before do
+        allow_next_instance_of(::Users::IdentityVerification::AuthorizeCi) do |instance|
+          allow(instance).to receive(:user_can_run_jobs?).and_return(true)
+        end
+      end
+
+      it_behaves_like 'returns the correct data' do
+        let(:iv_required) { false }
+      end
+    end
+  end
 end
