@@ -1,4 +1,3 @@
-import { uniqueId } from 'lodash';
 import showGlobalToast from '~/vue_shared/plugins/global_toast';
 import { __, s__ } from '~/locale';
 import {
@@ -55,33 +54,24 @@ export const generateBadges = ({ member, isCurrentUser, canManageMembers }) => [
  *   @param {Array<{baseAccessLevel: number, name: string, memberRoleId: number}>} member.customRoles
  */
 export const roleDropdownItems = ({ validRoles, customRoles }) => {
+  const standardDropdown = CERoleDropdownItems({ validRoles });
+
   if (!customRoles?.length) {
-    return CERoleDropdownItems({ validRoles });
+    return standardDropdown;
   }
 
-  const { flatten: staticRoleDropdownItems } = CERoleDropdownItems({ validRoles });
-
-  const customRoleDropdownItems = customRoles.map(
-    ({ baseAccessLevel, name, memberRoleId, description }) => ({
-      accessLevel: baseAccessLevel,
-      memberRoleId,
-      text: name,
-      value: uniqueId('role-custom-'),
-      description,
-    }),
-  );
+  const customRoleItems = customRoles.map(({ baseAccessLevel, name, ...role }) => ({
+    ...role,
+    accessLevel: baseAccessLevel,
+    text: name,
+    value: `role-custom-${role.memberRoleId}`,
+  }));
 
   return {
-    flatten: [...staticRoleDropdownItems, ...customRoleDropdownItems],
+    flatten: [...standardDropdown.flatten, ...customRoleItems],
     formatted: [
-      {
-        text: s__('MemberRole|Standard roles'),
-        options: staticRoleDropdownItems,
-      },
-      {
-        text: s__('MemberRole|Custom roles'),
-        options: customRoleDropdownItems,
-      },
+      { text: s__('MemberRole|Standard roles'), options: standardDropdown.flatten },
+      { text: s__('MemberRole|Custom roles'), options: customRoleItems },
     ],
   };
 };

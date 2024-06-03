@@ -31795,7 +31795,13 @@ msgstr ""
 msgid "MemberRole|Cannot create a member role with no enabled permissions"
 msgstr ""
 
+msgid "MemberRole|Change role"
+msgstr ""
+
 msgid "MemberRole|Could not fetch available permissions."
+msgstr ""
+
+msgid "MemberRole|Could not update role."
 msgstr ""
 
 msgid "MemberRole|Create a custom role with specific abilities by starting with a base role and adding custom permissions. %{linkStart}Learn more about custom roles.%{linkEnd}"
@@ -31907,6 +31913,9 @@ msgid "MemberRole|Standard roles"
 msgstr ""
 
 msgid "MemberRole|To delete custom role, remove role from all group members."
+msgstr ""
+
+msgid "MemberRole|Update role"
 msgstr ""
 
 msgid "MemberRole|View permissions"
@@ -32123,6 +32132,9 @@ msgid "Members|Role change request was sent to the administrator."
 msgstr ""
 
 msgid "Members|Role updated successfully."
+msgstr ""
+
+msgid "Members|Role was successfully updated."
 msgstr ""
 
 msgid "Members|Search groups"
