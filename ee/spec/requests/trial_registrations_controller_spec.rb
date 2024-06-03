@@ -221,6 +221,20 @@ RSpec.describe TrialRegistrationsController, :saas, feature_category: :onboardin
           end
         end
       end
+
+      context 'when user is not persisted' do
+        let(:user_params) { super().merge(password: '11111111') }
+
+        it 'tracks registration error' do
+          post_create
+
+          expect_snowplow_event(
+            category: 'Gitlab::Tracking::Helpers::InvalidUserErrorEvent',
+            action: 'track_trial_registration_error',
+            label: 'password_must_not_contain_commonly_used_combinations_of_words_and_letters'
+          )
+        end
+      end
     end
   end
 end

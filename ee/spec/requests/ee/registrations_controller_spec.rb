@@ -220,6 +220,16 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
 
             create_user
           end
+
+          it 'tracks registration error' do
+            create_user
+
+            expect_snowplow_event(
+              category: 'Gitlab::Tracking::Helpers::InvalidUserErrorEvent',
+              action: 'track_free_registration_error',
+              label: 'email_has_already_been_taken'
+            )
+          end
         end
       end
     end

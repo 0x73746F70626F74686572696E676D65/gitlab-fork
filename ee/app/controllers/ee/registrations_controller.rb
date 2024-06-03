@@ -6,6 +6,7 @@ module EE
     extend ::Gitlab::Utils::Override
     include ::Gitlab::Utils::StrongMemoize
     include ::Users::IdentityVerificationHelper
+    include ::Gitlab::Tracking::Helpers::InvalidUserErrorEvent
 
     prepended do
       include Arkose::ContentSecurityPolicy
@@ -199,6 +200,12 @@ module EE
     override :preregistration_tracking_label
     def preregistration_tracking_label
       onboarding_status.preregistration_tracking_label
+    end
+
+    override :track_error
+    def track_error(new_user)
+      super
+      track_invalid_user_error(new_user, preregistration_tracking_label)
     end
 
     def allow_account_deletion?
