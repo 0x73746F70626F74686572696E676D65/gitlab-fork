@@ -148,11 +148,7 @@ module QA
       end
 
       it 'displays security reports in the group security dashboard',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038',
-        quarantine: {
-          type: :stale,
-          issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/461959"
-        } do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038' do
         push_security_reports
         project.visit!
         wait_for_pipeline_success
@@ -174,7 +170,7 @@ module QA
         Page::Group::Menu.perform(&:go_to_vulnerability_report)
 
         EE::Page::Group::Secure::Show.perform do |dashboard|
-          dashboard.filter_project(project.id)
+          dashboard.filter_project(project_id: project.id, project_name: project.name)
 
           filter_report_and_perform(page: dashboard, filter_report: "Dependency Scanning") do
             expect(dashboard).to have_vulnerability dependency_scan_example_vuln
@@ -271,7 +267,13 @@ module QA
       def filter_report_and_perform(page:, filter_report:)
         page.filter_report_type(filter_report)
         yield
-        page.filter_report_type(filter_report) # Disable filter to avoid combining
+
+        if page.has_element?("filtered-search-term", wait: 1)
+          # This code to be removed after vulnerability_report_advanced_filtering is enabled by default
+          page.clear_filter_token('tool')
+        else
+          page.filter_report_type(filter_report)
+        end
       end
 
       def push_security_reports
