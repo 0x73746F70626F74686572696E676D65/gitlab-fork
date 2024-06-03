@@ -55,19 +55,24 @@ export const mockGroupEnvironments = {
   },
 };
 
+export const mockSecretId = 44;
+
+export const mockSecret = ({ customSecret } = {}) => ({
+  __typename: 'Secret',
+  id: mockSecretId,
+  environment: 'staging',
+  createdAt: '2024-01-22T08:04:26.024Z',
+  expiration: '2029-01-22T08:04:26.024Z',
+  description: 'This is a secret',
+  key: 'APP_PWD',
+  name: 'APP_PWD',
+  rotationPeriod: ROTATION_PERIOD_TWO_WEEKS.value,
+  ...customSecret,
+});
+
 export const mockProjectSecret = ({ customSecret, errors = [] } = {}) => ({
-  project: {
-    secret: {
-      errors,
-      nodes: {
-        id: 'gid://gitlab/Secret/44',
-        environment: '*',
-        createdAt: '2029-01-22T08:04:26.024Z',
-        description: 'This is a secret',
-        key: 'APP_PWD',
-        rotationPeriod: ROTATION_PERIOD_TWO_WEEKS.value,
-        ...customSecret,
-      },
-    },
+  secret: {
+    ...mockSecret(customSecret),
   },
+  errors,
 });

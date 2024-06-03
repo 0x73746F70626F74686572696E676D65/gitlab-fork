@@ -123,11 +123,12 @@ export default {
 
         this.isSubmitting = false;
 
-        const { errors } = data.createSecret.project.secret || [];
+        const { errors } = data.createSecret || [];
         if (errors.length > 0) {
           createAlert({ message: errors[0] });
         } else {
-          this.$router.push({ name: DETAILS_ROUTE_NAME, params: { key: this.secret.key } });
+          const { secret } = data.createSecret;
+          this.$router.push({ name: DETAILS_ROUTE_NAME, params: { id: secret.id } });
         }
       } catch (e) {
         this.isSubmitting = false;
