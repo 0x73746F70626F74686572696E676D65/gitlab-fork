@@ -242,6 +242,10 @@ module EE
         @subject.licensed_feature_available?(:runner_performance_insights_for_namespace)
       end
 
+      condition(:clickhouse_main_database_available, scope: :global) do
+        ::Gitlab::ClickHouse.configured?
+      end
+
       rule { user_banned_from_namespace }.prevent_all
 
       rule { public_group | logged_in_viewable }.policy do
@@ -270,6 +274,8 @@ module EE
         enable :admin_wiki
         enable :modify_product_analytics_settings
         enable :read_jobs_statistics
+        enable :read_runner_usage
+        enable :admin_push_rules
       end
 
       rule { (admin | maintainer) & group_analytics_dashboards_available & ~has_parent }.policy do
@@ -716,8 +722,11 @@ module EE
       end
 
       rule { ~runner_performance_insights_available }.policy do
+        prevent :read_runner_usage
         prevent :read_jobs_statistics
       end
+
+      rule { ~clickhouse_main_database_available }.prevent :read_runner_usage
 
       condition(:pre_receive_secret_detection_available) do
         ::Gitlab::CurrentSettings.gitlab_dedicated_instance? || ::Feature.enabled?(:pre_receive_secret_detection_push_check, @subject)

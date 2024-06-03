@@ -7,6 +7,8 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   include AdminModeHelper
   include_context 'ProjectPolicy context'
 
+  using RSpec::Parameterized::TableSyntax
+
   let(:project) { public_project }
 
   let_it_be(:auditor) { create(:user, :auditor) }
@@ -131,8 +133,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
           # permissions unless the feature is disabled.
           project_features.each do |feature, permissions|
             context "with project feature #{feature}" do
-              using RSpec::Parameterized::TableSyntax
-
               where(:project_visibility, :access_level, :allowed) do
                 :public   | ProjectFeature::ENABLED  | true
                 :public   | ProjectFeature::PRIVATE  | true
@@ -193,8 +193,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
 
     context 'in a group project' do
-      using RSpec::Parameterized::TableSyntax
-
       let(:project) { public_project_in_group }
       let(:current_user) { maintainer }
 
@@ -413,8 +411,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
 
     context 'when SAML SSO is enabled for resource' do
-      using RSpec::Parameterized::TableSyntax
-
       let(:saml_provider) { create(:saml_provider, enabled: true, enforced_sso: false) }
       let(:identity) { create(:group_saml_identity, saml_provider: saml_provider) }
       let(:root_group) { saml_provider.group }
@@ -1314,8 +1310,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     let(:policy) { :publish_status_page }
 
     context 'when feature is available' do
-      using RSpec::Parameterized::TableSyntax
-
       where(:role, :admin_mode, :allowed) do
         :anonymous  | nil   | false
         :guest      | nil   | false
@@ -1607,8 +1601,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   describe ':read_code_review_analytics' do
     let(:project) { private_project }
 
-    using RSpec::Parameterized::TableSyntax
-
     where(:role, :admin_mode, :allowed) do
       :guest      | nil   | false
       :reporter   | nil   | true
@@ -1643,8 +1635,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
   shared_examples 'merge request approval settings' do |admin_override_allowed = false|
     let(:project) { private_project }
-
-    using RSpec::Parameterized::TableSyntax
 
     context 'with merge request approvers rules available in license' do
       where(:role, :setting, :admin_mode, :allowed) do
@@ -1706,8 +1696,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   describe ':admin_merge_request_approval_settings' do
     let(:project) { private_project }
 
-    using RSpec::Parameterized::TableSyntax
-
     where(:role, :licensed, :allowed) do
       :guest      | true  | false
       :reporter   | true  | false
@@ -1758,8 +1746,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'Quality Management test case' do
-    using RSpec::Parameterized::TableSyntax
-
     let(:policy) { :create_test_case }
 
     where(:role, :admin_mode, :allowed) do
@@ -1793,8 +1779,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   shared_examples_for 'prevents CI cancellation ability' do
-    using RSpec::Parameterized::TableSyntax
-
     context 'when feature is enabled' do
       where(:restricted_role, :actual_role, :allowed) do
         :developer  | :guest      | false
@@ -1840,8 +1824,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe ':compliance_framework_available' do
-    using RSpec::Parameterized::TableSyntax
-
     let(:policy) { :admin_compliance_framework }
 
     where(:role, :feature_enabled, :admin_mode, :allowed) do
@@ -1873,8 +1855,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'Incident Management on-call schedules' do
-    using RSpec::Parameterized::TableSyntax
-
     let(:current_user) { public_send(role) }
     let(:admin_mode) { false }
 
@@ -1943,8 +1923,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'Escalation Policies' do
-    using RSpec::Parameterized::TableSyntax
-
     let(:current_user) { public_send(role) }
     let(:admin_mode) { false }
 
@@ -2309,8 +2287,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe ':build_read_project' do
-    using RSpec::Parameterized::TableSyntax
-
     let(:policy) { :build_read_project }
 
     where(:role, :project_visibility, :allowed) do
@@ -2346,8 +2322,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'pending member permissions' do
-    using RSpec::Parameterized::TableSyntax
-
     let_it_be(:current_user) { create(:user) }
     let_it_be(:group) { create(:group, :public) }
 
@@ -2435,8 +2409,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
 
     describe ':read_approvers' do
-      using RSpec::Parameterized::TableSyntax
-
       let(:policy) { :read_approvers }
 
       where(:role, :allowed) do
@@ -2601,8 +2573,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'create_objective' do
-    using RSpec::Parameterized::TableSyntax
-
     let(:okr_policies) { [:create_objective, :create_key_result] }
 
     where(:role, :allowed) do
@@ -2646,8 +2616,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'read_member_role' do
-    using RSpec::Parameterized::TableSyntax
-
     let_it_be_with_reload(:project) { private_project_in_group }
     let_it_be_with_reload(:current_user) { create(:user) }
 
@@ -3017,8 +2985,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'permissions for suggested reviewers bot', :saas do
-    using RSpec::Parameterized::TableSyntax
-
     let(:permissions) { [:admin_project_member, :create_resource_access_tokens] }
     let(:namespace) { build_stubbed(:namespace) }
     let(:project) { build_stubbed(:project, namespace: namespace) }
@@ -3074,6 +3040,37 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       let(:current_user) { auditor }
 
       it { is_expected.to be_allowed(:read_project_runners) }
+    end
+  end
+
+  describe 'read_runner_usage' do
+    where(:licensed, :current_user, :project, :enable_admin_mode, :clickhouse_configured, :expected) do
+      true  | ref(:admin)      | ref(:public_project_in_group) | true  | true  | true
+      false | ref(:maintainer) | ref(:public_project_in_group) | false | true  | false
+      true  | ref(:maintainer) | ref(:public_project_in_group) | false | false | false
+      true  | ref(:maintainer) | ref(:public_project_in_group) | false | true  | true
+      true  | ref(:auditor)    | ref(:public_project_in_group) | false | true  | false
+      true  | ref(:developer)  | ref(:public_project_in_group) | false | true  | false
+      true  | ref(:admin)      | ref(:public_project)          | true  | true  | false
+      true  | ref(:maintainer) | ref(:public_project)          | false | true  | false
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(runner_performance_insights_for_namespace: licensed)
+
+        enable_admin_mode!(admin) if enable_admin_mode
+
+        allow(::Gitlab::ClickHouse).to receive(:configured?).and_return(clickhouse_configured)
+      end
+
+      it 'matches expectation' do
+        if expected
+          is_expected.to be_allowed(:read_runner_usage)
+        else
+          is_expected.to be_disallowed(:read_runner_usage)
+        end
+      end
     end
   end
 
@@ -3553,8 +3550,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'generate_cube_query policy' do
-    using RSpec::Parameterized::TableSyntax
-
     let(:current_user) { owner }
 
     where(:ai_global_switch, :flag_enabled, :licensed, :allowed) do
@@ -3586,8 +3581,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'read_ai_agents' do
-    using RSpec::Parameterized::TableSyntax
-
     where(:feature_flag_enabled, :licensed_feature, :current_user, :allowed) do
       true  | true  | ref(:owner)      | true
       true  | true  | ref(:reporter)   | true
@@ -3621,8 +3614,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'write_ai_agents' do
-    using RSpec::Parameterized::TableSyntax
-
     where(:feature_flag_enabled, :licensed_feature, :current_user, :allowed) do
       true  | true  | ref(:owner)      | true
       true  | true  | ref(:reporter)   | true
@@ -3723,8 +3714,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
 
     context 'for self-managed', :with_cloud_connector do
-      using RSpec::Parameterized::TableSyntax
-
       let_it_be_with_reload(:group) { create(:group) }
       let(:policy) { :access_duo_chat }
 
@@ -3754,8 +3743,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   context 'access_duo_features' do
-    using RSpec::Parameterized::TableSyntax
-
     let(:project) { private_project }
 
     where(:current_user, :duo_features_enabled, :cs_matcher) do
@@ -3777,7 +3764,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'on_demand_scans_enabled policy' do
-    using RSpec::Parameterized::TableSyntax
     let(:current_user) { owner }
     let(:permissions) { [:read_on_demand_dast_scan, :create_on_demand_dast_scan, :edit_on_demand_dast_scan] }
 
@@ -3868,8 +3854,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'read_google_cloud_artifact_registry' do
-    using RSpec::Parameterized::TableSyntax
-
     where(:saas_feature_enabled, :current_user, :match_expected_result) do
       true  | ref(:owner)      | be_allowed(:read_google_cloud_artifact_registry)
       true  | ref(:reporter)   | be_allowed(:read_google_cloud_artifact_registry)
@@ -3891,8 +3875,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'admin_google_cloud_artifact_registry' do
-    using RSpec::Parameterized::TableSyntax
-
     where(:saas_feature_enabled, :current_user, :match_expected_result) do
       true  | ref(:owner)      | be_allowed(:admin_google_cloud_artifact_registry)
       true  | ref(:maintainer) | be_allowed(:admin_google_cloud_artifact_registry)
@@ -3954,8 +3936,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'enable_pre_receive_secret_detection' do
-    using RSpec::Parameterized::TableSyntax
-
     where(:dedicated_instance, :pre_receive_secret_detection_actor, :current_user, :match_expected_result) do
       false | project | ref(:owner)      | be_allowed(:enable_pre_receive_secret_detection)
       false | project | ref(:maintainer) | be_allowed(:enable_pre_receive_secret_detection)
@@ -3982,8 +3962,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   describe 'enable_container_scanning_for_registry' do
-    using RSpec::Parameterized::TableSyntax
-
     where(:container_scanning_for_registry, :current_user, :match_expected_result) do
       true  | ref(:owner)      | be_allowed(:enable_container_scanning_for_registry)
       true  | ref(:maintainer) | be_allowed(:enable_container_scanning_for_registry)

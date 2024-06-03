@@ -2,11 +2,10 @@
 
 module Types
   module Ci
+    # rubocop: disable Graphql/AuthorizeTypes -- the read_runner_usage permission is already checked by the resolver
     class RunnerUsageByProjectType < BaseObject
       graphql_name 'CiRunnerUsageByProject'
       description 'Runner usage in minutes by project.'
-
-      authorize :read_runner_usage
 
       field :project, ::Types::ProjectType,
         null: true, description: 'Project that the usage refers to. Null means "Other projects".'
@@ -27,5 +26,6 @@ module Types
         end
       end
     end
+    # rubocop: enable Graphql/AuthorizeTypes
   end
 end

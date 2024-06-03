@@ -3794,6 +3794,35 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     end
   end
 
+  describe 'read_runner_usage' do
+    where(:licensed, :current_user, :enable_admin_mode, :clickhouse_configured, :expected) do
+      true  | ref(:admin)      | true  | true  | true
+      false | ref(:maintainer) | false | true  | false
+      true  | ref(:maintainer) | false | false | false
+      true  | ref(:maintainer) | false | true  | true
+      true  | ref(:auditor)    | false | true  | false
+      true  | ref(:developer)  | false | true  | false
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(runner_performance_insights_for_namespace: licensed)
+
+        enable_admin_mode!(admin) if enable_admin_mode
+
+        allow(::Gitlab::ClickHouse).to receive(:configured?).and_return(clickhouse_configured)
+      end
+
+      it 'matches expectation' do
+        if expected
+          is_expected.to be_allowed(:read_runner_usage)
+        else
+          is_expected.to be_disallowed(:read_runner_usage)
+        end
+      end
+    end
+  end
+
   describe 'web_hooks' do
     let(:current_user) { maintainer }
 
