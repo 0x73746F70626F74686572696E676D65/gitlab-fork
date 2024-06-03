@@ -56,7 +56,8 @@ RSpec.describe 'Group-saml single-sign on registration flow', :js, :saas, featur
         sign_in(user)
       end
 
-      it 'auto accepts terms and redirects to the group path' do
+      it 'auto accepts terms and redirects to the group path',
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/438109' do
         visit sso_group_saml_providers_path(group, token: group.saml_discovery_token)
 
         expect_to_be_on_terms_page
