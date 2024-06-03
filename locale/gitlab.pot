@@ -33152,15 +33152,6 @@ msgstr ""
 msgid "MlExperimentTracking|Version"
 msgstr ""
 
-msgid "MlModelRegistry|# Create a model"
-msgstr ""
-
-msgid "MlModelRegistry|# Create a version"
-msgstr ""
-
-msgid "MlModelRegistry|# Log artifacts"
-msgstr ""
-
 msgid "MlModelRegistry|%d model"
 msgid_plural "MlModelRegistry|%d models"
 msgstr[0] ""
@@ -33189,12 +33180,6 @@ msgstr ""
 msgid "MlModelRegistry|Candidate not linked to a CI build"
 msgstr ""
 
-msgid "MlModelRegistry|Copied MLflow tracking URL to clipboard"
-msgstr ""
-
-msgid "MlModelRegistry|Copy MLflow tracking URL"
-msgstr ""
-
 msgid "MlModelRegistry|Create & import"
 msgstr ""
 
@@ -33210,10 +33195,25 @@ msgstr ""
 msgid "MlModelRegistry|Create model version & import artifacts"
 msgstr ""
 
+msgid "MlModelRegistry|Create model with MLflow"
+msgstr ""
+
 msgid "MlModelRegistry|Create model, version & import artifacts"
 msgstr ""
 
+msgid "MlModelRegistry|Create your machine learning using GitLab directly or using the MLflow client"
+msgstr ""
+
+msgid "MlModelRegistry|Creating a model"
+msgstr ""
+
+msgid "MlModelRegistry|Creating a model version"
+msgstr ""
+
 msgid "MlModelRegistry|Creating models is also possible through the MLflow client. %{linkStart}Follow the documentation to learn more.%{linkEnd}"
+msgstr ""
+
+msgid "MlModelRegistry|Creating models, model versions and candidates is also possible using the MLflow client:"
 msgstr ""
 
 msgid "MlModelRegistry|Delete model"
@@ -33270,7 +33270,7 @@ msgstr ""
 msgid "MlModelRegistry|ID"
 msgstr ""
 
-msgid "MlModelRegistry|Import your machine learning using GitLab directly or using the MLflow client:"
+msgid "MlModelRegistry|Import your machine learning models"
 msgstr ""
 
 msgid "MlModelRegistry|Info"
@@ -33288,7 +33288,10 @@ msgstr ""
 msgid "MlModelRegistry|Leave empty to skip version creation."
 msgstr ""
 
-msgid "MlModelRegistry|MLflow compatibility"
+msgid "MlModelRegistry|Logging artifacts"
+msgstr ""
+
+msgid "MlModelRegistry|MLflow compatibility documentation"
 msgstr ""
 
 msgid "MlModelRegistry|MLflow run ID"
@@ -33336,13 +33339,13 @@ msgstr ""
 msgid "MlModelRegistry|No logged parameters"
 msgstr ""
 
-msgid "MlModelRegistry|No models registered"
-msgstr ""
-
 msgid "MlModelRegistry|No registered versions"
 msgstr ""
 
 msgid "MlModelRegistry|Parameters"
+msgstr ""
+
+msgid "MlModelRegistry|Setting up the client"
 msgstr ""
 
 msgid "MlModelRegistry|Start tracking your machine learning models"
@@ -33364,6 +33367,9 @@ msgid "MlModelRegistry|Upload files under path: "
 msgstr ""
 
 msgid "MlModelRegistry|Use versions to track performance, parameters, and metadata"
+msgstr ""
+
+msgid "MlModelRegistry|Using the MLflow client"
 msgstr ""
 
 msgid "MlModelRegistry|Version Description"
