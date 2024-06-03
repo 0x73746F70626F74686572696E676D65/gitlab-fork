@@ -318,6 +318,7 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
         :manage_group_access_tokens    | 'Access Tokens'
         :manage_merge_request_settings | 'General'
         :remove_group                  | 'General'
+        :admin_integrations            | 'Integrations'
       end
 
       with_them do

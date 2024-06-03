@@ -121,6 +121,7 @@ RSpec.describe Sidebars::Projects::Menus::SettingsMenu, feature_category: :navig
       :admin_push_rules              | 'Repository'
       :manage_merge_request_settings | 'Merge requests'
       :manage_project_access_tokens  | 'Access Tokens'
+      :admin_integrations            | 'Integrations'
     end
 
     with_them do

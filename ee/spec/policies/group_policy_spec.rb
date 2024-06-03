@@ -3670,6 +3670,16 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         it { is_expected.to be_allowed(:admin_merge_request_approval_settings) }
       end
     end
+
+    context 'for a custom role with the `admin_integrations` permission' do
+      let(:member_role_abilities) { { admin_integrations: true } }
+
+      let(:allowed_abilities) do
+        [:admin_integrations]
+      end
+
+      it_behaves_like 'custom roles abilities'
+    end
   end
 
   context 'for :read_limit_alert' do
