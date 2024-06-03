@@ -63,5 +63,21 @@ module EE
         e.candidate { true }
       end.run
     end
+
+    override :identity_verification_alert_data
+    def identity_verification_alert_data(merge_request)
+      {
+        identity_verification_required: show_iv_alert_for_mr?(merge_request).to_s,
+        identity_verification_path: identity_verification_path
+      }
+    end
+
+    private
+
+    def show_iv_alert_for_mr?(merge_request)
+      return false unless current_user == merge_request.author
+
+      !::Users::IdentityVerification::AuthorizeCi.new(user: current_user, project: merge_request.project).user_can_run_jobs?
+    end
   end
 end
