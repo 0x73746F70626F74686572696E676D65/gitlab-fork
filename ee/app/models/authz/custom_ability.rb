@@ -18,7 +18,7 @@ module Authz
 
     class << self
       def allowed?(user, ability, resource)
-        new(Gitlab::CustomRoles::Definition.all[ability.to_sym])
+        new(Gitlab::CustomRoles::Definition.all[ability&.to_sym])
           .allowed?(user, resource)
       end
     end
@@ -27,9 +27,19 @@ module Authz
 
     attr_reader :attributes
 
+    def enabled?(attribute, default: false)
+      attributes.fetch(attribute, default)
+    end
+
+    def disabled?(attribute)
+      !enabled?(attribute)
+    end
+
     def enabled_for?(user, resource)
       return false if attributes.blank?
       return false unless user.is_a?(User)
+      return false if resource.is_a?(::Group) && disabled?(:group_ability)
+      return false if resource.is_a?(::Project) && disabled?(:project_ability)
       return false unless ::MemberRole.permission_enabled?(name, user)
 
       custom_roles_enabled?(resource)
