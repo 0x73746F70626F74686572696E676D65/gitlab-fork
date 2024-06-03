@@ -69,7 +69,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
       tool.request(&b)
     end
 
-    it 'logs the request' do
+    it 'logs the request', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/463465' do
       tool = ::Gitlab::Llm::Chain::Tools::IssueReader::Executor.new(context: context, options: options)
       expected_prompt = tool.prompt[:prompt]
 
