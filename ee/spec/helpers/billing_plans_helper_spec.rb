@@ -369,32 +369,6 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
     end
   end
 
-  describe '#free_plan_billing_hand_raise_props' do
-    let_it_be(:namespace) { create(:namespace) }
-    let_it_be(:user) { create(:user, username: 'Joe', first_name: 'Joe', last_name: 'Doe', organization: 'ACME') }
-
-    before do
-      allow(helper).to receive(:current_user).and_return(user)
-    end
-
-    it 'builds correct hash' do
-      props = helper.free_plan_billing_hand_raise_props(namespace, glm_content: 'some-content')
-
-      expect(props.keys).to match_array([:namespace_id,
-                                         :user_name,
-                                         :first_name,
-                                         :last_name,
-                                         :company_name,
-                                         :glm_content,
-                                         :product_interaction,
-                                         :create_hand_raise_lead_path,
-                                         :button_attributes,
-                                         :button_text,
-                                         :track_action,
-                                         :track_label])
-    end
-  end
-
   describe '#upgrade_button_css_classes' do
     let(:plan) { double('Plan', deprecated?: plan_is_deprecated) }
     let(:namespace) { double('Namespace', trial_active?: trial_active) }

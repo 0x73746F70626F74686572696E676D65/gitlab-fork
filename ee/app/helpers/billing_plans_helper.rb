@@ -122,15 +122,6 @@ module BillingPlansHelper
     namespace.subscription_add_on_purchases.active.for_gitlab_duo_pro.none?
   end
 
-  def free_plan_billing_hand_raise_props(namespace, glm_content:)
-    hand_raise_props(namespace, glm_content: glm_content).merge(
-      button_text: s_("BillingPlans|Talk to an expert"),
-      button_attributes: { category: 'secondary', class: "gl-vertical-align-text-bottom" }.to_json,
-      track_action: 'click_button',
-      track_label: 'hand_raise_lead_form'
-    )
-  end
-
   def billing_upgrade_button_data(plan)
     {
       track_action: 'click_button',

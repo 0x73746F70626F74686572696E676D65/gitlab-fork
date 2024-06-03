@@ -29,5 +29,27 @@ module Subscriptions
         }.to_json
       }
     end
+
+    def free_plan_billing_hand_raise_lead_data
+      {
+        glm_content: 'billing-group',
+        button_text: s_("BillingPlans|Talk to an expert"),
+        button_attributes: { category: 'secondary', class: 'gl-vertical-align-text-bottom' }.to_json,
+        cta_tracking: {
+          action: 'click_button'
+        }.to_json
+      }
+    end
+
+    def billing_action_hand_raise_lead_data(plan_code)
+      {
+        glm_content: 'billing-group',
+        cta_tracking: {
+          action: 'click_link',
+          property: plan_code
+        }.to_json,
+        button_attributes: {}.to_json
+      }
+    end
   end
 end

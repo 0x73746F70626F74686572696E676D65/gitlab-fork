@@ -41,4 +41,32 @@ RSpec.describe Subscriptions::HandRaiseLeadsHelper, feature_category: :acquisiti
       expect(helper.discover_page_hand_raise_lead_data(build_stubbed(:group))).to eq(result)
     end
   end
+
+  describe '#free_plan_billing_hand_raise_lead_data' do
+    it 'provides the expected dataset' do
+      result = {
+        glm_content: 'billing-group',
+        button_text: s_("BillingPlans|Talk to an expert"),
+        cta_tracking: { action: 'click_button' }.to_json,
+        button_attributes: {
+          category: 'secondary',
+          class: 'gl-vertical-align-text-bottom'
+        }.to_json
+      }
+
+      expect(helper.free_plan_billing_hand_raise_lead_data).to eq(result)
+    end
+  end
+
+  describe '#billing_action_hand_raise_lead_data' do
+    it 'provides the expected dataset' do
+      result = {
+        glm_content: 'billing-group',
+        cta_tracking: { action: 'click_link', property: 'code' }.to_json,
+        button_attributes: {}.to_json
+      }
+
+      expect(helper.billing_action_hand_raise_lead_data('code')).to eq(result)
+    end
+  end
 end
