@@ -107,12 +107,15 @@ describe('Members Utils', () => {
         const { flatten } = roleDropdownItems({ ...memberMock, customRoles });
         expect(flatten).toHaveLength(3);
 
-        expect(flatten).toContainEqual({
-          text: 'custom role 1',
-          value: 'role-custom-0',
-          description: 'custom role 1 description',
-          accessLevel: 10,
-          memberRoleId: 101,
+        customRoles.forEach((role) => {
+          expect(flatten).toContainEqual({
+            text: role.name,
+            value: `role-custom-${role.memberRoleId}`,
+            description: role.description,
+            accessLevel: role.baseAccessLevel,
+            memberRoleId: role.memberRoleId,
+            permissions: role.permissions,
+          });
         });
       });
 

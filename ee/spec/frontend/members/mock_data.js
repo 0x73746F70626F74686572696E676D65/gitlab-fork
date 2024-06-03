@@ -14,14 +14,33 @@ export const bannedMember = {
 };
 
 export const customRoles = [
-  { baseAccessLevel: 20, name: 'custom role 3', memberRoleId: 103 },
+  {
+    baseAccessLevel: 20,
+    name: 'custom role 3',
+    memberRoleId: 103,
+    description: 'custom role 3 description',
+    permissions: [{ name: 'Permission 4', description: 'Permission description 4' }],
+  },
   {
     baseAccessLevel: 10,
     name: 'custom role 1',
     description: 'custom role 1 description',
     memberRoleId: 101,
+    permissions: [
+      { name: 'Permission 0', description: 'Permission description 0' },
+      { name: 'Permission 1', description: 'Permission description 1' },
+    ],
   },
-  { baseAccessLevel: 10, name: 'custom role 2', memberRoleId: 102 },
+  {
+    baseAccessLevel: 10,
+    name: 'custom role 2',
+    description: 'custom role 2 description',
+    memberRoleId: 102,
+    permissions: [
+      { name: 'Permission 2', description: 'Permission description 2' },
+      { name: 'Permission 3', description: 'Permission description 3' },
+    ],
+  },
 ];
 
 export const upgradedMember = {
@@ -33,6 +52,12 @@ export const upgradedMember = {
     description: 'custom role 1 description',
   },
   customRoles,
+};
+
+export const updateableCustomRoleMember = {
+  ...upgradedMember,
+  isDirectMember: true,
+  canUpdate: true,
 };
 
 // eslint-disable-next-line import/export

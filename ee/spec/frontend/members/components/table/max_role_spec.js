@@ -65,7 +65,7 @@ describe('MaxRole', () => {
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findListboxItems = () => wrapper.findAllComponents(GlListboxItem);
   const findListboxItemByText = (text) =>
-    findListboxItems().wrappers.find((item) => item.text() === text);
+    findListboxItems().wrappers.find((item) => item.text().includes(text));
   const findRoleText = () => wrapper.findByTestId('role-text');
 
   describe('when a member has custom permissions', () => {
