@@ -2,10 +2,10 @@
 
 module QA
   RSpec.describe 'Fulfillment', :requires_admin, :skip_live_env, except: { job: 'review-qa-*' },
-    product_group: :subscription_management do
-    describe 'Purchase' do
+    product_group: :utilization do
+    describe 'Utilization' do
       describe 'User Registration' do
-        let(:group) { create(:group) }
+        let!(:group) { create(:group) }
 
         let(:user) do
           build(:user,
@@ -43,7 +43,8 @@ module QA
         end
 
         context 'when adding and removing a group member' do
-          it 'consumes a seat on the license', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347617' do
+          it 'consumes a seat on the license',
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347617' do
             Flow::Login.sign_in_as_admin
 
             # Save the number of users as stated by the license
