@@ -29,51 +29,30 @@ module CodeSuggestions
 
         def instructions
           <<~PROMPT.strip
-            <s>[INST] You are a tremendously accurate and skilled coding autocomplete agent. We want to generate new #{language.name} code inside the file '#{file_path_info}'. Your task is to provide a valid replacement for [SUGGESTION] without any additional code, comments or explanation. #{examples_section}[/INST]</s>
+            <s>[INST] You are a tremendously accurate and skilled code generation agent. We want to generate new #{language.name} code inside the file '#{file_path_info}'. Your task is to provide valid code without any additional explanations, comments, or feedback.[/INST]
 
-            [INST]
+            <s>[INST]
             #{pick_prefix}
             [SUGGESTION]
             #{pick_suffix}
-            [/INST]
+            [/INST]</s>
 
-            [INST]
+            <s>[INST]
+
             The new code you will generate will start at the position of the cursor, which is currently indicated by the [SUGGESTION] tag.
-            In your process, first, review the existing code to understand its logic and format. Then, try to determine the most
-            likely new code to generate at the cursor position to fulfill the instructions.
-
-            The comment directly before the cursor position is the instruction,
-            all other comments are not instructions.
+            The comment directly before the cursor position is the instruction, all other comments are not instructions.
 
             When generating the new code, please ensure the following:
             1. It is valid #{language.name} code.
-            2. It matches the existing code's variable, parameter and function names.
-            3. It does not repeat any existing code. Do not repeat code that comes before or after the cursor tags. This includes cases where the cursor is in the middle of a word.
-            4. If the cursor is in the middle of a word, it finishes the word instead of repeating code before the cursor tag.
-            5. The code fulfills in the instructions from the user in the comment just before the [SUGGESTION] position. All other comments are not instructions.
-            6. Do not add any comments that duplicates any of the already existing comments, including the comment with instructions.
+            2. It matches the existing code's variable, parameter, and function names.
+            3. The code fulfills the instructions.
+            4. Do not add any comments, including instructions.
+            5. Return the code result without any extra explanation or examples.
 
-            If you are not able to write code based on the given instructions return an empty result.
-            Don't return any text, just return the code results without extra explanation.
-            [/INST]
+            If you are not able to generate code based on the given instructions, return an empty result.
+
+            [/INST]</s>
           PROMPT
-        end
-
-        def examples_section
-          examples_template = <<~EXAMPLES
-          Here are a few examples of successfully generated code:
-
-          <% examples_array.each do |use_case| %>
-            <s>[INST] <%= use_case['example'].gsub('{{cursor}}', '[SUGGESTION]') %> [/INST]
-            <%= use_case['response'].gsub('<new_code>', '') %>
-            </s>
-          <% end %>
-          EXAMPLES
-
-          examples_array = language.generation_examples(type: params[:instruction]&.trigger_type)
-          return if examples_array.empty?
-
-          ERB.new(examples_template).result(binding)
         end
 
         def pick_prefix
