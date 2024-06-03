@@ -270,7 +270,6 @@ module EE
         enable :admin_wiki
         enable :modify_product_analytics_settings
         enable :read_jobs_statistics
-        enable :admin_push_rules
       end
 
       rule { (admin | maintainer) & group_analytics_dashboards_available & ~has_parent }.policy do
