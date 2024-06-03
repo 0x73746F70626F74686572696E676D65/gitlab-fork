@@ -194,7 +194,7 @@ class MergeRequest < ApplicationRecord
       transition locked: :opened
     end
 
-    before_transition any => :opened do |merge_request|
+    before_transition any => [:opened, :merged] do |merge_request|
       merge_request.merge_jid = nil
     end
 
