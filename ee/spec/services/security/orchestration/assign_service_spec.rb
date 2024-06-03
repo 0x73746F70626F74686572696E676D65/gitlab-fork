@@ -210,7 +210,8 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
                 'Security::OrchestrationPolicyConfiguration',
                 security_orchestration_policy_configuration: dbl_error,
                 all_security_orchestration_policy_configurations: [],
-                root_ancestor: instance_double(Group, delete_redundant_policy_projects?: true)
+                root_ancestor: instance_double(Group, delete_redundant_policy_projects?: true),
+                id: non_existing_record_id
               )
 
             allow(current_user).to receive(:can?).with(:update_security_orchestration_policy_project, dbl).and_return(true)

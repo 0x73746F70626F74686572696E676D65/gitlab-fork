@@ -15,7 +15,7 @@ RSpec.describe Mutations::SecurityPolicy::AssignSecurityPolicyProject, feature_c
 
     let(:current_user) { owner }
 
-    subject { mutation.resolve(full_path: container.full_path, security_policy_project_id: policy_project_id) }
+    subject(:resolve) { mutation.resolve(full_path: container.full_path, security_policy_project_id: policy_project_id) }
 
     shared_context 'assigns security policy project' do
       context 'when licensed feature is available' do
@@ -39,6 +39,26 @@ RSpec.describe Mutations::SecurityPolicy::AssignSecurityPolicyProject, feature_c
               expect(result[:errors]).to be_empty
               expect(container.security_orchestration_policy_configuration).not_to be_nil
               expect(container.security_orchestration_policy_configuration.security_policy_management_project).to eq(policy_project)
+            end
+
+            context 'when already assigned' do
+              let!(:policy_configuration) do
+                case container
+                when Project
+                  create(:security_orchestration_policy_configuration,
+                    project_id: container.id,
+                    security_policy_management_project: policy_project)
+                when Group
+                  create(:security_orchestration_policy_configuration,
+                    :namespace,
+                    namespace_id: container.id,
+                    security_policy_management_project: policy_project)
+                end
+              end
+
+              subject(:error) { resolve[:errors].first }
+
+              it { is_expected.to match(/is already assigned/) }
             end
           end
 

@@ -46739,6 +46739,9 @@ msgstr ""
 msgid "Security dashboard"
 msgstr ""
 
+msgid "Security policy project is already assigned."
+msgstr ""
+
 msgid "Security reports last updated"
 msgstr ""
 
