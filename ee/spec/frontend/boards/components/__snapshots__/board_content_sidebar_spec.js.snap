@@ -79,7 +79,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
   >
     <div>
       <div
-        class="gl-align-items-center gl-display-flex gl-font-weight-bold gl-leading-20 gl-text-gray-900"
+        class="gl-align-items-center gl-display-flex gl-font-bold gl-leading-20 gl-text-gray-900"
       >
         <span
           class="hide-collapsed"
