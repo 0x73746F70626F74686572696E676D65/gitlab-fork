@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.group_member_role', feature_category: :system_access do
+RSpec.describe 'Query.group_member_role', feature_category: :permissions do
   include GraphqlHelpers
 
   def member_roles_query(group)

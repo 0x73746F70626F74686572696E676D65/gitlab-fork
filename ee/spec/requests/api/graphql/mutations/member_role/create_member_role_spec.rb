@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'creating member role', feature_category: :system_access do
+RSpec.describe 'creating member role', feature_category: :permissions do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User with read_code custom role', feature_category: :system_access do
+RSpec.describe 'User with read_code custom role', feature_category: :permissions do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, :in_group) }
   let_it_be(:role) { create(:member_role, :guest, :read_code, namespace: project.group) }

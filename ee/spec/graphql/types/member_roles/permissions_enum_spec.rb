@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['MemberRolePermission'], feature_category: :system_access do
+RSpec.describe GitlabSchema.types['MemberRolePermission'], feature_category: :permissions do
   specify { expect(described_class.graphql_name).to eq('MemberRolePermission') }
 
   it 'exposes all the existing custom permissions',

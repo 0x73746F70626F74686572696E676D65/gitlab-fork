@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountMemberRolesMetric, feature_category: :system_access do
+RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountMemberRolesMetric, feature_category: :permissions do
   before do
     create(:member_role)
   end
