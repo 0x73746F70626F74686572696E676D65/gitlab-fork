@@ -13,15 +13,6 @@ module EE
             mutually_exclusive :only_protected_branches, :mirror_branch_regex
           end
         end
-
-        override :verify_mirror_branches_setting
-        def verify_mirror_branches_setting(attrs)
-          if attrs[:only_protected_branches]
-            attrs[:mirror_branch_regex] = nil
-          elsif attrs[:mirror_branch_regex].present?
-            attrs[:only_protected_branches] = false
-          end
-        end
       end
     end
   end
