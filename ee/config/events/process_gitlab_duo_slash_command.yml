@@ -9,8 +9,6 @@ extra_properties:
 identifiers:
 - user
 - namespace
-product_section: dev
-product_stage: create
 product_group: code_creation
 milestone: "16.7"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/138457

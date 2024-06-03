@@ -10,8 +10,6 @@ identifiers:
 #- project
 #- user
 #- namespace
-product_section: dev
-product_stage: manage
 product_group: compliance
 milestone: "15.0"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/87228
