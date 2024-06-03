@@ -398,7 +398,7 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
           end
         end
 
-        context 'when elasticsearch_limit_indexing off', :elastic_delete_by_query do
+        context 'when elasticsearch_limit_indexing off', :elastic_delete_by_query, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/461421' do
           before do
             stub_ee_application_setting(elasticsearch_limit_indexing: false)
           end
