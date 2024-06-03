@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab_redis_sessions,
-  :clean_gitlab_redis_rate_limiting, feature_category: :system_access do
+  :clean_gitlab_redis_rate_limiting, feature_category: :instance_resiliency do
   include SessionHelpers
   using RSpec::Parameterized::TableSyntax
 
