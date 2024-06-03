@@ -59096,7 +59096,7 @@ msgstr ""
 msgid "Wiki|Edit wiki sidebar"
 msgstr ""
 
-msgid "Wiki|Last edited by %{link_start}%{span_start}%{name}%{span_end}%{link_end}"
+msgid "Wiki|Last edited by %{author} %{timeago}"
 msgstr ""
 
 msgid "Wiki|New page"
