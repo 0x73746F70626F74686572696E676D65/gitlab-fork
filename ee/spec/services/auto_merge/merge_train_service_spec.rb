@@ -471,14 +471,6 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
 
         it { is_expected.to be_falsy }
       end
-
-      context 'when FF auto_merge_when_incomplete_pipeline_succeeds is disabled' do
-        before do
-          stub_feature_flags(auto_merge_when_incomplete_pipeline_succeeds: false)
-        end
-
-        it { is_expected.to be_falsy }
-      end
     end
   end
 
