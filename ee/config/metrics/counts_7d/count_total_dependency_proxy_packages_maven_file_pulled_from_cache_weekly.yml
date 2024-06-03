@@ -1,8 +1,6 @@
 ---
 key_path: counts.total_dependency_proxy_packages_maven_file_pulled_from_cache_weekly
 description: The number of files pulled through the Maven dependency proxy using the cache.
-product_section: ci
-product_stage: package
 product_group: package_registry
 performance_indicator_type: []
 value_type: number
