@@ -28,7 +28,7 @@ export default {
 </script>
 <template>
   <gl-filtered-search-suggestion :value="value">
-    <div class="gl-flex gl-items-center">
+    <div :data-testid="`${name}-search-token-suggestion-${value}`" class="gl-flex gl-items-center">
       <gl-icon
         name="check"
         class="gl-mr-3 gl-flex-shrink-0 gl-text-gray-700"

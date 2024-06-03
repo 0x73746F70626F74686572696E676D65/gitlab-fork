@@ -31,15 +31,31 @@ module QA
           end
 
           def filter_report_type(report)
-            wait_until(max_duration: 20, sleep_interval: 3, message: "Wait for tool dropdown to appear") do
-              has_element?('filter-tool-dropdown')
+            if has_element?("filtered-search-term", wait: 1)
+              click_element('filtered-search-term')
+              click_link('Tool')
+              selector = "tool-search-token-suggestion-#{report.upcase.sub(' ', '_')}"
+              click_element(selector)
+              click_element("search-button")
+              click_element("search-button") # Click twice to make dropdown go away
+            else
+              wait_until(max_duration: 20, sleep_interval: 3, message: "Wait for tool dropdown to appear") do
+                has_element?('filter-tool-dropdown')
+              end
+              click_element('filter-tool-dropdown')
+
+              find(status_listbox_item_selector(report)).click
+
+              # Click the dropdown to close the modal and ensure it isn't open if this function is called again
+              click_element('filter-tool-dropdown')
             end
-            click_element('filter-tool-dropdown')
+          end
 
-            find(status_listbox_item_selector(report)).click
-
-            # Click the dropdown to close the modal and ensure it isn't open if this function is called again
-            click_element('filter-tool-dropdown')
+          def clear_filter_token(token_name)
+            within_element("#{token_name}-token") do
+              click_element("close-icon")
+            end
+            click_element("search-button")
           end
 
           def status_listbox_item_selector(report)

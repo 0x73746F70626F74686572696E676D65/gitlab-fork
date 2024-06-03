@@ -202,6 +202,7 @@ export default {
     :querystring-key="toolFilterType"
     :value="querySyncValues"
     :valid-values="validValues"
+    data-testid="tool-token"
     @input="updateSelectedFromQS"
   >
     <gl-filtered-search-token

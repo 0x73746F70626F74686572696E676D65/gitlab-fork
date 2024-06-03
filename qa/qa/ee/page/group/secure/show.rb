@@ -20,9 +20,17 @@ module QA
               element 'filter-project-dropdown'
             end
 
-            def filter_project(project_id)
-              click_element('filter-project-dropdown')
-              find("[data-testid='listbox-item-#{project_id}']").click
+            def filter_project(project_id:, project_name:)
+              if has_element?('filtered-search-term', wait: 1)
+                click_element('filtered-search-term')
+                click_link('Project')
+                click_link(project_name)
+                click_element('filtered-search-term')
+                click_element('search-button')
+              else
+                click_element('filter-project-dropdown')
+                find("[data-testid='listbox-item-#{project_id}']").click
+              end
             end
 
             def has_security_status_project_for_severity?(severity, project)
