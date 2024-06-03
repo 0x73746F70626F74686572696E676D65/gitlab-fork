@@ -23,6 +23,9 @@ RSpec.describe CloudConnector::Access, models: true, feature_category: :cloud_co
   end
 
   describe '#clear_available_services_cache!' do
+    # creates CC access data; that will clear the cache before the test starts to avoid flakiness
+    let_it_be(:cloud_connector_access) { create(:cloud_connector_access) }
+
     it 'clears cache' do
       expect(CloudConnector::AvailableServices.access_data_reader)
         .to receive(:read_available_services).and_call_original.twice
@@ -31,8 +34,7 @@ RSpec.describe CloudConnector::Access, models: true, feature_category: :cloud_co
       CloudConnector::AvailableServices.available_services
 
       # Expire the memoization
-      access = create(:cloud_connector_access)
-      access.clear_available_services_cache!
+      cloud_connector_access.clear_available_services_cache!
 
       # Get service catalog and memoize the result, again.
       CloudConnector::AvailableServices.available_services
