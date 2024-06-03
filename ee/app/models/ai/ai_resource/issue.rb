@@ -26,6 +26,12 @@ module Ai
           The user is currently on a page that displays an issue with a description, comments, etc., which the user might refer to, for example, as 'current', 'this' or 'that'. The title of the issue is '#{resource.title}'. Remember to use the 'IssueReader' tool if they ask a question about the issue.
         SENTENCE
       end
+
+      def current_page_experimental_short_description
+        <<~SENTENCE
+          The user is currently on a page that displays an issue with a description, comments, etc., which the user might refer to, for example, as 'current', 'this' or 'that'. The title of the issue is '#{resource.title}'.
+        SENTENCE
+      end
     end
   end
 end
