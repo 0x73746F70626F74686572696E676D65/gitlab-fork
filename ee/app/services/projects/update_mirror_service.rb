@@ -162,9 +162,12 @@ module Projects
       result = Projects::LfsPointers::LfsImportService.new(project).execute
 
       if result[:status] == :error
+        Gitlab::Metrics::Lfs.update_objects_error_rate.increment(error: true, labels: {})
         log_error(result[:message])
         # Uncomment once https://gitlab.com/gitlab-org/gitlab-foss/issues/61834 is closed
         # raise UpdateError, result[:message]
+      else
+        Gitlab::Metrics::Lfs.update_objects_error_rate.increment(error: false, labels: {})
       end
     end
 

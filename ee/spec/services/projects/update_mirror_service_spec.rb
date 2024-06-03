@@ -2,12 +2,16 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::UpdateMirrorService do
+RSpec.describe Projects::UpdateMirrorService, feature_category: :source_code_management do
   let(:project) do
     create(:project, :repository, :mirror, import_url: Project::UNKNOWN_IMPORT_URL, only_mirror_protected_branches: false)
   end
 
   subject(:service) { described_class.new(project, project.first_owner) }
+
+  before do
+    allow(project).to receive(:lfs_enabled?).and_return(false)
+  end
 
   describe "#execute" do
     context 'unlicensed' do
@@ -39,6 +43,8 @@ RSpec.describe Projects::UpdateMirrorService do
         expect(svc).to receive(:execute)
       end
 
+      expect(Gitlab::Metrics::Lfs).to receive_message_chain(:update_objects_error_rate, :increment).with(error: false, labels: {})
+
       service.execute
     end
 
@@ -52,6 +58,8 @@ RSpec.describe Projects::UpdateMirrorService do
 
     it "returns success when updated succeeds" do
       stub_fetch_mirror(project)
+
+      expect(Gitlab::Metrics::Lfs).to receive_message_chain(:update_objects_error_rate, :increment).with(error: false, labels: {})
 
       result = service.execute
 
@@ -309,17 +317,21 @@ RSpec.describe Projects::UpdateMirrorService do
 
           it 'create a new matched branch' do
             allow(fake_regex).to receive(:match?).with(new_branch_name).and_return(true)
+
             service.execute
+
             expect(project.repository.branch_names).to include(new_branch_name)
           end
 
           it 'does not create mismatched branch' do
             service.execute
+
             expect(project.repository.branch_names).not_to include(new_branch_name)
           end
 
           it 'updates existing matched branches' do
             allow(fake_regex).to receive(:match?).with('existing-branch').and_return(true)
+
             service.execute
 
             expect(project.repository.find_branch(existing_branch_name).dereferenced_target)
@@ -420,6 +432,8 @@ RSpec.describe Projects::UpdateMirrorService do
             allow(project).to receive(:lfs_enabled?).and_return(false)
             expect(Projects::LfsPointers::LfsObjectDownloadListService).not_to receive(:new)
 
+            expect(Gitlab::Metrics::Lfs).to receive_message_chain(:update_objects_error_rate, :increment).with(error: false, labels: {})
+
             service.execute
           end
         end
@@ -434,6 +448,8 @@ RSpec.describe Projects::UpdateMirrorService do
             expect_next_instance_of(Projects::LfsPointers::LfsObjectDownloadListService) do |instance|
               expect(instance).to receive(:each_list_item)
             end
+
+            expect(Gitlab::Metrics::Lfs).to receive_message_chain(:update_objects_error_rate, :increment).with(error: false, labels: {})
 
             service.execute
           end
@@ -459,6 +475,8 @@ RSpec.describe Projects::UpdateMirrorService do
 
             # Remove once https://gitlab.com/gitlab-org/gitlab-foss/issues/61834 is closed
             it 'does not fail mirror operation' do
+              expect(Gitlab::Metrics::Lfs).to receive_message_chain(:update_objects_error_rate, :increment).with(error: true, labels: {})
+
               result = subject.execute
 
               expect(result[:status]).to eq :success
@@ -468,6 +486,8 @@ RSpec.describe Projects::UpdateMirrorService do
               expect_next_instance_of(Gitlab::UpdateMirrorServiceJsonLogger) do |instance|
                 expect(instance).to receive(:error).with(hash_including(error_message: error_message))
               end
+
+              expect(Gitlab::Metrics::Lfs).to receive_message_chain(:update_objects_error_rate, :increment).with(error: true, labels: {})
 
               subject.execute
             end
