@@ -6,8 +6,6 @@ identifiers:
 - user
 - project
 - namespace
-product_section: data-science
-product_stage: ai-powered
 product_group: duo_chat
 milestone: '16.11'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/148480

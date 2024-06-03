@@ -6,8 +6,6 @@ identifiers:
 - project
 - namespace
 - user
-product_section: sec
-product_stage: secure
 product_group: composition_analysis
 milestone: '16.10'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/145721

@@ -7,8 +7,6 @@ property_description:
 value_description:
 extra_properties:
 identifiers:
-product_section: enablement
-product_stage: systems
 product_group: geo
 milestone: "16.7"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/133435
