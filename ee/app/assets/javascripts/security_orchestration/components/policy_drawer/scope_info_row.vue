@@ -13,7 +13,6 @@ import {
   isGroup,
   isProject,
 } from 'ee/security_orchestration/components/utils';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
 import LoaderWithMessage from '../loader_with_message.vue';
 import ComplianceFrameworksToggleList from './compliance_frameworks_toggle_list.vue';
@@ -33,7 +32,6 @@ export default {
     scopeTitle: SCOPE_TITLE,
     defaultProjectText: DEFAULT_PROJECT_TEXT,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: ['namespaceType', 'namespacePath'],
   apollo: {
     linkedSppItems: {
@@ -52,7 +50,7 @@ export default {
         return [...linkedProjects, ...linkedNamespaces];
       },
       skip() {
-        return this.shouldSkipDependenciesCheck;
+        return this.isGroup;
       },
     },
   },
@@ -95,9 +93,6 @@ export default {
     },
     hasMultipleProjectsLinked() {
       return this.linkedSppItems.length > 1;
-    },
-    shouldSkipDependenciesCheck() {
-      return this.isGroup || !this.glFeatures.securityPoliciesPolicyScopeProject;
     },
     showDefaultText() {
       return this.isProject && !this.hasMultipleProjectsLinked;

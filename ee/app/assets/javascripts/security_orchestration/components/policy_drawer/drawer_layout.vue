@@ -1,7 +1,6 @@
 <script>
 import { GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 import { getSecurityPolicyListUrl } from '~/editor/extensions/source_editor_security_policy_schema_ext';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { isPolicyInherited, policyHasNamespace, isGroup } from '../utils';
 import {
   DEFAULT_DESCRIPTION_LABEL,
@@ -38,7 +37,6 @@ export default {
     groupTypeLabel: GROUP_TYPE_LABEL,
     projectTypeLabel: PROJECT_TYPE_LABEL,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: { namespaceType: {} },
   props: {
     description: {
@@ -62,9 +60,6 @@ export default {
     },
   },
   computed: {
-    showScopeInfoBox() {
-      return isGroup(this.namespaceType) || this.glFeatures.securityPoliciesPolicyScopeProject;
-    },
     isInherited() {
       return isPolicyInherited(this.policy.source);
     },
@@ -104,7 +99,7 @@ export default {
       </div>
     </info-row>
 
-    <scope-info-row v-if="showScopeInfoBox" :policy-scope="policyScope" />
+    <scope-info-row :policy-scope="policyScope" />
 
     <info-row :label="$options.i18n.sourceTitle">
       <div data-testid="policy-source">

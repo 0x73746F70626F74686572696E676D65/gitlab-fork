@@ -133,9 +133,6 @@ describe('ScopeInfoRow', () => {
       createComponent({
         provide: {
           namespaceType: NAMESPACE_TYPES.PROJECT,
-          glFeatures: {
-            securityPoliciesPolicyScopeProject: true,
-          },
         },
       });
 
@@ -164,22 +161,6 @@ describe('ScopeInfoRow', () => {
       expect(findPolicyScopeProjectText().text()).toBe(
         'This policy is applied to current project.',
       );
-    });
-
-    it('does not check dependencies on project level when ff is disabled', async () => {
-      createComponent({
-        provide: {
-          namespaceType: NAMESPACE_TYPES.PROJECT,
-          glFeatures: {
-            securityPoliciesPolicyScopeProject: false,
-          },
-        },
-      });
-
-      await waitForPromises();
-
-      expect(requestHandler).toHaveBeenCalledTimes(0);
-      expect(findLoader().exists()).toBe(false);
     });
   });
 });

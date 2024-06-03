@@ -303,24 +303,18 @@ describe('EditorLayout component', () => {
 
   describe('policy scope', () => {
     it.each`
-      flagEnabledProject | type                       | expectedResult
-      ${true}            | ${NAMESPACE_TYPES.GROUP}   | ${true}
-      ${false}           | ${NAMESPACE_TYPES.PROJECT} | ${false}
-      ${true}            | ${NAMESPACE_TYPES.PROJECT} | ${true}
-      ${true}            | ${NAMESPACE_TYPES.GROUP}   | ${true}
-    `(
-      'renders policy scope conditionally for $namespaceType level based on feature flag',
-      ({ flagEnabledProject, type, expectedResult }) => {
-        factory({
-          provide: {
-            namespaceType: type,
-            glFeatures: { securityPoliciesPolicyScopeProject: flagEnabledProject },
-          },
-        });
+      type
+      ${NAMESPACE_TYPES.GROUP}
+      ${NAMESPACE_TYPES.PROJECT}
+    `('renders policy scope conditionally for $namespaceType level based', ({ type }) => {
+      factory({
+        provide: {
+          namespaceType: type,
+        },
+      });
 
-        expect(findScopeSection().exists()).toBe(expectedResult);
-      },
-    );
+      expect(findScopeSection().exists()).toBe(true);
+    });
 
     it('should set policy properties', () => {
       const payload = { policy_scope: { compliance_frameworks: [{ id: 'test' }] } };

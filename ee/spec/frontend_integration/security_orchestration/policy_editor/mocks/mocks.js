@@ -29,6 +29,7 @@ export const DEFAULT_PROVIDE = {
   parsedSoftwareLicenses: [],
   timezones: [],
   customCiToggleEnabled: true,
+  existingPolicy: undefined,
 };
 
 export const SCAN_EXECUTION_POLICY = 'scan_execution_policy';

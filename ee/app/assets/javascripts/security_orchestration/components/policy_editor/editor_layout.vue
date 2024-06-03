@@ -182,9 +182,6 @@ export default {
     isGroupLevel() {
       return isGroup(this.namespaceType);
     },
-    shouldShowScope() {
-      return this.isGroupLevel || this.glFeatures.securityPoliciesPolicyScopeProject;
-    },
     deleteModalTitle() {
       return sprintf(s__('SecurityOrchestration|Delete policy: %{policy}'), {
         policy: this.policy.name,
@@ -313,7 +310,7 @@ export default {
               />
             </gl-form-group>
 
-            <dim-disable-container v-if="shouldShowScope" :disabled="hasParsingError">
+            <dim-disable-container :disabled="hasParsingError">
               <template #title>
                 <h4>{{ $options.i18n.SCOPE_LABEL }}</h4>
               </template>
