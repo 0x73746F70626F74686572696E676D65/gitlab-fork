@@ -5,7 +5,10 @@ require 'spec_helper'
 RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversService, feature_category: :security_policy_management do
   describe '#execute' do
     let_it_be(:group) { create(:group) }
+    let_it_be(:subgroup) { create(:group, :private, parent: group) }
+    let_it_be(:subgroup_2) { create(:group, :private, parent: group) }
     let_it_be(:project) { create(:project, :public, namespace: group) }
+    let_it_be(:subgroup_project) { create(:project, namespace: subgroup_2) }
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
     let_it_be(:user) { create(:user) }
 
@@ -153,6 +156,20 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
             expect(subject[:groups]).to include(other_group)
             expect(subject[:all_groups]).to include(other_group)
           end
+        end
+      end
+
+      context 'when subgroup' do
+        let(:container) { subgroup_project }
+        let(:action) { { type: 'require_approval', approvals_required: 1, group_approvers_ids: [subgroup.id] } }
+
+        it 'returns group approvers' do
+          response = service.execute
+
+          expect(response[:status]).to eq(:success)
+          expect(response[:groups]).to match_array([subgroup])
+          expect(response[:all_groups]).to match_array([subgroup])
+          expect(response[:users]).to be_empty
         end
       end
     end
