@@ -187,7 +187,7 @@ module Keeps
           'maintenance::refactor',
           'test',
           'failure::flaky-test',
-          'pipeline:expedite',
+          'pipeline::expedited',
           'quarantine',
           'quarantine::flaky',
           group_label
