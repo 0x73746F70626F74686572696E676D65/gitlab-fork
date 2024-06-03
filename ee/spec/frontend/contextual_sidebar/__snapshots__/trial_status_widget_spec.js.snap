@@ -80,6 +80,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
         class="gl-shrink-0 gl-text-blue-600!"
         name="information-o"
         size="16"
+        variant="current"
       />
       <div>
         <div

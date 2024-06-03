@@ -17,6 +17,7 @@ exports[`Target component without target renders Not Set with icon 1`] = `
     class="gl-mr-1"
     name="information-o"
     size="16"
+    variant="current"
   />
   Not Set
 </span>

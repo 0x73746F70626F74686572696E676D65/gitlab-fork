@@ -114,7 +114,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="gl-icon icon-unknown s14"
+              class="gl-fill-current gl-icon icon-unknown s14"
               data-testid="severity-unknown-icon"
               role="img"
             >
@@ -138,7 +138,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
           >
             <svg
               aria-hidden="true"
-              class="gl-flex-shrink-0 gl-icon gl-mr-3 icon-unknown s12"
+              class="gl-fill-current gl-flex-shrink-0 gl-icon gl-mr-3 icon-unknown s12"
               data-testid="severity-unknown-icon"
               role="img"
             >
@@ -182,7 +182,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
               </span>
               <svg
                 aria-hidden="true"
-                class="gl-button-icon gl-icon gl-new-dropdown-chevron s16"
+                class="gl-button-icon gl-fill-current gl-icon gl-new-dropdown-chevron s16"
                 data-testid="chevron-down-icon"
                 role="img"
               >
@@ -241,7 +241,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   >
                     <svg
                       aria-hidden="true"
-                      class="gl-align-self-start gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
+                      class="gl-align-self-start gl-fill-current gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
                       data-testid="dropdown-item-checkbox"
                       role="img"
                     >
@@ -257,7 +257,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-flex-shrink-0 gl-icon gl-mr-3 icon-critical s12"
+                          class="gl-fill-current gl-flex-shrink-0 gl-icon gl-mr-3 icon-critical s12"
                           data-testid="severity-critical-icon"
                           role="img"
                         >
@@ -285,7 +285,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   >
                     <svg
                       aria-hidden="true"
-                      class="gl-align-self-start gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
+                      class="gl-align-self-start gl-fill-current gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
                       data-testid="dropdown-item-checkbox"
                       role="img"
                     >
@@ -301,7 +301,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-flex-shrink-0 gl-icon gl-mr-3 icon-high s12"
+                          class="gl-fill-current gl-flex-shrink-0 gl-icon gl-mr-3 icon-high s12"
                           data-testid="severity-high-icon"
                           role="img"
                         >
@@ -329,7 +329,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   >
                     <svg
                       aria-hidden="true"
-                      class="gl-align-self-start gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
+                      class="gl-align-self-start gl-fill-current gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
                       data-testid="dropdown-item-checkbox"
                       role="img"
                     >
@@ -345,7 +345,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-flex-shrink-0 gl-icon gl-mr-3 icon-medium s12"
+                          class="gl-fill-current gl-flex-shrink-0 gl-icon gl-mr-3 icon-medium s12"
                           data-testid="severity-medium-icon"
                           role="img"
                         >
@@ -373,7 +373,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   >
                     <svg
                       aria-hidden="true"
-                      class="gl-align-self-start gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
+                      class="gl-align-self-start gl-fill-current gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
                       data-testid="dropdown-item-checkbox"
                       role="img"
                     >
@@ -389,7 +389,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-flex-shrink-0 gl-icon gl-mr-3 icon-low s12"
+                          class="gl-fill-current gl-flex-shrink-0 gl-icon gl-mr-3 icon-low s12"
                           data-testid="severity-low-icon"
                           role="img"
                         >
@@ -418,7 +418,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   >
                     <svg
                       aria-hidden="true"
-                      class="gl-align-self-start gl-icon gl-mt-3 gl-new-dropdown-item-check-icon s16"
+                      class="gl-align-self-start gl-fill-current gl-icon gl-mt-3 gl-new-dropdown-item-check-icon s16"
                       data-testid="dropdown-item-checkbox"
                       role="img"
                     >
@@ -434,7 +434,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="gl-flex-shrink-0 gl-icon gl-mr-3 icon-unknown s12"
+                          class="gl-fill-current gl-flex-shrink-0 gl-icon gl-mr-3 icon-unknown s12"
                           data-testid="severity-unknown-icon"
                           role="img"
                         >

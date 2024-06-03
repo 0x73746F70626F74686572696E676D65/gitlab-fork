@@ -40,6 +40,7 @@ exports[`Environment matchs the snapshot 1`] = `
           <gl-icon-stub
             name="work"
             size="14"
+            variant="current"
           />
           <gl-link-stub
             class="str-truncated"
