@@ -961,6 +961,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_9259aae92378() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "packages_packages"
+  WHERE "packages_packages"."id" = NEW."package_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_94514aeadc50() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -12922,7 +12938,8 @@ CREATE TABLE packages_build_infos (
     id bigint NOT NULL,
     package_id integer NOT NULL,
     pipeline_id_convert_to_bigint integer,
-    pipeline_id bigint
+    pipeline_id bigint,
+    project_id bigint
 );
 
 CREATE SEQUENCE packages_build_infos_id_seq
@@ -27074,6 +27091,8 @@ CREATE INDEX index_p_ci_runner_machine_builds_on_runner_machine_id ON ONLY p_ci_
 
 CREATE INDEX index_packages_build_infos_on_pipeline_id ON packages_build_infos USING btree (pipeline_id);
 
+CREATE INDEX index_packages_build_infos_on_project_id ON packages_build_infos USING btree (project_id);
+
 CREATE INDEX index_packages_build_infos_package_id_id ON packages_build_infos USING btree (package_id, id);
 
 CREATE INDEX index_packages_build_infos_package_id_pipeline_id_id ON packages_build_infos USING btree (package_id, pipeline_id, id);
@@ -30380,6 +30399,8 @@ CREATE TRIGGER trigger_8e66b994e8f0 BEFORE INSERT OR UPDATE ON audit_events_stre
 
 CREATE TRIGGER trigger_8fbb044c64ad BEFORE INSERT OR UPDATE ON design_management_designs FOR EACH ROW EXECUTE FUNCTION trigger_8fbb044c64ad();
 
+CREATE TRIGGER trigger_9259aae92378 BEFORE INSERT OR UPDATE ON packages_build_infos FOR EACH ROW EXECUTE FUNCTION trigger_9259aae92378();
+
 CREATE TRIGGER trigger_94514aeadc50 BEFORE INSERT OR UPDATE ON deployment_approvals FOR EACH ROW EXECUTE FUNCTION trigger_94514aeadc50();
 
 CREATE TRIGGER trigger_a253cb3cacdf BEFORE INSERT OR UPDATE ON dora_daily_metrics FOR EACH ROW EXECUTE FUNCTION trigger_a253cb3cacdf();
@@ -31361,6 +31382,9 @@ ALTER TABLE ONLY remote_development_namespace_cluster_agent_mappings
 
 ALTER TABLE ONLY zoekt_indices
     ADD CONSTRAINT fk_bf205d4773 FOREIGN KEY (zoekt_enabled_namespace_id) REFERENCES zoekt_enabled_namespaces(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY packages_build_infos
+    ADD CONSTRAINT fk_c0bc6b19ff FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY design_management_versions
     ADD CONSTRAINT fk_c1440b4896 FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL;
