@@ -14,7 +14,7 @@ module QA
       let(:group) { create(:group, path: "epic-milestone-group-#{SecureRandom.hex(8)}") }
       let(:project) { create(:project, name: "epic-milestone-project-#{SecureRandom.hex(8)}", group: group) }
 
-      it 'updates epic dates when updating milestones', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347958' do
+      it 'updates epic dates when updating milestones', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347958' do
         epic, milestone = create_epic_issue_milestone
         new_milestone_start_date = (Date.today + 20).iso8601
         new_milestone_due_date = (Date.today + 30).iso8601
