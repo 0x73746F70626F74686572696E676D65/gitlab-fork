@@ -114,7 +114,6 @@ module Vulnerabilities
     scope :by_severities, ->(values) { where(severity: values) }
     scope :by_confidences, ->(values) { where(confidence: values) }
     scope :by_location_fingerprints, ->(values) { where(location_fingerprint: values) }
-    scope :by_project_fingerprints, ->(values) { where(project_fingerprint: values) }
     scope :by_uuid, ->(uuids) { where(uuid: uuids) }
     scope :excluding_uuids, ->(uuids) { where.not(uuid: uuids) }
     scope :eager_load_comparison_entities, -> { includes(:scanner, :primary_identifier) }
