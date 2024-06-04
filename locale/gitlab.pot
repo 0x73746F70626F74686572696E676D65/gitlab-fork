@@ -39411,6 +39411,9 @@ msgstr ""
 msgid "ProductAnalytics|Add the script to the page and assign the client SDK to window:"
 msgstr ""
 
+msgid "ProductAnalytics|Additional permissions required"
+msgstr ""
+
 msgid "ProductAnalytics|After your application has been instrumented and data is being collected, you can visualize and monitor behaviors in your %{linkStart}analytics dashboards%{linkEnd}."
 msgstr ""
 
@@ -39481,6 +39484,9 @@ msgid "ProductAnalytics|Connect your own provider"
 msgstr ""
 
 msgid "ProductAnalytics|Contact our sales team"
+msgstr ""
+
+msgid "ProductAnalytics|Contact the GitLab administrator or project maintainer to onboard this project with product analytics. %{linkStart}Learn more%{linkEnd}."
 msgstr ""
 
 msgid "ProductAnalytics|Continue set up"

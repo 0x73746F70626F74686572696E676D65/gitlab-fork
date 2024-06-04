@@ -26,7 +26,7 @@ export default () => {
 
   const {
     dashboardProject: analyticsDashboardPointerJSON = '',
-    canConfigureDashboardsProject,
+    canConfigureProjectSettings: canConfigureProjectSettingsString,
     canSelectGitlabManagedProvider,
     managedClusterPurchased,
     trackingKey,
@@ -53,6 +53,7 @@ export default () => {
   } = el.dataset;
 
   const analyticsDashboardPointer = buildAnalyticsDashboardPointer(analyticsDashboardPointerJSON);
+  const canConfigureProjectSettings = parseBoolean(canConfigureProjectSettingsString);
 
   Vue.use(VueApollo);
 
@@ -86,7 +87,7 @@ export default () => {
     },
   });
 
-  const router = createRouter(routerBase, breadcrumbState);
+  const router = createRouter(routerBase, breadcrumbState, { canConfigureProjectSettings });
 
   injectVueAppBreadcrumbs(router, AnalyticsDashboardsBreadcrumbs);
 
@@ -99,7 +100,7 @@ export default () => {
       aiGenerateCubeQueryEnabled: parseBoolean(aiGenerateCubeQueryEnabled),
       breadcrumbState,
       customDashboardsProject: analyticsDashboardPointer,
-      canConfigureDashboardsProject: parseBoolean(canConfigureDashboardsProject),
+      canConfigureProjectSettings,
       canSelectGitlabManagedProvider: parseBoolean(canSelectGitlabManagedProvider),
       managedClusterPurchased: parseBoolean(managedClusterPurchased),
       trackingKey,

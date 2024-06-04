@@ -7,7 +7,7 @@ module Mutations
 
       include FindsProject
 
-      authorize :developer_access
+      authorize :maintainer_access
 
       argument :project_path, GraphQL::Types::ID,
                required: true,

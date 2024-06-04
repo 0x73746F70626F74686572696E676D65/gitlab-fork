@@ -116,12 +116,32 @@ RSpec.shared_examples 'product analytics dashboards' do
           stub_licensed_features(combined_project_analytics_dashboards: true, product_analytics: true)
         end
 
-        context 'without the correct user permissions' do
+        context 'with reporter permissions' do
           before do
             project.add_reporter(user)
           end
 
           it_behaves_like 'does not render the product analytics list item'
+        end
+
+        context 'with developer permissions' do
+          before do
+            project.add_developer(user)
+          end
+
+          it 'renders the onboarding list item' do
+            visit_page
+            expect(page).to have_content(s_('Product Analytics'))
+          end
+
+          it 'does not allow onboarding' do
+            visit_page
+            expect(page).to have_content(s_('Additional permissions required'))
+
+            visit project_analytics_dashboards_path(project, vueroute: 'product-analytics-onboarding')
+            wait_for_requests
+            expect(page).to have_content(s_('Dashboard not found'))
+          end
         end
 
         context 'with the correct user permissions' do

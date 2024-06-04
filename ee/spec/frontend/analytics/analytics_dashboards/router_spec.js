@@ -14,22 +14,23 @@ describe('Dashboards list router', () => {
   };
 
   let router = null;
-
-  beforeEach(() => {
-    router = createRouter(base, breadcrumbState);
-  });
-
   afterEach(() => {
     router = null;
     breadcrumbState.name = '';
   });
 
   it('returns a router object', () => {
+    router = createRouter(base, breadcrumbState, { canConfigureProjectSettings: true });
+
     // vue-router v3 and v4 store base at different locations
     expect(router.history?.base ?? router.options.history?.base).toBe(base);
   });
 
   describe('router', () => {
+    beforeEach(() => {
+      router = createRouter(base, breadcrumbState, { canConfigureProjectSettings: true });
+    });
+
     it.each`
       path                               | component                          | name
       ${'/'}                             | ${DashboardsList}                  | ${s__('Analytics|Analytics dashboards')}
@@ -72,5 +73,22 @@ describe('Dashboards list router', () => {
 
       expect(router.currentRoute.meta.root).toBe(true);
     });
+  });
+
+  describe('when user does not have permission to configure project settings', () => {
+    beforeEach(() => {
+      router = createRouter(base, breadcrumbState, { canConfigureProjectSettings: false });
+    });
+
+    it.each(['/product-analytics-onboarding', '/product-analytics-setup'])(
+      'does not include the "%s" route',
+      (onboardingRoute) => {
+        const productAnalyticsOnboardingRoute = router.options.routes.find(
+          (route) => route.path === onboardingRoute,
+        );
+
+        expect(productAnalyticsOnboardingRoute).toBeUndefined();
+      },
+    );
   });
 });

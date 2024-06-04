@@ -1,7 +1,8 @@
-import { GlIcon, GlBadge, GlButton, GlPopover } from '@gitlab/ui';
+import { GlIcon, GlBadge, GlButton, GlPopover, GlSprintf, GlLink } from '@gitlab/ui';
 import FeatureListItem from 'ee/analytics/analytics_dashboards/components/list/feature_list_item.vue';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import { __ } from '~/locale';
+import { RENDER_ALL_SLOTS_TEMPLATE, stubComponent } from 'helpers/stub_component';
 
 describe('FeatureListItem', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
@@ -24,6 +25,11 @@ describe('FeatureListItem', () => {
       propsData: {
         ...defaultProps,
         ...props,
+      },
+      stubs: {
+        GlSprintf: stubComponent(GlSprintf, {
+          template: RENDER_ALL_SLOTS_TEMPLATE,
+        }),
       },
     });
   };
@@ -74,15 +80,22 @@ describe('FeatureListItem', () => {
   });
 
   describe('badge popover', () => {
-    beforeEach(() => {
-      createWrapper({ badgeText: 'waiting', badgePopoverText: 'waiting for the foo to bar.' });
-    });
-
     it('renders a popover with the expected text', () => {
+      createWrapper({ badgeText: 'waiting', badgePopoverText: 'waiting for the foo to bar.' });
       const popover = findBadgePopover();
 
       expect(popover.text()).toBe('waiting for the foo to bar.');
       expect(popover.props('target')).toBe(findBadge().attributes('id'));
+    });
+
+    it('renders a popover with link when provided', () => {
+      createWrapper({
+        badgeText: 'waiting',
+        badgePopoverText: 'waiting for the foo to bar %{linkStart}Learn more%{linkEnd}.',
+        badgePopoverLink: '/foo',
+      });
+
+      expect(findBadgePopover().findComponent(GlLink).attributes('href')).toBe('/foo');
     });
   });
 

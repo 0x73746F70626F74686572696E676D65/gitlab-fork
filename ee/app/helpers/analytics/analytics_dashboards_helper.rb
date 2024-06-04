@@ -13,7 +13,7 @@ module Analytics
         is_project: is_project.to_s,
         is_group: is_group.to_s,
         dashboard_project: analytics_dashboard_pointer_project(namespace)&.to_json,
-        can_configure_dashboards_project: can_configure_dashboards_project?(namespace).to_s,
+        can_configure_project_settings: can_configure_project_settings?(namespace).to_s,
         can_select_gitlab_managed_provider: can_select_gitlab_managed_provider?(namespace).to_s,
         managed_cluster_purchased: managed_cluster_purchased?(namespace).to_s,
         tracking_key: can_read_product_analytics && is_project ? tracking_key(namespace) : nil,
@@ -88,7 +88,7 @@ module Analytics
       false
     end
 
-    def can_configure_dashboards_project?(namespace)
+    def can_configure_project_settings?(namespace)
       return false unless project?(namespace)
 
       can?(current_user, :admin_project, namespace)

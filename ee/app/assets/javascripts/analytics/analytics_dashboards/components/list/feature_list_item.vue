@@ -1,6 +1,6 @@
 <script>
 import { uniqueId } from 'lodash';
-import { GlIcon, GlBadge, GlButton, GlPopover } from '@gitlab/ui';
+import { GlIcon, GlBadge, GlButton, GlLink, GlPopover, GlSprintf } from '@gitlab/ui';
 import { __ } from '~/locale';
 
 export default {
@@ -9,7 +9,9 @@ export default {
     GlButton,
     GlIcon,
     GlBadge,
+    GlLink,
     GlPopover,
+    GlSprintf,
   },
   props: {
     title: {
@@ -30,10 +32,16 @@ export default {
       default: null,
     },
     badgePopoverText: { type: String, required: false, default: null },
+    badgePopoverLink: { type: String, required: false, default: null },
     actionText: {
       type: String,
       required: false,
       default: __('Set up'),
+    },
+    actionDisabled: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   featureAvatarColor: 1,
@@ -60,11 +68,18 @@ export default {
       <div class="gl-float-right">
         <template v-if="badgeText">
           <gl-badge :id="$options.badgeId">{{ badgeText }}</gl-badge>
-          <gl-popover v-if="badgePopoverText" :target="$options.badgeId">{{
-            badgePopoverText
-          }}</gl-popover>
+          <gl-popover v-if="badgePopoverText" :target="$options.badgeId">
+            <gl-sprintf v-if="badgePopoverLink" :message="badgePopoverText">
+              <template #link="{ content }">
+                <gl-link :href="badgePopoverLink">{{ content }}</gl-link>
+              </template>
+            </gl-sprintf>
+            <template v-else>{{ badgePopoverText }}</template>
+          </gl-popover>
         </template>
-        <gl-button data-testid="setup-button" :to="to">{{ actionText }}</gl-button>
+        <gl-button data-testid="setup-button" :to="to" :disabled="actionDisabled">{{
+          actionText
+        }}</gl-button>
       </div>
     </div>
   </li>

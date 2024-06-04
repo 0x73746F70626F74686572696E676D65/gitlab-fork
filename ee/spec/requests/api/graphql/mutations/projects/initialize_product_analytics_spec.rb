@@ -53,6 +53,16 @@ RSpec.describe 'Initialize Product Analytics', feature_category: :product_analyt
         end
       end
 
+      context 'when user is a project developer' do
+        before do
+          project.add_developer(current_user)
+        end
+
+        it_behaves_like 'a mutation that returns top-level errors',
+          errors: ['The resource that you are attempting to access does not exist '\
+                   'or you don\'t have permission to perform this action']
+      end
+
       context 'when user is not a project member' do
         it_behaves_like 'a mutation that returns top-level errors',
           errors: ['The resource that you are attempting to access does not exist '\

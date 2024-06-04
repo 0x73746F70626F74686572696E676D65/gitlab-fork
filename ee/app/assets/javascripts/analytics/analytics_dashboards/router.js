@@ -10,7 +10,7 @@ import AnalyticsVisualizationDesigner from './components/analytics_visualization
 
 Vue.use(VueRouter);
 
-export default (base, breadcrumbState) => {
+export default (base, breadcrumbState, permissions = {}) => {
   return new VueRouter({
     mode: 'history',
     base,
@@ -32,22 +32,26 @@ export default (base, breadcrumbState) => {
           getName: () => s__('Analytics|Visualization designer'),
         },
       },
-      {
-        name: 'product-analytics-onboarding',
-        path: '/product-analytics-onboarding',
-        component: ProductAnalyticsOnboardingView,
-        meta: {
-          getName: () => s__('ProductAnalytics|Product analytics onboarding'),
-        },
-      },
-      {
-        name: 'instrumentation-detail',
-        path: '/product-analytics-setup',
-        component: ProductAnalyticsOnboardingSetup,
-        meta: {
-          getName: () => s__('ProductAnalytics|Product analytics onboarding'),
-        },
-      },
+      ...(permissions.canConfigureProjectSettings
+        ? [
+            {
+              name: 'product-analytics-onboarding',
+              path: '/product-analytics-onboarding',
+              component: ProductAnalyticsOnboardingView,
+              meta: {
+                getName: () => s__('ProductAnalytics|Product analytics onboarding'),
+              },
+            },
+            {
+              name: 'instrumentation-detail',
+              path: '/product-analytics-setup',
+              component: ProductAnalyticsOnboardingSetup,
+              meta: {
+                getName: () => s__('ProductAnalytics|Product analytics onboarding'),
+              },
+            },
+          ]
+        : []),
       {
         name: 'dashboard-new',
         path: '/new',
