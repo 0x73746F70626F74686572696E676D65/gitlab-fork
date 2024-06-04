@@ -65,7 +65,7 @@ module QA
         it_behaves_like 'selected developer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347774'
       end
 
-      context 'when only one group is allowed to merge and push to a protected branch' do
+      context 'when only one group is allowed to merge and push to a protected branch', :blocking do
         let(:group) { create(:group, path: "access-to-protected-branch-#{SecureRandom.hex(8)}") }
 
         let(:project) { create(:project, :with_readme, name: 'group-with-access-to-protected-branch') }
@@ -99,7 +99,7 @@ module QA
         it_behaves_like 'selected developer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347773'
       end
 
-      context 'when a sub-group has push access, a developer in the parent group does not have push access' do
+      context 'when a sub-group has push access, a developer in the parent group does not have push access', :blocking do
         let(:parent_group) { create(:group, path: "access-to-protected-branch-#{SecureRandom.hex(8)}") }
         let(:sub_group) { create(:group, path: "sub-group-with-push-#{SecureRandom.hex(8)}", sandbox: parent_group) }
         let(:project) { create(:project, :with_readme, name: 'project-with-subgroup-with-push-access', group: parent_group) }
