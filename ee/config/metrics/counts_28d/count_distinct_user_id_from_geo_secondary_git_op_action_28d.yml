@@ -1,8 +1,6 @@
 ---
 key_path: count_distinct_user_id_from_geo_secondary_git_op_action_28d
 description: This represents the count of unique monthly users triggering Git operations on secondary sites.
-product_section: enablement
-product_stage: systems
 product_group: geo
 performance_indicator_type: []
 value_type: number
