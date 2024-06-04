@@ -2,7 +2,7 @@
 
 module Ai
   class CodeSuggestionsUsage < ClickHouseModel
-    self.table_name = 'code_suggestions_usages'
+    self.table_name = 'code_suggestion_usages'
 
     EVENTS = {
       'code_suggestions_requested' => 1, # old event name
@@ -18,12 +18,6 @@ module Ai
     validates :event, inclusion: { in: EVENTS.keys }
     validates :user, presence: true
     validates :timestamp, presence: true
-
-    def store
-      return false unless valid?
-
-      ::ClickHouse::WriteBuffer.write_event(to_clickhouse_csv_row)
-    end
 
     def to_clickhouse_csv_row
       {
