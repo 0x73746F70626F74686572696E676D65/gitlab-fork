@@ -1,8 +1,6 @@
 ---
 key_path: counts.saml_group_links
 description: "Count of SamlGroupLinks created for Group Sync `https://docs.gitlab.com/ee/user/group/saml_sso/#group-sync`"
-product_section: sec
-product_stage: govern
 product_group: authentication
 value_type: number
 status: active

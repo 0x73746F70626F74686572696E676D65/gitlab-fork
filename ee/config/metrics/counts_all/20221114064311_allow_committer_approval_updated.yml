@@ -1,8 +1,6 @@
 ---
 key_path: counts.allow_committer_approval_updated
 description: "Count of event triggered on updating prevent merge request approval from committers from group merge request setting"
-product_section: sec
-product_stage: govern
 product_group: compliance
 value_type: number
 status: active

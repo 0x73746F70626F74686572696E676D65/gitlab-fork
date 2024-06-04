@@ -2,8 +2,6 @@
 data_category: optional
 key_path: compliance_unique_visits.g_compliance_dashboard
 description: Removed as duplicate of redis_hll_counters.compliance.g_compliance_dashboard_weekly
-product_section: sec
-product_stage: govern
 product_group: compliance
 value_type: number
 status: removed

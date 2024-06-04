@@ -2,8 +2,6 @@
 data_category: optional
 key_path: usage_activity_by_stage.manage.custom_compliance_frameworks
 description: Total count of all custom compliance framework labels
-product_section: sec
-product_stage: govern
 product_group: compliance
 value_type: number
 status: active

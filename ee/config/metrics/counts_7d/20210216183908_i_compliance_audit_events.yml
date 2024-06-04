@@ -2,8 +2,6 @@
 data_category: optional
 key_path: compliance_unique_visits.i_compliance_audit_events
 description: Removed as duplicate of redis_hll_counters.compliance.i_compliance_audit_events_weekly
-product_section: sec
-product_stage: govern
 product_group: compliance
 value_type: number
 status: removed

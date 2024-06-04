@@ -1,8 +1,6 @@
 ---
 key_path: redis_hll_counters.govern.users_visiting_security_policies_monthly
 description: Unique count of security policies visits in a given month
-product_section: sec
-product_stage: govern
 product_group: security_policies
 value_type: number
 status: active

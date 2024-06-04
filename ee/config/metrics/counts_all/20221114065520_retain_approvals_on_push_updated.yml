@@ -1,8 +1,6 @@
 ---
 key_path: counts.retain_approvals_on_push_updated
 description: "Count of event triggered on updating require new approvals when new commits are added to an MR from group merge request setting"
-product_section: sec
-product_stage: govern
 product_group: compliance
 value_type: number
 status: active
