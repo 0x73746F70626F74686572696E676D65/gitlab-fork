@@ -58,7 +58,7 @@ RSpec.describe Gitlab::ImportExport::Project::DeployKeysRestorer, feature_catego
     end
 
     it 'logs the unauthorized user' do
-      expect(::Gitlab::Import::Logger).to receive(:warn).once.with(
+      expect(::Import::Framework::Logger).to receive(:warn).once.with(
         message: "User tried to access unauthorized service",
         username: user.username,
         user_id: user.id,
