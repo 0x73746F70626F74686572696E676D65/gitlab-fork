@@ -7,7 +7,7 @@ import {
   USAGE_OVERVIEW_IDENTIFIER_MERGE_REQUESTS,
   USAGE_OVERVIEW_IDENTIFIER_PIPELINES,
 } from '~/analytics/shared/constants';
-import UsageOverviewDataSource, {
+import fetch, {
   prepareQuery,
   extractUsageMetrics,
   extractUsageNamespaceData,
@@ -97,15 +97,10 @@ describe('Usage overview Data Source', () => {
   });
 
   describe('fetch', () => {
-    let dataSource;
-    beforeEach(() => {
-      dataSource = new UsageOverviewDataSource();
-    });
-
     it(`will request the namespace's usage overview metrics`, async () => {
       jest.spyOn(defaultClient, 'query').mockResolvedValue({ data: {} });
 
-      obj = await dataSource.fetch({ namespace, queryOverrides: mockQuery });
+      obj = await fetch({ namespace, queryOverrides: mockQuery });
 
       expect(defaultClient.query).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -127,7 +122,7 @@ describe('Usage overview Data Source', () => {
     it('will only request the specified metrics', async () => {
       jest.spyOn(defaultClient, 'query').mockResolvedValue({ data: {} });
 
-      obj = await dataSource.fetch({
+      obj = await fetch({
         namespace,
         queryOverrides: { filters: { include: [USAGE_OVERVIEW_IDENTIFIER_MERGE_REQUESTS] } },
       });
@@ -156,7 +151,7 @@ describe('Usage overview Data Source', () => {
     `('$label returns the no data object', async ({ params }) => {
       jest.spyOn(defaultClient, 'query').mockResolvedValue({ data: {} });
 
-      obj = await dataSource.fetch(params);
+      obj = await fetch(params);
 
       expect(obj).toMatchObject({ metrics: mockUsageMetricsNoData });
     });
@@ -165,7 +160,7 @@ describe('Usage overview Data Source', () => {
       beforeEach(() => {
         jest.spyOn(defaultClient, 'query').mockRejectedValue();
 
-        obj = dataSource.fetch({ namespace, queryOverrides: mockQuery });
+        obj = fetch({ namespace, queryOverrides: mockQuery });
       });
 
       it('returns the no data object', async () => {
@@ -179,7 +174,7 @@ describe('Usage overview Data Source', () => {
           .spyOn(defaultClient, 'query')
           .mockResolvedValue({ data: mockUsageMetricsQueryResponse });
 
-        obj = await dataSource.fetch({ namespace, queryOverrides: mockQuery });
+        obj = await fetch({ namespace, queryOverrides: mockQuery });
       });
 
       it('will fetch the usage overview data', () => {

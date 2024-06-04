@@ -1,9 +1,9 @@
 <script>
-import { GlLink, GlSprintf, GlButton } from '@gitlab/ui';
+import { GlButton, GlLink, GlSprintf } from '@gitlab/ui';
 import isString from 'lodash/isString';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { isEmptyPanelData } from 'ee/vue_shared/components/customizable_dashboard/utils';
-import { VARIANT_DANGER, VARIANT_WARNING, VARIANT_INFO } from '~/alert';
+import { VARIANT_DANGER, VARIANT_INFO, VARIANT_WARNING } from '~/alert';
 import { HTTP_STATUS_BAD_REQUEST } from '~/lib/utils/http_status';
 import { __, s__, sprintf } from '~/locale';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
@@ -74,7 +74,6 @@ export default {
     const validationErrors = this.visualization?.errors;
 
     return {
-      dataSource: null,
       errors: [],
       warnings: [],
       alertVariant: null,
@@ -139,15 +138,11 @@ export default {
     filters: 'fetchData',
   },
   methods: {
-    importModule(dataType) {
-      return dataSources[dataType]();
+    async importDataSourceModule(dataType) {
+      const module = await dataSources[dataType]();
+      return module.default;
     },
-    async initDataSource(dataType) {
-      const module = await this.importModule(dataType);
-      const DataSource = module.default;
-      return new DataSource({ projectId: this.namespaceId });
-    },
-    async onVisualizationChange(newViz, oldViz) {
+    async onVisualizationChange() {
       if (this.hasValidationErrors) {
         this.setAlerts({
           errors: this.validationErrors,
@@ -160,24 +155,20 @@ export default {
         return;
       }
 
-      const dataSourceChanged = oldViz && newViz.data.type !== oldViz.data.type;
-      if (!this.dataSource || dataSourceChanged) {
-        this.loading = true;
-        this.dataSource = await this.initDataSource(newViz.data.type);
-        this.loading = false;
-      }
       this.fetchData();
     },
     async fetchData() {
       const { queryOverrides, filters } = this;
-      const { query } = this.visualization.data;
+      const { type: dataType, query } = this.visualization.data;
       this.loading = true;
       this.clearAlerts();
       const requestNumber = this.currentRequestNumber + 1;
       this.currentRequestNumber = requestNumber;
 
       try {
-        const data = await this.dataSource.fetch({
+        const fetch = await this.importDataSourceModule(dataType);
+
+        const data = await fetch({
           title: this.title,
           projectId: this.namespaceId,
           namespace: this.namespace,

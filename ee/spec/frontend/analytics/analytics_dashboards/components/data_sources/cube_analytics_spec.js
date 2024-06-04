@@ -1,5 +1,5 @@
 import { CubeApi, HttpTransport, __setMockLoad } from '@cubejs-client/core';
-import CubeAnalyticsDataSource from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
+import fetch from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
 import {
   mockResultSet,
@@ -34,21 +34,19 @@ const itSetsUpCube = () => {
 };
 
 describe('Cube Analytics Data Source', () => {
-  let dataSource;
-  const projectId = 'TEST_ID';
   const visualizationType = 'LineChart';
+  const projectId = 'TEST_ID';
   const query = { measures: ['TrackedEvents.count'] };
   const queryOverrides = { measures: ['TrackedEvents.userLanguage'] };
   const cubeJsOptions = { castNumerics: true, progressCallback: expect.any(Function) };
 
   beforeEach(() => {
     __setMockLoad(mockLoad);
-    dataSource = new CubeAnalyticsDataSource({ projectId });
   });
 
   describe('fetch', () => {
     beforeEach(() => {
-      return dataSource.fetch({ visualizationType, query, queryOverrides });
+      return fetch({ projectId, visualizationType, query, queryOverrides });
     });
 
     itSetsUpCube();
@@ -71,7 +69,7 @@ describe('Cube Analytics Data Source', () => {
 
     it('calls the "onRequestDelayed" callback', () => {
       const mockOnRequestDelayed = jest.fn();
-      dataSource.fetch({
+      fetch({
         visualizationType,
         query,
         queryOverrides,
@@ -85,7 +83,7 @@ describe('Cube Analytics Data Source', () => {
   describe('formats the data', () => {
     describe('charts', () => {
       it('returns the expected data format for line charts', async () => {
-        const result = await dataSource.fetch({ visualizationType, query });
+        const result = await fetch({ visualizationType, query });
 
         expect(result[0]).toMatchObject({
           data: [
@@ -97,7 +95,7 @@ describe('Cube Analytics Data Source', () => {
       });
 
       it('returns the expected data format for column charts', async () => {
-        const result = await dataSource.fetch({
+        const result = await fetch({
           visualizationType: 'ColumnChart',
           query,
         });
@@ -114,7 +112,7 @@ describe('Cube Analytics Data Source', () => {
 
     describe('data tables', () => {
       it('returns the expected data format', async () => {
-        const result = await dataSource.fetch({
+        const result = await fetch({
           visualizationType: 'DataTable',
           query,
         });
@@ -130,7 +128,7 @@ describe('Cube Analytics Data Source', () => {
         beforeEach(() => mockLoad.mockResolvedValue(mockTableWithLinksResultSet));
 
         it('returns the expected data format when href is a single dimension', async () => {
-          const result = await dataSource.fetch({
+          const result = await fetch({
             visualizationType: 'DataTable',
             query: {
               measures: ['TrackedEvents.pageViewsCount'],
@@ -156,7 +154,7 @@ describe('Cube Analytics Data Source', () => {
         });
 
         it('returns the expected data format when href is an array of dimensions', async () => {
-          const result = await dataSource.fetch({
+          const result = await fetch({
             visualizationType: 'DataTable',
             query: {
               measures: ['TrackedEvents.pageViewsCount'],
@@ -186,7 +184,7 @@ describe('Cube Analytics Data Source', () => {
     describe('single stats', () => {
       it('returns the expected data format', async () => {
         mockLoad.mockResolvedValue(mockResultSet);
-        const result = await dataSource.fetch({
+        const result = await fetch({
           visualizationType: 'SingleStat',
           query,
         });
@@ -197,7 +195,7 @@ describe('Cube Analytics Data Source', () => {
       it('returns the expected data format with custom measure', async () => {
         mockLoad.mockResolvedValue(mockResultSet);
         const override = { measures: ['TrackedEvents.url'] };
-        const result = await dataSource.fetch({
+        const result = await fetch({
           visualizationType: 'SingleStat',
           query,
           queryOverrides: override,
@@ -209,7 +207,7 @@ describe('Cube Analytics Data Source', () => {
       it('returns 0 when the measure is null', async () => {
         mockLoad.mockResolvedValue(mockResultSetWithNullValues);
 
-        const result = await dataSource.fetch({
+        const result = await fetch({
           visualizationType: 'SingleStat',
           query,
         });
@@ -222,7 +220,7 @@ describe('Cube Analytics Data Source', () => {
           rawData: () => [],
         });
 
-        const result = await dataSource.fetch({
+        const result = await fetch({
           visualizationType: 'SingleStat',
           query,
         });
@@ -242,7 +240,7 @@ describe('Cube Analytics Data Source', () => {
     ];
 
     const fetchWithFilters = (measure, filters) =>
-      dataSource.fetch({
+      fetch({
         visualizationType,
         query: {
           filters: existingFilters,

@@ -1,10 +1,9 @@
 import { mockDoraMetricsResponseData } from 'ee_jest/analytics/dashboards/mock_data';
-import DoraMetricsOverTimeDataSource from 'ee/analytics/analytics_dashboards/data_sources/dora_metrics_over_time';
+import fetch from 'ee/analytics/analytics_dashboards/data_sources/dora_metrics_over_time';
 import { defaultClient } from 'ee/analytics/analytics_dashboards/graphql/client';
 import { LAST_WEEK, LAST_180_DAYS } from 'ee/dora/components/static_data/shared';
 
 describe('Dora Metrics Over Time Data Source', () => {
-  let dataSource;
   let res;
 
   const query = { metric: 'lead_time_for_changes', date_range: LAST_180_DAYS };
@@ -24,15 +23,11 @@ describe('Dora Metrics Over Time Data Source', () => {
       }),
     );
 
-  beforeEach(() => {
-    dataSource = new DoraMetricsOverTimeDataSource();
-  });
-
   describe('fetch', () => {
     describe('default', () => {
       beforeEach(async () => {
         mockResolvedQuery();
-        res = await dataSource.fetch({ namespace, query });
+        res = await fetch({ namespace, query });
       });
 
       it('returns a single value', () => {
@@ -52,7 +47,7 @@ describe('Dora Metrics Over Time Data Source', () => {
     describe('queryOverrides', () => {
       it('can override the date range', async () => {
         mockResolvedQuery();
-        res = await dataSource.fetch({
+        res = await fetch({
           ...defaultParams,
           queryOverrides: { date_range: LAST_WEEK },
         });
@@ -67,7 +62,7 @@ describe('Dora Metrics Over Time Data Source', () => {
 
       it('can override the namespace', async () => {
         mockResolvedQuery();
-        res = await dataSource.fetch({
+        res = await fetch({
           ...defaultParams,
           queryOverrides: { date_range: LAST_WEEK, namespace: 'cool-namespace/sub-namespace' },
         });

@@ -160,33 +160,28 @@ export const createCubeApi = (projectId) =>
     }),
   });
 
-export default class CubeAnalyticsDataSource {
-  #cubeApi;
+export default async function fetch({
+  projectId,
+  visualizationType,
+  visualizationOptions,
+  query,
+  queryOverrides = {},
+  filters = {},
+  onRequestDelayed = () => {},
+}) {
+  const cubeApi = createCubeApi(projectId);
 
-  constructor({ projectId }) {
-    this.#cubeApi = createCubeApi(projectId);
-  }
+  const userQuery = buildCubeQuery(query, queryOverrides, filters);
+  const request = cubeApi.load(userQuery, {
+    castNumerics: true,
+    progressCallback: ({ progressResponse }) => {
+      if (progressResponse?.error === CUBE_CONTINUE_WAIT_ERROR) {
+        onRequestDelayed();
+      }
+    },
+  });
 
-  async fetch({
-    visualizationType,
-    visualizationOptions,
-    query,
-    queryOverrides = {},
-    filters = {},
-    onRequestDelayed = () => {},
-  }) {
-    const userQuery = buildCubeQuery(query, queryOverrides, filters);
-    const request = this.#cubeApi.load(userQuery, {
-      castNumerics: true,
-      progressCallback: ({ progressResponse }) => {
-        if (progressResponse?.error === CUBE_CONTINUE_WAIT_ERROR) {
-          onRequestDelayed();
-        }
-      },
-    });
-
-    return request.then((resultSet) =>
-      VISUALIZATION_PARSERS[visualizationType](resultSet, userQuery, visualizationOptions),
-    );
-  }
+  return request.then((resultSet) =>
+    VISUALIZATION_PARSERS[visualizationType](resultSet, userQuery, visualizationOptions),
+  );
 }
