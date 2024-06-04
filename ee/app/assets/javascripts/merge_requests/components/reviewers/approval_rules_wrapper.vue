@@ -46,6 +46,12 @@ export default {
     ApprovalRules,
   },
   inject: ['projectPath', 'issuableIid', 'issuableId', 'multipleApprovalRulesAvailable'],
+  props: {
+    reviewers: {
+      type: Array,
+      required: true,
+    },
+  },
   data() {
     return {
       approvalRules: [],
@@ -86,6 +92,11 @@ export default {
     <div class="gl-animate-skeleton-loader gl-h-4 gl-rounded-base gl-mb-3 gl-max-w-30!"></div>
   </div>
   <div v-else>
-    <approval-rules v-for="group in mappedApprovalRules" :key="group.key" :group="group" />
+    <approval-rules
+      v-for="group in mappedApprovalRules"
+      :key="group.key"
+      :reviewers="reviewers"
+      :group="group"
+    />
   </div>
 </template>

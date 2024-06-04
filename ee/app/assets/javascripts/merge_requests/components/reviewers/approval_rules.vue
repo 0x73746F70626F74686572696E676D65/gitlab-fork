@@ -1,16 +1,22 @@
 <script>
 import { GlButton, GlSprintf, GlTableLite } from '@gitlab/ui';
 import { sprintf, __ } from '~/locale';
+import ReviewerDropdown from '~/merge_requests/components/reviewers/reviewer_dropdown.vue';
 
 export default {
   components: {
     GlButton,
     GlSprintf,
     GlTableLite,
+    ReviewerDropdown,
   },
   props: {
     group: {
       type: Object,
+      required: true,
+    },
+    reviewers: {
+      type: Array,
       required: true,
     },
   },
@@ -53,6 +59,12 @@ export default {
       thClass: 'gl-text-secondary! gl-font-sm! !gl-font-semibold gl-border-t-0! w-30p',
       class: 'gl-px-0! gl-py-4!',
     },
+    {
+      key: 'dropdown',
+      label: '',
+      thClass: 'gl-border-t-0! w-30p',
+      class: 'gl-px-0! gl-py-4!',
+    },
   ],
 };
 </script>
@@ -65,6 +77,11 @@ export default {
 
       <template #cell(rule_name)="{ item }">{{ item.name }}</template>
       <template #cell(rule_approvals)="{ item }">{{ getApprovalsLeftText(item) }}</template>
+      <template #cell(dropdown)="{ item }">
+        <div class="gl-display-flex gl-justify-content-end">
+          <reviewer-dropdown :selected-reviewers="reviewers" :users="item.eligibleApprovers" />
+        </div>
+      </template>
     </gl-table-lite>
     <div v-if="optionalRulesLength" class="gl-py-3 gl-border-b">
       <gl-button
