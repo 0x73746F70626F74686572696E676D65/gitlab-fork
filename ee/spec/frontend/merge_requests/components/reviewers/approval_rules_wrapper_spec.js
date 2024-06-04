@@ -39,6 +39,9 @@ describe('Reviewer drawer approval rules wrapper component', () => {
         issuableId: '1',
         multipleApprovalRulesAvailable: true,
       },
+      propsData: {
+        reviewers: [],
+      },
     });
   }
 

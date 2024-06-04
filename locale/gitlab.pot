@@ -42771,6 +42771,9 @@ msgstr ""
 msgid "Quick assign"
 msgstr ""
 
+msgid "Quick assign a reviewer"
+msgstr ""
+
 msgid "Quick help"
 msgstr ""
 
@@ -48444,6 +48447,9 @@ msgid "Select protected branches"
 msgstr ""
 
 msgid "Select report"
+msgstr ""
+
+msgid "Select reviewer"
 msgstr ""
 
 msgid "Select reviewers"

@@ -18,6 +18,15 @@ exports[`Reviewer drawer approval rules component renders non-optional rules by 
   >
     0 of 1
   </td>
+  <td
+    aria-colindex="3"
+    class="gl-px-0! gl-py-4!"
+    role="cell"
+  >
+    <div
+      class="gl-display-flex gl-justify-content-end"
+    />
+  </td>
 </tr>
 `;
 
@@ -38,6 +47,15 @@ exports[`Reviewer drawer approval rules component toggles optional rows when cli
     role="cell"
   >
     0 of 0
+  </td>
+  <td
+    aria-colindex="3"
+    class="gl-px-0! gl-py-4!"
+    role="cell"
+  >
+    <div
+      class="gl-display-flex gl-justify-content-end"
+    />
   </td>
 </tr>
 `;

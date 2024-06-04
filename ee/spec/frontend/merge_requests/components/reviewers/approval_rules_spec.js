@@ -1,6 +1,11 @@
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import ApprovalRules from 'ee/merge_requests/components/reviewers/approval_rules.vue';
+import userPermissionsQuery from '~/merge_requests/components/reviewers/queries/user_permissions.query.graphql';
+
+Vue.use(VueApollo);
 
 describe('Reviewer drawer approval rules component', () => {
   let wrapper;
@@ -9,8 +14,19 @@ describe('Reviewer drawer approval rules component', () => {
   const findRuleRows = () => wrapper.findAll('tbody tr');
 
   function createComponent() {
+    const apolloProvider = createMockApollo([
+      [userPermissionsQuery, jest.fn().mockResolvedValue({ data: { project: null } })],
+    ]);
+
     wrapper = mountExtended(ApprovalRules, {
+      apolloProvider,
+      provide: {
+        projectPath: 'gitlab-org/gitlab',
+        issuableId: 1,
+        issuableIid: 1,
+      },
       propsData: {
+        reviewers: [],
         group: {
           label: 'Rule',
           rules: [
