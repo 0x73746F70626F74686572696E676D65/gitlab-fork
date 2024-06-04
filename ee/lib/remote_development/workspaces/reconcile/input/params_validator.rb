@@ -70,6 +70,7 @@ module RemoteDevelopment
             errors = schemer.validate(original_params)
             errors.map { |error| JSONSchemer::Errors.pretty(error) }
           end
+          private_class_method :validate_original_params_against_schema
         end
       end
     end

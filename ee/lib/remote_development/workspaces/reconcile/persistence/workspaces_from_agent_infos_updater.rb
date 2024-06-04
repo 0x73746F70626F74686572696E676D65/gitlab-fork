@@ -66,6 +66,7 @@ module RemoteDevelopment
 
             nil
           end
+          private_class_method :update_persisted_workspace_with_latest_info
         end
       end
     end

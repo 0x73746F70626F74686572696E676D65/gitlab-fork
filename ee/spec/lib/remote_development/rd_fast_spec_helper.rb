@@ -15,7 +15,7 @@ end
 
 require_relative '../../../../spec/fast_spec_helper'
 require_relative '../../../../spec/support/matchers/result_matchers'
-require_relative '../../support/helpers/remote_development/railway_oriented_programming_helpers'
+require_relative '../../../../spec/support/railway_oriented_programming'
 require_relative '../../support/shared_contexts/remote_development/agent_info_status_fixture_not_implemented_error'
 require_relative '../../support/shared_contexts/remote_development/remote_development_shared_contexts'
 

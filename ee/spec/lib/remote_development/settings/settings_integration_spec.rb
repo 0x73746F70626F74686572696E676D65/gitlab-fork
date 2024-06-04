@@ -73,7 +73,7 @@ RSpec.describe ::RemoteDevelopment::Settings, feature_category: :remote_developm
 
       it "raises an error" do
         expected_err_msg = "Settings VSCode extensions gallery validation failed: root is missing required keys: " \
-          "service_url, item_url, resource_url_template" # rubocop:disable Layout/LineEndStringConcatenationIndentation -- This is being changed in https://gitlab.com/gitlab-org/ruby/gems/gitlab-styles/-/merge_requests/212
+          "service_url, item_url, resource_url_template"
         expect { vscode_extensions_gallery_setting }
           .to raise_error(expected_err_msg)
       end
@@ -109,7 +109,7 @@ RSpec.describe ::RemoteDevelopment::Settings, feature_category: :remote_developm
 
       it "raises an error" do
         expected_err_msg = "Settings VSCode extensions gallery metadata validation failed: " \
-          "root is missing required keys: enabled" # rubocop:disable Layout/LineEndStringConcatenationIndentation -- This is being changed in https://gitlab.com/gitlab-org/ruby/gems/gitlab-styles/-/merge_requests/212
+          "root is missing required keys: enabled"
         expect { vscode_extensions_gallery_metadata_setting }
           .to raise_error(expected_err_msg)
       end

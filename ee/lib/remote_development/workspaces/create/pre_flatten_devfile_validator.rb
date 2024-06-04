@@ -60,6 +60,7 @@ module RemoteDevelopment
         def self.err(details)
           Result.err(WorkspaceCreatePreFlattenDevfileValidationFailed.new({ details: details }))
         end
+        private_class_method :validate_schema_version, :validate_parent, :err
       end
     end
   end

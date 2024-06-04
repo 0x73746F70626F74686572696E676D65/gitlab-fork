@@ -2,130 +2,106 @@
 
 require_relative '../../rd_fast_spec_helper'
 
-# rubocop:disable RSpec/MultipleMemoizedHelpers -- Stubbing singleton methods
-RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature_category: :remote_development do
-  include RemoteDevelopment::RailwayOrientedProgrammingHelpers
-
-  let(:rails_infos) { [double] }
-  let(:settings) { {} }
-  let(:value) do
+RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
+  let(:value_passed_along_steps) { {} }
+  let(:response_payload) do
     {
-      workspace_rails_infos: rails_infos,
-      settings: settings
+      workspace_rails_infos: [],
+      settings: { settings: 'some_Settings' }
     }
   end
 
-  let(:builded_value) do
-    {
-      response_payload: {
-        workspace_rails_infos: rails_infos,
-        settings: settings
+  let(:rop_steps) do
+    [
+      [RemoteDevelopment::Workspaces::Reconcile::Input::ParamsValidator, :and_then],
+      [RemoteDevelopment::Workspaces::Reconcile::Input::ParamsExtractor, :map],
+      [RemoteDevelopment::Workspaces::Reconcile::Input::ParamsToInfosConverter, :map],
+      [RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserver, :map],
+      [RemoteDevelopment::Workspaces::Reconcile::Persistence::WorkspacesFromAgentInfosUpdater, :map],
+      [RemoteDevelopment::Workspaces::Reconcile::Persistence::OrphanedWorkspacesObserver, :map],
+      [RemoteDevelopment::Workspaces::Reconcile::Persistence::WorkspacesToBeReturnedFinder, :map],
+      [RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayloadBuilder, :map],
+      [RemoteDevelopment::Workspaces::Reconcile::Persistence::WorkspacesToBeReturnedUpdater, :map],
+      [RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayloadObserver, :map]
+    ]
+  end
+
+  describe "happy path" do
+    let(:value_passed_along_steps) do
+      {
+        ok_details: "Everything is OK!",
+        response_payload: response_payload
       }
-    }
-  end
-
-  let(:error_details) { 'some error details' }
-  let(:err_message_context) { { details: error_details } }
-
-  # rubocop:disable Layout/LineLength -- keep all the class and method fixtures as single-liners easier scanning/editing
-  # Classes
-
-  let(:params_validator_class) { RemoteDevelopment::Workspaces::Reconcile::Input::ParamsValidator }
-  let(:params_extractor_class) { RemoteDevelopment::Workspaces::Reconcile::Input::ParamsExtractor }
-  let(:params_to_infos_converter_class) { RemoteDevelopment::Workspaces::Reconcile::Input::ParamsToInfosConverter }
-  let(:agent_infos_observer_class) { RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserver }
-  let(:workspaces_from_agent_infos_updater_class) { RemoteDevelopment::Workspaces::Reconcile::Persistence::WorkspacesFromAgentInfosUpdater }
-  let(:orphaned_workspaces_observer_class) { RemoteDevelopment::Workspaces::Reconcile::Persistence::OrphanedWorkspacesObserver }
-  let(:workspaces_to_be_returned_finder_class) { RemoteDevelopment::Workspaces::Reconcile::Persistence::WorkspacesToBeReturnedFinder }
-  let(:response_payload_builder_class) { RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayloadBuilder }
-  let(:workspaces_to_be_returned_updater_class) { RemoteDevelopment::Workspaces::Reconcile::Persistence::WorkspacesToBeReturnedUpdater }
-  let(:response_payload_observer_class) { RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayloadObserver }
-
-  # Methods
-
-  let(:params_validator_method) { params_validator_class.singleton_method(:validate) }
-  let(:params_extractor_method) { params_extractor_class.singleton_method(:extract) }
-  let(:params_to_infos_converter_method) { params_to_infos_converter_class.singleton_method(:convert) }
-  let(:agent_infos_observer_method) { agent_infos_observer_class.singleton_method(:observe) }
-  let(:workspaces_from_agent_infos_updater_method) { workspaces_from_agent_infos_updater_class.singleton_method(:update) }
-  let(:orphaned_workspaces_observer_method) { orphaned_workspaces_observer_class.singleton_method(:observe) }
-  let(:workspaces_to_be_returned_finder_method) { workspaces_to_be_returned_finder_class.singleton_method(:find) }
-  let(:response_payload_builder_method) { response_payload_builder_class.singleton_method(:build) }
-  let(:workspaces_to_be_returned_updater_method) { workspaces_to_be_returned_updater_class.singleton_method(:update) }
-  let(:response_payload_observer_method) { response_payload_observer_class.singleton_method(:observe) }
-  # rubocop:enable Layout/LineLength
-
-  # Subject
-
-  subject(:response) { described_class.main(value) }
-
-  before do
-    allow(params_validator_class).to receive(:method) { params_validator_method }
-    allow(params_extractor_class).to receive(:method) { params_extractor_method }
-    allow(params_to_infos_converter_class).to receive(:method) { params_to_infos_converter_method }
-    allow(agent_infos_observer_class).to receive(:method) { agent_infos_observer_method }
-    allow(workspaces_from_agent_infos_updater_class).to receive(:method) { workspaces_from_agent_infos_updater_method }
-    allow(orphaned_workspaces_observer_class).to receive(:method) { orphaned_workspaces_observer_method }
-    allow(workspaces_to_be_returned_finder_class).to receive(:method) { workspaces_to_be_returned_finder_method }
-    allow(response_payload_builder_class).to receive(:method) { response_payload_builder_method }
-    allow(workspaces_to_be_returned_updater_class).to receive(:method) { workspaces_to_be_returned_updater_method }
-    allow(response_payload_observer_class).to receive(:method) { response_payload_observer_method }
-  end
-
-  context 'when the ParamsValidator returns an err Result' do
-    it 'returns an error response' do
-      expect(params_validator_method).to receive(:call).with(value) do
-        Result.err(RemoteDevelopment::Messages::WorkspaceReconcileParamsValidationFailed.new)
-      end
-      expect(response)
-        .to eq({ status: :error, message: 'Workspace reconcile params validation failed', reason: :bad_request })
-    end
-  end
-
-  context 'when the ParamsValidator returns an ok Result' do
-    before do
-      stub_methods_to_return_ok_result(
-        params_validator_method
-      )
-
-      stub_methods_to_return_value(
-        params_extractor_method,
-        params_to_infos_converter_method,
-        agent_infos_observer_method,
-        workspaces_from_agent_infos_updater_method,
-        orphaned_workspaces_observer_method,
-        workspaces_to_be_returned_finder_method,
-        response_payload_builder_method,
-        workspaces_to_be_returned_updater_method
-      )
     end
 
-    it 'returns a workspace reconcile success response with the workspace as the payload' do
-      expect(response_payload_builder_method).to receive(:call).with(value) do
-        builded_value
-      end
-      expect(workspaces_to_be_returned_updater_method).to receive(:call).with(builded_value) do
-        builded_value
-      end
-      expect(response_payload_observer_method).to receive(:call).with(builded_value) do
-        builded_value
-      end
-
-      expect(response).to eq({
+    let(:expected_response) do
+      {
         status: :success,
-        payload: value
-      })
+        payload: response_payload
+      }
+    end
+
+    it "returns expected response" do
+      # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+      expect do
+        described_class.main(value_passed_along_steps)
+      end
+        .to invoke_rop_steps(rop_steps)
+              .from_main_class(described_class)
+              .with_value_passed_along_steps(value_passed_along_steps)
+              .and_return_expected_value(expected_response)
     end
   end
 
-  context 'when an invalid Result is returned' do
-    it 'raises an UnmatchedResultError' do
-      expect(params_validator_method).to receive(:call).with(value) do
-        Result.err(RemoteDevelopment::Messages::WorkspaceReconcileSuccessful.new)
-      end
+  describe "error cases" do
+    let(:error_details) { "some error details" }
+    let(:err_message_content) { { details: error_details } }
 
-      expect { response }.to raise_error(RemoteDevelopment::UnmatchedResultError)
+    shared_examples "rop invocation with error response" do
+      it "returns expected response" do
+        # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+        expect do
+          described_class.main(value_passed_along_steps)
+        end
+          .to invoke_rop_steps(rop_steps)
+                .from_main_class(described_class)
+                .with_value_passed_along_steps(value_passed_along_steps)
+                .with_err_result_for_step(err_result_for_step)
+                .and_return_expected_value(expected_response)
+      end
+    end
+
+    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
+    # rubocop:disable Layout/LineLength -- we want to avoid excessive wrapping for RSpec::Parameterized Nested Array Style so we can have formatting consistency between entries
+    where(:case_name, :err_result_for_step, :expected_response) do
+      [
+        [
+          "when ParamsValidator returns WorkspaceReconcileParamsValidationFailed",
+          {
+            step_class: RemoteDevelopment::Workspaces::Reconcile::Input::ParamsValidator,
+            returned_message: lazy { RemoteDevelopment::Messages::WorkspaceReconcileParamsValidationFailed.new(err_message_content) }
+          },
+          {
+            status: :error,
+            message: lazy { "Workspace reconcile params validation failed: #{error_details}" },
+            reason: :bad_request
+          },
+        ],
+        [
+          "when an unmatched error is returned, an exception is raised",
+          {
+            step_class: RemoteDevelopment::Workspaces::Reconcile::Input::ParamsValidator,
+            returned_message: lazy { Class.new(RemoteDevelopment::Message).new(err_message_content) }
+          },
+          RemoteDevelopment::UnmatchedResultError
+        ]
+      ]
+    end
+    # rubocop:enable Style/TrailingCommaInArrayLiteral
+    # rubocop:enable Layout/LineLength
+
+    with_them do
+      it_behaves_like "rop invocation with error response"
     end
   end
 end
-# rubocop:enable RSpec/MultipleMemoizedHelpers

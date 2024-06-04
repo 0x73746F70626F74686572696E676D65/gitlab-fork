@@ -1,116 +1,122 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require_relative '../../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::NamespaceClusterAgentMappings::Create::Main, feature_category: :remote_development do
-  include RemoteDevelopment::RailwayOrientedProgrammingHelpers
-
-  let(:error_details) { 'some error details' }
-  let(:err_message_context) { { details: error_details } }
-  let(:value) { {} }
-
-  let(:validator_class) { RemoteDevelopment::NamespaceClusterAgentMappings::Create::ClusterAgentValidator }
-  let(:mapping_creator_class) { RemoteDevelopment::NamespaceClusterAgentMappings::Create::MappingCreator }
-
-  let(:validator_method) { validator_class.singleton_method(:validate) }
-  let(:creator_method) { mapping_creator_class.singleton_method(:create) }
-
-  subject(:response) { described_class.main(value) }
-
-  before do
-    allow(validator_class).to receive(:method) { validator_method }
-    allow(mapping_creator_class).to receive(:method) { creator_method }
+RSpec.describe RemoteDevelopment::NamespaceClusterAgentMappings::Create::Main, :rd_fast, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
+  let(:value_passed_along_steps) { {} }
+  let(:rop_steps) do
+    [
+      [RemoteDevelopment::NamespaceClusterAgentMappings::Create::ClusterAgentValidator, :and_then],
+      [RemoteDevelopment::NamespaceClusterAgentMappings::Create::MappingCreator, :and_then]
+    ]
   end
 
-  context 'when the ClusterAgentValidator returns an err Result' do
-    before do
-      allow(validator_method).to receive(:call).with(value) do
-        Result.err(RemoteDevelopment::Messages::NamespaceClusterAgentMappingCreateValidationFailed.new)
-      end
-    end
+  describe "happy path" do
+    let(:ok_message_content) { { ok_details: "Everything is OK!" } }
 
-    it 'returns a validation failed error response' do
-      expect(response).to eq({
-        status: :error,
-        message: 'Namespace cluster agent mapping create validation failed',
-        reason: :bad_request
-      })
-    end
-  end
-
-  context 'when the MappingCreator returns an err Result' do
-    shared_examples 'returns an error response' do |message_class, message|
-      before do
-        stub_methods_to_return_ok_result(
-          validator_method
-        )
-        stub_methods_to_return_err_result(
-          method: creator_method,
-          message_class: message_class
-        )
-      end
-
-      it 'returns a validation failed error response' do
-        expect(response).to eq({
-          status: :error,
-          message: "#{message}: #{error_details}",
-          reason: :bad_request
-        })
-      end
-    end
-
-    it_behaves_like 'returns an error response',
-      RemoteDevelopment::Messages::NamespaceClusterAgentMappingAlreadyExists,
-      "Namespace cluster agent mapping already exists"
-    it_behaves_like 'returns an error response',
-      RemoteDevelopment::Messages::NamespaceClusterAgentMappingCreateFailed,
-      "Namespace cluster agent mapping create failed"
-  end
-
-  context 'when the MappingCreator returns an ok Result' do
-    let(:namespace_agent_mapping) do
-      instance_double('RemoteDevelopment::RemoteDevelopmentNamespaceClusterAgentMapping')
-    end
-
-    before do
-      stub_methods_to_return_ok_result(
-        validator_method,
-        creator_method
-      )
-      allow(creator_method).to receive(:call).with(value) do
-        Result.ok(RemoteDevelopment::Messages::NamespaceClusterAgentMappingCreateSuccessful.new({
-          namespace_cluster_agent_mapping: namespace_agent_mapping
-        }))
-      end
-    end
-
-    it 'return a success response with the namespace cluster agent mapping as the payload' do
-      expect(response).to eq({
+    let(:expected_response) do
+      {
         status: :success,
-        payload: { namespace_cluster_agent_mapping: namespace_agent_mapping }
-      })
+        payload: ok_message_content
+      }
+    end
+
+    it "returns expected response" do
+      # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+      expect do
+        described_class.main(value_passed_along_steps)
+      end
+        .to invoke_rop_steps(rop_steps)
+              .from_main_class(described_class)
+              .with_value_passed_along_steps(value_passed_along_steps)
+              .with_ok_result_for_step(
+                {
+                  step_class: RemoteDevelopment::NamespaceClusterAgentMappings::Create::MappingCreator,
+                  returned_message: RemoteDevelopment::Messages::NamespaceClusterAgentMappingCreateSuccessful.new(
+                    ok_message_content
+                  )
+                }
+              )
+              .and_return_expected_value(expected_response)
     end
   end
 
-  context 'when an invalid Result is returned' do
-    let(:namespace_agent_mapping) do
-      instance_double('RemoteDevelopment::RemoteDevelopmentNamespaceClusterAgentMapping')
-    end
+  describe "error cases" do
+    let(:error_details) { "some error details" }
+    let(:err_message_content) { { details: error_details } }
 
-    before do
-      stub_methods_to_return_ok_result(
-        validator_method,
-        creator_method
-      )
-      allow(creator_method).to receive(:call).with(value) do
-        Result.err(RemoteDevelopment::Messages::NamespaceClusterAgentMappingCreateSuccessful.new({
-          namespace_cluster_agent_mapping: namespace_agent_mapping
-        }))
+    shared_examples "rop invocation with error response" do
+      it "returns expected response" do
+        # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+        expect do
+          described_class.main(value_passed_along_steps)
+        end
+          .to invoke_rop_steps(rop_steps)
+                .from_main_class(described_class)
+                .with_value_passed_along_steps(value_passed_along_steps)
+                .with_err_result_for_step(err_result_for_step)
+                .and_return_expected_value(expected_response)
       end
     end
 
-    it 'raises an UnmatchedResultError' do
-      expect { response }.to raise_error(RemoteDevelopment::UnmatchedResultError)
+    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
+    # rubocop:disable Layout/LineLength -- we want to avoid excessive wrapping for RSpec::Parameterized Nested Array Style so we can have formatting consistency between entries
+    where(:case_name, :err_result_for_step, :expected_response) do
+      [
+        [
+          "when ClusterAgentValidator returns NamespaceClusterAgentMappingCreateValidationFailed",
+          {
+            step_class: RemoteDevelopment::NamespaceClusterAgentMappings::Create::ClusterAgentValidator,
+            returned_message: lazy { RemoteDevelopment::Messages::NamespaceClusterAgentMappingCreateValidationFailed.new(err_message_content) }
+          },
+          {
+            status: :error,
+            message: lazy { "Namespace cluster agent mapping create validation failed: #{error_details}" },
+            reason: :bad_request
+          },
+        ],
+        [
+          "when MappingCreator returns NamespaceClusterAgentMappingCreateFailed",
+          {
+            step_class: RemoteDevelopment::NamespaceClusterAgentMappings::Create::MappingCreator,
+            returned_message:
+              lazy { RemoteDevelopment::Messages::NamespaceClusterAgentMappingCreateFailed.new(err_message_content) }
+          },
+          {
+            status: :error,
+            message: lazy { "Namespace cluster agent mapping create failed: #{error_details}" },
+            reason: :bad_request
+          },
+        ],
+
+        [
+          "when MappingCreator returns NamespaceClusterAgentMappingAlreadyExists",
+          {
+            step_class: RemoteDevelopment::NamespaceClusterAgentMappings::Create::MappingCreator,
+            returned_message:
+              lazy { RemoteDevelopment::Messages::NamespaceClusterAgentMappingAlreadyExists.new(err_message_content) }
+          },
+          {
+            status: :error,
+            message: lazy { "Namespace cluster agent mapping already exists: #{error_details}" },
+            reason: :bad_request
+          },
+        ],
+        [
+          "when an unmatched error is returned, an exception is raised",
+          {
+            step_class: RemoteDevelopment::NamespaceClusterAgentMappings::Create::ClusterAgentValidator,
+            returned_message: lazy { Class.new(RemoteDevelopment::Message).new(err_message_content) }
+          },
+          RemoteDevelopment::UnmatchedResultError,
+        ]
+      ]
+    end
+    # rubocop:enable Style/TrailingCommaInArrayLiteral
+    # rubocop:enable Layout/LineLength
+
+    with_them do
+      it_behaves_like "rop invocation with error response"
     end
   end
 end

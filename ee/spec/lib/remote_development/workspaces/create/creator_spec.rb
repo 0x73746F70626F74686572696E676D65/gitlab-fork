@@ -2,11 +2,18 @@
 
 require 'spec_helper'
 
-RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_category: :remote_development do
-  include RemoteDevelopment::RailwayOrientedProgrammingHelpers
-  include ResultMatchers
+# frozen_string_literal: true
+# rubocop:disable Rails/SaveBang -- method shadowing
 
-  include_context 'with remote development shared fixtures'
+Messages = RemoteDevelopment::Messages
+RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
+  let(:rop_steps) do
+    [
+      [RemoteDevelopment::Workspaces::Create::PersonalAccessTokenCreator, :and_then],
+      [RemoteDevelopment::Workspaces::Create::WorkspaceCreator, :and_then],
+      [RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreator, :and_then]
+    ]
+  end
 
   let_it_be(:user) { create(:user) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
@@ -18,15 +25,17 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
     }
   end
 
-  let(:value) do
+  let(:initial_value) do
     {
       params: params,
       current_user: user
     }
   end
 
+  let(:workspace) { instance_double("RemoteDevelopment::Workspace") }
+
   let(:updated_value) do
-    value.merge(
+    initial_value.merge(
       {
         workspace_name: "workspace-#{agent.id}-#{user.id}-#{random_string}",
         workspace_namespace: "gl-rd-ns-#{agent.id}-#{user.id}-#{random_string}"
@@ -34,116 +43,80 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
     )
   end
 
-  # Classes
-
-  let(:personal_access_token_creator_class) { RemoteDevelopment::Workspaces::Create::PersonalAccessTokenCreator }
-  let(:workspace_creator_class) { RemoteDevelopment::Workspaces::Create::WorkspaceCreator }
-  let(:workspace_variables_creator_class) { RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreator }
-
-  # Methods
-
-  let(:personal_access_token_creator_method) { personal_access_token_creator_class.singleton_method(:create) }
-  let(:workspace_creator_method) { workspace_creator_class.singleton_method(:create) }
-  let(:workspace_variables_creator_method) { workspace_variables_creator_class.singleton_method(:create) }
-
-  subject(:result) do
-    described_class.create(value) # rubocop:disable Rails/SaveBang -- we are testing validation, we don't want an exception
-  end
-
   before do
-    allow(personal_access_token_creator_class).to receive(:method).with(:create) do
-      personal_access_token_creator_method
+    allow(SecureRandom).to receive(:alphanumeric) { random_string }
+  end
+
+  describe "happy path" do
+    let(:expected_response) do
+      Result.ok(RemoteDevelopment::Messages::WorkspaceCreateSuccessful.new(updated_value))
     end
 
-    allow(workspace_creator_class).to receive(:method).with(:create) do
-      workspace_creator_method
-    end
-
-    allow(workspace_variables_creator_class).to receive(:method).with(:create) do
-      create(:workspace_variable)
-      workspace_variables_creator_method
+    it "returns expected response" do
+      # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+      expect do
+        described_class.create(initial_value)
+      end
+        .to invoke_rop_steps(rop_steps)
+              .from_main_class(described_class)
+              .with_value_passed_along_steps(updated_value)
+              .and_return_expected_value(expected_response)
     end
   end
 
-  context 'when workspace create is successful' do
-    before do
-      allow(SecureRandom).to receive(:alphanumeric) { random_string }
+  describe "error cases" do
+    let(:error_details) { "some error details" }
+    let(:err_message_content) { { errors: error_details } }
 
-      stub_methods_to_return_ok_result(
-        personal_access_token_creator_method,
-        workspace_creator_method,
-        workspace_variables_creator_method
-      )
-    end
-
-    it 'returns ok result containing successful message with updated value' do
-      expect(result).to be_ok_result do |message|
-        expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateSuccessful)
-        expect(message.context).to eq(updated_value)
-      end
-    end
-  end
-
-  context "when workspace create fails" do
-    let(:creation_errors) { 'some creation errors' }
-    let(:err_message_context) { { errors: creation_errors } }
-
-    context 'when the PersonalAccessTokenCreator returns an err Result' do
-      before do
-        stub_methods_to_return_err_result(
-          method: personal_access_token_creator_method,
-          message_class: RemoteDevelopment::Messages::PersonalAccessTokenModelCreateFailed
-        )
-      end
-
-      it 'returns an error result containing creation errors' do
-        expect(result).to be_err_result do |message|
-          expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateFailed)
-          message.context => { errors: errors }
-          expect(errors).to eq(creation_errors)
+    shared_examples "rop invocation with error response" do
+      it "returns expected response" do
+        # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+        expect do
+          described_class.create(initial_value)
         end
+          .to invoke_rop_steps(rop_steps)
+                .from_main_class(described_class)
+                .with_value_passed_along_steps(updated_value)
+                .with_err_result_for_step(err_result_for_step)
+                .and_return_expected_value(expected_response)
       end
     end
 
-    context 'when the WorkspaceCreator returns an err Result' do
-      before do
-        stub_methods_to_return_ok_result(personal_access_token_creator_method)
-
-        stub_methods_to_return_err_result(
-          method: workspace_creator_method,
-          message_class: RemoteDevelopment::Messages::WorkspaceModelCreateFailed
-        )
-      end
-
-      it 'returns an error result containing creation errors' do
-        expect(result).to be_err_result do |message|
-          expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateFailed)
-          message.context => { errors: errors }
-          expect(errors).to eq(creation_errors)
-        end
-      end
+    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
+    # rubocop:disable Layout/LineLength -- we want to avoid excessive wrapping for RSpec::Parameterized Nested Array Style so we can have formatting consistency between entries
+    where(:case_name, :err_result_for_step, :expected_response) do
+      [
+        [
+          "when PersonalAccessTokenCreator returns PersonalAccessTokenModelCreateFailed",
+          {
+            step_class: RemoteDevelopment::Workspaces::Create::PersonalAccessTokenCreator,
+            returned_message: lazy { Messages::PersonalAccessTokenModelCreateFailed.new(err_message_content) }
+          },
+          lazy { Result.err(Messages::WorkspaceCreateFailed.new(err_message_content)) }
+        ],
+        [
+          "when WorkspaceCreator returns WorkspaceModelCreateFailed",
+          {
+            step_class: RemoteDevelopment::Workspaces::Create::WorkspaceCreator,
+            returned_message: lazy { Messages::WorkspaceModelCreateFailed.new(err_message_content) }
+          },
+          lazy { Result.err(Messages::WorkspaceCreateFailed.new(err_message_content)) }
+        ],
+        [
+          "when WorkspaceVariablesCreator returns WorkspaceVariablesModelCreateFailed",
+          {
+            step_class: RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreator,
+            returned_message: lazy { Messages::WorkspaceVariablesModelCreateFailed.new(err_message_content) }
+          },
+          lazy { Result.err(Messages::WorkspaceCreateFailed.new(err_message_content)) }
+        ]
+      ]
     end
-
-    context 'when the WorkspaceVariablesCreator returns an err Result' do
-      before do
-        stub_methods_to_return_ok_result(
-          personal_access_token_creator_method,
-          workspace_creator_method
-        )
-
-        stub_methods_to_return_err_result(
-          method: workspace_variables_creator_method,
-          message_class: RemoteDevelopment::Messages::WorkspaceVariablesModelCreateFailed
-        )
-      end
-
-      it 'returns an error response containing creation errors' do
-        expect(result).to be_err_result do |message|
-          expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateFailed)
-          message.context => { errors: errors }
-          expect(errors).to eq(creation_errors)
-        end
-      end
+    # rubocop:enable Style/TrailingCommaInArrayLiteral
+    # rubocop:enable Layout/LineLength
+    # rubocop:enable Rails/SaveBang
+    with_them do
+      it_behaves_like "rop invocation with error response"
     end
   end
 end

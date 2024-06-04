@@ -50,6 +50,8 @@ module RemoteDevelopment
         errors = schemer.validate(hash_to_validate)
         errors.map { |error| JSONSchemer::Errors.pretty(error) }
       end
+
+      private_class_method :validate_against_schema
     end
   end
 end

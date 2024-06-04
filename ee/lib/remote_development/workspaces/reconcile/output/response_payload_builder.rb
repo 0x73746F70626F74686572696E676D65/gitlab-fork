@@ -95,6 +95,7 @@ module RemoteDevelopment
               workspace.force_include_all_resources ||
               workspace.desired_state_updated_more_recently_than_last_response_to_agent?
           end
+          private_class_method :should_include_config_to_apply?, :config_to_apply
         end
       end
     end

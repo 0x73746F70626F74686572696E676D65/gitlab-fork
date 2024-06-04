@@ -84,12 +84,10 @@ module Mutations
                 .filter_valid_namespace_cluster_agent_mappings(namespace_cluster_agent_mappings: relevant_mappings.to_a)
 
             unless valid_relevant_mappings.present?
-              # rubocop:disable Layout/LineEndStringConcatenationIndentation -- This is being changed in https://gitlab.com/gitlab-org/ruby/gems/gitlab-styles/-/merge_requests/212
               raise ::Gitlab::Graphql::Errors::ArgumentError,
                 "#{relevant_mappings.size} mapping(s) exist between the provided agent and the ancestor namespaces " \
                   "of the workspaces's project, but the agent does not reside within the hierarchy of any of the " \
                   "mapped ancestor namespaces."
-              # rubocop:enable Layout/LineEndStringConcatenationIndentation
             end
           else
             # NOTE: We only do the common-root-namespace check in the create mutation, because if we did it in the

@@ -88,6 +88,8 @@ module RemoteDevelopment
       rescue EncodingError => e
         raise "ENV var '#{env_var_name}' value was not valid parseable JSON. Parse error was: '#{e.message}'"
       end
+
+      private_class_method :cast_value, :parse_json
     end
   end
 end
