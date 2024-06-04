@@ -211,7 +211,11 @@ export default {
       <template #suggestions>
         <template v-for="(group, index) in $options.GROUPS">
           <gl-dropdown-section-header v-if="group.text" :key="group.text"
-            ><div v-if="group.icon" class="gl--flex-center" :data-testid="`header-${group.text}`">
+            ><div
+              v-if="group.icon"
+              class="gl-flex gl-justify-center gl-items-center"
+              :data-testid="`header-${group.text}`"
+            >
               <div class="gl-flex-grow-1">{{ group.text }}</div>
               <gl-badge :icon="group.icon" :variant="group.variant" /></div
           ></gl-dropdown-section-header>

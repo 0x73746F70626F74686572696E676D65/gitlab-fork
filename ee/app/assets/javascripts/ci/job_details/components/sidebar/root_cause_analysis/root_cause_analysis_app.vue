@@ -116,7 +116,7 @@ export default {
 <template>
   <gl-drawer :open="isShown" class="!gl-z-9999" @close="closeDrawer">
     <template #title>
-      <div class="gl--flex-center">
+      <div class="gl-flex gl-justify-center gl-items-center">
         <h3 class="gl-m-0">{{ $options.i18n.drawerTitle }}</h3>
         <gl-experiment-badge />
       </div>

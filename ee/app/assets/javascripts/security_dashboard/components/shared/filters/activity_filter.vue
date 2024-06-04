@@ -211,7 +211,7 @@ export default {
       <template #group-label="{ group }">
         <div
           v-if="group.icon"
-          class="gl--flex-center gl-pr-4"
+          class="gl-flex gl-justify-center gl-items-center gl-pr-4"
           :data-testid="`header-${group.text}`"
         >
           <div class="gl-flex-grow-1">{{ group.text }}</div>

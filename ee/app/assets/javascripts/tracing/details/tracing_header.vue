@@ -5,9 +5,9 @@ import { s__ } from '~/locale';
 import { formatTraceDuration, findRootSpan } from '../trace_utils';
 
 const CARD_CLASS = 'gl-mr-7 gl-w-3/20 gl-min-w-fit';
-const HEADER_CLASS = 'gl-p-2 gl-font-bold gl--flex-center';
+const HEADER_CLASS = 'gl-p-2 gl-font-bold gl-flex gl-justify-center gl-items-center';
 const BODY_CLASS =
-  'gl--flex-center gl-flex-direction-column gl-my-0 gl-p-4 gl-font-bold gl-text-center gl-flex-grow-1 gl-font-lg';
+  'gl-flex gl-justify-center gl-items-center gl-flex-direction-column gl-my-0 gl-p-4 gl-font-bold gl-text-center gl-flex-grow-1 gl-font-lg';
 
 export default {
   CARD_CLASS,
