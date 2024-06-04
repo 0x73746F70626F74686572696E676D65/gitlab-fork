@@ -131,6 +131,8 @@ module MergeTrains
     end
 
     def index
+      return unless active?
+
       all_prev.count
     end
 

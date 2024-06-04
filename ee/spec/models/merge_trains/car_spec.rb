@@ -151,7 +151,7 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     let!(:merge_request) { create_merge_request_on_train }
 
     context 'when the merge request is at first on the train' do
-      it 'returns nil' do
+      it 'returns an empty relation' do
         is_expected.to be_empty
       end
     end
@@ -344,16 +344,30 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   describe '#index' do
     subject { train_car.index }
 
+    let!(:merge_request) { create_merge_request_on_train(status: :fresh) }
     let(:train_car) { merge_request.merge_train_car }
-    let!(:merge_request) { create_merge_request_on_train }
 
     it { is_expected.to eq(0) }
 
     context 'when the merge train is at the second queue' do
+      let!(:merge_request_2) { create_merge_request_on_train(status: :fresh, source_branch: 'improve/awesome') }
       let(:train_car) { merge_request_2.merge_train_car }
-      let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'improve/awesome') }
 
       it { is_expected.to eq(1) }
+
+      context 'and the first car is successfully merged', :aggregate_failures do
+        let(:refresh_service_execution) do
+          merge_request.merge_train_car.start_merge!
+          merge_request.merge_train_car.finish_merge!
+        end
+
+        it 'removes index from the merged car and reduces the index of Train cars by 1' do
+          expect { refresh_service_execution }
+            .to change { merge_request.reload.merge_train_car.status_name }.from(:fresh).to(:merged)
+            .and change { merge_request.reload.merge_train_car.index }.from(0).to(nil)
+            .and change { merge_request_2.reload.merge_train_car.index }.from(1).to(0)
+        end
+      end
     end
   end
 
