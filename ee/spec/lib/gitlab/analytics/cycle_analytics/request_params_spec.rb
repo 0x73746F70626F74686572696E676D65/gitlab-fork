@@ -235,6 +235,14 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
         describe 'enable_vsd_link attribute' do
           subject(:value) { described_class.new(params).to_data_attributes[:enable_vsd_link] }
 
+          context "when `project_analytics_dashboard_dynamic_vsd` feature flag is disabled" do
+            before do
+              stub_feature_flags(project_analytics_dashboard_dynamic_vsd: false)
+            end
+
+            it { is_expected.to eq('false') }
+          end
+
           context "when user has access to the project's group" do
             it { is_expected.to eq('true') }
           end
