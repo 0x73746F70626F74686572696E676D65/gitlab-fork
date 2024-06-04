@@ -52,7 +52,7 @@ export const EXPAND_DELAY = 1000;
 
 export const itemRemoveModalId = 'item-remove-confirmation';
 
-export const treeItemChevronBtnClassName = 'btn-tree-item-chevron';
+export const treeItemChevronBtnKey = 'btn-tree-item-chevron';
 
 export const trackingAddedIssue = 'g_project_management_users_epic_issue_added_from_epic';
 
