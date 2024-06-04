@@ -162,15 +162,15 @@ module API
             render_api_error!({ error: _('This endpoint has been requested too many times. Try again later.') }, 429)
           end
 
-          result = Gitlab::Llm::AiGateway::CodeSuggestionsClient.new(current_user).direct_access_token
-          service_unavailable!(result[:message]) if result[:status] == :error
+          token = ::CloudConnector::AvailableServices.find_by_name(:code_suggestions).access_token(current_user)
+          service_unavailable! unless token
 
           access = {
             base_url: ::Gitlab::AiGateway.url,
             # for development purposes we just return instance JWT, this should not be used in production
             # until we generate a short-term token for user
             # https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist/-/issues/429
-            token: result[:token],
+            token: token,
             expires_at: token_expiration_time,
             headers: connector_public_headers
           }

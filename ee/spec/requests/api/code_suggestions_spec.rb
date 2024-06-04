@@ -921,9 +921,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       shared_examples_for 'user request with code suggestions allowed' do
         context 'when token creation succeeds' do
           before do
-            allow_next_instance_of(Gitlab::Llm::AiGateway::CodeSuggestionsClient) do |client|
-              allow(client).to receive(:direct_access_token).and_return({ status: :success, token: token })
-            end
+            allow(CloudConnector::AvailableServices)
+              .to receive_message_chain(:find_by_name, :access_token).and_return(token)
           end
 
           it 'returns direct access details', :freeze_time do
@@ -936,9 +935,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
         context 'when token creation fails' do
           before do
-            allow_next_instance_of(Gitlab::Llm::AiGateway::CodeSuggestionsClient) do |client|
-              allow(client).to receive(:direct_access_token).and_return({ status: :error, message: 'an error' })
-            end
+            allow(CloudConnector::AvailableServices)
+              .to receive_message_chain(:find_by_name, :access_token).and_return(nil)
           end
 
           it 'returns an error' do
@@ -976,9 +974,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         { rate_limit_key: :code_suggestions_direct_access,
           event_name: 'code_suggestions_direct_access_rate_limit_exceeded' } do
         before do
-          allow_next_instance_of(Gitlab::Llm::AiGateway::CodeSuggestionsClient) do |client|
-            allow(client).to receive(:direct_access_token).and_return({ status: :success, token: token })
-          end
+          allow(CloudConnector::AvailableServices)
+            .to receive_message_chain(:find_by_name, :access_token).and_return(token)
         end
 
         def request
