@@ -35,8 +35,6 @@ class GroupHook < WebHook
 
   belongs_to :group
 
-  validates :url, presence: true, addressable_url: true
-
   def pluralized_name
     _('Group Hooks')
   end
