@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# Managed license creation service. For use in the managed license controller.
 module SoftwareLicensePolicies
   class CreateService < ::BaseService
     def initialize(project, user, params)
