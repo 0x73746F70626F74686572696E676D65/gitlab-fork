@@ -175,7 +175,7 @@ RSpec.describe ::TodosHelper do
     let_it_be(:todo) { create(:todo, target: merge_request, user: user) }
 
     where(:action, :expected_action_name) do
-      ::Todo::ADDED_APPROVER | s_('Todos|have been added as an approver')
+      ::Todo::ADDED_APPROVER | s_('Todos|has added you as an approver')
     end
 
     with_them do

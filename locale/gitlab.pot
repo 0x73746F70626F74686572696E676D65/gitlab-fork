@@ -54777,10 +54777,10 @@ msgstr ""
 msgid "Todos|added a to-do item"
 msgstr ""
 
-msgid "Todos|has requested access to %{what} %{which}"
+msgid "Todos|has added you as an approver"
 msgstr ""
 
-msgid "Todos|have been added as an approver"
+msgid "Todos|has requested access to %{what} %{which}"
 msgstr ""
 
 msgid "Todos|mentioned %{who}"

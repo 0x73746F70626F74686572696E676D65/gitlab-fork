@@ -21,7 +21,7 @@ module EE
 
     override :todo_action_name
     def todo_action_name(todo)
-      return s_('Todos|have been added as an approver') if todo.action == ::Todo::ADDED_APPROVER
+      return s_('Todos|has added you as an approver') if todo.action == ::Todo::ADDED_APPROVER
 
       super
     end
