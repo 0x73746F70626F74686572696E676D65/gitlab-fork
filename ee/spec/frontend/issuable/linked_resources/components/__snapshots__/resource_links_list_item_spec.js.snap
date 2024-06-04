@@ -12,7 +12,7 @@ exports[`ResourceLinkItem template matches the snapshot 1`] = `
     >
       <svg
         aria-hidden="true"
-        class="gl-icon gl-mr-3 gl-text-gray-500 ic-zoom s16"
+        class="gl-fill-current gl-icon gl-mr-3 gl-text-gray-500 ic-zoom s16"
         data-testid="brand-zoom-icon"
         role="img"
       >
@@ -38,7 +38,7 @@ exports[`ResourceLinkItem template matches the snapshot 1`] = `
   >
     <svg
       aria-hidden="true"
-      class="gl-button-icon gl-icon s16"
+      class="gl-button-icon gl-fill-current gl-icon s16"
       data-testid="close-icon"
       role="img"
     >

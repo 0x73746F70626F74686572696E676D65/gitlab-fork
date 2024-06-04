@@ -127,7 +127,7 @@ exports[`MergeRequestTable component template matches the snapshot 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="gl-icon gl-mr-2 s16"
+                    class="gl-fill-current gl-icon gl-mr-2 s16"
                     data-testid="milestone-icon"
                     role="img"
                   >

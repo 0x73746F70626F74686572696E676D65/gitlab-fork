@@ -65,6 +65,7 @@ exports[`ExternalIssuesSidebarAssignee with no assignee template renders templat
       data-testid="no-assignee-icon"
       name="user"
       size="16"
+      variant="current"
     />
   </div>
 </div>

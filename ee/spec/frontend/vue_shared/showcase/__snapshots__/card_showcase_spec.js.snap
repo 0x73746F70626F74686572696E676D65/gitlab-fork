@@ -51,6 +51,7 @@ exports[`Card Showcase component renders correctly 1`] = `
         <gl-icon-stub
           name="external-link"
           size="16"
+          variant="current"
         />
       </gl-button-stub>
       <gl-button-stub

@@ -90,7 +90,7 @@ exports[`Environment Header renders name and link to app matches the snapshot 1`
       View app
       <svg
         aria-hidden="true"
-        class="fgray gl-icon s16"
+        class="fgray gl-fill-current gl-icon s16"
         data-testid="external-link-icon"
         role="img"
       >
@@ -135,6 +135,7 @@ exports[`Environment Header with environments grouped into a folder matches the 
     name="information"
     size="16"
     title="You are looking at the last updated environment"
+    variant="current"
   />
 </div>
 `;

@@ -9,6 +9,7 @@ exports[`LicenseStatusIcon renders "failed" state correctly 1`] = `
     data-testid="status-failed-icon"
     name="status-failed"
     size="12"
+    variant="current"
   />
 </div>
 `;
@@ -22,6 +23,7 @@ exports[`LicenseStatusIcon renders "neutral" state correctly 1`] = `
     data-testid="status-neutral-icon"
     name="status-alert"
     size="12"
+    variant="current"
   />
 </div>
 `;
@@ -35,6 +37,7 @@ exports[`LicenseStatusIcon renders "success" state correctly 1`] = `
     data-testid="status-success-icon"
     name="status-success"
     size="12"
+    variant="current"
   />
 </div>
 `;

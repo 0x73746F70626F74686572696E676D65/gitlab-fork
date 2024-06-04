@@ -83,7 +83,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="gl-icon s16"
+                  class="gl-fill-current gl-icon s16"
                   data-testid="completed-icon"
                   role="img"
                 >
@@ -148,7 +148,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="gl-icon s16"
+                  class="gl-fill-current gl-icon s16"
                   data-testid="completed-icon"
                   role="img"
                 >
@@ -171,7 +171,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="gl-icon s16"
+                  class="gl-fill-current gl-icon s16"
                   data-testid="completed-icon"
                   role="img"
                 >

@@ -47,6 +47,7 @@ exports[`DrawerLayout component enabled policy matches the snapshots 1`] = `
         class="gl-mr-3"
         name="check-circle-filled"
         size="16"
+        variant="current"
       />
       Enabled
     </div>

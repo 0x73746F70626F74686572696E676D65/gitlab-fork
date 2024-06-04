@@ -91,6 +91,7 @@ exports[`Buy Addons Shared App Compute minutes labels does not show labels if in
             class="gl-flex-shrink-0"
             name="chevron-right"
             size="16"
+            variant="current"
           />
           <span
             class="gl-ml-2"
@@ -359,6 +360,7 @@ exports[`Buy Addons Shared App Compute minutes labels shows labels correctly for
             class="gl-flex-shrink-0"
             name="chevron-right"
             size="16"
+            variant="current"
           />
           <span
             class="gl-ml-2"
@@ -639,6 +641,7 @@ exports[`Buy Addons Shared App Compute minutes labels shows labels correctly for
             class="gl-flex-shrink-0"
             name="chevron-right"
             size="16"
+            variant="current"
           />
           <span
             class="gl-ml-2"
@@ -902,6 +905,7 @@ exports[`Buy Addons Shared App Storage labels does not show labels if input is i
             class="gl-flex-shrink-0"
             name="chevron-right"
             size="16"
+            variant="current"
           />
           <span
             class="gl-ml-2"
@@ -955,6 +959,7 @@ exports[`Buy Addons Shared App Storage labels does not show labels if input is i
                 role="tooltip"
                 size="16"
                 title="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+                variant="current"
               />
             </div>
           </div>
@@ -1048,6 +1053,7 @@ exports[`Buy Addons Shared App Storage labels does not show labels if input is i
               role="tooltip"
               size="16"
               title="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+              variant="current"
             />
           </div>
         </div>
@@ -1183,6 +1189,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 
             class="gl-flex-shrink-0"
             name="chevron-right"
             size="16"
+            variant="current"
           />
           <span
             class="gl-ml-2"
@@ -1242,6 +1249,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 
                 role="tooltip"
                 size="16"
                 title="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+                variant="current"
               />
             </div>
           </div>
@@ -1341,6 +1349,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 
               role="tooltip"
               size="16"
               title="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+              variant="current"
             />
           </div>
         </div>
@@ -1476,6 +1485,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 2 packs
             class="gl-flex-shrink-0"
             name="chevron-right"
             size="16"
+            variant="current"
           />
           <span
             class="gl-ml-2"
@@ -1535,6 +1545,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 2 packs
                 role="tooltip"
                 size="16"
                 title="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+                variant="current"
               />
             </div>
           </div>
@@ -1634,6 +1645,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 2 packs
               role="tooltip"
               size="16"
               title="Your storage subscription has the same term as your main subscription, and the price is prorated accordingly."
+              variant="current"
             />
           </div>
         </div>

@@ -113,6 +113,7 @@ describe('Epic Popover', () => {
         ariaLabel: 'Confidential',
         size: 16,
         name: 'eye-slash',
+        variant: 'current',
       });
     });
 
