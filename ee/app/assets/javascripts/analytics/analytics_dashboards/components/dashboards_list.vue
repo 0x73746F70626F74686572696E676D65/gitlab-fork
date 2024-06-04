@@ -34,7 +34,7 @@ export default {
       type: Object,
       default: null,
     },
-    canConfigureDashboardsProject: {
+    canConfigureProjectSettings: {
       type: Boolean,
     },
     namespaceFullPath: {
@@ -76,7 +76,7 @@ export default {
       );
     },
     showCustomDashboardSetupBanner() {
-      return !this.customDashboardsProject && this.canConfigureDashboardsProject;
+      return !this.customDashboardsProject && this.canConfigureProjectSettings;
     },
     productAnalyticsIsOnboarded() {
       return (

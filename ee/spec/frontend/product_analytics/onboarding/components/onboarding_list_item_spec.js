@@ -18,10 +18,12 @@ describe('OnboardingListItem', () => {
   const findListItem = () => wrapper.findComponent(AnalyticsFeatureListItem);
   const findState = () => wrapper.findComponent(OnboardingState);
 
-  const createWrapper = (state) => {
+  const createWrapper = (state, provide = {}) => {
     wrapper = shallowMountExtended(OnboardingListItem, {
       provide: {
+        canConfigureProjectSettings: true,
         namespaceFullPath: TEST_PROJECT_FULL_PATH,
+        ...provide,
       },
     });
 
@@ -103,5 +105,28 @@ describe('OnboardingListItem', () => {
         expect(findListItem().props('actionText')).toBe(actionText);
       },
     );
+  });
+
+  describe('when user does not have required permissions', () => {
+    beforeEach(() => {
+      createWrapper(STATE_CREATE_INSTANCE, {
+        canConfigureProjectSettings: false,
+      });
+    });
+
+    it('does disables the setup button', () => {
+      expect(findListItem().props('actionDisabled')).toBe(true);
+    });
+
+    it('renders a badge informing the user they have insufficient permissions', () => {
+      expect(findListItem().props()).toMatchObject(
+        expect.objectContaining({
+          badgeText: 'Additional permissions required',
+          badgePopoverText:
+            'Contact the GitLab administrator or project maintainer to onboard this project with product analytics. %{linkStart}Learn more%{linkEnd}.',
+          badgePopoverLink: '/help/user/product_analytics#onboard-a-gitlab-project',
+        }),
+      );
+    });
   });
 });

@@ -72,7 +72,7 @@ describe('DashboardsList', () => {
         isGroup: false,
         collectorHost: TEST_COLLECTOR_HOST,
         trackingKey: TEST_TRACKING_KEY,
-        canConfigureDashboardsProject: true,
+        canConfigureProjectSettings: true,
         namespaceFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         analyticsSettingsPath: '/test/-/settings#foo',
         ...provided,
@@ -241,7 +241,7 @@ describe('DashboardsList', () => {
   describe('configure custom dashboards project', () => {
     describe('when user has permission', () => {
       it('shows the custom dashboard setup alert', () => {
-        createWrapper({ customDashboardsProject: null, canConfigureDashboardsProject: true });
+        createWrapper({ customDashboardsProject: null, canConfigureProjectSettings: true });
 
         expect(findConfigureAlert().exists()).toBe(true);
       });
@@ -249,7 +249,7 @@ describe('DashboardsList', () => {
 
     describe('when user does not have permission', () => {
       beforeEach(() => {
-        createWrapper({ customDashboardsProject: null, canConfigureDashboardsProject: false });
+        createWrapper({ customDashboardsProject: null, canConfigureProjectSettings: false });
       });
 
       it('does not show the custom dashboard setup alert', () => {

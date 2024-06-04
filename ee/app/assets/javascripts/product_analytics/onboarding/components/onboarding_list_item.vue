@@ -1,5 +1,7 @@
 <script>
 import { __, s__ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
+
 import AnalyticsFeatureListItem from 'ee/analytics/analytics_dashboards/components/list/feature_list_item.vue';
 import {
   STATE_COMPLETE,
@@ -7,7 +9,6 @@ import {
   STATE_LOADING_INSTANCE,
   STATE_CREATE_INSTANCE,
 } from '../constants';
-
 import OnboardingState from './onboarding_state.vue';
 
 export default {
@@ -16,6 +17,7 @@ export default {
     OnboardingState,
     AnalyticsFeatureListItem,
   },
+  inject: { canConfigureProjectSettings: {} },
   data() {
     return {
       state: '',
@@ -26,6 +28,18 @@ export default {
       return this.state && this.state !== STATE_COMPLETE;
     },
     badge() {
+      if (!this.canConfigureProjectSettings) {
+        return {
+          text: s__('ProductAnalytics|Additional permissions required'),
+          popoverText: s__(
+            'ProductAnalytics|Contact the GitLab administrator or project maintainer to onboard this project with product analytics. %{linkStart}Learn more%{linkEnd}.',
+          ),
+          popoverLink: helpPagePath('user/product_analytics', {
+            anchor: 'onboard-a-gitlab-project',
+          }),
+        };
+      }
+
       switch (this.state) {
         case STATE_WAITING_FOR_EVENTS:
           return {
@@ -49,6 +63,9 @@ export default {
       return this.state === STATE_CREATE_INSTANCE
         ? __('Set up')
         : s__('ProductAnalytics|Continue set up');
+    },
+    actionDisabled() {
+      return !this.canConfigureProjectSettings;
     },
   },
   methods: {
@@ -79,8 +96,10 @@ export default {
       "
       :badge-text="badge.text"
       :badge-popover-text="badge.popoverText"
+      :badge-popover-link="badge.popoverLink"
       :to="$options.onboardingRoute"
       :action-text="actionText"
+      :action-disabled="actionDisabled"
     />
   </onboarding-state>
 </template>

@@ -67,7 +67,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
               name: pointer.target_project.name,
               default_branch: pointer.target_project.default_branch
             }.to_json,
-            can_configure_dashboards_project: user_can_admin_project.to_s,
+            can_configure_project_settings: user_can_admin_project.to_s,
             can_select_gitlab_managed_provider: 'false',
             managed_cluster_purchased: 'false',
             tracking_key: user_has_permission ? product_analytics_instrumentation_key : nil,
@@ -127,7 +127,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           is_group: 'true',
           namespace_id: sub_group.id,
           dashboard_project: nil,
-          can_configure_dashboards_project: 'false',
+          can_configure_project_settings: 'false',
           can_select_gitlab_managed_provider: 'false',
           managed_cluster_purchased: 'false',
           tracking_key: nil,
@@ -194,7 +194,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             name: group_pointer.target_project.name,
             default_branch: group_pointer.target_project.default_branch
           }.to_json,
-          can_configure_dashboards_project: 'false',
+          can_configure_project_settings: 'false',
           can_select_gitlab_managed_provider: 'false',
           managed_cluster_purchased: 'false',
           tracking_key: nil,
