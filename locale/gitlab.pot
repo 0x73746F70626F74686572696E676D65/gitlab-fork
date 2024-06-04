@@ -986,7 +986,7 @@ msgstr ""
 msgid "%{listToShow}, and %{awardsListLength} more"
 msgstr ""
 
-msgid "%{lock_path} is locked by GitLab User %{lock_user_id}"
+msgid "%{lock_path} is locked by @%{lock_user_name}"
 msgstr ""
 
 msgid "%{mergeLength}/%{usersLength} can merge"
