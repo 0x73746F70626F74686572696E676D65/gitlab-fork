@@ -142,17 +142,16 @@ describe('DetailsDrawer component', () => {
     it('does not render the fallback behavior section if the policy does not have the fallback behavior property', () => {
       factory({
         props: {
-          policy: {
-            ...mockProjectScanResultPolicy,
-            yaml: mockNoFallbackScanResultManifest,
-          },
+          policy: { ...mockProjectScanResultPolicy, yaml: mockNoFallbackScanResultManifest },
         },
       });
-      expect(findAdditionalDetails().exists()).toBe(false);
+      expect(findAdditionalDetails().isVisible()).toBe(false);
+      expect(findAdditionalDetails().text()).toBe('');
     });
 
     it('renders the open fallback behavior', () => {
       factory();
+      expect(findAdditionalDetails().isVisible()).toBe(true);
       expect(findAdditionalDetails().text()).toBe(
         'Fail open: Allow the merge request to proceed, even if not all criteria are met',
       );
@@ -167,6 +166,7 @@ describe('DetailsDrawer component', () => {
           },
         },
       });
+      expect(findAdditionalDetails().isVisible()).toBe(true);
       expect(findAdditionalDetails().text()).toBe(
         'Fail closed: Block the merge request until all criteria are met',
       );
