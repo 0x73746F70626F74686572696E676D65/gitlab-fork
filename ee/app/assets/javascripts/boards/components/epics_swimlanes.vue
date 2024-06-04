@@ -148,7 +148,7 @@ export default {
       return this.isUnassignedCollapsed ? 'chevron-right' : 'chevron-down';
     },
     epicButtonLabel() {
-      return this.isLoadingMoreEpics ? s__('Board|Loading epics') : s__('Board|Load more epics');
+      return this.isLoadingMoreEpics ? s__('Boards|Loading epics') : s__('Boards|Load more epics');
     },
     shouldShowLoadMoreUnassignedIssues() {
       return !this.isUnassignedCollapsed && this.hasMoreUnassignedIssues;
@@ -392,7 +392,7 @@ export default {
           data-testid="board-lane-load-more-issues-button"
           @click="fetchMoreUnassignedIssues()"
         >
-          {{ s__('Board|Load more issues') }}
+          {{ s__('Boards|Load more issues') }}
         </gl-button>
       </div>
       <!-- placeholder for some space below lane lists -->
