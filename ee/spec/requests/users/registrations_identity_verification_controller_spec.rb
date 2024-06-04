@@ -230,7 +230,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
         stub_session(session_data: { verification_user_id: user.id })
       end
 
-      it 'returns verification methods and state' do
+      it 'returns verification methods and state', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/463198' do
         do_request
 
         expect(json_response).to eq({
