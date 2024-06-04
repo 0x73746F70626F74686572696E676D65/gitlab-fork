@@ -128,7 +128,7 @@ module Gitlab
         message = "#{_('Secret push protection skipped via')} #{skip_method}"
 
         audit_context = {
-          name: "skip_pre_receive_secret_detection",
+          name: "skip_secret_push_protection",
           author: changes_access.user_access.user,
           target: project,
           scope: project,
