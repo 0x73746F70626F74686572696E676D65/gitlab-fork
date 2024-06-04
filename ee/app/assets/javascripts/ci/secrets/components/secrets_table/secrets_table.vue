@@ -1,10 +1,11 @@
 <script>
 import { GlButton, GlCard, GlTableLite, GlSprintf, GlLabel, GlPagination } from '@gitlab/ui';
 import { updateHistory, getParameterByName, setUrlParams } from '~/lib/utils/url_utility';
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserDate from '~/vue_shared/components/user_date.vue';
 import { LONG_DATE_FORMAT_WITH_TZ } from '~/vue_shared/constants';
+import { convertEnvironmentScope } from '~/ci/common/private/ci_environments_dropdown';
 import getSecretsQuery from '../../graphql/queries/client/get_secrets.query.graphql';
 import {
   NEW_ROUTE_NAME,
@@ -96,6 +97,10 @@ export default {
     getLabelBackgroundColor(label) {
       return this.isScopedLabel(label) ? SCOPED_LABEL_COLOR : UNSCOPED_LABEL_COLOR;
     },
+    environmentLabelText(environment) {
+      const environmentText = convertEnvironmentScope(environment);
+      return `${__('env')}::${environmentText}`;
+    },
     updateQueryParamsFromUrl() {
       this.page = Number(getParameterByName('page')) || INITIAL_PAGE;
     },
@@ -128,6 +133,7 @@ export default {
   LONG_DATE_FORMAT_WITH_TZ,
   NEW_ROUTE_NAME,
   PAGE_SIZE,
+  SCOPED_LABEL_COLOR,
 };
 </script>
 <template>
@@ -162,10 +168,15 @@ export default {
         </div>
       </template>
       <gl-table-lite :fields="$options.fields" :items="secretsNodes" stacked="md" class="gl-mb-0">
-        <template #cell(name)="{ item: { id, name, labels } }">
+        <template #cell(name)="{ item: { id, name, labels, environment } }">
           <router-link data-testid="secret-details-link" :to="getDetailsRoute(id)" class="gl-block">
             {{ name }}
           </router-link>
+          <gl-label
+            :title="environmentLabelText(environment)"
+            :background-color="$options.SCOPED_LABEL_COLOR"
+            scoped
+          />
           <gl-label
             v-for="label in labels"
             :key="label"
