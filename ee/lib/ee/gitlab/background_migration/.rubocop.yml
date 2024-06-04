@@ -3,7 +3,7 @@
 ---
 inherit_from: ../../../../../lib/gitlab/background_migration/.rubocop.yml
 
-Migration/BackgroundMigrationBaseClass:
+Migration/BatchedMigrationBaseClass:
   Enabled: false
 
 BackgroundMigration/AvoidSilentRescueExceptions:
