@@ -115,6 +115,8 @@ RSpec.describe 'Project', feature_category: :source_code_management do
 
         find('.js-next-button a').click
 
+        wait_for_requests
+
         expect(page).to have_css(last_project)
       end
     end
