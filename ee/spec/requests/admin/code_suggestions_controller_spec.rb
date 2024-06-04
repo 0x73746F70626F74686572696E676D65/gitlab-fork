@@ -27,7 +27,7 @@ RSpec.describe Admin::CodeSuggestionsController, :cloud_licenses, feature_catego
 
           expect(response).to render_template(:index)
           expect(response.body).to include('js-code-suggestions-page')
-          expect(flash[:notice]).to eq("Code completion test was successful")
+          expect(flash.now[:notice]).to eq("Code completion test was successful")
         end
       end
 
@@ -43,7 +43,7 @@ RSpec.describe Admin::CodeSuggestionsController, :cloud_licenses, feature_catego
 
           expect(response).to render_template(:index)
           expect(response.body).to include('js-code-suggestions-page')
-          expect(flash[:alert]).to eq("Code completion test failed: an error")
+          expect(flash.now[:alert]).to eq("Code completion test failed: an error")
         end
       end
     end
