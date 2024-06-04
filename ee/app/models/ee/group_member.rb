@@ -93,9 +93,6 @@ module EE
       return false if ::Gitlab::Access::OWNER == group.max_member_access_for_user(current_user)
 
       current_member = group.highest_group_member(current_user)
-
-      return false if current_member&.access_level == ::Gitlab::Access::OWNER
-
       current_member_enabled_abilities = current_member.member_role&.enabled_permissions
       new_member_enabled_abilities = MemberRole.find_by_id(member_role_id)&.enabled_permissions
 
