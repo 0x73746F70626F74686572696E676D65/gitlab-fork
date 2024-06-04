@@ -110,12 +110,7 @@ describe('MemberList', () => {
 
           expect(
             findTableCellByMemberId('Actions', memberNoPermissions.id).classes(),
-          ).toStrictEqual([
-            'col-actions',
-            'gl-display-none!',
-            'gl-lg-display-table-cell!',
-            '!gl-align-middle',
-          ]);
+          ).toStrictEqual(['col-actions', '!gl-hidden', 'lg:!gl-table-cell', '!gl-align-middle']);
           expect(
             findTableCellByMemberId('Actions', memberWithPermission.id).classes(),
           ).toStrictEqual(['col-actions', '!gl-align-middle']);
