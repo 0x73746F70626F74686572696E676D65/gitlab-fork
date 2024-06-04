@@ -3,9 +3,13 @@
 - if can?(current_user, :make_profile_private, user)
   = render_ce 'user_settings/profiles/private_profile', form: form
 - else
+  - popover_target_id = 'private-profile-locked-btn'
+  - title = s_("Profiles|Setting locked")
+  - content = s_("Profiles|Profiles are required to be public in this instance.")
+  - popover_options = { target: popover_target_id, title: title, content: content }.to_json
   = form.gitlab_ui_checkbox_component :private_profile, checkbox_options: { disabled: true } do |c|
     - c.with_label do
       = s_("Profiles|Don't display activity-related personal information on your profile.")
-      = sprite_icon('lock')
-    - c.with_help_text do
-      = _('Setting locked. Profiles are required to be public in this instance.')
+      = render Pajamas::ButtonComponent.new(variant: :link, icon: 'lock', button_options: { id: popover_target_id, class: '!gl-text-gray-400 gl-mb-2' })
+      .js-vue-popover{ 'v-cloak': true, data: { app_data: popover_options } }
+
