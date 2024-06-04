@@ -1,8 +1,6 @@
 ---
 key_path: usage_activity_by_stage_monthly.release.releases_with_group_milestones
 description: Unique users creating releases with group milestones associated
-product_section: ops
-product_stage: deploy
 product_group: environments
 value_type: number
 status: active
