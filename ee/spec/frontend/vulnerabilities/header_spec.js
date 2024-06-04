@@ -535,22 +535,6 @@ describe('Vulnerability Header', () => {
         gon.current_user_id = 1;
       });
 
-      it('passes the experiment badge, tooltip, and tanuki icon', () => {
-        createWrapper({
-          vulnerability: getVulnerability({
-            canResolveWithAI: true,
-          }),
-        });
-
-        const buttons = findSplitButton().props('buttons');
-        expect(buttons[0]).toMatchObject({
-          badge: 'Experiment',
-          tooltip:
-            'This is an experiment feature that uses AI to provide recommendations for resolving this vulnerability. Use this feature with caution.',
-          icon: 'tanuki-ai',
-        });
-      });
-
       it('continues to show the loading state into the redirect call', async () => {
         await createWrapperWithAiApollo();
 
@@ -641,6 +625,27 @@ describe('Vulnerability Header', () => {
       expect(buttons).toHaveLength(2);
       expect(buttons[0].name).toBe('Resolve with merge request');
       expect(buttons[1].name).toBe('Download patch to resolve');
+    });
+  });
+
+  describe('when using experimental "Resolve with AI" (deprecated)', () => {
+    it('passes the experiment badge, tooltip, and tanuki icon', () => {
+      createWrapper({
+        glFeatures: {
+          resolveVulnerability: true,
+        },
+        vulnerability: getVulnerability({
+          canResolveWithAI: true,
+        }),
+      });
+
+      const buttons = findSplitButton().props('buttons');
+      expect(buttons[0]).toMatchObject({
+        badge: 'Experiment',
+        tooltip:
+          'This is an experiment feature that uses AI to provide recommendations for resolving this vulnerability. Use this feature with caution.',
+        icon: 'tanuki-ai',
+      });
     });
   });
 });
