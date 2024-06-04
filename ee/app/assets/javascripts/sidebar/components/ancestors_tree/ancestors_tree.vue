@@ -63,12 +63,15 @@ export default {
     getTimelineClass(ancestor) {
       return ancestor.state === STATUS_OPEN ? 'opened' : 'closed';
     },
+    getLastItemClass(index, length) {
+      return index === length - 1 ? '!gl-h-auto' : '';
+    },
   },
 };
 </script>
 
 <template>
-  <div class="ancestor-tree gl-bg-inherit">
+  <div class="ancestor-tree">
     <div ref="sidebarIcon" class="sidebar-collapsed-icon">
       <div><gl-icon name="epic" /></div>
       <span v-if="!isFetching" class="collapse-truncated-title gl-pt-2 gl-px-3 gl-font-sm">{{
@@ -81,18 +84,15 @@ export default {
     </gl-tooltip>
     <div class="title hide-collapsed gl-mb-2 gl-font-bold">{{ __('Ancestors') }}</div>
 
-    <ul
-      v-if="!isFetching && ancestors.length"
-      class="vertical-timeline hide-collapsed gl-bg-inherit"
-    >
+    <ul v-if="!isFetching && ancestors.length" class="vertical-timeline hide-collapsed">
       <template v-for="(ancestor, index) in ancestors">
         <li
           v-if="ancestor.hasParent && index === 0"
           :key="`${ancestor.id}-has-parent`"
-          class="vertical-timeline-row gl-display-flex gl-bg-inherit"
+          class="vertical-timeline-row gl-display-flex"
           data-testid="ancestor-parent-warning"
         >
-          <div class="vertical-timeline-icon gl-text-orange-500 gl-bg-inherit">
+          <div class="vertical-timeline-icon gl-text-orange-500 gl-bg-default">
             <gl-icon name="warning" />
           </div>
           <div class="vertical-timeline-content">
@@ -101,8 +101,11 @@ export default {
             }}</span>
           </div>
         </li>
-        <li :key="ancestor.id" class="vertical-timeline-row gl-display-flex gl-bg-inherit">
-          <div class="vertical-timeline-icon gl-bg-inherit" :class="getTimelineClass(ancestor)">
+        <li :key="ancestor.id" class="vertical-timeline-row gl-display-flex">
+          <div
+            class="vertical-timeline-icon gl-bg-default"
+            :class="[getTimelineClass(ancestor), getLastItemClass(index, ancestors.length)]"
+          >
             <gl-icon :name="getIcon(ancestor)" />
           </div>
           <div class="vertical-timeline-content">
