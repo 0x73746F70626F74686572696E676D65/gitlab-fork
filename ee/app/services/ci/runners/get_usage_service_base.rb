@@ -17,7 +17,7 @@ module Ci
       #   - Project: filter jobs from the specified project. current_user needs to be at least a maintainer
       #   - Group: filter jobs from projects under the specified group. current_user needs to be at least a maintainer
       #   - nil: use all jobs. current_user must be an admin
-      # @param [String] runner_type The type of CI runner to include data for
+      # @param [Symbol, Integer] runner_type The type of CI runner to include data for
       #     Valid options are defined in `Ci::Runner.runner_types`
       # @param [Array<String>] additional_group_by_columns An array of additional columns to group the report data by.
       #
@@ -28,7 +28,7 @@ module Ci
       )
         @current_user = current_user
         @scope = scope
-        @runner_type = Ci::Runner.runner_types[runner_type]
+        @runner_type = Ci::Runner.runner_types.fetch(runner_type) { Integer(runner_type) if runner_type }
         @from_date = from_date
         @to_date = to_date
         @max_item_count = max_item_count
