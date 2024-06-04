@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
 import { STATUS_OPEN } from '~/issues/constants';
-import createDefaultClient from '~/lib/graphql';
+import { apolloProvider } from '~/graphql_shared/issuable_client';
 import { parseBoolean, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { queryToObject } from '~/lib/utils/url_utility';
 
@@ -16,10 +16,6 @@ export default function initEpicsList({ mountPointSelector }) {
   if (!mountPointEl) {
     return null;
   }
-
-  const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(),
-  });
 
   const {
     page = 1,
@@ -38,6 +34,7 @@ export default function initEpicsList({ mountPointSelector }) {
     groupMilestonesPath,
     emptyStatePath,
     isSignedIn,
+    hasIssuableHealthStatusFeature,
   } = mountPointEl.dataset;
 
   const rawFilterParams = queryToObject(window.location.search, { gatherArrays: true });
@@ -66,6 +63,7 @@ export default function initEpicsList({ mountPointSelector }) {
       canBulkEditEpics: parseBoolean(canBulkEditEpics),
       hasScopedLabelsFeature: parseBoolean(hasScopedLabelsFeature),
       labelsFetchPath: `${labelsFetchPath}?only_group_labels=true`,
+      hasIssuableHealthStatusFeature: parseBoolean(hasIssuableHealthStatusFeature),
       epicNewPath,
       listEpicsPath,
       groupFullPath,

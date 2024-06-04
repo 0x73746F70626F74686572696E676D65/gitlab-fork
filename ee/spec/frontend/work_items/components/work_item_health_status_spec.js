@@ -46,6 +46,7 @@ describe('WorkItemHealthStatus component', () => {
     hasIssuableHealthStatusFeature = true,
     healthStatus,
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
+    isGroup = false,
   } = {}) => {
     wrapper = mountExtended(WorkItemHealthStatus, {
       apolloProvider: createMockApollo([
@@ -61,6 +62,7 @@ describe('WorkItemHealthStatus component', () => {
       },
       provide: {
         hasIssuableHealthStatusFeature,
+        isGroup,
       },
     });
   };

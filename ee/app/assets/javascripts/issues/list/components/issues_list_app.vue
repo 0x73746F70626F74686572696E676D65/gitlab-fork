@@ -1,5 +1,4 @@
 <script>
-import IssuesListApp from '~/issues/list/components/issues_list_app.vue';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   OPERATORS_IS_NOT,
@@ -45,7 +44,7 @@ const ChildEpicIssueIndicator = () =>
 export default {
   name: 'IssuesListAppEE',
   components: {
-    IssuesListApp,
+    IssuesListApp: () => import('~/issues/list/components/issues_list_app.vue'),
     NewIssueDropdown,
     ChildEpicIssueIndicator,
   },
@@ -182,6 +181,7 @@ export default {
 <template>
   <issues-list-app
     ref="issuesListApp"
+    class="js-issues-list-app"
     :ee-work-item-types="workItemTypes"
     :ee-type-token-options="typeTokenOptions"
     :ee-search-tokens="searchTokens"

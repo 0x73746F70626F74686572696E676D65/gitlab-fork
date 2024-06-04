@@ -13,6 +13,8 @@ describe('NewIssueDropdown component', () => {
     return mount(NewIssueDropdown, {
       provide: {
         newIssuePath: NEW_ISSUE_PATH,
+        fullPath: 'full-path',
+        isGroup: false,
       },
       stubs: {
         CreateWorkItemModal,

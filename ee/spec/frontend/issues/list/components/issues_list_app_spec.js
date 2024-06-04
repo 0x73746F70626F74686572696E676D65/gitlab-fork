@@ -88,6 +88,7 @@ describe('EE IssuesListApp component', () => {
     showNewIssueLink: true,
     signInPath: 'sign/in/path',
     groupId: '',
+    isGroup: false,
   };
 
   const defaultQueryResponse = cloneDeep(getIssuesQueryResponse);
@@ -123,6 +124,9 @@ describe('EE IssuesListApp component', () => {
         },
         ...defaultProvide,
         ...provide,
+      },
+      stubs: {
+        NewIssueDropdown: true,
       },
     });
   };
