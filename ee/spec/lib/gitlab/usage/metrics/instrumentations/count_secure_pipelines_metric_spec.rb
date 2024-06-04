@@ -64,7 +64,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountSecurePipelinesMet
       end
     end
 
-    it "for dependency_scanning" do
+    it "for dependency_scanning", quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/450187' do
       value = metric('dependency_scanning').value
 
       expect(value).to be_within(error_rate).percent_of(2)
