@@ -3,9 +3,22 @@
 require 'spec_helper'
 
 RSpec.describe API::Integrations, feature_category: :integrations do
+  include Integrations::TestHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:user2) { create(:user) }
   let_it_be_with_reload(:project) { create(:project, namespace: user.namespace) }
+  let_it_be(:project2) { create(:project, creator_id: user.id, namespace: user.namespace) }
+
+  let_it_be(:available_integration_names) do
+    Integration::EE_PROJECT_SPECIFIC_INTEGRATION_NAMES.union(Integration::GOOGLE_CLOUD_PLATFORM_INTEGRATION_NAMES)
+  end
+
+  let_it_be(:project_integrations_map) do
+    available_integration_names.index_with do |name|
+      create(integration_factory(name), :inactive, project: project)
+    end
+  end
 
   before do
     stub_saas_features(google_cloud_support: true)
@@ -113,7 +126,7 @@ RSpec.describe API::Integrations, feature_category: :integrations do
       let(:url) { api("/projects/#{project.id}/integrations/google-cloud-platform-artifact-registry", user) }
 
       before do
-        create(:google_cloud_platform_artifact_registry_integration, project: project)
+        project_integrations_map['google_cloud_platform_artifact_registry'].activate!
       end
 
       it_behaves_like 'handling google artifact registry conditions' do
@@ -125,7 +138,7 @@ RSpec.describe API::Integrations, feature_category: :integrations do
       let(:url) { api("/projects/#{project.id}/integrations/google-cloud-platform-artifact-registry", user) }
 
       before do
-        create(:google_cloud_platform_artifact_registry_integration, project: project)
+        project_integrations_map['google_cloud_platform_artifact_registry'].activate!
       end
 
       it_behaves_like 'handling google artifact registry conditions' do
@@ -135,13 +148,10 @@ RSpec.describe API::Integrations, feature_category: :integrations do
   end
 
   context 'when Google Cloud Workload Identity Federation integration feature is unavailable' do
-    let_it_be(:project_integration) do
-      create(:google_cloud_platform_workload_identity_federation_integration, project: project)
-    end
-
     let(:url) { api("/projects/#{project.id}/integrations/google-cloud-platform-workload-identity-federation", user) }
 
     before do
+      project_integrations_map['google_cloud_platform_workload_identity_federation'].activate!
       stub_saas_features(google_cloud_support: false)
     end
 
