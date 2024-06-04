@@ -18,7 +18,7 @@ module IdentityVerifiable
   MEDIUM_RISK_USER_METHODS = %w[email phone].freeze
   LOW_RISK_USER_METHODS = %w[email].freeze
   ACTIVE_USER_METHODS = %w[phone].freeze
-  IDENTITY_VERIFICATION_RELEASE_DATE = Date.new(2024, 6, 3)
+  IDENTITY_VERIFICATION_RELEASE_DATE = Date.new(2024, 5, 30)
   UNVERIFIED_USER_CREATED_GROUP_LIMIT = 2
 
   def signup_identity_verification_enabled?
