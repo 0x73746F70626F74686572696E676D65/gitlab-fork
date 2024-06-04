@@ -17480,8 +17480,9 @@ four standard [pagination arguments](#pagination-arguments):
 | <a id="cicatalogresourceversioncreatedat"></a>`createdAt` **{warning-solid}** | [`Time`](#time) | **Introduced** in GitLab 16.7. **Status**: Experiment. Timestamp of when the version was created. |
 | <a id="cicatalogresourceversionid"></a>`id` **{warning-solid}** | [`CiCatalogResourcesVersionID!`](#cicatalogresourcesversionid) | **Introduced** in GitLab 16.7. **Status**: Experiment. Global ID of the version. |
 | <a id="cicatalogresourceversionname"></a>`name` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 16.8. **Status**: Experiment. Name that uniquely identifies the version within the catalog resource. |
-| <a id="cicatalogresourceversionpath"></a>`path` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 16.8. **Status**: Experiment. Relative web path to the version. |
-| <a id="cicatalogresourceversionreadmehtml"></a>`readmeHtml` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 16.8. **Status**: Experiment. GitLab Flavored Markdown rendering of README.md. This field can only be resolved for one version in any single request. |
+| <a id="cicatalogresourceversionpath"></a>`path` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 16.8. **Status**: Experiment. Relative web path to the version's readme. |
+| <a id="cicatalogresourceversionreadme"></a>`readme` **{warning-solid}** | [`String`](#string) | **Introduced** in GitLab 16.8. **Status**: Experiment. Readme data. |
+| <a id="cicatalogresourceversionreadmehtml"></a>`readmeHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of `readme`. |
 | <a id="cicatalogresourceversionreleasedat"></a>`releasedAt` **{warning-solid}** | [`Time`](#time) | **Introduced** in GitLab 16.7. **Status**: Experiment. Timestamp of when the version was released. |
 
 ### `CiConfig`
