@@ -15,7 +15,7 @@ RSpec.describe Ci::InitialPipelineProcessWorker, feature_category: :continuous_i
     include_examples 'an idempotent worker' do
       let(:job_args) { pipeline.id }
 
-      context 'when the project is out of CI minutes' do
+      context 'when the project is out of compute minutes' do
         it 'marks the pipeline as failed' do
           expect(pipeline).to be_created
 

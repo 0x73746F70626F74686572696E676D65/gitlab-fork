@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# This class is responsible for dealing with the CI minutes limits set at root namespace level.
+# This class is responsible for dealing with the compute minutes limits set at root namespace level.
 
 module Ci
   module Minutes
@@ -36,7 +36,7 @@ module Ci
       def recalculate_remaining_purchased_minutes!
         return unless should_recalculate_purchased_minutes?
 
-        # Since we reset CI minutes data lazily, we take the last known usage
+        # Since we reset compute minutes data lazily, we take the last known usage
         # and not necessarily the previous month data because that represents
         # last time we reset the data.
         # Jan: monthly_minutes: 1_000, purchased_minutes: 500, minutes_used: 1_200

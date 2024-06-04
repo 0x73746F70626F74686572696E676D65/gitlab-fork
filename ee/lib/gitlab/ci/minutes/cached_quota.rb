@@ -42,7 +42,7 @@ module Gitlab
         end
 
         # We include the current month in the key so that the entry
-        # automatically expires on the 1st of the month, when we reset CI minutes.
+        # automatically expires on the 1st of the month, when we reset compute minutes.
         def cache_key
           strong_memoize(:cache_key) do
             now = Time.current.utc

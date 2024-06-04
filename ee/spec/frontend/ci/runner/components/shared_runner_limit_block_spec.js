@@ -27,7 +27,7 @@ describe('Shared Runner Limit Block', () => {
 
     it('renders provided quota limit and used quota', () => {
       expect(wrapper.text()).toContain(
-        'You have used 1000 out of 4000 of your instance runners pipeline minutes',
+        'You have used 1000 out of 4000 of your instance runners compute minutes',
       );
     });
 

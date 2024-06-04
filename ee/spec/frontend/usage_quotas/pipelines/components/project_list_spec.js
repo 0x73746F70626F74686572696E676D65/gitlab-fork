@@ -49,7 +49,7 @@ describe('ProjectCIMinutesList', () => {
       expect(firstProjectColumns.at(1).text()).toBe('1.33');
     });
 
-    it('renders CI minutes', () => {
+    it('renders compute minutes', () => {
       const firstProjectColumns = findTableRows().at(0).findAll('td');
 
       expect(firstProjectColumns.at(2).text()).toBe(
@@ -73,7 +73,7 @@ describe('ProjectCIMinutesList', () => {
       createComponent({ provide: { ciMinutesAnyProjectEnabled: false } });
     });
 
-    it('renders the ci minutes disabled message', () => {
+    it('renders the compute minutes disabled message', () => {
       expect(wrapper.text().replace(/\s+/g, ' ').trim()).toContain(
         sprintf(LABEL_CI_MINUTES_DISABLED, { linkStart: '', linkEnd: '' }),
       );

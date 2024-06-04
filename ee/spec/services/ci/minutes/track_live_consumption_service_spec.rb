@@ -28,7 +28,7 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas, feature_category
       it 'does not drop the build', :aggregate_failures do
         response = subject
         expect(response).to be_success
-        expect(response.message).to eq('CI minutes limit not exceeded')
+        expect(response.message).to eq('Compute minutes limit not exceeded')
         expect(response.payload.fetch(:current_balance).round).to eq(expected_balance)
 
         expect(service.live_consumption.to_i).to eq(expected_consumption)
@@ -39,7 +39,7 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas, feature_category
       it 'drops the build' do
         response = subject
         expect(response).to be_success
-        expect(response.message).to eq('Build dropped due to CI minutes limit exceeded')
+        expect(response.message).to eq('Build dropped due to compute minutes limit exceeded')
         expect(response.payload.fetch(:current_balance).round).to eq(-1001)
 
         expect(build.reload).to be_failed
@@ -51,7 +51,7 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas, feature_category
       it 'logs event' do
         allow(Gitlab::AppLogger).to receive(:info).and_call_original
         expect(Gitlab::AppLogger).to receive(:info).with(
-          message: 'Build dropped due to CI minutes limit exceeded',
+          message: 'Build dropped due to compute minutes limit exceeded',
           namespace: project.root_namespace.name,
           project_path: project.full_path,
           build_id: build.id,

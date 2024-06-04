@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Ci::Minutes::RefreshCachedDataWorker, feature_category: :hosted_runners do
   describe '#perform' do
-    context 'when namespace is out of CI minutes' do
+    context 'when namespace is out of compute minutes' do
       include_examples 'an idempotent worker' do
         let_it_be(:namespace) { create(:namespace, :with_used_build_minutes_limit) }
         let_it_be_with_reload(:pending_build) { create(:ci_pending_build, minutes_exceeded: false, namespace: namespace) }
@@ -18,7 +18,7 @@ RSpec.describe Ci::Minutes::RefreshCachedDataWorker, feature_category: :hosted_r
       end
     end
 
-    context 'when namespace has CI minutes' do
+    context 'when namespace has compute minutes' do
       include_examples 'an idempotent worker' do
         let_it_be(:namespace) { create(:namespace, :with_not_used_build_minutes_limit) }
         let_it_be_with_reload(:pending_build) { create(:ci_pending_build, minutes_exceeded: true, namespace: namespace) }

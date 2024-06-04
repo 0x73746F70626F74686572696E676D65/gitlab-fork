@@ -29,16 +29,16 @@ module Ci
           metrics.ci_minutes_exceeded_builds_counter.increment
 
           ::Gitlab::AppLogger.info(
-            message: 'Build dropped due to CI minutes limit exceeded',
+            message: 'Build dropped due to compute minutes limit exceeded',
             namespace: root_namespace.name,
             project_path: build.project.full_path,
             build_id: build.id,
             user_id: build.user_id,
             username: build.user&.username)
 
-          ServiceResponse.success(message: 'Build dropped due to CI minutes limit exceeded', payload: { current_balance: new_balance })
+          ServiceResponse.success(message: 'Build dropped due to compute minutes limit exceeded', payload: { current_balance: new_balance })
         else
-          ServiceResponse.success(message: 'CI minutes limit not exceeded', payload: { current_balance: new_balance })
+          ServiceResponse.success(message: 'Compute minutes limit not exceeded', payload: { current_balance: new_balance })
         end
       end
 

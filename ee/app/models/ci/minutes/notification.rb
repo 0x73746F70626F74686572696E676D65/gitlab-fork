@@ -92,14 +92,14 @@ module Ci
 
       def exceeded_message
         s_(
-          "Pipelines|The %{namespace_name} namespace has exceeded its pipeline minutes quota. " \
-          "Buy additional pipeline minutes, or no new jobs or pipelines in its projects will run."
+          "Pipelines|The %{namespace_name} namespace has exceeded its compute minutes quota. " \
+          "Buy additional compute minutes, or no new jobs or pipelines in its projects will run."
         ) % { namespace_name: context.namespace_name }
       end
 
       def threshold_message
         s_(
-          "Pipelines|The %{namespace_name} namespace has %{percentage}%% or less Shared Runner Pipeline " \
+          "Pipelines|The %{namespace_name} namespace has %{percentage}%% or less Shared Runner compute " \
           "minutes remaining. After it runs out, no new jobs or pipelines in its projects will run."
         ) % {
           namespace_name: context.namespace_name,

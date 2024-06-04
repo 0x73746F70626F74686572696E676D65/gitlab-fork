@@ -29,7 +29,7 @@ RSpec.describe Ci::Minutes::RefreshCachedDataService, feature_category: :hosted_
       end
     end
 
-    context 'when user purchases more ci minutes for a given namespace' do
+    context 'when user purchases more compute minutes for a given namespace' do
       before do
         allow_next_instance_of(::Ci::Minutes::Usage) do |instance|
           allow(instance).to receive(:minutes_used_up?).and_return(false)

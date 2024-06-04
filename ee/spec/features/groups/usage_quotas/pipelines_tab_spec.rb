@@ -154,12 +154,12 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
       end
 
       it 'does show a banner' do
-        visit group_usage_quotas_path(group, purchased_product: 'CI minutes')
+        visit group_usage_quotas_path(group, purchased_product: 'compute minutes')
 
         page.within('#content-body') do
           expect(page).to have_content('Thanks for your purchase!')
           expect(page).to have_content(
-            'You have successfully purchased CI minutes. You\'ll receive a receipt by email.'
+            'You have successfully purchased compute minutes. You\'ll receive a receipt by email.'
           )
         end
       end

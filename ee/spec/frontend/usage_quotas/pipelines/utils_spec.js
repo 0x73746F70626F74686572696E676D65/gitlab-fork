@@ -11,7 +11,7 @@ const {
   },
 } = mockGetCiMinutesUsageNamespace;
 
-describe('CI Minutes Usage Utils', () => {
+describe('Compute minutes Usage Utils', () => {
   it('getUsageDataByYearAsArray normalizes data by year', () => {
     const expectedDataByYear = {
       2021: [

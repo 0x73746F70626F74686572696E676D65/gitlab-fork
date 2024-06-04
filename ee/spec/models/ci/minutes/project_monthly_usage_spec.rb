@@ -69,7 +69,7 @@ RSpec.describe Ci::Minutes::ProjectMonthlyUsage, feature_category: :hosted_runne
         amount_used: 100)
     end
 
-    it_behaves_like 'CI minutes increase usage'
+    it_behaves_like 'compute minutes increase usage'
   end
 
   describe '.for_namespace_monthly_usage' do

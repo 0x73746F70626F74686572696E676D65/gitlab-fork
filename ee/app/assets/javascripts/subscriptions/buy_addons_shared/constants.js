@@ -22,7 +22,7 @@ export const STATE_TYPE = 'State';
 export const CI_MINUTES_PER_PACK = 1000;
 export const STORAGE_PER_PACK = 10;
 
-// CI Minutes addon data translations
+// Compute minutes addon data translations
 export const I18N_CI_MINUTES_PRODUCT_LABEL = s__('Checkout|Compute pack');
 export const I18N_CI_MINUTES_PRODUCT_UNIT = s__('Checkout|compute minutes');
 

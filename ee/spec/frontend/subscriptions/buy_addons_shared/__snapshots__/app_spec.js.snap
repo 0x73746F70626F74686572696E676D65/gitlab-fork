@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Buy Addons Shared App CI Minutes labels does not show labels if input is invalid 1`] = `
+exports[`Buy Addons Shared App Compute minutes labels does not show labels if input is invalid 1`] = `
 <step-order-app-stub
   data-testid="buy-addons-shared"
 >
@@ -118,7 +118,7 @@ exports[`Buy Addons Shared App CI Minutes labels does not show labels if input i
             <div
               data-testid="selected-plan"
             >
-              CI minutes pack
+              Compute minutes pack
             </div>
             <div>
               -
@@ -198,7 +198,7 @@ exports[`Buy Addons Shared App CI Minutes labels does not show labels if input i
           <div
             data-testid="selected-plan"
           >
-            CI minutes pack
+            Compute minutes pack
           </div>
           <div>
             -
@@ -264,7 +264,7 @@ exports[`Buy Addons Shared App CI Minutes labels does not show labels if input i
 </step-order-app-stub>
 `;
 
-exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pack 1`] = `
+exports[`Buy Addons Shared App Compute minutes labels shows labels correctly for 1 pack 1`] = `
 <step-order-app-stub
   data-testid="buy-addons-shared"
 >
@@ -387,7 +387,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pa
             <div
               data-testid="selected-plan"
             >
-              CI minutes pack
+              Compute minutes pack
               <span
                 data-testid="quantity"
               >
@@ -473,7 +473,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pa
           <div
             data-testid="selected-plan"
           >
-            CI minutes pack
+            Compute minutes pack
             <span
               data-testid="quantity"
             >
@@ -544,7 +544,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 1 pa
 </step-order-app-stub>
 `;
 
-exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 2 packs 1`] = `
+exports[`Buy Addons Shared App Compute minutes labels shows labels correctly for 2 packs 1`] = `
 <step-order-app-stub
   data-testid="buy-addons-shared"
 >
@@ -667,7 +667,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 2 pa
             <div
               data-testid="selected-plan"
             >
-              CI minutes pack
+              Compute minutes pack
               <span
                 data-testid="quantity"
               >
@@ -753,7 +753,7 @@ exports[`Buy Addons Shared App CI Minutes labels shows labels correctly for 2 pa
           <div
             data-testid="selected-plan"
           >
-            CI minutes pack
+            Compute minutes pack
             <span
               data-testid="quantity"
             >

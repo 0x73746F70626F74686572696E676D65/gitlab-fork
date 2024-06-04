@@ -210,7 +210,7 @@ describe('Buy Addons Shared App', () => {
     });
   });
 
-  describe('CI Minutes', () => {
+  describe('Compute minutes', () => {
     const injectedProps = {
       tags: [planTags.CI_1000_MINUTES_PLAN],
       i18n: I18N_CI_1000_MINUTES_PLAN,

@@ -259,14 +259,14 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
         expect(json_response['additional_purchased_storage_ends_on']).to eq(params[:additional_purchased_storage_ends_on])
       end
 
-      it 'expires the CI minutes CachedQuota' do
+      it 'expires the compute minutes CachedQuota' do
         expect_next(Gitlab::Ci::Minutes::CachedQuota).to receive(:expire!)
 
         subject
       end
 
-      context 'when current CI minutes notification level is set' do
-        it 'resets the current CI minutes notification level' do
+      context 'when current compute minutes notification level is set' do
+        it 'resets the current compute minutes notification level' do
           expect do
             put api("/namespaces/#{group1.id}", admin, admin_mode: true), params: params
           end.to change { usage.reload.notification_level }
@@ -275,13 +275,13 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
       end
 
       shared_examples 'handles monthly usage' do
-        it 'expires the CI minutes CachedQuota' do
+        it 'expires the compute minutes CachedQuota' do
           expect_next(Gitlab::Ci::Minutes::CachedQuota).to receive(:expire!)
 
           subject
         end
 
-        it 'resets the current CI minutes notification level' do
+        it 'resets the current compute minutes notification level' do
           expect do
             subject
           end.to change { usage.reload.notification_level }
@@ -326,15 +326,15 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
       end
 
       context 'when neither minutes limit params is provided' do
-        it 'does not expire the CI minutes CachedQuota' do
+        it 'does not expire the compute minutes CachedQuota' do
           params.delete(:shared_runners_minutes_limit)
           expect(Gitlab::Ci::Minutes::CachedQuota).not_to receive(:new)
 
           subject
         end
 
-        context 'when current CI minutes notification level is set' do
-          it 'does not reset the current CI minutes notification level' do
+        context 'when current compute minutes notification level is set' do
+          it 'does not reset the current compute minutes notification level' do
             params.delete(:shared_runners_minutes_limit)
 
             expect do
@@ -395,7 +395,7 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
           group1.update_attribute(attr, Time.now)
         end
 
-        it 'resets that value when assigning extra CI minutes' do
+        it 'resets that value when assigning extra compute minutes' do
           expect do
             put api("/namespaces/#{group1.full_path}", admin, admin_mode: true), params: { extra_shared_runners_minutes_limit: 1000 }
           end.to change { group1.reload.send(attr) }.to(nil)
@@ -403,7 +403,7 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
       end
     end
 
-    context "when customer purchases extra CI minutes" do
+    context "when customer purchases extra compute minutes" do
       it "ticks instance runners" do
         runners = Ci::Runner.instance_type
 

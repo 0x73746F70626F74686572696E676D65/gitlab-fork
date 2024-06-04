@@ -32,7 +32,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
     # because EE/CE should have the same attributes for logged-out users
     it_behaves_like 'logged-out super-sidebar context'
 
-    shared_examples 'pipeline minutes attributes' do
+    shared_examples 'compute minutes attributes' do
       it 'returns sidebar values from user', :use_clean_rails_memory_store_caching do
         expect(super_sidebar_context).to have_key(:pipeline_minutes)
         expect(super_sidebar_context[:pipeline_minutes]).to include({
@@ -179,7 +179,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
         helper.super_sidebar_context(user, group: group, project: project, panel: panel, panel_type: panel_type)
       end
 
-      include_examples 'pipeline minutes attributes'
+      include_examples 'compute minutes attributes'
       include_examples 'trial status widget data'
       include_examples 'duo pro trial status widget data'
 
@@ -203,7 +203,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
         helper.super_sidebar_context(user, group: group, project: project, panel: panel, panel_type: panel_type)
       end
 
-      include_examples 'pipeline minutes attributes'
+      include_examples 'compute minutes attributes'
       include_examples 'trial status widget data'
       include_examples 'duo pro trial status widget data'
 
@@ -226,7 +226,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
         helper.super_sidebar_context(user, group: group, project: project, panel: panel, panel_type: panel_type)
       end
 
-      it 'does not have pipeline minutes attributes' do
+      it 'does not have compute minutes attributes' do
         expect(super_sidebar_context).not_to have_key('pipeline_minutes')
       end
 

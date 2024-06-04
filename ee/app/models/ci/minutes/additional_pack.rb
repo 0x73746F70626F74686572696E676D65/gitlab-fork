@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Representation of additional CI Minute allocations, either
+# Representation of additional compute minute allocations, either
 # purchased via CustomersDot or assigned by an admin (self-managed)
 #
 # In the case of a purchase, `purchase_xid` represents the unique ID of the

@@ -22,7 +22,7 @@ module EE
           def update_namespace(namespace)
             update_attrs = declared_params(include_missing: false)
 
-            # Reset last_ci_minutes_notification_at if customer purchased extra CI minutes.
+            # Reset last_ci_minutes_notification_at if customer purchased extra compute minutes.
             if params[:extra_shared_runners_minutes_limit].present?
               update_attrs[:last_ci_minutes_notification_at] = nil
               update_attrs[:last_ci_minutes_usage_notification_level] = nil
@@ -59,8 +59,8 @@ module EE
             success ::API::Entities::Namespace
           end
           params do
-            optional :shared_runners_minutes_limit, type: Integer, desc: "Pipeline minutes quota for this namespace"
-            optional :extra_shared_runners_minutes_limit, type: Integer, desc: "Extra pipeline minutes for this namespace"
+            optional :shared_runners_minutes_limit, type: Integer, desc: "Compute minutes quota for this namespace"
+            optional :extra_shared_runners_minutes_limit, type: Integer, desc: "Extra compute minutes for this namespace"
             optional :additional_purchased_storage_size, type: Integer, desc: "Additional storage size for this namespace"
             optional :additional_purchased_storage_ends_on, type: Date, desc: "End of subscription of the additional purchased storage"
             optional :gitlab_subscription_attributes, type: Hash do

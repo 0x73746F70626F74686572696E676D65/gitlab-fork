@@ -66,7 +66,7 @@ RSpec.describe Ci::Minutes::AdditionalPacks::CreateService, feature_category: :h
           end
         end
 
-        it 'kicks off reset ci minutes service' do
+        it 'kicks off reset compute minutes service' do
           expect_next(::Ci::Minutes::RefreshCachedDataService).to receive(:execute)
 
           result

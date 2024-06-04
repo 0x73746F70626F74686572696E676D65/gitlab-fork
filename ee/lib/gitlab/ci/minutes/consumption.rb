@@ -3,7 +3,7 @@
 module Gitlab
   module Ci
     module Minutes
-      # Calculate the consumption of CI minutes based on a cost factor
+      # Calculate the consumption of compute minutes based on a cost factor
       # assigned to the involved Runner.
       # The amount returned is a float so that internally we could track
       # an accurate usage of minutes/credits.

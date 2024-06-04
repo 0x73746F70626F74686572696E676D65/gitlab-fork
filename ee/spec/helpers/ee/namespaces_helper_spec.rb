@@ -28,7 +28,7 @@ RSpec.describe EE::NamespacesHelper, feature_category: :groups_and_projects do
     describe 'rendering monthly minutes report' do
       let(:report) { usage_presenter.monthly_minutes_report }
 
-      context "when ci minutes usage is not enabled" do
+      context "when compute minutes usage is not enabled" do
         before do
           user_group.update!(shared_runners_minutes_limit: 0)
         end

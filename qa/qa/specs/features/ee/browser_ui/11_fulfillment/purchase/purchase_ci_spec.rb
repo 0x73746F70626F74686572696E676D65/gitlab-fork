@@ -24,7 +24,7 @@ module QA
       before do
         Flow::Login.sign_in(as: user)
 
-        # A group project is required for additional CI Minutes to show up
+        # A group project is required for additional compute minutes to show up
         create(:project, :with_readme, name: 'ci-minutes', group: group, api_client: Runtime::API::Client.as_admin)
 
         group.visit!

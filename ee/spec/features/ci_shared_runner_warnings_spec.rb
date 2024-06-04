@@ -42,7 +42,7 @@ RSpec.describe 'CI shared runner limits', feature_category: :runner do
       with_them do
         context "when there is a notification and minutes still exist", :js do
           let(:message) do
-            "#{group.name} namespace has #{percent_threshold}% or less Shared Runner Pipeline minutes remaining. " \
+            "#{group.name} namespace has #{percent_threshold}% or less Shared Runner compute minutes remaining. " \
               "After it runs out, no new jobs or pipelines in its projects will run."
           end
 
@@ -76,8 +76,8 @@ RSpec.describe 'CI shared runner limits', feature_category: :runner do
       context 'when limit is exceeded', :js do
         let(:group) { create(:group, :with_used_build_minutes_limit) }
         let(:message) do
-          "#{group.name} namespace has exceeded its pipeline minutes quota. " \
-            "Buy additional pipeline minutes, or no new jobs or pipelines in its projects will run."
+          "#{group.name} namespace has exceeded its compute minutes quota. " \
+            "Buy additional compute minutes, or no new jobs or pipelines in its projects will run."
         end
 
         it 'displays a warning message on project homepage' do
@@ -144,7 +144,7 @@ RSpec.describe 'CI shared runner limits', feature_category: :runner do
       with_them do
         context "when there is a notification and minutes still exist", :js do
           let(:message) do
-            "#{group.name} namespace has #{percent_threshold}% or less Shared Runner Pipeline minutes remaining. " \
+            "#{group.name} namespace has #{percent_threshold}% or less Shared Runner compute minutes remaining. " \
               "After it runs out, no new jobs or pipelines in its projects will run."
           end
 
@@ -166,8 +166,8 @@ RSpec.describe 'CI shared runner limits', feature_category: :runner do
       context 'when limit is exceeded', :js do
         let(:group) { create(:group, :with_used_build_minutes_limit) }
         let(:message) do
-          "#{group.name} namespace has exceeded its pipeline minutes quota. " \
-            "Buy additional pipeline minutes, or no new jobs or pipelines in its projects will run."
+          "#{group.name} namespace has exceeded its compute minutes quota. " \
+            "Buy additional compute minutes, or no new jobs or pipelines in its projects will run."
         end
 
         it 'displays a warning message on group information page' do
@@ -198,7 +198,7 @@ RSpec.describe 'CI shared runner limits', feature_category: :runner do
 
     page.within('.shared-runner-quota-message') do
       expect(page).to have_content(message)
-      expect(page).to have_link 'Buy more Pipeline minutes', href: buy_minutes_subscriptions_link(group)
+      expect(page).to have_link 'Buy more compute minutes', href: buy_minutes_subscriptions_link(group)
     end
   end
 

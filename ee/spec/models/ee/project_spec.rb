@@ -1644,7 +1644,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
     it { expect(project.any_online_runners?).to be_truthy }
 
-    context 'with used pipeline minutes' do
+    context 'with used compute minutes' do
       let(:namespace) { create(:namespace, :with_used_build_minutes_limit) }
       let(:project) do
         create(:project, namespace: namespace, shared_runners_enabled: true)
@@ -1659,7 +1659,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
   describe '#shared_runners_available?' do
     subject { project.shared_runners_available? }
 
-    context 'with used pipeline minutes' do
+    context 'with used compute minutes' do
       let(:namespace) { create(:namespace, :with_used_build_minutes_limit) }
       let(:project) do
         create(:project, namespace: namespace, shared_runners_enabled: true)
@@ -1670,7 +1670,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       end
     end
 
-    context 'without used pipeline minutes' do
+    context 'without used compute minutes' do
       let(:namespace) { create(:namespace, :with_not_used_build_minutes_limit) }
       let(:project) do
         create(:project, namespace: namespace, shared_runners_enabled: true)
@@ -3548,7 +3548,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         .and_return(double('quota', minutes_used_up?: minutes_used_up))
     end
 
-    context 'when CI minutes are available for project' do
+    context 'when compute minutes are available for project' do
       let(:minutes_used_up) { false }
 
       it 'returns a list of shared runners' do
@@ -3556,7 +3556,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       end
     end
 
-    context 'when out of CI minutes for project' do
+    context 'when out of compute minutes for project' do
       let(:minutes_used_up) { true }
 
       it 'returns a empty list' do
@@ -3581,7 +3581,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         .and_return(double('quota', minutes_used_up?: minutes_used_up))
     end
 
-    context 'when CI minutes are available for project' do
+    context 'when compute minutes are available for project' do
       let(:minutes_used_up) { false }
 
       it 'returns a list with all runners' do
@@ -3589,7 +3589,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       end
     end
 
-    context 'when out of CI minutes for project' do
+    context 'when out of compute minutes for project' do
       let(:minutes_used_up) { true }
 
       it 'returns a list with non-instance runners' do
