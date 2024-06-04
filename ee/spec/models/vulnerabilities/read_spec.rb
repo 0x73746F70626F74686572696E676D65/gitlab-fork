@@ -507,6 +507,60 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     end
   end
 
+  describe '.count_by_severity' do
+    let!(:high_severity_vulns) { create_list(:vulnerability, 2, :with_read, :high) }
+    let!(:low_severity_vulns) { create_list(:vulnerability, 3, :with_read, :low) }
+
+    subject { described_class.count_by_severity }
+
+    it 'returns the count of vulnerabilities grouped by severity' do
+      is_expected.to eq({ 'high' => high_severity_vulns.count, 'low' => low_severity_vulns.count })
+    end
+  end
+
+  describe '.capped_count_by_severity' do
+    let(:test_limit) { 5 }
+    let(:vulnerabilities) { described_class.with_states([:confirmed]) }
+
+    subject(:count) { vulnerabilities.capped_count_by_severity }
+
+    before do
+      stub_const("#{described_class}::SEVERITY_COUNT_LIMIT", test_limit)
+
+      create_list(:vulnerability, 10, :with_read, :high, :confirmed)
+      create_list(:vulnerability, 8, :with_read, :low, :confirmed)
+    end
+
+    context 'without severity scope' do
+      it 'returns limited count for all applicable severity type' do
+        is_expected.to eq({ 'high' => test_limit, 'low' => test_limit })
+      end
+    end
+
+    context 'with severitiy scope' do
+      let(:vulnerabilities) { super().with_severities(:high) }
+
+      it 'returns limited count only for the severities that are scoped' do
+        expect(count['high']).to eq(test_limit)
+        expect(count['low']).to be_nil
+      end
+    end
+
+    context 'when scope is none' do
+      let(:vulnerabilities) { described_class.none }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when scope is nil' do
+      let(:vulnerabilities) { described_class }
+
+      it 'returns limited count for all applicable severity type' do
+        is_expected.to eq({ 'high' => test_limit, 'low' => test_limit })
+      end
+    end
+  end
+
   describe '.order_by' do
     let_it_be(:vulnerability_1) { create(:vulnerability, :with_finding, :low) }
     let_it_be(:vulnerability_2) { create(:vulnerability, :with_finding, :critical) }
