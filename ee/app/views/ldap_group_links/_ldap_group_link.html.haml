@@ -1,6 +1,6 @@
 %li{ class: 'gl-align-items-center gl-display-flex!' }
   %div
-    %p.gl-font-weight-bold.gl-mb-0
+    %p.gl-font-bold.gl-mb-0
       = ldap_group_link.cn ? "Group: #{ldap_group_link.cn}" : "Filter: #{ldap_group_link.filter}"
 
     - if ldap_group_link.config
