@@ -17,21 +17,6 @@ RSpec.describe 'Project > Settings > Analytics -> Instrumentation instructions',
     before do
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: false)
-      stub_feature_flags(product_analytics_admin_settings: true)
-
-      visit project_settings_analytics_path(project)
-    end
-
-    it 'does not show instrumentation instructions' do
-      expect(page).not_to have_content s_('View instrumentation instructions')
-    end
-  end
-
-  context 'without correct feature flag enabled' do
-    before do
-      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-      stub_licensed_features(product_analytics: true)
-      stub_feature_flags(product_analytics_admin_settings: false)
 
       visit project_settings_analytics_path(project)
     end
@@ -47,7 +32,6 @@ RSpec.describe 'Project > Settings > Analytics -> Instrumentation instructions',
         product_analytics_enabled: false
       )
       stub_licensed_features(product_analytics: false)
-      stub_feature_flags(product_analytics_admin_settings: true)
 
       visit project_settings_analytics_path(project)
     end
@@ -74,7 +58,6 @@ RSpec.describe 'Project > Settings > Analytics -> Instrumentation instructions',
       allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
       allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true)
-      stub_feature_flags(product_analytics_admin_settings: true)
     end
 
     context 'when project is not yet onboarded' do

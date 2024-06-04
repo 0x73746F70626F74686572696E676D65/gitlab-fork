@@ -579,18 +579,6 @@ RSpec.describe Admin::ApplicationSettingsController do
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to render_template('admin/application_settings/analytics')
       end
-
-      context 'when flag is disabled' do
-        before do
-          stub_feature_flags(product_analytics_admin_settings: false)
-        end
-
-        it 'returns not found' do
-          get :analytics
-
-          expect(response).to have_gitlab_http_status(:not_found)
-        end
-      end
     end
 
     context 'when not licensed' do
