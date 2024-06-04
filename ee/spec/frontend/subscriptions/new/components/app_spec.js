@@ -76,15 +76,9 @@ describe('App component', () => {
 
       await nextTick();
 
-      expect(findConfirmOrderDesktop().classes()).toEqual([
-        'gl-display-none',
-        'gl-lg-display-block!',
-      ]);
+      expect(findConfirmOrderDesktop().classes()).toEqual(['gl-hidden', 'lg:!gl-block']);
 
-      expect(findConfirmOrderMobile().classes()).toEqual([
-        'gl-display-block',
-        'gl-lg-display-none!',
-      ]);
+      expect(findConfirmOrderMobile().classes()).toEqual(['gl-block', 'lg:!gl-hidden']);
     });
   });
 

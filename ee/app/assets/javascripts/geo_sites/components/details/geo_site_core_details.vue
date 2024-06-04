@@ -38,7 +38,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-grid gl-lg-display-block! geo-site-core-details-grid-columns">
+  <div class="gl-display-grid lg:!gl-block geo-site-core-details-grid-columns">
     <div class="gl-display-flex gl-flex-direction-column gl-lg-mb-5">
       <span>{{ $options.i18n.url }}</span>
       <gl-link

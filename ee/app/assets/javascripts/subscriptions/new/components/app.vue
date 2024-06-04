@@ -59,7 +59,7 @@ export default {
       <template #checkout>
         <checkout @error="handleError" @error-reset="hideError" />
         <confirm-order
-          class="gl-display-none gl-lg-display-block!"
+          class="gl-hidden lg:!gl-block"
           data-testid="confirm-order-desktop"
           @error="handleError"
         />
@@ -67,7 +67,7 @@ export default {
       <template #order-summary>
         <order-summary @error="handleError" @error-reset="hideError" />
         <confirm-order
-          class="gl-display-block gl-lg-display-none!"
+          class="gl-block lg:!gl-hidden"
           data-testid="confirm-order-mobile"
           @error="handleError"
         />

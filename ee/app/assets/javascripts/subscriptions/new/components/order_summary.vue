@@ -201,7 +201,7 @@ export default {
     v-if="!isGroupSelected || isSelectedGroupPresent"
     class="order-summary gl-display-flex gl-flex-direction-column gl-flex-grow-1"
   >
-    <div class="gl-lg-display-none">
+    <div class="lg:gl-hidden">
       <h4
         class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-font-lg gl-my-0"
       >
@@ -224,7 +224,7 @@ export default {
         </template>
       </summary-details>
     </div>
-    <div class="gl-display-none gl-lg-display-block" data-testid="order-summary">
+    <div class="gl-hidden lg:gl-block" data-testid="order-summary">
       <h4 class="gl-my-0 gl-font-lg" data-testid="title">{{ titleWithName }}</h4>
       <summary-details class="gl-mt-6">
         <template v-if="isEligibleToUsePromoCode" #promo-code>

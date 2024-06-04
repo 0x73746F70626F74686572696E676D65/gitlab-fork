@@ -55,7 +55,7 @@ export default {
 
 <template>
   <div
-    class="gl-lg-display-flex gl-align-items-center gl-border-solid gl-border-1 gl-border-gray-100 gl-p-6"
+    class="lg:gl-flex gl-align-items-center gl-border-solid gl-border-1 gl-border-gray-100 gl-p-6"
   >
     <div class="gl-display-flex gl-align-items-center" data-testid="pipeline">
       <div class="gl-mr-3">
@@ -78,9 +78,7 @@ export default {
     </div>
 
     <template v-if="showSbomPipelineStatus">
-      <div class="gl-mx-3 gl-display-none gl-lg-display-block" data-testid="pipeline-divider">
-        •
-      </div>
+      <div class="gl-mx-3 gl-hidden lg:gl-block" data-testid="pipeline-divider">•</div>
 
       <div class="md:fl-flex gl-align-items-center gl-mt-5 gl-lg-mt-0" data-testid="sbom-pipeline">
         <div>
