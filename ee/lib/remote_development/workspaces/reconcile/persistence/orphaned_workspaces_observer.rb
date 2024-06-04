@@ -50,6 +50,7 @@ module RemoteDevelopment
               persisted_workspace_names.include?(name.to_s)
             end.values
           end
+          private_class_method :detect_orphaned_workspaces
         end
       end
     end

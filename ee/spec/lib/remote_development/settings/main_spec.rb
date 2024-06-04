@@ -2,206 +2,166 @@
 
 require_relative '../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :remote_development do
-  include RemoteDevelopment::RailwayOrientedProgrammingHelpers
+Messages = RemoteDevelopment::Messages
+RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
+  let(:settings) { 'some settings' }
+  let(:value_passed_along_steps) { { settings: settings } }
 
-  let(:input_value) { { some_context: true } }
-  let(:settings) { { some_setting: 42 } }
-  let(:value) { { some_context: true, settings: settings } }
-  let(:error_details) { 'some error details' }
-  let(:err_message_context) { { details: error_details } }
-
-  # rubocop:disable Layout/LineLength -- keep all the class and method fixtures as single-liners easier scanning/editing
-  # Classes
-
-  let(:settings_initializer_class) { RemoteDevelopment::Settings::SettingsInitializer }
-  let(:current_settings_reader_class) { RemoteDevelopment::Settings::CurrentSettingsReader }
-  let(:extensions_gallery_metadata_generator_class) { RemoteDevelopment::Settings::ExtensionsGalleryMetadataGenerator }
-  let(:env_var_reader_class) { RemoteDevelopment::Settings::EnvVarReader }
-  let(:extensions_gallery_validator_class) { RemoteDevelopment::Settings::ExtensionsGalleryValidator }
-  let(:extensions_gallery_metadata_validator_class) { RemoteDevelopment::Settings::ExtensionsGalleryMetadataValidator }
-  let(:reconciliation_interval_seconds_validator_class) { RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidator }
-
-  # Methods
-
-  let(:settings_initializer_method) { settings_initializer_class.singleton_method(:init) }
-  let(:current_settings_reader_method) { current_settings_reader_class.singleton_method(:read) }
-  let(:extensions_gallery_metadata_generator_method) { extensions_gallery_metadata_generator_class.singleton_method(:generate) }
-  let(:env_var_reader_method) { env_var_reader_class.singleton_method(:read) }
-  let(:extensions_gallery_validator_method) { extensions_gallery_validator_class.singleton_method(:validate) }
-  let(:extensions_gallery_metadata_validator_method) { extensions_gallery_metadata_validator_class.singleton_method(:validate) }
-  let(:reconciliation_interval_seconds_validator_method) { reconciliation_interval_seconds_validator_class.singleton_method(:validate) }
-
-  # Subject
-
-  subject(:response) { described_class.get_settings(input_value) }
-
-  before do
-    allow(settings_initializer_class).to receive(:method).with(:init) { settings_initializer_method }
-    allow(current_settings_reader_class).to receive(:method).with(:read) { current_settings_reader_method }
-    allow(extensions_gallery_metadata_generator_class).to(receive(:method).with(:generate)) { extensions_gallery_metadata_generator_method }
-    allow(env_var_reader_class).to receive(:method).with(:read) { env_var_reader_method }
-    allow(extensions_gallery_validator_class).to(receive(:method).with(:validate)) { extensions_gallery_validator_method }
-    allow(extensions_gallery_metadata_validator_class).to(receive(:method).with(:validate)) { extensions_gallery_metadata_validator_method }
-    allow(reconciliation_interval_seconds_validator_class).to(receive(:method).with(:validate)) { reconciliation_interval_seconds_validator_method }
-
-    stub_method_to_modify_and_return_value(settings_initializer_method, expected_value: input_value, returned_value: value)
-    stub_methods_to_return_value(extensions_gallery_metadata_generator_method)
+  let(:rop_steps) do
+    [
+      [RemoteDevelopment::Settings::SettingsInitializer, :map],
+      [RemoteDevelopment::Settings::CurrentSettingsReader, :and_then],
+      [RemoteDevelopment::Settings::ExtensionsGalleryMetadataGenerator, :map],
+      [RemoteDevelopment::Settings::EnvVarReader, :and_then],
+      [RemoteDevelopment::Settings::ExtensionsGalleryValidator, :and_then],
+      [RemoteDevelopment::Settings::ExtensionsGalleryMetadataValidator, :and_then],
+      [RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidator, :and_then]
+    ]
   end
-  # rubocop:enable Layout/LineLength
 
-  context 'when all steps are successful' do
-    before do
-      stub_methods_to_return_ok_result(
-        current_settings_reader_method,
-        env_var_reader_method,
-        extensions_gallery_validator_method,
-        extensions_gallery_metadata_validator_method,
-        reconciliation_interval_seconds_validator_method
-      )
-    end
-
-    it 'returns a success response with the settings as the payload' do
-      expect(response).to eq({
+  describe "happy path" do
+    let(:expected_response) do
+      {
         status: :success,
         settings: settings
-      })
+      }
+    end
+
+    it "returns expected response" do
+      # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+      expect do
+        described_class.get_settings(value_passed_along_steps)
+      end
+        .to invoke_rop_steps(rop_steps)
+              .from_main_class(described_class)
+              .with_value_passed_along_steps(value_passed_along_steps)
+              .and_return_expected_value(expected_response)
     end
   end
 
-  context 'when the CurrentSettingsReader returns an err Result' do
-    before do
-      stub_methods_to_return_err_result(
-        method: current_settings_reader_method,
-        message_class: RemoteDevelopment::Messages::SettingsCurrentSettingsReadFailed
-      )
+  describe "error cases" do
+    let(:error_details) { "some error details" }
+    let(:err_message_content) { { details: error_details } }
+
+    shared_examples "rop invocation with error response" do
+      it "returns expected response" do
+        # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+        expect do
+          described_class.get_settings(value_passed_along_steps)
+        end
+          .to invoke_rop_steps(rop_steps)
+                .from_main_class(described_class)
+                .with_value_passed_along_steps(value_passed_along_steps)
+                .with_err_result_for_step(err_result_for_step)
+                .and_return_expected_value(expected_response)
+      end
     end
 
-    it 'returns an error response' do
-      expect(response).to eq({
-        status: :error,
-        message: "Settings current settings read failed: #{error_details}",
-        reason: :internal_server_error
-      })
-    end
-  end
+    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
+    # rubocop:disable Layout/LineLength -- we want to avoid excessive wrapping for RSpec::Parameterized Nested Array Style so we can have formatting consistency between entries
+    where(:case_name, :err_result_for_step, :expected_response) do
+      [
+        [
+          "when CurrentSettingsReader returns SettingsCurrentSettingsReadFailed",
+          {
+            step_class: RemoteDevelopment::Settings::CurrentSettingsReader,
+            returned_message: lazy { RemoteDevelopment::Messages::SettingsCurrentSettingsReadFailed.new(err_message_content) }
+          },
+          {
+            status: :error,
+            message: lazy { "Settings current settings read failed: #{error_details}" },
+            reason: :internal_server_error
+          },
+        ],
+        [
+          "when EnvVarReader returns SettingsEnvironmentVariableReadFailed",
+          {
+            step_class: RemoteDevelopment::Settings::EnvVarReader,
+            returned_message:
+              lazy { RemoteDevelopment::Messages::SettingsEnvironmentVariableReadFailed.new(err_message_content) }
+          },
+          {
+            status: :error,
+            message: lazy { "Settings environment variable read failed: #{error_details}" },
+            reason: :internal_server_error
+          },
+        ],
+        [
+          "when ExtensionsGalleryValidator returns SettingsVscodeExtensionsGalleryValidationFailed",
+          {
+            step_class: RemoteDevelopment::Settings::ExtensionsGalleryValidator,
+            returned_message: lazy { RemoteDevelopment::Messages::SettingsVscodeExtensionsGalleryValidationFailed.new(err_message_content) }
+          },
+          {
+            status: :error,
+            message: lazy { "Settings VSCode extensions gallery validation failed: #{error_details}" },
+            reason: :internal_server_error
+          },
+        ],
+        [
+          "when ExtensionsGalleryMetadataValidator returns SettingsVscodeExtensionsGalleryMetadataValidationFailed",
+          {
+            step_class: RemoteDevelopment::Settings::ExtensionsGalleryMetadataValidator,
+            returned_message: lazy { RemoteDevelopment::Messages::SettingsVscodeExtensionsGalleryMetadataValidationFailed.new(err_message_content) }
+          },
+          {
+            status: :error,
+            message: lazy { "Settings VSCode extensions gallery metadata validation failed: #{error_details}" },
+            reason: :internal_server_error
+          },
+        ],
+        [
+          "when ReconciliationIntervalSecondsValidator returns SettingsPartialReconciliationIntervalSecondsValidationFailed",
+          {
+            step_class: RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidator,
+            returned_message: lazy { RemoteDevelopment::Messages::SettingsPartialReconciliationIntervalSecondsValidationFailed.new(err_message_content) }
+          },
+          {
+            status: :error,
+            message: lazy { "Settings partial reconciliation interval seconds validation failed: #{error_details}" },
+            reason: :internal_server_error
+          },
+        ],
+        [
+          "when ReconciliationIntervalSecondsValidator returns SettingsFullReconciliationIntervalSecondsValidationFailed",
+          {
+            step_class: RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidator,
+            returned_message: lazy { RemoteDevelopment::Messages::SettingsFullReconciliationIntervalSecondsValidationFailed.new(err_message_content) }
 
-  context 'when the EnvVarReader returns an err Result' do
-    before do
-      stub_methods_to_return_ok_result(current_settings_reader_method)
-      stub_methods_to_return_err_result(
-        method: env_var_reader_method,
-        message_class: RemoteDevelopment::Messages::SettingsEnvironmentVariableReadFailed
-      )
+          },
+          {
+            status: :error,
+            message: lazy { "Settings full reconciliation interval seconds validation failed: #{error_details}" },
+            reason: :internal_server_error
+          },
+        ],
+        [
+          "when ReconciliationIntervalSecondsValidator returns SettingsPartialReconciliationIntervalSecondsValidationFailed",
+          {
+            step_class: RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidator,
+            returned_message: lazy { RemoteDevelopment::Messages::SettingsPartialReconciliationIntervalSecondsValidationFailed.new(err_message_content) }
+          },
+          {
+            status: :error,
+            message: lazy { "Settings partial reconciliation interval seconds validation failed: #{error_details}" },
+            reason: :internal_server_error
+          },
+        ],
+        [
+          "when an unmatched error is returned, an exception is raised",
+          {
+            step_class: RemoteDevelopment::Settings::CurrentSettingsReader,
+            returned_message: lazy { Class.new(RemoteDevelopment::Message).new(err_message_content) }
+          },
+          RemoteDevelopment::UnmatchedResultError
+        ]
+      ]
     end
+    # rubocop:enable Style/TrailingCommaInArrayLiteral
+    # rubocop:enable Layout/LineLength
 
-    it 'returns an error response' do
-      expect(response).to eq({
-        status: :error,
-        message: "Settings environment variable read failed: #{error_details}",
-        reason: :internal_server_error
-      })
-    end
-  end
-
-  context 'when the ExtensionsGalleryValidator returns an err Result' do
-    before do
-      stub_methods_to_return_ok_result(current_settings_reader_method, env_var_reader_method)
-      stub_methods_to_return_err_result(
-        method: extensions_gallery_validator_method,
-        message_class: RemoteDevelopment::Messages::SettingsVscodeExtensionsGalleryValidationFailed
-      )
-    end
-
-    it 'returns an error response' do
-      expect(response).to eq({
-        status: :error,
-        message: "Settings VSCode extensions gallery validation failed: #{error_details}",
-        reason: :internal_server_error
-      })
-    end
-  end
-
-  context 'when the ExtensionsGalleryMetadataValidator returns an err Result' do
-    before do
-      stub_methods_to_return_ok_result(
-        current_settings_reader_method,
-        env_var_reader_method,
-        extensions_gallery_validator_method
-      )
-      stub_methods_to_return_err_result(
-        method: extensions_gallery_metadata_validator_method,
-        message_class: RemoteDevelopment::Messages::SettingsVscodeExtensionsGalleryMetadataValidationFailed
-      )
-    end
-
-    it 'returns an error response' do
-      expect(response).to eq({
-        status: :error,
-        message: "Settings VSCode extensions gallery metadata validation failed: #{error_details}",
-        reason: :internal_server_error
-      })
-    end
-  end
-
-  context 'when the FullReconciliationIntervalSecondsValidator returns an err Result' do
-    before do
-      stub_methods_to_return_ok_result(
-        current_settings_reader_method,
-        env_var_reader_method,
-        extensions_gallery_validator_method,
-        extensions_gallery_metadata_validator_method
-      )
-      stub_methods_to_return_err_result(
-        method: reconciliation_interval_seconds_validator_method,
-        message_class: RemoteDevelopment::Messages::SettingsFullReconciliationIntervalSecondsValidationFailed
-      )
-    end
-
-    it 'returns an error response' do
-      expect(response).to eq({
-        status: :error,
-        message: "Settings full reconciliation interval seconds validation failed: #{error_details}",
-        reason: :internal_server_error
-      })
-    end
-  end
-
-  context 'when the SettingsPartialReconciliationIntervalSecondsValidationFailed returns an err Result' do
-    before do
-      stub_methods_to_return_ok_result(
-        current_settings_reader_method,
-        env_var_reader_method,
-        extensions_gallery_validator_method,
-        extensions_gallery_metadata_validator_method,
-        reconciliation_interval_seconds_validator_method
-      )
-      stub_methods_to_return_err_result(
-        method: reconciliation_interval_seconds_validator_method,
-        message_class: RemoteDevelopment::Messages::SettingsPartialReconciliationIntervalSecondsValidationFailed
-      )
-    end
-
-    it 'returns an error response' do
-      expect(response).to eq({
-        status: :error,
-        message: "Settings partial reconciliation interval seconds validation failed: #{error_details}",
-        reason: :internal_server_error
-      })
-    end
-  end
-
-  context 'when an invalid Result is returned' do
-    before do
-      stub_methods_to_return_ok_result(current_settings_reader_method)
-      stub_methods_to_return_err_result(
-        method: env_var_reader_method,
-        message_class: RemoteDevelopment::Messages::WorkspaceCreateSuccessful
-      )
-    end
-
-    it 'raises an UnmatchedResultError' do
-      expect { response }.to raise_error(RemoteDevelopment::UnmatchedResultError)
+    with_them do
+      it_behaves_like "rop invocation with error response"
     end
   end
 end

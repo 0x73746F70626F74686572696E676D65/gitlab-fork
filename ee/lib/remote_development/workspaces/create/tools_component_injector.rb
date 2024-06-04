@@ -162,6 +162,8 @@ module RemoteDevelopment
             }
           ]
         end
+        private_class_method :allow_extensions_marketplace_in_workspace_feature_enabled?, :override_main_container,
+          :inject_tools_components, :tools_components
       end
     end
   end

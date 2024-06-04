@@ -77,6 +77,7 @@ module RemoteDevelopment
           workspace.dns_zone = agent_dns_zone
           workspace.url_query_string = uri.query
         end
+        private_class_method :set_workspace_url
       end
     end
   end

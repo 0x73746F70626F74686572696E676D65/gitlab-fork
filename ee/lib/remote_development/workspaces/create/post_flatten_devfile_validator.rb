@@ -262,6 +262,9 @@ module RemoteDevelopment
         def self.err(details)
           Result.err(WorkspaceCreatePostFlattenDevfileValidationFailed.new({ details: details }))
         end
+        private_class_method :validate_projects, :validate_components, :validate_containers,
+          :validate_endpoints, :validate_commands, :validate_events,
+          :validate_variables, :err
       end
     end
   end

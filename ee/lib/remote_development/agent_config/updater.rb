@@ -93,6 +93,7 @@ module RemoteDevelopment
 
         model_instance
       end
+      private_class_method :find_or_initialize_remote_development_agent_config
     end
   end
 end

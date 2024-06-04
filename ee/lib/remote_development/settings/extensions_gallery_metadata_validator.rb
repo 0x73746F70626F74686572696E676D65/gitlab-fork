@@ -75,6 +75,7 @@ module RemoteDevelopment
         errors = schemer.validate(hash_to_validate)
         errors.map { |error| JSONSchemer::Errors.pretty(error) }
       end
+      private_class_method :make_hash_validatable_by_json_schemer, :validate_against_schema
     end
   end
 end

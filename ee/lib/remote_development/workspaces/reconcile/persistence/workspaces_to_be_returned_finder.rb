@@ -54,6 +54,7 @@ module RemoteDevelopment
               .or(agent.workspaces.forced_to_include_all_resources)
               .order_id_asc
           end
+          private_class_method :generate_workspaces_to_be_returned_query
         end
       end
     end

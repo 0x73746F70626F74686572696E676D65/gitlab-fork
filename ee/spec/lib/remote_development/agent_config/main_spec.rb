@@ -2,137 +2,128 @@
 
 require_relative '../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category: :remote_development do
-  include RemoteDevelopment::RailwayOrientedProgrammingHelpers
+RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
+  let(:value_passed_along_steps) { {} }
 
-  let(:value) { {} }
-  let(:error_details) { 'some error details' }
-  let(:err_message_context) { { details: error_details } }
-
-  # Classes
-
-  let(:license_checker_class) { RemoteDevelopment::AgentConfig::LicenseChecker }
-  let(:updater_class) { RemoteDevelopment::AgentConfig::Updater }
-
-  # Methods
-
-  let(:license_checker_method) { license_checker_class.singleton_method(:check_license) }
-  let(:updater_method) { updater_class.singleton_method(:update) }
-
-  # Subject
-
-  subject(:response) { described_class.main(value) }
-
-  before do
-    allow(license_checker_class).to receive(:method) { license_checker_method }
-    allow(updater_class).to receive(:method) { updater_method }
+  let(:rop_steps) do
+    [
+      [RemoteDevelopment::AgentConfig::LicenseChecker, :and_then],
+      [RemoteDevelopment::AgentConfig::Updater, :and_then]
+    ]
   end
 
-  context 'when the LicenseChecker returns an err Result' do
-    let(:err_message_context) { {} }
+  describe "happy path" do
+    let(:ok_message_content) { { ok_details: "Everything is OK!" } }
+    let(:skipped_message_content) { { skipped_reason: :skipped } }
 
-    before do
-      stub_methods_to_return_err_result(
-        method: license_checker_method,
-        message_class: RemoteDevelopment::Messages::LicenseCheckFailed
-      )
-    end
-
-    it 'returns a forbidden error response' do
-      expect(response).to eq(
-        { status: :error, message: "License check failed", reason: :forbidden }
-      )
-    end
-  end
-
-  context 'when the Updater returns an err Result' do
-    let(:errors) { ActiveModel::Errors.new(:base) }
-    let(:err_message_context) { { errors: errors } }
-
-    before do
-      stub_methods_to_return_ok_result(
-        license_checker_method
-      )
-      stub_methods_to_return_err_result(
-        method: updater_method,
-        message_class: RemoteDevelopment::Messages::AgentConfigUpdateFailed
-      )
-
-      errors.add(:base, 'err1')
-      errors.add(:base, 'err2')
-    end
-
-    it 'returns a agent_config update failed error response' do
-      expect(response).to eq({
-        status: :error,
-        message: "Agent config update failed: err1, err2",
-        reason: :bad_request
-      })
-    end
-  end
-
-  context 'when the Updater returns an AgentConfigUpdateSkippedBecauseNoConfigFileEntryFound Result' do
-    let(:skip_updater_context) { { skipped_reason: :some_skipped_reason } }
-
-    before do
-      stub_methods_to_return_ok_result(
-        license_checker_method
-      )
-      allow(updater_method).to receive(:call).with(value) do
-        Result.ok(
-          RemoteDevelopment::Messages::AgentConfigUpdateSkippedBecauseNoConfigFileEntryFound.new(skip_updater_context)
-        )
+    shared_examples "rop invocation with successful response" do
+      it "returns expected response" do
+        # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+        expect do
+          described_class.main(value_passed_along_steps)
+        end
+          .to invoke_rop_steps(rop_steps)
+                .from_main_class(described_class)
+                .with_value_passed_along_steps(value_passed_along_steps)
+                .with_ok_result_for_step(result_for_step)
+                .and_return_expected_value(expected_response)
       end
     end
 
-    it 'returns a agent_config update success response with the skipped payload' do
-      expect(response).to eq({
-        status: :success,
-        payload: skip_updater_context
-      })
+    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
+    # rubocop:disable Layout/LineLength -- we want to avoid excessive wrapping for RSpec::Parameterized Nested Array Style so we can have formatting consistency between entries
+    where(:case_name, :result_for_step, :expected_response) do
+      [
+        [
+          "when Updater returns AgentConfigUpdateSuccessful",
+          {
+            step_class: RemoteDevelopment::AgentConfig::Updater,
+            returned_message: lazy { RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(ok_message_content) }
+          },
+          {
+            status: :success,
+            payload: lazy { ok_message_content }
+          },
+        ],
+        [
+          "when Updater returns AgentConfigUpdateSkippedBecauseNoConfigFileEntryFound",
+          {
+            step_class: RemoteDevelopment::AgentConfig::Updater,
+            returned_message: lazy { RemoteDevelopment::Messages::AgentConfigUpdateSkippedBecauseNoConfigFileEntryFound.new(skipped_message_content) }
+          },
+          {
+            status: :success,
+            payload: lazy { skipped_message_content }
+          }
+        ]
+      ]
+    end
+    with_them do
+      it_behaves_like "rop invocation with successful response"
     end
   end
 
-  context 'when the Updater returns an AgentConfigUpdateSuccessful Result' do
-    let(:agent_config) { instance_double("RemoteDevelopment::RemoteDevelopmentAgentConfig") }
+  describe "error cases" do
+    let(:error_details) { "some error details" }
+    let(:err_message_content) { { details: error_details } }
 
-    before do
-      stub_methods_to_return_ok_result(
-        license_checker_method
-      )
-      allow(updater_method).to receive(:call).with(value) do
-        Result.ok(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new(
-          { remote_development_agent_config: agent_config }
-        ))
+    shared_examples "rop invocation with error response" do
+      it "returns expected response" do
+        # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+        expect do
+          described_class.main(value_passed_along_steps)
+        end
+          .to invoke_rop_steps(rop_steps)
+                .from_main_class(described_class)
+                .with_value_passed_along_steps(value_passed_along_steps)
+                .with_err_result_for_step(err_result_for_step)
+                .and_return_expected_value(expected_response)
       end
     end
 
-    it 'returns a agent_config update success response with the agent_config as the payload' do
-      expect(response).to eq({
-        status: :success,
-        payload: { remote_development_agent_config: agent_config }
-      })
+    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
+    # rubocop:disable Layout/LineLength -- we want to avoid excessive wrapping for RSpec::Parameterized Nested Array Style so we can have formatting consistency between entries
+    where(:case_name, :err_result_for_step, :expected_response) do
+      [
+        [
+          "when LicenseChecker returns LicenseCheckFailed",
+          {
+            step_class: RemoteDevelopment::AgentConfig::LicenseChecker,
+            returned_message: lazy { RemoteDevelopment::Messages::LicenseCheckFailed.new(err_message_content) }
+          },
+          {
+            status: :error,
+            message: lazy { "License check failed: #{error_details}" },
+            reason: :forbidden
+          },
+        ],
+        [
+          "when Updater returns AgentConfigUpdateFailed",
+          {
+            step_class: RemoteDevelopment::AgentConfig::Updater,
+            returned_message: lazy { RemoteDevelopment::Messages::AgentConfigUpdateFailed.new(err_message_content) }
+          },
+          {
+            status: :error,
+            message: lazy { "Agent config update failed: #{error_details}" },
+            reason: :bad_request
+          },
+        ],
+        [
+          "when an unmatched error is returned, an exception is raised",
+          {
+            step_class: RemoteDevelopment::NamespaceClusterAgentMappings::Delete::MappingDeleter,
+            returned_message: lazy { Class.new(RemoteDevelopment::Message).new(err_message_content) }
+          },
+          RemoteDevelopment::UnmatchedResultError
+        ]
+      ]
     end
-  end
+    # rubocop:enable Style/TrailingCommaInArrayLiteral
+    # rubocop:enable Layout/LineLength
 
-  context 'when an invalid Result is returned' do
-    # TODO: The following 'noinspection RailsParamDefResolve' is not finding the factory. We need to open a bug against
-    #       JetBrains and track at
-    #       https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
-    # noinspection RailsParamDefResolve
-    let(:agent_config) { build_stubbed(:agent_config) }
-
-    before do
-      stub_methods_to_return_ok_result(
-        license_checker_method
-      )
-      allow(updater_method).to receive(:call).with(value) do
-        Result.err(RemoteDevelopment::Messages::AgentConfigUpdateSuccessful.new)
-      end
-    end
-
-    it 'raises an UnmatchedResultError' do
-      expect { response }.to raise_error(RemoteDevelopment::UnmatchedResultError)
+    with_them do
+      it_behaves_like "rop invocation with error response"
     end
   end
 end
