@@ -1,8 +1,6 @@
 ---
 key_path: usage_activity_by_stage.secure.user_api_fuzzing_scans
 description: Number of users who have run a API Fuzzing scan
-product_section: sec
-product_stage: secure
 product_group: dynamic_analysis
 value_type: number
 status: removed

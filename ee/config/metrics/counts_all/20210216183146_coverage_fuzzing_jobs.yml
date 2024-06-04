@@ -2,8 +2,6 @@
 data_category: optional
 key_path: counts.coverage_fuzzing_jobs
 description: Count of coverage-guided fuzz testing jobs
-product_section: sec
-product_stage: secure
 product_group: dynamic_analysis
 value_type: number
 status: active

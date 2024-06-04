@@ -1,8 +1,6 @@
 ---
 key_path: counts.dast_on_demand_pipelines
 description: Count of all on-demand DAST pipelines
-product_section: sec
-product_stage: secure
 product_group: dynamic_analysis
 value_type: number
 status: active
