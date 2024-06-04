@@ -107,7 +107,6 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu, feature_category: :navi
       let(:item_id) { :dashboards_analytics }
 
       before do
-        stub_feature_flags(combined_analytics_dashboards: true)
         stub_licensed_features(combined_project_analytics_dashboards: true)
       end
 
@@ -156,14 +155,6 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu, feature_category: :navi
         describe 'when the license does not support the feature' do
           before do
             stub_licensed_features(combined_project_analytics_dashboards: false)
-          end
-
-          specify { is_expected.to be_nil }
-        end
-
-        describe 'when the dashboards analytics feature is disabled' do
-          before do
-            stub_feature_flags(combined_analytics_dashboards: false)
           end
 
           specify { is_expected.to be_nil }

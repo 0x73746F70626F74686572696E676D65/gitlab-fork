@@ -20,7 +20,6 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
     stub_feature_flags(model_registry: false)
     stub_feature_flags(agent_registry: false)
     stub_feature_flags(remove_monitor_metrics: false)
-    stub_feature_flags(combined_analytics_dashboards: false)
     insert_package_nav
     insert_infrastructure_registry_nav(s_('Terraform|Terraform states'))
     insert_infrastructure_google_cloud_nav
@@ -56,7 +55,13 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
         visit project_path(project)
       end
 
-      it_behaves_like 'verified navigation bar'
+      it_behaves_like 'verified navigation bar' do
+        let(:expected_structure) do
+          group_owned_structure.compact!
+          group_owned_structure.each { |s| s[:nav_sub_items]&.compact! }
+          group_owned_structure
+        end
+      end
     end
   end
 
@@ -220,7 +225,6 @@ RSpec.describe 'Project navbar', :js, feature_category: :navigation do
 
   context 'when analytics dashboards is available' do
     before do
-      stub_feature_flags(combined_analytics_dashboards: true)
       stub_licensed_features({ combined_project_analytics_dashboards: true, iterations: false })
       visit project_path(project)
     end

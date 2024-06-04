@@ -40,11 +40,6 @@ RSpec.describe Sidebars::Projects::Menus::SettingsMenu, feature_category: :navig
         end
 
         it_behaves_like 'access rights checks'
-
-        it 'is nil when combined_analytics_dashboards feature flag is disabled' do
-          stub_feature_flags(combined_analytics_dashboards: false)
-          expect(subject).to be_nil
-        end
       end
 
       context 'for personal projects' do

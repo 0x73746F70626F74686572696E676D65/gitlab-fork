@@ -49,51 +49,37 @@ RSpec.describe Projects::Analytics::DashboardsController, type: :request, featur
       let_it_be(:group) { create(:group) }
       let_it_be_with_reload(:project) { create(:project, :repository, group: group) }
 
-      context 'with the feature flag disabled' do
+      context 'without the licensed feature' do
         before do
-          stub_feature_flags(combined_analytics_dashboards: false)
+          stub_licensed_features(combined_project_analytics_dashboards: false)
         end
 
         it_behaves_like 'returns not found'
       end
 
-      context 'with the feature flag enabled' do
-        before do
-          stub_feature_flags(combined_analytics_dashboards: true)
+      context 'with the licensed feature' do
+        where(:access_level, :example_to_run) do
+          nil         | 'returns not found'
+          :reporter   | 'returns not found'
+          :developer  | 'returns success'
+          :maintainer | 'returns success'
         end
 
-        context 'without the licensed feature' do
+        with_them do
+          let(:user) { create(:user) }
+
           before do
-            stub_licensed_features(combined_project_analytics_dashboards: false)
+            stub_licensed_features(combined_project_analytics_dashboards: true)
+            project.add_member(user, access_level)
           end
 
-          it_behaves_like 'returns not found'
+          it_behaves_like params[:example_to_run]
         end
 
-        context 'with the licensed feature' do
-          where(:access_level, :example_to_run) do
-            nil         | 'returns not found'
-            :reporter   | 'returns not found'
-            :developer  | 'returns success'
-            :maintainer | 'returns success'
-          end
+        it 'does not count views for the dashboard listing' do
+          expect(Gitlab::InternalEvents).not_to receive(:track_event)
 
-          with_them do
-            let(:user) { create(:user) }
-
-            before do
-              stub_licensed_features(combined_project_analytics_dashboards: true)
-              project.add_member(user, access_level)
-            end
-
-            it_behaves_like params[:example_to_run]
-          end
-
-          it 'does not count views for the dashboard listing' do
-            expect(Gitlab::InternalEvents).not_to receive(:track_event)
-
-            get project_analytics_dashboards_path(project)
-          end
+          get project_analytics_dashboards_path(project)
         end
       end
     end
