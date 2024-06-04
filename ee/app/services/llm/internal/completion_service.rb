@@ -66,7 +66,7 @@ module Llm
       end
 
       def update_error_rate(ai_action_name, response = nil)
-        completion = ::Gitlab::Llm::CompletionsFactory::COMPLETIONS[ai_action_name.to_sym]
+        completion = ::Gitlab::Llm::Utils::AiFeaturesCatalogue::LIST[ai_action_name.to_sym]
         return unless completion
 
         success = response.try(:errors)&.empty?
@@ -81,7 +81,7 @@ module Llm
       end
 
       def update_duration_metric(ai_action_name, duration)
-        completion = ::Gitlab::Llm::CompletionsFactory::COMPLETIONS[ai_action_name.to_sym]
+        completion = ::Gitlab::Llm::Utils::AiFeaturesCatalogue::LIST[ai_action_name.to_sym]
         return unless completion
 
         labels = {

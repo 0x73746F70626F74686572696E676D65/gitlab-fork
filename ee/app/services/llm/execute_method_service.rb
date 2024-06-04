@@ -2,27 +2,6 @@
 
 module Llm
   class ExecuteMethodService < BaseService
-    # This list of methods will expand as we add more methods to support.
-    # Could also be abstracted to another class specific to find the appropriate method service.
-    METHODS = {
-      analyze_ci_job_failure: Llm::AnalyzeCiJobFailureService,
-      explain_vulnerability: ::Llm::ExplainVulnerabilityService,
-      resolve_vulnerability: ::Llm::ResolveVulnerabilityService,
-      summarize_comments: Llm::GenerateSummaryService,
-      summarize_review: Llm::MergeRequests::SummarizeReviewService,
-      summarize_new_merge_request: Llm::SummarizeNewMergeRequestService,
-      explain_code: Llm::ExplainCodeService,
-      generate_description: Llm::GenerateDescriptionService,
-      generate_commit_message: Llm::GenerateCommitMessageService,
-      chat: Llm::ChatService,
-      fill_in_merge_request_template: Llm::FillInMergeRequestTemplateService,
-      generate_cube_query: ::Llm::ProductAnalytics::GenerateCubeQueryService
-    }.freeze
-
-    INTERNAL_METHODS = {
-      categorize_question: Llm::Internal::CategorizeChatQuestionService
-    }.freeze
-
     def initialize(user, resource, method, options = {})
       super(user, resource, options)
 
@@ -30,10 +9,10 @@ module Llm
     end
 
     def execute
-      full_methods_list = METHODS.merge(INTERNAL_METHODS)
+      full_methods_list = ::Gitlab::Llm::Utils::AiFeaturesCatalogue::LIST
       return error('Unknown method') unless full_methods_list.key?(method)
 
-      result = full_methods_list[method].new(user, resource, options).execute
+      result = full_methods_list.dig(method, :execute_method).new(user, resource, options).execute
 
       track_snowplow_event(result)
 
