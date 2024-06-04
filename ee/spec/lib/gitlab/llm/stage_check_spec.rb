@@ -59,23 +59,23 @@ RSpec.describe Gitlab::Llm::StageCheck, feature_category: :ai_abstraction_layer 
       let_it_be_with_reload(:project) { create(:project, group: group) }
 
       where(:container, :feature_type, :namespace_experiment_features_enabled, :result) do
-        ref(:group)   | "EXPERIMENTAL" | true  | true
-        ref(:group)   | "EXPERIMENTAL" | false | false
-        ref(:group)   | "BETA"         | true  | true
-        ref(:group)   | "BETA"         | false | false
-        ref(:group)   | "GA"           | true  | true
-        ref(:group)   | "GA"           | false | true
-        ref(:project) | "EXPERIMENTAL" | true  | true
-        ref(:project) | "EXPERIMENTAL" | false | false
-        ref(:project) | "BETA"         | true  | true
-        ref(:project) | "BETA"         | false | false
-        ref(:project) | "GA"           | true  | true
-        ref(:project) | "GA"           | false | true
+        ref(:group)   | :experimental | true  | true
+        ref(:group)   | :experimental | false | false
+        ref(:group)   | :beta         | true  | true
+        ref(:group)   | :beta         | false | false
+        ref(:group)   | :ga           | true  | true
+        ref(:group)   | :ga           | false | true
+        ref(:project) | :experimental | true  | true
+        ref(:project) | :experimental | false | false
+        ref(:project) | :beta         | true  | true
+        ref(:project) | :beta         | false | false
+        ref(:project) | :ga           | true  | true
+        ref(:project) | :ga           | false | true
       end
 
       with_them do
         before do
-          stub_const("#{described_class}::#{feature_type}_FEATURES", [feature_name])
+          stub_const("::Gitlab::Llm::Utils::AiFeaturesCatalogue::LIST", feature_name => { maturity: feature_type })
           stub_licensed_features(ai_features: true)
           stub_saas_features(gitlab_duo_saas_only: true)
           root_group.namespace_settings.update!(experiment_features_enabled: namespace_experiment_features_enabled)
@@ -94,23 +94,23 @@ RSpec.describe Gitlab::Llm::StageCheck, feature_category: :ai_abstraction_layer 
       let_it_be_with_reload(:project) { create(:project, group: group) }
 
       where(:container, :feature_type, :instance_experiment_features_enabled, :result) do
-        ref(:group)   | "EXPERIMENTAL" | true  | false
-        ref(:group)   | "EXPERIMENTAL" | false | false
-        ref(:group)   | "BETA"         | true  | false
-        ref(:group)   | "BETA"         | false | false
-        ref(:group)   | "GA"           | true  | true
-        ref(:group)   | "GA"           | false | true
-        ref(:project) | "EXPERIMENTAL" | true  | false
-        ref(:project) | "EXPERIMENTAL" | false | false
-        ref(:project) | "BETA"         | true  | false
-        ref(:project) | "BETA"         | false | false
-        ref(:project) | "GA"           | true  | true
-        ref(:project) | "GA"           | false | true
+        ref(:group)   | :experimental | true  | false
+        ref(:group)   | :experimental | false | false
+        ref(:group)   | :beta         | true  | false
+        ref(:group)   | :beta         | false | false
+        ref(:group)   | :ga           | true  | true
+        ref(:group)   | :ga           | false | true
+        ref(:project) | :experimental | true  | false
+        ref(:project) | :experimental | false | false
+        ref(:project) | :beta         | true  | false
+        ref(:project) | :beta         | false | false
+        ref(:project) | :ga           | true  | true
+        ref(:project) | :ga           | false | true
       end
 
       with_them do
         before do
-          stub_const("#{described_class}::#{feature_type}_FEATURES", [feature_name])
+          stub_const("::Gitlab::Llm::Utils::AiFeaturesCatalogue::LIST", feature_name => { maturity: feature_type })
           stub_licensed_features(ai_features: true)
           Gitlab::CurrentSettings.current_application_settings.update!(
             instance_level_ai_beta_features_enabled: instance_experiment_features_enabled

@@ -11,7 +11,7 @@ module Gitlab
         }.freeze
 
         def initialize_slis!
-          completion_labels = Gitlab::Llm::CompletionsFactory::COMPLETIONS.values.map do |completion|
+          completion_labels = ::Gitlab::Llm::Utils::AiFeaturesCatalogue.with_service_class.values.map do |completion|
             { feature_category: completion[:feature_category], service_class: completion[:service_class].name }
           end
 

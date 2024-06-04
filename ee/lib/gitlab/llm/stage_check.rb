@@ -3,23 +3,6 @@
 module Gitlab
   module Llm
     class StageCheck
-      EXPERIMENTAL_FEATURES = [
-        :ai_analyze_ci_job_failure,
-        :summarize_comments,
-        :summarize_my_mr_code_review,
-        :explain_code,
-        :generate_description,
-        :explain_vulnerability,
-        :resolve_vulnerability,
-        :generate_commit_message,
-        :fill_in_merge_request_template,
-        :summarize_new_merge_request,
-        :summarize_submitted_review,
-        :ai_review_merge_request
-      ].freeze
-      BETA_FEATURES = [].freeze
-      GA_FEATURES = [:chat].freeze
-
       class << self
         def available?(container, feature)
           root_ancestor = container.root_ancestor
@@ -41,7 +24,7 @@ module Gitlab
         def available_on_experimental_stage?(root_ancestor, feature)
           return false unless instance_allows_experiment_and_beta_features
           return false unless gitlab_com_namespace_enables_experiment_and_beta_features(root_ancestor)
-          return false unless EXPERIMENTAL_FEATURES.include?(feature)
+          return false unless available_on_stage?(feature, :experimental)
 
           true
         end
@@ -51,13 +34,13 @@ module Gitlab
         def available_on_beta_stage?(root_ancestor, feature)
           return false unless instance_allows_experiment_and_beta_features
           return false unless gitlab_com_namespace_enables_experiment_and_beta_features(root_ancestor)
-          return false unless BETA_FEATURES.include?(feature)
+          return false unless available_on_stage?(feature, :beta)
 
           true
         end
 
         def available_on_ga_stage?(feature)
-          return true if GA_FEATURES.include?(feature)
+          return true if available_on_stage?(feature, :ga)
 
           false
         end
@@ -85,6 +68,10 @@ module Gitlab
           else
             false
           end
+        end
+
+        def available_on_stage?(feature, maturity)
+          ::Gitlab::Llm::Utils::AiFeaturesCatalogue::LIST.dig(feature, :maturity) == maturity
         end
       end
     end

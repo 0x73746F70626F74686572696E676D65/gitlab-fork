@@ -524,7 +524,7 @@ module EE
         project.licensed_feature_available?(:ai_review_mr) &&
         ::Gitlab::Llm::FeatureAuthorizer.new(
           container: project,
-          feature_name: :ai_review_merge_request
+          feature_name: :review_merge_request
         ).allowed? &&
         Ability.allowed?(user, :create_note, self)
     end

@@ -7,7 +7,7 @@ module Mutations
 
       MUTUALLY_EXCLUSIVE_ARGUMENTS_ERROR = 'Only one method argument is required'
 
-      Llm::ExecuteMethodService::METHODS.each_key do |method|
+      ::Gitlab::Llm::Utils::AiFeaturesCatalogue.external.each_key do |method|
         argument method,
           "Types::Ai::#{method.to_s.camelize}InputType".constantize,
           required: false,
@@ -79,7 +79,7 @@ module Mutations
       end
 
       def methods(args)
-        args.slice(*Llm::ExecuteMethodService::METHODS.keys)
+        args.slice(*::Gitlab::Llm::Utils::AiFeaturesCatalogue.external.keys)
       end
 
       def find_object(id:)
