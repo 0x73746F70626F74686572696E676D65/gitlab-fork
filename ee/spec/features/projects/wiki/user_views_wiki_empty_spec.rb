@@ -14,7 +14,7 @@ RSpec.describe 'Project > User views empty wiki', feature_category: :wiki do
       end
 
       context 'when user is not a member of the project' do
-        it_behaves_like 'empty wiki message', issuable: true, expect_button: false
+        it_behaves_like 'empty wiki message', writable: false
       end
 
       context 'when user is a member of the project' do
@@ -22,7 +22,7 @@ RSpec.describe 'Project > User views empty wiki', feature_category: :wiki do
           project.add_guest(auditor)
         end
 
-        it_behaves_like 'empty wiki message', issuable: true, expect_button: true
+        it_behaves_like 'empty wiki message', writable: false
       end
     end
   end
