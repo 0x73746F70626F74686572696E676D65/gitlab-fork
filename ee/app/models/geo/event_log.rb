@@ -10,16 +10,11 @@ module Geo
     include ::EachBatch
 
     EVENT_CLASSES = %w[Geo::CacheInvalidationEvent
-                       Geo::RepositoriesChangedEvent
                        Geo::Event].freeze
 
     belongs_to :cache_invalidation_event,
       class_name: 'Geo::CacheInvalidationEvent',
       foreign_key: :cache_invalidation_event_id
-
-    belongs_to :repositories_changed_event,
-      class_name: 'Geo::RepositoriesChangedEvent',
-      foreign_key: :repositories_changed_event_id
 
     belongs_to :geo_event,
       class_name: 'Geo::Event',
@@ -45,13 +40,9 @@ module Geo
       includes(reflections.keys)
     end
 
-    # rubocop:disable Metrics/CyclomaticComplexity
     def event
-      repositories_changed_event ||
-        cache_invalidation_event ||
-        geo_event
+      cache_invalidation_event || geo_event
     end
-    # rubocop:enable Metrics/CyclomaticComplexity
 
     def project_id
       event.try(:project_id)
