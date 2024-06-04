@@ -6,8 +6,6 @@ property_description: "`notifications`"
 value_description: "`1` if user is subscribed, `0` otherwise"
 extra_properties:
 identifiers:
-product_section: dev
-product_stage: plan
 product_group: product_planning
 milestone: "12.2"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/14944

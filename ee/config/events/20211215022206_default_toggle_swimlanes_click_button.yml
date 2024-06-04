@@ -6,8 +6,6 @@ property_description: "`click_load_more_epics`"
 value_description: ""
 extra_properties:
 identifiers:
-product_section: dev
-product_stage: plan
 product_group: product_planning
 milestone: "14.1"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65121

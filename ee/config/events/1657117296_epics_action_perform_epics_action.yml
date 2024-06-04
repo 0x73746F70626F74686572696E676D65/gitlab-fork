@@ -9,8 +9,6 @@ identifiers:
 additional_properties:
   label:
     description: the name of the performed action
-product_section: dev
-product_stage: plan
 product_group: product_planning
 milestone: "15.3"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/91912

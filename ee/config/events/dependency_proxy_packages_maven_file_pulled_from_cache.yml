@@ -6,8 +6,6 @@ identifiers:
 - project
 - user
 - namespace
-product_section: ci
-product_stage: package
 product_group: package_registry
 milestone: "16.7"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/137783
