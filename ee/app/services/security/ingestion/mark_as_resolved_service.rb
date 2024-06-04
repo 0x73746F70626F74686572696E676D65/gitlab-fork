@@ -27,8 +27,6 @@ module Security
           .by_scanner(scanner)
           .each_batch { |batch| process_batch(batch) }
 
-        return unless Feature.enabled?(:mark_cvs_vulnerabilities_as_resolved, project)
-
         if scanner_for_container_scanning?
           process_existing_cvs_vulnerabilities_for_container_scanning
         elsif scanner_for_dependency_scanning?
