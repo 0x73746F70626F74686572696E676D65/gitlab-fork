@@ -220,7 +220,7 @@ export default {
 
             <gl-disclosure-dropdown
               v-gl-tooltip
-              class="gl-display-none gl-md-display-inline-flex!"
+              class="gl-hidden md:!gl-inline-flex"
               toggle-class="gl-border-0! !gl-shadow-none"
               text-sr-only
               :toggle-text="__('More actions')"
@@ -249,7 +249,7 @@ export default {
               v-if="item.editPath"
               :href="item.editPath"
               category="tertiary"
-              class="gl-ml-3 gl-my-1 gl-md-display-none"
+              class="gl-ml-3 gl-my-1 md:gl-hidden"
               size="small"
             >
               {{ __('Edit') }}
@@ -264,7 +264,7 @@ export default {
                 icon="remove"
                 variant="danger"
                 size="small"
-                class="gl-mx-3 gl-my-1 gl-md-display-none"
+                class="gl-mx-3 gl-my-1 md:gl-hidden"
                 data-testid="dast-profile-delete-button"
                 :disabled="isPolicyProfile(item)"
                 :aria-disabled="isPolicyProfile(item)"

@@ -187,7 +187,7 @@ export default {
       @dismiss="dismissJobFailedAlert"
     />
 
-    <header class="gl-md-display-flex gl-align-items-flex-start gl-my-5">
+    <header class="md:gl-flex gl-align-items-flex-start gl-my-5">
       <div class="gl-mr-auto">
         <h2 class="h4 gl-mb-2 gl-mt-0 gl-display-flex gl-align-items-center">
           {{ __('Dependencies') }}

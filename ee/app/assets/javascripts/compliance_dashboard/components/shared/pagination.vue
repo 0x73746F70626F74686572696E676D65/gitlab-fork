@@ -58,11 +58,9 @@ export default {
 </script>
 
 <template>
-  <div v-if="pageInfo" class="gl-md-display-flex gl-justify-content-space-between">
-    <div class="gl-display-none gl-md-display-flex gl-flex-basis-0 gl-flex-grow-1"></div>
-    <div
-      class="gl-float-left gl-md-display-flex gl-flex-basis-0 gl-flex-grow-1 gl-justify-content-center"
-    >
+  <div v-if="pageInfo" class="md:gl-flex gl-justify-content-space-between">
+    <div class="gl-hidden md:gl-flex gl-flex-basis-0 gl-flex-grow-1"></div>
+    <div class="gl-float-leftmd:gl-flex gl-flex-basis-0 gl-flex-grow-1 gl-justify-content-center">
       <gl-keyset-pagination
         v-bind="pageInfo"
         :disabled="isLoading"
@@ -73,9 +71,7 @@ export default {
         @click="onPaginationClick"
       />
     </div>
-    <div
-      class="gl-float-right gl-md-display-flex gl-flex-basis-0 gl-flex-grow-1 gl-justify-content-end"
-    >
+    <div class="gl-float-right md:gl-flex gl-flex-basis-0 gl-flex-grow-1 gl-justify-content-end">
       <page-size-selector :value="perPage" @input="onPageSizeChange" />
     </div>
   </div>

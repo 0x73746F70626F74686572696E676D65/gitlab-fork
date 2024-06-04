@@ -207,7 +207,7 @@ export default {
         <gl-disclosure-dropdown
           v-if="canEditTestCase"
           data-testid="actions-dropdown"
-          class="gl-md-display-none gl-ml-auto"
+          class="md:gl-hidden gl-ml-auto"
           placement="right"
           category="secondary"
           :toggle-text="__('Options')"
@@ -224,7 +224,7 @@ export default {
         <gl-button
           v-if="canEditTestCase"
           data-testid="edit-test-case"
-          class="gl-display-none gl-md-display-inline-block"
+          class="gl-hidden md:gl-inline-block"
           :loading="testCaseStateChangeInProgress"
           :title="editCaseActionAriaLabel"
           :aria-label="editCaseActionAriaLabel"
@@ -234,7 +234,7 @@ export default {
         <gl-button
           v-if="canEditTestCase"
           data-testid="archive-test-case"
-          class="gl-display-none gl-md-display-inline-block"
+          class="gl-hidden md:gl-inline-block"
           :loading="testCaseStateChangeInProgress"
           @click="handleTestCaseStateChange"
           >{{ testCaseActionTitle }}</gl-button
@@ -243,8 +243,8 @@ export default {
           data-testid="new-test-case"
           category="secondary"
           variant="confirm"
-          class="gl-md-display-inline-block"
-          :class="{ 'gl-display-none': canEditTestCase, 'gl-flex-grow-1': !canEditTestCase }"
+          class="md:gl-inline-block"
+          :class="{ 'gl-hidden': canEditTestCase, 'gl-flex-grow-1': !canEditTestCase }"
           :href="testCaseNewPath"
           >{{ __('New test case') }}</gl-button
         >

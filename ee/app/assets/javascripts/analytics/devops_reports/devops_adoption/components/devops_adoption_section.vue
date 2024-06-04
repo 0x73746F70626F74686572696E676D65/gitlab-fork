@@ -73,7 +73,7 @@ export default {
       </p>
 
       <devops-adoption-add-dropdown
-        class="gl-mb-3 gl-md-display-none"
+        class="gl-mb-3 md:gl-hidden"
         :search-term="searchTerm"
         :groups="groups"
         :enabled-namespaces="enabledNamespaces"

@@ -104,7 +104,7 @@ export default {
       <span class="md:gl-whitespace-nowrap gl-text-blue-500">
         <gl-icon name="doc-text" />
         <gl-truncate
-          class="gl-display-none gl-md-display-inline-flex"
+          class="gl-hidden md:gl-inline-flex"
           position="start"
           :text="locationText"
           with-tooltip

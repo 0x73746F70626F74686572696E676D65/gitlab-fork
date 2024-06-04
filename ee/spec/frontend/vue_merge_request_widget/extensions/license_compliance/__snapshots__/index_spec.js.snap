@@ -94,7 +94,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                         class="gl-align-items-flex-start gl-display-flex gl-ml-auto gl-pl-3"
                       >
                         <div
-                          class="gl-disclosure-dropdown gl-display-block gl-md-display-none! gl-new-dropdown"
+                          class="gl-block gl-disclosure-dropdown gl-new-dropdown md:!gl-hidden"
                         >
                           <button
                             aria-controls="reference-1"
@@ -165,7 +165,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                           </div>
                         </div>
                         <a
-                          class="btn btn-confirm btn-confirm-tertiary btn-sm gl-button gl-display-none gl-float-left gl-md-display-block"
+                          class="btn btn-confirm btn-confirm-tertiary btn-sm gl-button gl-float-left gl-hidden md:gl-block"
                           data-testid="extension-actions-button"
                           href="/group-name/project-name/-/merge_requests/78/full_report"
                         >
@@ -391,7 +391,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                         class="gl-align-items-flex-start gl-display-flex gl-ml-auto gl-pl-3"
                       >
                         <div
-                          class="gl-disclosure-dropdown gl-display-block gl-md-display-none! gl-new-dropdown"
+                          class="gl-block gl-disclosure-dropdown gl-new-dropdown md:!gl-hidden"
                         >
                           <button
                             aria-controls="reference-1"
@@ -462,7 +462,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                           </div>
                         </div>
                         <a
-                          class="btn btn-confirm btn-confirm-tertiary btn-sm gl-button gl-display-none gl-float-left gl-md-display-block"
+                          class="btn btn-confirm btn-confirm-tertiary btn-sm gl-button gl-float-left gl-hidden md:gl-block"
                           data-testid="extension-actions-button"
                           href="/group-name/project-name/-/merge_requests/78/full_report"
                         >

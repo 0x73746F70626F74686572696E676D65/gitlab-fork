@@ -133,7 +133,7 @@ export default {
       <template #toggle>
         <span class="md:gl-whitespace-nowrap gl-text-blue-500">
           <gl-truncate
-            class="gl-display-none gl-md-display-inline-flex"
+            class="gl-hidden md:gl-inline-flex"
             position="start"
             :text="projectText"
             with-tooltip
@@ -164,7 +164,7 @@ export default {
     />
     <gl-link v-else class="md:gl-whitespace-nowrap" :href="projectPath">
       <gl-truncate
-        class="gl-display-none gl-md-display-inline-flex"
+        class="gl-hidden md:gl-inline-flex"
         position="start"
         :text="projectText"
         with-tooltip
