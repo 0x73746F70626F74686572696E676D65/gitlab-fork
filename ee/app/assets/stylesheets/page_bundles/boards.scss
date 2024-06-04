@@ -107,3 +107,9 @@ $epic-icons-spacing: 40px;
     background-color: var(--gray-10);
   }
 }
+
+.board-dropdown-toggle {
+  .gl-toggle-label {
+    font-weight: $gl-font-weight-normal;
+  }
+}
