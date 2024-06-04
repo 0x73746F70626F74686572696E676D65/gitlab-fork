@@ -27,18 +27,6 @@ RSpec.describe Gitlab::Tracking::AiTracking, feature_category: :value_stream_man
       track_event
     end
 
-    context 'when :ai_tracking_data_gathering feature flag is disabled' do
-      before do
-        stub_feature_flags(ai_tracking_data_gathering: false)
-      end
-
-      it 'does not create new events' do
-        expect(Ai::CodeSuggestionsUsage).not_to receive(:new)
-
-        track_event
-      end
-    end
-
     context 'when clickhouse is not enabled' do
       before do
         stub_application_setting(use_clickhouse_for_analytics: false)

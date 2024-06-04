@@ -1,9 +1,0 @@
----
-name: ai_tracking_data_gathering
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/441485
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/146918
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/454106
-milestone: '16.11'
-group: group::optimize
-type: experiment
-default_enabled: false
