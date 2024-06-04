@@ -39,6 +39,7 @@ trusted_cidrs_for_propagation = ["10.0.0.1/8"]
 
 [redis]
 password = "redis password"
+SentinelUsername = "sentinel-user"
 SentinelPassword = "sentinel password"
 [object_storage]
 provider = "test provider"
@@ -74,6 +75,7 @@ key = "/path/to/private/key"
 	// fields in each section; that should happen in the tests of the
 	// internal/config package.
 	require.Equal(t, "redis password", cfg.Redis.Password)
+	require.Equal(t, "sentinel-user", cfg.Redis.SentinelUsername)
 	require.Equal(t, "sentinel password", cfg.Redis.SentinelPassword)
 	require.Equal(t, "test provider", cfg.ObjectStorageCredentials.Provider)
 	require.Equal(t, uint32(123), cfg.ImageResizerConfig.MaxScalerProcs, "image resizer max_scaler_procs")

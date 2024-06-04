@@ -172,11 +172,12 @@ func configureRedis(cfg *config.RedisConfig) (*redis.Client, error) {
 }
 
 func configureSentinel(cfg *config.RedisConfig) *redis.Client {
-	sentinelPassword, sentinels := sentinelOptions(cfg)
+	sentinelUsername, sentinelPassword, sentinels := sentinelOptions(cfg)
 	client := redis.NewFailoverClient(&redis.FailoverOptions{
 		MasterName:       cfg.SentinelMaster,
 		SentinelAddrs:    sentinels,
 		Password:         cfg.Password,
+		SentinelUsername: sentinelUsername,
 		SentinelPassword: sentinelPassword,
 		DB:               getOrDefault(cfg.DB, 0),
 
@@ -195,10 +196,13 @@ func configureSentinel(cfg *config.RedisConfig) *redis.Client {
 	return client
 }
 
-// sentinelOptions extracts the sentinel password and addresses in <host>:<port> format
+// sentinelOptions extracts the sentinel username and password from the URLs
+// and addresses in <host>:<port> format.
 // the order of priority for the passwords is: SentinelPassword -> first password-in-url
-func sentinelOptions(cfg *config.RedisConfig) (string, []string) {
+// SentinelUsername will be the username associated with SentinelPassword.
+func sentinelOptions(cfg *config.RedisConfig) (string, string, []string) {
 	sentinels := make([]string, len(cfg.Sentinel))
+	sentinelUsername := cfg.SentinelUsername
 	sentinelPassword := cfg.SentinelPassword
 
 	for i := range cfg.Sentinel {
@@ -208,10 +212,16 @@ func sentinelOptions(cfg *config.RedisConfig) (string, []string) {
 		if pw, exist := sentinelDetails.User.Password(); exist && len(sentinelPassword) == 0 {
 			// sets password using the first non-empty password
 			sentinelPassword = pw
+
+			// If a password is specified, a username is optional. Ensure that we use the
+			// username associated with the password.
+			if username := sentinelDetails.User.Username(); username != "" && sentinelUsername == "" {
+				sentinelUsername = username
+			}
 		}
 	}
 
-	return sentinelPassword, sentinels
+	return sentinelUsername, sentinelPassword, sentinels
 }
 
 func getOrDefault(ptr *int, val int) int {
