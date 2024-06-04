@@ -5,7 +5,7 @@ module SamlGroupLinksHelper
     data = { standard_roles: group.access_level_roles }
 
     if group.custom_roles_enabled?
-      data[:custom_roles] = MemberRoles::RolesFinder.new(current_user, { parent: group, instance_roles: true })
+      data[:custom_roles] = MemberRoles::RolesFinder.new(current_user, { parent: group })
         .execute.map { |role| { member_role_id: role.id, name: role.name, base_access_level: role.base_access_level } }
     end
 

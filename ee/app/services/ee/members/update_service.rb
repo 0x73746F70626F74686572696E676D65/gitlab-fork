@@ -73,15 +73,11 @@ module EE
 
         return unless params[:member_role_id]
 
-        # TODO: scope to group/instance based on saas? mode when
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/429281 is merged
-        member_role = MemberRole.find_by_id(params[:member_role_id])
+        member_role = MemberRoles::RolesFinder.new(current_user, { id: params[:member_role_id] }).execute.first
 
         unless member_role
           member.errors.add(:member_role, "not found")
-          params.delete(:member_role_id)
-
-          return
+          raise ActiveRecord::RecordInvalid
         end
 
         return if params[:access_level]

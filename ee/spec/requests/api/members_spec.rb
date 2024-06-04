@@ -10,6 +10,7 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
     let_it_be(:subgroup) { create(:group, parent: group) }
     let_it_be(:minimal_access_member) { create(:group_member, :minimal_access, source: group) }
     let_it_be(:owner) { create(:user) }
+    let_it_be(:admin) { create(:admin) }
 
     before do
       group.add_owner(owner)
@@ -197,74 +198,91 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
             stub_licensed_features(custom_roles: true)
           end
 
-          context 'when member_role is associated with membership group' do
-            it_behaves_like 'a successful member role update'
-          end
+          context 'when on SaaS' do
+            before do
+              stub_saas_features(gitlab_com_subscriptions: true)
+            end
 
-          context 'when member_role is associated with root group of subgroup membership' do
-            let(:subgroup) { create(:group, parent: group) }
-            let(:member) { create(:group_member, :guest, source: subgroup) }
+            context 'when member_role is associated with membership group' do
+              it_behaves_like 'a successful member role update'
+            end
 
-            it_behaves_like 'a successful member role update'
-          end
+            context 'when member_role is associated with root group of subgroup membership' do
+              let(:subgroup) { create(:group, parent: group) }
+              let(:member) { create(:group_member, :guest, source: subgroup) }
 
-          context 'when member_role is associated with root group of project membership' do
-            let_it_be(:project) { create(:project, group: subgroup) }
+              it_behaves_like 'a successful member role update'
+            end
 
-            let(:member) { create(:project_member, :guest, source: project) }
+            context 'when member_role is associated with root group of project membership' do
+              let_it_be(:project) { create(:project, group: subgroup) }
 
-            it_behaves_like 'a successful member role update'
-          end
+              let(:member) { create(:project_member, :guest, source: project) }
 
-          context "when member_role has base_access_level that does not match user's access_level" do
-            let(:member_role) { create(:member_role, :developer, namespace: group) }
-            let(:params) { { member_role_id: member_role.id, access_level: Member::GUEST } }
+              it_behaves_like 'a successful member role update'
+            end
 
-            it 'raises an error' do
-              put_member
+            context "when member_role has base_access_level that does not match user's access_level" do
+              let(:member_role) { create(:member_role, :developer, namespace: group) }
+              let(:params) { { member_role_id: member_role.id, access_level: Member::GUEST } }
 
-              expect(response).to have_gitlab_http_status(:bad_request)
-              expect(json_response['message']['member_role_id']).to contain_exactly(
-                "the custom role's base access level does not match the current access level"
-              )
+              it 'raises an error' do
+                put_member
+
+                expect(response).to have_gitlab_http_status(:bad_request)
+                expect(json_response['message']['member_role_id']).to contain_exactly(
+                  "the custom role's base access level does not match the current access level"
+                )
+              end
+            end
+
+            context 'when member_role is not associated with root group of member source' do
+              let_it_be(:member_role) { create(:member_role, :guest, namespace: create(:group)) }
+
+              it 'raises an error' do
+                put_member
+
+                expect(response).to have_gitlab_http_status(:bad_request)
+                expect(json_response['message']['member_role']).to contain_exactly('not found')
+              end
+            end
+
+            context "when invalid member_role_id" do
+              let(:params) { { member_role_id: non_existing_record_id, access_level: Member::GUEST } }
+
+              it "returns 400" do
+                put_member
+
+                expect(response).to have_gitlab_http_status(:bad_request)
+                expect(json_response['message']['member_role']).to contain_exactly('not found')
+              end
+            end
+
+            context 'when member_role_id is nil' do
+              let(:params) { { member_role_id: nil, access_level: Member::REPORTER } }
+
+              it 'unsets the member_role_id attribute for the member' do
+                member.update!(member_role: member_role)
+
+                put_member
+
+                expect(response).to have_gitlab_http_status(:ok)
+                expect(json_response['id']).to eq(member.user_id)
+                expect(json_response['member_role']).to eq(nil)
+                expect(json_response['access_level']).to eq(Member::REPORTER)
+              end
             end
           end
 
-          context 'when member_role is not associated with root group of member source' do
-            let_it_be(:member_role) { create(:member_role, :guest, namespace: create(:group)) }
-
-            it 'raises an error' do
-              put_member
-
-              expect(response).to have_gitlab_http_status(:bad_request)
-              expect(json_response['message']['member_namespace'])
-                .to contain_exactly("must be in same hierarchy as custom role's namespace")
+          context 'when on self-managed' do
+            before do
+              stub_saas_features(gitlab_com_subscriptions: false)
             end
-          end
 
-          context "when invalid member_role_id" do
-            let(:params) { { member_role_id: non_existing_record_id, access_level: Member::GUEST } }
+            context 'when member_role is created on the instance-level' do
+              let_it_be(:member_role) { create(:member_role, :guest, :instance) }
 
-            it "returns 400" do
-              put_member
-
-              expect(response).to have_gitlab_http_status(:bad_request)
-              expect(json_response['message']['member_role']).to contain_exactly('not found')
-            end
-          end
-
-          context 'when member_role_id is nil' do
-            let(:params) { { member_role_id: nil, access_level: Member::REPORTER } }
-
-            it 'unsets the member_role_id attribute for the member' do
-              member.update!(member_role: member_role)
-
-              put_member
-
-              expect(response).to have_gitlab_http_status(:ok)
-              expect(json_response['id']).to eq(member.user_id)
-              expect(json_response['member_role']).to eq(nil)
-              expect(json_response['access_level']).to eq(Member::REPORTER)
+              it_behaves_like 'a successful member role update'
             end
           end
         end

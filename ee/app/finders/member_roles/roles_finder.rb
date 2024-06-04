@@ -7,7 +7,7 @@ module MemberRoles
 
     attr_reader :current_user, :params
 
-    VALID_PARAMS = [:parent, :id, :instance_roles].freeze
+    VALID_PARAMS = [:parent, :id].freeze
 
     ALLOWED_SORT_VALUES = %i[id created_at name].freeze
     DEFAULT_SORT_VALUE = :name
@@ -21,6 +21,8 @@ module MemberRoles
     end
 
     def execute
+      return MemberRole.none unless License.feature_available?(:custom_roles)
+
       validate_arguments!
 
       items = MemberRole.all
@@ -34,15 +36,15 @@ module MemberRoles
     private
 
     def validate_arguments!
-      raise ArgumentError, 'at least one filter param has to be provided' if valid_params.empty?
-    end
+      return unless gitlab_com_subscription?
+      return if params[:parent].present?
+      return if params[:id].present?
 
-    def valid_params
-      params.delete(:instance_roles) unless can_read_instance_roles?
-      params.slice(*VALID_PARAMS)
+      raise ArgumentError, 'at least one filter param, :parent or :id has to be provided'
     end
 
     def by_parent(items)
+      return items unless gitlab_com_subscription?
       return items if params[:parent].blank?
 
       return MemberRole.none unless allowed_read_member_role?(params[:parent])
@@ -55,7 +57,7 @@ module MemberRoles
 
       items = items.id_in(params[:id])
 
-      items.by_namespace(allowed_group_ids(items))
+      items.by_namespace(allowed_namespace_ids(items))
     end
 
     def sort(items)
@@ -67,30 +69,19 @@ module MemberRoles
     end
 
     def for_instance(items)
-      return items if params[:instance_roles].blank?
-
-      # TODO: only return instance-level custom roles when
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/454582 is done
-      return items.or(MemberRole.for_instance) if params[:parent].present?
+      return items if gitlab_com_subscription?
 
       items.for_instance
     end
 
-    def can_read_instance_roles?
-      return false if gitlab_com_subscription?
-
-      allowed_read_member_role?(params[:parent])
+    def allowed_namespace_ids(items)
+      items.select { |item| allowed_read_member_role?(item.namespace, item) }.map(&:namespace_id)
     end
 
-    def allowed_group_ids(items)
-      items.select { |item| allowed_read_member_role?(item.namespace) }.map(&:namespace_id)
-    end
-
-    def allowed_read_member_role?(group)
+    def allowed_read_member_role?(group, member_role = nil)
       return Ability.allowed?(current_user, :read_member_role, group) if group
 
-      # instance-level custom roles are allowed only for self-managed
-      return false if gitlab_com_subscription?
+      return Ability.allowed?(current_user, :read_member_role, member_role) if member_role
 
       Ability.allowed?(current_user, :read_member_role)
     end

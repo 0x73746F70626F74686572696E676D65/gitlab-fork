@@ -86,7 +86,7 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
       create(:member_role, :reporter, name: 'reporter plus', namespace: root_group, description: 'My custom role')
     end
 
-    let_it_be(:member_role_instance) do
+    let_it_be(:member_role_guest_instance) do
       create(:member_role, :guest, :instance, name: 'guest plus (instance-level)')
     end
 
@@ -95,6 +95,7 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
     end
 
     before do
+      stub_saas_features(gitlab_com_subscriptions: true)
       stub_licensed_features(custom_roles: true)
     end
 
@@ -109,13 +110,6 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
               description: 'My custom role',
               occupies_seat: true,
               permissions: permissions
-            }, {
-              base_access_level: Gitlab::Access::REPORTER,
-              member_role_id: member_role_reporter_instance.id,
-              name: 'reporter plus (instance-level)',
-              description: nil,
-              occupies_seat: true,
-              permissions: permissions
             }
           ]
         )
@@ -127,7 +121,7 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
         root_group.add_owner(user)
       end
 
-      it 'returns all roles for the root group and the instance' do
+      it 'returns all roles for the root group' do
         expect(presenter.valid_member_roles).to match_array(
           [
             {
@@ -144,21 +138,6 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
               name: 'guest plus',
               description: nil,
               occupies_seat: false,
-              permissions: permissions
-            },
-            {
-              base_access_level: Gitlab::Access::GUEST,
-              member_role_id: member_role_instance.id,
-              name: 'guest plus (instance-level)',
-              description: nil,
-              occupies_seat: false,
-              permissions: permissions
-            }, {
-              base_access_level: Gitlab::Access::REPORTER,
-              member_role_id: member_role_reporter_instance.id,
-              name: 'reporter plus (instance-level)',
-              description: nil,
-              occupies_seat: true,
               permissions: permissions
             }
           ]
@@ -178,6 +157,37 @@ RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
       end
 
       it_behaves_like 'returning all custom roles for subgroup'
+    end
+
+    context 'when the user has admin permissions', :enable_admin_mode do
+      let(:current_user) { admin }
+
+      before do
+        stub_saas_features(gitlab_com_subscriptions: false)
+      end
+
+      it 'returns instance-level roles' do
+        expect(presenter.valid_member_roles).to match_array(
+          [
+            {
+              base_access_level: Gitlab::Access::GUEST,
+              member_role_id: member_role_guest_instance.id,
+              name: 'guest plus (instance-level)',
+              description: nil,
+              occupies_seat: false,
+              permissions: permissions
+            },
+            {
+              base_access_level: Gitlab::Access::REPORTER,
+              member_role_id: member_role_reporter_instance.id,
+              name: 'reporter plus (instance-level)',
+              description: nil,
+              occupies_seat: true,
+              permissions: permissions
+            }
+          ]
+        )
+      end
     end
   end
 end

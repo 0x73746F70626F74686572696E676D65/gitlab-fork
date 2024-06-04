@@ -56,6 +56,7 @@ RSpec.describe 'SAML group links', feature_category: :system_access do
   context 'when custom roles are enabled' do
     before do
       stub_licensed_features(group_saml: true, saml_group_sync: true, custom_roles: true)
+      stub_saas_features(gitlab_com_subscriptions: true)
 
       create(:saml_provider, group: group, enabled: true)
       create(:member_role, namespace: group, name: 'Custom')
