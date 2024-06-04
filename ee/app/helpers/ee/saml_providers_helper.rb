@@ -40,7 +40,7 @@ module EE
       }
 
       if group.custom_roles_enabled?
-        custom_roles = MemberRoles::RolesFinder.new(current_user, { parent: group, instance_roles: true })
+        custom_roles = MemberRoles::RolesFinder.new(current_user, { parent: group })
           .execute.map do |role|
             { member_role_id: role.id, name: role.name, base_access_level: role.base_access_level }
           end

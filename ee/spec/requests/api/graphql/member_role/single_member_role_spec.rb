@@ -39,6 +39,8 @@ RSpec.describe 'Query.single_member_role', feature_category: :system_access do
 
     before do
       stub_licensed_features(custom_roles: true)
+      stub_saas_features(gitlab_com_subscriptions: true)
+
       post_graphql(member_role_query, current_user: user)
     end
 

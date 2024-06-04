@@ -29,7 +29,7 @@ RSpec.describe 'Query.group_member_role', feature_category: :permissions do
   let_it_be(:group_member_role_1) { create(:member_role, namespace: root_group, read_code: true) }
   let_it_be(:group_member_role_2) { create(:member_role, namespace: root_group, read_vulnerability: true) }
   let_it_be(:group_2_member_role) { create(:member_role) }
-  let_it_be(:instance_role) { create(:member_role, :instance, read_vulnerability: true) }
+
   let_it_be(:user) { create(:user, owner_of: root_group) }
 
   subject do
@@ -56,28 +56,31 @@ RSpec.describe 'Query.group_member_role', feature_category: :permissions do
       ]
     end
 
-    let(:instance_roles) do
-      [
-        {
-          'id' => instance_role.to_global_id.to_s,
-          'name' => instance_role.name,
-          'membersCount' => 0,
-          'editPath' => edit_admin_application_settings_roles_and_permission_path(instance_role)
-        }
-      ]
-    end
+    context 'when on SaaS' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
 
-    it_behaves_like 'a working graphql query'
+        post_graphql(member_roles_query(group), current_user: user)
+      end
 
-    context 'when on SaaS', :saas do
-      it 'returns only group-level custom roles' do
+      it_behaves_like 'a working graphql query'
+
+      it 'returns all group-level member roles' do
         expect(subject).to match_array(group_roles)
       end
     end
 
     context 'when on self-managed' do
-      it 'returns both group-level and instance-level custom roles' do
-        expect(subject).to match_array(group_roles.concat(instance_roles))
+      before do
+        stub_saas_features(gitlab_com_subscriptions: false)
+
+        post_graphql(member_roles_query(group), current_user: user)
+      end
+
+      it_behaves_like 'a working graphql query'
+
+      it 'returns an empty array' do
+        expect(subject).to be_empty
       end
     end
   end
@@ -108,17 +111,13 @@ RSpec.describe 'Query.group_member_role', feature_category: :permissions do
     end
 
     context 'for a root group' do
-      before do
-        post_graphql(member_roles_query(root_group), current_user: user)
-      end
+      let(:group) { root_group }
 
       it_behaves_like 'returns member roles'
     end
 
     context 'for subgroup' do
-      before do
-        post_graphql(member_roles_query(sub_group), current_user: user)
-      end
+      let(:group) { sub_group }
 
       it_behaves_like 'returns member roles'
     end

@@ -36,21 +36,41 @@ RSpec.describe 'Query.project_member_role', feature_category: :system_access do
   context 'with custom roles feature' do
     before do
       stub_licensed_features(custom_roles: true)
-
-      post_graphql(member_roles_query, current_user: user)
     end
 
-    it_behaves_like 'a working graphql query'
+    context 'when on SaaS' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: true)
 
-    it 'returns all customizable ablities' do
-      subject
+        post_graphql(member_roles_query, current_user: user)
+      end
 
-      expected_result = [
-        { 'id' => group_member_role_1.to_global_id.to_s, 'name' => group_member_role_1.name },
-        { 'id' => group_member_role_2.to_global_id.to_s, 'name' => group_member_role_2.name }
-      ]
+      it_behaves_like 'a working graphql query'
 
-      expect(subject).to match_array(expected_result)
+      it 'returns all group-level member roles' do
+        subject
+
+        expected_result = [
+          { 'id' => group_member_role_1.to_global_id.to_s, 'name' => group_member_role_1.name },
+          { 'id' => group_member_role_2.to_global_id.to_s, 'name' => group_member_role_2.name }
+        ]
+
+        expect(subject).to match_array(expected_result)
+      end
+    end
+
+    context 'when on self-managed' do
+      before do
+        stub_saas_features(gitlab_com_subscriptions: false)
+
+        post_graphql(member_roles_query, current_user: user)
+      end
+
+      it_behaves_like 'a working graphql query'
+
+      it 'returns an empty array' do
+        expect(subject).to be_empty
+      end
     end
   end
 

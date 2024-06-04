@@ -28,6 +28,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :groups_and_pro
       context 'when custom roles feature is enabled' do
         before do
           stub_licensed_features(custom_roles: true)
+          stub_saas_features(gitlab_com_subscriptions: true)
         end
 
         it 'returns success' do

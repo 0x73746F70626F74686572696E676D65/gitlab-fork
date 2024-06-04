@@ -27,7 +27,7 @@ module API
       strong_memoize_attr :group
 
       def member_roles
-        filter_params = group ? { parent: group } : { instance_roles: true }
+        filter_params = group ? { parent: group } : {}
 
         ::MemberRoles::RolesFinder.new(current_user, filter_params).execute
       end
