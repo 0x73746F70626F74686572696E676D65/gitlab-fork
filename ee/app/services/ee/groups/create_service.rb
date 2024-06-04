@@ -15,10 +15,7 @@ module EE
         return false unless super
         return true unless current_user.requires_identity_verification_to_create_group?(group)
 
-        group.errors.add(
-          :identity_verification,
-          s_('CreateGroup|You have reached the group limit until you verify your account.')
-        )
+        identity_verification_error
 
         false
       end
@@ -72,6 +69,20 @@ module EE
         }
 
         ::Gitlab::Audit::Auditor.audit(audit_context)
+      end
+
+      def identity_verification_error
+        ::Gitlab::AppLogger.info(
+          message: 'User has reached group creation limit',
+          reason: 'Identity verification required',
+          class: self.class.name,
+          username: current_user.username
+        )
+
+        group.errors.add(
+          :identity_verification,
+          s_('CreateGroup|You have reached the group limit until you verify your account.')
+        )
       end
     end
   end
