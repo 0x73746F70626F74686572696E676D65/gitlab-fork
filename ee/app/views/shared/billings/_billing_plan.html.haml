@@ -3,7 +3,7 @@
 - show_deprecated_plan = plan.deprecated?
 - if show_deprecated_plan
   - plan_name      += ' (Legacy)'
-  - faq_link_url   = "https://#{ApplicationHelper.promo_host}/pricing/faq-new-product-subscription-tiers"
+  - faq_link_url   = "#{ApplicationHelper.promo_url}/pricing/faq-new-product-subscription-tiers"
   - faq_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: faq_link_url }
 
 .card-wrapper{ data: { testid: "plan-card-#{plan.code}" } }
