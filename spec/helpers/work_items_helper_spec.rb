@@ -32,12 +32,14 @@ RSpec.describe WorkItemsHelper, feature_category: :team_planning do
 
     it 'returns expected data' do
       allow(helper).to receive(:current_user).and_return(current_user)
+      allow(helper).to receive(:can?).and_return(true)
 
       expect(work_items_list_data).to include(
         {
           full_path: group.full_path,
           initial_sort: current_user&.user_preference&.issues_sort,
-          is_signed_in: current_user.present?.to_s
+          is_signed_in: current_user.present?.to_s,
+          show_new_issue_link: 'true'
         }
       )
     end

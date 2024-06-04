@@ -20,7 +20,8 @@ module WorkItemsHelper
     {
       full_path: group.full_path,
       initial_sort: current_user&.user_preference&.issues_sort,
-      is_signed_in: current_user.present?.to_s
+      is_signed_in: current_user.present?.to_s,
+      show_new_issue_link: can?(current_user, :create_work_item, group).to_s
     }
   end
 end
