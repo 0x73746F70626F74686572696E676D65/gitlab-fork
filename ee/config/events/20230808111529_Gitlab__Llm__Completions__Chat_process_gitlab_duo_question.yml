@@ -9,8 +9,6 @@ extra_properties:
 identifiers:
 - user
 - namespace
-product_section: data-science
-product_stage: modelops
 product_group: ai_framework
 milestone: "16.3"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/128503

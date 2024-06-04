@@ -3,8 +3,6 @@ category: the class of the controller that triggered the event
 action: user_perform_visit
 identifiers:
   - user
-product_section: sec
-product_stage: govern
 product_group: compliance
 milestone: "16.6"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/135000

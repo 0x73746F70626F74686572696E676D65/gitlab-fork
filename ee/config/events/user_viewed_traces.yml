@@ -6,8 +6,6 @@ identifiers:
   - project
   - namespace
   - user
-product_section: analytics
-product_stage: monitor
 product_group: observability
 milestone: '17.1'
 introduced_by_url: 'https://gitlab.com/gitlab-org/gitlab/-/merge_requests/153227'
