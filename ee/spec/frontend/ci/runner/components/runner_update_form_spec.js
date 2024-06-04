@@ -106,7 +106,7 @@ describe('RunnerUpdateForm', () => {
         await waitForPromises();
       });
 
-      it('the form contains CI minute cost factors', () => {
+      it('the form contains compute minute cost factors', () => {
         expect(findPrivateProjectsCostFactor().exists()).toBe(true);
         expect(findPublicProjectsCostFactor().exists()).toBe(true);
       });
@@ -137,7 +137,7 @@ describe('RunnerUpdateForm', () => {
         createComponent();
       });
 
-      it('the form does not contain CI minute cost factors', () => {
+      it('the form does not contain compute minute cost factors', () => {
         expect(findPrivateProjectsCostFactor().exists()).toBe(false);
         expect(findPublicProjectsCostFactor().exists()).toBe(false);
       });

@@ -126,7 +126,7 @@ RSpec.describe SubscriptionsHelper, feature_category: :subscription_management d
     let_it_be(:active_subscription) { { name: 'S-000000000' } }
 
     let(:anchor) { 'pipelines-quota-tab' }
-    let(:purchased_product) { 'CI Minutes' }
+    let(:purchased_product) { 'compute minutes' }
 
     before do
       allow(helper).to receive(:current_user).and_return(user)

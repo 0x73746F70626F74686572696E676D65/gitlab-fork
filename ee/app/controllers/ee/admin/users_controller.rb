@@ -26,7 +26,7 @@ module EE
         user
 
         ::Ci::Minutes::ResetUsageService.new(@user.namespace).execute
-        redirect_to [:admin, @user], notice: _('User pipeline minutes were successfully reset.')
+        redirect_to [:admin, @user], notice: _('User compute minutes were successfully reset.')
       end
 
       def card_match

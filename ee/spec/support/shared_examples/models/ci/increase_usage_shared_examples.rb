@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples_for 'CI minutes increase usage' do
+RSpec.shared_examples_for 'compute minutes increase usage' do
   subject { current_usage.increase_usage(increments) }
 
   let(:increments) { { amount_used: amount } }

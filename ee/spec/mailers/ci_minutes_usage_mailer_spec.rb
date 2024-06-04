@@ -17,10 +17,10 @@ RSpec.describe CiMinutesUsageMailer do
 
   describe '#notify' do
     let(:subject_text) do
-      "Action required: There are no remaining Pipeline minutes for #{namespace.name}"
+      "Action required: There are no remaining compute minutes for #{namespace.name}"
     end
 
-    let(:body_text) { "has run out of Shared Runner Pipeline minutes" }
+    let(:body_text) { "has run out of Shared Runner compute minutes" }
 
     subject { described_class.notify(namespace, recipients) }
 
@@ -42,10 +42,10 @@ RSpec.describe CiMinutesUsageMailer do
   describe '#notify_limit' do
     let(:percent) { 30 }
     let(:subject_text) do
-      "Action required: Less than #{percent}% of Pipeline minutes remain for #{namespace.name}"
+      "Action required: Less than #{percent}% of compute minutes remain for #{namespace.name}"
     end
 
-    let(:body_text) { "has #{percent}% or less Shared Runner Pipeline minutes" }
+    let(:body_text) { "has #{percent}% or less Shared Runner compute minutes" }
 
     subject { described_class.notify_limit(namespace, recipients, percent) }
 

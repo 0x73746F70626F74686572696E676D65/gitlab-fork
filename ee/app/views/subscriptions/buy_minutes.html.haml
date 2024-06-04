@@ -1,4 +1,4 @@
-- page_title _('Buy CI Minutes')
+- page_title _('Buy compute minutes')
 - content_for :page_specific_javascripts do
   = render "layouts/one_trust"
   = render "layouts/google_tag_manager_head"
@@ -9,4 +9,4 @@
                          user: current_user,
                          namespace: @group)
 
-#js-buy-minutes{ data: buy_addon_data(@group, @account_id, @active_subscription, 'pipelines-quota-tab', s_('Checkout|CI minutes')) }
+#js-buy-minutes{ data: buy_addon_data(@group, @account_id, @active_subscription, 'pipelines-quota-tab', s_('Checkout|compute minutes')) }

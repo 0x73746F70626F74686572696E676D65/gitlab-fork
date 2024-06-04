@@ -15,7 +15,7 @@ module EE
         group
 
         ::Ci::Minutes::ResetUsageService.new(@group).execute
-        redirect_to [:admin, @group], notice: _('Group pipeline minutes were successfully reset.')
+        redirect_to [:admin, @group], notice: _('Group compute minutes were successfully reset.')
       end
 
       private

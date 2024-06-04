@@ -11,7 +11,7 @@ module API
       before { authenticated_as_admin! }
 
       resource :namespaces, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
-        desc 'Create a CI Minutes purchase record for the namespace' do
+        desc 'Create a compute minutes purchase record for the namespace' do
           detail 'Creates an additional pack'
           success ::EE::API::Entities::Ci::Minutes::AdditionalPack
           failure [
@@ -43,7 +43,7 @@ module API
           end
         end
 
-        desc 'Transfer purchased CI minutes packs to another namespace' do
+        desc 'Transfer purchased compute minutes packs to another namespace' do
           detail 'Moves additional packs from one namespace to another'
           success code: 202
           failure [

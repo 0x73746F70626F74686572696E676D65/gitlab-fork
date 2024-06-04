@@ -6,9 +6,9 @@
 # When a merge request pipeline from a fork targets a project from an enabled
 # namespace, we consider it a community contribution.
 #
-# Since GitLab pipelines are very heavy in CI minutes consumption we don't want
+# Since GitLab pipelines are very heavy in compute minutes consumption we don't want
 # to impact community contributions. Instead we grant them a low cost factor
-# that allows them to run pipelines with minimal CI minutes consumption.
+# that allows them to run pipelines with minimal compute minutes consumption.
 #
 module Gitlab
   module Ci
@@ -16,7 +16,7 @@ module Gitlab
       class GitlabContributionCostFactor
         include Gitlab::Utils::StrongMemoize
 
-        # The max number of CI minutes that a top-level namespace can consume
+        # The max number of compute minutes that a top-level namespace can consume
         # in contributions to GitLab projects.
         MAX_SHARED_RUNNERS_DURATION_MINUTES = 300_000
 
@@ -35,8 +35,8 @@ module Gitlab
           # based on the monthly quota.
           #
           # Example:
-          # - 300,000 duration in minutes * 0.03333333333 cost factor = 10,000 CI minutes quota
-          # - 10,000 CI minutes quota / 300,000 duration in minutes = 0.03333333333 cost factor
+          # - 300,000 duration in minutes * 0.03333333333 cost factor = 10,000 compute minutes quota
+          # - 10,000 compute minutes quota / 300,000 duration in minutes = 0.03333333333 cost factor
           minutes_quota.monthly.to_f / MAX_SHARED_RUNNERS_DURATION_MINUTES
         end
 

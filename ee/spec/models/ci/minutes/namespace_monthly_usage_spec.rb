@@ -205,7 +205,7 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage, feature_category: :hosted_run
   end
 
   describe '#increase_usage' do
-    it_behaves_like 'CI minutes increase usage'
+    it_behaves_like 'compute minutes increase usage'
   end
 
   describe '.for_namespace' do

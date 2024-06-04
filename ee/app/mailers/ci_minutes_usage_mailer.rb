@@ -11,7 +11,7 @@ class CiMinutesUsageMailer < ApplicationMailer
 
     mail_with_locale(
       bcc: recipients,
-      subject: "Action required: There are no remaining Pipeline minutes for #{@namespace.name}"
+      subject: "Action required: There are no remaining compute minutes for #{@namespace.name}"
     )
   end
 
@@ -22,7 +22,7 @@ class CiMinutesUsageMailer < ApplicationMailer
     mail_with_locale(
       bcc: recipients,
       subject: "Action required: Less than #{percentage_of_available_mins}% " \
-               "of Pipeline minutes remain for #{@namespace.name}"
+               "of compute minutes remain for #{@namespace.name}"
     )
   end
 end

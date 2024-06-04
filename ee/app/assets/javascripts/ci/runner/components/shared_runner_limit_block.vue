@@ -30,7 +30,7 @@ export default {
     runnersWarningMessage() {
       return sprintf(
         s__(
-          'Runners|You have used %{quotaUsed} out of %{quotaLimit} of your instance runners pipeline minutes.',
+          'Runners|You have used %{quotaUsed} out of %{quotaLimit} of your instance runners compute minutes.',
         ),
         { quotaUsed: this.quotaUsed, quotaLimit: this.quotaLimit },
       );

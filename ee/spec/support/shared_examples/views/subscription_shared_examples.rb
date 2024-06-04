@@ -29,7 +29,7 @@ RSpec.shared_examples_for 'buy minutes addon form data' do |js_selector|
   before do
     allow(view).to receive(:body_data_page).and_return('subscriptions:buy_minutes')
     allow(view).to receive(:current_user).and_return(user)
-    allow(view).to receive(:buy_addon_data).with(@group, @account_id, @active_subscription, 'pipelines-quota-tab', s_('Checkout|CI minutes')).and_return(
+    allow(view).to receive(:buy_addon_data).with(@group, @account_id, @active_subscription, 'pipelines-quota-tab', s_('Checkout|compute minutes')).and_return(
       active_subscription: active_subscription,
       group_data: '[{"id":"ci_minutes_plan_id","code":"ci_minutes","price_per_year":10.0}]',
       namespace_id: '1',

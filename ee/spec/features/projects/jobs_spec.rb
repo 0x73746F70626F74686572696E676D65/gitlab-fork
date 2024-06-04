@@ -24,7 +24,7 @@ RSpec.describe 'Jobs', :clean_gitlab_redis_shared_state, feature_category: :cont
         visit project_job_path(project, job)
         wait_for_requests
 
-        expect(page).to have_content('You have used 1000 out of 500 of your instance runners pipeline minutes.')
+        expect(page).to have_content('You have used 1000 out of 500 of your instance runners compute minutes.')
       end
     end
 
@@ -36,7 +36,7 @@ RSpec.describe 'Jobs', :clean_gitlab_redis_shared_state, feature_category: :cont
         visit project_job_path(project, job)
         wait_for_requests
 
-        expect(page).not_to have_content('You have used 1000 out of 500 of your shared Runners pipeline minutes.')
+        expect(page).not_to have_content('You have used 1000 out of 500 of your shared Runners compute minutes.')
       end
     end
 

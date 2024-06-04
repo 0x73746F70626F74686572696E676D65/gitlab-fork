@@ -117,7 +117,7 @@ RSpec.describe 'Query.ciRunnerUsageByProject', :click_house, feature_category: :
     let(:top_runners) { instance_runners.first(n) }
     let(:other_runners) { instance_runners - top_runners }
 
-    it "returns #{n} runners executed most of the ci minutes and one line for the 'rest'" do
+    it "returns #{n} runners executed most of the compute minutes and one line for the 'rest'" do
       builds = top_runners.each_with_index.flat_map do |runner, index|
         Array.new(index + 1) do
           stubbed_build(starting_date, 20.minutes, runner: runner)

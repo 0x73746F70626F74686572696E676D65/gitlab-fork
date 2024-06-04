@@ -93,7 +93,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     end
   end
 
-  describe 'updates pipeline minutes', feature_category: :hosted_runners do
+  describe 'updates compute minutes', feature_category: :hosted_runners do
     let(:job) { create(:ci_build, :running, pipeline: pipeline) }
 
     context 'when ci_canceling_status is disabled' do

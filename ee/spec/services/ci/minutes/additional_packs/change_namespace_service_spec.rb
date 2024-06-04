@@ -35,7 +35,7 @@ RSpec.describe Ci::Minutes::AdditionalPacks::ChangeNamespaceService, feature_cat
             expect(change_namespace[:status]).to eq :success
           end
 
-          it 'kicks off refresh ci minutes service for namespace and target' do
+          it 'kicks off refresh compute minutes service for namespace and target' do
             expect_next_instance_of(::Ci::Minutes::RefreshCachedDataService, namespace) do |instance|
               expect(instance).to receive(:execute)
             end

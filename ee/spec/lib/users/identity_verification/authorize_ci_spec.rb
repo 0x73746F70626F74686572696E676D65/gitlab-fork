@@ -133,7 +133,7 @@ RSpec.describe Users::IdentityVerification::AuthorizeCi, :saas, feature_category
           it { expect { authorize }.not_to raise_error }
         end
 
-        context 'when root namespace has purchased CI minutes' do
+        context 'when root namespace has purchased compute minutes' do
           before do
             project.namespace.update!(extra_shared_runners_minutes_limit: 100)
             project.namespace.clear_memoization(:ci_minutes_usage)
@@ -184,7 +184,7 @@ RSpec.describe Users::IdentityVerification::AuthorizeCi, :saas, feature_category
         it { is_expected.to eq(true) }
       end
 
-      context 'when root namespace has purchased CI minutes' do
+      context 'when root namespace has purchased compute minutes' do
         before do
           project.namespace.update!(extra_shared_runners_minutes_limit: 100)
           project.namespace.clear_memoization(:ci_minutes_usage)

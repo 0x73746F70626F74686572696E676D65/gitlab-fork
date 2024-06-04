@@ -51,7 +51,7 @@ RSpec.describe Ci::Minutes::Notification, feature_category: :hosted_runners do
         describe '#show?' do
           it 'has warning notification' do
             expect(subject.show?(user)).to be_truthy
-            expect(subject.text).to match(/.*\shas 30% or less Shared Runner Pipeline minutes remaining/)
+            expect(subject.text).to match(/.*\shas 30% or less Shared Runner compute minutes remaining/)
             expect(subject.style).to eq :warning
           end
 
@@ -83,7 +83,7 @@ RSpec.describe Ci::Minutes::Notification, feature_category: :hosted_runners do
         describe '#show?' do
           it 'has danger notification' do
             expect(subject.show?(user)).to be_truthy
-            expect(subject.text).to match(/.*\shas 5% or less Shared Runner Pipeline minutes remaining/)
+            expect(subject.text).to match(/.*\shas 5% or less Shared Runner compute minutes remaining/)
             expect(subject.style).to eq :danger
           end
 
@@ -115,7 +115,7 @@ RSpec.describe Ci::Minutes::Notification, feature_category: :hosted_runners do
         describe '#show?' do
           it 'has warning notification' do
             expect(subject.show?(user)).to be_truthy
-            expect(subject.text).to match(/.*\shas 30% or less Shared Runner Pipeline minutes remaining/)
+            expect(subject.text).to match(/.*\shas 30% or less Shared Runner compute minutes remaining/)
             expect(subject.style).to eq :warning
           end
 
@@ -147,7 +147,7 @@ RSpec.describe Ci::Minutes::Notification, feature_category: :hosted_runners do
         describe '#show?' do
           it 'has exceeded notification' do
             expect(subject.show?(user)).to be_truthy
-            expect(subject.text).to match(/.*\shas exceeded its pipeline minutes quota/)
+            expect(subject.text).to match(/.*\shas exceeded its compute minutes quota/)
             expect(subject.style).to eq :danger
           end
 
