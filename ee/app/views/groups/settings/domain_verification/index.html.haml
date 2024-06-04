@@ -28,7 +28,7 @@
             %th= _('Verification status')
             %th.gl-text-right= _('Actions')
         %tbody
-          %tr.js-domain-empty-state{ class: @domains.empty? ? '' : 'gl-display-none!' }
+          %tr.js-domain-empty-state{ class: @domains.empty? ? '' : '!gl-hidden' }
             %td{ colspan: 4, class: 'gl-py-6! text-center' }
               = s_("DomainVerification|No domains configured. Create a domain in a project in this group hierarchy.")
           - @domains.each do |domain|

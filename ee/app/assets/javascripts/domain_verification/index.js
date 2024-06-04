@@ -2,7 +2,7 @@ export function initRemoveButtonBehavior() {
   const emptyState = document.querySelector('.js-domain-empty-state');
 
   function removeRowSuccessCallback() {
-    this.closest('tr').classList.add('gl-display-none!');
+    this.closest('tr').classList.add('!gl-hidden');
 
     const labelsCount = document.querySelectorAll('.js-domain-row:not(.gl-display-none\\!)').length;
 
