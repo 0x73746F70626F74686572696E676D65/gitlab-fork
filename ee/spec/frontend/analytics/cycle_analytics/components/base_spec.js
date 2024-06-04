@@ -694,11 +694,9 @@ describe('EE Value Stream Analytics component', () => {
       mock.restore();
     });
 
-    // NOTE: current behaviour is still to point to the group VSD
-    // we should resolve this with https://gitlab.com/gitlab-org/gitlab/-/issues/454206
     it('renders a link to the value streams dashboard', () => {
       expect(findOverviewMetrics().props('dashboardsPath')).toBe(
-        '/groups/foo/-/analytics/dashboards/value_streams_dashboard',
+        '/some/cool/path/-/analytics/dashboards/value_streams_dashboard',
       );
     });
   });

@@ -152,11 +152,7 @@ export default {
       return this.enableVsdLink && Boolean(this.features?.groupLevelAnalyticsDashboard);
     },
     dashboardsPath() {
-      if (this.showDashboardsLink) {
-        const namespacePath = this.enableProjectsFilter ? this.namespacePath : this.groupPath;
-        return generateValueStreamsDashboardLink(namespacePath);
-      }
-      return null;
+      return this.showDashboardsLink ? generateValueStreamsDashboardLink(this.namespacePath) : null;
     },
   },
   methods: {
