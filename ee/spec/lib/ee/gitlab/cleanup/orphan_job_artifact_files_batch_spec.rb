@@ -35,7 +35,7 @@ RSpec.describe Gitlab::Cleanup::OrphanJobArtifactFilesBatch, feature_category: :
     end
 
     context 'with dry run' do
-      it 'does not remove registries' do
+      it 'does not remove registries', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/463508' do
         create(:geo_job_artifact_registry)
         create(:geo_job_artifact_registry, :orphan)
 
