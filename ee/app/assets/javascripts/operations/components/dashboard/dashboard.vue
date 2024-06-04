@@ -14,6 +14,7 @@ import VueDraggable from 'vuedraggable';
 import { mapState, mapActions } from 'vuex';
 import { s__ } from '~/locale';
 import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 import DashboardProject from './project.vue';
 
 export default {
@@ -31,6 +32,7 @@ export default {
     `OperationsDashboard|The operations dashboard provides a summary of each project's operational health, including pipeline and alert statuses.`,
   ),
   components: {
+    PageHeading,
     DashboardProject,
     GlDashboardSkeleton,
     GlButton,
@@ -150,23 +152,19 @@ export default {
 <template>
   <div class="operations-dashboard">
     <template v-if="showDashboard">
-      <div class="page-title-holder gl-display-flex gl-align-items-center">
-        <h1
-          class="page-title gl-font-size-h-display gl-whitespace-nowrap gl-flex-grow-1"
-          data-testid="dashboard-title"
-        >
-          {{ $options.title }}
-        </h1>
-        <gl-button
-          v-if="projects.length"
-          v-gl-modal="$options.modalId"
-          variant="confirm"
-          category="primary"
-          data-testid="add-projects-button"
-        >
-          {{ $options.addProjectsSubmitButton }}
-        </gl-button>
-      </div>
+      <page-heading :heading="$options.title">
+        <template #actions>
+          <gl-button
+            v-if="projects.length"
+            v-gl-modal="$options.modalId"
+            variant="confirm"
+            category="primary"
+            data-testid="add-projects-button"
+          >
+            {{ $options.addProjectsSubmitButton }}
+          </gl-button>
+        </template>
+      </page-heading>
       <p class="gl-mt-2 gl-mb-6">
         <gl-sprintf :message="$options.informationText">
           <template #link="{ content }">
