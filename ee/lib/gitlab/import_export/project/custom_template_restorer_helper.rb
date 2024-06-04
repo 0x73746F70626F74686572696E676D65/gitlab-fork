@@ -14,7 +14,7 @@ module Gitlab
           return if user_can_admin_source?
 
           err = StandardError.new "Unauthorized service"
-          Gitlab::Import::Logger.warn(
+          ::Import::Framework::Logger.warn(
             message: "User tried to access unauthorized service",
             username: user.username,
             user_id: user.id,
