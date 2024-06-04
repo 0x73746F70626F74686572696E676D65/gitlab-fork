@@ -431,7 +431,7 @@ export default {
 
 <template>
   <div
-    class="board gl-px-3 gl-align-top gl-white-space-normal gl-display-flex gl-flex-shrink-0"
+    class="board gl-px-3 gl-align-top gl-whitespace-normal gl-display-flex gl-flex-shrink-0"
     :class="{ 'is-collapsed gl-w-10': list.collapsed }"
   >
     <div class="gl-rounded-base gl-relative gl-w-full gl-bg-gray-50">

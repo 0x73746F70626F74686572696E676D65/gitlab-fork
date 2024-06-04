@@ -200,7 +200,7 @@ export default {
     <div class="table-section flex-grow-1">
       <div class="table-mobile-header" role="rowheader">{{ s__('Reports|Vulnerability') }}</div>
       <div
-        class="table-mobile-content gl-white-space-normal"
+        class="table-mobile-content gl-whitespace-normal"
         data-testid="vulnerability-info-content"
       >
         <gl-skeleton-loader v-if="isLoading" :lines="2" />
@@ -208,7 +208,7 @@ export default {
           <gl-button
             ref="vulnerability-title"
             class="text-body gl-display-grid"
-            button-text-classes="gl-text-left gl-white-space-normal! gl-pr-4!"
+            button-text-classes="gl-text-left gl-whitespace-normal! gl-pr-4!"
             variant="link"
             data-testid="security-finding-name-button"
             :data-qa-status-description="vulnerability.name"
@@ -253,7 +253,7 @@ export default {
       </div>
     </div>
 
-    <div class="table-section gl-white-space-normal section-15">
+    <div class="table-section gl-whitespace-normal section-15">
       <div class="table-mobile-header" role="rowheader">{{ s__('Reports|Identifier') }}</div>
       <div class="table-mobile-content">
         <div class="gl-text-overflow-ellipsis gl-overflow-hidden" :title="vulnerabilityIdentifier">
