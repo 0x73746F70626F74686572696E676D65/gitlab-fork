@@ -1,8 +1,6 @@
 ---
 key_path: license_expires_at
 description: The date the license ends
-product_section: fulfillment
-product_stage: fulfillment
 product_group: provision
 value_type: string
 status: active

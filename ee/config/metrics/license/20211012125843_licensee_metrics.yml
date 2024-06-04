@@ -1,8 +1,6 @@
 ---
 key_path: licensee
 description: Licensee Information
-product_section: fulfillment
-product_stage: fulfillment
 product_group: provision
 value_type: object
 instrumentation_class: LicenseeMetrics

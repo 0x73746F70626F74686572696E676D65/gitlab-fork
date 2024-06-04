@@ -1,8 +1,6 @@
 ---
 key_path: license_plan
 description: The plan of the GitLab license
-product_section: fulfillment
-product_stage: fulfillment
 product_group: provision
 value_type: string
 status: active

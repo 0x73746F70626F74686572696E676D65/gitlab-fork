@@ -1,8 +1,6 @@
 ---
 key_path: count_distinct_user_id_from_user_edited_custom_dashboard_7d
 description: Count of distinct users who edited an existing custom dashboard using the dashboard designer in the last 7d.
-product_section: analyze
-product_stage: analytics
 product_group: product_analytics
 performance_indicator_type: []
 value_type: number

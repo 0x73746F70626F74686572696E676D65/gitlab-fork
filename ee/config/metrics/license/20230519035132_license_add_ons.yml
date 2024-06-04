@@ -1,8 +1,6 @@
 ---
 key_path: license_add_ons
 description: List of add-ons in the license
-product_section: fulfillment
-product_stage: fulfillment
 product_group: provision
 value_type: object
 value_json_schema: 'ee/config/metrics/object_schemas/license_add_ons.json'

@@ -1,8 +1,6 @@
 ---
 key_path: counts.visited_dashboard_projects_weekly
 description: Count of distinct projects with at least one Analytics dashboard view in the last 7 days
-product_section: analytics
-product_stage: analytics
 product_group: product_analytics
 value_type: number
 status: active

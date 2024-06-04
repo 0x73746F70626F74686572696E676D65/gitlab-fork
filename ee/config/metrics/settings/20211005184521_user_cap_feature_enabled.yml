@@ -1,8 +1,6 @@
 ---
 key_path: user_cap_feature_enabled
 description: Whether User Cap feature is enabled
-product_section: fulfillment
-product_stage: fulfillment
 product_group: utilization
 value_type: number
 status: active

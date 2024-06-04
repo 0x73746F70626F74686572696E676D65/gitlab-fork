@@ -1,8 +1,6 @@
 ---
 key_path: counts.count_total_duo_pro_trial_registration_failure
 description: Total count of Duo Pro trial failures
-product_section: growth
-product_stage: growth
 product_group: acquisition
 performance_indicator_type: []
 value_type: number
