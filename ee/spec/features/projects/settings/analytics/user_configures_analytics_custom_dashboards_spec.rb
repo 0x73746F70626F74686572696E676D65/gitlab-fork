@@ -30,7 +30,6 @@ RSpec.describe 'Project > Settings > Analytics -> Custom dashboard projects', :j
   context 'with correct license' do
     before do
       stub_licensed_features(project_level_analytics_dashboard: true, product_analytics: true)
-      stub_feature_flags(product_analytics_admin_settings: true)
 
       visit project_settings_analytics_path(project)
     end

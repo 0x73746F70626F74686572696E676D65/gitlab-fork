@@ -19,14 +19,6 @@ RSpec.describe Sidebars::Admin::Menus::AdminSettingsMenu, feature_category: :nav
         end
 
         it { is_expected.to be_present }
-
-        context 'when flag is disabled' do
-          before do
-            stub_feature_flags(product_analytics_admin_settings: false)
-          end
-
-          it { is_expected.not_to be_present }
-        end
       end
 
       context 'when product_analytics feature is not licensed' do

@@ -205,8 +205,7 @@ module EE
       end
 
       def analytics
-        not_found if !::License.feature_available?(:product_analytics) ||
-          ::Feature.disabled?(:product_analytics_admin_settings)
+        not_found unless ::License.feature_available?(:product_analytics)
       end
 
       def push_disable_private_profiles_feature
