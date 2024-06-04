@@ -19,4 +19,5 @@
   labels_fetch_path: group_labels_path(@group, format: :json),
   group_milestones_path: group_milestones_path(@group, format: :json),
   empty_state_path: image_path('illustrations/empty-state/empty-epic-md.svg'),
+  has_issuable_health_status_feature: @group.licensed_feature_available?(:issuable_health_status).to_s,
   is_signed_in: is_signed_in } }

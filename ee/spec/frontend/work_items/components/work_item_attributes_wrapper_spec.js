@@ -57,6 +57,7 @@ describe('EE WorkItemAttributesWrapper component', () => {
         hasIssuableHealthStatusFeature: true,
         projectNamespace: 'namespace',
         glFeatures: featureFlags,
+        isGroup: false,
       },
     });
   };

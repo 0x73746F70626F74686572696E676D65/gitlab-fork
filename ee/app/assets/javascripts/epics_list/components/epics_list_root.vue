@@ -279,7 +279,7 @@ export default {
         <create-work-item-modal
           v-if="canCreateEpic && glFeatures.namespaceLevelWorkItems"
           class="gl-flex-grow-1"
-          :work-item-type="$options.WORK_ITEM_TYPE_ENUM_EPIC"
+          :work-item-type-name="$options.WORK_ITEM_TYPE_ENUM_EPIC"
         />
         <gl-button
           v-else-if="canCreateEpic"
