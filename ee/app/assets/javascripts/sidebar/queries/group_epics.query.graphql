@@ -24,7 +24,8 @@ query issueEpics(
         state
       }
     }
-    workItems(types: $types) @include(if: $includeWorkItems) {
+    workItems(types: $types, includeAncestors: true, includeDescendants: false)
+      @include(if: $includeWorkItems) {
       nodes {
         id
         title
