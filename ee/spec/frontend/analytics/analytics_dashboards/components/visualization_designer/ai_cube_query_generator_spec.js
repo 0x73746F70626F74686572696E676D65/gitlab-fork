@@ -51,6 +51,7 @@ describe('AiCubeQueryGenerator', () => {
         [aiResponseSubscription, aiResponseSubscriptionHandlerMock],
       ]),
       propsData: {
+        value: '',
         warnBeforeReplacingQuery: false,
         ...props,
       },
@@ -315,6 +316,19 @@ describe('AiCubeQueryGenerator', () => {
 
         it('logs the error to Sentry', () => expectLoggedToSentry());
       });
+    });
+  });
+
+  describe('when the prompt changes', () => {
+    const newPrompt = 'hello world';
+
+    beforeEach(() => {
+      createWrapper();
+      return findGenerateCubeQueryPromptInput().vm.$emit('input', newPrompt);
+    });
+
+    it('emits an input event with the new prompt value', () => {
+      expect(wrapper.emitted('input').at(0)).toStrictEqual([newPrompt]);
     });
   });
 });

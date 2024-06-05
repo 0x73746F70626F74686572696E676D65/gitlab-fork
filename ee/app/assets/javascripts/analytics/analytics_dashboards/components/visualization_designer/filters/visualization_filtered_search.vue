@@ -49,6 +49,11 @@ export default {
       ];
     },
   },
+  watch: {
+    query(query) {
+      this.value = mapQueryToTokenValues(query);
+    },
+  },
   methods: {
     onSubmit(value) {
       this.$emit('submit', {

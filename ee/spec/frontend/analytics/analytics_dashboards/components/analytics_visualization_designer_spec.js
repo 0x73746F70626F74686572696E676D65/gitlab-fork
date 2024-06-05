@@ -87,10 +87,22 @@ describe('AnalyticsVisualizationDesigner', () => {
     setVisualizationType('SingleStat');
   };
 
+  const setAllRequiredFieldsWithFilter = async () => {
+    await setVisualizationTitle('New Title');
+    await setVisualizationType('SingleStat');
+    await findFilteredSearch().vm.$emit('input', { measures: ['Sessions.count'], limit: 100 });
+  };
+
   const mockSaveVisualizationImplementation = async (responseCallback) => {
     saveProductAnalyticsVisualization.mockImplementation(responseCallback);
 
     await waitForPromises();
+  };
+
+  const saveVisualization = async () => {
+    await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+    await findSaveButton().vm.$emit('click');
+    return waitForPromises();
   };
 
   const createWrapper = (
@@ -356,11 +368,8 @@ describe('AnalyticsVisualizationDesigner', () => {
       describe('and it saved successfully', () => {
         beforeEach(async () => {
           await setAllRequiredFields();
-          await mockSaveVisualizationImplementation(() => ({ status: HTTP_STATUS_CREATED }));
 
-          await findSaveButton().vm.$emit('click');
-
-          return waitForPromises();
+          return saveVisualization();
         });
 
         it('creates the visualization file and shows a success toast', () => {
@@ -593,6 +602,69 @@ describe('AnalyticsVisualizationDesigner', () => {
       await setAllRequiredFields();
 
       expect(findAiQueryGenerator().props('warnBeforeReplacingQuery')).toBe(true);
+    });
+  });
+
+  describe('clear fields after saving', () => {
+    const expectTitleAndTypeReset = () => {
+      expect(findTitleInput().attributes('value')).toBe('');
+      expect(findTypeSelector().props('selectedVisualizationType')).toBe('');
+    };
+
+    describe('default behaviour', () => {
+      beforeEach(async () => {
+        createWrapper();
+        await setAllRequiredFields();
+        return saveVisualization();
+      });
+
+      it('resets the designer fields to their initial state', () => {
+        expectTitleAndTypeReset();
+
+        expect(findMeasureSelector().props('query')).toStrictEqual({ limit: 100 });
+      });
+    });
+
+    describe('when "aiGenerateCubeQueryEnabled" feature is enabled', () => {
+      beforeEach(async () => {
+        createWrapper('', {
+          provide: {
+            aiGenerateCubeQueryEnabled: true,
+          },
+        });
+        await setAllRequiredFields();
+        await findAiQueryGenerator().vm.$emit('input', 'Hello world');
+        return saveVisualization();
+      });
+
+      it('resets the designer fields + AI prompt to their initial state', () => {
+        expectTitleAndTypeReset();
+
+        expect(findMeasureSelector().props('query')).toStrictEqual({ limit: 100 });
+        expect(findMeasureSelector().props('aiPromptCorrelationId')).toBeUndefined();
+
+        expect(findAiQueryGenerator().props('value')).toBe('');
+      });
+    });
+
+    describe('when "analytics_visualization_designer_filtering" feature is enabled', () => {
+      beforeEach(async () => {
+        createWrapper('', {
+          provide: {
+            glFeatures: {
+              analyticsVisualizationDesignerFiltering: true,
+            },
+          },
+        });
+        await setAllRequiredFieldsWithFilter();
+        return saveVisualization();
+      });
+
+      it('resets the designer fields and filtered search to their initial state', () => {
+        expectTitleAndTypeReset();
+
+        expect(findFilteredSearch().props('query')).toStrictEqual({ limit: 100 });
+      });
     });
   });
 });

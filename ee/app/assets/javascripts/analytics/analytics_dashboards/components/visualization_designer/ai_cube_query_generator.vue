@@ -42,6 +42,10 @@ export default {
     },
   },
   props: {
+    value: {
+      type: String,
+      required: true,
+    },
     warnBeforeReplacingQuery: {
       type: Boolean,
       required: true,
@@ -49,7 +53,7 @@ export default {
   },
   data() {
     return {
-      prompt: null,
+      prompt: this.value,
       error: null,
       submitting: false,
       clientSubscriptionId: uuidv4(),
@@ -70,6 +74,12 @@ export default {
     },
   },
   watch: {
+    value(value) {
+      this.prompt = value;
+    },
+    prompt() {
+      this.$emit('input', this.prompt);
+    },
     hasCompletedGeneration(hasCompleted) {
       if (hasCompleted) {
         this.$emit('query-generated', this.query, this.correlationId);
