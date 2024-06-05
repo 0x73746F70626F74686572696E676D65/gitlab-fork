@@ -25,7 +25,7 @@ module Namespaces
       def usage_ratio
         return 0 if limit == 0
 
-        current_size.to_f / limit.to_f
+        current_size.to_f / limit
       end
 
       def current_size

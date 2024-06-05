@@ -268,7 +268,7 @@ class GeoNodeStatus < ApplicationRecord
     define_method(method_name) do
       return 0 if self[total].to_i == 0
 
-      (self[count].to_f / self[total].to_f) * 100.0
+      (self[count].to_f / self[total]) * 100.0
     end
   end
 
