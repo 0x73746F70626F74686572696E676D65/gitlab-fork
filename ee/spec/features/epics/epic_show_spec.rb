@@ -288,7 +288,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
           end
         end
 
-        it 'creates new label using create view' do
+        it 'creates new label using create view', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/446136' do
           page.within('.js-labels-block') do
             click_button 'Create group label'
             fill_in 'Name new label', with: 'Test label'
