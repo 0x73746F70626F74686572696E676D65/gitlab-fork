@@ -27,6 +27,7 @@ import {
   PQL_MODAL_CANCEL,
   PQL_MODAL_FOOTER_TEXT,
   PQL_MODAL_HEADER_TEXT,
+  PQL_MODAL_ID,
   PQL_MODAL_PRIMARY,
   PQL_MODAL_TITLE,
   PQL_PHONE_DESCRIPTION,
@@ -52,10 +53,6 @@ export default {
       required: true,
     },
     submitPath: {
-      type: String,
-      required: true,
-    },
-    modalId: {
       type: String,
       required: true,
     },
@@ -159,23 +156,14 @@ export default {
     });
   },
   methods: {
-    openModal({ productInteraction, ctaTracking, glmContent, modalIdToOpen }) {
+    openModal({ productInteraction, ctaTracking, glmContent }) {
       // The items being passed here are what can be unique about a particular
       // instance of this modal.
       this.productInteraction = productInteraction;
       this.ctaTracking = ctaTracking;
       this.glmContent = glmContent;
 
-      // TODO: Since we are still potentially putting multiple modals into the DOM, we need to ensure
-      // we only open the one we care about. In the next step of
-      // https://gitlab.com/gitlab-org/gitlab/-/issues/443674 we will ensure only one
-      // instance of the modal is loaded and we can remove this logic and passing
-      // of modalId.
-      if (modalIdToOpen !== this.modalId) {
-        return;
-      }
-
-      this.$root.$emit(BV_SHOW_MODAL, this.modalId);
+      this.$root.$emit(BV_SHOW_MODAL, this.$options.modalId);
       this.track('hand_raise_form_viewed');
     },
     resetForm() {
@@ -235,13 +223,14 @@ export default {
     handRaiseActionError: PQL_HAND_RAISE_ACTION_ERROR,
     handRaiseActionSuccess: PQL_HAND_RAISE_ACTION_SUCCESS,
   },
+  modalId: PQL_MODAL_ID,
 };
 </script>
 
 <template>
   <gl-modal
     ref="modal"
-    :modal-id="modalId"
+    :modal-id="$options.modalId"
     data-testid="hand-raise-lead-modal"
     size="sm"
     :title="$options.i18n.modalTitle"

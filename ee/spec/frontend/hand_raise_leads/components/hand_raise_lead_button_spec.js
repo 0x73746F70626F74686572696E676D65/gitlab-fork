@@ -3,13 +3,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import eventHub from 'ee/hand_raise_leads/hand_raise_lead/event_hub';
-import {
-  BUTTON_ATTRIBUTES,
-  BUTTON_TEXT,
-  GLM_CONTENT,
-  MODAL_ID,
-  PRODUCT_INTERACTION,
-} from './mock_data';
+import { BUTTON_ATTRIBUTES, BUTTON_TEXT, GLM_CONTENT, PRODUCT_INTERACTION } from './mock_data';
 
 describe('HandRaiseLeadButton', () => {
   let wrapper;
@@ -19,7 +13,6 @@ describe('HandRaiseLeadButton', () => {
   const createComponent = (props = {}) => {
     return shallowMountExtended(HandRaiseLeadButton, {
       propsData: {
-        modalId: MODAL_ID,
         buttonText: BUTTON_TEXT,
         buttonAttributes: BUTTON_ATTRIBUTES,
         ctaTracking,
@@ -152,7 +145,6 @@ describe('HandRaiseLeadButton', () => {
         productInteraction: PRODUCT_INTERACTION,
         ctaTracking,
         glmContent: GLM_CONTENT,
-        modalIdToOpen: MODAL_ID,
       });
     });
   });

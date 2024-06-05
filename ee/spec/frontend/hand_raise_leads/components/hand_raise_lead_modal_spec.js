@@ -24,7 +24,6 @@ import {
   CREATE_HAND_RAISE_LEAD_PATH,
   GLM_CONTENT,
   PRODUCT_INTERACTION,
-  MODAL_ID,
 } from './mock_data';
 
 Vue.use(VueApollo);
@@ -38,7 +37,6 @@ describe('HandRaiseLeadModal', () => {
       propsData: {
         submitPath: CREATE_HAND_RAISE_LEAD_PATH,
         user: USER,
-        modalId: MODAL_ID,
         ...props,
       },
     });
@@ -54,9 +52,8 @@ describe('HandRaiseLeadModal', () => {
     productInteraction = PRODUCT_INTERACTION,
     ctaTracking = {},
     glmContent = GLM_CONTENT,
-    modalIdToOpen = MODAL_ID,
   } = {}) => {
-    eventHub.$emit('openModal', { productInteraction, ctaTracking, glmContent, modalIdToOpen });
+    eventHub.$emit('openModal', { productInteraction, ctaTracking, glmContent });
     await nextTick();
   };
   const findFormInput = (testId) => wrapper.findByTestId(testId);
@@ -152,20 +149,6 @@ describe('HandRaiseLeadModal', () => {
       await triggerOpenModal();
 
       expect(rootWrapper.emitted(BV_SHOW_MODAL)).toHaveLength(1);
-    });
-
-    describe('with mismatched modelId', () => {
-      beforeEach(async () => {
-        await triggerOpenModal({ modalIdToOpen: '_bogus_modal_id_' });
-      });
-
-      it('does not track', () => {
-        expect(trackingSpy).not.toHaveBeenCalled();
-      });
-
-      it('does not open the modal', () => {
-        expect(rootWrapper.emitted(BV_SHOW_MODAL)).toBeUndefined();
-      });
     });
   });
 

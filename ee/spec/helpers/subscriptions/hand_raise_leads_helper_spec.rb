@@ -58,6 +58,26 @@ RSpec.describe Subscriptions::HandRaiseLeadsHelper, feature_category: :acquisiti
     end
   end
 
+  describe '#code_suggestions_billing_card_hand_raise_lead_data' do
+    it 'provides the expected dataset' do
+      result = {
+        glm_content: 'code-suggestions',
+        product_interaction: 'Requested Contact-Duo Pro Add-On',
+        cta_tracking: {
+          action: 'click_button',
+          label: 'code_suggestions_hand_raise_lead_form'
+        }.to_json,
+        button_attributes: {
+          'data-testid': 'code-suggestions-hand-raise-lead-button',
+          category: 'tertiary',
+          variant: 'confirm'
+        }.to_json
+      }
+
+      expect(helper.code_suggestions_billing_card_hand_raise_lead_data).to eq(result)
+    end
+  end
+
   describe '#billing_action_hand_raise_lead_data' do
     it 'provides the expected dataset' do
       result = {

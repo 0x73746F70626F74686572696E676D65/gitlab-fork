@@ -3,7 +3,6 @@ import { GlButton } from '@gitlab/ui';
 import Tracking from '~/tracking';
 import {
   PQL_HAND_RAISE_MODAL_TRACKING_LABEL,
-  PQL_MODAL_ID,
   PQL_PRODUCT_INTERACTION,
   PQL_BUTTON_TEXT,
 } from '../constants';
@@ -20,11 +19,6 @@ export default {
       type: Object,
       required: false,
       default: () => ({}),
-    },
-    modalId: {
-      type: String,
-      required: false,
-      default: PQL_MODAL_ID,
     },
     buttonText: {
       type: String,
@@ -61,7 +55,6 @@ export default {
         productInteraction: this.productInteraction,
         ctaTracking: this.ctaTracking,
         glmContent: this.glmContent,
-        modalIdToOpen: this.modalId,
       });
     },
     trackBtnClick() {

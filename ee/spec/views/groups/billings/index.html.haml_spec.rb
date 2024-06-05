@@ -136,7 +136,11 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
 
       context 'with code suggestions' do
         it 'renders the code suggestions component' do
-          hand_raise_selector = '.js-hand-raise-lead-button[data-track-label="code_suggestions_hand_raise_lead_form"]'
+          tracking = {
+            action: 'click_button',
+            label: 'code_suggestions_hand_raise_lead_form'
+          }.to_json
+          hand_raise_selector = ".js-hand-raise-lead-trigger[data-cta-tracking='#{tracking}']"
 
           render
 

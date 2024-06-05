@@ -490,68 +490,6 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
     end
   end
 
-  describe '#hand_raise_props' do
-    let_it_be(:user) { create(:user, username: 'Joe', first_name: 'Joe', last_name: 'Doe', organization: 'ACME') }
-
-    before do
-      allow(helper).to receive(:current_user).and_return(user)
-    end
-
-    it 'builds correct hash' do
-      props = helper.hand_raise_props(group, glm_content: 'some-content')
-
-      expect(props).to eq(
-        namespace_id: group.id,
-        user_name: 'Joe',
-        first_name: 'Joe',
-        last_name: 'Doe',
-        company_name: 'ACME',
-        glm_content: 'some-content',
-        product_interaction: 'Hand Raise PQL',
-        create_hand_raise_lead_path: '/-/subscriptions/hand_raise_leads')
-    end
-
-    it 'allows overriding of the default product_interaction' do
-      props = helper.hand_raise_props(group, glm_content: 'some-content', product_interaction: '_product_interaction_')
-
-      expect(props).to include(product_interaction: '_product_interaction_')
-    end
-  end
-
-  describe '#code_suggestions_hand_raise_props' do
-    let(:user) { build(:user, username: 'Joe', first_name: 'Joe', last_name: 'Doe', organization: 'ACME') }
-
-    before do
-      allow(helper).to receive(:current_user).and_return(user)
-    end
-
-    it 'builds correct hash' do
-      expected_result = {
-        namespace_id: group.id,
-        user_name: 'Joe',
-        first_name: 'Joe',
-        last_name: 'Doe',
-        company_name: 'ACME',
-        glm_content: 'code-suggestions',
-        product_interaction: 'Requested Contact-Duo Pro Add-On',
-        create_hand_raise_lead_path: '/-/subscriptions/hand_raise_leads',
-        track_action: 'click_button',
-        track_label: 'code_suggestions_hand_raise_lead_form',
-        button_attributes:
-          {
-            'data-testid': 'code-suggestions-hand-raise-lead-button',
-            category: 'tertiary',
-            variant: 'confirm',
-            class: 'gl-w-full'
-          }.to_json
-      }
-
-      props = helper.code_suggestions_hand_raise_props(group)
-
-      expect(props).to eq(expected_result)
-    end
-  end
-
   describe '#show_usage_quotas_tab?' do
     context 'when tab does not exist' do
       it { expect(helper.show_usage_quotas_tab?(group, :nonexistent_tab)).to be false }
