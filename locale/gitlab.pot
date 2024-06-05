@@ -33258,6 +33258,9 @@ msgstr ""
 msgid "MlModelRegistry|Drop to start upload"
 msgstr ""
 
+msgid "MlModelRegistry|Enter a semver version."
+msgstr ""
+
 msgid "MlModelRegistry|Enter some description"
 msgstr ""
 
@@ -33298,9 +33301,6 @@ msgid "MlModelRegistry|Initial version name. Must be a semantic version."
 msgstr ""
 
 msgid "MlModelRegistry|Latest version"
-msgstr ""
-
-msgid "MlModelRegistry|Leave empty to auto increment."
 msgstr ""
 
 msgid "MlModelRegistry|Leave empty to skip version creation."
