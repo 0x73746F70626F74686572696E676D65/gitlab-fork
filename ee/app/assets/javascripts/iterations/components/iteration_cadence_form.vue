@@ -356,7 +356,6 @@ export default {
         {{ i18n[page].title }}
       </h1>
     </div>
-    <hr class="gl-mt-0" />
 
     <gl-form>
       <gl-alert v-if="errorMessage" class="gl-mb-5" variant="danger" @dismiss="errorMessage = ''">{{
