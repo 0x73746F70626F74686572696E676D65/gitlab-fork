@@ -1,0 +1,8 @@
+---
+name: search_index_curation_work_items
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/151636
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/454241
+milestone: '17.1'
+type: ops
+group: group::global search
+default_enabled: false

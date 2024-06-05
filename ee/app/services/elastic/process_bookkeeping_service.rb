@@ -264,7 +264,7 @@ module Elastic
         )
       end
 
-      refs
+      refs.compact
     end
 
     def submit_document(ref)

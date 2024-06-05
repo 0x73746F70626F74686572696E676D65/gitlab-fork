@@ -11,7 +11,8 @@ module Gitlab
         Epic,
         User,
         Wiki,
-        Project
+        Project,
+        WorkItem
       ].freeze
 
       INDEXED_CLASSES = (ES_SEPARATE_CLASSES + [Repository]).freeze
@@ -147,7 +148,7 @@ module Gitlab
                   end
 
         classes.map do |class_name|
-          ::Elastic::Latest::ApplicationClassProxy.new(class_name, use_separate_indices: true)
+          type_class(class_name) || ::Elastic::Latest::ApplicationClassProxy.new(class_name, use_separate_indices: true)
         end
       end
 
@@ -346,7 +347,9 @@ module Gitlab
       def klass_to_alias_name(klass:)
         return target_name if klass == Repository
 
-        ::Elastic::Latest::ApplicationClassProxy.new(klass, use_separate_indices: true).index_name
+        proxy_klass = type_class(klass) || ::Elastic::Latest::ApplicationClassProxy.new(klass,
+          use_separate_indices: true)
+        proxy_klass.index_name
       end
 
       # handles unreachable hosts and any other exceptions that may be raised
@@ -452,6 +455,12 @@ module Gitlab
           routing: route,
           body: { query: { bool: { filter: { term: { rid: "wiki_#{container_type.downcase}_#{container_id}" } } } } }
         }.compact)
+      end
+
+      private
+
+      def type_class(class_name)
+        [::Search::Elastic::Types, class_name].join('::').safe_constantize
       end
     end
   end

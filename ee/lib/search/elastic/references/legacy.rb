@@ -8,6 +8,10 @@ module Search
           Gitlab::Elastic::DocumentReference.serialize_record(record)
         end
 
+        def self.instantiate_from_array(array)
+          instantiate(Gitlab::Elastic::DocumentReference.serialize_array(array))
+        end
+
         override :instantiate
         def self.instantiate(string)
           Gitlab::Elastic::DocumentReference.deserialize(string)
