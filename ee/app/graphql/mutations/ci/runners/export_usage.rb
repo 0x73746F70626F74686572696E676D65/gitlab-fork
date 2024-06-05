@@ -8,7 +8,7 @@ module Mutations
 
         DEFAULT_PROJECT_COUNT = 1_000
 
-        argument :type, ::Types::Ci::RunnerTypeEnum,
+        argument :runner_type, ::Types::Ci::RunnerTypeEnum,
           required: false,
           description: 'Scope of the runners to include in the report.'
 
@@ -40,12 +40,12 @@ module Mutations
           super
         end
 
-        def resolve(type: nil, from_date: nil, to_date: nil, max_project_count: nil)
+        def resolve(runner_type: nil, from_date: nil, to_date: nil, max_project_count: nil)
           from_date ||= Date.current.prev_month.beginning_of_month
           to_date ||= from_date.end_of_month
 
           args = {
-            runner_type: ::Ci::Runner.runner_types[type],
+            runner_type: ::Ci::Runner.runner_types[runner_type],
             from_date: from_date,
             to_date: to_date,
             max_project_count: max_project_count

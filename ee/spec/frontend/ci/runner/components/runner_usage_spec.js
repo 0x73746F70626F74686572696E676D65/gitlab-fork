@@ -216,7 +216,7 @@ describe('RunnerUsage', () => {
     await clickButton();
 
     expect(runnerUsageExportHandler).toHaveBeenCalledWith({
-      input: { type: INSTANCE_TYPE },
+      input: { runnerType: INSTANCE_TYPE },
     });
     expect(findButton().props('loading')).toBe(true);
   });

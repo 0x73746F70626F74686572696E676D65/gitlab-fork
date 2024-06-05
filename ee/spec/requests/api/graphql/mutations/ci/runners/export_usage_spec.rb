@@ -23,7 +23,7 @@ RSpec.describe 'RunnersExportUsage', :click_house, :enable_admin_mode, :sidekiq_
   let(:runner_type) { 'group_type' }
   let(:mutation_args) do
     {
-      type: runner_type.upcase,
+      runner_type: runner_type.upcase,
       from_date: Date.new(2023, 11, 1),
       to_date: Date.new(2023, 11, 30),
       max_project_count: 7
@@ -78,7 +78,8 @@ RSpec.describe 'RunnersExportUsage', :click_house, :enable_admin_mode, :sidekiq_
     it 'sends email with report' do
       expect(::Ci::Runners::ExportUsageCsvWorker).to receive(:perform_async)
         .with(current_user.id, {
-          runner_type: nil, from_date: Date.new(2023, 11, 1), to_date: Date.new(2023, 11, 30), max_project_count: 1_000
+          runner_type: nil,
+          from_date: Date.new(2023, 11, 1), to_date: Date.new(2023, 11, 30), max_project_count: 1_000
         }).and_call_original
 
       post_response
@@ -92,7 +93,8 @@ RSpec.describe 'RunnersExportUsage', :click_house, :enable_admin_mode, :sidekiq_
     it 'sends email with report of the month of September' do
       expect(::Ci::Runners::ExportUsageCsvWorker).to receive(:perform_async)
         .with(current_user.id, {
-          runner_type: nil, from_date: Date.new(2023, 9, 1), to_date: Date.new(2023, 9, 30), max_project_count: 1_000
+          runner_type: nil,
+          from_date: Date.new(2023, 9, 1), to_date: Date.new(2023, 9, 30), max_project_count: 1_000
         }).and_call_original
 
       post_response
@@ -102,7 +104,7 @@ RSpec.describe 'RunnersExportUsage', :click_house, :enable_admin_mode, :sidekiq_
 
   context 'when max_project_count is out-of-range' do
     context 'and is below acceptable range' do
-      let(:mutation_args) { { type: runner_type.upcase, max_project_count: 0 } }
+      let(:mutation_args) { { runner_type: runner_type.upcase, max_project_count: 0 } }
 
       it 'returns an error' do
         post_response
@@ -112,7 +114,10 @@ RSpec.describe 'RunnersExportUsage', :click_house, :enable_admin_mode, :sidekiq_
 
     context 'and is above acceptable range' do
       let(:mutation_args) do
-        { type: runner_type.upcase, max_project_count: ::Ci::Runners::GenerateUsageCsvService::MAX_PROJECT_COUNT + 1 }
+        {
+          runner_type: runner_type.upcase,
+          max_project_count: ::Ci::Runners::GenerateUsageCsvService::MAX_PROJECT_COUNT + 1
+        }
       end
 
       it 'returns an error' do
