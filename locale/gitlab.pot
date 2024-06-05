@@ -5165,6 +5165,9 @@ msgstr ""
 msgid "All users with matching phone numbers"
 msgstr ""
 
+msgid "Allow"
+msgstr ""
+
 msgid "Allow %{strongOpen}%{group_name}%{strongClose} to sign you in?"
 msgstr ""
 
@@ -8610,6 +8613,9 @@ msgid "BlobViewer|This file will still take up space in your LFS storage. %{link
 msgstr ""
 
 msgid "BlobViewer|View on %{environmentName}"
+msgstr ""
+
+msgid "Block"
 msgstr ""
 
 msgid "Block secrets such as keys and API tokens from being pushed to your repositories. Secret push protection is triggered when commits are pushed to a repository. If any secrets are detected, the push is blocked."
@@ -59696,7 +59702,22 @@ msgstr ""
 msgid "Workspaces|All agents"
 msgstr ""
 
+msgid "Workspaces|Allow agent"
+msgstr ""
+
+msgid "Workspaces|Allow this agent for all group members?"
+msgstr ""
+
 msgid "Workspaces|Allowed Agents"
+msgstr ""
+
+msgid "Workspaces|Block agent"
+msgstr ""
+
+msgid "Workspaces|Block this agent for all group members?"
+msgstr ""
+
+msgid "Workspaces|Blocking an agent doesn't delete it. Agents can only be deleted in the project where they were created."
 msgstr ""
 
 msgid "Workspaces|Cancel"
@@ -59748,6 +59769,12 @@ msgid "Workspaces|GitLab Workspaces is a powerful collaborative platform that pr
 msgstr ""
 
 msgid "Workspaces|Group agents"
+msgstr ""
+
+msgid "Workspaces|Group members can use allowed agents to create workspaces."
+msgstr ""
+
+msgid "Workspaces|Group members can't create a workspace with a blocked agent. Existing workspaces using this agent will continue to run, but can't restart if they are terminated."
 msgstr ""
 
 msgid "Workspaces|If your devfile is not in the root directory of your project, specify a relative path."
