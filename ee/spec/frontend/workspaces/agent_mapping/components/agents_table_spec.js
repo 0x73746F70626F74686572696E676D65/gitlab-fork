@@ -1,26 +1,41 @@
 import { GlTable, GlSkeletonLoader } from '@gitlab/ui';
+import { stubComponent } from 'helpers/stub_component';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import AgentsTable from 'ee_component/workspaces/agent_mapping/components/agents_table.vue';
-import {
-  AGENT_MAPPING_STATUS_MAPPED,
-  AGENT_MAPPING_STATUS_UNMAPPED,
-} from 'ee_component/workspaces/agent_mapping/constants';
+import AgentMappingStatusToggle from 'ee_component/workspaces/agent_mapping/components/agent_mapping_status_toggle.vue';
+import ToggleAgentMappingStatusMutation from 'ee_component/workspaces/agent_mapping/components/toggle_agent_mapping_status_mutation.vue';
+import { MAPPED_CLUSTER_AGENT, UNMAPPED_CLUSTER_AGENT, NAMESPACE_ID } from '../../mock_data';
 
-describe('workspaces/agent_mapping/components/agents_table.vue', () => {
+describe('workspaces/agent_mapping/components/agents_table', () => {
   let wrapper;
   const EMPTY_STATE_MESSAGE = 'No agents found';
-  const agents = [
-    { name: 'agent-1', mappingStatus: AGENT_MAPPING_STATUS_MAPPED },
-    { name: 'agent-1', mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED },
-  ];
+  const agents = [MAPPED_CLUSTER_AGENT, UNMAPPED_CLUSTER_AGENT];
+  let ToggleAgentMappingStatusMutationStub;
+  let executeToggleAgentMappingStatusMutationFn;
 
-  const buildWrapper = ({ propsData = {} } = {}, mountFn = shallowMountExtended) => {
+  const buildWrapper = ({ propsData = {}, provide = {} } = {}, mountFn = shallowMountExtended) => {
+    executeToggleAgentMappingStatusMutationFn = jest.fn();
+    ToggleAgentMappingStatusMutationStub = stubComponent(ToggleAgentMappingStatusMutation, {
+      render() {
+        return this.$scopedSlots.default?.({
+          execute: executeToggleAgentMappingStatusMutationFn,
+        });
+      },
+    });
+
     wrapper = mountFn(AgentsTable, {
       propsData: {
         agents: [],
         emptyStateMessage: EMPTY_STATE_MESSAGE,
         isLoading: false,
+        namespaceId: NAMESPACE_ID,
         ...propsData,
+      },
+      provide: {
+        ...provide,
+      },
+      stubs: {
+        ToggleAgentMappingStatusMutation: ToggleAgentMappingStatusMutationStub,
       },
     });
   };
@@ -114,7 +129,7 @@ describe('workspaces/agent_mapping/components/agents_table.vue', () => {
     });
 
     it('displays agents list', () => {
-      expect(findAgentsTable().text()).toContain('agent-1');
+      expect(findAgentsTable().text()).toContain(MAPPED_CLUSTER_AGENT.name);
     });
 
     describe('when displayMappingStatus is true', () => {
@@ -131,9 +146,15 @@ describe('workspaces/agent_mapping/components/agents_table.vue', () => {
         );
         const labels = wrapper
           .findAllByTestId('agent-mapping-status-label')
-          .wrappers.map((labelWrapper) => labelWrapper.text());
+          .wrappers.map((labelWrapper) => ({
+            text: labelWrapper.text(),
+            variant: labelWrapper.props().variant,
+          }));
 
-        expect(labels).toEqual(['Allowed', 'Blocked']);
+        expect(labels).toEqual([
+          { text: 'Allowed', variant: 'success' },
+          { text: 'Blocked', variant: 'danger' },
+        ]);
       });
     });
 
@@ -152,6 +173,65 @@ describe('workspaces/agent_mapping/components/agents_table.vue', () => {
 
         expect(wrapper.findAllByTestId('agent-mapping-status-label').length).toBe(0);
       });
+    });
+
+    describe('when canAdminClusterAgentMapping is true', () => {
+      beforeEach(() => {
+        buildWrapper(
+          {
+            propsData: {
+              isLoading: false,
+              agents,
+            },
+            provide: {
+              canAdminClusterAgentMapping: true,
+            },
+          },
+          mountExtended,
+        );
+      });
+
+      it('displays actions column', () => {
+        expect(findAgentsTable().text()).toContain('Actions');
+
+        const toggles = findAgentsTable().findAllComponents(AgentMappingStatusToggle);
+        const mutations = findAgentsTable().findAllComponents(ToggleAgentMappingStatusMutationStub);
+
+        agents.forEach((agent, index) => {
+          expect(toggles.at(index).props().agent).toMatchObject(agent);
+          expect(mutations.at(index).props()).toMatchObject({
+            agent,
+            namespaceId: NAMESPACE_ID,
+          });
+        });
+      });
+
+      describe('when action toggle emits toggle event', () => {
+        it('executes the toggle mapping agent status mutation', () => {
+          findAgentsTable().findAllComponents(AgentMappingStatusToggle).at(0).vm.$emit('toggle');
+
+          expect(executeToggleAgentMappingStatusMutationFn).toHaveBeenCalled();
+        });
+      });
+    });
+  });
+
+  describe('when canAdminClusterAgentMapping is false', () => {
+    it('does not display actions column', () => {
+      buildWrapper(
+        {
+          propsData: {
+            isLoading: false,
+            agents,
+          },
+          provide: {
+            canAdminClusterAgentMapping: false,
+          },
+        },
+        mountExtended,
+      );
+      expect(findAgentsTable().text()).not.toContain('Actions');
+      expect(findAgentsTable().findAllComponents(AgentMappingStatusToggle).length).toBe(0);
     });
   });
 });

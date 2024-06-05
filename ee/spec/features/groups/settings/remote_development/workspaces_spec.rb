@@ -16,7 +16,7 @@ RSpec.describe 'Group Workspaces Settings', :js, feature_category: :remote_devel
   end
 
   before_all do
-    group.add_developer(user)
+    group.add_owner(user)
   end
 
   before do
@@ -70,6 +70,40 @@ RSpec.describe 'Group Workspaces Settings', :js, feature_category: :remote_devel
 
         expect(page).to have_content 'Allowed'
         expect(page).to have_content 'Blocked'
+      end
+
+      it 'allows mapping or unmapping agents' do
+        first_agent_row_selector = 'tbody tr:first-child'
+
+        click_link 'All agents'
+
+        # Executes block action on the first agent
+        within first_agent_row_selector do
+          expect(page).to have_content('Allowed')
+
+          click_button 'Block'
+        end
+
+        expect(page).to have_content('Block agent')
+
+        click_button 'Block agent'
+
+        wait_for_requests
+
+        # Reverts the block action by allowing the agent
+        within first_agent_row_selector do
+          expect(page).to have_content('Blocked')
+
+          click_button 'Allow'
+
+          wait_for_requests
+        end
+
+        expect(page).to have_content('Allow agent')
+
+        click_button 'Allow agent'
+
+        expect(page).to have_content('Allowed')
       end
     end
   end
