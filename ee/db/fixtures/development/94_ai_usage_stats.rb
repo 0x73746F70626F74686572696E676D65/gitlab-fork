@@ -46,7 +46,7 @@ class Gitlab::Seeder::AiUsageStats # rubocop:disable Style/ClassAndModuleChildre
           event: Gitlab::Tracking::AiTracking::EVENTS['code_suggestion_shown_in_ide'],
           timestamp: rand(TIME_PERIOD_DAYS).days.ago
         }
-        ClickHouse::WriteBuffer.write_event(event_data)
+        ClickHouse::WriteBuffer.add(Ai::CodeSuggestionsUsage.table_name, event_data)
       end
     end
   end

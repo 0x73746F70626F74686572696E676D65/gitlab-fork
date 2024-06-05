@@ -24,21 +24,6 @@ RSpec.describe Ai::CodeSuggestionsUsage, feature_category: :value_stream_managem
     end
   end
 
-  describe '#store', :freeze_time do
-    let(:attributes) { super().merge(timestamp: 1.day.ago) }
-
-    it 'saves serialized record to clickhouse buffer' do
-      expect(::ClickHouse::WriteBuffer).to receive(:write_event)
-        .with({
-          user_id: user.id,
-          event: described_class::EVENTS['code_suggestion_shown_in_ide'],
-          timestamp: 1.day.ago.to_f
-        })
-
-      model.store
-    end
-  end
-
   describe '#to_clickhouse_csv_row', :freeze_time do
     let(:attributes) { super().merge(timestamp: 1.day.ago) }
 

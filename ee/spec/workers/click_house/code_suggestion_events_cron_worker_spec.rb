@@ -80,7 +80,7 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
 
           expect { job.perform }.to raise_error(Errno::ECONNREFUSED)
 
-          expect(ClickHouse::WriteBuffer.pop_events(100).size).to eq(3)
+          expect(ClickHouse::WriteBuffer.pop('code_suggestion_usages', 100).size).to eq(3)
         end
       end
 
@@ -123,8 +123,8 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
       end
 
       before do
-        ::ClickHouse::WriteBuffer.write_event(usage1_hash)
-        ::ClickHouse::WriteBuffer.write_event(usage2_hash)
+        ::ClickHouse::WriteBuffer.add('code_suggestion_usages', usage1_hash)
+        ::ClickHouse::WriteBuffer.add('code_suggestion_usages', usage2_hash)
       end
 
       it 'runs separate insert query for each attributes group' do

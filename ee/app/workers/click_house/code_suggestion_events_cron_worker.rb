@@ -15,8 +15,7 @@ module ClickHouse
     BATCH_SIZE = 1000
 
     INSERT_QUERY_TEMPLATE = <<~SQL.squish
-      INSERT INTO code_suggestion_usages (%{fields})
-      SETTINGS async_insert=1, wait_for_async_insert=1 FORMAT CSV
+      INSERT INTO %{table_name} (%{fields}) SETTINGS async_insert=1, wait_for_async_insert=1 FORMAT CSV
     SQL
 
     def perform
@@ -69,7 +68,7 @@ module ClickHouse
     end
 
     def next_batch
-      ClickHouse::WriteBuffer.pop_events(BATCH_SIZE)
+      ClickHouse::WriteBuffer.pop(Ai::CodeSuggestionsUsage.table_name, BATCH_SIZE)
     end
 
     def build_csv_mapping(keys)
@@ -88,7 +87,7 @@ module ClickHouse
     end
 
     def prepare_insert_statement(mapping)
-      format(INSERT_QUERY_TEMPLATE, fields: mapping.keys.join(', '))
+      format(INSERT_QUERY_TEMPLATE, fields: mapping.keys.join(', '), table_name: Ai::CodeSuggestionsUsage.table_name)
     end
 
     def connection
