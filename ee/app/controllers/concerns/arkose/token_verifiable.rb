@@ -28,7 +28,7 @@ module Arkose
       end
     end
 
-    def arkose_challenge_solved?
+    def arkose_interactive_challenge_solved?
       return false unless arkose_labs_verify_response
 
       arkose_labs_verify_response.interactive_challenge_solved?
@@ -47,6 +47,24 @@ module Arkose
         message: 'Sign-up blocked',
         reason: 'arkose token is missing in request',
         username: username
+      )
+    end
+
+    def track_arkose_challenge_result
+      interactive = arkose_interactive_challenge_solved?
+
+      session[:arkose_challenge_solved] = true if interactive
+
+      log_arkose_challenge_solved(interactive: interactive)
+    end
+
+    def log_arkose_challenge_solved(interactive: false)
+      challenge_type = interactive ? 'interactive' : 'transparent'
+
+      ::Gitlab::AppLogger.info(
+        username: username,
+        message: "Arkose challenge",
+        event: "#{challenge_type} challenge solved"
       )
     end
 

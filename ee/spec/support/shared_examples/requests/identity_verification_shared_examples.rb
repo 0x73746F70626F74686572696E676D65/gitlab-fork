@@ -149,20 +149,50 @@ RSpec.shared_examples 'sets arkose_challenge_solved session variable' do
   describe 'arkose_shown_challenge_solved session variable' do
     before do
       mock_arkose_token_verification(success: true, challenge_shown: shown_challenge_solved)
-
-      do_request
     end
 
-    subject { request.session[:arkose_challenge_solved] }
+    subject do
+      do_request
+
+      request.session[:arkose_challenge_solved]
+    end
 
     context 'when user solved a shown challenge' do
       let(:shown_challenge_solved) { true }
+
+      it "logs the event" do
+        allow(Gitlab::AppLogger).to receive(:info).with(an_instance_of(Hash))
+
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          hash_including(
+            username: an_instance_of(String),
+            message: "Arkose challenge",
+            event: "interactive challenge solved"
+          )
+        )
+
+        do_request
+      end
 
       it { is_expected.to eq true }
     end
 
     context 'when user solved a challenge that was not shown' do
       let(:shown_challenge_solved) { false }
+
+      it "logs the event" do
+        allow(Gitlab::AppLogger).to receive(:info).with(an_instance_of(Hash))
+
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          hash_including(
+            username: an_instance_of(String),
+            message: "Arkose challenge",
+            event: "transparent challenge solved"
+          )
+        )
+
+        do_request
+      end
 
       it { is_expected.to be_nil }
     end
@@ -283,7 +313,7 @@ RSpec.shared_examples 'it handles failed phone number verification code send' do
     let(:response_opts) { { message: 'message', reason: :related_to_high_risk_user } }
 
     it 'does not log an error' do
-      expect(Gitlab::AppLogger).not_to receive(:info)
+      expect(Gitlab::AppLogger).not_to receive(:info).with(reason: 'related_to_high_risk_user')
 
       do_request
     end

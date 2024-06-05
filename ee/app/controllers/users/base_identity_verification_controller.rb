@@ -158,7 +158,7 @@ module Users
 
     def ensure_challenge_completed!
       if verify_arkose_labs_token
-        session[:arkose_challenge_solved] = true if arkose_challenge_solved?
+        track_arkose_challenge_result
       else
         message = s_('IdentityVerification|Complete verification to proceed.')
         render status: :bad_request, json: { message: message }

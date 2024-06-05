@@ -33,7 +33,7 @@ module Users
         return render action: :arkose_labs_challenge
       end
 
-      session[:arkose_challenge_solved] = true if arkose_challenge_solved?
+      track_arkose_challenge_result
 
       service = PhoneVerification::Users::RateLimitService
       service.assume_user_high_risk_if_daily_limit_exceeded!(@user)

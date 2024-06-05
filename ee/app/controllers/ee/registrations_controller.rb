@@ -184,7 +184,7 @@ module EE
       return unless arkose_labs_enabled?(user: user)
       return unless arkose_labs_verify_response
 
-      session[:arkose_challenge_solved] = true if arkose_challenge_solved?
+      track_arkose_challenge_result
 
       Arkose::RecordUserDataService.new(
         response: arkose_labs_verify_response,
