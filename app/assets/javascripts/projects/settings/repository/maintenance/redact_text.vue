@@ -1,33 +1,33 @@
 <script>
-import { GlButton, GlDrawer, GlLink, GlFormTextarea, GlModal, GlFormInput } from '@gitlab/ui';
+import { GlButton, GlDrawer, GlFormTextarea, GlModal, GlFormInput, GlSprintf } from '@gitlab/ui';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { helpPagePath } from '~/helpers/help_page_helper';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { s__ } from '~/locale';
 import { createAlert, VARIANT_WARNING } from '~/alert';
-import removeBlobsMutation from './graphql/mutations/remove_blobs.mutation.graphql';
-
-export const BLOB_OID_LENGTH = 40;
+import replaceTextMutation from './graphql/mutations/replace_text.mutation.graphql';
 
 const i18n = {
-  removeBlobs: s__('ProjectMaintenance|Remove blobs'),
+  redactText: s__('ProjectMaintenance|Redact text'),
+  redactMatchingStrings: s__('ProjectMaintenance|Redact matching strings'),
+  removed: s__('ProjectMaintenance|REMOVED'),
   description: s__(
-    'ProjectMaintenance|Enter a list of object IDs to be removed to reduce repository size.',
+    'ProjectMaintenance|Redact matching instances of text in the repository. Strings will be replaced with %{removed}.',
   ),
-  helpLink: s__('ProjectMaintenance|How do I get a list of object IDs?'),
-  label: s__('ProjectMaintenance|Blob IDs to remove'),
-  helpText: s__('ProjectMaintenance|Enter multiple entries on separate lines.'),
-  modalPrimaryText: s__('ProjectMaintenance|Yes, remove blobs'),
+  label: s__('ProjectMaintenance|Strings to redact'),
+  helpText: s__(
+    'ProjectMaintenance|Regex and glob patterns supported. Enter multiple entries on separate lines.',
+  ),
+  modalPrimaryText: s__('ProjectMaintenance|Yes, redact matching strings'),
   modalCancelText: s__('ProjectMaintenance|Cancel'),
   modalContent: s__(
-    'ProjectMaintenance|Removing blobs by ID cannot be undone. Are you sure you want to continue?',
+    'ProjectMaintenance|Redacting strings does not produce a preview and cannot be undone. Are you sure you want to continue?',
   ),
-  modalConfirm: s__('ProjectMaintenance|Enter the following to confirm:'),
-  removeBlobsError: s__('ProjectMaintenance|Something went wrong while removing blobs.'),
-  successAlertTitle: s__('ProjectMaintenance|Blobs removed'),
+  modalConfirm: s__('ProjectMaintenance|To confirm, enter the following:'),
+  redactTextError: s__('ProjectMaintenance|Something went wrong while redacting text.'),
+  successAlertTitle: s__('ProjectMaintenance|Text redacted'),
   successAlertContent: s__(
-    'ProjectMaintenance|Run housekeeping to remove old versions from repository.',
+    'ProjectMaintenance|To remove old versions from the repository, run housekeeping.',
   ),
   successAlertButtonText: s__('ProjectMaintenance|Go to housekeeping'),
 };
@@ -35,16 +35,13 @@ const i18n = {
 export default {
   i18n,
   DRAWER_Z_INDEX,
-  removeBlobsHelpLink: helpPagePath('/user/project/repository/reducing_the_repo_size_using_git', {
-    anchor: 'repository-cleanup',
-  }),
   modalCancel: { text: i18n.modalCancelText },
-  components: { GlButton, GlDrawer, GlLink, GlFormTextarea, GlModal, GlFormInput },
+  components: { GlButton, GlDrawer, GlFormTextarea, GlModal, GlFormInput, GlSprintf },
   inject: { projectPath: { default: '' }, housekeepingPath: { default: '' } },
   data() {
     return {
       isDrawerOpen: false,
-      blobIDs: null,
+      text: null,
       showConfirmationModal: false,
       confirmInput: null,
       isLoading: false,
@@ -54,11 +51,11 @@ export default {
     getDrawerHeaderHeight() {
       return getContentWrapperHeight();
     },
-    blobOids() {
-      return this.blobIDs?.split('\n') || [];
+    textArray() {
+      return this.text?.split('\n') || [];
     },
     isValid() {
-      return this.blobOids.length && this.blobOids.every((s) => s.length >= BLOB_OID_LENGTH);
+      return this.textArray.length;
     },
     modalPrimary() {
       return {
@@ -75,26 +72,26 @@ export default {
       this.isDrawerOpen = true;
     },
     closeDrawer() {
-      this.blobIDs = null;
+      this.text = null;
       this.isDrawerOpen = false;
     },
     clearConfirmInput() {
       this.confirmInput = null;
     },
-    removeBlobs() {
+    redactText() {
       this.showConfirmationModal = true;
     },
-    removeBlobsConfirm() {
+    redactTextConfirm() {
       this.isLoading = true;
       this.$apollo
         .mutate({
-          mutation: removeBlobsMutation,
+          mutation: replaceTextMutation,
           variables: {
-            blobOids: this.blobOids,
+            replacements: this.textArray,
             projectPath: this.projectPath,
           },
         })
-        .then(({ data: { projectBlobsRemove: { errors } = {} } = {} }) => {
+        .then(({ data: { projectTextReplace: { errors } = {} } = {} }) => {
           this.isLoading = false;
 
           if (errors?.length) {
@@ -125,7 +122,7 @@ export default {
       visitUrl(this.housekeepingPath);
     },
     handleError() {
-      createAlert({ message: i18n.removeBlobsError, captureError: true });
+      createAlert({ message: i18n.redactTextError, captureError: true });
     },
   },
 };
@@ -139,7 +136,7 @@ export default {
       variant="danger"
       data-testid="drawer-trigger"
       @click="openDrawer"
-      >{{ $options.i18n.removeBlobs }}</gl-button
+      >{{ $options.i18n.redactText }}</gl-button
     >
 
     <gl-drawer
@@ -149,20 +146,21 @@ export default {
       @close="closeDrawer"
     >
       <template #title>
-        <h4 class="gl-m-0">{{ $options.i18n.removeBlobs }}</h4>
+        <h4 class="gl-m-0">{{ $options.i18n.redactText }}</h4>
       </template>
 
       <div>
         <p class="gl-text-secondary">
-          {{ $options.i18n.description }}
-          <gl-link :href="$options.removeBlobsHelpLink" target="_blank">{{
-            $options.i18n.helpLink
-          }}</gl-link>
+          <gl-sprintf :message="$options.i18n.description">
+            <template #removed>
+              <code>***{{ $options.i18n.removed }}***</code>
+            </template>
+          </gl-sprintf>
         </p>
-        <label for="blobs">{{ $options.i18n.label }}</label>
+        <label for="text">{{ $options.i18n.label }}</label>
         <gl-form-textarea
-          id="blobs"
-          v-model.trim="blobIDs"
+          id="text"
+          v-model.trim="text"
           class="!gl-font-monospace gl-mb-3"
           :disabled="isLoading"
           autofocus
@@ -171,24 +169,24 @@ export default {
         <p class="gl-text-gray-400">{{ $options.i18n.helpText }}</p>
 
         <gl-button
-          data-testid="remove-blobs"
+          data-testid="redact-text"
           variant="danger"
           :disabled="!isValid"
           :loading="isLoading"
-          @click="removeBlobs"
-          >{{ $options.i18n.removeBlobs }}</gl-button
+          @click="redactText"
+          >{{ $options.i18n.redactMatchingStrings }}</gl-button
         >
       </div>
     </gl-drawer>
 
     <gl-modal
       v-model="showConfirmationModal"
-      :title="$options.i18n.removeBlobs"
-      modal-id="remove-blobs-confirmation-modal"
+      :title="$options.i18n.redactText"
+      modal-id="redact-text-confirmation-modal"
       :action-cancel="$options.modalCancel"
       :action-primary="modalPrimary"
       @hide="clearConfirmInput"
-      @primary="removeBlobsConfirm"
+      @primary="redactTextConfirm"
     >
       <p>{{ $options.i18n.modalContent }}</p>
 
