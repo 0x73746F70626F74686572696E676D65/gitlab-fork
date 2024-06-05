@@ -5,7 +5,8 @@ module Types
     class CarType < BaseObject
       graphql_name 'MergeTrainCar'
 
-      description 'Represent a car/merge request on a merge train'
+      description 'MergeTrainCar represents an attempt to merge a merge request' \
+        'using merge trains.'
 
       connection_type_class Types::CountableConnectionType
       authorize :read_merge_train
@@ -25,7 +26,7 @@ module Types
       field :merge_request,
         Types::MergeRequestType,
         null: false,
-        description: 'Merge request the car is contains.'
+        description: 'Merge request the car contains.'
       field :merged_at,
         Types::TimeType,
         null: true,
@@ -55,7 +56,7 @@ module Types
       field :user,
         Types::UserType,
         null: false,
-        description: "User that owns the car's merge request."
+        description: "Creator of the car (user who added the merge request to the train)."
     end
   end
 end
