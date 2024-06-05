@@ -7,14 +7,14 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { createAlert, VARIANT_WARNING } from '~/alert';
-import RemoveBlobs from '~/projects/settings/repository/maintenance/remove_blobs.vue';
-import removeBlobsMutation from '~/projects/settings/repository/maintenance/graphql/mutations/remove_blobs.mutation.graphql';
+import RedactText from '~/projects/settings/repository/maintenance/redact_text.vue';
+import replaceTextMutation from '~/projects/settings/repository/maintenance/graphql/mutations/replace_text.mutation.graphql';
 import {
   TEST_HEADER_HEIGHT,
   TEST_PROJECT_PATH,
-  TEST_BLOB_ID,
-  REMOVE_MUTATION_SUCCESS,
-  REMOVE_MUTATION_FAIL,
+  TEST_TEXT,
+  REPLACE_MUTATION_SUCCESS,
+  REPLACE_MUTATION_FAIL,
 } from './mock_data';
 
 Vue.use(VueApollo);
@@ -22,18 +22,18 @@ Vue.use(VueApollo);
 jest.mock('~/lib/utils/dom_utils');
 jest.mock('~/alert');
 
-describe('Remove blobs', () => {
+describe('Redact text', () => {
   let wrapper;
   let mutationMock;
 
   const createMockApolloProvider = (resolverMock) => {
-    return createMockApollo([[removeBlobsMutation, resolverMock]]);
+    return createMockApollo([[replaceTextMutation, resolverMock]]);
   };
 
-  const createComponent = (mutationResponse = REMOVE_MUTATION_SUCCESS) => {
+  const createComponent = (mutationResponse = REPLACE_MUTATION_SUCCESS) => {
     mutationMock = jest.fn().mockResolvedValue(mutationResponse);
     getContentWrapperHeight.mockReturnValue(TEST_HEADER_HEIGHT);
-    wrapper = shallowMountExtended(RemoveBlobs, {
+    wrapper = shallowMountExtended(RedactText, {
       apolloProvider: createMockApolloProvider(mutationMock),
       provide: {
         projectPath: TEST_PROJECT_PATH,
@@ -45,7 +45,7 @@ describe('Remove blobs', () => {
   const findDrawer = () => wrapper.findComponent(GlDrawer);
   const findModal = () => wrapper.findComponent(GlModal);
   const findModalInput = () => findModal().findComponent(GlFormInput);
-  const removeBlobsButton = () => wrapper.findByTestId('remove-blobs');
+  const redactTextButton = () => wrapper.findByTestId('redact-text');
   const findTextarea = () => wrapper.findComponent(GlFormTextarea);
 
   beforeEach(() => createComponent());
@@ -63,28 +63,28 @@ describe('Remove blobs', () => {
       });
 
       expect(findDrawer().text()).toContain(
-        'Enter a list of object IDs to be removed to reduce repository size.',
+        'Regex and glob patterns supported. Enter multiple entries on separate lines.',
       );
     });
 
     it('renders a modal, closed by default', () => {
       expect(findModal().props()).toMatchObject({
         visible: false,
-        title: 'Remove blobs',
-        modalId: 'remove-blobs-confirmation-modal',
+        title: 'Redact text',
+        modalId: 'redact-text-confirmation-modal',
         actionCancel: { text: 'Cancel' },
-        actionPrimary: { text: 'Yes, remove blobs' },
+        actionPrimary: { text: 'Yes, redact matching strings' },
       });
 
       expect(findModal().text()).toContain(
-        'Removing blobs by ID cannot be undone. Are you sure you want to continue?',
+        'Redacting strings does not produce a preview and cannot be undone. Are you sure you want to continue?',
       );
 
-      expect(findModal().text()).toContain('Enter the following to confirm: project/path');
+      expect(findModal().text()).toContain('To confirm, enter the following: project/path');
     });
   });
 
-  describe('removing blobs', () => {
+  describe('redacting text', () => {
     beforeEach(() => findDrawerTrigger().vm.$emit('click'));
 
     it('opens the drawer', () => {
@@ -92,31 +92,24 @@ describe('Remove blobs', () => {
     });
 
     it('renders a text area without text', () => {
-      expect(findTextarea().text('disabled')).toBe('');
+      expect(findTextarea().text()).toBe('');
     });
 
     it('disables the primary action by default', () => {
-      expect(removeBlobsButton().props('disabled')).toBe(true);
+      expect(redactTextButton().props('disabled')).toBe(true);
     });
 
-    describe('adding blob IDs', () => {
-      beforeEach(() => findTextarea().vm.$emit('input', TEST_BLOB_ID));
+    describe('adding text', () => {
+      beforeEach(() => findTextarea().vm.$emit('input', TEST_TEXT));
 
-      it('enables the primary action when valid blob IDs are added', () => {
-        expect(removeBlobsButton().props('disabled')).toBe(false);
-      });
-
-      it('disables the primary action when invalid blob IDs are added', async () => {
-        findTextarea().vm.$emit('input', 'invalid');
-        await nextTick();
-
-        expect(removeBlobsButton().props('disabled')).toBe(true);
+      it('enables the primary action when text is added', () => {
+        expect(redactTextButton().props('disabled')).toBe(false);
       });
 
       describe('confirmation modal', () => {
-        beforeEach(() => removeBlobsButton().vm.$emit('click'));
+        beforeEach(() => redactTextButton().vm.$emit('click'));
 
-        it('renders the confirmation modal when remove blobs button is clicked', () => {
+        it('renders the confirmation modal when redact text button is clicked', () => {
           expect(findModal().props('visible')).toBe(true);
         });
 
@@ -128,12 +121,12 @@ describe('Remove blobs', () => {
 
           it('disables user input while loading', () => {
             expect(findTextarea().attributes('disabled')).toBe('true');
-            expect(removeBlobsButton().props('loading')).toBe(true);
+            expect(redactTextButton().props('loading')).toBe(true);
           });
 
-          it('calls the remove mutation', () => {
+          it('calls the redact mutation', () => {
             expect(mutationMock).toHaveBeenCalledWith({
-              blobOids: [TEST_BLOB_ID],
+              replacements: [TEST_TEXT],
               projectPath: TEST_PROJECT_PATH,
             });
           });
@@ -155,9 +148,9 @@ describe('Remove blobs', () => {
             await waitForPromises();
 
             expect(createAlert).toHaveBeenCalledWith({
-              message: 'Run housekeeping to remove old versions from repository.',
+              message: 'To remove old versions from the repository, run housekeeping.',
               primaryButton: { clickHandler: expect.any(Function), text: 'Go to housekeeping' },
-              title: 'Blobs removed',
+              title: 'Text redacted',
               variant: VARIANT_WARNING,
             });
           });
@@ -165,12 +158,12 @@ describe('Remove blobs', () => {
 
         describe('removal confirmed (fail)', () => {
           beforeEach(async () => {
-            createComponent(REMOVE_MUTATION_FAIL);
+            createComponent(REPLACE_MUTATION_FAIL);
 
-            // Simulates the workflow (open drawer → add blobId → click remove → confirm remove)
+            // Simulates the workflow (open drawer → add text → click remove → confirm remove)
             findDrawerTrigger().vm.$emit('click');
-            findTextarea().vm.$emit('input', TEST_BLOB_ID);
-            removeBlobsButton().vm.$emit('click');
+            findTextarea().vm.$emit('input', TEST_TEXT);
+            redactTextButton().vm.$emit('click');
             findModal().vm.$emit('primary');
 
             await waitForPromises();
@@ -178,7 +171,7 @@ describe('Remove blobs', () => {
 
           it('generates an error alert upon failed mutation', () => {
             expect(createAlert).toHaveBeenCalledWith({
-              message: 'Something went wrong while removing blobs.',
+              message: 'Something went wrong while redacting text.',
               captureError: true,
             });
           });
