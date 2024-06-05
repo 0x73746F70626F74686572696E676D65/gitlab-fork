@@ -5,6 +5,7 @@ FactoryBot.define do
     add_on { association(:gitlab_subscription_add_on) }
     namespace { association(:group) }
     quantity { 1 }
+    started_at { 1.day.ago.to_date }
     expires_on { 1.year.from_now.to_date }
     purchase_xid { SecureRandom.hex(16) }
     trial { false }

@@ -9,6 +9,7 @@ module EE
           expose :namespace_name, documentation: { type: 'string', example: 'GitLab' }
           expose :add_on, documentation: { type: 'string', example: 'Code Suggestions' }
           expose :quantity, documentation: { type: 'integer', example: 10 }
+          expose :started_at, as: :started_on, documentation: { type: 'date', example: '2023-05-30' }
           expose :expires_on, documentation: { type: 'date', example: '2023-05-30' }
           expose :purchase_xid, documentation: { type: 'string', example: 'A-S00000001' }
           expose :trial, documentation: { type: 'boolean', example: 'false' }

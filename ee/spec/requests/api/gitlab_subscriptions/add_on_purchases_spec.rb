@@ -36,6 +36,7 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
     let(:params) do
       {
         quantity: 10,
+        started_on: Date.current.to_s,
         expires_on: (Date.current + 1.year).to_s,
         purchase_xid: purchase_xid
       }
@@ -76,6 +77,7 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
           expect(json_response['namespace_name']).to eq(namespace.name)
           expect(json_response['add_on']).to eq(add_on.name.titleize)
           expect(json_response['quantity']).to eq(params[:quantity])
+          expect(json_response['started_on']).to eq(params[:started_on])
           expect(json_response['expires_on']).to eq(params[:expires_on])
           expect(json_response['purchase_xid']).to eq(params[:purchase_xid])
         end
@@ -210,6 +212,7 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
             'namespace_name' => namespace.name,
             'add_on' => add_on.name.titleize,
             'quantity' => add_on_purchase.quantity,
+            'started_on' => add_on_purchase.started_at.to_s,
             'expires_on' => add_on_purchase.expires_on.to_s,
             'purchase_xid' => add_on_purchase.purchase_xid,
             'trial' => add_on_purchase.trial
@@ -223,6 +226,7 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
     let(:params) do
       {
         quantity: 10,
+        started_on: Date.current.to_s,
         expires_on: (Date.current + 1.year).to_s,
         purchase_xid: purchase_xid,
         trial: true
@@ -257,12 +261,14 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
 
       context 'when the add-on purchase exists' do
         let_it_be(:expires_on) { Date.current + 6.months }
+        let_it_be(:started_at) { Date.current + 1.week }
         let_it_be_with_reload(:add_on_purchase) do
           create(
             :gitlab_subscription_add_on_purchase,
             namespace: namespace,
             add_on: add_on,
             quantity: 5,
+            started_at: started_at,
             expires_on: expires_on,
             purchase_xid: purchase_xid
           )
@@ -282,6 +288,7 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
             'namespace_name' => namespace.name,
             'add_on' => add_on.name.titleize,
             'quantity' => params[:quantity],
+            'started_on' => params[:started_on],
             'expires_on' => params[:expires_on],
             'purchase_xid' => params[:purchase_xid],
             'trial' => params[:trial]
@@ -289,7 +296,12 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
         end
 
         context 'with only required params' do
-          let(:params) { { expires_on: (Date.current + 1.year).to_s } }
+          let(:params) do
+            {
+              expires_on: (Date.current + 1.year).to_s,
+              started_on: (Date.current + 1.week).to_s
+            }
+          end
 
           it 'updates the add-on purchase' do
             expect do
@@ -304,6 +316,7 @@ RSpec.describe API::GitlabSubscriptions::AddOnPurchases, :aggregate_failures, fe
               'namespace_name' => namespace.name,
               'add_on' => add_on.name.titleize,
               'quantity' => add_on_purchase.quantity,
+              'started_on' => params[:started_on],
               'expires_on' => params[:expires_on],
               'purchase_xid' => add_on_purchase.purchase_xid,
               'trial' => add_on_purchase.trial

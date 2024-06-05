@@ -39,6 +39,7 @@ module GitlabSubscriptions
       def update_add_on_purchase
         attributes = {
           quantity: quantity,
+          started_at: started_at,
           expires_on: expires_on,
           purchase_xid: purchase_xid,
           trial: trial

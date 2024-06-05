@@ -26,6 +26,7 @@ module GitlabSubscriptions
           namespace: namespace,
           add_on: add_on,
           quantity: quantity,
+          started_at: started_at,
           expires_on: expires_on,
           purchase_xid: purchase_xid,
           trial: trial.presence || false

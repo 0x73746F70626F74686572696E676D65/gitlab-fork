@@ -9,6 +9,7 @@ module GitlabSubscriptions
         @namespace = namespace
         @add_on = add_on
         @quantity = params[:quantity]
+        @started_at = params[:started_on]
         @expires_on = params[:expires_on]
         @purchase_xid = params[:purchase_xid]
         @trial = params[:trial]
@@ -20,7 +21,7 @@ module GitlabSubscriptions
 
       private
 
-      attr_reader :namespace, :add_on, :quantity, :expires_on, :purchase_xid, :trial
+      attr_reader :namespace, :add_on, :quantity, :started_at, :expires_on, :purchase_xid, :trial
 
       # Override in derived class
       def add_on_purchase
