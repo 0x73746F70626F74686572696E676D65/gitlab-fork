@@ -360,7 +360,8 @@ module EE
         columns = [
           "epics.id", "epics.iid", "epics.parent_id", "epics.state_id AS epic_state_id", "issues.state_id AS issues_state_id",
           "COUNT(issues) AS issues_count",
-          "SUM(COALESCE(issues.weight, 0)) AS issues_weight_sum"
+          "SUM(COALESCE(issues.weight, 0)) AS issues_weight_sum",
+          "epics.start_date", "epics.end_date"
         ]
 
         if count_health_status

@@ -1001,7 +1001,9 @@ RSpec.describe Epic, feature_category: :portfolio_management do
           "issues_count" => 2,
           "issues_state_id" => 1,
           "issues_weight_sum" => 5,
-          "parent_id" => epic1.id
+          "parent_id" => epic1.id,
+          "start_date" => epic2.start_date,
+          "end_date" => epic2.end_date
         }, {
           "epic_state_id" => 2,
           "id" => epic3.id,
@@ -1009,7 +1011,9 @@ RSpec.describe Epic, feature_category: :portfolio_management do
           "issues_count" => 1,
           "issues_state_id" => 2,
           "issues_weight_sum" => 0,
-          "parent_id" => epic2.id
+          "parent_id" => epic2.id,
+          "start_date" => epic3.start_date,
+          "end_date" => epic3.end_date
         }]
         expect(result).to match_array(expected)
       end
@@ -1042,7 +1046,9 @@ RSpec.describe Epic, feature_category: :portfolio_management do
             "parent_id" => epic1.id,
             "issues_on_track" => 1,
             "issues_needs_attention" => 1,
-            "issues_at_risk" => 1
+            "issues_at_risk" => 1,
+            "start_date" => epic2.start_date,
+            "end_date" => epic2.end_date
           }, {
             "epic_state_id" => 2,
             "id" => epic3.id,
@@ -1053,7 +1059,9 @@ RSpec.describe Epic, feature_category: :portfolio_management do
             "parent_id" => epic2.id,
             "issues_on_track" => 0,
             "issues_needs_attention" => 0,
-            "issues_at_risk" => 0
+            "issues_at_risk" => 0,
+            "start_date" => epic3.start_date,
+            "end_date" => epic3.end_date
           }, {
             "epic_state_id" => 2,
             "id" => epic3.id,
@@ -1064,7 +1072,9 @@ RSpec.describe Epic, feature_category: :portfolio_management do
             "parent_id" => epic2.id,
             "issues_on_track" => 0,
             "issues_needs_attention" => 0,
-            "issues_at_risk" => 1
+            "issues_at_risk" => 1,
+            "start_date" => epic3.start_date,
+            "end_date" => epic3.end_date
           }]
 
           expect(result).to match_array(expected)

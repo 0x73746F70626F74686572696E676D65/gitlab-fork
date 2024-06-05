@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Graphql::Aggregations::Epics::EpicNode do
+RSpec.describe Gitlab::Graphql::Aggregations::Epics::EpicNode, feature_category: :portfolio_management do
   include_context 'includes EpicAggregate constants'
 
   let(:epic_id) { 34 }
@@ -156,5 +156,77 @@ RSpec.describe Gitlab::Graphql::Aggregations::Epics::EpicNode do
       issues_state_id: issues_state_id,
       epic_state_id: epic_state_id
     }
+  end
+
+  describe '#has_children_within_timeframe?' do
+    using RSpec::Parameterized::TableSyntax
+
+    let(:parent_epic_id) { 1 }
+    let(:child_epic_id) { 2 }
+
+    let(:parent_flat_info) do
+      [
+        {
+          epic_id: parent_epic_id,
+          parent_id: nil,
+          epic_state_id: OPENED_EPIC_STATE,
+          start_date: parent_start_date,
+          end_date: parent_end_date,
+          issues_state_id: nil,
+          issues_count: 0,
+          issues_weight_sum: 0
+        }
+      ]
+    end
+
+    let(:child_flat_info) do
+      [
+        {
+          epic_id: child_epic_id,
+          parent_id: parent_epic_id,
+          epic_state_id: OPENED_EPIC_STATE,
+          start_date: child_start_date,
+          end_date: child_end_date,
+          issues_state_id: nil,
+          issues_count: 0,
+          issues_weight_sum: 0
+        }
+      ]
+    end
+
+    subject { described_class.new(parent_epic_id, parent_flat_info) }
+
+    where(:parent_start_date, :parent_end_date, :child_start_date, :child_end_date, :result) do
+      Date.new(2023, 1, 1) | Date.new(2023, 12, 31) | Date.new(2023, 6, 1) | Date.new(2023, 6, 30)  | true   # Child within parent range
+      Date.new(2023, 1, 1) | Date.new(2023, 12, 31) | Date.new(2024, 1, 1) | Date.new(2024, 12, 31) | false  # Non-overlapping date ranges
+      nil                  | Date.new(2023, 12, 31) | Date.new(2023, 6, 1) | Date.new(2023, 6, 30)  | false  # Parent start date missing
+      Date.new(2023, 1, 1) | nil                    | Date.new(2023, 6, 1) | Date.new(2023, 6, 30)  | false  # Parent end date missing
+      Date.new(2023, 1, 1) | Date.new(2023, 12, 31) | nil                  | Date.new(2023, 6, 30)  | false  # Child start date missing
+      Date.new(2023, 1, 1) | Date.new(2023, 12, 31) | Date.new(2023, 6, 1) | nil                    | false  # Child end date missing
+      nil                  | nil                    | Date.new(2023, 6, 1) | Date.new(2023, 6, 30)  | false  # Both parent dates missing
+      Date.new(2023, 1, 1) | Date.new(2023, 12, 31) | nil                  | nil                    | false  # Both child dates missing
+      Date.new(2023, 1, 1) | Date.new(2023, 12, 31) | Date.new(2023, 1, 1) | Date.new(2023, 12, 31) | true   # Child matches parent range exactly
+      Date.new(2023, 1, 1) | Date.new(2023, 12, 31) | Date.new(2023, 1, 1) | Date.new(2023, 6, 1)   | true   # Child starts at parent start
+      Date.new(2023, 1, 1) | Date.new(2023, 12, 31) | Date.new(2023, 6, 1) | Date.new(2023, 12, 31) | true   # Child ends at parent end
+    end
+
+    before do
+      allow(subject).to receive(:epic_info_flat_list).and_return(parent_flat_info)
+      child_node = described_class.new(child_epic_id, child_flat_info)
+      allow(child_node).to receive(:epic_info_flat_list).and_return(child_flat_info)
+      subject.children << child_node
+
+      # Setting parent and child dates
+      parent_flat_info.first[:start_date] = parent_start_date
+      parent_flat_info.first[:end_date] = parent_end_date
+      child_flat_info.first[:start_date] = child_start_date
+      child_flat_info.first[:end_date] = child_end_date
+    end
+
+    with_them do
+      it 'returns the correct result' do
+        expect(subject.has_children_within_timeframe?).to eq(result)
+      end
+    end
   end
 end

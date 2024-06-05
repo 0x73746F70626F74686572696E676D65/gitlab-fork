@@ -12,7 +12,7 @@ RSpec.describe GitlabSchema.types['Epic'], feature_category: :portfolio_manageme
       parent author labels start_date start_date_is_fixed start_date_fixed
       start_date_from_milestones start_date_from_inherited_source due_date
       due_date_is_fixed due_date_fixed due_date_from_milestones due_date_from_inherited_source
-      closed_at created_at updated_at children has_children has_issues
+      closed_at created_at updated_at children has_children has_children_within_timeframe has_issues
       has_parent web_path web_url relation_path reference issues user_permissions
       notes discussions relative_position subscribed participants
       descendant_counts descendant_weight_sum upvotes downvotes
