@@ -38,6 +38,10 @@ RSpec.describe CloudConnector::AccessDataStorageService, feature_category: :clou
     end
 
     context 'when no records exist' do
+      before do
+        CloudConnector::Access.delete_all
+      end
+
       context 'when the valid data JSON is provided' do
         let(:data) { service_data }
 
