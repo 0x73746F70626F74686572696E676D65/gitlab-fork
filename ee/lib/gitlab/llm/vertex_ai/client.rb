@@ -119,6 +119,7 @@ module Gitlab
               config.url,
               headers: config.headers,
               body: config.payload(content).merge(options).to_json,
+              allow_local_requests: true,
               stream_body: true
             )
           end
