@@ -91,11 +91,6 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
       merge_request.project.update!(visibility_level: Gitlab::VisibilityLevel::INTERNAL)
     end
 
-    it 'does not include hidden if add_hidden_to_merge_requests is not finished' do
-      set_elasticsearch_migration_to :add_hidden_to_merge_requests, including: false
-      expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('hidden', 'archived', 'schema_version'))
-    end
-
     it 'does not include archived if add_archived_to_merge_requests is not finished' do
       set_elasticsearch_migration_to :add_archived_to_merge_requests, including: false
       expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('archived', 'schema_version'))

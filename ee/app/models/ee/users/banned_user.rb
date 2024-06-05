@@ -12,13 +12,7 @@ module EE
       private
 
       def reindex_issues_and_merge_requests
-        associations = [:issues]
-
-        if ::Elastic::DataMigrationService.migration_has_finished?(:add_hidden_to_merge_requests)
-          associations << :merge_requests
-        end
-
-        ElasticAssociationIndexerWorker.perform_async(user.class.name, user.id, associations)
+        ElasticAssociationIndexerWorker.perform_async(user.class.name, user.id, %i[issues merge_requests])
       end
     end
   end
