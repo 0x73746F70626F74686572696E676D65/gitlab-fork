@@ -5,8 +5,6 @@ action: render_duo_pro_lead_page
 identifiers:
   - namespace
   - user
-product_section: growth
-product_stage: growth
 product_group: acquisition
 milestone: '16.10'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/146059
