@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::AddOnPurchases::BaseService, feature_category: :plan_provisioning do
   describe '#execute' do
-    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:namespace) { create(:group, :with_organization) }
     let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
 
     let(:params) do
@@ -56,6 +56,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::BaseService, feature_categor
           def add_on_purchase
             @add_on_purchase ||= GitlabSubscriptions::AddOnPurchase.new(
               namespace: namespace,
+              organization: namespace.organization,
               add_on: add_on,
               quantity: quantity,
               expires_on: expires_on,

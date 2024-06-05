@@ -12,6 +12,8 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :plan
     let(:seat_link_url) { [subscription_portal_url, '/api/v1/seat_links'].join }
     let(:body) { { success: true }.to_json }
 
+    let_it_be(:default_organization) { create(:organization, :default) }
+
     before do
       stub_request(:post, seat_link_url).to_return(
         status: 200,
