@@ -36,7 +36,7 @@ module EE
                   elsif pipeline_filtered_by_rules?(response.payload)
                     # no-op: we ignore empty pipelines
                   else
-                    return error("Pipeline execution policy error: #{response.message}", config_error: true) # rubocop:disable Cop/AvoidReturnFromBlocks -- We want to exit early
+                    return error("Pipeline execution policy error: #{response.message}", failure_reason: :config_error)
                   end
                 end
               end

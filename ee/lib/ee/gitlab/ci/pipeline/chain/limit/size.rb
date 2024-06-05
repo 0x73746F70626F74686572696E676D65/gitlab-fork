@@ -24,7 +24,7 @@ module EE
               def perform!
                 if limit.exceeded?
                   limit.log_error!(log_attrs)
-                  error(limit.message, drop_reason: :size_limit_exceeded)
+                  error(limit.message, failure_reason: :size_limit_exceeded)
                 elsif limit.log_exceeded_limit?
                   limit.log_error!(log_attrs)
                 end

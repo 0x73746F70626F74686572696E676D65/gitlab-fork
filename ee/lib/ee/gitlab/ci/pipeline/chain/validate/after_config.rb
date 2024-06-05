@@ -15,7 +15,7 @@ module EE
                   ::Users::IdentityVerification::AuthorizeCi.new(user: current_user, project: project)
                     .authorize_run_jobs!
                 rescue ::Users::IdentityVerification::Error => e
-                  return error(e.message, drop_reason: :user_not_verified)
+                  return error(e.message, failure_reason: :user_not_verified)
                 end
 
                 super

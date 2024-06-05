@@ -35,7 +35,7 @@ module EE
                 }
               ).execute
 
-              error(response.errors.join(', '), config_error: true) if response.error?
+              error(response.errors.join(', '), failure_reason: :config_error) if response.error?
             rescue ActiveRecord::ActiveRecordError => e
               ::Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e, extra: { pipeline_id: pipeline.id })
 
