@@ -991,6 +991,26 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                   expect(work_item.reload.description).to eq('- [ ] Task')
                 end
               end
+
+              context 'when params are different than the epic attributes' do
+                before do
+                  epic.update!(title: "Outdated title")
+                end
+
+                let(:opts) do
+                  {
+                    description: 'New description'
+                  }
+                end
+
+                it 'only applies the changed params' do
+                  subject
+
+                  expect(epic.reload.description).to eq('New description')
+                  expect(work_item.reload.description).to eq('New description')
+                  expect(work_item.reload.title).not_to eq('Outdated title')
+                end
+              end
             end
           end
 
