@@ -27,20 +27,6 @@ RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :ai_abstr
 
       expect(configuration.access_token).to eq current_token
     end
-
-    context 'when use_ai_gateway_proxy is disabled' do
-      before do
-        stub_feature_flags(use_ai_gateway_proxy: false)
-      end
-
-      it 'delegates to Llm::VertexAiAccessTokenService' do
-        token_loader = instance_double(Gitlab::Llm::VertexAi::TokenLoader)
-        allow(Gitlab::Llm::VertexAi::TokenLoader).to receive(:new).and_return(token_loader)
-        allow(token_loader).to receive(:current_token).and_return(current_token)
-
-        expect(configuration.access_token).to eq current_token
-      end
-    end
   end
 
   describe '#headers' do
@@ -64,23 +50,6 @@ RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :ai_abstr
           'X-Request-ID' => be_an(String)
         }
       )
-    end
-
-    context 'when use_ai_gateway_proxy is disabled' do
-      before do
-        stub_feature_flags(use_ai_gateway_proxy: false)
-      end
-
-      it 'returns headers with text host header replacing host value' do
-        expect(configuration.headers).to eq(
-          {
-            'Accept' => 'application/json',
-            'Authorization' => 'Bearer 123',
-            'Host' => host,
-            'Content-Type' => 'application/json'
-          }
-        )
-      end
     end
   end
 

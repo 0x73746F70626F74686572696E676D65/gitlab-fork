@@ -23,6 +23,7 @@ module Gitlab
           print_output(group)
         end
 
+        # rubocop:disable Style/GuardClause -- Keep it explicit
         def validates!
           puts "Validating settings...."
 
@@ -38,21 +39,8 @@ module Gitlab
               See https://docs.gitlab.com/ee/development/ee_features.html#simulate-a-saas-instance for more information.
             MSG
           end
-
-          unless ::Gitlab::CurrentSettings.anthropic_api_key.present?
-            raise <<~MSG
-              Make sure Anthropic API key is correctly set.
-              See https://docs.gitlab.com/ee/development/ai_features/index.html#anthropic for more information.
-            MSG
-          end
-
-          return if ::Gitlab::Llm::VertexAi::TokenLoader.new.current_token.present?
-
-          raise <<~MSG
-              Make sure Vertex AI access is correctly setup.
-              See https://docs.gitlab.com/ee/development/ai_features/index.html#google-cloud-vertex for more information.
-          MSG
         end
+        # rubocop:enable Style/GuardClause
 
         def ensure_feature_flags
           puts "Enabling feature flags...."

@@ -3,6 +3,7 @@
 module Gitlab
   module Llm
     module VertexAi
+      # Deprecated. See https://gitlab.com/gitlab-org/gitlab/-/issues/466161
       class TokenLoader
         DEFAULT_SCOPE = 'https://www.googleapis.com/auth/cloud-platform'
         ACCESS_TOKEN_EXPIRY = 3540 # 59 minutes in seconds

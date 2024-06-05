@@ -14,17 +14,9 @@ module Gitlab
           def url
             raise MissingConfigurationError if host.blank? || vertex_ai_project.blank?
 
-            if ::Feature.enabled?(:use_ai_gateway_proxy, user)
-              return "#{Gitlab::AiGateway.url}/v1/proxy/vertex-ai" \
-                "/v1/projects/#{vertex_ai_project}/locations/#{vertex_ai_location}" \
-                "/publishers/google/models/#{model}:predict"
-            end
-
-            text_model_url = URI::HTTPS.build(
-              host: host,
-              path: "/v1/projects/#{vertex_ai_project}/locations/us-central1/publishers/google/models/#{model}:predict"
-            )
-            text_model_url.to_s
+            "#{Gitlab::AiGateway.url}/v1/proxy/vertex-ai" \
+              "/v1/projects/#{vertex_ai_project}/locations/#{vertex_ai_location}" \
+              "/publishers/google/models/#{model}:predict"
           end
 
           def host
@@ -44,17 +36,11 @@ module Gitlab
           attr_reader :user
 
           def vertex_ai_host
-            return URI.parse(Gitlab::AiGateway.url).host if ::Feature.enabled?(:use_ai_gateway_proxy, user)
-
-            settings.vertex_ai_host
+            URI.parse(Gitlab::AiGateway.url).host
           end
 
           def vertex_ai_project
-            if ::Feature.enabled?(:use_ai_gateway_proxy, user)
-              return "PROJECT" # AI Gateway replaces the project hence setting an arbitrary value.
-            end
-
-            settings.vertex_ai_project
+            "PROJECT" # AI Gateway replaces the project hence setting an arbitrary value.
           end
 
           def vertex_ai_location

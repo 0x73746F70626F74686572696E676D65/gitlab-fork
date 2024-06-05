@@ -68,26 +68,4 @@ RSpec.describe Gitlab::Duo::Developments::Setup, :saas, :gitlab_duo, :silence_st
       expect { setup }.to raise_error(RuntimeError)
     end
   end
-
-  context 'when Anthropic key is missing' do
-    before do
-      allow(::Gitlab::CurrentSettings).to receive(:anthropic_api_key).and_return(nil)
-    end
-
-    it 'raises an error' do
-      expect { setup }.to raise_error(RuntimeError)
-    end
-  end
-
-  context 'when VertexAI access is not setup' do
-    before do
-      allow_next_instance_of(::Gitlab::Llm::VertexAi::TokenLoader) do |token_loader|
-        allow(token_loader).to receive(:current_token).and_return(nil)
-      end
-    end
-
-    it 'raises an error' do
-      expect { setup }.to raise_error(RuntimeError)
-    end
-  end
 end
