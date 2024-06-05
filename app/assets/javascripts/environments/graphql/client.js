@@ -140,6 +140,7 @@ export const apolloProvider = (endpoint) => {
         status: '',
         type: '',
       },
+      inventory: [],
     },
   });
   cache.writeQuery({
