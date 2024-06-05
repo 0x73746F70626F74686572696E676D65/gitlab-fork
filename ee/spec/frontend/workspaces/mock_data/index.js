@@ -342,10 +342,9 @@ export const GET_REMOTE_DEVELOPMENT_CLUSTER_AGENTS_QUERY_RESULT_TWO_AGENTS = {
 
 export const GET_AGENTS_WITH_MAPPING_STATUS_QUERY_RESULT = {
   data: {
-    group: {
+    namespace: {
       id: 'gid://gitlab/Group/81',
-      fullPath: 'gitlab-org/subgroup',
-      clusterAgents: {
+      mappedAgents: {
         nodes: [
           {
             id: 'gid://gitlab/Clusters::Agent/1',
@@ -355,24 +354,16 @@ export const GET_AGENTS_WITH_MAPPING_STATUS_QUERY_RESULT = {
               nameWithNamespace: 'GitLab Org / GitLab Agent One',
             },
           },
+        ],
+      },
+      unmappedAgents: {
+        nodes: [
           {
             id: 'gid://gitlab/Clusters::Agent/2',
             name: 'rootgroup-agent-2',
             project: {
               id: 'gid://gitlab/Project/102',
               nameWithNamespace: 'GitLab Org / GitLab Agent Two',
-            },
-          },
-        ],
-      },
-      remoteDevelopmentClusterAgents: {
-        nodes: [
-          {
-            id: 'gid://gitlab/Clusters::Agent/1',
-            name: 'rootgroup-agent',
-            project: {
-              id: 'gid://gitlab/Project/101',
-              nameWithNamespace: 'GitLab Org / GitLab Agent One',
             },
           },
         ],

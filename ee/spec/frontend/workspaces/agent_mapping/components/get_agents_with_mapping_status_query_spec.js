@@ -85,7 +85,7 @@ describe('workspaces/agent_mapping/components/get_agents_with_mapping_status_que
         expect(wrapper.emitted('result')).toEqual([
           [
             {
-              namespaceId: GET_AGENTS_WITH_MAPPING_STATUS_QUERY_RESULT.data.group.id,
+              namespaceId: GET_AGENTS_WITH_MAPPING_STATUS_QUERY_RESULT.data.namespace.id,
               agents: [
                 {
                   id: 'gid://gitlab/Clusters::Agent/1',

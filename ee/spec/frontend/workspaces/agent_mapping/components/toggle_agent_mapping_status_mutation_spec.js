@@ -54,7 +54,7 @@ describe('workspaces/agent_mapping/components/toggle_agent_mapping_status_mutati
     });
   };
 
-  const readRemoteDevelopmentClusterAgentsFromQueryCache = () => {
+  const getAgentsWithAuthorizationStatusFromCache = () => {
     const apolloClient = apolloProvider.clients.defaultClient;
     const result = apolloClient.readQuery({
       query: getAgentsWithAuthorizationStatusQuery,
@@ -63,7 +63,10 @@ describe('workspaces/agent_mapping/components/toggle_agent_mapping_status_mutati
       },
     });
 
-    return result?.group.remoteDevelopmentClusterAgents.nodes;
+    return {
+      mappedAgents: result?.namespace.mappedAgents.nodes,
+      unmappedAgents: result?.namespace.unmappedAgents.nodes,
+    };
   };
 
   const buildWrapper = ({ propsData = {} } = {}) => {
@@ -121,10 +124,16 @@ describe('workspaces/agent_mapping/components/toggle_agent_mapping_status_mutati
         });
       });
 
-      it('removes agent from the remoteDevelopmentClusterAgents collection', () => {
-        const agents = readRemoteDevelopmentClusterAgentsFromQueryCache();
+      it('removes agent from the mapped agents nodes', () => {
+        const { mappedAgents } = getAgentsWithAuthorizationStatusFromCache();
 
-        expect(agents.some((agent) => agent.id === MAPPED_CLUSTER_AGENT.id)).toBe(false);
+        expect(mappedAgents.some((agent) => agent.id === MAPPED_CLUSTER_AGENT.id)).toBe(false);
+      });
+
+      it('adds agent from the unmapped agents nodes', () => {
+        const { unmappedAgents } = getAgentsWithAuthorizationStatusFromCache();
+
+        expect(unmappedAgents.some((agent) => agent.id === MAPPED_CLUSTER_AGENT.id)).toBe(true);
       });
     });
 
@@ -146,10 +155,16 @@ describe('workspaces/agent_mapping/components/toggle_agent_mapping_status_mutati
         });
       });
 
-      it('adds unmapped agents to the remoteDevelopmentClusterAgents collection', () => {
-        const agents = readRemoteDevelopmentClusterAgentsFromQueryCache();
+      it('adds unmapped agent to the mapped agents nodes', () => {
+        const { mappedAgents } = getAgentsWithAuthorizationStatusFromCache();
 
-        expect(agents.some((agent) => agent.id === UNMAPPED_CLUSTER_AGENT.id)).toBe(true);
+        expect(mappedAgents.some((agent) => agent.id === UNMAPPED_CLUSTER_AGENT.id)).toBe(true);
+      });
+
+      it('removes unmapped agent from the unmapped agents nodes', () => {
+        const { unmappedAgents } = getAgentsWithAuthorizationStatusFromCache();
+
+        expect(unmappedAgents.some((agent) => agent.id === UNMAPPED_CLUSTER_AGENT.id)).toBe(false);
       });
     });
 
