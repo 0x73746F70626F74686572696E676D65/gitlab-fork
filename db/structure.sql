@@ -1041,6 +1041,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_a1bc7c70cbdf() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "vulnerabilities"
+  WHERE "vulnerabilities"."id" = NEW."vulnerability_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_a253cb3cacdf() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -18434,7 +18450,8 @@ CREATE TABLE vulnerability_user_mentions (
     mentioned_users_ids integer[],
     mentioned_projects_ids integer[],
     mentioned_groups_ids integer[],
-    note_id bigint
+    note_id bigint,
+    project_id bigint
 );
 
 CREATE SEQUENCE vulnerability_user_mentions_id_seq
@@ -28484,6 +28501,8 @@ CREATE UNIQUE INDEX index_vulnerability_statistics_on_unique_project_id ON vulne
 
 CREATE UNIQUE INDEX index_vulnerability_user_mentions_on_note_id ON vulnerability_user_mentions USING btree (note_id) WHERE (note_id IS NOT NULL);
 
+CREATE INDEX index_vulnerability_user_mentions_on_project_id ON vulnerability_user_mentions USING btree (project_id);
+
 CREATE UNIQUE INDEX index_vulns_user_mentions_on_vulnerability_id ON vulnerability_user_mentions USING btree (vulnerability_id) WHERE (note_id IS NULL);
 
 CREATE UNIQUE INDEX index_vulns_user_mentions_on_vulnerability_id_and_note_id ON vulnerability_user_mentions USING btree (vulnerability_id, note_id);
@@ -30472,6 +30491,8 @@ CREATE TRIGGER trigger_94514aeadc50 BEFORE INSERT OR UPDATE ON deployment_approv
 
 CREATE TRIGGER trigger_96a76ee9f147 BEFORE INSERT OR UPDATE ON design_management_versions FOR EACH ROW EXECUTE FUNCTION trigger_96a76ee9f147();
 
+CREATE TRIGGER trigger_a1bc7c70cbdf BEFORE INSERT OR UPDATE ON vulnerability_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_a1bc7c70cbdf();
+
 CREATE TRIGGER trigger_a253cb3cacdf BEFORE INSERT OR UPDATE ON dora_daily_metrics FOR EACH ROW EXECUTE FUNCTION trigger_a253cb3cacdf();
 
 CREATE TRIGGER trigger_b4520c29ea74 BEFORE INSERT OR UPDATE ON approval_merge_request_rule_sources FOR EACH ROW EXECUTE FUNCTION trigger_b4520c29ea74();
@@ -31751,6 +31772,9 @@ ALTER TABLE ONLY design_management_designs_versions
 
 ALTER TABLE ONLY scan_result_policy_violations
     ADD CONSTRAINT fk_f53706dbdd FOREIGN KEY (scan_result_policy_id) REFERENCES scan_result_policies(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY vulnerability_user_mentions
+    ADD CONSTRAINT fk_f5768ba1ec FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY analytics_devops_adoption_segments
     ADD CONSTRAINT fk_f5aa768998 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
