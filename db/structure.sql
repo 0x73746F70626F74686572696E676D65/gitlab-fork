@@ -1153,6 +1153,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_d4487a75bd44() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "terraform_states"
+  WHERE "terraform_states"."id" = NEW."terraform_state_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_dbdd61a66a91() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -17247,6 +17263,7 @@ CREATE TABLE terraform_state_versions (
     ci_build_id bigint,
     verification_started_at timestamp with time zone,
     verification_state smallint DEFAULT 0 NOT NULL,
+    project_id bigint,
     CONSTRAINT check_0824bb7bbd CHECK ((char_length(file) <= 255)),
     CONSTRAINT tf_state_versions_verification_failure_text_limit CHECK ((char_length(verification_failure) <= 255))
 );
@@ -28124,6 +28141,8 @@ CREATE INDEX index_terraform_state_versions_on_ci_build_id ON terraform_state_ve
 
 CREATE INDEX index_terraform_state_versions_on_created_by_user_id ON terraform_state_versions USING btree (created_by_user_id);
 
+CREATE INDEX index_terraform_state_versions_on_project_id ON terraform_state_versions USING btree (project_id);
+
 CREATE UNIQUE INDEX index_terraform_state_versions_on_state_id_and_version ON terraform_state_versions USING btree (terraform_state_id, version);
 
 CREATE INDEX index_terraform_state_versions_on_verification_state ON terraform_state_versions USING btree (verification_state);
@@ -30546,6 +30565,8 @@ CREATE TRIGGER trigger_c9090feed334 BEFORE INSERT OR UPDATE ON boards_epic_lists
 
 CREATE TRIGGER trigger_catalog_resource_sync_event_on_project_update AFTER UPDATE ON projects FOR EACH ROW WHEN ((((old.name)::text IS DISTINCT FROM (new.name)::text) OR (old.description IS DISTINCT FROM new.description) OR (old.visibility_level IS DISTINCT FROM new.visibility_level))) EXECUTE FUNCTION insert_catalog_resource_sync_event();
 
+CREATE TRIGGER trigger_d4487a75bd44 BEFORE INSERT OR UPDATE ON terraform_state_versions FOR EACH ROW EXECUTE FUNCTION trigger_d4487a75bd44();
+
 CREATE TRIGGER trigger_dbdd61a66a91 BEFORE INSERT OR UPDATE ON agent_activity_events FOR EACH ROW EXECUTE FUNCTION trigger_dbdd61a66a91();
 
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
@@ -30723,6 +30744,9 @@ ALTER TABLE ONLY scan_result_policy_violations
 
 ALTER TABLE ONLY incident_management_timeline_events
     ADD CONSTRAINT fk_1800597ef9 FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY terraform_state_versions
+    ADD CONSTRAINT fk_180cde327a FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY project_features
     ADD CONSTRAINT fk_18513d9b92 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
