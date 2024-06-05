@@ -14,6 +14,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchase, feature_category: :plan_provi
   describe 'associations' do
     it { is_expected.to belong_to(:add_on).with_foreign_key(:subscription_add_on_id).inverse_of(:add_on_purchases) }
     it { is_expected.to belong_to(:namespace).optional(true) }
+    it { is_expected.to belong_to(:organization) }
 
     it do
       is_expected.to have_many(:assigned_users)

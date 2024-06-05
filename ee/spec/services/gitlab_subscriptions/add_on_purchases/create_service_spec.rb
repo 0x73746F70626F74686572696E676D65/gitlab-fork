@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::AddOnPurchases::CreateService, :aggregate_failures, feature_category: :plan_provisioning do
   describe '#execute' do
-    let_it_be(:root_namespace) { create(:group) }
     let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
 
     let(:params) do
@@ -75,7 +74,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::CreateService, :aggregate_fa
     end
 
     context 'when on .com', :saas do
-      let(:namespace) { root_namespace }
+      let_it_be(:namespace) { create(:group, :with_organization) }
 
       before do
         stub_ee_application_setting(should_check_namespace_plan: true)
@@ -91,7 +90,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::CreateService, :aggregate_fa
       end
 
       context 'when namespace is not a root namespace' do
-        let(:namespace) { create(:group, parent: root_namespace) }
+        let(:namespace) { create(:group, :nested) }
 
         it 'returns an error' do
           expect(result[:status]).to eq(:error)
@@ -119,13 +118,20 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::CreateService, :aggregate_fa
       end
 
       include_examples 'no record exists'
+
+      it 'creates record with organization associated with the namespace' do
+        expect { result }
+          .to change { GitlabSubscriptions::AddOnPurchase.where(organization_id: namespace.organization).count }.by(1)
+      end
     end
 
     context 'when not on .com' do
+      let_it_be(:default_organization) { create(:organization, :default) }
+
       let(:namespace) { nil }
 
       context 'when passing in a namespace that is not a root namespace' do
-        let(:namespace) { create(:group, parent: root_namespace) }
+        let(:namespace) { create(:group, :nested) }
 
         it 'returns a success' do
           expect(result[:status]).to eq(:success)
@@ -151,6 +157,10 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::CreateService, :aggregate_fa
       end
 
       include_examples 'no record exists'
+
+      it 'creates record with default organization id' do
+        expect { result }.to change { GitlabSubscriptions::AddOnPurchase.where(organization_id: 1).count }.by(1)
+      end
     end
   end
 end

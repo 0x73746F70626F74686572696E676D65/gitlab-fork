@@ -12,6 +12,8 @@ RSpec.describe GitlabSubscriptions::ActivateService, feature_category: :plan_pro
   let(:activation_code) { 'activation_code' }
   let(:automated) { false }
 
+  let_it_be(:organization) { create(:organization, :default) }
+
   def stub_client_activate
     expect(Gitlab::SubscriptionPortal::Client).to receive(:activate)
       .with(activation_code, automated: automated)

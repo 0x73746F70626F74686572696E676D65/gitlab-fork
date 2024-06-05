@@ -16915,6 +16915,7 @@ CREATE TABLE subscription_add_on_purchases (
     last_assigned_users_refreshed_at timestamp with time zone,
     trial boolean DEFAULT false NOT NULL,
     started_at date,
+    organization_id bigint DEFAULT 1 NOT NULL,
     CONSTRAINT check_3313c4d200 CHECK ((char_length(purchase_xid) <= 255))
 );
 
@@ -24856,6 +24857,8 @@ CREATE UNIQUE INDEX index_activity_pub_releases_sub_on_project_id_inbox_url ON a
 
 CREATE UNIQUE INDEX index_activity_pub_releases_sub_on_project_id_sub_url ON activity_pub_releases_subscriptions USING btree (project_id, lower(subscriber_url));
 
+CREATE INDEX index_add_on_purchases_on_organization_id ON subscription_add_on_purchases USING btree (organization_id);
+
 CREATE INDEX index_agent_activity_events_on_agent_id_and_recorded_at_and_id ON agent_activity_events USING btree (agent_id, recorded_at, id);
 
 CREATE INDEX index_agent_activity_events_on_agent_project_id ON agent_activity_events USING btree (agent_project_id);
@@ -31467,6 +31470,9 @@ ALTER TABLE ONLY personal_access_tokens
 
 ALTER TABLE ONLY jira_tracker_data
     ADD CONSTRAINT fk_c98abcd54c FOREIGN KEY (integration_id) REFERENCES integrations(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY subscription_add_on_purchases
+    ADD CONSTRAINT fk_caed789645 FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY boards_epic_board_labels
     ADD CONSTRAINT fk_cb8ded70e2 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;

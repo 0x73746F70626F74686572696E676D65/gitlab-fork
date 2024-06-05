@@ -3,6 +3,7 @@
 FactoryBot.define do
   factory :gitlab_subscription_add_on_purchase, class: 'GitlabSubscriptions::AddOnPurchase' do
     add_on { association(:gitlab_subscription_add_on) }
+    organization { association(:organization, :default) }
     namespace { association(:group) }
     quantity { 1 }
     expires_on { 1.year.from_now.to_date }

@@ -15,6 +15,8 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::SelfManaged::ProvisionCodeSu
       )
     end
 
+    let_it_be(:default_organization) { create(:organization, :default) }
+
     let(:purchased_add_on_quantity) { 5 }
     let(:subscription_name) { 'A-S00000002' }
 
