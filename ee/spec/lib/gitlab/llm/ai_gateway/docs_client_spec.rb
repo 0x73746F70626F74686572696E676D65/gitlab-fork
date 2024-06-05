@@ -73,7 +73,7 @@ RSpec.describe Gitlab::Llm::AiGateway::DocsClient, feature_category: :ai_abstrac
       described_class.new(user, tracking_context: tracking_context).search(query: 'anything', **options)
     end
 
-    it 'returns response' do
+    it 'returns response', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/463071' do
       expect(Gitlab::HTTP).to receive(:post).with(
         anything,
         hash_including(timeout: described_class::DEFAULT_TIMEOUT)
