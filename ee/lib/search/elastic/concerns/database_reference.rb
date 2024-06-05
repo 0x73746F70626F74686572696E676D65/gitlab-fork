@@ -27,6 +27,22 @@ module Search
         def database_id
           database_record&.id
         end
+
+        def safely_read_attribute_for_elasticsearch(target, attr_name)
+          result = target.send(attr_name) # rubocop: disable GitlabSecurity/PublicSend -- copied from previous definition
+          apply_field_limit(result)
+        rescue StandardError
+        end
+
+        def apply_field_limit(result)
+          return result unless result.is_a? String
+
+          limit = Gitlab::CurrentSettings.elasticsearch_indexed_field_length_limit
+
+          return result unless limit > 0
+
+          result[0, limit]
+        end
       end
     end
   end

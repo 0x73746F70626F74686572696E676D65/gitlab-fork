@@ -510,11 +510,12 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
     context 'with foreign keys mappings', :aggregate_failures do
       let(:ignore_columns) do
         {
-          id: [Project, Issue, MergeRequest, Commit, Epic, User],
+          id: [Project, Issue, MergeRequest, Commit, Epic, User, WorkItem],
           project_id: :all,
           target_project_id: :all,
           source_project_id: :all,
           author_id: :all,
+          namespace_id: :all,
           assignee_id: :all,
           hashed_root_namespace_id: :all,
           work_item_type_id: :all,

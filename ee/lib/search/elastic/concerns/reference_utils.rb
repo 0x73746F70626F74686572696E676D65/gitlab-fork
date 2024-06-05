@@ -10,6 +10,10 @@ module Search
           string.split(self::DELIMITER)
         end
 
+        def join_delimited(array)
+          array.join(self::DELIMITER)
+        end
+
         def ref_klass(string)
           "#{ref_module}::#{delimit(string).first}".safe_constantize
         end
@@ -20,6 +24,10 @@ module Search
 
         def ref_module
           to_s.pluralize
+        end
+
+        def environment_specific_index_name(type)
+          [Rails.application.class.module_parent_name.downcase, Rails.env, type].join('-')
         end
       end
     end

@@ -35,6 +35,7 @@ module EE
         )
       end
       scope :grouped_by_work_item, -> { group(:id) }
+      scope :preload_for_indexing, -> { includes(:namespace, :labels, project: :project_feature) }
     end
 
     class_methods do
@@ -69,8 +70,25 @@ module EE
       super || epic_work_item?
     end
 
+    override :use_elasticsearch?
+    def use_elasticsearch?
+      elasticsearch_available = ::Feature.enabled?(:elastic_index_work_items) && # rubocop:disable Gitlab/FeatureFlagWithoutActor -- We do not need an actor here
+        ::Elastic::DataMigrationService.migration_has_finished?(:create_work_items_index)
+      return super unless elasticsearch_available
+
+      namespace.use_elasticsearch?
+    end
+
     def epic_work_item?
       work_item_type.epic?
+    end
+
+    def es_parent
+      "group_#{namespace.root_ancestor.id}"
+    end
+
+    def elastic_reference
+      ::Search::Elastic::References::WorkItem.serialize(self)
     end
 
     private

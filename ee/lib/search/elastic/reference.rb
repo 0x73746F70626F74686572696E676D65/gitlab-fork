@@ -33,6 +33,10 @@ module Search
         raise NotImplementedError
       end
 
+      def index_name
+        raise NotImplementedError
+      end
+
       def klass
         self.class.name.demodulize
       end
@@ -77,10 +81,6 @@ module Search
           end
 
           refs
-        end
-
-        def index_name
-          raise NotImplementedError
         end
 
         def instantiate(_)

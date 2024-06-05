@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe WorkItem, feature_category: :team_planning do
+RSpec.describe WorkItem, :elastic_helpers, feature_category: :team_planning do
   let_it_be(:reusable_project) { create(:project) }
 
   it 'has one `color`' do
@@ -518,6 +518,83 @@ RSpec.describe WorkItem, feature_category: :team_planning do
         expect(work_item.errors[:work_item_type_id])
           .to include(_('cannot be changed to issue when the work item is a legacy epic synced work item'))
       end
+    end
+  end
+
+  describe '#use_elasticsearch?' do
+    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:work_item) { create(:work_item, namespace: namespace) }
+
+    context 'when elastic_index_work_items is disabled' do
+      before do
+        stub_feature_flags(elastic_index_work_items: false)
+      end
+
+      it 'returns false' do
+        expect(work_item.use_elasticsearch?).to be_falsey
+      end
+    end
+
+    context 'when migration is not complete' do
+      before do
+        set_elasticsearch_migration_to :create_work_items_index, including: false
+      end
+
+      it 'returns false' do
+        expect(work_item.use_elasticsearch?).to be_falsey
+      end
+    end
+
+    context 'when namespace does not use elasticsearch' do
+      it 'returns false' do
+        stub_feature_flags(elastic_index_work_items: false)
+        set_elasticsearch_migration_to :create_work_items_index, including: true
+        stub_ee_application_setting(elasticsearch_indexing: true, elasticsearch_limit_indexing: true)
+
+        expect(work_item.use_elasticsearch?).to be_falsey
+      end
+    end
+
+    context 'when work_item index is available and namesapce uses elasticsearch' do
+      before do
+        set_elasticsearch_migration_to :create_work_items_index, including: true
+        stub_ee_application_setting(elasticsearch_indexing: true, elasticsearch_limit_indexing: false)
+      end
+
+      it 'returns true' do
+        expect(work_item.use_elasticsearch?).to be_truthy
+      end
+    end
+  end
+
+  describe '#preload_for_indexing' do
+    let_it_be(:work_item) { create(:work_item) }
+
+    it 'preloads for indexing  and avoid N+1 queries' do
+      work_item = described_class.preload_for_indexing.first
+      recorder = ActiveRecord::QueryRecorder.new do
+        work_item.namespace
+        work_item.labels
+        work_item.project.project_feature
+      end
+      expect(recorder.count).to be_zero
+    end
+  end
+
+  describe '#elastic_reference' do
+    let(:work_item) { create(:work_item) }
+
+    it 'returns the string representation for the elasticsearch' do
+      expect(work_item.elastic_reference).to eq("WorkItem|#{work_item.id}|#{work_item.es_parent}")
+    end
+  end
+
+  describe '#es_parent' do
+    let(:namespace) { create(:namespace) }
+    let(:work_item) { create(:work_item, namespace: namespace) }
+
+    it 'returns to correct routing id' do
+      expect(work_item.es_parent).to eq("group_#{namespace.root_ancestor.id}")
     end
   end
 end

@@ -455,6 +455,24 @@ RSpec.describe Elastic::ProcessBookkeepingService,
         expect { described_class.new.execute }.not_to exceed_all_query_limit(control)
       end
 
+      it 'does not have N+1 queries for work_items' do
+        project = create(:project)
+        work_items = [create(:work_item), create(:work_item, project: project),
+          create(:work_item, namespace: create(:group))]
+
+        described_class.track!(*work_items)
+
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) { described_class.new.execute }
+
+        project = create(:project)
+        work_items = [create(:work_item), create(:work_item, project: project),
+          create(:work_item, namespace: create(:group))]
+
+        described_class.track!(*work_items)
+
+        expect { described_class.new.execute }.not_to exceed_all_query_limit(control)
+      end
+
       it 'does not have N+1 queries for notes' do
         # Gitaly N+1 calls when processing notes on commits
         # https://gitlab.com/gitlab-org/gitlab/-/issues/327086 . Even though
