@@ -124,10 +124,28 @@ module ProductAnalytics
 
     def to_sql
       <<-SQL
-      SELECT
-        (SELECT max(derived_tstamp) FROM gitlab_project_#{project.id}.snowplow_events) as x,
-        windowFunnel(#{@seconds_to_convert})(toDateTime(derived_tstamp), #{steps.filter_map(&:step_definition).join(', ')}) as step
-        FROM gitlab_project_#{project.id}.snowplow_events
+        SELECT
+          (SELECT max(derived_tstamp) FROM gitlab_project_#{project.id}.snowplow_events) as x,
+          arrayJoin(range(1, #{steps.size + 1})) AS level,
+          sumIf(c, user_level >= level) AS count
+        FROM
+          (SELECT
+             level AS user_level,
+             count(*) AS c
+           FROM (
+               SELECT
+                 user_id,
+                 windowFunnel(#{@seconds_to_convert}, 'strict_order')(toDateTime(derived_tstamp),
+                    #{steps.filter_map(&:step_definition).join(', ')}
+                 ) AS level
+               FROM gitlab_project_#{project.id}.snowplow_events
+               WHERE ${FILTER_PARAMS.#{@name}.date.filter('derived_tstamp')}
+               GROUP BY user_id
+               )
+           GROUP BY level
+          )
+          GROUP BY level
+	        ORDER BY level ASC
       SQL
     end
   end
