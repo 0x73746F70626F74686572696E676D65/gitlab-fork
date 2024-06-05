@@ -26783,6 +26783,7 @@ Returns [`UserMergeRequestInteraction`](#usermergerequestinteraction).
 | <a id="pipelineuser"></a>`user` | [`UserCore`](#usercore) | Pipeline user. |
 | <a id="pipelineuserpermissions"></a>`userPermissions` | [`PipelinePermissions!`](#pipelinepermissions) | Permissions for the current user on the resource. |
 | <a id="pipelineusesneeds"></a>`usesNeeds` | [`Boolean`](#boolean) | Indicates if the pipeline has jobs with `needs` dependencies. |
+| <a id="pipelinevariables"></a>`variables` | [`CiManualVariableConnection`](#cimanualvariableconnection) | Manual variables added to a pipeline. (see [Connections](#connections)) |
 | <a id="pipelinewarningmessages"></a>`warningMessages` | [`[PipelineMessage!]`](#pipelinemessage) | Pipeline warning messages. |
 | <a id="pipelinewarnings"></a>`warnings` | [`Boolean!`](#boolean) | Indicates if a pipeline has warnings. |
 | <a id="pipelineyamlerrormessages"></a>`yamlErrorMessages` | [`String`](#string) | The pipeline YAML errors. |
