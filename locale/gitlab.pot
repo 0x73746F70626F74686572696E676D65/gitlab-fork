@@ -42771,12 +42771,6 @@ msgstr ""
 msgid "Quick actions can be used in description and comment boxes."
 msgstr ""
 
-msgid "Quick assign"
-msgstr ""
-
-msgid "Quick assign a reviewer"
-msgstr ""
-
 msgid "Quick help"
 msgstr ""
 
