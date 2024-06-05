@@ -93,11 +93,31 @@ module Gitlab
             end
           end
 
+          def has_children_within_timeframe?
+            parent_date_range = extract_date_range(epic_info_flat_list.first)
+            return false unless parent_date_range
+
+            children.any? do |child|
+              child_date_range = extract_date_range(child.epic_info_flat_list.first)
+              next unless child_date_range
+
+              parent_date_range.cover?(child_date_range)
+            end
+          end
+
           private
 
           def set_epic_attributes(record)
             @epic_state_id = record[:epic_state_id]
             @parent_id = record[:parent_id]
+          end
+
+          def extract_date_range(info)
+            start_date = info[:start_date]
+            end_date = info[:end_date]
+            return if start_date.nil? || end_date.nil?
+
+            start_date..end_date
           end
 
           def value_from_records(facet, state, type, status)

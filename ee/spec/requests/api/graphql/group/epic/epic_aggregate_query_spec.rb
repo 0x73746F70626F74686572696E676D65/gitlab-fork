@@ -8,7 +8,7 @@ RSpec.describe 'Epic aggregates (count and weight)', feature_category: :portfoli
   let_it_be(:current_user) { create(:user) }
   let_it_be(:ancestor) { create(:group, :public) }
   let_it_be(:group) { create(:group, :public, parent: ancestor) }
-  let_it_be(:parent_epic) { create(:epic, group: ancestor, title: 'parent epic') }
+  let_it_be(:parent_epic) { create(:epic, group: ancestor, title: 'parent epic', start_date: '2020-01-01', due_date: '2020-03-31') }
 
   let(:target_epic) { parent_epic }
   let(:query) do
@@ -42,8 +42,8 @@ RSpec.describe 'Epic aggregates (count and weight)', feature_category: :portfoli
     let_it_be(:subgroup) { create(:group, :private, parent: group) }
     let_it_be(:project) { create(:project, namespace: group) }
 
-    let_it_be(:epic_with_issues) { create(:epic, group: group, parent: parent_epic, title: 'epic with issues') }
-    let_it_be(:epic_without_issues) { create(:epic, :closed, group: group, parent: parent_epic, title: 'epic without issues') }
+    let_it_be(:epic_with_issues) { create(:epic, group: group, parent: parent_epic, title: 'epic with issues', start_date: '2020-02-01', due_date: '2020-03-01') }
+    let_it_be(:epic_without_issues) { create(:epic, :closed, group: group, parent: parent_epic, title: 'epic without issues', start_date: '2020-02-01', due_date: '2020-03-01') }
     let_it_be(:closed_epic) { create(:epic, :closed, group: group, parent: parent_epic, title: 'closed epic') }
 
     let_it_be(:issue1) { create(:issue, project: project, weight: 5, state: :opened) }
@@ -177,6 +177,23 @@ RSpec.describe 'Epic aggregates (count and weight)', feature_category: :portfoli
       end
 
       it_behaves_like 'having correct values for', 'hasChildren'
+      it_behaves_like 'efficient query'
+    end
+
+    context 'when requesting has_children_within_timeframe' do
+      let(:query) do
+        graphql_query_for('group', { fullPath: target_epic.group.full_path }, query_graphql_field('epics', { iid: target_epic.iid, timeframe: { start: "2020-01-01", end: "2020-03-31" } }, epic_aggregates_query))
+      end
+
+      let(:epic_aggregates_query) do
+        <<~QUERY
+          nodes {
+            hasChildrenWithinTimeframe
+          }
+        QUERY
+      end
+
+      it_behaves_like 'having correct values for', 'hasChildrenWithinTimeframe'
       it_behaves_like 'efficient query'
     end
   end

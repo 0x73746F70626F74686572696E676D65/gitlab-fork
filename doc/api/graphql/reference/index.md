@@ -17131,6 +17131,7 @@ Represents an epic on an issue board.
 | <a id="boardepicevents"></a>`events` | [`EventConnection`](#eventconnection) | List of events associated with the object. (see [Connections](#connections)) |
 | <a id="boardepicgroup"></a>`group` | [`Group!`](#group) | Group to which the epic belongs. |
 | <a id="boardepichaschildren"></a>`hasChildren` | [`Boolean!`](#boolean) | Indicates if the epic has children. |
+| <a id="boardepichaschildrenwithintimeframe"></a>`hasChildrenWithinTimeframe` | [`Boolean!`](#boolean) | Indicates if the epic has children in the specified timeframe. |
 | <a id="boardepichasissues"></a>`hasIssues` | [`Boolean!`](#boolean) | Indicates if the epic has direct issues. |
 | <a id="boardepichasparent"></a>`hasParent` | [`Boolean!`](#boolean) | Indicates if the epic has a parent epic. |
 | <a id="boardepichealthstatus"></a>`healthStatus` | [`EpicHealthStatus`](#epichealthstatus) | Current health status of the epic. |
@@ -20327,6 +20328,7 @@ Represents an epic.
 | <a id="epicevents"></a>`events` | [`EventConnection`](#eventconnection) | List of events associated with the object. (see [Connections](#connections)) |
 | <a id="epicgroup"></a>`group` | [`Group!`](#group) | Group to which the epic belongs. |
 | <a id="epichaschildren"></a>`hasChildren` | [`Boolean!`](#boolean) | Indicates if the epic has children. |
+| <a id="epichaschildrenwithintimeframe"></a>`hasChildrenWithinTimeframe` | [`Boolean!`](#boolean) | Indicates if the epic has children in the specified timeframe. |
 | <a id="epichasissues"></a>`hasIssues` | [`Boolean!`](#boolean) | Indicates if the epic has direct issues. |
 | <a id="epichasparent"></a>`hasParent` | [`Boolean!`](#boolean) | Indicates if the epic has a parent epic. |
 | <a id="epichealthstatus"></a>`healthStatus` | [`EpicHealthStatus`](#epichealthstatus) | Current health status of the epic. |

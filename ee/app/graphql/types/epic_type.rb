@@ -106,6 +106,9 @@ module Types
     field :has_children, GraphQL::Types::Boolean,
       null: false, description: 'Indicates if the epic has children.'
 
+    field :has_children_within_timeframe, GraphQL::Types::Boolean,
+      null: false, description: 'Indicates if the epic has children in the specified timeframe.'
+
     field :has_issues, GraphQL::Types::Boolean,
       null: false, description: 'Indicates if the epic has direct issues.'
 
@@ -204,8 +207,15 @@ module Types
       end
     end
 
+    def has_children_within_timeframe?
+      Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate.new(context, object.id, COUNT) do |node, _aggregate_object|
+        node.has_children_within_timeframe?
+      end
+    end
+
     alias_method :has_children, :has_children?
     alias_method :has_issues, :has_issues?
+    alias_method :has_children_within_timeframe, :has_children_within_timeframe?
 
     def author
       Gitlab::Graphql::Loaders::BatchModelLoader.new(User, object.author_id).find

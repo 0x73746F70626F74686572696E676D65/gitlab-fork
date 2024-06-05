@@ -166,7 +166,9 @@ RSpec.describe Gitlab::Graphql::Loaders::BulkEpicAggregateLoader do
       issues_weight_sum: issues_weight_sum,
       parent_id: epic.parent_id,
       issues_state_id: issues_state,
-      epic_state_id: epic.state_id
+      epic_state_id: epic.state_id,
+      start_date: epic.start_date,
+      end_date: epic.end_date
     }.stringify_keys
   end
 end
