@@ -22,7 +22,7 @@ module Resolvers
         required: false,
         description: 'Filter jobs by the type of runner that executed them.'
 
-      argument :full_path, GraphQL::Types::String,
+      argument :full_path, GraphQL::Types::ID,
         required: false,
         description: 'Filter jobs based on the full path of the group or project they belong to. ' \
           'For example, `gitlab-org` or `gitlab-org/gitlab`. ' \
