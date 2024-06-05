@@ -85,10 +85,28 @@ RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics_da
 
     let(:query) do
       <<-SQL
-      SELECT
-        (SELECT max(derived_tstamp) FROM gitlab_project_#{project.id}.snowplow_events) as x,
-        windowFunnel(3600)(toDateTime(derived_tstamp), page_urlpath = '/page1.html', page_urlpath = '/page2.html') as step
-        FROM gitlab_project_#{project.id}.snowplow_events
+        SELECT
+          (SELECT max(derived_tstamp) FROM gitlab_project_#{project.id}.snowplow_events) as x,
+          arrayJoin(range(1, 3)) AS level,
+          sumIf(c, user_level >= level) AS count
+        FROM
+          (SELECT
+             level AS user_level,
+             count(*) AS c
+           FROM (
+               SELECT
+                 user_id,
+                 windowFunnel(3600, 'strict_order')(toDateTime(derived_tstamp),
+                    page_urlpath = '/page1.html', page_urlpath = '/page2.html'
+                 ) AS level
+               FROM gitlab_project_#{project.id}.snowplow_events
+               WHERE ${FILTER_PARAMS.completed_purchase.date.filter('derived_tstamp')}
+               GROUP BY user_id
+               )
+           GROUP BY level
+          )
+          GROUP BY level
+	        ORDER BY level ASC
       SQL
     end
 
