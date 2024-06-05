@@ -19,6 +19,14 @@ module Resolvers
         required: false,
         description: 'Filter runners by the type.'
 
+      argument :full_path, GraphQL::Types::ID,
+        required: false,
+        description: 'Filter jobs by the full path of the group or project they belong to. ' \
+          'For example, `gitlab-org` or `gitlab-org/gitlab`. ' \
+          'Available only to admins, group maintainers (when a group is specified), ' \
+          'or project maintainers (when a project is specified). ' \
+          "Limited to runners from #{::Ci::Runners::GetUsageService::MAX_PROJECTS_IN_GROUP} child projects."
+
       argument :from_date, Types::DateType,
         required: false,
         description: 'Start of the requested date frame. Defaults to the start of the previous calendar month.'
@@ -35,8 +43,8 @@ module Resolvers
           'Other runners will be aggregated to a `runner: null` entry. ' \
           "Defaults to #{DEFAULT_RUNNERS_LIMIT} if unspecified. Maximum of #{MAX_RUNNERS_LIMIT}."
 
-      def resolve(from_date: nil, to_date: nil, runner_type: nil, runners_limit: nil)
-        authorize! :global
+      def resolve(from_date: nil, to_date: nil, full_path: nil, runner_type: nil, runners_limit: nil)
+        scope = find_and_authorize_scope!(full_path)
 
         from_date ||= 1.month.ago.beginning_of_month.to_date
         to_date ||= 1.month.ago.end_of_month.to_date
@@ -46,8 +54,10 @@ module Resolvers
             "'to_date' must be greater than 'from_date' and be within 1 year"
         end
 
-        result = ::Ci::Runners::GetUsageService.new(current_user,
+        result = ::Ci::Runners::GetUsageService.new(
+          current_user,
           runner_type: runner_type,
+          scope: scope,
           from_date: from_date,
           to_date: to_date,
           max_item_count: [MAX_RUNNERS_LIMIT, runners_limit || DEFAULT_RUNNERS_LIMIT].min
@@ -59,6 +69,20 @@ module Resolvers
       end
 
       private
+
+      def find_and_authorize_scope!(full_path)
+        if full_path.nil?
+          authorize! :global
+          return
+        end
+
+        scope = Group.find_by_full_path(full_path) || Project.find_by_full_path(full_path)
+
+        raise_resource_not_available_error! if scope.nil?
+        authorize!(scope)
+
+        scope
+      end
 
       def prepare_result(payload)
         payload.map do |runner_usage|
