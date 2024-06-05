@@ -249,9 +249,6 @@ export const FiltersInfo = {
         : k;
     },
   },
-  iterationTitle: {
-    negatedSupport: true,
-  },
   iterationWildcardId: {
     negatedSupport: true,
     transform: (val) => {

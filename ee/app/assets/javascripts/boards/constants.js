@@ -62,7 +62,6 @@ export const FilterFields = {
     'epicWildcardId',
     'weight',
     'iterationId',
-    'iterationTitle',
     'iterationWildcardId',
     'iterationCadenceId',
     'healthStatusFilter',

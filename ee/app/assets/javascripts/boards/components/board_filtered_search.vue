@@ -32,7 +32,6 @@ export default {
         milestoneId: board.milestone?.id || null,
         milestoneTitle: board.milestone?.title || null,
         iterationId: board.iteration?.id || null,
-        iterationTitle: board.iteration?.title || null,
         iterationCadenceId: board.iterationCadence?.id || null,
         assigneeId: board.assignee?.id || null,
         assigneeUsername: board.assignee?.username || null,
