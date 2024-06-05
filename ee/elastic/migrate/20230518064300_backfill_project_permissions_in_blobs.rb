@@ -189,3 +189,5 @@ class BackfillProjectPermissionsInBlobs < Elastic::Migration
     [get_number_of_shards(index_name: helper.target_name), max_projects_to_process].min
   end
 end
+
+BackfillProjectPermissionsInBlobs.prepend ::Elastic::MigrationObsolete

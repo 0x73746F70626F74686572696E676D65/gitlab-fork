@@ -36,17 +36,6 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
           subject.elastic_search('*', type: 'blob', options: search_options)
           assert_named_queries('doc:is_a:blob', 'blob:authorized:project', 'blob:match:search_terms')
         end
-
-        context 'when backfill_project_permissions_in_blobs migration is not finished' do
-          before do
-            set_elasticsearch_migration_to(:backfill_project_permissions_in_blobs, including: false)
-          end
-
-          it 'uses the correct elasticsearch query' do
-            subject.elastic_search('*', type: 'blob', options: search_options)
-            assert_named_queries('doc:is_a:blob', 'blob:authorized:project:parent', 'blob:match:search_terms')
-          end
-        end
       end
 
       context 'when performing a group search' do
@@ -391,20 +380,6 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
       }
       subject.blob_aggregations('*', search_options)
       assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
-        'blob:match:search_terms')
-    end
-
-    it 'assert names queries for global blob search when migration is not complete' do
-      search_options = {
-        current_user: user,
-        public_and_internal_projects: true,
-        order_by: nil,
-        sort: nil
-      }
-      set_elasticsearch_migration_to(:backfill_project_permissions_in_blobs, including: false)
-
-      subject.blob_aggregations('*', search_options)
-      assert_named_queries('doc:is_a:blob', 'blob:authorized:project:parent',
         'blob:match:search_terms')
     end
 

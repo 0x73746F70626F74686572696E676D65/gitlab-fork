@@ -10,8 +10,6 @@ RSpec.describe Peek::Views::Elasticsearch, :elastic, :request_store do
     ::Gitlab::Instrumentation::ElasticsearchTransport.detail_store # Create store in redis
     allow(::Gitlab::PerformanceBar).to receive(:enabled_for_request?).and_return(true)
     ensure_elasticsearch_index!
-
-    set_elasticsearch_migration_to(:backfill_project_permissions_in_blobs)
   end
 
   describe '#results' do
@@ -25,11 +23,12 @@ RSpec.describe Peek::Views::Elasticsearch, :elastic, :request_store do
 
       expect(results[:calls]).to be > 0
       expect(results[:duration]).to be_kind_of(String)
-      expect(results[:details].last[:method]).to eq('POST')
-      expect(results[:details].last[:path]).to eq('gitlab-test/_search')
-      expect(results[:details].last[:params]).to eq({ routing: "project_#{project.id}", timeout: timeout })
-
-      expect(results[:details].last[:request]).to eq("POST gitlab-test/_search?routing=project_#{project.id}&timeout=#{timeout}")
+      expect(results[:details]).to include(hash_including({
+        method: 'POST',
+        path: 'gitlab-test/_search',
+        params: { routing: "project_#{project.id}", timeout: timeout },
+        request: "POST gitlab-test/_search?routing=project_#{project.id}&timeout=#{timeout}"
+      }))
     end
   end
 end

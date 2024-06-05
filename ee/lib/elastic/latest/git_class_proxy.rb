@@ -382,7 +382,7 @@ module Elastic
       end
 
       def disable_project_joins_for_blob?
-        Elastic::DataMigrationService.migration_has_finished?(:backfill_project_permissions_in_blobs)
+        true
       end
     end
   end
