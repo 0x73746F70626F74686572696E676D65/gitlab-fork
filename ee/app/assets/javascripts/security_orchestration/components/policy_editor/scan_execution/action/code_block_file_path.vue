@@ -16,10 +16,10 @@ import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import GroupProjectsDropdown from 'ee/security_orchestration/components/group_projects_dropdown.vue';
 import { isGroup } from 'ee/security_orchestration/components/utils';
-import { validateOverrideValues } from '../lib';
+import { validateStrategyValues } from '../lib';
 import { INJECT, OVERRIDE } from '../constants';
 import CodeBlockSourceSelector from './code_block_source_selector.vue';
-import CodeBlockOverrideSelector from './code_block_override_selector.vue';
+import CodeBlockStrategySelector from './code_block_strategy_selector.vue';
 
 export default {
   i18n: {
@@ -29,10 +29,10 @@ export default {
     ),
     pipelineFilePathCopy: {
       [INJECT]: s__(
-        'ScanExecutionPolicy|%{overrideSelector}into the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}',
+        'ScanExecutionPolicy|%{strategySelector}into the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}',
       ),
       [OVERRIDE]: s__(
-        'ScanExecutionPolicy|%{overrideSelector}the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}',
+        'ScanExecutionPolicy|%{strategySelector}the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}',
       ),
     },
     filePathPrependLabel: __('No project selected'),
@@ -60,7 +60,7 @@ export default {
   SELECTED_PROJECT_TOOLTIP: 'selected-project-tooltip',
   name: 'CodeBlockFilePath',
   components: {
-    CodeBlockOverrideSelector,
+    CodeBlockStrategySelector,
     CodeBlockSourceSelector,
     GlIcon,
     GlFormGroup,
@@ -76,11 +76,11 @@ export default {
   mixins: [glFeatureFlagMixin()],
   inject: ['namespacePath', 'rootNamespacePath', 'namespaceType'],
   props: {
-    overrideType: {
+    strategy: {
       type: String,
       required: false,
       default: INJECT,
-      validator: validateOverrideValues,
+      validator: validateStrategyValues,
     },
     selectedType: {
       type: String,
@@ -114,7 +114,7 @@ export default {
     },
     fileBlockMessage() {
       return this.isPipelineExecution
-        ? this.$options.i18n.pipelineFilePathCopy[this.overrideType]
+        ? this.$options.i18n.pipelineFilePathCopy[this.strategy]
         : this.$options.i18n.filePathCopy;
     },
     isValidFilePath() {
@@ -158,15 +158,15 @@ export default {
       return isGroup(this.namespaceType) ? this.namespacePath : this.rootNamespacePath;
     },
     selectedProjectInformationText() {
-      return this.$options.i18n.selectedProjectInformation[this.overrideType];
+      return this.$options.i18n.selectedProjectInformation[this.strategy];
     },
   },
   methods: {
     updatedFilePath(value) {
       this.$emit('update-file-path', value);
     },
-    setOverride(override) {
-      this.$emit('select-override', override);
+    setStrategy(strategy) {
+      this.$emit('select-strategy', strategy);
     },
 
     setSelectedProject(project) {
@@ -190,8 +190,8 @@ export default {
   <div class="gl-display-flex gl-w-full gl-flex-direction-column gl-gap-3">
     <div class="gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap">
       <gl-sprintf :message="fileBlockMessage">
-        <template #overrideSelector>
-          <code-block-override-selector :override-type="overrideType" @select="setOverride" />
+        <template #strategySelector>
+          <code-block-strategy-selector :strategy="strategy" @select="setStrategy" />
         </template>
 
         <template #bold="{ content }">

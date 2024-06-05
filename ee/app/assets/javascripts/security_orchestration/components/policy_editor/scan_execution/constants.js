@@ -94,15 +94,15 @@ export const CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS = Object.entries(
   CUSTOM_ACTION_OPTIONS,
 ).map(([value, text]) => ({ value, text }));
 
-export const INJECT = 'inject';
-export const OVERRIDE = 'override';
+export const INJECT = 'inject_ci';
+export const OVERRIDE = 'override_project_ci';
 
-export const CUSTOM_OVERRIDE_OPTIONS = {
+export const CUSTOM_STRATEGY_OPTIONS = {
   [INJECT]: s__('ScanExecutionPolicy|Inject'),
   [OVERRIDE]: s__('ScanExecutionPolicy|Override'),
 };
 
-export const CUSTOM_OVERRIDE_OPTIONS_KEYS = Object.keys(CUSTOM_OVERRIDE_OPTIONS);
-export const CUSTOM_OVERRIDE_OPTIONS_LISTBOX_ITEMS = Object.entries(
-  CUSTOM_OVERRIDE_OPTIONS,
+export const CUSTOM_STRATEGY_OPTIONS_KEYS = Object.keys(CUSTOM_STRATEGY_OPTIONS);
+export const CUSTOM_STRATEGY_OPTIONS_LISTBOX_ITEMS = Object.entries(
+  CUSTOM_STRATEGY_OPTIONS,
 ).map(([value, text]) => ({ value, text }));

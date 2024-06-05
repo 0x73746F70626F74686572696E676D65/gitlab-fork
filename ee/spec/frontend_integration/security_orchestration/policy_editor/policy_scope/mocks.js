@@ -41,7 +41,7 @@ export const mockPipelineExecutionActionManifest = `type: pipeline_execution_pol
 name: ''
 description: ''
 enabled: true
-override_project_ci: false
+pipeline_config_strategy: inject_ci
 content:
   include:
     project: ''
@@ -91,7 +91,7 @@ actions:
 name: ''
 description: ''
 enabled: true
-override_project_ci: false
+pipeline_config_strategy: inject_ci
 content:
   include:
     project: ''

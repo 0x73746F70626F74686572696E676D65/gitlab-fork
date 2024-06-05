@@ -1,5 +1,4 @@
 import { safeDump, safeLoad } from 'js-yaml';
-import { isBoolean } from 'lodash';
 import { hasInvalidKey } from '../utils';
 
 /*
@@ -22,17 +21,20 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'name',
         'description',
         'enabled',
-        'override_project_ci',
+        'pipeline_config_strategy',
+        'policy_scope',
         'content',
       ];
-      const contentKeys = ['workflow', 'include'];
+      const contentKeys = ['include'];
+      const pipelineConfigStrategies = ['inject_ci', 'override_project_ci'];
 
-      const hasInvalidOverrideType = (overrideType) => !isBoolean(overrideType);
+      const hasInvalidPipelineConfigStrategy = (strategy) =>
+        !pipelineConfigStrategies.includes(strategy);
 
       return !(
         hasInvalidKey(policy, primaryKeys) ||
         hasInvalidKey(policy.content, contentKeys) ||
-        hasInvalidOverrideType(policy.override_project_ci)
+        hasInvalidPipelineConfigStrategy(policy.pipeline_config_strategy)
       )
         ? policy
         : { error: true };

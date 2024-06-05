@@ -7,12 +7,16 @@ import {
   GlTruncate,
 } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import CodeBlockOverrideSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_override_selector.vue';
+import CodeBlockStrategySelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_strategy_selector.vue';
 import CodeBlockSourceSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_source_selector.vue';
 import CodeBlockFilePath from 'ee/security_orchestration/components/policy_editor/scan_execution/action/code_block_file_path.vue';
 import GroupProjectsDropdown from 'ee/security_orchestration/components/group_projects_dropdown.vue';
 import RefSelector from '~/ref/components/ref_selector.vue';
-import { INSERTED_CODE_BLOCK } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
+import {
+  INSERTED_CODE_BLOCK,
+  INJECT,
+  OVERRIDE,
+} from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 describe('CodeBlockFilePath', () => {
@@ -46,7 +50,7 @@ describe('CodeBlockFilePath', () => {
   const findGlSprintf = () => wrapper.findComponent(GlSprintf);
   const findIcon = () => wrapper.findComponent(GlIcon);
   const findGroupProjectsDropdown = () => wrapper.findComponent(GroupProjectsDropdown);
-  const findOverrideSelector = () => wrapper.findComponent(CodeBlockOverrideSelector);
+  const findStrategySelector = () => wrapper.findComponent(CodeBlockStrategySelector);
   const findRefSelector = () => wrapper.findComponent(RefSelector);
   const findPipelineExecutionRefSelector = () =>
     wrapper.findByTestId('pipeline-execution-ref-selector');
@@ -86,18 +90,18 @@ describe('CodeBlockFilePath', () => {
         stubs: { GlSprintf: false },
       });
       expect(findGlSprintf().attributes('message')).toBe(
-        '%{overrideSelector}into the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}',
+        '%{strategySelector}into the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}',
       );
     });
 
     it('renders message for "override" pipeline execution policy', () => {
       createComponent({
-        propsData: { overrideType: 'override' },
+        propsData: { strategy: OVERRIDE },
         provide: { glFeatures: { pipelineExecutionPolicyType: true } },
         stubs: { GlSprintf: false },
       });
       expect(findGlSprintf().attributes('message')).toBe(
-        '%{overrideSelector}the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}',
+        '%{strategySelector}the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}',
       );
     });
 
@@ -112,7 +116,7 @@ describe('CodeBlockFilePath', () => {
 
     it('renders icon tooltip message for override pipeline execution policy', () => {
       createComponent({
-        propsData: { overrideType: 'override' },
+        propsData: { strategy: OVERRIDE },
         provide: { glFeatures: { pipelineExecutionPolicyType: true } },
       });
       expect(findIcon().attributes('title')).toBe(
@@ -205,10 +209,10 @@ describe('CodeBlockFilePath', () => {
 
     it('renders selected override', () => {
       createComponent({
-        propsData: { overrideType: 'override' },
+        propsData: { strategy: OVERRIDE },
         provide: { glFeatures: { pipelineExecutionPolicyType: true } },
       });
-      expect(findOverrideSelector().props('overrideType')).toBe('override');
+      expect(findStrategySelector().props('strategy')).toBe(OVERRIDE);
     });
   });
 
@@ -251,13 +255,13 @@ describe('CodeBlockFilePath', () => {
       expect(wrapper.emitted('update-file-path')).toEqual([['file-path']]);
     });
 
-    it('can select override for pipeline execution policy', () => {
+    it('can select strategy for pipeline execution policy', () => {
       createComponent({
-        propsData: { overrideType: 'inject' },
+        propsData: { strategy: INJECT },
         provide: { glFeatures: { pipelineExecutionPolicyType: true } },
       });
-      findOverrideSelector().vm.$emit('select', 'override');
-      expect(wrapper.emitted('select-override')).toEqual([['override']]);
+      findStrategySelector().vm.$emit('select', OVERRIDE);
+      expect(wrapper.emitted('select-strategy')).toEqual([[OVERRIDE]]);
     });
   });
 

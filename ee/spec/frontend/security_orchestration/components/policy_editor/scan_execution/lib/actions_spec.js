@@ -1,8 +1,8 @@
-import { CUSTOM_OVERRIDE_OPTIONS_KEYS } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
+import { CUSTOM_STRATEGY_OPTIONS_KEYS } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
 import {
   buildCustomCodeAction,
   buildScannerAction,
-  validateOverrideValues,
+  validateStrategyValues,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib/actions';
 import { REPORT_TYPE_DAST } from '~/vue_shared/security_reports/constants';
 
@@ -52,13 +52,13 @@ describe('buildScannerAction', () => {
   });
 });
 
-describe('validateOverrideValues', () => {
+describe('validateStrategyValues', () => {
   it.each`
     input                              | expected
-    ${CUSTOM_OVERRIDE_OPTIONS_KEYS[0]} | ${true}
-    ${CUSTOM_OVERRIDE_OPTIONS_KEYS[1]} | ${true}
+    ${CUSTOM_STRATEGY_OPTIONS_KEYS[0]} | ${true}
+    ${CUSTOM_STRATEGY_OPTIONS_KEYS[1]} | ${true}
     ${'other string'}                  | ${false}
   `('validates correctly for $input', ({ input, expected }) => {
-    expect(validateOverrideValues(input)).toBe(expected);
+    expect(validateStrategyValues(input)).toBe(expected);
   });
 });

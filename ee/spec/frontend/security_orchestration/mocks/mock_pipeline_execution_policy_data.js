@@ -20,7 +20,7 @@ export const customYamlObject = { variable: true };
 export const mockWithoutRefPipelineExecutionManifest = `name: Ci config file
 description: triggers all protected branches except main
 enabled: true
-override_project_ci: false
+pipeline_config_strategy: inject_ci
 content:
   include:
     project: GitLab.org/GitLab
@@ -31,10 +31,10 @@ export const mockWithoutRefPipelineExecutionObject = fromYaml({
   manifest: mockWithoutRefPipelineExecutionManifest,
 });
 
-export const nonBooleanOverrideTypeManifest = `name: Ci config file
+export const invalidStrategyManifest = `name: Ci config file
 description: triggers all protected branches except main
 enabled: true
-override_project_ci: this_is_wrong
+pipeline_config_strategy: this_is_wrong
 content:
   include:
     project: GitLab.org/GitLab

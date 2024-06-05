@@ -45823,12 +45823,6 @@ msgstr ""
 msgid "ScanExecutionPolicy|%{labelStart}File path:%{labelEnd} %{filePath}"
 msgstr ""
 
-msgid "ScanExecutionPolicy|%{overrideSelector}into the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}"
-msgstr ""
-
-msgid "ScanExecutionPolicy|%{overrideSelector}the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}"
-msgstr ""
-
 msgid "ScanExecutionPolicy|%{period} %{days} around %{time} %{timezoneLabel} %{timezone}"
 msgstr ""
 
@@ -45836,6 +45830,12 @@ msgid "ScanExecutionPolicy|%{rules} actions for %{scopes} %{branches} %{agents} 
 msgstr ""
 
 msgid "ScanExecutionPolicy|%{rules} every time a pipeline runs for %{scopes} %{branches} %{branchExceptions} %{agents} %{namespaces}"
+msgstr ""
+
+msgid "ScanExecutionPolicy|%{strategySelector}into the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}"
+msgstr ""
+
+msgid "ScanExecutionPolicy|%{strategySelector}the %{boldStart}.gitlab-ci.yml%{boldEnd} with the following %{boldStart}pipeline execution file%{boldEnd} from %{projectSelector}"
 msgstr ""
 
 msgid "ScanExecutionPolicy|A runner will be selected automatically from those available."
