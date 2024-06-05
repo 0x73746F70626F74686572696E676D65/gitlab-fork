@@ -81,10 +81,15 @@ type LocalFluxResourceConditions {
   type: String
 }
 
+type LocalFluxResourceInventoryItem {
+  id: String
+}
+
 type LocalFluxKustomization {
   kind: String
   metadata: LocalFluxResourceMetadata
   conditions: [LocalFluxResourceConditions]
+  inventory: [LocalFluxResourceInventoryItem]
 }
 type LocalFluxHelmReleaseStatus {
   conditions: [LocalFluxResourceConditions]
