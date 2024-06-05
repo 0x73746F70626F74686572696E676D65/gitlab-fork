@@ -27,6 +27,7 @@ module GitlabSubscriptions
           organization_id: namespace&.organization_id || Organizations::Organization::DEFAULT_ORGANIZATION_ID,
           add_on: add_on,
           quantity: quantity,
+          started_at: started_at,
           expires_on: expires_on,
           purchase_xid: purchase_xid,
           trial: trial.presence || false

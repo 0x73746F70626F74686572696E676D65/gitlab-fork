@@ -11,6 +11,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::UpdateService, :aggregate_fa
     let(:params) do
       {
         quantity: 10,
+        started_on: Date.current.to_s,
         expires_on: (Date.current + 1.year).to_s,
         purchase_xid: purchase_xid,
         trial: true
@@ -21,6 +22,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::UpdateService, :aggregate_fa
 
     shared_examples 'record exists' do
       context 'when a record exists' do
+        let_it_be(:started_at) { Date.current - 1.week }
         let_it_be(:expires_on) { Date.current + 6.months }
         let_it_be(:add_on_purchase) do
           create(
@@ -28,6 +30,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::UpdateService, :aggregate_fa
             namespace: namespace,
             add_on: add_on,
             quantity: 5,
+            started_at: started_at,
             expires_on: expires_on,
             purchase_xid: purchase_xid,
             trial: false
@@ -45,6 +48,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::UpdateService, :aggregate_fa
             result
             add_on_purchase.reload
           end.to change { add_on_purchase.quantity }.from(5).to(10)
+            .and change { add_on_purchase.started_at }.from(started_at).to(params[:started_on].to_date)
             .and change { add_on_purchase.expires_on }.from(expires_on).to(params[:expires_on].to_date)
             .and change { add_on_purchase.trial }.from(false).to(true)
         end

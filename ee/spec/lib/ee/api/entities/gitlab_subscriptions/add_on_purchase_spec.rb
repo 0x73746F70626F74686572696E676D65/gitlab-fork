@@ -12,6 +12,7 @@ RSpec.describe ::EE::API::Entities::GitlabSubscriptions::AddOnPurchase, feature_
     expect(entity[:namespace_name]).to eq add_on_purchase.namespace.name
     expect(entity[:add_on]).to eq add_on_purchase.add_on.name.titleize
     expect(entity[:quantity]).to eq add_on_purchase.quantity
+    expect(entity[:started_on]).to eq add_on_purchase.started_at
     expect(entity[:expires_on]).to eq add_on_purchase.expires_on
     expect(entity[:purchase_xid]).to eq add_on_purchase.purchase_xid
     expect(entity[:trial]).to eq add_on_purchase.trial

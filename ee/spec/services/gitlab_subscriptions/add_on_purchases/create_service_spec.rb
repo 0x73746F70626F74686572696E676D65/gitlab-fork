@@ -9,6 +9,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::CreateService, :aggregate_fa
     let(:params) do
       {
         quantity: 10,
+        started_on: Date.current.to_s,
         expires_on: (Date.current + 1.year).to_s,
         purchase_xid: 'S-A00000001',
         trial: false
@@ -30,6 +31,7 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::CreateService, :aggregate_fa
           namespace: namespace,
           add_on: add_on,
           quantity: params[:quantity],
+          started_at: params[:started_on].to_date,
           expires_on: params[:expires_on].to_date,
           purchase_xid: params[:purchase_xid],
           trial: trial_value

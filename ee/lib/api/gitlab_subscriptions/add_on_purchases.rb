@@ -25,6 +25,7 @@ module API
         end
         params do
           requires :quantity, type: Integer, desc: 'The quantity of the purchase'
+          requires :started_on, type: Date, desc: 'The date when purchase takes effect'
           requires :expires_on, type: Date, desc: 'The date when purchase expires on'
           requires :purchase_xid, type: String, desc: 'The purchase identifier (example: the subscription name)'
           optional :trial, type: Boolean, default: false, desc: 'Whether the add-on is a trial'
@@ -70,6 +71,7 @@ module API
           ]
         end
         params do
+          requires :started_on, type: Date, desc: 'The date when purchase takes effect'
           requires :expires_on, type: Date, desc: 'The date when purchase expires on'
           optional :quantity, type: Integer, desc: 'The quantity of the purchase'
           optional :purchase_xid, type: String, desc: 'The purchase identifier (example: the subscription name)'
