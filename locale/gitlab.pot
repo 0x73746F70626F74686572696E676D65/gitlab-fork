@@ -59141,19 +59141,22 @@ msgstr ""
 msgid "WikiPage|Write your content or drag files here…"
 msgstr ""
 
+msgid "Wiki|Add custom sidebar"
+msgstr ""
+
 msgid "Wiki|Could not access the Wiki Repository at this time."
 msgstr ""
 
 msgid "Wiki|Create a new page under \"%{page_title}\""
 msgstr ""
 
+msgid "Wiki|Edit custom sidebar"
+msgstr ""
+
 msgid "Wiki|Edit page"
 msgstr ""
 
 msgid "Wiki|Edit template"
-msgstr ""
-
-msgid "Wiki|Edit wiki sidebar"
 msgstr ""
 
 msgid "Wiki|Last edited by %{author} %{timeago}"
