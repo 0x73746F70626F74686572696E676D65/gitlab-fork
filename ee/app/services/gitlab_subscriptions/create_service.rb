@@ -7,6 +7,7 @@ module GitlabSubscriptions
     attr_reader :current_user, :customer_params, :subscription_params, :idempotency_key
 
     CUSTOMERS_OAUTH_APP_UID_CACHE_KEY = 'customers_oauth_app_uid'
+    PURCHASE_FLOW = 'gitlab'
 
     def initialize(current_user, group:, customer_params:, subscription_params:, idempotency_key:)
       @current_user = current_user
@@ -86,7 +87,8 @@ module GitlabSubscriptions
         gl_namespace_name: @group.name,
         preview: 'false',
         source: subscription_params[:source],
-        idempotency_key: idempotency_key
+        idempotency_key: idempotency_key,
+        purchase_flow: PURCHASE_FLOW
       }
     end
 

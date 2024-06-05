@@ -34,7 +34,8 @@
       "preview": "false",
       "source": "some_source",
       "promo_code": null,
-      "idempotency_key": "idempotency-key"
+      "idempotency_key": "idempotency-key",
+      "purchase_flow": "gitlab"
     }
   },
   "subscription_params_with_promo_code": {
@@ -72,7 +73,8 @@
       "preview": "false",
       "source": "some_source",
       "promo_code": "Sample promo code",
-      "idempotency_key": "idempotency-key"
+      "idempotency_key": "idempotency-key",
+      "purchase_flow": "gitlab"
     }
   },
   "addon_with_active_sub": {
@@ -106,7 +108,8 @@
       "gl_namespace_name": "Group name",
       "preview": "false",
       "source": "some_source",
-      "idempotency_key": "idempotency-key"
+      "idempotency_key": "idempotency-key",
+      "purchase_flow": "gitlab"
     }
   },
   "addon_without_active_sub": {
@@ -144,7 +147,8 @@
       "preview": "false",
       "source": "some_source",
       "promo_code": null,
-      "idempotency_key": "idempotency-key"
+      "idempotency_key": "idempotency-key",
+      "purchase_flow": "gitlab"
     }
   }
 }
