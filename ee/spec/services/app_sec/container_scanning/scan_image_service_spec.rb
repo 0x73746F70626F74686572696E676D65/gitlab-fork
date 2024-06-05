@@ -14,6 +14,33 @@ RSpec.describe AppSec::ContainerScanning::ScanImageService, feature_category: :s
     allow(Gitlab::ApplicationRateLimiter).to receive(:throttled_request?).and_return(false)
   end
 
+  shared_examples 'creates a throttled log entry' do
+    it do
+      expect(Gitlab::AppJsonLogger).to receive(:info).with(
+        a_hash_including(
+          class: described_class.name,
+          project_id: project_id,
+          user_id: user_id,
+          image: image,
+          scan_type: :container_scanning,
+          pipeline_source: described_class::SOURCE,
+          limit_type: :container_scanning_for_registry_scans,
+          message: 'Daily rate limit container_scanning_for_registry_scans reached'
+        )
+      )
+
+      execute
+    end
+  end
+
+  shared_examples 'does not creates a throttled log entry' do
+    it do
+      expect(Gitlab::AppJsonLogger).not_to receive(:info)
+
+      execute
+    end
+  end
+
   describe '#pipeline_config' do
     subject(:pipeline_config) do
       described_class.new(
@@ -44,18 +71,24 @@ RSpec.describe AppSec::ContainerScanning::ScanImageService, feature_category: :s
       let(:project_id) { nil }
 
       it { is_expected.to be_nil }
+
+      it_behaves_like 'does not creates a throttled log entry'
     end
 
     context 'when a user is not present' do
       let(:user_id) { nil }
 
       it { is_expected.to be_nil }
+
+      it_behaves_like 'does not creates a throttled log entry'
     end
 
     context 'when a valid project and user is present' do
       it 'creates a pipeline' do
         expect { execute }.to change { Ci::Pipeline.count }.by(1)
       end
+
+      it_behaves_like 'does not creates a throttled log entry'
     end
 
     context 'when the project has exceeded the daily scan limit' do
@@ -64,6 +97,8 @@ RSpec.describe AppSec::ContainerScanning::ScanImageService, feature_category: :s
       end
 
       it { is_expected.to be_nil }
+
+      it_behaves_like 'creates a throttled log entry'
     end
   end
 end
