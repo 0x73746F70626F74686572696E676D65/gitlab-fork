@@ -30092,6 +30092,9 @@ msgstr ""
 msgid "KubernetesDashboard|You can select an agent from a project's environment page."
 msgstr ""
 
+msgid "KubernetesLogs|No logs available for pod %{podName}"
+msgstr ""
+
 msgid "LDAP"
 msgstr ""
 
@@ -31091,6 +31094,18 @@ msgid "Logo will be removed. Are you sure?"
 msgstr ""
 
 msgid "Logs"
+msgstr ""
+
+msgid "LogsViewer|Enter full screen"
+msgstr ""
+
+msgid "LogsViewer|Exit full screen"
+msgstr ""
+
+msgid "LogsViewer|Scroll to bottom"
+msgstr ""
+
+msgid "LogsViewer|Scroll to top"
 msgstr ""
 
 msgid "Low - S4"
