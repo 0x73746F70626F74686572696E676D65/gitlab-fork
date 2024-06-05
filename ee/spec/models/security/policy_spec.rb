@@ -8,6 +8,7 @@ RSpec.describe Security::Policy, feature_category: :security_policy_management d
   describe 'associations' do
     it { is_expected.to belong_to(:security_orchestration_policy_configuration) }
     it { is_expected.to have_many(:approval_policy_rules) }
+    it { is_expected.to have_many(:security_policy_project_links) }
 
     it do
       is_expected.to validate_uniqueness_of(:security_orchestration_policy_configuration_id).scoped_to(%i[type

@@ -10,6 +10,8 @@ module Security
       inverse_of: :security_policy
     has_many :scan_execution_policy_rules, class_name: 'Security::ScanExecutionPolicyRule',
       foreign_key: 'security_policy_id', inverse_of: :security_policy
+    has_many :security_policy_project_links, class_name: 'Security::PolicyProjectLink',
+      foreign_key: :security_policy_id, inverse_of: :security_policy
 
     enum type: { approval_policy: 0, scan_execution_policy: 1 }, _prefix: true
 
