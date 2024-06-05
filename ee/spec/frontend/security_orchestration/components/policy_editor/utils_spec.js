@@ -10,6 +10,7 @@ import {
   hasDuplicates,
   slugify,
   slugifyToArray,
+  renderMultiselectLabel,
   renderMultiSelectText,
   createProjectWithMinimumValues,
   parseCustomFileConfiguration,
@@ -249,6 +250,22 @@ describe('slugifyToArray', () => {
     expect(slugifyToArray(BRANCHES.map((b) => b.input).join(','))).toEqual(
       BRANCHES.map((b) => b.output).filter(Boolean),
     );
+  });
+});
+
+describe('validation', () => {
+  it.each`
+    useSingleOption | commonItems                             | items                                                                      | expectedText
+    ${false}        | ${[]}                                   | ${{}}                                                                      | ${''}
+    ${false}        | ${[]}                                   | ${{ project1: 'project 1', project2: 'project 2' }}                        | ${''}
+    ${false}        | ${['project1', 'project2']}             | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'project 1, project 2'}
+    ${false}        | ${['project1', 'project2', 'project3']} | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'project 1, project 2 +1 more'}
+    ${true}         | ${['project1', 'project2', 'project3']} | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'project 1 +2 more'}
+    ${true}         | ${['project1', 'project2']}             | ${{ project1: 'project 1', project2: 'project 2', project3: 'project 3' }} | ${'project 1 +1 more'}
+    ${true}         | ${[]}                                   | ${{}}                                                                      | ${''}
+    ${true}         | ${['project1']}                         | ${{}}                                                                      | ${''}
+  `('renders correct multiple label', ({ useSingleOption, commonItems, items, expectedText }) => {
+    expect(renderMultiselectLabel({ useSingleOption, commonItems, items })).toBe(expectedText);
   });
 });
 
