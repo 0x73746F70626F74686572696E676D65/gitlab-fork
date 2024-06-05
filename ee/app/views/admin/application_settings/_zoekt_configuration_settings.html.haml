@@ -6,6 +6,7 @@
       = expanded_by_default? ? _('Collapse') : _('Expand')
     %p.gl-text-secondary
       = _('Configure settings for exact code search.')
+      = link_to _('Learn more.'), help_page_path('integration/exact_code_search/zoekt'), target: '_blank', rel: 'noopener noreferrer'
   .settings-content
     = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-exact-code-search-settings'), html: { class: 'fieldset-form', id: 'exact-code-search-settings' } do |f|
       = form_errors(@application_setting)
