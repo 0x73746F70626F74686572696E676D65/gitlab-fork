@@ -165,6 +165,8 @@ module API
           token = ::CloudConnector::AvailableServices.find_by_name(:code_suggestions).access_token(current_user)
           service_unavailable! unless token
 
+          Gitlab::Tracking::AiTracking.track_event('code_suggestion_direct_access_token_refresh', user: current_user)
+
           access = {
             base_url: ::Gitlab::AiGateway.url,
             # for development purposes we just return instance JWT, this should not be used in production
