@@ -15,3 +15,5 @@ class AddHiddenToMergeRequests < Elastic::Migration
     }
   end
 end
+
+AddHiddenToMergeRequests.prepend ::Elastic::MigrationObsolete
