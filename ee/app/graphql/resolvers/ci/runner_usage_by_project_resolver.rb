@@ -75,6 +75,7 @@ module Resolvers
       def find_and_authorize_scope!(full_path)
         return authorize! :global if full_path.nil?
 
+        full_path = full_path.downcase # full path is always converted to lowercase for case-insensitive results
         strong_memoize_with(:find_and_authorize_scope, full_path) do
           @group_scope = Group.find_by_full_path(full_path)
           @project_scope = Project.find_by_full_path(full_path) if @group_scope.nil?
