@@ -33390,6 +33390,9 @@ msgstr ""
 msgid "MlModelRegistry|Upload files under path: "
 msgstr ""
 
+msgid "MlModelRegistry|Uploaded files successfully"
+msgstr ""
+
 msgid "MlModelRegistry|Use versions to track performance, parameters, and metadata"
 msgstr ""
 
