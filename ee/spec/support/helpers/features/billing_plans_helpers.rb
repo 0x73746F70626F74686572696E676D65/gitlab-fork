@@ -9,12 +9,7 @@ module Features
     include HandRaiseLeadHelpers
 
     def should_have_hand_raise_lead_button
-      expect(page).to(
-        have_selector(
-          ".js-hand-raise-lead-button[data-namespace-id='#{namespace.id}'][data-user-name='#{user.username}']",
-          visible: false
-        )
-      )
+      expect(page).to have_selector(".js-hand-raise-lead-trigger", visible: false)
     end
 
     def click_premium_contact_sales_button_and_submit_form(user, namespace)
