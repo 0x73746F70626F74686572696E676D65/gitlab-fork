@@ -176,6 +176,13 @@ module EE
           description: 'Instance-level external audit event streaming destinations.',
           resolver: ::Resolvers::AuditEvents::Instance::StreamingDestinationsResolver,
           alpha: { milestone: '16.11' }
+
+        field :ai_self_hosted_models,
+          ::Types::Ai::SelfHostedModels::SelfHostedModelType.connection_type,
+          null: true,
+          description: 'List of Self-Hosted LLM servers.',
+          resolver: ::Resolvers::Ai::SelfHostedModels::SelfHostedModelsResolver,
+          alpha: { milestone: '17.1' }
       end
 
       def vulnerability(id:)
