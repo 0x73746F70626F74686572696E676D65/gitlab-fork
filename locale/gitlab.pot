@@ -28551,10 +28551,10 @@ msgstr ""
 msgid "Issue was closed by %{name}"
 msgstr ""
 
-msgid "Issue was closed by %{name} via %{closed_via}"
+msgid "Issue was closed by %{name} with %{closed_via}"
 msgstr ""
 
-msgid "Issue was closed by %{name} via merge request %{link}"
+msgid "Issue was closed by %{name} with merge request %{link}"
 msgstr ""
 
 msgid "Issue weight"
