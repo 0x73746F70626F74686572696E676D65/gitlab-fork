@@ -103,7 +103,7 @@ module Resolvers
     attr_reader :resolver_object
 
     def unconditional_includes
-      [:group]
+      [:group, :sync_object]
     end
 
     def preloads

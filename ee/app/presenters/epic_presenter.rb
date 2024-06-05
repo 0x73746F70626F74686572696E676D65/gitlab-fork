@@ -4,6 +4,7 @@ class EpicPresenter < Gitlab::View::Presenter::Delegated
   include GitlabRoutingHelper
   include EntityDateHelper
 
+  delegator_override_with Gitlab::Utils::StrongMemoize
   presents ::Epic, as: :epic
 
   def show_data(base_data: {}, author_icon: nil)

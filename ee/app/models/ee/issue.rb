@@ -17,7 +17,6 @@ module EE
       include IterationEventable
       include HealthStatus
       include Epics::MetadataCacheUpdate
-
       # widget supporting custom issue types - see https://gitlab.com/gitlab-org/gitlab/-/issues/292035
       include IssueWidgets::ActsLikeRequirement
 

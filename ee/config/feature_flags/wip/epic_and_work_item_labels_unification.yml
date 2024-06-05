@@ -1,0 +1,9 @@
+---
+name: epic_and_work_item_labels_unification
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/443548
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/151490
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/work_items/463000
+milestone: '17.1'
+group: group::product planning
+type: wip
+default_enabled: false

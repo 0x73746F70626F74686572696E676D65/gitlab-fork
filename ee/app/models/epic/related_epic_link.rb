@@ -12,8 +12,8 @@ class Epic::RelatedEpicLink < ApplicationRecord
 
   scope :with_api_entity_associations, -> do
     preload(
-      source: [:author, :labels, { group: [:saml_provider, :route] }],
-      target: [:author, :labels, { group: [:saml_provider, :route] }]
+      source: [:sync_object, :author, :labels, { group: [:saml_provider, :route] }],
+      target: [:sync_object, :author, :labels, { group: [:saml_provider, :route] }]
     )
   end
 

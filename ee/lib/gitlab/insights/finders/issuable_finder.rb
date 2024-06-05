@@ -51,7 +51,7 @@ module Gitlab
 
           relation = finder
             .new(current_user, finder_args)
-            .execute
+            .execute.with_api_entity_associations
           relation = relation.including_metrics if period_field == :merged_at
           relation = relation.preload(:labels) if query.key?(:collection_labels) # rubocop:disable CodeReuse/ActiveRecord
 

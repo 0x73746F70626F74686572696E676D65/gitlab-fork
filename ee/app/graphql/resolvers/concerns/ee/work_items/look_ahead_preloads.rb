@@ -17,6 +17,13 @@ module EE
           feature_flags: { feature_flags: :project }
         )
       end
+
+      def unconditional_includes
+        [
+          *super,
+          :sync_object
+        ]
+      end
     end
   end
 end
