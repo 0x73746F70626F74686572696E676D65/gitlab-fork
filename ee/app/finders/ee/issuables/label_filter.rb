@@ -18,6 +18,14 @@ module EE
         find_wildcard_label_ids(scoped_label_wildcards) + super(label_names)
       end
 
+      override :target_label_links_query
+      def target_label_links_query(target_model, label_ids)
+        return super unless %w[Epic Issue].include?(target_model.name)
+        return super unless namespace&.epic_and_work_item_labels_unification_enabled?
+
+        multi_target_label_links_query(target_model, label_ids)
+      end
+
       def extract_scoped_label_wildcards(label_names)
         label_names.partition { |name| name.ends_with?(::Label::SCOPED_LABEL_SEPARATOR + SCOPED_LABEL_WILDCARD) }
       end
@@ -62,6 +70,43 @@ module EE
             ids_by_prefix[prefix] << id
           end
         end
+      end
+
+      # rubocop: disable CodeReuse/ActiveRecord
+      def multi_target_label_links_query(target_model, label_ids)
+        case target_model.name
+        when 'Epic'
+          sync_model = ::Issue
+          join_clause = target_model.arel_table['issue_id']
+
+          ::LabelLink.from_union(
+            [
+              ::LabelLink.by_target_for_exists_query(target_model.name, target_model.arel_table['id'], label_ids),
+              ::LabelLink.by_target_for_exists_query(sync_model.name, join_clause, label_ids)
+            ],
+            remove_duplicates: false
+          )
+        when 'Issue'
+          sync_model = ::Epic
+          join_clause = sync_model.arel_table.project(sync_model.arel_table['id']).where(
+            sync_model.arel_table['issue_id'].eq(target_model.arel_table['id'])
+          )
+
+          ::LabelLink.from_union(
+            [
+              ::LabelLink.by_target_for_exists_query(target_model.name, target_model.arel_table['id'], label_ids),
+              ::LabelLink.by_target_for_exists_query(sync_model.name, join_clause, label_ids)
+            ],
+            remove_duplicates: false
+          )
+        end
+      end
+      # rubocop: enable CodeReuse/ActiveRecord
+
+      def namespace
+        return project.group if project
+
+        group
       end
     end
   end

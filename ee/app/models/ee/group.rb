@@ -263,6 +263,10 @@ module EE
       end
     end
 
+    def epic_and_work_item_labels_unification_enabled?
+      ::Feature.enabled?(:epic_and_work_item_labels_unification, self, type: :wip)
+    end
+
     override :supports_saved_replies?
     def supports_saved_replies?
       ::Feature.enabled?(:group_saved_replies_flag, self, type: :beta) && licensed_feature_available?(:group_saved_replies)

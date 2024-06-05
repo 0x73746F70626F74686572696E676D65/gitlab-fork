@@ -672,21 +672,183 @@ RSpec.describe EpicsFinder, feature_category: :team_planning do
         end
 
         context 'when using group cte for search' do
-          context 'and two labels more search string are present' do
-            let_it_be(:label1) { create(:group_label, group: group) }
-            let_it_be(:label2) { create(:group_label, group: group) }
-            let_it_be(:labeled_epic) { create(:labeled_epic, group: group, title: 'filtered epic', labels: [label1, label2]) }
+          let_it_be(:label1) { create(:group_label, group: group) }
+          let_it_be(:label2) { create(:group_label, group: group) }
+          let_it_be(:labeled_epic1) { create(:labeled_epic, group: group, title: 'filtered epic', labels: [label1, label2]) }
 
+          context 'and two labels more search string are present' do
             it 'returns correct epics' do
               filtered_epics =
                 epics(attempt_group_search_optimizations: true, label_name: [label1.title, label2.title], search: 'filtered')
 
-              expect(filtered_epics).to contain_exactly(labeled_epic)
+              expect(filtered_epics).to contain_exactly(labeled_epic1)
             end
 
             it 'filters correctly by short expressions when sorting by due date' do
               expect(epics(attempt_group_search_optimizations: true, search: 'aw', sort: 'end_date_desc'))
                 .to eq([epic3, epic1])
+            end
+          end
+
+          context 'when epic labels are split across epic and epic work item' do
+            let_it_be(:label3) { create(:group_label, group: group) }
+            let_it_be(:label4) { create(:group_label, group: group) }
+            let_it_be(:label5) { create(:group_label, group: group) }
+            let_it_be(:labeled_epic2) { create(:labeled_epic, group: group, title: 'filtered epic2', labels: [label4]) }
+            let_it_be(:labeled_epic3) { create(:labeled_epic, group: group, title: 'filtered epic3') }
+            let_it_be(:epic_work_item1) { labeled_epic1.work_item }
+            let_it_be(:epic_work_item2) { labeled_epic2.work_item }
+            let_it_be(:epic_work_item3) { labeled_epic3.work_item }
+
+            let(:filtering_params) { {} }
+            let(:params) { { attempt_group_search_optimizations: true } }
+
+            before do
+              epic_work_item1.labels << label3
+              epic_work_item2.labels << label5
+              epic_work_item3.labels << label5
+            end
+
+            subject(:filtered_epics) { epics(params.merge(filtering_params)) }
+
+            context 'when epic_and_work_item_labels_unification FF is enabled' do
+              context 'when searching by NONE' do
+                let(:filtering_params) { { label_name: ['None'] } }
+
+                it 'returns correct epics' do
+                  # these epics have no labels neither on epic or epic work item side, e.g.
+                  # labeled_epic3 does not have a label on epic side, but has one on epic work item side
+                  expect(filtered_epics).to contain_exactly(epic1, epic2, epic3, epic5)
+                end
+              end
+
+              context 'with `and` search' do
+                context 'when searching by label assigned only to epic work item' do
+                  let(:filtering_params) { { label_name: [label3.title] } }
+
+                  it 'returns correct epics' do
+                    expect(filtered_epics).to contain_exactly(labeled_epic1)
+                  end
+                end
+
+                context 'when searching by a combination of labels assigned to epic and epic work item' do
+                  let(:filtering_params) { { label_name: [label3.title, label1.title] } }
+
+                  it 'returns correct epics' do
+                    expect(filtered_epics).to contain_exactly(labeled_epic1)
+                  end
+                end
+              end
+
+              context 'with `or` search' do
+                context 'when searching by label assigned to epic work item' do
+                  let(:filtering_params) { { or: { label_name: [label3.title, label5.title] } } }
+
+                  it 'returns correct epics' do
+                    expect(filtered_epics).to contain_exactly(labeled_epic1, labeled_epic2, labeled_epic3)
+                  end
+                end
+
+                context 'when searching by a combination of labels assigned to epic and epic work item' do
+                  let(:filtering_params) { { or: { label_name: [label3.title, label4.title] } } }
+
+                  it 'returns correct epics' do
+                    expect(filtered_epics).to contain_exactly(labeled_epic1, labeled_epic2)
+                  end
+                end
+              end
+
+              context 'with `not` search' do
+                context 'when searching by label assigned to epic work item' do
+                  let(:filtering_params) { { not: { label_name: [label3.title, label5.title] } } }
+
+                  it 'returns correct epics' do
+                    expect(filtered_epics).to contain_exactly(
+                      *(group.epics.to_a - [labeled_epic1, labeled_epic2, labeled_epic3])
+                    )
+                  end
+                end
+
+                context 'when searching by a combination of labels assigned to epic and epic work item' do
+                  let(:filtering_params) { { not: { label_name: [label3.title, label4.title] } } }
+
+                  it 'returns correct epics' do
+                    expect(filtered_epics).to contain_exactly(*(group.epics.to_a - [labeled_epic1, labeled_epic2]))
+                  end
+                end
+              end
+            end
+
+            context 'when epic_and_work_item_labels_unification FF is disabled' do
+              before do
+                stub_feature_flags(epic_and_work_item_labels_unification: false)
+              end
+
+              context 'when searching by NONE' do
+                let(:filtering_params) { { label_name: ['None'] } }
+
+                it 'returns correct epics' do
+                  # epics epic1, epic2, epic3, epic5 have no labels neither on epic or epic work item side, e.g.
+                  # labeled_epic3 does not have a label on epic side, but has one on epic work item side
+                  expect(filtered_epics).to contain_exactly(epic1, epic2, epic3, epic5, labeled_epic3)
+                end
+              end
+
+              context 'with `and` search' do
+                context 'when searching by label assigned only to epic work item' do
+                  let(:filtering_params) { { label_name: [label3.title] } }
+
+                  it 'returns correct epics' do
+                    expect(filtered_epics).to be_empty
+                  end
+                end
+
+                context 'when searching by a combination of labels assigned to epic and epic work item' do
+                  let(:filtering_params) { { label_name: [label3.title, label2.title] } }
+
+                  it 'returns correct epics' do
+                    expect(filtered_epics).to be_empty
+                  end
+                end
+              end
+
+              context 'with `or` search' do
+                context 'when searching by label assigned to epic work item' do
+                  let(:filtering_params) { { or: { label_name: [label3.title, label5.title] } } }
+
+                  it 'returns correct epics' do
+                    # because we search by labels that are assigned just to epic work item, we get no result
+                    expect(filtered_epics).to be_empty
+                  end
+                end
+
+                context 'when searching by a combination of labels assigned to epic and epic work item' do
+                  let(:filtering_params) { { or: { label_name: [label3.title, label4.title] } } }
+
+                  it 'returns correct epics' do
+                    # because the label4 is assigned to the epic we get that epic as a result
+                    expect(filtered_epics).to contain_exactly(labeled_epic2)
+                  end
+                end
+              end
+
+              context 'with `not` search' do
+                context 'when searching by label assigned to epic work item' do
+                  let(:filtering_params) { { not: { label_name: [label3.title, label5.title] } } }
+
+                  it 'returns correct epics' do
+                    expect(filtered_epics).to contain_exactly(*group.epics.to_a)
+                  end
+                end
+
+                context 'when searching by a combination of labels assigned to epic and epic work item' do
+                  let(:filtering_params) { { not: { label_name: [label3.title, label4.title] } } }
+
+                  it 'returns correct epics' do
+                    expect(filtered_epics).to contain_exactly(*(group.epics.to_a - [labeled_epic2]))
+                  end
+                end
+              end
             end
           end
         end

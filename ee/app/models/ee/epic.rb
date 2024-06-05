@@ -26,6 +26,9 @@ module EE
       include Elastic::ApplicationVersionedSearch
       include Elastic::UpdateAssociatedEpicsOnDateChange
 
+      # we'd need to make sure these override the existing associations so we prepend this.
+      include ::WorkItems::EpicAsWorkItem
+
       DEFAULT_COLOR = ::Gitlab::Color.of('#1068bf')
       MAX_HIERARCHY_DEPTH = 7
       MAX_CHILDREN_COUNT = 5000
@@ -67,6 +70,7 @@ module EE
       has_many :children, class_name: "Epic", foreign_key: :parent_id
       has_many :events, as: :target, dependent: :delete_all # rubocop:disable Cop/ActiveRecordDependent
       belongs_to :work_item, foreign_key: 'issue_id', inverse_of: :synced_epic, dependent: :destroy
+      belongs_to :sync_object, foreign_key: 'issue_id', class_name: 'WorkItem', inverse_of: :sync_object
 
       has_internal_id :iid, scope: :group
 
@@ -109,7 +113,9 @@ module EE
       end
 
       scope :with_web_entity_associations, -> { preload(:author, group: [:ip_restrictions, :route]) }
-      scope :with_api_entity_associations, -> { preload(:author, :labels, :parent, group: [:saml_provider, :route]) }
+      scope :with_api_entity_associations, -> do
+        preload(:author, :sync_object, :labels, :parent, group: [:saml_provider, :route])
+      end
       scope :preload_for_indexing, -> do
         includes(:author, :labels, :group, :start_date_sourcing_epic, :due_date_sourcing_epic,
           :start_date_sourcing_milestone, :due_date_sourcing_milestone)

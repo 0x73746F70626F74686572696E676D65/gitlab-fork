@@ -142,7 +142,7 @@ RSpec.describe Gitlab::Insights::Finders::IssuableFinder, feature_category: :tea
         create(:"labeled_#{issuable_type.singularize}", :opened, created_at: Time.utc(2019, 3, 5), labels: [label_bug], project_association_key => project, **extra_issuable_attrs[5])
 
         expect do
-          find(entity, query: query).map { |issuable| issuable.labels.map(&:title) }
+          subject.map { |issuable| issuable.labels.map(&:title) }
         end.not_to exceed_query_limit(control_queries)
       end
 

@@ -69,7 +69,7 @@ RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
     it 'from epic to unassigned issues lane' do
       # TODO: remove threshold after epic-work item sync
       # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/438295
-      allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(108)
+      allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(109)
 
       wait_for_board_cards(1, 2)
       wait_for_board_cards_in_second_epic(1, 1)

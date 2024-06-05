@@ -1604,4 +1604,42 @@ RSpec.describe Epic, feature_category: :portfolio_management do
       epic.sync_work_item_updated_at
     end
   end
+
+  context 'with labels' do
+    let_it_be(:label1) { create(:group_label, group: group, title: 'epic-label-1') }
+    let_it_be(:label2) { create(:group_label, group: group, title: 'epic-label-2') }
+    let_it_be(:epic) { create(:epic, group: group, labels: [label1]) }
+    let_it_be(:work_item) { epic.work_item }
+
+    before do
+      work_item.labels << label2
+    end
+
+    context 'when labels are fetched just from the epic itself' do
+      before do
+        stub_feature_flags(epic_and_work_item_labels_unification: false)
+      end
+
+      it 'returns only epic labels' do
+        expect(epic.reload.labels).to match_array([label1])
+        expect(work_item.reload.labels).to match_array([label2])
+      end
+    end
+
+    context 'when labels are fetched from the epic and epic work item' do
+      before do
+        stub_feature_flags(epic_and_work_item_labels_unification: true)
+      end
+
+      it 'returns only epic labels' do
+        expect(epic.reload.labels).to match_array([label1, label2])
+        expect(work_item.reload.labels).to match_array([label1, label2])
+      end
+
+      it 'returns only epic labels queried by id' do
+        expect(epic.reload.labels.find(label1.id)).to eq(label1)
+        expect(work_item.reload.labels.find(label1.id)).to eq(label1)
+      end
+    end
+  end
 end

@@ -8,8 +8,11 @@ module EE
     prepended do
       include FilterableByTestReports
 
-      has_one :progress, class_name: 'WorkItems::Progress', foreign_key: 'issue_id', inverse_of: :work_item
+      # we'd need to make sure these override the existing associations so we prepend this.
+      include ::WorkItems::EpicAsWorkItem
 
+      has_one :sync_object, class_name: 'Epic', foreign_key: 'issue_id', inverse_of: :sync_object
+      has_one :progress, class_name: 'WorkItems::Progress', foreign_key: 'issue_id', inverse_of: :work_item
       has_one :color, class_name: 'WorkItems::Color', foreign_key: 'issue_id', inverse_of: :work_item
 
       delegate :reminder_frequency, to: :progress, allow_nil: true
@@ -32,6 +35,12 @@ module EE
         )
       end
       scope :grouped_by_work_item, -> { group(:id) }
+    end
+
+    class_methods do
+      def with_api_entity_associations
+        super.preload(:sync_object)
+      end
     end
 
     def widgets
