@@ -2397,6 +2397,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: work_items_rolledup_dates_bulk_update_handler
+  :worker_name: WorkItems::RolledupDates::BulkUpdateHandler
+  :feature_category: :portfolio_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: work_items_rolledup_dates_update_milestone_related_work_item_dates_event_handler
   :worker_name: WorkItems::RolledupDates::UpdateMilestoneRelatedWorkItemDatesEventHandler
   :feature_category: :portfolio_management

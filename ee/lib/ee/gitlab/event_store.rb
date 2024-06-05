@@ -111,8 +111,15 @@ module EE
           store.subscribe ::WorkItems::RolledupDates::UpdateRolledupDatesEventHandler,
             to: ::WorkItems::WorkItemDeletedEvent
           store.subscribe ::WorkItems::RolledupDates::UpdateRolledupDatesEventHandler,
-            to: ::WorkItems::WorkItemUpdatedEvent, if: ->(event) {
+            to: ::WorkItems::WorkItemUpdatedEvent,
+            if: ->(event) {
               ::WorkItems::RolledupDates::UpdateRolledupDatesEventHandler.can_handle_update?(event)
+            }
+
+          store.subscribe ::WorkItems::RolledupDates::BulkUpdateHandler,
+            to: ::WorkItems::BulkUpdatedEvent,
+            if: ->(event) {
+              ::WorkItems::RolledupDates::BulkUpdateHandler.can_handle?(event)
             }
 
           store.subscribe ::WorkItems::ValidateEpicWorkItemSyncWorker,
@@ -123,6 +130,7 @@ module EE
                       ::Group.actor_from_id(event.data[:namespace_id])) &&
                     ::Epic.find_by_issue_id(event.data[:id]).present?
                 }
+
           store.subscribe ::WorkItems::ValidateEpicWorkItemSyncWorker,
             to: ::WorkItems::WorkItemUpdatedEvent,
             if: ->(event) {
