@@ -1,9 +1,0 @@
----
-name: ai_gateway_docs_search
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/451215
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/149804
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/456681
-milestone: '17.0'
-group: group::duo chat
-type: beta
-default_enabled: true

@@ -41,33 +41,11 @@ module Gitlab
         return empty_response unless question.present?
         return empty_response unless self.class.enabled_for?(user: current_user)
 
-        if ::Feature.enabled?(:ai_gateway_docs_search, current_user)
-          search_documents = get_search_results(question)
+        search_documents = get_search_results(question)
 
-          return empty_response if search_documents.blank?
+        return empty_response if search_documents.blank?
 
-          return get_completions_ai_gateway(search_documents, &block)
-        end
-
-        unless ::Embedding::Vertex::GitlabDocumentation.table_exists?
-          logger.info_or_debug(current_user, message: "Embeddings database does not exist")
-
-          return unsupported_response
-        end
-
-        unless ::Embedding::Vertex::GitlabDocumentation.any?
-          logger.info_or_debug(current_user, message: "Need to query docs but no embeddings are found")
-
-          return empty_response
-        end
-
-        embedding = embedding_for_question(question)
-        return empty_response if embedding.nil?
-
-        search_documents = get_nearest_neighbors(embedding)
-        return empty_response if search_documents.empty?
-
-        get_completions(search_documents, &block)
+        get_completions_ai_gateway(search_documents, &block)
       end
 
       # Note: a Rake task is using this method to extract embeddings for a test fixture.
