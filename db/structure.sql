@@ -749,6 +749,22 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_13d4aa8fe3dd() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "target_project_id"
+  INTO NEW."project_id"
+  FROM "merge_requests"
+  WHERE "merge_requests"."id" = NEW."merge_request_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_174b23fa3dfb() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -9157,6 +9173,7 @@ CREATE TABLE draft_notes (
     line_code text,
     internal boolean DEFAULT false NOT NULL,
     note_type smallint,
+    project_id bigint,
     CONSTRAINT check_c497a94a0e CHECK ((char_length(line_code) <= 255))
 );
 
@@ -26123,6 +26140,8 @@ CREATE INDEX index_draft_notes_on_discussion_id ON draft_notes USING btree (disc
 
 CREATE INDEX index_draft_notes_on_merge_request_id ON draft_notes USING btree (merge_request_id);
 
+CREATE INDEX index_draft_notes_on_project_id ON draft_notes USING btree (project_id);
+
 CREATE INDEX index_early_access_program_tracking_events_on_category ON early_access_program_tracking_events USING btree (category);
 
 CREATE INDEX index_early_access_program_tracking_events_on_event_label ON early_access_program_tracking_events USING btree (event_label);
@@ -30573,6 +30592,8 @@ CREATE TRIGGER trigger_01b3fc052119 BEFORE INSERT OR UPDATE ON approval_merge_re
 
 CREATE TRIGGER trigger_10ee1357e825 BEFORE INSERT OR UPDATE ON p_ci_builds FOR EACH ROW EXECUTE FUNCTION trigger_10ee1357e825();
 
+CREATE TRIGGER trigger_13d4aa8fe3dd BEFORE INSERT OR UPDATE ON draft_notes FOR EACH ROW EXECUTE FUNCTION trigger_13d4aa8fe3dd();
+
 CREATE TRIGGER trigger_174b23fa3dfb BEFORE INSERT OR UPDATE ON approval_project_rules_users FOR EACH ROW EXECUTE FUNCTION trigger_174b23fa3dfb();
 
 CREATE TRIGGER trigger_207005e8e995 BEFORE INSERT OR UPDATE ON operations_strategies FOR EACH ROW EXECUTE FUNCTION trigger_207005e8e995();
@@ -30983,6 +31004,9 @@ ALTER TABLE ONLY ml_model_versions
 
 ALTER TABLE p_ci_builds
     ADD CONSTRAINT fk_3a9eaa254d_p FOREIGN KEY (partition_id, stage_id) REFERENCES p_ci_stages(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE ONLY draft_notes
+    ADD CONSTRAINT fk_3ac2bcb746 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY agent_activity_events
     ADD CONSTRAINT fk_3af186389b FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE SET NULL;
