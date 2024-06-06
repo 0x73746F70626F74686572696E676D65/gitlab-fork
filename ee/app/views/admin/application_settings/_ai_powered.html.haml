@@ -1,7 +1,6 @@
 - return if Gitlab.org_or_com?
 
 - visible_duo_chat = admin_display_ai_powered_toggle?
-- code_suggestions_purchased = code_suggestions_purchased?
 
 - return if !visible_duo_chat
 
@@ -26,21 +25,8 @@
             s_('AIPoweredSM|Enable GitLab Duo features')
           = f.gitlab_ui_checkbox_component :lock_duo_features_enabled,
             s_('AIPoweredSM|Enforce Duo features setting for all subgroups')
-        .form-group
-          - if code_suggestions_purchased
-            = render Pajamas::AlertComponent.new(variant: :info, dismissible: true, alert_options: { class: 'gl-mb-5' }) do |c|
-              - c.with_body do
-                - subscription_details_link = link_to('', admin_code_suggestions_path)
-                = safe_format(s_('CodeSuggestionsSM|Manage user access for Code Suggestions on the %{subscription_details_link_start}subscription details page%{subscription_details_link_end}.'), tag_pair(subscription_details_link, :subscription_details_link_start, :subscription_details_link_end))
-          - else
-            = render Pajamas::AlertComponent.new(variant: :warning, dismissible: true, alert_options: { class: 'gl-mb-5' }, title: s_('CodeSuggestionsSM|Code Suggestions free access has ended')) do |c|
-              - c.with_body do
-                = s_('CodeSuggestionsSM|Purchase the Duo Pro add-on to use Code Suggestions.')
-              - c.with_actions do
-                = render Pajamas::ButtonComponent.new(variant: :default, href: 'https://about.gitlab.com/solutions/gitlab-duo-pro/sales/', target: '_blank') do
-                  = s_('CodeSuggestionsSM|Contact Sales')
-            = f.gitlab_ui_checkbox_component :instance_level_ai_beta_features_enabled,
-              s_('AIPoweredSM|Enable experiment and beta AI-powered features'),
-              help_text: ai_powered_testing_agreement
+          = f.gitlab_ui_checkbox_component :instance_level_ai_beta_features_enabled,
+            s_('AIPoweredSM|Enable experiment and beta AI-powered features'),
+            help_text: ai_powered_testing_agreement
 
       = f.submit _('Save changes'), pajamas_button: true
