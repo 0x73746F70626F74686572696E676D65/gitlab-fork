@@ -72,7 +72,7 @@ module Gitlab
             # Guidance from google is that a token is approximately 4 chars
             # Here we use a lower Multiplier since we don't currently
             # have a way to calculate the token number accurately
-            # and we've found that real logs fail when using a 2 higher multiplier
+            # and we've found that real logs fail when using a multiplier equal or higher than 2
             MAX_INPUT_TOKENS * 1.5
           end
 
