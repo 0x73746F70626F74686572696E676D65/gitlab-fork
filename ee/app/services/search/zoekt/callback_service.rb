@@ -35,7 +35,7 @@ module Search
         repo = task.zoekt_repository
         ApplicationRecord.transaction do
           if task.delete_repo?
-            repo.destroy!
+            repo&.destroy!
           else
             repo.indexed_at = Time.current
             repo.state = :ready if repo.pending? || repo.initializing?
