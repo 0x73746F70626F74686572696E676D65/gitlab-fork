@@ -123,35 +123,6 @@ module EE
       }
     end
 
-    def hand_raise_props(namespace, glm_content:, product_interaction: 'Hand Raise PQL')
-      {
-        namespace_id: namespace.id,
-        user_name: current_user.username,
-        first_name: current_user.first_name,
-        last_name: current_user.last_name,
-        company_name: current_user.organization,
-        glm_content: glm_content,
-        product_interaction: product_interaction,
-        create_hand_raise_lead_path: subscriptions_hand_raise_leads_path
-      }
-    end
-
-    def code_suggestions_hand_raise_props(namespace)
-      hand_raise_props(
-        namespace,
-        glm_content: 'code-suggestions',
-        product_interaction: 'Requested Contact-Duo Pro Add-On')
-        .merge(track_action: 'click_button', track_label: 'code_suggestions_hand_raise_lead_form')
-        .merge(
-          button_attributes: {
-            'data-testid': 'code-suggestions-hand-raise-lead-button',
-            category: 'tertiary',
-            variant: 'confirm',
-            class: 'gl-w-full'
-          }.to_json
-        )
-    end
-
     def show_usage_quotas_tab?(group, tab)
       case tab
       when :seats

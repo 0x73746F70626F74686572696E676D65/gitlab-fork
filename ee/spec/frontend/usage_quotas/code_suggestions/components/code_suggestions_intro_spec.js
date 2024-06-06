@@ -32,7 +32,6 @@ describe('Code Suggestions Intro', () => {
         },
         glmContent: 'code-suggestions',
         buttonText: 'Contact sales',
-        modalId: 'hand-raise-modal',
         productInteraction: 'Requested Contact-Duo Pro Add-On',
         ctaTracking: {
           action: 'click_button',
