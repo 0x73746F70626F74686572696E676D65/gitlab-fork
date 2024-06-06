@@ -897,6 +897,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_44558add1625() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "target_project_id"
+  INTO NEW."project_id"
+  FROM "merge_requests"
+  WHERE "merge_requests"."id" = NEW."merge_request_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_56d49f4ed623() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -11567,7 +11583,8 @@ CREATE TABLE merge_request_assignees (
     id bigint NOT NULL,
     user_id integer NOT NULL,
     merge_request_id integer NOT NULL,
-    created_at timestamp with time zone
+    created_at timestamp with time zone,
+    project_id bigint
 );
 
 CREATE SEQUENCE merge_request_assignees_id_seq
@@ -26796,6 +26813,8 @@ CREATE INDEX index_members_on_user_id_created_at ON members USING btree (user_id
 
 CREATE UNIQUE INDEX index_merge_request_assignees_on_merge_request_id_and_user_id ON merge_request_assignees USING btree (merge_request_id, user_id);
 
+CREATE INDEX index_merge_request_assignees_on_project_id ON merge_request_assignees USING btree (project_id);
+
 CREATE INDEX index_merge_request_assignees_on_user_id ON merge_request_assignees USING btree (user_id);
 
 CREATE INDEX index_merge_request_assignment_events_on_user_id ON merge_request_assignment_events USING btree (user_id);
@@ -30576,6 +30595,8 @@ CREATE TRIGGER trigger_388e93f88fdd BEFORE INSERT OR UPDATE ON packages_build_in
 
 CREATE TRIGGER trigger_43484cb41aca BEFORE INSERT OR UPDATE ON wiki_repository_states FOR EACH ROW EXECUTE FUNCTION trigger_43484cb41aca();
 
+CREATE TRIGGER trigger_44558add1625 BEFORE INSERT OR UPDATE ON merge_request_assignees FOR EACH ROW EXECUTE FUNCTION trigger_44558add1625();
+
 CREATE TRIGGER trigger_56d49f4ed623 BEFORE INSERT OR UPDATE ON workspace_variables FOR EACH ROW EXECUTE FUNCTION trigger_56d49f4ed623();
 
 CREATE TRIGGER trigger_57ad2742ac16 BEFORE INSERT OR UPDATE ON user_achievements FOR EACH ROW EXECUTE FUNCTION trigger_57ad2742ac16();
@@ -30710,6 +30731,9 @@ ALTER TABLE ONLY ai_agent_version_attachments
 
 ALTER TABLE ONLY abuse_report_user_mentions
     ADD CONSTRAINT fk_088018ecd8 FOREIGN KEY (abuse_report_id) REFERENCES abuse_reports(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY merge_request_assignees
+    ADD CONSTRAINT fk_088f01d08d FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY merge_request_assignment_events
     ADD CONSTRAINT fk_08f7602bfd FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE CASCADE;
