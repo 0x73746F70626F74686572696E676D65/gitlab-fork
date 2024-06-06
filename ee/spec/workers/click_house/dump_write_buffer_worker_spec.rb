@@ -2,8 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :value_stream_management do
+RSpec.describe ClickHouse::DumpWriteBufferWorker, feature_category: :database do
   let(:job) { described_class.new }
+  let(:perform) { job.perform(table_name) }
+  let(:table_name) { 'code_suggestion_usages' }
 
   context 'when ClickHouse is disabled for analytics' do
     before do
@@ -13,39 +15,41 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
     it 'does nothing' do
       expect(Gitlab::Metrics::RuntimeLimiter).not_to receive(:new)
 
-      job.perform
+      perform
     end
   end
 
   context 'when ClickHouse is enabled', :click_house, :clean_gitlab_redis_shared_state do
     let(:connection) { ClickHouse::Connection.new(:main) }
 
-    subject(:inserted_records) { connection.select('SELECT * FROM code_suggestion_usages FINAL ORDER BY user_id ASC') }
+    subject(:inserted_records) { connection.select("SELECT * FROM #{table_name} FINAL ORDER BY user_id ASC") }
 
     before do
       stub_application_setting(use_clickhouse_for_analytics: true)
     end
 
     it 'does not insert anything' do
-      job.perform
+      perform
 
       expect(inserted_records).to be_empty
     end
 
     context 'when data is present' do
-      let!(:usage1) { build(:code_suggestions_usage).tap(&:store) }
-      let!(:usage2) { build(:code_suggestions_usage).tap(&:store) }
-      let!(:usage3) { build(:code_suggestions_usage).tap(&:store) }
+      before do
+        ClickHouse::WriteBuffer.add(table_name, { user_id: 1 })
+        ClickHouse::WriteBuffer.add(table_name, { user_id: 2 })
+        ClickHouse::WriteBuffer.add(table_name, { user_id: 3 })
+      end
 
       it 'inserts all rows' do
-        status = job.perform
+        status = perform
 
         expect(status).to eq({ status: :processed, inserted_rows: 3 })
 
         expect(inserted_records).to match([
-          hash_including('user_id' => usage1.user.id),
-          hash_including('user_id' => usage2.user.id),
-          hash_including('user_id' => usage3.user.id)
+          hash_including('user_id' => 1),
+          hash_including('user_id' => 2),
+          hash_including('user_id' => 3)
         ])
       end
 
@@ -53,7 +57,7 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
         it 'inserts all rows' do
           stub_const("#{described_class.name}::BATCH_SIZE", 2)
 
-          status = job.perform
+          status = perform
 
           expect(status).to eq({ status: :processed, inserted_rows: 3 })
         end
@@ -65,9 +69,9 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
             expect(connection).to receive(:ping).and_raise(Errno::ECONNREFUSED)
           end
 
-          expect { job.perform }.to raise_error(Errno::ECONNREFUSED)
+          expect { perform }.to raise_error(Errno::ECONNREFUSED)
 
-          expect(ClickHouse::WriteBuffer.pop('code_suggestion_usages', 100).size).to eq(3)
+          expect(ClickHouse::WriteBuffer.pop(table_name, 100).size).to eq(3)
         end
       end
 
@@ -79,13 +83,13 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
             allow(limiter).to receive(:over_time?).and_return(false, false, true)
           end
 
-          status = job.perform
+          status = perform
 
           expect(status).to eq({ status: :over_time, inserted_rows: 2 })
 
           expect(inserted_records).to match([
-            hash_including('user_id' => usage1.user.id),
-            hash_including('user_id' => usage2.user.id)
+            hash_including('user_id' => 1),
+            hash_including('user_id' => 2)
           ])
         end
       end
@@ -110,14 +114,14 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
       end
 
       before do
-        ::ClickHouse::WriteBuffer.add('code_suggestion_usages', usage1_hash)
-        ::ClickHouse::WriteBuffer.add('code_suggestion_usages', usage2_hash)
+        ::ClickHouse::WriteBuffer.add(table_name, usage1_hash)
+        ::ClickHouse::WriteBuffer.add(table_name, usage2_hash)
       end
 
       it 'runs separate insert query for each attributes group' do
         expect(ClickHouse::Client).to receive(:insert_csv).twice.and_call_original
 
-        status = job.perform
+        status = perform
 
         expect(status).to eq({ status: :processed, inserted_rows: 2 })
 

@@ -52,7 +52,9 @@ class Gitlab::Seeder::AiUsageStats # rubocop:disable Style/ClassAndModuleChildre
   end
 
   def sync_to_click_house
-    ClickHouse::CodeSuggestionEventsCronWorker.new.perform
+    ClickHouse::DumpAllWriteBuffersCronWorker.new.buffered_tables.each do |table_name|
+      ClickHouse::DumpWriteBufferWorker.perform_inline(table_name)
+    end
 
     # Re-sync data with ClickHouse
     ClickHouse::SyncCursor.update_cursor_for('events', 0)

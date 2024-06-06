@@ -13,7 +13,7 @@ FactoryBot.define do
         puts "ClickHouse is not enabled globally for analytics. Your factory won't be saved"
       end
 
-      ClickHouse::CodeSuggestionEventsCronWorker.perform_inline
+      ClickHouse::DumpWriteBufferWorker.perform_inline(::Ai::CodeSuggestionsUsage.table_name)
     end
 
     trait :requested do
