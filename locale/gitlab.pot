@@ -53203,6 +53203,9 @@ msgstr ""
 msgid "There was a problem fetching the latest pipeline status."
 msgstr ""
 
+msgid "There was a problem fetching the pipeline mini graph."
+msgstr ""
+
 msgid "There was a problem fetching the pipeline stage."
 msgstr ""
 
