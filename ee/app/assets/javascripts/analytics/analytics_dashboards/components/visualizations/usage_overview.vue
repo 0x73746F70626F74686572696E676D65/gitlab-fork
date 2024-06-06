@@ -1,6 +1,7 @@
 <script>
 import { compact } from 'lodash';
 import { GlAvatar, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__, __, sprintf } from '~/locale';
 import dateFormat, { masks } from '~/lib/dateformat';
 import SingleStat from './single_stat.vue';
@@ -50,6 +51,16 @@ export default {
     const { tooltip, lastUpdated } = this.$options.i18n;
     const text = `${tooltip}${recordedAt ? sprintf(lastUpdated, { recordedAt }) : ''}`;
     this.$emit('showTooltip', text);
+
+    if (!this.overviewCountsAggregationEnabled) {
+      const { description, descriptionLink, backgroundAggregationNoData } = this.$options.i18n;
+      this.$emit('set-alerts', {
+        title: this.$options.i18n.backgroundAggregationWarningTitle,
+        description: backgroundAggregationNoData,
+        warnings: [{ description, link: descriptionLink }],
+        canRetry: false,
+      });
+    }
   },
   methods: {
     displayValue(value) {
@@ -62,6 +73,14 @@ export default {
       'Analytics|Statistics on namespace usage. Usage data is a cumulative count, and updated monthly.',
     ),
     lastUpdated: s__('Analytics| Last updated: %{recordedAt}'),
+    backgroundAggregationWarningTitle: s__('DORA4Metrics|Background aggregation not enabled'),
+    description: s__(
+      'DORA4Metrics|To see usage overview, you must %{linkStart}enable background aggregation%{linkEnd}',
+    ),
+    descriptionLink: helpPagePath('user/analytics/value_streams_dashboard.html', {
+      anchor: 'enable-or-disable-overview-background-aggregation',
+    }),
+    backgroundAggregationNoData: __('No data available'),
   },
 };
 </script>

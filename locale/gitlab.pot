@@ -16189,6 +16189,9 @@ msgstr ""
 msgid "DORA4Metrics|Average (last %{days}d)"
 msgstr ""
 
+msgid "DORA4Metrics|Background aggregation not enabled"
+msgstr ""
+
 msgid "DORA4Metrics|By enabling this feature, you accept the %{url}"
 msgstr ""
 

@@ -79,6 +79,7 @@ export default {
       alertVariant: null,
       alertTitle: '',
       alertDescription: '',
+      alertDescriptionLink: '',
       validationErrors,
       canRetryError: false,
       data: null,
@@ -112,8 +113,8 @@ export default {
       return Boolean(this.alertMessages.length > 0 || this.alertDescription.length);
     },
     alertMessages() {
-      if (this.errors.length > 0) return this.errors.filter(isString);
-      if (this.warnings.length > 0) return this.warnings.filter(isString);
+      if (this.errors.length > 0) return this.errors.filter(this.isValidAlertMessage);
+      if (this.warnings.length > 0) return this.warnings.filter(this.isValidAlertMessage);
       return [];
     },
     namespace() {
@@ -141,6 +142,9 @@ export default {
     async importDataSourceModule(dataType) {
       const module = await dataSources[dataType]();
       return module.default;
+    },
+    isValidAlertMessage(message) {
+      return isString(message) || (isString(message.link) && isString(message.description));
     },
     async onVisualizationChange() {
       if (this.hasValidationErrors) {
@@ -206,9 +210,17 @@ export default {
       this.warnings = [];
       this.alertVariant = null;
       this.alertDescription = '';
+      this.descriptionLink = '';
       this.alertTitle = '';
     },
-    setAlerts({ errors = [], warnings = [], title = '', description = '', canRetry = true }) {
+    setAlerts({
+      errors = [],
+      warnings = [],
+      title = '',
+      description = '',
+      descriptionLink = '',
+      canRetry = true,
+    }) {
       this.canRetryError = canRetry;
 
       this.errors = errors;
@@ -226,6 +238,7 @@ export default {
       }
 
       this.alertDescription = description;
+      this.alertDescriptionLink = descriptionLink || this.$options.PANEL_TROUBLESHOOTING_URL;
       this.alertTitle = title;
     },
     isCubeJsBadRequest(error) {
@@ -274,13 +287,20 @@ export default {
     <template #alert-popover>
       <gl-sprintf :message="alertDescription">
         <template #link="{ content }">
-          <gl-link :href="$options.PANEL_TROUBLESHOOTING_URL" class="gl-font-sm">{{
-            content
-          }}</gl-link>
+          <gl-link :href="alertDescriptionLink" class="gl-font-sm">{{ content }}</gl-link>
         </template>
       </gl-sprintf>
-      <ul v-if="alertMessages.length" data-testid="alert-messages">
-        <li v-for="message in alertMessages" :key="message">{{ message }}</li>
+      <ul v-if="alertMessages.length" data-testid="alert-messages" class="gl-mb-0">
+        <li v-for="(message, i) in alertMessages" :key="`alert-message-${i}`">
+          <span v-if="message.link && message.description">
+            <gl-sprintf :message="message.description">
+              <template #link="{ content }">
+                <gl-link :href="message.link" class="gl-font-sm">{{ content }}</gl-link>
+              </template>
+            </gl-sprintf>
+          </span>
+          <span v-else>{{ message }}</span>
+        </li>
       </ul>
       <gl-button v-if="canRetryError" class="gl-display-block gl-mt-3" @click="fetchData">{{
         __('Retry')
