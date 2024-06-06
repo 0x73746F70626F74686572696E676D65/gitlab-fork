@@ -8,6 +8,10 @@ module RemoteDevelopment
           include Messages
           include UpdateTypes
 
+          ALL_RESOURCES_INCLUDED = :all_resources_included
+          PARTIAL_RESOURCES_INCLUDED = :partial_resources_included
+          NO_RESOURCES_INCLUDED = :no_resources_included
+
           # @param [Hash] value
           # @return [Hash]
           def self.build(value)
@@ -21,20 +25,26 @@ module RemoteDevelopment
               logger: logger
             }
 
+            observability_for_rails_infos = {}
+
             # Create an array of workspace_rails_info hashes based on the workspaces. These indicate the desired updates
             # to the workspace, which will be returned in the payload to the agent to be applied to kubernetes
             workspace_rails_infos = workspaces_to_be_returned.map do |workspace|
-              workspace_rails_info = {
+              config_to_apply, config_to_apply_resources_include_type = config_to_apply(workspace: workspace,
+                update_type: update_type, logger: logger)
+              observability_for_rails_infos[workspace.name] = {
+                config_to_apply_resources_included: config_to_apply_resources_include_type
+              }
+
+              {
                 name: workspace.name,
                 namespace: workspace.namespace,
                 desired_state: workspace.desired_state,
                 actual_state: workspace.actual_state,
                 deployment_resource_version: workspace.deployment_resource_version,
                 # NOTE: config_to_apply should be returned as null if config_to_apply returned nil
-                config_to_apply: config_to_apply(workspace: workspace, update_type: update_type, logger: logger)
+                config_to_apply: config_to_apply
               }
-
-              workspace_rails_info
             end
 
             settings = {
@@ -46,18 +56,21 @@ module RemoteDevelopment
               response_payload: {
                 workspace_rails_infos: workspace_rails_infos,
                 settings: settings
-              }
+              },
+              observability_for_rails_infos: observability_for_rails_infos
             )
           end
 
           # @param [RemoteDevelopment::Workspace] workspace
           # @param [String (frozen)] update_type
           # @param [RemoteDevelopment::Logger] logger
-          # @return [nil, String]
+          # @return [Array]
           def self.config_to_apply(workspace:, update_type:, logger:)
-            return unless should_include_config_to_apply?(update_type: update_type, workspace: workspace)
+            return nil, NO_RESOURCES_INCLUDED unless should_include_config_to_apply?(update_type: update_type,
+              workspace: workspace)
 
             include_all_resources = update_type == FULL || workspace.force_include_all_resources
+            resources_include_type = include_all_resources ? ALL_RESOURCES_INCLUDED : PARTIAL_RESOURCES_INCLUDED
 
             workspace_resources =
               case workspace.config_version
@@ -82,9 +95,9 @@ module RemoteDevelopment
               YAML.dump(Gitlab::Utils.deep_sort_hash(resource).deep_stringify_keys)
             end
 
-            return unless desired_config_to_apply_array.present?
+            return nil, NO_RESOURCES_INCLUDED unless desired_config_to_apply_array.present?
 
-            desired_config_to_apply_array.join
+            [desired_config_to_apply_array.join, resources_include_type]
           end
 
           # @param [String (frozen)] update_type

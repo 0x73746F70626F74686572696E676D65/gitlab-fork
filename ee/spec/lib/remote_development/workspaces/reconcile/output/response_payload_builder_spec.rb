@@ -76,8 +76,17 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
       response_payload: {
         workspace_rails_infos: returned_workspace_rails_infos,
         settings: settings
+      },
+      observability_for_rails_infos: {
+        workspace.name => {
+          config_to_apply_resources_included: expected_workspace_resources_included_type
+        }
       }
     )
+  end
+
+  let(:expected_workspace_resources_included_type) do
+    described_class::ALL_RESOURCES_INCLUDED
   end
 
   subject(:returned_value) do
@@ -139,6 +148,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
 
         context "when workspace.desired_state_updated_more_recently_than_last_response_to_agent == true" do
           let(:desired_state_updated_more_recently_than_last_response_to_agent) { true }
+          let(:expected_workspace_resources_included_type) do
+            described_class::PARTIAL_RESOURCES_INCLUDED
+          end
 
           it "includes config_to_apply without all resources included" do
             expect(returned_value).to eq(expected_returned_value)
@@ -148,6 +160,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
         context "when workspace.desired_state_updated_more_recently_than_last_response_to_agent == false" do
           let(:desired_state_updated_more_recently_than_last_response_to_agent) { false }
           let(:generated_config_to_apply) { nil }
+          let(:expected_workspace_resources_included_type) do
+            described_class::NO_RESOURCES_INCLUDED
+          end
 
           it "does not includes config_to_apply and returns it as nil" do
             expect(returned_value).to eq(expected_returned_value)
@@ -163,7 +178,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
     let(:desired_state_updated_more_recently_than_last_response_to_agent) { false }
     let(:expected_include_all_resources) { true }
 
-    it "includes config_to_apply without all resources included" do
+    it "includes config_to_apply with all resources included" do
       allow(RemoteDevelopment::Workspaces::Reconcile::Output::DesiredConfigGeneratorV2)
         .to(receive(:generate_desired_config))
         .with(hash_including(include_all_resources: expected_include_all_resources)) { generated_config_to_apply }

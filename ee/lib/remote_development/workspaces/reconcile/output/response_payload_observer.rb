@@ -18,6 +18,7 @@ module RemoteDevelopment
                   partial_reconciliation_interval_seconds: Integer => partial_reconciliation_interval_seconds
                 },
               },
+              observability_for_rails_infos: Hash => observability_for_rails_infos,
               logger: logger, # Skip type checking to avoid coupling to Rails logger
             }
 
@@ -37,7 +38,8 @@ module RemoteDevelopment
                   full_reconciliation_interval_seconds: full_reconciliation_interval_seconds,
                   partial_reconciliation_interval_seconds: partial_reconciliation_interval_seconds
                 }
-              }
+              },
+              observability_for_rails_infos: observability_for_rails_infos
             )
 
             value
