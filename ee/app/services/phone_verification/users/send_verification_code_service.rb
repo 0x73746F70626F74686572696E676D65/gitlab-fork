@@ -34,7 +34,7 @@ module PhoneVerification
         end
 
         return error_send_not_allowed unless send_allowed?
-        return error_high_risk_number if related_to_banned_user?
+        return error_duplicate_phone_number! unless duplicate_phone_number_allowed?
 
         risk_result = query_intelligence_api
         return risk_result unless risk_result.success?
@@ -199,6 +199,23 @@ module PhoneVerification
           phone_verification_record: record,
           risk_result: risk_result
         ).execute
+      end
+
+      def duplicate_phone_number_allowed?
+        return true unless Feature.enabled?(:duplicate_phone_number_assume_high_risk, type: :gitlab_com_derisk)
+        return true if user.assumed_high_risk?
+
+        last_used = record.duplicate_records.last
+        return true unless last_used
+
+        last_used.created_at < 1.week.ago
+      end
+
+      def error_duplicate_phone_number!
+        user.assume_high_risk!(reason: 'Duplicate phone number')
+        record.save!
+
+        ServiceResponse.error(message: 'Phone verification high-risk user', reason: :related_to_high_risk_user)
       end
     end
   end

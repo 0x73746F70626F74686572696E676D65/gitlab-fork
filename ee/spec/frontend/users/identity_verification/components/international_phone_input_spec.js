@@ -380,7 +380,7 @@ describe('International Phone input component', () => {
     });
 
     describe('when user is high risk', () => {
-      const errorMessage = 'Telesign high-risk user';
+      const errorMessage = 'Phone verification high-risk user';
       const reason = 'related_to_high_risk_user';
 
       beforeEach(() => {

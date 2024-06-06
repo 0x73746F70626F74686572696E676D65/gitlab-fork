@@ -63,7 +63,7 @@ RSpec.describe PhoneVerification::Users::RecordUserDataService, feature_category
 
         expect(response).to be_a(ServiceResponse)
         expect(response).to be_error
-        expect(response.message).to eq('Telesign high-risk user')
+        expect(response.message).to eq('Phone verification high-risk user')
         expect(response.reason).to eq(:related_to_high_risk_user)
       end
 

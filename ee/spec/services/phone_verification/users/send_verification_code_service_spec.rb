@@ -181,7 +181,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
 
         expect(response).to be_a(ServiceResponse)
         expect(response).to be_error
-        expect(response.message).to eq('Telesign high-risk user')
+        expect(response.message).to eq('Phone verification high-risk user')
         expect(response.reason).to eq(:related_to_high_risk_user)
       end
 
@@ -220,6 +220,50 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
 
           expect(user.assumed_high_risk?).to eq(false)
         end
+      end
+    end
+
+    context 'with a duplicate phone number' do
+      let_it_be(:send_verification_code_response) { ServiceResponse.success }
+
+      context 'when a duplicate phone validation has been created within a week' do
+        before do
+          create(
+            :phone_number_validation,
+            international_dial_code: params[:international_dial_code],
+            phone_number: params[:phone_number]
+          )
+        end
+
+        it 'returns an error', :aggregate_failures do
+          response = service.execute
+
+          expect(response).to be_a(ServiceResponse)
+          expect(response).to be_error
+          expect(response.message).to eq('Phone verification high-risk user')
+          expect(response.reason).to eq(:related_to_high_risk_user)
+        end
+
+        context 'when the feature is disabled' do
+          before do
+            stub_feature_flags(duplicate_phone_number_assume_high_risk: false)
+          end
+
+          it_behaves_like 'it returns a success response'
+        end
+      end
+
+      context 'when a duplicate phone validation is older than 1 week' do
+        before do
+          create(
+            :phone_number_validation,
+            international_dial_code: params[:international_dial_code],
+            phone_number: params[:phone_number],
+            created_at: 8.days.ago
+          )
+        end
+
+        it_behaves_like 'it returns a success response'
       end
     end
 
