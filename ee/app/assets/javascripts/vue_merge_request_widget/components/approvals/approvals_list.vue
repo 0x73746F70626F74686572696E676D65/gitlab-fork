@@ -173,7 +173,7 @@ export default {
       <tr>
         <td></td>
         <td class="gl-pl-0!">
-          <div class="gl-display-flex" style="width: 100px; height: 20px">
+          <div class="gl-flex" style="width: 100px; height: 20px">
             <gl-skeleton-loader :width="100" :height="20">
               <rect width="100" height="20" x="0" y="0" rx="4" />
             </gl-skeleton-loader>
@@ -181,21 +181,21 @@ export default {
         </td>
         <td></td>
         <td>
-          <div class="gl-display-flex" style="width: 50px; height: 20px">
+          <div class="gl-flex" style="width: 50px; height: 20px">
             <gl-skeleton-loader :width="50" :height="20">
               <rect width="50" height="20" x="0" y="0" rx="4" />
             </gl-skeleton-loader>
           </div>
         </td>
         <td>
-          <div class="gl-display-flex" style="width: 20px; height: 20px">
+          <div class="gl-flex" style="width: 20px; height: 20px">
             <gl-skeleton-loader :width="20" :height="20">
               <circle cx="10" cy="10" r="10" />
             </gl-skeleton-loader>
           </div>
         </td>
         <td>
-          <div class="gl-display-flex" style="width: 20px; height: 20px">
+          <div class="gl-flex" style="width: 20px; height: 20px">
             <gl-skeleton-loader :width="20" :height="20">
               <circle cx="10" cy="10" r="10" />
             </gl-skeleton-loader>
@@ -279,7 +279,7 @@ export default {
               :items="rule.eligibleApprovers"
               :img-size="24"
               empty-text=""
-              class="gl-display-flex gl-flex-wrap gl-gap-y-2"
+              class="gl-flex gl-flex-wrap gl-gap-y-2"
             />
           </td>
           <td class="w-0 gl-hidden md:gl-table-cell gl-whitespace-nowrap js-pending">
@@ -290,7 +290,7 @@ export default {
               :items="rule.commentedBy.nodes"
               :img-size="24"
               empty-text=""
-              class="gl-display-flex gl-flex-wrap gl-gap-y-2"
+              class="gl-flex gl-flex-wrap gl-gap-y-2"
             />
           </td>
           <td class="gl-hidden md:gl-table-cell js-approved-by">
@@ -298,7 +298,7 @@ export default {
               :items="rule.approvedBy.nodes"
               :img-size="24"
               empty-text=""
-              class="gl-display-flex gl-flex-wrap gl-gap-y-2"
+              class="gl-flex gl-flex-wrap gl-gap-y-2"
             />
           </td>
         </tr>

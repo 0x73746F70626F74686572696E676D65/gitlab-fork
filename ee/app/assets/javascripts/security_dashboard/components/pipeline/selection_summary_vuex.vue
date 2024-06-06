@@ -57,7 +57,7 @@ export default {
 
 <template>
   <div class="card">
-    <form class="card-body d-flex gl-align-items-center" @submit.prevent="handleDismiss">
+    <form class="card-body gl-flex gl-items-center" @submit.prevent="handleDismiss">
       <span data-testid="dismiss-message">{{ message }}</span>
       <gl-form-select
         v-model="dismissalReason"

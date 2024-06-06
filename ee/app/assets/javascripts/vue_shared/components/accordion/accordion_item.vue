@@ -90,7 +90,7 @@ export default {
 <template>
   <li class="list-group-item p-0">
     <template v-if="!isLoading">
-      <div class="d-flex align-items-stretch">
+      <div class="gl-flex gl-items-stretch">
         <button
           :id="buttonId"
           data-testid="expansion-trigger"
@@ -102,7 +102,7 @@ export default {
           :class="{ 'cursor-default': isDisabled, 'list-group-item-action': !isDisabled }"
           @click="handleClick"
         >
-          <div class="d-flex gl-align-items-center p-2">
+          <div class="gl-flex gl-items-center p-2">
             <gl-icon
               :size="16"
               class="gl-mr-3 gl-text-gray-900"
@@ -124,7 +124,7 @@ export default {
         <div data-testid="content" :style="contentStyles"><slot name="default"></slot></div>
       </section>
     </template>
-    <div v-else data-testid="loading-indicator" class="d-flex p-2">
+    <div v-else data-testid="loading-indicator" class="gl-flex p-2">
       <div class="h-32-px">
         <gl-skeleton-loader :height="32">
           <rect width="12" height="16" rx="4" x="0" y="8" />

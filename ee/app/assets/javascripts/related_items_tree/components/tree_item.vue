@@ -83,7 +83,7 @@ export default {
       'js-item-type-issue item-type-issue': item.type === $options.ChildType.Issue,
     }"
   >
-    <div class="list-item-body d-flex gl-align-items-center">
+    <div class="list-item-body gl-flex gl-items-center">
       <gl-button
         v-if="!childrenFetchInProgress && hasChildren"
         v-gl-tooltip.viewport.hover

@@ -178,7 +178,7 @@ export default {
           :value="getSuggestionValue(item)"
           data-testid="audit-filter-suggestion"
         >
-          <div class="d-flex">
+          <div class="gl-flex">
             <gl-avatar
               :size="32"
               :src="item.avatar_url"

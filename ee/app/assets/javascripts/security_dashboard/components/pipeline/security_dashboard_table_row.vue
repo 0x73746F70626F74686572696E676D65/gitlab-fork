@@ -283,7 +283,7 @@ export default {
 
     <div class="table-section section-20">
       <div class="table-mobile-header" role="rowheader">{{ s__('Reports|Actions') }}</div>
-      <div class="table-mobile-content action-buttons d-flex justify-content-end">
+      <div class="table-mobile-content action-buttons gl-flex justify-content-end">
         <vulnerability-action-buttons
           v-if="!isLoading"
           :vulnerability="vulnerability"

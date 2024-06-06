@@ -42,7 +42,7 @@ export default {
     <gl-skeleton-loader v-if="isInitialLoadInProgress" />
     <gl-table v-else :items="members" :fields="$options.fields">
       <template #cell(name)="{ item }">
-        <span class="d-flex">
+        <span class="gl-flex">
           <gl-avatar :src="item.avatar_url" :size="48" />
           <div class="ml-2">
             <div class="font-weight-bold">

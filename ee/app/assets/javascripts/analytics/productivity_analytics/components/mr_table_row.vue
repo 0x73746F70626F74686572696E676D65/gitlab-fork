@@ -50,12 +50,12 @@ export default {
 <template>
   <div class="gl-responsive-table-row-layout gl-responsive-table-row">
     <div
-      class="table-section section-50 d-flex flex-row-reverse flex-md-row justify-content-between justify-content-md-start js-mr-details"
+      class="table-section section-50 gl-flex flex-row-reverse flex-md-row justify-content-between justify-content-md-start js-mr-details"
     >
-      <div class="d-flex mr-md-2">
+      <div class="gl-flex mr-md-2">
         <gl-avatar :src="mergeRequest.author_avatar_url" :size="16" />
       </div>
-      <div class="d-flex flex-column flex-grow overflow-auto gl-mr-1">
+      <div class="gl-flex flex-column flex-grow overflow-auto gl-mr-1">
         <h5 class="item-title gl-max-w-34 my-0 d-block str-truncated">
           <gl-link :href="mergeRequest.merge_request_url" target="_blank">{{
             mergeRequest.title
@@ -73,7 +73,7 @@ export default {
         </ul>
       </div>
     </div>
-    <div class="table-section section-50 d-flex flex-row align-items-start js-mr-metrics">
+    <div class="table-section section-50 gl-flex flex-row align-items-start js-mr-metrics">
       <metric-column
         type="days_to_merge"
         :value="mergeRequest.days_to_merge"

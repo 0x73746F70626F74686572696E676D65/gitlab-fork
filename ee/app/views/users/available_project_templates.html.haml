@@ -1,7 +1,7 @@
 .custom-project-templates
   - if @custom_project_templates.present?
     - @custom_project_templates.each do |template|
-      .template-option.d-flex.gl-align-items-center{ data: { testid: 'template-option-container' } }
+      .template-option.gl-items-center{ class: '!gl-flex', data: { testid: 'template-option-container' } }
         = render Pajamas::AvatarComponent.new(template, alt: template.name, class: 'btn-template-icon gl-flex-shrink-0 gl-mr-5', size: 48, avatar_options: { lazy: false })
         .description
           %strong
@@ -9,7 +9,7 @@
           %br
           .text-muted
             = template.description
-        .controls.d-flex.align-items-baseline
+        .controls.gl-items-baseline{ class: '!gl-flex' }
           = render Pajamas::ButtonComponent.new(href: project_path(template), target: '_blank', button_options: { class: 'gl-mr-3' }) do
             = _('Preview')
           %label.btn.gl-button.btn-confirm.custom-template-button.choose-template.gl-mb-0{ for: template.name }

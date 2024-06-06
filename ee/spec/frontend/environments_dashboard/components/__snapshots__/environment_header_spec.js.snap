@@ -2,7 +2,7 @@
 
 exports[`Environment Header has a failed pipeline matches the snapshot 1`] = `
 <div
-  class="border-0 card-header d-flex dashboard-card-header-failed gl-align-items-center py-2"
+  class="border-0 card-header dashboard-card-header-failed gl-flex gl-items-center gl-py-3"
 >
   <div
     class="block-truncated flex-grow-1"
@@ -30,7 +30,7 @@ exports[`Environment Header has a failed pipeline matches the snapshot 1`] = `
 
 exports[`Environment Header has errors matches the snapshot 1`] = `
 <div
-  class="border-0 card-header d-flex dashboard-card-header-warning gl-align-items-center py-2"
+  class="border-0 card-header dashboard-card-header-warning gl-flex gl-items-center gl-py-3"
 >
   <div
     class="block-truncated flex-grow-1"
@@ -58,7 +58,7 @@ exports[`Environment Header has errors matches the snapshot 1`] = `
 
 exports[`Environment Header renders name and link to app matches the snapshot 1`] = `
 <div
-  class="bg-light border-0 card-header d-flex gl-align-items-center py-2"
+  class="bg-light border-0 card-header gl-flex gl-items-center gl-py-3"
 >
   <div
     class="block-truncated flex-grow-1"
@@ -105,7 +105,7 @@ exports[`Environment Header renders name and link to app matches the snapshot 1`
 
 exports[`Environment Header with environments grouped into a folder matches the snapshot 1`] = `
 <div
-  class="bg-light border-0 card-header d-flex gl-align-items-center py-2"
+  class="bg-light border-0 card-header gl-flex gl-items-center gl-py-3"
 >
   <div
     class="block-truncated flex-grow-1"

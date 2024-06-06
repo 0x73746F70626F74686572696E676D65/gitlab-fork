@@ -2,13 +2,13 @@
 
 exports[`ResourceLinkItem template matches the snapshot 1`] = `
 <div
-  class="-gl-mx-2 d-flex gl-align-items-center gl-pr-2 gl-px-3 item-body"
+  class="-gl-mx-2 gl-align-items-center gl-flex gl-pr-2 gl-px-3 item-body"
 >
   <div
-    class="flex-xl-nowrap gl-align-items-center gl-display-flex gl-flex-grow-1 gl-flex-wrap gl-min-h-7 item-contents"
+    class="flex-xl-nowrap gl-flex gl-flex-grow-1 gl-flex-wrap gl-items-center gl-min-h-7 item-contents"
   >
     <div
-      class="align-items-xl-center gl-min-w-0 gl-sm-display-flex item-title mb-xl-0"
+      class="align-items-xl-center gl-min-w-0 item-title mb-xl-0 sm:gl-flex"
     >
       <svg
         aria-hidden="true"

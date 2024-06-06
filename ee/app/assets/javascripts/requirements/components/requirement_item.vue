@@ -134,7 +134,7 @@ export default {
           class="gl-display-block gl-sm-display-none!"
         />
       </div>
-      <div class="d-flex">
+      <div class="gl-flex">
         <ul
           v-if="showIssuableMetaActions"
           class="controls gl-flex-direction-column gl-sm-flex-direction-row!"
@@ -175,7 +175,7 @@ export default {
       </div>
     </div>
     <gl-popover :target="getAuthorPopoverTarget()" placement="top">
-      <div class="gl-leading-normal gl-display-flex">
+      <div class="gl-leading-normal gl-flex">
         <div class="gl-p-2 gl-flex-shrink-1">
           <gl-avatar :entity-name="author.name" :alt="author.name" :src="author.avatarUrl" />
         </div>

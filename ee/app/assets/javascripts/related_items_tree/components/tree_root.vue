@@ -102,7 +102,7 @@ export default {
       :item="item"
       class="gl-pt-3! gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
     />
-    <li v-if="hasMoreChildren" class="tree-item list-item pt-0 pb-0 d-flex justify-content-center">
+    <li v-if="hasMoreChildren" class="tree-item list-item pt-0 pb-0 gl-flex justify-content-center">
       <gl-button
         v-if="!fetchInProgress"
         class="gl-inline-block mb-2"
