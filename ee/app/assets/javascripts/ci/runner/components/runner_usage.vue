@@ -88,7 +88,7 @@ export default {
           mutation: RunnerUsageExportMutation,
           variables: {
             input: {
-              type: INSTANCE_TYPE,
+              runnerType: INSTANCE_TYPE,
             },
           },
         });
