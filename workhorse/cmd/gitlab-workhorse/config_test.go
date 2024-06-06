@@ -38,7 +38,7 @@ trusted_cidrs_for_x_forwarded_for = ["127.0.0.1/8", "192.168.0.1/8"]
 trusted_cidrs_for_propagation = ["10.0.0.1/8"]
 
 [redis]
-password = "redis password"
+Password = "redis password"
 SentinelUsername = "sentinel-user"
 SentinelPassword = "sentinel password"
 [object_storage]

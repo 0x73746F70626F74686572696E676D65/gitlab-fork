@@ -187,15 +187,15 @@ func TestSentinelOptions(t *testing.T) {
 				sentinelUrls[i] = config.TomlURL{URL: *parsedURL}
 			}
 
-			outputUsername, outputPw, outputSentinels := sentinelOptions(&config.RedisConfig{
+			options := sentinelOptions(&config.RedisConfig{
 				Sentinel:         sentinelUrls,
 				SentinelUsername: tc.inputSentinelUsername,
 				SentinelPassword: tc.inputSentinelPassword,
 			})
 
-			require.Equal(t, tc.username, outputUsername)
-			require.Equal(t, tc.password, outputPw)
-			require.Equal(t, tc.sentinels, outputSentinels)
+			require.Equal(t, tc.username, options.SentinelUsername)
+			require.Equal(t, tc.password, options.SentinelPassword)
+			require.Equal(t, tc.sentinels, options.Sentinels)
 		})
 	}
 }
