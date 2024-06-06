@@ -78,6 +78,16 @@ RSpec.describe Search::Zoekt::CallbackService, feature_category: :global_search 
           expect { execute }.to change { delete_zoekt_task.reload.state }.to('done')
           expect(delete_zoekt_task.zoekt_repository).to be nil
         end
+
+        context 'when repository is already deleted' do
+          before do
+            delete_zoekt_task.zoekt_repository.destroy!
+          end
+
+          it 'moves the task to done' do
+            expect { execute }.to change { delete_zoekt_task.reload.state }.to('done')
+          end
+        end
       end
     end
 
