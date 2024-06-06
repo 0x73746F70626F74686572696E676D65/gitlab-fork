@@ -182,6 +182,8 @@
 .ci-patterns: &ci-patterns
   - ".gitlab-ci.yml"
   - ".gitlab/ci/**/*"
+  - "jh/.gitlab/ci/**/*"
+  - "jh/.gitlab-ci.yml"
   - "scripts/rspec_helpers.sh"
 
 .ci-build-images-patterns: &ci-build-images-patterns
@@ -342,6 +344,8 @@
   # CI changes
   - ".gitlab-ci.yml"
   - ".gitlab/ci/**/*"
+  - "jh/.gitlab/ci/**/*"
+  - "jh/.gitlab-ci.yml"
   - "*_VERSION"
   - "scripts/rspec_helpers.sh"
   # Mapped patterns (see tests.yml)
@@ -455,6 +459,8 @@
   # CI changes
   - ".gitlab-ci.yml"
   - ".gitlab/ci/**/*"
+  - "jh/.gitlab/ci/**/*"
+  - "jh/.gitlab-ci.yml"
   # Mapped patterns (see tests.yml)
   - "data/whats_new/*.yml"
   - "doc/index.md"
@@ -481,6 +487,8 @@
   # CI changes
   - ".gitlab-ci.yml"
   - ".gitlab/ci/**/*"
+  - "jh/.gitlab/ci/**/*"
+  - "jh/.gitlab-ci.yml"
   # Mapped patterns (see tests.yml)
   - "data/whats_new/*.yml"
   - "doc/index.md"
@@ -514,6 +522,8 @@
   # CI changes
   - ".gitlab-ci.yml"
   - ".gitlab/ci/**/*"
+  - "jh/.gitlab/ci/**/*"
+  - "jh/.gitlab-ci.yml"
   # Mapped patterns (see tests.yml)
   - "data/whats_new/*.yml"
   - "doc/index.md"
@@ -543,6 +553,8 @@
   # CI changes
   - ".gitlab-ci.yml"
   - ".gitlab/ci/**/*"
+  - "jh/.gitlab/ci/**/*"
+  - "jh/.gitlab-ci.yml"
   # Backstage changes
   - "Dangerfile"
   - "danger/**/*"
@@ -582,6 +594,8 @@
   # CI changes
   - ".gitlab-ci.yml"
   - ".gitlab/ci/**/*"
+  - "jh/.gitlab/ci/**/*"
+  - "jh/.gitlab-ci.yml"
   # Mapped patterns (see tests.yml)
   - "data/whats_new/*.yml"
   - "doc/index.md"
