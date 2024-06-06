@@ -100,7 +100,8 @@ module Gitlab
             end
 
             def authorize
-              can_summarize? && Utils::ChatAuthorizer.context(context: context).allowed?
+              can_summarize? && ::Gitlab::Llm::Utils::Authorizer
+                                  .resource(resource: context.resource, user: context.current_user).allowed?
             end
 
             def build_answer(resource, ai_response)
