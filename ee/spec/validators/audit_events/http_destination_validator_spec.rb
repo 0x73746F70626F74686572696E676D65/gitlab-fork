@@ -38,7 +38,7 @@ RSpec.describe AuditEvents::HttpDestinationValidator, feature_category: :audit_e
                 validator.validate(new_destination)
 
                 expect(new_destination.errors.full_messages)
-                  .to include(_('Config url is already taken.'))
+                  .to include(_('Config url already taken.'))
               end
             end
 
@@ -77,7 +77,7 @@ RSpec.describe AuditEvents::HttpDestinationValidator, feature_category: :audit_e
               validator.validate(new_destination)
 
               expect(new_destination.errors.full_messages)
-                .to include(_('Config url is already taken.'))
+                .to include(_('Config url already taken.'))
             end
           end
         end
@@ -109,7 +109,7 @@ RSpec.describe AuditEvents::HttpDestinationValidator, feature_category: :audit_e
             validator.validate(new_destination)
 
             expect(new_destination.errors.full_messages)
-              .to include(_('Config url is already taken.'))
+              .to include(_('Config url already taken.'))
           end
         end
       end

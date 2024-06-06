@@ -55,7 +55,7 @@ RSpec.shared_examples 'includes ExternallyStreamable concern' do
         using RSpec::Parameterized::TableSyntax
 
         subject(:destination) do
-          build(:audit_events_group_external_streaming_destination, config: { url: http_url, headers: http_headers })
+          build(model_factory_name, config: { url: http_url, headers: http_headers })
         end
 
         let(:more_than_allowed_headers) { {} }
@@ -122,6 +122,102 @@ RSpec.shared_examples 'includes ExternallyStreamable concern' do
           it do
             expect(destination.valid?).to eq(is_valid)
           end
+        end
+      end
+    end
+
+    context 'when category is gcp' do
+      context 'for config schema validation' do
+        using RSpec::Parameterized::TableSyntax
+
+        subject(:destination) do
+          build(model_factory_name, :gcp,
+            config: { googleProjectIdName: project_id, clientEmail: client_email, logIdName: log_id }.compact)
+        end
+
+        where(:project_id, :client_email, :log_id, :is_valid) do
+          "valid-project-id"     | "abcd@example.com"                         | "audit-events"        | true
+          "valid-project-id-1"   | "abcd@example.com"                         | "audit-events"        | true
+          "invalid_project_id"   | "abcd@example.com"                         | "audit-events"        | false
+          "invalid-project-id-"  | "abcd@example.com"                         | "audit-events"        | false
+          "Invalid-project-id"   | "abcd@example.com"                         | "audit-events"        | false
+          "1-invalid-project-id" | "abcd@example.com"                         | "audit-events"        | false
+          "-invalid-project-id"  | "abcd@example.com"                         | "audit-events"        | false
+          "small"                | "abcd@example.com"                         | "audit-events"        | false
+          SecureRandom.hex(16)   | "abcd@example.com"                         | "audit-events"        | false
+
+          "valid-project-id"     | "valid_email+mail@mail.com"                | "audit-events"        | true
+          "valid-project-id"     | "invalid_email"                            | "audit-events"        | false
+          "valid-project-id"     | "invalid@.com"                             | "audit-events"        | false
+          "valid-project-id"     | "invalid..com"                             | "audit-events"        | false
+          "valid-project-id"     | "abcd#{SecureRandom.hex(120)}@example.com" | "audit-events"        | false
+
+          "valid-project-id"     | "abcd@example.com"                         | "audit_events"        | true
+          "valid-project-id"     | "abcd@example.com"                         | "audit.events"        | true
+          "valid-project-id"     | "abcd@example.com"                         | "AUDIT_EVENTS"        | true
+          "valid-project-id"     | "abcd@example.com"                         | "audit_events/123"    | true
+          "valid-project-id"     | "abcd@example.com"                         | "AUDIT_EVENT@"        | false
+          "valid-project-id"     | "abcd@example.com"                         | "AUDIT_EVENT$"        | false
+          "valid-project-id"     | "abcd@example.com"                         | "#AUDIT_EVENT"        | false
+          "valid-project-id"     | "abcd@example.com"                         | "%audit_events/123"   | false
+          "valid-project-id"     | "abcd@example.com"                         | SecureRandom.hex(256) | false
+
+          nil                    | nil                                        | nil                   | false
+          "valid-project-id"     | "abcd@example.com"                         | nil                   | true
+          "valid-project-id"     | nil                                        | "audit-events"        | false
+          nil                    | "abcd@example.com"                         | "audit-events"        | false
+        end
+
+        with_them do
+          it do
+            expect(destination.valid?).to eq(is_valid)
+          end
+        end
+      end
+    end
+
+    describe "#assign_default_log_id" do
+      context 'when category is gcp' do
+        context 'when log id is provided' do
+          it 'does not assign default value' do
+            destination = create(model_factory_name,
+              :gcp,
+              config: {
+                googleProjectIdName: "project-id",
+                clientEmail: "abcd@email.com",
+                logIdName: 'non-default-log'
+              }
+            )
+
+            expect(destination).to be_valid
+            expect(destination.errors).to be_empty
+            expect(destination.config['logIdName']).to eq('non-default-log')
+          end
+        end
+
+        context 'when log id is not provided' do
+          it 'assigns default value' do
+            destination = create(model_factory_name,
+              :gcp,
+              config: {
+                googleProjectIdName: "project-id",
+                clientEmail: "abcd@email.com"
+              }
+            )
+
+            expect(destination).to be_valid
+            expect(destination.errors).to be_empty
+            expect(destination.config['logIdName']).to eq('audit-events')
+          end
+        end
+      end
+
+      context 'when category is not gcp' do
+        it 'does not add logIdName field to config' do
+          destination = create(model_factory_name, config: { url: "https://www.example.com" })
+
+          expect(destination).to be_valid
+          expect(destination.config.keys).not_to include('logIdName')
         end
       end
     end

@@ -539,7 +539,7 @@ msgstr ""
 msgid "%{argument_name} must be formatted correctly. For example: 1h 30m."
 msgstr ""
 
-msgid "%{attribute} is already taken."
+msgid "%{attribute} already taken."
 msgstr ""
 
 msgid "%{author_link} cloned %{original_issue} to %{new_issue}."
@@ -22781,6 +22781,9 @@ msgid "GPG keys allow you to verify signed commits."
 msgstr ""
 
 msgid "GPG signature (loading...)"
+msgstr ""
+
+msgid "GcpDestinationValidator validates only gcp external audit event destinations."
 msgstr ""
 
 msgid "General"

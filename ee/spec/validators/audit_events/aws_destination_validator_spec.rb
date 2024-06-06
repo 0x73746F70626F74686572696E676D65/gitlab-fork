@@ -40,7 +40,7 @@ RSpec.describe AuditEvents::AwsDestinationValidator, feature_category: :audit_ev
                 validator.validate(new_destination)
 
                 expect(new_destination.errors.full_messages)
-                  .to include(_('Config bucketName is already taken.'))
+                  .to include(_('Config bucketName already taken.'))
               end
             end
 
@@ -79,7 +79,7 @@ RSpec.describe AuditEvents::AwsDestinationValidator, feature_category: :audit_ev
               validator.validate(new_destination)
 
               expect(new_destination.errors.full_messages)
-                .to include(_('Config bucketName is already taken.'))
+                .to include(_('Config bucketName already taken.'))
             end
           end
         end
@@ -113,7 +113,7 @@ RSpec.describe AuditEvents::AwsDestinationValidator, feature_category: :audit_ev
             validator.validate(new_destination)
 
             expect(new_destination.errors.full_messages)
-              .to include(_('Config bucketName is already taken.'))
+              .to include(_('Config bucketName already taken.'))
           end
         end
       end
