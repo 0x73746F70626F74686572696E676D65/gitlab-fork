@@ -141,7 +141,7 @@ export default {
 
     <template #additional-details>
       <info-row
-        v-if="fallbackBehaviorText"
+        v-show="fallbackBehaviorText"
         :label="$options.i18n.fallbackTitle"
         data-testid="additional-details"
       >
