@@ -25,6 +25,7 @@ module PhoneVerification
           telesign_reference_id: response['reference_id'],
           telesign_response: telesign_response,
           telesign_status_code: status_code,
+          telesign_risk_score: response.dig('risk', 'score'),
           username: user&.username
         )
       end

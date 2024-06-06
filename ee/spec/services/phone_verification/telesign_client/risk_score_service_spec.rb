@@ -14,7 +14,9 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
 
   before do
     allow_next_instance_of(TelesignEnterprise::PhoneIdClient) do |instance|
-      allow(instance).to receive(:score).and_return(telesign_response)
+      allow(instance).to receive(:score)
+        .with(phone_number, described_class::USE_CASE_ID, request_risk_insights: true, email_address: user.email)
+        .and_return(telesign_response)
     end
   end
 
@@ -66,6 +68,7 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
             telesign_reference_id: telesign_reference_xid,
             telesign_response: telesign_response.json['status']['description'],
             telesign_status_code: telesign_response.status_code,
+            telesign_risk_score: telesign_response.json.dig('risk', 'score'),
             username: user.username
           )
           .and_call_original
