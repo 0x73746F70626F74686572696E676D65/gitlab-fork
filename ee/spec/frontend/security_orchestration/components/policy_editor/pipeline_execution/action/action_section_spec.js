@@ -30,7 +30,7 @@ describe('ActionSection', () => {
 
   const defaultProps = {
     action: defaultAction,
-    overrideType: mockWithoutRefPipelineExecutionObject.override_project_ci,
+    strategy: mockWithoutRefPipelineExecutionObject.pipeline_config_strategy,
   };
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
@@ -54,7 +54,7 @@ describe('ActionSection', () => {
       expect(findCodeBlockFilePath().props()).toEqual(
         expect.objectContaining({
           filePath: '.pipeline-execution.yml',
-          overrideType: 'inject',
+          strategy: INJECT,
           selectedRef: '',
           selectedProject: { fullPath: 'GitLab.org/GitLab' },
           doesFileExist: true,
@@ -107,15 +107,10 @@ describe('ActionSection', () => {
       ]);
     });
 
-    it.each([OVERRIDE, INJECT])(
-      'updates override type when the value is %o',
-      async ({ overrideType }) => {
-        await findCodeBlockFilePath().vm.$emit('select-override', overrideType);
-        expect(wrapper.emitted('changed')).toEqual([
-          ['override_project_ci', overrideType === OVERRIDE],
-        ]);
-      },
-    );
+    it.each([OVERRIDE, INJECT])('updates strategy when the value is %o', async ({ strategy }) => {
+      await findCodeBlockFilePath().vm.$emit('select-strategy', strategy);
+      expect(wrapper.emitted('changed')).toEqual([['pipeline_config_strategy', strategy]]);
+    });
 
     it('clears project on deselect', async () => {
       await findCodeBlockFilePath().vm.$emit('select-project', undefined);

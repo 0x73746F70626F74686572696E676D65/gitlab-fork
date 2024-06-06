@@ -89,8 +89,8 @@ export default {
     originalName() {
       return this.existingPolicy?.name;
     },
-    overrideType() {
-      return this.policy.override_project_ci;
+    strategy() {
+      return this.policy.pipeline_config_strategy;
     },
   },
   methods: {
@@ -217,7 +217,7 @@ export default {
         <action-section
           class="gl-mb-4 security-policies-bg-gray-10 gl-rounded-base gl-p-5"
           :action="policy.content"
-          :override-type="overrideType"
+          :strategy="strategy"
           @changed="handleUpdateProperty"
         />
       </dim-disable-container>

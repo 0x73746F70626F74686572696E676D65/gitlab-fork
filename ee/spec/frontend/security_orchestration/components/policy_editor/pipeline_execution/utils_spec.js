@@ -1,4 +1,7 @@
-import { DEFAULT_PIPELINE_EXECUTION_POLICY } from 'ee/security_orchestration/components/policy_editor/pipeline_execution/constants';
+import {
+  DEFAULT_PIPELINE_EXECUTION_POLICY,
+  DEFAULT_PIPELINE_EXECUTION_POLICY_WITH_SCOPE,
+} from 'ee/security_orchestration/components/policy_editor/pipeline_execution/constants';
 import {
   createPolicyObject,
   fromYaml,
@@ -8,15 +11,16 @@ import {
 import {
   customYaml,
   customYamlObject,
-  nonBooleanOverrideTypeManifest,
+  invalidStrategyManifest,
 } from 'ee_jest/security_orchestration/mocks/mock_pipeline_execution_policy_data';
 
 describe('fromYaml', () => {
   it.each`
-    title                                                                                        | input                                               | output
-    ${'returns the policy object for a supported manifest'}                                      | ${{ manifest: DEFAULT_PIPELINE_EXECUTION_POLICY }}  | ${fromYaml({ manifest: DEFAULT_PIPELINE_EXECUTION_POLICY })}
-    ${'returns the policy object for a policy with an unsupported attribute without validation'} | ${{ manifest: customYaml }}                         | ${customYamlObject}
-    ${'returns the error object for a policy with an unsupported attribute with validation'}     | ${{ manifest: customYaml, validateRuleMode: true }} | ${{ error: true }}
+    title                                                                                        | input                                                                                 | output
+    ${'returns the policy object for a supported manifest'}                                      | ${{ manifest: DEFAULT_PIPELINE_EXECUTION_POLICY }}                                    | ${fromYaml({ manifest: DEFAULT_PIPELINE_EXECUTION_POLICY })}
+    ${'returns the policy object for a supported manifest with scope with validation'}           | ${{ manifest: DEFAULT_PIPELINE_EXECUTION_POLICY_WITH_SCOPE, validateRuleMode: true }} | ${fromYaml({ manifest: DEFAULT_PIPELINE_EXECUTION_POLICY_WITH_SCOPE })}
+    ${'returns the policy object for a policy with an unsupported attribute without validation'} | ${{ manifest: customYaml }}                                                           | ${customYamlObject}
+    ${'returns the error object for a policy with an unsupported attribute with validation'}     | ${{ manifest: customYaml, validateRuleMode: true }}                                   | ${{ error: true }}
   `('$title', ({ input, output }) => {
     expect(fromYaml(input)).toStrictEqual(output);
   });
@@ -24,10 +28,10 @@ describe('fromYaml', () => {
 
 describe('createPolicyObject', () => {
   it.each`
-    title                                                                              | input                                | output
-    ${'returns the policy object and no errors for a supported manifest'}              | ${DEFAULT_PIPELINE_EXECUTION_POLICY} | ${{ policy: fromYaml({ manifest: DEFAULT_PIPELINE_EXECUTION_POLICY }), hasParsingError: false }}
-    ${'returns the error policy object and the error for an unsupported manifest'}     | ${customYaml}                        | ${{ policy: { error: true }, hasParsingError: true }}
-    ${'returns the error policy object and the error for a non-boolean override type'} | ${nonBooleanOverrideTypeManifest}    | ${{ policy: { error: true }, hasParsingError: true }}
+    title                                                                           | input                                | output
+    ${'returns the policy object and no errors for a supported manifest'}           | ${DEFAULT_PIPELINE_EXECUTION_POLICY} | ${{ policy: fromYaml({ manifest: DEFAULT_PIPELINE_EXECUTION_POLICY }), hasParsingError: false }}
+    ${'returns the error policy object and the error for an unsupported manifest'}  | ${customYaml}                        | ${{ policy: { error: true }, hasParsingError: true }}
+    ${'returns the error policy object and the error for an invalid strategy name'} | ${invalidStrategyManifest}           | ${{ policy: { error: true }, hasParsingError: true }}
   `('$title', ({ input, output }) => {
     expect(createPolicyObject(input)).toStrictEqual(output);
   });

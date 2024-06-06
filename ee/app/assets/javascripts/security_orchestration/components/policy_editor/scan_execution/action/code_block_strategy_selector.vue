@@ -1,29 +1,29 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import {
-  CUSTOM_OVERRIDE_OPTIONS,
-  CUSTOM_OVERRIDE_OPTIONS_LISTBOX_ITEMS,
+  CUSTOM_STRATEGY_OPTIONS,
+  CUSTOM_STRATEGY_OPTIONS_LISTBOX_ITEMS,
   INJECT,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
-import { validateOverrideValues } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
+import { validateStrategyValues } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 
 export default {
-  CUSTOM_OVERRIDE_OPTIONS_LISTBOX_ITEMS,
-  name: 'CodeBlockOverrideSelector',
+  CUSTOM_STRATEGY_OPTIONS_LISTBOX_ITEMS,
+  name: 'CodeBlockStrategySelector',
   components: {
     GlCollapsibleListbox,
   },
   props: {
-    overrideType: {
+    strategy: {
       type: String,
       required: false,
       default: INJECT,
-      validator: validateOverrideValues,
+      validator: validateStrategyValues,
     },
   },
   computed: {
     toggleText() {
-      return CUSTOM_OVERRIDE_OPTIONS[this.overrideType];
+      return CUSTOM_STRATEGY_OPTIONS[this.strategy];
     },
   },
 };
@@ -32,9 +32,9 @@ export default {
 <template>
   <gl-collapsible-listbox
     label-for="file-path"
-    :items="$options.CUSTOM_OVERRIDE_OPTIONS_LISTBOX_ITEMS"
+    :items="$options.CUSTOM_STRATEGY_OPTIONS_LISTBOX_ITEMS"
     :toggle-text="toggleText"
-    :selected="overrideType"
+    :selected="strategy"
     @select="$emit('select', $event)"
   />
 </template>

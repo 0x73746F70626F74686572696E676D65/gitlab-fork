@@ -4,20 +4,19 @@ import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import Api from 'ee/api';
 import { parseCustomFileConfiguration } from 'ee/security_orchestration/components/policy_editor/utils';
-import CodeBlockFileFilePath from '../../scan_execution/action/code_block_file_path.vue';
-import { INJECT, OVERRIDE } from '../../scan_execution/constants';
+import CodeBlockFilePath from '../../scan_execution/action/code_block_file_path.vue';
 
 export default {
   components: {
-    CodeBlockFileFilePath,
+    CodeBlockFilePath,
   },
   props: {
     action: {
       type: Object,
       required: true,
     },
-    overrideType: {
-      type: Boolean,
+    strategy: {
+      type: String,
       required: true,
     },
   },
@@ -35,9 +34,6 @@ export default {
     },
     filePath() {
       return this.ciConfigurationPath.file;
-    },
-    overrideString() {
-      return this.overrideType ? OVERRIDE : INJECT;
     },
     selectedRef() {
       return this.ciConfigurationPath.ref;
@@ -69,8 +65,8 @@ export default {
         this.doesFileExist = true;
       }
     },
-    setOverride(overrideType) {
-      this.$emit('changed', 'override_project_ci', overrideType === OVERRIDE);
+    setStrategy(strategy) {
+      this.$emit('changed', 'pipeline_config_strategy', strategy);
     },
     setSelectedRef(ref) {
       this.setCiConfigurationPath({ ...this.ciConfigurationPath, ref });
@@ -129,13 +125,13 @@ export default {
 </script>
 
 <template>
-  <code-block-file-file-path
+  <code-block-file-path
     :file-path="filePath"
-    :override-type="overrideString"
+    :strategy="strategy"
     :selected-ref="selectedRef"
     :selected-project="selectedProject"
     :does-file-exist="doesFileExist"
-    @select-override="setOverride"
+    @select-strategy="setStrategy"
     @select-ref="setSelectedRef"
     @select-project="setSelectedProject"
     @update-file-path="updatedFilePath"
