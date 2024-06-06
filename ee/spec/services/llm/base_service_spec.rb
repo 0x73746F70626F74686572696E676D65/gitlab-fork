@@ -18,6 +18,15 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
     end
   end
 
+  shared_examples 'returns a missing resource error' do
+    it 'returns a missing resource error' do
+      result = subject.execute
+
+      expect(result).to be_error
+      expect(result.message).to eq(described_class::MISSING_RESOURCE_ID_MESSAGE)
+    end
+  end
+
   shared_examples 'raises a NotImplementedError' do
     it 'raises a NotImplementedError' do
       expect { subject.execute }.to raise_error(NotImplementedError)
@@ -39,6 +48,34 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
 
     it_behaves_like 'schedules completion worker' do
       let(:action_name) { :test }
+    end
+  end
+
+  shared_examples 'success when implemented with slash command' do
+    subject do
+      Class.new(described_class) do
+        def perform
+          schedule_completion_worker
+        end
+      end.new(user, resource, options)
+    end
+
+    it_behaves_like 'schedules completion worker' do
+      let(:action_name) { "/explain def" }
+    end
+  end
+
+  shared_examples 'success when implemented with invalid slash command' do
+    subject do
+      Class.new(described_class) do
+        def perform
+          schedule_completion_worker
+        end
+      end.new(user, resource, options)
+    end
+
+    it_behaves_like 'schedules completion worker' do
+      let(:action_name) { "/where can credentials be set" }
     end
   end
 
@@ -102,6 +139,10 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
       end
 
       context 'when ai features are enabled' do
+        before do
+          stub_feature_flags(require_resource_id: false)
+        end
+
         include_context 'with ai features enabled for group'
 
         it_behaves_like 'raises a NotImplementedError'
@@ -122,6 +163,47 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
           let_it_be(:resource) { nil }
 
           it_behaves_like 'success when implemented'
+        end
+
+        context 'when require_resource_id FF is enabled' do
+          context 'when resource is missing' do
+            let(:resource) { nil }
+            let(:options) { { ai_action: "/explain def" } }
+
+            before do
+              stub_feature_flags(require_resource_id: true)
+            end
+
+            it_behaves_like 'returns a missing resource error'
+          end
+
+          context 'when non slash command request starts with a slash' do
+            let(:resource) { nil }
+            let(:options) { { ai_action: "/where can credentials be set" } }
+
+            before do
+              stub_feature_flags(require_resource_id: true)
+            end
+
+            it_behaves_like 'success when implemented with invalid slash command'
+          end
+
+          context 'when non slash command request is received' do
+            let(:resource) { nil }
+
+            before do
+              stub_feature_flags(require_resource_id: true)
+            end
+
+            it_behaves_like 'success when implemented'
+          end
+        end
+
+        context 'when resource is missing and require_resource_id FF is disabled, slash command request ' do
+          let(:resource) { nil }
+          let(:options) { { ai_action: "/explain def" } }
+
+          it_behaves_like 'success when implemented with slash command'
         end
       end
     end

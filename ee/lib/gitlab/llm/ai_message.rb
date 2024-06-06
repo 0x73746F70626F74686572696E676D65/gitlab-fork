@@ -16,6 +16,12 @@ module Gitlab
         :agent_version_id, :referer_url
       ].freeze
 
+      SLASH_COMMAND_TOOLS = [
+        ::Gitlab::Llm::Chain::Tools::ExplainCode,
+        ::Gitlab::Llm::Chain::Tools::WriteTests,
+        ::Gitlab::Llm::Chain::Tools::RefactorCode
+      ].freeze
+
       attr_accessor(*ATTRIBUTES_LIST)
 
       delegate :resource, to: :context
@@ -71,6 +77,18 @@ module Gitlab
 
       def slash_command?
         content.to_s.match?(%r{\A/\w})
+      end
+
+      def slash_command_prompt?
+        false unless slash_command?
+
+        command, _ = slash_command_and_input
+
+        return false unless SLASH_COMMAND_TOOLS.find do |tool|
+          tool::Executor.slash_commands.has_key?(command)
+        end
+
+        true
       end
 
       def slash_command_and_input
