@@ -342,6 +342,8 @@ describe('Vulnerability Footer', () => {
         expect(statusDescription().props('vulnerability')).toEqual({
           state: 'detected',
           pipeline: vulnerability.pipeline,
+          scanner: vulnerability.scanner,
+          detectedAt: vulnerability.detectedAt,
         });
       },
     );
