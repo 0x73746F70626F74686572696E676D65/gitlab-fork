@@ -72,6 +72,7 @@ module Gitlab
             headers: request_headers,
             body: request_body(prompt: prompt, options: options).to_json,
             timeout: timeout,
+            allow_local_requests: true,
             stream_body: options.fetch(:stream, false)
           ) do |fragment|
             parse_sse_events(fragment).each do |parsed_event|
