@@ -46,6 +46,8 @@ export default {
         if (projects.nodes?.length === 0) {
           this.setErrorType(this.$options.NO_RESULTS_ERROR);
         }
+
+        this.searching = false;
       },
       error() {
         this.fetchProjectsError();
@@ -92,14 +94,15 @@ export default {
       projects: [],
       searchQuery: '',
       pageInfo: defaultPageInfo,
+      searching: false,
     };
   },
   computed: {
-    isSearchingProjects() {
+    isLoadingProjects() {
       return this.$apollo.queries.projects.loading;
     },
-    isLoadingFirstResult() {
-      return this.isSearchingProjects && this.projects.length === 0;
+    isLoadingMoreProjects() {
+      return this.isLoadingProjects && this.projects.length > 0;
     },
     isSearchQueryTooShort() {
       return this.searchQuery.length < this.$options.MINIMUM_QUERY_LENGTH;
@@ -151,6 +154,7 @@ export default {
       if (this.isSearchQueryTooShort) {
         this.cancelSearch();
       } else {
+        this.searching = true;
         this.errorType = null;
         this.pageInfo = defaultPageInfo;
         this.projects = [];
@@ -183,9 +187,10 @@ export default {
     is-check-centered
     :disabled="disabled"
     :header-text="headerText"
-    :loading="isLoadingFirstResult"
+    :loading="isLoadingProjects"
     :no-results-text="searchSuggestionText"
-    :searching="isSearchingProjects"
+    :searching="searching"
+    :infinite-scroll-loading="isLoadingMoreProjects"
     :selected="selected"
     :items="listBoxItems"
     :toggle-text="toggleText"
