@@ -9,6 +9,7 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import LicenseToken from './tokens/license_token.vue';
 import ProjectToken from './tokens/project_token.vue';
 import ComponentToken from './tokens/component_token.vue';
+import PackagerToken from './tokens/package_manager_token.vue';
 
 export default {
   components: {
@@ -45,6 +46,18 @@ export default {
           token: ProjectToken,
           operators: OPERATORS_IS,
         },
+        ...(this.glFeatures.groupLevelDependenciesFilteringByPackager
+          ? [
+              {
+                type: 'package_managers',
+                title: __('Packager'),
+                multiSelect: true,
+                unique: true,
+                token: PackagerToken,
+                operators: OPERATORS_IS,
+              },
+            ]
+          : []),
         ...(this.glFeatures.groupLevelDependenciesFilteringByComponent
           ? [
               {

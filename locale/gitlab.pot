@@ -17543,6 +17543,9 @@ msgstr ""
 msgid "Dependencies|There was an error fetching the components for this group. Please try again later."
 msgstr ""
 
+msgid "Dependencies|There was an error fetching the package managers for this group. Please try again later."
+msgstr ""
+
 msgid "Dependencies|There was an error fetching the projects for this group. Please try again later."
 msgstr ""
 
@@ -37312,6 +37315,9 @@ msgid "PackageRegistry|npm"
 msgstr ""
 
 msgid "PackageRegistry|published by %{author}"
+msgstr ""
+
+msgid "Packager"
 msgstr ""
 
 msgid "Packages"
