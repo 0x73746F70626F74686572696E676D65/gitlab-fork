@@ -131,6 +131,10 @@ module EE
           ).allow_cross_joins_across_databases(url: "https://gitlab.com/gitlab-org/gitlab/-/issues/419988")
       end
 
+      scope :with_group_wiki_repositories, -> do
+        joins('INNER JOIN group_wiki_repositories ON namespaces.id = group_wiki_repositories.group_id')
+      end
+
       delegate :eligible_additional_purchased_storage_size, :additional_purchased_storage_size=,
         :additional_purchased_storage_ends_on, :additional_purchased_storage_ends_on=,
         to: :namespace_limit, allow_nil: true
