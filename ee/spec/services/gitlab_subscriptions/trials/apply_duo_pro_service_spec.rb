@@ -49,7 +49,7 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyDuoProService, :saas, feature_c
       context 'with error while applying the trial' do
         let(:response) { { success: false, data: { errors: ['some error'] } } }
 
-        it 'returns success: false with errors and reason' do
+        it 'returns an error response with errors and reason' do
           expect(execute).to be_error.and have_attributes(
             message: ['some error'], reason: described_class::GENERIC_TRIAL_ERROR
           )
@@ -61,7 +61,7 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyDuoProService, :saas, feature_c
       context 'when namespace_id is not in the trial_user_information' do
         let(:trial_user_information) { {} }
 
-        it 'returns success: false with errors' do
+        it 'returns an error response with errors' do
           expect(execute).to be_error.and have_attributes(message: /Not valid to generate a trial/)
         end
       end
@@ -69,7 +69,7 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyDuoProService, :saas, feature_c
       context 'when namespace does not exist' do
         let(:trial_user_information) { { namespace_id: non_existing_record_id } }
 
-        it 'returns success: false with errors' do
+        it 'returns an error response with errors' do
           expect(execute).to be_error.and have_attributes(message: /Not valid to generate a trial/)
         end
       end
@@ -77,17 +77,27 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyDuoProService, :saas, feature_c
       context 'when namespace is not paid' do
         let_it_be(:namespace) { create(:group) }
 
-        it 'returns success: false with errors' do
+        it 'returns an error response with errors' do
           expect(execute).to be_error.and have_attributes(message: /Not valid to generate a trial/)
         end
       end
 
-      context 'when namespace already has duo pro add-on' do
+      context 'when namespace already has an active duo pro add-on' do
         before do
           create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, namespace: namespace)
         end
 
-        it 'returns success: false with errors' do
+        it 'returns an error response with errors' do
+          expect(execute).to be_error.and have_attributes(message: /Not valid to generate a trial/)
+        end
+      end
+
+      context 'when namespace already has an expired duo pro add-on' do
+        before do
+          create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :expired, namespace: namespace)
+        end
+
+        it 'returns an error response with errors' do
           expect(execute).to be_error.and have_attributes(message: /Not valid to generate a trial/)
         end
       end
