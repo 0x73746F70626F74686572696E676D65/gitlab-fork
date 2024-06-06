@@ -84,7 +84,7 @@ class PreMergeChecks
     return if hours_ago < PIPELINE_FRESHNESS_THRESHOLD_IN_HOURS
 
     fail_check! <<~TEXT
-      Expected latest pipeline to be created within the last #{PIPELINE_FRESHNESS_THRESHOLD_IN_HOURS} hours (it was created #{hours_ago} hours ago)!
+      Expected latest pipeline (#{pipeline.web_url}) to be created within the last #{PIPELINE_FRESHNESS_THRESHOLD_IN_HOURS} hours (it was created #{hours_ago} hours ago)!
 
       Please start a new pipeline.
     TEXT
@@ -93,13 +93,13 @@ class PreMergeChecks
   def check_pipeline_identifier!(pipeline)
     if pipeline.name.match?(TIER_IDENTIFIER_REGEX)
       fail_check! <<~MSG unless pipeline.name.include?(REQUIRED_TIER_IDENTIFIER)
-        Expected latest pipeline to be a tier-3 pipeline!
+        Expected latest pipeline (#{pipeline.web_url}) to be a tier-3 pipeline! Pipeline name was "#{pipeline.name}".
 
         Please ensure the MR has all the required approvals, start a new pipeline and put the MR back on the Merge Train.
       MSG
     elsif pipeline.name.include?(PREDICTIVE_PIPELINE_IDENTIFIER)
       fail_check! <<~MSG
-        Expected latest pipeline not to be a predictive pipeline!
+        Expected latest pipeline (#{pipeline.web_url}) not to be a predictive pipeline! Pipeline name was "#{pipeline.name}".
 
         Please ensure the MR has all the required approvals, start a new pipeline and put the MR back on the Merge Train.
       MSG
