@@ -8,7 +8,7 @@
         = gl_badge_tag _('beta'), variant: :info, size: :sm
   %p.gl-text-secondary
     = s_('Preferences|Use exact code search instead of advanced search to search for code in GitLab.')
-    = link_to _('Learn more.'), help_page_path('user/profile/preferences', anchor: 'enable-exact-code-search'), target: '_blank', rel: 'noopener noreferrer'
+    = link_to _('Learn more.'), help_page_path('user/profile/preferences', anchor: 'disable-exact-code-search'), target: '_blank', rel: 'noopener noreferrer'
 
   .form-group
     = form.gitlab_ui_checkbox_component :enabled_zoekt,
