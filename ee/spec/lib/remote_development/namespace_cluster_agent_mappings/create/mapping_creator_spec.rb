@@ -38,18 +38,21 @@ RSpec.describe ::RemoteDevelopment::NamespaceClusterAgentMappings::Create::Mappi
     end
 
     context 'when cluster agent does not exist' do
+      # noinspection RubyResolve -- Rubymine isn't finding build_stubbed
       let_it_be(:agent) { build_stubbed(:cluster_agent) }
 
       it_behaves_like 'err result', expected_error_details: "Agent can't be blank"
     end
 
     context 'when namespace does not exist' do
+      # noinspection RubyResolve -- Rubymine isn't finding build_stubbed
       let_it_be(:namespace) { build_stubbed(:group) }
 
       it_behaves_like 'err result', expected_error_details: "Namespace can't be blank"
     end
 
     context 'when user does not exist' do
+      # noinspection RubyResolve -- Rubymine isn't finding build_stubbed
       let_it_be(:user) { build_stubbed(:user) }
 
       it_behaves_like 'err result', expected_error_details: "User can't be blank"
@@ -62,8 +65,10 @@ RSpec.describe ::RemoteDevelopment::NamespaceClusterAgentMappings::Create::Mappi
       expect(result.unwrap).to be_a(RemoteDevelopment::Messages::NamespaceClusterAgentMappingCreateSuccessful)
       new_mapping = result.unwrap.context[:namespace_cluster_agent_mapping]
 
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       expect(new_mapping.cluster_agent_id).to be(agent.id)
       expect(new_mapping.namespace_id).to be(namespace.id)
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       expect(new_mapping.creator_id).to be(user.id)
     end
   end

@@ -4,7 +4,6 @@ module Resolvers
   module RemoteDevelopment
     class WorkspacesForAgentResolver < ::Resolvers::BaseResolver
       include ResolvesIds
-      # noinspection RubyResolve - likely due to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       include Gitlab::Graphql::Authorize::AuthorizeResource
 
       type Types::RemoteDevelopment::WorkspaceType.connection_type, null: true

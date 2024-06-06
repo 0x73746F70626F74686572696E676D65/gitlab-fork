@@ -4,7 +4,6 @@ module RemoteDevelopment
   class Workspace < ApplicationRecord
     include IgnorableColumns
     include Sortable
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     include RemoteDevelopment::Workspaces::States
     include ::Gitlab::Utils::StrongMemoize
 
@@ -80,6 +79,7 @@ module RemoteDevelopment
         .by_agent_ids(cluster_agent_id)
         .count
     end
+
     strong_memoize_attr :workspaces_count_for_current_user_and_agent
 
     def workspaces_count_for_current_agent
@@ -88,11 +88,13 @@ module RemoteDevelopment
         .by_agent_ids(cluster_agent_id)
         .count
     end
+
     strong_memoize_attr :workspaces_count_for_current_agent
 
     def exceeds_workspaces_per_user_quota?
       return unless remote_development_agent_config
 
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       quota = remote_development_agent_config.workspaces_per_user_quota
       return true if quota == 0
       return false if quota == -1
@@ -103,6 +105,7 @@ module RemoteDevelopment
     def exceeds_workspaces_quota?
       return unless remote_development_agent_config
 
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       quota = remote_development_agent_config.workspaces_quota
       return true if quota == 0
       return false if quota == -1
@@ -159,21 +162,27 @@ module RemoteDevelopment
     def enforce_quotas
       agent_config = remote_development_agent_config
       if exceeds_workspaces_per_user_quota?
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         errors.add :base,
-          format(s_('RemoteDevelopment|You cannot create a workspace because you already have "%{count}" existing workspaces for the given agent with a per user quota of "%{quota}" workspaces'),
+          format(
+            s_('RemoteDevelopment|You cannot create a workspace because you already have "%{count}" existing workspaces for the given agent with a per user quota of "%{quota}" workspaces'),
             count: workspaces_count_for_current_user_and_agent,
-            quota: agent_config.workspaces_per_user_quota)
+            quota: agent_config.workspaces_per_user_quota
+          )
       elsif exceeds_workspaces_quota?
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         errors.add :base,
-          format(s_('RemoteDevelopment|You cannot create a workspace because there are already "%{count}" existing workspaces for the given agent with a total quota of "%{quota}" workspaces'),
+          format(
+            s_('RemoteDevelopment|You cannot create a workspace because there are already "%{count}" existing workspaces for the given agent with a total quota of "%{quota}" workspaces'),
             count: workspaces_count_for_current_agent,
-            quota: agent_config.workspaces_quota)
+            quota: agent_config.workspaces_quota
+          )
       end
     end
+
     # rubocop:enable Layout/LineLength  -- Long messages for UI
 
     def touch_desired_state_updated_at
-      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       self.desired_state_updated_at = Time.current.utc
     end
   end

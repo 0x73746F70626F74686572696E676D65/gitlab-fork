@@ -42,6 +42,7 @@ module RemoteDevelopment
           # project_namespaces_by_id must contain project.project_namespace_id as "projects" table has a
           # ON CASCADE DELETE constraint with respect to the projects table. As such, if a project can be retrieved
           # from the database, so should its project_namespace
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           project_namespace = project_namespaces_by_id[project.project_namespace_id]
 
           hash[cluster_agent_id] = project_namespace.traversal_ids

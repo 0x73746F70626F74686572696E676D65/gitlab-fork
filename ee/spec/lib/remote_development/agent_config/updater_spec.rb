@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 
-# noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :remote_development do
   include ResultMatchers
 
@@ -99,7 +98,9 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
           .to eq(default_resources_per_workspace_container)
         expect(config_instance.max_resources_per_workspace.deep_symbolize_keys)
           .to eq(max_resources_per_workspace)
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect(config_instance.workspaces_quota).to eq(saved_quota)
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect(config_instance.workspaces_per_user_quota).to eq(saved_quota)
 
         expect(result)

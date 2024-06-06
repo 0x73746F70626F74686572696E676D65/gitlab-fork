@@ -13,6 +13,7 @@ module RemoteDevelopment
       when :unmapped
         validate_user_can_read_namespace_agent_mappings!(user: user, namespace: namespace)
 
+        # noinspection RailsParamDefResolve -- A symbol is a valid argument for 'select'
         existing_mapped_agents =
           RemoteDevelopmentNamespaceClusterAgentMapping
             .for_namespaces([namespace.id])

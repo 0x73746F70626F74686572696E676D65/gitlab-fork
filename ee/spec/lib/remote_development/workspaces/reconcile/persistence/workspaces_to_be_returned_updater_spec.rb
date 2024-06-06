@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 
-# noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::WorkspacesToBeReturnedUpdater, feature_category: :remote_development do
   let_it_be(:user) { create(:user) }
   let_it_be(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
@@ -70,8 +69,11 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
   context "for update_type FULL" do
     it "updates all workspaces", :unlimited_max_formatted_output_length do
       returned_value
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       expect(workspace1.reload.responded_to_agent_at).to be > 1.minute.ago
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       expect(workspace2.reload.responded_to_agent_at).to be > 1.minute.ago
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       expect(workspace3.reload.responded_to_agent_at).to be > 1.minute.ago
     end
 

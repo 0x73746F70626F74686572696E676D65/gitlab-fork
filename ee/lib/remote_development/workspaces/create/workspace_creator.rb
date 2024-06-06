@@ -3,7 +3,6 @@
 module RemoteDevelopment
   module Workspaces
     module Create
-      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       class WorkspaceCreator
         include States
         include Messages

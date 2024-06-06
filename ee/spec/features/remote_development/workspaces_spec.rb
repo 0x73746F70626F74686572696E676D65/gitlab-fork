@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 
-# noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
   include_context 'file upload requests helpers'
@@ -45,6 +44,7 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
 
       # NAVIGATE TO WORKSPACES PAGE
 
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       visit remote_development_workspaces_path
       wait_for_requests
 
@@ -54,7 +54,7 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
       click_button 'Select a project'
       find_by_testid("listbox-item-#{project.full_path}").click
       wait_for_requests
-      # noinspection RubyMismatchedArgumentType - TODO: Try suggestions in https://youtrack.jetbrains.com/issue/RUBY-25400/Programmatically-defined-constants-always-produce-Unresolved-reference-error#focus=Comments-27-8161148.0-0
+      # noinspection RubyMismatchedArgumentType -- Rubymine is finding the wrong `select`
       select agent.name, from: 'Cluster agent'
       fill_in 'Workspace automatically terminates after', with: '20'
       click_button 'Create workspace'

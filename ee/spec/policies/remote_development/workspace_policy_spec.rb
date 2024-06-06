@@ -16,7 +16,6 @@ RSpec.describe RemoteDevelopment::WorkspacePolicy, feature_category: :remote_dev
   let_it_be(:workspace_project, refind: true) { create(:project, creator: workspace_project_creator) }
   let_it_be(:workspace_owner, refind: true) { create(:user) }
   let_it_be(:workspace, refind: true) do
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
     create(:workspace, project: workspace_project, agent: agent, user: workspace_owner)
   end
 
@@ -45,7 +44,7 @@ RSpec.describe RemoteDevelopment::WorkspacePolicy, feature_category: :remote_dev
   end
 
   shared_examples 'fixture sanity checks' do
-    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31543
+    # noinspection RubyResolve -- Rubymine is incorrectly resolving workspace_project as `QA::Resource::Project`.
     it "has fixture sanity checks" do
       expect(agent_project.creator_id).not_to eq(workspace_project.creator_id)
       expect(agent_project.creator_id).not_to eq(user.id)

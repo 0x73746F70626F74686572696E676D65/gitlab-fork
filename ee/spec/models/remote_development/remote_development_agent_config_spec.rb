@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 
-# noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category: :remote_development do
   let_it_be_with_reload(:agent) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
   let(:default_default_resources_per_workspace_container) { {} }
@@ -55,6 +54,7 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
     end
 
     it 'when network_policy_egress is nil' do
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       config.network_policy_egress = nil
       expect(config).not_to be_valid
       expect(config.errors[:network_policy_egress]).to include(
@@ -69,6 +69,7 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
     end
 
     it 'when default_resources_per_workspace_container is nil' do
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       config.default_resources_per_workspace_container = nil
       expect(config).not_to be_valid
       expect(config.errors[:default_resources_per_workspace_container]).to include(
@@ -83,6 +84,7 @@ RSpec.describe RemoteDevelopment::RemoteDevelopmentAgentConfig, feature_category
     end
 
     it 'when default_resources_per_workspace_container is nil' do
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       config.max_resources_per_workspace = nil
       expect(config).not_to be_valid
       expect(config.errors[:max_resources_per_workspace]).to include(

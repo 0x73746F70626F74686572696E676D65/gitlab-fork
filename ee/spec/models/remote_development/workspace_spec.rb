@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 
-# noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_development do
   let_it_be(:user) { create(:user) }
   let_it_be(:agent, reload: true) { create(:ee_cluster_agent, :with_remote_development_agent_config) }
@@ -49,6 +48,7 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
         expect(agent.remote_development_agent_config.workspaces.first).to eq(workspace)
         expect(workspace.url_prefix).to eq("60001-#{workspace.name}")
         expect(workspace.dns_zone).to eq(agent.remote_development_agent_config.dns_zone)
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect(workspace.url_query_string).to eq("folder=dir%2Ffile")
       end
     end
@@ -80,6 +80,7 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
 
       it 'sets desired_state_updated_at' do
         workspace.save!
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect(workspace.desired_state_updated_at).to eq(Time.current)
       end
     end
@@ -192,7 +193,9 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
 
       context 'when dns_zone matches config dns_zone' do
         before do
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           workspace.dns_zone = 'zone1'
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           agent.remote_development_agent_config.dns_zone = 'zone1'
         end
 
@@ -204,6 +207,7 @@ RSpec.describe RemoteDevelopment::Workspace, feature_category: :remote_developme
       context 'when dns_zone does not match config dns_zone' do
         before do
           workspace.dns_zone = 'zone1'
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           agent.remote_development_agent_config.dns_zone = 'zone2'
         end
 

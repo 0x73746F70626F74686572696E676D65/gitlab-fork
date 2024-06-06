@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 
-# noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
   include_context 'file upload requests helpers'
@@ -75,6 +74,7 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
       it 'allows navigating to the new workspace page' do
         click_link 'New workspace'
 
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect(page).to have_current_path("#{new_remote_development_workspace_path}?project=#{project.full_path}")
         expect(page).to have_css('button', text: project.name_with_namespace)
       end
@@ -138,6 +138,7 @@ RSpec.describe 'Remote Development workspaces dropdown group', :api, :js, featur
   end
 
   describe 'when viewing blob page' do
+    # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
     let(:subject) { project_blob_path(project, "#{project.default_branch}/#{devfile_path}") }
 
     it_behaves_like 'views and manages workspaces in workspaces dropdown group based on feature flag'
