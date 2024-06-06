@@ -19451,12 +19451,6 @@ msgstr ""
 msgid "Edit Identity"
 msgstr ""
 
-msgid "Edit Label"
-msgstr ""
-
-msgid "Edit Milestone"
-msgstr ""
-
 msgid "Edit Password"
 msgstr ""
 
@@ -19538,10 +19532,16 @@ msgstr ""
 msgid "Edit inline"
 msgstr ""
 
+msgid "Edit label"
+msgstr ""
+
 msgid "Edit link"
 msgstr ""
 
 msgid "Edit merge request"
+msgstr ""
+
+msgid "Edit milestone"
 msgstr ""
 
 msgid "Edit page"
