@@ -202,7 +202,11 @@ module EE
 
       override :retryable?
       def retryable?
-        super && !merge_train_pipeline?
+        # if a merge train pipeline is complete, retrying jobs won't put it the MR back
+        # in the train, this prevents users from uselessly retrying the pipeline.
+        return false if merge_train_pipeline? && complete?
+
+        super
       end
 
       override :merge_train_pipeline?

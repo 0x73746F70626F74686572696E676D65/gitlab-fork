@@ -48,7 +48,7 @@ RSpec.describe 'Merge request > User sees merge widget', :js, feature_category: 
     end
 
     context 'when the head pipeline is merge train pipeline' do
-      let(:traits) { [:with_merge_train_pipeline] }
+      let(:traits) { [:with_pending_merge_train_pipeline] }
       let(:options) { { merge_sha: project.commit.sha } }
       let(:pipeline) { merge_request.all_pipelines.first }
 

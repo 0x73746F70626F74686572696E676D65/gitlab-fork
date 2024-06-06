@@ -764,8 +764,14 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
       it { is_expected.to be true }
     end
 
+    context 'with running merge train pipeline' do
+      let(:merge_request) { create(:merge_request, :with_pending_merge_train_pipeline) }
+
+      it { is_expected.to be true }
+    end
+
     context 'with merge train pipeline' do
-      let(:merge_request) { create(:merge_request, :with_merge_train_pipeline) }
+      let(:merge_request) { create(:merge_request, :with_failed_merge_train_pipeline) }
 
       it { is_expected.to be false }
     end
@@ -796,7 +802,7 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     let(:pipeline) { merge_request.all_pipelines.last }
 
     context 'when pipeline is merge train pipeline' do
-      let(:merge_request) { create(:merge_request, :with_merge_train_pipeline) }
+      let(:merge_request) { create(:merge_request, :with_pending_merge_train_pipeline) }
 
       it { is_expected.to eq(:merge_train) }
     end
