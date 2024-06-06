@@ -3,6 +3,7 @@ import { GlAlert, GlButton, GlIcon, GlSprintf } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { NEW_POLICY_BUTTON_TEXT } from '../constants';
 import ApprovalPolicyNameUpdateBanner from './banners/approval_policy_name_update_banner.vue';
 import BreakingChangesBanner from './banners/breaking_changes_banner.vue';
@@ -30,6 +31,7 @@ export default {
     'disableScanPolicyUpdate',
     'documentationPath',
     'newPolicyPath',
+    'namespaceType',
   ],
   props: {
     hasInvalidPolicies: {
@@ -39,9 +41,14 @@ export default {
   },
   i18n: {
     title: s__('SecurityOrchestration|Policies'),
-    subtitle: s__(
-      'SecurityOrchestration|Enforce %{linkStart}security policies%{linkEnd} for this project.',
-    ),
+    subtitle: {
+      [NAMESPACE_TYPES.GROUP]: s__(
+        'SecurityOrchestration|Enforce %{linkStart}security policies%{linkEnd} for this group.',
+      ),
+      [NAMESPACE_TYPES.PROJECT]: s__(
+        'SecurityOrchestration|Enforce %{linkStart}security policies%{linkEnd} for this project.',
+      ),
+    },
     newPolicyButtonText: NEW_POLICY_BUTTON_TEXT,
     editPolicyProjectButtonText: s__('SecurityOrchestration|Edit policy project'),
     viewPolicyProjectButtonText: s__('SecurityOrchestration|View policy project'),
@@ -111,7 +118,7 @@ export default {
             {{ $options.i18n.title }}
           </h2>
           <p data-testid="policies-subheader">
-            <gl-sprintf :message="$options.i18n.subtitle">
+            <gl-sprintf :message="$options.i18n.subtitle[namespaceType]">
               <template #link="{ content }">
                 <gl-button
                   class="gl-pb-1!"
