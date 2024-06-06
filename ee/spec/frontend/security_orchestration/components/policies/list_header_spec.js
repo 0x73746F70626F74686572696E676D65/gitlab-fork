@@ -6,6 +6,7 @@ import ExperimentFeaturesBanner from 'ee/security_orchestration/components/polic
 import InvalidPoliciesBanner from 'ee/security_orchestration/components/policies/banners/invalid_policies_banner.vue';
 import ListHeader from 'ee/security_orchestration/components/policies/list_header.vue';
 import ProjectModal from 'ee/security_orchestration/components/policies/project_modal.vue';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { NEW_POLICY_BUTTON_TEXT } from 'ee/security_orchestration/components/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -50,6 +51,7 @@ describe('List Header Component', () => {
         assignedPolicyProject: null,
         disableScanPolicyUpdate: false,
         disableSecurityPolicyProject: false,
+        namespaceType: NAMESPACE_TYPES.PROJECT,
         ...provide,
       },
       stubs: {
@@ -92,13 +94,6 @@ describe('List Header Component', () => {
       expect(findScanNewPolicyModal().props().visible).toBe(true);
     });
 
-    it('displays the subheader', () => {
-      expect(findSubheader().text()).toMatchInterpolatedText(
-        'Enforce security policies for this project.',
-      );
-      expect(findMoreInformationLink().attributes('href')).toBe(documentationPath);
-    });
-
     describe('linking security policies project', () => {
       beforeEach(async () => {
         await linkSecurityPoliciesProject();
@@ -133,6 +128,18 @@ describe('List Header Component', () => {
 
         expect(findApprovalPolicyNameUpdateBanner().findComponent(GlAlert).exists()).toBe(false);
       });
+    });
+  });
+
+  describe('subheader', () => {
+    it.each`
+      namespaceType              | expectedText
+      ${NAMESPACE_TYPES.GROUP}   | ${'Enforce security policies for this group.'}
+      ${NAMESPACE_TYPES.PROJECT} | ${'Enforce security policies for this project.'}
+    `('displays the subheader for $namespaceType', ({ namespaceType, expectedText }) => {
+      createWrapper({ provide: { namespaceType } });
+      expect(findSubheader().text()).toMatchInterpolatedText(expectedText);
+      expect(findMoreInformationLink().attributes('href')).toBe(documentationPath);
     });
   });
 

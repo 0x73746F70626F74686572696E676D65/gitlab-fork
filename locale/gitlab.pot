@@ -47170,6 +47170,9 @@ msgstr ""
 msgid "SecurityOrchestration|Enabled"
 msgstr ""
 
+msgid "SecurityOrchestration|Enforce %{linkStart}security policies%{linkEnd} for this group."
+msgstr ""
+
 msgid "SecurityOrchestration|Enforce %{linkStart}security policies%{linkEnd} for this project."
 msgstr ""
 
