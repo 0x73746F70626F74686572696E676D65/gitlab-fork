@@ -2,7 +2,7 @@
 name: admin_integrations
 description: Create, read, update, and delete integrations with external applications.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/460522
-introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/TODO
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/154601
 feature_category: integrations
 milestone: '17.1'
 group_ability: true

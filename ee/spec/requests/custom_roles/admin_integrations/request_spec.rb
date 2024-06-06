@@ -127,4 +127,42 @@ RSpec.describe 'User with admin_integrations custom role', feature_category: :in
       end
     end
   end
+
+  describe API::Integrations do
+    include ApiHelpers
+
+    let_it_be(:asana_integration) { create(:asana_integration, project: project) }
+
+    describe 'GET /projects/:id/integrations' do
+      it 'returns success for a user with custom role' do
+        get api("/projects/#{project.id}/integrations", user)
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
+    describe 'PUT /projects/:id/integrations/asana' do
+      it 'returns success for a user with custom role' do
+        put api("/projects/#{project.id}/integrations/asana", user), params: { api_key: 'key' }
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
+    describe 'DELETE /projects/:id/integrations/asana' do
+      it 'returns success for a user with custom role' do
+        delete api("/projects/#{project.id}/integrations/asana", user)
+
+        expect(response).to have_gitlab_http_status(:no_content)
+      end
+    end
+
+    describe 'GET /projects/:id/integrations/asana' do
+      it 'returns success for a user with custom role' do
+        get api("/projects/#{project.id}/integrations/asana", user)
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+  end
 end
