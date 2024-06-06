@@ -136,8 +136,8 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
 
       context 'when marked_for_deletion_on is not present' do
-        it 'raise an error' do
-          expect { described_class.by_marked_for_deletion_on(nil) }.to raise_error(ArgumentError, 'marked_for_deletion_on cannot be blank')
+        it 'does not return any groups marked for deletion' do
+          expect(described_class.by_marked_for_deletion_on(nil)).to be_empty
         end
       end
     end

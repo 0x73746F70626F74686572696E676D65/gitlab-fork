@@ -31,7 +31,7 @@ RSpec.describe Resolvers::GroupsResolver, feature_category: :groups_and_projects
       context 'and no groups have been marked for deletion on the given date' do
         let(:filters) { { marked_for_deletion_on: (marked_for_deletion_on - 1.day).iso8601 } }
 
-        it 'returns all groups' do
+        it 'returns no groups' do
           expect(groups_resolver).to be_empty
         end
       end

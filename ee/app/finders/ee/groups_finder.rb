@@ -20,7 +20,8 @@ module EE
     end
 
     def by_marked_for_deletion_on(groups)
-      return groups unless params[:marked_for_deletion_on]
+      return groups unless params[:marked_for_deletion_on].present?
+      return groups unless License.feature_available?(:adjourned_deletion_for_projects_and_groups)
 
       groups.by_marked_for_deletion_on(params[:marked_for_deletion_on])
     end
