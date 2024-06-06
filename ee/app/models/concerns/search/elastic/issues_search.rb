@@ -7,23 +7,48 @@ module Search
 
       include ::Elastic::ApplicationVersionedSearch
 
+      EMBEDDING_TRACKED_FIELDS = %i[title description].freeze
+
       included do
         extend ::Gitlab::Utils::Override
 
         override :maintain_elasticsearch_create
         def maintain_elasticsearch_create
           ::Elastic::ProcessBookkeepingService.track!(*get_indexing_data)
+
+          track_embedding! if track_embedding?
         end
 
         override :maintain_elasticsearch_update
         def maintain_elasticsearch_update(updated_attributes: previous_changes.keys)
           ::Elastic::ProcessBookkeepingService.track!(*get_indexing_data)
           super unless indexing_issue_of_epic_type?
+
+          track_embedding! if (updated_attributes.map(&:to_sym) & EMBEDDING_TRACKED_FIELDS).any? && track_embedding?
         end
 
         override :maintain_elasticsearch_destroy
         def maintain_elasticsearch_destroy
           ::Elastic::ProcessBookkeepingService.track!(*get_indexing_data)
+        end
+
+        private
+
+        # rubocop: disable Gitlab/FeatureFlagWithoutActor -- global flags
+        def track_embedding?
+          instance_of?(Issue) &&
+            project&.public? &&
+            Feature.enabled?(:ai_global_switch, type: :ops) &&
+            Feature.enabled?(:elaticsearch_issue_upsert, type: :gitlab_com_derisk) &&
+            Feature.enabled?(:elasticsearch_issue_embedding, project, type: :ops) &&
+            Gitlab::Saas.feature_available?(:ai_vertex_embeddings) &&
+            Gitlab::Elastic::Helper.default.vectors_supported?(:elasticsearch) &&
+            ::Elastic::DataMigrationService.migration_has_finished?(:add_embedding_to_issues)
+        end
+        # rubocop: enable Gitlab/FeatureFlagWithoutActor
+
+        def track_embedding!
+          ::Search::Elastic::ProcessEmbeddingBookkeepingService.track_embedding!(self)
         end
       end
 

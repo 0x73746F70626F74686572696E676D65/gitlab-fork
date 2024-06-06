@@ -14,6 +14,10 @@ module Search
           "elastic:embedding:updates:#{shard_number}:score"
         end
 
+        def track_embedding!(item)
+          track!(::Search::Elastic::References::Embedding.ref(item))
+        end
+
         def shard_limit
           (threshold / self::SHARDS.count).to_i
         end

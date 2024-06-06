@@ -122,7 +122,7 @@ RSpec.describe ::Search::Elastic::Reference, feature_category: :global_search do
     end
   end
 
-  describe '#index_name' do
+  describe '.index_name' do
     it 'raises a NotImplementedError' do
       expect { instance.index_name }.to raise_error(NotImplementedError)
     end

@@ -2,12 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Elastic Ingestion Pipeline', :elastic_delete_by_query, :sidekiq_inline, feature_category: :global_search do
+RSpec.describe 'Elastic Ingestion Pipeline', :sidekiq_inline, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, maintainers: user) }
 
   let(:project_routing) { "project_#{project.id}" }
-  let(:search_service) { ::SearchService.new(user, { scope: scope, search: '*' }) }
   let(:logger) { ::Gitlab::Elasticsearch::Logger.build }
   let(:bulk_indexer) { ::Gitlab::Elastic::BulkIndexer.new(logger: logger) }
   let(:bookkeeping_service) { ::Elastic::ProcessBookkeepingService }
@@ -21,9 +20,7 @@ RSpec.describe 'Elastic Ingestion Pipeline', :elastic_delete_by_query, :sidekiq_
     ensure_elasticsearch_index!
   end
 
-  context 'for legacy references' do
-    let(:scope) { 'merge_requests' }
-
+  context 'for legacy references', :elastic_delete_by_query do
     it 'adds the document to the index' do
       merge_request = create(:merge_request, source_project: project, target_project: project)
 
@@ -47,8 +44,8 @@ RSpec.describe 'Elastic Ingestion Pipeline', :elastic_delete_by_query, :sidekiq_
 
       ensure_elasticsearch_index!
 
-      expect(docs_in_index('gitlab-test-merge_requests')).to match_array([{ id: merge_request.es_id.to_s,
-                                                                            routing: project_routing }])
+      expect(docs_in_index('gitlab-test-merge_requests')).to match_array([{ 'id' => merge_request.es_id.to_s,
+                                                                            'routing' => project_routing }])
     end
 
     context 'when a manual reference exists in the queue' do
@@ -69,8 +66,8 @@ RSpec.describe 'Elastic Ingestion Pipeline', :elastic_delete_by_query, :sidekiq_
         ensure_elasticsearch_index!
 
         expect(bookkeeping_service.queued_items).to eq({})
-        expect(docs_in_index('gitlab-test-merge_requests').last).to eq({ id: merge_request.es_id.to_s,
-                                                                         routing: project_routing })
+        expect(docs_in_index('gitlab-test-merge_requests').last).to eq({ 'id' => merge_request.es_id.to_s,
+                                                                         'routing' => project_routing })
       end
     end
 
@@ -92,8 +89,8 @@ RSpec.describe 'Elastic Ingestion Pipeline', :elastic_delete_by_query, :sidekiq_
         ensure_elasticsearch_index!
 
         expect(bookkeeping_service.queued_items).to eq({})
-        expect(docs_in_index('gitlab-test-merge_requests').last).to eq({ id: merge_request.es_id.to_s,
-                                                                         routing: project_routing })
+        expect(docs_in_index('gitlab-test-merge_requests').last).to eq({ 'id' => merge_request.es_id.to_s,
+                                                                         'routing' => project_routing })
       end
     end
 
@@ -126,10 +123,70 @@ RSpec.describe 'Elastic Ingestion Pipeline', :elastic_delete_by_query, :sidekiq_
     end
   end
 
-  def docs_in_index(index)
+  context 'for embedding references', :elastic_clean do
+    before do
+      skip 'embeddings are not supported' unless Gitlab::Elastic::Helper.default.vectors_supported?(:elasticsearch)
+
+      allow(project).to receive(:public?).and_return(true)
+
+      allow(Gitlab::Saas).to receive(:feature_available?).with(:ai_vertex_embeddings).and_return(true)
+
+      allow_next_instance_of(Search::Elastic::References::Embedding) do |ref|
+        allow(ref).to receive(:as_indexed_json).and_return({ embedding_version: 0, routing: project_routing })
+      end
+    end
+
+    it 'adds embedding on create and keeps embedding when title is updated' do
+      issue = create(:issue, project: project)
+      ensure_elasticsearch_index!
+
+      expect(docs_in_index('gitlab-test-issues', include_source: true)).to match_array([hash_including({
+        'id' => issue.id, 'routing' => project_routing, 'title' => issue.title, 'embedding_version' => 0
+      })])
+
+      new_title = 'My title 2'
+      issue.update!(title: new_title)
+      ensure_elasticsearch_index!
+
+      expect(docs_in_index('gitlab-test-issues', include_source: true)).to match_array([hash_including({
+        'id' => issue.id, 'routing' => project_routing, 'title' => new_title, 'embedding_version' => 0
+      })])
+    end
+
+    context 'when embeddings is not enabled' do
+      before do
+        stub_feature_flags(elasticsearch_issue_embedding: false)
+      end
+
+      it 'does not add embeddings on create or update' do
+        issue = create(:issue, project: project)
+        ensure_elasticsearch_index!
+
+        docs_in_index = docs_in_index('gitlab-test-issues', include_source: true)
+        expect(docs_in_index)
+          .to match_array([hash_including({ 'id' => issue.id, 'routing' => project_routing, 'title' => issue.title })])
+        expect(docs_in_index.first.keys).not_to include('embedding_version')
+
+        new_title = 'My title 2'
+        issue.update!(title: new_title)
+        ensure_elasticsearch_index!
+
+        docs_in_index = docs_in_index('gitlab-test-issues', include_source: true)
+        expect(docs_in_index)
+          .to match_array([hash_including({ 'id' => issue.id, 'routing' => project_routing, 'title' => new_title })])
+        expect(docs_in_index.first.keys).not_to include('embedding_version')
+      end
+    end
+  end
+
+  def docs_in_index(index, include_source: false)
     client
       .search(index: index)
       .dig('hits', 'hits')
-      .map { |hit| { id: hit['_id'], routing: hit['_routing'] } }
+      .map do |hit|
+        hash = { id: hit['_id'], routing: hit['_routing'] }
+        hash.merge!(hit['_source']) if include_source
+        hash.with_indifferent_access
+      end
   end
 end
