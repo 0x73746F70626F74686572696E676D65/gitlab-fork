@@ -4,6 +4,7 @@ import { debounce } from 'lodash';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { n__ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { RULE_TYPE_ANY_APPROVER } from '../../constants';
 
 const ANY_RULE_NAME = 'All Members';
@@ -17,6 +18,7 @@ export default {
       return n__('Approval required', 'Approvals required', approvalsCount);
     },
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     rule: {
       type: Object,
@@ -27,6 +29,11 @@ export default {
       required: false,
       default: true,
     },
+    isBranchRulesEdit: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
   },
   computed: {
     ...mapState(['settings']),
@@ -35,6 +42,9 @@ export default {
     },
     minInputValue() {
       return this.rule.minApprovalsRequired || 0;
+    },
+    isDisabled() {
+      return this.isBranchRulesEdit ? !this.glFeatures.editBranchRules : !this.settings.canEdit;
     },
   },
   created() {
@@ -69,7 +79,7 @@ export default {
     <gl-form-input
       :id="uniqueInputId"
       :value="rule.approvalsRequired"
-      :disabled="!settings.canEdit"
+      :disabled="isDisabled"
       class="gl-ml-auto gl-sm-mr-auto gl-w-10 -gl-my-3"
       type="number"
       name="approvals-number-field"

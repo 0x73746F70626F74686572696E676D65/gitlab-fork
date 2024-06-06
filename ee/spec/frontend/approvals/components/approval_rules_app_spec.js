@@ -23,13 +23,18 @@ describe('EE Approvals App', () => {
   let slots;
 
   const targetBranchName = 'development';
-  const factory = (propsData = {}) => {
+  const factory = (propsData = {}, editBranchRules = true) => {
     wrapper = shallowMountExtended(ApprovalRulesApp, {
       slots,
       store: new Vuex.Store(store),
       propsData,
       stubs: {
         GlCard,
+      },
+      provide: {
+        glFeatures: {
+          editBranchRules,
+        },
       },
     });
   };
@@ -149,6 +154,7 @@ describe('EE Approvals App', () => {
           hasLoaded: true,
           rules: [],
           isLoading: false,
+          drawerOpen: false,
         };
       });
 
@@ -282,6 +288,26 @@ describe('EE Approvals App', () => {
 
       await nextTick();
       expect(store.modules.approvals.actions.fetchRules).not.toHaveBeenCalled();
+    });
+
+    it('renders add button', () => {
+      factory({ isBranchRulesEdit: true });
+
+      const button = findAddButton();
+
+      expect(button.exists()).toBe(true);
+      expect(button.text()).toBe('Add approval rule');
+    });
+
+    describe('when edit_branch_rules feature flag is disabled', () => {
+      it('does not render add button', () => {
+        const editBranchRules = false;
+        factory({ isBranchRulesEdit: true }, editBranchRules);
+
+        const button = findAddButton();
+
+        expect(button.exists()).toBe(false);
+      });
     });
   });
 });
