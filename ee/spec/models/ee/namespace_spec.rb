@@ -499,6 +499,17 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
     end
   end
 
+  describe '.with_group_wiki_repositories' do
+    subject { described_class.with_group_wiki_repositories }
+
+    let_it_be(:namespace_without_group_wiki_repository) { create(:group) }
+
+    let_it_be(:namespace_with_group_wiki_repository) { create(:group) }
+    let_it_be(:group_wiki_repository) { create(:group_wiki_repository, group: namespace_with_group_wiki_repository) }
+
+    it { is_expected.to contain_exactly(namespace_with_group_wiki_repository) }
+  end
+
   context 'validation' do
     it "ensures max_pages_size is an integer greater than 0 (or equal to 0 to indicate unlimited/maximum)" do
       is_expected.to validate_numericality_of(:max_pages_size).only_integer.is_greater_than_or_equal_to(0)
