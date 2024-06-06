@@ -1,5 +1,4 @@
 <script>
-import Vue from 'vue';
 import { isEmpty, uniqBy } from 'lodash';
 import { GlAlert, GlEmptyState, GlButton } from '@gitlab/ui';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
@@ -299,7 +298,10 @@ export default {
     oldUpdateAction(actionIndex, values) {
       // TODO: Remove with the approvalPolicyDisableBotComment feature flag
       this.policy.actions.splice(actionIndex, 1, values);
-      this.$set(this.errors, 'action', []);
+      this.errors = {
+        ...this.errors,
+        action: [],
+      };
       this.updateYamlEditorValue(this.policy);
     },
     addAction(type) {
@@ -340,7 +342,10 @@ export default {
     },
     updateSettings(values) {
       if (!this.policy.approval_settings) {
-        Vue.set(this.policy, 'approval_settings', values);
+        this.policy = {
+          ...this.policy,
+          approval_settings: values,
+        };
       } else {
         this.policy.approval_settings = values;
       }

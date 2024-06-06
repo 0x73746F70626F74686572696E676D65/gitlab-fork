@@ -118,7 +118,11 @@ export default {
       this.$emit('changed', updatedAction);
     },
     selectFilter(filter) {
-      this.$set(this.filters, filter, true);
+      this.filters = {
+        ...this.filters,
+        [filter]: true,
+      };
+
       if (filter === CI_VARIABLE) {
         this.triggerChanged({ variables: { '': '' } });
       }
