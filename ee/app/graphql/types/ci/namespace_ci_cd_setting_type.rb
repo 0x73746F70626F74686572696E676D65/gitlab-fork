@@ -5,7 +5,7 @@ module Types
     class NamespaceCiCdSettingType < BaseObject
       graphql_name 'NamespaceCiCdSetting'
 
-      authorize :admin_namespace
+      authorize :admin_runner
 
       field :allow_stale_runner_pruning, GraphQL::Types::Boolean,
         null: true,

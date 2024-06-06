@@ -2769,6 +2769,21 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it_behaves_like 'custom roles abilities'
     end
 
+    context 'for a member role with admin_runners true' do
+      let(:member_role_abilities) { { admin_runners: true } }
+      let(:allowed_abilities) do
+        [
+          :admin_runner,
+          :create_runner,
+          :destroy_runner,
+          :read_runner,
+          :update_runner
+        ]
+      end
+
+      it_behaves_like 'custom roles abilities'
+    end
+
     context 'for a member role with read_vulnerability true' do
       let(:member_role_abilities) { { read_vulnerability: true } }
       let(:allowed_abilities) do

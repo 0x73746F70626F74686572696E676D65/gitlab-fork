@@ -1,0 +1,13 @@
+---
+name: admin_runners
+description: Create, view, edit, and delete group or project Runners. Includes configuring
+  Runner settings.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/442851
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/151825
+feature_category: runner
+milestone: '17.1'
+group_ability: true
+project_ability: true
+requirements: []
+available_from_access_level:
+feature_flag: custom_ability_admin_runners

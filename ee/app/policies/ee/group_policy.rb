@@ -592,6 +592,8 @@ module EE
         enable :read_licenses
       end
 
+      rule { custom_role_enables_admin_runners }.enable(*create_read_update_admin_destroy(:runner))
+
       rule { admin | owner }.policy do
         enable :owner_access
         enable :read_billable_member

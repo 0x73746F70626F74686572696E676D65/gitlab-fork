@@ -3671,6 +3671,21 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       end
     end
 
+    context 'for a member role with `admin_runners` true' do
+      let(:member_role_abilities) { { admin_runners: true } }
+      let(:allowed_abilities) do
+        [
+          :admin_runner,
+          :create_runner,
+          :destroy_runner,
+          :read_runner,
+          :update_runner
+        ]
+      end
+
+      it_behaves_like 'custom roles abilities'
+    end
+
     context 'for a custom role with the `admin_integrations` permission' do
       let(:member_role_abilities) { { admin_integrations: true } }
 

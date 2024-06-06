@@ -22,7 +22,8 @@ module EE
               :manage_merge_request_settings
             ],
             ci_cd_menu_item: [
-              :admin_cicd_variables
+              :admin_cicd_variables,
+              :admin_runner
             ],
             integrations_menu_item: [
               :admin_integrations

@@ -314,6 +314,7 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
         :admin_cicd_variables          | 'CI/CD'
         :admin_compliance_framework    | 'General'
         :admin_push_rules              | 'Repository'
+        :admin_runners                 | 'CI/CD'
         :manage_deploy_tokens          | 'Repository'
         :manage_group_access_tokens    | 'Access Tokens'
         :manage_merge_request_settings | 'General'
