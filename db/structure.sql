@@ -17035,7 +17035,7 @@ CREATE TABLE subscription_add_on_purchases (
     last_assigned_users_refreshed_at timestamp with time zone,
     trial boolean DEFAULT false NOT NULL,
     started_at date,
-    organization_id bigint DEFAULT 1 NOT NULL,
+    organization_id bigint NOT NULL,
     CONSTRAINT check_3313c4d200 CHECK ((char_length(purchase_xid) <= 255))
 );
 
