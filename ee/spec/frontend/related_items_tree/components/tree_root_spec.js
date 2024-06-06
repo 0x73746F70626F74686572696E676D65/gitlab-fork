@@ -7,7 +7,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { ESC_KEY_CODE } from '~/lib/utils/keycodes';
 import { DRAG_DELAY } from '~/sortable/constants';
 import TreeRoot from 'ee/related_items_tree/components/tree_root.vue';
-import { treeItemChevronBtnKey } from 'ee/related_items_tree/constants';
+import { treeItemChevronBtnClassName } from 'ee/related_items_tree/constants';
 import createDefaultStore from 'ee/related_items_tree/store';
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
 import { gqClient } from 'ee/related_items_tree/utils/epic_utils';
@@ -117,7 +117,7 @@ describe('RelatedItemsTree', () => {
                   tag: 'ul',
                   'data-parent-reference': mockParentItem.reference,
                   'data-parent-id': mockParentItem.id,
-                  filter: `[data-button-type=${treeItemChevronBtnKey}]`,
+                  filter: `.${treeItemChevronBtnClassName}`,
                 }),
               );
             });
