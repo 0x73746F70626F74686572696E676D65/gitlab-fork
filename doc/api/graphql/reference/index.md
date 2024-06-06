@@ -16021,6 +16021,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="addonuserauthoredmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="addonuserauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="addonuserauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="addonuserauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="addonuserauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="addonuserauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -16117,6 +16118,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="addonuserreviewrequestedmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="addonuserreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="addonuserreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="addonuserreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
 | <a id="addonuserreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="addonuserreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
@@ -16829,6 +16831,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="autocompleteduserauthoredmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="autocompleteduserauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="autocompleteduserauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="autocompleteduserauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="autocompleteduserauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="autocompleteduserauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -16937,6 +16940,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="autocompleteduserreviewrequestedmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="autocompleteduserreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="autocompleteduserreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="autocompleteduserreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
 | <a id="autocompleteduserreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="autocompleteduserreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
@@ -19025,6 +19029,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="currentuserauthoredmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="currentuserauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="currentuserauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="currentuserauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="currentuserauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="currentuserauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -19121,6 +19126,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="currentuserreviewrequestedmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="currentuserreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="currentuserreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="currentuserreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
 | <a id="currentuserreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="currentuserreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
@@ -22326,6 +22332,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="groupmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="groupmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="groupmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="groupmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
 | <a id="groupmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="groupmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
@@ -24339,6 +24346,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestassigneeauthoredmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="mergerequestassigneeauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="mergerequestassigneeauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="mergerequestassigneeauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestassigneeauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestassigneeauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -24435,6 +24443,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestassigneereviewrequestedmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="mergerequestassigneereviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="mergerequestassigneereviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="mergerequestassigneereviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
 | <a id="mergerequestassigneereviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestassigneereviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
@@ -24679,6 +24688,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestauthorauthoredmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="mergerequestauthorauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="mergerequestauthorauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="mergerequestauthorauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestauthorauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestauthorauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -24775,6 +24785,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestauthorreviewrequestedmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="mergerequestauthorreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="mergerequestauthorreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="mergerequestauthorreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
 | <a id="mergerequestauthorreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestauthorreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
@@ -25066,6 +25077,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestparticipantauthoredmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="mergerequestparticipantauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="mergerequestparticipantauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="mergerequestparticipantauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestparticipantauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestparticipantauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -25162,6 +25174,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestparticipantreviewrequestedmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="mergerequestparticipantreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="mergerequestparticipantreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="mergerequestparticipantreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
 | <a id="mergerequestparticipantreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestparticipantreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
@@ -25442,6 +25455,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestreviewerauthoredmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="mergerequestreviewerauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="mergerequestreviewerauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="mergerequestreviewerauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestreviewerauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="mergerequestreviewerauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -25538,6 +25552,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="mergerequestreviewerreviewrequestedmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="mergerequestreviewerreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="mergerequestreviewerreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
@@ -28414,6 +28429,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="projectmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="projectmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="projectmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="projectmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
 | <a id="projectmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="projectmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
@@ -31221,6 +31237,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="usercoreauthoredmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="usercoreauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="usercoreauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="usercoreauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="usercoreauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="usercoreauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -31317,6 +31334,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="usercorereviewrequestedmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="usercorereviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="usercorereviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="usercorereviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
 | <a id="usercorereviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="usercorereviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
@@ -37605,6 +37623,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="userauthoredmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="userauthoredmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="userauthoredmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="userauthoredmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="userauthoredmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
 | <a id="userauthoredmergerequestsdeployedafter"></a>`deployedAfter` | [`Time`](#time) | Merge requests deployed after the timestamp. |
@@ -37701,6 +37720,7 @@ four standard [pagination arguments](#pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="userreviewrequestedmergerequestsapproved"></a>`approved` | [`Boolean`](#boolean) | Limit results to approved merge requests. Available only when the feature flag `mr_approved_filter` is enabled. |
 | <a id="userreviewrequestedmergerequestsassigneeusername"></a>`assigneeUsername` | [`String`](#string) | Username of the assignee. |
+| <a id="userreviewrequestedmergerequestsassigneewildcardid"></a>`assigneeWildcardId` | [`AssigneeWildcardId`](#assigneewildcardid) | Filter by assignee presence. Incompatible with assigneeUsernames and assigneeUsername. |
 | <a id="userreviewrequestedmergerequestsauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author. |
 | <a id="userreviewrequestedmergerequestscreatedafter"></a>`createdAfter` | [`Time`](#time) | Merge requests created after the timestamp. |
 | <a id="userreviewrequestedmergerequestscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Merge requests created before the timestamp. |
