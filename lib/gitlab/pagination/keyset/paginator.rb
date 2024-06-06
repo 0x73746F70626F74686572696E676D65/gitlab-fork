@@ -54,7 +54,7 @@ module Gitlab
           keyset_relation.to_sql
         end
 
-        # rubocop: disable CodeReuse/ActiveRecord -- This code is reusable.
+        # rubocop: disable CodeReuse/ActiveRecord -- This code is not reusable.
         def keyset_relation
           if paginate_backward?
             reversed_order
