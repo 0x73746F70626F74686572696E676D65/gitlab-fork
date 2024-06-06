@@ -42,8 +42,10 @@ class PreMergeChecks
     latest_pipeline = api_client.pipeline(project_id, latest_pipeline_id)
 
     check_pipeline_for_merged_results!(latest_pipeline)
-    check_pipeline_freshness!(latest_pipeline)
+    check_pipeline_not_running!(latest_pipeline)
+    check_pipeline_success!(latest_pipeline)
     check_pipeline_identifier!(latest_pipeline)
+    check_pipeline_freshness!(latest_pipeline)
 
     PreMergeChecksStatus.new(0, "All good for merge! 🚀")
   rescue PreMergeChecksFailedError => ex
@@ -74,6 +76,26 @@ class PreMergeChecks
 
     fail_check! <<~TEXT
       Expected to have a Merged Results pipeline but got #{pipeline.ref}!
+
+      Please start a new pipeline.
+    TEXT
+  end
+
+  def check_pipeline_not_running!(pipeline)
+    return unless pipeline.status == 'running'
+
+    fail_check! <<~TEXT
+      Expected latest pipeline (#{pipeline.web_url}) to be successful! Pipeline status was "#{pipeline.status}".
+
+      Please ensure the latest pipeline is finished and successful.
+    TEXT
+  end
+
+  def check_pipeline_success!(pipeline)
+    return if pipeline.status == 'success'
+
+    fail_check! <<~TEXT
+      Expected latest pipeline (#{pipeline.web_url}) to be successful! Pipeline status was "#{pipeline.status}".
 
       Please start a new pipeline.
     TEXT
