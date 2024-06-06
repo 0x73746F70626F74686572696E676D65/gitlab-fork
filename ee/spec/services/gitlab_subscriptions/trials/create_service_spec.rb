@@ -122,6 +122,16 @@ RSpec.describe GitlabSubscriptions::Trials::CreateService, feature_category: :pl
         end
       end
     end
+
+    context 'when lead was submitted with an intended namespace' do
+      let(:trial_params) { { namespace_id: non_existing_record_id.to_s } }
+
+      it 'does not create a trial and returns that there is no namespace' do
+        stub_lead_without_trial(trial_user_params)
+
+        expect_to_trigger_trial_step(execute, extra_lead_params, trial_params)
+      end
+    end
   end
 
   def lead_params(user, extra_lead_params)

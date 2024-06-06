@@ -3,6 +3,16 @@
 module GitlabSubscriptions
   module Trials
     class CreateDuoProService < ::GitlabSubscriptions::Trials::BaseCreateService
+      include Gitlab::Utils::StrongMemoize
+      extend ::Gitlab::Utils::Override
+
+      override :execute
+      def execute
+        return not_found unless DuoPro.eligible_namespace?(trial_params[:namespace_id], namespaces_eligible_for_trial)
+
+        super
+      end
+
       private
 
       def trial_flow

@@ -98,6 +98,32 @@ RSpec.describe GitlabSubscriptions::Trials::CreateDuoProService, feature_categor
         end
       end
     end
+
+    context 'when namespace_id is provided' do
+      let_it_be(:namespace) do
+        create(:group_with_plan, plan: :ultimate_plan, name: 'gitlab') { |record| record.add_owner(user) }
+      end
+
+      let(:trial_params) { { namespace_id: namespace.id.to_s } }
+
+      context 'when it is an eligible namespace' do
+        before do
+          expect_create_lead_success(trial_user_params)
+          expect_apply_trial_success(user, namespace, extra_params: existing_group_attrs(namespace))
+        end
+
+        it { is_expected.to be_success }
+      end
+
+      context 'when it is not an eligible namespace' do
+        let(:trial_params) { { namespace_id: non_existing_record_id.to_s } }
+
+        specify do
+          expect(execute).to be_error
+          expect(execute.reason).to eq(:not_found)
+        end
+      end
+    end
   end
 
   def lead_params(user, extra_lead_params)
