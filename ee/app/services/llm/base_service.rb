@@ -3,6 +3,7 @@
 module Llm
   class BaseService
     INVALID_MESSAGE = 'AI features are not enabled or resource is not permitted to be sent.'
+    MISSING_RESOURCE_ID_MESSAGE = 'ResourceId is required for slash command request.'
 
     def initialize(user, resource, options = {})
       @user = user
@@ -17,6 +18,11 @@ module Llm
         return error(INVALID_MESSAGE)
       end
 
+      if Feature.enabled?(:require_resource_id, @group) && invalid_slash_command_request?
+        logger.info(message: "Returning from Service due to missing resource id. Associated group: #{@group}")
+        return error(MISSING_RESOURCE_ID_MESSAGE)
+      end
+
       result = perform
 
       result.is_a?(ServiceResponse) ? result : success(ai_message: prompt_message)
@@ -26,6 +32,11 @@ module Llm
       return false if resource && !Gitlab::Llm::Utils::Authorizer.resource(resource: resource, user: user).allowed?
 
       ai_integration_enabled? && user_can_send_to_ai?
+    end
+
+    def invalid_slash_command_request?
+      true if contains_ai_action? && prompt_message.slash_command_prompt? &&
+        !prompt_message.resource.present?
     end
 
     private
@@ -44,6 +55,10 @@ module Llm
       return true unless ::Gitlab.com?
 
       user.any_group_with_ai_available?
+    end
+
+    def contains_ai_action?
+      options.key?(:ai_action)
     end
 
     def prompt_message
