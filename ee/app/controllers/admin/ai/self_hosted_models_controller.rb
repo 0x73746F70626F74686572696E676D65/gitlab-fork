@@ -12,6 +12,7 @@ module Admin
 
       def index
         @self_hosted_models = ::Ai::SelfHostedModel.all
+        @custom_models_json = @self_hosted_models.to_json(only: [:id, :name, :model, :api_token, :endpoint])
       end
 
       def new

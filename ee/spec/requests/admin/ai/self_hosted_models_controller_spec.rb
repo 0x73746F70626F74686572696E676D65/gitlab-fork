@@ -9,6 +9,7 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
   before do
     sign_in(admin)
     stub_ee_application_setting(duo_features_enabled: duo_features_enabled)
+    stub_feature_flags(custom_models_vue_app: false) # disables vue app while running test suite
   end
 
   shared_examples 'returns 404' do
