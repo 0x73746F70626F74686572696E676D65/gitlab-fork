@@ -72,6 +72,10 @@ describe('Usage Overview Visualization', () => {
           'Public - The group and any public projects can be viewed without any authentication.',
         );
       });
+
+      it('does not emit `set-alerts', () => {
+        expect(wrapper.emitted('set-alerts')).toBeUndefined();
+      });
     });
 
     describe('metrics', () => {
@@ -128,17 +132,40 @@ describe('Usage Overview Visualization', () => {
   });
 
   describe('with `overviewCountsAggregationEnabled=false`', () => {
-    it('with no data should render `-` for each metric', () => {
+    beforeEach(() => {
       createWrapper({
         props: { data: { metrics: mockUsageMetricsNoData } },
         provide: { overviewCountsAggregationEnabled: false },
       });
+    });
 
+    it('with no data should render `-` for each metric', () => {
       expect(findMetrics()).toHaveLength(mockUsageMetrics.length);
 
       findMetrics().wrappers.forEach((v) => {
         expect(v.text()).toContain('-');
       });
+    });
+
+    it('emits `set-alerts` with the background aggregation warning', () => {
+      expect(wrapper.emitted('set-alerts')).toHaveLength(1);
+
+      const alert = wrapper.emitted('set-alerts')[0][0];
+      expect(alert).toEqual(
+        expect.objectContaining({
+          canRetry: false,
+          description: 'No data available',
+          title: 'Background aggregation not enabled',
+          warnings: [
+            {
+              description:
+                'To see usage overview, you must %{linkStart}enable background aggregation%{linkEnd}',
+              link:
+                '/help/user/analytics/value_streams_dashboard.html#enable-or-disable-overview-background-aggregation',
+            },
+          ],
+        }),
+      );
     });
   });
 });

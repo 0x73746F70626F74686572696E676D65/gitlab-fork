@@ -23,7 +23,7 @@ describe('AnalyticsDashboardPanel', () => {
   const findPanelsBase = () => wrapper.findComponent(PanelsBase);
   const findPanelRetryButton = () => wrapper.findComponent(GlButton);
   const findAlertMessages = () => wrapper.findByTestId('alert-messages').findAll('li');
-  const findErrorLink = () => wrapper.findComponent(GlLink);
+  const findAlertDescriptionLink = () => wrapper.findComponent(GlLink);
   const findAlertBody = () => wrapper.findByTestId('alert-body');
   const findVisualization = () => wrapper.findComponent(LineChart);
 
@@ -143,7 +143,7 @@ describe('AnalyticsDashboardPanel', () => {
     });
 
     it('renders a link to the help docs', () => {
-      expect(findErrorLink().attributes('href')).toBe(
+      expect(findAlertDescriptionLink().attributes('href')).toBe(
         '/help/user/analytics/analytics_dashboards#troubleshooting',
       );
     });
@@ -305,6 +305,33 @@ describe('AnalyticsDashboardPanel', () => {
 
             it('does not log to Sentry', () => {
               expect(captureExceptionSpy).not.toHaveBeenCalled();
+            });
+          });
+
+          describe('with an alert description containing link placeholders', () => {
+            it('sets the default if there is no set', async () => {
+              findVisualization().vm.$emit('set-alerts', {
+                description: 'This is just information, %{linkStart}learn more%{linkEnd}',
+              });
+
+              await nextTick();
+
+              expect(findAlertDescriptionLink().attributes('href')).toBe(
+                '/help/user/analytics/analytics_dashboards#troubleshooting',
+              );
+            });
+
+            it('can override the default link', async () => {
+              findVisualization().vm.$emit('set-alerts', {
+                description: 'This is just information, %{linkStart}learn more%{linkEnd}',
+                descriptionLink: 'https://en.wikipedia.org/wiki/Macross_Plus',
+              });
+
+              await nextTick();
+
+              expect(findAlertDescriptionLink().attributes('href')).toBe(
+                'https://en.wikipedia.org/wiki/Macross_Plus',
+              );
             });
           });
 

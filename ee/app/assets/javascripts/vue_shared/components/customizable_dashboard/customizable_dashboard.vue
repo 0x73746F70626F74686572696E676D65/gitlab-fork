@@ -10,7 +10,6 @@ import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/
 import BetaBadge from '~/vue_shared/components/badges/beta_badge.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
-import UsageOverviewBackgroundAggregationWarning from 'ee/analytics/dashboards/components/usage_overview_background_aggregation_warning.vue';
 import { CUSTOM_VALUE_STREAM_DASHBOARD } from 'ee/analytics/dashboards/constants';
 import {
   EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
@@ -42,7 +41,6 @@ export default {
     BetaBadge,
     AvailableVisualizationsDrawer,
     GridstackWrapper,
-    UsageOverviewBackgroundAggregationWarning,
   },
   mixins: [InternalEvents.mixin(), glFeatureFlagsMixin()],
   props: {
@@ -483,10 +481,6 @@ export default {
               {{ s__('Analytics|Add visualization') }}
             </div>
           </button>
-
-          <div v-if="showEnableAggregationWarning" class="gl-mx-3">
-            <usage-overview-background-aggregation-warning />
-          </div>
           <gridstack-wrapper v-model="dashboard" :editing="editing">
             <template #panel="{ panel }">
               <slot

@@ -102,17 +102,3 @@ export const mockPanel = {
   queryOverrides: {},
   id: getUniquePanelId(),
 };
-
-export const mockUsageOverviewPanel = {
-  title: __('Usage overview'),
-  gridAddtributes: {
-    width: 12,
-    height: 1,
-    xPos: 0,
-    yPos: 3,
-  },
-  visualization: {
-    type: 'UsageOverview',
-    slug: 'usage_overview',
-  },
-};
