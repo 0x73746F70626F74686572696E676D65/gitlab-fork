@@ -17,7 +17,9 @@ module PhoneVerification
         return success unless Feature.enabled?(:telesign_intelligence, type: :ops)
 
         phoneid_client = TelesignEnterprise::PhoneIdClient.new(customer_id, api_key)
-        response = phoneid_client.score(phone_number, USE_CASE_ID, request_risk_insights: true)
+
+        opts = { request_risk_insights: true, email_address: user.email }
+        response = phoneid_client.score(phone_number, USE_CASE_ID, **opts)
 
         json_response = response.json
         request_status = response.status_code
