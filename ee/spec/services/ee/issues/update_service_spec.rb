@@ -403,6 +403,16 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
           end
         end
 
+        context 'when issue belongs to the epic already' do
+          before do
+            issue.update!(epic: epic)
+          end
+
+          it 'does not error and keeps the same epic' do
+            expect { subject }.not_to change { issue.reload.epic }
+          end
+        end
+
         context 'when issue belongs to another epic' do
           let_it_be(:epic2) { create(:epic, group: group) }
 
