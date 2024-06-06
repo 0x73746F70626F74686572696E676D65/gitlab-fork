@@ -72,11 +72,10 @@ RSpec.describe Gitlab::Llm::AiGateway::CodeSuggestionsClient, feature_category: 
     let(:response_body) { expected_response.to_json }
     let(:http_status) { 200 }
     let(:client) { described_class.new(user) }
-    let(:gitlab_global_id) { API::Helpers::GlobalIds::Generator.new.generate(user) }
     let(:expected_request_headers) do
       {
-        'X-Gitlab-Instance-Id' => gitlab_global_id.first,
-        'X-Gitlab-Global-User-Id' => gitlab_global_id.second,
+        'X-Gitlab-Instance-Id' => Gitlab::GlobalAnonymousId.instance_id,
+        'X-Gitlab-Global-User-Id' => Gitlab::GlobalAnonymousId.user_id(user),
         'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
         'X-Gitlab-Realm' => Gitlab::CloudConnector::GITLAB_REALM_SELF_MANAGED,
         'X-Gitlab-Authentication-Type' => 'oidc',

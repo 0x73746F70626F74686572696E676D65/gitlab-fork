@@ -6,8 +6,6 @@ module API
 
     feature_category :code_suggestions
 
-    helpers ::API::Helpers::CloudConnector
-
     # a limit used for overall body size when forwarding request to ai-assist, overall size should not be bigger than
     # summary of limits on accepted parameters
     # (https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist#completions)
@@ -27,18 +25,13 @@ module API
 
     helpers do
       def model_gateway_headers(headers, gateway_token)
-        {
-          # Forward the request time on to the model gateway to calculate latency
-          'X-Gitlab-Rails-Send-Start' => Time.now.to_f.to_s,
-          'Authorization' => "Bearer #{gateway_token}",
-          'Content-Type' => 'application/json',
-          'User-Agent' => headers["User-Agent"] # Forward the User-Agent on to the model gateway
-        }.merge(connector_public_headers)
+        Gitlab::AiGateway.headers(user: current_user, token: gateway_token, agent: headers["User-Agent"])
+          .merge(saas_headers)
           .transform_values { |v| Array(v) }
       end
 
       def connector_public_headers
-        cloud_connector_headers(current_user).merge(saas_headers).merge('X-Gitlab-Authentication-Type' => 'oidc')
+        Gitlab::CloudConnector.headers(current_user).merge(saas_headers).merge('X-Gitlab-Authentication-Type' => 'oidc')
       end
 
       def saas_headers

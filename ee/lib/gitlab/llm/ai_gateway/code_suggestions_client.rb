@@ -5,7 +5,6 @@ module Gitlab
     module AiGateway
       class CodeSuggestionsClient
         include ::Gitlab::Utils::StrongMemoize
-        include ::API::Helpers::CloudConnector
 
         COMPLETION_CHECK_TIMEOUT = 3.seconds
         DEFAULT_TIMEOUT = 30.seconds
@@ -20,7 +19,7 @@ module Gitlab
 
           response = Gitlab::HTTP.post(
             task.endpoint,
-            headers: request_headers,
+            headers: Gitlab::AiGateway.headers(user: user, token: access_token),
             body: task.body,
             timeout: COMPLETION_CHECK_TIMEOUT,
             allow_local_requests: true
@@ -41,7 +40,7 @@ module Gitlab
           logger.info(message: "Creating user access token")
           response = Gitlab::HTTP.post(
             Gitlab::AiGateway.access_token_url,
-            headers: request_headers,
+            headers: Gitlab::AiGateway.headers(user: user, token: access_token),
             body: nil,
             timeout: DEFAULT_TIMEOUT,
             allow_local_requests: true,
@@ -67,15 +66,6 @@ module Gitlab
         def success(pass_back = {})
           pass_back[:status] = :success
           pass_back
-        end
-
-        def request_headers
-          {
-            'X-Gitlab-Authentication-Type' => 'oidc',
-            'Authorization' => "Bearer #{access_token}",
-            'Content-Type' => 'application/json',
-            'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
-          }.merge(cloud_connector_headers(user))
         end
 
         def access_token

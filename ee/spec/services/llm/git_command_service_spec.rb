@@ -44,6 +44,7 @@ RSpec.describe Llm::GitCommandService, feature_category: :source_code_management
             'X-Gitlab-Global-User-Id' => be_an(String),
             'X-Gitlab-Host-Name' => be_an(String),
             'X-Gitlab-Instance-Id' => be_an(String),
+            'X-Gitlab-Rails-Send-Start' => be_an(String),
             'X-Gitlab-Realm' => be_an(String),
             'X-Gitlab-Unit-Primitive' => 'generate_commit_message',
             'X-Gitlab-Version' => be_an(String),

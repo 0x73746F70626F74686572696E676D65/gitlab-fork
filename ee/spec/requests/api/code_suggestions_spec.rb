@@ -35,9 +35,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     allow(Gitlab::InternalEvents).to receive(:track_event)
     allow(Gitlab::Tracking::AiTracking).to receive(:track_event)
 
-    allow_next_instance_of(API::Helpers::GlobalIds::Generator) do |generator|
-      allow(generator).to receive(:generate).with(authorized_user).and_return([global_instance_id, global_user_id])
-    end
+    allow(Gitlab::GlobalAnonymousId).to receive(:user_id).and_return(global_user_id)
+    allow(Gitlab::GlobalAnonymousId).to receive(:instance_id).and_return(global_instance_id)
 
     stub_feature_flags(claude_3_code_generation_haiku: false)
   end
@@ -937,7 +936,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       let(:token) { 'user token' }
       let(:expected_response) do
         {
-          'base_url' => 'https://cloud.gitlab.com/ai',
+          'base_url' => ::Gitlab::AiGateway.url,
           'expires_at' => expected_expiration,
           'token' => token,
           'headers' => base_headers.merge(headers)

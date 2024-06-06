@@ -7,7 +7,6 @@ module Gitlab
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
         include ::Gitlab::Llm::Concerns::EventTracking
         include ::Gitlab::Llm::Concerns::AvailableModels
-        include ::API::Helpers::CloudConnector
         include Langsmith::RunHelpers
 
         DEFAULT_TEMPERATURE = 0
@@ -98,13 +97,9 @@ module Gitlab
         def request_headers
           {
             "Accept" => "application/json",
-            "Content-Type" => "application/json",
             'anthropic-version' => '2023-06-01',
-            "Authorization" => "Bearer #{api_key}",
-            'X-Gitlab-Authentication-Type' => 'oidc',
-            'X-Gitlab-Unit-Primitive' => unit_primitive,
-            'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
-          }.merge(cloud_connector_headers(user))
+            'X-Gitlab-Unit-Primitive' => unit_primitive
+          }.merge(Gitlab::AiGateway.headers(user: user, token: api_key))
         end
 
         def request_body(prompt:, options: {})

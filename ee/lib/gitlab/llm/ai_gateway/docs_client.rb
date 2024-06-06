@@ -7,7 +7,6 @@ module Gitlab
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
         include ::Gitlab::Llm::Concerns::EventTracking
         include ::Gitlab::Utils::StrongMemoize
-        include ::API::Helpers::CloudConnector
 
         DEFAULT_TIMEOUT = 30.seconds
         DEFAULT_TYPE = 'search-docs'
@@ -35,7 +34,7 @@ module Gitlab
 
           response = Gitlab::HTTP.post(
             "#{Gitlab::AiGateway.url}/v1/search/gitlab-docs",
-            headers: request_headers,
+            headers: Gitlab::AiGateway.headers(user: user, token: access_token),
             body: request_body(query: query).to_json,
             timeout: timeout,
             allow_local_requests: true
@@ -48,15 +47,6 @@ module Gitlab
 
         def enabled?
           access_token.present?
-        end
-
-        def request_headers
-          {
-            'X-Gitlab-Authentication-Type' => 'oidc',
-            'Authorization' => "Bearer #{access_token}",
-            'Content-Type' => 'application/json',
-            'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
-          }.merge(cloud_connector_headers(user))
         end
 
         def access_token

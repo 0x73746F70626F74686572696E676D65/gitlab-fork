@@ -34,6 +34,7 @@ RSpec.describe API::Ai::Llm::GitCommand, :saas, feature_category: :source_code_m
           'X-Gitlab-Global-User-Id' => anything,
           'X-Gitlab-Host-Name' => anything,
           'X-Gitlab-Instance-Id' => anything,
+          'X-Gitlab-Rails-Send-Start' => anything,
           'X-Gitlab-Realm' => anything,
           'X-Gitlab-Unit-Primitive' => ['generate_commit_message'],
           'X-Gitlab-Version' => anything,

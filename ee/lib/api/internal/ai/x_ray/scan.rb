@@ -10,7 +10,6 @@ module API
           feature_category :code_suggestions
 
           helpers ::API::Ci::Helpers::Runner
-          helpers ::API::Helpers::CloudConnector
 
           PURCHASE_NOT_FOUND_MESSAGE = "GitLab Duo Pro Add-On purchase can't be found"
           TOKEN_NOT_FOUND_MESSAGE = "GitLab Duo Pro Add-On access token missing. Please synchronise Add-On access token"
@@ -44,12 +43,9 @@ module API
             end
 
             def model_gateway_headers(headers, gateway_token)
-              {
-                'X-Gitlab-Authentication-Type' => 'oidc',
-                'Authorization' => "Bearer #{gateway_token}",
-                'Content-Type' => 'application/json',
-                'User-Agent' => headers["User-Agent"] # Forward the User-Agent on to the model gateway
-              }.merge(saas_headers).merge(cloud_connector_headers(current_job.user)).transform_values { |v| Array(v) }
+              Gitlab::AiGateway.headers(user: current_job.user, token: gateway_token, agent: headers["User-Agent"])
+                .merge(saas_headers)
+                .transform_values { |v| Array(v) }
             end
 
             def saas_headers
