@@ -18,10 +18,6 @@ module Admin
       License.feature_available?(:ai_chat) && CloudConnector::AvailableServices.find_by_name(:duo_chat).free_access?
     end
 
-    def code_suggestions_purchased?
-      ::CloudConnector::AvailableServices.find_by_name(:code_suggestions).purchased?
-    end
-
     private
 
     # rubocop:disable Gitlab/DocUrl
