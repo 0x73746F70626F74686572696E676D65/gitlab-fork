@@ -19,7 +19,6 @@ module Gitlab
           group = ensure_group
           ensure_license_activated(group)
           ensure_group_settings(group)
-          ensure_embeddings
 
           print_output(group)
         end
@@ -43,30 +42,21 @@ module Gitlab
           unless ::Gitlab::CurrentSettings.anthropic_api_key.present?
             raise <<~MSG
               Make sure Anthropic API key is correctly set.
-              See https://docs.gitlab.com/ee/development/ai_features/index.html#configure-anthropic-access for more information.
+              See https://docs.gitlab.com/ee/development/ai_features/index.html#anthropic for more information.
             MSG
           end
 
-          unless ::Gitlab::Llm::VertexAi::TokenLoader.new.current_token.present?
-            raise <<~MSG
+          return if ::Gitlab::Llm::VertexAi::TokenLoader.new.current_token.present?
+
+          raise <<~MSG
               Make sure Vertex AI access is correctly setup.
-              See https://docs.gitlab.com/ee/development/ai_features/index.html#configure-gcp-vertex-access for more information.
-            MSG
-          end
-
-          unless Gitlab::Database.has_config?(:embedding) # rubocop:disable Style/GuardClause -- Align guard clauses
-            raise <<~MSG
-              Make sure embedding database is setup.
-              See https://docs.gitlab.com/ee/development/ai_features/index.html#embeddings-database for more information.
-            MSG
-          end
+              See https://docs.gitlab.com/ee/development/ai_features/index.html#google-cloud-vertex for more information.
+          MSG
         end
 
         def ensure_feature_flags
           puts "Enabling feature flags...."
 
-          ::Feature.enable(:ai_global_switch)
-          ::Feature.enable(:ai_duo_chat_switch)
           ::Feature.enable(:summarize_my_code_review)
           ::Feature.enable(:automatically_summarize_mr_review)
           ::Feature.enable(:fill_in_mr_template)
@@ -124,17 +114,6 @@ module Gitlab
 
           group = Group.find(group.id) # Hard Reload for refreshing the cache
           group.update!(experiment_features_enabled: true)
-        end
-
-        def ensure_embeddings
-          if ::Embedding::Vertex::GitlabDocumentation.count > 0
-            puts "Embeddings of GitLab Documentations already exist. Skipping...."
-            return
-          end
-
-          puts "Embeddings of GitLab Documentations do not exist. Seeding...."
-
-          ::Rake::Task['gitlab:llm:embeddings:vertex:seed'].invoke
         end
 
         def print_output(group)
