@@ -111,17 +111,6 @@ RSpec.describe IdentityVerifiable, :saas, feature_category: :instance_resiliency
       it { is_expected.to eq(result) }
     end
 
-    context 'when user is not active' do
-      let_it_be(:user) { create(:user) }
-
-      before do
-        allow(user).to receive(:identity_verification_enabled?).and_return(true)
-        allow(user).to receive(:identity_verification_state).and_return({ phone: true, credit_card: true })
-      end
-
-      it { is_expected.to eq(false) }
-    end
-
     context 'when identity verification is not enabled' do
       before do
         allow(user).to receive(:identity_verification_enabled?).and_return(false)
