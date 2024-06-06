@@ -45,5 +45,44 @@ RSpec.describe Ci::RunnerPolicy, feature_category: :runner do
         end
       end
     end
+
+    context 'with `admin_runner` access via a custom role' do
+      let_it_be_with_reload(:user) { create(:user) }
+      let_it_be(:role) { create(:member_role, :guest, :admin_runners, namespace: project.group) }
+
+      before do
+        stub_licensed_features(custom_roles: true)
+      end
+
+      context 'with project runner' do
+        let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, project: project) }
+        let_it_be_with_reload(:runner) { create(:ci_runner, :project, projects: [project]) }
+
+        it { expect_allowed :read_runner }
+
+        it 'avoids N+1 queries' do
+          control = ActiveRecord::QueryRecorder.new do
+            described_class.new(user, runner).allowed?(:read_runner)
+          end
+
+          create_list(:project, 3).each do |project|
+            project.add_member(user, :guest)
+            runner.runner_projects.create!(project: project)
+          end
+
+          expect do
+            described_class.new(user, runner).allowed?(:read_runner)
+          end.not_to exceed_query_limit(control)
+        end
+
+        context 'with `custom_ability_admin_runners` disabled' do
+          before do
+            stub_feature_flags(custom_ability_admin_runners: false)
+          end
+
+          it { expect_disallowed :read_runner }
+        end
+      end
+    end
   end
 end

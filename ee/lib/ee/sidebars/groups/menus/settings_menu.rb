@@ -29,7 +29,7 @@ module EE
               add_menu_item_for_abilities(integrations_menu_item, :admin_integrations)
               add_menu_item_for_abilities(access_tokens_menu_item, :read_resource_access_tokens)
               add_menu_item_for_abilities(repository_menu_item, [:admin_push_rules, :manage_deploy_tokens])
-              add_menu_item_for_abilities(ci_cd_menu_item, :admin_cicd_variables)
+              add_menu_item_for_abilities(ci_cd_menu_item, [:admin_cicd_variables, :admin_runner])
               add_menu_item_for_abilities(billing_menu_item, :read_billing)
             end
           end
