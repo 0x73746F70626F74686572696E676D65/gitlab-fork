@@ -34,7 +34,7 @@ RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
       end
     end
 
-    it 'includes all workers with Elastic::IndexingControl enabled' do
+    it 'includes all workers with Elastic::IndexingControl enabled', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444965' do
       workers = ObjectSpace.each_object(::Class).select { |klass| klass < described_class }
 
       expect(described_class::WORKERS).to match_array(workers)
