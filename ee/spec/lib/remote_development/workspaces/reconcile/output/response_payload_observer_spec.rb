@@ -49,6 +49,17 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
     ]
   end
 
+  let(:expected_observability_for_rails_infos) do
+    {
+      workspace1: {
+        config_to_apply_resources_included: "no_resources_included"
+      },
+      workspace2: {
+        config_to_apply_resources_included: "partial_resources_included"
+      }
+    }
+  end
+
   let(:value) do
     {
       agent: agent,
@@ -60,6 +71,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
           partial_reconciliation_interval_seconds: 10
         }
       },
+      observability_for_rails_infos: expected_observability_for_rails_infos,
       logger: logger
     }
   end
@@ -80,7 +92,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
           full_reconciliation_interval_seconds: 3600,
           partial_reconciliation_interval_seconds: 10
         }
-      }
+      },
+      observability_for_rails_infos: expected_observability_for_rails_infos
     )
 
     expect(returned_value).to eq(value)
