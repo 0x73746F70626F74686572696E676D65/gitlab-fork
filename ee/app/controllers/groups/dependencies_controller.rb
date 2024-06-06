@@ -134,6 +134,8 @@ module Groups
 
     def map_sort_by(sort_by)
       case sort_by
+      when 'name'
+        :component_name
       when 'severity'
         :highest_severity
       else
