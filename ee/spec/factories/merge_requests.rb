@@ -34,12 +34,25 @@ FactoryBot.modify do
       end
     end
 
-    trait :with_merge_train_pipeline do
+    trait :with_pending_merge_train_pipeline do
       with_merge_request_pipeline
 
       after(:create) do |merge_request, evaluator|
         merge_request.pipelines_for_merge_request.last
           .update!(ref: merge_request.train_ref_path)
+      end
+    end
+
+    trait :with_failed_merge_train_pipeline do
+      with_merge_request_pipeline
+
+      transient do
+        status { 'failed' }
+      end
+
+      after(:create) do |merge_request, evaluator|
+        merge_request.pipelines_for_merge_request.last
+          .update!(ref: merge_request.train_ref_path, status: evaluator.status)
       end
     end
 
