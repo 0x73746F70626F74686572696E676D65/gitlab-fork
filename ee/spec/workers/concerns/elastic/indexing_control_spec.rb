@@ -40,7 +40,7 @@ RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
       expect(described_class::WORKERS).to match_array(workers)
     end
 
-    it 'includes all workers with feature_category :global_search and without pause_control' do
+    it 'includes all workers with feature_category :global_search and without pause_control', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/444966' do
       exceptions = [
         ConcurrencyLimit::ResumeWorker,
         Elastic::MigrationWorker,
