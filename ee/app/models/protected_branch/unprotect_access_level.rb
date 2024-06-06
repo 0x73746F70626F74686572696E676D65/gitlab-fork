@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class ProtectedBranch::UnprotectAccessLevel < ApplicationRecord
-  include Importable
-
   # Override `ProtectedBranchAccess::allowed_access_levels` method:
   #
   # UnprotectAccessLevels define rules around who can delete a ProtectedBranch
