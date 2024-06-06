@@ -8,7 +8,7 @@ import TreeItem from 'ee/related_items_tree/components/tree_item.vue';
 import TreeItemBody from 'ee/related_items_tree/components/tree_item_body.vue';
 import TreeRoot from 'ee/related_items_tree/components/tree_root.vue';
 
-import { ChildType, treeItemChevronBtnClassName } from 'ee/related_items_tree/constants';
+import { ChildType, treeItemChevronBtnKey } from 'ee/related_items_tree/constants';
 import createDefaultStore from 'ee/related_items_tree/store';
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
 import { PathIdSeparator } from '~/related_issues/constants';
@@ -81,7 +81,7 @@ describe('RelatedItemsTree', () => {
 
     describe('default', () => {
       it('has the proper class on the expand/collapse button to avoid dragging', () => {
-        expect(findChevronButton().attributes('class')).toContain(treeItemChevronBtnClassName);
+        expect(findChevronButton().attributes('data-button-type')).toEqual(treeItemChevronBtnKey);
       });
 
       it('calls `toggleItem` action with `item` as a param when clicked', async () => {

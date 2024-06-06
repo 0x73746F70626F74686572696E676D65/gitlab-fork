@@ -30,27 +30,9 @@
     .item-meta {
       line-height: $gl-line-height-18;
     }
-
-    .btn-tree-item-chevron {
-      margin-bottom: $gl-padding-4;
-      margin-right: $gl-padding-4;
-      padding: $gl-padding-8 0;
-      line-height: 0;
-      color: $gl-text-color;
-
-      &:hover {
-        border-color: $border-color;
-        background-color: $border-color;
-      }
-    }
-
+    
     .tree-item-noexpand {
       margin-left: $gl-sidebar-padding - 2;
-    }
-
-    .loading-icon {
-      margin-left: $gl-padding-4 / 2;
-      margin-right: $gl-padding-4;
     }
   }
 }

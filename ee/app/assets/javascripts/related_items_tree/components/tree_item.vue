@@ -5,7 +5,7 @@ import { mapGetters, mapActions, mapState } from 'vuex';
 
 import { __ } from '~/locale';
 
-import { ChildType } from '../constants';
+import { ChildType, treeItemChevronBtnKey } from '../constants';
 import TreeItemBody from './tree_item_body.vue';
 
 export default {
@@ -69,6 +69,7 @@ export default {
       });
     },
   },
+  treeItemChevronBtnKey,
 };
 </script>
 
@@ -91,12 +92,17 @@ export default {
         :aria-label="chevronTooltip"
         :class="chevronType"
         variant="link"
-        class="btn-tree-item-chevron align-self-start"
+        :data-button-type="$options.treeItemChevronBtnKey"
+        class="gl-mr-2 gl-mb-2 !gl-py-3 !gl-leading-[0px] gl-self-start !gl-text-gray-900 hover:gl-border-gray-100 hover:!gl-bg-gray-100"
         @click="handleChevronClick"
       >
         <gl-icon :name="chevronType" />
       </gl-button>
-      <gl-loading-icon v-if="childrenFetchInProgress" class="loading-icon" size="sm" />
+      <gl-loading-icon
+        v-if="childrenFetchInProgress"
+        class="gl-mr-2 gl-mb-2 gl-py-3 gl-self-start"
+        size="sm"
+      />
       <tree-item-body
         class="tree-item-row gl-mb-3"
         :parent-item="parentItem"
