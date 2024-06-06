@@ -105,14 +105,6 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     it { is_expected.to match_array(expected_findings) }
   end
 
-  describe '.by_project_fingerprints' do
-    let(:expected_findings) { [finding_1] }
-
-    subject { described_class.by_project_fingerprints(finding_1.project_fingerprint) }
-
-    it { is_expected.to match_array(expected_findings) }
-  end
-
   describe '.by_scanners' do
     subject { described_class.by_scanners(finding_1.scanner) }
 

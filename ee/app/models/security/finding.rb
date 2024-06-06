@@ -59,7 +59,6 @@ module Security
 
     scope :by_uuid, ->(uuids) { where(uuid: uuids) }
     scope :by_build_ids, ->(build_ids) { joins(:scan).merge(Security::Scan.by_build_ids(build_ids)) }
-    scope :by_project_fingerprints, ->(fingerprints) { where(project_fingerprint: fingerprints) }
     scope :by_severity_levels, ->(severity_levels) { where(severity: severity_levels) }
     scope :by_confidence_levels, ->(confidence_levels) { where(confidence: confidence_levels) }
     scope :by_report_types, ->(report_types) { joins(:scan).merge(Scan.by_scan_types(report_types)) }
