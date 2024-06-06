@@ -1,29 +1,32 @@
 - page_title _("Self-Hosted Models")
 - add_page_specific_style 'page_bundles/labels'
 
-- if @self_hosted_models.present?
-  = render Pajamas::CardComponent.new(card_options: { class: 'gl-new-card labels other-labels js-toggle-container js-admin-labels-container' }, header_options: { class: 'gl-new-card-header' }, body_options: { class: 'gl-new-card-body gl-px-0' }) do |c|
-    - c.with_header do
-      .gl-new-card-title-wrapper.gl-flex-direction-column
-        %h2.h5.gl-new-card-title
-          = _('Self-Hosted Models')
-          .gl-new-card-count
-            %span.js-admin-labels-count= @self_hosted_models.count
-        .gl-new-card-description
-          = s_('AdminSelfHostedModels|They point to the self-hosted AI models that can be used for backing up GitLab AI features.')
-      .gl-new-card-actions
-        = render Pajamas::ButtonComponent.new(variant: :default,
-          size: :small,
-          href: new_admin_ai_self_hosted_model_path) do
-          = _('New Self-Hosted Model')
-    - c.with_body do
-      %ul.manage-labels-list.js-other-labels.gl-px-3.gl-rounded-base
-        = render partial: 'self_hosted_model', collection: @self_hosted_models, as: :self_hosted_model
-.js-admin-labels-empty-state{ class: ('gl-hidden' if @self_hosted_models.present?) }
-  = render Pajamas::EmptyStateComponent.new(svg_path: 'illustrations/empty-state/empty-labels-md.svg',
-    title: s_('AdminSelfHostedModels|Define your set of self-hosted models'),
-    primary_button_text: _('New Self-Hosted Model'),
-    primary_button_link: new_admin_ai_self_hosted_model_path) do |c|
+- if Feature.enabled?(:custom_models_vue_app, current_user)
+  #js-custom-models{ data: { custom_models: @custom_models_json.html_safe } }
+- else
+  - if @self_hosted_models.present?
+    = render Pajamas::CardComponent.new(card_options: { class: 'gl-new-card labels other-labels js-toggle-container js-admin-labels-container' }, header_options: { class: 'gl-new-card-header' }, body_options: { class: 'gl-new-card-body gl-px-0' }) do |c|
+      - c.with_header do
+        .gl-new-card-title-wrapper.gl-flex-direction-column
+          %h2.h5.gl-new-card-title
+            = _('Self-Hosted Models')
+            .gl-new-card-count
+              %span.js-admin-labels-count= @self_hosted_models.count
+          .gl-new-card-description
+            = s_('AdminSelfHostedModels|They point to the self-hosted AI models that can be used for backing up GitLab AI features.')
+        .gl-new-card-actions
+          = render Pajamas::ButtonComponent.new(variant: :default,
+            size: :small,
+            href: new_admin_ai_self_hosted_model_path) do
+            = _('New Self-Hosted Model')
+      - c.with_body do
+        %ul.manage-labels-list.js-other-labels.gl-px-3
+          = render partial: 'self_hosted_model', collection: @self_hosted_models, as: :self_hosted_model
+  .js-admin-labels-empty-state{ class: ('gl-display-none' if @self_hosted_models.present?) }
+    = render Pajamas::EmptyStateComponent.new(svg_path: 'illustrations/empty-state/empty-labels-md.svg',
+      title: s_('AdminSelfHostedModels|Define your set of self-hosted models'),
+      primary_button_text: _('New Self-Hosted Model'),
+      primary_button_link: new_admin_ai_self_hosted_model_path) do |c|
 
-    - c.with_description do
-      = s_('AdminSelfHostedModels|They point to the self-hosted AI models that can be used for backing up GitLab AI features.')
+      - c.with_description do
+        = s_('AdminSelfHostedModels|They point to the self-hosted AI models that can be used for backing up GitLab AI features.')
