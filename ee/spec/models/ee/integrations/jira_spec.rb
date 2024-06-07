@@ -103,6 +103,7 @@ RSpec.describe Integrations::Jira, feature_category: :integrations do
     context 'when server is not responding' do
       before do
         allow(jira_integration).to receive(:server_info).and_return(nil)
+        allow(jira_integration).to receive(:client_info).and_return(nil)
       end
 
       it { is_expected.to eq(success: false, result: nil) }
@@ -111,6 +112,7 @@ RSpec.describe Integrations::Jira, feature_category: :integrations do
     context 'when server is responding' do
       before do
         allow(jira_integration).to receive(:server_info).and_return({ jira: true })
+        allow(jira_integration).to receive(:client_info).and_return({ jira: true })
       end
 
       context 'when vulnerabilities integration is not enabled' do
