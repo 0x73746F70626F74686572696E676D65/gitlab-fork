@@ -33231,10 +33231,10 @@ msgstr ""
 msgid "MlModelRegistry|Create model version & import artifacts"
 msgstr ""
 
-msgid "MlModelRegistry|Create model with MLflow"
+msgid "MlModelRegistry|Create model, version & import artifacts"
 msgstr ""
 
-msgid "MlModelRegistry|Create model, version & import artifacts"
+msgid "MlModelRegistry|Create using MLflow"
 msgstr ""
 
 msgid "MlModelRegistry|Create your machine learning using GitLab directly or using the MLflow client"
@@ -33337,6 +33337,9 @@ msgid "MlModelRegistry|MLflow run ID"
 msgstr ""
 
 msgid "MlModelRegistry|Manage versions of your machine learning model"
+msgstr ""
+
+msgid "MlModelRegistry|Manage versions of your machine learning modelManage versions of your machine learning model"
 msgstr ""
 
 msgid "MlModelRegistry|Metadata"
