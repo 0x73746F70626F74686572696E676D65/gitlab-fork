@@ -2,6 +2,7 @@
 import { isNumber } from 'lodash';
 import { GlLink } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
+import { STATUS_OPEN } from '~/issues/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 export default {
@@ -11,6 +12,11 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
+    mergeRequestState: {
+      type: String,
+      required: false,
+      default: null,
+    },
     mergeTrainIndex: {
       type: Number,
       required: false,
@@ -30,6 +36,9 @@ export default {
   computed: {
     mergeTrainsVizEnabled() {
       return this.glFeatures.mergeTrainsViz;
+    },
+    isMergeRequestOpen() {
+      return this.mergeRequestState === STATUS_OPEN;
     },
     message() {
       if (this.mergeTrainIndex === 0) {
@@ -64,6 +73,10 @@ export default {
   },
   watch: {
     mergeTrainIndex(newIndex, oldIndex) {
+      if (!this.isMergeRequestOpen) {
+        return;
+      }
+
       const wasInTrain = isNumber(oldIndex);
       const isInTrain = isNumber(newIndex);
 
