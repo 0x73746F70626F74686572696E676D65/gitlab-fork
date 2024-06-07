@@ -39,33 +39,15 @@ module Gitlab
         attr_reader :user, :project, :params
 
         def extracted_diff
-          compare = CompareService
-            .new(source_project, params[:source_branch])
-            .execute(project, params[:target_branch])
-
-          return unless compare
-
-          # Extract only the diff strings and discard everything else
-          compare.raw_diffs.to_a.map do |raw_diff|
-            # Each diff string starts with information about the lines changed,
-            # bracketed by @@. Removing this saves us tokens.
-            #
-            # Ex: @@ -0,0 +1,58 @@\n+# frozen_string_literal: true\n+\n+module MergeRequests\n+
-
-            next if raw_diff.diff.encoding != Encoding::UTF_8 || raw_diff.has_binary_notice?
-
-            diff_output(raw_diff.old_path, raw_diff.new_path, raw_diff.diff.sub(Gitlab::Regex.git_diff_prefix, ""))
-          end.join.truncate_words(CHARACTER_LIMIT)
+          Gitlab::Llm::Utils::MergeRequestTool.extract_diff(
+            source_project: source_project,
+            source_branch: params[:source_branch],
+            target_project: project,
+            target_branch: params[:target_branch],
+            character_limit: CHARACTER_LIMIT
+          )
         end
         strong_memoize_attr :extracted_diff
-
-        def diff_output(old_path, new_path, diff)
-          <<~DIFF
-            --- #{old_path}
-            +++ #{new_path}
-            #{diff}
-          DIFF
-        end
 
         def source_project
           return project unless params[:source_project_id]
