@@ -27,10 +27,18 @@ module CodeSuggestions
         .new(file_content, intent, params[:generation_type], params[:user_instruction]).extract
 
       unless instruction
-        return CodeSuggestions::Tasks::CodeCompletion.new(
-          params: params,
-          unsafe_passthrough_params: unsafe_passthrough_params
-        )
+        if code_completions_feature_setting&.self_hosted?
+          return CodeSuggestions::Tasks::SelfHostedCodeCompletion.new(
+            feature_setting: code_completions_feature_setting,
+            params: params,
+            unsafe_passthrough_params: unsafe_passthrough_params
+          )
+        else
+          return CodeSuggestions::Tasks::CodeCompletion.new(
+            params: params,
+            unsafe_passthrough_params: unsafe_passthrough_params
+          )
+        end
       end
 
       if code_generations_feature_setting&.self_hosted?
@@ -81,6 +89,10 @@ module CodeSuggestions
 
     def code_generations_feature_setting
       ::Ai::FeatureSetting.find_by_feature(:code_generations)
+    end
+
+    def code_completions_feature_setting
+      ::Ai::FeatureSetting.find_by_feature(:code_completions)
     end
 
     def trim_context!
