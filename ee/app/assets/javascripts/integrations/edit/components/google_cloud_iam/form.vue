@@ -56,7 +56,7 @@ export default {
     <configuration
       :fields="gcProjectFields"
       field-class="gl-form-input-lg gl-flex-grow-1"
-      class="gl-border-b gl-mb-6 gl-sm-display-flex gl-flex-direction-row gl-gap-5"
+      class="gl-border-b gl-mb-6 sm:gl-flex gl-flex-direction-row gl-gap-5"
     />
 
     <h4 class="gl-mt-0">{{ s__('GoogleCloud|Workload identity federation') }}</h4>
@@ -71,7 +71,7 @@ export default {
     <configuration
       :fields="workloadIdentityFields"
       field-class="gl-form-input-lg gl-flex-grow-1"
-      class="gl-mb-6 gl-sm-display-flex gl-flex-direction-row gl-gap-5"
+      class="gl-mb-6 sm:gl-flex gl-flex-direction-row gl-gap-5"
     />
   </div>
 </template>

@@ -112,7 +112,7 @@ export default {
         </div>
       </div>
       <div
-        class="gl-display-flex gl-sm-display-inline-flex gl-leading-1 gl-align-middle gl-sm-ml-2 gl-ml-0 gl-flex-wrap gl-mt-2 gl-sm-mt-0"
+        class="gl-flex sm:gl-inline-flex gl-leading-1 gl-align-middle gl-sm-ml-2 gl-ml-0 gl-flex-wrap gl-mt-2 gl-sm-mt-0"
       >
         <epic-health-status v-if="showHealthStatus" :health-status="healthStatus" />
       </div>
@@ -120,7 +120,7 @@ export default {
 
     <div
       v-if="parentIsEpic"
-      class="gl-display-flex gl-sm-display-inline-flex gl-sm-ml-auto gl-leading-1 gl-align-middle gl-mt-3 gl-sm-mt-0 gl-pl-0 gl-sm-pl-7"
+      class="gl-flex sm:gl-inline-flex gl-sm-ml-auto gl-leading-1 gl-align-middle gl-mt-3 gl-sm-mt-0 gl-pl-0 gl-sm-pl-7"
     >
       <div
         class="gl-flex-grow-1 gl-flex-direction-column gl-sm-flex-direction-row js-button-container"

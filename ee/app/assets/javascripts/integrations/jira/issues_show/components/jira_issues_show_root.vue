@@ -84,7 +84,7 @@ export default {
         :issuable="issue"
         :enable-edit="false"
         :status-icon="statusIcon"
-        status-icon-class="gl-sm-display-none"
+        status-icon-class="sm:gl-hidden"
       >
         <template #right-sidebar-items="{ sidebarExpanded, toggleSidebar }">
           <jira-issue-sidebar

@@ -4,7 +4,7 @@
 %nav.bg-secondary.border-bottom.border-secondary-100.p-3
   .row.gl-flex.flex-column.flex-sm-row
     .col
-      .sm:.gl-flex.-gl-mx-1
+      .sm:gl-flex.-gl-mx-1
         = gl_redirect_listbox_tag geo_filter_nav_options(replicable_controller, replicable_name), filter_by, class: 'gl-px-2 gl-my-2 my-sm-0 gl-w-full'
         .replicable-search.px-1.my-1.my-sm-0.gl-w-full
           = form_tag filter_projects_path, method: :get do |f|

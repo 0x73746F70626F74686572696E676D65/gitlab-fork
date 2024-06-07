@@ -267,7 +267,7 @@ export default {
       </gl-button>
       <span
         v-if="showDurationBadget"
-        class="gl-mr-5 gl-display-none gl-sm-display-inline-block"
+        class="gl-mr-5 gl-hidden sm:gl-inline-block"
         data-testid="duration-badge"
       >
         <gl-icon name="clock" class="gl-mr-3" />
