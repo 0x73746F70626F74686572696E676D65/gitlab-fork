@@ -37033,6 +37033,9 @@ msgstr ""
 msgid "PackageRegistry|Maven XML"
 msgstr ""
 
+msgid "PackageRegistry|Minimum access level for push"
+msgstr ""
+
 msgid "PackageRegistry|Name pattern"
 msgstr ""
 
@@ -37132,9 +37135,6 @@ msgid "PackageRegistry|Published to the %{project} Package Registry %{datetime}"
 msgstr ""
 
 msgid "PackageRegistry|Published to the %{project} Terraform Module Registry %{datetime}"
-msgstr ""
-
-msgid "PackageRegistry|Push protected up to access level"
 msgstr ""
 
 msgid "PackageRegistry|PyPI"
