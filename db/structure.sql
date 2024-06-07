@@ -25324,8 +25324,6 @@ CREATE UNIQUE INDEX index_board_project_recent_visits_on_user_project_and_board 
 
 CREATE INDEX index_board_user_preferences_on_board_id ON board_user_preferences USING btree (board_id);
 
-CREATE INDEX index_board_user_preferences_on_user_id ON board_user_preferences USING btree (user_id);
-
 CREATE UNIQUE INDEX index_board_user_preferences_on_user_id_and_board_id ON board_user_preferences USING btree (user_id, board_id);
 
 CREATE INDEX index_boards_epic_board_labels_on_epic_board_id ON boards_epic_board_labels USING btree (epic_board_id);
