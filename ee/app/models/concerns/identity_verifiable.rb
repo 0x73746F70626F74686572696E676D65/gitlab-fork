@@ -69,7 +69,6 @@ module IdentityVerifiable
 
   def identity_verified?
     return true unless identity_verification_enabled?
-    return false unless active_user?
     return true unless created_after_require_identity_verification_release_day?
 
     # Allow an existing credit card validation to override the identity verification state if
