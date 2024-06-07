@@ -53,6 +53,12 @@ RSpec.describe Gitlab::Llm::AiGateway::CodeSuggestionsClient, feature_category: 
         stub_request(:post, /#{Gitlab::AiGateway.url}/).to_raise(StandardError.new('an error'))
       end
 
+      it 'tracks an exception' do
+        expect(Gitlab::ErrorTracking).to receive(:track_exception).with(instance_of(StandardError))
+
+        result
+      end
+
       it_behaves_like 'error response', 'an error'
     end
   end

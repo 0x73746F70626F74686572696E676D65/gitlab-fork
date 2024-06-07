@@ -44,7 +44,7 @@ module Gitlab
 
               options[:suggestions] += error_message
             rescue StandardError => e
-              logger.error(message: "Error", error: e.message, class: self.class.to_s)
+              Gitlab::ErrorTracking.track_exception(e)
               return Answer.error_answer(context: context, content: _("Unexpected error"))
             end
 

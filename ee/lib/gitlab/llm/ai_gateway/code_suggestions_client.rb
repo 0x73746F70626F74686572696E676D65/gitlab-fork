@@ -31,6 +31,7 @@ module Gitlab
 
           nil
         rescue StandardError => err
+          Gitlab::ErrorTracking.track_exception(err)
           err.message
         end
 

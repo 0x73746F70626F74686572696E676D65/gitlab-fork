@@ -54,7 +54,9 @@ module Gitlab
 
             def perform(&_block)
               Answer.new(status: :ok, context: context, content: request, tool: nil)
-            rescue StandardError
+            rescue StandardError => e
+              Gitlab::ErrorTracking.track_exception(e)
+
               Answer.error_answer(context: context, content: _("Unexpected error"))
             end
             traceable :perform, run_type: 'tool'
