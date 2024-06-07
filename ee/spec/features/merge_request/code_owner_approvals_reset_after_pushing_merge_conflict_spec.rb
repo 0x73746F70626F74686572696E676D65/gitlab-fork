@@ -102,9 +102,16 @@ RSpec.describe "Code owner approvals reset after pushing merge conflict to sourc
           user: rb_approving_user
         )
         sign_in(user)
-        visit project_merge_request_path(project, merge_request)
 
-        wait_for_all_requests
+        # We're skipping transaction check here because we're getting failures
+        # about `Gitlab::ExclusiveLease::LeaseWithinTransactionError` being raised
+        # when `MergeRequests::MergeabilityCheckService` gets executed.
+        #
+        # We don't execute that service within a transaction though.
+        Gitlab::ExclusiveLease.skipping_transaction_check do
+          visit project_merge_request_path(project, merge_request)
+          wait_for_all_requests
+        end
       end
 
       it 'is ready to merge' do
