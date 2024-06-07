@@ -5,7 +5,7 @@ query searchIterations(
   $search: String
   $id: ID
   $isProject: Boolean = false
-  $state: IterationState = opened
+  $state: IterationState = all
 ) {
   group(fullPath: $fullPath) @skip(if: $isProject) {
     id
