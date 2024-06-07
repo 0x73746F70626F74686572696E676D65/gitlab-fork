@@ -22,7 +22,7 @@ RSpec.describe RemoteDevelopment::NamespaceClusterAgentMappings::Create::Main, :
     end
 
     it "returns expected response" do
-      # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       expect do
         described_class.main(value_passed_along_steps)
       end
@@ -47,7 +47,7 @@ RSpec.describe RemoteDevelopment::NamespaceClusterAgentMappings::Create::Main, :
 
     shared_examples "rop invocation with error response" do
       it "returns expected response" do
-        # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect do
           described_class.main(value_passed_along_steps)
         end

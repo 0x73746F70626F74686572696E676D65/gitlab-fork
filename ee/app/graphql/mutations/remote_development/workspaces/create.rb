@@ -106,7 +106,7 @@ module Mutations
             end
           end
 
-          # noinspection RubyNilAnalysis
+          # noinspection RubyNilAnalysis - This is because the superclass #current_user uses #[], which can return nil
           track_usage_event(:users_creating_workspaces, current_user.id)
 
           service = ::RemoteDevelopment::Workspaces::CreateService.new(current_user: current_user)

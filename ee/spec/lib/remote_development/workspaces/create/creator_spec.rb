@@ -53,7 +53,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
     end
 
     it "returns expected response" do
-      # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+      # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       expect do
         described_class.create(initial_value)
       end
@@ -70,7 +70,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
 
     shared_examples "rop invocation with error response" do
       it "returns expected response" do
-        # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
+        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect do
           described_class.create(initial_value)
         end

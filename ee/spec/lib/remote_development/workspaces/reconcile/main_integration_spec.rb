@@ -3,7 +3,6 @@
 require 'spec_helper'
 
 # rubocop:disable RSpec/MultipleMemoizedHelpers -- needed helpers for multiple cases
-# noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :freeze_time, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
 
@@ -285,13 +284,16 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
         before do
           # Ensure that both desired_state_updated_at and responded_to_agent_at are before Time.current,
           # so that we can test for any necessary differences after processing updates them
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           expect(workspace.desired_state_updated_at).to be_before(Time.current)
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           expect(workspace.responded_to_agent_at).to be_before(Time.current)
         end
 
         after do
           # After processing, the responded_to_agent_at should always have been updated
           workspace.reload
+          # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
           expect(workspace.responded_to_agent_at)
             .not_to be_before(workspace.desired_state_updated_at)
         end
@@ -300,6 +302,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
         context 'when desired_state matches actual_state' do
           # rubocop:todo RSpec/ExpectInHook -- This could be moved to a shared example
           before do
+            # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
             expect(workspace.responded_to_agent_at)
               .to be_after(workspace.desired_state_updated_at)
           end
@@ -371,6 +374,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, "Integration", :f
 
           # rubocop:disable RSpec/ExpectInHook -- This could be moved to a shared example
           before do
+            # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
             expect(workspace.responded_to_agent_at)
               .to be_before(workspace.desired_state_updated_at)
           end

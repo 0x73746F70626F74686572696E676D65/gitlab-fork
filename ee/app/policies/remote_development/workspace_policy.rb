@@ -3,9 +3,6 @@
 module RemoteDevelopment
   # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-25400
   class WorkspacePolicy < BasePolicy
-    # TODO: This policy should be updated/replaced with a new authorization scheme based on runners.
-    #       See https://gitlab.com/groups/gitlab-org/-/epics/10272
-
     condition(:can_access_workspaces_feature) { user&.can?(:access_workspaces_feature, :global) }
     condition(:can_admin_cluster_agent_for_workspace) { user&.can?(:admin_cluster, workspace.agent) }
     condition(:can_admin_owned_workspace) { workspace_owner? && has_developer_access_to_workspace_project? }

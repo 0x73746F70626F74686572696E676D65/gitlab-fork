@@ -41,11 +41,12 @@ module RemoteDevelopment
       end
 
       # @param [String] env_var_name
-      # @param [Integer,String] env_var_value_string
+      # @param [String] env_var_value_string
       # @param [Class] setting_type
       # @return [Object]
       # @raise [RuntimeError]
       def self.cast_value(env_var_name:, env_var_value_string:, setting_type:)
+        # noinspection RubyIfCanBeCaseInspection -- This cannot be a case statement - see discussion here https://gitlab.com/gitlab-org/gitlab/-/merge_requests/148287#note_1849160293
         if setting_type == String
           env_var_value_string
         elsif setting_type == Integer

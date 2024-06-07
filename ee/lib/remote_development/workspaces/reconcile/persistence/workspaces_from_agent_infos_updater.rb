@@ -4,7 +4,6 @@ module RemoteDevelopment
   module Workspaces
     module Reconcile
       module Persistence
-        # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         class WorkspacesFromAgentInfosUpdater
           # @param [Hash] value
           # @return [Hash]
