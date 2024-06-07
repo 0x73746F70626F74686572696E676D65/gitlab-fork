@@ -110,6 +110,8 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Executor, feature_catego
         it 'returns error answer' do
           allow(tool).to receive(:request).and_raise(StandardError)
 
+          expect(Gitlab::ErrorTracking).to receive(:track_exception).with(instance_of(StandardError))
+
           expect(tool.execute.content).to eq('Unexpected error')
         end
       end
