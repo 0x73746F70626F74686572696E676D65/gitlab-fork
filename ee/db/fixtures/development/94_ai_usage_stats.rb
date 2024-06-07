@@ -63,8 +63,7 @@ class Gitlab::Seeder::AiUsageStats # rubocop:disable Style/ClassAndModuleChildre
 end
 
 Gitlab::Seeder.quiet do
-  feature_available = ::Gitlab::ClickHouse.globally_enabled_for_analytics? &&
-    Feature.enabled?(:code_suggestion_events_in_click_house)
+  feature_available = ::Gitlab::ClickHouse.globally_enabled_for_analytics?
 
   unless feature_available
     puts "
@@ -77,8 +76,6 @@ Gitlab::Seeder.quiet do
     In a Rails console session, enable ClickHouse for analytics and the feature flags:
 
     Gitlab::CurrentSettings.current_application_settings.update(use_clickhouse_for_analytics: true)
-
-    Feature.enable(:code_suggestion_events_in_click_house)
     "
     break
   end

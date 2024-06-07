@@ -1,9 +1,0 @@
----
-name: code_suggestion_events_in_click_house
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/441485
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/148401
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/454093
-milestone: '16.11'
-group: group::optimize
-type: beta
-default_enabled: false
