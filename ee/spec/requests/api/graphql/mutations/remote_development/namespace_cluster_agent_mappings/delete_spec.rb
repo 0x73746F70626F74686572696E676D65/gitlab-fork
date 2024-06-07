@@ -82,7 +82,7 @@ RSpec.describe 'Remove existing mapping between a cluster and a group', feature_
       post_graphql_mutation(mutation, current_user: current_user)
 
       expect_graphql_errors_to_include("attempting to access does not exist or " \
-                                       "you don't have permission to perform this action")
+        "you don't have permission to perform this action")
     end
   end
 
@@ -93,7 +93,7 @@ RSpec.describe 'Remove existing mapping between a cluster and a group', feature_
       post_graphql_mutation(mutation, current_user: current_user)
 
       expect_graphql_errors_to_include("attempting to access does not exist or " \
-                                       "you don't have permission to perform this action")
+        "you don't have permission to perform this action")
     end
   end
 

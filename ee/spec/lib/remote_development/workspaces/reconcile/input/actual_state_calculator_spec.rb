@@ -67,12 +67,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
               latest_k8s_deployment_info: latest_k8s_deployment_info
             )
           rescue RemoteDevelopment::AgentInfoStatusFixtureNotImplementedError
-            # rubocop:todo Layout/LineEndStringConcatenationIndentation -- make this cop accept standard 2-character indentation
             skip 'TODO: Properly implement the agent info status fixture for ' \
               "previous_actual_state: #{previous_actual_state}, " \
               "current_actual_state: #{current_actual_state}, " \
               "workspace_exists: #{workspace_exists}"
-            # rubocop:enable Layout/LineEndStringConcatenationIndentation
           end
           expect(calculated_actual_state).to be(current_actual_state) if calculated_actual_state
         end

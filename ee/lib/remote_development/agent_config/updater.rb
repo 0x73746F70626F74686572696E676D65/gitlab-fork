@@ -4,6 +4,7 @@ module RemoteDevelopment
   module AgentConfig
     class Updater
       include Messages
+
       UNLIMITED_QUOTA = -1
       NETWORK_POLICY_EGRESS_DEFAULT = [
         {

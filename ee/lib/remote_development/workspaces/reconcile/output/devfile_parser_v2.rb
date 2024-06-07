@@ -7,6 +7,8 @@ module RemoteDevelopment
     module Reconcile
       module Output
         class DevfileParserV2
+          RUN_AS_USER = 5001
+
           # rubocop:todo Metrics/ParameterLists -- refactor this to have fewer parameters - perhaps introduce a parameter object: https://refactoring.com/catalog/introduceParameterObject.html
           # @param [String] processed_devfile
           # @param [String] name
@@ -70,7 +72,6 @@ module RemoteDevelopment
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409189
           #       Once devfile library releases a new version, update the devfile-gem and move
           #       the logic of setting the security context as part of workspace creation.
-          RUN_AS_USER = 5001
 
           # @param [Array<Hash>] workspace_resources
           # @return [Array<Hash>]

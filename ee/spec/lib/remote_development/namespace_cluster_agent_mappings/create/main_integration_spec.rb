@@ -44,7 +44,7 @@ RSpec.describe ::RemoteDevelopment::NamespaceClusterAgentMappings::Create::Main,
         expect(response).to eq({
           status: :error,
           message: "Namespace cluster agent mapping create validation failed: " \
-                   "Cluster Agent's project must be nested within the namespace",
+            "Cluster Agent's project must be nested within the namespace",
           reason: :bad_request
         })
       end

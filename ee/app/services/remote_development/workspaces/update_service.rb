@@ -4,6 +4,7 @@ module RemoteDevelopment
   module Workspaces
     class UpdateService
       include ServiceResponseFactory
+
       attr_reader :current_user
 
       # NOTE: This constructor intentionally does not follow all of the conventions from
