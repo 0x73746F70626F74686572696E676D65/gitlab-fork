@@ -5,14 +5,6 @@ if $LOADED_FEATURES.include?(File.expand_path('../../../../spec/spec_helper.rb',
   return
 end
 
-if ENV['SPRING_TMP_PATH']
-  warn "\n\n\nERROR: Spring is detected as running due to ENV['SPRING_TMP_PATH']=#{ENV['SPRING_TMP_PATH']} found.\n\n" \
-       "Do not run #{__FILE__} with Spring enabled, it can cause Zeitwerk errors.\n\n" \
-       "Exiting.\n\n"
-
-  exit 1
-end
-
 require_relative '../../../../spec/fast_spec_helper'
 require_relative '../../../../spec/support/matchers/result_matchers'
 require_relative '../../../../spec/support/railway_oriented_programming'
