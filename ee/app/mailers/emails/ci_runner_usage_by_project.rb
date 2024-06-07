@@ -2,8 +2,9 @@
 
 module Emails
   module CiRunnerUsageByProject
-    def runner_usage_by_project_csv_email(user:, from_date:, to_date:, csv_data:, export_status:)
+    def runner_usage_by_project_csv_email(user:, scope:, from_date:, to_date:, csv_data:, export_status:)
       @count = export_status.fetch(:projects_expected)
+      @scope = scope
       @written_count = export_status.fetch(:projects_written)
       @truncated = export_status.fetch(:truncated)
       @size_limit = ActiveSupport::NumberHelper.number_to_human_size(ExportCsv::BaseService::TARGET_FILESIZE)

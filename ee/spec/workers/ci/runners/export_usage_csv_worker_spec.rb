@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Ci::Runners::ExportUsageCsvWorker, :click_house, :enable_admin_mode, feature_category: :fleet_visibility do
   let_it_be(:admin) { create(:admin) }
   let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
 
   let(:worker) { described_class.new }
 
@@ -13,18 +14,20 @@ RSpec.describe Ci::Runners::ExportUsageCsvWorker, :click_house, :enable_admin_mo
 
     let(:current_user) { admin }
     let(:params) do
-      { runner_type: 1, from_date: '2023-11-01', to_date: '2023-11-30', max_project_count: 25 }
+      {
+        full_path: group.full_path, runner_type: 1, from_date: '2023-11-01', to_date: '2023-11-30',
+        max_project_count: 25
+      }
     end
 
     before do
-      stub_licensed_features(runner_performance_insights: true)
+      stub_licensed_features(runner_performance_insights_for_namespace: true)
     end
 
     it 'delegates to Ci::Runners::SendUsageCsvService' do
       expect_next_instance_of(Ci::Runners::SendUsageCsvService, {
-        current_user: current_user, runner_type: params[:runner_type],
-        from_date: Date.new(2023, 11, 1), to_date: Date.new(2023, 11, 30),
-        max_project_count: params[:max_project_count]
+        current_user: current_user, from_date: Date.new(2023, 11, 1), to_date: Date.new(2023, 11, 30),
+        **params.slice(*%i[full_path runner_type max_project_count])
       }) do |service|
         expect(service).to receive(:execute).and_call_original
       end
