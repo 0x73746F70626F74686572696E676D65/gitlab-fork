@@ -21,7 +21,8 @@ module Ci
         from_date = Date.parse(params[:from_date])
         to_date = Date.parse(params[:to_date])
         result = Ci::Runners::SendUsageCsvService.new(
-          current_user: user, from_date: from_date, to_date: to_date, **params.slice(:runner_type, :max_project_count)
+          current_user: user, from_date: from_date, to_date: to_date,
+          **params.slice(:runner_type, :full_path, :max_project_count)
         ).execute
         log_extra_metadata_on_done(:status, result.status)
         log_extra_metadata_on_done(:message, result.message) if result.message

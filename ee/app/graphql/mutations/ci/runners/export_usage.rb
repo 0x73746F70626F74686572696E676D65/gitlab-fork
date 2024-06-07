@@ -6,8 +6,17 @@ module Mutations
       class ExportUsage < BaseMutation
         graphql_name 'RunnersExportUsage'
 
+        authorize :read_runner_usage
+
         DEFAULT_PROJECT_COUNT = 1_000
 
+        argument :full_path, GraphQL::Types::ID,
+          required: false,
+          description: 'Filter jobs by the full path of the group or project they belong to. ' \
+            'For example, `gitlab-org` or `gitlab-org/gitlab`. ' \
+            'Available only to administrators and users with the Maintainer role for the group ' \
+            '(when a group is specified), or project (when a project is specified). ' \
+            "Limited to runners from #{::Ci::Runners::GetUsageByProjectService::MAX_PROJECTS_IN_GROUP} child projects."
         argument :runner_type, ::Types::Ci::RunnerTypeEnum,
           required: false,
           description: 'Scope of the runners to include in the report.'
@@ -28,8 +37,6 @@ module Mutations
             "to an `<Other projects>` entry. Defaults to #{DEFAULT_PROJECT_COUNT} projects."
 
         def ready?(**args)
-          raise_resource_not_available_error! unless Ability.allowed?(current_user, :read_runner_usage)
-
           max_project_count = args.fetch(:max_project_count, DEFAULT_PROJECT_COUNT)
 
           unless max_project_count.between?(1, ::Ci::Runners::GenerateUsageCsvService::MAX_PROJECT_COUNT)
@@ -40,12 +47,15 @@ module Mutations
           super
         end
 
-        def resolve(runner_type: nil, from_date: nil, to_date: nil, max_project_count: nil)
+        def resolve(full_path: nil, runner_type: nil, from_date: nil, to_date: nil, max_project_count: nil)
+          find_and_authorize_scope!(full_path)
+
           from_date ||= Date.current.prev_month.beginning_of_month
           to_date ||= from_date.end_of_month
 
           args = {
             runner_type: ::Ci::Runner.runner_types[runner_type],
+            full_path: full_path,
             from_date: from_date,
             to_date: to_date,
             max_project_count: max_project_count
@@ -56,6 +66,17 @@ module Mutations
           {
             errors: []
           }
+        end
+
+        private
+
+        def find_and_authorize_scope!(full_path)
+          return authorize! :global if full_path.nil?
+
+          scope = Group.find_by_full_path(full_path) || Project.find_by_full_path(full_path)
+
+          raise_resource_not_available_error! if scope.nil?
+          authorize! scope
         end
       end
     end

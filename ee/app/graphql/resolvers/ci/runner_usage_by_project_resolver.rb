@@ -14,8 +14,8 @@ module Resolvers
       type [Types::Ci::RunnerUsageByProjectType], null: true
       description <<~MD
         Runner usage in minutes by project.
-        Available only to admins, group maintainers (when a group is specified),
-        or project maintainers (when a project is specified).
+        Available only to administrators and users with the Maintainer role for the group (when a group is specified),
+        or project (when a project is specified).
       MD
 
       argument :runner_type, ::Types::Ci::RunnerTypeEnum,
@@ -26,8 +26,8 @@ module Resolvers
         required: false,
         description: 'Filter jobs based on the full path of the group or project they belong to. ' \
           'For example, `gitlab-org` or `gitlab-org/gitlab`. ' \
-          'Available only to admins, group maintainers (when a group is specified), ' \
-          'or project maintainers (when a project is specified). ' \
+          'Available only to administrators and users with the Maintainer role for the group ' \
+          '(when a group is specified), or project (when a project is specified). ' \
           "Limited to runners from #{::Ci::Runners::GetUsageByProjectService::MAX_PROJECTS_IN_GROUP} child projects."
 
       argument :from_date, Types::DateType,
