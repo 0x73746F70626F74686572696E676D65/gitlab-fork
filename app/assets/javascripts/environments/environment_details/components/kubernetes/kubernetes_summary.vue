@@ -86,7 +86,7 @@ export default {
       return this.fluxInventory?.filter((item) => item.kind === DEPLOYMENT_KIND);
     },
     fluxRelatedDeployments() {
-      // Maps the deployment statuses to the existing least of the inventory deployments
+      // Maps the deployment statuses to the existing list of the inventory deployments
       if (!this.k8sDeployments) {
         return this.fluxInventoryDeployments;
       }
