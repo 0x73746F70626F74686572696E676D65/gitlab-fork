@@ -7,7 +7,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   include ListboxHelpers
 
   let_it_be_with_reload(:user) do
-    create(:user, created_at: IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day)
+    create(:user, :identity_verification_eligible)
   end
 
   let(:require_challenge) { true }

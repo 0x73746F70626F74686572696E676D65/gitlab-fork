@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Users::IdentityVerification::AuthorizeCi, :saas, feature_category: :instance_resiliency do
-  let_it_be(:user) { create(:user, :with_sign_ins) }
+  let_it_be(:user) { create(:user) }
   let_it_be_with_reload(:project) { create(:project) }
 
   def stub_verifications(credit_card:, identity_verification:)

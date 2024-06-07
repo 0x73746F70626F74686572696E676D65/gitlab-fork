@@ -46,8 +46,6 @@ FactoryBot.modify do
     end
 
     trait :identity_verification_eligible do
-      with_sign_ins
-
       created_at { IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day }
     end
   end

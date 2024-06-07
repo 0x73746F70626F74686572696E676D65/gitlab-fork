@@ -82,9 +82,7 @@ RSpec.shared_examples 'logs and tracks the event' do |category, event, reason = 
 end
 
 RSpec.shared_examples 'it requires a signed in user' do
-  let_it_be(:confirmed_user) do
-    create(:user, created_at: IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day)
-  end
+  let_it_be(:confirmed_user) { create(:user, :identity_verification_eligible) }
 
   before do
     stub_session(session_data: { verification_user_id: nil })
