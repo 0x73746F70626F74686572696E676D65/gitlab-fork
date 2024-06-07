@@ -35,7 +35,7 @@ module EE
           group.update_personal_access_tokens_lifetime
         end
 
-        update_cascading_settings if ::Feature.enabled?(:cascade_duo_features_enabled_setting, group)
+        update_cascading_settings
         activate_pending_members
       end
 
