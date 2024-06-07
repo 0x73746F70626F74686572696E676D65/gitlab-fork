@@ -24,7 +24,11 @@ module QA
           end
 
           def latest_response
-            find_all('.duo-chat-message').last.text
+            find_all('.duo-chat-message p').last.text
+          end
+
+          def number_of_messages
+            find_all('.duo-chat-message').size
           end
         end
       end
