@@ -133,6 +133,10 @@ module EE
         finder_params[:include_hidden] = declared_params[:include_hidden] if declared_params[:include_hidden]
         finder_params[:with_security_reports] = true if params[:with_security_reports].present?
 
+        if declared_params[:marked_for_deletion_on].present?
+          finder_params[:marked_for_deletion_on] = declared_params[:marked_for_deletion_on]
+        end
+
         finder_params
       end
 

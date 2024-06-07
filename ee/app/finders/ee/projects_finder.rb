@@ -22,6 +22,7 @@ module EE
       collection = by_plans(collection)
       collection = by_feature_available(collection)
       collection = by_hidden(collection)
+      collection = by_marked_for_deletion_on(collection)
       by_aimed_for_deletion(collection)
     end
 
@@ -39,6 +40,13 @@ module EE
       else
         collection
       end
+    end
+
+    def by_marked_for_deletion_on(collection)
+      return collection unless params[:marked_for_deletion_on].present?
+      return collection unless License.feature_available?(:adjourned_deletion_for_projects_and_groups)
+
+      collection.by_marked_for_deletion_on(params[:marked_for_deletion_on])
     end
 
     def by_aimed_for_deletion(items)
