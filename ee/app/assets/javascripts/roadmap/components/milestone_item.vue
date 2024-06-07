@@ -121,13 +121,13 @@ export default {
       class="milestone-item-details gl-inline-block position-absolute"
       data-testid="milestone-item-wrapper"
     >
-      <a :href="milestone.webPath" class="milestone-url d-block">
+      <a :href="milestone.webPath" class="milestone-url gl-block">
         <span
           :id="`milestone-item-${milestone.id}`"
           class="milestone-item-title str-truncated-100 bold position-sticky"
           >{{ milestone.title }}</span
         >
-        <span class="timeline-bar position-relative d-block"></span>
+        <span class="timeline-bar position-relative gl-block"></span>
       </a>
       <div class="milestone-start-and-end position-relative" :style="hoverStyles"></div>
       <gl-popover

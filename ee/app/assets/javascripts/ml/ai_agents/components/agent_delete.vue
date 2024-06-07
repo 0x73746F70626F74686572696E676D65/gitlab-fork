@@ -82,7 +82,7 @@ export default {
     <gl-button
       v-gl-modal="$options.deleteModalId"
       variant="danger"
-      class="gl-mt-3 d-block"
+      class="gl-mt-3 gl-block"
       :loading="loading"
       >{{ $options.i18n.deleteAgent }}</gl-button
     >
