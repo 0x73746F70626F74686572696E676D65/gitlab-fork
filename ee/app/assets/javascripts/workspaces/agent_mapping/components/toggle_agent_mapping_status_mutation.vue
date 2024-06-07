@@ -57,16 +57,20 @@ export default {
               },
               (sourceData) =>
                 produce(sourceData, (draftData) => {
-                  const { remoteDevelopmentClusterAgents } = draftData.group;
-                  const { nodes } = remoteDevelopmentClusterAgents;
+                  const { mappedAgents, unmappedAgents } = draftData.namespace;
+                  let addTo;
+                  let removeFrom;
 
                   if (agent.mappingStatus === AGENT_MAPPING_STATUS_MAPPED) {
-                    remoteDevelopmentClusterAgents.nodes = nodes.filter(
-                      (node) => node.id !== agent.id,
-                    );
+                    addTo = unmappedAgents;
+                    removeFrom = mappedAgents;
                   } else {
-                    remoteDevelopmentClusterAgents.nodes.push(agent);
+                    addTo = mappedAgents;
+                    removeFrom = unmappedAgents;
                   }
+
+                  addTo.nodes.push(agent);
+                  removeFrom.nodes = removeFrom.nodes.filter((node) => node.id !== agent.id);
                 }),
             );
           },

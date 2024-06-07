@@ -34,26 +34,23 @@ export default {
           return;
         }
 
-        const {
-          remoteDevelopmentClusterAgents,
-          clusterAgents,
-          id: namespaceId,
-        } = result.data.group;
+        const { mappedAgents, unmappedAgents, id: namespaceId } = result.data.namespace;
 
-        const agents =
-          clusterAgents?.nodes.map(({ id, name }) => {
-            const mappingStatus = remoteDevelopmentClusterAgents?.nodes.some(
-              (agent) => agent.id === id,
-            )
-              ? AGENT_MAPPING_STATUS_MAPPED
-              : AGENT_MAPPING_STATUS_UNMAPPED;
+        const agents = [];
 
-            return {
-              id,
-              name,
-              mappingStatus,
-            };
-          }) || [];
+        agents.push(
+          ...(mappedAgents.nodes.map((agent) => ({
+            ...agent,
+            mappingStatus: AGENT_MAPPING_STATUS_MAPPED,
+          })) || []),
+        );
+
+        agents.push(
+          ...(unmappedAgents.nodes.map((agent) => ({
+            ...agent,
+            mappingStatus: AGENT_MAPPING_STATUS_UNMAPPED,
+          })) || []),
+        );
 
         this.$emit('result', { namespaceId, agents });
       },
