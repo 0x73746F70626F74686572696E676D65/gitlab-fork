@@ -95,6 +95,7 @@ export default {
     @start="handleDragOnStart"
     @end="handleDragOnEnd"
   >
+    <!-- eslint-disable-next-line vue/no-undef-components -->
     <tree-item
       v-for="item in children"
       :key="item.id"

@@ -37,6 +37,7 @@ export default {
 };
 </script>
 <template>
+  <!-- eslint-disable vue/no-undef-components -->
   <div v-if="!loading" id="widget-state" class="mr-state-widget gl-mt-5">
     <header
       v-if="shouldRenderCollaborationStatus"

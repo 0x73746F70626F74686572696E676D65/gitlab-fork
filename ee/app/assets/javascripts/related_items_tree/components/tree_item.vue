@@ -112,6 +112,7 @@ export default {
         }"
       />
     </div>
+    <!-- eslint-disable-next-line vue/no-undef-components -->
     <tree-root
       v-if="itemExpanded || showEpicDropzone"
       :parent-item="item"
