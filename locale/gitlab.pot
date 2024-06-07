@@ -59252,6 +59252,9 @@ msgstr ""
 msgid "WikiPage|Write your content or drag files here…"
 msgstr ""
 
+msgid "Wiki|+ %{count} more"
+msgstr ""
+
 msgid "Wiki|Add custom sidebar"
 msgstr ""
 
@@ -59306,7 +59309,10 @@ msgstr ""
 msgid "Wiki|The sidebar failed to load. You can reload the page to try again."
 msgstr ""
 
-msgid "Wiki|View all"
+msgid "Wiki|There are no pages in this wiki yet"
+msgstr ""
+
+msgid "Wiki|View all pages"
 msgstr ""
 
 msgid "Wiki|Wiki Pages"
