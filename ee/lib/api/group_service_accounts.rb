@@ -9,6 +9,17 @@ module API
       authorize! :admin_service_accounts, user_group
     end
 
+    helpers do
+      def user
+        user_group.provisioned_users.find_by_id(params[:user_id])
+      end
+
+      def validate_service_account_user
+        not_found!('User') unless user
+        bad_request!("User is not of type Service Account") unless user.service_account?
+      end
+    end
+
     params do
       requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the group'
     end
@@ -32,7 +43,7 @@ module API
         end
 
         post do
-          organization_id = Namespace.find(params[:id]).organization_id
+          organization_id = user_group.organization_id
           service_params = declared_params.merge({ organization_id: organization_id, namespace_id: params[:id] })
 
           response = ::Namespaces::ServiceAccounts::CreateService
@@ -46,18 +57,37 @@ module API
           end
         end
 
-        resource ":user_id/personal_access_tokens" do
-          helpers do
-            def user
-              user_group.provisioned_users.find_by_id(params[:user_id])
-            end
+        desc 'Delete a service account user. Available only for group owners and admins.' do
+          failure [
+            { code: 400, message: '400 Bad request' },
+            { code: 401, message: '401 Unauthorized' },
+            { code: 403, message: '403 Forbidden' },
+            { code: 404, message: '404 Group not found' }
+          ]
+        end
 
-            def validate_service_account_user
-              not_found! unless user
-              bad_request!("User is not of type Service Account") unless user.service_account?
-            end
+        params do
+          requires :user_id, type: Integer, desc: 'The ID of the service account user'
+          optional :hard_delete, type: Boolean, desc: "Whether to remove a user's contributions"
+        end
+
+        delete ":user_id" do
+          validate_service_account_user
+
+          delete_params = declared_params(include_missing: false)
+
+          unless user.can_be_removed? || delete_params[:hard_delete]
+            conflict!('User cannot be removed while is the sole-owner of a group')
           end
 
+          destroy_conditionally!(user) do
+            ::Namespaces::ServiceAccounts::DeleteService
+            .new(current_user, user)
+            .execute(delete_params)
+          end
+        end
+
+        resource ":user_id/personal_access_tokens" do
           desc 'Create a personal access token. Available only for group owners.' do
             detail 'This feature was introduced in GitLab 16.1'
             success Entities::PersonalAccessTokenWithToken
