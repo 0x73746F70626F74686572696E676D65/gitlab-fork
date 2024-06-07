@@ -11,7 +11,6 @@ module EE
         @subject.target_project&.can_override_approvers?
       end
 
-      with_scope :subject
       condition(:summarize_draft_code_review_enabled) do
         ::Feature.enabled?(:summarize_my_code_review, @user) &&
           ::Gitlab::Llm::FeatureAuthorizer.new(

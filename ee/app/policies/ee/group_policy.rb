@@ -84,11 +84,11 @@ module EE
         @subject.feature_available?(:group_forking_protection)
       end
 
-      condition(:needs_new_sso_session, scope: :subject) do
+      condition(:needs_new_sso_session) do
         ::Gitlab::Auth::GroupSaml::SsoEnforcer.access_restricted?(user: @user, resource: @subject)
       end
 
-      condition(:no_active_sso_session, scope: :subject) do
+      condition(:no_active_sso_session) do
         ::Gitlab::Auth::GroupSaml::SessionEnforcer.new(@user, @subject).access_restricted?
       end
 
@@ -99,7 +99,9 @@ module EE
         saml_provider.enabled? && saml_provider.enforced_sso?
       end
 
-      condition(:ip_enforcement_prevents_access, scope: :subject) do
+      # NOTE: This condition does not use :subject scope because it needs to be evaluated for each request,
+      # as the request IP can change
+      condition(:ip_enforcement_prevents_access) do
         !::Gitlab::IpRestriction::Enforcer.new(subject).allows_current_ip?
       end
 
@@ -232,7 +234,7 @@ module EE
         ::Gitlab::Llm::StageCheck.available?(@subject, :chat)
       end
 
-      condition(:chat_available_for_user, scope: :global) do
+      condition(:chat_available_for_user, scope: :user) do
         Ability.allowed?(@user, :access_duo_chat)
       end
 

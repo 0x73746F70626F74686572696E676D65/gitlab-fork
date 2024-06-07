@@ -91,47 +91,38 @@ module EE
         @subject.feature_available?(:reject_non_dco_commits)
       end
 
-      with_scope :subject
-      condition(:security_orchestration_policies_enabled) do
+      condition(:security_orchestration_policies_enabled, scope: :subject) do
         @subject.feature_available?(:security_orchestration_policies)
       end
 
-      with_scope :subject
-      condition(:security_dashboard_enabled) do
+      condition(:security_dashboard_enabled, scope: :subject) do
         @subject.feature_available?(:security_dashboard)
       end
 
-      with_scope :subject
-      condition(:coverage_fuzzing_enabled) do
+      condition(:coverage_fuzzing_enabled, scope: :subject) do
         @subject.feature_available?(:coverage_fuzzing)
       end
 
-      with_scope :subject
-      condition(:on_demand_scans_enabled) do
+      condition(:on_demand_scans_enabled, scope: :subject) do
         @subject.on_demand_dast_available?
       end
 
-      with_scope :subject
-      condition(:license_scanning_enabled) do
+      condition(:license_scanning_enabled, scope: :subject) do
         @subject.feature_available?(:license_scanning)
       end
 
-      with_scope :subject
-      condition(:dependency_scanning_enabled) do
+      condition(:dependency_scanning_enabled, scope: :subject) do
         @subject.feature_available?(:dependency_scanning)
       end
 
-      with_scope :subject
       condition(:code_review_analytics_enabled) do
         @subject.feature_available?(:code_review_analytics, @user)
       end
 
-      with_scope :subject
       condition(:issue_analytics_enabled) do
         @subject.feature_available?(:issues_analytics, @user)
       end
 
-      with_scope :subject
       condition(:combined_project_analytics_dashboards_enabled) do
         @subject.feature_available?(:combined_project_analytics_dashboards, @user)
       end
@@ -148,40 +139,33 @@ module EE
         @subject.root_namespace.read_only?
       end
 
-      with_scope :subject
-      condition(:feature_flags_related_issues_disabled) do
+      condition(:feature_flags_related_issues_disabled, scope: :subject) do
         !@subject.feature_available?(:feature_flags_related_issues)
       end
 
-      with_scope :subject
-      condition(:oncall_schedules_available) do
+      condition(:oncall_schedules_available, scope: :subject) do
         ::Gitlab::IncidentManagement.oncall_schedules_available?(@subject)
       end
 
-      with_scope :subject
-      condition(:escalation_policies_available) do
+      condition(:escalation_policies_available, scope: :subject) do
         ::Gitlab::IncidentManagement.escalation_policies_available?(@subject)
       end
 
-      with_scope :subject
-      condition(:hidden) do
+      condition(:hidden, scope: :subject) do
         @subject.hidden?
       end
 
-      with_scope :subject
-      condition(:membership_locked_via_parent_group) do
+      condition(:membership_locked_via_parent_group, scope: :subject) do
         @subject.group && (
           @subject.group.membership_lock? ||
           ::Gitlab::CurrentSettings.lock_memberships_to_ldap? ||
           ::Gitlab::CurrentSettings.lock_memberships_to_saml)
       end
 
-      with_scope :subject
-      condition(:security_policy_project_available) do
+      condition(:security_policy_project_available, scope: :subject) do
         @subject.security_orchestration_policy_configuration.present?
       end
 
-      with_scope :subject
       condition(:can_commit_to_security_policy_project) do
         security_orchestration_policy_configuration = @subject.security_orchestration_policy_configuration
 
@@ -190,18 +174,15 @@ module EE
         Ability.allowed?(@user, :developer_access, security_orchestration_policy_configuration.security_policy_management_project)
       end
 
-      with_scope :subject
-      condition(:okrs_enabled) do
+      condition(:okrs_enabled, scope: :subject) do
         @subject.okrs_mvc_feature_flag_enabled? && @subject.feature_available?(:okrs)
       end
 
-      with_scope :subject
       condition(:licensed_cycle_analytics_available, scope: :subject) do
         @subject.feature_available?(:cycle_analytics_for_projects)
       end
 
-      with_scope :subject
-      condition(:agent_registry_enabled) do
+      condition(:agent_registry_enabled, scope: :subject) do
         ::Feature.enabled?(:agent_registry, @subject) && @subject.licensed_feature_available?(:ai_agents)
       end
 
@@ -334,7 +315,7 @@ module EE
         ::Gitlab::Llm::StageCheck.available?(@subject.parent, :chat)
       end
 
-      condition(:chat_available_for_user, scope: :global) do
+      condition(:chat_available_for_user, scope: :user) do
         Ability.allowed?(@user, :access_duo_chat)
       end
 
@@ -643,18 +624,17 @@ module EE
 
       rule { user_banned_from_namespace }.prevent_all
 
-      with_scope :subject
       condition(:needs_new_sso_session) do
         ::Gitlab::Auth::GroupSaml::SsoEnforcer.access_restricted?(user: @user, resource: subject)
       end
 
-      with_scope :subject
+      # NOTE: This condition does not use :subject scope because it needs to be evaluated for each request,
+      # as the request IP can change
       condition(:ip_enforcement_prevents_access) do
         !::Gitlab::IpRestriction::Enforcer.new(subject.group).allows_current_ip? if subject.group
       end
 
-      with_scope :global
-      condition(:owner_cannot_destroy_project) do
+      condition(:owner_cannot_destroy_project, scope: :global) do
         ::Gitlab::CurrentSettings.current_application_settings
           .default_project_deletion_protection
       end
