@@ -247,3 +247,7 @@ class GitlabSubscription < ApplicationRecord
     Groups::ResetSeatCalloutsWorker.perform_async(namespace_id)
   end
 end
+
+# Added for JiHu
+# Used in https://jihulab.com/gitlab-cn/gitlab/-/blob/main-jh/jh/app/models/jh/gitlab_subscription.rb
+GitlabSubscription.prepend_mod
