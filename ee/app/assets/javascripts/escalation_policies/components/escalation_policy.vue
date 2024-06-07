@@ -215,7 +215,7 @@ export default {
               </span>
 
               <span
-                class="right-arrow gl-relative gl-min-w-7 gl-bg-gray-900 gl-display-none gl-lg-display-block gl-flex-shrink-0 gl-mx-5"
+                class="right-arrow gl-relative gl-min-w-7 gl-bg-gray-900 gl-hidden lg:gl-block gl-flex-shrink-0 gl-mx-5"
                 :style="{ width: getArrowLength(ruleIndex) }"
               >
                 <i class="right-arrow-head gl-absolute gl-p-1 gl-border-solid"></i>

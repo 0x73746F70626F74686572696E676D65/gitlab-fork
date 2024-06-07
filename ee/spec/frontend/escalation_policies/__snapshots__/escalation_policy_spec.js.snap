@@ -39,7 +39,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
             </span>
           </span>
           <span
-            class="gl-bg-gray-900 gl-display-none gl-flex-shrink-0 gl-lg-display-block gl-min-w-7 gl-mx-5 gl-relative right-arrow"
+            class="gl-bg-gray-900 gl-flex-shrink-0 gl-hidden gl-min-w-7 gl-mx-5 gl-relative lg:gl-block right-arrow"
             style="width: 4%;"
           >
             <i
@@ -88,7 +88,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
             </span>
           </span>
           <span
-            class="gl-bg-gray-900 gl-display-none gl-flex-shrink-0 gl-lg-display-block gl-min-w-7 gl-mx-5 gl-relative right-arrow"
+            class="gl-bg-gray-900 gl-flex-shrink-0 gl-hidden gl-min-w-7 gl-mx-5 gl-relative lg:gl-block right-arrow"
             style="width: 8%;"
           >
             <i
@@ -148,7 +148,7 @@ exports[`EscalationPolicy renders a policy with rules 1`] = `
             </span>
           </span>
           <span
-            class="gl-bg-gray-900 gl-display-none gl-flex-shrink-0 gl-lg-display-block gl-min-w-7 gl-mx-5 gl-relative right-arrow"
+            class="gl-bg-gray-900 gl-flex-shrink-0 gl-hidden gl-min-w-7 gl-mx-5 gl-relative lg:gl-block right-arrow"
             style="width: 12%;"
           >
             <i

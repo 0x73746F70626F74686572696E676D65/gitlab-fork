@@ -128,7 +128,7 @@ export default {
 </script>
 <template>
   <gl-card class="order-summary gl-display-flex gl-flex-direction-column gl-flex-grow-1">
-    <div class="gl-lg-display-none">
+    <div class="lg:gl-hidden">
       <h4
         v-gl-collapse-toggle.summary-details
         class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-font-lg gl-my-0"
@@ -162,7 +162,7 @@ export default {
         </summary-details>
       </gl-collapse>
     </div>
-    <div class="gl-display-none gl-lg-display-block">
+    <div class="gl-hidden lg:gl-block">
       <h4 class="gl-my-0 gl-font-lg">
         {{ titleWithName }}
       </h4>

@@ -30,11 +30,7 @@ export default {
 
 <template>
   <div>
-    <geo-site-actions-mobile class="gl-lg-display-none" :site="site" @remove="warnSiteRemoval" />
-    <geo-site-actions-desktop
-      class="gl-hidden gl-lg-display-flex"
-      :site="site"
-      @remove="warnSiteRemoval"
-    />
+    <geo-site-actions-mobile class="lg:gl-hidden" :site="site" @remove="warnSiteRemoval" />
+    <geo-site-actions-desktop class="gl-hidden lg:gl-flex" :site="site" @remove="warnSiteRemoval" />
   </div>
 </template>

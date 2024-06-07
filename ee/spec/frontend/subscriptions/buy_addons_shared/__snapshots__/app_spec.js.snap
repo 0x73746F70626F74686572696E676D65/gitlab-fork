@@ -75,7 +75,7 @@ exports[`Buy Addons Shared App Compute minutes labels does not show labels if in
     headerclass=""
   >
     <div
-      class="gl-lg-display-none"
+      class="lg:gl-hidden"
     >
       <h4
         aria-controls="reference-0"
@@ -183,7 +183,7 @@ exports[`Buy Addons Shared App Compute minutes labels does not show labels if in
       </gl-collapse-stub>
     </div>
     <div
-      class="gl-display-none gl-lg-display-block"
+      class="gl-hidden lg:gl-block"
     >
       <h4
         class="gl-font-lg gl-my-0"
@@ -344,7 +344,7 @@ exports[`Buy Addons Shared App Compute minutes labels shows labels correctly for
     headerclass=""
   >
     <div
-      class="gl-lg-display-none"
+      class="lg:gl-hidden"
     >
       <h4
         aria-controls="reference-0"
@@ -458,7 +458,7 @@ exports[`Buy Addons Shared App Compute minutes labels shows labels correctly for
       </gl-collapse-stub>
     </div>
     <div
-      class="gl-display-none gl-lg-display-block"
+      class="gl-hidden lg:gl-block"
     >
       <h4
         class="gl-font-lg gl-my-0"
@@ -625,7 +625,7 @@ exports[`Buy Addons Shared App Compute minutes labels shows labels correctly for
     headerclass=""
   >
     <div
-      class="gl-lg-display-none"
+      class="lg:gl-hidden"
     >
       <h4
         aria-controls="reference-0"
@@ -739,7 +739,7 @@ exports[`Buy Addons Shared App Compute minutes labels shows labels correctly for
       </gl-collapse-stub>
     </div>
     <div
-      class="gl-display-none gl-lg-display-block"
+      class="gl-hidden lg:gl-block"
     >
       <h4
         class="gl-font-lg gl-my-0"
@@ -889,7 +889,7 @@ exports[`Buy Addons Shared App Storage labels does not show labels if input is i
     headerclass=""
   >
     <div
-      class="gl-lg-display-none"
+      class="lg:gl-hidden"
     >
       <h4
         aria-controls="reference-0"
@@ -1011,7 +1011,7 @@ exports[`Buy Addons Shared App Storage labels does not show labels if input is i
       </gl-collapse-stub>
     </div>
     <div
-      class="gl-display-none gl-lg-display-block"
+      class="gl-hidden lg:gl-block"
     >
       <h4
         class="gl-font-lg gl-my-0"
@@ -1173,7 +1173,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 
     headerclass=""
   >
     <div
-      class="gl-lg-display-none"
+      class="lg:gl-hidden"
     >
       <h4
         aria-controls="reference-0"
@@ -1301,7 +1301,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 1 pack 
       </gl-collapse-stub>
     </div>
     <div
-      class="gl-display-none gl-lg-display-block"
+      class="gl-hidden lg:gl-block"
     >
       <h4
         class="gl-font-lg gl-my-0"
@@ -1469,7 +1469,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 2 packs
     headerclass=""
   >
     <div
-      class="gl-lg-display-none"
+      class="lg:gl-hidden"
     >
       <h4
         aria-controls="reference-0"
@@ -1597,7 +1597,7 @@ exports[`Buy Addons Shared App Storage labels shows labels correctly for 2 packs
       </gl-collapse-stub>
     </div>
     <div
-      class="gl-display-none gl-lg-display-block"
+      class="gl-hidden lg:gl-block"
     >
       <h4
         class="gl-font-lg gl-my-0"
