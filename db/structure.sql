@@ -733,6 +733,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_0da002390fdc() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "operations_feature_flags"
+  WHERE "operations_feature_flags"."id" = NEW."feature_flag_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_10ee1357e825() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -12984,7 +13000,8 @@ ALTER SEQUENCE operations_feature_flags_id_seq OWNED BY operations_feature_flags
 CREATE TABLE operations_feature_flags_issues (
     id bigint NOT NULL,
     feature_flag_id bigint NOT NULL,
-    issue_id bigint NOT NULL
+    issue_id bigint NOT NULL,
+    project_id bigint
 );
 
 CREATE SEQUENCE operations_feature_flags_issues_id_seq
@@ -27265,6 +27282,8 @@ CREATE INDEX index_oncall_shifts_on_rotation_id_and_starts_at_and_ends_at ON inc
 
 CREATE INDEX index_operations_feature_flags_issues_on_issue_id ON operations_feature_flags_issues USING btree (issue_id);
 
+CREATE INDEX index_operations_feature_flags_issues_on_project_id ON operations_feature_flags_issues USING btree (project_id);
+
 CREATE UNIQUE INDEX index_operations_feature_flags_on_project_id_and_iid ON operations_feature_flags USING btree (project_id, iid);
 
 CREATE UNIQUE INDEX index_operations_feature_flags_on_project_id_and_name ON operations_feature_flags USING btree (project_id, name);
@@ -30607,6 +30626,8 @@ CREATE TRIGGER tags_loose_fk_trigger AFTER DELETE ON tags REFERENCING OLD TABLE 
 
 CREATE TRIGGER trigger_01b3fc052119 BEFORE INSERT OR UPDATE ON approval_merge_request_rules FOR EACH ROW EXECUTE FUNCTION trigger_01b3fc052119();
 
+CREATE TRIGGER trigger_0da002390fdc BEFORE INSERT OR UPDATE ON operations_feature_flags_issues FOR EACH ROW EXECUTE FUNCTION trigger_0da002390fdc();
+
 CREATE TRIGGER trigger_10ee1357e825 BEFORE INSERT OR UPDATE ON p_ci_builds FOR EACH ROW EXECUTE FUNCTION trigger_10ee1357e825();
 
 CREATE TRIGGER trigger_13d4aa8fe3dd BEFORE INSERT OR UPDATE ON draft_notes FOR EACH ROW EXECUTE FUNCTION trigger_13d4aa8fe3dd();
@@ -31005,6 +31026,9 @@ ALTER TABLE ONLY epics
 
 ALTER TABLE ONLY sprints
     ADD CONSTRAINT fk_365d1db505 FOREIGN KEY (iterations_cadence_id) REFERENCES iterations_cadences(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY operations_feature_flags_issues
+    ADD CONSTRAINT fk_3685a990ae FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY push_event_payloads
     ADD CONSTRAINT fk_36c74129da FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE;
