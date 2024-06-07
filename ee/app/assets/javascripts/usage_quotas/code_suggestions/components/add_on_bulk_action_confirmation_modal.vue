@@ -33,9 +33,9 @@ export default {
     },
     modalTitle() {
       if (this.isBulkActionToAssignSeats) {
-        return s__('Billing|Confirm bulk seat allocation');
+        return s__('Billing|Confirm bulk seat assignment');
       }
-      return s__('Billing|Confirm bulk seat unassignment');
+      return s__('Billing|Confirm bulk seat removal');
     },
     modalBodyText() {
       let actionText;
