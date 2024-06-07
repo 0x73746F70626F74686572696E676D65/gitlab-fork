@@ -15,5 +15,6 @@ export default {
 </script>
 
 <template>
+  <!-- eslint-disable-next-line vue/no-undef-components -->
   <tree-root :parent-item="parentItem" :children="children" />
 </template>
