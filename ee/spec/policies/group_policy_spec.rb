@@ -3061,6 +3061,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         it { is_expected.to be_disallowed(:admin_service_accounts) }
         it { is_expected.to be_disallowed(:admin_service_account_member) }
         it { is_expected.to be_disallowed(:create_service_account) }
+        it { is_expected.to be_disallowed(:delete_service_account) }
       end
 
       context 'when feature is enabled' do
@@ -3074,6 +3075,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
           it { is_expected.to be_disallowed(:admin_service_accounts) }
           it { is_expected.to be_disallowed(:admin_service_account_member) }
           it { is_expected.to be_disallowed(:create_service_account) }
+          it { is_expected.to be_disallowed(:delete_service_account) }
         end
 
         context 'when the user is an owner' do
@@ -3082,6 +3084,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
           it { is_expected.to be_allowed(:admin_service_accounts) }
           it { is_expected.to be_allowed(:admin_service_account_member) }
           it { is_expected.to be_disallowed(:create_service_account) }
+          it { is_expected.to be_disallowed(:delete_service_account) }
 
           context 'for subgroup' do
             let_it_be(:subgroup) { create(:group, :private, parent: group) }
@@ -3091,6 +3094,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
             it { is_expected.to be_allowed(:admin_service_accounts) }
             it { is_expected.to be_allowed(:admin_service_account_member) }
             it { is_expected.to be_disallowed(:create_service_account) }
+            it { is_expected.to be_disallowed(:delete_service_account) }
           end
         end
 
@@ -3101,6 +3105,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
             it { is_expected.to be_allowed(:admin_service_accounts) }
             it { is_expected.to be_allowed(:admin_service_account_member) }
             it { is_expected.to be_allowed(:create_service_account) }
+            it { is_expected.to be_allowed(:delete_service_account) }
 
             context 'for subgroup' do
               let_it_be(:subgroup) { create(:group, :private, parent: group) }
@@ -3110,6 +3115,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
               it { is_expected.to be_allowed(:admin_service_accounts) }
               it { is_expected.to be_allowed(:admin_service_account_member) }
               it { is_expected.to be_disallowed(:create_service_account) }
+              it { is_expected.to be_disallowed(:delete_service_account) }
             end
           end
 
@@ -3117,6 +3123,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
             it { is_expected.to be_disallowed(:admin_service_accounts) }
             it { is_expected.to be_disallowed(:admin_service_account_member) }
             it { is_expected.to be_disallowed(:create_service_account) }
+            it { is_expected.to be_disallowed(:delete_service_account) }
           end
         end
       end
@@ -3128,6 +3135,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
           it { is_expected.to be_disallowed(:admin_service_accounts) }
           it { is_expected.to be_disallowed(:admin_service_account_member) }
           it { is_expected.to be_disallowed(:create_service_account) }
+          it { is_expected.to be_disallowed(:delete_service_account) }
         end
 
         context 'when feature is enabled' do
@@ -3141,6 +3149,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
             it { is_expected.to be_disallowed(:admin_service_accounts) }
             it { is_expected.to be_disallowed(:admin_service_account_member) }
             it { is_expected.to be_disallowed(:create_service_account) }
+            it { is_expected.to be_disallowed(:delete_service_account) }
           end
 
           context 'when the user is an owner' do
@@ -3149,6 +3158,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
             it { is_expected.to be_allowed(:admin_service_accounts) }
             it { is_expected.to be_allowed(:admin_service_account_member) }
             it { is_expected.to be_allowed(:create_service_account) }
+            it { is_expected.to be_allowed(:delete_service_account) }
 
             context 'for subgroup' do
               let_it_be(:subgroup) { create(:group, :private, parent: group) }
@@ -3158,6 +3168,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
               it { is_expected.to be_allowed(:admin_service_accounts) }
               it { is_expected.to be_allowed(:admin_service_account_member) }
               it { is_expected.to be_disallowed(:create_service_account) }
+              it { is_expected.to be_disallowed(:delete_service_account) }
             end
           end
 
@@ -3168,6 +3179,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
               it { is_expected.to be_allowed(:admin_service_accounts) }
               it { is_expected.to be_allowed(:admin_service_account_member) }
               it { is_expected.to be_allowed(:create_service_account) }
+              it { is_expected.to be_allowed(:delete_service_account) }
 
               context 'for subgroup' do
                 let_it_be(:subgroup) { create(:group, :private, parent: group) }
@@ -3177,6 +3189,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
                 it { is_expected.to be_allowed(:admin_service_accounts) }
                 it { is_expected.to be_allowed(:admin_service_account_member) }
                 it { is_expected.to be_disallowed(:create_service_account) }
+                it { is_expected.to be_disallowed(:delete_service_account) }
               end
             end
 
@@ -3184,6 +3197,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
               it { is_expected.to be_disallowed(:admin_service_accounts) }
               it { is_expected.to be_disallowed(:admin_service_account_member) }
               it { is_expected.to be_disallowed(:create_service_account) }
+              it { is_expected.to be_disallowed(:delete_service_account) }
             end
           end
         end

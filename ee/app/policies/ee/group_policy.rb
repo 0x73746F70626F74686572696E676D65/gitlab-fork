@@ -450,6 +450,7 @@ module EE
 
       rule { service_accounts_available & ~has_parent & (admin | (is_gitlab_com & owner)) }.policy do
         enable :create_service_account
+        enable :delete_service_account
       end
 
       rule { developer }.policy do

@@ -14,6 +14,113 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
     service_account_user.save!
   end
 
+  RSpec.shared_examples "service account user deletion" do
+    it "marks user for deletion", :sidekiq_inline do
+      perform_enqueued_jobs { delete api(path, admin, admin_mode: true) }
+
+      expect(response).to have_gitlab_http_status(:no_content)
+      expect(Users::GhostUserMigration.where(user: service_account_user, initiator_user: admin)).to exist
+    end
+
+    context "when sole owner of a group" do
+      let!(:new_group) { create(:group, owners: service_account_user) }
+
+      context "when hard delete disabled" do
+        it "does not mark  user for deletion" do
+          perform_enqueued_jobs { delete api(path, admin, admin_mode: true) }
+          expect(service_account_user.blocked?).to eq(false)
+          expect(Users::GhostUserMigration.where(user: service_account_user, initiator_user: admin,
+            hard_delete: false)).not_to exist
+          expect(response).to have_gitlab_http_status(:conflict)
+        end
+      end
+
+      context "when hard delete enabled" do
+        let!(:another_group) { create(:group, owners: service_account_user) }
+
+        it "marks user for deletion and group is deleted", :sidekiq_inline do
+          perform_enqueued_jobs do
+            delete api("/groups/#{group_id}/service_accounts/#{service_account_user.id}?hard_delete=true", admin,
+              admin_mode: true)
+          end
+          expect(response).to have_gitlab_http_status(:no_content)
+          expect(Users::GhostUserMigration.where(user: service_account_user, initiator_user: admin,
+            hard_delete: true)).to exist
+          expect(service_account_user.reload.blocked?).to eq(true)
+          expect(Group.exists?(another_group.id)).to eq(false)
+        end
+
+        context "when there is a subgroup" do
+          let(:parent_group) { create(:group) }
+          let(:subgroup) { create(:group, parent: parent_group) }
+
+          before do
+            parent_group.add_owner(create(:user))
+            subgroup.add_owner(user)
+          end
+
+          it "marks only user for deletion and group is not deleted", :sidekiq_inline do
+            perform_enqueued_jobs do
+              delete api("/groups/#{group_id}/service_accounts/#{service_account_user.id}?hard_delete=true", admin,
+                admin_mode: true)
+            end
+            expect(response).to have_gitlab_http_status(:no_content)
+            expect(Group.exists?(subgroup.id)).to eq(true)
+            expect(Users::GhostUserMigration.where(user: service_account_user, initiator_user: admin,
+              hard_delete: true)).to exist
+            expect(service_account_user.reload.blocked?).to eq(true)
+          end
+        end
+      end
+    end
+
+    it "fails for unauthenticated user" do
+      perform_enqueued_jobs { delete api(path) }
+      expect(service_account_user.reload.blocked?).to eq(false)
+      expect(response).to have_gitlab_http_status(:unauthorized)
+    end
+
+    it "returns 404 for non-existing user" do
+      perform_enqueued_jobs do
+        delete api("/groups/#{group_id}/service_accounts/#{non_existing_record_id}", admin, admin_mode: true)
+      end
+
+      expect(response).to have_gitlab_http_status(:not_found)
+      expect(json_response['message']).to eq('404 User Not Found')
+    end
+
+    it "returns a 400 for invalid ID" do
+      perform_enqueued_jobs { delete api("/groups/#{group_id}/service_accounts/ASDF", admin, admin_mode: true) }
+
+      expect(response).to have_gitlab_http_status(:bad_request)
+    end
+
+    context "when hard delete disabled" do
+      it "moves contributions to the ghost user", :sidekiq_might_not_need_inline do
+        perform_enqueued_jobs { delete api(path, admin, admin_mode: true) }
+
+        expect(response).to have_gitlab_http_status(:no_content)
+        expect(issue.reload).to be_persisted
+        expect(Users::GhostUserMigration.where(user: service_account_user, initiator_user: admin,
+          hard_delete: false)).to exist
+        expect(service_account_user.reload.blocked?).to eq(true)
+      end
+    end
+
+    context "when hard delete enabled" do
+      it "removes contributions", :sidekiq_might_not_need_inline do
+        perform_enqueued_jobs do
+          delete api("/groups/#{group_id}/service_accounts/#{service_account_user.id}?hard_delete=true", admin,
+            admin_mode: true)
+        end
+
+        expect(response).to have_gitlab_http_status(:no_content)
+        expect(Users::GhostUserMigration.where(user: service_account_user, initiator_user: admin,
+          hard_delete: true)).to exist
+      end
+    end
+  end
+
   describe "POST /groups/:id/service_accounts" do
     subject(:perform_request) { post api("/groups/#{group_id}/service_accounts", user), params: params }
 
@@ -209,6 +316,78 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
 
         it "returns error" do
           perform_request
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+    end
+  end
+
+  describe "DELETE /groups/:id/service_accounts/:user_id" do
+    let(:issue) { create(:issue, author: service_account_user) }
+    let(:group_id) { group.id }
+    let(:path) { "/groups/#{group_id}/service_accounts/#{service_account_user.id}" }
+    let(:admin) { create(:admin) }
+
+    before do
+      stub_licensed_features(service_accounts: true)
+    end
+
+    it_behaves_like 'DELETE request permissions for admin mode'
+
+    context 'when self-managed' do
+      it_behaves_like "service account user deletion"
+
+      it "is not available for non admin users" do
+        perform_enqueued_jobs { delete api(path, user) }
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+
+      context 'when feature is not licensed' do
+        let(:group_id) { group.id }
+
+        before do
+          stub_licensed_features(service_accounts: false)
+          group.add_owner(user)
+        end
+
+        it 'returns error' do
+          perform_enqueued_jobs { delete api(path, service_account_user) }
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+    end
+
+    context 'when .com', :saas do
+      it_behaves_like "service account user deletion"
+
+      it "is available for group owners", :sidekiq_inline do
+        group.add_owner(user)
+
+        perform_enqueued_jobs { delete api(path, user) }
+        expect(response).to have_gitlab_http_status(:no_content)
+        expect(Users::GhostUserMigration.where(user: service_account_user, initiator_user: user)).to exist
+      end
+
+      it "is not available to non group owners" do
+        group.add_maintainer(user)
+
+        perform_enqueued_jobs { delete api(path, user) }
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+
+      context 'when feature is not licensed' do
+        let(:group_id) { group.id }
+
+        before do
+          stub_licensed_features(service_accounts: false)
+          group.add_owner(user)
+        end
+
+        it 'returns error' do
+          perform_enqueued_jobs { delete api(path, service_account_user) }
 
           expect(response).to have_gitlab_http_status(:forbidden)
         end
