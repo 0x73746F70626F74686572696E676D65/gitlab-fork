@@ -33297,6 +33297,9 @@ msgstr ""
 msgid "MlModelRegistry|Failed to load model with error: %{message}"
 msgstr ""
 
+msgid "MlModelRegistry|File \"%{name}\" is %{size}. It is larger than max allowed size of %{maxAllowedFileSize}"
+msgstr ""
+
 msgid "MlModelRegistry|For example 1.0.0"
 msgstr ""
 
@@ -33421,6 +33424,9 @@ msgid "MlModelRegistry|· %d version"
 msgid_plural "MlModelRegistry|· %d versions"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Mlmodelregistry|Provide the max allowed file size"
+msgstr ""
 
 msgid "Mock an external CI integration."
 msgstr ""
