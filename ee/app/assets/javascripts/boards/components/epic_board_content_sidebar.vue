@@ -1,12 +1,14 @@
 <script>
 import { GlDrawer } from '@gitlab/ui';
 import { MountingPortal } from 'portal-vue';
+import { union } from 'lodash';
 import activeBoardItemQuery from 'ee_else_ce/boards/graphql/client/active_board_item.query.graphql';
 import setActiveBoardItemMutation from 'ee_else_ce/boards/graphql/client/set_active_board_item.mutation.graphql';
 import SidebarAncestorsWidget from 'ee_component/sidebar/components/ancestors_tree/sidebar_ancestors_widget.vue';
 import { s__ } from '~/locale';
+import { ListType } from '~/boards/constants';
 import BoardSidebarTitle from '~/boards/components/sidebar/board_sidebar_title.vue';
-import { setError } from '~/boards/graphql/cache_updates';
+import { setError, identifyAffectedLists } from '~/boards/graphql/cache_updates';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';
 import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar_participants_widget.vue';
@@ -17,6 +19,7 @@ import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
 
 export default {
+  ListType,
   components: {
     BoardSidebarTitle,
     ColorSelectDropdown,
@@ -33,6 +36,22 @@ export default {
   mixins: [glFeatureFlagMixin()],
   inject: ['canUpdate', 'labelsFilterBasePath', 'issuableType', 'allowSubEpics'],
   inheritAttrs: false,
+  props: {
+    backlogListId: {
+      type: String,
+      required: true,
+    },
+    closedListId: {
+      type: String,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      affectedListTypes: [],
+      updatedAttributeIds: [],
+    };
+  },
   apollo: {
     activeBoardCard: {
       query: activeBoardItemQuery,
@@ -60,14 +79,71 @@ export default {
     fullPath() {
       return this.activeBoardCard?.referencePath?.split('&')[0] || '';
     },
+    apolloClient() {
+      return this.$apollo.provider.defaultClient;
+    },
   },
   methods: {
-    handleClose() {
-      this.$apollo.mutate({
+    async handleClose() {
+      const item = this.activeBoardCard;
+
+      await this.$apollo.mutate({
         mutation: setActiveBoardItemMutation,
         variables: {
           boardItem: null,
           listId: null,
+        },
+      });
+      if (item.listId !== this.closedListId) {
+        await this.refetchAffectedLists(item);
+      }
+      this.affectedListTypes = [];
+      this.updatedAttributeIds = [];
+    },
+    updateAffectedLists({ listType, attribute }) {
+      if (!this.affectedListTypes.includes(listType)) {
+        this.affectedListTypes.push(listType);
+      }
+      this.updatedAttributeIds = union(
+        this.updatedAttributeIds,
+        attribute.map(({ id }) => id),
+      );
+    },
+    refetchAffectedLists(item) {
+      if (!this.affectedListTypes.length) {
+        return;
+      }
+
+      const affectedLists = identifyAffectedLists({
+        client: this.apolloClient,
+        item,
+        issuableType: this.issuableType,
+        affectedListTypes: this.affectedListTypes,
+        updatedAttributeIds: this.updatedAttributeIds,
+      });
+
+      if (this.backlogListId && !affectedLists.includes(this.backlogListId)) {
+        affectedLists.push(this.backlogListId);
+      }
+
+      this.apolloClient.refetchQueries({
+        updateCache(cache) {
+          affectedLists.forEach((listId) => {
+            cache.evict({
+              id: cache.identify({
+                __typename: 'EpicList',
+                id: listId,
+              }),
+              fieldName: 'epics',
+            });
+            cache.evict({
+              id: cache.identify({
+                __typename: 'EpicList',
+                id: listId,
+              }),
+              fieldName: 'metadata',
+            });
+          });
         },
       });
     },
@@ -124,6 +200,9 @@ export default {
           workspace-type="group"
           :issuable-type="issuableType"
           label-create-type="group"
+          @updateSelectedLabels="
+            updateAffectedLists({ listType: $options.ListType.label, attribute: $event.labels })
+          "
         >
           {{ __('None') }}
         </sidebar-labels-widget>
