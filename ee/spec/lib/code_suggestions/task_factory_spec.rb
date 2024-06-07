@@ -20,11 +20,9 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
         },
         generation_type: 'empty_function',
         user_instruction: user_instruction,
-        context: {
-          type: 'file',
-          name: 'main.go',
-          content: 'package main'
-        }
+        context: [
+          { type: 'file', name: 'main.go', content: 'package main' }
+        ]
       }
     end
 
@@ -36,6 +34,14 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
 
         get_task
       end
+    end
+
+    it 'calls context trimmer' do
+      ctx = instance_double(CodeSuggestions::Context, :trimmed)
+      expect(CodeSuggestions::Context).to receive(:new).with(params[:context]).and_return(ctx)
+      expect(ctx).to receive(:trimmed)
+
+      get_task
     end
 
     it 'calls instructions extractor with expected params' do

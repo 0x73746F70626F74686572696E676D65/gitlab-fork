@@ -453,22 +453,6 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
             end
           end
 
-          context 'when context has more than 10 items' do
-            let(:additional_params) do
-              {
-                context: (1..11).map { |i| { type: 'snippet', name: "func#{i}", content: "func func#{i}() {}" } }
-              }
-            end
-
-            it 'responds with bad request' do
-              post_api
-
-              expect(response).to have_gitlab_http_status(:bad_request)
-              expect(response.body)
-                .to eq({ error: "context context must be less than 10 characters" }.to_json)
-            end
-          end
-
           context 'when context missing a type' do
             let(:additional_params) do
               {
