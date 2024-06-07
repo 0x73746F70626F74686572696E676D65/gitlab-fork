@@ -57,8 +57,7 @@ module ClickHouse
     end
 
     def enabled?
-      Gitlab::ClickHouse.globally_enabled_for_analytics? &&
-        Feature.enabled?(:code_suggestion_events_in_click_house)
+      Gitlab::ClickHouse.globally_enabled_for_analytics?
     end
 
     def process_next_batch

@@ -17,19 +17,6 @@ RSpec.describe ClickHouse::CodeSuggestionEventsCronWorker, feature_category: :va
     end
   end
 
-  context 'when code_suggestion_events_in_click_house feature flag is disabled' do
-    before do
-      stub_application_setting(use_clickhouse_for_analytics: true)
-      stub_feature_flags(code_suggestion_events_in_click_house: false)
-    end
-
-    it 'does nothing' do
-      expect(Gitlab::Metrics::RuntimeLimiter).not_to receive(:new)
-
-      job.perform
-    end
-  end
-
   context 'when ClickHouse is enabled', :click_house, :clean_gitlab_redis_shared_state do
     let(:connection) { ClickHouse::Connection.new(:main) }
 
