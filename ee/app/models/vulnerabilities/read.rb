@@ -5,8 +5,11 @@ module Vulnerabilities
     include VulnerabilityScopes
     include EachBatch
     include UnnestedInFilters::Dsl
+    include FromUnion
 
     declarative_enum DismissalReasonEnum
+
+    SEVERITY_COUNT_LIMIT = 1001
 
     self.table_name = "vulnerability_reads"
     self.primary_key = :vulnerability_id
@@ -106,6 +109,30 @@ module Vulnerabilities
 
     def self.all_vulnerable_traversal_ids_for(group)
       by_group(group).unarchived.loose_index_scan(column: :traversal_ids)
+    end
+
+    def self.count_by_severity
+      grouped_by_severity.count
+    end
+
+    def self.capped_count_by_severity
+      # Return early when called by `Vulnerabilities::Read.none`.
+      return {} if current_scope.is_a?(ActiveRecord::NullRelation)
+
+      # Handles case when called directly `Vulnerabilities::Read.capped_count_by_severity`.
+      if current_scope.nil?
+        severities_to_iterate = severities.keys
+        local_scope = self
+      else
+        severities_to_iterate = Array(current_scope.where_values_hash['severity'].presence || severities.keys)
+        local_scope = current_scope.unscope(where: :severity)
+      end
+
+      array_severities_limit = severities_to_iterate.map do |severity|
+        local_scope.with_severities(severity).select(:id, :severity).limit(SEVERITY_COUNT_LIMIT)
+      end
+
+      unscoped.from_union(array_severities_limit).count_by_severity
     end
 
     def self.order_by(method)
