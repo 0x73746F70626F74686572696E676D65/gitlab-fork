@@ -6,104 +6,42 @@ import ListComponent from 'ee/security_orchestration/components/policies/list_co
 import ListComponentScope from 'ee/security_orchestration/components/policies/list_component_scope.vue';
 import DrawerWrapper from 'ee/security_orchestration/components/policy_drawer/drawer_wrapper.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
-import projectScanExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/project_scan_execution_policies.query.graphql';
-import groupScanExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/group_scan_execution_policies.query.graphql';
-import projectScanResultPoliciesQuery from 'ee/security_orchestration/graphql/queries/project_scan_result_policies.query.graphql';
-import groupScanResultPoliciesQuery from 'ee/security_orchestration/graphql/queries/group_scan_result_policies.query.graphql';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
-import projectPipelineExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/project_pipeline_execution_policies.query.graphql';
-import groupPipelineExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/group_pipeline_execution_policies.query.graphql';
 
 import {
   POLICY_SOURCE_OPTIONS,
   POLICY_TYPE_FILTER_OPTIONS,
   PIPELINE_EXECUTION_FILTER_OPTION,
 } from 'ee/security_orchestration/components/policies/constants';
-import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import waitForPromises from 'helpers/wait_for_promises';
 import { trimText } from 'helpers/text_helper';
-import {
-  projectScanExecutionPolicies,
-  groupScanExecutionPolicies,
-  projectScanResultPolicies,
-  groupScanResultPolicies,
-  groupPipelineResultPolicies,
-  projectPipelineResultPolicies,
-  mockLinkedSppItemsResponse,
-} from '../../mocks/mock_apollo';
-import {
-  mockGroupScanExecutionPolicy,
-  mockScanExecutionPoliciesResponse,
-} from '../../mocks/mock_scan_execution_policy_data';
-import {
-  mockScanResultPoliciesResponse,
-  mockGroupScanResultPolicy,
-  mockProjectScanResultPolicy,
-} from '../../mocks/mock_scan_result_policy_data';
 import { mockPipelineExecutionPoliciesResponse } from '../../mocks/mock_pipeline_execution_policy_data';
+import { mockScanExecutionPoliciesResponse } from '../../mocks/mock_scan_execution_policy_data';
+import { mockScanResultPoliciesResponse } from '../../mocks/mock_scan_result_policy_data';
 
 Vue.use(VueApollo);
 
 const namespacePath = 'path/to/project/or/group';
-const projectScanExecutionPoliciesSpy = projectScanExecutionPolicies(
-  mockScanExecutionPoliciesResponse,
-);
-const groupScanExecutionPoliciesSpy = groupScanExecutionPolicies(mockScanExecutionPoliciesResponse);
-const projectScanResultPoliciesSpy = projectScanResultPolicies(mockScanResultPoliciesResponse);
-const groupScanResultPoliciesSpy = groupScanResultPolicies(mockScanResultPoliciesResponse);
-const projectPipelineExecutionPoliciesSpy = projectPipelineResultPolicies(
-  mockPipelineExecutionPoliciesResponse,
-);
-const groupPipelineExecutionPoliciesSpy = groupPipelineResultPolicies(
-  mockPipelineExecutionPoliciesResponse,
-);
-
-const linkedSppItemsResponseSpy = mockLinkedSppItemsResponse();
-const defaultRequestHandlers = {
-  projectScanExecutionPolicies: projectScanExecutionPoliciesSpy,
-  groupScanExecutionPolicies: groupScanExecutionPoliciesSpy,
-  projectScanResultPolicies: projectScanResultPoliciesSpy,
-  groupScanResultPolicies: groupScanResultPoliciesSpy,
-  projectPipelineExecutionPolicies: projectPipelineExecutionPoliciesSpy,
-  groupPipelineExecutionPolicies: groupPipelineExecutionPoliciesSpy,
-  linkedSppItemsResponse: linkedSppItemsResponseSpy,
-};
 
 describe('List component', () => {
   let wrapper;
-  let requestHandlers;
 
-  const factory = (mountFn = mountExtended) => ({ handlers = {}, provide = {} } = {}) => {
-    requestHandlers = {
-      ...defaultRequestHandlers,
-      ...handlers,
-    };
-
+  const factory = (mountFn = mountExtended) => ({ props = {}, provide = {} } = {}) => {
     wrapper = mountFn(ListComponent, {
       propsData: {
-        documentationPath: 'documentation_path',
+        pipelineExecutionPolicies: mockPipelineExecutionPoliciesResponse,
+        scanExecutionPolicies: mockScanExecutionPoliciesResponse,
+        scanResultPolicies: mockScanResultPoliciesResponse,
+        ...props,
       },
       provide: {
         customCiToggleEnabled: false,
-        documentationPath: 'path/to/docs',
+        disableScanPolicyUpdate: false,
         namespacePath,
         namespaceType: NAMESPACE_TYPES.PROJECT,
-        newPolicyPath: `${namespacePath}/-/security/policies/new`,
-        disableScanPolicyUpdate: false,
         ...provide,
       },
-      apolloProvider: createMockApollo([
-        [projectScanExecutionPoliciesQuery, requestHandlers.projectScanExecutionPolicies],
-        [groupScanExecutionPoliciesQuery, requestHandlers.groupScanExecutionPolicies],
-        [projectScanResultPoliciesQuery, requestHandlers.projectScanResultPolicies],
-        [groupScanResultPoliciesQuery, requestHandlers.groupScanResultPolicies],
-        [getSppLinkedProjectsNamespaces, requestHandlers.linkedSppItemsResponse],
-        [projectPipelineExecutionPoliciesQuery, requestHandlers.projectPipelineExecutionPolicies],
-        [groupPipelineExecutionPoliciesQuery, requestHandlers.groupPipelineExecutionPolicies],
-      ]),
       stubs: {
         DrawerWrapper: stubComponent(DrawerWrapper, {
           props: {
@@ -144,26 +82,8 @@ describe('List component', () => {
       expect(editorDrawer.props('open')).toBe(false);
     });
 
-    it('fetches policies', () => {
-      mountShallowWrapper();
-
-      expect(requestHandlers.projectScanExecutionPolicies).toHaveBeenCalledWith({
-        fullPath: namespacePath,
-        relationship: POLICY_SOURCE_OPTIONS.ALL.value,
-      });
-      expect(requestHandlers.groupScanExecutionPolicies).not.toHaveBeenCalled();
-      expect(requestHandlers.projectScanResultPolicies).toHaveBeenCalledWith({
-        fullPath: namespacePath,
-        relationship: POLICY_SOURCE_OPTIONS.ALL.value,
-      });
-      expect(requestHandlers.groupScanResultPolicies).not.toHaveBeenCalled();
-
-      expect(requestHandlers.groupPipelineExecutionPolicies).not.toHaveBeenCalled();
-      expect(requestHandlers.projectPipelineExecutionPolicies).not.toHaveBeenCalled();
-    });
-
     it("sets table's loading state", () => {
-      mountShallowWrapper({});
+      mountShallowWrapper({ props: { isLoadingPolicies: true } });
 
       expect(findPoliciesTable().attributes('busy')).toBe('true');
     });
@@ -172,9 +92,8 @@ describe('List component', () => {
   describe('given policies have been fetched', () => {
     let rows;
 
-    beforeEach(async () => {
+    beforeEach(() => {
       mountWrapper();
-      await waitForPromises();
       rows = wrapper.findAll('tr');
     });
 
@@ -212,65 +131,41 @@ describe('List component', () => {
       });
     });
 
-    it('updates url when type filter is selected', async () => {
+    it('updates url when type filter is selected', () => {
       findPolicyTypeFilter().vm.$emit('input', POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value);
-      await waitForPromises();
-
       expect(urlUtils.updateHistory).toHaveBeenCalledWith({
         title: 'Test title',
         url: `http://test.host/?type=${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value.toLowerCase()}`,
         replace: true,
       });
     });
-
-    it('does emit `update-policy-list` and refetch scan execution policies on `shouldUpdatePolicyList` change to `true`', async () => {
-      expect(projectScanExecutionPoliciesSpy).toHaveBeenCalledTimes(1);
-      expect(wrapper.emitted('update-policy-list')).toBeUndefined();
-      wrapper.setProps({ shouldUpdatePolicyList: true });
-      await nextTick();
-      expect(wrapper.emitted('update-policy-list')).toStrictEqual([[{}]]);
-      expect(projectScanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
-    });
-
-    it('does not emit `update-policy-list` or refetch scan execution policies on `shouldUpdatePolicyList` change to `false`', async () => {
-      wrapper.setProps({ shouldUpdatePolicyList: true });
-      await nextTick();
-      expect(projectScanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
-      wrapper.setProps({ shouldUpdatePolicyList: false });
-      await nextTick();
-      expect(projectScanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
-    });
   });
 
-  describe('group-level policies', () => {
-    beforeEach(async () => {
-      mountShallowWrapper({
-        provide: {
-          namespacePath,
-          namespaceType: NAMESPACE_TYPES.GROUP,
-        },
-      });
-      await waitForPromises();
+  describe('selected policy', () => {
+    beforeEach(() => {
+      mountWrapper();
     });
 
-    it('does not fetch policies', () => {
-      expect(requestHandlers.projectScanExecutionPolicies).not.toHaveBeenCalled();
-      expect(requestHandlers.groupScanExecutionPolicies).toHaveBeenCalledWith({
-        fullPath: namespacePath,
-        relationship: POLICY_SOURCE_OPTIONS.ALL.value,
-      });
-      expect(requestHandlers.projectScanResultPolicies).not.toHaveBeenCalled();
-      expect(requestHandlers.groupScanResultPolicies).toHaveBeenCalledWith({
-        fullPath: namespacePath,
-        relationship: POLICY_SOURCE_OPTIONS.ALL.value,
-      });
+    it('updates the selected policy when `shouldUpdatePolicyList` changes to `true`', async () => {
+      findPoliciesTable().vm.$emit('row-selected', [mockScanExecutionPoliciesResponse[0]]);
+      await nextTick();
+      expect(findPolicyDrawer().props('policy')).toEqual(mockScanExecutionPoliciesResponse[0]);
+      wrapper.setProps({ shouldUpdatePolicyList: true });
+      await nextTick();
+      expect(findPolicyDrawer().props('policy')).toEqual(null);
+    });
+
+    it('does not update the selected policy when `shouldUpdatePolicyList` changes to `false`', async () => {
+      expect(findPolicyDrawer().props('policy')).toEqual(null);
+      wrapper.setProps({ shouldUpdatePolicyList: false });
+      await nextTick();
+      expect(findPolicyDrawer().props('policy')).toEqual(null);
     });
   });
 
   describe('status column', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       mountWrapper();
-      await waitForPromises();
     });
 
     it('renders a checkmark icon for enabled policies', () => {
@@ -293,44 +188,20 @@ describe('List component', () => {
   });
 
   describe('source column', () => {
-    beforeEach(async () => {
-      mountWrapper();
-      await waitForPromises();
-    });
-
     it('renders when the policy is not inherited', () => {
+      mountWrapper();
       expect(findPolicySourceCells().at(0).text()).toBe('This project');
     });
 
     it('renders when the policy is inherited', () => {
+      mountWrapper();
       expect(trimText(findPolicySourceCells().at(1).text())).toBe(
         'Inherited from parent-group-name',
       );
     });
 
-    it('renders inherited policy without namespace', async () => {
-      mountWrapper({
-        provide: {
-          namespaceType: NAMESPACE_TYPES.PROJECT,
-        },
-        handlers: {
-          groupScanResultPolicies: projectScanResultPolicies([
-            {
-              ...mockProjectScanResultPolicy,
-              ...{
-                source: {
-                  __typename: 'GroupSecurityPolicySource',
-                  inherited: true,
-                  namespace: undefined,
-                },
-              },
-            },
-          ]),
-        },
-      });
-
-      await waitForPromises();
-
+    it('renders inherited policy without namespace', () => {
+      mountWrapper({ provide: { namespaceType: NAMESPACE_TYPES.PROJECT } });
       expect(trimText(findPolicySourceCells().at(1).text())).toBe(
         'Inherited from parent-group-name',
       );
@@ -343,7 +214,7 @@ describe('List component', () => {
     ${'scan result'}    | ${mockScanResultPoliciesResponse[0]}    | ${POLICY_TYPE_COMPONENT_OPTIONS.approval.value}
   `('given there is a $description policy selected', ({ policy, policyType }) => {
     beforeEach(() => {
-      mountShallowWrapper();
+      mountWrapper();
       findPoliciesTable().vm.$emit('row-selected', [policy]);
     });
 
@@ -362,7 +233,7 @@ describe('List component', () => {
     it('should close drawer when new security project is selected', async () => {
       const scanExecutionPolicy = mockScanExecutionPoliciesResponse[0];
 
-      mountShallowWrapper();
+      mountWrapper();
       findPoliciesTable().vm.$emit('row-selected', [scanExecutionPolicy]);
       await nextTick();
 
@@ -378,19 +249,14 @@ describe('List component', () => {
   });
 
   describe('inherited filter', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       mountWrapper({
-        handlers: {
-          projectScanExecutionPolicies: projectScanExecutionPolicies([
-            mockGroupScanExecutionPolicy,
-          ]),
-          projectScanResultPolicies: projectScanResultPolicies([mockGroupScanResultPolicy]),
+        props: {
+          scanExecutionPolicies: [mockScanExecutionPoliciesResponse[1]],
+          scanResultPolicies: [mockScanResultPoliciesResponse[1]],
         },
       });
-      await waitForPromises();
-
       findPolicySourceFilter().vm.$emit('input', POLICY_SOURCE_OPTIONS.INHERITED.value);
-      await waitForPromises();
     });
 
     it('displays inherited policies only', () => {
@@ -426,138 +292,62 @@ describe('List component', () => {
 
   describe('selected url parameters', () => {
     it.each`
-      value                                              | expectedType                                       | expectedSource
-      ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}            | ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}            | ${POLICY_SOURCE_OPTIONS.ALL.value}
-      ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value} | ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value} | ${POLICY_SOURCE_OPTIONS.ALL.value}
-      ${POLICY_SOURCE_OPTIONS.DIRECT.value}              | ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}            | ${POLICY_SOURCE_OPTIONS.DIRECT.value}
-      ${POLICY_SOURCE_OPTIONS.INHERITED.value}           | ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}            | ${POLICY_SOURCE_OPTIONS.INHERITED.value}
-    `(
-      'should select filters when parameters are in url',
-      ({ value, expectedType, expectedSource }) => {
-        jest.spyOn(urlUtils, 'getParameterByName').mockReturnValue(value);
+      value
+      ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}
+      ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value}
+    `('should select type filter value $value parameters are in url', ({ value }) => {
+      jest.spyOn(urlUtils, 'getParameterByName').mockReturnValue(value);
+      mountWrapper();
+      expect(findPolicySourceFilter().props('value')).toBe(POLICY_SOURCE_OPTIONS.ALL.value);
+      expect(findPolicyTypeFilter().props('value')).toBe(value);
+    });
 
-        mountWrapper();
-
-        expect(findPolicySourceFilter().props('value')).toBe(expectedSource);
-        expect(findPolicyTypeFilter().props('value')).toBe(expectedType);
-        expect(findPolicyScopeCells()).toHaveLength(0);
-      },
-    );
+    it.each`
+      value
+      ${POLICY_SOURCE_OPTIONS.DIRECT.value}
+      ${POLICY_SOURCE_OPTIONS.INHERITED.value}
+    `('should select source filter value $value when parameters are in url', ({ value }) => {
+      mountWrapper({ props: { selectedPolicySource: value } });
+      expect(findPolicySourceFilter().props('value')).toBe(value);
+      expect(findPolicyTypeFilter().props('value')).toBe(POLICY_TYPE_FILTER_OPTIONS.ALL.value);
+    });
   });
 
   describe('scope column', () => {
-    const SCOPE_HEADER_FIELD = {
-      key: 'scope',
-      label: 'Scope',
-      sortable: true,
-      tdAttr: { 'data-testid': 'policy-scope-cell' },
-    };
-
-    it('renders scope column on group level', async () => {
-      mountShallowWrapper({
-        provide: {
-          namespaceType: NAMESPACE_TYPES.GROUP,
-        },
-      });
-
-      await waitForPromises();
-
-      expect(findPoliciesTable().props('fields')[4]).toEqual(SCOPE_HEADER_FIELD);
-    });
-
     it.each([NAMESPACE_TYPES.GROUP, NAMESPACE_TYPES.PROJECT])(
-      'renders policy scope column inside table',
-      async (namespaceType) => {
-        mountWrapper({
-          provide: {
-            namespaceType,
-          },
-        });
-
-        await waitForPromises();
-
+      'renders policy scope column inside table on %s level',
+      (namespaceType) => {
+        mountWrapper({ provide: { namespaceType } });
         expect(findPolicyScopeCells()).toHaveLength(4);
         expect(findListComponentScope().exists()).toBe(true);
       },
     );
   });
 
-  describe('invalid policies', () => {
-    it('emits that a policy is invalid when there are deprecated properties in scan result policies that are not "type: scan_result_policy"', async () => {
-      mountWrapper({
-        handlers: {
-          projectScanResultPolicies: projectScanResultPolicies([
-            { ...mockProjectScanResultPolicy, deprecatedProperties: ['test', 'test1'] },
-          ]),
-        },
-      });
-      await waitForPromises();
-      expect(wrapper.emitted('has-invalid-policies')).toEqual([[true]]);
-    });
-
-    it('does not emit that a policy is invalid when there are deprecated properties in scan result policies that are "type: scan_result_policy"', async () => {
-      mountWrapper({
-        handlers: {
-          projectScanResultPolicies: projectScanResultPolicies([
-            { ...mockProjectScanResultPolicy, deprecatedProperties: ['scan_result_policy'] },
-          ]),
-        },
-      });
-      await waitForPromises();
-      expect(wrapper.emitted('has-invalid-policies')).toEqual(undefined);
-    });
-
-    it('does not emit that a policy is invalid when there are no deprecated properties', async () => {
-      mountWrapper({
-        handlers: {
-          projectScanResultPolicies: projectScanResultPolicies([
-            { ...mockProjectScanResultPolicy, deprecatedProperties: [] },
-          ]),
-        },
-      });
-      await waitForPromises();
-      expect(wrapper.emitted('has-invalid-policies')).toEqual(undefined);
-    });
-  });
-
   describe('breaking changes icon', () => {
-    it('does not render breaking changes icon when flag is disabled', async () => {
+    it('does not render breaking changes icon when flag is disabled', () => {
       mountWrapper();
-      await waitForPromises();
-
       const icons = findPolicyStatusCells().at(0).findAll('svg');
-
       expect(icons.length).toBe(1);
       expect(icons.at(0).props('name')).toBe('check-circle-filled');
     });
 
-    it('does not render breaking changes icon when there are no deprecated properties', async () => {
+    it('does not render breaking changes icon when there are no deprecated properties', () => {
       mountWrapper();
-
-      await waitForPromises();
-
       const icons = findPolicyStatusCells().at(0).findAll('svg');
-
       expect(icons.length).toBe(1);
       expect(icons.at(0).props('name')).toBe('check-circle-filled');
     });
 
-    it('renders breaking changes icon when there are deprecated properties', async () => {
+    it('renders breaking changes icon when there are deprecated properties', () => {
       mountWrapper({
-        handlers: {
-          projectScanResultPolicies: projectScanResultPolicies([
-            {
-              ...mockProjectScanResultPolicy,
-              deprecatedProperties: ['test', 'test1'],
-            },
-          ]),
+        props: {
+          scanResultPolicies: [
+            { ...mockScanResultPoliciesResponse[0], deprecatedProperties: ['test', 'test1'] },
+          ],
         },
       });
-
-      await waitForPromises();
-
       const icon = findPolicyStatusCells().at(2).find('svg');
-
       expect(icon.props('name')).toBe('warning');
     });
   });
@@ -568,7 +358,7 @@ describe('List component', () => {
     });
 
     it('updates url when type filter is selected', () => {
-      mountShallowWrapper({
+      mountWrapper({
         provide: {
           customCiToggleEnabled: true,
           glFeatures: {
@@ -586,39 +376,6 @@ describe('List component', () => {
         title: 'Test title',
         url: `http://test.host/?type=${PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value.toLowerCase()}`,
         replace: true,
-      });
-    });
-
-    it('fetches pipeline execution policies on project level', () => {
-      mountShallowWrapper({
-        provide: {
-          customCiToggleEnabled: true,
-          glFeatures: {
-            pipelineExecutionPolicyType: true,
-          },
-        },
-      });
-
-      expect(requestHandlers.projectPipelineExecutionPolicies).toHaveBeenCalledWith({
-        fullPath: namespacePath,
-        relationship: POLICY_SOURCE_OPTIONS.ALL.value,
-      });
-    });
-
-    it('fetches pipeline execution policies on group level', () => {
-      mountShallowWrapper({
-        provide: {
-          namespaceType: NAMESPACE_TYPES.GROUP,
-          customCiToggleEnabled: true,
-          glFeatures: {
-            pipelineExecutionPolicyType: true,
-          },
-        },
-      });
-
-      expect(requestHandlers.groupPipelineExecutionPolicies).toHaveBeenCalledWith({
-        fullPath: namespacePath,
-        relationship: POLICY_SOURCE_OPTIONS.ALL.value,
       });
     });
   });
