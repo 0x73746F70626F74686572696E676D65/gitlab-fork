@@ -1,7 +1,6 @@
 <script>
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { getDataZoomOption } from '~/analytics/shared/utils';
-import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
 import { truncateWidth } from '~/lib/utils/text_utility';
 
 import {
@@ -35,20 +34,15 @@ export default {
     return {
       width: 0,
       height: CHART_HEIGHT,
-      svgs: {},
     };
   },
   computed: {
-    handleIcon() {
-      return this.svgs['scroll-handle'] ? { handleIcon: this.svgs['scroll-handle'] } : {};
-    },
     dataZoomOption() {
       const dataZoom = [
         {
           type: 'slider',
           bottom: 10,
           start: 0,
-          ...this.handleIcon,
         },
       ];
 
@@ -77,24 +71,6 @@ export default {
       return [{ name: 'full', data: this.chartData }];
     },
   },
-  methods: {
-    setSvg(name) {
-      return getSvgIconPathContent(name)
-        .then((path) => {
-          if (path) {
-            this.$set(this.svgs, name, `path://${path}`);
-          }
-        })
-        .catch((e) => {
-          // eslint-disable-next-line no-console, @gitlab/require-i18n-strings
-          console.error('SVG could not be rendered correctly: ', e);
-        });
-    },
-    onChartCreated(columnChart) {
-      this.setSvg('scroll-handle');
-      columnChart.on('datazoom', this.updateAxisNamePadding);
-    },
-  },
 };
 </script>
 
@@ -110,6 +86,5 @@ export default {
     :y-axis-title="yAxisTitle"
     x-axis-type="category"
     :option="chartOptions"
-    @created="onChartCreated"
   />
 </template>
