@@ -66,6 +66,12 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_
     end
 
     it 'does not create the group', :aggregate_failures do
+      expect(Gitlab::AppLogger).to receive(:info).with({
+        message: 'User has reached group creation limit',
+        reason: 'Identity verification required',
+        class: 'Groups::CreateService',
+        username: user.username
+      })
       expect { response }.not_to change { Group.count }
       expect(response).to be_error
       expect(response[:group].errors[:identity_verification].first)
