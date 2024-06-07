@@ -9,18 +9,18 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
   >
     Incident details
   </h2>
-  <sidebartodowidget-stub
+  <sidebar-todo-widget-stub
     class="gl-mt-3"
     fullpath="gitlab-org/test-subgroup/gitlab-test"
     issuableid="gid://gitlab/Issue/436"
     issuableiid="27"
     issuabletype="issue"
   />
-  <boardsidebartitle-stub
+  <board-sidebar-title-stub
     activeitem="[object Object]"
     data-testid="sidebar-title"
   />
-  <sidebarassigneeswidget-stub
+  <sidebar-assignees-widget-stub
     editable="true"
     fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
@@ -28,7 +28,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
     issuabletype="issue"
   />
   <div>
-    <sidebardropdownwidget-stub
+    <sidebar-dropdown-widget-stub
       attrworkspacepath="gitlab-org/test-subgroup/gitlab-test"
       data-testid="sidebar-milestones"
       iid="27"
@@ -38,21 +38,21 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
       workspacepath="gitlab-org/test-subgroup/gitlab-test"
     />
   </div>
-  <sidebartimetracker-stub
+  <sidebar-time-tracker-stub
     canaddtimeentries="true"
     cansettimeestimate="true"
     fullpath="gitlab-org/test-subgroup/gitlab-test"
     issuableid="gid://gitlab/Issue/436"
     issuableiid="27"
   />
-  <sidebardatewidget-stub
+  <sidebar-date-widget-stub
     data-testid="sidebar-due-date"
     datetype="dueDate"
     fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuabletype="issue"
   />
-  <sidebarlabelswidget-stub
+  <sidebar-labels-widget-stub
     allowmultiselect="true"
     attrworkspacepath="gitlab-org/test-subgroup/gitlab-test"
     class="block labels"
@@ -72,415 +72,53 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
     workspacetype="project"
   >
     None
-  </sidebarlabelswidget-stub>
-  <div
-    class="block"
-    data-testid="severity-block-container"
-  >
-    <div>
-      <div
-        class="gl-align-items-center gl-display-flex gl-font-bold gl-leading-20 gl-text-gray-900"
-      >
-        <span
-          class="hide-collapsed"
-          data-testid="title"
-        >
-          Severity
-        </span>
-        <button
-          aria-keyshortcuts=""
-          aria-label=""
-          class="-gl-mr-2 btn btn-default btn-default-tertiary btn-sm gl-button gl-ml-auto gl-text-gray-900! hide-collapsed shortcut-sidebar-dropdown-toggle"
-          data-testid="edit-button"
-          id="reference-0"
-          title=""
-          type="button"
-        >
-          <span
-            class="gl-button-text"
-          >
-            Edit
-          </span>
-        </button>
-      </div>
-      <div
-        data-testid="collapsed-content"
-      >
-        <div
-          class="sidebar-collapsed-icon"
-        >
-          <div
-            class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
-          >
-            <svg
-              aria-hidden="true"
-              class="gl-fill-current gl-icon icon-unknown s14"
-              data-testid="severity-unknown-icon"
-              role="img"
-            >
-              <use
-                href="file-mock#severity-unknown"
-              />
-            </svg>
-          </div>
-          <div
-            class="gl-tooltip"
-          >
-            Severity: Unknown
-          </div>
-        </div>
-        <div
-          class="hide-collapsed"
-          data-testid="incident-severity"
-        >
-          <div
-            class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
-          >
-            <svg
-              aria-hidden="true"
-              class="gl-fill-current gl-flex-shrink-0 gl-icon gl-mr-3 icon-unknown s12"
-              data-testid="severity-unknown-icon"
-              role="img"
-            >
-              <use
-                href="file-mock#severity-unknown"
-              />
-            </svg>
-            <span
-              class="gl-min-w-0 gl-text-truncate"
-            >
-              Unknown
-            </span>
-          </div>
-        </div>
-      </div>
-      <div
-        class="gl-mt-3"
-        data-testid="expanded-content"
-        style="display: none;"
-      >
-        <div
-          class="gl-display-block! gl-mt-3 gl-new-dropdown"
-        >
-          <button
-            aria-controls="reference-2"
-            aria-expanded="false"
-            aria-haspopup="listbox"
-            aria-labelledby="reference-1"
-            class="btn btn-block btn-default btn-md gl-button gl-new-dropdown-toggle"
-            data-testid="base-dropdown-toggle"
-            id="reference-1"
-            type="button"
-          >
-            <span
-              class="gl-button-text gl-w-full"
-            >
-              <span
-                class="gl-new-dropdown-button-text"
-              >
-                Unknown
-              </span>
-              <svg
-                aria-hidden="true"
-                class="gl-button-icon gl-fill-current gl-icon gl-new-dropdown-chevron s16"
-                data-testid="chevron-down-icon"
-                role="img"
-              >
-                <use
-                  href="file-mock#chevron-down"
-                />
-              </svg>
-            </span>
-          </button>
-          <div
-            class="gl-new-dropdown-panel gl-w-31!"
-            data-testid="base-dropdown-menu"
-            id="reference-2"
-          >
-            <div
-              class="gl-new-dropdown-inner"
-            >
-              <div
-                class="gl-align-items-center gl-border-b-1 gl-border-b-gray-200 gl-border-b-solid gl-display-flex gl-min-h-8 gl-p-4!"
-              >
-                <div
-                  class="gl-flex-grow-1 gl-font-sm gl-font-weight-bold gl-pr-2"
-                  data-testid="listbox-header-text"
-                  id="reference-3"
-                >
-                  Assign severity
-                </div>
-              </div>
-              <ul
-                aria-labelledby="reference-3"
-                class="gl-new-dropdown-contents gl-new-dropdown-contents-with-scrim-overlay"
-                id="reference-4"
-                role="listbox"
-                tabindex="0"
-              >
-                <li
-                  aria-hidden="true"
-                  class="top-scrim-wrapper"
-                  data-testid="top-scrim"
-                >
-                  <div
-                    class="top-scrim top-scrim-dark"
-                  />
-                </li>
-                <li
-                  aria-hidden="true"
-                />
-                <li
-                  class="gl-new-dropdown-item"
-                  data-testid="listbox-item-CRITICAL"
-                  role="option"
-                  tabindex="-1"
-                >
-                  <span
-                    class="gl-new-dropdown-item-content"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="gl-align-self-start gl-fill-current gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
-                      data-testid="dropdown-item-checkbox"
-                      role="img"
-                    >
-                      <use
-                        href="file-mock#mobile-issue-close"
-                      />
-                    </svg>
-                    <span
-                      class="gl-new-dropdown-item-text-wrapper"
-                    >
-                      <div
-                        class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="gl-fill-current gl-flex-shrink-0 gl-icon gl-mr-3 icon-critical s12"
-                          data-testid="severity-critical-icon"
-                          role="img"
-                        >
-                          <use
-                            href="file-mock#severity-critical"
-                          />
-                        </svg>
-                        <span
-                          class="gl-min-w-0 gl-text-truncate"
-                        >
-                          Critical - S1
-                        </span>
-                      </div>
-                    </span>
-                  </span>
-                </li>
-                <li
-                  class="gl-new-dropdown-item"
-                  data-testid="listbox-item-HIGH"
-                  role="option"
-                  tabindex="-1"
-                >
-                  <span
-                    class="gl-new-dropdown-item-content"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="gl-align-self-start gl-fill-current gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
-                      data-testid="dropdown-item-checkbox"
-                      role="img"
-                    >
-                      <use
-                        href="file-mock#mobile-issue-close"
-                      />
-                    </svg>
-                    <span
-                      class="gl-new-dropdown-item-text-wrapper"
-                    >
-                      <div
-                        class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="gl-fill-current gl-flex-shrink-0 gl-icon gl-mr-3 icon-high s12"
-                          data-testid="severity-high-icon"
-                          role="img"
-                        >
-                          <use
-                            href="file-mock#severity-high"
-                          />
-                        </svg>
-                        <span
-                          class="gl-min-w-0 gl-text-truncate"
-                        >
-                          High - S2
-                        </span>
-                      </div>
-                    </span>
-                  </span>
-                </li>
-                <li
-                  class="gl-new-dropdown-item"
-                  data-testid="listbox-item-MEDIUM"
-                  role="option"
-                  tabindex="-1"
-                >
-                  <span
-                    class="gl-new-dropdown-item-content"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="gl-align-self-start gl-fill-current gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
-                      data-testid="dropdown-item-checkbox"
-                      role="img"
-                    >
-                      <use
-                        href="file-mock#mobile-issue-close"
-                      />
-                    </svg>
-                    <span
-                      class="gl-new-dropdown-item-text-wrapper"
-                    >
-                      <div
-                        class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="gl-fill-current gl-flex-shrink-0 gl-icon gl-mr-3 icon-medium s12"
-                          data-testid="severity-medium-icon"
-                          role="img"
-                        >
-                          <use
-                            href="file-mock#severity-medium"
-                          />
-                        </svg>
-                        <span
-                          class="gl-min-w-0 gl-text-truncate"
-                        >
-                          Medium - S3
-                        </span>
-                      </div>
-                    </span>
-                  </span>
-                </li>
-                <li
-                  class="gl-new-dropdown-item"
-                  data-testid="listbox-item-LOW"
-                  role="option"
-                  tabindex="-1"
-                >
-                  <span
-                    class="gl-new-dropdown-item-content"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="gl-align-self-start gl-fill-current gl-icon gl-mt-3 gl-new-dropdown-item-check-icon gl-visibility-hidden s16"
-                      data-testid="dropdown-item-checkbox"
-                      role="img"
-                    >
-                      <use
-                        href="file-mock#mobile-issue-close"
-                      />
-                    </svg>
-                    <span
-                      class="gl-new-dropdown-item-text-wrapper"
-                    >
-                      <div
-                        class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="gl-fill-current gl-flex-shrink-0 gl-icon gl-mr-3 icon-low s12"
-                          data-testid="severity-low-icon"
-                          role="img"
-                        >
-                          <use
-                            href="file-mock#severity-low"
-                          />
-                        </svg>
-                        <span
-                          class="gl-min-w-0 gl-text-truncate"
-                        >
-                          Low - S4
-                        </span>
-                      </div>
-                    </span>
-                  </span>
-                </li>
-                <li
-                  aria-selected="true"
-                  class="gl-new-dropdown-item"
-                  data-testid="listbox-item-UNKNOWN"
-                  role="option"
-                  tabindex="-1"
-                >
-                  <span
-                    class="gl-new-dropdown-item-content"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="gl-align-self-start gl-fill-current gl-icon gl-mt-3 gl-new-dropdown-item-check-icon s16"
-                      data-testid="dropdown-item-checkbox"
-                      role="img"
-                    >
-                      <use
-                        href="file-mock#mobile-issue-close"
-                      />
-                    </svg>
-                    <span
-                      class="gl-new-dropdown-item-text-wrapper"
-                    >
-                      <div
-                        class="gl-align-items-center gl-display-inline-flex gl-justify-content-between gl-max-w-full incident-severity"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="gl-fill-current gl-flex-shrink-0 gl-icon gl-mr-3 icon-unknown s12"
-                          data-testid="severity-unknown-icon"
-                          role="img"
-                        >
-                          <use
-                            href="file-mock#severity-unknown"
-                          />
-                        </svg>
-                        <span
-                          class="gl-min-w-0 gl-text-truncate"
-                        >
-                          Unknown
-                        </span>
-                      </div>
-                    </span>
-                  </span>
-                </li>
-                <li
-                  aria-hidden="true"
-                />
-                <li
-                  aria-hidden="true"
-                  class="bottom-scrim-wrapper"
-                  data-testid="bottom-scrim"
-                >
-                  <div
-                    class="bottom-scrim"
-                  />
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <sidebarhealthstatuswidget-stub
-    full-path="gitlab-org/test-subgroup/gitlab-test"
+  </sidebar-labels-widget-stub>
+  <sidebar-severity-widget-stub
     iid="27"
-    issuable-type="issue"
+    initialseverity="UNKNOWN"
+    issuabletype="incident"
+    projectpath="gitlab-org/test-subgroup/gitlab-test"
   />
-  <sidebarconfidentialitywidget-stub
+  <sidebar-editable-item-stub
+    buttonid=""
+    class="block health-status"
+    editarialabel=""
+    editkeyshortcuts=""
+    edittooltip=""
+    title="Health status"
+    tracking="[object Object]"
+  >
+    <div
+      class="sidebar-collapsed-icon"
+    >
+      <gl-icon-stub
+        name="status-health"
+        size="16"
+        variant="current"
+      />
+      <p
+        class="collapse-truncated-title gl-font-sm gl-pt-2 gl-px-3"
+      >
+        None
+      </p>
+    </div>
+    <div
+      class="hide-collapsed"
+    >
+      <span
+        class="gl-text-secondary"
+      >
+        None
+      </span>
+    </div>
+    <health-status-dropdown-stub />
+  </sidebar-editable-item-stub>
+  <sidebar-confidentiality-widget-stub
     fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuabletype="issue"
   />
-  <sidebarsubscriptionswidget-stub
+  <sidebar-subscriptions-widget-stub
     data-testid="sidebar-notifications"
     fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
@@ -498,25 +136,25 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
   >
     Issue details
   </h2>
-  <sidebartodowidget-stub
+  <sidebar-todo-widget-stub
     class="gl-mt-3"
     fullpath="gitlab-org/test-subgroup/gitlab-test"
     issuableid="gid://gitlab/Issue/436"
     issuableiid="27"
     issuabletype="issue"
   />
-  <boardsidebartitle-stub
+  <board-sidebar-title-stub
     activeitem="[object Object]"
     data-testid="sidebar-title"
   />
-  <sidebarassigneeswidget-stub
+  <sidebar-assignees-widget-stub
     editable="true"
     fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     initialassignees="[object Object],[object Object]"
     issuabletype="issue"
   />
-  <sidebardropdownwidget-stub
+  <sidebar-dropdown-widget-stub
     attrworkspacepath="gitlab-org/test-subgroup"
     data-testid="sidebar-epic"
     iid="27"
@@ -526,7 +164,7 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
     workspacepath="gitlab-org/test-subgroup/gitlab-test"
   />
   <div>
-    <sidebardropdownwidget-stub
+    <sidebar-dropdown-widget-stub
       attrworkspacepath="gitlab-org/test-subgroup/gitlab-test"
       data-testid="sidebar-milestones"
       iid="27"
@@ -535,31 +173,32 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
       issueid="gid://gitlab/Issue/436"
       workspacepath="gitlab-org/test-subgroup/gitlab-test"
     />
-    <sidebariterationwidget-stub
-      attr-workspace-path="gitlab-org/test-subgroup"
+    <sidebar-dropdown-widget-stub
+      attrworkspacepath="gitlab-org/test-subgroup"
       class="gl-mt-5"
       data-testid="iteration-edit"
       iid="27"
-      issuable-type="issue"
-      issue-id="gid://gitlab/Issue/436"
-      workspace-path="gitlab-org/test-subgroup/gitlab-test"
+      issuableattribute="iteration"
+      issuabletype="issue"
+      issueid="gid://gitlab/Issue/436"
+      workspacepath="gitlab-org/test-subgroup/gitlab-test"
     />
   </div>
-  <sidebartimetracker-stub
+  <sidebar-time-tracker-stub
     canaddtimeentries="true"
     cansettimeestimate="true"
     fullpath="gitlab-org/test-subgroup/gitlab-test"
     issuableid="gid://gitlab/Issue/436"
     issuableiid="27"
   />
-  <sidebardatewidget-stub
+  <sidebar-date-widget-stub
     data-testid="sidebar-due-date"
     datetype="dueDate"
     fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuabletype="issue"
   />
-  <sidebarlabelswidget-stub
+  <sidebar-labels-widget-stub
     allowmultiselect="true"
     attrworkspacepath="gitlab-org/test-subgroup/gitlab-test"
     class="block labels"
@@ -579,23 +218,101 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
     workspacetype="project"
   >
     None
-  </sidebarlabelswidget-stub>
-  <sidebarweightwidget-stub
-    full-path="gitlab-org/test-subgroup/gitlab-test"
-    iid="27"
-    issuable-type="issue"
-  />
-  <sidebarhealthstatuswidget-stub
-    full-path="gitlab-org/test-subgroup/gitlab-test"
-    iid="27"
-    issuable-type="issue"
-  />
-  <sidebarconfidentialitywidget-stub
+  </sidebar-labels-widget-stub>
+  <sidebar-editable-item-stub
+    buttonid=""
+    canedit="true"
+    class="block weight"
+    data-testid="sidebar-weight"
+    editarialabel=""
+    editkeyshortcuts=""
+    edittooltip=""
+    title="Weight"
+    tracking="[object Object]"
+  >
+    <div
+      class="gl-align-items-center gl-display-flex hide-collapsed"
+    >
+      <span
+        class="gl-text-gray-500"
+        data-testid="sidebar-weight-value"
+      >
+        None
+      </span>
+    </div>
+    <div
+      class="js-weight-collapsed-block sidebar-collapsed-icon"
+      title="Weight"
+    >
+      <gl-icon-stub
+        name="weight"
+        size="16"
+        variant="current"
+      />
+      <span
+        class="collapse-truncated-title gl-font-sm gl-pt-2 gl-px-3 js-weight-collapsed-weight-label"
+      >
+        None
+      </span>
+    </div>
+    <gl-form-stub>
+      <gl-form-group-stub
+        label="Weight"
+        label-for="weight-input"
+        label-sr-only=""
+        labeldescription=""
+        optionaltext="(optional)"
+      >
+        <gl-form-input-stub
+          id="reference-0"
+          min="0"
+          placeholder="Enter a number"
+          type="number"
+          value=""
+        />
+      </gl-form-group-stub>
+    </gl-form-stub>
+  </sidebar-editable-item-stub>
+  <sidebar-editable-item-stub
+    buttonid=""
+    class="block health-status"
+    editarialabel=""
+    editkeyshortcuts=""
+    edittooltip=""
+    title="Health status"
+    tracking="[object Object]"
+  >
+    <div
+      class="sidebar-collapsed-icon"
+    >
+      <gl-icon-stub
+        name="status-health"
+        size="16"
+        variant="current"
+      />
+      <p
+        class="collapse-truncated-title gl-font-sm gl-pt-2 gl-px-3"
+      >
+        None
+      </p>
+    </div>
+    <div
+      class="hide-collapsed"
+    >
+      <span
+        class="gl-text-secondary"
+      >
+        None
+      </span>
+    </div>
+    <health-status-dropdown-stub />
+  </sidebar-editable-item-stub>
+  <sidebar-confidentiality-widget-stub
     fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"
     issuabletype="issue"
   />
-  <sidebarsubscriptionswidget-stub
+  <sidebar-subscriptions-widget-stub
     data-testid="sidebar-notifications"
     fullpath="gitlab-org/test-subgroup/gitlab-test"
     iid="27"

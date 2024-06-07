@@ -66,6 +66,9 @@ export default {
           iid: this.iid,
         };
       },
+      skip() {
+        return !this.iid;
+      },
       update: (data) => data.workspace?.issuable,
       error(error) {
         createAlert({

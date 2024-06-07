@@ -71,6 +71,7 @@ export default {
     :issuable-type="issuableType"
     :workspace-path="workspacePath"
     :issue-id="issueId"
+    @attribute-updated="$emit('iteration-updated', $event)"
   >
     <template #value="{ attributeUrl, currentAttribute }">
       <p class="gl-text-gray-500 gl-font-size-sm gl-line-height-21 gl-my-1">
