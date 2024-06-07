@@ -7151,7 +7151,7 @@ msgstr ""
 msgid "Assigned %{reviewer_users_sentence} as %{reviewer_text}."
 msgstr ""
 
-msgid "Assigned Issues"
+msgid "Assigned issues"
 msgstr ""
 
 msgid "Assigned merge requests"
