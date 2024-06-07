@@ -1,25 +1,13 @@
 <script>
 import { intersection } from 'lodash';
 import { GlIcon, GlLink, GlLoadingIcon, GlSprintf, GlTable, GlTooltipDirective } from '@gitlab/ui';
-import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { createAlert } from '~/alert';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { getSecurityPolicyListUrl } from '~/editor/extensions/source_editor_security_policy_schema_ext';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DATE_ONLY_FORMAT } from '~/lib/utils/datetime_utility';
 import { getParameterByName, setUrlParams, updateHistory } from '~/lib/utils/url_utility';
-import {
-  extractTypeParameter,
-  extractSourceParameter,
-} from 'ee/security_orchestration/components/policies/utils';
-import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
-import projectScanExecutionPoliciesQuery from '../../graphql/queries/project_scan_execution_policies.query.graphql';
-import groupScanExecutionPoliciesQuery from '../../graphql/queries/group_scan_execution_policies.query.graphql';
-import projectScanResultPoliciesQuery from '../../graphql/queries/project_scan_result_policies.query.graphql';
-import groupScanResultPoliciesQuery from '../../graphql/queries/group_scan_result_policies.query.graphql';
-import projectPipelineExecutionPoliciesQuery from '../../graphql/queries/project_pipeline_execution_policies.query.graphql';
-import groupPipelineExecutionPoliciesQuery from '../../graphql/queries/group_pipeline_execution_policies.query.graphql';
+import { extractTypeParameter } from 'ee/security_orchestration/components/policies/utils';
 import { getPolicyType } from '../../utils';
 import DrawerWrapper from '../policy_drawer/drawer_wrapper.vue';
 import { isPolicyInherited, policyHasNamespace, isGroup, isProject } from '../utils';
@@ -34,31 +22,6 @@ import SourceFilter from './filters/source_filter.vue';
 import TypeFilter from './filters/type_filter.vue';
 import EmptyState from './empty_state.vue';
 import ListComponentScope from './list_component_scope.vue';
-
-const NAMESPACE_QUERY_DICT = {
-  scanExecution: {
-    [NAMESPACE_TYPES.PROJECT]: projectScanExecutionPoliciesQuery,
-    [NAMESPACE_TYPES.GROUP]: groupScanExecutionPoliciesQuery,
-  },
-  scanResult: {
-    [NAMESPACE_TYPES.PROJECT]: projectScanResultPoliciesQuery,
-    [NAMESPACE_TYPES.GROUP]: groupScanResultPoliciesQuery,
-  },
-  pipelineExecution: {
-    [NAMESPACE_TYPES.PROJECT]: projectPipelineExecutionPoliciesQuery,
-    [NAMESPACE_TYPES.GROUP]: groupPipelineExecutionPoliciesQuery,
-  },
-};
-
-const createPolicyFetchError = ({ gqlError, networkError }) => {
-  const error =
-    gqlError?.message ||
-    networkError?.message ||
-    s__('SecurityOrchestration|Something went wrong, unable to fetch policies');
-  createAlert({
-    message: error,
-  });
-};
 
 const getPoliciesWithType = (policies, policyType) =>
   policies.map((policy) => ({
@@ -85,117 +48,63 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: [
-    'customCiToggleEnabled',
-    'documentationPath',
-    'namespacePath',
-    'namespaceType',
-    'newPolicyPath',
-    'disableScanPolicyUpdate',
-  ],
+  inject: ['customCiToggleEnabled', 'namespacePath', 'namespaceType', 'disableScanPolicyUpdate'],
   props: {
     hasPolicyProject: {
       type: Boolean,
       required: false,
       default: false,
     },
+    isLoadingLinkedSpps: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    isLoadingPolicies: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    selectedPolicySource: {
+      type: String,
+      required: false,
+      default: POLICY_SOURCE_OPTIONS.ALL.value,
+    },
+    linkedSppItems: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
     shouldUpdatePolicyList: {
       type: Boolean,
       required: false,
       default: false,
     },
-  },
-  apollo: {
-    linkedSppItems: {
-      query: getSppLinkedProjectsNamespaces,
-      variables() {
-        return {
-          fullPath: this.namespacePath,
-        };
-      },
-      update(data) {
-        const {
-          securityPolicyProjectLinkedProjects: { nodes: linkedProjects = [] } = {},
-          securityPolicyProjectLinkedNamespaces: { nodes: linkedNamespaces = [] } = {},
-        } = data?.project || {};
-
-        return [...linkedProjects, ...linkedNamespaces];
-      },
-      skip() {
-        return this.isGroup;
-      },
+    pipelineExecutionPolicies: {
+      type: Array,
+      required: false,
+      default: () => [],
     },
     scanExecutionPolicies: {
-      query() {
-        return NAMESPACE_QUERY_DICT.scanExecution[this.namespaceType];
-      },
-      variables() {
-        return {
-          fullPath: this.namespacePath,
-          relationship: this.selectedPolicySource,
-        };
-      },
-      update(data) {
-        return data?.namespace?.scanExecutionPolicies?.nodes ?? [];
-      },
-      error: createPolicyFetchError,
+      type: Array,
+      required: false,
+      default: () => [],
     },
     scanResultPolicies: {
-      query() {
-        return NAMESPACE_QUERY_DICT.scanResult[this.namespaceType];
-      },
-      variables() {
-        return {
-          fullPath: this.namespacePath,
-          relationship: this.selectedPolicySource,
-        };
-      },
-      update(data) {
-        return data?.namespace?.scanResultPolicies?.nodes ?? [];
-      },
-      result({ data }) {
-        const policies = data?.namespace?.scanResultPolicies?.nodes ?? [];
-        this.hasInvalidPolicies = policies.some((policy) =>
-          policy.deprecatedProperties.some((prop) => prop !== 'scan_result_policy'),
-        );
-      },
-      error: createPolicyFetchError,
-    },
-    pipelineExecutionPolicies: {
-      query() {
-        return NAMESPACE_QUERY_DICT.pipelineExecution[this.namespaceType];
-      },
-      variables() {
-        return {
-          fullPath: this.namespacePath,
-          relationship: this.selectedPolicySource,
-        };
-      },
-      update(data) {
-        return data?.namespace?.pipelineExecutionPolicies?.nodes ?? [];
-      },
-      error: createPolicyFetchError,
-      skip() {
-        return !this.pipelineExecutionPolicyEnabled;
-      },
+      type: Array,
+      required: false,
+      default: () => [],
     },
   },
   data() {
-    const selectedPolicySource = extractSourceParameter(getParameterByName('source'));
     const selectedPolicyType = extractTypeParameter(
       getParameterByName('type'),
       this.customCiToggleEnabled,
     );
 
     return {
-      hasInvalidPolicies: false,
       selectedPolicy: null,
-      pipelineExecutionPolicies: [],
-      scanExecutionPolicies: [],
-      scanResultPolicies: [],
-      selectedPolicySource,
       selectedPolicyType,
-      linkedSppItems: [],
     };
   },
   computed: {
@@ -211,7 +120,7 @@ export default {
       return this.customCiToggleEnabled && this.glFeatures.pipelineExecutionPolicyType;
     },
     showLoader() {
-      return this.$apollo.queries.linkedSppItems?.loading && this.isProject;
+      return this.isLoadingLinkedSpps && this.isProject;
     },
     isProject() {
       return isProject(this.namespaceType);
@@ -246,12 +155,6 @@ export default {
       );
 
       return policies.flat();
-    },
-    isLoadingPolicies() {
-      return (
-        this.$apollo.queries.scanExecutionPolicies.loading ||
-        this.$apollo.queries.scanResultPolicies.loading
-      );
     },
     hasSelectedPolicy() {
       return Boolean(this.selectedPolicy);
@@ -314,16 +217,9 @@ export default {
     },
   },
   watch: {
-    hasInvalidPolicies(hasInvalidPolicies) {
-      this.$emit('has-invalid-policies', hasInvalidPolicies);
-    },
     shouldUpdatePolicyList(newShouldUpdatePolicyList) {
-      // This check prevents an infinite loop of `update-policy-list` being called
       if (newShouldUpdatePolicyList) {
-        this.selectedPolicy = null;
-        this.$apollo.queries.scanExecutionPolicies.refetch();
-        this.$apollo.queries.scanResultPolicies.refetch();
-        this.$emit('update-policy-list', {});
+        this.deselectPolicy();
       }
     },
   },
@@ -358,33 +254,39 @@ export default {
     deselectPolicy() {
       this.selectedPolicy = null;
 
+      // Refs are required by BTable to manipulate the selection
+      // issue: https://gitlab.com/gitlab-org/gitlab-ui/-/issues/1531
       const bTable = this.$refs.policiesTable.$children[0];
       bTable.clearSelected();
+
+      if (this.shouldUpdatePolicyList) {
+        this.$emit('cleared-selected');
+      }
     },
     convertFilterValue(defaultValue, value) {
       return value === defaultValue ? undefined : value.toLowerCase();
     },
     setTypeFilter(type) {
-      const value = this.convertFilterValue(POLICY_TYPE_FILTER_OPTIONS.ALL.value, type);
+      this.deselectPolicy();
 
+      const value = this.convertFilterValue(POLICY_TYPE_FILTER_OPTIONS.ALL.value, type);
       updateHistory({
         url: setUrlParams({ type: value }),
         title: document.title,
         replace: true,
       });
-
       this.selectedPolicyType = type;
     },
     setSourceFilter(source) {
-      const value = this.convertFilterValue(POLICY_SOURCE_OPTIONS.ALL.value, source);
+      this.deselectPolicy();
 
+      const value = this.convertFilterValue(POLICY_SOURCE_OPTIONS.ALL.value, source);
       updateHistory({
         url: setUrlParams({ source: value }),
         title: document.title,
         replace: true,
       });
-
-      this.selectedPolicySource = source;
+      this.$emit('update-policy-source', source);
     },
   },
   dateTimeFormat: DATE_ONLY_FORMAT,
