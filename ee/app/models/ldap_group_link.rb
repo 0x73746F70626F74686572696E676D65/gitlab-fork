@@ -2,6 +2,10 @@
 
 class LdapGroupLink < ApplicationRecord
   include Gitlab::Access
+  include MemberRoles::MemberRoleRelation
+
+  base_access_level_attr :group_access
+
   belongs_to :group
 
   BLANK_ATTRIBUTES = %w[cn filter].freeze
@@ -18,8 +22,6 @@ class LdapGroupLink < ApplicationRecord
     validates :cn, absence: true
   end
 
-  validates :group_access, :group_id, presence: true
-  validates :group_access, inclusion: { in: Gitlab::Access.all_values }
   validates :provider, presence: true
 
   scope :with_provider, ->(provider) { where(provider: provider) }
