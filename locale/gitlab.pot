@@ -9671,6 +9671,9 @@ msgstr ""
 msgid "BulkImport|Import without projects"
 msgstr ""
 
+msgid "BulkImport|Importing projects is a %{docsLinkStart}Beta%{docsLinkEnd} feature."
+msgstr ""
+
 msgid "BulkImport|Importing the group failed."
 msgstr ""
 
