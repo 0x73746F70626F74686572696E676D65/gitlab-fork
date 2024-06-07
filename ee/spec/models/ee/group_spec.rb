@@ -188,8 +188,8 @@ RSpec.describe Group, feature_category: :groups_and_projects do
         create(:group_member, :minimal_access, user: user, source: minimal_access_group)
       end
 
-      it 'returns only groups where user is direct or indirect member ignoring inheritance and minimal access level' do
-        expect(described_class.user_is_member(user)).to match_array([shared_group, direct_group])
+      it 'returns only groups where user is direct or indirect member ignoring minimal access level' do
+        expect(described_class.user_is_member(user)).to match_array([shared_group, direct_group, inherited_group])
       end
     end
 
