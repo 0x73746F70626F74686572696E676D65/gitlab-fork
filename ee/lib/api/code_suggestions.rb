@@ -14,7 +14,6 @@ module API
     MAX_BODY_SIZE = 500_000
     MAX_CONTENT_SIZE = 400_000
 
-    MAX_CONTEXT_COUNT = 10
     MAX_CONTEXT_NAME_SIZE = 255
 
     allow_access_with_scope :ai_features
@@ -86,8 +85,7 @@ module API
             documentation: { example: 'namespace/project' }
           optional :user_instruction, type: String, limit: MAX_BODY_SIZE,
             desc: 'Additional instructions provided by a user'
-          optional :context, type: Array, allow_blank: false, limit: MAX_CONTEXT_COUNT,
-            desc: 'List of related context parts' do
+          optional :context, type: Array, allow_blank: false, desc: 'List of related context parts' do
             requires :type, type: String,
               values: ::CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages::CONTENT_TYPES.values,
               desc: 'The type of a related part of context'

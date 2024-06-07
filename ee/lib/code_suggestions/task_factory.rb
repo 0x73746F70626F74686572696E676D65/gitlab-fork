@@ -20,6 +20,8 @@ module CodeSuggestions
     end
 
     def task
+      trim_context!
+
       file_content = CodeSuggestions::FileContent.new(language, prefix, suffix)
       instruction = CodeSuggestions::InstructionsExtractor
         .new(file_content, intent, params[:generation_type], params[:user_instruction]).extract
@@ -79,6 +81,12 @@ module CodeSuggestions
 
     def code_generations_feature_setting
       ::Ai::FeatureSetting.find_by_feature(:code_generations)
+    end
+
+    def trim_context!
+      return if params[:context].blank?
+
+      @params[:context] = Context.new(params[:context]).trimmed
     end
   end
 end
