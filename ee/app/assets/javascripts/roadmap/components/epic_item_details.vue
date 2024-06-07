@@ -250,7 +250,7 @@ export default {
           data-testid="child-epics-count-tooltip"
         >
           <span :class="{ bold: hasFiltersApplied }">{{ childEpicsCountText }}</span>
-          <span v-if="hasFiltersApplied" class="d-block">{{ childEpicsSearchText }}</span>
+          <span v-if="hasFiltersApplied" class="gl-block">{{ childEpicsSearchText }}</span>
         </gl-tooltip>
       </template>
     </div>

@@ -67,7 +67,7 @@ const bindEvents = () => {
     selectedIcon.innerHTML = '';
     selectedTemplateText.textContent = templateName;
 
-    clonedTemplate.classList.replace('s40', 'd-block');
+    clonedTemplate.classList.replace('s40', '!gl-block');
     selectedIcon.append(clonedTemplate);
 
     templateProjectNameInput.focus();

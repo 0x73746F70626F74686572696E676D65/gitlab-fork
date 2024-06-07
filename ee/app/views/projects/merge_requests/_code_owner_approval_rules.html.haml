@@ -19,7 +19,7 @@
           %tr{ data: { testid: "approver-content" } }
             %td
               - if code_owner_approval_rule.section != Gitlab::CodeOwners::Section::DEFAULT
-                %span.text-muted.small.d-block= code_owner_approval_rule.section
+                %span.text-muted.small.gl-block= code_owner_approval_rule.section
               %span.monospace= code_owner_approval_rule.name
             %td.gl-hidden.sm:gl-flex.gl-gap-y-2.gl-flex-wrap
               - code_owner_approval_rule.approvers.each do |approver|

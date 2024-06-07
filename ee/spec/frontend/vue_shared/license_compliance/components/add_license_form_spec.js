@@ -87,7 +87,7 @@ describe('AddLicenseForm', () => {
         findAddLicenseFormDropdown().vm.$emit('update-selected-license', 'FOO');
         await nextTick();
 
-        expect(findFeedbackElement().classes()).toContain('d-block');
+        expect(findFeedbackElement().classes()).toContain('gl-block');
       });
 
       it('is false if the entered license is unique', async () => {
@@ -95,7 +95,7 @@ describe('AddLicenseForm', () => {
         findAddLicenseFormDropdown().vm.$emit('update-selected-license', 'FOO2');
         await nextTick();
 
-        expect(findFeedbackElement().classes()).not.toContain('d-block');
+        expect(findFeedbackElement().classes()).not.toContain('gl-block');
       });
     });
   });
@@ -134,7 +134,7 @@ describe('AddLicenseForm', () => {
       const feedbackElement = findFeedbackElement();
 
       expect(feedbackElement.exists()).toBe(true);
-      expect(feedbackElement.classes()).toContain('d-block');
+      expect(feedbackElement.classes()).toContain('gl-block');
       expect(feedbackElement.text()).toBe('This license already exists in this project.');
     });
 

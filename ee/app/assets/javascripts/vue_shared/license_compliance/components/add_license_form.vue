@@ -82,7 +82,7 @@ export default {
         :known-licenses="knownLicenses"
         @update-selected-license="handleLicenseUpdate"
       />
-      <div class="invalid-feedback" :class="{ 'd-block': isInvalidLicense }">
+      <div class="invalid-feedback" :class="{ 'gl-block': isInvalidLicense }">
         {{ s__('LicenseCompliance|This license already exists in this project.') }}
       </div>
     </div>
