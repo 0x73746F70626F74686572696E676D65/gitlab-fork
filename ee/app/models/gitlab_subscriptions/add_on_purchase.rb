@@ -3,6 +3,9 @@
 module GitlabSubscriptions
   class AddOnPurchase < ApplicationRecord
     include EachBatch
+    include SafelyChangeColumnDefault
+
+    columns_changing_default :organization_id
 
     CLEANUP_DELAY_PERIOD = 14.days
 
