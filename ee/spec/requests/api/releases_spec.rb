@@ -78,7 +78,7 @@ RSpec.describe API::Releases, feature_category: :release_orchestration do
         params.merge!(milestone_params)
       end
 
-      context 'succesfully adds a group milestone' do
+      context 'successfully adds a group milestone' do
         let(:milestone_params) { { milestones: [group_milestone.title] } }
 
         it 'adds the milestone', :aggregate_failures do

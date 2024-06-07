@@ -40,7 +40,7 @@ RSpec.describe MemberRoles::UpdateService, feature_category: :system_access do
       end
 
       context 'with valid params' do
-        it 'is succesful' do
+        it 'is successful' do
           expect(result).to be_success
         end
 
@@ -92,7 +92,7 @@ RSpec.describe MemberRoles::UpdateService, feature_category: :system_access do
           allow(error_messages).to receive(:full_messages).and_return(['this is wrong'])
         end
 
-        it 'is not succesful' do
+        it 'is not successful' do
           expect(result).to be_error
         end
 

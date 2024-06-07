@@ -40,7 +40,7 @@ RSpec.describe Gitlab::StatusPage::Storage::S3MultipartUpload, :aws_s3 do
       file.close
     end
 
-    context 'when sucessful' do
+    context 'when successful' do
       before do
         stub_responses(
           :upload_part,

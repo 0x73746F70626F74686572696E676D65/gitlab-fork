@@ -647,7 +647,7 @@ describe('License store actions', () => {
         );
       });
 
-      it('should send an error on an unsuccesful request', async () => {
+      it('should send an error on an unsuccessful request', async () => {
         licensesApiMock.replyOnce(HTTP_STATUS_BAD_REQUEST);
 
         await testAction(

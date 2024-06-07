@@ -22,7 +22,7 @@ RSpec.describe MemberRoles::CreateService, feature_category: :system_access do
     end
 
     shared_examples 'service returns error' do
-      it 'is not succesful' do
+      it 'is not successful' do
         expect(create_member_role).to be_error
       end
 
