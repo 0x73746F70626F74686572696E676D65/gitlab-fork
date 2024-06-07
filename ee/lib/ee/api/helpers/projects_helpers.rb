@@ -29,6 +29,7 @@ module EE
             optional :wiki_checksum_failed, type: Grape::API::Boolean, default: false, desc: 'Limit by projects where wiki checksum is failed'
             optional :repository_checksum_failed, type: Grape::API::Boolean, default: false, desc: 'Limit by projects where repository checksum is failed'
             optional :include_hidden, type: Grape::API::Boolean, default: false, desc: 'Include hidden projects. Can only be set by admins'
+            optional :marked_for_deletion_on, type: Date, desc: 'Date when the project was marked for deletion'
           end
 
           params :optional_update_params_ee do

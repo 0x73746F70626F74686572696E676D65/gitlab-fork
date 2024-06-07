@@ -269,6 +269,10 @@ module EE
       scope :with_group_saml_provider, -> { preload(group: :saml_provider) }
       scope :with_invited_groups, -> { preload(:invited_groups) }
 
+      scope :by_marked_for_deletion_on, ->(marked_for_deletion_on) do
+        where(marked_for_deletion_at: marked_for_deletion_on)
+      end
+
       scope :with_total_repository_size_greater_than, ->(value) do
         statistics = ::ProjectStatistics.arel_table
 

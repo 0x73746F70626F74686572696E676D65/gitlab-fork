@@ -475,6 +475,23 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       end
     end
 
+    describe '.by_marked_for_deletion_on' do
+      let_it_be(:project) { create(:project) }
+      let_it_be(:marked_for_deletion_project) { create(:project, marked_for_deletion_at: Date.parse('2024-01-01')) }
+
+      context 'when marked_for_deletion_on is present' do
+        it 'return projects marked for deletion' do
+          expect(described_class.by_marked_for_deletion_on(Date.parse('2024-01-01'))).to contain_exactly(marked_for_deletion_project)
+        end
+      end
+
+      context 'when marked_for_deletion_on is not present' do
+        it 'return projects not marked for deletion' do
+          expect(described_class.by_marked_for_deletion_on(nil)).to contain_exactly(project)
+        end
+      end
+    end
+
     describe '.order_by_excess_repo_storage_size_desc' do
       let_it_be(:project_1) { create(:project_statistics, lfs_objects_size: 10, repository_size: 10).project }
       let_it_be(:project_2) { create(:project_statistics, lfs_objects_size: 5, repository_size: 55).project }
