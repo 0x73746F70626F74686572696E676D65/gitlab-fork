@@ -32,7 +32,7 @@ module Types
       field :desired_state, GraphQL::Types::String,
         null: false, description: 'Desired state of the workspace.'
 
-      field :desired_state_updated_at, Types::TimeType,
+      field :desired_state_updated_at, Types::TimeType, # rubocop:disable GraphQL/ExtractType -- We don't want to extract this to a type, it's just a timestamp field
         null: false, description: 'Timestamp of the last update to the desired state.'
 
       # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409772 - Make this a type:enum
@@ -58,7 +58,7 @@ module Types
       field :devfile_path, GraphQL::Types::String,
         null: false, description: 'Path to the devfile used to configure the workspace.'
 
-      field :devfile_web_url, GraphQL::Types::String,
+      field :devfile_web_url, GraphQL::Types::String, # rubocop:disable GraphQL/ExtractType -- We don't want to extract this to a type, it would cause confusion with the devfile field
         null: false, description: 'Web URL of the devfile used to configure the workspace.'
 
       field :devfile, GraphQL::Types::String,

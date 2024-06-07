@@ -85,7 +85,7 @@ RSpec.describe 'Map a cluster agent to a group', feature_category: :remote_devel
       post_graphql_mutation(mutation, current_user: current_user)
 
       expect_graphql_errors_to_include("attempting to access does not exist or " \
-                                       "you don't have permission to perform this action")
+        "you don't have permission to perform this action")
     end
   end
 
@@ -96,7 +96,7 @@ RSpec.describe 'Map a cluster agent to a group', feature_category: :remote_devel
       post_graphql_mutation(mutation, current_user: current_user)
 
       expect_graphql_errors_to_include("attempting to access does not exist or " \
-                                       "you don't have permission to perform this action")
+        "you don't have permission to perform this action")
     end
   end
 

@@ -30,7 +30,7 @@ module RemoteDevelopment
             # Log normal agent infos at debug level
             logger.debug(
               message: "Parsed #{total_count} total workspace agent infos from params, with " \
-                       "#{normal_count} in a NORMAL actual_state and #{abnormal_count} in an ABNORMAL actual_state",
+                "#{normal_count} in a NORMAL actual_state and #{abnormal_count} in an ABNORMAL actual_state",
               agent_id: agent.id,
               update_type: update_type,
               actual_state_type: NORMAL,
@@ -59,7 +59,7 @@ module RemoteDevelopment
             if abnormal_agent_infos.present?
               logger.warn(
                 message: "Parsed #{abnormal_count} workspace agent infos with an " \
-                         "ABNORMAL actual_state from params (total: #{total_count})",
+                  "ABNORMAL actual_state from params (total: #{total_count})",
                 error_type: "abnormal_actual_state",
                 agent_id: agent.id,
                 update_type: update_type,

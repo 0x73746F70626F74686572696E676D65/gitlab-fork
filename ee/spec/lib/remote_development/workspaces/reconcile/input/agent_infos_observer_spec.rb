@@ -63,7 +63,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
     it "logs normal workspaces at debug level", :unlimited_max_formatted_output_length do
       expect(logger).to receive(:debug).with(
         message: "Parsed 3 total workspace agent infos from params, " \
-                 "with 1 in a NORMAL actual_state and 2 in an ABNORMAL actual_state",
+          "with 1 in a NORMAL actual_state and 2 in an ABNORMAL actual_state",
         agent_id: agent.id,
         update_type: update_type,
         actual_state_type: RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserver::NORMAL,
@@ -137,7 +137,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
     it "logs normal workspaces at debug level", :unlimited_max_formatted_output_length do
       expect(logger).to receive(:debug).with(
         message: "Parsed 1 total workspace agent infos from params, " \
-                 "with 1 in a NORMAL actual_state and 0 in an ABNORMAL actual_state",
+          "with 1 in a NORMAL actual_state and 0 in an ABNORMAL actual_state",
         agent_id: agent.id,
         update_type: update_type,
         actual_state_type: RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserver::NORMAL,
@@ -175,7 +175,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
     it "logs zero normal workspaces at debug level", :unlimited_max_formatted_output_length do
       expect(logger).to receive(:debug).with(
         message: "Parsed 2 total workspace agent infos from params, " \
-                 "with 0 in a NORMAL actual_state and 2 in an ABNORMAL actual_state",
+          "with 0 in a NORMAL actual_state and 2 in an ABNORMAL actual_state",
         agent_id: agent.id,
         update_type: update_type,
         actual_state_type: RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserver::NORMAL,
@@ -240,7 +240,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
 
       expect(logger).to receive(:debug).with(
         message: "Parsed 0 total workspace agent infos from params, " \
-                 "with 0 in a NORMAL actual_state and 0 in an ABNORMAL actual_state",
+          "with 0 in a NORMAL actual_state and 0 in an ABNORMAL actual_state",
         agent_id: agent.id,
         update_type: update_type,
         actual_state_type: RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserver::NORMAL,

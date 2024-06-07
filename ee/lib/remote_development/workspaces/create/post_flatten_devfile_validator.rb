@@ -240,11 +240,11 @@ module RemoteDevelopment
           restricted_prefix_underscore = RESTRICTED_PREFIX.tr("-", "_")
 
           # Ensure no variables name starts with restricted_prefix
-          variables.each do |variable, _|
+          variables.each_key do |variable|
             [RESTRICTED_PREFIX, restricted_prefix_underscore].each do |prefix|
               next unless variable.downcase.start_with?(prefix)
 
-              return err(
+              return err( # rubocop:disable Cop/AvoidReturnFromBlocks -- We want to use a return here - it works fine, and the alternative is unnecessarily complex.
                 format(
                   _("Variable name '%{variable}' must not start with '%{prefix}'"),
                   variable: variable,

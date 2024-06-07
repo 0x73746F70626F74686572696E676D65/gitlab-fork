@@ -4,6 +4,7 @@ module Resolvers
   module RemoteDevelopment
     class WorkspacesForQueryRootResolver < ::Resolvers::BaseResolver
       include ResolvesIds
+
       # NOTE: We are intentionally not including Gitlab::Graphql::Authorize::AuthorizeResource, because this resolver
       #       is currently only authorized at the instance admin level for all workspaces in the instance via the
       #       `:read_all_workspaces` ability, so it's not necessary (or performant) to authorize individual workspaces.
