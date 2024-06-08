@@ -33,12 +33,7 @@ module EE
         end
 
         def valid_username
-          if ::Feature.enabled?(:extra_slug_path_sanitization)
-            ::Gitlab::Auth::ExternalUsernameSanitizer.new(@parsed_hash[:username]).sanitize
-          else
-            clean_username = ::Namespace.clean_path(@parsed_hash[:username])
-            ::Gitlab::Utils::Uniquify.new.string(clean_username) { |s| !NamespacePathValidator.valid_path?(s) }
-          end
+          ::Gitlab::Auth::ExternalUsernameSanitizer.new(@parsed_hash[:username]).sanitize
         end
 
         def missing_params

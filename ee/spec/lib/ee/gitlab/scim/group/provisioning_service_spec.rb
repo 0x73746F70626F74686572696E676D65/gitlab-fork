@@ -171,18 +171,6 @@ RSpec.describe ::EE::Gitlab::Scim::Group::ProvisioningService, :saas,
             expect(user.username).to eq('ricky.the.raccoon1')
           end
         end
-
-        context 'and extra_slug_sanitization FF is disabled' do
-          before do
-            stub_feature_flags(extra_slug_path_sanitization: false)
-          end
-
-          it 'cannot create a user due to invalid username' do
-            expect { result }.not_to change { User.count }
-            expect(result.status).to eq(:error)
-            expect(result.message).to include(Gitlab::Regex.oci_repository_path_regex_message)
-          end
-        end
       end
     end
 
