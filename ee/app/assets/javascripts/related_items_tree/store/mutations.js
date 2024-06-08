@@ -1,4 +1,3 @@
-import Vue from 'vue';
 import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import * as types from './mutation_types';
 
@@ -55,18 +54,24 @@ export default {
     if (append) {
       state.children[parentItem.reference].push(...children);
     } else {
-      Vue.set(state.children, parentItem.reference, children);
+      state.children = {
+        ...state.children,
+        [parentItem.reference]: children,
+      };
     }
   },
 
   [types.SET_ITEM_CHILDREN_FLAGS](state, { children }) {
     children.forEach((item) => {
-      Vue.set(state.childrenFlags, item.reference, {
-        itemExpanded: false,
-        itemChildrenFetchInProgress: false,
-        itemRemoveInProgress: false,
-        itemHasChildren: item.hasChildren || item.hasIssues,
-      });
+      state.childrenFlags = {
+        ...state.childrenFlags,
+        [item.reference]: {
+          itemExpanded: false,
+          itemChildrenFetchInProgress: false,
+          itemRemoveInProgress: false,
+          itemHasChildren: item.hasChildren || item.hasIssues,
+        },
+      };
     });
   },
 
@@ -249,11 +254,17 @@ export default {
 
     // Insert at new position in new parent
     if (isFirstChild) {
-      Vue.set(state.children, newParentItem.parentReference, [targetItem]);
-      Vue.set(state.childrenFlags, newParentItem.parentReference, {
-        itemExpanded: true,
-        itemHasChildren: true,
-      });
+      state.children = {
+        ...state.children,
+        [newParentItem.parentReference]: [targetItem],
+      };
+      state.childrenFlags = {
+        ...state.childrenFlags,
+        [newParentItem.parentReference]: {
+          itemExpanded: true,
+          itemHasChildren: true,
+        },
+      };
     } else {
       state.children[newParentItem.parentReference].splice(newIndex, 0, targetItem);
     }
