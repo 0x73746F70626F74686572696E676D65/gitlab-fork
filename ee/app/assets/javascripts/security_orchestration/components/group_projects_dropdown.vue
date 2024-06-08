@@ -1,6 +1,6 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import { debounce } from 'lodash';
+import { debounce, uniqBy } from 'lodash';
 import produce from 'immer';
 import { __ } from '~/locale';
 import { renderMultiSelectText } from 'ee/security_orchestration/components/policy_editor/utils';
@@ -27,7 +27,12 @@ export default {
         };
       },
       update(data) {
-        return data.group?.projects?.nodes || [];
+        /**
+         * It is important to preserve all projects that has benn loaded
+         * otherwise after performing backend search and selecting found item
+         * selection is overwritten
+         */
+        return uniqBy([...this.projects, ...data.group.projects.nodes], 'id');
       },
       result({ data }) {
         this.projectsPageInfo = data?.group?.projects?.pageInfo || {};
@@ -97,6 +102,12 @@ export default {
     loading() {
       return this.$apollo.queries.projects.loading;
     },
+    searching() {
+      return this.loading && this.searchUsed && !this.hasNextPage;
+    },
+    searchUsed() {
+      return this.searchTerm !== '';
+    },
     hasNextPage() {
       return this.projectsPageInfo.hasNextPage;
     },
@@ -107,7 +118,9 @@ export default {
       }, {});
     },
     projectListBoxItems() {
-      return this.projects.map(({ id, name }) => ({ text: name, value: id }));
+      return this.projects
+        .map(({ id, name }) => ({ text: name, value: id }))
+        .filter(({ text }) => text.toLowerCase().includes(this.searchTerm.toLowerCase()));
     },
     projectsIds() {
       return this.projects.map(({ id }) => id);
@@ -178,7 +191,7 @@ export default {
     :infinite-scroll-loading="loading"
     :reset-button-label="resetButtonLabel"
     :show-select-all-button-label="$options.i18n.selectAllLabel"
-    :searching="loading"
+    :searching="searching"
     :selected="existingFormattedSelectedProjectsIds"
     :placement="placement"
     :items="projectListBoxItems"
