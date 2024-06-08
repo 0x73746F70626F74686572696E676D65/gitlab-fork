@@ -83,7 +83,7 @@ module QA
 
         Page::MergeRequest::Show.perform do |merge_request|
           merge_request.try_to_merge!
-          expect(page).to have_text("locked by #{admin_username}", wait: 30)
+          expect(page).to have_text("locked by @#{admin_username}", wait: 30)
           expect(merge_request).to have_merge_button
         end
       end
@@ -152,7 +152,7 @@ module QA
       end
 
       def admin_username
-        create(:user, username: Runtime::User.username).name
+        create(:user, username: Runtime::User.username).username
       end
     end
   end

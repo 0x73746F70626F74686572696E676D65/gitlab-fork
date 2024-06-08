@@ -291,7 +291,7 @@ RSpec.describe Gitlab::Checks::DiffCheck, feature_category: :source_code_managem
           it 'returns an error' do
             path_lock
 
-            expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "The path '#{filename}' is locked by #{path_lock.user.name}")
+            expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "'#{filename}' is locked by @#{path_lock.user.username}")
           end
         end
 
