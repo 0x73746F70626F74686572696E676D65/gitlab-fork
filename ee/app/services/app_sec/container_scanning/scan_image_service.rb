@@ -36,9 +36,7 @@ module AppSec
           container_scanning:
             stage: test
             variables:
-              SECURE_LOG_LEVEL: debug
               REGISTRY_TRIGGERED: true
-              CS_DISABLE_DEPENDENCY_LIST: true
               CS_IMAGE: '#{image}'
         YAML
       end
