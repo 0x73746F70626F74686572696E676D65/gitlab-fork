@@ -34,7 +34,10 @@ RSpec.describe 'Profile > Usage Quota', :js, feature_category: :consumables_cost
     end
 
     with_them do
-      let(:no_shared_runners_text) { 'Instance runners are disabled, so there are no limits set on pipeline usage' }
+      let(:no_shared_runners_text) do
+        'No compute usage data because Instance runners are disabled, ' \
+          'or there are no projects in this group.'
+      end
 
       before do
         project.update!(shared_runners_enabled: shared_runners_enabled)

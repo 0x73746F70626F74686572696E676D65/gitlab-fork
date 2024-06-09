@@ -53,7 +53,8 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
       end
 
       within_testid('pipelines-quota-tab-project-table') do
-        expect(page).to have_content('Instance runners are disabled, so there are no limits set on pipeline usage')
+        expect(page).to have_content('No compute usage data because Instance runners are disabled, ' \
+          'or there are no projects in this group.')
       end
     end
   end
