@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop: disable Gitlab/NamespacedClass -- General utility
 module Gitlab
   class IpAddressState
     THREAD_KEY = :current_ip_address
@@ -32,3 +33,4 @@ module Gitlab
     end
   end
 end
+# rubocop: enable Gitlab/NamespacedClass
