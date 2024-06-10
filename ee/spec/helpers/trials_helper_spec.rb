@@ -143,10 +143,11 @@ RSpec.describe TrialsHelper, feature_category: :acquisition do
       attributes = {
         submit_path: "/users/sign_up/company?#{extra_params.to_query}",
         first_name: user.first_name,
-        last_name: user.last_name
+        last_name: user.last_name,
+        initial_trial: 'false'
       }
 
-      expect(helper.create_company_form_data).to match(attributes)
+      expect(helper.create_company_form_data(::Onboarding::Status.new({}, {}, user))).to match(attributes)
     end
   end
 

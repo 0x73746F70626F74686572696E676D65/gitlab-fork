@@ -8,8 +8,7 @@ RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: 
       :user,
       last_name: 'Jones',
       onboarding_status_email_opt_in: true,
-      onboarding_status_initial_registration_type: 'trial',
-      onboarding_status_registration_type: 'trial'
+      onboarding_status_initial_registration_type: 'trial'
     )
   end
 
@@ -36,11 +35,11 @@ RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: 
 
     shared_examples 'correct client attributes' do
       let(:params) do
-        base_params.merge(jtbd: nil, trial_onboarding_flow: true)
+        base_params.merge(jtbd: nil)
       end
 
       let(:service_params) do
-        params.merge({ trial: trial_registration, glm_source: 'some_source', glm_content: 'some_content' })
+        params.merge({ glm_source: 'some_source', glm_content: 'some_content' })
       end
 
       before do
@@ -62,7 +61,6 @@ RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: 
 
     context 'when creating an automatic trial' do
       let(:path) { '' }
-      let(:trial_registration) { false }
 
       before do
         user.update!(onboarding_status_initial_registration_type: 'free')
@@ -95,13 +93,12 @@ RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: 
 
     it 'successfully creates a trial' do
       allow(Gitlab::SubscriptionPortal::Client).to receive(:generate_trial)
-        .with(base_params.merge(product_interaction: 'SaaS Trial - defaulted', trial_onboarding_flow: true))
+        .with(base_params.merge(product_interaction: 'SaaS Trial'))
         .and_return({ success: true })
 
       result = described_class.new(user: user, params: {
         first_name: user.first_name,
         last_name: user.last_name,
-        trial_onboarding_flow: true,
         jobs_to_be_done_other: '_comment_',
         registration_objective: '_jtbd_'
       }).execute
@@ -113,7 +110,7 @@ RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: 
       it 'error while creating trial' do
         allow(Gitlab::SubscriptionPortal::Client).to receive(:generate_trial).and_return({ success: false })
 
-        result = described_class.new(user: user, params: { trial_onboarding_flow: true }).execute
+        result = described_class.new(user: user, params: {}).execute
 
         expect(result.success?).to be false
         expect(result.reason).to eq(:submission_failed)
@@ -136,7 +133,7 @@ RSpec.describe GitlabSubscriptions::CreateCompanyLeadService, feature_category: 
         # symbols for `error`
         allow(Gitlab::HTTP).to receive(:post).and_return(gitlab_http_response)
 
-        result = described_class.new(user: user, params: { trial_onboarding_flow: true }).execute
+        result = described_class.new(user: user, params: {}).execute
 
         expect(result.success?).to be false
         expect(result.reason).to eq(:submission_failed)

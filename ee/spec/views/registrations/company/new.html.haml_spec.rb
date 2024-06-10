@@ -4,8 +4,10 @@ require 'spec_helper'
 
 RSpec.describe 'registrations/company/new', feature_category: :onboarding do
   let(:user) { build_stubbed(:user) }
-  let(:trial?) { false }
-  let(:onboarding_status) { instance_double(::Onboarding::Status, trial?: trial?) }
+  let(:initial_trial?) { false }
+  let(:onboarding_status) do
+    instance_double(::Onboarding::Status, initial_trial?: initial_trial?)
+  end
 
   before do
     allow(view).to receive(:current_user).and_return(user)
@@ -41,7 +43,7 @@ RSpec.describe 'registrations/company/new', feature_category: :onboarding do
 
   describe 'when page is rendered' do
     context 'when a user is coming from a trial registration' do
-      let(:trial?) { true }
+      let(:initial_trial?) { true }
 
       it 'renders correctly' do
         render
@@ -51,7 +53,7 @@ RSpec.describe 'registrations/company/new', feature_category: :onboarding do
     end
 
     context 'when a user is coming from a free registration' do
-      let(:trial?) { false }
+      let(:initial_trial?) { false }
 
       it 'renders correctly' do
         render

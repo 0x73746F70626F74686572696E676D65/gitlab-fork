@@ -61,7 +61,7 @@ module Registrations
     def update_params
       # TODO: this is getting hit 3 times at least due to calls to it.
       # There likely isn't any perf impact, but should we look to memoize in a
-      # future step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746?
+      # future step in https://gitlab.com/gitlab-org/gitlab/-/issues/465532?
       params.require(:user)
             .permit(:role, :setup_for_company, :registration_objective, :onboarding_status_email_opt_in)
             .merge(onboarding_status_params)
@@ -79,23 +79,9 @@ module Registrations
     end
 
     def passed_through_params
-      # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746
-      # when we remove the need to keep passing `trial` as a way to detect registration types,
-      # we can remove this logic. This is purely here while we are in an in-between state
-      # of needing to support `trial` passed to company controller and how we have a value
-      # for this from `trial` param passed to this controller or from onboarding_status.
-      trial_param = params.permit(:trial)
-      if trial_param.key?('trial') || onboarding_status.trial_from_the_beginning?
-        trial_param = { trial: onboarding_status.trial_from_the_beginning? }
-      end
-
       update_params.slice(:role, :registration_objective)
                    .merge(params.permit(:jobs_to_be_done_other))
                    .merge(glm_tracking_params)
-                   # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove this
-                   # passing of trial once we cut over to fully use db solution as this is merely tracking initial
-                   # trial and so we can merely call that in the places that consume this.
-                   .merge(trial_param)
     end
 
     def iterable_params

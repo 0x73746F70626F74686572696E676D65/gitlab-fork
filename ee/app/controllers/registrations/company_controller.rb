@@ -21,13 +21,13 @@ module Registrations
     end
 
     def create
-      result = GitlabSubscriptions::CreateCompanyLeadService.new(user: current_user, params: service_params).execute
+      result = GitlabSubscriptions::CreateCompanyLeadService.new(user: current_user, params: permitted_params).execute
 
       if result.success?
         track_event('successfully_submitted_form')
 
         response = Onboarding::StatusStepUpdateService
-                     .new(current_user, new_users_sign_up_group_path(redirect_params)).execute
+                     .new(current_user, new_users_sign_up_group_path(glm_tracking_params)).execute
 
         redirect_to response[:step_url]
       else
@@ -53,21 +53,6 @@ module Registrations
         :registration_objective,
         :jobs_to_be_done_other
       ).merge(glm_tracking_params)
-    end
-
-    def service_params
-      # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove this
-      # passing of trial once we cut over to fully use db solution as this is merely tracking initial
-      # trial and so we can merely call that off the user record in the service layer.
-      permitted_params.merge(trial_onboarding_flow: true, trial: onboarding_status.trial_from_the_beginning?)
-    end
-
-    def redirect_params
-      # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove this
-      # passing of trial and trial_onboarding_flow once we cut over to fully use db solution as this is
-      # merely tracking initial and current states of trial which we are recording in user.onboarding_status now
-      # and so we can merely call that in the places that consume this.
-      glm_tracking_params.merge(trial_onboarding_flow: true, trial: params[:trial])
     end
 
     def track_event(action)

@@ -48,8 +48,6 @@ module EE
             request.env.fetch('omniauth.params', {}).deep_symbolize_keys, session, user, onboarding_first_step_path
           ).execute
 
-        # TODO: We can look at removing this `unless onboarding_status.subscription?` and out of our conditionals here
-        # in the next steps of https://gitlab.com/gitlab-org/gitlab/-/issues/435746 where we only drive off db values.
         # We need to do this here since the subscription flow relies on what was set in the stored_location_for(:user)
         # that was set on initial redirect from the SubscriptionsController#new and super will wipe that out.
         # Then the RegistrationsIdentityVerificationController#success will get

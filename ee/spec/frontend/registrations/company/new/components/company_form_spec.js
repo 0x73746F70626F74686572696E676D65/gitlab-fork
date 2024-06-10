@@ -10,7 +10,7 @@ jest.mock('ee/google_tag_manager');
 describe('CompanyForm', () => {
   let wrapper;
 
-  const createComponent = (propsData = {}) => {
+  const createComponent = (provideData = {}) => {
     return shallowMountExtended(CompanyForm, {
       provide: {
         submitPath: SUBMIT_PATH,
@@ -18,9 +18,7 @@ describe('CompanyForm', () => {
           firstName: 'Joe',
           lastName: 'Doe',
         },
-      },
-      propsData: {
-        ...propsData,
+        ...provideData,
       },
     });
   };
@@ -50,9 +48,9 @@ describe('CompanyForm', () => {
     });
   });
 
-  describe('when trial prop true', () => {
+  describe('when initialTrial is true', () => {
     beforeEach(() => {
-      wrapper = createComponent({ trial: true });
+      wrapper = createComponent({ initialTrial: true });
     });
 
     it('displays correct description text', () => {

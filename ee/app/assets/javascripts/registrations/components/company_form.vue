@@ -34,11 +34,16 @@ export default {
     GlFormText,
     CountryOrRegionSelector,
   },
-  inject: ['user', 'submitPath'],
-  props: {
-    trial: {
+  inject: {
+    user: {
+      default: {},
+    },
+    submitPath: {
+      type: String,
+      default: '',
+    },
+    initialTrial: {
       type: Boolean,
-      required: false,
       default: false,
     },
   },
@@ -64,17 +69,17 @@ export default {
       ];
     },
     descriptionText() {
-      return this.trial
+      return this.initialTrial
         ? this.$options.i18n.description.trial
         : this.$options.i18n.description.registration;
     },
     submitButtonText() {
-      return this.trial
+      return this.initialTrial
         ? this.$options.i18n.formSubmitText.trial
         : this.$options.i18n.formSubmitText.registration;
     },
     footerText() {
-      return this.trial
+      return this.initialTrial
         ? this.$options.i18n.footerDescription.trial
         : this.$options.i18n.footerDescription.registration;
     },

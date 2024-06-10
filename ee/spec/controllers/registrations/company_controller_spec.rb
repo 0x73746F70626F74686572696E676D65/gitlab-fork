@@ -93,15 +93,7 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
         phone_number: '+1 23 456-78-90',
         country: 'US',
         state: 'California',
-        website_url: 'gitlab.com',
-        trial: trial_registration
-      }.merge(glm_params)
-    end
-
-    let(:redirect_params) do
-      {
-        trial_onboarding_flow: true,
-        trial: false
+        website_url: 'gitlab.com'
       }.merge(glm_params)
     end
 
@@ -116,10 +108,7 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
         expect_next_instance_of(
           GitlabSubscriptions::CreateCompanyLeadService,
           user: user,
-          params: ActionController::Parameters.new(params.merge(
-            trial_onboarding_flow: true,
-            trial: false
-          )).permit!
+          params: ActionController::Parameters.new(params).permit!
         ) do |service|
           expect(service).to receive(:execute).and_return(ServiceResponse.success)
         end
@@ -127,7 +116,7 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
         post :create, params: params
 
         expect(response).to have_gitlab_http_status(:redirect)
-        expect(response).to redirect_to(new_users_sign_up_group_path(redirect_params))
+        expect(response).to redirect_to(new_users_sign_up_group_path(glm_params))
       end
 
       context 'when it is a trial registration' do
@@ -143,10 +132,7 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
           expect_next_instance_of(
             GitlabSubscriptions::CreateCompanyLeadService,
             user: user,
-            params: ActionController::Parameters.new(params.merge(
-              trial_onboarding_flow: true,
-              trial: true
-            )).permit!
+            params: ActionController::Parameters.new(params).permit!
           ) do |service|
             expect(service).to receive(:execute).and_return(ServiceResponse.success)
           end
@@ -165,10 +151,7 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
             expect_next_instance_of(
               GitlabSubscriptions::CreateCompanyLeadService,
               user: user,
-              params: ActionController::Parameters.new(params.merge(
-                trial_onboarding_flow: true,
-                trial: true
-              )).permit!
+              params: ActionController::Parameters.new(params).permit!
             ) do |service|
               expect(service).to receive(:execute).and_return(ServiceResponse.success)
             end
@@ -179,7 +162,7 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
       end
 
       context 'when saving onboarding_status_step_url' do
-        let(:path) { new_users_sign_up_group_path(redirect_params) }
+        let(:path) { new_users_sign_up_group_path(glm_params) }
 
         before do
           allow_next_instance_of(GitlabSubscriptions::CreateCompanyLeadService) do |service|
@@ -255,7 +238,7 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
           post :create, params: params
 
           expect(response).to have_gitlab_http_status(:redirect)
-          expect(response).to redirect_to(new_users_sign_up_group_path(redirect_params))
+          expect(response).to redirect_to(new_users_sign_up_group_path(glm_params))
         end
       end
     end
@@ -267,16 +250,12 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
         end
       end
 
-      where(trial_onboarding_flow: %w[true false])
+      it 'renders company page :new' do
+        post :create, params: params
 
-      with_them do
-        it 'renders company page :new' do
-          post :create, params: params.merge(trial_onboarding_flow: trial_onboarding_flow)
-
-          expect(response).to have_gitlab_http_status(:unprocessable_entity)
-          expect(response).to render_template(:new)
-          expect(flash[:alert]).to eq('failed')
-        end
+        expect(response).to have_gitlab_http_status(:unprocessable_entity)
+        expect(response).to render_template(:new)
+        expect(flash[:alert]).to eq('failed')
       end
 
       context 'with snowplow tracking' do
@@ -292,8 +271,6 @@ RSpec.describe Registrations::CompanyController, feature_category: :onboarding d
         end
 
         context 'when in trial flow' do
-          let(:params) { { trial: 'true' } }
-
           it 'tracks successful submission event' do
             post_create
 
