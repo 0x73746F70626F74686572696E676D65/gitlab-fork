@@ -20,10 +20,6 @@ export const SUPPORTED_VULNERABILITY_METRICS = [VULNERABILITY_METRICS.CRITICAL];
 
 export const SUPPORTED_AI_METRICS = [AI_METRICS.CODE_SUGGESTIONS_USAGE_RATE];
 
-// Code suggestions usage only started being tracked April 4, 2024
-// https://gitlab.com/gitlab-org/gitlab/-/issues/456108
-export const CODE_SUGGESTIONS_START_DATE = new Date('2024-04-04');
-
 export const AI_IMPACT_TABLE_METRICS = {
   ...pick(VSD_TABLE_METRICS, [
     ...SUPPORTED_FLOW_METRICS,

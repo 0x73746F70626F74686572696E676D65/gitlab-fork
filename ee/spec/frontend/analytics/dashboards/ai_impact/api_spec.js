@@ -2,7 +2,6 @@ import { extractGraphqlAiData } from 'ee/analytics/dashboards/ai_impact/api';
 
 describe('AI impact dashboard api', () => {
   describe('extractGraphqlAiData', () => {
-    const timePeriodEnd = new Date('2024-05-05');
     const buildResult = ({ value = '-', tooltip = 'No data' } = {}) => ({
       code_suggestions_usage_rate: {
         identifier: 'code_suggestions_usage_rate',
@@ -12,22 +11,7 @@ describe('AI impact dashboard api', () => {
     });
 
     it('returns `-` and `No data` tooltip when the payload is undefined', () => {
-      expect(extractGraphqlAiData({ timePeriodEnd })).toEqual(buildResult());
-    });
-
-    it('has tooltip when `timePeriodEnd` is earlier than the code suggestions start date', () => {
-      expect(
-        extractGraphqlAiData({
-          timePeriodEnd: new Date('2024-04-01'),
-        }),
-      ).toEqual({
-        code_suggestions_usage_rate: {
-          identifier: 'code_suggestions_usage_rate',
-          value: '-',
-          tooltip:
-            'Usage rate for Code Suggestions is calculated with data starting on Apr 04, 2024',
-        },
-      });
+      expect(extractGraphqlAiData()).toEqual(buildResult());
     });
 
     it.each`
@@ -41,7 +25,6 @@ describe('AI impact dashboard api', () => {
       ({ codeSuggestionsContributorsCount, codeContributorsCount, result }) => {
         expect(
           extractGraphqlAiData({
-            timePeriodEnd,
             codeSuggestionsContributorsCount,
             codeContributorsCount,
           }),

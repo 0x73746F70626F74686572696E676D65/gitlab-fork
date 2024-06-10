@@ -5,7 +5,19 @@ exports[`Metric table for the change_failure_rate table row when the data is loa
     Percentage of deployments that cause an incident in production.
     
       Go to docs
-       10.0%  20.0%  40.0%  10.0%  20.0%  40.0% 
+      
+        10.0%
+       
+        20.0%
+       
+        40.0%
+       
+        10.0%
+       
+        20.0%
+       
+        40.0%
+       
   100.0%"
 `;
 
@@ -15,18 +27,18 @@ exports[`Metric table for the code_suggestions_usage_rate table row when the dat
     
       Go to docs
       
-      5.0%
-    
-      10.0%
-    
-      25.0%
-    
-      5.0%
-    
-      10.0%
-    
-      25.0%
-    
+        5.0%
+       The usage data may be incomplete due to backend calculations starting after upgrade to GitLab 16.11. For more information, see epic 12978.
+        10.0%
+       The usage data may be incomplete due to backend calculations starting after upgrade to GitLab 16.11. For more information, see epic 12978.
+        25.0%
+       The usage data may be incomplete due to backend calculations starting after upgrade to GitLab 16.11. For more information, see epic 12978.
+        5.0%
+       The usage data may be incomplete due to backend calculations starting after upgrade to GitLab 16.11. For more information, see epic 12978.
+        10.0%
+       The usage data may be incomplete due to backend calculations starting after upgrade to GitLab 16.11. For more information, see epic 12978.
+        25.0%
+       The usage data may be incomplete due to backend calculations starting after upgrade to GitLab 16.11. For more information, see epic 12978.
   100.0%"
 `;
 
@@ -35,7 +47,19 @@ exports[`Metric table for the cycle_time table row when the data is loaded rende
     Median time from the earliest commit of a linked issue's merge request to when that issue is closed.
     
       Go to docs
-       4.0 d  2.0 d  1.0 d  4.0 d  2.0 d  1.0 d 
+      
+        4.0 d
+       
+        2.0 d
+       
+        1.0 d
+       
+        4.0 d
+       
+        2.0 d
+       
+        1.0 d
+       
   50.0%"
 `;
 
@@ -44,7 +68,19 @@ exports[`Metric table for the deployment_frequency table row when the data is lo
     Average number of deployments to production per day. This metric measures how often value is delivered to end users.
     
       Go to docs
-       10.0/d  20.0/d  40.0/d  10.0/d  20.0/d  40.0/d 
+      
+        10.0/d
+       
+        20.0/d
+       
+        40.0/d
+       
+        10.0/d
+       
+        20.0/d
+       
+        40.0/d
+       
   100.0%"
 `;
 
@@ -53,7 +89,18 @@ exports[`Metric table for the lead_time table row when the data is loaded render
     Median time from issue created to issue closed.
     
       Go to docs
-       -  2.0 d  4.0 d  1.0 d  2.0 d  4.0 d"
+      
+        -
+       
+        2.0 d
+       
+        4.0 d
+       
+        1.0 d
+       
+        2.0 d
+       
+        4.0 d"
 `;
 
 exports[`Metric table for the vulnerability_critical table row when the data is loaded renders the metric values 1`] = `
@@ -61,6 +108,18 @@ exports[`Metric table for the vulnerability_critical table row when the data is 
     Critical vulnerabilities over time.
     
       Go to docs
-       40  20  10  40  20  10 
+      
+        40
+       
+        20
+       
+        10
+       
+        40
+       
+        20
+       
+        10
+       
   50.0%"
 `;

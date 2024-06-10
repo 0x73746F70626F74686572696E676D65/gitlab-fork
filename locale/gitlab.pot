@@ -4730,7 +4730,7 @@ msgstr ""
 msgid "AiImpactAnalytics|Monthly user engagement with AI Code Suggestions. Percentage ratio calculated as monthly unique Code Suggestions users / total monthly unique code contributors."
 msgstr ""
 
-msgid "AiImpactAnalytics|Usage rate for Code Suggestions is calculated with data starting on %{startDate}"
+msgid "AiImpactAnalytics|The usage data may be incomplete due to backend calculations starting after upgrade to GitLab 16.11. For more information, see %{linkStart}epic 12978%{linkEnd}."
 msgstr ""
 
 msgid "Akismet"
