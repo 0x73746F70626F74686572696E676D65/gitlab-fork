@@ -5016,6 +5016,7 @@ CREATE TABLE approval_group_rules (
     scan_result_policy_id bigint,
     name text NOT NULL,
     applies_to_all_protected_branches boolean DEFAULT false NOT NULL,
+    approval_policy_rule_id bigint,
     CONSTRAINT check_25d42add43 CHECK ((char_length(name) <= 255))
 );
 
@@ -5109,6 +5110,7 @@ CREATE TABLE approval_merge_request_rules (
     scan_result_policy_id bigint,
     applicable_post_merge boolean,
     project_id bigint,
+    approval_policy_rule_id bigint,
     CONSTRAINT check_6fca5928b2 CHECK ((char_length(section) <= 255))
 );
 
@@ -5202,7 +5204,8 @@ CREATE TABLE approval_project_rules (
     orchestration_policy_idx smallint,
     applies_to_all_protected_branches boolean DEFAULT false NOT NULL,
     security_orchestration_policy_configuration_id bigint,
-    scan_result_policy_id bigint
+    scan_result_policy_id bigint,
+    approval_policy_rule_id bigint
 );
 
 CREATE TABLE approval_project_rules_groups (
@@ -16283,7 +16286,8 @@ CREATE TABLE scan_result_policy_violations (
     project_id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    violation_data jsonb
+    violation_data jsonb,
+    approval_policy_rule_id bigint
 );
 
 CREATE SEQUENCE scan_result_policy_violations_id_seq
@@ -16832,6 +16836,7 @@ CREATE TABLE software_license_policies (
     updated_at timestamp with time zone NOT NULL,
     scan_result_policy_id bigint,
     custom_software_license_id bigint,
+    approval_policy_rule_id bigint,
     CONSTRAINT check_9ba23ae4c3 CHECK ((num_nonnulls(custom_software_license_id, software_license_id) = 1))
 );
 
