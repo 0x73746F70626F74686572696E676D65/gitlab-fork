@@ -31789,6 +31789,9 @@ msgstr ""
 msgid "MemberRole|Change role"
 msgstr ""
 
+msgid "MemberRole|Could not check guest overage."
+msgstr ""
+
 msgid "MemberRole|Could not fetch available permissions."
 msgstr ""
 
