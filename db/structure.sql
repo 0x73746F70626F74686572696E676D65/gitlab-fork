@@ -18508,6 +18508,7 @@ CREATE TABLE vulnerability_reads (
     owasp_top_10 smallint,
     traversal_ids bigint[] DEFAULT '{}'::bigint[],
     archived boolean DEFAULT false NOT NULL,
+    identifier_external_ids text[] DEFAULT '{}'::text[] NOT NULL,
     CONSTRAINT check_380451bdbe CHECK ((char_length(location_image) <= 2048)),
     CONSTRAINT check_4b1a1bf5ea CHECK ((has_merge_request IS NOT NULL)),
     CONSTRAINT check_a105eb825a CHECK ((char_length(cluster_agent_id) <= 10)),
