@@ -28,7 +28,6 @@ module API
     helpers do
       def model_gateway_headers(headers, gateway_token)
         {
-          'X-Gitlab-Authentication-Type' => 'oidc',
           # Forward the request time on to the model gateway to calculate latency
           'X-Gitlab-Rails-Send-Start' => Time.now.to_f.to_s,
           'Authorization' => "Bearer #{gateway_token}",
@@ -39,7 +38,7 @@ module API
       end
 
       def connector_public_headers
-        cloud_connector_headers(current_user).merge(saas_headers)
+        cloud_connector_headers(current_user).merge(saas_headers).merge('X-Gitlab-Authentication-Type' => 'oidc')
       end
 
       def saas_headers
