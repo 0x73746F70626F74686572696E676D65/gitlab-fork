@@ -8,5 +8,20 @@ description: Stores rules of a Security Orchestration Policy.
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/109624
 milestone: '15.9'
 gitlab_schema: gitlab_main_cell
-sharding_key:
-  project_id: projects
+desired_sharding_key:
+  project_id:
+    references: projects
+    backfill_via:
+      parent:
+        foreign_key: security_orchestration_policy_configuration_id
+        table: security_orchestration_policy_configurations
+        sharding_key: project_id
+        belongs_to: security_orchestration_policy_configuration
+  namespace_id:
+    references: namespaces
+    backfill_via:
+      parent:
+        foreign_key: security_orchestration_policy_configuration_id
+        table: security_orchestration_policy_configurations
+        sharding_key: namespace_id
+        belongs_to: security_orchestration_policy_configuration
