@@ -897,6 +897,22 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_3fe922f4db67() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "vulnerabilities"
+  WHERE "vulnerabilities"."id" = NEW."vulnerability_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_43484cb41aca() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -18431,7 +18447,8 @@ CREATE TABLE vulnerability_merge_request_links (
     vulnerability_id bigint NOT NULL,
     merge_request_id integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    project_id bigint
 );
 
 CREATE SEQUENCE vulnerability_merge_request_links_id_seq
@@ -28653,6 +28670,8 @@ CREATE INDEX index_vulnerability_issue_links_on_issue_id ON vulnerability_issue_
 
 CREATE INDEX index_vulnerability_merge_request_links_on_merge_request_id ON vulnerability_merge_request_links USING btree (merge_request_id);
 
+CREATE INDEX index_vulnerability_merge_request_links_on_project_id ON vulnerability_merge_request_links USING btree (project_id);
+
 CREATE INDEX index_vulnerability_occurrence_identifiers_on_identifier_id ON vulnerability_occurrence_identifiers USING btree (identifier_id);
 
 CREATE UNIQUE INDEX index_vulnerability_occurrence_identifiers_on_unique_keys ON vulnerability_occurrence_identifiers USING btree (occurrence_id, identifier_id);
@@ -30705,6 +30724,8 @@ CREATE TRIGGER trigger_3857ca5ea4af BEFORE INSERT OR UPDATE ON merge_trains FOR 
 
 CREATE TRIGGER trigger_388e93f88fdd BEFORE INSERT OR UPDATE ON packages_build_infos FOR EACH ROW EXECUTE FUNCTION trigger_388e93f88fdd();
 
+CREATE TRIGGER trigger_3fe922f4db67 BEFORE INSERT OR UPDATE ON vulnerability_merge_request_links FOR EACH ROW EXECUTE FUNCTION trigger_3fe922f4db67();
+
 CREATE TRIGGER trigger_43484cb41aca BEFORE INSERT OR UPDATE ON wiki_repository_states FOR EACH ROW EXECUTE FUNCTION trigger_43484cb41aca();
 
 CREATE TRIGGER trigger_44558add1625 BEFORE INSERT OR UPDATE ON merge_request_assignees FOR EACH ROW EXECUTE FUNCTION trigger_44558add1625();
@@ -31994,6 +32015,9 @@ ALTER TABLE ONLY pages_domains
 
 ALTER TABLE ONLY dast_profiles_tags
     ADD CONSTRAINT fk_eb7e19f8da FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY vulnerability_merge_request_links
+    ADD CONSTRAINT fk_ec0f8ab831 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY catalog_resource_components
     ADD CONSTRAINT fk_ec417536da FOREIGN KEY (catalog_resource_id) REFERENCES catalog_resources(id) ON DELETE CASCADE;
