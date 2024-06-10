@@ -2,7 +2,7 @@
 import { GlCard, GlBadge } from '@gitlab/ui';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { s__ } from '~/locale';
-import { formatTraceDuration, findRootSpan } from '../trace_utils';
+import { formatTraceDuration } from '../trace_utils';
 
 const CARD_CLASS = 'gl-mr-7 gl-w-3/20 gl-min-w-fit';
 const HEADER_CLASS = 'gl-p-2 gl-font-bold gl-flex gl-justify-center gl-items-center';
@@ -25,6 +25,10 @@ export default {
       required: true,
       type: Object,
     },
+    incomplete: {
+      required: true,
+      type: Boolean,
+    },
   },
   computed: {
     title() {
@@ -39,9 +43,6 @@ export default {
     traceDuration() {
       return formatTraceDuration(this.trace.duration_nano);
     },
-    isTraceInProgress() {
-      return !findRootSpan(this.trace);
-    },
   },
 };
 </script>
@@ -50,13 +51,9 @@ export default {
   <div class="gl-mb-6">
     <h1>
       {{ title }}
-      <gl-badge
-        v-if="isTraceInProgress"
-        variant="warning"
-        size="md"
-        class="gl-ml-3 gl-align-middle"
-        >{{ $options.i18n.inProgress }}</gl-badge
-      >
+      <gl-badge v-if="incomplete" variant="warning" size="md" class="gl-ml-3 gl-align-middle">{{
+        $options.i18n.inProgress
+      }}</gl-badge>
     </h1>
 
     <div class="gl-display-flex gl-flex-wrap gl-justify-content-center gl-my-7 gl-gap-y-6">

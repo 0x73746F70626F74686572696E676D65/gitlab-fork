@@ -16,10 +16,11 @@ describe('TracingHeader', () => {
     ],
   };
 
-  const createComponent = (trace = defaultTrace) => {
+  const createComponent = (trace = defaultTrace, incomplete = false) => {
     wrapper = shallowMountExtended(TracingHeader, {
       propsData: {
         trace,
+        incomplete,
       },
     });
   };
@@ -31,15 +32,17 @@ describe('TracingHeader', () => {
     expect(wrapper.find('h1').text()).toBe('Service : Operation');
   });
 
-  it('does not show the in progress label when the root span is not missing', () => {
+  it('does not show the in progress label if incomplete=false', () => {
     expect(wrapper.find('h1').text()).not.toContain('In progress');
   });
 
-  it('shows the in progress label when the root span is missing', () => {
-    createComponent({
-      ...defaultTrace,
-      spans: [{ span_id: 'span-2', parent_span_id: 'span-1' }],
-    });
+  it('shows the in progress label when incomplete=true', () => {
+    createComponent(
+      {
+        ...defaultTrace,
+      },
+      true,
+    );
 
     expect(wrapper.find('h1').text()).toContain('In progress');
   });

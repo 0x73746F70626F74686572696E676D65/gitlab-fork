@@ -8,9 +8,11 @@ import TracingDetails from 'ee/tracing/details/tracing_details.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
+import { mapTraceToSpanTrees } from 'ee/tracing/trace_utils';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
+jest.mock('ee/tracing/trace_utils');
 
 describe('TracingDetails', () => {
   let wrapper;
@@ -61,9 +63,11 @@ describe('TracingDetails', () => {
       traceId: 'test-trace-id',
       spans: [{ span_id: 'span-1' }, { span_id: 'span-2' }],
     };
+    const mockTree = { roots: [{ span_id: 'span-1' }], incomplete: true };
     beforeEach(async () => {
       observabilityClientMock.isObservabilityEnabled.mockResolvedValueOnce(true);
       observabilityClientMock.fetchTrace.mockResolvedValueOnce(mockTrace);
+      mapTraceToSpanTrees.mockReturnValue(mockTree);
 
       await mountComponent();
     });
@@ -75,10 +79,18 @@ describe('TracingDetails', () => {
       expect(findTraceDetails().exists()).toBe(true);
     });
 
-    it('renders the correct components', () => {
-      const details = findTraceDetails();
-      expect(findTraceChart().exists()).toBe(true);
-      expect(details.findComponent(TracingHeader).exists()).toBe(true);
+    it('renders the chart component', () => {
+      const chart = findTraceChart();
+      expect(chart.exists()).toBe(true);
+      expect(chart.props('trace')).toEqual(mockTrace);
+      expect(chart.props('spanTrees')).toEqual(mockTree.roots);
+    });
+
+    it('renders the header', () => {
+      const header = findTraceDetails().findComponent(TracingHeader);
+      expect(header.exists()).toBe(true);
+      expect(header.props('incomplete')).toBe(mockTree.incomplete);
+      expect(header.props('trace')).toEqual(mockTrace);
     });
 
     describe('details drawer', () => {

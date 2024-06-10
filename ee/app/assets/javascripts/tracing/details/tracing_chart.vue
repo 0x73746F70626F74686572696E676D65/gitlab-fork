@@ -1,5 +1,5 @@
 <script>
-import { mapTraceToTreeRoot, durationNanoToMs, assignColorToServices } from '../trace_utils';
+import { durationNanoToMs, assignColorToServices } from '../trace_utils';
 import TracingSpansChart from './tracing_spans_chart.vue';
 
 export default {
@@ -11,6 +11,10 @@ export default {
       required: true,
       type: Object,
     },
+    spanTrees: {
+      required: true,
+      type: Array,
+    },
     selectedSpanId: {
       required: false,
       type: String,
@@ -18,10 +22,6 @@ export default {
     },
   },
   computed: {
-    spans() {
-      const root = mapTraceToTreeRoot(this.trace);
-      return root ? [root] : [];
-    },
     traceDurationMs() {
       return durationNanoToMs(this.trace.duration_nano);
     },
@@ -30,6 +30,9 @@ export default {
     },
   },
   methods: {
+    spans(tree) {
+      return [tree];
+    },
     onSelect({ spanId }) {
       this.$emit('span-selected', { spanId });
     },
@@ -38,11 +41,16 @@ export default {
 </script>
 
 <template>
-  <tracing-spans-chart
-    :spans="spans"
-    :trace-duration-ms="traceDurationMs"
-    :service-to-color="serviceToColor"
-    :selected-span-id="selectedSpanId"
-    @span-selected="onSelect"
-  />
+  <div>
+    <tracing-spans-chart
+      v-for="tree in spanTrees"
+      :key="tree.id"
+      custom-class="gl-my-4 gl-border gl-rounded-base gl-border-b-0 gl-overflow-x-scroll"
+      :spans="spans(tree)"
+      :trace-duration-ms="traceDurationMs"
+      :service-to-color="serviceToColor"
+      :selected-span-id="selectedSpanId"
+      @span-selected="onSelect"
+    />
+  </div>
 </template>
