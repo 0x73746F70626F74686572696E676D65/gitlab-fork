@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { GlTooltip } from '@gitlab/ui';
 import {
   FLOW_METRICS,
   DORA_METRICS,
@@ -9,7 +10,6 @@ import {
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import FlowMetricsQuery from 'ee/analytics/dashboards/ai_impact/graphql/flow_metrics.query.graphql';
 import DoraMetricsQuery from 'ee/analytics/dashboards/ai_impact/graphql/dora_metrics.query.graphql';
 import VulnerabilitiesQuery from 'ee/analytics/dashboards/ai_impact/graphql/vulnerabilities.query.graphql';
@@ -85,9 +85,6 @@ describe('Metric table', () => {
         namespace,
         isProject,
         ...props,
-      },
-      directives: {
-        GlTooltip: createMockDirective('gl-tooltip'),
       },
     });
 
@@ -191,33 +188,21 @@ describe('Metric table', () => {
         });
       }
 
-      if (hasValueTooltips) {
-        it('adds tooltip to value cells', () => {
-          const tooltip = getBinding(findValueTableCells(testId).at(0).element, 'gl-tooltip');
+      it(`${hasValueTooltips ? 'adds' : 'does not add'} tooltip to value cells`, () => {
+        const tooltip = findValueTableCells(testId).at(0).findComponent(GlTooltip);
+        expect(tooltip.exists()).toBe(hasValueTooltips);
+      });
 
-          expect(tooltip).toBeDefined();
-        });
+      it(`${hasValueTooltips ? 'adds' : 'does not add'} hover classes to value cells`, () => {
+        const hoverClasses = ['gl-cursor-pointer', 'hover:gl-underline'];
+        const formattedMetric = findValueTableCells(testId)
+          .at(0)
+          .find('[data-testid="formatted-metric-value"]');
 
-        it('adds hover classes to value cells', () => {
-          expect(findValueTableCells(testId).at(0).classes()).toContain(
-            'gl-cursor-pointer',
-            'hover:gl-underline',
-          );
-        });
-      } else {
-        it('does not add tooltip to value cells', () => {
-          const tooltip = getBinding(findValueTableCells(testId).at(0).element, 'gl-tooltip');
-
-          expect(tooltip).toBeUndefined();
-        });
-
-        it('does not add hover classes to value cells', () => {
-          expect(findValueTableCells(testId).at(0).classes()).not.toContain(
-            'gl-cursor-pointer',
-            'hover:gl-underline',
-          );
-        });
-      }
+        expect(formattedMetric.classes().some((c) => hoverClasses.includes(c))).toBe(
+          hasValueTooltips,
+        );
+      });
     });
   });
 
