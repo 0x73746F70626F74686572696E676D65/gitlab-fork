@@ -11129,6 +11129,9 @@ msgstr ""
 msgid "CiCatalog|Set component project as a CI/CD Catalog project. %{linkStart}What is the CI/CD Catalog?%{linkEnd}"
 msgstr ""
 
+msgid "CiCatalog|The number of projects that used a component from this project in a pipeline, by using \"include:component\", in the last 30 days."
+msgstr ""
+
 msgid "CiCatalog|The project and any released versions will be removed from the CI/CD Catalog. If you re-enable this toggle, the project's existing releases are not re-added to the catalog. You must %{linkStart}create a new release%{linkEnd}."
 msgstr ""
 
