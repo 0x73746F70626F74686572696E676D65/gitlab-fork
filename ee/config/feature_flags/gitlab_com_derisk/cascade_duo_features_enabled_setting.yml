@@ -1,9 +1,0 @@
----
-name: cascade_duo_features_enabled_setting
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/441482
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/145876
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/460874
-milestone: '17.1'
-group: group::ai framework
-type: gitlab_com_derisk
-default_enabled: false

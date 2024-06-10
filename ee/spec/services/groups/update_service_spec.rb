@@ -563,28 +563,12 @@ RSpec.describe Groups::UpdateService, '#execute', feature_category: :groups_and_
       context 'group has subgroups' do
         let(:subgroup) { create(:group, parent: group) }
 
-        context 'when the cascade duo features flag is on' do
-          it 'runs worker that sets subgroup duo_features_enabled to match group', :sidekiq_inline do
-            subgroup.namespace_settings.update!(duo_features_enabled: true)
+        it 'runs worker that sets subgroup duo_features_enabled to match group', :sidekiq_inline do
+          subgroup.namespace_settings.update!(duo_features_enabled: true)
 
-            update_group(group, user, params)
+          update_group(group, user, params)
 
-            expect(subgroup.reload.namespace_settings.reload.duo_features_enabled).to eq false
-          end
-        end
-
-        context 'when the cascade duo features flag is off' do
-          before do
-            stub_feature_flags(cascade_duo_features_enabled_setting: false)
-          end
-
-          it 'does not run worker that sets subgroup duo_features_enabled to match group', :sidekiq_inline do
-            subgroup.namespace_settings.update!(duo_features_enabled: true)
-
-            update_group(group, user, params)
-
-            expect(subgroup.reload.namespace_settings.reload.duo_features_enabled).to eq true
-          end
+          expect(subgroup.reload.namespace_settings.reload.duo_features_enabled).to eq false
         end
       end
     end
