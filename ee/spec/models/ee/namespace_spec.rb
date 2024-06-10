@@ -497,17 +497,17 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
         it { is_expected.to contain_exactly(ultimate_namespace, ultimate_trial_namespace, premium_namespace, opensource_namespace) }
       end
     end
-  end
 
-  describe '.with_group_wiki_repositories' do
-    subject { described_class.with_group_wiki_repositories }
+    describe '.with_group_wiki_repositories' do
+      subject { described_class.with_group_wiki_repositories }
 
-    let_it_be(:namespace_without_group_wiki_repository) { create(:group) }
+      let_it_be(:namespace_without_group_wiki_repository) { create(:group) }
 
-    let_it_be(:namespace_with_group_wiki_repository) { create(:group) }
-    let_it_be(:group_wiki_repository) { create(:group_wiki_repository, group: namespace_with_group_wiki_repository) }
+      let_it_be(:namespace_with_group_wiki_repository) { create(:group) }
+      let_it_be(:group_wiki_repository) { create(:group_wiki_repository, group: namespace_with_group_wiki_repository) }
 
-    it { is_expected.to contain_exactly(namespace_with_group_wiki_repository) }
+      it { is_expected.to contain_exactly(namespace_with_group_wiki_repository) }
+    end
   end
 
   context 'validation' do
