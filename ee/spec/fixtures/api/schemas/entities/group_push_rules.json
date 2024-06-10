@@ -61,6 +61,9 @@
     },
     "reject_unsigned_commits": {
       "type": "boolean"
+    },
+    "reject_non_dco_commits": {
+      "type": "boolean"
     }
   },
   "required": [

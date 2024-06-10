@@ -20,6 +20,7 @@ module EE
         expose_restricted :commit_committer_check, documentation: { type: 'boolean', example: true }, &:project
         expose_restricted :commit_committer_name_check, documentation: { type: 'boolean', example: true }, &:project
         expose_restricted :reject_unsigned_commits, documentation: { type: 'boolean', example: true }, &:project
+        expose_restricted :reject_non_dco_commits, documentation: { type: 'boolean', example: true }, &:project
       end
     end
   end

@@ -605,12 +605,17 @@ module EE
 
       rule { can?(:admin_push_rules) }.policy do
         enable :change_push_rules
+
         enable :read_commit_committer_check
         enable :change_commit_committer_check
+
         enable :read_commit_committer_name_check
         enable :change_commit_committer_name_check
+
         enable :read_reject_unsigned_commits
         enable :change_reject_unsigned_commits
+
+        enable :read_reject_non_dco_commits
         enable :change_reject_non_dco_commits
       end
 
@@ -634,6 +639,7 @@ module EE
       end
 
       rule { ~reject_non_dco_commits_available }.policy do
+        prevent :read_reject_non_dco_commits
         prevent :change_reject_non_dco_commits
       end
 
