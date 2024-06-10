@@ -9368,7 +9368,7 @@ msgstr ""
 msgid "Branches|Please type the following to confirm:"
 msgstr ""
 
-msgid "Branches|Plese type the following to confirm: %{codeStart}delete%{codeEnd}."
+msgid "Branches|Please type the following to confirm: %{codeStart}delete%{codeEnd}."
 msgstr ""
 
 msgid "Branches|See all branch-related settings together with branch rules"
