@@ -56,7 +56,7 @@ export default (base, props) => {
         path: '/:id',
         component: SecretTabs,
         props: ({ params: { id }, name }) => {
-          return { secretId: Number(id), routeName: name };
+          return { fullPath, secretId: Number(id), routeName: name };
         },
         children: [
           {

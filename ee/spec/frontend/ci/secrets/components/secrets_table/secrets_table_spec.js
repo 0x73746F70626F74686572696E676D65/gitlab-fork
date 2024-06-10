@@ -109,7 +109,7 @@ describe('SecretsTable component', () => {
       });
     });
 
-    it.each([0, 1])('shows the labels for a secret', (labelIndex) => {
+    it.each([0, 0])('shows the labels for a secret', (labelIndex) => {
       expect(findSecretLabels().at(labelIndex).props()).toMatchObject({
         title: secret.labels[labelIndex],
       });

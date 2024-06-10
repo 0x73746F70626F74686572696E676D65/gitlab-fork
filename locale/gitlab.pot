@@ -15691,6 +15691,9 @@ msgstr ""
 msgid "Created on %{created_at}"
 msgstr ""
 
+msgid "Created on %{date}"
+msgstr ""
+
 msgid "Created on:"
 msgstr ""
 
@@ -46850,6 +46853,9 @@ msgstr ""
 msgid "Secrets|Delete"
 msgstr ""
 
+msgid "Secrets|Details"
+msgstr ""
+
 msgid "Secrets|Edit %{id}"
 msgstr ""
 
@@ -46857,6 +46863,9 @@ msgid "Secrets|Edit secret"
 msgstr ""
 
 msgid "Secrets|Enter a key name"
+msgstr ""
+
+msgid "Secrets|Failed to load secret. Please try again later."
 msgstr ""
 
 msgid "Secrets|Intervals"
@@ -46878,9 +46887,6 @@ msgid "Secrets|Revoke"
 msgstr ""
 
 msgid "Secrets|Rotation period"
-msgstr ""
-
-msgid "Secrets|Secret details"
 msgstr ""
 
 msgid "Secrets|Secret key"
@@ -62219,6 +62225,9 @@ msgid "entries cannot be nil"
 msgstr ""
 
 msgid "entries cannot contain HTML tags"
+msgstr ""
+
+msgid "env"
 msgstr ""
 
 msgid "epic"
