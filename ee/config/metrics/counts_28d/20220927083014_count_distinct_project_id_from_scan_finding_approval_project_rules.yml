@@ -1,8 +1,6 @@
 ---
   key_path: usage_activity_by_stage_monthly.govern.count_distinct_project_id_from_scan_finding_approval_project_rules
   description: "The total number of projects with at least one scan result policy"
-  product_section: sec
-  product_stage: govern
   product_group: security_policies
   value_type: number
   status: active

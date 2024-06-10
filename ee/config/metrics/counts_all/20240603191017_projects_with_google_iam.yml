@@ -1,8 +1,6 @@
 ---
 key_path: counts.projects_google_cloud_platform_workload_identity_federation_active
 description: Count of projects with the Google Cloud IAM integration enabled.
-product_section: sec
-product_stage: govern
 product_group: authentication
 value_type: number
 status: active

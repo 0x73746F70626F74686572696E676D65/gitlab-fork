@@ -2,7 +2,6 @@
 key_path: analytics_unique_visits.g_metrics_comparison_page
 description: Removed as duplicate of redis_hll_counters.analytics.g_metrics_comparison_page_weekly
 product_group: optimize
-product_category:
 value_type: number
 status: removed
 milestone: "15.11"
