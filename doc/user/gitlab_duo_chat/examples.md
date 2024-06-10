@@ -9,7 +9,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 GitLab Duo Chat can help with a variety of questions. The following examples
 represent some of the areas where GitLab Duo Chat can be the most helpful.
 
-For additional practical examples, see the [GitLab Duo examples](questions.md).
+For additional practical examples, see the [GitLab Duo use cases](../gitlab_duo/use_cases.md).
 
 ## Ask about GitLab
 

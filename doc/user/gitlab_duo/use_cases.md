@@ -1,12 +1,15 @@
 ---
 stage: AI-powered
-group: Duo Chat
+group: AI Model Validation
+description: AI-powered features and functionality.
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://handbook.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
-# GitLab Duo examples
+<!-- This page is maintained by Developer Relations, author @dnsmichi. -->
 
-The following use cases describe practical examples with GitLab Duo.
+# GitLab Duo use cases
+
+The following use cases describe practical use cases with GitLab Duo.
 Learn how to start with software development and refactor existing source code.
 Dive into debugging problems with root cause analysis, solve security vulnerabilities,
 and use all stages of the DevSecOps lifecycle.

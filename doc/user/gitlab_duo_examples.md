@@ -1,9 +1,9 @@
 ---
-redirect_to: '../user/gitlab_duo_chat/questions.md'
+redirect_to: '../user/gitlab_duo/use_cases.md'
 remove_date: '2024-09-07'
 ---
 
-This document was moved to [another location](../user/gitlab_duo_chat/questions.md).
+This document was moved to [another location](../user/gitlab_duo/use_cases.md).
 
 <!-- This redirect file can be deleted after <2024-09-07>. -->
 <!-- Redirects that point to other docs in the same project expire in three months. -->
