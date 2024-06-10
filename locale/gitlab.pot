@@ -30958,9 +30958,6 @@ msgstr ""
 msgid "LinkedIn:"
 msgstr ""
 
-msgid "LinkedPipelines|%{counterLabel} more downstream pipelines"
-msgstr ""
-
 msgid "LinkedResources|Add"
 msgstr ""
 
@@ -38422,6 +38419,9 @@ msgid "Pipelines settings for '%{project_name}' were successfully updated."
 msgstr ""
 
 msgid "Pipelines|\"Hello world\" with GitLab CI"
+msgstr ""
+
+msgid "Pipelines|%{counterLabel} more downstream pipelines"
 msgstr ""
 
 msgid "Pipelines|Active train"
