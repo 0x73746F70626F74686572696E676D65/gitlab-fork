@@ -92,42 +92,57 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
   describe '#rewrite_epic_issue' do
     context 'issue assigned to epic' do
       let(:epic) { create(:epic, group: group) }
-      let!(:epic_issue) { create(:epic_issue, issue: old_issue, epic: epic) }
+      let(:epic_issue) { create(:epic_issue, issue: old_issue, epic: epic) }
 
       before do
         stub_licensed_features(epics: true)
       end
 
-      it 'updates epic issue reference' do
-        epic_issue.epic.group.add_reporter(user)
-
-        new_issue = move_service.execute(old_issue, new_project)
-
-        expect(new_issue.epic_issue).to eq(epic_issue)
-      end
-
-      describe 'events tracking', :snowplow do
-        subject(:issue_move) { move_service.execute(old_issue, new_project) }
-
+      context 'when user can update the epic' do
         before do
-          epic_issue.epic.group.add_reporter(user)
+          # Multiple internal events are triggered by creating/updating the issue,
+          # so trigger irrelevant events outside of the metric time ranges
+          travel_to(2.months.ago) do
+            epic_issue.epic.group.add_reporter(user)
+          end
         end
 
-        it 'tracks usage data for changed epic action' do
-          expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).to receive(:track_issue_changed_epic_action)
-                                                                             .with(author: user, project: new_project)
+        it 'updates epic issue reference' do
+          new_issue = move_service.execute(old_issue, new_project)
 
-          subject
+          expect(new_issue.epic_issue).to eq(epic_issue)
         end
 
-        it_behaves_like 'internal event tracking' do
-          let(:event) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC }
-          let(:project) { new_project }
-          let(:namespace) { project.namespace }
+        it 'tracks usage data for changed epic action', :clean_gitlab_redis_shared_state do
+          expect { move_service.execute(old_issue, new_project) }
+            .to trigger_internal_events(
+              Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC,
+              Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_MOVED,
+              Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CREATED
+            ).with(user: user, project: new_project, category: 'InternalEventTracking')
+            .and trigger_internal_events(
+              Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CLOSED,
+              Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_MOVED
+            ).with(user: user, project: old_project, category: 'InternalEventTracking')
+            .and increment_usage_metrics(
+              "redis_hll_counters.issues_edit.g_project_management_issue_changed_epic_monthly",
+              "redis_hll_counters.issues_edit.g_project_management_issue_changed_epic_weekly",
+              "redis_hll_counters.issues_edit.issues_edit_total_unique_counts_monthly",
+              "redis_hll_counters.issues_edit.issues_edit_total_unique_counts_weekly"
+            )
+        end
+
+        context 'epic update fails' do
+          it 'does not send usage data for changed epic action' do
+            allow(old_issue.epic_issue).to receive(:update).and_return(false)
+
+            expect { move_service.execute(old_issue, new_project) }
+              .not_to trigger_internal_events(Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC)
+          end
         end
       end
 
-      context 'user can not update the epic' do
+      context 'when user can not update the epic' do
         it 'ignores epic issue reference' do
           new_issue = move_service.execute(old_issue, new_project)
 
@@ -135,21 +150,8 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
         end
 
         it 'does not send usage data for changed epic action' do
-          expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).not_to receive(:track_issue_changed_epic_action)
-
-          move_service.execute(old_issue, new_project)
-        end
-      end
-
-      context 'epic update fails' do
-        it 'does not send usage data for changed epic action' do
-          allow_next_instance_of(::EpicIssue) do |epic_issue|
-            allow(epic_issue).to receive(:update).and_return(false)
-          end
-
-          expect(Gitlab::UsageDataCounters::IssueActivityUniqueCounter).not_to receive(:track_issue_changed_epic_action)
-
-          move_service.execute(old_issue, new_project)
+          expect { move_service.execute(old_issue, new_project) }
+            .not_to trigger_internal_events(Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC)
         end
       end
     end

@@ -34,7 +34,11 @@ RSpec.describe ResourceIterationEvent, :snowplow, feature_category: :team_planni
   # Move inside timebox_resource_tracks_issue_metrics when milestone is migrated
   # from https://gitlab.com/gitlab-org/gitlab/-/issues/365960
   describe 'when creating an issue' do
-    let(:issue) { create(:issue) }
+    let(:issue) do
+      # The g_project_management_issue_created event is triggered by creating the issue.
+      # So we'll trigger the irrelevant event outside of the metric time ranges
+      travel_to(2.months.ago) { create(:issue) }
+    end
 
     it_behaves_like 'internal event tracking' do
       let(:event) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ITERATION_CHANGED }

@@ -33,38 +33,54 @@ RSpec.describe GitlabSubscriptions::Trials::CreateDuoProService, feature_categor
     it_behaves_like 'with an unknown step'
     it_behaves_like 'with no step'
 
-    context 'for tracking the lead step' do
-      context 'when lead creation is successful regardless' do
-        let_it_be(:namespace) do
-          create(:group_with_plan, plan: :ultimate_plan, name: 'gitlab') { |record| record.add_owner(user) }
-        end
-
-        before do
-          expect_create_lead_success(trial_user_params)
-          expect_apply_trial_fail(user, namespace, extra_params: existing_group_attrs(namespace))
-        end
-
-        it_behaves_like 'internal event tracking' do
-          let(:event) { 'duo_pro_lead_creation_success' }
-
-          subject(:track_event) { execute }
-        end
+    context 'for tracking the lead step', :clean_gitlab_redis_shared_state do
+      let_it_be(:namespace) do
+        create(:group_with_plan, plan: :ultimate_plan, name: 'gitlab') { |record| record.add_owner(user) }
       end
 
-      context 'when lead creation fails' do
-        before do
-          expect_create_lead_fail(trial_user_params)
-        end
+      it 'tracks when lead creation is successful' do
+        expect_create_lead_success(trial_user_params)
+        expect_apply_trial_fail(user, namespace, extra_params: existing_group_attrs(namespace))
 
-        it_behaves_like 'internal event tracking' do
-          let(:event) { 'duo_pro_lead_creation_failure' }
+        expect { execute }.to trigger_internal_events(
+          'duo_pro_lead_creation_success'
+        ).with(user: user, category: 'InternalEventTracking')
+        .and trigger_internal_events(
+          'duo_pro_trial_registration_failure'
+        ).with(user: user, namespace: namespace, category: 'InternalEventTracking')
+        .and not_trigger_internal_events(
+          'duo_pro_trial_registration_success',
+          'duo_pro_lead_creation_failure'
+        ).and increment_usage_metrics(
+          'counts.count_total_duo_pro_lead_creation_success',
+          'counts.count_total_duo_pro_trial_registration_failure'
+        ).and not_increment_usage_metrics(
+          'counts.count_total_duo_pro_trial_registration_success',
+          'counts.count_total_duo_pro_lead_creation_failure'
+        )
+      end
 
-          subject(:track_event) { execute }
-        end
+      it 'tracks when lead creation fails' do
+        expect_create_lead_fail(trial_user_params)
+
+        expect { execute }.to trigger_internal_events(
+          'duo_pro_lead_creation_failure'
+        ).with(user: user, category: 'InternalEventTracking')
+        .and not_trigger_internal_events(
+          'duo_pro_lead_creation_success',
+          'duo_pro_trial_registration_failure',
+          'duo_pro_trial_registration_success'
+        ).and increment_usage_metrics(
+          'counts.count_total_duo_pro_lead_creation_failure'
+        ).and not_increment_usage_metrics(
+          'counts.count_total_duo_pro_lead_creation_success',
+          'counts.count_total_duo_pro_trial_registration_failure',
+          'counts.count_total_duo_pro_trial_registration_success'
+        )
       end
     end
 
-    context 'for tracking the trial step' do
+    context 'for tracking the trial step', :clean_gitlab_redis_shared_state do
       let(:step) { described_class::TRIAL }
       let_it_be(:namespace) do
         create(:group_with_plan, plan: :ultimate_plan, name: 'gitlab') { |record| record.add_owner(user) }
@@ -74,28 +90,41 @@ RSpec.describe GitlabSubscriptions::Trials::CreateDuoProService, feature_categor
       let(:extra_params) { { trial_entity: '_entity_' } }
       let(:trial_params) { { namespace_id: namespace_id }.merge(extra_params) }
 
-      context 'for success' do
-        before do
-          expect_apply_trial_success(user, namespace, extra_params: extra_params.merge(existing_group_attrs(namespace)))
-        end
+      it 'tracks when trial registration is successful' do
+        expect_apply_trial_success(user, namespace, extra_params: extra_params.merge(existing_group_attrs(namespace)))
 
-        it_behaves_like 'internal event tracking' do
-          let(:event) { 'duo_pro_trial_registration_success' }
-
-          subject(:track_event) { execute }
-        end
+        expect { execute }.to trigger_internal_events(
+          'duo_pro_trial_registration_success'
+        ).with(user: user, namespace: namespace, category: 'InternalEventTracking')
+        .and not_trigger_internal_events(
+          'duo_pro_lead_creation_success',
+          'duo_pro_lead_creation_failure',
+          'duo_pro_trial_registration_failure'
+        ).and increment_usage_metrics(
+          'counts.count_total_duo_pro_trial_registration_success'
+        ).and not_increment_usage_metrics(
+          'counts.count_total_duo_pro_lead_creation_success',
+          'counts.count_total_duo_pro_lead_creation_failure'
+        )
       end
 
-      context 'for failure' do
-        before do
-          expect_apply_trial_fail(user, namespace, extra_params: extra_params.merge(existing_group_attrs(namespace)))
-        end
+      it 'tracks when trial registration fails' do
+        expect_apply_trial_fail(user, namespace, extra_params: extra_params.merge(existing_group_attrs(namespace)))
 
-        it_behaves_like 'internal event tracking' do
-          let(:event) { 'duo_pro_trial_registration_failure' }
-
-          subject(:track_event) { execute }
-        end
+        expect { execute }.to trigger_internal_events(
+          'duo_pro_trial_registration_failure'
+        ).with(user: user, namespace: namespace, category: 'InternalEventTracking')
+        .and not_trigger_internal_events(
+          'duo_pro_lead_creation_success',
+          'duo_pro_lead_creation_failure',
+          'duo_pro_trial_registration_success'
+        ).and increment_usage_metrics(
+          'counts.count_total_duo_pro_trial_registration_failure'
+        ).and not_increment_usage_metrics(
+          'counts.count_total_duo_pro_lead_creation_success',
+          'counts.count_total_duo_pro_lead_creation_failure',
+          'counts.count_total_duo_pro_trial_registration_success'
+        )
       end
     end
 
