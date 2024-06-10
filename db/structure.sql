@@ -977,6 +977,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_7de792ddbc05() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "dast_site_tokens"
+  WHERE "dast_site_tokens"."id" = NEW."dast_site_token_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_84d67ad63e93() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -8756,6 +8772,7 @@ CREATE TABLE dast_site_validations (
     url_base text NOT NULL,
     url_path text NOT NULL,
     state text DEFAULT 'pending'::text NOT NULL,
+    project_id bigint,
     CONSTRAINT check_13b34efe4b CHECK ((char_length(url_path) <= 255)),
     CONSTRAINT check_283be72e9b CHECK ((char_length(state) <= 255)),
     CONSTRAINT check_cd3b538210 CHECK ((char_length(url_base) <= 255))
@@ -26037,6 +26054,8 @@ CREATE INDEX index_dast_site_tokens_on_project_id ON dast_site_tokens USING btre
 
 CREATE INDEX index_dast_site_validations_on_dast_site_token_id ON dast_site_validations USING btree (dast_site_token_id);
 
+CREATE INDEX index_dast_site_validations_on_project_id ON dast_site_validations USING btree (project_id);
+
 CREATE INDEX index_dast_site_validations_on_url_base_and_state ON dast_site_validations USING btree (url_base, state);
 
 CREATE INDEX index_dast_sites_on_dast_site_validation_id ON dast_sites USING btree (dast_site_validation_id);
@@ -30683,6 +30702,8 @@ CREATE TRIGGER trigger_57ad2742ac16 BEFORE INSERT OR UPDATE ON user_achievements
 
 CREATE TRIGGER trigger_7a8b08eed782 BEFORE INSERT OR UPDATE ON boards_epic_board_positions FOR EACH ROW EXECUTE FUNCTION trigger_7a8b08eed782();
 
+CREATE TRIGGER trigger_7de792ddbc05 BEFORE INSERT OR UPDATE ON dast_site_validations FOR EACH ROW EXECUTE FUNCTION trigger_7de792ddbc05();
+
 CREATE TRIGGER trigger_84d67ad63e93 BEFORE INSERT OR UPDATE ON wiki_page_slugs FOR EACH ROW EXECUTE FUNCTION trigger_84d67ad63e93();
 
 CREATE TRIGGER trigger_8a38ce2327de BEFORE INSERT OR UPDATE ON boards_epic_user_preferences FOR EACH ROW EXECUTE FUNCTION trigger_8a38ce2327de();
@@ -30949,6 +30970,9 @@ ALTER TABLE ONLY coverage_fuzzing_corpuses
 
 ALTER TABLE ONLY namespace_settings
     ADD CONSTRAINT fk_20cf0eb2f9 FOREIGN KEY (default_compliance_framework_id) REFERENCES compliance_management_frameworks(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY dast_site_validations
+    ADD CONSTRAINT fk_20d44ecf03 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY ci_build_trace_metadata
     ADD CONSTRAINT fk_21d25cac1a_p FOREIGN KEY (partition_id, trace_artifact_id) REFERENCES p_ci_job_artifacts(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
