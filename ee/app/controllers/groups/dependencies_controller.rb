@@ -75,7 +75,7 @@ module Groups
 
     def dependencies
       if using_new_query?
-        ::DependencyManagement::AggregationsFinder.new(group, params: params).execute
+        ::DependencyManagement::AggregationsFinder.new(group, params: dependencies_finder_params).execute
           .with_component
           .with_version
           .keyset_paginate(cursor: params[:cursor], per_page: per_page)
@@ -91,6 +91,7 @@ module Groups
     def dependencies_finder_params
       finder_params = if below_group_limit?
                         params.permit(
+                          :cursor,
                           :page,
                           :per_page,
                           :sort,
@@ -101,7 +102,7 @@ module Groups
                           project_ids: []
                         )
                       else
-                        params.permit(:page, :per_page, :sort, :sort_by)
+                        params.permit(:cursor, :page, :per_page, :sort, :sort_by)
                       end
 
       finder_params[:sort_by] = map_sort_by(finder_params[:sort_by]) if using_new_query?
