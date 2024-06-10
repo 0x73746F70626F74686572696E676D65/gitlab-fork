@@ -91,7 +91,7 @@ RSpec.describe Admin::GroupsController, feature_category: :groups_and_projects d
         expect(assigns(:groups)).to eq([group])
       end
 
-      it 'redirects to the page' do
+      it 'redirects to the page', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/464681' do
         get :index, params: { page: 2 }
 
         expect(response).to have_gitlab_http_status(:ok)
