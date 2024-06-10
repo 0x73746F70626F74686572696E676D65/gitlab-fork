@@ -19565,9 +19565,6 @@ msgstr ""
 msgid "Edit milestone"
 msgstr ""
 
-msgid "Edit page"
-msgstr ""
-
 msgid "Edit project: %{project_name}"
 msgstr ""
 
@@ -59180,10 +59177,22 @@ msgstr ""
 msgid "WikiHistoricalPage|This is an old version of this page."
 msgstr ""
 
+msgid "WikiPageConfirmDelete|Are you sure you want to delete the custom sidebar?"
+msgstr ""
+
 msgid "WikiPageConfirmDelete|Are you sure you want to delete this page?"
 msgstr ""
 
 msgid "WikiPageConfirmDelete|Are you sure you want to delete this template?"
+msgstr ""
+
+msgid "WikiPageConfirmDelete|Delete"
+msgstr ""
+
+msgid "WikiPageConfirmDelete|Delete custom sidebar"
+msgstr ""
+
+msgid "WikiPageConfirmDelete|Delete custom sidebar?"
 msgstr ""
 
 msgid "WikiPageConfirmDelete|Delete page"
@@ -59211,6 +59220,9 @@ msgid "WikiPage|Content"
 msgstr ""
 
 msgid "WikiPage|Create %{pageTitle}"
+msgstr ""
+
+msgid "WikiPage|Create custom sidebar"
 msgstr ""
 
 msgid "WikiPage|Create page"
@@ -59282,6 +59294,9 @@ msgstr ""
 msgid "Wiki|Last edited by %{author} %{timeago}"
 msgstr ""
 
+msgid "Wiki|New custom sidebar"
+msgstr ""
+
 msgid "Wiki|New page"
 msgstr ""
 
@@ -59295,6 +59310,12 @@ msgid "Wiki|Page history"
 msgstr ""
 
 msgid "Wiki|Pages"
+msgstr ""
+
+msgid "Wiki|Sidebar was successfully created."
+msgstr ""
+
+msgid "Wiki|Sidebar was successfully updated."
 msgstr ""
 
 msgid "Wiki|Template history"
