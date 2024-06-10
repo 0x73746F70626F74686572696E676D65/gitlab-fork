@@ -45,32 +45,15 @@ module Epics
 
     private
 
-    def filtered_params(epic)
-      ALLOWED_PARAMS.index_with { |attr| epic[attr] }
-    end
-
     def create_params(epic)
-      filtered_params(epic).merge(
-        work_item_type: WorkItems::Type.default_by_type(:epic),
-        namespace_id: group.id
-      )
+      ALLOWED_PARAMS.index_with { |attr| epic[attr] }
+                    .merge(work_item_type: WorkItems::Type.default_by_type(:epic), namespace_id: group.id)
     end
 
     def update_params(epic)
-      update_params = filtered_params(epic).merge({
-        updated_by: epic.updated_by,
-        updated_at: epic.updated_at
-      })
-
-      if epic.edited?
-        update_params[:last_edited_at] = epic.last_edited_at
-        update_params[:last_edited_by] = epic.last_edited_by
-      end
-
-      update_params[:title_html] = epic.title_html
-      update_params[:description_html] = epic.description_html
-
-      update_params
+      epic.previous_changes.keys.map(&:to_sym)
+        .intersection(ALLOWED_PARAMS + %i[updated_at title_html description_html])
+        .index_with { |attr| epic[attr] }
     end
 
     def sync_color(epic, work_item)
