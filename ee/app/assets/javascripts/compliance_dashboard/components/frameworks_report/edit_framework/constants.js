@@ -78,4 +78,15 @@ export const i18n = {
     'ComplianceFrameworks|Default framework will be applied automatically to any new project created in the group or sub group.',
   ),
   setAsDefaultOnlyOne: s__('ComplianceFrameworks|There can be only one default framework.'),
+  deprecationWarning: {
+    title: s__('ComplianceReport|Compliance pipelines are now in maintenance mode'),
+    message: s__(
+      'ComplianceReport|You can still edit existing compliance pipelines, but cannot create new compliance pipelines. %{linkStart}Pipeline execution policy%{linkEnd} actions provide the ability to enforce CI/CD jobs, execute security scans, and better manage compliance. You should migrate as soon as possible.',
+    ),
+    details: s__(
+      'ComplianceReport|For more information, see %{linkStart}how to migrate from compliance pipelines to pipeline execution policy actions%{linkEnd}.',
+    ),
+    dismiss: s__('ComplianceReport|Dismiss'),
+    migratePipelineToPolicy: s__('ComplianceReport|Migrate pipeline to a policy'),
+  },
 };

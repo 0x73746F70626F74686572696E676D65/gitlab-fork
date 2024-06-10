@@ -1,5 +1,14 @@
 <script>
-import { GlFormCheckbox, GlFormGroup, GlFormInput, GlLink, GlSprintf, GlPopover } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlFormCheckbox,
+  GlFormGroup,
+  GlFormInput,
+  GlLink,
+  GlSprintf,
+  GlButton,
+  GlPopover,
+} from '@gitlab/ui';
 import { debounce } from 'lodash';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import ColorPicker from '~/vue_shared/components/color_picker/color_picker.vue';
@@ -23,9 +32,17 @@ export default {
     GlLink,
     GlSprintf,
     GlPopover,
+    GlAlert,
+    GlButton,
   },
 
-  inject: ['pipelineConfigurationFullPathEnabled', 'pipelineConfigurationEnabled'],
+  inject: [
+    'featurePipelineMaintenanceModeEnabled',
+    'migratePipelineToPolicyPath',
+    'pipelineConfigurationFullPathEnabled',
+    'pipelineConfigurationEnabled',
+    'pipelineExecutionPolicyPath',
+  ],
   props: {
     value: {
       type: Object,
@@ -41,6 +58,7 @@ export default {
   data() {
     return {
       formData: JSON.parse(JSON.stringify(this.value)),
+      maintenanceModeDismissed: false,
       pipelineConfigurationFileExists: true,
     };
   },
@@ -104,6 +122,9 @@ export default {
         this.isValidPipelineConfiguration !== false
       );
     },
+    showMaintenanceModeAlert() {
+      return this.featurePipelineMaintenanceModeEnabled && !this.maintenanceModeDismissed;
+    },
   },
 
   watch: {
@@ -136,6 +157,10 @@ export default {
     validatePipelineInput: debounce(function debounceValidation(path) {
       this.validatePipelineConfigurationPath(path);
     }, DEBOUNCE_DELAY),
+
+    handleOnDismissMaintenanceMode() {
+      this.maintenanceModeDismissed = true;
+    },
   },
 
   i18n,
@@ -207,6 +232,45 @@ export default {
           </template>
         </gl-sprintf>
       </template>
+
+      <gl-alert
+        v-if="showMaintenanceModeAlert"
+        variant="warning"
+        class="gl-my-3"
+        data-testid="maintenance-mode-alert"
+        :dismissible="true"
+        :title="$options.i18n.deprecationWarning.title"
+        @dismiss="handleOnDismissMaintenanceMode"
+      >
+        <p>
+          <gl-sprintf :message="$options.i18n.deprecationWarning.message">
+            <template #link="{ content }">
+              <gl-link :href="pipelineExecutionPolicyPath" target="_blank">{{ content }}</gl-link>
+            </template>
+          </gl-sprintf>
+        </p>
+
+        <gl-sprintf :message="$options.i18n.deprecationWarning.details">
+          <template #link="{ content }">
+            <gl-link :href="migratePipelineToPolicyPath" target="_blank">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+
+        <template #actions>
+          <gl-button
+            category="primary"
+            variant="confirm"
+            :href="migratePipelineToPolicyPath"
+            target="_blank"
+          >
+            {{ $options.i18n.deprecationWarning.migratePipelineToPolicy }}
+          </gl-button>
+
+          <gl-button class="gl-ml-5" @click="handleOnDismissMaintenanceMode">
+            {{ $options.i18n.deprecationWarning.dismiss }}
+          </gl-button>
+        </template>
+      </gl-alert>
 
       <gl-form-input
         id="pipeline-configuration-input"

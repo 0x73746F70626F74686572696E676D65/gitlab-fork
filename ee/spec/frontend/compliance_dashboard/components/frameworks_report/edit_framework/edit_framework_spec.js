@@ -32,6 +32,9 @@ describe('Edit Framework Form', () => {
     pipelineConfigurationEnabled: true,
     disableScanPolicyUpdate: false,
     featureSecurityPoliciesEnabled: true,
+    featurePipelineMaintenanceModeEnabled: true,
+    migratePipelineToPolicyPath: '/migratepipelinetopolicypath',
+    pipelineExecutionPolicyPath: '/policypath',
   };
 
   const showDeleteModal = jest.fn();
