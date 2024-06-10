@@ -50,7 +50,7 @@ module Gitlab
           return error('Token creation failed') unless response.success?
           return error('Token is missing in response') unless response['token'].present?
 
-          success(token: response['token'])
+          success(token: response['token'], expires_at: response['expires_at'])
         end
 
         private

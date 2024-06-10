@@ -67,7 +67,8 @@ RSpec.describe Gitlab::Llm::AiGateway::CodeSuggestionsClient, feature_category: 
     include StubRequests
 
     let(:expected_token) { 'user token' }
-    let(:expected_response) { { 'token' => expected_token } }
+    let(:expires_at) { 1.hour.from_now.to_i }
+    let(:expected_response) { { token: expected_token, expires_at: expires_at } }
     let(:response_body) { expected_response.to_json }
     let(:http_status) { 200 }
     let(:client) { described_class.new(user) }
@@ -100,7 +101,7 @@ RSpec.describe Gitlab::Llm::AiGateway::CodeSuggestionsClient, feature_category: 
         )
     end
 
-    it { is_expected.to match({ status: :success, token: expected_token }) }
+    it { is_expected.to match({ status: :success, token: expected_token, expires_at: expires_at }) }
 
     context 'when instance token is missing' do
       before do
