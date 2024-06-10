@@ -1,5 +1,5 @@
-query getRunnerUsage {
-  runnerUsage(runnerType: INSTANCE_TYPE, runnersLimit: 5) {
+query getRunnerUsage($runnerType: CiRunnerType, $fullPath: ID) {
+  runnerUsage(runnerType: $runnerType, fullPath: $fullPath, runnersLimit: 5) {
     runner {
       id
       shortSha

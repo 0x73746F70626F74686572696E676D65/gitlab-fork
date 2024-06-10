@@ -3,7 +3,7 @@ import { GlAvatar, GlButton, GlLink, GlTableLite } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { s__, formatNumber } from '~/locale';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
-import { INSTANCE_TYPE } from '~/ci/runner/constants';
+import { INSTANCE_TYPE, GROUP_TYPE } from '~/ci/runner/constants';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import TooltipOnTruncate from '~/vue_shared/directives/tooltip_on_truncate';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -25,6 +25,17 @@ export default {
   directives: {
     TooltipOnTruncate,
   },
+  props: {
+    scope: {
+      type: String,
+      required: true,
+    },
+    groupFullPath: {
+      type: String,
+      required: false,
+      default: null,
+    },
+  },
   data() {
     return {
       loading: false,
@@ -33,15 +44,75 @@ export default {
   apollo: {
     topProjects: {
       query: RunnerUsageByProjectQuery,
+      variables() {
+        return this.queryVariables;
+      },
       update(data) {
         return data.runnerUsageByProject;
       },
     },
     topRunners: {
       query: RunnerUsageQuery,
+      variables() {
+        return this.queryVariables;
+      },
       update(data) {
         return data.runnerUsage;
       },
+    },
+  },
+  computed: {
+    queryVariables() {
+      if (this.scope === INSTANCE_TYPE) {
+        return {
+          runnerType: INSTANCE_TYPE,
+        };
+      }
+      if (this.scope === GROUP_TYPE) {
+        return {
+          fullPath: this.groupFullPath,
+          runnerType: GROUP_TYPE,
+        };
+      }
+      return null;
+    },
+    runnerField() {
+      const labels = {
+        [INSTANCE_TYPE]: s__('Runners|Most used instance runners'),
+        [GROUP_TYPE]: s__('Runners|Most used group runners'),
+      };
+
+      return {
+        key: 'runner',
+        label: labels[this.scope],
+        thClass: [...thClass, 'gl-width-full'],
+      };
+    },
+    projectField() {
+      const labels = {
+        [INSTANCE_TYPE]: s__('Runners|Top projects consuming runners'),
+        [GROUP_TYPE]: s__('Runners|Top projects consuming group runners'),
+      };
+
+      return {
+        key: 'project',
+        label: labels[this.scope],
+        thClass: [...thClass, 'gl-width-full'],
+      };
+    },
+    ciMinutesUsedField() {
+      return {
+        key: 'ciMinutesUsed',
+        label: s__('Runners|Usage (min)'),
+        thClass: [...thClass, 'gl-text-right'],
+        tdClass: 'gl-text-right',
+      };
+    },
+    topRunnersFields() {
+      return [this.runnerField, this.ciMinutesUsedField];
+    },
+    topProjectsFields() {
+      return [this.projectField, this.ciMinutesUsedField];
     },
   },
   methods: {
@@ -88,7 +159,7 @@ export default {
           mutation: RunnerUsageExportMutation,
           variables: {
             input: {
-              runnerType: INSTANCE_TYPE,
+              ...this.queryVariables,
             },
           },
         });
@@ -114,32 +185,6 @@ export default {
       }
     },
   },
-  topRunnersFields: [
-    {
-      key: 'runner',
-      label: s__('Runners|Most used instance runners'),
-      thClass: [...thClass, 'gl-width-full'],
-    },
-    {
-      key: 'ciMinutesUsed',
-      label: s__('Runners|Usage (min)'),
-      thClass: [...thClass, 'gl-text-right'],
-      tdClass: 'gl-text-right gl-break-all',
-    },
-  ],
-  topProjectsFields: [
-    {
-      key: 'project',
-      label: s__('Runners|Top projects consuming runners'),
-      thClass: [...thClass, 'gl-width-full'],
-    },
-    {
-      key: 'ciMinutesUsed',
-      label: s__('Runners|Usage (min)'),
-      thClass: [...thClass, 'gl-text-right'],
-      tdClass: 'gl-text-right gl-break-all',
-    },
-  ],
 };
 </script>
 <template>
@@ -155,7 +200,7 @@ export default {
 
     <div class="md:gl-flex gl-justify-between gl-align-items-flex-start gl-gap-4">
       <gl-table-lite
-        :fields="$options.topProjectsFields"
+        :fields="topProjectsFields"
         :items="topProjects"
         class="runners-usage-table runners-top-result-table runners-dashboard-half-gap-4"
         data-testid="top-projects-table"
@@ -185,7 +230,7 @@ export default {
       </gl-table-lite>
 
       <gl-table-lite
-        :fields="$options.topRunnersFields"
+        :fields="topRunnersFields"
         :items="topRunners"
         class="runners-usage-table runners-top-result-table runners-dashboard-half-gap-4"
         data-testid="top-runners-table"
@@ -195,9 +240,12 @@ export default {
             v-tooltip-on-truncate
             class="gl-whitespace-nowrap gl-text-overflow-ellipsis gl-overflow-hidden"
           >
-            <gl-link v-if="value" :href="value.adminUrl" class="gl-text-body!">
-              {{ runnerName(value) }}
-            </gl-link>
+            <template v-if="value">
+              <gl-link v-if="value.adminUrl" :href="value.adminUrl" class="gl-text-body!">
+                {{ runnerName(value) }}
+              </gl-link>
+              <template v-else>{{ runnerName(value) }}</template>
+            </template>
             <template v-else> {{ s__('Runners|Other runners') }} </template>
           </div>
         </template>

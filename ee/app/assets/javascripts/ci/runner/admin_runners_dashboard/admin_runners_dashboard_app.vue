@@ -75,7 +75,11 @@ export default {
           />
 
           <!-- we use job failures as fallback, when clickhouse is not available -->
-          <runner-usage v-if="clickhouseCiAnalyticsAvailable" class="gl-flex-basis-full" />
+          <runner-usage
+            v-if="clickhouseCiAnalyticsAvailable"
+            :scope="$options.INSTANCE_TYPE"
+            class="gl-flex-basis-full"
+          />
           <runner-job-failures v-else class="gl-flex-basis-full" />
         </div>
 

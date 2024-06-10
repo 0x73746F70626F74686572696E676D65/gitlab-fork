@@ -6,6 +6,7 @@ import GroupRunnersDashboardApp from 'ee/ci/runner/group_runners_dashboard/group
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import RunnerDashboardStatStatus from 'ee/ci/runner/components/runner_dashboard_stat_status.vue';
+import RunnerUsage from 'ee/ci/runner/components/runner_usage.vue';
 import GroupRunnersActiveList from 'ee/ci/runner/group_runners_dashboard/group_runners_active_list.vue';
 import GroupRunnersWaitTimes from 'ee/ci/runner/group_runners_dashboard/group_runners_wait_times.vue';
 
@@ -61,6 +62,33 @@ describe('GroupRunnersDashboardApp', () => {
     });
     expect(findGroupRunnersWaitTimes().props()).toEqual({
       groupFullPath: mockGroupPath,
+    });
+  });
+
+  describe('when clickhouse is available', () => {
+    beforeEach(() => {
+      createComponent({
+        provide: { clickhouseCiAnalyticsAvailable: true },
+      });
+    });
+
+    it('shows runner usage', () => {
+      expect(wrapper.findComponent(RunnerUsage).props()).toEqual({
+        groupFullPath: mockGroupPath,
+        scope: GROUP_TYPE,
+      });
+    });
+  });
+
+  describe('when clickhouse is not available', () => {
+    beforeEach(() => {
+      createComponent({
+        provide: { clickhouseCiAnalyticsAvailable: false },
+      });
+    });
+
+    it('does not runner usage', () => {
+      expect(wrapper.findComponent(RunnerUsage).exists()).toBe(false);
     });
   });
 });

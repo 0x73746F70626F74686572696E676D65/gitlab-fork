@@ -45218,6 +45218,9 @@ msgstr ""
 msgid "Runners|Most recent failures"
 msgstr ""
 
+msgid "Runners|Most used group runners"
+msgstr ""
+
 msgid "Runners|Most used instance runners"
 msgstr ""
 
@@ -45683,6 +45686,9 @@ msgid "Runners|To view the setup instructions, make sure all form fields are com
 msgstr ""
 
 msgid "Runners|Token expiry"
+msgstr ""
+
+msgid "Runners|Top projects consuming group runners"
 msgstr ""
 
 msgid "Runners|Top projects consuming runners"
