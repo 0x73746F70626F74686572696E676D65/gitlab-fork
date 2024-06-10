@@ -2,7 +2,7 @@
 
 require 'fast_spec_helper'
 
-RSpec.describe Gitlab::IpAddressState do
+RSpec.describe Gitlab::IpAddressState, feature_category: :system_access do
   let(:address) { '1.1.1.1' }
 
   describe '.with' do
@@ -13,7 +13,7 @@ RSpec.describe Gitlab::IpAddressState do
     end
 
     it 'clears IP address after execution' do
-      described_class.with(address) {}
+      described_class.with(address) {} # rubocop: disable Lint/EmptyBlock -- wrapper which requires a block
 
       expect(Thread.current[described_class::THREAD_KEY]).to eq(nil)
     end
