@@ -14,16 +14,18 @@ module QA
       end
 
       let(:sdk_host) { Runtime::Env.pa_collector_host }
+
       let(:custom_dashboard_title) { 'My New Custom Dashboard' }
-      let(:custom_dashboard_description) { 'My dashboard description' }
+      let(:custom_visualization_title) { 'Events amount custom' }
+      let(:custom_visualization_type) { 'Data table' }
 
       before do
         Flow::Login.sign_in
         EE::Flow::ProductAnalytics.activate(project)
       end
 
-      it 'custom dashboard can be created',
-        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/451299' do
+      it 'custom visualisation can be created and displayed on a dashboard',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/466572' do
         sdk_app_id = 0
 
         EE::Page::Project::Analyze::AnalyticsDashboards::Setup.perform do |analytics_dashboards_setup|
@@ -46,13 +48,26 @@ module QA
         end
 
         Page::Project::Menu.perform(&:go_to_analytics_dashboards)
+
+        EE::Page::Project::Analyze::AnalyticsDashboards::Home.perform(&:click_visualization_designer_button)
+
+        EE::Page::Project::Analyze::VisualizationSetup.perform do |visualization|
+          visualization.set_visualization_title(custom_visualization_title)
+          visualization.select_visualization_type(custom_visualization_type)
+          visualization.choose_events
+          visualization.choose_all_events_compared
+          visualization.click_save_your_visualization
+        end
+
+        Page::Project::Menu.perform(&:go_to_analytics_dashboards)
+        page.driver.browser.switch_to.alert.accept
+
         EE::Page::Project::Analyze::AnalyticsDashboards::Home.perform(&:click_new_dashboard_button)
 
         EE::Page::Project::Analyze::DashboardSetup.perform do |your_dashboard|
           your_dashboard.set_dashboard_title(custom_dashboard_title)
-          your_dashboard.set_dashboard_description(custom_dashboard_description)
           your_dashboard.click_add_visualisation
-          your_dashboard.check_total_events
+          your_dashboard.check_visualisation(custom_visualization_title)
           your_dashboard.click_add_to_dashboard
           your_dashboard.click_save_your_dashboard
         end
@@ -60,17 +75,15 @@ module QA
         Page::Project::Menu.perform(&:go_to_analytics_dashboards)
 
         EE::Page::Project::Analyze::AnalyticsDashboards::Home.perform do |analytics_dashboards|
-          expect(analytics_dashboards.dashboards_list[2].text).to eq(custom_dashboard_title)
-
           analytics_dashboards.dashboards_list[2].click
         end
 
         EE::Page::Project::Analyze::AnalyticsDashboards::Dashboard.perform do |dashboard|
           panels = dashboard.panels
-          aggregate_failures 'test custom dashboard' do
+          aggregate_failures 'test custom visualization' do
             expect(panels.count).to equal(1)
-            expect(dashboard.panel_title(panel_index: 0)).to eq('Total events')
-            expect(dashboard.panel_value_content(panel_index: 0)).to eq(1)
+            expect(dashboard.panel_title(panel_index: 0)).to eq(custom_visualization_title)
+            expect(dashboard.table_value(panel_index: 0, cell_index: 0)).to equal(1)
           end
         end
       end

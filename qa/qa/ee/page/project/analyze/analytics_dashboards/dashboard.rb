@@ -33,9 +33,21 @@ module QA
                 all_elements('grid-stack-panel', minimum: 5)
               end
 
+              def panel_title(panel_index:)
+                within_element_by_index('grid-stack-panel', panel_index) do
+                  find_element('panel-title').text
+                end
+              end
+
               def panel_value_content(panel_index:)
                 within_element_by_index('grid-stack-panel', panel_index) do
                   find_element('displayValue').text.to_i
+                end
+              end
+
+              def table_value(panel_index:, cell_index:)
+                within_element_by_index('grid-stack-panel', panel_index) do
+                  all_elements('td[role=cell]', minimum: 1)[cell_index].text.to_i
                 end
               end
 

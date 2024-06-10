@@ -14,6 +14,7 @@ module QA
               view 'ee/app/assets/javascripts/analytics/analytics_dashboards/components/dashboards_list.vue' do
                 element 'configure-dashboard-container'
                 element 'new-dashboard-button'
+                element 'visualization-designer-button'
               end
 
               def wait_for_dashboards_list
@@ -36,6 +37,10 @@ module QA
                 within_element('configure-dashboard-container') do
                   click_element('.btn-confirm')
                 end
+              end
+
+              def click_visualization_designer_button
+                click_element('visualization-designer-button')
               end
 
               def click_new_dashboard_button
