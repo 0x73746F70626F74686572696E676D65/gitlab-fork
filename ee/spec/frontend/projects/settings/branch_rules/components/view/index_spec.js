@@ -20,6 +20,7 @@ import {
   deleteBranchRuleMockResponse,
   branchProtectionsMockResponse,
   statusChecksRulesMock,
+  protectionMockProps,
 } from './mock_data';
 
 jest.mock('~/lib/utils/url_utility', () => ({
@@ -30,13 +31,6 @@ jest.mock('~/lib/utils/url_utility', () => ({
 
 Vue.use(VueApollo);
 Vue.use(Vuex);
-
-const protectionMockProps = {
-  headerLinkHref: 'protected/branches',
-  headerLinkTitle: I18N.manageProtectionsLinkTitle,
-  roles: [{ accessLevelDescription: 'Maintainers' }],
-  users: [{ avatarUrl: 'test.com/user.png', name: 'peter', webUrl: 'test.com' }],
-};
 
 describe('View branch rules in enterprise edition', () => {
   let wrapper;

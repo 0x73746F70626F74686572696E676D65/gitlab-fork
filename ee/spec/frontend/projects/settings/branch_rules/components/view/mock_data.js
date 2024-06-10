@@ -36,10 +36,14 @@ export const usersMock = [
   },
 ];
 
-const accessLevelsMock = [
-  { accessLevelDescription: 'Administrator' },
-  { accessLevelDescription: 'Maintainers' },
-];
+const accessLevelsMock = [40];
+
+export const protectionMockProps = {
+  headerLinkHref: 'protected/branches',
+  headerLinkTitle: 'Manage in protected branches',
+  roles: accessLevelsMock,
+  users: [{ avatarUrl: 'test.com/user.png', name: 'peter', webUrl: 'test.com' }],
+};
 
 const approvalsRequired = 3;
 
@@ -353,6 +357,15 @@ export const allowedToMergeDrawerProps = {
   isLoading: false,
   isOpen: false,
   title: 'Edit allowed to merge',
-  roles: [accessLevelsMock[1]],
+  roles: accessLevelsMock,
   users: [accessLevelsMockResponse[0].node.user],
 };
+
+export const editRuleData = [
+  { userId: 'gid://gitlab/User/123' },
+  { accessLevel: 60 },
+  { accessLevel: 40 },
+  { accessLevel: 30 },
+];
+
+export const editRuleDataNoOne = [{ accessLevel: 0 }];
