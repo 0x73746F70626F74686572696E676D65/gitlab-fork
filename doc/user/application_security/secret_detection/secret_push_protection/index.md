@@ -43,6 +43,8 @@ remote:
 remote: To push your changes you must remove the identified secrets.
 ```
 
+If secret push protection does not detect any secrets in your commits, no message is displayed.
+
 ## Enable secret push protection
 
 On GitLab Dedicated, you must allow the use of secret push protection in your instance and then enable it per project.
