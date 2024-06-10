@@ -21,7 +21,7 @@ RSpec.shared_examples 'member promotion management' do
         expect(requester.reload.human_access).to eq('Guest')
         expect(requester2.reload.human_access).to eq('Guest')
         expect(response).to have_gitlab_http_status(:success)
-        expect(json_response).to eq({ 'enqueued' => true })
+        expect(json_response).to include('enqueued' => true)
       end
     end
 
@@ -39,13 +39,13 @@ RSpec.shared_examples 'member promotion management' do
         expect(requester.reload.human_access).to eq('Guest')
         expect(requester2.reload.human_access).to eq('Maintainer')
         expect(response).to have_gitlab_http_status(:success)
-        expect(json_response).to eq({ 'enqueued' => true })
+        expect(json_response).to include({ 'enqueued' => true })
       end
     end
   end
 
   context 'when all members were promoted' do
-    it 'returns {}' do
+    it 'returns { using_license: true }' do
       requester.update!(access_level: Gitlab::Access::REPORTER)
       create(:user_highest_role, :reporter, user: requester.user)
 
@@ -53,7 +53,7 @@ RSpec.shared_examples 'member promotion management' do
 
       expect(requester.reload.human_access).to eq('Maintainer')
       expect(response).to have_gitlab_http_status(:success)
-      expect(json_response).to eq({})
+      expect(json_response['using_license']).to be_boolean
     end
   end
 end

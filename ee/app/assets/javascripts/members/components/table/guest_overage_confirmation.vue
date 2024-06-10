@@ -60,9 +60,9 @@ export default {
         !this.glFeatures.showOverageOnRolePromotion ||
         // Skip if there's no group path (e.g. a personal project), the subscription data is only available for groups.
         !this.groupPath ||
-        // Skip if the member is already assigned a role that uses a seat, because the seat usage can't increase.
+        // Skip if the member is already assigned a role that uses a seat because the seat usage won't increase.
         this.member.usingLicense ||
-        // Skip if the new role does not occupy a seat, so we don't need to check if there's an overage.
+        // Skip if the new role does not occupy a seat because it won't cause an overage.
         !this.role.occupiesSeat
       );
     },
@@ -137,7 +137,7 @@ export default {
       <template #groupName>{{ groupName }}</template>
       <template #seatCount>{{ newBillableUserCount }}</template>
     </gl-sprintf>
-    <gl-link :href="reconciliationDocsPath" target="_blank">
+    <gl-link :href="reconciliationDocsPath" target="_blank" class="gl-display-inline-block">
       {{ __('Learn more') }}
       <gl-icon name="external-link" />
     </gl-link>

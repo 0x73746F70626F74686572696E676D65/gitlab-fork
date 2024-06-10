@@ -1,4 +1,4 @@
-import { GlDrawer, GlBadge, GlSprintf, GlIcon } from '@gitlab/ui';
+import { GlDrawer, GlBadge, GlSprintf, GlIcon, GlAlert } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
 import { nextTick } from 'vue';
@@ -8,11 +8,16 @@ import MembersTableCell from '~/members/components/table/members_table_cell.vue'
 import RoleSelector from '~/members/components/table/role_selector.vue';
 import { roleDropdownItems } from 'ee/members/utils';
 import waitForPromises from 'helpers/wait_for_promises';
+import GuestOverageConfirmation from 'ee/members/components/table/guest_overage_confirmation.vue';
+import { stubComponent } from 'helpers/stub_component';
 import { member as baseRoleMember, updateableCustomRoleMember } from '../../mock_data';
 
 describe('Role details drawer', () => {
   const { permissions } = updateableCustomRoleMember.customRoles[1];
-  const customRole = roleDropdownItems(updateableCustomRoleMember).flatten[8];
+  const dropdownItems = roleDropdownItems(updateableCustomRoleMember);
+  const customRole1 = dropdownItems.flatten[7];
+  const customRole2 = dropdownItems.flatten[8];
+  const confirmOverageMock = jest.fn();
   let axiosMock;
   let wrapper;
 
@@ -23,8 +28,16 @@ describe('Role details drawer', () => {
         currentUserId: 1,
         canManageMembers: true,
         namespace,
+        group: { path: 'group/path' },
       },
-      stubs: { GlDrawer, MembersTableCell, GlSprintf },
+      stubs: {
+        GlDrawer,
+        MembersTableCell,
+        GlSprintf,
+        GuestOverageConfirmation: stubComponent(GuestOverageConfirmation, {
+          methods: { confirmOverage: confirmOverageMock },
+        }),
+      },
     });
   };
 
@@ -39,12 +52,21 @@ describe('Role details drawer', () => {
   const findPermissionDescriptionAt = (index) =>
     wrapper.findAllByTestId('permission-description').at(index);
   const findSaveButton = () => wrapper.findByTestId('save-button');
+  const findGuestOverageConfirmation = () => wrapper.findComponent(GuestOverageConfirmation);
 
+  // Create wrapper, change role, then click save button.
   const createWrapperChangeRoleAndClickSave = async () => {
     createWrapper({ member: updateableCustomRoleMember });
-    findRoleSelector().vm.$emit('input', customRole);
+    findRoleSelector().vm.$emit('input', customRole2);
     await nextTick();
     findSaveButton().vm.$emit('click');
+
+    return waitForPromises();
+  };
+
+  const createWrapperAndEmitOverageEvent = async ({ member, eventName = 'confirm' } = {}) => {
+    await createWrapperChangeRoleAndClickSave(member);
+    findGuestOverageConfirmation().vm.$emit(eventName);
 
     return waitForPromises();
   };
@@ -126,10 +148,33 @@ describe('Role details drawer', () => {
       return createWrapperChangeRoleAndClickSave();
     });
 
-    it('calls update role API with expected data', () => {
+    it('does not call update role API', () => {
+      expect(axiosMock.history.put).toHaveLength(0);
+    });
+
+    it('checks overage', () => {
+      expect(confirmOverageMock).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('guest overage confirmation', () => {
+    it('calls update role API when guest confirmation is confirmed', async () => {
+      await createWrapperAndEmitOverageEvent({ eventName: 'confirm' });
       const expectedData = JSON.stringify({ access_level: 10, member_role_id: 102 });
 
       expect(axiosMock.history.put[0].data).toBe(expectedData);
+    });
+
+    it('resets role when guest confirmation is canceled', async () => {
+      await createWrapperAndEmitOverageEvent({ eventName: 'cancel' });
+
+      expect(findRoleSelector().props('value')).toEqual(customRole1);
+    });
+
+    it('shows error message if confirmation check failed', async () => {
+      await createWrapperAndEmitOverageEvent({ eventName: 'error' });
+
+      expect(wrapper.findComponent(GlAlert).text()).toBe('Could not check guest overage.');
     });
   });
 });
