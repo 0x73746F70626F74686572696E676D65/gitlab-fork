@@ -74,15 +74,15 @@ module Security
       end
 
       def policy_exists?(policy_hash, policy_name, type)
-        if type == :scan_execution_policy
-          existing_policy_index = policy_index(policy_hash, policy_name, type)
-          [existing_policy_index, :scan_execution_policy] if existing_policy_index.present?
-        else
+        if Security::ScanResultPolicy::SCAN_RESULT_POLICY_TYPES.include?(type)
           existing_policy_index_scan_result = policy_index(policy_hash, policy_name, :scan_result_policy)
           return [existing_policy_index_scan_result, :scan_result_policy] if existing_policy_index_scan_result.present?
 
           existing_policy_index_approval = policy_index(policy_hash, policy_name, :approval_policy)
           [existing_policy_index_approval, :approval_policy] if existing_policy_index_approval.present?
+        else
+          existing_policy_index = policy_index(policy_hash, policy_name, type)
+          [existing_policy_index, type] if existing_policy_index.present?
         end
       end
 

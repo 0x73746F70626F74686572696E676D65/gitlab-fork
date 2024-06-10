@@ -6,21 +6,21 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService, fe
   describe '#execute' do
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration) }
 
-    let(:policy) { build(:scan_execution_policy, name: 'Test Policy', enabled: false) }
-    let(:scheduled_policy) { build(:scan_execution_policy, :with_schedule, name: 'Scheduled DAST') }
-    let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(policy.to_yaml).load! }
     let(:type) { :scan_execution_policy }
+    let(:policy) { build(type, name: 'Test Policy', enabled: false) }
+    let(:other_policy) { build(type, name: 'Other Policy') }
+    let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(policy.to_yaml).load! }
     let(:operation) { :append }
     let(:policy_name) { policy[:name] }
 
     let(:repository_with_existing_policy_yaml) do
-      pipeline_policy = build(:scan_execution_policy, name: 'Test Policy')
-      build(:orchestration_policy_yaml, scan_execution_policy: [pipeline_policy, scheduled_policy])
+      pipeline_policy = build(type, name: 'Test Policy')
+      build(:orchestration_policy_yaml, type => [pipeline_policy, other_policy])
     end
 
     let(:repository_policy_yaml) do
-      pipeline_policy = build(:scan_execution_policy, name: "Execute DAST in every pipeline")
-      build(:orchestration_policy_yaml, scan_execution_policy: [pipeline_policy, scheduled_policy])
+      pipeline_policy = build(type, name: "Execute DAST in every pipeline")
+      build(:orchestration_policy_yaml, type => [pipeline_policy, other_policy])
     end
 
     subject(:service) { described_class.new(policy_configuration: policy_configuration, params: { policy: policy_yaml, name: policy_name, operation: operation, type: type }) }
@@ -50,29 +50,48 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService, fe
     end
 
     context 'append policy' do
-      context 'when policy is present in repository' do
-        before do
-          allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(repository_policy_yaml).load!)
-        end
+      %i[approval_policy scan_execution_policy pipeline_execution_policy].each do |type|
+        context "when type is #{type}" do
+          let(:type) { type }
 
-        it 'appends the new policy' do
-          result = service.execute
+          context 'when policy is present in repository' do
+            before do
+              allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(repository_policy_yaml).load!)
+            end
 
-          expect(result[:status]).to eq(:success)
-          expect(result.dig(:policy_hash, :scan_execution_policy).count).to eq(3)
-        end
-      end
+            it 'appends the new policy' do
+              result = service.execute
 
-      context 'when policy with same name already exists in repository' do
-        before do
-          allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(repository_with_existing_policy_yaml).load!)
-        end
+              expect(result[:status]).to eq(:success)
+              expect(result.dig(:policy_hash, type).count).to eq(3)
+            end
+          end
 
-        it 'returns error' do
-          result = service.execute
+          context 'when policy with same name already exists in repository' do
+            before do
+              allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(repository_with_existing_policy_yaml).load!)
+            end
 
-          expect(result[:status]).to eq(:error)
-          expect(result[:message]).to eq('Policy already exists with same name')
+            it 'returns error' do
+              result = service.execute
+
+              expect(result[:status]).to eq(:error)
+              expect(result[:message]).to eq('Policy already exists with same name')
+            end
+          end
+
+          context 'when policy is not present in repository' do
+            before do
+              allow(policy_configuration).to receive(:policy_hash).and_return(nil)
+            end
+
+            it 'appends the new policy' do
+              result = service.execute
+
+              expect(result[:status]).to eq(:success)
+              expect(result.dig(:policy_hash, type).count).to eq(1)
+            end
+          end
         end
       end
 
@@ -113,19 +132,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService, fe
           expect(result[:message]).to eq('Policy already exists with same name')
         end
       end
-
-      context 'when policy is not present in repository' do
-        before do
-          allow(policy_configuration).to receive(:policy_hash).and_return(nil)
-        end
-
-        it 'appends the new policy' do
-          result = service.execute
-
-          expect(result[:status]).to eq(:success)
-          expect(result.dig(:policy_hash, :scan_execution_policy).count).to eq(1)
-        end
-      end
     end
 
     context 'replace policy' do
@@ -136,32 +142,63 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService, fe
         allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(policies_yaml).load!)
       end
 
-      context 'when policy is not present in repository' do
-        let(:policies_yaml) { repository_policy_yaml }
+      %i[approval_policy scan_execution_policy pipeline_execution_policy].each do |type|
+        context "when type is #{type}" do
+          let(:type) { type }
 
-        it 'returns error' do
-          result = service.execute
+          context 'when policy is not present in repository' do
+            let(:policies_yaml) { repository_policy_yaml }
 
-          expect(result[:status]).to eq(:error)
-          expect(result[:message]).to eq('Policy does not exist')
-        end
-      end
+            it 'returns error' do
+              result = service.execute
 
-      context 'when policy name is empty' do
-        let(:policy_name) { nil }
+              expect(result[:status]).to eq(:error)
+              expect(result[:message]).to eq('Policy does not exist')
+            end
+          end
 
-        it 'does not modify the policy name' do
-          result = service.execute
+          context 'when policy name is empty' do
+            let(:policy_name) { nil }
 
-          expect(result.dig(:policy_hash, :scan_execution_policy).first).to eq(policy_yaml)
-        end
-      end
+            it 'does not modify the policy name' do
+              result = service.execute
 
-      context 'when policy with same name already exists in repository' do
-        it 'replaces the policy' do
-          result = service.execute
+              expect(result.dig(:policy_hash, type).first).to eq(policy_yaml)
+            end
+          end
 
-          expect(result.dig(:policy_hash, :scan_execution_policy).first[:enabled]).to be_falsey
+          context 'when policy with same name already exists in repository' do
+            it 'replaces the policy' do
+              result = service.execute
+
+              expect(result.dig(:policy_hash, type).first[:enabled]).to be_falsey
+            end
+          end
+
+          context 'when policy name is not same as in policy' do
+            let(:policy_yaml) do
+              Gitlab::Config::Loader::Yaml.new(build(type, name: 'Updated Policy', enabled: false).to_yaml).load!
+            end
+
+            it 'updates the policy name' do
+              result = service.execute
+
+              expect(result.dig(:policy_hash, type).first[:name]).to eq('Updated Policy')
+            end
+          end
+
+          context 'when name of the policy to be updated already exists' do
+            let(:policy_yaml) do
+              Gitlab::Config::Loader::Yaml.new(build(type, name: 'Other Policy', enabled: false).to_yaml).load!
+            end
+
+            it 'returns error' do
+              result = service.execute
+
+              expect(result[:status]).to eq(:error)
+              expect(result[:message]).to eq('Policy already exists with same name')
+            end
+          end
         end
       end
 
@@ -197,109 +234,94 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessPolicyService, fe
           end
         end
       end
-
-      context 'when policy name is not same as in policy' do
-        let(:policy_yaml) do
-          Gitlab::Config::Loader::Yaml.new(build(:scan_execution_policy, name: 'Updated Policy', enabled: false).to_yaml).load!
-        end
-
-        it 'updates the policy name' do
-          result = service.execute
-
-          expect(result.dig(:policy_hash, :scan_execution_policy).first[:name]).to eq('Updated Policy')
-        end
-      end
-
-      context 'when name of the policy to be updated already exists' do
-        let(:policy_yaml) do
-          Gitlab::Config::Loader::Yaml.new(build(:scan_execution_policy, name: 'Scheduled DAST', enabled: false).to_yaml).load!
-        end
-
-        it 'returns error' do
-          result = service.execute
-
-          expect(result[:status]).to eq(:error)
-          expect(result[:message]).to eq('Policy already exists with same name')
-        end
-      end
     end
 
     context 'remove policy' do
       let(:operation) { :remove }
 
-      context 'when policy is not present in repository' do
-        before do
-          allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(repository_policy_yaml).load!)
-        end
+      %i[approval_policy scan_execution_policy pipeline_execution_policy].each do |type|
+        context "when type is #{type}" do
+          let(:type) { type }
 
-        it 'returns error' do
-          result = service.execute
+          context 'when policy is not present in repository' do
+            before do
+              allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(repository_policy_yaml).load!)
+            end
 
-          expect(result[:status]).to eq(:error)
-          expect(result[:message]).to eq('Policy does not exist')
+            it 'returns error' do
+              result = service.execute
+
+              expect(result[:status]).to eq(:error)
+              expect(result[:message]).to eq('Policy does not exist')
+            end
+          end
+
+          context 'when policy with same name already exists in repository' do
+            let(:policies_yaml) { repository_with_existing_policy_yaml }
+
+            before do
+              allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(policies_yaml).load!)
+            end
+
+            it 'removes the policy' do
+              result = service.execute
+
+              expect(result[:status]).to eq(:success)
+              expect(result.dig(:policy_hash, type).count).to eq(1)
+            end
+          end
         end
       end
 
-      context 'when policy with same name already exists in repository' do
-        let(:policies_yaml) { repository_with_existing_policy_yaml }
-
+      describe 'mixed scan_result_policy and approval_policy types' do
         before do
           allow(policy_configuration).to receive(:policy_hash).and_return(Gitlab::Config::Loader::Yaml.new(policies_yaml).load!)
         end
 
-        it 'removes the policy' do
-          result = service.execute
+        context 'when policy exists as "scan_result_policy" and type specifies "approval_policy"' do
+          let(:type) { :approval_policy }
+          let(:policy) { build(:scan_result_policy, name: 'Test Policy') }
+          let(:policies_yaml) do
+            build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy, name: 'Test Policy')])
+          end
 
-          expect(result[:status]).to eq(:success)
-          expect(result.dig(:policy_hash, :scan_execution_policy).count).to eq(1)
+          it 'removes the policy' do
+            result = service.execute
+
+            expect(result[:status]).to eq(:success)
+            expect(result[:policy_hash]).not_to have_key(:scan_result_policy)
+            expect(result[:policy_hash]).to have_key(:approval_policy)
+          end
         end
 
-        describe 'mixed scan_result_policy and approval_policy types' do
-          context 'when policy exists as "scan_result_policy" and type specifies "approval_policy"' do
-            let(:type) { :approval_policy }
-            let(:policy) { build(:scan_result_policy, name: 'Test Policy') }
-            let(:policies_yaml) do
-              build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy, name: 'Test Policy')])
-            end
-
-            it 'removes the policy' do
-              result = service.execute
-
-              expect(result[:status]).to eq(:success)
-              expect(result[:policy_hash]).not_to have_key(:scan_result_policy)
-              expect(result[:policy_hash]).to have_key(:approval_policy)
-            end
+        context 'when multiple policies exist as "scan_result_policy" and type specifies "approval_policy"' do
+          let(:type) { :approval_policy }
+          let(:policy) { build(:scan_result_policy, name: 'Test Policy') }
+          let(:other_policy) { build(:scan_result_policy, name: 'Test Policy 2') }
+          let(:policies_yaml) do
+            build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy, name: 'Test Policy'), other_policy])
           end
 
-          context 'when multiple policies exist as "scan_result_policy" and type specifies "approval_policy"' do
-            let(:type) { :approval_policy }
-            let(:policy) { build(:scan_result_policy, name: 'Test Policy') }
-            let(:other_policy) { build(:scan_result_policy, name: 'Test Policy 2') }
-            let(:policies_yaml) do
-              build(:orchestration_policy_yaml, scan_result_policy: [build(:scan_result_policy, name: 'Test Policy'), other_policy])
-            end
+          it 'removes only the referenced policy and keeps `scan_result_policy` key' do
+            result = service.execute
 
-            it 'removes only the referenced policy and keeps `scan_result_policy` key' do
-              result = service.execute
+            expect(result[:status]).to eq(:success)
+            expect(result.dig(:policy_hash, :scan_result_policy)).to contain_exactly(other_policy)
+            expect(result[:policy_hash]).not_to have_key(:approval_policy)
+          end
+        end
 
-              expect(result[:status]).to eq(:success)
-              expect(result.dig(:policy_hash, :scan_result_policy)).to contain_exactly(other_policy)
-              expect(result[:policy_hash]).not_to have_key(:approval_policy)
-            end
+        context 'when policy exists as "approval_policy" and type specifies "scan_result_policy"' do
+          let(:type) { :scan_result_policy }
+          let(:policy) { build(:approval_policy, name: 'Test Policy') }
+          let(:policies_yaml) do
+            build(:orchestration_policy_yaml, approval_policy: [build(:approval_policy, name: 'Test Policy')])
           end
 
-          context 'when policy exists as "approval_policy" and type specifies "scan_result_policy"' do
-            let(:type) { :scan_result_policy }
-            let(:policy) { build(:approval_policy, name: 'Test Policy') }
-            let(:policies_yaml) do
-              build(:orchestration_policy_yaml, approval_policy: [build(:approval_policy, name: 'Test Policy')])
-            end
+          it 'removes the policy' do
+            result = service.execute
 
-            it 'removes the policy' do
-              result = service.execute
-
-              expect(result.dig(:policy_hash, :approval_policy)).to eq([])
-            end
+            expect(result.dig(:policy_hash, :approval_policy)).to eq([])
           end
         end
       end

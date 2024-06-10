@@ -55,7 +55,7 @@ module Security
       end
 
       def blank_branch_for_rule?
-        return false if scan_result_policy?
+        return false unless scan_execution_policy?
 
         policy[:rules].any? do |rule|
           rule.values_at(:agents, :branches, :branch_type).all?(&:blank?)
@@ -65,6 +65,7 @@ module Security
       def missing_branch_for_rule?
         return false if container.blank?
         return false unless project_container?
+        return false if pipeline_execution_policy?
 
         missing_branch_names.present?
       end
@@ -130,6 +131,8 @@ module Security
 
       def missing_branch_names
         strong_memoize(:missing_branch_names) do
+          next [] if policy[:rules].blank?
+
           policy[:rules]
             .select { |rule| rule[:agents].blank? }
             .flat_map { |rule| rule[:branches] }
@@ -154,7 +157,7 @@ module Security
       end
 
       def invalid_branch_types?
-        return false if container.blank? || !project_container?
+        return false if container.blank? || !project_container? || policy[:rules].blank?
 
         service = Security::SecurityOrchestrationPolicies::PolicyBranchesService.new(project: container)
 
@@ -162,14 +165,14 @@ module Security
                       .any? do |rule|
           if scan_result_policy?
             service.scan_result_branches([rule]).empty?
-          else
+          elsif scan_execution_policy?
             service.scan_execution_branches([rule]).empty?
           end
         end
       end
 
       def invalid_timezone?
-        return false if scan_result_policy?
+        return false unless scan_execution_policy?
 
         policy[:rules].select { |rule| rule[:timezone] }
                       .any? do |rule|
@@ -197,6 +200,14 @@ module Security
         Security::ScanResultPolicy::SCAN_RESULT_POLICY_TYPES.include?(policy_type)
       end
 
+      def scan_execution_policy?
+        policy_type == :scan_execution_policy
+      end
+
+      def pipeline_execution_policy?
+        policy_type == :pipeline_execution_policy
+      end
+
       def compliance_framework_ids
         policy.dig(:policy_scope, :compliance_frameworks)&.pluck(:id)&.uniq
       end
@@ -208,7 +219,7 @@ module Security
       strong_memoize_attr :approval_requiring_action
 
       def invalid_cadence?
-        return false if scan_result_policy?
+        return false unless scan_execution_policy?
 
         policy[:rules].select { |rule| rule[:cadence] }
                       .any? do |rule|

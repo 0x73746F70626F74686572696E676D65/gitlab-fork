@@ -82,23 +82,25 @@ FactoryBot.define do
   end
 
   factory :pipeline_execution_policy,
-    class: Struct.new(:name, :description, :enabled, :content, :policy_scope) do
+    class: Struct.new(:name, :description, :enabled, :pipeline_config_strategy, :content, :policy_scope) do
     skip_create
 
     initialize_with do
       name = attributes[:name]
       description = attributes[:description]
       enabled = attributes[:enabled]
+      pipeline_config_strategy = attributes[:pipeline_config_strategy]
       content = attributes[:content]
       policy_scope = attributes[:policy_scope]
 
-      new(name, description, enabled, content, policy_scope).to_h
+      new(name, description, enabled, pipeline_config_strategy, content, policy_scope).to_h
     end
 
     sequence(:name) { |n| "test-pipeline-execution-policy-#{n}" }
     description { 'This policy enforces execution of custom CI in the pipeline' }
     enabled { true }
     content { {} }
+    pipeline_config_strategy { 'inject_ci' }
     policy_scope { {} }
 
     trait :with_policy_scope do
