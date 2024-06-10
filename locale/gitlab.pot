@@ -9368,7 +9368,7 @@ msgstr ""
 msgid "Branches|Please type the following to confirm:"
 msgstr ""
 
-msgid "Branches|Plese type the following to confirm: %{codeStart}delete%{codeEnd}."
+msgid "Branches|Please type the following to confirm: %{codeStart}delete%{codeEnd}."
 msgstr ""
 
 msgid "Branches|See all branch-related settings together with branch rules"
@@ -30168,6 +30168,9 @@ msgid "KubernetesDashboard|View projects"
 msgstr ""
 
 msgid "KubernetesDashboard|You can select an agent from a project's environment page."
+msgstr ""
+
+msgid "KubernetesLogs|No logs available for container %{containerName} of pod %{podName}"
 msgstr ""
 
 msgid "KubernetesLogs|No logs available for pod %{podName}"
