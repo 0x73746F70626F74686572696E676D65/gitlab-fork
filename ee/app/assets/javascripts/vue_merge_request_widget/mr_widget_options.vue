@@ -3,6 +3,16 @@ import { GlSprintf, GlLink } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
 import CEWidgetOptions from '~/vue_merge_request_widget/mr_widget_options.vue';
+import MrWidgetAlertMessage from '~/vue_merge_request_widget/components/mr_widget_alert_message.vue';
+import MrWidgetSuggestPipeline from '~/vue_merge_request_widget/components/mr_widget_suggest_pipeline.vue';
+import MrWidgetPipelineContainer from '~/vue_merge_request_widget/components/mr_widget_pipeline_container.vue';
+import MrWidgetApprovals from 'ee_else_ce/vue_merge_request_widget/components/approvals/approvals.vue';
+import MrWidgetMigrateJenkins from '~/vue_merge_request_widget/components/mr_widget_migrate_jenkins.vue';
+import ReportWidgetContainer from '~/vue_merge_request_widget/components/report_widget_container.vue';
+import MrWidgetAutoMergeEnabled from '~/vue_merge_request_widget/components/states/mr_widget_auto_merge_enabled.vue';
+import MergeChecks from '~/vue_merge_request_widget/components/merge_checks.vue';
+import ReadyToMerge from '~/vue_merge_request_widget/components/states/ready_to_merge.vue';
+import Loading from '~/vue_merge_request_widget/components/loading.vue';
 import MrWidgetJiraAssociationMissing from './components/states/mr_widget_jira_association_missing.vue';
 import MrWidgetPolicyViolation from './components/states/mr_widget_policy_violation.vue';
 import MrWidgetGeoSecondaryNode from './components/states/mr_widget_secondary_geo_node.vue';
@@ -16,6 +26,16 @@ export default {
     MrWidgetGeoSecondaryNode,
     MrWidgetPolicyViolation,
     MrWidgetJiraAssociationMissing,
+    MrWidgetAlertMessage,
+    MrWidgetSuggestPipeline,
+    MrWidgetMigrateJenkins,
+    MrWidgetPipelineContainer,
+    MrWidgetApprovals,
+    ReportWidgetContainer,
+    MrWidgetAutoMergeEnabled,
+    Loading,
+    MergeChecks,
+    ReadyToMerge,
     BlockingMergeRequestsReport: () =>
       import('./components/blocking_merge_requests/blocking_merge_requests_report.vue'),
   },
@@ -37,7 +57,6 @@ export default {
 };
 </script>
 <template>
-  <!-- eslint-disable vue/no-undef-components -->
   <div v-if="!loading" id="widget-state" class="mr-state-widget gl-mt-5">
     <header
       v-if="shouldRenderCollaborationStatus"
