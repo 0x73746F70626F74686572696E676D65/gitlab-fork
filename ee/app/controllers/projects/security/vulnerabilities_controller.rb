@@ -25,6 +25,7 @@ module Projects
           :resolve_vulnerability,
           can?(current_user, :resolve_vulnerability, vulnerability)
         )
+        push_frontend_feature_flag(:explain_vulnerability_tool, vulnerability.group)
         pipeline = vulnerability.finding.first_finding_pipeline
         @pipeline = pipeline if can?(current_user, :read_pipeline, pipeline)
         @gfm_form = true

@@ -107,7 +107,7 @@ RSpec.describe RemoteDevelopment::Settings::EnvVarReader, :rd_fast, feature_cate
 
       it "returns an err Result containing a settings environment variable read failed message with details" do
         expect(result).to be_err_result(
-          RemoteDevelopment::Messages::SettingsEnvironmentVariableReadFailed.new(
+          RemoteDevelopment::Settings::Messages::SettingsEnvironmentVariableReadFailed.new(
             details: "ENV var '#{env_var_name}' value could not be cast to #{setting_type} type."
           )
         )
@@ -122,7 +122,7 @@ RSpec.describe RemoteDevelopment::Settings::EnvVarReader, :rd_fast, feature_cate
 
         it "returns an err Result containing a settings environment variable read failed message with details" do
           expect(result).to be_err_result do |message|
-            expect(message).to be_a(RemoteDevelopment::Messages::SettingsEnvironmentVariableReadFailed)
+            expect(message).to be_a(RemoteDevelopment::Settings::Messages::SettingsEnvironmentVariableReadFailed)
             message.context => { details: String => details }
             expect(details).to match(
               /ENV var '#{env_var_name}'.*not valid parseable JSON. Parse error was: 'not a number.*line 1, column 1.*'/
@@ -136,7 +136,7 @@ RSpec.describe RemoteDevelopment::Settings::EnvVarReader, :rd_fast, feature_cate
 
         it "returns an err Result containing a settings environment variable read failed message with details" do
           expect(result).to be_err_result do |message|
-            expect(message).to be_a(RemoteDevelopment::Messages::SettingsEnvironmentVariableReadFailed)
+            expect(message).to be_a(RemoteDevelopment::Settings::Messages::SettingsEnvironmentVariableReadFailed)
             message.context => { details: String => details }
             expect(details).to match(
               /ENV var '#{env_var_name}' was a JSON array type, but it should be an object type/
@@ -154,7 +154,7 @@ RSpec.describe RemoteDevelopment::Settings::EnvVarReader, :rd_fast, feature_cate
 
         it "returns an err Result containing a settings environment variable read failed message with details" do
           expect(result).to be_err_result do |message|
-            expect(message).to be_a(RemoteDevelopment::Messages::SettingsEnvironmentVariableReadFailed)
+            expect(message).to be_a(RemoteDevelopment::Settings::Messages::SettingsEnvironmentVariableReadFailed)
             message.context => { details: String => details }
             expect(details).to match(
               /ENV var '#{env_var_name}'.*not valid parseable JSON. Parse error was: 'not a number.*line 1, column 1.*'/
@@ -167,7 +167,7 @@ RSpec.describe RemoteDevelopment::Settings::EnvVarReader, :rd_fast, feature_cate
 
           it "returns an err Result containing a settings environment variable read failed message with details" do
             expect(result).to be_err_result do |message|
-              expect(message).to be_a(RemoteDevelopment::Messages::SettingsEnvironmentVariableReadFailed)
+              expect(message).to be_a(RemoteDevelopment::Settings::Messages::SettingsEnvironmentVariableReadFailed)
               message.context => { details: String => details }
               expect(details).to match(
                 /ENV var '#{env_var_name}' was a JSON object type, but it should be an array type/
@@ -185,7 +185,7 @@ RSpec.describe RemoteDevelopment::Settings::EnvVarReader, :rd_fast, feature_cate
 
     it "returns an err Result containing a settings environment variable read failed message with details" do
       expect(result).to be_err_result(
-        RemoteDevelopment::Messages::SettingsEnvironmentVariableReadFailed.new(
+        RemoteDevelopment::Settings::Messages::SettingsEnvironmentVariableReadFailed.new(
           details: "Unsupported Remote Development setting type: #{setting_type}"
         )
       )

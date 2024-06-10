@@ -34,7 +34,7 @@ RSpec.describe RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidat
       it "returns an err Result containing error details" do
         expect(result).to be_err_result do |message|
           expect(message)
-            .to be_a(RemoteDevelopment::Messages::SettingsPartialReconciliationIntervalSecondsValidationFailed)
+            .to be_a RemoteDevelopment::Settings::Messages::SettingsPartialReconciliationIntervalSecondsValidationFailed
           message.context => { details: String => error_details }
           expect(error_details).to eq("Partial reconciliation interval must be greater than zero")
         end
@@ -47,7 +47,7 @@ RSpec.describe RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidat
       it "returns an err Result containing error details" do
         expect(result).to be_err_result do |message|
           expect(message)
-            .to be_a(RemoteDevelopment::Messages::SettingsPartialReconciliationIntervalSecondsValidationFailed)
+            .to be_a RemoteDevelopment::Settings::Messages::SettingsPartialReconciliationIntervalSecondsValidationFailed
           message.context => { details: String => error_details }
           expect(error_details).to eq("Partial reconciliation interval must be less than full reconciliation interval")
         end
@@ -62,7 +62,7 @@ RSpec.describe RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidat
       it "returns an err Result containing error details" do
         expect(result).to be_err_result do |message|
           expect(message)
-            .to be_a(RemoteDevelopment::Messages::SettingsFullReconciliationIntervalSecondsValidationFailed)
+            .to be_a(RemoteDevelopment::Settings::Messages::SettingsFullReconciliationIntervalSecondsValidationFailed)
           message.context => { details: String => error_details }
           expect(error_details).to eq("Full reconciliation interval must be greater than zero")
         end

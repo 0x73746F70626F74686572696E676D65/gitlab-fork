@@ -67,65 +67,75 @@ RSpec.describe DependencyManagement::AggregationsFinder, feature_category: :depe
       end
     end
 
-    context 'when sorting by component_name' do
+    describe 'sorting' do
       let_it_be(:project) { target_projects.first }
-      let_it_be(:b_name) { create(:sbom_occurrence, component: component('b'), project: project) }
-      let_it_be(:a_name) { create(:sbom_occurrence, component: component('a'), project: project) }
-      let_it_be(:c_name) { create(:sbom_occurrence, component: component('c'), project: project) }
-
-      let(:params) { { sort_by: 'component_name', sort: direction } }
+      let_it_be(:occurrence_1) { occurrence(packager: :npm, name: 'c', severity: 'low') }
+      let_it_be(:occurrence_2) { occurrence(packager: :bundler, name: 'b', severity: 'medium') }
+      let_it_be(:occurrence_3) { occurrence(packager: :nuget, name: 'a', severity: 'high') }
+      let_it_be(:occurrence_4) { occurrence(packager: :yarn, name: 'd', severity: 'critical') }
 
       before_all do
         Sbom::Occurrence.id_in(target_occurrences.map(&:id)).delete_all
       end
 
-      context 'in ascending order' do
-        let(:direction) { :asc }
+      def occurrence(packager:, name:, severity:)
+        component = create(:sbom_component, name: name)
+        create(:sbom_occurrence, packager, component: component, highest_severity: severity, project: project)
+      end
 
-        it 'returns occurrences in ascending order of name' do
-          expect(execute.to_a).to eq([a_name, b_name, c_name])
+      shared_examples 'can sort in both asc and desc order' do |sort_by|
+        context 'in ascending order' do
+          let(:params) { { sort_by: sort_by, sort: direction } }
+          let(:direction) { :asc }
+
+          it "returns occurrences in ascending order of #{sort_by}" do
+            expect(execute.to_a).to eq(expected_asc)
+          end
+        end
+
+        context 'in descending order' do
+          let(:params) { { sort_by: sort_by, sort: direction } }
+          let(:direction) { :desc }
+
+          it "returns occurrences in descending order of #{sort_by}" do
+            expect(execute.to_a).to eq(expected_desc)
+          end
         end
       end
 
-      context 'in descending order' do
-        let(:direction) { :desc }
+      context 'when sorting by component_name' do
+        it_behaves_like 'can sort in both asc and desc order', 'component_name' do
+          let_it_be(:a_name) { occurrence_3 }
+          let_it_be(:b_name) { occurrence_2 }
+          let_it_be(:c_name) { occurrence_1 }
+          let_it_be(:d_name) { occurrence_4 }
 
-        it 'returns occurrences in descending order of name' do
-          expect(execute.to_a).to eq([c_name, b_name, a_name])
+          let(:expected_asc) { [a_name, b_name, c_name, d_name] }
+          let(:expected_desc) { [d_name, c_name, b_name, a_name] }
         end
       end
 
-      def component(name)
-        create(:sbom_component, name: name)
-      end
-    end
+      context 'when sorting by highest_severity' do
+        it_behaves_like 'can sort in both asc and desc order', 'highest_severity' do
+          let_it_be(:low) { occurrence_1 }
+          let_it_be(:medium) { occurrence_2 }
+          let_it_be(:high) { occurrence_3 }
+          let_it_be(:critical) { occurrence_4 }
 
-    context 'when sorting by highest_severity' do
-      let_it_be(:project) { target_projects.first }
-      let_it_be(:low) { create(:sbom_occurrence, highest_severity: 'low', project: project) }
-      let_it_be(:medium) { create(:sbom_occurrence, highest_severity: 'medium', project: project) }
-      let_it_be(:high) { create(:sbom_occurrence, highest_severity: 'high', project: project) }
-      let_it_be(:critical) { create(:sbom_occurrence, highest_severity: 'critical', project: project) }
-
-      let(:params) { { sort_by: 'highest_severity', sort: direction } }
-
-      before_all do
-        Sbom::Occurrence.id_in(target_occurrences.map(&:id)).delete_all
-      end
-
-      context 'in ascending order' do
-        let(:direction) { :asc }
-
-        it 'returns occurrences in ascending order of severity' do
-          expect(execute.to_a).to eq([low, medium, high, critical])
+          let(:expected_asc) { [low, medium, high, critical] }
+          let(:expected_desc) { [critical, high, medium, low] }
         end
       end
 
-      context 'in descending order' do
-        let(:direction) { :desc }
+      context 'when sorting by package manager' do
+        it_behaves_like 'can sort in both asc and desc order', 'package_manager' do
+          let_it_be(:npm) { occurrence_1 }
+          let_it_be(:bundler) { occurrence_2 }
+          let_it_be(:nuget) { occurrence_3 }
+          let_it_be(:yarn) { occurrence_4 }
 
-        it 'returns occurrences in descending order of severity' do
-          expect(execute.to_a).to eq([critical, high, medium, low])
+          let(:expected_asc) { [bundler, npm, nuget, yarn] }
+          let(:expected_desc) { [yarn, nuget, npm, bundler] }
         end
       end
     end

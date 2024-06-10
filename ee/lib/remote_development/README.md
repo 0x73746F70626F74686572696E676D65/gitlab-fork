@@ -495,7 +495,7 @@ Remote Development has a dedicated module in the domain logic for handling setti
 ### Adding a new setting
 
 To add a new Remote Development setting with a default value which is automatically configurable
-via an ENV var, add a new entry in `ee/lib/remote_development/settings/default_settings.rb`
+via an ENV var, add a new entry in `lib/remote_development/settings/default_settings.rb`
 
 ### Reading settings
 
@@ -503,7 +503,7 @@ To read a single setting, use `RemoteDevelopment::Settings.get_single_setting(:s
 
 To read all settings, use `RemoteDevelopment::Settings.get_all_settings`
 
-NOTE: A setting _MUST_ have an entry defined in `ee/lib/remote_development/settings/default_settings.rb`
+NOTE: A setting _MUST_ have an entry defined in `lib/remote_development/settings/default_settings.rb`
 to be read, but the default value can be `nil`. This will likely be the case when you want to use
 a setting from `Gitlab::CurrentSettings`.
 
@@ -512,7 +512,7 @@ a setting from `Gitlab::CurrentSettings`.
 If a setting can be defined via multiple means (e.g. via an `ENV` var the `Settings` model),
 there is a clear and simple set of precedence rules for which one "wins". These follow the
 order of the steps in the
-[RoP `Main` class of the Remote Development Settings module](./settings/main.rb):
+[RoP `Main` class of the Remote Development Settings module](../../../lib/remote_development/settings/main.rb):
 
 1. First, the default value is used
 1. Next, one of the following values are used if defined and not `nil`:

@@ -3,6 +3,7 @@ import { stubComponent, RENDER_ALL_SLOTS_TEMPLATE } from 'helpers/stub_component
 import { mockStore } from 'jest/vue_merge_request_widget/mock_data';
 import waitForPromises from 'helpers/wait_for_promises';
 
+import { STATUS_OPEN } from '~/issues/constants';
 import MrWidgetPipelineContainer from '~/vue_merge_request_widget/components/mr_widget_pipeline_container.vue';
 import MrWidgetContainer from '~/vue_merge_request_widget/components/mr_widget_container.vue';
 import MergeTrainPositionIndicator from 'ee/vue_merge_request_widget/components/merge_train_position_indicator.vue';
@@ -10,10 +11,10 @@ import MergeTrainPositionIndicator from 'ee/vue_merge_request_widget/components/
 describe('MrWidgetPipelineContainer', () => {
   let wrapper;
 
-  const createComponent = (options) => {
+  const createComponent = ({ store, ...options } = {}) => {
     wrapper = shallowMount(MrWidgetPipelineContainer, {
       propsData: {
-        mr: { ...mockStore },
+        mr: { ...store, ...mockStore },
       },
       stubs: {
         MrWidgetContainer: stubComponent(MrWidgetContainer, {
@@ -25,12 +26,24 @@ describe('MrWidgetPipelineContainer', () => {
   };
 
   describe('merge train indicator', () => {
-    it('should render the merge train indicator', async () => {
-      createComponent();
+    it('should render merge train indicator', async () => {
+      createComponent({
+        store: {
+          mergeRequestState: STATUS_OPEN,
+          mergeTrainIndex: 0,
+          mergeTrainsCount: 1,
+          mergeTrainsPath: '/train/1',
+        },
+      });
 
       await waitForPromises();
 
-      expect(wrapper.findComponent(MergeTrainPositionIndicator).exists()).toBe(true);
+      expect(wrapper.findComponent(MergeTrainPositionIndicator).props()).toEqual({
+        mergeRequestState: STATUS_OPEN,
+        mergeTrainIndex: 0,
+        mergeTrainsCount: 1,
+        mergeTrainsPath: '/train/1',
+      });
     });
   });
 });

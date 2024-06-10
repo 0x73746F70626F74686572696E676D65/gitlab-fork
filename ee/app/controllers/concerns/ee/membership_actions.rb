@@ -26,6 +26,12 @@ module EE
       if result[:members_queued_for_approval].present?
         response_data[:enqueued] = true
       end
+      # Add in the seat usage info, frontend needs this to update the "is using seat" badge.
+      member = result[:members]&.first
+      if member.present?
+        response_data[:using_license] =
+          can?(current_user, :read_billable_member, member.group) && member.user&.using_gitlab_com_seat?(member.group)
+      end
 
       response_data
     end

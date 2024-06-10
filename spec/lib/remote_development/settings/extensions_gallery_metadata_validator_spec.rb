@@ -51,7 +51,7 @@ RSpec.describe RemoteDevelopment::Settings::ExtensionsGalleryMetadataValidator, 
       it "returns an err Result containing error details" do
         expect(result).to be_err_result do |message|
           expect(message)
-            .to be_a(RemoteDevelopment::Messages::SettingsVscodeExtensionsGalleryMetadataValidationFailed)
+            .to be_a(RemoteDevelopment::Settings::Messages::SettingsVscodeExtensionsGalleryMetadataValidationFailed)
           message.context => { details: String => error_details }
           expect(error_details).to eq(expected_error_details)
         end

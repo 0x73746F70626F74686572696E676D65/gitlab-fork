@@ -30,9 +30,7 @@ module RemoteDevelopment
             .map(
               # As the final step, return the settings in a SettingsGetSuccessful message
               ->(value) do
-                RemoteDevelopment::Messages::SettingsGetSuccessful.new(
-                  settings: value.fetch(:settings)
-                )
+                SettingsGetSuccessful.new(settings: value.fetch(:settings))
               end
             )
         # rubocop:disable Lint/DuplicateBranch -- Rubocop doesn't know the branches are different due to destructuring
