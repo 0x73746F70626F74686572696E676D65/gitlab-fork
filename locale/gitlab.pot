@@ -21841,6 +21841,9 @@ msgstr ""
 msgid "Failed to load stacktrace."
 msgstr ""
 
+msgid "Failed to load the Web IDE"
+msgstr ""
+
 msgid "Failed to make repository read-only: %{reason}"
 msgstr ""
 
@@ -22548,6 +22551,9 @@ msgid "For more information, go to the "
 msgstr ""
 
 msgid "For more information, see the File Hooks documentation."
+msgstr ""
+
+msgid "For more information, see the developer console. Try to reload the page or sign out and in again. If the issue persists, %{reportIssueStart}report a problem%{reportIssueEnd}."
 msgstr ""
 
 msgid "For the GitLab Team to keep your subscription data up to date, this is a reminder to report your license usage on a monthly basis, or at the cadence set in your agreement with GitLab. This allows us to simplify the billing process for overages and renewals. To report your usage data, export your license usage file and email it to %{renewal_service_email}. If you need an updated license, GitLab will send the license to the email address registered in the %{customers_dot}, and you can upload this license to your instance."
@@ -31066,7 +31072,7 @@ msgstr ""
 msgid "Loading snippet"
 msgstr ""
 
-msgid "Loading the GitLab IDE"
+msgid "Loading the Web IDE"
 msgstr ""
 
 msgid "Loading..."
@@ -43418,6 +43424,9 @@ msgid "Release|Unable to fetch the tag notes."
 msgstr ""
 
 msgid "Release|You can edit the content later by editing the release. %{linkStart}How do I edit a release?%{linkEnd}"
+msgstr ""
+
+msgid "Reload"
 msgstr ""
 
 msgid "Reload page"
