@@ -9056,6 +9056,9 @@ msgstr ""
 msgid "BranchRules|Add branch rule"
 msgstr ""
 
+msgid "BranchRules|Administrators"
+msgstr ""
+
 msgid "BranchRules|After a protected branch is created, it will show up in the list as a branch rule."
 msgstr ""
 
@@ -9158,6 +9161,9 @@ msgstr ""
 msgid "BranchRules|Delete rule"
 msgstr ""
 
+msgid "BranchRules|Developers and Maintainers"
+msgstr ""
+
 msgid "BranchRules|Does not allow force push"
 msgstr ""
 
@@ -9179,6 +9185,9 @@ msgstr ""
 msgid "BranchRules|Keep stable branches secure and force developers to use merge requests. %{linkStart}What are protected branches?%{linkEnd}"
 msgstr ""
 
+msgid "BranchRules|Maintainers"
+msgstr ""
+
 msgid "BranchRules|Manage in merge request approvals"
 msgstr ""
 
@@ -9195,6 +9204,9 @@ msgid "BranchRules|No data to display"
 msgstr ""
 
 msgid "BranchRules|No matching results"
+msgstr ""
+
+msgid "BranchRules|No one"
 msgstr ""
 
 msgid "BranchRules|No one is allowed to merge changes."
