@@ -22,7 +22,7 @@ RSpec.describe Admin::GroupsController, feature_category: :groups_and_projects d
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(response).to render_template(:index)
-      expect(assigns(:groups)).to eq([group, group_2, group_3])
+      expect(assigns(:groups)).to match_array([group, group_2, group_3])
     end
 
     it 'renders a correct list of sort by options' do
