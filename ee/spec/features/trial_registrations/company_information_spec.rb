@@ -42,9 +42,7 @@ RSpec.describe 'Company Information', :js, feature_category: :activation do
         phone_number: '+1234567890',
         country: 'US',
         state: 'Florida',
-        website_url: 'https://gitlab.com',
-        trial_onboarding_flow: true,
-        trial: false
+        website_url: 'https://gitlab.com'
       }.merge(extra_params)
     end
 

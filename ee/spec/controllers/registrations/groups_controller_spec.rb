@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user, reload: true) { create(:user) }
   let_it_be(:group) { create(:group) }
 
   let(:experiment) { instance_double(ApplicationExperiment) }
@@ -97,11 +97,15 @@ RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
           end
 
           context 'when on trial' do
+            before do
+              user.update!(onboarding_status_registration_type: 'trial')
+            end
+
             it 'tracks the new group view event' do
               expect(experiment).to receive(:publish)
               expect(experiment).to receive(:track).with(:render_groups_new, label: 'trial_registration')
 
-              get :new, params: { trial_onboarding_flow: true }
+              get_new
 
               expect_snowplow_event(
                 category: described_class.name,
@@ -210,7 +214,9 @@ RSpec.describe Registrations::GroupsController, feature_category: :onboarding do
         end
 
         context 'when on trial' do
-          let(:extra_params) { { trial_onboarding_flow: true } }
+          before do
+            user.update!(onboarding_status_registration_type: 'trial')
+          end
 
           it 'tracks submission event' do
             expect(experiment).to receive(:publish)

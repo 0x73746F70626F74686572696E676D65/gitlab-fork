@@ -6,7 +6,7 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
   using RSpec::Parameterized::TableSyntax
 
   describe '#execute' do
-    let_it_be(:user) { create(:user) }
+    let_it_be(:user, reload: true) { create(:user) }
     let_it_be(:group) { create(:group) }
     let(:extra_params) { {} }
     let(:group_params) do
@@ -96,21 +96,11 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
 
         execute
       end
-
-      context 'with trial concerns' do
-        let(:extra_params) { { trial_onboarding_flow: 'true' } }
-
-        it 'does not attempt to create a trial' do
-          expect(GitlabSubscriptions::Trials::ApplyTrialWorker).not_to receive(:perform_async)
-
-          expect(execute).to be_error
-        end
-      end
     end
 
     context 'with applying for a trial' do
       let(:extra_params) do
-        { trial_onboarding_flow: 'true', glm_source: 'about.gitlab.com', glm_content: 'content' }
+        { glm_source: 'about.gitlab.com', glm_content: 'content' }
       end
 
       let(:trial_user_information) do
@@ -130,6 +120,9 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
         allow_next_instance_of(::Groups::CreateService) do |service|
           allow(service).to receive(:execute).and_return(ServiceResponse.success(payload: { group: group }))
         end
+
+        stub_saas_features(onboarding: true)
+        user.update!(onboarding_status_registration_type: 'trial')
       end
 
       it 'applies a trial' do

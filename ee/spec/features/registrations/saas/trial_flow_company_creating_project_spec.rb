@@ -22,13 +22,13 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
       ensure_onboarding { expect_to_see_company_form }
 
       # failure
-      fill_in_company_form(success: false, trial: true)
+      fill_in_company_form(success: false)
       click_on 'Start free GitLab Ultimate trial'
 
       expect_to_see_company_form_failure
 
       # success
-      fill_in_company_form(success: true, trial: true)
+      fill_in_company_form(success: true)
       click_on 'Start free GitLab Ultimate trial'
 
       ensure_onboarding { expect_to_see_group_and_project_creation_form }
@@ -59,7 +59,7 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
       expect(page).to have_native_text_validation_message('last_name')
 
       # success
-      fill_in_company_form(with_last_name: true, glm: false, trial: true)
+      fill_in_company_form(with_last_name: true, glm: false)
       click_on 'Start free GitLab Ultimate trial'
 
       ensure_onboarding { expect_to_see_group_and_project_creation_form }

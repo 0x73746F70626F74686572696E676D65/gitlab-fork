@@ -63,8 +63,6 @@ module EE
       end
 
       def trial?
-        # TODO: As the next step in https://gitlab.com/gitlab-org/gitlab/-/issues/435746, we can remove the
-        # the params and stored location considerations as we will be fully driving off the db registration_type.
         return false unless enabled?
 
         user.onboarding_status_registration_type == REGISTRATION_TYPE[:trial]
@@ -94,23 +92,9 @@ module EE
       end
 
       def group_creation_tracking_label
-        return TRACKING_LABEL[:trial] if trial_onboarding_flow? || trial?
+        return TRACKING_LABEL[:trial] if trial?
 
         TRACKING_LABEL[:free]
-      end
-
-      def onboarding_tracking_label
-        return TRACKING_LABEL[:trial] if trial_onboarding_flow?
-
-        TRACKING_LABEL[:free]
-      end
-
-      def trial_onboarding_flow?
-        # This only comes from the submission of the company form.
-        # It is then passed around to creating group/project
-        # and then back to welcome controller for the
-        # continuous getting started action.
-        ::Gitlab::Utils.to_boolean(params[:trial_onboarding_flow], default: false)
       end
 
       def setup_for_company?
@@ -137,7 +121,7 @@ module EE
       end
 
       def company_lead_product_interaction
-        if trial? && trial_from_the_beginning?
+        if initial_trial?
           PRODUCT_INTERACTION[:trial]
         else
           # Due to this only being called in an area where only trials reach,
@@ -146,7 +130,7 @@ module EE
         end
       end
 
-      def trial_from_the_beginning?
+      def initial_trial?
         user.onboarding_status_initial_registration_type == REGISTRATION_TYPE[:trial]
       end
 

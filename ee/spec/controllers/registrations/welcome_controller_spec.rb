@@ -429,14 +429,14 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
                 jobs_to_be_done_other: '_jobs_to_be_done_other_',
                 glm_source: 'some_source',
                 glm_content: 'some_content'
-              }.merge(trial_concerns)
+              }
             end
 
             context 'when it is a trial registration' do
-              let(:trial_concerns) { { trial: true } }
-
               before do
-                user.update!(onboarding_status_initial_registration_type: 'trial')
+                user.update!(
+                  onboarding_status_initial_registration_type: 'trial', onboarding_status_registration_type: 'trial'
+                )
               end
 
               it 'redirects to the company path and stores the url' do
@@ -467,22 +467,6 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
                 expect(user.onboarding_status_registration_type)
                   .to eq(::Onboarding::StatusCreateService::REGISTRATION_TYPE[:trial])
                 expect(response).to redirect_to redirect_path
-              end
-            end
-
-            context 'with trial param sent with update' do
-              context 'when trial is sent in the redirect_path due to onboarding_status' do
-                let(:trial_concerns) { { trial: true } }
-
-                before do
-                  user.update!(onboarding_status_initial_registration_type: 'trial')
-
-                  patch_update
-                end
-
-                it 'redirects to the company path with trial param' do
-                  expect(response).to redirect_to redirect_path
-                end
               end
             end
 
@@ -557,8 +541,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
                       role: 'software_developer',
                       jobs_to_be_done_other: '_jobs_to_be_done_other_',
                       glm_source: 'some_source',
-                      glm_content: 'some_content',
-                      trial: 'true'
+                      glm_content: 'some_content'
                     }
 
                     patch_update
@@ -574,16 +557,14 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
               end
             end
 
-            context 'when trial is false' do
-              let(:extra_params) { { trial: 'false' } }
+            context 'when it is not a trial' do
               let(:expected_params) do
                 {
                   registration_objective: 'code_storage',
                   role: 'software_developer',
                   jobs_to_be_done_other: '_jobs_to_be_done_other_',
                   glm_source: 'some_source',
-                  glm_content: 'some_content',
-                  trial: 'false'
+                  glm_content: 'some_content'
                 }
               end
 
@@ -644,33 +625,6 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
                 user: user,
                 label: 'trial_registration'
               )
-            end
-
-            context 'when trial from beginning and we want to pass the trial param' do
-              before do
-                user.update!(onboarding_status_initial_registration_type: 'trial')
-              end
-
-              specify do
-                patch_update
-                user.reset
-
-                path = ::Gitlab::Utils.add_url_parameters(
-                  new_users_sign_up_company_path,
-                  {
-                    glm_content: 'some_content',
-                    glm_source: 'some_source',
-                    jobs_to_be_done_other: '_jobs_to_be_done_other_',
-                    registration_objective: 'code_storage',
-                    role: 'software_developer',
-                    trial: 'true'
-                  }
-                )
-
-                expect(user.onboarding_in_progress).to be(true)
-                expect(user.onboarding_status_step_url).to eq(path)
-                expect(response).to redirect_to path
-              end
             end
           end
         end

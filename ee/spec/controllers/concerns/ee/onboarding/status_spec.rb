@@ -144,23 +144,6 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
     end
   end
 
-  describe '#trial_onboarding_flow?' do
-    where(:params, :expected_result) do
-      { trial_onboarding_flow: 'true' }  | true
-      { trial_onboarding_flow: 'false' } | false
-      {}                                 | false
-      { trial_onboarding_flow: '' }      | false
-    end
-
-    with_them do
-      let(:instance) { described_class.new(params, nil, nil) }
-
-      subject { instance.trial_onboarding_flow? }
-
-      it { is_expected.to eq(expected_result) }
-    end
-  end
-
   describe '#tracking_label' do
     let(:instance) { described_class.new({}, nil, nil) }
     let(:trial?) { false }
@@ -196,31 +179,10 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
     end
   end
 
-  describe '#onboarding_tracking_label' do
-    let(:instance) { described_class.new({}, nil, nil) }
-    let(:trial_onboarding_flow?) { false }
-
-    subject(:tracking_label) { instance.onboarding_tracking_label }
-
-    before do
-      allow(instance).to receive(:trial_onboarding_flow?).and_return(trial_onboarding_flow?)
-    end
-
-    it { is_expected.to eq('free_registration') }
-
-    context 'when it is a trial_onboarding_flow' do
-      let(:trial_onboarding_flow?) { true }
-
-      it { is_expected.to eq('trial_registration') }
-    end
-  end
-
   describe '#group_creation_tracking_label' do
-    where(:trial_onboarding_flow?, :trial?, :expected_result) do
-      true  | true  | 'trial_registration'
-      true  | false | 'trial_registration'
-      false | true  | 'trial_registration'
-      false | false | 'free_registration'
+    where(:trial?, :expected_result) do
+      true  | 'trial_registration'
+      false | 'free_registration'
     end
 
     with_them do
@@ -229,7 +191,6 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
       subject { instance.group_creation_tracking_label }
 
       before do
-        allow(instance).to receive(:trial_onboarding_flow?).and_return(trial_onboarding_flow?)
         allow(instance).to receive(:trial?).and_return(trial?)
       end
 
@@ -260,7 +221,7 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
     end
   end
 
-  describe '#trial_from_the_beginning?' do
+  describe '#initial_trial?' do
     let(:user_with_initial_trial) { build_stubbed(:user, onboarding_status_initial_registration_type: 'trial') }
     let(:user_with_initial_free) { build_stubbed(:user, onboarding_status_initial_registration_type: 'free') }
 
@@ -277,7 +238,7 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
     with_them do
       let(:instance) { described_class.new(nil, nil, current_user) }
 
-      subject { instance.trial_from_the_beginning? }
+      subject { instance.initial_trial? }
 
       it { is_expected.to eq(expected_result) }
     end

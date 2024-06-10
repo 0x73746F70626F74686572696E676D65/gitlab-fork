@@ -9,9 +9,9 @@
   .col-md-6.m-sm-6
     %h2.gl-pb-5.gl-my-0
       = _("About your company")
-    #js-registrations-company-form{ data: create_company_form_data }
+    #js-registrations-company-form{ data: create_company_form_data(onboarding_status) }
 
-  - if onboarding_status.trial?
+  - if onboarding_status.initial_trial?
     .col-md-4.company-illustration{ data: { testid: 'trial-registration-column' } }
       = image_tag 'illustrations/saas-trial-illustration.svg', alt: '', class: 'gl-hidden md:gl-inline gl-w-full'
   - else
