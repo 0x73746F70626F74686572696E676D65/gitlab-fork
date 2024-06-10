@@ -929,7 +929,8 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           'X-Gitlab-Instance-Id' => global_instance_id,
           'X-Gitlab-Host-Name' => Gitlab.config.gitlab.host,
           'X-Gitlab-Realm' => gitlab_realm,
-          'X-Gitlab-Version' => Gitlab.version_info.to_s
+          'X-Gitlab-Version' => Gitlab.version_info.to_s,
+          'X-Gitlab-Authentication-Type' => 'oidc'
         }
       end
 
