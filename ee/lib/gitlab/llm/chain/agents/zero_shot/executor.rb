@@ -208,8 +208,6 @@ module Gitlab
             end
 
             def source_template
-              return "" unless Feature.enabled?(:duo_chat_display_source, context.current_user)
-
               <<~CONTEXT
                   If GitLab resource of issue or epic type is present and is directly relevant to the question,
                   include the following section at the end of your response:
