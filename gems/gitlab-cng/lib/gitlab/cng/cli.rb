@@ -30,6 +30,9 @@ module Gitlab
 
       desc "create [SUBCOMMAND]", "Manage deployment related object creation"
       subcommand "create", Commands::Create
+
+      desc "log [SUBCOMMAND]", "Manage deployment related logs"
+      subcommand "log", Commands::Log
     end
   end
 end

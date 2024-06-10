@@ -69,10 +69,9 @@ workflow:
         retry_failed_e2e_rspec_examples
       fi
   after_script:
-    - source scripts/qa/cng_deploy/cng-kind.sh
-    - echo -e "\e[0Ksection_start:`date +%s`:log_deploy[collapsed=true]\r\e[0KDeployment info"
-    - save_install_logs
-    - echo -e "\e[0Ksection_end:`date +%s`:log_deploy\r\e[0K"
+    - cd qa
+    - bundle exec cng log events --save
+    - bundle exec cng log pods --save --containers all
   artifacts:
     expire_in: 1 day
     when: always
@@ -81,7 +80,7 @@ workflow:
       dotenv: $QA_SUITE_STATUS_ENV_FILE
     paths:
       - qa/tmp
-      - ${CI_PROJECT_DIR}/*.log
+      - ${CI_PROJECT_DIR}/qa/*.log
 
 # ==========================================
 # Pre stage
