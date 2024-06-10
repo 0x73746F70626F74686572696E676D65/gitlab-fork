@@ -1417,6 +1417,14 @@ CREATE TABLE p_ci_build_names (
 )
 PARTITION BY LIST (partition_id);
 
+CREATE TABLE p_ci_build_sources (
+    build_id bigint NOT NULL,
+    partition_id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    source smallint NOT NULL
+)
+PARTITION BY LIST (partition_id);
+
 CREATE TABLE p_ci_builds (
     status character varying,
     finished_at timestamp without time zone,
@@ -22538,6 +22546,9 @@ ALTER TABLE ONLY p_catalog_resource_sync_events
 ALTER TABLE ONLY p_ci_build_names
     ADD CONSTRAINT p_ci_build_names_pkey PRIMARY KEY (build_id, partition_id);
 
+ALTER TABLE ONLY p_ci_build_sources
+    ADD CONSTRAINT p_ci_build_sources_pkey PRIMARY KEY (build_id, partition_id);
+
 ALTER TABLE ONLY p_ci_builds_execution_configs
     ADD CONSTRAINT p_ci_builds_execution_configs_pkey PRIMARY KEY (id, partition_id);
 
@@ -27213,6 +27224,8 @@ CREATE INDEX index_p_catalog_resource_sync_events_on_id_where_pending ON ONLY p_
 CREATE INDEX index_p_ci_build_names_on_project_id_and_build_id ON ONLY p_ci_build_names USING btree (project_id, build_id);
 
 CREATE INDEX index_p_ci_build_names_on_search_vector ON ONLY p_ci_build_names USING gin (search_vector);
+
+CREATE INDEX index_p_ci_build_sources_on_project_id_and_build_id ON ONLY p_ci_build_sources USING btree (project_id, build_id);
 
 CREATE INDEX index_p_ci_builds_execution_configs_on_pipeline_id ON ONLY p_ci_builds_execution_configs USING btree (pipeline_id);
 
@@ -31953,6 +31966,9 @@ ALTER TABLE ONLY approval_merge_request_rules
 
 ALTER TABLE ONLY namespace_statistics
     ADD CONSTRAINT fk_rails_0062050394 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
+
+ALTER TABLE p_ci_build_sources
+    ADD CONSTRAINT fk_rails_023578ae70 FOREIGN KEY (partition_id, build_id) REFERENCES p_ci_builds(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 ALTER TABLE ONLY automation_rules
     ADD CONSTRAINT fk_rails_025b519b8d FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
