@@ -21,6 +21,11 @@ import {
 
 const { epic } = mockQueryResponse.data.group;
 
+const mockElement = {
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+};
+
 Vue.use(Vuex);
 
 describe('RelatedItemsTree', () => {
@@ -253,14 +258,28 @@ describe('RelatedItemsTree', () => {
             it('adds a class `is-dragging` to document body', () => {
               expect(document.body.classList.contains('is-dragging')).toBe(false);
 
-              wrapper.vm.handleDragOnStart();
+              wrapper.vm.handleDragOnStart({
+                to: wrapper.element,
+              });
 
               expect(document.body.classList.contains('is-dragging')).toBe(true);
             });
 
+            it('adds and removes a click event handler to ignore clicks while dragging', () => {
+              wrapper.vm.handleDragOnStart({
+                to: mockElement,
+              });
+              jest.runAllTimers();
+
+              expect(mockElement.addEventListener).toHaveBeenCalled();
+              expect(mockElement.removeEventListener).toHaveBeenCalled();
+            });
+
             it('attaches `keyup` event listener on document', async () => {
               jest.spyOn(document, 'addEventListener');
-              wrapper.findComponent(Draggable).vm.$emit('start');
+              wrapper.findComponent(Draggable).vm.$emit('start', {
+                to: wrapper.element,
+              });
               await nextTick();
 
               expect(document.addEventListener).toHaveBeenCalledWith('keyup', expect.any(Function));

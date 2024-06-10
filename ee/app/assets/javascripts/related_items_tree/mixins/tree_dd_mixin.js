@@ -95,12 +95,19 @@ export default {
      * of item is started, and it sets `is-dragging` class
      * to page body.
      */
-    handleDragOnStart() {
+    handleDragOnStart({ to }) {
       document.body.classList.add('is-dragging');
 
       this.dragCancelled = false;
       // Attach listener to detect `ESC` key press to cancel drag.
       document.addEventListener('keyup', this.handleKeyUp.bind(this));
+
+      // Ignore click events originating from anchor elements on the next event loop
+      // Firefox fires a click event on anchor elements inside the draggable item.
+      const ignoreClickEvent = (event) => event.preventDefault();
+      to.addEventListener('click', ignoreClickEvent, { capture: true, once: true });
+
+      setTimeout(() => to.removeEventListener('click', ignoreClickEvent), 1);
     },
     /**
      * This event handler is fired when user releases the dragging
