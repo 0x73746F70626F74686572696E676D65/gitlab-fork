@@ -15901,9 +15901,6 @@ msgstr ""
 msgid "Custom notification events"
 msgstr ""
 
-msgid "Custom notification levels are the same as participating levels. With custom notification levels you will also receive notifications for select events. To find out more, check out %{notificationLinkStart}notification emails%{notificationLinkEnd}."
-msgstr ""
-
 msgid "Custom project templates"
 msgstr ""
 
@@ -34876,9 +34873,6 @@ msgid_plural "NotificationEmail|Reviewers: %{users}"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "NotificationEvent|Added as approver"
-msgstr ""
-
 msgid "NotificationEvent|Change reviewer merge request"
 msgstr ""
 
@@ -34886,6 +34880,12 @@ msgid "NotificationEvent|Close issue"
 msgstr ""
 
 msgid "NotificationEvent|Close merge request"
+msgstr ""
+
+msgid "NotificationEvent|Comment is added"
+msgstr ""
+
+msgid "NotificationEvent|Epic is created"
 msgstr ""
 
 msgid "NotificationEvent|Failed pipeline"
@@ -34897,7 +34897,46 @@ msgstr ""
 msgid "NotificationEvent|Issue due"
 msgstr ""
 
+msgid "NotificationEvent|Issue is closed"
+msgstr ""
+
+msgid "NotificationEvent|Issue is created"
+msgstr ""
+
+msgid "NotificationEvent|Issue is due soon"
+msgstr ""
+
+msgid "NotificationEvent|Issue is reassigned"
+msgstr ""
+
+msgid "NotificationEvent|Issue is reopened"
+msgstr ""
+
 msgid "NotificationEvent|Merge merge request"
+msgstr ""
+
+msgid "NotificationEvent|Merge request is closed"
+msgstr ""
+
+msgid "NotificationEvent|Merge request is created"
+msgstr ""
+
+msgid "NotificationEvent|Merge request is merged"
+msgstr ""
+
+msgid "NotificationEvent|Merge request is reassigned"
+msgstr ""
+
+msgid "NotificationEvent|Merge request is reopened"
+msgstr ""
+
+msgid "NotificationEvent|Merge request is set to auto-merge"
+msgstr ""
+
+msgid "NotificationEvent|Merge request receives a push"
+msgstr ""
+
+msgid "NotificationEvent|Merge request reviewers are changed"
 msgstr ""
 
 msgid "NotificationEvent|Merge when pipeline succeeds"
@@ -34921,6 +34960,18 @@ msgstr ""
 msgid "NotificationEvent|New release"
 msgstr ""
 
+msgid "NotificationEvent|Pipeline fails"
+msgstr ""
+
+msgid "NotificationEvent|Pipeline is fixed"
+msgstr ""
+
+msgid "NotificationEvent|Pipeline is successful"
+msgstr ""
+
+msgid "NotificationEvent|Project is moved"
+msgstr ""
+
 msgid "NotificationEvent|Push to merge request"
 msgstr ""
 
@@ -34930,13 +34981,16 @@ msgstr ""
 msgid "NotificationEvent|Reassign merge request"
 msgstr ""
 
+msgid "NotificationEvent|Release is created"
+msgstr ""
+
 msgid "NotificationEvent|Reopen issue"
 msgstr ""
 
 msgid "NotificationEvent|Reopen merge request"
 msgstr ""
 
-msgid "NotificationEvent|Successful pipeline"
+msgid "NotificationEvent|You are added as an approver on a merge request"
 msgstr ""
 
 msgid "NotificationLevel|Custom"
@@ -59237,6 +59291,9 @@ msgstr ""
 msgid "Wireframe"
 msgstr ""
 
+msgid "With custom notification levels you receive notifications for the same events as in the Participate level, with additional selected events. For more information, see %{notificationLinkStart}notification emails%{notificationLinkEnd}."
+msgstr ""
+
 msgid "With issues you can discuss the implementation of an idea, track tasks and work status, elaborate on code implementations, and accept feature proposals, questions, support requests, or bug reports."
 msgstr ""
 
@@ -60661,10 +60718,10 @@ msgstr ""
 msgid "You will not get any notifications via email"
 msgstr ""
 
-msgid "You will only receive notifications for the events you choose"
+msgid "You will only receive notifications for items you have participated in"
 msgstr ""
 
-msgid "You will only receive notifications for threads you have participated in"
+msgid "You will only receive notifications for items you have participated in and the events you choose"
 msgstr ""
 
 msgid "You will receive notifications for any activity"
