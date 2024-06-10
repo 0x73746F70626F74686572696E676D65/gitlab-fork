@@ -48,8 +48,27 @@ module IdentityVerificationHelpers
     page.execute_script("document.querySelector('#{selector}').dispatchEvent(new Event('input'))")
   end
 
+  def test_phone_number
+    dial_code = '61'
+    phone_number = '400000000'
+
+    {
+      short: phone_number,
+      full: "#{dial_code}#{phone_number}",
+      dial_code: dial_code
+    }
+  end
+
   def stub_telesign_verification(risk_score: ::IdentityVerification::UserRiskProfile::TELESIGN_HIGH_RISK_THRESHOLD)
-    allow_next_instance_of(::PhoneVerification::TelesignClient::RiskScoreService) do |service|
+    risk_score_service_params = {
+      phone_number: test_phone_number[:full],
+      user: an_instance_of(User),
+      ip_address: an_instance_of(String)
+    }
+    allow_next_instance_of(
+      ::PhoneVerification::TelesignClient::RiskScoreService,
+      risk_score_service_params
+    ) do |service|
       allow(service).to receive(:execute).and_return(
         ServiceResponse.success(payload: { risk_score: risk_score })
       )
@@ -98,10 +117,10 @@ module IdentityVerificationHelpers
     stub_telesign_verification(**telesign_opts)
 
     us_list_item = '🇺🇸 United States of America (+1)'
-    au_list_item = '🇦🇺 Australia (+61)'
+    au_list_item = "🇦🇺 Australia (+#{test_phone_number[:dial_code]})"
     select_from_listbox(au_list_item, from: us_list_item) if has_content?(us_list_item)
 
-    fill_in 'phone_number', with: '400000000'
+    fill_in 'phone_number', with: test_phone_number[:short]
     click_button s_('IdentityVerification|Send code')
   end
 
@@ -110,7 +129,7 @@ module IdentityVerificationHelpers
 
     content = format(
       s_("IdentityVerification|We've sent a verification code to +%{phoneNumber}"),
-      phoneNumber: '61400000000'
+      phoneNumber: test_phone_number[:full]
     )
 
     expect(page).to have_content(content)

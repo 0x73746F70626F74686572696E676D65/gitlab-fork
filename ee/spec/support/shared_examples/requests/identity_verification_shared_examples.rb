@@ -34,9 +34,10 @@ def mock_arkose_token_verification(success:, challenge_shown: true, service_down
   end
 end
 
-def mock_send_phone_number_verification_code(success:, response_opts: {})
+def mock_send_phone_number_verification_code(success:, service_params: [], response_opts: {})
   response = success ? ServiceResponse.success(**response_opts) : ServiceResponse.error(**response_opts)
-  allow_next_instance_of(::PhoneVerification::Users::SendVerificationCodeService) do |service|
+
+  allow_next_instance_of(::PhoneVerification::Users::SendVerificationCodeService, *service_params) do |service|
     allow(service).to receive(:execute).and_return(response)
   end
 end
@@ -275,9 +276,12 @@ end
 # POST send_phone_verification_code
 RSpec.shared_examples 'it successfully sends phone number verification code' do
   let(:response_opts) { { payload: { container: 'contents' } } }
+  let(:service_params) { [user, { ip_address: an_instance_of(String), **phone_number_details.stringify_keys }] }
 
   before do
-    mock_send_phone_number_verification_code(success: true, response_opts: response_opts)
+    mock_send_phone_number_verification_code(
+      success: true, service_params: service_params, response_opts: response_opts
+    )
   end
 
   it 'responds with status 200 OK' do

@@ -5,12 +5,15 @@ module PhoneVerification
     class RiskScoreService < BaseService
       # TeleSign API: https://developer.telesign.com/enterprise/reference/submitphonenumberforintelligence
 
+      include Gitlab::Utils::StrongMemoize
+
       # High risk: https://developer.telesign.com/enterprise/docs/codes-languages-and-time-zones#phone-type-codes
       BLOCKED_PHONE_TYPES = %w[TOLL_FREE PAGER VOIP INVALID OTHER VOICEMAIL RESTRICTED_PREMIUM PAYPHONE].freeze
 
-      def initialize(phone_number:, user:)
+      def initialize(phone_number:, user:, ip_address:)
         @phone_number = phone_number
         @user = user
+        @ip_address = ip_address
       end
 
       def execute
@@ -18,22 +21,13 @@ module PhoneVerification
 
         phoneid_client = TelesignEnterprise::PhoneIdClient.new(customer_id, api_key)
 
-        opts = { request_risk_insights: true, email_address: user.email }
-        response = phoneid_client.score(phone_number, USE_CASE_ID, **opts)
+        opts = { request_risk_insights: true, email_address: user.email, originating_ip: ip_address }
+        @response = phoneid_client.score(phone_number, USE_CASE_ID, **opts.compact)
 
-        json_response = response.json
-        request_status = response.status_code
+        log_result
 
-        log_telesign_response(
-          'Received a risk score for a phone number from Telesign',
-          json_response,
-          request_status
-        )
-
-        case request_status
+        case response_status
         when HTTP_SUCCESS
-          phone_type = json_response['phone_type']['description']
-          risk_score = json_response['risk']['score']
           BLOCKED_PHONE_TYPES.include?(phone_type) ? blocked : risk_success(risk_score)
         when HTTP_CLIENT_ERROR
           invalid_phone_number_error
@@ -52,7 +46,7 @@ module PhoneVerification
 
       private
 
-      attr_reader :phone_number
+      attr_reader :phone_number, :ip_address
 
       def risk_success(risk_score)
         success({ risk_score: risk_score })
@@ -65,6 +59,56 @@ module PhoneVerification
         )
         error(error_message, :invalid_phone_number)
       end
+
+      def log_result
+        extra_fields = {
+          telesign_risk_score: risk_score,
+          telesign_risk_level: risk_level,
+          telesign_risk_category: risk_category,
+          telesign_country: country,
+          email: user.email
+        }
+
+        log_telesign_response(
+          'Received a risk score for a phone number from Telesign',
+          json_response,
+          response_status,
+          extra_fields: extra_fields.compact
+        )
+      end
+
+      def response_status
+        @response_status ||= @response.status_code
+      end
+
+      def json_response
+        @json_response ||= @response.json
+      end
+
+      def phone_type
+        json_response.dig('phone_type', 'description')
+      end
+      strong_memoize_attr :phone_type
+
+      def risk_category
+        json_response.dig('risk_insights', 'category')
+      end
+      strong_memoize_attr :risk_category
+
+      def risk_level
+        json_response.dig('risk', 'level')
+      end
+      strong_memoize_attr :risk_level
+
+      def risk_score
+        json_response.dig('risk', 'score')
+      end
+      strong_memoize_attr :risk_score
+
+      def country
+        json_response.dig('location', 'country', 'iso2')
+      end
+      strong_memoize_attr :country
     end
   end
 end

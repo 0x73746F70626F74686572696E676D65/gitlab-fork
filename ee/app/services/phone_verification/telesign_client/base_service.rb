@@ -15,7 +15,7 @@ module PhoneVerification
         raise NotImplementedError
       end
 
-      def log_telesign_response(event, response, status_code)
+      def log_telesign_response(event, response, status_code, extra_fields: {})
         telesign_response = telesign_error_message(response) || telesign_status(response) || ''
 
         ::Gitlab::AppJsonLogger.info(
@@ -25,8 +25,8 @@ module PhoneVerification
           telesign_reference_id: response['reference_id'],
           telesign_response: telesign_response,
           telesign_status_code: status_code,
-          telesign_risk_score: response.dig('risk', 'score'),
-          username: user&.username
+          username: user&.username,
+          **extra_fields
         )
       end
 

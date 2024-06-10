@@ -7,15 +7,17 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
   let(:telesign_api_key) { 'bar' }
 
   let(:user) { build(:user) }
+  let(:ip_address) { '1.2.3.4' }
   let(:phone_number) { '555' }
   let(:telesign_reference_xid) { '360F69274E0813049191FB5A94308801' }
 
-  subject(:service) { described_class.new(phone_number: phone_number, user: user) }
+  subject(:service) { described_class.new(phone_number: phone_number, user: user, ip_address: ip_address) }
 
   before do
     allow_next_instance_of(TelesignEnterprise::PhoneIdClient) do |instance|
+      opts = { request_risk_insights: true, email_address: user.email, originating_ip: ip_address }
       allow(instance).to receive(:score)
-        .with(phone_number, described_class::USE_CASE_ID, request_risk_insights: true, email_address: user.email)
+        .with(phone_number, described_class::USE_CASE_ID, **opts)
         .and_return(telesign_response)
     end
   end
@@ -43,8 +45,10 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
           json: {
             'reference_id' => telesign_reference_xid,
             'phone_type' => { 'description' => 'MOBILE' },
-            'risk' => { 'score' => risk_score },
-            'status' => { 'description' => 'Transaction completed successfully' }
+            'risk' => { 'score' => risk_score, 'level' => 'low' },
+            'risk_insights' => { 'category' => [10002] },
+            'status' => { 'description' => 'Transaction completed successfully' },
+            'location' => { 'country' => { 'iso2' => 'US' } }
           },
           status_code: '200'
         )
@@ -66,10 +70,14 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
             message: 'IdentityVerification::Phone',
             event: 'Received a risk score for a phone number from Telesign',
             telesign_reference_id: telesign_reference_xid,
-            telesign_response: telesign_response.json['status']['description'],
-            telesign_status_code: telesign_response.status_code,
-            telesign_risk_score: telesign_response.json.dig('risk', 'score'),
-            username: user.username
+            telesign_response: 'Transaction completed successfully',
+            telesign_status_code: '200',
+            telesign_risk_score: risk_score,
+            telesign_risk_level: 'low',
+            telesign_risk_category: [10002],
+            telesign_country: 'US',
+            username: user.username,
+            email: user.email
           )
           .and_call_original
 

@@ -9,12 +9,13 @@ module PhoneVerification
 
       TELESIGN_ERROR = :unknown_telesign_error
 
-      def initialize(user, params = {})
+      def initialize(user, ip_address:, **phone_number_details)
         @user = user
-        @params = params
+        @ip_address = ip_address
+        @phone_number_details = phone_number_details.with_indifferent_access
 
         @record = ::Users::PhoneNumberValidation.for_user(user.id).first_or_initialize
-        @record.assign_attributes(params)
+        @record.assign_attributes(phone_number_details)
       end
 
       def execute
@@ -54,10 +55,10 @@ module PhoneVerification
 
       private
 
-      attr_reader :user, :params, :record
+      attr_reader :user, :ip_address, :phone_number_details, :record
 
       def phone_number
-        params[:international_dial_code].to_s + params[:phone_number].to_s
+        phone_number_details[:international_dial_code].to_s + phone_number_details[:phone_number].to_s
       end
 
       def valid?
@@ -70,7 +71,7 @@ module PhoneVerification
 
       def related_to_banned_user?
         ::Users::PhoneNumberValidation.related_to_banned_user?(
-          params[:international_dial_code], params[:phone_number]
+          phone_number_details[:international_dial_code], phone_number_details[:phone_number]
         )
       end
       strong_memoize_attr :related_to_banned_user?
@@ -189,7 +190,8 @@ module PhoneVerification
 
         risk_result = ::PhoneVerification::TelesignClient::RiskScoreService.new(
           phone_number: phone_number,
-          user: user
+          user: user,
+          ip_address: ip_address
         ).execute
 
         return error_downstream_service(risk_result) unless risk_result.success?
