@@ -1,5 +1,5 @@
-query getRunnerUsageByProject {
-  runnerUsageByProject(runnerType: INSTANCE_TYPE, projectsLimit: 5) {
+query getRunnerUsageByProject($runnerType: CiRunnerType, $fullPath: ID) {
+  runnerUsageByProject(runnerType: $runnerType, fullPath: $fullPath, projectsLimit: 5) {
     project {
       id
       name

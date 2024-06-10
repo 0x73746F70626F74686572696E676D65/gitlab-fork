@@ -2,6 +2,7 @@
 import { GlButton } from '@gitlab/ui';
 import { GROUP_TYPE, STATUS_ONLINE, STATUS_OFFLINE } from '~/ci/runner/constants';
 import RunnerListHeader from '~/ci/runner/components/runner_list_header.vue';
+import RunnerUsage from '../components/runner_usage.vue';
 
 import RunnerDashboardStatStatus from '../components/runner_dashboard_stat_status.vue';
 import GroupRunnersActiveList from './group_runners_active_list.vue';
@@ -14,6 +15,7 @@ export default {
     GroupRunnersWaitTimes,
     RunnerListHeader,
     RunnerDashboardStatStatus,
+    RunnerUsage,
   },
   inject: {
     clickhouseCiAnalyticsAvailable: {
@@ -56,20 +58,36 @@ export default {
     <p>
       {{ s__('Runners|Use the dashboard to view performance statistics of your runner fleet.') }}
     </p>
-    <div class="sm:gl-flex gl-gap-x-4 gl-justify-content-space-between">
-      <runner-dashboard-stat-status
-        :scope="$options.GROUP_TYPE"
-        :status="$options.STATUS_ONLINE"
-        :variables="{ groupFullPath: groupFullPath }"
-        class="runners-dashboard-half-gap-4 gl-mb-4"
+    <div class="sm:gl-flex gl-gap-x-4 gl-justify-between">
+      <div class="sm:gl-flex gl-gap-x-4 gl-justify-between gl-w-full">
+        <div
+          class="runners-dashboard-two-thirds-gap-4 gl-display-flex gl-gap-4 gl-justify-between gl-mb-4 gl-flex-wrap"
+        >
+          <runner-dashboard-stat-status
+            :scope="$options.GROUP_TYPE"
+            :status="$options.STATUS_ONLINE"
+            :variables="{ groupFullPath: groupFullPath }"
+            class="runners-dashboard-half-gap-4"
+          />
+          <runner-dashboard-stat-status
+            :scope="$options.GROUP_TYPE"
+            :status="$options.STATUS_OFFLINE"
+            :variables="{ groupFullPath: groupFullPath }"
+            class="runners-dashboard-half-gap-4"
+          />
+          <runner-usage
+            v-if="clickhouseCiAnalyticsAvailable"
+            :group-full-path="groupFullPath"
+            :scope="$options.GROUP_TYPE"
+            class="gl-flex-basis-full"
+          />
+        </div>
+      </div>
+
+      <group-runners-active-list
+        :group-full-path="groupFullPath"
+        class="runners-dashboard-third-gap-4 gl-mb-4"
       />
-      <runner-dashboard-stat-status
-        :scope="$options.GROUP_TYPE"
-        :status="$options.STATUS_OFFLINE"
-        :variables="{ groupFullPath: groupFullPath }"
-        class="runners-dashboard-half-gap-4 gl-mb-4"
-      />
-      <group-runners-active-list :group-full-path="groupFullPath" class="gl-mb-4" />
     </div>
     <group-runners-wait-times :group-full-path="groupFullPath" />
   </div>
