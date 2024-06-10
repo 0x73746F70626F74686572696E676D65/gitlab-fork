@@ -1,8 +1,6 @@
 ---
   key_path: usage_activity_by_stage_monthly.govern.user_merge_requests_for_projects_with_assigned_security_policy_project
   description: "The total number of users who have created merge requests in Projects that have an assigned security policy project"
-  product_section: sec
-  product_stage: govern
   product_group: security_policies
   value_type: number
   status: active

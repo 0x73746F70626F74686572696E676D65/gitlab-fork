@@ -1,8 +1,6 @@
 ---
   key_path: usage_activity_by_stage_monthly.govern.user_merge_requests_with_applied_scan_result_policies
   description: "The total number of users who have created merge requests with at least one applicable scan result policy"
-  product_section: sec
-  product_stage: govern
   product_group: security_policies
   value_type: number
   status: active
