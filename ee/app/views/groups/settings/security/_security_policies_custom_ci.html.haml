@@ -14,8 +14,9 @@
     %div
       = s_('Settings|Security policy pipeline execution action')
       = render 'shared/experimental_badge_tag'
-  = render 'shared/namespaces/cascading_settings/enforcement_checkbox',
-      attribute: :toggle_security_policy_custom_ci,
-      group: @group,
-      form: f,
-      setting_locked: toggle_security_policy_custom_ci_locked
+  .gl-ml-6.gl-mt-2
+    = render 'shared/namespaces/cascading_settings/enforcement_checkbox',
+        attribute: :toggle_security_policy_custom_ci,
+        group: @group,
+        form: f,
+        setting_locked: toggle_security_policy_custom_ci_locked

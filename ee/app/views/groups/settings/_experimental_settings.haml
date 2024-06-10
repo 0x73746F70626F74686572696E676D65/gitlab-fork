@@ -3,7 +3,7 @@
 - docs_link_url = help_page_path('policy/experiment-beta-support')
 - docs_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: docs_link_url }
 - terms_link_start = '<a href="https://about.gitlab.com/handbook/legal/testing-agreement/" target="_blank" rel="noopener noreferrer">'.html_safe
-
+- early_access_program_link_start = '<a href="https://about.gitlab.com/community/early-access/" target="_blank" rel="noopener noreferrer">'.html_safe
 
 %h5
   = s_('GroupSettings|Experiment and beta features')
@@ -18,3 +18,7 @@
     s_('GroupSettings|Use experiment and beta features'),
     checkbox_options: { data: { testid: 'use-experimental-features-checkbox' } },
     help_text: s_('GroupSettings|Enabling these features is your acceptance of the %{link_start}GitLab Testing Agreement%{link_end}.').html_safe % { link_start: terms_link_start, link_end: '</a>'.html_safe }
+  - if ::Feature.enabled?(:early_access_program_toggle, current_user)
+    .gl-ml-6.gl-mt-2
+      = f.gitlab_ui_checkbox_component :early_access_program_participant,
+        s_('GroupSettings|Participate in the %{link_start}GitLab Early Access Program%{link_end}.').html_safe % { link_start: early_access_program_link_start, link_end: '</a>'.html_safe }

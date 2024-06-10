@@ -16,8 +16,9 @@
       help_text: safe_format(s_('GroupSettings|Enable GitLab Duo features for this group %{link_start}Learn more%{link_end}.'), tag_pair(link, :link_start, :link_end)) do
     %div
       = s_('GroupSettings|Use Duo features')
-  = render 'shared/namespaces/cascading_settings/enforcement_checkbox',
-      attribute: :duo_features_enabled,
-      group: @group,
-      form: f,
-      setting_locked: duo_features_enabled_locked
+  .gl-ml-6.gl-mt-2
+    = render 'shared/namespaces/cascading_settings/enforcement_checkbox',
+        attribute: :duo_features_enabled,
+        group: @group,
+        form: f,
+        setting_locked: duo_features_enabled_locked

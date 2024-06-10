@@ -101,7 +101,7 @@ module EE
         params_ee << :service_access_tokens_expiration_enforced if can_change_service_access_tokens_expiration?(current_user, current_group)
         params_ee << :enforce_ssh_certificates if current_group&.ssh_certificates_available?
         params_ee << { value_stream_dashboard_aggregation_attributes: [:enabled] } if can?(current_user, :modify_value_stream_dashboard_settings, current_group)
-        params_ee << :experiment_features_enabled if experiment_settings_allowed?
+        params_ee.push(:experiment_features_enabled, :early_access_program_participant) if experiment_settings_allowed?
         params_ee.push(%i[duo_features_enabled lock_duo_features_enabled]) if licensed_ai_features_available?
         params_ee << :disable_personal_access_tokens
         params_ee << :enable_auto_assign_gitlab_duo_pro_seats if allow_update_enable_auto_assign_gitlab_duo_pro_seats?
