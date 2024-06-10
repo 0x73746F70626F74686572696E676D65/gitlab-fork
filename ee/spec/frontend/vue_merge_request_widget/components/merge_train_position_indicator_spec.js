@@ -1,7 +1,7 @@
-import { nextTick } from 'vue';
 import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import MergeTrainPositionIndicator from 'ee/vue_merge_request_widget/components/merge_train_position_indicator.vue';
+import { STATUS_OPEN, STATUS_MERGED } from '~/issues/constants';
 import { trimText } from 'helpers/text_helper';
 
 describe('MergeTrainPositionIndicator', () => {
@@ -104,30 +104,48 @@ describe('MergeTrainPositionIndicator', () => {
       mockToast = jest.fn();
     });
 
-    it.each([0, 1, 2])(
-      'shows a toast when removed from position %d in the train',
-      async (index) => {
-        createComponent({ mergeTrainIndex: index });
+    describe.each([0, 1])('when open MR is at %d position', (index) => {
+      beforeEach(() => {
+        createComponent({ mergeTrainIndex: index, mergeRequestState: STATUS_OPEN });
+      });
 
+      it('shows toast when removed from train', async () => {
         expect(mockToast).not.toHaveBeenCalled();
 
-        wrapper.setProps({ mergeTrainIndex: null });
-        await nextTick();
+        await wrapper.setProps({ mergeTrainIndex: null, mergeRequestState: STATUS_OPEN });
 
         expect(mockToast).toHaveBeenCalledTimes(1);
         expect(mockToast).toHaveBeenCalledWith('Merge request was removed from the merge train.');
-      },
-    );
+      });
 
-    it.each([0, 1, 2])('shows no toast when added to train in position %d', async (index) => {
-      createComponent({ mergeTrainIndex: null });
+      it('does not show toast when removed from train due to merge', async () => {
+        await wrapper.setProps({ mergeTrainIndex: null, mergeRequestState: STATUS_MERGED });
+        expect(mockToast).not.toHaveBeenCalled();
+      });
+    });
 
-      expect(mockToast).not.toHaveBeenCalled();
+    describe.each([0, 1])('when merged MR is at %d position', (index) => {
+      beforeEach(() => {
+        createComponent({ mergeTrainIndex: index, mergeRequestState: STATUS_MERGED });
+      });
 
-      wrapper.setProps({ mergeTrainIndex: index });
-      await nextTick();
+      it('does not show toast when removed from train', async () => {
+        await wrapper.setProps({ mergeTrainIndex: null, mergeRequestState: STATUS_MERGED });
 
-      expect(mockToast).not.toHaveBeenCalled();
+        expect(mockToast).not.toHaveBeenCalled();
+      });
+    });
+
+    describe.each([0, 1])('when open MR is not in train', (newIndex) => {
+      beforeEach(() => {
+        createComponent({ mergeTrainIndex: null, mergeRequestState: STATUS_OPEN });
+      });
+
+      it(`does not show toast when added to train at ${newIndex} position`, async () => {
+        await wrapper.setProps({ mergeTrainIndex: newIndex, mergeRequestState: STATUS_OPEN });
+
+        expect(mockToast).not.toHaveBeenCalled();
+      });
     });
   });
 });
