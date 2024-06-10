@@ -15,6 +15,11 @@ export default {
     toggleChildrenSpans: s__('Tracing|Toggle child spans'),
   },
   props: {
+    customClass: {
+      required: false,
+      type: String,
+      default: null,
+    },
     spans: {
       required: true,
       type: Array,
@@ -118,7 +123,7 @@ export default {
 </script>
 
 <template>
-  <div class="span-tree">
+  <div v-if="spans.length" :class="['span-tree', customClass]">
     <div
       v-for="(span, index) in spans"
       :key="span.span_id"

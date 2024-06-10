@@ -3,6 +3,7 @@ import { GlLoadingIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
+import { mapTraceToSpanTrees } from '../trace_utils';
 import TracingChart from './tracing_chart.vue';
 import TracingHeader from './tracing_header.vue';
 import TracingDrawer from './tracing_drawer.vue';
@@ -35,6 +36,7 @@ export default {
   data() {
     return {
       trace: null,
+      spanTrees: null,
       loading: false,
       isDrawerOpen: false,
       selectedSpan: null,
@@ -69,7 +71,10 @@ export default {
     async fetchTrace() {
       this.loading = true;
       try {
-        this.trace = await this.observabilityClient.fetchTrace(this.traceId);
+        const trace = await this.observabilityClient.fetchTrace(this.traceId);
+        // freezing object removes reactivity and lowers memory consumption for large objects
+        this.trace = Object.freeze(trace);
+        this.spanTrees = Object.freeze(mapTraceToSpanTrees(this.trace));
       } catch (e) {
         createAlert({
           message: this.$options.i18n.error,
@@ -104,8 +109,9 @@ export default {
   </div>
 
   <div v-else-if="trace" data-testid="trace-details" class="gl-mx-7">
-    <tracing-header :trace="trace" />
+    <tracing-header :trace="trace" :incomplete="spanTrees.incomplete" />
     <tracing-chart
+      :span-trees="spanTrees.roots"
       :trace="trace"
       :selected-span-id="selectedSpan && selectedSpan.span_id"
       @span-selected="onToggleDrawer"

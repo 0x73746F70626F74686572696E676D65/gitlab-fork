@@ -1,11 +1,10 @@
 import { times } from 'lodash';
 import {
-  mapTraceToTreeRoot,
+  mapTraceToSpanTrees,
   durationNanoToMs,
   formatDurationMs,
   formatTraceDuration,
   assignColorToServices,
-  findRootSpan,
 } from 'ee/tracing/trace_utils';
 
 describe('trace_utils', () => {
@@ -52,7 +51,7 @@ describe('trace_utils', () => {
       trace.spans = times(31).map((i) => ({
         timestamp: '2023-08-07T15:03:32.199806Z',
         span_id: `SPAN-${i}`,
-        trace_id: 'TRACE-1',
+        trace_id: 'fake-trace',
         service_name: `service-${i}`,
         operation: 'op',
         duration_nano: 100000,
@@ -96,123 +95,181 @@ describe('trace_utils', () => {
     });
   });
 
-  describe('findRootSpan', () => {
-    const rootSpan = {
-      timestamp: '2023-08-07T15:03:53.199871Z',
-      span_id: 'SPAN-1',
-      trace_id: 'TRACE-1',
-      service_name: 'SERVICE-1',
-      operation: 'OP-1',
-      duration_nano: 123456789,
-      parent_span_id: '',
-    };
-    const nonRootSpan = {
-      timestamp: '2023-08-07T15:03:53.199871Z',
-      span_id: 'SPAN-2',
-      trace_id: 'TRACE-2',
-      service_name: 'SERVICE-2',
-      operation: 'OP-2',
-      duration_nano: 123456789,
-      parent_span_id: 'SPAN-1',
-    };
-    it('returns the root span', () => {
-      expect(
-        findRootSpan({
-          spans: [nonRootSpan, rootSpan],
-        }),
-      ).toBe(rootSpan);
+  describe('mapTraceToSpanTrees', () => {
+    const secsToNano = (secs) => secs * 1e9;
+    const secsToMs = (secs) => secs * 1e3;
+
+    const createMockSpan = (spanId, parentId, durationNano, timestamp, hasError = false) => ({
+      timestamp,
+      span_id: spanId,
+      trace_id: 'fake-trace',
+      service_name: 'fake-service',
+      operation: 'fake-operation',
+      duration_nano: durationNano,
+      parent_span_id: parentId,
+      status_code: hasError ? 'STATUS_CODE_ERROR' : undefined,
     });
 
-    it('returns undefined if the root span is missing', () => {
-      expect(
-        findRootSpan({
-          spans: [nonRootSpan],
-        }),
-      ).toBeUndefined();
-    });
-  });
-
-  describe('mapTraceToTreeRoot', () => {
-    it('should map a trace data to tree data and return the root node', () => {
+    it('should map a trace data to tree data', () => {
       const trace = {
         spans: [
-          {
-            timestamp: '2023-08-07T15:03:53.199871Z',
-            span_id: 'SPAN-3',
-            trace_id: 'TRACE-1',
-            service_name: 'tracegen',
-            operation: 'okey-dokey',
-            duration_nano: 50027500,
-            parent_span_id: 'SPAN-2',
-            status_code: 'STATUS_CODE_ERROR',
-          },
-          {
-            timestamp: '2023-08-07T15:03:32.199871Z',
-            span_id: 'SPAN-2',
-            trace_id: 'TRACE-1',
-            service_name: 'tracegen',
-            operation: 'okey-dokey',
-            duration_nano: 100055000,
-            parent_span_id: 'SPAN-1',
-          },
-          {
-            timestamp: '2023-08-07T15:03:53.199871Z',
-            span_id: 'SPAN-4',
-            trace_id: 'TRACE-1',
-            service_name: 'fake-service-2',
-            operation: 'okey-dokey',
-            duration_nano: 50027500,
-            parent_span_id: 'SPAN-2',
-          },
-          {
-            timestamp: '2023-08-07T15:03:32.199806Z',
-            span_id: 'SPAN-1',
-            trace_id: 'TRACE-1',
-            service_name: 'tracegen',
-            operation: 'lets-go',
-            duration_nano: 100120000,
-            parent_span_id: '',
-          },
+          createMockSpan('SPAN-1', '', secsToNano(10), '2023-08-07T15:03:00'),
+          createMockSpan('SPAN-2', 'SPAN-1', secsToNano(9), '2023-08-07T15:03:01'),
+          createMockSpan('SPAN-3', 'SPAN-2', secsToNano(8), '2023-08-07T15:03:02', true),
+          createMockSpan('SPAN-4', 'SPAN-2', secsToNano(7), '2023-08-07T15:03:03'),
         ],
         duration_nano: 3000000,
       };
 
-      expect(mapTraceToTreeRoot(trace)).toEqual({
-        duration_ms: 100.12,
-        operation: 'lets-go',
-        service: 'tracegen',
-        span_id: 'SPAN-1',
-        start_ms: 0,
-        timestamp: '2023-08-07T15:03:32.199806Z',
-        hasError: false,
-        children: [
+      expect(mapTraceToSpanTrees(trace)).toEqual({
+        incomplete: false,
+        roots: [
           {
-            duration_ms: 100.055,
-            operation: 'okey-dokey',
-            service: 'tracegen',
+            duration_ms: secsToMs(10),
+            operation: 'fake-operation',
+            service: 'fake-service',
+            span_id: 'SPAN-1',
+            start_ms: 0,
+            timestamp: '2023-08-07T15:03:00',
+            hasError: false,
+            children: [
+              {
+                duration_ms: secsToMs(9),
+                operation: 'fake-operation',
+                service: 'fake-service',
+                span_id: 'SPAN-2',
+                start_ms: secsToMs(1),
+                timestamp: '2023-08-07T15:03:01',
+                hasError: false,
+                children: [
+                  {
+                    children: [],
+                    duration_ms: secsToMs(8),
+                    operation: 'fake-operation',
+                    service: 'fake-service',
+                    span_id: 'SPAN-3',
+                    start_ms: secsToMs(2),
+                    timestamp: '2023-08-07T15:03:02',
+                    hasError: true,
+                  },
+                  {
+                    children: [],
+                    duration_ms: secsToMs(7),
+                    operation: 'fake-operation',
+                    service: 'fake-service',
+                    span_id: 'SPAN-4',
+                    start_ms: secsToMs(3),
+                    timestamp: '2023-08-07T15:03:03',
+                    hasError: false,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('should handle missing roots', () => {
+      expect(
+        mapTraceToSpanTrees({
+          spans: [
+            createMockSpan('SPAN-2', 'SPAN-1', secsToNano(9), '2023-08-07T15:03:01'),
+            createMockSpan('SPAN-3', 'SPAN-2', secsToNano(8), '2023-08-07T15:03:02', true),
+            createMockSpan('SPAN-4', 'SPAN-2', secsToNano(7), '2023-08-07T15:03:03'),
+          ],
+          duration_nano: 3000000,
+        }),
+      ).toEqual({
+        incomplete: true,
+        roots: [
+          {
+            duration_ms: secsToMs(9),
+            operation: 'fake-operation',
+            service: 'fake-service',
             span_id: 'SPAN-2',
             start_ms: 0,
-            timestamp: '2023-08-07T15:03:32.199871Z',
+            timestamp: '2023-08-07T15:03:01',
             hasError: false,
             children: [
               {
                 children: [],
-                duration_ms: 50.0275,
-                operation: 'okey-dokey',
-                service: 'tracegen',
+                duration_ms: secsToMs(8),
+                operation: 'fake-operation',
+                service: 'fake-service',
                 span_id: 'SPAN-3',
-                start_ms: 21000,
-                timestamp: '2023-08-07T15:03:53.199871Z',
+                start_ms: secsToMs(1),
+                timestamp: '2023-08-07T15:03:02',
                 hasError: true,
               },
               {
                 children: [],
-                duration_ms: 50.0275,
-                operation: 'okey-dokey',
-                service: 'fake-service-2',
+                duration_ms: secsToMs(7),
+                operation: 'fake-operation',
+                service: 'fake-service',
                 span_id: 'SPAN-4',
-                start_ms: 21000,
-                timestamp: '2023-08-07T15:03:53.199871Z',
+                start_ms: secsToMs(2),
+                timestamp: '2023-08-07T15:03:03',
+                hasError: false,
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('should handle multiple roots', () => {
+      expect(
+        mapTraceToSpanTrees({
+          spans: [
+            createMockSpan('SPAN-1', '', secsToNano(10), '2023-08-07T15:03:00'),
+            createMockSpan('SPAN-2', 'SPAN-1', secsToNano(5), '2023-08-07T15:03:05'),
+            createMockSpan('SPAN-3', '', secsToNano(10), '2023-08-07T15:03:03', true),
+            createMockSpan('SPAN-4', 'SPAN-3', secsToNano(4), '2023-08-07T15:03:04'),
+          ],
+          duration_nano: 3000000,
+        }),
+      ).toEqual({
+        incomplete: true,
+        roots: [
+          {
+            duration_ms: secsToMs(10),
+            operation: 'fake-operation',
+            service: 'fake-service',
+            span_id: 'SPAN-1',
+            start_ms: 0,
+            timestamp: '2023-08-07T15:03:00',
+            hasError: false,
+            children: [
+              {
+                children: [],
+                duration_ms: secsToMs(5),
+                operation: 'fake-operation',
+                service: 'fake-service',
+                span_id: 'SPAN-2',
+                start_ms: secsToMs(5),
+                timestamp: '2023-08-07T15:03:05',
+                hasError: false,
+              },
+            ],
+          },
+          {
+            duration_ms: secsToMs(10),
+            operation: 'fake-operation',
+            service: 'fake-service',
+            span_id: 'SPAN-3',
+            start_ms: secsToMs(3),
+            timestamp: '2023-08-07T15:03:03',
+            hasError: true,
+            children: [
+              {
+                children: [],
+                duration_ms: secsToMs(4),
+                operation: 'fake-operation',
+                service: 'fake-service',
+                span_id: 'SPAN-4',
+                start_ms: secsToMs(4),
+                timestamp: '2023-08-07T15:03:04',
                 hasError: false,
               },
             ],

@@ -86,16 +86,16 @@ export function assignColorToServices(trace) {
 
 const timestampToMs = (ts) => new Date(ts).getTime();
 
-export const findRootSpan = (trace) => trace.spans.find((s) => s.parent_span_id === '');
+function setNodeStartTs(node, root) {
+  // eslint-disable-next-line no-param-reassign
+  node.start_ms = timestampToMs(node.timestamp) - timestampToMs(root.timestamp);
+  node.children.forEach((child) => setNodeStartTs(child, root));
+}
 
-export function mapTraceToTreeRoot(trace) {
+export function mapTraceToSpanTrees(trace) {
   const nodes = {};
 
-  const rootSpan = findRootSpan(trace);
-  if (!rootSpan) return undefined;
-
   const spanToNode = (span) => ({
-    start_ms: timestampToMs(span.timestamp) - timestampToMs(rootSpan.timestamp),
     timestamp: span.timestamp,
     span_id: span.span_id,
     operation: span.operation,
@@ -105,17 +105,41 @@ export function mapTraceToTreeRoot(trace) {
     hasError: span.status_code === 'STATUS_CODE_ERROR',
   });
 
-  // We need to loop twice here because we don't want to assume that parent nodes appear
-  // in the list before children nodes
   trace.spans.forEach((s) => {
     nodes[s.span_id] = spanToNode(s);
   });
+
+  const roots = [];
+
+  let incomplete = false;
+
   trace.spans.forEach((s) => {
     const node = nodes[s.span_id];
     const parentId = s.parent_span_id;
     if (nodes[parentId]) {
       nodes[parentId].children.push(node);
+    } else {
+      /**
+       * in this case the node either
+       *  a) is a valid root (parentId === '')
+       *  b) has a parent which is missing (parentId !== '' && nodes[parentId] === null), in which case we consider it a root
+       *     of an incomplete tree
+       */
+      roots.push(node);
+      if (parentId !== '') {
+        incomplete = true;
+      }
     }
   });
-  return nodes[rootSpan.span_id];
+  if (roots.length > 1) {
+    // if there is more than one roots it means we have discontinuous data and trace is “incomplete”
+    incomplete = true;
+  }
+  // in case of multiple trees, we want to sort them by timestamp
+  roots.sort((a, b) => a.timestamp_nano - b.timestamp_nano);
+  if (roots[0]) {
+    // and use the first root's timestamp as baseline for the other trees
+    roots.forEach((root) => setNodeStartTs(root, roots[0]));
+  }
+  return { roots, incomplete };
 }
