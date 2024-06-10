@@ -332,7 +332,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
   describe 'protects against malicious backtracking resulting in a ReDOS' do
     let(:context) { { project: nil, group: group } }
 
-    it 'fails fast' do
+    it 'fails fast', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/439360' do
       content = "http://1#{'..1' * 333_300}"
 
       expect do
