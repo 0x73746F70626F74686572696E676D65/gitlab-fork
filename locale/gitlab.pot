@@ -35593,6 +35593,9 @@ msgstr ""
 msgid "ObservabilityLogs|Fingerprint"
 msgstr ""
 
+msgid "ObservabilityLogs|Learn more."
+msgstr ""
+
 msgid "ObservabilityLogs|Level"
 msgstr ""
 
@@ -35603,6 +35606,9 @@ msgid "ObservabilityLogs|Message"
 msgstr ""
 
 msgid "ObservabilityLogs|Metadata"
+msgstr ""
+
+msgid "ObservabilityLogs|Monitor log events captured from your systems. Send log data to this project using OpenTelemetry. %{docsLink}"
 msgstr ""
 
 msgid "ObservabilityLogs|No logs to display."
@@ -35674,6 +35680,9 @@ msgstr ""
 msgid "ObservabilityMetrics|Last ingested"
 msgstr ""
 
+msgid "ObservabilityMetrics|Learn more."
+msgstr ""
+
 msgid "ObservabilityMetrics|Metric Details"
 msgstr ""
 
@@ -35702,6 +35711,9 @@ msgid "ObservabilityMetrics|Select function"
 msgstr ""
 
 msgid "ObservabilityMetrics|Selected attributes"
+msgstr ""
+
+msgid "ObservabilityMetrics|Track health data from your systems. Send metric data to this project using OpenTelemetry. %{docsLink}"
 msgstr ""
 
 msgid "ObservabilityMetrics|Type"
@@ -55286,6 +55298,12 @@ msgstr ""
 msgid "Tracing|In progress"
 msgstr ""
 
+msgid "Tracing|Inspect application requests across services. Send trace data to this project using OpenTelemetry. %{docsLink}"
+msgstr ""
+
+msgid "Tracing|Learn more."
+msgstr ""
+
 msgid "Tracing|Metadata"
 msgstr ""
 
@@ -55329,6 +55347,9 @@ msgid "Tracing|Trace ID"
 msgstr ""
 
 msgid "Tracing|Traces"
+msgstr ""
+
+msgid "Tracing|Tracing"
 msgstr ""
 
 msgid "Tracing|You must select a Service and Operation first."

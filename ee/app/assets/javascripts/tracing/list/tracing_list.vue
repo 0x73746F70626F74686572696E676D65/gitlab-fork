@@ -1,14 +1,15 @@
 <script>
-import { GlLoadingIcon, GlInfiniteScroll, GlSprintf } from '@gitlab/ui';
+import { GlLoadingIcon, GlInfiniteScroll, GlSprintf, GlLink } from '@gitlab/ui';
 import { throttle } from 'lodash';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
-import { visitUrl, joinPaths, queryToObject } from '~/lib/utils/url_utility';
+import { visitUrl, joinPaths, queryToObject, DOCS_URL_IN_EE_DIR } from '~/lib/utils/url_utility';
 import { InternalEvents } from '~/tracking';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { contentTop, isMetaClick } from '~/lib/utils/common_utils';
 import { DEFAULT_SORTING_OPTION } from '~/observability/constants';
 import axios from '~/lib/utils/axios_utils';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 import { queryToFilterObj, filterObjToQuery } from './filter_bar/filters';
 import TracingTableList from './tracing_table.vue';
 import FilteredSearch from './filter_bar/tracing_filtered_search.vue';
@@ -19,6 +20,7 @@ const TRACING_LIST_VERTICAL_PADDING = 150; // Accounts for the search bar height
 
 export default {
   components: {
+    PageHeading,
     GlLoadingIcon,
     TracingTableList,
     FilteredSearch,
@@ -26,11 +28,18 @@ export default {
     GlSprintf,
     GlInfiniteScroll,
     TracingAnalytics,
+    GlLink,
   },
   mixins: [InternalEvents.mixin()],
   i18n: {
     infiniteScrollLegend: s__(`Tracing|Showing %{count} traces`),
+    pageTitle: s__(`Tracing|Tracing`),
+    description: s__(
+      `Tracing|Inspect application requests across services. Send trace data to this project using OpenTelemetry. %{docsLink}`,
+    ),
+    docsLinkText: s__(`Tracing|Learn more.`),
   },
+  docsLink: `${DOCS_URL_IN_EE_DIR}/operations/tracing`,
   props: {
     observabilityClient: {
       required: true,
@@ -169,6 +178,21 @@ export default {
 <template>
   <div class="gl-px-4">
     <url-sync :query="query" />
+
+    <header>
+      <page-heading :heading="$options.i18n.pageTitle">
+        <template #description>
+          <gl-sprintf :message="$options.i18n.description">
+            <template #docsLink>
+              <gl-link target="_blank" :href="$options.docsLink">
+                <span>{{ $options.i18n.docsLinkText }}</span>
+              </gl-link>
+            </template>
+          </gl-sprintf>
+        </template>
+      </page-heading>
+    </header>
+
     <filtered-search
       :attributes-filters="filters.attributes"
       :date-range-filter="filters.dateRange"

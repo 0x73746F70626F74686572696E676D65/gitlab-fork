@@ -1,4 +1,4 @@
-import { GlLoadingIcon, GlInfiniteScroll } from '@gitlab/ui';
+import { GlLoadingIcon, GlInfiniteScroll, GlSprintf } from '@gitlab/ui';
 import { filterObjToFilterToken } from 'ee/metrics/list/filters';
 import MetricsTable from 'ee/metrics/list/metrics_table.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -10,6 +10,7 @@ import setWindowLocation from 'helpers/set_window_location_helper';
 import { createMockClient } from 'helpers/mock_observability_client';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 import { mockMetrics } from './mock_data';
 
 jest.mock('~/alert');
@@ -42,6 +43,9 @@ describe('MetricsComponent', () => {
     wrapper = shallowMountExtended(MetricsList, {
       propsData: {
         observabilityClient: observabilityClientMock,
+      },
+      stubs: {
+        GlSprintf,
       },
     });
     await waitForPromises();
@@ -89,6 +93,13 @@ describe('MetricsComponent', () => {
       it('renders the metrics table within the infinite-scrolling', () => {
         expect(findMetricsTable().exists()).toBe(true);
         expect(findMetricsTable().props('metrics')).toEqual(mockResponse.metrics);
+      });
+
+      it('renders the header', () => {
+        expect(wrapper.findComponent(PageHeading).props('heading')).toBe('Metrics');
+        expect(wrapper.find('header').text()).toBe(
+          'Track health data from your systems. Send metric data to this project using OpenTelemetry. Learn more.',
+        );
       });
     });
   });
