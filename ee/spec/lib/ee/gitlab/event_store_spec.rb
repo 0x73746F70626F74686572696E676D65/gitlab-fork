@@ -12,6 +12,7 @@ RSpec.describe Gitlab::EventStore, feature_category: :shared do
         ::Ci::PipelineCreatedEvent,
         ::Repositories::KeepAroundRefsCreatedEvent,
         ::MergeRequests::ApprovedEvent,
+        ::MergeRequests::JiraTitleDescriptionUpdateEvent,
         ::MergeRequests::ApprovalsResetEvent,
         ::MergeRequests::DraftStateChangeEvent,
         ::MergeRequests::UnblockedStateEvent,
