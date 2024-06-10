@@ -6,7 +6,7 @@ module API
     before { authenticate! }
     before { authorize! :admin_push_rules, user_project }
     before { check_project_feature_available!(:push_rules) }
-    before { authorize_change_param(user_project, :commit_committer_check, :commit_committer_name_check, :reject_unsigned_commits) }
+    before { authorize_change_param(user_project, :commit_committer_check, :commit_committer_name_check, :reject_unsigned_commits, :reject_non_dco_commits) }
 
     helpers do
       def create_or_update_push_rule
@@ -50,11 +50,12 @@ module API
             desc: 'Users can only push commits to this repository if the commit author name is consistent with their GitLab account name.',
             documentation: { example: true }
           optional :reject_unsigned_commits, type: Boolean, desc: 'Reject commit when it’s not signed.', documentation: { example: true }
+          optional :reject_non_dco_commits, type: Boolean, desc: 'Reject commit when it’s not DCO certified.', documentation: { example: true }
           at_least_one_of :deny_delete_tag, :member_check, :prevent_secrets,
             :commit_message_regex, :commit_message_negative_regex, :branch_name_regex, :author_email_regex,
             :file_name_regex, :max_file_size,
             :commit_committer_check, :commit_committer_name_check,
-            :reject_unsigned_commits
+            :reject_unsigned_commits, :reject_non_dco_commits
         end
       end
 

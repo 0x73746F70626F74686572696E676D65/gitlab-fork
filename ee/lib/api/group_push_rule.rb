@@ -6,7 +6,7 @@ module API
 
     before { authenticate! }
     before { check_group_push_rule_access! }
-    before { authorize_change_param(user_group, :commit_committer_check, :reject_unsigned_commits) }
+    before { authorize_change_param(user_group, :commit_committer_check, :commit_committer_name_check, :reject_unsigned_commits, :reject_non_dco_commits) }
 
     params do
       requires :id, type: String, desc: 'The ID or URL-encoded path of a group'
@@ -44,15 +44,16 @@ module API
           optional :author_email_regex, type: String, desc: 'All commit author emails must match this', documentation: { example: '@my-company.com$' }
           optional :file_name_regex, type: String, desc: 'All committed filenames must not match this', documentation: { example: '(jar|exe)$' }
           optional :max_file_size, type: Integer, desc: 'Maximum file size (MB)', documentation: { example: 20 }
-          optional :commit_committer_check, type: Boolean, desc: 'Users may only push their own commits'
-          optional :commit_committer_name_check, type: Boolean, desc: 'The commit author name must be consistent with their GitLab account name.'
-          optional :reject_unsigned_commits, type: Boolean, desc: 'Only signed commits can be pushed to this repository'
+          optional :commit_committer_check, type: Boolean, desc: 'Users can only push commits to this repository if the committer email is one of their own verified emails.', documentation: { example: true }
+          optional :commit_committer_name_check, type: Boolean, desc: 'Users can only push commits to this repository if the commit author name is consistent with their GitLab account name.', documentation: { example: true }
+          optional :reject_unsigned_commits, type: Boolean, desc: 'Reject commit when it’s not signed.', documentation: { example: true }
+          optional :reject_non_dco_commits, type: Boolean, desc: 'Reject commit when it’s not DCO certified.', documentation: { example: true }
           at_least_one_of :deny_delete_tag, :member_check, :prevent_secrets,
             :commit_message_regex, :commit_message_negative_regex, :branch_name_regex,
             :author_email_regex,
             :file_name_regex, :max_file_size,
             :commit_committer_check, :commit_committer_name_check,
-            :reject_unsigned_commits
+            :reject_unsigned_commits, :reject_non_dco_commits
         end
       end
 

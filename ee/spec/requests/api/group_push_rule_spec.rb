@@ -4,10 +4,12 @@ require 'spec_helper'
 
 RSpec.describe API::GroupPushRule, 'GroupPushRule', :aggregate_failures, api: true, feature_category: :source_code_management do
   include ApiHelpers
-  include AccessMatchersForRequest
 
-  let_it_be(:admin) { create(:user, :admin) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
+
+  let_it_be(:maintainer) { create(:user) }
+  let_it_be(:developer) { create(:user) }
+
   let_it_be(:attributes) do
     {
       author_email_regex: '^[A-Za-z0-9.]+@gitlab.com$',
@@ -19,14 +21,34 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', :aggregate_failures, api: tr
       max_file_size: 100,
       member_check: false,
       prevent_secrets: true,
-      reject_unsigned_commits: true
+      reject_unsigned_commits: true,
+      reject_non_dco_commits: true
     }
   end
 
-  shared_examples 'not found when feature is unavailable' do
-    before do
-      stub_licensed_features(push_rules: false)
-    end
+  let(:push_rules_enabled) { true }
+  let(:ccc_enabled) { true }
+  let(:ccnc_enabled) { true }
+  let(:ruc_enabled) { true }
+  let(:rnd_enabled) { true }
+
+  before do
+    stub_licensed_features(
+      push_rules: push_rules_enabled,
+      commit_committer_check: ccc_enabled,
+      commit_committer_name_check: ccnc_enabled,
+      reject_unsigned_commits: ruc_enabled,
+      reject_non_dco_commits: rnd_enabled
+    )
+  end
+
+  before_all do
+    group.add_maintainer(maintainer)
+    group.add_developer(developer)
+  end
+
+  shared_examples 'requires a license' do
+    let(:push_rules_enabled) { false }
 
     it do
       subject
@@ -35,130 +57,142 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', :aggregate_failures, api: tr
     end
   end
 
-  shared_examples 'allow access to api based on role' do
-    context 'when admin', :enable_admin_mode do
-      it { expect { subject }.to be_allowed_for(:admin) }
+  shared_examples 'does not include key in the response' do
+    it 'succeeds' do
+      get_push_rule
+
+      expect(response).to have_gitlab_http_status(:ok)
     end
 
-    it { expect { subject }.to be_allowed_for(:owner).of(group) }
+    it 'does not include key in the response' do
+      get_push_rule
 
-    it { expect { subject }.to be_denied_for(:developer).of(group) }
-    it { expect { subject }.to be_denied_for(:reporter).of(group) }
-    it { expect { subject }.to be_denied_for(:guest).of(group) }
-    it { expect { subject }.to be_denied_for(:anonymous) }
+      expect(json_response).not_to have_key(key.to_s)
+    end
   end
 
-  shared_context 'licensed features available' do
-    before do
-      stub_licensed_features(push_rules: true,
-        commit_committer_check: true,
-        reject_unsigned_commits: true)
+  shared_examples 'authorizes change param' do
+    context 'when request is sent with the unauthorized parameter' do
+      it 'returns forbidden' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'when request is sent without the unauthorized parameter' do
+      before do
+        params.delete(unauthorized_param)
+      end
+
+      it 'returns success' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:success)
+      end
     end
   end
 
   describe 'GET /groups/:id/push_rule' do
-    let_it_be(:group) { create(:group) }
+    subject(:get_push_rule) { get api("/groups/#{group.id}/push_rule", user) }
 
     before_all do
-      push_rule = create(:push_rule, **attributes)
-      group.update!(push_rule: push_rule)
+      create(:push_rule, group: group, **attributes)
     end
 
-    it_behaves_like 'GET request permissions for admin mode' do
-      let(:path) { "/groups/#{group.id}/push_rule" }
-      let(:failed_status_code) { :not_found }
-    end
+    context 'when the current user is a maintainer' do
+      let(:user) { maintainer }
 
-    context 'when unlicensed' do
-      subject { get api("/groups/#{group.id}/push_rule", admin, admin_mode: true) }
+      it_behaves_like 'requires a license'
 
-      it_behaves_like 'not found when feature is unavailable'
-    end
+      it 'returns group push rule' do
+        get_push_rule
 
-    context 'authorized user' do
-      subject { get api("/groups/#{group.id}/push_rule", admin, admin_mode: true) }
+        expect(json_response).to eq(
+          {
+            "author_email_regex" => attributes[:author_email_regex],
+            "branch_name_regex" => nil,
+            "commit_committer_check" => true,
+            "commit_committer_name_check" => true,
+            "commit_message_negative_regex" => attributes[:commit_message_negative_regex],
+            "commit_message_regex" => attributes[:commit_message_regex],
+            "created_at" => group.reload.push_rule.created_at.iso8601(3),
+            "deny_delete_tag" => false,
+            "file_name_regex" => nil,
+            "id" => group.push_rule.id,
+            "max_file_size" => 100,
+            "member_check" => false,
+            "reject_non_dco_commits" => true,
+            "prevent_secrets" => true,
+            "reject_unsigned_commits" => true
+          }
+        )
+      end
 
-      context 'when licensed' do
-        include_context 'licensed features available'
+      it 'matches response schema' do
+        get_push_rule
 
-        it 'returns attributes as expected' do
-          subject
+        expect(response).to match_response_schema('entities/group_push_rules')
+      end
 
-          expect(json_response).to eq(
-            {
-              "author_email_regex" => attributes[:author_email_regex],
-              "branch_name_regex" => nil,
-              "commit_committer_check" => true,
-              "commit_committer_name_check" => true,
-              "commit_message_negative_regex" => attributes[:commit_message_negative_regex],
-              "commit_message_regex" => attributes[:commit_message_regex],
-              "created_at" => group.reload.push_rule.created_at.iso8601(3),
-              "deny_delete_tag" => false,
-              "file_name_regex" => nil,
-              "id" => group.push_rule.id,
-              "max_file_size" => 100,
-              "member_check" => false,
-              "prevent_secrets" => true,
-              "reject_unsigned_commits" => true
-            }
-          )
+      context 'when group name contains a dot' do
+        before do
+          group.update!(path: 'group.path')
         end
 
-        it 'matches response schema' do
-          subject
+        it 'returns group push rule', :aggregate_failures do
+          get api("/groups/#{CGI.escape(group.full_path)}/push_rule", user)
 
-          expect(response).to match_response_schema('entities/group_push_rules')
-        end
-
-        context 'when group name contains a dot' do
-          let_it_be(:group) { create(:group, path: 'group.path', push_rule: create(:push_rule)) }
-
-          it 'returns group push rule' do
-            get api("/groups/#{group.path}/push_rule", admin, admin_mode: true)
-
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to be_an Hash
-            expect(json_response['id']).to eq(group.push_rule_id)
-          end
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to be_an Hash
+          expect(json_response['id']).to eq(group.push_rule_id)
         end
       end
 
-      context 'when reject_unsigned_commits is unavailable' do
-        before do
-          stub_licensed_features(reject_unsigned_commits: false)
-        end
+      context 'when reject_unsigned_commits feature is unavailable' do
+        let(:ruc_enabled) { false }
+        let(:key) { :reject_unsigned_commits }
 
-        it do
-          subject
-
-          expect(json_response).not_to have_key('reject_unsigned_commits')
-        end
+        it_behaves_like 'does not include key in the response'
       end
 
       context 'when commit_committer_check is unavailable' do
-        before do
-          stub_licensed_features(commit_committer_check: false)
-        end
+        let(:ccc_enabled) { false }
+        let(:key) { :commit_committer_check }
 
-        it do
-          subject
+        it_behaves_like 'does not include key in the response'
+      end
 
-          expect(json_response).not_to have_key('commit_committer_check')
+      context 'when commit_committer_name_check is unavailable' do
+        let(:ccnc_enabled) { false }
+        let(:key) { :commit_committer_name_check }
+
+        it_behaves_like 'does not include key in the response'
+      end
+
+      context 'when reject_non_dco_commits is unavailable' do
+        let(:rnd_enabled) { false }
+        let(:key) { :reject_non_dco_commits }
+
+        it_behaves_like 'does not include key in the response'
+      end
+
+      context 'when push rule does not exist' do
+        let_it_be(:no_push_rule_group) { create(:group) }
+
+        it 'returns 400 error' do
+          get api("/groups/#{no_push_rule_group.id}/push_rule", user)
+
+          expect(response).to have_gitlab_http_status(:not_found)
         end
       end
     end
 
-    context 'permissions' do
-      subject(:get_push_rules) { get api("/groups/#{group.id}/push_rule", user) }
+    context 'when current user is a developer' do
+      let(:user) { developer }
 
-      it_behaves_like 'allow access to api based on role'
-    end
-
-    context 'when push rule does not exist' do
-      let_it_be(:no_push_rule_group) { create(:group) }
-
-      it 'returns not found' do
-        get api("/groups/#{no_push_rule_group.id}/push_rule", admin)
+      it 'returns 404 error' do
+        get_push_rule
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
@@ -166,293 +200,249 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', :aggregate_failures, api: tr
   end
 
   describe 'POST /groups/:id/push_rule' do
-    let_it_be(:group) { create(:group) }
+    subject(:create_push_rule) { post api("/groups/#{group.id}/push_rule", user), params: params }
 
-    it_behaves_like 'POST request permissions for admin mode' do
-      include_context 'licensed features available'
+    let(:params) { attributes }
 
-      let(:path) { "/groups/#{group.id}/push_rule" }
-      let(:params) { attributes }
-      let(:failed_status_code) { :not_found }
-    end
+    context 'when the current user is a maintainer' do
+      let(:user) { maintainer }
 
-    context 'when unlicensed' do
-      subject { post api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes }
+      it_behaves_like 'requires a license'
 
-      it_behaves_like 'not found when feature is unavailable'
-    end
+      it 'returns success', :aggregate_failures do
+        create_push_rule
 
-    context 'authorized user' do
-      subject { post api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes }
+        expect(response).to have_gitlab_http_status(:created)
+      end
 
-      context 'when licensed' do
-        include_context 'licensed features available'
+      it do
+        expect { create_push_rule }.to change { PushRule.count }.by(1)
+      end
 
-        it do
-          subject
+      it 'creates the push rule' do
+        create_push_rule
 
-          expect(response).to have_gitlab_http_status(:created)
+        push_rule = group.reload.push_rule
+
+        expect(push_rule.author_email_regex).to eq(attributes[:author_email_regex])
+        expect(push_rule.commit_committer_check).to eq(attributes[:commit_committer_check])
+        expect(push_rule.commit_committer_name_check).to eq(attributes[:commit_committer_name_check])
+        expect(push_rule.commit_message_negative_regex).to eq(attributes[:commit_message_negative_regex])
+        expect(push_rule.commit_message_regex).to eq(attributes[:commit_message_regex])
+        expect(push_rule.deny_delete_tag).to eq(attributes[:deny_delete_tag])
+        expect(push_rule.max_file_size).to eq(attributes[:max_file_size])
+        expect(push_rule.member_check).to eq(attributes[:member_check])
+        expect(push_rule.prevent_secrets).to eq(attributes[:prevent_secrets])
+        expect(push_rule.reject_unsigned_commits).to eq(attributes[:reject_unsigned_commits])
+        expect(push_rule.reject_non_dco_commits).to eq(attributes[:reject_non_dco_commits])
+      end
+
+      context 'when a push rule already exists' do
+        before do
+          create(:push_rule, group: group)
         end
 
-        it do
-          expect { subject }.to change { PushRule.count }.by(1)
-        end
+        it 'returns an error response' do
+          create_push_rule
 
-        it 'creates record with appropriate attributes' do
-          subject
-
-          push_rule = group.reload.push_rule
-
-          expect(push_rule.author_email_regex).to eq(attributes[:author_email_regex])
-          expect(push_rule.commit_committer_check).to eq(attributes[:commit_committer_check])
-          expect(push_rule.commit_committer_name_check).to eq(attributes[:commit_committer_name_check])
-          expect(push_rule.commit_message_negative_regex).to eq(attributes[:commit_message_negative_regex])
-          expect(push_rule.commit_message_regex).to eq(attributes[:commit_message_regex])
-          expect(push_rule.deny_delete_tag).to eq(attributes[:deny_delete_tag])
-          expect(push_rule.max_file_size).to eq(attributes[:max_file_size])
-          expect(push_rule.member_check).to eq(attributes[:member_check])
-          expect(push_rule.prevent_secrets).to eq(attributes[:prevent_secrets])
-          expect(push_rule.reject_unsigned_commits).to eq(attributes[:reject_unsigned_commits])
-        end
-
-        context 'when push rule exists' do
-          before do
-            push_rule = create(:push_rule, **attributes)
-            group.update!(push_rule: push_rule)
-          end
-
-          specify do
-            subject
-
-            expect(response).to have_gitlab_http_status(:unprocessable_entity)
-            expect(json_response['message']).to eq('Group push rule exists, try updating')
-          end
-        end
-
-        context 'permissions' do
-          subject { post api("/groups/#{group.id}/push_rule", user), params: attributes }
-
-          it_behaves_like 'allow access to api based on role'
-        end
-
-        context 'when no rule is specified' do
-          specify do
-            post api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: {}
-
-            expect(response).to have_gitlab_http_status(:bad_request)
-            expect(json_response['error']).to include('at least one parameter must be provided')
-          end
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+          expect(json_response['message']).to eq('Group push rule exists, try updating')
         end
       end
 
-      context 'when reject_unsigned_commits is unavailable' do
-        before do
-          stub_licensed_features(reject_unsigned_commits: false)
-          stub_licensed_features(push_rules: true, commit_committer_check: true)
-        end
+      context 'when no params are provided' do
+        let(:params) { {} }
 
-        it 'returns forbidden' do
-          subject
+        it 'returns 400 error', :aggregate_failures do
+          create_push_rule
 
-          expect(response).to have_gitlab_http_status(:forbidden)
-        end
-
-        context 'and reject_unsigned_commits is not set' do
-          it 'returns created' do
-            post api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes.except(:reject_unsigned_commits)
-
-            expect(response).to have_gitlab_http_status(:created)
-          end
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response['error']).to include('at least one parameter must be provided')
         end
       end
 
-      context 'when commit_committer_check is unavailable' do
-        before do
-          stub_licensed_features(commit_committer_check: false)
-          stub_licensed_features(push_rules: true, reject_unsigned_commits: true)
+      context 'when reject_unsigned_commits feature is unavailable' do
+        it_behaves_like 'authorizes change param' do
+          let(:ruc_enabled) { false }
+          let(:unauthorized_param) { :reject_unsigned_commits }
         end
+      end
 
-        it do
-          subject
-
-          expect(response).to have_gitlab_http_status(:forbidden)
+      context 'when commit_committer_check feature is unavailable' do
+        it_behaves_like 'authorizes change param' do
+          let(:ccc_enabled) { false }
+          let(:unauthorized_param) { :commit_committer_check }
         end
+      end
 
-        context 'and commit_committer_check is not set' do
-          it 'returns created' do
-            post api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes.except(:commit_committer_check)
-
-            expect(response).to have_gitlab_http_status(:created)
-          end
+      context 'when commit_committer_name_check feature is unavailable' do
+        it_behaves_like 'authorizes change param' do
+          let(:ccnc_enabled) { false }
+          let(:unauthorized_param) { :commit_committer_name_check }
         end
+      end
+
+      context 'when reject_non_dco_commits feature is unavailable' do
+        it_behaves_like 'authorizes change param' do
+          let(:rnd_enabled) { false }
+          let(:unauthorized_param) { :reject_non_dco_commits }
+        end
+      end
+    end
+
+    context 'when the current user is a developer' do
+      let(:user) { developer }
+
+      it 'returns 404 error' do
+        create_push_rule
+
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
   end
 
   describe 'PUT /groups/:id/push_rule' do
-    subject { put api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes_for_update }
-
-    let(:group) { create(:group) }
+    subject(:update_push_rule) { put api("/groups/#{group.id}/push_rule", user), params: params }
 
     let_it_be(:attributes_for_update) do
       {
         author_email_regex: '^[A-Za-z0-9.]+@disney.com$',
         reject_unsigned_commits: true,
         commit_committer_name_check: false,
-        commit_committer_check: false
+        commit_committer_check: false,
+        reject_non_dco_commits: true
       }
     end
 
-    before do
-      push_rule = create(:push_rule, **attributes)
-      group.update!(push_rule: push_rule)
+    let(:params) { attributes_for_update }
+
+    before_all do
+      create(:push_rule, group: group, **attributes)
     end
 
-    it_behaves_like 'PUT request permissions for admin mode' do
-      include_context 'licensed features available'
+    context 'when the current user is a maintainer' do
+      let(:user) { maintainer }
 
-      let(:path) { "/groups/#{group.id}/push_rule" }
-      let(:params) { attributes_for_update }
-      let(:failed_status_code) { :not_found }
-    end
+      it_behaves_like 'requires a license'
 
-    context 'when unlicensed' do
-      it_behaves_like 'not found when feature is unavailable'
-    end
+      it 'returns success' do
+        update_push_rule
 
-    context 'authorized user' do
-      context 'when licensed' do
-        include_context 'licensed features available'
+        expect(response).to have_gitlab_http_status(:ok)
+      end
 
-        it do
-          subject
+      it 'updates the push rule' do
+        expect { update_push_rule }.to change { group.reload.push_rule.author_email_regex }
+                                .from(attributes[:author_email_regex])
+                                .to(attributes_for_update[:author_email_regex])
+      end
 
-          expect(response).to have_gitlab_http_status(:ok)
+      context 'when push rule does not exist for group' do
+        let_it_be(:group_without_push_rule) { create(:group) }
+
+        before_all do
+          group_without_push_rule.add_maintainer(maintainer)
         end
 
-        it 'updates attributes as expected' do
-          expect { subject }.to change { group.reload.push_rule.author_email_regex }
-                                  .from(attributes[:author_email_regex])
-                                  .to(attributes_for_update[:author_email_regex])
+        it 'returns 404 error', :aggregate_failures do
+          put api("/groups/#{group_without_push_rule.id}/push_rule", user), params: params
+
+          expect(response).to have_gitlab_http_status(:not_found)
+          expect(json_response['message']).to include('Push Rule Not Found')
         end
+      end
 
-        context 'when push rule does not exist for group' do
-          let_it_be(:group_without_push_rule) { create(:group) }
+      context 'when no params are provided' do
+        let(:params) { {} }
 
-          it 'returns not found' do
-            put api("/groups/#{group_without_push_rule.id}/push_rule", admin, admin_mode: true), params: attributes_for_update
+        it 'returns 400 error' do
+          update_push_rule
 
-            expect(response).to have_gitlab_http_status(:not_found)
-            expect(json_response['message']).to include('Push Rule Not Found')
-          end
-        end
-
-        context 'permissions' do
-          subject { put api("/groups/#{group.id}/push_rule", user), params: attributes_for_update }
-
-          it_behaves_like 'allow access to api based on role'
-        end
-
-        context 'when no rule is specified' do
-          specify do
-            put api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: {}
-
-            expect(response).to have_gitlab_http_status(:bad_request)
-            expect(json_response['error']).to include('at least one parameter must be provided')
-          end
+          expect(response).to have_gitlab_http_status(:bad_request)
+          expect(json_response['error']).to include('at least one parameter must be provided')
         end
       end
 
       context 'when reject_unsigned_commits is unavailable' do
-        before do
-          stub_licensed_features(reject_unsigned_commits: false)
-          stub_licensed_features(push_rules: true, commit_committer_check: true)
-        end
-
-        it 'returns forbidden' do
-          subject
-
-          expect(response).to have_gitlab_http_status(:forbidden)
-        end
-
-        context 'and reject_unsigned_commits is not set' do
-          it 'returns status ok' do
-            put api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes_for_update.except(:reject_unsigned_commits)
-
-            expect(response).to have_gitlab_http_status(:ok)
-          end
+        it_behaves_like 'authorizes change param' do
+          let(:ruc_enabled) { false }
+          let(:unauthorized_param) { :reject_unsigned_commits }
         end
       end
 
       context 'when commit_committer_check is unavailable' do
-        before do
-          stub_licensed_features(commit_committer_check: false)
-          stub_licensed_features(push_rules: true, reject_unsigned_commits: true)
+        it_behaves_like 'authorizes change param' do
+          let(:ccc_enabled) { false }
+          let(:unauthorized_param) { :commit_committer_check }
         end
+      end
 
-        it do
-          subject
-
-          expect(response).to have_gitlab_http_status(:forbidden)
+      context 'when commit_committer_name_check is unavailable' do
+        it_behaves_like 'authorizes change param' do
+          let(:ccnc_enabled) { false }
+          let(:unauthorized_param) { :commit_committer_name_check }
         end
+      end
 
-        context 'and commit_committer_check is not set' do
-          it 'returns status ok' do
-            put api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes_for_update.except(:commit_committer_check)
-
-            expect(response).to have_gitlab_http_status(:ok)
-          end
+      context 'when reject_non_dco_commits is unavailable' do
+        it_behaves_like 'authorizes change param' do
+          let(:rnd_enabled) { false }
+          let(:unauthorized_param) { :reject_non_dco_commits }
         end
+      end
+    end
+
+    context 'when the current user is a developer' do
+      let(:user) { developer }
+
+      it 'returns 404 error' do
+        update_push_rule
+
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
   end
 
   describe 'DELETE /groups/:id/push_rule' do
-    let_it_be(:push_rule) { create(:push_rule, **attributes) }
-    let_it_be(:group) { create(:group, push_rule: push_rule) }
+    subject(:delete_push_rule) { delete api("/groups/#{group.id}/push_rule", user) }
 
-    it_behaves_like 'DELETE request permissions for admin mode' do
-      include_context 'licensed features available'
-
-      let(:path) { "/groups/#{group.id}/push_rule" }
-      let(:failed_status_code) { :not_found }
+    before_all do
+      create(:push_rule, group: group)
     end
 
-    context 'authorized user' do
-      context 'when licensed' do
-        include_context 'licensed features available'
+    context 'when the current user is a maintainer' do
+      let(:user) { maintainer }
 
-        context 'with group push rule' do
-          specify do
-            delete api("/groups/#{group.id}/push_rule", admin, admin_mode: true)
+      it_behaves_like 'requires a license'
 
-            expect(response).to have_gitlab_http_status(:no_content)
-            expect(group.reload.push_rule).to be nil
-          end
-        end
+      context 'when the push rule exists' do
+        it 'deletes push rule from group', :aggregate_failures do
+          delete_push_rule
 
-        context 'when push rule does not exist' do
-          it 'returns not found' do
-            no_push_rule_group = create(:group)
-
-            delete api("/groups/#{no_push_rule_group.id}/push_rule", admin)
-
-            expect(response).to have_gitlab_http_status(:not_found)
-          end
+          expect(response).to have_gitlab_http_status(:no_content)
+          expect(group.reload.push_rule).to be nil
         end
       end
 
-      context 'when unlicensed' do
-        subject { delete api("/groups/#{group.id}/push_rule", admin, admin_mode: true) }
+      context 'when push rule does not exist' do
+        let(:no_push_rule_group) { create(:group) }
 
-        it_behaves_like 'not found when feature is unavailable'
+        it 'returns 404 error' do
+          delete api("/groups/#{no_push_rule_group.id}/push_rule", user)
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
       end
     end
 
-    context 'permissions' do
-      subject { delete api("/groups/#{group.id}/push_rule", user) }
+    context 'when the current user is a developer' do
+      let(:user) { developer }
 
-      it_behaves_like 'allow access to api based on role'
+      it 'returns a 404 error' do
+        delete_push_rule
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
     end
   end
 end

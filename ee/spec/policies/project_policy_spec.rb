@@ -1531,6 +1531,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     let(:current_user) { maintainer }
 
+    it { is_expected.to be_disallowed(:read_reject_non_dco_commits) }
     it { is_expected.to be_disallowed(:change_reject_non_dco_commits) }
   end
 
@@ -1542,18 +1543,21 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     context 'when the user is an admin', :enable_admin_mode do
       let(:current_user) { admin }
 
+      it { is_expected.to be_allowed(:read_reject_non_dco_commits) }
       it { is_expected.to be_allowed(:change_reject_non_dco_commits) }
     end
 
     context 'when the user is a maintainer' do
       let(:current_user) { maintainer }
 
+      it { is_expected.to be_allowed(:read_reject_non_dco_commits) }
       it { is_expected.to be_allowed(:change_reject_non_dco_commits) }
     end
 
     context 'when the user is a developer' do
       let(:current_user) { developer }
 
+      it { is_expected.to be_disallowed(:read_reject_non_dco_commits) }
       it { is_expected.to be_disallowed(:change_reject_non_dco_commits) }
     end
   end
