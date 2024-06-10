@@ -45363,6 +45363,9 @@ msgstr ""
 msgid "Runners|The %{boldStart}runner authentication token%{boldEnd} is no longer visible, it is stored in the %{codeStart}config.toml%{codeEnd} if you have registered the runner."
 msgstr ""
 
+msgid "Runners|The ID of the machine hosting the runner."
+msgstr ""
+
 msgid "Runners|The deployment name is invalid"
 msgstr ""
 
@@ -45381,9 +45384,6 @@ msgid "Runners|The time it takes for a group runner assigned to this group to pi
 msgstr ""
 
 msgid "Runners|The time it takes for an instance runner to pick up a job. Jobs waiting for runners are in the pending state."
-msgstr ""
-
-msgid "Runners|The unique ID for each runner that uses this configuration."
 msgstr ""
 
 msgid "Runners|The user is not allowed to create a runner"
