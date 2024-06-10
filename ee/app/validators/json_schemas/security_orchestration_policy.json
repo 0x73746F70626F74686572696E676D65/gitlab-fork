@@ -35,7 +35,8 @@
         "required": [
           "name",
           "enabled",
-          "content"
+          "content",
+          "pipeline_config_strategy"
         ],
         "type": "object",
         "properties": {
@@ -52,6 +53,14 @@
           "content": {
             "description": "Specifies the content of custom configuration.",
             "type": "object"
+          },
+          "pipeline_config_strategy": {
+            "description": "Defines the method for merging the policy configuration with the project pipeline. `inject_ci` preserves the project CI configuration and injects additional jobs from the policy. Having multiple policies enabled injects all jobs additively. `override_project_ci` replaces the project CI configuration and keeps only the policy jobs in the pipeline.",
+            "type": "string",
+            "enum": [
+              "inject_ci",
+              "override_project_ci"
+            ]
           },
           "policy_scope": {
             "type": "object",

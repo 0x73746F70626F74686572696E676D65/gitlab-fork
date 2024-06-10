@@ -549,11 +549,13 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
   describe '#policy_configuration_validation_errors' do
     let(:scan_execution_policy) { nil }
     let(:scan_result_policy) { nil }
+    let(:pipeline_execution_policy) { nil }
 
     let(:policy_yaml) do
       {
         scan_execution_policy: [scan_execution_policy].compact,
-        scan_result_policy: [scan_result_policy].compact
+        scan_result_policy: [scan_result_policy].compact,
+        pipeline_execution_policy: [pipeline_execution_policy].compact
       }
     end
 
@@ -1484,6 +1486,15 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
           }
         end
       end
+    end
+
+    describe "pipeline execution policies" do
+      let(:pipeline_execution_policy) { build(:pipeline_execution_policy, policy_scope: policy_scope) }
+      let(:policy_scope) { {} }
+
+      it { expect(errors).to be_empty }
+
+      it_behaves_like "policy_scope"
     end
 
     context 'when file is valid' do

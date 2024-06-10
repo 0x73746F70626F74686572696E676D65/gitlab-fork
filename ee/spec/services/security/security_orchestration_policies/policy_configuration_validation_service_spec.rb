@@ -22,11 +22,15 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyConfigurationValid
       end
     end
 
-    context 'when all components are valid' do
-      it 'returns success' do
-        response = service.execute
+    %i[approval_policy scan_execution_policy pipeline_execution_policy].each do |type|
+      context "when type is #{type}" do
+        let(:type) { type }
 
-        expect(response[:status]).to eq(:success)
+        it 'returns success' do
+          response = service.execute
+
+          expect(response[:status]).to eq(:success)
+        end
       end
     end
 

@@ -22,7 +22,8 @@ module Security
     # json_schemer computes an $id fallback property for schemas lacking one.
     # But this schema is kept anonymous on purpose, so the $id is stripped.
     POLICY_SCHEMA_JSON = POLICY_SCHEMA.as_json['root'].except('$id')
-    AVAILABLE_POLICY_TYPES = (%i[scan_execution_policy] + Security::ScanResultPolicy::SCAN_RESULT_POLICY_TYPES).freeze
+    AVAILABLE_POLICY_TYPES = (%i[scan_execution_policy pipeline_execution_policy] +
+      Security::ScanResultPolicy::SCAN_RESULT_POLICY_TYPES).freeze
     JSON_SCHEMA_VALIDATION_TIMEOUT = 5.seconds
 
     belongs_to :project, inverse_of: :security_orchestration_policy_configuration, optional: true

@@ -129,9 +129,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
           using RSpec::Parameterized::TableSyntax
 
           where(:policy_type, :branches, :branch_type, :status, :details, :field) do
-            'scan_result_policy'    | nil | nil | :success | nil                                                     | nil
-            'approval_policy'       | nil | nil | :success | nil                                                     | nil
-            'scan_execution_policy' | nil | nil | :error   | ['Policy cannot be enabled without branch information'] | :branches
+            'scan_result_policy'        | nil | nil | :success | nil                                                     | nil
+            'approval_policy'           | nil | nil | :success | nil                                                     | nil
+            'pipeline_execution_policy' | nil | nil | :success | nil                                                     | nil
+            'scan_execution_policy'     | nil | nil | :error   | ['Policy cannot be enabled without branch information'] | :branches
           end
 
           with_them do
@@ -179,7 +180,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
         end
 
         context 'when branches are not defined for project' do
-          let(:branches) { ['non-exising-branch'] }
+          let(:branches) { ['non-existing-branch'] }
 
           it { expect(result[:status]).to eq(:success) }
         end
@@ -212,6 +213,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
           it { expect(result[:details]).to match_array(['Policy cannot be enabled for non-existing branches (non-exising-branch)']) }
 
           it_behaves_like 'checks only if policy is enabled'
+
+          context 'with pipeline_execution_policy' do
+            let(:policy_type) { :pipeline_execution_policy }
+
+            it { expect(result[:status]).to eq(:success) }
+          end
         end
 
         context 'when branches are defined as pattern' do
@@ -557,6 +564,16 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       end
     end
 
+    shared_examples 'pipeline execution policy validation' do
+      let(:policy_type) { 'pipeline_execution_policy' }
+      let(:name) { 'New policy' }
+      let(:policy) do
+        attributes_for(:pipeline_execution_policy).merge(type: policy_type, name: name, enabled: enabled)
+      end
+
+      it { expect(result[:status]).to eq(:success) }
+    end
+
     context 'when project or namespace is not provided' do
       let_it_be(:container) { nil }
 
@@ -601,6 +618,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
             :approval_policy | 'default' | :error
           end
         end
+
+        it_behaves_like 'pipeline execution policy validation'
       end
 
       context 'when project has a default protected branch' do
@@ -629,6 +648,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
             :approval_policy | 'default' | :success
           end
         end
+
+        it_behaves_like 'pipeline execution policy validation'
       end
 
       context 'when project has a non-default protected branch' do
@@ -658,6 +679,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
             :approval_policy | 'default' | :error
           end
         end
+
+        it_behaves_like 'pipeline execution policy validation'
       end
 
       context 'when project has only a default unprotected branch' do
@@ -696,6 +719,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
             end
           end
         end
+
+        it_behaves_like 'pipeline execution policy validation'
       end
     end
 
@@ -709,6 +734,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
       it_behaves_like 'checks if timezone is valid'
       it_behaves_like 'checks if cadence is valid'
       it_behaves_like 'checks if vulnerability_age is valid'
+
+      it_behaves_like 'pipeline execution policy validation'
 
       context 'when policy_scope is present' do
         let_it_be(:framework_1) { create(:compliance_framework, namespace: container.root_ancestor) }
