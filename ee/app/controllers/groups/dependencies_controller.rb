@@ -137,6 +137,8 @@ module Groups
       case sort_by
       when 'name'
         :component_name
+      when 'packager'
+        :package_manager
       when 'severity'
         :highest_severity
       else
