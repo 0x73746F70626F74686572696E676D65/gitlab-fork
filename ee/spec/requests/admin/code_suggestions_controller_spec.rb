@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Admin::CodeSuggestionsController, :cloud_licenses, feature_category: :seat_cost_management do
   include AdminModeHelper
 
-  describe 'GET /code_suggestions' do
+  describe 'GET /code_suggestions', :with_cloud_connector do
     let(:plan) { License::STARTER_PLAN }
     let(:license) { build(:license, plan: plan) }
 
@@ -15,35 +15,48 @@ RSpec.describe Admin::CodeSuggestionsController, :cloud_licenses, feature_catego
     end
 
     shared_examples 'renders the activation form' do
-      context 'when connection check succeeds' do
-        before do
-          allow_next_instance_of(Gitlab::Llm::AiGateway::CodeSuggestionsClient) do |client|
-            allow(client).to receive(:test_completion).and_return(nil)
-          end
-        end
+      it 'renders the activation form and skips completion test' do
+        get admin_code_suggestions_path
 
-        it 'renders the activation form' do
-          get admin_code_suggestions_path
-
-          expect(response).to render_template(:index)
-          expect(response.body).to include('js-code-suggestions-page')
-          expect(flash.now[:notice]).to eq("Code completion test was successful")
-        end
+        expect(response).to render_template(:index)
+        expect(response.body).to include('js-code-suggestions-page')
+        expect(flash.now[:notice]).to be_nil
+        expect(flash.now[:alert]).to be_nil
       end
 
-      context 'when connection check fails' do
-        before do
-          allow_next_instance_of(Gitlab::Llm::AiGateway::CodeSuggestionsClient) do |client|
-            allow(client).to receive(:test_completion).and_return('an error')
+      context 'when duo pro addon is purchased' do
+        let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :active) }
+
+        context 'when connection check succeeds' do
+          before do
+            allow_next_instance_of(Gitlab::Llm::AiGateway::CodeSuggestionsClient) do |client|
+              allow(client).to receive(:test_completion).and_return(nil)
+            end
+          end
+
+          it 'renders the activation form' do
+            get admin_code_suggestions_path
+
+            expect(response).to render_template(:index)
+            expect(response.body).to include('js-code-suggestions-page')
+            expect(flash.now[:notice]).to eq("Code completion test was successful")
           end
         end
 
-        it 'renders the activation form with alert message' do
-          get admin_code_suggestions_path
+        context 'when connection check fails' do
+          before do
+            allow_next_instance_of(Gitlab::Llm::AiGateway::CodeSuggestionsClient) do |client|
+              allow(client).to receive(:test_completion).and_return('an error')
+            end
+          end
 
-          expect(response).to render_template(:index)
-          expect(response.body).to include('js-code-suggestions-page')
-          expect(flash.now[:alert]).to eq("Code completion test failed: an error")
+          it 'renders the activation form with alert message' do
+            get admin_code_suggestions_path
+
+            expect(response).to render_template(:index)
+            expect(response.body).to include('js-code-suggestions-page')
+            expect(flash.now[:alert]).to eq("Code completion test failed: an error")
+          end
         end
       end
     end
