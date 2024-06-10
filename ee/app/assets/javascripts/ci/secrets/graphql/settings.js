@@ -79,10 +79,12 @@ export const resolvers = {
             id: 'gid://gitlab/Project/19',
             fullPath,
             secret: {
-              ...secret,
               id,
+              ...secret,
               createdAt: dateAndTimeToISOString(new Date(), '00:00'),
               expiration: dateAndTimeToISOString(secret.expiration, '00:00'),
+              // eslint-disable-next-line @gitlab/require-i18n-strings
+              __typename: 'Secret',
             },
           },
         },
