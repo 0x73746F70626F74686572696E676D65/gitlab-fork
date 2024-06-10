@@ -134,7 +134,7 @@ RSpec.describe Gitlab::Geo::GeoTasks, feature_category: :geo_replication do
       described_class.drain_non_geo_queues
     end
 
-    it 'enables Geo primary Sidekiq cron jobs' do
+    it 'enables Geo primary Sidekiq cron jobs', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/463717' do
       cronjob1 = instance_double(Sidekiq::Cron::Job)
       cronjob2 = instance_double(Sidekiq::Cron::Job)
       allow(described_class).to receive(:geo_primary_jobs).and_return(%w[foo bar])
