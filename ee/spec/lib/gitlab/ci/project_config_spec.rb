@@ -11,6 +11,7 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
   let(:triggered_for_branch) { true }
   let(:ref) { 'master' }
   let(:security_policies) { {} }
+  let(:has_execution_policy_pipelines) { false }
 
   let(:content_result) do
     <<~CICONFIG
@@ -29,7 +30,8 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
       pipeline_source: source,
       pipeline_source_bridge: bridge,
       triggered_for_branch: triggered_for_branch,
-      ref: ref
+      ref: ref,
+      has_execution_policy_pipelines: has_execution_policy_pipelines
     )
   end
 
@@ -262,6 +264,29 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig, feature_category: :continuous_integr
             end
           end
         end
+      end
+    end
+
+    context 'when project has active pipeline execution policies' do
+      shared_examples_for 'forces the pipeline creation by including dummy content' do
+        let(:expected_content) { YAML.dump(Gitlab::Ci::ProjectConfig::PipelineExecutionPolicyForced::DUMMY_CONTENT) }
+
+        it 'includes dummy job to force the pipeline creation' do
+          expect(config.source).to eq(:pipeline_execution_policy_forced)
+          expect(config.content).to eq(expected_content)
+        end
+      end
+
+      let(:has_execution_policy_pipelines) { true }
+
+      it_behaves_like 'forces the pipeline creation by including dummy content'
+
+      context 'when auto devops is not enabled' do
+        before do
+          stub_application_setting(auto_devops_enabled: false)
+        end
+
+        it_behaves_like 'forces the pipeline creation by including dummy content'
       end
     end
   end
