@@ -12,6 +12,15 @@
   :weight: 3
   :idempotent: true
   :tags: []
+- :name: click_house_buffer_sync:click_house_dump_write_buffer
+  :worker_name: ClickHouse::DumpWriteBufferWorker
+  :feature_category: :database
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:active_user_count_threshold
   :worker_name: ActiveUserCountThresholdWorker
   :feature_category: :plan_provisioning
@@ -122,8 +131,17 @@
   :tags: []
 - :name: cronjob:click_house_code_suggestion_events_cron
   :worker_name: ClickHouse::CodeSuggestionEventsCronWorker
-  :feature_category: :value_stream_management
-  :has_external_dependencies: true
+  :feature_category: :database
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: cronjob:click_house_dump_all_write_buffers_cron
+  :worker_name: ClickHouse::DumpAllWriteBuffersCronWorker
+  :feature_category: :database
+  :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
