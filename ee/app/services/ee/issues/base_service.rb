@@ -102,14 +102,14 @@ module EE
         return unless epic_param_present?
 
         old_epic = issue.epic
-        epic = options.dig(:params, :epic)
+        new_epic = options.dig(:params, :epic)
+        # No need to do anything if the epic is unchanged
+        return if old_epic == new_epic
 
-        return if !epic && !old_epic
-
-        result = if old_epic && !epic
+        result = if old_epic && !new_epic
                    unassign_epic(issue)
                  else
-                   assign_epic(issue, epic)
+                   assign_epic(issue, new_epic)
                  end
 
         issue.reload_epic
