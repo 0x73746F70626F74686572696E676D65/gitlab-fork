@@ -59547,9 +59547,6 @@ msgstr ""
 msgid "Wiki|View all pages"
 msgstr ""
 
-msgid "Wiki|Wiki Pages"
-msgstr ""
-
 msgid "Wiki|Wiki actions"
 msgstr ""
 
@@ -59557,6 +59554,9 @@ msgid "Wiki|Wiki page was successfully created."
 msgstr ""
 
 msgid "Wiki|Wiki page was successfully updated."
+msgstr ""
+
+msgid "Wiki|Wiki pages"
 msgstr ""
 
 msgid "Wiki|Wiki templates"
