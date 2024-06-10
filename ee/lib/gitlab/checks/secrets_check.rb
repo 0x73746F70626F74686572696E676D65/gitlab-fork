@@ -34,7 +34,7 @@ module Gitlab
 
       BLOB_BYTES_LIMIT = 1.megabyte # Limit is 1MiB to start with.
       SPECIAL_COMMIT_FLAG = /\[skip secret detection\]/i
-      DOCUMENTATION_PATH = 'user/application_security/secret_detection/pre_receive/index.html'
+      DOCUMENTATION_PATH = 'user/application_security/secret_detection/secret_push_protection/index.html'
       DOCUMENTATION_PATH_ANCHOR = 'resolve-a-blocked-push'
 
       def validate!
