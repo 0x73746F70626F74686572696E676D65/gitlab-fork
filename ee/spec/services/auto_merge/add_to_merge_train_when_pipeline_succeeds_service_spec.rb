@@ -70,7 +70,7 @@ RSpec.describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService do
 
           expect(SystemNoteService)
             .to receive(:abort_add_to_merge_train_when_pipeline_succeeds).once
-            .with(merge_request, project, user, 'This merge request cannot be added to the merge train')
+            .with(merge_request, project, user, 'this merge request cannot be added to the merge train')
 
           subject
         end
