@@ -22,7 +22,6 @@ module Search
       DOT_COM_ROLLOUT_LIMIT = 2000
       DOT_COM_ROLLOUT_SEARCH_LIMIT = 100
       DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER = 72.hours
-      DOT_COM_ROLLOUT_CUTOFF_DATE = Date.parse('2024-04-25')
 
       attr_reader :task
 
@@ -140,20 +139,9 @@ module Search
         return false if EnabledNamespace.with_missing_indices.exists?
 
         execute_every 2.hours, cache_key: :dot_com_rollout do
-          join_sql = <<~SQL
-            INNER JOIN namespace_settings
-            ON namespace_settings.namespace_id = zoekt_enabled_namespaces.root_namespace_id
-          SQL
-          where_sql = <<~SQL
-            namespace_settings.experiment_features_enabled = :experiment_features_enabled
-            OR zoekt_enabled_namespaces.created_at <= :created_before
-          SQL
-
           Search::Zoekt::EnabledNamespace
             .where(search: false)
-            .where('zoekt_enabled_namespaces.updated_at < ?', DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER.ago)
-            .joins(join_sql)
-            .where(where_sql, experiment_features_enabled: true, created_before: DOT_COM_ROLLOUT_CUTOFF_DATE)
+            .where('created_at < ?', DOT_COM_ROLLOUT_ENABLE_SEARCH_AFTER.ago)
             .order(:id)
             .limit(DOT_COM_ROLLOUT_SEARCH_LIMIT)
             .update_all(search: true, updated_at: Time.zone.now)
