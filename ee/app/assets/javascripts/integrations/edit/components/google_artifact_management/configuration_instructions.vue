@@ -125,11 +125,13 @@ gcloud projects add-iam-policy-binding ${this.googleCloudProjectId} \\
         </gl-sprintf>
       </li>
       <li>
-        {{
-          s__(
-            'GoogleArtifactRegistry|Run the following command to grant roles in your Google Cloud project. You might be prompted to sign into Google.',
-          )
-        }}
+        <span>
+          {{
+            s__(
+              'GoogleArtifactRegistry|Run the following command to grant roles in your Google Cloud project. You might be prompted to sign into Google.',
+            )
+          }}
+        </span>
         <ul v-if="!hasId" class="gl-pl-5">
           <li>
             <gl-sprintf
@@ -144,32 +146,34 @@ gcloud projects add-iam-policy-binding ${this.googleCloudProjectId} \\
             </gl-sprintf>
           </li>
         </ul>
+        <div class="gl-relative gl-mt-2">
+          <clipboard-button
+            :title="s__('GoogleArtifactRegistry|Copy command')"
+            :text="instructions"
+            class="gl-absolute gl-top-3 gl-right-3 gl-z-1"
+          />
+          <code-block-highlighted
+            class="gl-border gl-p-4"
+            language="powershell"
+            :code="instructions"
+            tabindex="0"
+            role="group"
+            :aria-label="s__('GoogleArtifactRegistry|Instructions')"
+          />
+        </div>
+      </li>
+      <li>
+        <gl-sprintf
+          :message="
+            s__(
+              'GoogleArtifactRegistry|After the roles have been granted, select %{strongStart}Save changes%{strongEnd} to continue.',
+            )
+          "
+          ><template #strong="{ content }">
+            <strong>{{ content }}</strong>
+          </template>
+        </gl-sprintf>
       </li>
     </ol>
-    <div class="gl-relative">
-      <clipboard-button
-        :title="s__('GoogleArtifactRegistry|Copy command')"
-        :text="instructions"
-        class="gl-absolute gl-top-3 gl-right-3 gl-z-1"
-      />
-      <code-block-highlighted
-        class="gl-border gl-p-4"
-        language="powershell"
-        :code="instructions"
-        tabindex="0"
-        role="group"
-        :aria-label="s__('GoogleArtifactRegistry|Instructions')"
-      />
-    </div>
-    <gl-sprintf
-      :message="
-        s__(
-          'GoogleArtifactRegistry|After the roles have been granted, select %{strongStart}Save changes%{strongEnd} to continue.',
-        )
-      "
-      ><template #strong="{ content }">
-        <strong>{{ content }}</strong>
-      </template>
-    </gl-sprintf>
   </div>
 </template>
