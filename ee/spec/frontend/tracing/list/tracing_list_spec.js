@@ -14,6 +14,7 @@ import setWindowLocation from 'helpers/set_window_location_helper';
 import { createMockClient } from 'helpers/mock_observability_client';
 import * as commonUtils from '~/lib/utils/common_utils';
 import axios from '~/lib/utils/axios_utils';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 
 jest.mock('~/lib/utils/axios_utils');
 
@@ -123,6 +124,13 @@ describe('TracingList', () => {
         expect(findUrlSync().exists()).toBe(true);
         expect(findTableList().props('traces')).toEqual(mockResponse.traces);
         expect(findInfiniteScrolling().exists()).toBe(true);
+      });
+
+      it('renders the header', () => {
+        expect(wrapper.findComponent(PageHeading).props('heading')).toBe('Tracing');
+        expect(wrapper.find('header').text()).toBe(
+          'Inspect application requests across services. Send trace data to this project using OpenTelemetry. Learn more.',
+        );
       });
     });
   });

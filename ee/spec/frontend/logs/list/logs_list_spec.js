@@ -13,6 +13,7 @@ import setWindowLocation from 'helpers/set_window_location_helper';
 import { createMockClient } from 'helpers/mock_observability_client';
 import * as commonUtils from '~/lib/utils/common_utils';
 import axios from '~/lib/utils/axios_utils';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 import { mockLogs, mockMetadata } from './mock_data';
 
 jest.mock('~/lib/utils/axios_utils');
@@ -84,6 +85,15 @@ describe('LogsList', () => {
     expect(findLoadingIcon().exists()).toBe(false);
     expect(findLogsTable().exists()).toBe(true);
     expect(findLogsTable().props('logs')).toEqual(mockLogs);
+  });
+
+  it('renders the header', async () => {
+    await mountComponent();
+
+    expect(wrapper.findComponent(PageHeading).props('heading')).toBe('Logs');
+    expect(wrapper.find('header').text()).toBe(
+      'Monitor log events captured from your systems. Send log data to this project using OpenTelemetry. Learn more.',
+    );
   });
 
   it('calls fetchLogs method when LogsTable emits reload event', async () => {
