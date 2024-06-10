@@ -86,6 +86,7 @@ RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :subscription_m
           expect(page).to have_content("#{group.name} is currently using the Bronze Plan")
           within subscription_table do
             expect(page).to have_content("start date #{formatted_date(subscription.start_date)}")
+            expect(page).to have_content("end date #{formatted_date(subscription.end_date)}")
             expect(page).to have_link("Manage", href: manage_url)
             expect(page).to have_link("Add seats", href: extra_seats_url)
             expect(page).to have_link("Renew", href: renew_url)

@@ -426,25 +426,50 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :su
     end
 
     context 'seat refresh button' do
-      let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 15) }
+      let_it_be(:developer) { create(:user) }
+      let_it_be(:guest) { create(:user) }
 
-      let(:page_path) { group_billings_path(namespace) }
+      let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 1) }
+
       let(:plan) { ultimate_plan }
 
-      it 'updates seat counts on click' do
-        visit page_path
+      before do
+        namespace.add_developer(developer)
+        namespace.add_guest(guest)
 
+        visit group_billings_path(namespace)
+      end
+
+      it 'updates seat counts on click' do
+        expect(seats_in_subscription).to eq '1'
         expect(seats_currently_in_use).to eq '0'
+        expect(max_seats_used).to eq '0'
+        expect(seats_owed).to eq '0'
 
         click_button 'Refresh Seats'
         wait_for_requests
 
-        expect(seats_currently_in_use).to eq '1'
+        expect(seats_in_subscription).to eq '1'
+        expect(seats_currently_in_use).to eq '2'
+        expect(max_seats_used).to eq '2'
+        expect(seats_owed).to eq '1'
       end
-    end
 
-    def seats_currently_in_use
-      find_by_testid('seats-currently-in-use').text
+      def seats_in_subscription
+        find_by_testid('seats-in-subscription').text
+      end
+
+      def seats_currently_in_use
+        find_by_testid('seats-currently-in-use').text
+      end
+
+      def max_seats_used
+        find_by_testid('max-seats-used').text
+      end
+
+      def seats_owed
+        find_by_testid('seats-owed').text
+      end
     end
   end
 
