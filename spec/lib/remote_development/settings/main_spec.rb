@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-require_relative '../rd_fast_spec_helper'
+require_relative "../rd_fast_spec_helper"
 
-Messages = RemoteDevelopment::Messages
-RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
+RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :remote_development do
   let(:settings) { 'some settings' }
   let(:value_passed_along_steps) { { settings: settings } }
 
@@ -65,7 +64,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
           "when CurrentSettingsReader returns SettingsCurrentSettingsReadFailed",
           {
             step_class: RemoteDevelopment::Settings::CurrentSettingsReader,
-            returned_message: lazy { RemoteDevelopment::Messages::SettingsCurrentSettingsReadFailed.new(err_message_content) }
+            returned_message: lazy { RemoteDevelopment::Settings::Messages::SettingsCurrentSettingsReadFailed.new(err_message_content) }
           },
           {
             status: :error,
@@ -78,7 +77,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
           {
             step_class: RemoteDevelopment::Settings::EnvVarReader,
             returned_message:
-              lazy { RemoteDevelopment::Messages::SettingsEnvironmentVariableReadFailed.new(err_message_content) }
+              lazy { RemoteDevelopment::Settings::Messages::SettingsEnvironmentVariableReadFailed.new(err_message_content) }
           },
           {
             status: :error,
@@ -90,7 +89,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
           "when ExtensionsGalleryValidator returns SettingsVscodeExtensionsGalleryValidationFailed",
           {
             step_class: RemoteDevelopment::Settings::ExtensionsGalleryValidator,
-            returned_message: lazy { RemoteDevelopment::Messages::SettingsVscodeExtensionsGalleryValidationFailed.new(err_message_content) }
+            returned_message: lazy { RemoteDevelopment::Settings::Messages::SettingsVscodeExtensionsGalleryValidationFailed.new(err_message_content) }
           },
           {
             status: :error,
@@ -102,7 +101,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
           "when ExtensionsGalleryMetadataValidator returns SettingsVscodeExtensionsGalleryMetadataValidationFailed",
           {
             step_class: RemoteDevelopment::Settings::ExtensionsGalleryMetadataValidator,
-            returned_message: lazy { RemoteDevelopment::Messages::SettingsVscodeExtensionsGalleryMetadataValidationFailed.new(err_message_content) }
+            returned_message: lazy { RemoteDevelopment::Settings::Messages::SettingsVscodeExtensionsGalleryMetadataValidationFailed.new(err_message_content) }
           },
           {
             status: :error,
@@ -114,7 +113,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
           "when ReconciliationIntervalSecondsValidator returns SettingsPartialReconciliationIntervalSecondsValidationFailed",
           {
             step_class: RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidator,
-            returned_message: lazy { RemoteDevelopment::Messages::SettingsPartialReconciliationIntervalSecondsValidationFailed.new(err_message_content) }
+            returned_message: lazy { RemoteDevelopment::Settings::Messages::SettingsPartialReconciliationIntervalSecondsValidationFailed.new(err_message_content) }
           },
           {
             status: :error,
@@ -126,7 +125,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
           "when ReconciliationIntervalSecondsValidator returns SettingsFullReconciliationIntervalSecondsValidationFailed",
           {
             step_class: RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidator,
-            returned_message: lazy { RemoteDevelopment::Messages::SettingsFullReconciliationIntervalSecondsValidationFailed.new(err_message_content) }
+            returned_message: lazy { RemoteDevelopment::Settings::Messages::SettingsFullReconciliationIntervalSecondsValidationFailed.new(err_message_content) }
 
           },
           {
@@ -139,7 +138,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
           "when ReconciliationIntervalSecondsValidator returns SettingsPartialReconciliationIntervalSecondsValidationFailed",
           {
             step_class: RemoteDevelopment::Settings::ReconciliationIntervalSecondsValidator,
-            returned_message: lazy { RemoteDevelopment::Messages::SettingsPartialReconciliationIntervalSecondsValidationFailed.new(err_message_content) }
+            returned_message: lazy { RemoteDevelopment::Settings::Messages::SettingsPartialReconciliationIntervalSecondsValidationFailed.new(err_message_content) }
           },
           {
             status: :error,
@@ -154,7 +153,7 @@ RSpec.describe RemoteDevelopment::Settings::Main, :rd_fast, feature_category: :r
             returned_message: lazy { Class.new(RemoteDevelopment::Message).new(err_message_content) }
           },
           RemoteDevelopment::UnmatchedResultError
-        ]
+        ],
       ]
     end
     # rubocop:enable Style/TrailingCommaInArrayLiteral

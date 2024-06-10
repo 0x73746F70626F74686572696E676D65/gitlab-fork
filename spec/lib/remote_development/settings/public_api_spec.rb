@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../rd_fast_spec_helper'
+require_relative "../rd_fast_spec_helper"
 
 RSpec.describe RemoteDevelopment::Settings::PublicApi, :rd_fast, feature_category: :remote_development do
   subject(:settings_module) { RemoteDevelopment::Settings }

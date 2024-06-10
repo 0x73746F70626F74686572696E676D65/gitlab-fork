@@ -25,7 +25,7 @@ RSpec.describe RemoteDevelopment::Settings::ExtensionsGalleryMetadataGenerator, 
     it "has the expected settings behavior" do
       if expected_vscode_extensions_gallery_metadata == RuntimeError
         expected_err_msg = "Invalid user.extensions_marketplace_opt_in_status: '#{opt_in_status}'. " \
-          "Supported statuses are: [:unset, :enabled, :disabled]." # rubocop:disable Layout/LineEndStringConcatenationIndentation -- This is already changed in the next version of gitlab-styles
+          "Supported statuses are: [:unset, :enabled, :disabled]."
         expect { returned_value }
           .to raise_error(expected_err_msg)
       else

@@ -58,7 +58,7 @@ module RemoteDevelopment
           env_var_value_string.to_i
         elsif setting_type == Hash
           # NOTE: A Hash type is expected to be represented in an ENV var as a valid JSON string
-          parsed_value = parse_json(env_var_name: env_var_name, value: env_var_value_string)
+          parsed_value = parse_json(env_var_name: env_var_name, value: env_var_value_string.to_s)
 
           unless parsed_value.is_a?(Hash)
             raise "ENV var '#{env_var_name}' was a JSON array type, but it should be an object type"
@@ -67,7 +67,7 @@ module RemoteDevelopment
           parsed_value
         elsif setting_type == Array
           # NOTE: An Array type is expected to be represented in an ENV var as a valid JSON string
-          parsed_value = parse_json(env_var_name: env_var_name, value: env_var_value_string)
+          parsed_value = parse_json(env_var_name: env_var_name, value: env_var_value_string.to_s)
 
           unless parsed_value.is_a?(Array)
             raise "ENV var '#{env_var_name}' was a JSON object type, but it should be an array type"

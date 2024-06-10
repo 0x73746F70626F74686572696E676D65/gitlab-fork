@@ -52,9 +52,9 @@ RSpec.describe ::RemoteDevelopment::Settings::CurrentSettingsReader, feature_cat
 
     it "returns an err Result containing a Gitlab::CurrentSettings read failed message with details" do
       expect(result).to be_err_result(
-        RemoteDevelopment::Messages::SettingsCurrentSettingsReadFailed.new(
+        RemoteDevelopment::Settings::Messages::SettingsCurrentSettingsReadFailed.new(
           details: "Gitlab::CurrentSettings.overridden_setting type of 'String' " \
-            "did not match initialized Remote Development Settings type of '#{overridden_setting_type}'." # rubocop:disable Layout/LineEndStringConcatenationIndentation -- use default RubyMine formatting
+            "did not match initialized Remote Development Settings type of '#{overridden_setting_type}'."
         )
       )
     end
