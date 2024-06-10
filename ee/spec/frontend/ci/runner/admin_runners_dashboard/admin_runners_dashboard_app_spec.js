@@ -65,7 +65,10 @@ describe('AdminRunnersDashboardApp', () => {
     });
 
     it('shows runner usage', () => {
-      expect(wrapper.findComponent(RunnerUsage).exists()).toBe(true);
+      expect(wrapper.findComponent(RunnerUsage).props()).toEqual({
+        groupFullPath: null,
+        scope: 'INSTANCE_TYPE',
+      });
     });
 
     it('does not show job failures', () => {
