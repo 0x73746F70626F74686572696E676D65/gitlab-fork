@@ -212,7 +212,7 @@ describe('mutations', () => {
     });
   });
 
-  describe('RECEIEVE_NEXT_PAGE_SUCESS', () => {
+  describe('RECEIVE_NEXT_PAGE_SUCCESS', () => {
     it('sets the nextPage and currentPage of results', () => {
       localState.projectSearchResults = [{ id: 1 }];
       const headers = {

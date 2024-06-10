@@ -43,7 +43,7 @@ RSpec.describe 'Issue Boards new issue', :js, feature_category: :portfolio_manag
     end
 
     describe 'milestone list' do
-      it 'successfuly loads milestone to be added to newly created issue' do
+      it 'successfully loads milestone to be added to newly created issue' do
         create_issue_in_board_list(1)
 
         within_testid('sidebar-milestones') do

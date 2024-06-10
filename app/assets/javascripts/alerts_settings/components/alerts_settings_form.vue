@@ -362,7 +362,7 @@ export default {
             this.resetPayloadAndMappingConfirmed = false;
 
             this.$toast.show(
-              this.$options.i18n.integrationFormSteps.mapFields.payloadParsedSucessMsg,
+              this.$options.i18n.integrationFormSteps.mapFields.payloadParsedSuccessMsg,
             );
           },
         )

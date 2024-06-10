@@ -28,7 +28,7 @@ RSpec.describe Members::AwaitService, :saas, feature_category: :groups_and_proje
       end
     end
 
-    shared_examples 'succesfully sets member to be awaiting' do
+    shared_examples 'successfully sets member to be awaiting' do
       before do
         expect(member).to be_active
       end
@@ -84,19 +84,19 @@ RSpec.describe Members::AwaitService, :saas, feature_category: :groups_and_proje
         let_it_be(:owner) { create(:group_member, :owner, group: root_group) }
 
         context 'when member of the root group' do
-          it_behaves_like 'succesfully sets member to be awaiting' do
+          it_behaves_like 'successfully sets member to be awaiting' do
             let(:member) { create(:group_member, :active, group: root_group, user: user) }
           end
         end
 
         context 'when member of a sub-group' do
-          it_behaves_like 'succesfully sets member to be awaiting' do
+          it_behaves_like 'successfully sets member to be awaiting' do
             let(:member) { create(:group_member, :active, group: sub_group, user: user) }
           end
         end
 
         context 'when member is an awaiting member of a project' do
-          it_behaves_like 'succesfully sets member to be awaiting' do
+          it_behaves_like 'successfully sets member to be awaiting' do
             let(:member) { create(:project_member, :active, project: project, user: user) }
           end
         end

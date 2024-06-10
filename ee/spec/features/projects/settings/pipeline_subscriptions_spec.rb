@@ -64,7 +64,7 @@ RSpec.describe 'Project Subscriptions', :js, feature_category: :pipeline_composi
     expect(page).to have_content('Subscription successfully created.')
   end
 
-  it 'shows flash warning when unsuccesful in creating a pipeline subscription' do
+  it 'shows flash warning when unsuccessful in creating a pipeline subscription' do
     within '#pipeline-subscriptions' do
       click_on 'Add new'
       within 'form' do

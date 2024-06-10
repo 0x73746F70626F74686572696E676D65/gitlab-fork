@@ -40,7 +40,7 @@ module Security
         end
       end
 
-      # This method will be removed after the deprecation of Vulnerability Feedbacks is declared succesful
+      # This method will be removed after the deprecation of Vulnerability Feedbacks is declared successful
       # It is a temporary measure to permit revert to Feedbacks if necessary.
       def create_or_update_feedback
         feedback = @project
