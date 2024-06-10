@@ -15,6 +15,7 @@ module Search
       index_epics
       index_group_entities
       index_group_wikis
+      index_namespaces
       index_projects
       index_projects_status
       index_snippets
@@ -132,7 +133,12 @@ module Search
       if ::Gitlab::CurrentSettings.elasticsearch_pause_indexing?
         logger.info('Indexing is already paused.'.color(:orange))
       else
-        ::Gitlab::CurrentSettings.update!(elasticsearch_pause_indexing: true)
+        ApplicationSettings::UpdateService.new(
+          Gitlab::CurrentSettings.current_application_settings,
+          nil,
+          { elasticsearch_pause_indexing: true }
+        ).execute
+
         logger.info('Indexing is now paused.'.color(:green))
       end
     end
@@ -141,7 +147,12 @@ module Search
       logger.info('Resuming indexing...'.color(:green))
 
       if ::Gitlab::CurrentSettings.elasticsearch_pause_indexing?
-        ::Gitlab::CurrentSettings.update!(elasticsearch_pause_indexing: false)
+        ApplicationSettings::UpdateService.new(
+          Gitlab::CurrentSettings.current_application_settings,
+          nil,
+          { elasticsearch_pause_indexing: false }
+        ).execute
+
         logger.info('Indexing is now running.'.color(:green))
       else
         logger.info('Indexing is already running.'.color(:orange))
@@ -201,7 +212,7 @@ module Search
       logger.info("This GitLab instance combined repository and wiki size is #{total_size_human}. ")
       logger.info('By our estimates, ' \
         "your cluster size should be at least #{estimated_cluster_size_human}. ".color(:green))
-      logger.info("Please note that it is possible to index only selected namespaces/projects by using " \
+      logger.info('Please note that it is possible to index only selected namespaces/projects by using ' \
         'Advanced search indexing restrictions.')
     end
 
@@ -285,7 +296,7 @@ module Search
       indexed = IndexStatus.for_project(projects_maintaining_indexed_associations).size
       percent = (indexed / projects.to_f) * 100.0
 
-      logger.info(format("Indexing is %.2f%% complete (%d/%d projects)", percent, indexed, projects))
+      logger.info(format('Indexing is %.2f%% complete (%d/%d projects)', percent, indexed, projects))
     end
 
     def index_users
@@ -298,6 +309,19 @@ module Search
       logger.info("Indexing users... #{'done'.color(:green)}")
     end
 
+    def index_namespaces
+      Namespace.by_parent(nil).each_batch do |batch|
+        batch = batch.include_route
+        batch = batch.select(&:use_elasticsearch?)
+
+        ElasticNamespaceIndexerWorker.bulk_perform_async_with_contexts(
+          batch,
+          arguments_proc: ->(namespace) { [namespace.id, :index] },
+          context_proc: ->(namespace) { { namespace: namespace } }
+        )
+      end
+    end
+
     def index_projects
       unless Gitlab::CurrentSettings.elasticsearch_indexing?
         logger.warn('WARNING: Setting `elasticsearch_indexing` is disabled. ' \
@@ -308,7 +332,7 @@ module Search
 
       count = projects_in_batches do |projects|
         ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(*projects)
-        print "." # do not send to structured log
+        print '.' # do not send to structured log
       end
 
       marker = count > 0 ? "✔" : "∅"

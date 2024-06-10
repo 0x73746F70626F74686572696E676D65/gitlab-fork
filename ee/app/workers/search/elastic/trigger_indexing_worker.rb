@@ -4,7 +4,6 @@ module Search
   module Elastic
     class TriggerIndexingWorker
       include ApplicationWorker
-      prepend ::Elastic::IndexingControl
       prepend ::Geo::SkipSecondary
 
       INITIAL_TASK = :initiate
@@ -18,34 +17,61 @@ module Search
       urgency :throttled
 
       def perform(task = INITIAL_TASK, options = {})
-        return false unless Gitlab::CurrentSettings.elasticsearch_indexing?
+        return false if ::Gitlab::Saas.feature_available?(:advanced_search)
 
         task = task&.to_sym
         raise ArgumentError, "Unknown task: #{task}" unless allowed_tasks.include?(task)
 
-        options = options.with_indifferent_access
+        @options = options.with_indifferent_access
 
         case task
         when :initiate
-          initiate(options)
+          initiate
         when :namespaces
-          namespaces
+          task_executor_service.execute(:index_namespaces)
         when :projects
-          projects
+          task_executor_service.execute(:index_projects)
         when :snippets
-          snippets
+          task_executor_service.execute(:index_snippets)
         when :users
-          users
+          task_executor_service.execute(:index_users)
         end
       end
 
       private
 
+      attr_reader :options
+
       def allowed_tasks
         [INITIAL_TASK] + TASKS
       end
 
-      def initiate(options)
+      def initiate
+        unless Gitlab::CurrentSettings.elasticsearch_indexing?
+          ApplicationSettings::UpdateService.new(
+            Gitlab::CurrentSettings.current_application_settings,
+            nil,
+            { elasticsearch_indexing: true }
+          ).execute
+
+          logger.info('Setting `elasticsearch_indexing` has been enabled.')
+          self.class.perform_in(2.minutes, INITIAL_TASK, options)
+
+          return false
+        end
+
+        unless ::Gitlab::CurrentSettings.elasticsearch_pause_indexing?
+          task_executor_service.execute(:pause_indexing)
+
+          self.class.perform_in(2.minutes, INITIAL_TASK, options)
+
+          return false
+        end
+
+        task_executor_service.execute(:recreate_index)
+        task_executor_service.execute(:clear_index_status)
+        task_executor_service.execute(:resume_indexing)
+
         skip_tasks = Array.wrap(options[:skip]).map(&:to_sym)
         tasks_to_schedule = TASKS - skip_tasks
 
@@ -54,36 +80,12 @@ module Search
         end
       end
 
-      def namespaces
-        Namespace.by_parent(nil).each_batch do |batch|
-          batch = batch.preload(:route) # rubocop: disable CodeReuse/ActiveRecord -- Avoid N+1
-          batch = batch.select(&:use_elasticsearch?)
-
-          ElasticNamespaceIndexerWorker.bulk_perform_async_with_contexts(
-            batch,
-            arguments_proc: ->(namespace) { [namespace.id, :index] },
-            context_proc: ->(namespace) { { namespace: namespace } }
-          )
-        end
+      def task_executor_service
+        @task_executor_service ||= Search::RakeTaskExecutorService.new(logger: logger)
       end
 
-      def projects
-        Project.each_batch do |batch|
-          ::Preloaders::ProjectRootAncestorPreloader.new(batch, :namespace).execute
-          batch = batch.select(&:maintaining_elasticsearch?)
-
-          ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(*batch)
-        end
-      end
-
-      def snippets
-        Snippet.es_import
-      end
-
-      def users
-        User.each_batch do |users|
-          ::Elastic::ProcessInitialBookkeepingService.track!(*users)
-        end
+      def logger
+        @logger ||= ::Gitlab::Elasticsearch::Logger.build
       end
     end
   end

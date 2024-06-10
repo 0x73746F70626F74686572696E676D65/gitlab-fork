@@ -173,7 +173,7 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
     let(:settings) { ::Gitlab::CurrentSettings }
 
     before do
-      allow(settings).to receive(:elasticsearch_pause_indexing?).and_return(indexing_paused)
+      settings.update!(elasticsearch_pause_indexing: indexing_paused)
     end
 
     context 'when indexing is already paused' do
@@ -184,7 +184,9 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
         expect(logger).to receive(:info).with(/Pausing indexing.../)
         expect(logger).to receive(:info).with(/Indexing is already paused/)
 
-        service.execute(:pause_indexing)
+        expect { service.execute(:pause_indexing) }.not_to change {
+          settings.reload.elasticsearch_pause_indexing
+        }
       end
     end
 
@@ -192,11 +194,12 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
       let(:indexing_paused) { false }
 
       it 'pauses indexing' do
-        expect(settings).to receive(:update!).with(elasticsearch_pause_indexing: true)
         expect(logger).to receive(:info).with(/Pausing indexing.../)
         expect(logger).to receive(:info).with(/Indexing is now paused/)
 
-        service.execute(:pause_indexing)
+        expect { service.execute(:pause_indexing) }.to change {
+          settings.reload.elasticsearch_pause_indexing
+        }
       end
     end
   end
@@ -205,19 +208,19 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
     let(:settings) { ::Gitlab::CurrentSettings }
 
     before do
-      allow(settings).to receive(:elasticsearch_pause_indexing?).and_return(indexing_paused)
+      settings.update!(elasticsearch_pause_indexing: indexing_paused)
     end
 
     context 'when indexing is already running' do
       let(:indexing_paused) { false }
 
       it 'does not do anything' do
-        expect(settings).not_to receive(:update!)
-
         expect(logger).to receive(:info).with(/Resuming indexing.../)
         expect(logger).to receive(:info).with(/Indexing is already running/)
 
-        service.execute(:resume_indexing)
+        expect { service.execute(:resume_indexing) }.not_to change {
+          settings.reload.elasticsearch_pause_indexing
+        }
       end
     end
 
@@ -225,12 +228,12 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
       let(:indexing_paused) { true }
 
       it 'resumes indexing' do
-        expect(settings).to receive(:update!).with(elasticsearch_pause_indexing: false)
-
         expect(logger).to receive(:info).with(/Resuming indexing.../)
         expect(logger).to receive(:info).with(/Indexing is now running/)
 
-        service.execute(:resume_indexing)
+        expect { service.execute(:resume_indexing) }.to change {
+          settings.reload.elasticsearch_pause_indexing
+        }
       end
     end
   end
@@ -255,6 +258,7 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
     let(:counted_items) { described_class::CLASSES_TO_COUNT }
 
     before do
+      allow(logger).to receive(:info)
       allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?).and_return(true)
       allow(::Gitlab::Database::Count).to receive(:approximate_counts).with(counted_items).and_return(
         Hash[counted_items.zip(counts)]
@@ -536,6 +540,31 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
       create_list(:user, 5)
 
       expect { service.execute(:index_users) }.to issue_same_number_of_queries_as(control)
+    end
+  end
+
+  describe '#index_namespaces' do
+    let_it_be(:groups) { create_list(:group, 3) }
+
+    subject(:task) { service.execute(:index_namespaces) }
+
+    before do
+      stub_ee_application_setting(elasticsearch_indexing: true)
+    end
+
+    it 'indexes namespaces' do
+      expect(ElasticNamespaceIndexerWorker).to receive(:bulk_perform_async_with_contexts)
+        .with(groups, { arguments_proc: kind_of(Proc), context_proc: kind_of(Proc) })
+
+      task
+    end
+
+    it 'avoids N+1 queries', :use_sql_query_cache do
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) { task }
+
+      create_list(:group, 3)
+
+      expect { service.execute(:index_namespaces) }.to issue_same_number_of_queries_as(control)
     end
   end
 
