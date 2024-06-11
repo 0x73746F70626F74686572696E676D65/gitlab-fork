@@ -59378,6 +59378,9 @@ msgstr ""
 msgid "Wiki|Edit template"
 msgstr ""
 
+msgid "Wiki|Home"
+msgstr ""
+
 msgid "Wiki|Last edited by %{author} %{timeago}"
 msgstr ""
 
