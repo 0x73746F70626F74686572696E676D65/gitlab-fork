@@ -7715,21 +7715,14 @@ CREATE TABLE ci_runners (
     contacted_at timestamp without time zone,
     active boolean DEFAULT true NOT NULL,
     name character varying,
-    version character varying,
-    revision character varying,
-    platform character varying,
-    architecture character varying,
     run_untagged boolean DEFAULT true NOT NULL,
     locked boolean DEFAULT false NOT NULL,
     access_level integer DEFAULT 0 NOT NULL,
-    ip_address character varying,
     maximum_timeout integer,
     runner_type smallint NOT NULL,
     token_encrypted character varying,
     public_projects_minutes_cost_factor double precision DEFAULT 1.0 NOT NULL,
     private_projects_minutes_cost_factor double precision DEFAULT 1.0 NOT NULL,
-    config jsonb DEFAULT '{}'::jsonb NOT NULL,
-    executor_type smallint,
     maintainer_note text,
     token_expires_at timestamp with time zone,
     allowed_plans text[] DEFAULT '{}'::text[] NOT NULL,
@@ -25909,8 +25902,6 @@ CREATE INDEX index_ci_runners_on_runner_type_and_id ON ci_runners USING btree (r
 CREATE INDEX index_ci_runners_on_token_expires_at_and_id_desc ON ci_runners USING btree (token_expires_at, id DESC);
 
 CREATE INDEX index_ci_runners_on_token_expires_at_desc_and_id_desc ON ci_runners USING btree (token_expires_at DESC, id DESC);
-
-CREATE INDEX index_ci_runners_on_version ON ci_runners USING btree (version);
 
 CREATE UNIQUE INDEX index_ci_running_builds_on_build_id ON ci_running_builds USING btree (build_id);
 
