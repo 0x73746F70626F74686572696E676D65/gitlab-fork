@@ -21,6 +21,8 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
   let_it_be(:ultimate_plan, reload: true) { create(:ultimate_plan) }
 
   before do
+    stub_signing_key
+    stub_reconciliation_request(true)
     stub_subscription_request_seat_usage(true)
     stub_feature_flags(block_seat_overages: false, show_role_details_in_drawer: false)
   end
