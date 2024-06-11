@@ -499,6 +499,19 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
           expect(response).to render_template('arkose_labs_challenge')
         end
 
+        context 'with tracking' do
+          before do
+            mock_arkose_token_verification(success: false)
+          end
+
+          it_behaves_like 'internal event tracking' do
+            let(:event) { 'fail_arkose_challenge_during_registration' }
+            let(:category) { described_class.name }
+
+            subject { do_request }
+          end
+        end
+
         context 'when Arkose is down' do
           it 'marks the user as Arkose-verified' do
             mock_arkose_token_verification(success: false, service_down: true)
