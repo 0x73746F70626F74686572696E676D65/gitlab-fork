@@ -44,6 +44,12 @@ stages:
     BUNDLE_SILENCE_ROOT_WARNING: "true"
     BUNDLE_WITHOUT: development
 
+.qa-run-e2e-with-bundler:
+  script:
+    - source $CI_PROJECT_DIR/scripts/utils.sh
+    - source $CI_PROJECT_DIR/scripts/rspec_helpers.sh
+    - run_e2e_specs "${QA_GITLAB_URL}" "${QA_TESTS}" "${QA_RSPEC_TAGS}"
+
 .qa-install:
   extends:
     - .bundler-variables
