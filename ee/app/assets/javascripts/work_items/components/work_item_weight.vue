@@ -164,7 +164,7 @@ export default {
           :id="$options.inputId"
           ref="input"
           min="0"
-          class="hide-unfocused-input-decoration gl-display-block"
+          class="hide-unfocused-input-decoration gl-block"
           type="number"
           :disabled="isUpdating"
           :placeholder="__('Enter a number')"

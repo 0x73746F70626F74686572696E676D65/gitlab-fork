@@ -2,7 +2,7 @@
 - return unless Gitlab::CurrentSettings.should_check_namespace_plan?
 
 .form-group.gl-form-group{ role: 'group' }
-  = f.label :plan, class: 'gl-display-block col-form-label'
+  = f.label :plan, class: 'gl-block col-form-label'
   = f.fields_for :gitlab_subscription do |f|
     = f.select :hosted_plan_id, Plan.pluck(:title, :id),
       { include_blank: _('No plan') },

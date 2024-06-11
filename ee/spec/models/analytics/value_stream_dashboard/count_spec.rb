@@ -60,6 +60,16 @@ RSpec.describe Analytics::ValueStreamDashboard::Count, feature_category: :value_
       create(:value_stream_dashboard_count, metric: :groups, count: 1, namespace: subgroup, recorded_at: '2023-05-25')
     end
 
+    let_it_be(:direct_members_aggregation) do
+      create(:value_stream_dashboard_count, metric: :direct_members, count: 50, namespace: group,
+        recorded_at: '2023-05-25')
+    end
+
+    let_it_be(:direct_members_aggregation_subgroup) do
+      create(:value_stream_dashboard_count, metric: :direct_members, count: 15, namespace: subgroup,
+        recorded_at: '2023-05-25')
+    end
+
     let(:group_to_aggregate) { group }
     let(:from) { Date.new(2023, 5, 1) }
     let(:to) { Date.new(2023, 5, 31) }
@@ -92,6 +102,22 @@ RSpec.describe Analytics::ValueStreamDashboard::Count, feature_category: :value_
 
         it 'returns count scoped to the subgroup' do
           expect(count).to eq(1)
+        end
+      end
+    end
+
+    context 'when requesting direct_members counts' do
+      let(:metric) { :direct_members }
+
+      it 'returns only the directly associated count and does not look up subgroups' do
+        expect(count).to eq(50)
+      end
+
+      context 'when querying a subgroup' do
+        let(:group_to_aggregate) { subgroup }
+
+        it 'returns count scoped to the subgroup' do
+          expect(count).to eq(15)
         end
       end
     end

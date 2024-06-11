@@ -258,7 +258,7 @@ export default {
 
             <gl-dropdown-divider v-if="frequentProjects.length > 0" />
             <template v-if="!projectsFetchInProgress">
-              <span v-if="!projects.length" class="gl-display-block text-center gl-p-3">{{
+              <span v-if="!projects.length" class="gl-block text-center gl-p-3">{{
                 __('No matches found')
               }}</span>
               <gl-dropdown-item

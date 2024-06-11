@@ -133,7 +133,7 @@ export default {
       }}</gl-alert>
       <div>{{ $options.i18n.downloadCSVModalDescription }}</div>
       <div class="gl-my-4">
-        <label class="gl-display-block col-form-label-sm col-form-label">
+        <label class="gl-block col-form-label-sm col-form-label">
           {{ $options.i18n.projectDropdownHeader }}
         </label>
 
@@ -156,7 +156,7 @@ export default {
       </div>
 
       <div class="gl-my-4">
-        <label class="gl-display-block col-form-label-sm col-form-label">
+        <label class="gl-block col-form-label-sm col-form-label">
           {{ $options.i18n.dateRangeHeader }}
         </label>
         <gl-collapsible-listbox

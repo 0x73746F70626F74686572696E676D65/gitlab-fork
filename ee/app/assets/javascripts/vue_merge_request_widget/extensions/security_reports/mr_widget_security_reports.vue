@@ -414,13 +414,13 @@ export default {
                   <strong
                     v-if="report.numberOfNewFindings > 0 && index === 0"
                     data-testid="new-findings-title"
-                    class="gl-display-block gl-mt-2"
+                    class="gl-block gl-mt-2"
                     >{{ $options.i18n.new }}</strong
                   >
                   <strong
                     v-if="report.numberOfFixedFindings > 0 && report.numberOfNewFindings === index"
                     data-testid="fixed-findings-title"
-                    class="gl-display-block gl-mt-2"
+                    class="gl-block gl-mt-2"
                     >{{ $options.i18n.fixed }}</strong
                   >
                   <mr-widget-row

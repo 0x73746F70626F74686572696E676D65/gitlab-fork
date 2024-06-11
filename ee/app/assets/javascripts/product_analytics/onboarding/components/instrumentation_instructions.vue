@@ -80,13 +80,11 @@ export default {
       <section class="gl-mb-6" data-testid="npm-instrumentation-instructions">
         <h5 class="gl-mb-5">{{ $options.i18n.jsModuleTitle }}</h5>
 
-        <strong class="gl-display-block gl-mb-3">{{ $options.i18n.addNpmPackage }}</strong>
+        <strong class="gl-block gl-mb-3">{{ $options.i18n.addNpmPackage }}</strong>
         <pre class="gl-mb-5">{{ $options.INSTALL_NPM_PACKAGE }}</pre>
-        <strong class="gl-display-block gl-mt-5 gl-mb-3">{{
-          $options.i18n.importNpmPackage
-        }}</strong>
+        <strong class="gl-block gl-mt-5 gl-mb-3">{{ $options.i18n.importNpmPackage }}</strong>
         <pre class="gl-mb-5">{{ $options.IMPORT_NPM_PACKAGE }}</pre>
-        <strong class="gl-display-block gl-mt-5 gl-mb-3">{{ $options.i18n.initNpmPackage }}</strong>
+        <strong class="gl-block gl-mt-5 gl-mb-3">{{ $options.i18n.initNpmPackage }}</strong>
         <pre class="gl-mb-5"><gl-sprintf :message="$options.INIT_TRACKING">
           <template #appId><span>{{ trackingKey }}</span></template>
           <template #host><span>{{ collectorHost }}</span></template>
@@ -95,9 +93,7 @@ export default {
 
       <section class="gl-mb-6" data-testid="html-instrumentation-instructions">
         <h5 class="gl-mb-5 gl-w-full">{{ $options.i18n.htmlScriptTag }}</h5>
-        <strong class="gl-display-block gl-mb-3">{{
-          $options.i18n.htmlScriptTagDescription
-        }}</strong>
+        <strong class="gl-block gl-mb-3">{{ $options.i18n.htmlScriptTagDescription }}</strong>
         <pre class="gl-mb-5"><gl-sprintf :message="$options.HTML_SCRIPT_SETUP">
           <template #appId><span>{{ trackingKey }}</span></template>
           <template #host><span>{{ collectorHost }}</span></template>
