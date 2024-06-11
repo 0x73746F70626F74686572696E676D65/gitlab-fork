@@ -57,17 +57,6 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
       end
     end
 
-    context 'when search_query_builder feature flag is false' do
-      before do
-        stub_feature_flags(search_query_builder: false)
-      end
-
-      include_examples 'search results filtered by state'
-      include_examples 'search results filtered by confidential'
-      include_examples 'search results filtered by labels'
-      it_behaves_like 'namespace ancestry_filter for aggregations'
-    end
-
     include_examples 'search results filtered by state'
     include_examples 'search results filtered by confidential'
     include_examples 'search results filtered by labels'

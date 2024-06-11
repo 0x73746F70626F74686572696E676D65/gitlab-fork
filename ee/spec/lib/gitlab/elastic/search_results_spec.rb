@@ -1326,14 +1326,6 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
 
         it_behaves_like 'issues respect visibility'
       end
-
-      context 'when search_query_builder feature flag is false' do
-        before do
-          stub_feature_flags(search_query_builder: false)
-        end
-
-        it_behaves_like 'issues respect visibility'
-      end
     end
 
     context 'milestones' do
