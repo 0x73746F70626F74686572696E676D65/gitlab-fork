@@ -10,7 +10,12 @@ module EE
         def track_event(event_name, context_hash = {})
           return unless ::Gitlab::ClickHouse.globally_enabled_for_analytics?
 
-          Ai::CodeSuggestionsUsage.new(**context_hash.merge(event: event_name)).store
+          attributes = context_hash
+            .with_indifferent_access
+            .slice(*Ai::CodeSuggestionsUsage.attribute_names)
+            .merge(event: event_name)
+
+          Ai::CodeSuggestionsUsage.new(attributes).store
         end
 
         override :track_via_code_suggestions?

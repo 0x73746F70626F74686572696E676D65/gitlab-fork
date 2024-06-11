@@ -27,6 +27,17 @@ RSpec.describe Gitlab::Tracking::AiTracking, feature_category: :value_stream_man
       track_event
     end
 
+    context 'when extra arguments are present in the context' do
+      let(:event_context) { { user: current_user, extra1: 'bar', extra2: 'baz' } }
+
+      it 'ignores extra arguments' do
+        expect(Ai::CodeSuggestionsUsage).to receive(:new).with({ event: event_name, user: current_user })
+                                                         .once.and_call_original
+
+        track_event
+      end
+    end
+
     context 'when clickhouse is not enabled' do
       before do
         stub_application_setting(use_clickhouse_for_analytics: false)
