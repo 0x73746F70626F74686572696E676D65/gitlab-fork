@@ -44,12 +44,19 @@ module Analytics
           .fetch(:namespace_class)
 
         if metric_namespace_class == Group
-          group.self_and_descendant_ids
+          group_ids(group, metric)
         elsif metric_namespace_class == Namespaces::ProjectNamespace
           group.all_projects.select(:project_namespace_id)
         else
           Group.none
         end
+      end
+
+      def self.group_ids(group, metric)
+        # Direct members are a special case, we don't look at the descendant groups when calculating the count
+        return Group.where(id: group.id) if metric == :direct_members
+
+        group.self_and_descendant_ids
       end
     end
   end
