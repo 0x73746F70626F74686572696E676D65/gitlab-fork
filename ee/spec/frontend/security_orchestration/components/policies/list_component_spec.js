@@ -36,7 +36,6 @@ describe('List component', () => {
         ...props,
       },
       provide: {
-        customCiToggleEnabled: false,
         disableScanPolicyUpdate: false,
         namespacePath,
         namespaceType: NAMESPACE_TYPES.PROJECT,
@@ -360,7 +359,6 @@ describe('List component', () => {
     it('updates url when type filter is selected', () => {
       mountWrapper({
         provide: {
-          customCiToggleEnabled: true,
           glFeatures: {
             pipelineExecutionPolicyType: true,
           },

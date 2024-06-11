@@ -68,7 +68,6 @@ describe('App', () => {
     wrapper = shallowMountExtended(App, {
       provide: {
         assignedPolicyProject,
-        customCiToggleEnabled: false,
         namespacePath,
         namespaceType: NAMESPACE_TYPES.PROJECT,
         ...provide,
@@ -154,10 +153,7 @@ describe('App', () => {
     describe('when pipelineExecutionPolicyEnabled is true', () => {
       beforeEach(async () => {
         createWrapper({
-          provide: {
-            customCiToggleEnabled: true,
-            glFeatures: { pipelineExecutionPolicyType: true },
-          },
+          provide: { glFeatures: { pipelineExecutionPolicyType: true } },
         });
         await waitForPromises();
       });
@@ -230,7 +226,6 @@ describe('App', () => {
         createWrapper({
           provide: {
             namespaceType: NAMESPACE_TYPES.GROUP,
-            customCiToggleEnabled: true,
             glFeatures: { pipelineExecutionPolicyType: true },
           },
         });

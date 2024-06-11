@@ -24,14 +24,13 @@ const validateFilter = (allowedValues, value, lowerCase = false) => {
  * @param toggleEnabled
  * @returns {boolean}
  */
-export const validateTypeFilter = (value, toggleEnabled = true) => {
-  const options =
-    gon.features.pipelineExecutionPolicyType && toggleEnabled
-      ? {
-          ...POLICY_TYPE_FILTER_OPTIONS,
-          ...PIPELINE_EXECUTION_FILTER_OPTION,
-        }
-      : POLICY_TYPE_FILTER_OPTIONS;
+export const validateTypeFilter = (value) => {
+  const options = gon.features.pipelineExecutionPolicyType
+    ? {
+        ...POLICY_TYPE_FILTER_OPTIONS,
+        ...PIPELINE_EXECUTION_FILTER_OPTION,
+      }
+    : POLICY_TYPE_FILTER_OPTIONS;
 
   return validateFilter(options, value, true);
 };
@@ -50,10 +49,10 @@ export const validateSourceFilter = (value) => validateFilter(POLICY_SOURCE_OPTI
  * @param toggleEnabled
  * @returns {string|undefined|string}
  */
-export const extractTypeParameter = (type, toggleEnabled = false) => {
+export const extractTypeParameter = (type) => {
   // necessary for bookmarks of /-/security/policies?type=scan_result
   const updatedType = type === 'scan_result' ? 'approval' : type;
-  return validateTypeFilter(updatedType, toggleEnabled)
+  return validateTypeFilter(updatedType)
     ? updatedType?.toUpperCase()
     : POLICY_TYPE_FILTER_OPTIONS.ALL.value;
 };

@@ -48,7 +48,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['customCiToggleEnabled', 'namespacePath', 'namespaceType', 'disableScanPolicyUpdate'],
+  inject: ['namespacePath', 'namespaceType', 'disableScanPolicyUpdate'],
   props: {
     hasPolicyProject: {
       type: Boolean,
@@ -97,10 +97,7 @@ export default {
     },
   },
   data() {
-    const selectedPolicyType = extractTypeParameter(
-      getParameterByName('type'),
-      this.customCiToggleEnabled,
-    );
+    const selectedPolicyType = extractTypeParameter(getParameterByName('type'));
 
     return {
       selectedPolicy: null,
@@ -117,7 +114,7 @@ export default {
         : POLICY_TYPE_FILTER_OPTIONS;
     },
     pipelineExecutionPolicyEnabled() {
-      return this.customCiToggleEnabled && this.glFeatures.pipelineExecutionPolicyType;
+      return this.glFeatures.pipelineExecutionPolicyType;
     },
     showLoader() {
       return this.isLoadingLinkedSpps && this.isProject;

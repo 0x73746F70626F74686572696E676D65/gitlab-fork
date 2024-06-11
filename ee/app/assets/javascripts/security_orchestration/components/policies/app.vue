@@ -47,7 +47,7 @@ export default {
     ListComponent,
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['assignedPolicyProject', 'customCiToggleEnabled', 'namespacePath', 'namespaceType'],
+  inject: ['assignedPolicyProject', 'namespacePath', 'namespaceType'],
   apollo: {
     linkedSppItems: {
       query: getSppLinkedProjectsNamespaces,
@@ -148,7 +148,7 @@ export default {
       );
     },
     pipelineExecutionPolicyEnabled() {
-      return this.customCiToggleEnabled && this.glFeatures.pipelineExecutionPolicyType;
+      return this.glFeatures.pipelineExecutionPolicyType;
     },
   },
   methods: {

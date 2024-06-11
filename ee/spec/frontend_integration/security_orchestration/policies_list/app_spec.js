@@ -105,7 +105,6 @@ describe('Policies List', () => {
       window.gon.features = { pipelineExecutionPolicyType: true };
       createWrapper({
         provide: {
-          customCiToggleEnabled: true,
           glFeatures: {
             pipelineExecutionPolicyType: true,
           },
@@ -135,7 +134,6 @@ describe('Policies List', () => {
       createWrapper({
         provide: {
           namespaceType: NAMESPACE_TYPES.GROUP,
-          customCiToggleEnabled: true,
         },
       });
     });
@@ -157,7 +155,6 @@ describe('Policies List', () => {
       createWrapper({
         provide: {
           namespaceType: NAMESPACE_TYPES.GROUP,
-          customCiToggleEnabled: true,
           glFeatures: {
             pipelineExecutionPolicyType: true,
           },

@@ -37,25 +37,23 @@ describe('utils', () => {
 
   describe('validateTypeFilter', () => {
     it.each`
-      value                                                                      | valid    | features                                  | toggle
-      ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}                                    | ${true}  | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value}                         | ${true}  | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value}                               | ${true}  | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${''}                                                                      | ${true}  | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${'invalid key'}                                                           | ${false} | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${undefined}                                                               | ${false} | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${null}                                                                    | ${false} | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${{}}                                                                      | ${false} | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${0}                                                                       | ${false} | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${POLICY_TYPE_FILTER_OPTIONS.ALL.value.toLowerCase()}                      | ${true}  | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value.toLowerCase()}           | ${true}  | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value.toLowerCase()}                 | ${true}  | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value.toLowerCase()} | ${false} | ${{ pipelineExecutionPolicyType: false }} | ${true}
-      ${PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value.toLowerCase()} | ${true}  | ${{ pipelineExecutionPolicyType: true }}  | ${true}
-      ${PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value.toLowerCase()} | ${false} | ${{ pipelineExecutionPolicyType: true }}  | ${false}
-    `('should validate type filters', ({ value, valid, features, toggle }) => {
+      value                                                                      | valid    | features
+      ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}                                    | ${true}  | ${{ pipelineExecutionPolicyType: false }}
+      ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value}                         | ${true}  | ${{ pipelineExecutionPolicyType: false }}
+      ${POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value}                               | ${true}  | ${{ pipelineExecutionPolicyType: false }}
+      ${''}                                                                      | ${true}  | ${{ pipelineExecutionPolicyType: false }}
+      ${'invalid key'}                                                           | ${false} | ${{ pipelineExecutionPolicyType: false }}
+      ${undefined}                                                               | ${false} | ${{ pipelineExecutionPolicyType: false }}
+      ${null}                                                                    | ${false} | ${{ pipelineExecutionPolicyType: false }}
+      ${{}}                                                                      | ${false} | ${{ pipelineExecutionPolicyType: false }}
+      ${0}                                                                       | ${false} | ${{ pipelineExecutionPolicyType: false }}
+      ${POLICY_TYPE_FILTER_OPTIONS.ALL.value.toLowerCase()}                      | ${true}  | ${{ pipelineExecutionPolicyType: false }}
+      ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value.toLowerCase()}           | ${true}  | ${{ pipelineExecutionPolicyType: false }}
+      ${POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value.toLowerCase()}                 | ${true}  | ${{ pipelineExecutionPolicyType: false }}
+      ${PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value.toLowerCase()} | ${false} | ${{ pipelineExecutionPolicyType: false }}
+    `('should validate type filters', ({ value, valid, features }) => {
       window.gon.features = features;
-      expect(validateTypeFilter(value, toggle)).toBe(valid);
+      expect(validateTypeFilter(value)).toBe(valid);
     });
   });
 
