@@ -51,9 +51,11 @@ module Epics
     end
 
     def update_params(epic)
-      epic.previous_changes.keys.map(&:to_sym)
-        .intersection(ALLOWED_PARAMS + %i[updated_at title_html description_html])
+      filtered_attributes = epic.previous_changes.keys.map(&:to_sym)
+        .intersection(ALLOWED_PARAMS + %i[title_html description_html])
         .index_with { |attr| epic[attr] }
+
+      filtered_attributes.merge({ updated_by: epic.updated_by, updated_at: epic.updated_at })
     end
 
     def sync_color(epic, work_item)
