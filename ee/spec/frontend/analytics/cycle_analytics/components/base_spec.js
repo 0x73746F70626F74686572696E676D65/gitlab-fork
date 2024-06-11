@@ -722,7 +722,7 @@ describe('EE Value Stream Analytics component', () => {
       mock.restore();
     });
 
-    it('renders a link to the value streams dashboard', () => {
+    it('does not render a link to the value streams dashboard', () => {
       expect(findOverviewMetrics().props('dashboardsPath')).toBeNull();
     });
   });

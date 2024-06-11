@@ -75,7 +75,7 @@ export default {
     lastUpdated: s__('Analytics| Last updated: %{recordedAt}'),
     backgroundAggregationWarningTitle: s__('DORA4Metrics|Background aggregation not enabled'),
     description: s__(
-      'DORA4Metrics|To see usage overview, you must %{linkStart}enable background aggregation%{linkEnd}',
+      'DORA4Metrics|To see usage overview, you must %{linkStart}enable background aggregation%{linkEnd}.',
     ),
     descriptionLink: helpPagePath('user/analytics/value_streams_dashboard.html', {
       anchor: 'enable-or-disable-overview-background-aggregation',
