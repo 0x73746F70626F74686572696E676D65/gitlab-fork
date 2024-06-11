@@ -118,7 +118,6 @@ describe('CustomizableDashboard', () => {
   const findUrlSync = () => wrapper.findComponent(UrlSync);
   const findVisualizationDrawer = () => wrapper.findComponent(AvailableVisualizationsDrawer);
   const findDashboardDescription = () => wrapper.findByTestId('dashboard-description');
-  const findDashboardHelpLink = () => wrapper.findByTestId('dashboard-help-link');
   const findGridstackWrapper = () => wrapper.findComponent(GridstackWrapper);
   const findBetaBadge = () => wrapper.findComponent(BetaBadge);
 
@@ -238,13 +237,43 @@ describe('CustomizableDashboard', () => {
 
   describe('when the slug is "value_stream_dashboard"', () => {
     beforeEach(() => {
-      createWrapper({}, { ...builtinDashboard, slug: 'value_stream_dashboard' });
+      createWrapper({}, { ...builtinDashboard, slug: 'value_streams_dashboard' });
     });
 
     it('shows a "Learn more" link to the VSD user docs', () => {
-      expect(findDashboardHelpLink().text()).toBe('Learn more');
-      expect(findDashboardHelpLink().attributes('href')).toBe(
-        '/help/user/analytics/value_streams_dashboard',
+      const link = findDashboardDescription().findComponent(GlLink);
+
+      expect(link.text()).toBe('Learn more');
+      expect(link.attributes('href')).toBe('/help/user/analytics/value_streams_dashboard');
+    });
+  });
+
+  describe('when the slug is "ai_impact"', () => {
+    beforeEach(() => {
+      createWrapper({}, { ...builtinDashboard, slug: 'ai_impact' });
+    });
+
+    it('shows an alternative dashboard description', () => {
+      expect(findDashboardDescription().text()).toBe(
+        'Visualize the relation between AI usage and SDLC trends. Learn more about AI Impact analytics and GitLab Duo Pro seats usage.',
+      );
+    });
+
+    it('shows a link to the docs page', () => {
+      const link = findDashboardDescription().findAllComponents(GlLink).at(0);
+
+      expect(link.text()).toBe('AI Impact analytics');
+      expect(link.attributes('href')).toBe(
+        '/help/user/analytics/value_streams_dashboard#ai-impact-analytics',
+      );
+    });
+
+    it('shows a link to the Duo Pro subscription add-ons page', () => {
+      const link = findDashboardDescription().findAllComponents(GlLink).at(1);
+
+      expect(link.text()).toBe('GitLab Duo Pro seats usage');
+      expect(link.attributes('href')).toBe(
+        '/help/subscriptions/subscription-add-ons#assign-gitlab-duo-pro-seats',
       );
     });
   });
