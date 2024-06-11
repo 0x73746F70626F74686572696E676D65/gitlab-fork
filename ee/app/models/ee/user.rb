@@ -168,7 +168,7 @@ module EE
 
       scope :with_email_domain, ->(domain) { where("lower(split_part(email, '@', 2)) = ?", domain.downcase) }
 
-      scope :excluding_enterprise_users_of_group, ->(group) { left_joins(:user_detail).where('user_details.enterprise_group_id != ? OR user_details.enterprise_group_id IS NULL', group.id) }
+      scope :excluding_enterprise_users_of_group, ->(group) { left_join_user_detail.where('user_details.enterprise_group_id != ? OR user_details.enterprise_group_id IS NULL', group.id) }
 
       scope :security_policy_bots_for_projects, ->(projects) do
         security_policy_bot
