@@ -62,12 +62,7 @@ FactoryBot.define do
     end
 
     trait :with_read do
-      transient do
-        namespace_id { nil }
-        traversal_ids { nil }
-      end
-
-      after(:create) do |vulnerability, evaluator|
+      after(:create) do |vulnerability, _|
         create(
           :vulnerability_read,
           vulnerability: vulnerability,
@@ -75,8 +70,8 @@ FactoryBot.define do
           report_type: vulnerability.report_type,
           severity: vulnerability.severity,
           state: vulnerability.state,
-          namespace_id: evaluator.namespace_id,
-          traversal_ids: evaluator.traversal_ids
+          namespace_id: vulnerability.project&.namespace_id,
+          traversal_ids: vulnerability.project&.namespace&.traversal_ids
         )
       end
     end
