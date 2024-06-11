@@ -431,27 +431,14 @@ RSpec.shared_examples 'it verifies presence of credit_card_validation record for
         expect { do_request }.to change { user.reload.banned? }.from(false).to(true)
       end
 
-      describe 'returned error message' do
-        where(:dot_com, :error_message) do
-          true  | "Your account has been blocked. Contact #{EE::CUSTOMER_SUPPORT_URL} for assistance."
-          false | "Your account has been blocked. Contact your GitLab administrator for assistance."
-        end
+      it 'returns HTTP status 400 and a message', :aggregate_failures do
+        do_request
 
-        with_them do
-          before do
-            allow(Gitlab).to receive(:com?).and_return(dot_com)
-          end
-
-          it 'returns HTTP status 400 and a message', :aggregate_failures do
-            do_request
-
-            expect(json_response).to include({
-              'message' => error_message,
-              'reason' => 'related_to_banned_user'
-            })
-            expect(response).to have_gitlab_http_status(:bad_request)
-          end
-        end
+        expect(json_response).to include({
+          'message' => "Your account has been blocked. Contact #{EE::CUSTOMER_SUPPORT_URL} for assistance.",
+          'reason' => 'related_to_banned_user'
+        })
+        expect(response).to have_gitlab_http_status(:bad_request)
       end
     end
 
