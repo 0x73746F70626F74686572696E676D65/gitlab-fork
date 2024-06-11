@@ -26800,7 +26800,7 @@ CREATE INDEX index_issues_on_id_and_weight ON issues USING btree (id, weight);
 
 CREATE INDEX index_issues_on_last_edited_by_id ON issues USING btree (last_edited_by_id);
 
-CREATE INDEX index_issues_on_milestone_id ON issues USING btree (milestone_id);
+CREATE INDEX index_issues_on_milestone_id_and_id ON issues USING btree (milestone_id, id);
 
 CREATE INDEX index_issues_on_moved_to_id ON issues USING btree (moved_to_id) WHERE (moved_to_id IS NOT NULL);
 
