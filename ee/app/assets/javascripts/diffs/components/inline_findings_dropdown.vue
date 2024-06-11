@@ -58,7 +58,7 @@ export default {
     :items="items"
     :fluid-width="true"
     positioning-strategy="absolute"
-    class="gl-white-space-normal gl-text-body! findings-dropdown"
+    class="gl-whitespace-normal gl-text-body! findings-dropdown"
   >
     <template #group-label="{ group }">
       {{ group.name }}
