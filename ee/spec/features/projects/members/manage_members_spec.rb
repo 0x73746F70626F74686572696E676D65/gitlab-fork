@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Projects > Members > Manage members', :js, feature_category: :groups_and_projects do
   include Features::InviteMembersModalHelpers
+  include SubscriptionPortalHelpers
 
   context 'with free user limit', :saas do
     let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
@@ -15,6 +16,8 @@ RSpec.describe 'Projects > Members > Manage members', :js, feature_category: :gr
     end
 
     before do
+      stub_signing_key
+      stub_reconciliation_request(true)
       stub_ee_application_setting(dashboard_limit_enabled: true)
     end
 
