@@ -61185,9 +61185,6 @@ msgstr ""
 msgid "Your account has been blocked. Contact %{support} for assistance."
 msgstr ""
 
-msgid "Your account has been blocked. Contact your GitLab administrator for assistance."
-msgstr ""
-
 msgid "Your account has been deactivated"
 msgstr ""
 

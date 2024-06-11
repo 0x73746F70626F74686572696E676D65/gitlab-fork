@@ -96,43 +96,33 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         }
       end
 
-      where(:dot_com, :error_message) do
-        true  | "Your account has been blocked. Contact #{EE::CUSTOMER_SUPPORT_URL} for assistance."
-        false | "Your account has been blocked. Contact your GitLab administrator for assistance."
+      it 'bans the user' do
+        expect_next_instance_of(::Users::AutoBanService, user: user, reason: :banned_phone_number) do |instance|
+          expect(instance).to receive(:execute).and_call_original
+        end
+
+        service.execute
+
+        expect(user).to be_banned
       end
 
-      with_them do
-        before do
-          allow(Gitlab).to receive(:com?).and_return(dot_com)
-        end
+      it 'saves the phone number validation record' do
+        service.execute
 
-        it 'bans the user' do
-          expect_next_instance_of(::Users::AutoBanService, user: user, reason: :banned_phone_number) do |instance|
-            expect(instance).to receive(:execute).and_call_original
-          end
+        record = user.phone_number_validation
 
-          service.execute
+        expect(record.international_dial_code).to eq(params[:international_dial_code])
+        expect(record.phone_number).to eq(params[:phone_number])
+      end
 
-          expect(user).to be_banned
-        end
+      it 'returns an error', :aggregate_failures do
+        response = service.execute
 
-        it 'saves the phone number validation record' do
-          service.execute
-
-          record = user.phone_number_validation
-
-          expect(record.international_dial_code).to eq(params[:international_dial_code])
-          expect(record.phone_number).to eq(params[:phone_number])
-        end
-
-        it 'returns an error', :aggregate_failures do
-          response = service.execute
-
-          expect(response).to be_a(ServiceResponse)
-          expect(response).to be_error
-          expect(response.message).to eq(error_message)
-          expect(response.reason).to eq(:related_to_banned_user)
-        end
+        expect(response).to be_a(ServiceResponse)
+        expect(response).to be_error
+        expect(response.message)
+          .to eq("Your account has been blocked. Contact #{EE::CUSTOMER_SUPPORT_URL} for assistance.")
+        expect(response.reason).to eq(:related_to_banned_user)
       end
     end
 
