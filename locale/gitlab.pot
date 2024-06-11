@@ -14212,7 +14212,7 @@ msgstr ""
 msgid "ContainerRegistry|We are having trouble connecting to the Container Registry. Please try refreshing the page. If this error persists, please review  %{docLinkStart}the troubleshooting documentation%{docLinkEnd}."
 msgstr ""
 
-msgid "ContainerRegistry|When a container is protected then only certain user roles are able to push and delete the protected container image. This helps to avoid tampering with the container image."
+msgid "ContainerRegistry|When a container is protected, only certain user roles can push and delete the protected container image, which helps to avoid tampering with the container image."
 msgstr ""
 
 msgid "ContainerRegistry|While the rename is in progress, new uploads to the container registry are blocked. Ongoing uploads may fail and need to be retried."
@@ -36854,7 +36854,7 @@ msgstr ""
 msgid "PackageRegistry|Validate these URLs manually to ensure malicious packages are not uploaded to the NuGet package registry. Selecting and clearing the checkbox might lead to invalid records in the package registry that you cannot update."
 msgstr ""
 
-msgid "PackageRegistry|When a package is protected then only certain user roles are able to update and delete the protected package. This helps to avoid tampering with the package."
+msgid "PackageRegistry|When a package is protected, only certain user roles can push, update, and delete the protected package, which helps to avoid tampering with the package."
 msgstr ""
 
 msgid "PackageRegistry|When a package with same name and version is uploaded to the registry, more assets are added to the package. To save storage space, keep only the most recent assets."
