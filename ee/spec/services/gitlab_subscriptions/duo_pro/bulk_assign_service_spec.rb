@@ -139,6 +139,13 @@ RSpec.describe GitlabSubscriptions::DuoPro::BulkAssignService, feature_category:
             expect(response[:users].map(&:id)).to eq(user_ids)
           end
 
+          it 'calls the iterable triggers worker', :sidekiq_inline do
+            expect(::Onboarding::CreateIterableTriggersWorker).to receive(:perform_async).with(namespace.id, user_ids)
+                                                                                         .and_call_original
+
+            bulk_assign
+          end
+
           context 'when a user is already assigned' do
             let_it_be(:user) { create(:user) }
             let_it_be(:user_2) { create(:user) }
@@ -257,6 +264,12 @@ RSpec.describe GitlabSubscriptions::DuoPro::BulkAssignService, feature_category:
             response = bulk_assign
             expect(response.error?).to be_truthy
             expect(response.message).to eq(error_message)
+          end
+
+          it 'does not create any iterable triggers' do
+            expect(::Onboarding::CreateIterableTriggersWorker).not_to receive(:perform_async)
+
+            bulk_assign
           end
         end
       end

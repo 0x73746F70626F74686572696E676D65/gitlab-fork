@@ -1812,6 +1812,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: onboarding_create_iterable_triggers
+  :worker_name: Onboarding::CreateIterableTriggersWorker
+  :feature_category: :onboarding
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: false
+  :tags: []
 - :name: package_metadata_global_advisory_scan
   :worker_name: PackageMetadata::GlobalAdvisoryScanWorker
   :feature_category: :software_composition_analysis
