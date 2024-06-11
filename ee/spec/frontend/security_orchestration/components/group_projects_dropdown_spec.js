@@ -1,9 +1,9 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { shallowMount } from '@vue/test-utils';
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import getGroupProjects from 'ee/security_orchestration/graphql/queries/get_group_projects.query.graphql';
@@ -13,20 +13,17 @@ describe('GroupProjectsDropdown', () => {
   let wrapper;
   let requestHandlers;
 
-  const defaultNodes = [
-    {
-      id: convertToGraphQLId(TYPENAME_PROJECT, 1),
-      name: '1',
-      fullPath: 'project-1-full-path',
+  const GROUP_FULL_PATH = 'gitlab-org';
+
+  const generateMockNode = (ids) =>
+    ids.map((id) => ({
+      id: convertToGraphQLId(TYPENAME_PROJECT, id),
+      name: `${id}`,
+      fullPath: `project-${id}-full-path`,
       repository: { rootRef: 'main' },
-    },
-    {
-      id: convertToGraphQLId(TYPENAME_PROJECT, 2),
-      name: '2',
-      fullPath: 'project-2-full-path',
-      repository: { rootRef: 'main' },
-    },
-  ];
+    }));
+
+  const defaultNodes = generateMockNode([1, 2]);
 
   const defaultNodesIds = defaultNodes.map(({ id }) => id);
 
@@ -64,13 +61,18 @@ describe('GroupProjectsDropdown', () => {
     return createMockApollo([[getGroupProjects, requestHandlers.getGroupProjects]]);
   };
 
-  const createComponent = ({ propsData = {}, handlers = mockApolloHandlers() } = {}) => {
-    wrapper = shallowMount(GroupProjectsDropdown, {
+  const createComponent = ({
+    propsData = {},
+    handlers = mockApolloHandlers(),
+    stubs = {},
+  } = {}) => {
+    wrapper = shallowMountExtended(GroupProjectsDropdown, {
       apolloProvider: createMockApolloProvider(handlers),
       propsData: {
-        groupFullPath: 'gitlab-org',
+        groupFullPath: GROUP_FULL_PATH,
         ...propsData,
       },
+      stubs,
     });
   };
 
@@ -299,6 +301,39 @@ describe('GroupProjectsDropdown', () => {
       findDropdown().vm.$emit('reset');
 
       expect(wrapper.emitted('select')).toEqual([[[]]]);
+    });
+  });
+
+  describe('selection after search', () => {
+    it('should add projects to existing selection after search', async () => {
+      const moreNodes = generateMockNode([1, 2, 3, 44, 444, 4444]);
+      createComponent({
+        propsData: {
+          selected: defaultNodesIds,
+        },
+        handlers: mockApolloHandlers(moreNodes),
+        stubs: {
+          GlCollapsibleListbox,
+        },
+      });
+
+      await waitForPromises();
+
+      expect(findDropdown().props('selected')).toEqual(defaultNodesIds);
+
+      findDropdown().vm.$emit('search', '4');
+      await waitForPromises();
+
+      expect(requestHandlers.getGroupProjects).toHaveBeenCalledWith({
+        fullPath: GROUP_FULL_PATH,
+        projectIds: null,
+        search: '4',
+      });
+
+      await waitForPromises();
+      await wrapper.findByTestId(`listbox-item-${moreNodes[3].id}`).vm.$emit('select', true);
+
+      expect(wrapper.emitted('select')).toEqual([[[...defaultNodes, moreNodes[3]]]]);
     });
   });
 });
