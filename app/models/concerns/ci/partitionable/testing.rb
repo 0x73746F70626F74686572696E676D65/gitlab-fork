@@ -31,6 +31,7 @@ module Ci
         Ci::PipelineMetadata
         Ci::PipelineVariable
         Ci::Sources::Pipeline
+        Ci::Sources::Project
         Ci::Stage
         Ci::UnitTestFailure
       ].freeze

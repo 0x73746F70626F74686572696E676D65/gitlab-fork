@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Sources::Project do
+RSpec.describe Ci::Sources::Project, feature_category: :continuous_integration do
   describe 'Relations' do
     it { is_expected.to belong_to(:pipeline).required }
     it { is_expected.to belong_to(:source_project).required.class_name('::Project') }
@@ -18,6 +18,21 @@ RSpec.describe Ci::Sources::Project do
     it_behaves_like 'cleanup by a loose foreign key' do
       let!(:parent) { create(:project) }
       let!(:model) { create(:ci_sources_project, source_project: parent) }
+    end
+  end
+
+  describe 'partitioning', :ci_partitionable do
+    include Ci::PartitioningHelpers
+
+    let(:pipeline) { create(:ci_pipeline) }
+    let(:project_source) { create(:ci_sources_project, pipeline: pipeline) }
+
+    before do
+      stub_current_partition_id
+    end
+
+    it 'assigns the same partition id as the one that pipeline has' do
+      expect(project_source.partition_id).to eq(ci_testing_partition_id)
     end
   end
 end
