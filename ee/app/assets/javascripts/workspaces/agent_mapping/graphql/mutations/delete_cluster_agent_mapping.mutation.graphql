@@ -2,6 +2,7 @@ mutation deleteClusterAgentMapping(
   $input: NamespaceDeleteRemoteDevelopmentClusterAgentMappingInput!
 ) {
   namespaceDeleteRemoteDevelopmentClusterAgentMapping(input: $input) {
+    errors
     clientMutationId
   }
 }

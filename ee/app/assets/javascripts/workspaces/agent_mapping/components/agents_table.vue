@@ -33,7 +33,7 @@ const MAPPING_STATUS_LABEL_FIELD = {
 
 const MAPPING_ACTIONS_FIELD = {
   key: 'actions',
-  label: __('Actions'),
+  label: __('Action'),
   sortable: false,
   thClass: 'gl-w-3/10',
 };
