@@ -12,8 +12,8 @@ module Ai
       'code_suggestion_direct_access_token_refresh' => 5
     }.freeze
 
-    attr_accessor :event, :user, :language, :suggestion_size, :unique_tracking_id
-
+    attribute :user
+    attribute :event, :string
     attribute :timestamp, :datetime, default: -> { DateTime.current }
     attribute :language, :string, default: -> { '' }
     attribute :suggestion_size, :integer, default: -> { 0 }

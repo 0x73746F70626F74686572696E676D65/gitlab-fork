@@ -17,11 +17,16 @@ RSpec.describe API::UsageData, feature_category: :service_ping do
         let_it_be(:additional_properties) do
           {
             language: 'ruby',
-            timestamp: '2024-01-01'
+            timestamp: '2024-01-01',
+            unrelated_info: 'bar'
           }
         end
 
         let(:event_name) { 'code_suggestion_shown_in_ide' }
+
+        before do
+          stub_feature_flags(track_ai_metrics_in_usage_data: true)
+        end
 
         it 'triggers AI tracking' do
           expect(Gitlab::Tracking::AiTracking).to receive(:track_event)

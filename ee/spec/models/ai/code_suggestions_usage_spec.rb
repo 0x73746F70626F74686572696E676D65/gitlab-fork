@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Ai::CodeSuggestionsUsage, feature_category: :value_stream_management do
-  subject(:model) { described_class.new(**attributes) }
+  subject(:model) { described_class.new(attributes) }
 
   let(:attributes) { { event: 'code_suggestion_shown_in_ide', user: user } }
   let(:user) { build_stubbed(:user) }
@@ -12,7 +12,9 @@ RSpec.describe Ai::CodeSuggestionsUsage, feature_category: :value_stream_managem
     it { is_expected.to validate_presence_of(:user) }
     it { is_expected.to validate_presence_of(:timestamp) }
     it { is_expected.to validate_inclusion_of(:event).in_array(described_class::EVENTS.keys) }
-    it { is_expected.to validate_numericality_of(:suggestion_size).only_integer.is_greater_than_or_equal_to(0) }
+    it { is_expected.to allow_value(1).for(:suggestion_size) }
+    it { is_expected.to allow_value(0).for(:suggestion_size) }
+    it { is_expected.not_to allow_value(-1).for(:suggestion_size) }
   end
 
   describe '#timestamp', :freeze_time do
