@@ -10,21 +10,73 @@ RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
 
   let(:train) { described_class.new(target_project, merge_request.target_branch) }
 
+  shared_examples 'fetches the requested trains' do
+    it 'returns relevant merge trains' do
+      branches = trains.map(&:target_branch)
+
+      expect(branches).to contain_exactly(*expected_branches)
+    end
+  end
+
   describe '.all_for_project' do
-    before do
-      create(:merge_train_car, target_project: target_project, target_branch: 'master')
+    subject(:trains) { described_class.all_for_project(target_project) }
+
+    before_all do
       create(:merge_train_car, target_project: target_project, target_branch: 'master')
       create(:merge_train_car, target_project: target_project, target_branch: 'feature-1')
       create(:merge_train_car, :merged, target_project: target_project, target_branch: 'feature-2')
       create(:merge_train_car, target_project: create(:project), target_branch: 'master')
     end
 
-    subject(:trains) { described_class.all_for_project(target_project) }
+    it_behaves_like 'fetches the requested trains' do
+      let(:expected_branches) { %w[master feature-1] }
+    end
+  end
 
-    it 'returns distinct active merge trains' do
-      branches = trains.map(&:target_branch)
+  describe '.all_for' do
+    subject(:trains) { described_class.all_for(target_project, **params) }
 
-      expect(branches).to contain_exactly('master', 'feature-1')
+    before_all do
+      create(:merge_train_car, target_project: target_project, target_branch: 'master')
+      create(:merge_train_car, target_project: target_project, target_branch: 'master')
+      create(:merge_train_car, :merged, target_project: target_project, target_branch: 'master')
+      create(:merge_train_car, target_project: target_project, target_branch: 'feature-1')
+      create(:merge_train_car, :merged, target_project: target_project, target_branch: 'feature-2')
+      create(:merge_train_car, target_project: create(:project), target_branch: 'master')
+    end
+
+    context 'when only the project is provided' do
+      let(:params) { {} }
+
+      it_behaves_like 'fetches the requested trains' do
+        let(:expected_branches) { %w[master feature-1 feature-2] }
+      end
+    end
+
+    context 'when target_branches are provided' do
+      let(:params) { { target_branch: %w[feature-1 feature-2] } }
+
+      it_behaves_like 'fetches the requested trains' do
+        let(:expected_branches) { %w[feature-1 feature-2] }
+      end
+
+      context 'when status is provided' do
+        before do
+          params[:status] = described_class::STATUSES[:completed]
+        end
+
+        it_behaves_like 'fetches the requested trains' do
+          let(:expected_branches) { %w[feature-2] }
+        end
+      end
+    end
+
+    context 'when status is provided' do
+      let(:params) { { status: described_class::STATUSES[:completed] } }
+
+      it_behaves_like 'fetches the requested trains' do
+        let(:expected_branches) { %w[feature-2] }
+      end
     end
   end
 
@@ -55,6 +107,62 @@ RSpec.describe MergeTrains::Train, feature_category: :merge_trains do
         .to receive(:perform_async).with(train.project_id, train.target_branch)
 
       subject
+    end
+  end
+
+  describe '#active?' do
+    before_all do
+      create(:merge_train_car, target_project: target_project, target_branch: 'master')
+      create(:merge_train_car, :merged, target_project: target_project, target_branch: 'feature-2')
+      create(:merge_train_car, target_project: create(:project), target_branch: 'master')
+    end
+
+    context 'when the train contains both completed and idle cars' do
+      let(:train) do
+        create(:merge_train_car, :merged, target_project: target_project, target_branch: 'master').train
+      end
+
+      it 'returns true' do
+        expect(train.active?).to eq(true)
+      end
+    end
+
+    context 'when the train contains only completed cars' do
+      let(:train) do
+        create(:merge_train_car, :merged, target_project: target_project, target_branch: 'feature-2').train
+      end
+
+      it 'returns false' do
+        expect(train.active?).to eq(false)
+      end
+    end
+  end
+
+  describe '#completed?' do
+    before_all do
+      create(:merge_train_car, target_project: target_project, target_branch: 'master')
+      create(:merge_train_car, :merged, target_project: target_project, target_branch: 'feature-2')
+      create(:merge_train_car, target_project: create(:project), target_branch: 'master')
+    end
+
+    context 'when the train contains both completed and idle cars' do
+      let(:train) do
+        create(:merge_train_car, :merged, target_project: target_project, target_branch: 'master').train
+      end
+
+      it 'returns true' do
+        expect(train.completed?).to eq(false)
+      end
+    end
+
+    context 'when the train contains only completed cars' do
+      let(:train) do
+        create(:merge_train_car, :merged, target_project: target_project, target_branch: 'feature-2').train
+      end
+
+      it 'returns false' do
+        expect(train.completed?).to eq(true)
+      end
     end
   end
 

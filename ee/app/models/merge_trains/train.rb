@@ -3,12 +3,35 @@
 # This model represents a merge train with many Merge Request 'Cars' for a projects branch
 module MergeTrains
   class Train
+    STATUSES = {
+      active: 'active',
+      completed: 'completed'
+    }.freeze
+
     def self.all_for_project(project)
       MergeTrains::Car
       .active
       .where(target_project: project)
       .select('DISTINCT ON (target_branch) *')
       .map(&:train)
+    end
+
+    # Consider moving to finder
+    def self.all_for(project, status: nil, target_branch: [])
+      cars = MergeTrains::Car
+                 .where(target_project: project)
+      cars = cars.where(target_branch: target_branch) if target_branch.present?
+
+      case status
+      when :completed, STATUSES[:completed]
+        cars = cars.where.not(target_branch: cars.active.select(:target_branch))
+      when :active, STATUSES[:active]
+        cars = cars.active
+      end
+
+      cars
+        .select('DISTINCT ON (merge_trains.target_branch) *')
+        .map(&:train)
     end
 
     def self.project_using_ff?(project)
@@ -23,6 +46,10 @@ module MergeTrains
       @target_branch = branch
     end
 
+    def project
+      Project.find_by_id(project_id)
+    end
+
     def refresh_async
       MergeTrains::RefreshWorker.perform_async(project_id, target_branch)
     end
@@ -33,6 +60,14 @@ module MergeTrains
 
     def car_count
       all_cars.count
+    end
+
+    def active?
+      all_cars.any?
+    end
+
+    def completed?
+      !active?
     end
 
     def sha_exists_in_history?(newrev, limit: 20)
@@ -47,11 +82,11 @@ module MergeTrains
       persisted_cars.active.by_id.limit(limit)
     end
 
-    private
-
-    def completed_cars(limit:)
+    def completed_cars(limit: nil)
       persisted_cars.complete.by_id(:desc).limit(limit)
     end
+
+    private
 
     def persisted_cars
       MergeTrains::Car.for_target(project_id, target_branch)
