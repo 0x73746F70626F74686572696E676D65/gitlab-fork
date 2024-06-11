@@ -278,28 +278,64 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     end
   end
 
-  describe 'custom roles administration' do
-    let(:permissions) { [:read_member_role, :admin_member_role] }
+  describe 'custom roles' do
+    describe 'admin_member_role' do
+      let(:permissions) { [:admin_member_role] }
 
-    context 'when custom_roles feature is enabled' do
-      before do
-        stub_licensed_features(custom_roles: true)
+      context 'when custom_roles feature is enabled' do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        it { is_expected.to be_disallowed(*permissions) }
+
+        context 'when admin mode enabled', :enable_admin_mode do
+          let(:current_user) { admin }
+
+          it { is_expected.to be_allowed(*permissions) }
+        end
+
+        context 'when admin mode disabled' do
+          let(:current_user) { admin }
+
+          it { is_expected.to be_disallowed(*permissions) }
+        end
       end
 
-      it { is_expected.to be_disallowed(*permissions) }
+      context 'when custom_roles feature is disabled' do
+        let(:current_user) { admin }
 
-      context 'when admin mode enabled', :enable_admin_mode do
-        it { expect(described_class.new(admin, [user])).to be_allowed(*permissions) }
-      end
-
-      context 'when admin mode disabled' do
-        it { expect(described_class.new(admin, [user])).to be_disallowed(*permissions) }
+        context 'when admin mode enabled', :enable_admin_mode do
+          it { is_expected.to be_disallowed(*permissions) }
+        end
       end
     end
 
-    context 'when custom_roles feature is disabled' do
-      context 'when admin mode enabled', :enable_admin_mode do
-        it { expect(described_class.new(admin, [user])).to be_disallowed(*permissions) }
+    describe 'read_member_role' do
+      let(:permissions) { [:read_member_role] }
+
+      context 'when custom_roles feature is enabled' do
+        before do
+          stub_licensed_features(custom_roles: true)
+        end
+
+        context 'for anynomous user' do
+          let(:current_user) { nil }
+
+          it { is_expected.to be_disallowed(*permissions) }
+        end
+
+        context 'for registeres user' do
+          let(:current_user) { user }
+
+          it { is_expected.to be_allowed(*permissions) }
+        end
+      end
+
+      context 'when custom_roles feature is disabled' do
+        context 'when admin mode enabled', :enable_admin_mode do
+          it { expect(described_class.new(admin, [user])).to be_disallowed(*permissions) }
+        end
       end
     end
   end
@@ -576,9 +612,9 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
         stub_licensed_features(code_suggestions: code_suggestions_licensed)
         code_suggestions_service_data = instance_double(CloudConnector::BaseAvailableServiceData)
         allow(CloudConnector::AvailableServices).to receive(:find_by_name).with(:code_suggestions)
-          .and_return(code_suggestions_service_data)
+                                                                          .and_return(code_suggestions_service_data)
         allow(code_suggestions_service_data).to receive(:allowed_for?).with(current_user)
-          .and_return(duo_pro_seat_assigned)
+                                                                      .and_return(duo_pro_seat_assigned)
       end
 
       it { is_expected.to code_suggestions_enabled_for_user }
@@ -608,10 +644,10 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
           allow(current_user).to receive(:any_group_with_ai_chat_available?).and_return(group_with_ai_membership)
           duo_chat_service_data = instance_double(CloudConnector::SelfManaged::AvailableServiceData)
           allow(CloudConnector::AvailableServices).to receive(:find_by_name).with(:duo_chat)
-            .and_return(duo_chat_service_data)
+                                                                            .and_return(duo_chat_service_data)
           allow(duo_chat_service_data).to receive(:allowed_for?).with(current_user).and_return(duo_pro_seat_assigned)
           allow(current_user).to receive(:belongs_to_group_requires_licensed_seat_for_chat?)
-            .and_return(requires_licensed_seat)
+                                   .and_return(requires_licensed_seat)
         end
 
         it { is_expected.to duo_chat_enabled_for_user }
@@ -648,7 +684,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
           duo_chat_service_data = CloudConnector::SelfManaged::AvailableServiceData.new(:duo_chat,
             duo_chat_cut_off_date, %w[duo_pro])
           allow(CloudConnector::AvailableServices).to receive(:find_by_name)
-            .with(:duo_chat).and_return(duo_chat_service_data)
+                                                        .with(:duo_chat).and_return(duo_chat_service_data)
           allow(duo_chat_service_data).to receive(:allowed_for?).with(current_user).and_return(duo_pro_seat_assigned)
         end
 

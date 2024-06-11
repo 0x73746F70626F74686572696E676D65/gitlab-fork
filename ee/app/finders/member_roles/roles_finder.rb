@@ -71,6 +71,8 @@ module MemberRoles
     def for_instance(items)
       return items if gitlab_com_subscription?
 
+      return MemberRole.none unless allowed_read_member_role?
+
       items.for_instance
     end
 
@@ -78,7 +80,7 @@ module MemberRoles
       items.select { |item| allowed_read_member_role?(item.namespace, item) }.map(&:namespace_id)
     end
 
-    def allowed_read_member_role?(group, member_role = nil)
+    def allowed_read_member_role?(group = nil, member_role = nil)
       return Ability.allowed?(current_user, :read_member_role, group) if group
 
       return Ability.allowed?(current_user, :read_member_role, member_role) if member_role
