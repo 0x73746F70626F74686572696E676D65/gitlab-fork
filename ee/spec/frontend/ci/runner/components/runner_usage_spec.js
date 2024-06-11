@@ -258,14 +258,12 @@ describe('RunnerUsage', () => {
   it('shows empty results', async () => {
     runnerUsageHandler.mockResolvedValue({
       data: {
-        runnerUsage: [{ runner: null, ciMinutesUsed: null, __typename: 'CiRunnerUsage' }],
+        runnerUsage: [],
       },
     });
     runnerUsageByProjectHandler.mockResolvedValue({
       data: {
-        runnerUsageByProject: [
-          { project: null, ciMinutesUsed: null, __typename: 'CiRunnerUsageByProject' },
-        ],
+        runnerUsageByProject: [],
       },
     });
 

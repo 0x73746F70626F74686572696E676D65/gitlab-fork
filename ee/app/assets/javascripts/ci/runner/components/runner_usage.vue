@@ -47,8 +47,11 @@ export default {
       variables() {
         return this.queryVariables;
       },
-      update(data) {
-        return data.runnerUsageByProject;
+      update({ runnerUsageByProject }) {
+        if (runnerUsageByProject.length) {
+          return runnerUsageByProject;
+        }
+        return [{ project: null, ciMinutesUsed: null }];
       },
     },
     topRunners: {
@@ -56,8 +59,11 @@ export default {
       variables() {
         return this.queryVariables;
       },
-      update(data) {
-        return data.runnerUsage;
+      update({ runnerUsage }) {
+        if (runnerUsage.length) {
+          return runnerUsage;
+        }
+        return [{ runner: null, ciMinutesUsed: null }];
       },
     },
   },
