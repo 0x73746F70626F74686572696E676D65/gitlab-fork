@@ -1,0 +1,9 @@
+---
+name: scan_execution_policies_with_latest_templates
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/415427
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/152851
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/461474
+milestone: '17.1'
+group: group::security policies
+type: gitlab_com_derisk
+default_enabled: false

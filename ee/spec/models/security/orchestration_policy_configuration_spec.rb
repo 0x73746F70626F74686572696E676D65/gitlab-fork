@@ -402,6 +402,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
           invalid_policy = policy.deep_dup
           invalid_policy[:scan_execution_policy][0][:actions][0][:scan] = 'secret_detection'
           invalid_policy[:scan_execution_policy][0][:actions][0][:variables] = { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }
+          invalid_policy[:scan_execution_policy][0][:actions][0][:tags] = %w[linux]
 
           expect(security_orchestration_policy_configuration.policy_configuration_valid?(invalid_policy)).to be_falsey
         end
@@ -839,6 +840,24 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
               expect(errors.count).to be(1)
               expect(errors.first).to match(
                 "property '/scan_execution_policy/0/actions/0/variables/with spaces' is invalid: error_type=schema")
+            end
+          end
+        end
+
+        context "with template" do
+          let(:action) { { scan: "container_scanning", template: "latest" } }
+
+          specify { expect(errors).to be_empty }
+
+          context "with invalid value" do
+            before do
+              action[:template] = 'regular'
+            end
+
+            specify do
+              expect(errors.count).to be(1)
+              expect(errors.first).to match(
+                "property '/scan_execution_policy/0/actions/0/template' is not one of: [\"default\", \"latest\"]")
             end
           end
         end
@@ -1510,6 +1529,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
           invalid_policy = policy.deep_dup
           invalid_policy[:scan_execution_policy][0][:actions][0][:scan] = 'secret_detection'
           invalid_policy[:scan_execution_policy][0][:actions][0][:variables] = { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }
+          invalid_policy[:scan_execution_policy][0][:actions][0][:template] = 'default'
           invalid_policy[:scan_execution_policy][0][:rules][0][:cadence] = 'invalid * * * *'
 
           expect(security_orchestration_policy_configuration.policy_configuration_validation_errors(invalid_policy)).to contain_exactly(

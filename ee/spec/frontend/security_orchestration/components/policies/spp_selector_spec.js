@@ -177,12 +177,18 @@ describe('SppSelector Component', () => {
 
     it('does query when the bottom is reached', async () => {
       expect(querySpy).toHaveBeenCalledTimes(0);
-      findListbox().vm.$emit('search', 'abc');
+      await findListbox().vm.$emit('search', 'abc');
+      expect(findListbox().props('searching')).toBe(true);
       await waitForPromises();
       expect(querySpy).toHaveBeenCalledTimes(1);
       querySpy.mockResolvedValue(mockGetProjectSpp().repeat);
-      findListbox().vm.$emit('bottom-reached');
+      await findListbox().vm.$emit('bottom-reached');
+      expect(findListbox().props('infiniteScrollLoading')).toBe(true);
       await waitForPromises();
+
+      expect(findListbox().props('infiniteScrollLoading')).toBe(false);
+      expect(findListbox().props('searching')).toBe(false);
+
       expect(querySpy).toHaveBeenCalledTimes(2);
       expect(querySpy).toHaveBeenCalledWith({
         ...defaultQueryVariables,

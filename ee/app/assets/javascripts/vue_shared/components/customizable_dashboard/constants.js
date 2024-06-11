@@ -16,10 +16,6 @@ export const CURSOR_GRABBING_CLASS = 'gl-cursor-grabbing!';
 
 export const NEW_DASHBOARD_SLUG = 'new';
 
-export const DASHBOARD_DOCUMENTATION_LINKS = {
-  value_stream_dashboard: '/help/user/analytics/value_streams_dashboard',
-};
-
 export const CATEGORY_SINGLE_STATS = 'singleStats';
 export const CATEGORY_TABLES = 'tables';
 export const CATEGORY_CHARTS = 'charts';

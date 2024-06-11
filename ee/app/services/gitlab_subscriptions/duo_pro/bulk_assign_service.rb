@@ -31,6 +31,8 @@ module GitlabSubscriptions
           )
         end
 
+        ::Onboarding::CreateIterableTriggersWorker.perform_async(namespace.id, eligible_user_ids)
+
         Gitlab::AppLogger.info(log_events(type: 'success',
           payload: { users: eligible_user_ids }))
         ServiceResponse.success(payload: { users: User.id_in(eligible_user_ids) })
