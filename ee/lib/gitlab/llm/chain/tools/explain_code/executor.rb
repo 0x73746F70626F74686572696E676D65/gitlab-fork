@@ -13,6 +13,7 @@ module Gitlab
             HUMAN_NAME = 'Explain Code'
             DESCRIPTION = 'Useful tool to explain code snippets and blocks.'
             RESOURCE_NAME = nil
+            ACTION = 'explain'
             EXAMPLE = "Question: How would you improve the " \
                       "```def hello_world\nputs('Hello, world!\\n\');\nend``` code? " \
                       'Picked tools: "ExplainCode" tool. ' \

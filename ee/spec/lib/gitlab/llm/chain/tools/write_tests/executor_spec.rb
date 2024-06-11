@@ -10,6 +10,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::WriteTests::Executor, feature_category
   let(:options) { { input: input } }
   let(:stream_response_handler) { nil }
   let(:command) { nil }
+  let(:command_name) { '/tests' }
 
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(

@@ -6,6 +6,7 @@
 # * prompt_class
 # * input
 # * extra_params
+# * command_name
 RSpec.shared_examples 'slash command tool' do
   let(:filename) { 'test.py' }
   let(:expected_params) do
@@ -23,10 +24,50 @@ RSpec.shared_examples 'slash command tool' do
     allow(tool).to receive(:provider_prompt_class).and_return(prompt_class)
     context.current_file = {
       file_name: filename,
-      selected_text: 'selected text',
+      selected_text: selected_text,
       content_above_cursor: 'code above',
       content_below_cursor: 'code below'
     }
+  end
+
+  let(:selected_text) { 'selected text' }
+
+  shared_examples 'prompt is called with command options' do
+    it 'calls prompt with correct params' do
+      expect(prompt_class).to receive(:prompt).with(expected_params.merge(input: instruction))
+
+      tool.execute
+    end
+  end
+
+  shared_examples 'user input blank for IDE' do |client_source|
+    let(:client_source) { client_source }
+
+    context 'when user input is not present' do
+      let(:user_input) { nil }
+      let(:input_blank_message) do
+        "Your request does not seems to contain code to #{described_class::ACTION}. " \
+          "To #{described_class::HUMAN_NAME.downcase} select the lines of code in your editor " \
+          "and then type the command #{command.name} in the chat. " \
+          "You may add additional instructions after this comment. If you have no code to select, " \
+          "you can also simply add the code after the command."
+      end
+
+      context 'when selected text is present' do
+        it_behaves_like 'prompt is called with command options'
+      end
+
+      context 'when selected text is not present' do
+        let(:selected_text) { nil }
+
+        it 'returns input blank answer' do
+          answer = tool.execute
+
+          expect(answer.content).to eq(input_blank_message)
+          expect(answer.status).to eq(:not_executed)
+        end
+      end
+    end
   end
 
   it 'calls prompt with correct params' do
@@ -37,14 +78,46 @@ RSpec.shared_examples 'slash command tool' do
 
   context 'when slash command is used' do
     let(:instruction) { 'command instruction' }
-    let(:command_prompt_options) { { input: instruction } }
-    let(:command) { instance_double(Gitlab::Llm::Chain::SlashCommand, prompt_options: command_prompt_options) }
-    let(:options) { { input: '/explain something' } }
+    let(:command_prompt_options) { { instruction: instruction } }
+    let(:user_input) { 'something' }
+    let(:client_source) { nil }
+    let(:command) do
+      Gitlab::Llm::Chain::SlashCommand.new(
+        name: command_name,
+        command_options: command_prompt_options,
+        user_input: user_input,
+        client_source: client_source,
+        tool: nil)
+    end
 
-    it 'calls prompt with correct params' do
-      expect(prompt_class).to receive(:prompt).with(expected_params.merge(input: instruction))
+    it_behaves_like 'prompt is called with command options'
 
-      tool.execute
+    context 'when user input is blank' do
+      context 'with web client source' do
+        let(:client_source) { 'web' }
+
+        it_behaves_like 'prompt is called with command options'
+
+        context 'when selected text is not present' do
+          let(:selected_text) { nil }
+          let(:expected_params) do
+            super().merge(
+              selected_text: '',
+              file_content: "Here is the content of the file user is working with:\n" \
+                            "<file>\n  code abovecode below\n</file>\n")
+          end
+
+          it_behaves_like 'prompt is called with command options'
+        end
+      end
+
+      context 'with VS Code client source' do
+        it_behaves_like 'user input blank for IDE', 'vscode'
+      end
+
+      context 'with Web IDE client source' do
+        it_behaves_like 'user input blank for IDE', 'webide'
+      end
     end
   end
 

@@ -13,6 +13,7 @@ module Gitlab
             HUMAN_NAME = 'Write Tests'
             DESCRIPTION = 'Useful tool to write tests for source code.'
             RESOURCE_NAME = nil
+            ACTION = 'generate tests for'
             EXAMPLE = <<~TEXT
               Question: Write tests for this code
               ```

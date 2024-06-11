@@ -13,6 +13,7 @@ module Gitlab
             HUMAN_NAME = 'Refactor Code'
             DESCRIPTION = 'Useful tool to refactor source code.'
             RESOURCE_NAME = nil
+            ACTION = 'refactor'
             EXAMPLE = <<~TEXT
               Question: Refactor the following code
               ```
