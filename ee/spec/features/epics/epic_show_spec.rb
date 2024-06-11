@@ -284,7 +284,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
           page.within('.js-labels-block') do
             click_button 'Create group label'
 
-            expect(page).to have_selector('.js-labels-create')
+            expect(page).to have_field _('Name new label')
           end
         end
 
