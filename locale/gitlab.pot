@@ -3908,6 +3908,12 @@ msgstr ""
 msgid "AdminSettings|Maximum number of runners registered per project"
 msgstr ""
 
+msgid "AdminSettings|Maximum number of variables in a dotenv artifact"
+msgstr ""
+
+msgid "AdminSettings|Maximum size of a dotenv artifact in bytes"
+msgstr ""
+
 msgid "AdminSettings|Minimum size must be at least 0."
 msgstr ""
 
