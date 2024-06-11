@@ -18,26 +18,10 @@ module Security
       delegate :security_orchestration_policy_configuration, to: :container
 
       def delete_configuration(configuration, old_policy_project)
-        if container.root_ancestor.delete_redundant_policy_projects?
-          Security::DeleteOrchestrationConfigurationWorker.perform_async(
-            configuration.id, current_user.id, old_policy_project.id)
+        Security::DeleteOrchestrationConfigurationWorker.perform_async(
+          configuration.id, current_user.id, old_policy_project.id)
 
-          return success
-        end
-
-        if configuration.delete
-          ::Gitlab::Audit::Auditor.audit(
-            name: 'policy_project_updated',
-            author: current_user,
-            scope: container,
-            target: old_policy_project,
-            message: "Unlinked #{old_policy_project.name} as the security policy project"
-          )
-
-          return success
-        end
-
-        error(security_orchestration_policy_configuration.errors.full_messages.to_sentence)
+        success
       end
 
       def success

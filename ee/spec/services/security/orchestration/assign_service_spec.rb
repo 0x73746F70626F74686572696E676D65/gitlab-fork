@@ -104,16 +104,6 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
               expect(service.to_h.slice(:status, :message).values).to match_array([:error, "You don't need to link the security policy projects from the group. All policies in the security policy projects are inherited already."])
             end
 
-            context 'with feature disabled' do
-              before do
-                stub_feature_flags(security_policies_unassign_redundant_policy_projects: false)
-              end
-
-              it 'succeeds' do
-                expect(service).to be_success
-              end
-            end
-
             context 'when already inherited configuration is invalid' do
               before do
                 allow_next_found_instances_of(Security::OrchestrationPolicyConfiguration, 3) do |configuration|
@@ -210,7 +200,6 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
                 'Security::OrchestrationPolicyConfiguration',
                 security_orchestration_policy_configuration: dbl_error,
                 all_security_orchestration_policy_configurations: [],
-                root_ancestor: instance_double(Group, delete_redundant_policy_projects?: true),
                 id: non_existing_record_id
               )
 
@@ -305,20 +294,6 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
           expect(::Security::UnassignRedundantPolicyConfigurationsWorker).to receive(:perform_async).with(container.id, policy_project.id, current_user.id)
 
           service
-        end
-
-        context 'with feature disabled' do
-          before do
-            stub_feature_flags(security_policies_unassign_redundant_policy_projects: false)
-
-            container.root_ancestor.clear_memoization(:delete_redundant_policy_projects?)
-          end
-
-          it 'does not unassign redundant configurations' do
-            expect(::Security::UnassignRedundantPolicyConfigurationsWorker).not_to receive(:perform_async)
-
-            service
-          end
         end
       end
     end

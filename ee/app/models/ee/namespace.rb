@@ -552,11 +552,6 @@ module EE
       false
     end
 
-    def delete_redundant_policy_projects?
-      ::Feature.enabled?(:security_policies_unassign_redundant_policy_projects, self)
-    end
-    strong_memoize_attr :delete_redundant_policy_projects?
-
     def all_security_orchestration_policy_configurations(include_invalid: false)
       return Array.wrap(security_orchestration_policy_configuration) if self_and_ancestor_ids.blank?
 
