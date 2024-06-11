@@ -204,7 +204,7 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
           stub_feature_flags(namespace_level_work_items: true)
         end
 
-        it 'renders work item epics' do
+        it 'renders work item epics', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/455260' do
           visit group_epics_path(group)
 
           page.within('.issuable-list-container') do
