@@ -10,7 +10,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
     let(:ci_variables) { { KEY: 'value' } }
     let(:context) { 'context' }
     let(:index) { 0 }
-    let(:opts) { { allow_restricted_variables_at_policy_level: true } }
+    let(:opts) do
+      { allow_restricted_variables_at_policy_level: true, scan_execution_policies_with_latest_templates: true }
+    end
 
     subject(:execute_service) { described_class.new(project).execute(action, ci_variables, context, index) }
 
@@ -34,7 +36,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           stub_feature_flags(allow_restricted_variables_at_policy_level: false)
         end
 
-        let(:opts) { { allow_restricted_variables_at_policy_level: false } }
+        let(:opts) do
+          { allow_restricted_variables_at_policy_level: false, scan_execution_policies_with_latest_templates: true }
+        end
 
         it 'configures a template scan with disabled flag' do
           expect_next_instance_of(Security::SecurityOrchestrationPolicies::CiAction::Template,
@@ -42,7 +46,31 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
             ci_variables,
             context,
             index,
-            allow_restricted_variables_at_policy_level: false
+            opts
+          ) do |instance|
+            expect(instance).to receive(:config)
+          end
+
+          execute_service
+        end
+      end
+
+      context 'when scan_execution_policies_with_latest_templates is disabled' do
+        before do
+          stub_feature_flags(scan_execution_policies_with_latest_templates: false)
+        end
+
+        let(:opts) do
+          { allow_restricted_variables_at_policy_level: true, scan_execution_policies_with_latest_templates: false }
+        end
+
+        it 'configures a template scan with disabled flag' do
+          expect_next_instance_of(Security::SecurityOrchestrationPolicies::CiAction::Template,
+            action,
+            ci_variables,
+            context,
+            index,
+            opts
           ) do |instance|
             expect(instance).to receive(:config)
           end

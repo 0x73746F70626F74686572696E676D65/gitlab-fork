@@ -384,6 +384,14 @@
                       "type": "string"
                     }
                   }
+                },
+                "template": {
+                  "description": "The type of the CI template that should be used to enforce the scan. Available: `default` and `latest`.",
+                  "enum": [
+                    "default",
+                    "latest"
+                  ],
+                  "type": "string"
                 }
               },
               "allOf": [
@@ -423,7 +431,7 @@
                     "required": [
                       "site_profile"
                     ],
-                    "maxProperties": 5
+                    "maxProperties": 6
                   }
                 },
                 {
@@ -435,7 +443,7 @@
                     }
                   },
                   "then": {
-                    "maxProperties": 3
+                    "maxProperties": 4
                   }
                 },
                 {
@@ -459,7 +467,7 @@
                     }
                   },
                   "then": {
-                    "maxProperties": 3
+                    "maxProperties": 4
                   }
                 },
                 {
@@ -471,7 +479,7 @@
                     }
                   },
                   "then": {
-                    "maxProperties": 3
+                    "maxProperties": 4
                   }
                 }
               ],
