@@ -26627,8 +26627,6 @@ CREATE INDEX index_historical_data_on_recorded_at ON historical_data USING btree
 
 CREATE UNIQUE INDEX index_http_integrations_on_project_and_endpoint ON alert_management_http_integrations USING btree (project_id, endpoint_identifier);
 
-CREATE INDEX index_identities_on_provider ON identities USING btree (provider);
-
 CREATE INDEX index_identities_on_saml_provider_id ON identities USING btree (saml_provider_id) WHERE (saml_provider_id IS NOT NULL);
 
 CREATE INDEX index_identities_on_user_id ON identities USING btree (user_id);
