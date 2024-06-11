@@ -8,6 +8,7 @@ import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget
 import { IssuableAttributeType } from 'ee/sidebar/constants';
 import { issuableAttributesQueries } from 'ee/sidebar/queries/constants';
 import groupEpicsQuery from 'ee/sidebar/queries/group_epics.query.graphql';
+import workItemParentsQuery from 'ee/sidebar/queries/work_item_parents.query.graphql';
 import projectIssueEpicMutation from 'ee/sidebar/queries/project_issue_epic.mutation.graphql';
 import updateWorkItemParent from 'ee/sidebar/queries/project_issue_update_parent.mutation.graphql';
 import projectIssueEpicQuery from 'ee/sidebar/queries/project_issue_epic.query.graphql';
@@ -175,7 +176,6 @@ describe('SidebarDropdownWidget', () => {
                 sort: 'TITLE_ASC',
                 state: 'opened',
                 title: mockSearchTerm,
-                includeWorkItems: false,
                 in: 'TITLE',
               });
             });
@@ -197,7 +197,6 @@ describe('SidebarDropdownWidget', () => {
 
               expect(groupEpicsSpy).toHaveBeenCalledWith({
                 fullPath: mockIssue.groupPath,
-                includeWorkItems: false,
                 sort: 'TITLE_ASC',
                 state: 'opened',
               });
@@ -210,7 +209,6 @@ describe('SidebarDropdownWidget', () => {
                 fullPath: mockIssue.groupPath,
                 iidStartsWith: '1',
                 sort: 'TITLE_ASC',
-                includeWorkItems: false,
                 state: 'opened',
               });
             });
@@ -316,27 +314,26 @@ describe('SidebarDropdownWidget', () => {
           const setWorkItemEpicNullMutationSpy = jest
             .fn()
             .mockResolvedValue(mockSetWorkItemEpicNullMutationResponse);
-          const groupWorkItemEpicsSpy = jest.fn().mockResolvedValue(mockGroupWorkItemEpicsResponse);
+          const workItemParentsSpy = jest.fn().mockResolvedValue(mockGroupWorkItemEpicsResponse);
 
           it('searches work item Epic with the entered search term "foo" in TITLE param', async () => {
             await createComponentWithApollo({
               showWorkItemEpics: true,
               currentEpicSpy: currentEpicHasParentSpy,
-              groupEpicsSpy: groupWorkItemEpicsSpy,
+              requestHandlers: [[workItemParentsQuery, workItemParentsSpy]],
             });
 
             await clickEdit(wrapper);
 
             await search(wrapper, mockSearchTerm);
 
-            expect(groupWorkItemEpicsSpy).toHaveBeenCalledWith({
+            expect(workItemParentsSpy).toHaveBeenCalledWith({
               fullPath: mockIssue.groupPath,
-              sort: 'TITLE_ASC',
               state: 'opened',
               title: mockSearchTerm,
-              includeWorkItems: true,
               in: 'TITLE',
               types: [WORK_ITEM_TYPE_ENUM_EPIC],
+              sort: 'TITLE_ASC',
             });
           });
 
@@ -345,7 +342,7 @@ describe('SidebarDropdownWidget', () => {
               await createComponentWithApollo({
                 showWorkItemEpics: true,
                 currentEpicSpy: currentEpicHasParentSpy,
-                groupEpicsSpy: groupWorkItemEpicsSpy,
+                requestHandlers: [[workItemParentsQuery, workItemParentsSpy]],
               });
 
               await clickEdit(wrapper);
@@ -468,7 +465,7 @@ describe('SidebarDropdownWidget', () => {
               await createComponentWithApollo({
                 showWorkItemEpics: true,
                 currentEpicSpy: mockCurrentEpicSpy,
-                groupEpicsSpy: groupWorkItemEpicsSpy,
+                requestHandlers: [[workItemParentsQuery, workItemParentsSpy]],
               });
 
               await clickEdit(wrapper);
