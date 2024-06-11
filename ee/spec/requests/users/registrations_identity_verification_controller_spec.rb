@@ -167,29 +167,22 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
     context 'with a banned user' do
       let_it_be_with_reload(:user) { unconfirmed_user }
 
-      where(:dot_com, :error_message) do
-        true  | "Your account has been blocked. Contact #{EE::CUSTOMER_SUPPORT_URL} for assistance."
-        false | "Your account has been blocked. Contact your GitLab administrator for assistance."
+      before do
+        stub_session(session_data: { verification_user_id: user.id })
+        user.ban
+
+        do_request
       end
 
-      with_them do
-        before do
-          allow(Gitlab).to receive(:com?).and_return(dot_com)
-          stub_session(session_data: { verification_user_id: user.id })
-          user.ban
+      it 'redirects to the sign-in page with an error message', :aggregate_failures do
+        expect(response).to have_gitlab_http_status(:redirect)
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert])
+          .to eq("Your account has been blocked. Contact #{EE::CUSTOMER_SUPPORT_URL} for assistance.")
+      end
 
-          do_request
-        end
-
-        it 'redirects to the sign-in page with an error message', :aggregate_failures do
-          expect(response).to have_gitlab_http_status(:redirect)
-          expect(response).to redirect_to(new_user_session_path)
-          expect(flash[:alert]).to eq(error_message)
-        end
-
-        it 'deletes the verification_user_id from the session' do
-          expect(request.session.has_key?(:verification_user_id)).to eq(false)
-        end
+      it 'deletes the verification_user_id from the session' do
+        expect(request.session.has_key?(:verification_user_id)).to eq(false)
       end
     end
   end

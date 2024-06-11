@@ -70,7 +70,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
 
   let(:workspaces_from_agent_infos) { [workspace_from_agent_info] }
 
-  let(:value) do
+  let(:context) do
     {
       agent: agent,
       update_type: update_type,
@@ -79,7 +79,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
   end
 
   subject(:returned_value) do
-    described_class.find(value)
+    described_class.find(context)
   end
 
   before do
@@ -156,9 +156,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
         .to match_array(expected_workspaces_to_be_returned.map(&:name))
     end
 
-    it "preserves existing value entries",
+    it "preserves existing context entries",
       :unlimited_max_formatted_output_length do
-      expect(returned_value).to eq(value.merge(workspaces_to_be_returned: expected_workspaces_to_be_returned))
+      expect(returned_value).to eq(context.merge(workspaces_to_be_returned: expected_workspaces_to_be_returned))
     end
   end
 
@@ -179,9 +179,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
         .to eq(expected_workspaces_to_be_returned.map(&:name))
     end
 
-    it "preserves existing value entries",
+    it "preserves existing context entries",
       :unlimited_max_formatted_output_length do
-      expect(returned_value).to eq(value.merge(workspaces_to_be_returned: expected_workspaces_to_be_returned))
+      expect(returned_value).to eq(context.merge(workspaces_to_be_returned: expected_workspaces_to_be_returned))
     end
   end
 end

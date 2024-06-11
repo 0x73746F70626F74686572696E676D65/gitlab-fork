@@ -415,30 +415,25 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
         :project_cube_api_key,
         :expected_value
       ) do
-        true | 'https://self-managed.collector.example.com' | nil | nil | nil | nil | 'true'
-        true | 'https://gitlab-managed.collector.gl-product-analytics.com' | nil | nil | nil | nil | 'false'
-        true | 'self-managed.collector.example.com' | 'https://configurator.example.com' | nil | nil | nil | 'false'
-        true | 'self-managed.collector.example.com' | nil | 'https://collector.example.com' | nil | nil | 'false'
-        true | 'self-managed.collector.example.com' | nil | nil | 'https://cube.example.com' | nil | 'false'
-        true | 'self-managed.collector.example.com' | nil | nil | nil | '123-apikey' | 'false'
+        # rubocop:disable Layout/LineLength -- lines are unwrappable
+        true | 'https://self-managed.collector.example.com' | 'https://configurator.example.com' | 'https://collector.example.com' | 'https://cube.example.com' | '123-apikey' | 'false'
+        true | 'https://gitlab-managed.collector.gl-product-analytics.com' | 'https://configurator.example.com' | 'https://collector.example.com' | 'https://cube.example.com' | '123-apikey' | 'false'
 
-        false | 'https://self-managed.collector.example.com' | nil | nil | nil | nil | 'true'
-        false | 'https://gitlab-managed.collector.gl-product-analytics.com' | nil | nil | nil | nil | 'true'
-        false | 'self-managed.collector.example.com' | 'https://configurator.example.com' | nil | nil | nil | 'true'
-        false | 'self-managed.collector.example.com' | nil | 'https://collector.example.com' | nil | nil | 'true'
-        false | 'self-managed.collector.example.com' | nil | nil | 'https://cube.example.com' | nil | 'true'
-        false | 'self-managed.collector.example.com' | nil | nil | nil | '123-apikey' | 'true'
+        false | 'https://self-managed.collector.example.com' | 'https://configurator.example.com' | 'https://collector.example.com' | 'https://cube.example.com' | '123-apikey' | 'true'
+        false | 'https://gitlab-managed.collector.gl-product-analytics.com' | 'https://configurator.example.com' | 'https://collector.example.com' | 'https://cube.example.com' | '123-apikey' | 'true'
+        # rubocop:enable Layout/LineLength
       end
 
       with_them do
         before do
           stub_application_setting(product_analytics_data_collector_host: instance_collector_host)
 
-          project.project_setting.update!(product_analytics_configurator_connection_string:
-                                            project_configurator_connection_string)
-          project.project_setting.update!(product_analytics_data_collector_host: project_collector_host)
-          project.project_setting.update!(cube_api_base_url: project_cube_api_base_url)
-          project.project_setting.update!(cube_api_key: project_cube_api_key)
+          project.create_project_setting!(
+            product_analytics_configurator_connection_string: project_configurator_connection_string,
+            product_analytics_data_collector_host: project_collector_host,
+            cube_api_base_url: project_cube_api_base_url,
+            cube_api_key: project_cube_api_key
+          )
         end
 
         subject(:data) { helper.analytics_dashboards_list_app_data(is_project ? project : group) }
@@ -468,7 +463,10 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
         project.project_setting.update!(
           product_analytics_instrumentation_key: project_instrumentation_key,
           product_analytics_data_collector_host:
-            use_project_level ? 'https://project-collector.example.com' : nil
+            use_project_level ? 'https://project-collector.example.com' : 'https://new-collector.example.com',
+          product_analytics_configurator_connection_string: 'http://test.net',
+          cube_api_base_url: 'https://test.net:3000',
+          cube_api_key: 'thisisasecretkey'
         )
 
         stub_application_setting(product_analytics_enabled: can_read_product_analytics)

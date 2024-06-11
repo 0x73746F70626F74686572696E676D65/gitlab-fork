@@ -6,15 +6,15 @@ module RemoteDevelopment
       class ClusterAgentValidator
         include Messages
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.validate(value)
-          value => {
+        def self.validate(context)
+          context => {
             namespace: Namespace => namespace,
             cluster_agent: Clusters::Agent => cluster_agent,
           }
 
-          return Result.ok(value) unless cluster_agent.project.project_namespace.traversal_ids.exclude?(namespace.id)
+          return Result.ok(context) unless cluster_agent.project.project_namespace.traversal_ids.exclude?(namespace.id)
 
           Result.err(NamespaceClusterAgentMappingCreateValidationFailed.new({
             details: "Cluster Agent's project must be nested within the namespace"

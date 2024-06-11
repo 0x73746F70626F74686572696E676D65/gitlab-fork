@@ -6,10 +6,10 @@ module RemoteDevelopment
       class MappingDeleter
         include Messages
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.delete(value)
-          value => {
+        def self.delete(context)
+          context => {
             namespace: Namespace => namespace,
             cluster_agent: Clusters::Agent => cluster_agent,
           }

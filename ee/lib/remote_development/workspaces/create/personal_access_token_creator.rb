@@ -6,10 +6,10 @@ module RemoteDevelopment
       class PersonalAccessTokenCreator
         include Messages
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.create(value)
-          value => {
+        def self.create(context)
+          context => {
             current_user: User => user,
             workspace_name: String => workspace_name,
             params: Hash => params
@@ -38,7 +38,7 @@ module RemoteDevelopment
           end
 
           Result.ok(
-            value.merge({
+            context.merge({
               personal_access_token: personal_access_token
             })
           )

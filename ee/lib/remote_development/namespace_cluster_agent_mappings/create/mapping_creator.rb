@@ -6,10 +6,10 @@ module RemoteDevelopment
       class MappingCreator
         include Messages
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.create(value)
-          value => {
+        def self.create(context)
+          context => {
             namespace: Namespace => namespace,
             cluster_agent: Clusters::Agent => cluster_agent,
             user: User => user

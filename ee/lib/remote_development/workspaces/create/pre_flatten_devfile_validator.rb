@@ -9,18 +9,18 @@ module RemoteDevelopment
         # We must ensure that devfiles are not created with a schema version different than the required version
         REQUIRED_DEVFILE_SCHEMA_VERSION = '2.2.0'
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.validate(value)
-          Result.ok(value)
+        def self.validate(context)
+          Result.ok(context)
                 .and_then(method(:validate_schema_version))
                 .and_then(method(:validate_parent))
         end
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.validate_schema_version(value)
-          value => { devfile: Hash => devfile }
+        def self.validate_schema_version(context)
+          context => { devfile: Hash => devfile }
 
           minimum_schema_version = Gem::Version.new(REQUIRED_DEVFILE_SCHEMA_VERSION)
           devfile_schema_version_string = devfile.fetch('schemaVersion')
@@ -42,17 +42,17 @@ module RemoteDevelopment
             )
           end
 
-          Result.ok(value)
+          Result.ok(context)
         end
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.validate_parent(value)
-          value => { devfile: Hash => devfile }
+        def self.validate_parent(context)
+          context => { devfile: Hash => devfile }
 
           return err(_("Inheriting from 'parent' is not yet supported")) if devfile['parent']
 
-          Result.ok(value)
+          Result.ok(context)
         end
 
         # @param [String] details

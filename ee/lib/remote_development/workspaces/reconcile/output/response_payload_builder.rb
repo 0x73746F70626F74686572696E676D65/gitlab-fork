@@ -12,10 +12,10 @@ module RemoteDevelopment
           PARTIAL_RESOURCES_INCLUDED = :partial_resources_included
           NO_RESOURCES_INCLUDED = :no_resources_included
 
-          # @param [Hash] value
+          # @param [Hash] context
           # @return [Hash]
-          def self.build(value)
-            value => {
+          def self.build(context)
+            context => {
               update_type: String => update_type,
               workspaces_to_be_returned: Array => workspaces_to_be_returned,
               settings: {
@@ -52,7 +52,7 @@ module RemoteDevelopment
               partial_reconciliation_interval_seconds: partial_reconciliation_interval_seconds
             }
 
-            value.merge(
+            context.merge(
               response_payload: {
                 workspace_rails_infos: workspace_rails_infos,
                 settings: settings

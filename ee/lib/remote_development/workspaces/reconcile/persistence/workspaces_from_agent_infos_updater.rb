@@ -5,10 +5,10 @@ module RemoteDevelopment
     module Reconcile
       module Persistence
         class WorkspacesFromAgentInfosUpdater
-          # @param [Hash] value
+          # @param [Hash] context
           # @return [Hash]
-          def self.update(value)
-            value => {
+          def self.update(context)
+            context => {
               agent: agent, # Skip type checking to avoid coupling to Rails monolith
               workspace_agent_infos_by_name: Hash => workspace_agent_infos_by_name,
             }
@@ -26,7 +26,7 @@ module RemoteDevelopment
               )
             end
 
-            value.merge(
+            context.merge(
               workspaces_from_agent_infos: workspaces_from_agent_infos
             )
           end

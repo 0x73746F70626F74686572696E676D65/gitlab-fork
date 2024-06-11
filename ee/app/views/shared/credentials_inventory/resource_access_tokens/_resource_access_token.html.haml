@@ -5,17 +5,17 @@
   .table-section.section-10
     .table-mobile-header{ role: 'rowheader' }
       = _('Name')
-    .table-mobile-content.gl-white-space-normal.gl-break-anywhere.gl-pr-5
+    .table-mobile-content.gl-whitespace-normal.gl-break-anywhere.gl-pr-5
       = resource_access_token.name
   .table-section.section-15
     .table-mobile-header{ role: 'rowheader' }
       = _('Scopes')
-    .table-mobile-content.gl-white-space-normal
+    .table-mobile-content.gl-whitespace-normal
       = resource_access_token.scopes.join(', ')
   .table-section.section-15
     .table-mobile-header{ role: 'rowheader' }
       = _('Project or Group')
-    .table-mobile-content.gl-white-space-normal.gl-break-anywhere.gl-pr-5
+    .table-mobile-content.gl-whitespace-normal.gl-break-anywhere.gl-pr-5
       - if project
         = link_to project.name, project_url(project)
       - elsif group

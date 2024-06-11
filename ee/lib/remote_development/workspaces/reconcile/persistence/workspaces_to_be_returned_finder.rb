@@ -7,10 +7,10 @@ module RemoteDevelopment
         class WorkspacesToBeReturnedFinder
           include UpdateTypes
 
-          # @param [Hash] value
+          # @param [Hash] context
           # @return [Hash]
-          def self.find(value)
-            value => {
+          def self.find(context)
+            context => {
               agent: agent, # Skip type checking to avoid coupling to Rails monolith
               update_type: String => update_type,
               workspaces_from_agent_infos: Array => workspaces_from_agent_infos,
@@ -25,7 +25,7 @@ module RemoteDevelopment
 
             workspaces_to_be_returned = workspaces_to_be_returned_query.to_a
 
-            value.merge(
+            context.merge(
               workspaces_to_be_returned: workspaces_to_be_returned
             )
           end

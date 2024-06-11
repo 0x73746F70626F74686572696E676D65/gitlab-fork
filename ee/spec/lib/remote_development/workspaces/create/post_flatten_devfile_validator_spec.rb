@@ -9,21 +9,21 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PostFlattenDevfileValida
 
   let(:flattened_devfile_name) { 'example.flattened-with-entries-devfile.yaml' }
   let(:processed_devfile) { YAML.safe_load(read_devfile(flattened_devfile_name)) }
-  let(:value) { { processed_devfile: processed_devfile } }
+  let(:context) { { processed_devfile: processed_devfile } }
 
   subject(:result) do
-    described_class.validate(value)
+    described_class.validate(context)
   end
 
   context 'for devfiles containing no violations' do
-    it 'returns an ok Result containing the original value' do
+    it 'returns an ok Result containing the original context' do
       expect(result).to eq(Result.ok({ processed_devfile: processed_devfile }))
     end
 
     context 'when devfile has multiple array entries' do
       let(:flattened_devfile_name) { 'example.multi-entry-devfile.yaml' }
 
-      it 'returns an ok Result containing the original value' do
+      it 'returns an ok Result containing the original context' do
         expect(result).to eq(Result.ok({ processed_devfile: processed_devfile }))
       end
     end
@@ -63,7 +63,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PostFlattenDevfileValida
       it 'returns an err Result containing error details' do
         is_expected.to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreatePostFlattenDevfileValidationFailed)
-          message.context => { details: String => error_details }
+          message.content => { details: String => error_details }
           expect(error_details).to eq(error_str)
         end
       end
@@ -72,7 +72,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PostFlattenDevfileValida
 
   context 'for multi-array-entry devfiles containing post flatten violations' do
     # NOTE: This context guards against the incorrect usage of
-    #       `return Result.ok(value) unless condition`
+    #       `return Result.ok(context) unless condition`
     #       guard clauses within iterator blocks in the validator logic.
     #       Because the behavior of `return` in Ruby is to return from the entire containing method,
     #       regardless of how many blocks you are nexted within, this would result in early returns
@@ -94,7 +94,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PostFlattenDevfileValida
       it 'returns an err Result containing error details' do
         is_expected.to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreatePostFlattenDevfileValidationFailed)
-          message.context => { details: String => error_details }
+          message.content => { details: String => error_details }
           expect(error_details).to eq(error_str)
         end
       end

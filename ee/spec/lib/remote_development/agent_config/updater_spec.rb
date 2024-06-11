@@ -117,7 +117,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
       context 'when enabled is not present in the config passed' do
         let(:config) { { remote_development: { dns_zone: dns_zone } } }
 
-        it 'creates a config record with a default value of enabled as false' do
+        it 'creates a config record with a default context of enabled as false' do
           expect { result }.to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
           expect(result).to be_ok_result
           expect(agent.reload.remote_development_agent_config.enabled).to eq(false)
@@ -306,7 +306,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
               expect { result }.not_to change { RemoteDevelopment::RemoteDevelopmentAgentConfig.count }
               expect(result).to be_err_result do |message|
                 expect(message).to be_a(RemoteDevelopment::Messages::AgentConfigUpdateFailed)
-                message.context => { details: String => details }
+                message.content => { details: String => details }
                 expect(details).to eq(
                   "Error updating associated workspaces with update_all: SOME ERROR"
                 )
@@ -328,7 +328,7 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Updater, feature_category: :rem
 
           expect(result).to be_err_result do |message|
             expect(message).to be_a(RemoteDevelopment::Messages::AgentConfigUpdateFailed)
-            message.context => { errors: ActiveModel::Errors => errors }
+            message.content => { errors: ActiveModel::Errors => errors }
             expect(errors.full_messages.join(', ')).to match(/dns zone/i)
           end
         end

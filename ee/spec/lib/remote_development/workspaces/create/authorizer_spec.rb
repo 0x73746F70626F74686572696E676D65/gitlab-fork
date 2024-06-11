@@ -8,10 +8,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Authorizer, feature_catego
   let(:project) { build_stubbed(:project) }
   let(:user) { build_stubbed(:user) }
   let(:params) { { project: project } }
-  let(:value) { { current_user: user, params: params } }
+  let(:context) { { current_user: user, params: params } }
 
   subject(:result) do
-    described_class.authorize(value)
+    described_class.authorize(context)
   end
 
   before do
@@ -21,8 +21,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Authorizer, feature_catego
   context 'when user is authorized' do
     let(:user_can_create_workspace) { true }
 
-    it 'returns an ok Result containing the original value which was passed' do
-      expect(result).to eq(Result.ok(value))
+    it 'returns an ok Result containing the original context which was passed' do
+      expect(result).to eq(Result.ok(context))
     end
   end
 

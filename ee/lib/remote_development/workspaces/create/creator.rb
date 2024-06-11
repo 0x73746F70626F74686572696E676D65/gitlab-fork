@@ -8,10 +8,10 @@ module RemoteDevelopment
 
         RANDOM_STRING_LENGTH = 6
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.create(value)
-          value => {
+        def self.create(context)
+          context => {
             current_user: User => user,
             params: Hash => params,
           }
@@ -21,12 +21,12 @@ module RemoteDevelopment
           random_string = SecureRandom.alphanumeric(RANDOM_STRING_LENGTH).downcase
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409774
           #       We can come maybe come up with a better/cooler way to get a unique name, for now this works
-          value[:workspace_name] = "workspace-#{agent.id}-#{user.id}-#{random_string}"
-          value[:workspace_namespace] = "gl-rd-ns-#{agent.id}-#{user.id}-#{random_string}"
+          context[:workspace_name] = "workspace-#{agent.id}-#{user.id}-#{random_string}"
+          context[:workspace_namespace] = "gl-rd-ns-#{agent.id}-#{user.id}-#{random_string}"
           model_errors = nil
 
           updated_value = ApplicationRecord.transaction do
-            initial_result = Result.ok(value)
+            initial_result = Result.ok(context)
 
             result =
               initial_result
@@ -39,7 +39,7 @@ module RemoteDevelopment
               WorkspaceModelCreateFailed |
               WorkspaceVariablesModelCreateFailed => message
             }
-              model_errors = message.context[:errors]
+              model_errors = message.content[:errors]
               raise ActiveRecord::Rollback
             else
               result.unwrap

@@ -5,10 +5,10 @@ require 'spec_helper'
 RSpec.describe RemoteDevelopment::AgentConfig::LicenseChecker, feature_category: :remote_development do
   include ResultMatchers
 
-  let(:value) { instance_double(Hash) }
+  let(:context) { instance_double(Hash) }
 
   subject(:result) do
-    described_class.check_license(value)
+    described_class.check_license(context)
   end
 
   before do
@@ -18,8 +18,8 @@ RSpec.describe RemoteDevelopment::AgentConfig::LicenseChecker, feature_category:
   context 'when licensed' do
     let(:licensed) { true }
 
-    it 'returns an ok Result containing the original value which was passed' do
-      expect(result).to eq(Result.ok(value))
+    it 'returns an ok Result containing the original context which was passed' do
+      expect(result).to eq(Result.ok(context))
     end
   end
 

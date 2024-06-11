@@ -48,7 +48,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Update::Updater, feature_categor
         }
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceUpdateFailed)
-          message.context => { errors: ActiveModel::Errors => errors }
+          message.content => { errors: ActiveModel::Errors => errors }
           expect(errors.full_messages).to match([/#{expected_error_details}/i])
         end
       end
@@ -77,7 +77,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Update::Updater, feature_categor
 
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceUpdateFailed)
-          expect(message.context[:errors]).to be(errors)
+          expect(message.content[:errors]).to be(errors)
         end
       end
     end

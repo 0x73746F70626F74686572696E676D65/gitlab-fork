@@ -8,13 +8,13 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, :rd_fast
   let(:devfile_yaml) { example_devfile }
   let(:devfile) { YAML.safe_load(devfile_yaml) }
   let(:expected_processed_devfile) { YAML.safe_load(example_flattened_devfile) }
-  let(:value) { { devfile: devfile } }
+  let(:context) { { devfile: devfile } }
 
   subject(:result) do
-    described_class.flatten(value)
+    described_class.flatten(context)
   end
 
-  it "merges flattened devfile to passed value" do
+  it "merges flattened devfile to passed context" do
     expect(result).to eq(
       Result.ok(
         {
@@ -52,7 +52,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, :rd_fast
           "- (root): Additional property random is not allowed\n"
       message = result.unwrap_err
       expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateDevfileFlattenFailed)
-      expect(message.context).to eq(details: expected_error_message)
+      expect(message.content).to eq(details: expected_error_message)
     end
   end
 end

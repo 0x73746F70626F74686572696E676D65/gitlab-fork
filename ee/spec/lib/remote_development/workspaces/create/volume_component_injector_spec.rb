@@ -11,7 +11,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::VolumeComponentInjector, f
   let(:expected_processed_devfile) { YAML.safe_load(read_devfile(expected_processed_devfile_name)).to_h }
   let(:component_name) { "gl-workspace-data" }
   let(:volume_name) { "gl-workspace-data" }
-  let(:value) do
+  let(:context) do
     {
       processed_devfile: input_processed_devfile,
       volume_mounts: {
@@ -24,7 +24,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::VolumeComponentInjector, f
   end
 
   subject(:returned_value) do
-    described_class.inject(value)
+    described_class.inject(context)
   end
 
   it "injects the workspace volume component" do

@@ -60,10 +60,10 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
     }
   end
 
-  let(:value) { { current_user: current_user, params: params, settings: settings } }
+  let(:context) { { current_user: current_user, params: params, settings: settings } }
 
   subject(:response) do
-    described_class.main(value)
+    described_class.main(context)
   end
 
   context 'when params are valid' do

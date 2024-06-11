@@ -41,7 +41,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
 
   let(:workspaces_to_be_returned) { [workspace1, workspace2, workspace3] }
 
-  let(:value) do
+  let(:context) do
     {
       agent: agent,
       workspaces_to_be_returned: workspaces_to_be_returned
@@ -49,7 +49,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
   end
 
   subject(:returned_value) do
-    described_class.update(value) # rubocop:disable Rails/SaveBang -- This is not an ActiveRecord method
+    described_class.update(context) # rubocop:disable Rails/SaveBang -- This is not an ActiveRecord method
   end
 
   before do
@@ -77,9 +77,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::Workspaces
       expect(workspace3.reload.responded_to_agent_at).to be > 1.minute.ago
     end
 
-    it "preserves existing value entries" do
+    it "preserves existing context entries" do
       returned_value
-      expect(returned_value).to eq(value.merge(workspaces_to_be_returned: [workspace1.reload, workspace2.reload,
+      expect(returned_value).to eq(context.merge(workspaces_to_be_returned: [workspace1.reload, workspace2.reload,
         workspace3.reload]))
     end
 

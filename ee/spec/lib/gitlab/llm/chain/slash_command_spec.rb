@@ -25,6 +25,47 @@ RSpec.describe Gitlab::Llm::Chain::SlashCommand, feature_category: :duo_chat do
 
       it { is_expected.to be_nil }
     end
+
+    context 'when request comes from the Web' do
+      let(:user_agent) { 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)' }
+      let(:message) do
+        build(:ai_chat_message, user: instance_double(User), resource: nil, request_id: 'uuid', content: content,
+          user_agent: user_agent, referer_url: referer_url)
+      end
+
+      let(:referer_url) { 'http://example.com/project' }
+
+      it 'returns web as client source' do
+        is_expected
+          .to be_an_instance_of(described_class)
+          .and have_attributes(client_source: 'web')
+      end
+
+      context 'when request comes from the Web IDE' do
+        let(:referer_url) { "#{Gitlab.config.gitlab.base_url}/-/ide/project" }
+
+        it 'returns webide as client source' do
+          is_expected
+            .to be_an_instance_of(described_class)
+            .and have_attributes(client_source: 'webide')
+        end
+      end
+    end
+
+    context 'when request comes from VS Code' do
+      let(:message) do
+        build(:ai_chat_message, user: instance_double(User), resource: nil, request_id: 'uuid', content: content,
+          user_agent: user_agent)
+      end
+
+      let(:user_agent) { 'vs-code-gitlab-workflow/3.11.1 VSCode/1.52.1 Node.js/12.14.1 (darwin; x64)' }
+
+      it 'returns vscode as client source' do
+        is_expected
+          .to be_an_instance_of(described_class)
+          .and have_attributes(client_source: 'vscode')
+      end
+    end
   end
 
   describe '#prompt_options' do

@@ -16,7 +16,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ParamsExtractor,
     }
   end
 
-  let(:value) do
+  let(:context) do
     {
       agent: agent,
       original_params: original_params,
@@ -26,7 +26,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ParamsExtractor,
   end
 
   subject(:returned_value) do
-    described_class.extract(value)
+    described_class.extract(context)
   end
 
   it "extracts and flattens agent and params contents to top level and deep symbolizes keys" do

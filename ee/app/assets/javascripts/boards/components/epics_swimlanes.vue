@@ -262,7 +262,7 @@ export default {
             'is-collapsed gl-w-10': list.collapsed,
             'is-draggable': isListDraggable(list),
           }"
-          class="board gl-display-inline-block gl-px-3 gl-align-top gl-white-space-normal"
+          class="board gl-display-inline-block gl-px-3 gl-align-top gl-whitespace-normal"
           :data-list-id="list.id"
           data-testid="board-header-container"
           :data-draggable-item-type="$options.draggableItemTypes.list"

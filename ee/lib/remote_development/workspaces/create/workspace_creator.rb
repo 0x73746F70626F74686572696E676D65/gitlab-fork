@@ -9,10 +9,10 @@ module RemoteDevelopment
 
         WORKSPACE_PORT = 60001
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.create(value)
-          value => {
+        def self.create(context)
+          context => {
             devfile_yaml: String => devfile_yaml,
             processed_devfile: Hash => processed_devfile,
             volume_mounts: Hash => volume_mounts,
@@ -54,7 +54,7 @@ module RemoteDevelopment
           end
 
           Result.ok(
-            value.merge({
+            context.merge({
               workspace: workspace
             })
           )

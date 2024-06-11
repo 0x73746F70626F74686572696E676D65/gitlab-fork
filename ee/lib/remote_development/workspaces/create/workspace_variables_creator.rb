@@ -6,10 +6,10 @@ module RemoteDevelopment
       class WorkspaceVariablesCreator
         include Messages
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.create(value)
-          value => {
+        def self.create(context)
+          context => {
             workspace: RemoteDevelopment::Workspace => workspace,
             personal_access_token: PersonalAccessToken => personal_access_token,
             current_user: User => user,
@@ -36,7 +36,7 @@ module RemoteDevelopment
             end
           end
 
-          Result.ok(value)
+          Result.ok(context)
         end
       end
     end

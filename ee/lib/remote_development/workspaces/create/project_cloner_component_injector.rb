@@ -6,10 +6,10 @@ module RemoteDevelopment
       class ProjectClonerComponentInjector
         include Messages
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Hash]
-        def self.inject(value)
-          value => {
+        def self.inject(context)
+          context => {
             processed_devfile: Hash => processed_devfile,
             volume_mounts: Hash => volume_mounts,
             params: Hash => params,
@@ -81,7 +81,7 @@ module RemoteDevelopment
           processed_devfile['events']['preStart'] ||= []
           processed_devfile['events']['preStart'] << cloner_command['id']
 
-          value
+          context
         end
       end
     end

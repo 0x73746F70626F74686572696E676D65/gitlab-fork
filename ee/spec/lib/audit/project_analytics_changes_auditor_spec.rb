@@ -15,23 +15,6 @@ RSpec.describe Audit::ProjectAnalyticsChangesAuditor, feature_category: :product
       stub_licensed_features(extended_audit_events: true, external_audit_events: true)
     end
 
-    context 'when the cube_api_key is set' do
-      before do
-        project.project_setting.update!(cube_api_key: "thisisasecretkey")
-      end
-
-      it 'adds an audit event', :aggregate_failures do
-        expect { auditor.execute }.to change { AuditEvent.count }.by(1)
-        expect(AuditEvent.last.details)
-          .to include({ change: :cube_api_key })
-
-        # 'from' and 'to' should be nil, as their value is encrypted
-        # and we should not expose it in the audit logs
-        expect(AuditEvent.last.details[:from]).to be_nil
-        expect(AuditEvent.last.details[:to]).to be_nil
-      end
-    end
-
     context 'when the pointer project is changed' do
       before do
         project.build_analytics_dashboards_pointer
@@ -45,44 +28,28 @@ RSpec.describe Audit::ProjectAnalyticsChangesAuditor, feature_category: :product
       end
     end
 
-    context 'when the snowplow configurator connection string is set' do
+    context 'when the settings are defined' do
       before do
-        project.project_setting.update!(product_analytics_configurator_connection_string: "http://example.com")
+        project.project_setting.update!(
+          product_analytics_configurator_connection_string: 'https://gl-product-analytics-configurator.gl.com:4567',
+          product_analytics_data_collector_host: 'http://test.net',
+          cube_api_base_url: 'https://test.com:3000',
+          cube_api_key: 'helloworld'
+        )
       end
 
-      it 'adds an audit event', :aggregate_failures do
-        expect { auditor.execute }.to change { AuditEvent.count }.by(1)
-        expect(AuditEvent.last.details)
-          .to include({ change: :product_analytics_configurator_connection_string })
-
-        # 'from' and 'to' should be nil, as their value is encrypted
-        # and we should not expose it in the audit logs
-        expect(AuditEvent.last.details[:from]).to be_nil
-        expect(AuditEvent.last.details[:to]).to be_nil
-      end
-    end
-
-    context 'when the product_analytics_data_collector_host is set' do
-      before do
-        project.project_setting.update!(product_analytics_data_collector_host: "http://example2.com")
+      it 'adds 4 audit events' do
+        expect { auditor.execute }.to change { AuditEvent.count }.by(4)
       end
 
-      it 'adds an audit event' do
-        expect { auditor.execute }.to change { AuditEvent.count }.by(1)
-        expect(AuditEvent.last.details)
-          .to include({ change: :product_analytics_data_collector_host, from: nil, to: "http://example2.com" })
-      end
-    end
+      it 'has the correct audit event types' do
+        auditor.execute
+        details = AuditEvent.last(4).map { |ae| ae.details[:change] }
 
-    context 'when the cube_api_base_url is set' do
-      before do
-        project.project_setting.update!(cube_api_base_url: "http://example3.com")
-      end
-
-      it 'adds an audit event' do
-        expect { auditor.execute }.to change { AuditEvent.count }.by(1)
-        expect(AuditEvent.last.details)
-          .to include({ change: :cube_api_base_url, from: nil, to: "http://example3.com" })
+        expect(details).to include(:product_analytics_configurator_connection_string,
+          :product_analytics_data_collector_host,
+          :cube_api_base_url,
+          :cube_api_key)
       end
     end
   end

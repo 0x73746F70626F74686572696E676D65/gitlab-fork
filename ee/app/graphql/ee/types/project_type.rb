@@ -417,6 +417,12 @@ module EE
           description: 'Saved reply in the project. Available only when feature flag ' \
                        '`group_saved_replies_flag` is enabled.',
           alpha: { milestone: '16.11' }
+
+        field :merge_trains,
+          ::Types::MergeTrains::TrainType.connection_type,
+          resolver: ::Resolvers::MergeTrains::TrainsResolver,
+          description: 'Merge trains available to the project. ',
+          alpha: { milestone: '17.1' }
       end
 
       def tracking_key

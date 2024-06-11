@@ -7,7 +7,7 @@
   .table-section.section-20
     .table-mobile-header{ role: 'rowheader' }
       = _('Scope')
-    .table-mobile-content.gl-white-space-normal
+    .table-mobile-content.gl-whitespace-normal
       - scopes = personal_access_token.scopes
       = scopes.present? ? scopes.join(", ") : _('No Scopes')
   .table-section.section-15
