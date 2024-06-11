@@ -1,6 +1,14 @@
 # frozen_string_literal: true
 
 module ElasticsearchHelpers
+  def assert_names_in_query(query, with: [], without: [])
+    query.extend(Hashie::Extensions::DeepFind)
+    names = query.deep_find_all(:_name)
+
+    expect(names).to include(*Array.wrap(with))
+    expect(names).not_to include(*Array.wrap(without))
+  end
+
   def assert_named_queries(*expected_names, without: [])
     es_host = Gitlab::CurrentSettings.elasticsearch_url.first
     search_uri = %r{#{es_host}/[\w-]+/_search}
