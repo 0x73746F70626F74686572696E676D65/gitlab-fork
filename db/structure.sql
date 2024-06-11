@@ -1329,6 +1329,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_dadd660afe2c() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."group_id" IS NULL THEN
+  SELECT "group_id"
+  INTO NEW."group_id"
+  FROM "packages_debian_group_distributions"
+  WHERE "packages_debian_group_distributions"."id" = NEW."distribution_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_dbdd61a66a91() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -13451,6 +13467,7 @@ CREATE TABLE packages_debian_group_distribution_keys (
     encrypted_passphrase_iv text NOT NULL,
     public_key text NOT NULL,
     fingerprint text NOT NULL,
+    group_id bigint,
     CONSTRAINT check_bc95dc3fbe CHECK ((char_length(fingerprint) <= 255)),
     CONSTRAINT check_f708183491 CHECK ((char_length(public_key) <= 524288))
 );
@@ -27462,6 +27479,8 @@ CREATE UNIQUE INDEX index_packages_conan_metadata_on_package_id_username_channel
 
 CREATE INDEX index_packages_debian_group_component_files_on_component_id ON packages_debian_group_component_files USING btree (component_id);
 
+CREATE INDEX index_packages_debian_group_distribution_keys_on_group_id ON packages_debian_group_distribution_keys USING btree (group_id);
+
 CREATE INDEX index_packages_debian_group_distributions_on_creator_id ON packages_debian_group_distributions USING btree (creator_id);
 
 CREATE INDEX index_packages_debian_project_component_files_on_component_id ON packages_debian_project_component_files USING btree (component_id);
@@ -30820,6 +30839,8 @@ CREATE TRIGGER trigger_c9090feed334 BEFORE INSERT OR UPDATE ON boards_epic_lists
 
 CREATE TRIGGER trigger_catalog_resource_sync_event_on_project_update AFTER UPDATE ON projects FOR EACH ROW WHEN ((((old.name)::text IS DISTINCT FROM (new.name)::text) OR (old.description IS DISTINCT FROM new.description) OR (old.visibility_level IS DISTINCT FROM new.visibility_level))) EXECUTE FUNCTION insert_catalog_resource_sync_event();
 
+CREATE TRIGGER trigger_dadd660afe2c BEFORE INSERT OR UPDATE ON packages_debian_group_distribution_keys FOR EACH ROW EXECUTE FUNCTION trigger_dadd660afe2c();
+
 CREATE TRIGGER trigger_d4487a75bd44 BEFORE INSERT OR UPDATE ON terraform_state_versions FOR EACH ROW EXECUTE FUNCTION trigger_d4487a75bd44();
 
 CREATE TRIGGER trigger_dbdd61a66a91 BEFORE INSERT OR UPDATE ON agent_activity_events FOR EACH ROW EXECUTE FUNCTION trigger_dbdd61a66a91();
@@ -31875,6 +31896,9 @@ ALTER TABLE ONLY issues
 
 ALTER TABLE ONLY user_broadcast_message_dismissals
     ADD CONSTRAINT fk_c7cbf5566d FOREIGN KEY (broadcast_message_id) REFERENCES broadcast_messages(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY packages_debian_group_distribution_keys
+    ADD CONSTRAINT fk_c802025a67 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY agent_activity_events
     ADD CONSTRAINT fk_c815368376 FOREIGN KEY (agent_id) REFERENCES cluster_agents(id) ON DELETE CASCADE;
