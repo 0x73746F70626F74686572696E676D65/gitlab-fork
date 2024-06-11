@@ -370,6 +370,7 @@ RSpec.describe GroupsController, type: :request, feature_category: :groups_and_p
         before do
           stub_saas_features(gitlab_com_subscriptions: false)
           ::CloudConnector::AvailableServices.clear_memoization(:access_data_reader)
+          ::CloudConnector::AvailableServices.clear_memoization(:available_services)
         end
 
         context 'when feature flag is disabled' do
@@ -388,6 +389,7 @@ RSpec.describe GroupsController, type: :request, feature_category: :groups_and_p
         before do
           stub_saas_features(gitlab_com_subscriptions: true)
           ::CloudConnector::AvailableServices.clear_memoization(:access_data_reader)
+          ::CloudConnector::AvailableServices.clear_memoization(:available_services)
         end
 
         context 'when group is not a root' do

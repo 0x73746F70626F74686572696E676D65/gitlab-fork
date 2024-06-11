@@ -92,6 +92,7 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
 
       before do
         ::CloudConnector::AvailableServices.clear_memoization(:access_data_reader)
+        ::CloudConnector::AvailableServices.clear_memoization(:available_services)
       end
 
       context 'without code suggestion license feature' do
@@ -190,6 +191,7 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
           allow(token).to receive(:encoded).and_return(ai_gateway_token)
         end
         ::CloudConnector::AvailableServices.clear_memoization(:access_data_reader)
+        ::CloudConnector::AvailableServices.clear_memoization(:available_services)
       end
 
       it_behaves_like 'successful send request via workhorse'

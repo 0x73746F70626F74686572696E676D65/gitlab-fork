@@ -18,8 +18,8 @@ module API
           before do
             authenticate_job!
             not_found! unless x_ray_enabled_on_instance?
-            unauthorized!(PURCHASE_NOT_FOUND_MESSAGE) unless token_available?
-            unauthorized!(TOKEN_NOT_FOUND_MESSAGE) unless x_ray_available?
+            unauthorized!(TOKEN_NOT_FOUND_MESSAGE) unless token_available?
+            unauthorized!(PURCHASE_NOT_FOUND_MESSAGE) unless x_ray_available?
           end
 
           helpers do
