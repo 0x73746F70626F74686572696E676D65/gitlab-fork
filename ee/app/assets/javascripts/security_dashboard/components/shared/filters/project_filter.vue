@@ -127,7 +127,10 @@ export default {
       result({ data }) {
         // Add each unfetched ID to projectNames so that we know we fetched the project data for it.
         this.unfetchedIds.forEach((id) => {
-          this.$set(this.projectNames, id, undefined);
+          this.projectNames = {
+            ...this.projectNames,
+            [id]: undefined,
+          };
         });
 
         const projects = mapProjects(data[this.dashboardType].projects.edges.map((x) => x.node));
@@ -202,7 +205,12 @@ export default {
       return name.replace(regex, '<b>$1</b>');
     },
     saveProjectNames(projects) {
-      projects.forEach(({ value, text }) => this.$set(this.projectNames, value, text));
+      projects.forEach(({ value, text }) => {
+        this.projectNames = {
+          ...this.projectNames,
+          [value]: text,
+        };
+      });
     },
     fetchNextPage() {
       this.$apollo.queries.projects.fetchMore({ variables: { after: this.pageInfo.endCursor } });
