@@ -6,7 +6,6 @@ RSpec.describe ClickHouseModel, feature_category: :value_stream_management do
   let(:model_class) do
     Class.new(described_class) do
       self.table_name = 'test_table'
-
       def to_clickhouse_csv_row
         { foo: 'bar' }
       end
