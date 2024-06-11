@@ -190,15 +190,18 @@ export default {
           this.data = data;
         }
       } catch (error) {
+        const isCubeJsBadRequest = this.isCubeJsBadRequest(error);
+        const additionalErrorDetails = isCubeJsBadRequest ? error.response?.message : null;
+
         this.setAlerts({
-          errors: [error],
+          errors: [error, additionalErrorDetails].filter(Boolean),
           title: s__('Analytics|Failed to fetch data'),
           description: s__(
             'Analytics|Something went wrong while connecting to your data source. See %{linkStart}troubleshooting documentation%{linkEnd}.',
           ),
 
           // bad or malformed CubeJS query, retry won't fix
-          canRetry: !this.isCubeJsBadRequest(error),
+          canRetry: !isCubeJsBadRequest,
         });
       } finally {
         this.loading = false;

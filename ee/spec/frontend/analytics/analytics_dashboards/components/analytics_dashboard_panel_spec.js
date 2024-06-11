@@ -432,6 +432,13 @@ describe('AnalyticsDashboardPanel', () => {
         expectPanelErrored();
       });
 
+      it('renders a popover message with details of the bad request', () => {
+        const messages = findAlertMessages();
+
+        expect(messages).toHaveLength(1);
+        expect(messages.at(0).text()).toBe('Some specific CubeJS error');
+      });
+
       it('does not render the retry button', () => {
         expect(findPanelRetryButton().exists()).toBe(false);
       });
