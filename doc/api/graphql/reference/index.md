@@ -15680,6 +15680,7 @@ The connection type for [`WorkItem`](#workitem).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="workitemconnectioncount"></a>`count` | [`Int!`](#int) | Total count of collection. |
 | <a id="workitemconnectionedges"></a>`edges` | [`[WorkItemEdge]`](#workitemedge) | A list of edges. |
 | <a id="workitemconnectionnodes"></a>`nodes` | [`[WorkItem]`](#workitem) | A list of nodes. |
 | <a id="workitemconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
