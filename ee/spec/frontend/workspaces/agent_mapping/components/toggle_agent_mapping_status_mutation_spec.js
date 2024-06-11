@@ -1,23 +1,28 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import { createAlert, VARIANT_WARNING } from '~/alert';
 import { logError } from '~/lib/logger';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { ALERT_CONTAINER_CLASSNAME } from 'ee_component/workspaces/agent_mapping/constants';
 import ToggleAgentMappingStatusMutation from 'ee_component/workspaces/agent_mapping/components/toggle_agent_mapping_status_mutation.vue';
 import createClusterAgentMappingMutation from 'ee/workspaces/agent_mapping/graphql/mutations/create_cluster_agent_mapping.mutation.graphql';
 import deleteClusterAgentMappingMutation from 'ee/workspaces/agent_mapping/graphql/mutations/delete_cluster_agent_mapping.mutation.graphql';
 import getAgentsWithAuthorizationStatusQuery from 'ee/workspaces/agent_mapping/graphql/queries/get_agents_with_mapping_status.query.graphql';
 import {
   CREATE_CLUSTER_AGENT_MAPPING_MUTATION_RESULT,
+  CREATE_CLUSTER_AGENT_MAPPING_MUTATION_WITH_ERROR_RESULT,
   DELETE_CLUSTER_AGENT_MAPPING_MUTATION_RESULT,
+  DELETE_CLUSTER_AGENT_MAPPING_MUTATION_WITH_ERROR_RESULT,
   GET_AGENTS_WITH_MAPPING_STATUS_QUERY_RESULT,
   MAPPED_CLUSTER_AGENT,
   NAMESPACE_ID,
   UNMAPPED_CLUSTER_AGENT,
 } from '../../mock_data';
 
+jest.mock('~/alert');
 jest.mock('~/lib/logger');
 jest.mock('~/sentry/sentry_browser_wrapper');
 
@@ -167,6 +172,34 @@ describe('workspaces/agent_mapping/components/toggle_agent_mapping_status_mutati
         expect(unmappedAgents.some((agent) => agent.id === UNMAPPED_CLUSTER_AGENT.id)).toBe(false);
       });
     });
+
+    describe.each`
+      agent                     | mutationHandler                                   | mutationResult                                             | expectedMessage
+      ${MAPPED_CLUSTER_AGENT}   | ${() => deleteClusterAgentMappingMutationHandler} | ${DELETE_CLUSTER_AGENT_MAPPING_MUTATION_WITH_ERROR_RESULT} | ${'This agent is already blocked. Refresh the page and try again.'}
+      ${UNMAPPED_CLUSTER_AGENT} | ${() => createClusterAgentMappingMutationHandler} | ${CREATE_CLUSTER_AGENT_MAPPING_MUTATION_WITH_ERROR_RESULT} | ${'This agent is already allowed. Refresh the page and try again.'}
+    `(
+      'when mutation contains request errors',
+      ({ agent, mutationHandler, mutationResult, expectedMessage }) => {
+        beforeEach(async () => {
+          mutationHandler().mockReset().mockResolvedValueOnce(mutationResult);
+
+          buildWrapper({ propsData: { agent } });
+
+          executeMutationFn();
+
+          await nextTick();
+        });
+
+        it('displays warning alert indicating that the agent is already unmapped', () => {
+          expect(createAlert).toHaveBeenCalledWith({
+            title: 'Unable to complete this action',
+            message: expectedMessage,
+            variant: VARIANT_WARNING,
+            containerSelector: `.${ALERT_CONTAINER_CLASSNAME}`,
+          });
+        });
+      },
+    );
 
     describe('when the mutation fails', () => {
       const error = new Error();

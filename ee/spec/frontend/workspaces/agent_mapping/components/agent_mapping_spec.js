@@ -1,11 +1,17 @@
 import { nextTick } from 'vue';
-import { GlAlert, GlTabs, GlTab, GlBadge } from '@gitlab/ui';
+import { GlTabs, GlTab, GlBadge } from '@gitlab/ui';
+import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import AgentMapping from 'ee_component/workspaces/agent_mapping/components/agent_mapping.vue';
 import GetAgentsWithMappingStatusQuery from 'ee_component/workspaces/agent_mapping/components/get_agents_with_mapping_status_query.vue';
-import { AGENT_MAPPING_STATUS_MAPPED } from 'ee/workspaces/agent_mapping/constants';
+import {
+  AGENT_MAPPING_STATUS_MAPPED,
+  ALERT_CONTAINER_SELECTOR,
+} from 'ee/workspaces/agent_mapping/constants';
 import { stubComponent } from 'helpers/stub_component';
 import { NAMESPACE_ID, MAPPED_CLUSTER_AGENT, UNMAPPED_CLUSTER_AGENT } from '../../mock_data';
+
+jest.mock('~/alert');
 
 describe('workspaces/agent_mapping/components/agent_mapping', () => {
   let wrapper;
@@ -32,7 +38,7 @@ describe('workspaces/agent_mapping/components/agent_mapping', () => {
     wrapper.findComponent(GetAgentsWithMappingStatusQuery);
   const findAllowedAgentsTable = () => wrapper.findByTestId('allowed-agents-table');
   const findAllAgentsTable = () => wrapper.findByTestId('all-agents-table');
-  const findErrorAlert = () => wrapper.findComponent(GlAlert);
+  const findAlertContainer = () => wrapper.find(ALERT_CONTAINER_SELECTOR);
   const findAllowedAgentsTab = () => wrapper.findByTestId('allowed-agents-tab');
   const findAllAgentsTab = () => wrapper.findByTestId('all-agents-tab');
   const triggerQueryResultEvent = (result) => {
@@ -47,8 +53,8 @@ describe('workspaces/agent_mapping/components/agent_mapping', () => {
       buildWrapper();
     });
 
-    it('does not display an error alert', () => {
-      expect(findErrorAlert().exists()).toBe(false);
+    it('has alert container', () => {
+      expect(findAlertContainer().exists()).toBe(true);
     });
   });
 
@@ -162,7 +168,10 @@ describe('workspaces/agent_mapping/components/agent_mapping', () => {
       });
 
       it('displays error as a danger alert', () => {
-        expect(findErrorAlert().text()).toContain('Could not load available agents');
+        expect(createAlert).toHaveBeenCalledWith({
+          message: 'Could not load available agents. Refresh the page to try again.',
+          containerSelector: ALERT_CONTAINER_SELECTOR,
+        });
       });
 
       it('does not render any table', () => {

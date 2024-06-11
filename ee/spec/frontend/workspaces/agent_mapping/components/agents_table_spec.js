@@ -192,7 +192,7 @@ describe('workspaces/agent_mapping/components/agents_table', () => {
       });
 
       it('displays actions column', () => {
-        expect(findAgentsTable().text()).toContain('Actions');
+        expect(findAgentsTable().text()).toContain('Action');
 
         const toggles = findAgentsTable().findAllComponents(AgentMappingStatusToggle);
         const mutations = findAgentsTable().findAllComponents(ToggleAgentMappingStatusMutationStub);
