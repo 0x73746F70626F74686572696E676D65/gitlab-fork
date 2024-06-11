@@ -45,7 +45,10 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
         params = {
           project: {
             project_setting_attributes: {
-              cube_api_key: 'cube_api_key'
+              cube_api_key: 'cube_api_key',
+              product_analytics_configurator_connection_string: 'https://test:test@configurator.example.com',
+              product_analytics_data_collector_host: 'https://collector.example.com',
+              cube_api_base_url: 'https://cube.example.com'
             }
           }
         }
@@ -58,8 +61,13 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
 
       context 'with existing product_analytics_instrumentation_key' do
         before do
-          project.project_setting.update!(product_analytics_instrumentation_key: "key",
-            product_analytics_configurator_connection_string: "http://test:test@old_configurator.example.com")
+          project.project_setting.update!(
+            product_analytics_instrumentation_key: "key",
+            product_analytics_configurator_connection_string: 'http://test:test@old_configurator.example.com',
+            product_analytics_data_collector_host: 'http://test.net',
+            cube_api_base_url: 'https://test.com:3000',
+            cube_api_key: 'helloworld'
+          )
           project.reload
         end
 
@@ -100,7 +108,10 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
           params = {
             project: {
               project_setting_attributes: {
-                product_analytics_configurator_connection_string: 'https://test:test@configurator.example.com'
+                product_analytics_configurator_connection_string: 'https://test:test@test.example.com',
+                product_analytics_data_collector_host: 'http://test.net',
+                cube_api_base_url: 'https://test.com:3000',
+                cube_api_key: 'helloworld'
               }
             }
           }
@@ -111,27 +122,6 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
             project.reload.project_setting.product_analytics_configurator_connection_string
           }.to(
             params.dig(:project, :project_setting_attributes, :product_analytics_configurator_connection_string)
-          ).and change {
-            project.reload.project_setting.product_analytics_instrumentation_key
-          }.to(nil)
-        end
-
-        it 'cleans up instrumentation key when params have empty configurator connection string' do
-          params = {
-            project: {
-              project_setting_attributes: {
-                product_analytics_configurator_connection_string: '',
-                cube_api_key: 'cube_api_key'
-              }
-            }
-          }
-
-          expect do
-            patch project_settings_analytics_path(project, params)
-          end.to change {
-            project.reload.project_setting.cube_api_key
-          }.to(
-            params.dig(:project, :project_setting_attributes, :cube_api_key)
           ).and change {
             project.reload.project_setting.product_analytics_instrumentation_key
           }.to(nil)
@@ -300,6 +290,9 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
     params = {
       project: {
         project_setting_attributes: {
+          product_analytics_configurator_connection_string: 'http://test:test@old_configurator.example.com',
+          product_analytics_data_collector_host: 'http://test.net',
+          cube_api_base_url: 'https://test.com:3000',
           cube_api_key: 'cube_api_key'
         }
       }
