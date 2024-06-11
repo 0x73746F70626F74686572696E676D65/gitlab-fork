@@ -47,14 +47,6 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
       end
     end
 
-    context 'when search_query_builder feature flag is false' do
-      before do
-        stub_feature_flags(search_query_builder: false)
-      end
-
-      it_behaves_like 'returns aggregations'
-    end
-
     it_behaves_like 'returns aggregations'
   end
 
@@ -150,22 +142,6 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
             end
           end
 
-          context 'when search_query_builder feature flag is false' do
-            before do
-              stub_feature_flags(search_query_builder: false)
-            end
-
-            context 'when search_uses_match_queries feature flag is false' do
-              before do
-                stub_feature_flags(search_uses_match_queries: false)
-              end
-
-              it_behaves_like 'a query that uses simple_query_string'
-            end
-
-            it_behaves_like 'a query that uses multi_match'
-          end
-
           context 'when querying by iid' do
             let(:query) { '#1' }
 
@@ -194,18 +170,6 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
         end
 
         describe 'state filter' do
-          context 'when search_query_builder feature flag is false' do
-            before do
-              stub_feature_flags(search_query_builder: false)
-            end
-
-            it 'does not filter by state in the query' do
-              result.response
-
-              assert_named_queries(without: ['issue:match:state'])
-            end
-          end
-
           it 'does not filter by state in the query' do
             result.response
 
@@ -214,18 +178,6 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
 
           context 'when state option is provided' do
             let(:options) { base_options.merge(state: 'opened') }
-
-            context 'when search_query_builder feature flag is false' do
-              before do
-                stub_feature_flags(search_query_builder: false)
-              end
-
-              it 'filters by state in the query' do
-                result.response
-
-                assert_named_queries('issue:match:state')
-              end
-            end
 
             it 'filters by state in the query' do
               result.response
@@ -241,18 +193,6 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
               allow(user).to receive(:can_admin_all_resources?).and_return(true)
             end
 
-            context 'when search_query_builder feature flag is false' do
-              before do
-                stub_feature_flags(search_query_builder: false)
-              end
-
-              it 'does not filter hidden issues' do
-                result.response
-
-                assert_named_queries(without: ['issue:hidden:non_hidden'])
-              end
-            end
-
             it 'does not filter hidden issues' do
               result.response
 
@@ -265,18 +205,6 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
               allow(user).to receive(:can_admin_all_resources?).and_return(false)
             end
 
-            context 'when search_query_builder feature flag is false' do
-              before do
-                stub_feature_flags(search_query_builder: false)
-              end
-
-              it 'filters hidden issues' do
-                result.response
-
-                assert_named_queries('issue:hidden:non_hidden')
-              end
-            end
-
             it 'filters hidden issues' do
               result.response
 
@@ -286,18 +214,6 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
         end
 
         describe 'label filter' do
-          context 'when search_query_builder feature flag is false' do
-            before do
-              stub_feature_flags(search_query_builder: false)
-            end
-
-            it 'filters the labels in the query' do
-              result.response
-
-              assert_named_queries(without: ['issue:filter:label_ids'])
-            end
-          end
-
           it 'filters the labels in the query' do
             result.response
 
@@ -306,18 +222,6 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
 
           context 'when labels option is provided' do
             let(:options) { base_options.merge(labels: [label.id]) }
-
-            context 'when search_query_builder feature flag is false' do
-              before do
-                stub_feature_flags(search_query_builder: false)
-              end
-
-              it 'filters the labels in the query' do
-                result.response
-
-                assert_named_queries('issue:filter:label_ids')
-              end
-            end
 
             it 'filters the labels in the query' do
               result.response
@@ -331,18 +235,6 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
           context 'when include_archived is set' do
             let(:options) { { include_archived: true } }
 
-            context 'when search_query_builder feature flag is false' do
-              before do
-                stub_feature_flags(search_query_builder: false)
-              end
-
-              it 'does not have a filter for archived' do
-                result.response
-
-                assert_named_queries(without: ['issue:archived:non_archived'])
-              end
-            end
-
             it 'does not have a filter for archived' do
               result.response
 
@@ -352,18 +244,6 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
 
           context 'when include_archived is not set' do
             let(:options) { {} }
-
-            context 'when search_query_builder feature flag is false' do
-              before do
-                stub_feature_flags(search_query_builder: false)
-              end
-
-              it 'does have a filter for archived' do
-                result.response
-
-                assert_named_queries('issue:archived:non_archived')
-              end
-            end
 
             it 'does have a filter for archived' do
               result.response
