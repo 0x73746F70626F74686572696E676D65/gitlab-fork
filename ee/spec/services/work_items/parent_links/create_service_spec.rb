@@ -58,10 +58,13 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
           .and change { legacy_child.reload.try(relationship) }.to(nil)
           .and change { Note.count }.by(2)
 
-        expect(parent_work_item.notes.first.note)
-          .to eq("added #{child_work_item.to_reference} as child #{legacy_child.model_name.element}")
+        full_reference = child_work_item.namespace != parent_work_item.namespace
+
+        expect(parent_work_item.notes.first.note).to eq(
+          "added #{child_work_item.to_reference(full: full_reference)} as child #{legacy_child.model_name.element}"
+        )
         expect(child_work_item.notes.first.note)
-          .to eq("added #{parent_work_item.to_reference} as parent epic")
+          .to eq("added #{parent_work_item.to_reference(full: full_reference)} as parent epic")
       end
     end
 
@@ -213,7 +216,7 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
               create_link
             end
 
-            it 'syncs parent epic and creates notes only for the work items' do
+            it 'syncs parent epic and creates notes only for the work items', :aggregate_failures do
               expect { create_link }.to change { child_issue.reload.epic }.to(parent_epic)
                 .and change { WorkItems::ParentLink.count }.by(1)
                 .and change { Note.count }.by(2)
@@ -222,9 +225,9 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
               expect(child_issue.epic_issue.relative_position).to eq(child_work_item.parent_link.relative_position)
 
               expect(parent_work_item.reload.notes.last.note)
-                .to eq("added #{child_work_item.to_reference} as child issue")
+                .to eq("added #{child_work_item.to_reference(full: true)} as child issue")
               expect(child_work_item.reload.notes.last.note)
-                .to eq("added #{parent_work_item.to_reference} as parent epic")
+                .to eq("added #{parent_work_item.to_reference(full: true)} as parent epic")
             end
 
             context 'when sync_work_item_to_epic feature flag is disabled' do
