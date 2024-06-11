@@ -13,10 +13,12 @@ module Security
         }.freeze
         EXCLUDED_VARIABLES_PATTERNS = %w[_DISABLED _EXCLUDED_PATHS].freeze
         CONDITIONALLY_EXCLUDED_VARIABLES_PATTERNS = %w[_EXCLUDED_ANALYZERS].freeze
+        LATEST_TEMPLATE_TYPE = 'latest'
 
         def config
           scan_type = @action[:scan]
-          ci_configuration = scan_template(scan_type)
+          template = @action[:template]
+          ci_configuration = scan_template(scan_type, template)
           variables = merge_variables(ci_configuration.delete(:variables), @ci_variables)
 
           ci_configuration.reject! { |job_name, _| hidden_job?(job_name) }
@@ -34,9 +36,17 @@ module Security
 
         private
 
-        def scan_template(scan_type)
-          template = ::TemplateFinder.build(:gitlab_ci_ymls, nil, name: SCAN_TEMPLATES[scan_type]).execute
+        def scan_template(scan_type, template)
+          template = ::TemplateFinder.build(:gitlab_ci_ymls, nil, name: scan_template_path(scan_type, template)).execute
           Gitlab::Ci::Config.new(template.content).to_hash
+        end
+
+        def scan_template_path(scan_type, template)
+          scan_template_ci_path = SCAN_TEMPLATES[scan_type]
+          return scan_template_ci_path unless @opts[:scan_execution_policies_with_latest_templates]
+          return scan_template_ci_path if template != LATEST_TEMPLATE_TYPE
+
+          "#{scan_template_ci_path}.#{LATEST_TEMPLATE_TYPE}"
         end
 
         def hidden_job?(job_name)
