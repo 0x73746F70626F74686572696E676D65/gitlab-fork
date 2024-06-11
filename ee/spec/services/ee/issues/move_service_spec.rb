@@ -11,6 +11,7 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
   let(:move_service) { described_class.new(container: old_project, current_user: user) }
 
   before do
+    stub_licensed_features(epics: true)
     old_project.add_reporter(user)
     new_project.add_reporter(user)
   end
@@ -29,25 +30,6 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
         # actually get to the `after_commit` hook that queues these jobs.
         expect { move_service.execute(old_issue, new_project) }
           .not_to raise_error # Sidekiq::Worker::EnqueueFromTransactionError
-      end
-
-      context 'when moved issue belongs to epic' do
-        it 'records epic moved from project event' do
-          create(:epic_issue, issue: old_issue)
-          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_issue_moved_from_project)
-            .with(author: user, namespace: group)
-
-          move_service.execute(old_issue, new_project)
-        end
-      end
-
-      context 'when moved issue does not belong to epic' do
-        it 'does not record epic moved from project event' do
-          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).not_to receive(:track_epic_issue_moved_from_project)
-            .with(author: user, namespace: group)
-
-          move_service.execute(old_issue, new_project)
-        end
       end
 
       context 'when it is not allowed to move issues of given type' do
@@ -93,9 +75,16 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
     context 'issue assigned to epic' do
       let(:epic) { create(:epic, group: group) }
       let(:epic_issue) { create(:epic_issue, issue: old_issue, epic: epic) }
-
-      before do
-        stub_licensed_features(epics: true)
+      let!(:parent_link) do
+        # Create outside the metric time ranges so it doesn't count towards issues_edit_total_unique_counts_monthly
+        travel_to(2.months.ago) do
+          create(
+            :parent_link,
+            work_item: WorkItem.find(old_issue.id),
+            work_item_parent: epic.work_item,
+            namespace_id: old_project.namespace_id
+          )
+        end
       end
 
       context 'when user can update the epic' do
@@ -111,6 +100,8 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
           new_issue = move_service.execute(old_issue, new_project)
 
           expect(new_issue.epic_issue).to eq(epic_issue)
+          expect(parent_link.reload.work_item).to eq(WorkItem.find(new_issue.id))
+          expect(parent_link.namespace_id).to eq(new_project.namespace_id)
         end
 
         it 'tracks usage data for changed epic action', :clean_gitlab_redis_shared_state do
@@ -124,21 +115,15 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
               Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CLOSED,
               Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_MOVED
             ).with(user: user, project: old_project, category: 'InternalEventTracking')
+            .and trigger_internal_events(
+              Gitlab::UsageDataCounters::EpicActivityUniqueCounter::EPIC_ISSUE_MOVED_FROM_PROJECT
+            ).with(user: user, namespace: group, category: 'InternalEventTracking')
             .and increment_usage_metrics(
               "redis_hll_counters.issues_edit.g_project_management_issue_changed_epic_monthly",
               "redis_hll_counters.issues_edit.g_project_management_issue_changed_epic_weekly",
               "redis_hll_counters.issues_edit.issues_edit_total_unique_counts_monthly",
               "redis_hll_counters.issues_edit.issues_edit_total_unique_counts_weekly"
             )
-        end
-
-        context 'epic update fails' do
-          it 'does not send usage data for changed epic action' do
-            allow(old_issue.epic_issue).to receive(:update).and_return(false)
-
-            expect { move_service.execute(old_issue, new_project) }
-              .not_to trigger_internal_events(Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC)
-          end
         end
       end
 
@@ -149,9 +134,81 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
           expect(new_issue.epic_issue).to be_nil
         end
 
-        it 'does not send usage data for changed epic action' do
+        it 'does not send usage data' do
           expect { move_service.execute(old_issue, new_project) }
-            .not_to trigger_internal_events(Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC)
+            .to not_trigger_internal_events(Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC)
+            .and not_trigger_internal_events(
+              Gitlab::UsageDataCounters::EpicActivityUniqueCounter::EPIC_ISSUE_MOVED_FROM_PROJECT
+            )
+        end
+      end
+
+      context 'when epic update fails' do
+        before do
+          epic_issue.epic.group.add_reporter(user)
+        end
+
+        context 'when epic_issue update fails' do
+          before do
+            allow(epic_issue).to receive(:update).and_return(false)
+            errors = ActiveModel::Errors.new(epic_issue).tap { |e| e.add(:base, 'epic_issue error message') }
+            allow(epic_issue).to receive(:errors).and_return(errors)
+          end
+
+          it 'does not update epic_issue or synced parent_link' do
+            expect(Gitlab::AppLogger).to receive(:error)
+              .with("Cannot create association with epic ID: #{epic_issue.epic_id}. Error: epic_issue error message")
+
+            expect { move_service.execute(old_issue, new_project) }.to change { Issue.count }.by(1)
+
+            expect(epic_issue.reload.issue).to eq(old_issue)
+            expect(parent_link.reload.work_item).to eq(WorkItem.find(old_issue.id))
+            expect(parent_link.namespace_id).to eq(old_project.namespace_id)
+          end
+
+          it 'does not send usage data for epic issue actions' do
+            expect { move_service.execute(old_issue, new_project) }
+              .to not_trigger_internal_events(Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC)
+              .and not_trigger_internal_events(
+                Gitlab::UsageDataCounters::EpicActivityUniqueCounter::EPIC_ISSUE_MOVED_FROM_PROJECT
+              )
+          end
+        end
+
+        context 'when synced parent_link update fails' do
+          before do
+            allow_next_found_instance_of(WorkItems::ParentLink) do |instance|
+              allow(instance).to receive(:update).and_return(false)
+
+              errors = ActiveModel::Errors.new(instance).tap { |e| e.add(:base, 'parent_link error message') }
+              allow(instance).to receive(:errors).and_return(errors)
+            end
+          end
+
+          it 'does not send usage data for epic issue actions' do
+            expect { move_service.execute(old_issue, new_project) }
+              .to not_trigger_internal_events(Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC)
+              .and not_trigger_internal_events(
+                Gitlab::UsageDataCounters::EpicActivityUniqueCounter::EPIC_ISSUE_MOVED_FROM_PROJECT
+              )
+          end
+
+          it 'does not update parent_link or epic_issue' do
+            expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error).with(
+              error_message: 'parent_link error message',
+              message: 'Not able to update work item link',
+              work_item_id: old_issue.id
+            )
+
+            expect(Gitlab::AppLogger).to receive(:error)
+              .with("Cannot create association with epic ID: #{epic_issue.epic_id}. Error: ")
+
+            expect { move_service.execute(old_issue, new_project) }.to change { Issue.count }.by(1)
+
+            expect(epic_issue.reload.issue).to eq(old_issue)
+            expect(parent_link.reload.work_item).to eq(WorkItem.find(old_issue.id))
+            expect(parent_link.namespace_id).to eq(old_project.namespace_id)
+          end
         end
       end
     end
