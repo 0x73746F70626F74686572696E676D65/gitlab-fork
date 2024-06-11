@@ -20,9 +20,9 @@ RSpec.describe Resolvers::WorkItemsResolver do
         expect(resolve_items(status_widget: { status: 'missing' })).to contain_exactly(work_item3)
       end
 
-      context 'when work_items_mvc_2 flag is disabled' do
+      context 'when work_items_alpha flag is disabled' do
         before do
-          stub_feature_flags(work_items_mvc_2: false)
+          stub_feature_flags(work_items_alpha: false)
         end
 
         it 'ignores status_widget argument' do
