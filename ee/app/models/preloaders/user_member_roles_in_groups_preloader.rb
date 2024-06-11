@@ -50,14 +50,6 @@ module Preloaders
         FROM (#{value_list.to_sql}) AS namespace_ids (namespace_id, namespace_ids),
         LATERAL (
           (
-           #{Member.select(permission_columns)
-              .left_outer_joins(:member_role)
-              .where("members.source_type = 'Namespace' AND members.source_id = namespace_ids.namespace_id")
-              .with_user(user)
-              .where(permission_condition)
-              .to_sql}
-          ) UNION ALL
-          (
             #{Member.select(permission_columns)
               .left_outer_joins(:member_role)
               .where("members.source_type = 'Namespace' AND members.source_id IN (SELECT UNNEST(namespace_ids) as ids)")

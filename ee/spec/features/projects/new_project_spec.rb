@@ -81,7 +81,7 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
     end
 
     shared_examples 'CI/CD for GitHub' do
-      it 'creates CI/CD project from GitHub' do
+      it 'creates CI/CD project from GitHub', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/455603' do
         visit new_project_path
         click_link 'Run CI/CD for external repository'
 
@@ -140,7 +140,8 @@ RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
         expect(created_project.project_feature).not_to be_issues_enabled
       end
 
-      it 'stays on GitHub import page after access token failure' do
+      it 'stays on GitHub import page after access token failure',
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/455603' do
         visit new_project_path
         click_link 'Run CI/CD for external repository'
 
