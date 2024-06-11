@@ -50588,6 +50588,9 @@ msgstr ""
 msgid "Sorry, no projects matched your search"
 msgstr ""
 
+msgid "Sorry, this page doesn't exist"
+msgstr ""
+
 msgid "Sorry, you have exceeded the maximum browsable page number. Please use the API to explore further."
 msgstr ""
 
@@ -59602,6 +59605,9 @@ msgid "Wiki|The sidebar failed to load. You can reload the page to try again."
 msgstr ""
 
 msgid "Wiki|There are no pages in this wiki yet"
+msgstr ""
+
+msgid "Wiki|Use the sidebar to find a different page."
 msgstr ""
 
 msgid "Wiki|View all pages"
