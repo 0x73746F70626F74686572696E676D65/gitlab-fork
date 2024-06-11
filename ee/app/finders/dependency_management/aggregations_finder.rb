@@ -43,20 +43,28 @@ module DependencyManagement
       orderings.keys
     end
 
-    def outer_order
+    def keyset_order(column_expression_evaluator:, order_expression_evaluator:)
       order_definitions = orderings.map do |column, direction|
-        order_expression = Arel.sql("MIN(outer_occurrences.#{column})")
+        column_expression = column_expression_evaluator.call(column)
+        order_expression = order_expression_evaluator.call(column)
 
         Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
           attribute_name: column.to_s,
-          column_expression: Arel.sql("outer_occurrences.#{column}"),
-          order_expression: direction == :asc ? order_expression.asc : order_expression.desc,
+          column_expression: column_expression,
+          order_expression: direction == :desc ? order_expression.desc : order_expression.asc,
           nullable: :not_nullable,
           order_direction: direction
         )
       end
 
       Gitlab::Pagination::Keyset::Order.build(order_definitions)
+    end
+
+    def outer_order
+      keyset_order(
+        column_expression_evaluator: ->(column) { Arel.sql("outer_occurrences.#{column}") },
+        order_expression_evaluator: ->(column) { Arel.sql("MIN(outer_occurrences.#{column})") }
+      )
     end
 
     def namespaces_cte
@@ -72,19 +80,11 @@ module DependencyManagement
     end
 
     def inner_order
-      order_definitions = orderings.map do |column, direction|
-        column_expression = Sbom::Occurrence.arel_table[column]
-
-        Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
-          attribute_name: column.to_s,
-          column_expression: column_expression,
-          order_expression: direction == :asc ? column_expression.asc : column_expression.desc,
-          nullable: :not_nullable,
-          order_direction: direction
-        )
-      end
-
-      Gitlab::Pagination::Keyset::Order.build(order_definitions)
+      evaluator = ->(column) { Sbom::Occurrence.arel_table[column] }
+      keyset_order(
+        column_expression_evaluator: evaluator,
+        order_expression_evaluator: evaluator
+      )
     end
 
     def outer_occurrences
