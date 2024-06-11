@@ -8483,10 +8483,10 @@ msgstr ""
 msgid "Billing|Cannot remove user"
 msgstr ""
 
-msgid "Billing|Confirm bulk seat allocation"
+msgid "Billing|Confirm bulk seat assignment"
 msgstr ""
 
-msgid "Billing|Confirm bulk seat unassignment"
+msgid "Billing|Confirm bulk seat removal"
 msgstr ""
 
 msgid "Billing|Direct memberships"
