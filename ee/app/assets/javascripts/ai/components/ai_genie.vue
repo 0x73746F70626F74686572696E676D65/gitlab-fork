@@ -162,7 +162,7 @@ export default {
       variant="default"
       icon="question"
       size="small"
-      class="gl-p-0! gl-display-block gl-bg-white! explain-the-code gl-rounded-full!"
+      class="gl-p-0! gl-block gl-bg-white! explain-the-code gl-rounded-full!"
       @click="requestCodeExplanation"
     />
   </div>

@@ -36,7 +36,7 @@ export default {
 
 <template>
   <div>
-    <label class="js-list-label gl-display-block">{{ listTypeHeader }}</label>
+    <label class="js-list-label gl-block">{{ listTypeHeader }}</label>
     <gl-avatar-link
       v-if="boardListType === ListType.assignee"
       class="js-assignee"

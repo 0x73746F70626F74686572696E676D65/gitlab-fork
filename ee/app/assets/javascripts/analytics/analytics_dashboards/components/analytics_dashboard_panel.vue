@@ -305,7 +305,7 @@ export default {
           <span v-else>{{ message }}</span>
         </li>
       </ul>
-      <gl-button v-if="canRetryError" class="gl-display-block gl-mt-3" @click="fetchData">{{
+      <gl-button v-if="canRetryError" class="gl-block gl-mt-3" @click="fetchData">{{
         __('Retry')
       }}</gl-button>
     </template>

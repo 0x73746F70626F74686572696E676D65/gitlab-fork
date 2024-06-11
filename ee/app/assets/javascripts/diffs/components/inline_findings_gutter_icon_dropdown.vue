@@ -157,7 +157,7 @@ export default {
           >
             <p
               data-testid="inline-findings-more-count"
-              class="gl-mb-0 gl-display-block gl-w-3 more-count-copy-dropdown"
+              class="gl-mb-0 gl-block gl-w-3 more-count-copy-dropdown"
             >
               {{ moreCount }}
             </p>

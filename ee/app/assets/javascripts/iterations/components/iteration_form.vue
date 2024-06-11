@@ -286,7 +286,7 @@ export default {
     }}</gl-alert>
     <gl-form class="common-note-form">
       <p v-if="isAutoModeEdit && title">
-        <span class="gl-font-bold gl-display-block gl-pb-3">{{ $options.i18n.form.title }}</span>
+        <span class="gl-font-bold gl-block gl-pb-3">{{ $options.i18n.form.title }}</span>
         <span>{{ title }}</span>
       </p>
       <gl-form-group

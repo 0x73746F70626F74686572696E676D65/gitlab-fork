@@ -15,7 +15,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
         class="gl-mb-2"
       >
         <strong
-          class="gl-display-block"
+          class="gl-block"
         >
           Allowed
         </strong>
@@ -204,7 +204,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
         class="gl-mb-2"
       >
         <strong
-          class="gl-display-block"
+          class="gl-block"
         >
           Denied
         </strong>
@@ -312,7 +312,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
         class="gl-mb-2"
       >
         <strong
-          class="gl-display-block"
+          class="gl-block"
         >
           Uncategorized
         </strong>

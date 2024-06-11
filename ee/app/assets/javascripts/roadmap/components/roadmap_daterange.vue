@@ -100,7 +100,7 @@ export default {
 
 <template>
   <div>
-    <label for="roadmap-daterange" class="gl-display-block">{{ $options.i18n.header }}</label>
+    <label for="roadmap-daterange" class="gl-block">{{ $options.i18n.header }}</label>
     <gl-collapsible-listbox
       id="roadmap-daterange"
       v-model="selectedDaterange"

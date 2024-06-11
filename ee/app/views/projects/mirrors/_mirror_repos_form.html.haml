@@ -9,7 +9,7 @@
 
 .form-group
   = label_tag :mirror_direction, _('Mirror direction'), class: 'label-light'
-  = select_tag :mirror_direction, options_for_select(direction_options), class: 'custom-select gl-form-select js-mirror-direction gl-max-w-34 gl-display-block', disabled: (direction_options.count == 1) || has_existing_pull_mirror, data: { testid: 'mirror-direction-field' }
+  = select_tag :mirror_direction, options_for_select(direction_options), class: 'custom-select gl-form-select js-mirror-direction gl-max-w-34 gl-block', disabled: (direction_options.count == 1) || has_existing_pull_mirror, data: { testid: 'mirror-direction-field' }
 
 .js-form-insertion-point
 

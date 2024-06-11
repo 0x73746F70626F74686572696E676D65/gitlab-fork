@@ -823,7 +823,7 @@ export default {
       </gl-form-group>
 
       <div class="gl-mb-5">
-        <label class="gl-display-block gl-font-lg gl-mb-3">{{ $options.i18n.HEADERS_LABEL }}</label>
+        <label class="gl-block gl-font-lg gl-mb-3">{{ $options.i18n.HEADERS_LABEL }}</label>
         <gl-table-lite :items="headers" :fields="$options.fields">
           <template #cell(active)="{ index, item: { active } }">
             <gl-form-checkbox
@@ -920,12 +920,12 @@ export default {
       </div>
 
       <div class="gl-mb-5">
-        <label class="gl-display-block gl-font-lg" data-testid="filtering-header">{{
+        <label class="gl-block gl-font-lg" data-testid="filtering-header">{{
           $options.i18n.HEADER_FILTERING
         }}</label>
         <div class="gl-ml-5">
           <label
-            class="gl-display-block gl-mb-3 gl-mt-5"
+            class="gl-block gl-mb-3 gl-mt-5"
             for="audit-event-type-filter"
             data-testid="event-type-filtering-header"
             >{{ $options.i18n.FILTER_BY_AUDIT_EVENT_TYPE }}</label
@@ -934,7 +934,7 @@ export default {
         </div>
         <div v-if="!isInstance" class="gl-ml-5">
           <label
-            class="gl-display-block gl-mb-3 gl-mt-5"
+            class="gl-block gl-mb-3 gl-mt-5"
             for="audit-event-namespace-filter"
             data-testid="event-namespace-filtering-header"
             >{{ $options.i18n.FILTER_BY_NAMESPACE }}</label

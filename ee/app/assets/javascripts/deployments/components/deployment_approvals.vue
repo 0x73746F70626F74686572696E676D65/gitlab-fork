@@ -172,7 +172,7 @@ export default {
     class="gl-border-l gl-border-t gl-border-r gl-rounded-base"
     :class="classes"
   >
-    <div class="gl-display-block gl-m-5 gl-font-bold" data-testid="deployment-approval-header">
+    <div class="gl-block gl-m-5 gl-font-bold" data-testid="deployment-approval-header">
       <gl-icon name="approval" class="gl-mr-2" /> <span>{{ header }}</span>
     </div>
     <multiple-approval-rules-table :rules="approvalSummary.rules" @select-rule="onRuleSelected" />

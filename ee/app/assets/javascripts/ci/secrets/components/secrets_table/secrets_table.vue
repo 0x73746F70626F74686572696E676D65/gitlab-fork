@@ -163,11 +163,7 @@ export default {
       </template>
       <gl-table-lite :fields="$options.fields" :items="secretsNodes" stacked="md" class="gl-mb-0">
         <template #cell(name)="{ item: { id, name, labels } }">
-          <router-link
-            data-testid="secret-details-link"
-            :to="getDetailsRoute(id)"
-            class="gl-display-block"
-          >
+          <router-link data-testid="secret-details-link" :to="getDetailsRoute(id)" class="gl-block">
             {{ name }}
           </router-link>
           <gl-label
