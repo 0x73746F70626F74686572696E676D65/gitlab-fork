@@ -72,7 +72,7 @@ const mountWikiContentApp = () => {
   });
 };
 
-const mountWikiSidebarEntries = () => {
+export const mountWikiSidebarEntries = () => {
   const el = document.querySelector('#js-wiki-sidebar-entries');
   if (!el) return false;
 
@@ -94,7 +94,6 @@ const mountWikiSidebarEntries = () => {
 
 export const mountApplications = () => {
   mountWikiContentApp();
-  mountWikiSidebarEntries();
 
   new Wikis(); // eslint-disable-line no-new
 };
