@@ -102,7 +102,7 @@ module Gitlab
               @options ||= {
                 tool_names: tools.map { |tool_class| tool_class::Executor::NAME }.join(', '),
                 tools_definitions: tools.map do |tool_class|
-                  tool_class::Executor.full_definition(use_experimental_prompt: use_experimental_prompt?)
+                  tool_class::Executor.full_definition
                 end.join("\n"),
                 user_input: user_input,
                 agent_scratchpad: +"",
@@ -154,11 +154,7 @@ module Gitlab
             end
 
             def zero_shot_prompt
-              use_experimental_prompt? ? ZERO_SHOT_EXPERIMENTAL_PROMPT : ZERO_SHOT_PROMPT
-            end
-
-            def use_experimental_prompt?
-              Feature.enabled?(:prevent_issue_epic_search, context.current_user)
+              ZERO_SHOT_PROMPT
             end
 
             def last_conversation
@@ -198,11 +194,7 @@ module Gitlab
             end
 
             def current_resource
-              if use_experimental_prompt?
-                context.current_page_experimental_short_description
-              else
-                context.current_page_short_description
-              end
+              context.current_page_short_description
             rescue ArgumentError
               ""
             end
@@ -217,51 +209,6 @@ module Gitlab
             end
 
             ZERO_SHOT_PROMPT = <<~PROMPT.freeze
-                  Answer the question as accurate as you can.
-
-                  You have access only to the following tools:
-                  <tool_list>
-                  %<tools_definitions>s
-                  </tool_list>
-                  Consider every tool before making a decision.
-                  Ensure that your answer is accurate and contain only information directly supported by the information retrieved using provided tools.
-
-                  When you can answer the question directly you must use this response format:
-                  Thought: you should always think about how to answer the question
-                  Action: DirectAnswer
-                  Final Answer: the final answer to the original input question if you have a direct answer to the user's question.
-
-                  You must always use the following format when using a tool:
-                  Question: the input question you must answer
-                  Thought: you should always think about what to do
-                  Action: the action to take, should be one tool from this list: [%<tool_names>s]
-                  Action Input: the input to the action needs to be provided for every action that uses a tool.
-                  Observation: the result of the tool actions. But remember that you're still #{AGENT_NAME}.
-
-
-                  ... (this Thought/Action/Action Input/Observation sequence can repeat N times)
-
-                  Thought: I know the final answer.
-                  Final Answer: the final answer to the original input question.
-
-                  When concluding your response, provide the final answer as "Final Answer:". It should contain everything that user needs to see, including answer from "Observation" section.
-                  %<current_code>s
-
-                  You have access to the following GitLab resources: %<resources>s.
-                  You also have access to all information that can be helpful to someone working in software development of any kind.
-                  At the moment, you do not have access to the following GitLab resources: Merge Requests, Pipelines, Vulnerabilities.
-
-                  %<source_template>s
-
-                  Avoid asking for more details if you cannot provide an answer anyway.
-                  Ask user to leave feedback.
-
-                  %<current_resource>s
-
-                  Begin!
-            PROMPT
-
-            ZERO_SHOT_EXPERIMENTAL_PROMPT = <<~PROMPT.freeze
                   Answer the question as accurate as you can.
 
                   You have access only to the following tools:

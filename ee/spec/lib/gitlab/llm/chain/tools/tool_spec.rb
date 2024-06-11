@@ -136,21 +136,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
       XML
     end
 
-    let(:experimental_definition) do
-      <<~XML.chomp
-       <tool>
-       <tool_name>TEST_TOOL</tool_name>
-       <description>
-       #{experimental_description}
-       </description>
-       <example>
-       EXAMPLE
-       </example>
-       </tool>
-      XML
-    end
-
-    let(:expected_description) { 'No feature flag description' }
+    let(:expected_description) { 'TEST' }
 
     before do
       stub_const("#{described_class.name}::NAME", 'TEST_TOOL')
@@ -158,39 +144,9 @@ RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :duo_chat do
       stub_const("#{described_class.name}::EXAMPLE", 'EXAMPLE')
     end
 
-    context 'when experimental description constant is not defined' do
-      context 'when experimental prompt is enabled' do
-        it 'returns default description of the tool' do
-          expect(described_class.full_definition(use_experimental_prompt: true)).to eq(definition)
-        end
-      end
-
-      context 'when experimental prompt is not enabled' do
-        stub_feature_flags(prevent_issue_epic_search: false)
-
-        it 'returns default description of the tool' do
-          expect(described_class.full_definition).to eq(definition)
-        end
-      end
-    end
-
-    context 'when experimental description constant is defined' do
-      let(:experimental_description) { 'Experimental description' }
-
-      before do
-        stub_const("#{described_class.name}::EXPERIMENTAL_TOOL_DESCRIPTION", experimental_description)
-      end
-
-      context 'when experimental prompt is enabled' do
-        it 'returns experimental description of the tool' do
-          expect(described_class.full_definition(use_experimental_prompt: true)).to eq(experimental_definition)
-        end
-      end
-
-      context 'when experimental prompt is not enabled' do
-        it 'returns default description of the tool' do
-          expect(described_class.full_definition).to eq(definition)
-        end
+    context 'when description is defined' do
+      it 'returns detailed description of the tool' do
+        expect(described_class.full_definition).to eq(definition)
       end
     end
   end

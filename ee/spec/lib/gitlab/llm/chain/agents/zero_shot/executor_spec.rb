@@ -237,36 +237,11 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       expect(system_prompt(agent)).to include(source_template)
     end
 
-    context 'with the `prevent_issue_epic_search` feature flag' do
-      before do
-        stub_const("#{described_class.name}::ZERO_SHOT_EXPERIMENTAL_PROMPT", 'I am an experimental prompt.')
-      end
+    it 'includes prompt in the options' do
+      expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
+        .to receive(:prompt).once.with(a_hash_including(prompt_options))
 
-      context 'when experimental feature flag is enabled' do
-        let(:prompt_options) { { zero_shot_prompt: described_class::ZERO_SHOT_EXPERIMENTAL_PROMPT } }
-
-        it 'includes the experimental prompt in the prompt options' do
-          expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
-            .to receive(:prompt).once.with(a_hash_including(prompt_options))
-
-          agent.prompt
-        end
-      end
-
-      context 'when experimental feature flag is not enabled' do
-        let(:prompt_options) { { zero_shot_prompt: described_class::ZERO_SHOT_PROMPT } }
-
-        before do
-          stub_feature_flags(prevent_issue_epic_search: false)
-        end
-
-        it 'includes the default prompt options' do
-          expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
-            .to receive(:prompt).once.with(a_hash_including(prompt_options))
-
-          agent.prompt
-        end
-      end
+      agent.prompt
     end
 
     context 'when agent_version is passed' do
@@ -313,10 +288,6 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
           XML
         end
 
-        before do
-          stub_feature_flags(prevent_issue_epic_search: false)
-        end
-
         let(:prompt_resource) do
           <<~CONTEXT
             <resource>
@@ -326,7 +297,6 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
         end
 
         let(:short_description) { 'short description' }
-        let(:experimental_short_description) { 'experimental short description' }
 
         it 'does not include the current resource metadata' do
           expect(context).not_to receive(:resource_serialized)
@@ -336,18 +306,6 @@ prompt_version: described_class::CUSTOM_AGENT_PROMPT_TEMPLATE }))
         it 'includes the shortened resource description' do
           expect(context).to receive(:current_page_short_description).and_return(short_description)
           expect(system_prompt(agent)).to include(short_description)
-        end
-
-        context 'when the `prevent_issue_epic_search` is enabled' do
-          before do
-            stub_feature_flags(prevent_issue_epic_search: true)
-          end
-
-          it 'returns experimental short description' do
-            expect(context).to receive(:current_page_experimental_short_description)
-                                 .and_return(experimental_short_description)
-            expect(system_prompt(agent)).to include(experimental_short_description)
-          end
         end
       end
 
