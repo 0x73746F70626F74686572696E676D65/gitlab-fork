@@ -4,6 +4,7 @@ module Users
   class RegistrationsIdentityVerificationController < BaseIdentityVerificationController
     include AcceptsPendingInvitations
     include ::Gitlab::Utils::StrongMemoize
+    include ::Gitlab::InternalEventsTracking
     extend ::Gitlab::Utils::Override
 
     helper_method :onboarding_status
@@ -29,6 +30,8 @@ module Users
 
     def verify_arkose_labs_session
       unless verify_arkose_labs_token(user: @user)
+        track_internal_event("fail_arkose_challenge_during_registration", user: @user)
+
         flash[:alert] = s_('IdentityVerification|Complete verification to sign up.')
         return render action: :arkose_labs_challenge
       end
