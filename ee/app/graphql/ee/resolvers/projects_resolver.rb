@@ -13,6 +13,9 @@ module EE
         argument :include_hidden, GraphQL::Types::Boolean,
           required: false,
           description: 'Include hidden projects.'
+        argument :marked_for_deletion_on, ::Types::DateType,
+          required: false,
+          description: 'Date when the project was marked for deletion.'
       end
 
       private
@@ -27,7 +30,7 @@ module EE
 
       override :finder_params
       def finder_params(args)
-        super(args).merge(args.slice(:aimed_for_deletion, :include_hidden))
+        super(args).merge(args.slice(:aimed_for_deletion, :include_hidden, :marked_for_deletion_on))
       end
     end
   end
