@@ -25,6 +25,13 @@ module EE
         subscription: 'subscription'
       }.freeze
 
+      REGISTRATION_KLASSES = {
+        REGISTRATION_TYPE[:free] => ::Onboarding::FreeRegistration,
+        REGISTRATION_TYPE[:trial] => ::Onboarding::TrialRegistration,
+        REGISTRATION_TYPE[:invite] => ::Onboarding::InviteRegistration,
+        REGISTRATION_TYPE[:subscription] => ::Onboarding::SubscriptionRegistration
+      }.freeze
+
       module ClassMethods
         def enabled?
           ::Gitlab::Saas.feature_available?(:onboarding)
@@ -33,6 +40,16 @@ module EE
 
       def self.prepended(base)
         base.singleton_class.prepend ClassMethods
+      end
+
+      attr_reader :registration_type
+
+      delegate :redirect_to_company_form?, to: :registration_type
+
+      def initialize(*)
+        super
+
+        @registration_type = calculate_registration_type_klass
       end
 
       def continue_full_onboarding?
@@ -44,10 +61,6 @@ module EE
 
       def joining_a_project?
         ::Gitlab::Utils.to_boolean(params[:joining_project], default: false)
-      end
-
-      def redirect_to_company_form?
-        trial? || converted_to_automatic_trial?
       end
 
       def convert_to_automatic_trial?
@@ -100,7 +113,6 @@ module EE
       def setup_for_company?
         ::Gitlab::Utils.to_boolean(params.dig(:user, :setup_for_company), default: false)
       end
-      alias_method :converted_to_automatic_trial?, :setup_for_company?
 
       def enabled?
         self.class.enabled?
@@ -156,6 +168,10 @@ module EE
       private
 
       attr_reader :params, :session
+
+      def calculate_registration_type_klass
+        REGISTRATION_KLASSES.fetch(user&.onboarding_status_registration_type, ::Onboarding::FreeRegistration)
+      end
 
       def subscription_from_stored_location?
         base_stored_user_location_path == ::Gitlab::Routing.url_helpers.new_subscriptions_path

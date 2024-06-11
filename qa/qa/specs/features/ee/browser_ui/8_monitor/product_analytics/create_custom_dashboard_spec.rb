@@ -69,7 +69,7 @@ module QA
           panels = dashboard.panels
           aggregate_failures 'test custom dashboard' do
             expect(panels.count).to equal(1)
-            expect(panels[0]).to have_content('Total events')
+            expect(dashboard.panel_title(panel_index: 0)).to eq('Total events')
             expect(dashboard.panel_value_content(panel_index: 0)).to eq(1)
           end
         end

@@ -46,22 +46,38 @@ RSpec.describe Onboarding::Status, feature_category: :onboarding do
     end
   end
 
-  describe '#redirect_to_company_form?' do
-    where(:converted_to_automatic_trial?, :trial?, :expected_result) do
-      true  | false | true
-      false | false | false
-      false | true  | true
+  describe '#registration_type' do
+    where(:registration_type, :expected_klass) do
+      'free'         | ::Onboarding::FreeRegistration
+      'trial'        | ::Onboarding::TrialRegistration
+      'invite'       | ::Onboarding::InviteRegistration
+      'subscription' | ::Onboarding::SubscriptionRegistration
+      nil            | ::Onboarding::FreeRegistration
     end
 
     with_them do
-      let(:instance) { described_class.new({}, nil, nil) }
+      let(:current_user) { build(:user, onboarding_status_registration_type: registration_type) }
+
+      specify do
+        expect(described_class.new({}, nil, current_user).registration_type).to eq expected_klass
+      end
+    end
+  end
+
+  describe '#redirect_to_company_form?' do
+    where(:registration_type, :expected_result) do
+      'free'         | false
+      'trial'        | true
+      'invite'       | false
+      'subscription' | false
+      nil            | false
+    end
+
+    with_them do
+      let(:current_user) { build(:user, onboarding_status_registration_type: registration_type) }
+      let(:instance) { described_class.new({}, nil, current_user) }
 
       subject { instance.redirect_to_company_form? }
-
-      before do
-        allow(instance).to receive(:trial?).and_return(trial?)
-        allow(instance).to receive(:converted_to_automatic_trial?).and_return(converted_to_automatic_trial?)
-      end
 
       it { is_expected.to eq(expected_result) }
     end
