@@ -223,7 +223,7 @@ An administrator can make this option the default in the project's settings.
 
 DETAILS:
 **Tier:** Free, Premium, Ultimate
-**Offering:** Self-managed
+**Offering:** GitLab.com, Self-managed, GitLab Dedicated
 
 Merge requests are often chained together, with one merge request depending on
 the code added or changed in another merge request. To support keeping individual
