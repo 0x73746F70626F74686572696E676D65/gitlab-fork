@@ -2225,6 +2225,9 @@ msgstr ""
 msgid "AI|Wrong"
 msgstr ""
 
+msgid "AI|Your request does not seems to contain code to %{action}. To %{human_name} select the lines of code in your editor and then type the command %{command_name} in the chat. You may add additional instructions after this comment. If you have no code to select, you can also simply add the code after the command."
+msgstr ""
+
 msgid "API"
 msgstr ""
 

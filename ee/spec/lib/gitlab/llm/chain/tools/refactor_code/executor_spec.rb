@@ -10,6 +10,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Executor, feature_catego
   let(:options) { { input: input } }
   let(:stream_response_handler) { nil }
   let(:command) { nil }
+  let(:command_name) { '/refactor' }
 
   let(:context) do
     Gitlab::Llm::Chain::GitlabContext.new(

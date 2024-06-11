@@ -3,8 +3,6 @@
 module Gitlab
   module Llm
     class Tracking
-      VS_CODE_USER_AGENT_REGEX = /\Avs-code-gitlab-workflow/
-
       def self.event_for_ai_message(category, action, ai_message:)
         ::Gitlab::Tracking.event(
           category,
@@ -19,7 +17,7 @@ module Gitlab
       def self.client_for_user_agent(user_agent)
         return unless user_agent.present?
 
-        user_agent.match?(VS_CODE_USER_AGENT_REGEX) ? 'vscode' : 'web'
+        user_agent.match?(Gitlab::Regex.vs_code_user_agent_regex) ? 'vscode' : 'web'
       end
       private_class_method :client_for_user_agent
     end
