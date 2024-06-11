@@ -33,7 +33,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceCreator, featur
     }
   end
 
-  let(:value) do
+  let(:context) do
     {
       params: params,
       current_user: user,
@@ -52,7 +52,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceCreator, featur
   end
 
   subject(:result) do
-    described_class.create(value) # rubocop:disable Rails/SaveBang -- this is not an ActiveRecord method
+    described_class.create(context) # rubocop:disable Rails/SaveBang -- this is not an ActiveRecord method
   end
 
   context 'when workspace create is successful' do
@@ -83,7 +83,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceCreator, featur
 
       expect(result).to be_err_result do |message|
         expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceModelCreateFailed)
-        message.context => { errors: ActiveModel::Errors => errors }
+        message.content => { errors: ActiveModel::Errors => errors }
         expect(errors.full_messages).to match([/desired state/i])
       end
     end

@@ -8,15 +8,15 @@ RSpec.describe ::RemoteDevelopment::NamespaceClusterAgentMappings::Create::Mappi
   let_it_be(:namespace) { create(:group) }
   let_it_be(:agent) { create(:cluster_agent) }
   let_it_be(:user) { create(:user) }
-  let(:value) { { namespace: namespace, cluster_agent: agent, user: user } }
+  let(:context) { { namespace: namespace, cluster_agent: agent, user: user } }
 
   subject(:result) do
-    described_class.create(value) # rubocop:disable Rails/SaveBang -- this isn't ActiveRecord
+    described_class.create(context) # rubocop:disable Rails/SaveBang -- this isn't ActiveRecord
   end
 
   context 'when a mapping exists for the same cluster agent and group' do
     before do
-      described_class.create(value) # rubocop:disable Rails/SaveBang -- this isn't ActiveRecord
+      described_class.create(context) # rubocop:disable Rails/SaveBang -- this isn't ActiveRecord
     end
 
     it 'returns an err Result indicating that a mapping already exists' do
@@ -31,7 +31,7 @@ RSpec.describe ::RemoteDevelopment::NamespaceClusterAgentMappings::Create::Mappi
 
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::NamespaceClusterAgentMappingCreateFailed)
-          message.context => { errors: ActiveModel::Errors => errors }
+          message.content => { errors: ActiveModel::Errors => errors }
           expect(errors.full_messages).to match([/#{expected_error_details}/i])
         end
       end
@@ -63,7 +63,7 @@ RSpec.describe ::RemoteDevelopment::NamespaceClusterAgentMappings::Create::Mappi
     it 'returns an ok Result containing the recently added mapping' do
       expect(result).to be_ok_result
       expect(result.unwrap).to be_a(RemoteDevelopment::Messages::NamespaceClusterAgentMappingCreateSuccessful)
-      new_mapping = result.unwrap.context[:namespace_cluster_agent_mapping]
+      new_mapping = result.unwrap.content[:namespace_cluster_agent_mapping]
 
       # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       expect(new_mapping.cluster_agent_id).to be(agent.id)

@@ -3,7 +3,7 @@
 require_relative '../../rd_fast_spec_helper'
 
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
-  let(:value_passed_along_steps) { {} }
+  let(:context_passed_along_steps) { {} }
   let(:response_payload) do
     {
       workspace_rails_infos: [],
@@ -27,7 +27,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature
   end
 
   describe "happy path" do
-    let(:value_passed_along_steps) do
+    let(:context_passed_along_steps) do
       {
         ok_details: "Everything is OK!",
         response_payload: response_payload
@@ -44,11 +44,11 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature
     it "returns expected response" do
       # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       expect do
-        described_class.main(value_passed_along_steps)
+        described_class.main(context_passed_along_steps)
       end
         .to invoke_rop_steps(rop_steps)
               .from_main_class(described_class)
-              .with_value_passed_along_steps(value_passed_along_steps)
+              .with_context_passed_along_steps(context_passed_along_steps)
               .and_return_expected_value(expected_response)
     end
   end
@@ -61,11 +61,11 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature
       it "returns expected response" do
         # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect do
-          described_class.main(value_passed_along_steps)
+          described_class.main(context_passed_along_steps)
         end
           .to invoke_rop_steps(rop_steps)
                 .from_main_class(described_class)
-                .with_value_passed_along_steps(value_passed_along_steps)
+                .with_context_passed_along_steps(context_passed_along_steps)
                 .with_err_result_for_step(err_result_for_step)
                 .and_return_expected_value(expected_response)
       end

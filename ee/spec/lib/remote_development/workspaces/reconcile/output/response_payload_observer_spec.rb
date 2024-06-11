@@ -60,7 +60,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
     }
   end
 
-  let(:value) do
+  let(:context) do
     {
       agent: agent,
       update_type: update_type,
@@ -77,7 +77,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
   end
 
   subject(:returned_value) do
-    described_class.observe(value)
+    described_class.observe(context)
   end
 
   it "logs workspace_rails_infos", :unlimited_max_formatted_output_length do
@@ -96,6 +96,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
       observability_for_rails_infos: expected_observability_for_rails_infos
     )
 
-    expect(returned_value).to eq(value)
+    expect(returned_value).to eq(context)
   end
 end

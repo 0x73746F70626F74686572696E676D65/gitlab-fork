@@ -3,7 +3,7 @@
 require_relative '../rd_fast_spec_helper'
 
 RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
-  let(:value_passed_along_steps) { {} }
+  let(:context_passed_along_steps) { {} }
 
   let(:rop_steps) do
     [
@@ -20,11 +20,11 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
       it "returns expected response" do
         # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
         expect do
-          described_class.main(value_passed_along_steps)
+          described_class.main(context_passed_along_steps)
         end
           .to invoke_rop_steps(rop_steps)
                 .from_main_class(described_class)
-                .with_value_passed_along_steps(value_passed_along_steps)
+                .with_context_passed_along_steps(context_passed_along_steps)
                 .with_ok_result_for_step(result_for_step)
                 .and_return_expected_value(expected_response)
       end
@@ -71,11 +71,11 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
       it "returns expected response" do
         # noinspection RubyResolve -- TODO: open issue and add to https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues
         expect do
-          described_class.main(value_passed_along_steps)
+          described_class.main(context_passed_along_steps)
         end
           .to invoke_rop_steps(rop_steps)
                 .from_main_class(described_class)
-                .with_value_passed_along_steps(value_passed_along_steps)
+                .with_context_passed_along_steps(context_passed_along_steps)
                 .with_err_result_for_step(err_result_for_step)
                 .and_return_expected_value(expected_response)
       end

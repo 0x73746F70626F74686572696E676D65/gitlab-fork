@@ -34,7 +34,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
     }
   end
 
-  let(:value) do
+  let(:context) do
     {
       update_type: update_type,
       workspaces_to_be_returned: [workspace],
@@ -72,7 +72,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
   end
 
   let(:expected_returned_value) do
-    value.merge(
+    context.merge(
       response_payload: {
         workspace_rails_infos: returned_workspace_rails_infos,
         settings: settings
@@ -90,7 +90,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::ResponsePayload
   end
 
   subject(:returned_value) do
-    described_class.build(value)
+    described_class.build(context)
   end
 
   before do

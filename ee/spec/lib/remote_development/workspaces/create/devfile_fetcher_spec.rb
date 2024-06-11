@@ -8,7 +8,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
   include_context 'with remote development shared fixtures'
 
   subject(:result) do
-    described_class.fetch(value)
+    described_class.fetch(context)
   end
 
   let_it_be(:user) { create(:user) }
@@ -34,7 +34,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
     }
   end
 
-  let(:value) { { params: params } }
+  let(:context) { { params: params } }
 
   before do
     allow(project.repository).to receive_message_chain(:blob_at_branch, :data) { devfile_yaml }
@@ -64,7 +64,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
 
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateParamsValidationFailed)
-          message.context => { details: String => error_details }
+          message.content => { details: String => error_details }
           expect(error_details).to eq("No RemoteDevelopmentAgentConfig found for agent '#{agent.name}'")
         end
       end
@@ -80,7 +80,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
       it 'returns an err Result containing error details' do
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateDevfileLoadFailed)
-          message.context => { details: String => error_details }
+          message.content => { details: String => error_details }
           expect(error_details)
             .to eq("Devfile path '#{devfile_path}' at ref '#{devfile_ref}' does not exist in project repository")
         end
@@ -95,7 +95,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
       it 'returns an err Result containing error details' do
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateDevfileLoadFailed)
-          message.context => { details: String => error_details }
+          message.content => { details: String => error_details }
           expect(error_details).to eq("Devfile could not be loaded from project")
         end
       end
@@ -107,7 +107,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
       it 'returns an err Result containing error details' do
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateDevfileYamlParseFailed)
-          message.context => { details: String => error_details }
+          message.content => { details: String => error_details }
           expect(error_details).to match(/Devfile YAML could not be parsed: .*mapping values are not allowed/i)
         end
       end
@@ -119,7 +119,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
       it 'returns an err Result containing error details' do
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreateDevfileYamlParseFailed)
-          message.context => { details: String => error_details }
+          message.content => { details: String => error_details }
           expect(error_details).to match(/Devfile YAML could not be parsed: Invalid Unicode \[91 ec\] at 0/i)
         end
       end

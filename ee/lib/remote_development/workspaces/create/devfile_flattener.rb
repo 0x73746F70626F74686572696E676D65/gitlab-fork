@@ -6,10 +6,10 @@ module RemoteDevelopment
       class DevfileFlattener
         include Messages
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.flatten(value)
-          value => { devfile: Hash => devfile }
+        def self.flatten(context)
+          context => { devfile: Hash => devfile }
 
           begin
             flattened_devfile_yaml = Devfile::Parser.flatten(YAML.dump(devfile))
@@ -25,7 +25,7 @@ module RemoteDevelopment
 
           processed_devfile['components'] ||= []
 
-          Result.ok(value.merge(processed_devfile: processed_devfile))
+          Result.ok(context.merge(processed_devfile: processed_devfile))
         end
       end
     end

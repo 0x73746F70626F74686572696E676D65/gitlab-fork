@@ -21,16 +21,16 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ParamsValidator,
     }
   end
 
-  let(:value) { { original_params: original_params } }
+  let(:context) { { original_params: original_params } }
 
   subject(:result) do
-    described_class.validate(value)
+    described_class.validate(context)
   end
 
   context 'when original_params are valid' do
     shared_examples 'success result' do
-      it 'return an ok Result containing the original value which was passed' do
-        expect(result).to eq(Result.ok(value))
+      it 'return an ok Result containing the original context which was passed' do
+        expect(result).to eq(Result.ok(context))
       end
     end
 
@@ -69,7 +69,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ParamsValidator,
       it 'returns an err Result containing error details nil original_params and an error' do
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceReconcileParamsValidationFailed)
-          message.context => { details: String => error_details }
+          message.content => { details: String => error_details }
           expect(error_details).to eq(expected_error_details)
         end
       end
@@ -112,7 +112,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ParamsValidator,
           "property '/workspace_agent_infos/0/error_details' is missing required keys: error_type"
       end
 
-      context 'when error_type has an invalid value' do
+      context 'when error_type has an invalid context' do
         let(:workspace_error_details) do
           {
             error_type: "INVALID ERROR TYPE",

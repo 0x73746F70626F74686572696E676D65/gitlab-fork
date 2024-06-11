@@ -6,10 +6,10 @@ module RemoteDevelopment
       class VolumeComponentInjector
         include Messages
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Hash]
-        def self.inject(value)
-          value => { processed_devfile: Hash => processed_devfile, volume_mounts: Hash => volume_mounts }
+        def self.inject(context)
+          context => { processed_devfile: Hash => processed_devfile, volume_mounts: Hash => volume_mounts }
           volume_mounts => { data_volume: Hash => data_volume }
           data_volume => {
             name: String => volume_name,
@@ -31,7 +31,7 @@ module RemoteDevelopment
             component['container']['volumeMounts'] += [{ 'name' => volume_name, 'path' => volume_path }]
           end
 
-          value
+          context
         end
       end
     end

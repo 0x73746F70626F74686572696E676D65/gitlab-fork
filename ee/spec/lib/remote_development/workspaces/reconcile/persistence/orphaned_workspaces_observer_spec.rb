@@ -29,7 +29,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::OrphanedWo
 
   let(:workspaces_from_agent_infos) { [workspace] }
 
-  let(:value) do
+  let(:context) do
     {
       agent: agent,
       update_type: update_type,
@@ -40,7 +40,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::OrphanedWo
   end
 
   subject(:returned_value) do
-    described_class.observe(value)
+    described_class.observe(context)
   end
 
   context "when orphaned workspaces exist" do
@@ -67,7 +67,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::OrphanedWo
         ]
       )
 
-      expect(returned_value).to eq(value)
+      expect(returned_value).to eq(context)
     end
   end
 
@@ -81,7 +81,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Persistence::OrphanedWo
     it "does not log" do
       expect(logger).not_to receive(:warn)
 
-      expect(returned_value).to eq(value)
+      expect(returned_value).to eq(context)
     end
   end
 end

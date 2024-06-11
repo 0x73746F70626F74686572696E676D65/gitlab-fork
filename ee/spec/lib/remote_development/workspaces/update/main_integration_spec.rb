@@ -11,10 +11,10 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Update::Main, "Integration", fea
 
   let(:new_desired_state) { RemoteDevelopment::Workspaces::States::STOPPED }
   let(:params) { { desired_state: new_desired_state } }
-  let(:value) { { workspace: workspace, current_user: current_user, params: params } }
+  let(:context) { { workspace: workspace, current_user: current_user, params: params } }
 
   subject(:response) do
-    described_class.main(value)
+    described_class.main(context)
   end
 
   before do

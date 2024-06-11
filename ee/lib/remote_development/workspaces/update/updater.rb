@@ -7,10 +7,10 @@ module RemoteDevelopment
         include Messages
         include States
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.update(value)
-          value => { workspace: RemoteDevelopment::Workspace => workspace, params: Hash => params }
+        def self.update(context)
+          context => { workspace: RemoteDevelopment::Workspace => workspace, params: Hash => params }
           model_errors = nil
 
           ApplicationRecord.transaction do

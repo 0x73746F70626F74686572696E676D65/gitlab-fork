@@ -15,7 +15,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ProjectClonerComponentInje
   let(:expected_processed_devfile_name) { 'example.project-cloner-injected-devfile.yaml' }
   let(:expected_processed_devfile) { YAML.safe_load(read_devfile(expected_processed_devfile_name)).to_h }
   let(:component_name) { "gl-cloner-injector" }
-  let(:value) do
+  let(:context) do
     {
       params: {
         project: project,
@@ -34,7 +34,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ProjectClonerComponentInje
   end
 
   subject(:returned_value) do
-    described_class.inject(value)
+    described_class.inject(context)
   end
 
   it "injects the project cloner component" do

@@ -16,7 +16,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PersonalAccessTokenCreat
     }
   end
 
-  let(:value) do
+  let(:context) do
     {
       params: params,
       current_user: user,
@@ -25,7 +25,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PersonalAccessTokenCreat
   end
 
   subject(:result) do
-    described_class.create(value) # rubocop:disable Rails/SaveBang -- we are testing validation, we don't want an exception
+    described_class.create(context) # rubocop:disable Rails/SaveBang -- we are testing validation, we don't want an exception
   end
 
   context 'when personal access token creation is successful' do
@@ -47,7 +47,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PersonalAccessTokenCreat
 
       expect(result).to be_err_result do |message|
         expect(message).to be_a(RemoteDevelopment::Messages::PersonalAccessTokenModelCreateFailed)
-        message.context => { errors: ActiveModel::Errors => errors }
+        message.content => { errors: ActiveModel::Errors => errors }
         expect(errors.full_messages).to match([/expiration date/i])
       end
     end

@@ -24,10 +24,10 @@ module RemoteDevelopment
         # Currently, we only support `preStart` events
         SUPPORTED_EVENTS = %w[preStart].freeze
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.validate(value)
-          Result.ok(value)
+        def self.validate(context)
+          Result.ok(context)
                 .and_then(method(:validate_projects))
                 .and_then(method(:validate_components))
                 .and_then(method(:validate_containers))
@@ -37,21 +37,21 @@ module RemoteDevelopment
                 .and_then(method(:validate_variables))
         end
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.validate_projects(value)
-          value => { processed_devfile: Hash => processed_devfile }
+        def self.validate_projects(context)
+          context => { processed_devfile: Hash => processed_devfile }
 
           return err(_("'starterProjects' is not yet supported")) if processed_devfile['starterProjects']
           return err(_("'projects' is not yet supported")) if processed_devfile['projects']
 
-          Result.ok(value)
+          Result.ok(context)
         end
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.validate_components(value)
-          value => { processed_devfile: Hash => processed_devfile }
+        def self.validate_components(context)
+          context => { processed_devfile: Hash => processed_devfile }
 
           components = processed_devfile['components']
 
@@ -93,13 +93,13 @@ module RemoteDevelopment
             end
           end
 
-          Result.ok(value)
+          Result.ok(context)
         end
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.validate_containers(value)
-          value => { processed_devfile: Hash => processed_devfile }
+        def self.validate_containers(context)
+          context => { processed_devfile: Hash => processed_devfile }
 
           components = processed_devfile['components']
 
@@ -117,13 +117,13 @@ module RemoteDevelopment
             end
           end
 
-          Result.ok(value)
+          Result.ok(context)
         end
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.validate_endpoints(value)
-          value => { processed_devfile: Hash => processed_devfile }
+        def self.validate_endpoints(context)
+          context => { processed_devfile: Hash => processed_devfile }
 
           components = processed_devfile['components']
 
@@ -150,16 +150,16 @@ module RemoteDevelopment
 
           return err_result if err_result
 
-          Result.ok(value)
+          Result.ok(context)
         end
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.validate_commands(value)
-          value => { processed_devfile: Hash => processed_devfile }
+        def self.validate_commands(context)
+          context => { processed_devfile: Hash => processed_devfile }
 
           commands = processed_devfile['commands']
-          return Result.ok(value) if commands.nil?
+          return Result.ok(context) if commands.nil?
 
           # Ensure no command name starts with restricted_prefix
           commands.each do |command|
@@ -193,16 +193,16 @@ module RemoteDevelopment
             end
           end
 
-          Result.ok(value)
+          Result.ok(context)
         end
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.validate_events(value)
-          value => { processed_devfile: Hash => processed_devfile }
+        def self.validate_events(context)
+          context => { processed_devfile: Hash => processed_devfile }
 
           events = processed_devfile['events']
-          return Result.ok(value) if events.nil?
+          return Result.ok(context) if events.nil?
 
           events.each do |event_type, event_type_events|
             # Ensure no event type other than "preStart" are allowed
@@ -226,16 +226,16 @@ module RemoteDevelopment
             end
           end
 
-          Result.ok(value)
+          Result.ok(context)
         end
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.validate_variables(value)
-          value => { processed_devfile: Hash => processed_devfile }
+        def self.validate_variables(context)
+          context => { processed_devfile: Hash => processed_devfile }
 
           variables = processed_devfile['variables']
-          return Result.ok(value) if variables.nil?
+          return Result.ok(context) if variables.nil?
 
           restricted_prefix_underscore = RESTRICTED_PREFIX.tr("-", "_")
 
@@ -254,7 +254,7 @@ module RemoteDevelopment
             end
           end
 
-          Result.ok(value)
+          Result.ok(context)
         end
 
         # @param [String] details

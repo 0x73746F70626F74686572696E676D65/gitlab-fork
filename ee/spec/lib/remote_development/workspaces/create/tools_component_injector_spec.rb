@@ -19,7 +19,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ToolsComponentInjector, :r
     }
   end
 
-  let(:value) do
+  let(:context) do
     {
       processed_devfile: input_processed_devfile,
       volume_mounts: {
@@ -32,7 +32,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ToolsComponentInjector, :r
   end
 
   subject(:returned_value) do
-    described_class.inject(value)
+    described_class.inject(context)
   end
 
   before do

@@ -8,17 +8,17 @@ RSpec.describe RemoteDevelopment::NamespaceClusterAgentMappings::Create::Cluster
   # NOTE: reload is necessary to calculate traversal IDs
   let_it_be_with_reload(:cluster_agent) { create(:cluster_agent, project: create(:project, :in_group)) }
 
-  let(:value) { { namespace: namespace, cluster_agent: cluster_agent } }
+  let(:context) { { namespace: namespace, cluster_agent: cluster_agent } }
 
   subject(:result) do
-    described_class.validate(value)
+    described_class.validate(context)
   end
 
   context 'when cluster exists in the group' do
     let_it_be(:namespace) { cluster_agent.project.group }
 
     it 'returns an ok Result containing the original values that were passed' do
-      expect(result).to eq(Result.ok(value))
+      expect(result).to eq(Result.ok(context))
     end
   end
 
