@@ -7,21 +7,21 @@ module RemoteDevelopment
         class ParamsExtractor
           include Messages
 
-          # @param [Hash] value
+          # @param [Hash] context
           # @return [Hash]
-          def self.extract(value)
-            value => { original_params: Hash => original_params }
+          def self.extract(context)
+            context => { original_params: Hash => original_params }
 
             original_params.symbolize_keys => {
               update_type: String => update_type,
               workspace_agent_infos: Array => workspace_agent_info_hashes_from_params,
             }
 
-            # We extract the original string-keyed params, move them to the top level of the value hash with descriptive
-            # names, and deep-symbolize keys. The original_params will still remain in the value hash as well for
+            # We extract the original string-keyed params, move them to the top level of context hash with descriptive
+            # names, and deep-symbolize keys. The original_params will still remain in the context hash as well for
             # debugging purposes.
 
-            value.merge(
+            context.merge(
               {
                 update_type: update_type,
                 workspace_agent_info_hashes_from_params: workspace_agent_info_hashes_from_params

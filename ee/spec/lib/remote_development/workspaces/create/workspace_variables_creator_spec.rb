@@ -10,7 +10,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
   let_it_be(:user) { create(:user) }
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
   let_it_be(:workspace) { create(:workspace, user: user, personal_access_token: personal_access_token) }
-  let(:settings) { { some_setting: "value" } }
+  let(:settings) { { some_setting: "context" } }
   let(:returned_workspace_variables) do
     [
       {
@@ -40,7 +40,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
     }
   end
 
-  let(:value) do
+  let(:context) do
     {
       workspace: workspace,
       personal_access_token: personal_access_token,
@@ -50,7 +50,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
   end
 
   subject(:result) do
-    described_class.create(value) # rubocop:disable Rails/SaveBang -- this is not an ActiveRecord method
+    described_class.create(context) # rubocop:disable Rails/SaveBang -- this is not an ActiveRecord method
   end
 
   before do
@@ -62,13 +62,13 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
     let(:valid_variable_type) { RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR }
     let(:variable_type) { valid_variable_type }
 
-    it 'creates the workspace variable records and returns ok result containing original value' do
+    it 'creates the workspace variable records and returns ok result containing original context' do
       expect { result }.to change { workspace.workspace_variables.count }.by(2)
 
       expect(RemoteDevelopment::WorkspaceVariable.find_by_key('key1').value).to eq('value1')
       expect(RemoteDevelopment::WorkspaceVariable.find_by_key('key2').value).to eq('value2')
 
-      expect(result).to be_ok_result(value)
+      expect(result).to be_ok_result(context)
     end
   end
 
@@ -86,7 +86,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
 
       expect(result).to be_err_result do |message|
         expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceVariablesModelCreateFailed)
-        message.context => { errors: ActiveModel::Errors => errors }
+        message.content => { errors: ActiveModel::Errors => errors }
         expect(errors.full_messages).to match([/variable type/i])
       end
     end

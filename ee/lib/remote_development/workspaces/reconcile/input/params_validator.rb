@@ -8,10 +8,10 @@ module RemoteDevelopment
           include Messages
           include UpdateTypes
 
-          # @param [Hash] value
+          # @param [Hash] context
           # @return [Result]
-          def self.validate(value)
-            value => { original_params: Hash => original_params }
+          def self.validate(context)
+            context => { original_params: Hash => original_params }
 
             # NOTE: We deep_stringify_keys here, because even though they will be strings in the a real request,
             #       so we can still pass keys as symbols during tests, and not have to worry about passing string
@@ -20,7 +20,7 @@ module RemoteDevelopment
             errors = validate_original_params_against_schema(original_params.deep_stringify_keys)
 
             if errors.none?
-              Result.ok(value)
+              Result.ok(context)
             else
               Result.err(WorkspaceReconcileParamsValidationFailed.new(details: errors.join(". ")))
             end

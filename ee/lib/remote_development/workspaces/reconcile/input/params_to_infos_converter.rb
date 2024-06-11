@@ -7,10 +7,10 @@ module RemoteDevelopment
         class ParamsToInfosConverter
           include Messages
 
-          # @param [Hash] value
+          # @param [Hash] context
           # @return [Hash]
-          def self.convert(value)
-            value => { workspace_agent_info_hashes_from_params: Array => workspace_agent_info_hashes_from_params }
+          def self.convert(context)
+            context => { workspace_agent_info_hashes_from_params: Array => workspace_agent_info_hashes_from_params }
 
             # Convert the workspace_agent_info_hashes_from_params array into an array of AgentInfo objects
             workspace_agent_infos_by_name =
@@ -19,7 +19,7 @@ module RemoteDevelopment
                 hash[agent_info.name.to_sym] = agent_info
               end
 
-            value.merge(workspace_agent_infos_by_name: workspace_agent_infos_by_name)
+            context.merge(workspace_agent_infos_by_name: workspace_agent_infos_by_name)
           end
         end
       end

@@ -7,9 +7,9 @@ module RemoteDevelopment
       #       we may want to add more logic to this class in the future, possibly to allow users
       #       control over the configuration of the volume mounts.
       class VolumeDefiner
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Hash]
-        def self.define(value)
+        def self.define(context)
           workspace_data_volume_name = "gl-workspace-data"
 
           # workspace_root is set to /projects as devfile parser uses this value when setting env vars
@@ -21,7 +21,7 @@ module RemoteDevelopment
           #       and update devfile processing to use them idiomatically / conform to devfile specifications
           workspace_root = "/projects"
 
-          value.merge(
+          context.merge(
             volume_mounts: {
               data_volume: {
                 name: workspace_data_volume_name,

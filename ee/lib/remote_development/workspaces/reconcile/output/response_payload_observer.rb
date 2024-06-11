@@ -5,10 +5,10 @@ module RemoteDevelopment
     module Reconcile
       module Output
         class ResponsePayloadObserver
-          # @param [Hash] value
+          # @param [Hash] context
           # @return [Hash]
-          def self.observe(value)
-            value => {
+          def self.observe(context)
+            context => {
               agent: agent, # Skip type checking so we can use fast_spec_helper
               update_type: String => update_type,
               response_payload: {
@@ -42,7 +42,7 @@ module RemoteDevelopment
               observability_for_rails_infos: observability_for_rails_infos
             )
 
-            value
+            context
           end
         end
       end

@@ -9,10 +9,10 @@ module RemoteDevelopment
         # NOTE: This method should be called `load` to follow the convention of other singleton methods,
         #       but that naming causes errors due to conflicts with `Kernel#load`.
         #
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.fetch(value)
-          value => { params: Hash => params }
+        def self.fetch(context)
+          context => { params: Hash => params }
           params => {
             agent: Clusters::Agent => agent,
             project: Project => project,
@@ -51,7 +51,7 @@ module RemoteDevelopment
             ))
           end
 
-          Result.ok(value.merge({
+          Result.ok(context.merge({
             # NOTE: The devfile_yaml should only be used for storing it in the database and not in any other
             #       subsequent step in the chain.
             devfile_yaml: devfile_yaml,

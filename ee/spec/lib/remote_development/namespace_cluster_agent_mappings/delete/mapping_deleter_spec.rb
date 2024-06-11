@@ -7,10 +7,10 @@ RSpec.describe ::RemoteDevelopment::NamespaceClusterAgentMappings::Delete::Mappi
 
   let_it_be(:namespace) { create(:group) }
   let_it_be(:agent) { create(:cluster_agent) }
-  let(:value) { { namespace: namespace, cluster_agent: agent } }
+  let(:context) { { namespace: namespace, cluster_agent: agent } }
 
   subject(:result) do
-    described_class.delete(value)
+    described_class.delete(context)
   end
 
   context 'when mapping does not exist for given cluster agent and namespace' do

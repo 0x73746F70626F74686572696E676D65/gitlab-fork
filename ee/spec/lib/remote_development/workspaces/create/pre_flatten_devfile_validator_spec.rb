@@ -9,14 +9,14 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PreFlattenDevfileValidat
 
   let(:devfile_name) { 'example.devfile.yaml' }
   let(:devfile) { YAML.safe_load(read_devfile(devfile_name)).to_h }
-  let(:value) { { devfile: devfile } }
+  let(:context) { { devfile: devfile } }
 
   subject(:result) do
-    described_class.validate(value)
+    described_class.validate(context)
   end
 
   context 'for devfiles containing no violations' do
-    it 'returns an ok Result containing the original value' do
+    it 'returns an ok Result containing the original context' do
       expect(result).to eq(
         Result.ok({
           devfile: devfile
@@ -40,7 +40,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PreFlattenDevfileValidat
       it 'returns an err Result containing error details' do
         expect(result).to be_err_result do |message|
           expect(message).to be_a(RemoteDevelopment::Messages::WorkspaceCreatePreFlattenDevfileValidationFailed)
-          message.context => { details: String => error_details }
+          message.content => { details: String => error_details }
           expect(error_details).to eq(error_str)
         end
       end

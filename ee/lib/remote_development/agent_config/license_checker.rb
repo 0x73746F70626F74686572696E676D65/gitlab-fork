@@ -5,11 +5,11 @@ module RemoteDevelopment
     class LicenseChecker
       include Messages
 
-      # @param [Hash] value
+      # @param [Hash] context
       # @return [Result]
-      def self.check_license(value)
+      def self.check_license(context)
         if License.feature_available?(:remote_development)
-          Result.ok(value)
+          Result.ok(context)
         else
           Result.err(LicenseCheckFailed.new)
         end

@@ -293,9 +293,9 @@ To support this pattern, we have created a standard, reusable [`Result` class](h
 
 This is a very common pattern in many languages, and our `Result` class naming and usage is based on a subset of the [Rust implementation](https://doc.rust-lang.org/std/result/index.html). It's actually a monad, but you don't have to know anything about that word in order to use it. It's [definitely _not_ a burrito](https://www.google.com/search?q=monads+are+not+burritos).
 
-The main idea of `Result` is that it is an abstraction which encapsulates whether an operation was successful ("`ok`") or failed ("`err`"). In either case, it will contain a `value`, representing either the output of the successful operation, or some information about the failure.
+The main idea of `Result` is that it is an abstraction which encapsulates whether an operation was successful ("`ok`") or failed ("`err`"). In either case, it will contain a `context`, representing either the output of the successful operation, or some information about the failure.
 
-The `Result#and_then` and `Result#map` methods are [higher order functions](#higher-order-functions) which support the Railway Oriented Programming pattern. They allow "function references" (which are Ruby lambdas or singleton/class `Method` object instances) to be passed, which allows them to be "chained" together, with a `Result` and its contained value being passed along the chain. If any step in the chain fails, the chain exits early.
+The `Result#and_then` and `Result#map` methods are [higher order functions](#higher-order-functions) which support the Railway Oriented Programming pattern. They allow "function references" (which are Ruby lambdas or singleton/class `Method` object instances) to be passed, which allows them to be "chained" together, with a `Result` and its contained context being passed along the chain. If any step in the chain fails, the chain exits early.
 
 The only difference between `Result#and_then` and `Result#map` is that reference passed to `#and_then` needs to support the possibility of an `err` failure, but the reference passed to `#map` has no possibility of failing.
 
@@ -305,15 +305,15 @@ Note that we do not support procs to be used with result, only lambdas and class
 
 ### Message class and Messages module
 
-As shown in the examples in the ["Railway Oriented Programming" slides](https://fsharpforfunandprofit.com/rop/), we use a concept of ["Union types"](#union-types) to represent the messages passed as the `value` of a `Result` object.
+As shown in the examples in the ["Railway Oriented Programming" slides](https://fsharpforfunandprofit.com/rop/), we use a concept of ["Union types"](#union-types) to represent the messages passed as the `context` of a `Result` object.
 
 The `RemoteDevelopment::Messages` (plural) module, and all of its contained message classes, is an example of this sort of "Union type".
 
-Each of these message types is an instance of the `Message` class (singular). A `Message` instance is a [Value Object](#value-objects) which represents a single message to be contained as the `value` within a `Result`. It has single `context` attribute which must be of type `Hash`.
+Each of these message types is an instance of the `Message` class (singular). A `Message` instance is a [Value Object](#value-objects) which represents a single message to be contained as the `context` within a `Result`. It has single `context` attribute which must be of type `Hash`.
 
-All of these Messsage classes represent every possible type of success and error `Result` value which can occur within the Remote Development domain.
+All of these Messsage classes represent every possible type of success and error `Result` context which can occur within the Remote Development domain.
 
-Unlike `Result`, the `Messages` module and `Message` class are intentionally part of the `RemoteDevelopment` namespace, and are not included in the top-level `lib` directory, because they are specific to the Remote Development domain. Other domains which use `Result` may want to use their own type(s) as the `value` of a `Result`.
+Unlike `Result`, the `Messages` module and `Message` class are intentionally part of the `RemoteDevelopment` namespace, and are not included in the top-level `lib` directory, because they are specific to the Remote Development domain. Other domains which use `Result` may want to use their own type(s) as the `context` of a `Result`.
 
 #### What types of errors should be handled as domain Messages?
 
@@ -356,8 +356,8 @@ Note that the `Main` class also has no domain logic in it itself other than invo
 
 ```ruby
 class Main
-  def self.main(value)
-    initial_result = Result.ok(value)
+  def self.main(context)
+    initial_result = Result.ok(context)
     result =
       initial_result
         .and_then(Authorizer.method(:authorize))
@@ -369,7 +369,7 @@ class Main
     in { err: WorkspaceUpdateFailed => message }
       generate_error_response_from_message(message: message, reason: :bad_request)
     in { ok: WorkspaceUpdateSuccessful => message }
-      { status: :success, payload: message.context }
+      { status: :success, payload: message.content }
     else
       raise UnmatchedResultError.new(result: result)
     end
@@ -383,8 +383,8 @@ unrelated domain logic:
 
 ```ruby
 class Updater
-  def self.update(value)
-    value => { workspace: RemoteDevelopment::Workspace => workspace, params: Hash => params }
+  def self.update(context)
+    context => { workspace: RemoteDevelopment::Workspace => workspace, params: Hash => params }
     if workspace.update(params)
       Result.ok(WorkspaceUpdateSuccessful.new({ workspace: workspace }))
     else
@@ -396,11 +396,11 @@ end
 
 ### Passing information along the ROP chain
 
-In our implementation of Railway Oriented Programming, **we pass all "context" along the ROP/Result chain via a single `value` parameter which is a `Hash` type**. 
+In our implementation of Railway Oriented Programming, **we pass all "context" along the ROP/Result chain via a single `context` parameter which is a `Hash` type**. 
 
-This allows us to avoid explicit parameters in order to reduce coupling and increase cohesion of the higher-level methods like `Main.main`. (_NOTE: Although this parameter is currently called "value", [we are considering renaming it to "context"](https://gitlab.com/gitlab-org/gitlab/-/issues/452475) to make its usage more clear, and to also be aligned with the [concept of "context" from Golang](https://www.reddit.com/r/golang/comments/18mphqt/what_even_is_context/) which many people will be familiar with_)
+This allows us to avoid explicit parameters in order to reduce coupling and increase cohesion of the higher-level methods like `Main.main`.
 
-In other words, in these higher-level `Main.main` methods which are our "public API", and in all the classes that are steps in the ROP chain which each have their own single "public API" method, we "hide" dependency information they do not directly use. And inside these "public API" methods, we _only extract/destructure the dependencies which are directly used by the class_ from the `value` parameter `Hash`, and we _never extract or reference anything that is not directly used by that class_.
+In other words, in these higher-level `Main.main` methods which are our "public API", and in all the classes that are steps in the ROP chain which each have their own single "public API" method, we "hide" dependency information they do not directly use. And inside these "public API" methods, we _only extract/destructure the dependencies which are directly used by the class_ from the `context` parameter `Hash`, and we _never extract or reference anything that is not directly used by that class_.
 
 Note that "internal" methods which are _not_ part of the public API of the class may have individual arguments for their dependencies, and we usually prefer to make these [keyword arguments](https://thoughtbot.com/blog/ruby-2-keyword-arguments) for a bit of extra type safety.
 

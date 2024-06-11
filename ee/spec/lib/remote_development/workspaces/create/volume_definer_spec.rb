@@ -3,13 +3,13 @@
 require_relative '../../rd_fast_spec_helper'
 
 RSpec.describe RemoteDevelopment::Workspaces::Create::VolumeDefiner, :rd_fast, feature_category: :remote_development do
-  let(:value) { { params: 1 } }
+  let(:context) { { params: 1 } }
 
   subject(:returned_value) do
-    described_class.define(value)
+    described_class.define(context)
   end
 
-  it "merges volume mount info to passed value" do
+  it "merges volume mount info to passed context" do
     expect(returned_value).to eq(
       {
         params: 1,

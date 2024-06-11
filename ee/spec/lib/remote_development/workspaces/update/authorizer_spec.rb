@@ -9,10 +9,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Update::Authorizer, feature_catego
   let(:user) { build_stubbed(:user) }
   let(:user_can_update_workspace) { true }
   let(:params) { instance_double(Hash) }
-  let(:value) { { workspace: workspace, current_user: user, params: params } }
+  let(:context) { { workspace: workspace, current_user: user, params: params } }
 
   subject(:result) do
-    described_class.authorize(value)
+    described_class.authorize(context)
   end
 
   before do
@@ -20,8 +20,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Update::Authorizer, feature_catego
   end
 
   context 'when user is authorized' do
-    it 'returns an ok Result containing the original value which was passed' do
-      expect(result).to eq(Result.ok(value))
+    it 'returns an ok Result containing the original context which was passed' do
+      expect(result).to eq(Result.ok(context))
     end
   end
 

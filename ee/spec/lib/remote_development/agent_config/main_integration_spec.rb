@@ -15,10 +15,10 @@ RSpec.describe ::RemoteDevelopment::AgentConfig::Main, "Integration", feature_ca
     }
   end
 
-  let(:value) { { agent: agent, config: config } }
+  let(:context) { { agent: agent, config: config } }
 
   subject(:response) do
-    described_class.main(value)
+    described_class.main(context)
   end
 
   before do

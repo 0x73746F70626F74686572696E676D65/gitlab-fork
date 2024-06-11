@@ -59,7 +59,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
       end
         .to invoke_rop_steps(rop_steps)
               .from_main_class(described_class)
-              .with_value_passed_along_steps(updated_value)
+              .with_context_passed_along_steps(updated_value)
               .and_return_expected_value(expected_response)
     end
   end
@@ -76,7 +76,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
         end
           .to invoke_rop_steps(rop_steps)
                 .from_main_class(described_class)
-                .with_value_passed_along_steps(updated_value)
+                .with_context_passed_along_steps(updated_value)
                 .with_err_result_for_step(err_result_for_step)
                 .and_return_expected_value(expected_response)
       end

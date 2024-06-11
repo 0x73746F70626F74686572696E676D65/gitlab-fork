@@ -15,10 +15,10 @@ module RemoteDevelopment
       DEFAULT_RESOURCES_PER_WORKSPACE_CONTAINER_DEFAULT = {}.freeze
       MAX_RESOURCES_PER_WORKSPACE_DEFAULT = {}.freeze
 
-      # @param [Hash] value
+      # @param [Hash] context
       # @return [Result]
-      def self.update(value)
-        value => { agent: Clusters::Agent => agent, config: Hash => config }
+      def self.update(context)
+        context => { agent: Clusters::Agent => agent, config: Hash => config }
         config_from_agent_config_file = config[:remote_development]
 
         unless config_from_agent_config_file

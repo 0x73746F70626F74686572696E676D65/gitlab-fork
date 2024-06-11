@@ -6,10 +6,10 @@ module RemoteDevelopment
       class ToolsComponentInjector
         include Messages
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Hash]
-        def self.inject(value)
-          value => {
+        def self.inject(context)
+          context => {
             processed_devfile: Hash => processed_devfile,
             volume_mounts: Hash => volume_mounts,
             settings: Hash => settings
@@ -21,7 +21,7 @@ module RemoteDevelopment
           editor_port = WorkspaceCreator::WORKSPACE_PORT
           ssh_port = 60022
           tools_dir = "#{volume_path}/.gl-tools"
-          enable_marketplace = allow_extensions_marketplace_in_workspace_feature_enabled?(value: value)
+          enable_marketplace = allow_extensions_marketplace_in_workspace_feature_enabled?(context: context)
 
           # NOTE: We will always have exactly one tools_component found, because we have already
           #       validated this in post_flatten_devfile_validator.rb
@@ -42,15 +42,15 @@ module RemoteDevelopment
             enable_marketplace: enable_marketplace
           )
 
-          value
+          context
         end
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Boolean]
-        def self.allow_extensions_marketplace_in_workspace_feature_enabled?(value:)
+        def self.allow_extensions_marketplace_in_workspace_feature_enabled?(context:)
           Feature.enabled?(
             :allow_extensions_marketplace_in_workspace,
-            value.fetch(:params).fetch(:agent).project.root_namespace,
+            context.fetch(:params).fetch(:agent).project.root_namespace,
             type: :beta
           )
         end

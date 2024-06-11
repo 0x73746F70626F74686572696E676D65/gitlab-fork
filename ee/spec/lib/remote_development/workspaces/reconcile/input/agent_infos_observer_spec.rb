@@ -33,7 +33,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
     )
   end
 
-  let(:value) do
+  let(:context) do
     {
       agent: agent,
       update_type: update_type,
@@ -43,7 +43,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
   end
 
   subject(:returned_value) do
-    described_class.observe(value)
+    described_class.observe(context)
   end
 
   context "when normal and abnormal workspaces exist" do
@@ -94,7 +94,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
         ]
       )
 
-      expect(returned_value).to eq(value)
+      expect(returned_value).to eq(context)
     end
 
     it "logs abnormal workspaces at warn level", :unlimited_max_formatted_output_length do
@@ -123,7 +123,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
         ]
       )
 
-      expect(returned_value).to eq(value)
+      expect(returned_value).to eq(context)
     end
   end
 
@@ -155,7 +155,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
         abnormal_agent_infos: []
       )
 
-      expect(returned_value).to eq(value)
+      expect(returned_value).to eq(context)
     end
   end
 
@@ -199,7 +199,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
         ]
       )
 
-      expect(returned_value).to eq(value)
+      expect(returned_value).to eq(context)
     end
 
     it "logs abnormal workspaces at warn level", :unlimited_max_formatted_output_length do
@@ -228,7 +228,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
         ]
       )
 
-      expect(returned_value).to eq(value)
+      expect(returned_value).to eq(context)
     end
   end
 
@@ -251,7 +251,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::AgentInfosObserv
         abnormal_agent_infos: []
       )
 
-      expect(returned_value).to eq(value)
+      expect(returned_value).to eq(context)
     end
   end
 end

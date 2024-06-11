@@ -9,11 +9,11 @@ module RemoteDevelopment
 
         private_class_method :generate_error_response_from_message
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Hash]
         # @raise [UnmatchedResultError]
-        def self.main(value)
-          initial_result = Result.ok(value)
+        def self.main(context)
+          initial_result = Result.ok(context)
           result =
             initial_result
               .and_then(Authorizer.method(:authorize))
@@ -25,7 +25,7 @@ module RemoteDevelopment
           in { err: WorkspaceUpdateFailed => message }
             generate_error_response_from_message(message: message, reason: :bad_request)
           in { ok: WorkspaceUpdateSuccessful => message }
-            { status: :success, payload: message.context }
+            { status: :success, payload: message.content }
           else
             raise UnmatchedResultError.new(result: result)
           end

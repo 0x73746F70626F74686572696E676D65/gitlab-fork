@@ -6,13 +6,13 @@ module RemoteDevelopment
       class Authorizer
         include Messages
 
-        # @param [Hash] value
+        # @param [Hash] context
         # @return [Result]
-        def self.authorize(value)
-          value => { workspace: RemoteDevelopment::Workspace => workspace, current_user: User => current_user }
+        def self.authorize(context)
+          context => { workspace: RemoteDevelopment::Workspace => workspace, current_user: User => current_user }
 
           if current_user.can?(:update_workspace, workspace)
-            Result.ok(value)
+            Result.ok(context)
           else
             Result.err(Unauthorized.new)
           end
