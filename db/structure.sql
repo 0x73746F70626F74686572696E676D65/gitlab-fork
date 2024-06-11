@@ -25472,8 +25472,6 @@ CREATE INDEX index_boards_epic_lists_on_group_id ON boards_epic_lists USING btre
 
 CREATE INDEX index_boards_epic_lists_on_label_id ON boards_epic_lists USING btree (label_id);
 
-CREATE INDEX index_boards_epic_user_preferences_on_board_id ON boards_epic_user_preferences USING btree (board_id);
-
 CREATE UNIQUE INDEX index_boards_epic_user_preferences_on_board_user_epic_unique ON boards_epic_user_preferences USING btree (board_id, user_id, epic_id);
 
 CREATE INDEX index_boards_epic_user_preferences_on_epic_id ON boards_epic_user_preferences USING btree (epic_id);
