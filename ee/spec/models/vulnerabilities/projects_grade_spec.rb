@@ -11,6 +11,8 @@ RSpec.describe Vulnerabilities::ProjectsGrade, feature_category: :vulnerability_
   let_it_be(:project_4) { create(:project, group: group) }
   let_it_be(:project_5) { create(:project, group: group) }
   let_it_be(:project_6) { create(:project, group: subgroup) }
+  let_it_be(:archived_project) { create(:project, :archived, group: group).tap { |p| create(:vulnerability_statistic, :grade_a, project: p) } }
+  let_it_be(:unrelated_project) { create(:project).tap { |p| create(:vulnerability_statistic, :grade_a, project: p) } }
 
   let_it_be(:vulnerability_statistic_1) { create(:vulnerability_statistic, :grade_a, project: project_1) }
   let_it_be(:vulnerability_statistic_2) { create(:vulnerability_statistic, :grade_b, project: project_2) }
@@ -108,8 +110,12 @@ RSpec.describe Vulnerabilities::ProjectsGrade, feature_category: :vulnerability_
       before do
         project_1.add_developer(user)
         project_2.add_developer(user)
+        archived_project.add_developer(user)
+        unrelated_project.add_developer(user)
+
         user.security_dashboard_projects << project_1
         user.security_dashboard_projects << project_2
+        user.security_dashboard_projects << archived_project
       end
 
       context 'when the filter is not given' do
@@ -151,9 +157,26 @@ RSpec.describe Vulnerabilities::ProjectsGrade, feature_category: :vulnerability_
   end
 
   describe '#projects' do
-    let(:projects_grade) { described_class.new(group, 1, [project_3.id, project_4.id, project_6.id], include_subgroups: include_subgroups) }
+    let(:projects_grade) { described_class.new(group, 1, project_ids, **filters) }
+    let(:filters) { { include_subgroups: include_subgroups }.compact }
+    let(:include_subgroups) { nil }
+    let(:project_ids) { [project_3.id, project_4.id, project_6.id] }
 
     subject(:projects) { projects_grade.projects }
+
+    context 'when unrelated project IDs are given' do
+      let(:project_ids) { [project_3.id, project_4.id, project_6.id, unrelated_project.id] }
+      let(:expected_projects) { [project_3, project_4] }
+
+      it { is_expected.to match_array(expected_projects) }
+    end
+
+    context 'when archived project IDs are given' do
+      let(:project_ids) { [project_3.id, project_4.id, project_6.id, archived_project.id] }
+      let(:expected_projects) { [project_3, project_4] }
+
+      it { is_expected.to match_array(expected_projects) }
+    end
 
     context 'when include_subgroups is set to false' do
       let(:include_subgroups) { false }
@@ -191,10 +214,23 @@ RSpec.describe Vulnerabilities::ProjectsGrade, feature_category: :vulnerability_
   end
 
   describe '#count' do
-    let(:projects_grade) { described_class.new(group, 1, [project_3.id, project_4.id]) }
+    let(:project_ids) { [project_3.id, project_4.id] }
+    let(:projects_grade) { described_class.new(group, 1, project_ids) }
 
     subject(:projects) { projects_grade.count }
 
     it { is_expected.to eq 2 }
+
+    context 'with unrelated projects' do
+      let(:project_ids) { [project_3.id, project_4.id, unrelated_project.id] }
+
+      it { is_expected.to eq 2 }
+    end
+
+    context 'with archived projects' do
+      let(:project_ids) { [project_3.id, project_4.id, archived_project.id] }
+
+      it { is_expected.to eq 2 }
+    end
   end
 end
