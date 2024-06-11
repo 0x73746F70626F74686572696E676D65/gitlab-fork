@@ -47751,7 +47751,7 @@ msgstr ""
 msgid "SecurityOrchestration|Send bot message"
 msgstr ""
 
-msgid "SecurityOrchestration|Several merge request approval policy criteria have been deprecated. Policies using these criteria will not work after GitLab 17.0 (May 10, 2024). You must edit these policies to replace or remove the deprecated criteria."
+msgid "SecurityOrchestration|Several merge request approval policy criteria have been deprecated. Policies using these criteria will not work after GitLab 18.0 (May 10, 2025). You must edit these policies to replace or remove the deprecated criteria."
 msgstr ""
 
 msgid "SecurityOrchestration|Severity is %{severity}."
@@ -48009,19 +48009,10 @@ msgstr ""
 msgid "SecurityOrchestration|have no fix available"
 msgstr ""
 
-msgid "SecurityOrchestration|match_on_inclusion is replaced by %{linkStart}match_on_inclusion_license%{linkEnd}"
-msgstr ""
-
 msgid "SecurityOrchestration|more than %{allowed}"
 msgstr ""
 
-msgid "SecurityOrchestration|newly_detected in scan_finding rules is replaced by %{firstLinkStart}new_needs_triage%{firstLinkEnd} and %{secondLinkStart}new_dismissed%{secondLinkEnd}"
-msgstr ""
-
 msgid "SecurityOrchestration|or from:"
-msgstr ""
-
-msgid "SecurityOrchestration|project.networkpolicies will be removed (GraphQL API associated with the network policies)"
 msgstr ""
 
 msgid "SecurityOrchestration|projects with compliance frameworks"
