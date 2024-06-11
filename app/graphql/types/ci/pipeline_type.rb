@@ -206,7 +206,7 @@ module Types
 
       field :trigger, GraphQL::Types::Boolean, method: :trigger?, null: false, description: "If the pipeline was created by a Trigger request."
 
-      field :variables, ManualVariableType.connection_type, null: true, description: 'Manual variables added to a pipeline.'
+      field :manual_variables, ManualVariableType.connection_type, null: true, description: 'Manual variables added to a pipeline.'
 
       def commit
         BatchLoader::GraphQL.wrap(object.commit)
@@ -242,6 +242,13 @@ module Types
         return pipeline.short_sha if format == Types::ShaFormatEnum.enum[:short]
 
         pipeline.sha
+      end
+
+      def manual_variables
+        variables = object.variables
+        return variables if Ability.allowed?(current_user, :read_pipeline_variable, pipeline)
+
+        variables.map { |variable| { key: variable.key, value: nil } }
       end
 
       alias_method :pipeline, :object
