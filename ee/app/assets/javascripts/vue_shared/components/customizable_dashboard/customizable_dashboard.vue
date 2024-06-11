@@ -10,15 +10,19 @@ import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/
 import BetaBadge from '~/vue_shared/components/badges/beta_badge.vue';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { createNewVisualizationPanel } from 'ee/analytics/analytics_dashboards/utils';
-import { CUSTOM_VALUE_STREAM_DASHBOARD } from 'ee/analytics/dashboards/constants';
+import {
+  AI_IMPACT_DASHBOARD,
+  BUILT_IN_VALUE_STREAM_DASHBOARD,
+  CUSTOM_VALUE_STREAM_DASHBOARD,
+} from 'ee/analytics/dashboards/constants';
 import {
   EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
   EVENT_LABEL_EXCLUDE_ANONYMISED_USERS,
   DASHBOARD_STATUS_BETA,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import GridstackWrapper from './gridstack_wrapper.vue';
-import { DASHBOARD_DOCUMENTATION_LINKS } from './constants';
 import AvailableVisualizationsDrawer from './dashboard_editor/available_visualizations_drawer.vue';
 import {
   getDashboardConfig,
@@ -152,15 +156,18 @@ export default {
     dashboardDescription() {
       return this.dashboard.description;
     },
-    documentationLink() {
-      return DASHBOARD_DOCUMENTATION_LINKS[this.dashboard.slug];
-    },
     changesMade() {
       // Compare the dashboard configs as that is what will be saved
       return !isEqual(
         getDashboardConfig(this.initialDashboard),
         getDashboardConfig(this.dashboard),
       );
+    },
+    isValueStreamsDashboard() {
+      return this.dashboard.slug === BUILT_IN_VALUE_STREAM_DASHBOARD;
+    },
+    isAiImpactDashboard() {
+      return this.dashboard.slug === AI_IMPACT_DASHBOARD;
     },
   },
   watch: {
@@ -345,9 +352,21 @@ export default {
       this.dashboard.panels.push(...panels);
     },
   },
+  i18n: {
+    alternativeAiImpactDescription: s__(
+      'Analytics|Visualize the relation between AI usage and SDLC trends. Learn more about %{docsLinkStart}AI Impact analytics%{docsLinkEnd} and %{subscriptionLinkStart}GitLab Duo Pro seats usage%{subscriptionLinkEnd}.',
+    ),
+  },
   HISTORY_REPLACE_UPDATE_METHOD,
   FORM_GROUP_CLASS: 'gl-w-full gl-sm-w-30p gl-min-w-20 gl-m-0',
   FORM_INPUT_CLASS: 'form-control gl-mr-4 gl-border-gray-200',
+  VSD_DOCUMENTATION_LINK: helpPagePath('user/analytics/value_streams_dashboard'),
+  AI_IMPACT_DOCUMENTATION_LINK: helpPagePath('user/analytics/value_streams_dashboard', {
+    anchor: 'ai-impact-analytics',
+  }),
+  DUO_PRO_SUBSCRIPTION_ADD_ON_LINK: helpPagePath('subscriptions/subscription-add-ons', {
+    anchor: 'assign-gitlab-duo-pro-seats',
+  }),
 };
 </script>
 
@@ -366,23 +385,38 @@ export default {
           <h2 data-testid="dashboard-title" class="gl-my-0">{{ dashboard.title }}</h2>
           <beta-badge v-if="showBetaBadge" class="gl-ml-3" />
         </div>
+
         <div
           v-if="showDashboardDescription"
           class="gl-display-flex gl-mt-3"
           data-testid="dashboard-description"
         >
           <p class="gl-mb-0">
-            {{ dashboardDescription }}
+            <!-- TODO: Remove this alternative description in https://gitlab.com/gitlab-org/gitlab/-/issues/465569 -->
             <gl-sprintf
-              v-if="documentationLink"
-              :message="__('%{linkStart} Learn more%{linkEnd}.')"
+              v-if="isAiImpactDashboard"
+              :message="$options.i18n.alternativeAiImpactDescription"
             >
-              <template #link="{ content }">
-                <gl-link data-testid="dashboard-help-link" :href="documentationLink">{{
-                  content
-                }}</gl-link>
+              <template #docsLink="{ content }">
+                <gl-link :href="$options.AI_IMPACT_DOCUMENTATION_LINK">{{ content }}</gl-link>
+              </template>
+
+              <template #subscriptionLink="{ content }">
+                <gl-link :href="$options.DUO_PRO_SUBSCRIPTION_ADD_ON_LINK">{{ content }}</gl-link>
               </template>
             </gl-sprintf>
+            <template v-else>
+              {{ dashboardDescription }}
+              <!-- TODO: Remove this link in https://gitlab.com/gitlab-org/gitlab/-/issues/465569 -->
+              <gl-sprintf
+                v-if="isValueStreamsDashboard"
+                :message="__('%{linkStart} Learn more%{linkEnd}.')"
+              >
+                <template #link="{ content }">
+                  <gl-link :href="$options.VSD_DOCUMENTATION_LINK">{{ content }}</gl-link>
+                </template>
+              </gl-sprintf>
+            </template>
           </p>
         </div>
 
