@@ -30,7 +30,7 @@ module Search
       resume_indexing
     ].freeze
 
-    CLASSES_TO_COUNT = Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES - [Repository, Commit, ::Wiki, WorkItem].freeze
+    CLASSES_TO_COUNT = Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES - [Repository, Commit, ::Wiki].freeze
     SHARDS_MIN = 5
     SHARDS_DIVISOR = 5_000_000
     REPOSITORY_MULTIPLIER = 0.5
@@ -159,10 +159,17 @@ module Search
       end
     end
 
+    def work_item_index_available?
+      ::Feature.enabled?(:elastic_index_work_items) && # rubocop:disable Gitlab/FeatureFlagWithoutActor -- We do not need an actor here
+        ::Elastic::DataMigrationService.migration_has_finished?(:create_work_items_index)
+    end
+
     def estimate_shard_sizes
       estimates = {}
 
       klasses = CLASSES_TO_COUNT
+
+      klasses -= [WorkItem] unless work_item_index_available?
 
       unless ::Elastic::DataMigrationService.migration_has_finished?(:create_epic_index) &&
           ::Elastic::DataMigrationService.migration_has_finished?(:backfill_epics)
@@ -174,7 +181,7 @@ module Search
       klasses.each do |klass|
         shards = (counts[klass] / SHARDS_DIVISOR) + SHARDS_MIN
         formatted_doc_count = number_with_delimiter(counts[klass], delimiter: ',')
-        estimates[klass.index_name] = { document_count: formatted_doc_count, shards: shards }
+        estimates[helper.klass_to_alias_name(klass: klass)] = { document_count: formatted_doc_count, shards: shards }
       end
 
       sizing_url = Rails.application.routes.url_helpers
