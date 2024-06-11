@@ -527,11 +527,13 @@ module EE
         enable :manage_resource_access_tokens
       end
 
+      rule { custom_roles_allowed & guest }.policy do
+        enable :read_member_role
+      end
+
       rule { custom_roles_allowed & owner }.policy do
         enable :admin_member_role
       end
-
-      rule { can?(:admin_member_role) }.enable :read_member_role
 
       rule { custom_roles_allowed & can?(:admin_group_member) }.policy do
         enable :admin_member_role

@@ -135,6 +135,9 @@ module EE
 
       rule { admin & custom_roles_allowed }.policy do
         enable :admin_member_role
+      end
+
+      rule { ~anonymous & custom_roles_allowed }.policy do
         enable :read_member_role
       end
 
