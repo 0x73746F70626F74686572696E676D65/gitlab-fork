@@ -1,9 +1,0 @@
----
-name: security_policies_unassign_redundant_policy_projects
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/416903
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/143668
-rollout_issue_url: https://gitlab.com/gitlab-com/gl-infra/production/-/issues/17500
-milestone: '16.10'
-group: group::security policies
-type: beta
-default_enabled: true
