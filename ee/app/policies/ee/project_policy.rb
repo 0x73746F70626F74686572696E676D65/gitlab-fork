@@ -372,7 +372,7 @@ module EE
         enable :admin_iteration
       end
 
-      rule { custom_roles_allowed & can?(:admin_project_member) }.policy do
+      rule { custom_roles_allowed & (guest | admin) }.policy do
         enable :read_member_role
       end
 

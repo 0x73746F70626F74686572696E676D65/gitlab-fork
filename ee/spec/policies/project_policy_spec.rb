@@ -2626,9 +2626,9 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     let(:permission) { :read_member_role }
 
     where(:role, :allowed) do
-      :guest      | false
-      :reporter   | false
-      :developer  | false
+      :guest      | true
+      :reporter   | true
+      :developer  | true
       :maintainer | true
       :auditor    | false
       :owner      | true
