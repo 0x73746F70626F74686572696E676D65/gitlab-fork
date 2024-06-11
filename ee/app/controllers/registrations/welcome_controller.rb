@@ -36,6 +36,7 @@ module Registrations
       result = ::Users::SignupService.new(current_user, update_params).execute
 
       if result.success?
+        clear_memoization(:onboarding_status) # needed in case registration_type is changed on update
         track_event('successfully_submitted_form')
         track_joining_a_project_event
         successful_update_hooks
