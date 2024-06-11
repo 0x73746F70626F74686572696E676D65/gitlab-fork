@@ -7,6 +7,9 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
 
   let_it_be(:admin) { create(:user, :admin, email: 'admin@example.com') }
   let_it_be(:group, reload: true) { create(:group) }
+  let_it_be(:project) { create(:project, namespace: group) }
+  let_it_be(:member_role) { create(:member_role, :guest, :instance) }
+  let_it_be(:user) { create(:user) }
 
   let(:url) { "/groups/#{group.id}/invitations" }
   let(:invite_email) { 'restricted@example.org' }
@@ -66,6 +69,97 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
 
         expect(response).to have_gitlab_http_status(:bad_request)
       end.not_to change { AuditEvent.count }
+    end
+  end
+
+  shared_examples 'member role assignment during creation' do
+    let(:params) do
+      { email: invite_email, access_level: Member::GUEST, member_role_id: member_role.id }
+    end
+
+    subject(:invite_custom_member) { post api(url, admin, admin_mode: true), params: params }
+
+    context 'with custom_roles feature' do
+      before do
+        stub_licensed_features(custom_roles: true)
+      end
+
+      it 'returns success' do
+        invite_custom_member
+
+        expect(response).to have_gitlab_http_status(:created)
+      end
+
+      it 'creates a new member correctly' do
+        expect { invite_custom_member }.to change { source.members.count }.by(1)
+
+        member = Member.last
+
+        expect(member.member_role).to eq(member_role)
+        expect(member.access_level).to eq(Member::GUEST)
+      end
+    end
+
+    context 'without custom_roles feature' do
+      before do
+        stub_licensed_features(custom_roles: false)
+      end
+
+      it 'returns success' do
+        invite_custom_member
+
+        expect(response).to have_gitlab_http_status(:created)
+      end
+
+      it 'creates a new member without the member role' do
+        expect { invite_custom_member }.to change { source.members.count }.by(1)
+
+        member = Member.last
+
+        expect(member.member_role).to be_nil
+        expect(member.access_level).to eq(Member::GUEST)
+      end
+    end
+  end
+
+  shared_examples 'member role assignment during update' do
+    let(:params) do
+      { member_role_id: member_role.id }
+    end
+
+    subject(:update_custom_member) { put api(url, admin, admin_mode: true), params: params }
+
+    context 'with custom_roles feature' do
+      before do
+        stub_licensed_features(custom_roles: true)
+      end
+
+      it 'returns success' do
+        update_custom_member
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      it 'updates the invited member correctly' do
+        expect { update_custom_member }.to change { member.reload.member_role_id }
+          .to(member_role.id)
+      end
+    end
+
+    context 'without custom_roles feature' do
+      before do
+        stub_licensed_features(custom_roles: false)
+      end
+
+      it 'returns success' do
+        update_custom_member
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      it 'does not update the member role' do
+        expect { update_custom_member }.not_to change { member.reload.member_role_id }
+      end
     end
   end
 
@@ -262,61 +356,13 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
     end
 
     context 'when assigning a member role' do
-      let_it_be(:member_role) { create(:member_role, :guest, namespace: group) }
+      let(:source) { group }
 
-      let(:params) do
-        { email: invite_email, access_level: Member::GUEST, member_role_id: member_role.id }
-      end
-
-      subject(:invite_custom_member) { post api(url, admin, admin_mode: true), params: params }
-
-      context 'with custom_roles feature' do
-        before do
-          stub_licensed_features(custom_roles: true)
-        end
-
-        it 'returns success' do
-          invite_custom_member
-
-          expect(response).to have_gitlab_http_status(:created)
-        end
-
-        it 'creates a new member correctly' do
-          expect { invite_custom_member }.to change { group.members.count }.by(1)
-
-          member = Member.last
-
-          expect(member.member_role).to eq(member_role)
-          expect(member.access_level).to eq(Member::GUEST)
-        end
-      end
-
-      context 'without custom_roles feature' do
-        before do
-          stub_licensed_features(custom_roles: false)
-        end
-
-        it 'returns success' do
-          invite_custom_member
-
-          expect(response).to have_gitlab_http_status(:created)
-        end
-
-        it 'creates a new member without the member role' do
-          expect { invite_custom_member }.to change { group.members.count }.by(1)
-
-          member = Member.last
-
-          expect(member.member_role).to be_nil
-          expect(member.access_level).to eq(Member::GUEST)
-        end
-      end
+      it_behaves_like 'member role assignment during creation'
     end
   end
 
   describe 'POST /projects/:id/invitations' do
-    let_it_be(:project) { create(:project, namespace: group) }
-
     let(:url) { "/projects/#{project.id}/invitations" }
 
     it_behaves_like 'member creation audit event'
@@ -461,6 +507,34 @@ RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_
         end
       end
     end
+
+    context 'when assigning a member role' do
+      let(:source) { project }
+
+      it_behaves_like 'member role assignment during creation'
+    end
+  end
+
+  describe 'PUT /groups/:id/invitations/:email' do
+    let!(:member) do
+      create(:group_member, :guest, invite_token: '123', invite_email: invite_email, source: group)
+    end
+
+    let(:url) { "/groups/#{group.id}/invitations/#{invite_email}" }
+    let(:source) { group }
+
+    it_behaves_like 'member role assignment during update'
+  end
+
+  describe 'PUT /projects/:id/invitations/:email' do
+    let!(:member) do
+      create(:project_member, :guest, invite_token: '123', invite_email: invite_email, source: project)
+    end
+
+    let(:url) { "/projects/#{project.id}/invitations/#{invite_email}" }
+    let(:source) { project }
+
+    it_behaves_like 'member role assignment during update'
   end
 
   context 'group with LDAP group link' do
