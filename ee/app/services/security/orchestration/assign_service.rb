@@ -122,8 +122,6 @@ module Security
       end
 
       def unassign_redundant_configurations
-        return unless container.root_ancestor.delete_redundant_policy_projects?
-
         ::Security::UnassignRedundantPolicyConfigurationsWorker
           .perform_async(container.id, policy_project_id, current_user.id)
       end
@@ -141,8 +139,6 @@ module Security
       end
 
       def policy_project_inherited?
-        return false unless container.root_ancestor.delete_redundant_policy_projects?
-
         all_effective_policy_project_ids.include?(policy_project_id)
       end
 

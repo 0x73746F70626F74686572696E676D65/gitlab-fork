@@ -31,27 +31,11 @@ RSpec.describe Security::Orchestration::UnassignService, :sidekiq_inline, featur
         describe 'deletion' do
           let(:policy_configuration) { container.security_orchestration_policy_configuration }
 
-          context 'with feature enabled' do
-            it 'enqueues for deletion' do
-              expect(Security::DeleteOrchestrationConfigurationWorker).to receive(:perform_async).with(
-                policy_configuration.id, current_user.id, policy_configuration.security_policy_management_project.id)
+          it 'enqueues for deletion' do
+            expect(Security::DeleteOrchestrationConfigurationWorker).to receive(:perform_async).with(
+              policy_configuration.id, current_user.id, policy_configuration.security_policy_management_project.id)
 
-              result
-            end
-          end
-
-          context 'with feature disabled' do
-            before do
-              stub_feature_flags(security_policies_unassign_redundant_policy_projects: false)
-
-              container.root_ancestor.clear_memoization(:delete_redundant_policy_projects?)
-            end
-
-            it 'deletes immediately' do
-              expect(policy_configuration).to receive(:delete).once
-
-              result
-            end
+            result
           end
         end
 
@@ -68,30 +52,6 @@ RSpec.describe Security::Orchestration::UnassignService, :sidekiq_inline, featur
           expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
 
           result
-        end
-
-        context 'when deleting configuration synchronously' do
-          before do
-            stub_feature_flags(security_policies_unassign_redundant_policy_projects: false)
-          end
-
-          context 'when destroy fails' do
-            before do
-              allow(container.security_orchestration_policy_configuration).to receive(:delete).and_return(false)
-            end
-
-            it { is_expected.not_to be_success }
-
-            it 'does not delete rule schedules related to the project' do
-              expect { result }.not_to change(Security::OrchestrationPolicyRuleSchedule, :count)
-            end
-
-            it 'does not log audit event' do
-              expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
-
-              result
-            end
-          end
         end
       end
 
