@@ -894,4 +894,100 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
 
     include_examples 'connectivity problems calling the endpoint'
   end
+
+  describe '#get_billing_account_details' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:rsa_key) { OpenSSL::PKey::RSA.generate(1024) }
+    let_it_be(:jwt_jti) { 'jwt_jti' }
+    let(:jwt) { Gitlab::CustomersDot::Jwt.new(user).encoded }
+
+    let(:expected_query) do
+      <<~GQL
+        query getBillingAccount {
+          billingAccount {
+            zuoraAccountName
+          }
+        }
+      GQL
+    end
+
+    let(:headers) do
+      {
+        "Accept" => "application/json",
+        "Content-Type" => "application/json",
+        'Authorization' => "Bearer #{jwt}"
+      }
+    end
+
+    before do
+      stub_application_setting(customers_dot_jwt_signing_key: rsa_key.to_s)
+      allow(SecureRandom).to receive(:uuid).and_return(jwt_jti)
+    end
+
+    subject(:get_billing_account_details) { client.get_billing_account_details(user) }
+
+    context 'when the response is successful' do
+      it 'returns the billing account name' do
+        response = {
+          success: true,
+          data: {
+            'billingAccount' => {
+              'zuoraAccountName' => 'sample-account-name'
+            }
+          },
+          'errors' => []
+        }
+
+        expect(client).to receive(:http_post).with('graphql', headers, { query: expected_query }).and_return(response)
+
+        expect(subject).to eq(success: true,
+          response: { "billingAccount" => { "zuoraAccountName" => "sample-account-name" } })
+      end
+    end
+
+    context 'when the response contains an error' do
+      it 'returns a failure response and logs the error' do
+        response = {
+          success: false,
+          data: {
+            "errors" => [
+              {
+                "message" => "You must be logged in to access this resource",
+                "locations" => [{ "line" => 2, "column" => 3 }],
+                "path" => ["billingAccount"],
+                "extensions" => { "errorAttributeMap" => { "base" => ["unauthenticated"] } }
+              }
+            ]
+          }
+        }
+
+        expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception).with(
+          a_kind_of(Gitlab::SubscriptionPortal::Client::ResponseError),
+          query: expected_query,
+          response: response[:data]
+        )
+
+        expect(client).to receive(:http_post).with('graphql', headers, { query: expected_query }).and_return(response)
+
+        error = {
+          "message" => "You must be logged in to access this resource",
+          "locations" => [{ "line" => 2, "column" => 3 }],
+          "path" => ["billingAccount"],
+          "extensions" => { "errorAttributeMap" => { "base" => ["unauthenticated"] } }
+        }
+        expect(subject).to eq(success: false, errors: [error])
+      end
+    end
+
+    context 'when there is a network connectivity error' do
+      it 'returns an error response' do
+        allow(client).to receive(:http_post).and_raise(HTTParty::Error)
+        expect(Gitlab::ErrorTracking).to receive(:log_exception).with(kind_of(HTTParty::Error))
+
+        request = client.get_billing_account_details(user)
+
+        expect(request).to eq({ success: false, errors: "CONNECTIVITY_ERROR" })
+      end
+    end
+  end
 end

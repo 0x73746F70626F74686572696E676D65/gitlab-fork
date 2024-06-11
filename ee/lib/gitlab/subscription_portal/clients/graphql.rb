@@ -329,6 +329,36 @@ module Gitlab
             end
           end
 
+          def get_billing_account_details(user)
+            query = <<~GQL
+            query getBillingAccount {
+              billingAccount {
+                zuoraAccountName
+              }
+            }
+            GQL
+
+            response = http_post('graphql',
+              user_auth_headers(user),
+              { query: query }
+            )[:data]
+
+            if response['errors'].blank?
+              {
+                success: true,
+                response: response
+              }
+            else
+              track_error(query, response)
+
+              error(response['errors'])
+            end
+          rescue *RESCUABLE_HTTP_ERRORS => e
+            Gitlab::ErrorTracking.log_exception(e)
+
+            error(CONNECTIVITY_ERROR)
+          end
+
           private
 
           def execute_graphql_query(params)

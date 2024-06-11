@@ -36,6 +36,12 @@ module Gitlab
           )
         end
 
+        def user_auth_headers(user)
+          json_headers.merge(
+            'Authorization' => "Bearer #{Gitlab::CustomersDot::Jwt.new(user).encoded}"
+          )
+        end
+
         def parse_response(http_response)
           parsed_response = http_response.parsed_response
 
