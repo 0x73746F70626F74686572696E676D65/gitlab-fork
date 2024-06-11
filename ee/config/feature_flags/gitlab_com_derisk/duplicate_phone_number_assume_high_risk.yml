@@ -1,0 +1,9 @@
+---
+name: duplicate_phone_number_assume_high_risk
+feature_issue_url: https://gitlab.com/gitlab-org/modelops/anti-abuse/team-tasks/-/issues/537
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/155642
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/466090
+milestone: '17.1'
+group: group::anti-abuse
+type: gitlab_com_derisk
+default_enabled: false

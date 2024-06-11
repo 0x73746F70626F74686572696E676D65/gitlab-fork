@@ -31,7 +31,7 @@ export default {
 </script>
 
 <template>
-  <div class="dashboard-filters border-bottom bg-gray-light">
+  <div class="dashboard-filters border-bottom gl-bg-gray-10">
     <div class="row mx-0 p-2">
       <severity-filter
         class="col-sm-6 col-md-4 col-lg-2 p-2 js-filter"

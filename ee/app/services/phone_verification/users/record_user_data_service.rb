@@ -27,7 +27,7 @@ module PhoneVerification
       attr_reader :user, :user_risk_profile, :phone_verification_record, :risk_score
 
       def error_related_to_high_risk_user
-        ServiceResponse.error(message: 'Telesign high-risk user', reason: :related_to_high_risk_user)
+        ServiceResponse.error(message: 'Phone verification high-risk user', reason: :related_to_high_risk_user)
       end
 
       def store_risk_score(risk_score)

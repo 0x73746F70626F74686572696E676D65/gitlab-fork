@@ -88,7 +88,7 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-border-b gl-px-5 gl-py-4 file-validation">
+  <div class="gl-border-b gl-px-5 gl-py-4 gl-bg-subtle">
     <gl-skeleton-loader v-if="isLoading" :lines="1" />
     <template v-else>
       <div v-if="errorsTotal">
