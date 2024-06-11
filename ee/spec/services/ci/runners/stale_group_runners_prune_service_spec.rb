@@ -13,7 +13,7 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService, feature_category: :fl
     end
 
     let!(:stale_runners) do
-      create_list(:ci_runner, 3, :group, groups: [group1], created_at: 5.months.ago, contacted_at: 4.months.ago)
+      create_list(:ci_runner, 3, :group, groups: [group1], created_at: 5.months.ago, contacted_at: 8.days.ago)
     end
 
     let(:group2) { create(:group) }

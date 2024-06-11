@@ -18,11 +18,15 @@ module Vulnerabilities
       return Project.none if project_ids.blank?
 
       projects = include_subgroups ? vulnerable.all_projects : vulnerable.projects
+      projects = projects.non_archived
       projects.with_vulnerability_statistics.inc_routes.where(id: project_ids)
     end
 
     def self.grades_for(vulnerables, filter: nil, include_subgroups: false)
-      projects = include_subgroups ? vulnerables.map(&:all_projects) : vulnerables.map(&:projects)
+      projects = vulnerables.map do |v|
+        collection = include_subgroups ? v.all_projects : v.projects
+        collection.non_archived
+      end
 
       relation = ::Vulnerabilities::Statistic.for_project(projects.reduce(&:or))
       relation = relation.by_grade(filter) if filter
