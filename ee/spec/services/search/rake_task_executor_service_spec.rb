@@ -254,7 +254,7 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
   end
 
   describe '#estimate_shard_sizes' do
-    let(:counts) { [400, 1500, 10_000_000, 50_000_000, 100_000_000, 4_000] }
+    let(:counts) { [400, 1500, 10_000_000, 50_000_000, 100_000_000, 4_000, 5_000] }
     let(:counted_items) { described_class::CLASSES_TO_COUNT }
 
     before do
@@ -265,8 +265,23 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
       )
     end
 
+    context 'when work_items are not in a standalone index' do
+      let(:counts) { [400, 1500, 10_000_000, 50_000_000, 100_000_000, 4_000] }
+      let(:counted_items) { described_class::CLASSES_TO_COUNT - [WorkItem] }
+
+      before do
+        set_elasticsearch_migration_to :create_work_items_index, including: false
+      end
+
+      it 'does not include work_items index in shard size estimates' do
+        expect(logger).not_to receive(:info).with(/gitlab-test-work_items/)
+
+        service.execute(:estimate_shard_sizes)
+      end
+    end
+
     context 'when epics are not in a standalone index' do
-      let(:counts) { [400, 1500, 10_000_000, 50_000_000, 100_000_000] }
+      let(:counts) { [400, 1500, 10_000_000, 50_000_000, 100_000_000, 4_000] }
       let(:counted_items) { described_class::CLASSES_TO_COUNT - [Epic] }
 
       before do
@@ -282,6 +297,13 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
     end
 
     it 'outputs shard size estimates' do
+      expected_work_items = <<~ESTIMATE
+        - gitlab-test-work_items:
+          document count: 5,000
+          recommended shards: 5
+          recommended replicas: 1
+      ESTIMATE
+
       expected_issues = <<~ESTIMATE
         - gitlab-test-issues:
           document count: 400
@@ -330,6 +352,7 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
       expect(logger).to receive(:info).with(/#{expected_epics}/)
       expect(logger).to receive(:info).with(/#{expected_users}/)
       expect(logger).to receive(:info).with(/#{expected_projects}/)
+      expect(logger).to receive(:info).with(/#{expected_work_items}/)
 
       service.execute(:estimate_shard_sizes)
     end
