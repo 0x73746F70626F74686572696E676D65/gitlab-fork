@@ -233,6 +233,10 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
       agent.prompt
     end
 
+    it 'includes source template' do
+      expect(system_prompt(agent)).to include(source_template)
+    end
+
     context 'with the `prevent_issue_epic_search` feature flag' do
       before do
         stub_const("#{described_class.name}::ZERO_SHOT_EXPERIMENTAL_PROMPT", 'I am an experimental prompt.')
@@ -262,26 +266,6 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
 
           agent.prompt
         end
-      end
-    end
-
-    context 'when duo_chat_display_source feature flag is enabled' do
-      before do
-        stub_feature_flags(duo_chat_display_source: true)
-      end
-
-      it 'includes source template' do
-        expect(system_prompt(agent)).to include(source_template)
-      end
-    end
-
-    context 'when duo_chat_source feature flag is disabled' do
-      before do
-        stub_feature_flags(duo_chat_display_source: false)
-      end
-
-      it 'does not include source template' do
-        expect(system_prompt(agent)).not_to include(source_template)
       end
     end
 
