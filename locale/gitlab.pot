@@ -59492,6 +59492,9 @@ msgstr ""
 msgid "Wiki|Pages"
 msgstr ""
 
+msgid "Wiki|Search pages"
+msgstr ""
+
 msgid "Wiki|Sidebar was successfully created."
 msgstr ""
 
