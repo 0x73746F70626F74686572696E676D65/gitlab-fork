@@ -80,7 +80,7 @@ module QA
           panels = dashboard.panels
           aggregate_failures 'test edited dashboard' do
             expect(panels.count).to equal(1)
-            expect(panels[0]).to have_content('Events over time')
+            expect(dashboard.panel_title(panel_index: 0)).to eq('Events over time')
             expect(dashboard.panel_has_chart?(panel_index: 0)).to be(true)
             expect(dashboard.panel_chart_legend(panel_index: 0)).to have_content('Max: 1')
           end

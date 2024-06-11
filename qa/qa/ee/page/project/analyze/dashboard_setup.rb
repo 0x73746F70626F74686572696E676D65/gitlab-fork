@@ -45,6 +45,11 @@ module QA
               click_element 'list-item-events_over_time'
             end
 
+            def check_visualisation(name)
+              name = name.downcase.tr(' ', '_')
+              click_element "list-item-#{name}"
+            end
+
             def click_add_to_dashboard
               click_element 'add-button'
             end

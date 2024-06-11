@@ -384,6 +384,7 @@ export default {
         >
           <visualization-type-selector
             ref="typeSelector"
+            data-testid="visualization-type-dropdown"
             :selected-visualization-type="selectedVisualizationType"
             @selectVisualizationType="selectVisualizationType"
           />
