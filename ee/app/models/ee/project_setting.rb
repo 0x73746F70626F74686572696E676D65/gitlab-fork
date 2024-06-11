@@ -28,6 +28,21 @@ module EE
         addressable_url: { schemes: %w[http https], allow_localhost: true, allow_local_network: true },
         allow_blank: true
       validates :cube_api_key, length: { maximum: 255 }, allow_blank: true
+
+      validate :all_or_none_product_analytics_attributes_set
+
+      def all_or_none_product_analytics_attributes_set
+        attrs = [
+          :encrypted_product_analytics_configurator_connection_string,
+          :product_analytics_data_collector_host,
+          :cube_api_base_url,
+          :encrypted_cube_api_key
+        ]
+
+        return if attrs.all? { |attr| self[attr].present? } || attrs.all? { |attr| self[attr].blank? }
+
+        errors.add(:data_sources_settings, 'must all be set or none should be set')
+      end
     end
 
     def selective_code_owner_removals

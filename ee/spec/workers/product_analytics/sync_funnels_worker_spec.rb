@@ -158,7 +158,12 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
       context 'with single pointer project' do
         before do
           Analytics::DashboardsPointer.create!(project: other_project_1, target_project: project)
-          other_project_1.project_setting.update!(product_analytics_configurator_connection_string: "http://test:test@localhost:4567")
+          other_project_1.project_setting.update!(
+            product_analytics_configurator_connection_string: 'http://test:test@localhost:4567',
+            product_analytics_data_collector_host: 'http://test.net',
+            cube_api_base_url: 'https://test.com:3000',
+            cube_api_key: 'helloworld'
+          )
           other_project_1.reload
         end
 
@@ -177,9 +182,19 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
 
         context "when projects are using the same configurator" do
           before do
-            other_project_1.project_setting.update!(product_analytics_configurator_connection_string: "http://test:test@localhost:4567")
+            other_project_1.project_setting.update!(
+              product_analytics_configurator_connection_string: 'http://test:test@localhost:4567',
+              product_analytics_data_collector_host: 'http://test.net',
+              cube_api_base_url: 'https://test.com:3000',
+              cube_api_key: 'helloworld'
+            )
             other_project_1.reload
-            other_project_2.project_setting.update!(product_analytics_configurator_connection_string: "http://test:test@localhost:4567")
+            other_project_2.project_setting.update!(
+              product_analytics_configurator_connection_string: 'http://test:test@localhost:4567',
+              product_analytics_data_collector_host: 'http://test.net',
+              cube_api_base_url: 'https://test.com:3000',
+              cube_api_key: 'helloworld'
+            )
             other_project_2.reload
           end
 
@@ -192,8 +207,18 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
 
         context "when projects are using different configurators" do
           before do
-            other_project_1.project_setting.update!(product_analytics_configurator_connection_string: "http://test:test@localhost:4567")
-            other_project_2.project_setting.update!(product_analytics_configurator_connection_string: "http://test:test@anotherhost:4567")
+            other_project_1.project_setting.update!(
+              product_analytics_configurator_connection_string: 'http://test:test@localhost:4567',
+              product_analytics_data_collector_host: 'http://test.net',
+              cube_api_base_url: 'https://test.com:3000',
+              cube_api_key: 'helloworld'
+            )
+            other_project_2.project_setting.update!(
+              product_analytics_configurator_connection_string: 'http://test:test@anotherhost:4567',
+              product_analytics_data_collector_host: 'http://test.net',
+              cube_api_base_url: 'https://test.com:3000',
+              cube_api_key: 'helloworld'
+            )
             other_project_1.reload
             other_project_2.reload
           end

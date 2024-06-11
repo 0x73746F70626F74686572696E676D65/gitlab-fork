@@ -55,7 +55,10 @@ RSpec.describe ProductAnalytics::InitializeSnowplowProductAnalyticsWorker, featu
       before do
         stub_application_setting(product_analytics_configurator_connection_string: '')
         project.project_setting.update!(
-          product_analytics_configurator_connection_string: 'https://gl-product-analytics-configurator.gl.com:4567'
+          product_analytics_configurator_connection_string: 'https://gl-product-analytics-configurator.gl.com:4567',
+          product_analytics_data_collector_host: 'http://test.net',
+          cube_api_base_url: 'https://test.com:3000',
+          cube_api_key: 'helloworld'
         )
       end
 

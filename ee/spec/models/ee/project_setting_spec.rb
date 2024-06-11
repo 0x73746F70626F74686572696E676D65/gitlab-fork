@@ -33,6 +33,51 @@ RSpec.describe ProjectSetting, feature_category: :groups_and_projects do
     it { is_expected.to contain_exactly(setting_1) }
   end
 
+  describe 'all_or_none_product_analytics_attributes_set' do
+    let_it_be(:setting) { create(:project_setting) }
+
+    subject { setting }
+
+    context 'when setting all values' do
+      before do
+        setting.update( # rubocop:disable Rails/SaveBang -- We need to test validity in the subject
+          product_analytics_configurator_connection_string: 'https://test.com',
+          product_analytics_data_collector_host: 'https://test.net',
+          cube_api_base_url: 'https://test.org',
+          cube_api_key: 'thisisnotasecret'
+        )
+      end
+
+      it { is_expected.to be_valid }
+    end
+
+    context 'when setting no values' do
+      before do
+        setting.update( # rubocop:disable Rails/SaveBang -- We need to test validity in the subject
+          product_analytics_configurator_connection_string: nil,
+          product_analytics_data_collector_host: nil,
+          cube_api_base_url: nil,
+          cube_api_key: nil
+        )
+      end
+
+      it { is_expected.to be_valid }
+    end
+
+    context 'when setting some values' do
+      before do
+        setting.update( # rubocop:disable Rails/SaveBang -- We need to test validity in the subject
+          product_analytics_configurator_connection_string: nil,
+          product_analytics_data_collector_host: 'https://test.net',
+          cube_api_base_url: 'https://test.org',
+          cube_api_key: 'thisisnotasecret'
+        )
+      end
+
+      it { is_expected.not_to be_valid }
+    end
+  end
+
   describe '.duo_features_set' do
     let_it_be(:setting_1) { create(:project_setting, duo_features_enabled: true) }
     let_it_be(:setting_2) { create(:project_setting, duo_features_enabled: false) }
