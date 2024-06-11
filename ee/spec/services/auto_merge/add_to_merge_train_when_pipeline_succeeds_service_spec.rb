@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService do
+RSpec.describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService, feature_category: :merge_trains do
   let_it_be(:project, reload: true) { create(:project, :repository) }
   let_it_be(:user) { create(:user) }
 
@@ -42,6 +42,8 @@ RSpec.describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService do
     subject { service.process(merge_request) }
 
     before do
+      merge_request.merge_params['auto_merge_strategy'] =
+        AutoMergeService::STRATEGY_ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS
       service.execute(merge_request)
     end
 
@@ -56,6 +58,20 @@ RSpec.describe AutoMerge::AddToMergeTrainWhenPipelineSucceedsService do
         end
 
         subject
+      end
+
+      context 'when the merge request is in the middle of a mergeability check' do
+        before do
+          merge_request.mark_as_unchecked!
+        end
+
+        it 'executes MergeTrainService' do
+          expect_next_instance_of(AutoMerge::MergeTrainService) do |train_service|
+            expect(train_service).to receive(:execute).with(merge_request)
+          end
+
+          subject
+        end
       end
 
       context 'when merge train strategy is not available for the merge request' do
