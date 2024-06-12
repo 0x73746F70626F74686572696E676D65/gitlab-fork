@@ -69,7 +69,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             }.to_json,
             can_configure_project_settings: user_can_admin_project.to_s,
             can_select_gitlab_managed_provider: 'false',
-            managed_cluster_purchased: 'false',
+            managed_cluster_purchased: 'true',
             tracking_key: user_has_permission ? product_analytics_instrumentation_key : nil,
             collector_host: user_has_permission ? 'https://new-collector.example.com' : nil,
             chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
@@ -316,46 +316,40 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
       where(:is_project,
         :gitlab_com,
         :product_analytics_billing,
-        :product_analytics_billing_override,
         :expected_value) do
-        true  | true  | true  | false | 'true'
-        true  | true  | true  | true  | 'false'
-        true  | true  | false | false | 'false'
-        true  | false | true  | false | 'false'
-        true  | false | false | false | 'false'
-        false | true  | true  | false | 'false'
-        false | true  | false | false | 'false'
-        false | false | true  | false | 'false'
-        false | false | false | false | 'false'
+        true  | true  | true  | true
+        true  | true  | false | false
+        true  | false | true  | false
+        true  | false | false | false
+        false | true  | true  | false
       end
 
       with_them do
         before do
           allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(gitlab_com)
           stub_feature_flags(product_analytics_billing: product_analytics_billing)
-          stub_feature_flags(product_analytics_billing_override: product_analytics_billing_override)
         end
 
         subject(:data) { helper.analytics_dashboards_list_app_data(is_project ? project : group) }
 
         it 'returns the expected value' do
-          expect(data[:can_select_gitlab_managed_provider]).to eq(expected_value)
+          expect(data[:can_select_gitlab_managed_provider]).to eq(expected_value.to_s)
         end
       end
     end
 
     describe '#managed_cluster_purchased' do
-      where(:is_project, :purchased_product_analytics_add_on, :product_analytics_billing,
+      where(:is_project, :purchased_product_analytics_add_on,
         :product_analytics_billing_override, :expected_value) do
-        true  | true  | true | false | 'true'
-        true  | true  | true | true | 'false'
-        true  | true  | false | false | 'false'
-        true  | false | true  | false | 'false'
-        true  | false | false | false | 'false'
-        false | true  | true | false  | 'false'
-        false | true  | false | false | 'false'
-        false | false | true | false  | 'false'
-        false | false | false | false | 'false'
+        true | true  | true  | true
+        true | true  | false | true
+        true | false | true  | true
+        true | false | false | false
+
+        false | true   | true  | false
+        false | true   | false | false
+        false | false  | true  | false
+        false | false  | false | false
       end
 
       with_them do
@@ -364,14 +358,13 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             create(:gitlab_subscription_add_on_purchase, :product_analytics, namespace: group, add_on: add_on) # rubocop:disable RSpec/FactoryBot/AvoidCreate
           end
 
-          stub_feature_flags(product_analytics_billing: product_analytics_billing)
           stub_feature_flags(product_analytics_billing_override: product_analytics_billing_override)
         end
 
         subject(:data) { helper.analytics_dashboards_list_app_data(is_project ? project : group) }
 
         it 'returns the expected value' do
-          expect(data[:managed_cluster_purchased]).to eq(expected_value)
+          expect(data[:managed_cluster_purchased]).to eq(expected_value.to_s)
         end
       end
     end
