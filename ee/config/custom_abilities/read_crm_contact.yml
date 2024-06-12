@@ -1,0 +1,11 @@
+---
+name: read_crm_contact
+description: Read CRM contact.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/443268
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/154017
+feature_category: team_planning
+milestone: '17.1'
+group_ability: true
+project_ability: false
+requirements: []
+available_from_access_level: 20

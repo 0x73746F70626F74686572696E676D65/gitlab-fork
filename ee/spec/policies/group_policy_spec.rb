@@ -3695,6 +3695,13 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
       it_behaves_like 'custom roles abilities'
     end
+
+    context 'for a member role with read_crm_contact true' do
+      let(:member_role_abilities) { { read_crm_contact: true } }
+      let(:allowed_abilities) { [:read_crm_contact] }
+
+      it_behaves_like 'custom roles abilities'
+    end
   end
 
   context 'for :read_limit_alert' do
