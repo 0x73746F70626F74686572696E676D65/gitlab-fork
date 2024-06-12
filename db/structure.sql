@@ -829,6 +829,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_219952df8fc4() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "target_project_id"
+  INTO NEW."project_id"
+  FROM "merge_requests"
+  WHERE "merge_requests"."id" = NEW."blocking_merge_request_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_2428b5519042() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -11846,7 +11862,8 @@ CREATE TABLE merge_request_blocks (
     blocking_merge_request_id integer NOT NULL,
     blocked_merge_request_id integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    project_id bigint
 );
 
 CREATE SEQUENCE merge_request_blocks_id_seq
@@ -27022,6 +27039,8 @@ CREATE INDEX index_merge_request_assignment_events_on_user_id ON merge_request_a
 
 CREATE INDEX index_merge_request_blocks_on_blocked_merge_request_id ON merge_request_blocks USING btree (blocked_merge_request_id);
 
+CREATE INDEX index_merge_request_blocks_on_project_id ON merge_request_blocks USING btree (project_id);
+
 CREATE UNIQUE INDEX index_merge_request_cleanup_schedules_on_merge_request_id ON merge_request_cleanup_schedules USING btree (merge_request_id);
 
 CREATE INDEX index_merge_request_cleanup_schedules_on_status ON merge_request_cleanup_schedules USING btree (status);
@@ -30802,6 +30821,8 @@ CREATE TRIGGER trigger_174b23fa3dfb BEFORE INSERT OR UPDATE ON approval_project_
 
 CREATE TRIGGER trigger_207005e8e995 BEFORE INSERT OR UPDATE ON operations_strategies FOR EACH ROW EXECUTE FUNCTION trigger_207005e8e995();
 
+CREATE TRIGGER trigger_219952df8fc4 BEFORE INSERT OR UPDATE ON merge_request_blocks FOR EACH ROW EXECUTE FUNCTION trigger_219952df8fc4();
+
 CREATE TRIGGER trigger_2428b5519042 BEFORE INSERT OR UPDATE ON vulnerability_feedback FOR EACH ROW EXECUTE FUNCTION trigger_2428b5519042();
 
 CREATE TRIGGER trigger_2514245c7fc5 BEFORE INSERT OR UPDATE ON dast_site_profile_secret_variables FOR EACH ROW EXECUTE FUNCTION trigger_2514245c7fc5();
@@ -31038,6 +31059,9 @@ ALTER TABLE ONLY approval_group_rules
 
 ALTER TABLE ONLY catalog_resource_versions
     ADD CONSTRAINT fk_15376d917e FOREIGN KEY (release_id) REFERENCES releases(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY merge_request_blocks
+    ADD CONSTRAINT fk_1551efdd17 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY sbom_occurrences
     ADD CONSTRAINT fk_157506c0e2 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
