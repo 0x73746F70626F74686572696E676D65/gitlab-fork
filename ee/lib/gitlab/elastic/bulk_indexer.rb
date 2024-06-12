@@ -17,6 +17,8 @@ module Gitlab
 
       RoutingMissingError = Class.new(StandardError)
 
+      ZERO_BYTES_PROCESSED = 0
+
       attr_reader :logger, :failures
 
       # body - array of json formatted index operation requests awaiting submission to elasticsearch in bulk
@@ -79,6 +81,10 @@ module Gitlab
       rescue ::Elastic::Latest::DocumentShouldBeDeletedFromIndexError => e
         logger.warn(error_message: e.message, record_id: e.record_id, error_class: e.class)
         delete(ref)
+      rescue ::Search::Elastic::Reference::ReferenceFailure => error
+        logger.error(message: error.message, ref: ref.serialize, klass: ref.klass)
+        failures.push(ref)
+        ZERO_BYTES_PROCESSED
       end
 
       def delete(ref, index_name: nil)
@@ -171,7 +177,7 @@ module Gitlab
       def upsert_operation(ref)
         index_json = ref.as_indexed_json
 
-        track_routing_missing_error(ref) if ref.routing && !index_json.key?('routing')
+        track_routing_missing_error(ref) if ref.routing && !index_json.with_indifferent_access.key?('routing')
 
         [{ update: build_op(ref) }, { doc: index_json, doc_as_upsert: true }]
       end
