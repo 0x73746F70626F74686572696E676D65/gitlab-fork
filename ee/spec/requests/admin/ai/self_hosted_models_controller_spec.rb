@@ -10,6 +10,22 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
     sign_in(admin)
     stub_ee_application_setting(duo_features_enabled: duo_features_enabled)
     stub_feature_flags(custom_models_vue_app: false) # disables vue app while running test suite
+
+    allow(::Ai::TestingTermsAcceptance).to receive(:has_accepted?).and_return(true)
+  end
+
+  shared_examples 'must accept terms and conditions' do
+    context 'when terms have not been accepted' do
+      before do
+        allow(::Ai::TestingTermsAcceptance).to receive(:has_accepted?).and_return(false)
+      end
+
+      it 'redirects to terms page' do
+        perform_request
+
+        expect(response).to redirect_to(admin_ai_terms_and_conditions_url)
+      end
+    end
   end
 
   shared_examples 'returns 404' do
@@ -75,6 +91,7 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
     end
 
     it_behaves_like 'returns 404'
+    it_behaves_like 'must accept terms and conditions'
   end
 
   describe 'GET #edit' do
@@ -122,6 +139,7 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
     end
 
     it_behaves_like 'returns 404'
+    it_behaves_like 'must accept terms and conditions'
   end
 
   describe 'POST #create' do
@@ -151,6 +169,7 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
     end
 
     it_behaves_like 'returns 404'
+    it_behaves_like 'must accept terms and conditions'
   end
 
   describe 'PATCH #update' do
@@ -187,6 +206,7 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
     end
 
     it_behaves_like 'returns 404'
+    it_behaves_like 'must accept terms and conditions'
   end
 
   describe 'DELETE #destroy' do
@@ -204,5 +224,6 @@ RSpec.describe Admin::Ai::SelfHostedModelsController, :enable_admin_mode, featur
     end
 
     it_behaves_like 'returns 404'
+    it_behaves_like 'must accept terms and conditions'
   end
 end

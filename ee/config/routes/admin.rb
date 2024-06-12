@@ -48,7 +48,11 @@ namespace :admin do
   get 'code_suggestions', to: 'code_suggestions#index'
 
   namespace :ai do
-    resources :self_hosted_models, only: [:index, :new, :create, :edit, :update, :destroy]
+    resources :self_hosted_models, only: [:index, :new, :create, :edit, :update, :destroy] do
+      collection do
+        resources :terms_and_conditions, only: [:index, :create]
+      end
+    end
     resources :feature_settings, only: [:index, :edit, :update, :create]
   end
 
