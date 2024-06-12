@@ -560,7 +560,7 @@ class Issue < ApplicationRecord
   end
 
   def can_be_worked_on?
-    !self.closed?
+    !self.closed? && !self.project.forked?
   end
 
   # Returns `true` if the current issue can be viewed by either a logged in User
