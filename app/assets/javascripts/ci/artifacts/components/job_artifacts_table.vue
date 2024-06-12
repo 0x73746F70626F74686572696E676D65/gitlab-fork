@@ -17,7 +17,12 @@ import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import getJobArtifactsQuery from '../graphql/queries/get_job_artifacts.query.graphql';
-import { totalArtifactsSizeForJob, mapArchivesToJobNodes, mapBooleansToJobNodes } from '../utils';
+import {
+  totalArtifactsSizeForJob,
+  mapArchivesToJobNodes,
+  mapBooleansToJobNodes,
+  hasJobWithNoArtifacts,
+} from '../utils';
 import bulkDestroyJobArtifactsMutation from '../graphql/mutations/bulk_destroy_job_artifacts.mutation.graphql';
 import { removeArtifactFromStore } from '../graphql/cache_update';
 import {
@@ -182,7 +187,7 @@ export default {
         : '';
     },
     hasJobWithNoArtifacts() {
-      return this.jobArtifacts.some((job) => !job.hasArtifacts);
+      return hasJobWithNoArtifacts(this.jobArtifacts);
     },
   },
   watch: {

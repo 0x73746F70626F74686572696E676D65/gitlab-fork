@@ -26,3 +26,6 @@ export const mapBooleansToJobNodes = (jobNode) => {
     ...jobNode,
   };
 };
+
+export const hasJobWithNoArtifacts = (jobArtifacts) =>
+  jobArtifacts.some((job) => !job.hasArtifacts);
