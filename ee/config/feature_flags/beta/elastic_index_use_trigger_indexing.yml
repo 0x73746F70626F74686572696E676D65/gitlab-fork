@@ -5,5 +5,5 @@ introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/139300
 rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/434580
 milestone: '16.8'
 group: group::global search
-type: gitlab_com_derisk
+type: beta
 default_enabled: false
