@@ -84,13 +84,29 @@ module Gitlab
                   version: Gitlab.version_info.to_s
                 },
                 payload: {
-                  content: prompt,
-                  provider: provider(options),
-                  model: model(options)
-                }.merge(payload_params(options))
+                  content: prompt
+                }.merge(payload_params(options)).merge(model_params(options))
               }],
               stream: true
             }
+          end
+
+          def model_params(options)
+            if chat_feature_setting&.self_hosted?
+              self_hosted_model = chat_feature_setting.self_hosted_model
+
+              {
+                provider: :litellm,
+                model: self_hosted_model.model,
+                model_endpoint: self_hosted_model.endpoint,
+                model_api_key: self_hosted_model.api_token
+              }
+            else
+              {
+                provider: provider(options),
+                model: model(options)
+              }
+            end
           end
 
           def payload_params(options)
@@ -110,6 +126,10 @@ module Gitlab
           override :tracking_class_name
           def tracking_class_name(provider)
             TRACKING_CLASS_NAMES.fetch(provider)
+          end
+
+          def chat_feature_setting
+            ::Ai::FeatureSetting.find_by_feature(:duo_chat)
           end
         end
       end
