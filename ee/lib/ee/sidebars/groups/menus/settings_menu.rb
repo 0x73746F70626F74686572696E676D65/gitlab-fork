@@ -23,6 +23,7 @@ module EE
               add_item(domain_verification_menu_item)
               add_item(billing_menu_item)
               add_item(reporting_menu_item)
+              add_item(workspaces_menu_item)
             else
               add_menu_item_for_abilities(general_menu_item, [:remove_group, :admin_compliance_framework,
                 :manage_merge_request_settings])
@@ -31,6 +32,7 @@ module EE
               add_menu_item_for_abilities(repository_menu_item, [:admin_push_rules, :manage_deploy_tokens])
               add_menu_item_for_abilities(ci_cd_menu_item, [:admin_cicd_variables, :admin_runner])
               add_menu_item_for_abilities(billing_menu_item, :read_billing)
+              add_menu_item_for_abilities(workspaces_menu_item, :read_remote_development_cluster_agent_mapping)
             end
           end
 
@@ -56,9 +58,7 @@ module EE
           end
 
           def ldap_sync_menu_item
-            unless ldap_sync_enabled?
-              return ::Sidebars::NilMenuItem.new(item_id: :ldap_sync)
-            end
+            return ::Sidebars::NilMenuItem.new(item_id: :ldap_sync) unless ldap_sync_enabled?
 
             ::Sidebars::MenuItem.new(
               title: _('LDAP Synchronization'),
@@ -74,9 +74,7 @@ module EE
           end
 
           def saml_sso_menu_item
-            unless saml_sso_enabled?
-              return ::Sidebars::NilMenuItem.new(item_id: :saml_sso)
-            end
+            return ::Sidebars::NilMenuItem.new(item_id: :saml_sso) unless saml_sso_enabled?
 
             ::Sidebars::MenuItem.new(
               title: _('SAML SSO'),
@@ -91,9 +89,8 @@ module EE
           end
 
           def saml_group_links_menu_item
-            unless can?(context.current_user, :admin_saml_group_links, context.group)
-              return ::Sidebars::NilMenuItem.new(item_id: :saml_group_links)
-            end
+            return ::Sidebars::NilMenuItem.new(item_id: :saml_group_links) unless
+              can?(context.current_user, :admin_saml_group_links, context.group)
 
             ::Sidebars::MenuItem.new(
               title: s_('GroupSAML|SAML Group Links'),
@@ -119,9 +116,7 @@ module EE
           end
 
           def webhooks_menu_item
-            unless webhooks_enabled?
-              return ::Sidebars::NilMenuItem.new(item_id: :webhooks)
-            end
+            return ::Sidebars::NilMenuItem.new(item_id: :webhooks) unless webhooks_enabled?
 
             ::Sidebars::MenuItem.new(
               title: _('Webhooks'),
@@ -137,9 +132,7 @@ module EE
           end
 
           def billing_menu_item
-            unless billing_enabled?
-              return ::Sidebars::NilMenuItem.new(item_id: :billing)
-            end
+            return ::Sidebars::NilMenuItem.new(item_id: :billing) unless billing_enabled?
 
             ::Sidebars::MenuItem.new(
               title: _('Billing'),
@@ -154,9 +147,8 @@ module EE
           end
 
           def reporting_menu_item
-            unless context.group.unique_project_download_limit_enabled?
-              return ::Sidebars::NilMenuItem.new(item_id: :reporting)
-            end
+            return ::Sidebars::NilMenuItem.new(item_id: :reporting) unless
+              context.group.unique_project_download_limit_enabled?
 
             ::Sidebars::MenuItem.new(
               title: s_('GroupSettings|Reporting'),
@@ -166,10 +158,26 @@ module EE
             )
           end
 
+          def workspaces_menu_item
+            return ::Sidebars::NilMenuItem.new(item_id: :workspaces) unless workspaces_enabled?
+
+            ::Sidebars::MenuItem.new(
+              title: s_('Workspaces'),
+              link: group_settings_workspaces_path(context.group),
+              active_routes: { path: 'groups/settings/remote_development/workspaces#show' },
+              item_id: :workspaces_settings
+            )
+          end
+
+          def workspaces_enabled?
+            return false unless ::Feature.enabled?(:remote_development_namespace_agent_authorization,
+              context.group.root_ancestor)
+
+            can?(context.current_user, :access_workspaces_feature)
+          end
+
           def analytics_menu_item
-            unless analytics_available?
-              return ::Sidebars::NilMenuItem.new(item_id: :analytics)
-            end
+            return ::Sidebars::NilMenuItem.new(item_id: :analytics) unless analytics_available?
 
             ::Sidebars::MenuItem.new(
               title: _('Analytics'),
