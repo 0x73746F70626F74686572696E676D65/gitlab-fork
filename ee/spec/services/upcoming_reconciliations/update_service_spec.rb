@@ -58,7 +58,8 @@ RSpec.describe UpcomingReconciliations::UpdateService, feature_category: :source
     shared_examples 'creates new upcoming reconciliation' do
       it 'increases upcoming_reconciliations count' do
         expect { service.execute }
-          .to change { GitlabSubscriptions::UpcomingReconciliation.count }.by(1)
+          .to change { GitlabSubscriptions::UpcomingReconciliation.where(organization: namespace.organization).count }
+          .by(1)
       end
 
       it 'created upcoming reconciliation matches given hash' do

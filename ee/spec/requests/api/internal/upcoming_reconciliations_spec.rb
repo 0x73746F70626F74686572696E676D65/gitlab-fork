@@ -27,6 +27,7 @@ RSpec.describe API::Internal::UpcomingReconciliations, :aggregate_failures, :api
     end
 
     context 'when authenticated as admin' do
+      let_it_be(:default_organization) { create(:organization, :default) }
       let_it_be(:admin) { create(:admin) }
       let_it_be(:namespace) { create(:namespace) }
 

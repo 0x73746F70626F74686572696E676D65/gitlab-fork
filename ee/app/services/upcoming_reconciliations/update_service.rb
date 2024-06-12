@@ -32,7 +32,9 @@ module UpcomingReconciliations
 
     def parse_reconciliation(attributes)
       attributes[:created_at] = attributes[:updated_at] = Time.zone.now
-      reconciliation = GitlabSubscriptions::UpcomingReconciliation.new(attributes)
+      reconciliation = GitlabSubscriptions::UpcomingReconciliation.new(attributes).tap do |result|
+        result.organization_id = result.namespace&.organization_id
+      end
 
       if reconciliation.valid?
         reconciliation

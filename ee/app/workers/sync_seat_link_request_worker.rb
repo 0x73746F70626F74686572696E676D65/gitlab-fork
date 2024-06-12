@@ -89,7 +89,9 @@ class SyncSeatLinkRequestWorker
       if reconciliation
         reconciliation.update!(attributes)
       else
-        GitlabSubscriptions::UpcomingReconciliation.create!(attributes)
+        GitlabSubscriptions::UpcomingReconciliation.create!(
+          attributes.merge({ organization_id: Organizations::Organization.first.id })
+        )
       end
     end
   end
