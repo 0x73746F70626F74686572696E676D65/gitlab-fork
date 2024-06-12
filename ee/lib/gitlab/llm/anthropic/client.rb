@@ -86,40 +86,25 @@ module Gitlab
         end
 
         def url
-          return "#{Gitlab::AiGateway.url}/v1/proxy/anthropic" if ::Feature.enabled?(:use_ai_gateway_proxy, user)
-
-          'https://api.anthropic.com'
+          "#{Gitlab::AiGateway.url}/v1/proxy/anthropic"
         end
 
         def api_key
-          if ::Feature.enabled?(:use_ai_gateway_proxy, user)
-            return ::CloudConnector::AvailableServices.find_by_name(:anthropic_proxy).access_token(user)
-          end
-
-          @api_key ||= ::Gitlab::CurrentSettings.anthropic_api_key
+          ::CloudConnector::AvailableServices.find_by_name(:anthropic_proxy).access_token(user)
         end
 
         # We specificy the `anthropic-version` header to receive the stream word by word instead of the accumulated
         # response https://docs.anthropic.com/claude/reference/streaming.
         def request_headers
-          if ::Feature.enabled?(:use_ai_gateway_proxy, user)
-            return {
-              "Accept" => "application/json",
-              "Content-Type" => "application/json",
-              'anthropic-version' => '2023-06-01',
-              "Authorization" => "Bearer #{api_key}",
-              'X-Gitlab-Authentication-Type' => 'oidc',
-              'X-Gitlab-Unit-Primitive' => unit_primitive,
-              'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
-            }.merge(cloud_connector_headers(user))
-          end
-
           {
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
+            "Accept" => "application/json",
+            "Content-Type" => "application/json",
             'anthropic-version' => '2023-06-01',
-            'x-api-key' => api_key
-          }
+            "Authorization" => "Bearer #{api_key}",
+            'X-Gitlab-Authentication-Type' => 'oidc',
+            'X-Gitlab-Unit-Primitive' => unit_primitive,
+            'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
+          }.merge(cloud_connector_headers(user))
         end
 
         def request_body(prompt:, options: {})

@@ -33,32 +33,19 @@ module Gitlab
         end
 
         def access_token
-          if ::Feature.enabled?(:use_ai_gateway_proxy, user)
-            return ::CloudConnector::AvailableServices.find_by_name(:vertex_ai_proxy).access_token(user)
-          end
-
-          TokenLoader.new.current_token
+          ::CloudConnector::AvailableServices.find_by_name(:vertex_ai_proxy).access_token(user)
         end
 
         def headers
-          if ::Feature.enabled?(:use_ai_gateway_proxy, user)
-            return {
-              "Accept" => "application/json",
-              "Authorization" => "Bearer #{access_token}",
-              "Host" => model_config.host,
-              "Content-Type" => "application/json",
-              'X-Gitlab-Authentication-Type' => 'oidc',
-              'X-Gitlab-Unit-Primitive' => unit_primitive,
-              'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
-            }.merge(cloud_connector_headers(user))
-          end
-
           {
             "Accept" => "application/json",
             "Authorization" => "Bearer #{access_token}",
             "Host" => model_config.host,
-            "Content-Type" => "application/json"
-          }
+            "Content-Type" => "application/json",
+            'X-Gitlab-Authentication-Type' => 'oidc',
+            'X-Gitlab-Unit-Primitive' => unit_primitive,
+            'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
+          }.merge(cloud_connector_headers(user))
         end
 
         private
