@@ -42170,6 +42170,15 @@ msgstr ""
 msgid "Promotion is not supported."
 msgstr ""
 
+msgid "PromotionRequests|An error occured while loading the role promotion requests. Please refresh the page to try again."
+msgstr ""
+
+msgid "PromotionRequests|Highest role requested"
+msgstr ""
+
+msgid "PromotionRequests|No promotion requests found"
+msgstr ""
+
 msgid "Promotions"
 msgstr ""
 
