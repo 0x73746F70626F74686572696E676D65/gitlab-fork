@@ -12,7 +12,13 @@ module Sbom
       end
 
       def execute
-        ingest_reports.then { |ingested_ids| delete_not_present_occurrences(ingested_ids) }
+        ingest_reports.then do |ingested_ids|
+          delete_not_present_occurrences(ingested_ids)
+
+          if ingested_ids.present? && Feature.enabled?(:dependency_scanning_using_sbom_reports, project)
+            publish_ingested_sbom_event
+          end
+        end
 
         project.set_latest_ingested_sbom_pipeline_id(pipeline.id)
       end
@@ -41,6 +47,12 @@ module Sbom
 
       def vulnerabilities_info
         @vulnerabilities_info ||= Sbom::Ingestion::Vulnerabilities.new(pipeline)
+      end
+
+      def publish_ingested_sbom_event
+        Gitlab::EventStore.publish(
+          Sbom::SbomIngestedEvent.new(data: { pipeline_id: pipeline.id })
+        )
       end
     end
   end

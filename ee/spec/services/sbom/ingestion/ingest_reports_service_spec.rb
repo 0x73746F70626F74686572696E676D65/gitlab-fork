@@ -38,6 +38,22 @@ RSpec.describe Sbom::Ingestion::IngestReportsService, feature_category: :depende
         .with(pipeline, sequencer.range)
     end
 
+    context 'when feature flag dependency_scanning_using_sbom_reports is enabled' do
+      it 'publishes the pipeline id to the event store' do
+        expect { execute }.to publish_event(::Sbom::SbomIngestedEvent).with({ pipeline_id: pipeline.id })
+      end
+    end
+
+    context 'when feature flag dependency_scanning_using_sbom_reports is disabled' do
+      before do
+        stub_feature_flags(dependency_scanning_using_sbom_reports: false)
+      end
+
+      it 'does not publish anything to the event store' do
+        expect(Gitlab::EventStore).not_to receive(:publish)
+      end
+    end
+
     context 'when a report is invalid' do
       let_it_be(:invalid_report) { create(:ci_reports_sbom_report, :invalid) }
       let_it_be(:valid_reports) { create_list(:ci_reports_sbom_report, 4) }

@@ -1,0 +1,9 @@
+---
+name: dependency_scanning_using_sbom_reports
+feature_issue_url: https://gitlab.com/groups/gitlab-org/-/epics/8026
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/155446
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/395692
+milestone: '17.1'
+group: group::composition analysis
+type: gitlab_com_derisk
+default_enabled: false
