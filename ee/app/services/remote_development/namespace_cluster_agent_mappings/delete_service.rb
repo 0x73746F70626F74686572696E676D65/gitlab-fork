@@ -8,8 +8,8 @@ module RemoteDevelopment
 
       extend MessageSupport
 
-      # @param [Namespace] namespace
-      # @param [Clusters::Agent] cluster_agent
+      # @param [Namespace, BatchLoader::GraphQL] namespace
+      # @param [Clusters::Agent, BatchLoader::GraphQL] cluster_agent
       # @return [ServiceResponse]
       def execute(namespace:, cluster_agent:)
         response_hash = NamespaceClusterAgentMappings::Delete::Main.main(

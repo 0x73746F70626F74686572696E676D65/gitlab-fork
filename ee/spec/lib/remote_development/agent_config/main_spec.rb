@@ -30,6 +30,7 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
       end
     end
 
+    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
     # rubocop:disable Layout/LineLength -- we want to avoid excessive wrapping for RSpec::Parameterized Nested Array Style so we can have formatting consistency between entries
     where(:case_name, :result_for_step, :expected_response) do
       [
@@ -54,10 +55,12 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
             status: :success,
             payload: lazy { skipped_message_content }
           }
-        ]
+        ],
       ]
     end
+    # rubocop:enable Style/TrailingCommaInArrayLiteral
     # rubocop:enable Layout/LineLength
+
     with_them do
       it_behaves_like "rop invocation with successful response"
     end
@@ -81,6 +84,7 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
       end
     end
 
+    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
     where(:case_name, :err_result_for_step, :expected_response) do
       [
         [
@@ -114,9 +118,10 @@ RSpec.describe RemoteDevelopment::AgentConfig::Main, :rd_fast, feature_category:
             returned_message: lazy { Class.new(RemoteDevelopment::Message).new(err_message_content) }
           },
           RemoteDevelopment::UnmatchedResultError
-        ]
+        ],
       ]
     end
+    # rubocop:enable Style/TrailingCommaInArrayLiteral
 
     with_them do
       it_behaves_like "rop invocation with error response"

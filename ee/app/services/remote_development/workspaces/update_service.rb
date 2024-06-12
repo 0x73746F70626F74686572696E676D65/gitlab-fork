@@ -19,7 +19,7 @@ module RemoteDevelopment
         @current_user = current_user
       end
 
-      # @param [RemoteDevelopment::Workspace] workspace
+      # @param [RemoteDevelopment::Workspace, BatchLoader::GraphQL] workspace
       # @param [Hash] params
       # @return [ServiceResponse]
       def execute(workspace:, params:)
