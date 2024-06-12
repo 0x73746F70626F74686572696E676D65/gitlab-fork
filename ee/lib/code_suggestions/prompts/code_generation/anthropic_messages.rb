@@ -139,9 +139,14 @@ module CodeSuggestions
           return unless xray_report.present?
           return unless xray_report.libs.any?
 
-          libs = xray_report.libs[(0...MAX_LIBS_COUNT)].map do |lib|
-            "#{lib['name']}: #{lib['description']}"
-          end
+          libs =
+            if params[:skip_dependency_descriptions]
+              xray_report.libs.pluck('name') # rubocop:disable CodeReuse/ActiveRecord -- libs is an array
+            else
+              xray_report.libs[(0...MAX_LIBS_COUNT)].map do |lib|
+                "#{lib['name']}: #{lib['description']}"
+              end
+            end
 
           Gitlab::InternalEvents.track_event(
             'include_repository_xray_data_into_code_generation_prompt',
@@ -159,10 +164,7 @@ module CodeSuggestions
         end
 
         def xray_report
-          ::Projects::XrayReport
-            .for_project(params[:project])
-            .for_lang(language.x_ray_lang)
-            .first
+          ::Projects::XrayReport.for_project(params[:project]).for_lang(language.x_ray_lang).first
         end
         strong_memoize_attr :xray_report
 

@@ -49,4 +49,24 @@ RSpec.describe Llm::CompletionWorker, feature_category: :ai_abstraction_layer do
       )
     end
   end
+
+  describe '.perform_for' do
+    let(:ip_address) { '1.1.1.1' }
+
+    it 'sets set_ip_address to true' do
+      allow(::Gitlab::IpAddressState).to receive(:current).and_return(ip_address)
+
+      described_class.perform_for(prompt_message, options)
+
+      job = described_class.jobs.first
+
+      expect(job).to include(
+        'ip_address_state' => ip_address,
+        'args' => [
+          hash_including("ai_action" => ai_action_name.to_s),
+          options
+        ]
+      )
+    end
+  end
 end
