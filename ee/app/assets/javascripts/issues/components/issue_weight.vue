@@ -12,20 +12,14 @@ export default {
       type: Number,
       required: true,
     },
-    tagName: {
-      type: String,
-      required: false,
-      default: 'a',
-    },
   },
 };
 </script>
 
 <template>
-  <component
-    :is="tagName"
+  <div
     ref="itemWeight"
-    class="board-card-info board-card-weight gl-mr-3 gl-cursor-pointer gl-text-gray-500 gl-font-sm gl-hover-text-decoration-underline"
+    class="board-card-info board-card-weight gl-mr-3 gl-text-gray-500 gl-text-sm gl-cursor-help gl-inline-flex gl-items-center gl-align-bottom"
     v-on="$listeners"
   >
     <gl-icon name="weight" class="board-card-info-icon gl-mr-2" />
@@ -33,5 +27,5 @@ export default {
     <gl-tooltip :target="() => $refs.itemWeight" placement="bottom" container="body"
       >{{ __('Weight') }}<br /><span class="text-tertiary">{{ weight }}</span>
     </gl-tooltip>
-  </component>
+  </div>
 </template>
