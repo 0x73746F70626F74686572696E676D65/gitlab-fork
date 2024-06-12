@@ -4280,6 +4280,13 @@ CREATE SEQUENCE ai_self_hosted_models_id_seq
 
 ALTER SEQUENCE ai_self_hosted_models_id_seq OWNED BY ai_self_hosted_models.id;
 
+CREATE TABLE ai_testing_terms_acceptances (
+    created_at timestamp with time zone NOT NULL,
+    user_id bigint NOT NULL,
+    user_email text NOT NULL,
+    CONSTRAINT check_5efe98894e CHECK ((char_length(user_email) <= 255))
+);
+
 CREATE TABLE ai_vectorizable_files (
     id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -21487,6 +21494,9 @@ ALTER TABLE ONLY ai_feature_settings
 
 ALTER TABLE ONLY ai_self_hosted_models
     ADD CONSTRAINT ai_self_hosted_models_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY ai_testing_terms_acceptances
+    ADD CONSTRAINT ai_testing_terms_acceptances_pkey PRIMARY KEY (user_id);
 
 ALTER TABLE ONLY ai_vectorizable_files
     ADD CONSTRAINT ai_vectorizable_files_pkey PRIMARY KEY (id);

@@ -3668,7 +3668,19 @@ msgstr ""
 msgid "AdminProjects|Delete Project %{projectName}?"
 msgstr ""
 
+msgid "AdminSelfHostedModels|By enabling Self-Hosted Models, you accept the %{link_start}GitLab Testing Agreement%{link_end}."
+msgstr ""
+
 msgid "AdminSelfHostedModels|Define your set of self-hosted models"
+msgstr ""
+
+msgid "AdminSelfHostedModels|Enable Self-hosted models"
+msgstr ""
+
+msgid "AdminSelfHostedModels|Self-Hosted models"
+msgstr ""
+
+msgid "AdminSelfHostedModels|Self-hosted models are an experimental feature."
 msgstr ""
 
 msgid "AdminSelfHostedModels|They point to the self-hosted AI models that can be used for backing up GitLab AI features."
@@ -48782,6 +48794,9 @@ msgstr ""
 msgid "Self-Hosted Models"
 msgstr ""
 
+msgid "Self-Hosted models"
+msgstr ""
+
 msgid "Self-hosted models dropdown"
 msgstr ""
 
@@ -51442,6 +51457,9 @@ msgid "Succeeded"
 msgstr ""
 
 msgid "Success"
+msgstr ""
+
+msgid "Successfully accepted GitLab Testing Terms"
 msgstr ""
 
 msgid "Successfully activated"
