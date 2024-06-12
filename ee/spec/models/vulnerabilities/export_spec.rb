@@ -210,4 +210,30 @@ RSpec.describe Vulnerabilities::Export, feature_category: :vulnerability_managem
       it { is_expected.to be_completed }
     end
   end
+
+  describe '#export_service' do
+    let(:export) { build(:vulnerability_export) }
+
+    subject(:export_service) { export.export_service }
+
+    it 'instantiates a export service for the instance' do
+      expect(::VulnerabilityExports::ExportService).to receive(:new).with(export).and_call_original
+
+      expect(export_service.class).to eq(::VulnerabilityExports::ExportService)
+    end
+  end
+
+  describe '#retrive_upload' do
+    subject(:export) { create(:vulnerability_export) }
+
+    before do
+      file = Tempfile.new
+      file.print "Hello World!"
+      export.update!(file: file)
+    end
+
+    it 'retrieves the file associated with the vulnerability export' do
+      expect(export.file.read).to eq("Hello World!")
+    end
+  end
 end
