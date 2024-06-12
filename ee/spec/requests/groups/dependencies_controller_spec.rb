@@ -198,7 +198,28 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
             it 'includes pagination headers in the response' do
               subject
 
-              expect(response).to include_pagination_headers
+              expect(response).to include_keyset_url_params
+              expect(response).to include_limited_pagination_headers
+              expect(response.headers['X-Page-Type']).to eq('cursor')
+            end
+
+            context 'when using a cursor' do
+              let(:cursor_data) do
+                { component_id: sbom_occurrence_npm.component_id,
+                  component_version_id: sbom_occurrence_npm.component_version_id }
+              end
+
+              let(:cursor) { Base64.urlsafe_encode64(cursor_data.to_json) }
+              let(:params) { { group_id: group.to_param, cursor: cursor } }
+
+              it 'returns data at the cursor' do
+                subject
+
+                dependencies = json_response['dependencies']
+
+                expect(dependencies.size).to eq(1)
+                expect(dependencies.first['name']).to eq(sbom_occurrence_bundler.name)
+              end
             end
 
             it 'avoids N+1 database queries', :aggregate_failures do
