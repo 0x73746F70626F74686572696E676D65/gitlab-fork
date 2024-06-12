@@ -4,6 +4,7 @@ FactoryBot.define do
   factory :vulnerability_export, class: 'Vulnerabilities::Export' do
     project
     author
+    association :organization, factory: :organization
 
     trait :csv do
       format { :csv }
