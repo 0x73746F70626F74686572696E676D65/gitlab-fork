@@ -516,6 +516,8 @@ module EE
         enable :read_billable_member
       end
 
+      rule { custom_role_enables_read_crm_contact }.enable(:read_crm_contact)
+
       rule { custom_role_enables_admin_group_member & service_accounts_available }.policy do
         enable :admin_service_account_member
       end
