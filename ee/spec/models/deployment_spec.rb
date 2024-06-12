@@ -49,6 +49,19 @@ RSpec.describe Deployment, feature_category: :continuous_delivery do
   it { is_expected.to have_many(:approvals) }
   it { is_expected.to delegate_method(:needs_approval?).to(:environment) }
 
+  describe 'state machine' do
+    context 'when transitioning to :running' do
+      it 'calls the audit service' do
+        service = instance_double(Environments::Deployments::AuditService)
+
+        expect(Environments::Deployments::AuditService).to receive(:new).with(deployment).and_return(service)
+        expect(service).to receive(:execute)
+
+        deployment.run!
+      end
+    end
+  end
+
   describe '#waiting_for_approval?' do
     subject { deployment.waiting_for_approval? }
 
