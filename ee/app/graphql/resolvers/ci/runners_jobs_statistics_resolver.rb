@@ -14,7 +14,7 @@ module Resolvers
       JOBS_LIMIT = 100
 
       def resolve(lookahead:)
-        return unless Ability.allowed?(current_user, :read_jobs_statistics)
+        return unless Ability.allowed?(current_user, :read_jobs_statistics, parent || :global)
 
         track_usage_event(:g_runner_fleet_read_jobs_statistics, current_user.id)
 
@@ -22,6 +22,11 @@ module Resolvers
       end
 
       private
+
+      def parent
+        obj = object.respond_to?(:sync) ? object.sync : object
+        obj.parent if obj
+      end
 
       def calculate_statistics(lookahead)
         response = {}
