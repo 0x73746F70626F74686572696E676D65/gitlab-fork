@@ -33,7 +33,7 @@ does not take care of this so you must do so manually. See
 
 ## Use bigint for foreign keys
 
-When adding a new foreign key, you should define it as `bigint`..
+When adding a new foreign key, you should define it as `bigint`.
 Even if the referenced table has an `integer` primary key type,
 you must reference the new foreign key as `bigint`. As we are
 migrating all primary keys to `bigint`, using `bigint` foreign keys
