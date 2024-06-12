@@ -28,29 +28,29 @@ RSpec.describe Authz::CustomAbility, feature_category: :system_access do
         nil | name | ref(:project_runner) | false
         nil | name | "unknown" | false
 
-        ref(:root_group) | name | ref(:root_group) | attrs.fetch(:group_ability, true)
-        ref(:root_group) | name | ref(:group) | attrs.fetch(:group_ability, true)
-        ref(:root_group) | name | ref(:child_group) | attrs.fetch(:group_ability, true)
-        ref(:root_group) | name | ref(:project) | attrs.fetch(:project_ability, true)
-        ref(:root_group) | name | ref(:child_project) | attrs.fetch(:project_ability, true)
-        ref(:root_group) | name | ref(:group_runner) | attrs.fetch(:group_ability, true)
-        ref(:root_group) | name | ref(:project_runner) | attrs.fetch(:project_ability, true)
+        ref(:root_group) | name | ref(:root_group) | attrs[:group_ability]
+        ref(:root_group) | name | ref(:group) | attrs[:group_ability]
+        ref(:root_group) | name | ref(:child_group) | attrs[:group_ability]
+        ref(:root_group) | name | ref(:project) | attrs[:project_ability]
+        ref(:root_group) | name | ref(:child_project) | attrs[:project_ability]
+        ref(:root_group) | name | ref(:group_runner) | attrs[:group_ability]
+        ref(:root_group) | name | ref(:project_runner) | attrs[:project_ability]
         ref(:root_group) | name | "unknown" | false
 
         ref(:group) | name | ref(:root_group) | false
-        ref(:group) | name | ref(:group) | attrs.fetch(:group_ability, true)
-        ref(:group) | name | ref(:child_group) | attrs.fetch(:group_ability, true)
-        ref(:group) | name | ref(:project) | attrs.fetch(:project_ability, true)
-        ref(:group) | name | ref(:child_project) | attrs.fetch(:project_ability, true)
-        ref(:group) | name | ref(:group_runner) | attrs.fetch(:group_ability, true)
-        ref(:group) | name | ref(:project_runner) | attrs.fetch(:project_ability, true)
+        ref(:group) | name | ref(:group) | attrs[:group_ability]
+        ref(:group) | name | ref(:child_group) | attrs[:group_ability]
+        ref(:group) | name | ref(:project) | attrs[:project_ability]
+        ref(:group) | name | ref(:child_project) | attrs[:project_ability]
+        ref(:group) | name | ref(:group_runner) | attrs[:group_ability]
+        ref(:group) | name | ref(:project_runner) | attrs[:project_ability]
         ref(:group) | name | "unknown" | false
 
         ref(:child_group) | name | ref(:root_group) | false
         ref(:child_group) | name | ref(:group) | false
-        ref(:child_group) | name | ref(:child_group) | attrs.fetch(:group_ability, true)
+        ref(:child_group) | name | ref(:child_group) | attrs[:group_ability]
         ref(:child_group) | name | ref(:project) | false
-        ref(:child_group) | name | ref(:child_project) | attrs.fetch(:project_ability, true)
+        ref(:child_group) | name | ref(:child_project) | attrs[:project_ability]
         ref(:child_group) | name | ref(:group_runner) | false
         ref(:child_group) | name | ref(:project_runner) | false
         ref(:child_group) | name | "unknown" | false
@@ -58,17 +58,17 @@ RSpec.describe Authz::CustomAbility, feature_category: :system_access do
         ref(:project) | name | ref(:root_group) | false
         ref(:project) | name | ref(:group) | false
         ref(:project) | name | ref(:child_group) | false
-        ref(:project) | name | ref(:project) | attrs.fetch(:project_ability, true)
+        ref(:project) | name | ref(:project) | attrs[:project_ability]
         ref(:project) | name | ref(:child_project) | false
         ref(:project) | name | ref(:group_runner) | false
-        ref(:project) | name | ref(:project_runner) | attrs.fetch(:project_ability, true)
+        ref(:project) | name | ref(:project_runner) | attrs[:project_ability]
         ref(:project) | name | "unknown" | false
 
         ref(:child_project) | name | ref(:root_group) | false
         ref(:child_project) | name | ref(:group) | false
         ref(:child_project) | name | ref(:child_group) | false
         ref(:child_project) | name | ref(:project) | false
-        ref(:child_project) | name | ref(:child_project) | attrs.fetch(:project_ability, true)
+        ref(:child_project) | name | ref(:child_project) | attrs[:project_ability]
         ref(:child_project) | name | ref(:group_runner) | false
         ref(:child_project) | name | ref(:project_runner) | false
         ref(:child_project) | name | "unknown" | false
