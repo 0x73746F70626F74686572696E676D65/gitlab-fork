@@ -845,6 +845,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_219952df8fc4() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "target_project_id"
+  INTO NEW."project_id"
+  FROM "merge_requests"
+  WHERE "merge_requests"."id" = NEW."blocking_merge_request_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_2428b5519042() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -1034,6 +1050,22 @@ IF NEW."namespace_id" IS NULL THEN
   INTO NEW."namespace_id"
   FROM "achievements"
   WHERE "achievements"."id" = NEW."achievement_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
+CREATE FUNCTION trigger_77d9fbad5b12() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "packages_debian_project_distributions"
+  WHERE "packages_debian_project_distributions"."id" = NEW."distribution_id";
 END IF;
 
 RETURN NEW;
@@ -1242,6 +1274,22 @@ IF NEW."project_id" IS NULL THEN
   INTO NEW."project_id"
   FROM "environments"
   WHERE "environments"."id" = NEW."environment_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
+CREATE FUNCTION trigger_a4e4fb2451d9() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."group_id" IS NULL THEN
+  SELECT "group_id"
+  INTO NEW."group_id"
+  FROM "epics"
+  WHERE "epics"."id" = NEW."epic_id";
 END IF;
 
 RETURN NEW;
@@ -9687,7 +9735,8 @@ CREATE TABLE epic_user_mentions (
     mentioned_users_ids integer[],
     mentioned_projects_ids integer[],
     mentioned_groups_ids integer[],
-    note_id bigint
+    note_id bigint,
+    group_id bigint
 );
 
 CREATE SEQUENCE epic_user_mentions_id_seq
@@ -11869,7 +11918,8 @@ CREATE TABLE merge_request_blocks (
     blocking_merge_request_id integer NOT NULL,
     blocked_merge_request_id integer NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    project_id bigint
 );
 
 CREATE SEQUENCE merge_request_blocks_id_seq
@@ -13641,6 +13691,7 @@ CREATE TABLE packages_debian_project_distribution_keys (
     encrypted_passphrase_iv text NOT NULL,
     public_key text NOT NULL,
     fingerprint text NOT NULL,
+    project_id bigint,
     CONSTRAINT check_9e8a5eef0a CHECK ((char_length(fingerprint) <= 255)),
     CONSTRAINT check_d188f6547f CHECK ((char_length(public_key) <= 524288))
 );
@@ -26418,6 +26469,8 @@ CREATE UNIQUE INDEX index_epic_issues_on_issue_id ON epic_issues USING btree (is
 
 CREATE INDEX index_epic_metrics ON epic_metrics USING btree (epic_id);
 
+CREATE INDEX index_epic_user_mentions_on_group_id ON epic_user_mentions USING btree (group_id);
+
 CREATE UNIQUE INDEX index_epic_user_mentions_on_note_id ON epic_user_mentions USING btree (note_id) WHERE (note_id IS NOT NULL);
 
 CREATE INDEX index_epics_on_assignee_id ON epics USING btree (assignee_id);
@@ -27050,6 +27103,8 @@ CREATE INDEX index_merge_request_assignment_events_on_user_id ON merge_request_a
 
 CREATE INDEX index_merge_request_blocks_on_blocked_merge_request_id ON merge_request_blocks USING btree (blocked_merge_request_id);
 
+CREATE INDEX index_merge_request_blocks_on_project_id ON merge_request_blocks USING btree (project_id);
+
 CREATE UNIQUE INDEX index_merge_request_cleanup_schedules_on_merge_request_id ON merge_request_cleanup_schedules USING btree (merge_request_id);
 
 CREATE INDEX index_merge_request_cleanup_schedules_on_status ON merge_request_cleanup_schedules USING btree (status);
@@ -27535,6 +27590,8 @@ CREATE INDEX index_packages_debian_group_distribution_keys_on_group_id ON packag
 CREATE INDEX index_packages_debian_group_distributions_on_creator_id ON packages_debian_group_distributions USING btree (creator_id);
 
 CREATE INDEX index_packages_debian_project_component_files_on_component_id ON packages_debian_project_component_files USING btree (component_id);
+
+CREATE INDEX index_packages_debian_project_distribution_keys_on_project_id ON packages_debian_project_distribution_keys USING btree (project_id);
 
 CREATE INDEX index_packages_debian_project_distributions_on_creator_id ON packages_debian_project_distributions USING btree (creator_id);
 
@@ -30834,6 +30891,8 @@ CREATE TRIGGER trigger_174b23fa3dfb BEFORE INSERT OR UPDATE ON approval_project_
 
 CREATE TRIGGER trigger_207005e8e995 BEFORE INSERT OR UPDATE ON operations_strategies FOR EACH ROW EXECUTE FUNCTION trigger_207005e8e995();
 
+CREATE TRIGGER trigger_219952df8fc4 BEFORE INSERT OR UPDATE ON merge_request_blocks FOR EACH ROW EXECUTE FUNCTION trigger_219952df8fc4();
+
 CREATE TRIGGER trigger_2428b5519042 BEFORE INSERT OR UPDATE ON vulnerability_feedback FOR EACH ROW EXECUTE FUNCTION trigger_2428b5519042();
 
 CREATE TRIGGER trigger_2514245c7fc5 BEFORE INSERT OR UPDATE ON dast_site_profile_secret_variables FOR EACH ROW EXECUTE FUNCTION trigger_2514245c7fc5();
@@ -30862,6 +30921,8 @@ CREATE TRIGGER trigger_56d49f4ed623 BEFORE INSERT OR UPDATE ON workspace_variabl
 
 CREATE TRIGGER trigger_57ad2742ac16 BEFORE INSERT OR UPDATE ON user_achievements FOR EACH ROW EXECUTE FUNCTION trigger_57ad2742ac16();
 
+CREATE TRIGGER trigger_77d9fbad5b12 BEFORE INSERT OR UPDATE ON packages_debian_project_distribution_keys FOR EACH ROW EXECUTE FUNCTION trigger_77d9fbad5b12();
+
 CREATE TRIGGER trigger_7a8b08eed782 BEFORE INSERT OR UPDATE ON boards_epic_board_positions FOR EACH ROW EXECUTE FUNCTION trigger_7a8b08eed782();
 
 CREATE TRIGGER trigger_7de792ddbc05 BEFORE INSERT OR UPDATE ON dast_site_validations FOR EACH ROW EXECUTE FUNCTION trigger_7de792ddbc05();
@@ -30887,6 +30948,8 @@ CREATE TRIGGER trigger_96a76ee9f147 BEFORE INSERT OR UPDATE ON design_management
 CREATE TRIGGER trigger_a1bc7c70cbdf BEFORE INSERT OR UPDATE ON vulnerability_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_a1bc7c70cbdf();
 
 CREATE TRIGGER trigger_a253cb3cacdf BEFORE INSERT OR UPDATE ON dora_daily_metrics FOR EACH ROW EXECUTE FUNCTION trigger_a253cb3cacdf();
+
+CREATE TRIGGER trigger_a4e4fb2451d9 BEFORE INSERT OR UPDATE ON epic_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_a4e4fb2451d9();
 
 CREATE TRIGGER trigger_b2612138515d BEFORE INSERT OR UPDATE ON project_relation_exports FOR EACH ROW EXECUTE FUNCTION trigger_b2612138515d();
 
@@ -31070,6 +31133,9 @@ ALTER TABLE ONLY approval_group_rules
 
 ALTER TABLE ONLY catalog_resource_versions
     ADD CONSTRAINT fk_15376d917e FOREIGN KEY (release_id) REFERENCES releases(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY merge_request_blocks
+    ADD CONSTRAINT fk_1551efdd17 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY sbom_occurrences
     ADD CONSTRAINT fk_157506c0e2 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
@@ -32163,6 +32229,9 @@ ALTER TABLE ONLY integrations
 ALTER TABLE ONLY pages_domains
     ADD CONSTRAINT fk_ea2f6dfc6f FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY packages_debian_project_distribution_keys
+    ADD CONSTRAINT fk_eb2224a3c0 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY dast_profiles_tags
     ADD CONSTRAINT fk_eb7e19f8da FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
@@ -32222,6 +32291,9 @@ ALTER TABLE ONLY timelogs
 
 ALTER TABLE ONLY boards
     ADD CONSTRAINT fk_f15266b5f9 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY epic_user_mentions
+    ADD CONSTRAINT fk_f1ab52883e FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE p_ci_pipeline_variables
     ADD CONSTRAINT fk_f29c5f4380 FOREIGN KEY (pipeline_id) REFERENCES ci_pipelines(id) ON DELETE CASCADE;

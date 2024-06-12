@@ -30209,10 +30209,19 @@ msgstr ""
 msgid "KubernetesDashboard|You can select an agent from a project's environment page."
 msgstr ""
 
+msgid "KubernetesLogs|Container"
+msgstr ""
+
+msgid "KubernetesLogs|Namespace"
+msgstr ""
+
 msgid "KubernetesLogs|No logs available for container %{containerName} of pod %{podName}"
 msgstr ""
 
 msgid "KubernetesLogs|No logs available for pod %{podName}"
+msgstr ""
+
+msgid "KubernetesLogs|Pod"
 msgstr ""
 
 msgid "LDAP"
@@ -33312,6 +33321,12 @@ msgstr ""
 msgid "MlModelRegistry|Are you sure you want to delete model version %{versionName}?"
 msgstr ""
 
+msgid "MlModelRegistry|Artifact file creation failed"
+msgstr ""
+
+msgid "MlModelRegistry|Artifact file is too large"
+msgstr ""
+
 msgid "MlModelRegistry|Artifacts"
 msgstr ""
 
@@ -33487,6 +33502,9 @@ msgid "MlModelRegistry|No logged parameters"
 msgstr ""
 
 msgid "MlModelRegistry|No registered versions"
+msgstr ""
+
+msgid "MlModelRegistry|Package creation failed"
 msgstr ""
 
 msgid "MlModelRegistry|Parameters"
