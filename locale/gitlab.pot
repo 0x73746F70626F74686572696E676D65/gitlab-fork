@@ -56557,9 +56557,6 @@ msgstr ""
 msgid "UsageQuotas|Namespace transfer data used"
 msgstr ""
 
-msgid "UsageQuota|%{linkStart}Instance runners%{linkEnd} are disabled, so there are no limits set on pipeline usage"
-msgstr ""
-
 msgid "UsageQuota|%{linkTitle} help link"
 msgstr ""
 
@@ -56669,6 +56666,9 @@ msgid "UsageQuota|Namespace total storage represents the sum of storage consumed
 msgstr ""
 
 msgid "UsageQuota|No compute usage data available."
+msgstr ""
+
+msgid "UsageQuota|No compute usage data because %{linkStart}Instance runners%{linkEnd} are disabled, or there are no projects in this group."
 msgstr ""
 
 msgid "UsageQuota|No projects to display."
