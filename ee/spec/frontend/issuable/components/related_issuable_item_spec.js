@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import IssueWeight from 'ee_component/boards/components/issue_card_weight.vue';
+import IssueWeight from 'ee_component/issues/components/issue_weight.vue';
 import { TEST_HOST } from 'helpers/test_constants';
 import {
   defaultAssignees,
