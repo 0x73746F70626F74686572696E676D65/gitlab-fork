@@ -12,6 +12,7 @@ module Search
       attr_accessor :database_record, :database_id
 
       InvalidError = Class.new(StandardError)
+      ReferenceFailure = Class.new(StandardError)
 
       def serialize
         raise NotImplementedError

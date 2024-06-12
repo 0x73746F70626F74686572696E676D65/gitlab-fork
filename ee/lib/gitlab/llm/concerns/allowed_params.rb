@@ -9,12 +9,14 @@ module Gitlab
 
         ALLOWED_PARAMS = {
           anthropic: ANTHROPIC_PARAMS,
-          vertex: VERTEX_PARAMS
+          vertex: VERTEX_PARAMS,
+          litellm: ANTHROPIC_PARAMS
         }.freeze
 
         TRACKING_CLASS_NAMES = {
           anthropic: 'Gitlab::Llm::Anthropic::Client',
-          vertex: 'Gitlab::Llm::VertexAi::Client'
+          vertex: 'Gitlab::Llm::VertexAi::Client',
+          litellm: 'Gitlab::Llm::AiGateway::Client'
         }.freeze
       end
     end

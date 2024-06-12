@@ -170,6 +170,16 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
           end
         end
       end
+
+      it 'returns 0 and adds ref to failures if ReferenceFailure is raised' do
+        rec = issue_as_ref.database_record
+        allow(rec.__elasticsearch__)
+          .to receive(:as_indexed_json)
+          .and_raise ::Search::Elastic::Reference::ReferenceFailure
+
+        expect(indexer.process(issue_as_ref)).to eq(0)
+        expect(indexer.failures).to contain_exactly(issue_as_ref)
+      end
     end
 
     describe 'when the operation is invalid' do

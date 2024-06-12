@@ -24,7 +24,8 @@ module Ai
 
     enum feature: {
       code_generations: 0,
-      code_completions: 1
+      code_completions: 1,
+      duo_chat: 2
     }
 
     def provider_title

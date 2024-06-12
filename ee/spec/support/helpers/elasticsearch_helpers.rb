@@ -44,6 +44,7 @@ module ElasticsearchHelpers
     # Ensure that any enqueued updates are processed
     Elastic::ProcessBookkeepingService.new.execute
     Elastic::ProcessInitialBookkeepingService.new.execute
+    Search::Elastic::ProcessEmbeddingBookkeepingService.new.execute
 
     # Make any documents added to the index visible
     refresh_index!
