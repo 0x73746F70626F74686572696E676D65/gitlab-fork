@@ -1265,6 +1265,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_a4e4fb2451d9() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."group_id" IS NULL THEN
+  SELECT "group_id"
+  INTO NEW."group_id"
+  FROM "epics"
+  WHERE "epics"."id" = NEW."epic_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_b2612138515d() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -9703,7 +9719,8 @@ CREATE TABLE epic_user_mentions (
     mentioned_users_ids integer[],
     mentioned_projects_ids integer[],
     mentioned_groups_ids integer[],
-    note_id bigint
+    note_id bigint,
+    group_id bigint
 );
 
 CREATE SEQUENCE epic_user_mentions_id_seq
@@ -26435,6 +26452,8 @@ CREATE UNIQUE INDEX index_epic_issues_on_issue_id ON epic_issues USING btree (is
 
 CREATE INDEX index_epic_metrics ON epic_metrics USING btree (epic_id);
 
+CREATE INDEX index_epic_user_mentions_on_group_id ON epic_user_mentions USING btree (group_id);
+
 CREATE UNIQUE INDEX index_epic_user_mentions_on_note_id ON epic_user_mentions USING btree (note_id) WHERE (note_id IS NOT NULL);
 
 CREATE INDEX index_epics_on_assignee_id ON epics USING btree (assignee_id);
@@ -30909,6 +30928,8 @@ CREATE TRIGGER trigger_a1bc7c70cbdf BEFORE INSERT OR UPDATE ON vulnerability_use
 
 CREATE TRIGGER trigger_a253cb3cacdf BEFORE INSERT OR UPDATE ON dora_daily_metrics FOR EACH ROW EXECUTE FUNCTION trigger_a253cb3cacdf();
 
+CREATE TRIGGER trigger_a4e4fb2451d9 BEFORE INSERT OR UPDATE ON epic_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_a4e4fb2451d9();
+
 CREATE TRIGGER trigger_b2612138515d BEFORE INSERT OR UPDATE ON project_relation_exports FOR EACH ROW EXECUTE FUNCTION trigger_b2612138515d();
 
 CREATE TRIGGER trigger_b4520c29ea74 BEFORE INSERT OR UPDATE ON approval_merge_request_rule_sources FOR EACH ROW EXECUTE FUNCTION trigger_b4520c29ea74();
@@ -32246,6 +32267,9 @@ ALTER TABLE ONLY timelogs
 
 ALTER TABLE ONLY boards
     ADD CONSTRAINT fk_f15266b5f9 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY epic_user_mentions
+    ADD CONSTRAINT fk_f1ab52883e FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE p_ci_pipeline_variables
     ADD CONSTRAINT fk_f29c5f4380 FOREIGN KEY (pipeline_id) REFERENCES ci_pipelines(id) ON DELETE CASCADE;
