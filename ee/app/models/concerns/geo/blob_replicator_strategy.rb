@@ -5,7 +5,6 @@ module Geo
     extend ActiveSupport::Concern
 
     include ::Geo::VerifiableReplicator
-    include Gitlab::Geo::LogHelpers
     include EE::GeoHelper # rubocop: disable Cop/InjectEnterpriseEditionModule
 
     EVENT_CREATED = 'created'
@@ -93,6 +92,8 @@ module Geo
     end
 
     # Schedules a verification job after a model record is created/updated
+    #
+    # Called by Gitlab::Geo::Replicator#geo_handle_after_(create|update)
     def after_verifiable_update
       verify_async if should_primary_verify_after_save?
     end

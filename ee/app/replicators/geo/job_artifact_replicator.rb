@@ -3,7 +3,6 @@
 module Geo
   class JobArtifactReplicator < Gitlab::Geo::Replicator
     include ::Geo::BlobReplicatorStrategy
-    extend ::Gitlab::Utils::Override
 
     def self.model
       ::Ci::JobArtifact

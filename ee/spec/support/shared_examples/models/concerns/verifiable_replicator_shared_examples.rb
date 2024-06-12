@@ -525,9 +525,14 @@ RSpec.shared_examples 'a verifiable replicator' do
         stub_primary_node
       end
 
-      it 'calls verification_started! and enqueues VerificationWorker' do
-        expect(model_record).to receive(:verification_started!)
-        expect(Geo::VerificationWorker).to receive(:perform_async).with(replicator.replicable_name, model_record.id)
+      it 'calls verification_pending!' do
+        expect(model_record).to receive(:verification_pending!)
+
+        replicator.verify_async
+      end
+
+      it 'does not enqueue Geo::VerificationWorker' do
+        expect(Geo::VerificationWorker).not_to receive(:perform_async).with(replicator.replicable_name, model_record.id)
 
         replicator.verify_async
       end

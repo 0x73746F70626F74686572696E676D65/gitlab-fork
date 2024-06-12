@@ -5,7 +5,6 @@ module Geo
     extend ActiveSupport::Concern
 
     include ::Geo::VerifiableReplicator
-    include Gitlab::Geo::LogHelpers
 
     EVENT_CREATED = 'created'
     EVENT_UPDATED = 'updated'
@@ -100,9 +99,11 @@ module Geo
       return unless ::Gitlab::Geo.primary?
       return unless self.class.verification_enabled?
 
-      # Just let verification backfill pick it up.
+      # Just let verification backfill pick it up to ensure
+      # the verification concurrency limit is applied to all
+      # create and update events.
       #
-      # See issue: https://gitlab.com/gitlab-org/gitlab/-/issues/427493
+      # See issue: https://gitlab.com/gitlab-org/gitlab/-/issues/443875
       model_record.verification_pending!
     end
 

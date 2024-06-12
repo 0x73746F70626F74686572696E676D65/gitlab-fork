@@ -3,16 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe Geo::ContainerRepositoryReplicator, :geo, feature_category: :geo_replication do
-  let(:model_record) { build(:container_repository) }
-
   let_it_be(:primary) { create(:geo_node, :primary) }
   let_it_be(:secondary) { create(:geo_node) }
-
-  subject(:replicator) { model_record.replicator }
 
   # Based on shared example 'a repository replicator'
   context 'for base replicator functionality' do
     include EE::GeoHelpers
+
+    let(:model_record) { build(:container_repository) }
+
+    subject(:replicator) { model_record.replicator }
 
     before do
       stub_current_geo_node(primary)
@@ -158,9 +158,12 @@ RSpec.describe Geo::ContainerRepositoryReplicator, :geo, feature_category: :geo_
   end
 
   include_examples 'a verifiable replicator' do
+    let(:model_record) { create(:container_repository) }
     let(:api_url) { 'http://registry.gitlab' }
     let(:repository_url) { "#{api_url}/v2/#{model_record.path}" }
     let(:tags) { { 'latest' => 'sha256:1111' } }
+
+    subject(:replicator) { model_record.replicator }
 
     before do
       stub_container_registry_config(enabled: true, api_url: api_url)
