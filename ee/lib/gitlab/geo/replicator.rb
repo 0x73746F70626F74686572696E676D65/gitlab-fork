@@ -14,6 +14,7 @@ module Gitlab
       include ::Gitlab::Geo::LogHelpers
       extend ::Gitlab::Geo::LogHelpers
       extend ::Gitlab::Geo::BatchCounter
+      extend ::Gitlab::Utils::Override
 
       CLASS_SUFFIXES = %w[RegistryFinder RegistriesResolver].freeze
 

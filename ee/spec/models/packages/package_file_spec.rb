@@ -4,17 +4,6 @@ require 'spec_helper'
 RSpec.describe Packages::PackageFile, type: :model do
   include ::EE::GeoHelpers
 
-  context 'new file' do
-    it 'calls checksum worker' do
-      stub_primary_node
-      allow(Geo::VerificationWorker).to receive(:perform_async)
-
-      package_file = create(:conan_package_file, :conan_recipe_file)
-
-      expect(Geo::VerificationWorker).to have_received(:perform_async).with('package_file', package_file.id)
-    end
-  end
-
   describe '.replicables_for_current_secondary' do
     subject { described_class.replicables_for_current_secondary(1..described_class.last.id) }
 

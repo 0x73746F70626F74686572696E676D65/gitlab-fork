@@ -3,7 +3,6 @@
 module Geo
   class DependencyProxyManifestReplicator < Gitlab::Geo::Replicator
     include ::Geo::BlobReplicatorStrategy
-    extend ::Gitlab::Utils::Override
 
     def self.model
       ::DependencyProxy::Manifest

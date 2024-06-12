@@ -42,6 +42,7 @@ RSpec.shared_examples 'a replicable model with a separate table for verification
       it 'returns records with given scope' do
         expect(verification_model_class.checksummed.size).to eq(0)
 
+        verifiable_model_record.save!
         verifiable_model_record.verification_started!
         verifiable_model_record.verification_succeeded_with_checksum!('checksum', Time.now)
 

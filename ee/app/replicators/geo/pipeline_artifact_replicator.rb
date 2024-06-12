@@ -3,7 +3,6 @@
 module Geo
   class PipelineArtifactReplicator < Gitlab::Geo::Replicator
     include ::Geo::BlobReplicatorStrategy
-    extend ::Gitlab::Utils::Override
 
     def self.model
       ::Ci::PipelineArtifact

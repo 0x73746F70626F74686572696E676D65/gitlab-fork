@@ -3,7 +3,6 @@
 module Geo
   class ProjectRepositoryReplicator < Gitlab::Geo::Replicator
     include ::Geo::RepositoryReplicatorStrategy
-    extend ::Gitlab::Utils::Override
 
     def self.model
       ::Project

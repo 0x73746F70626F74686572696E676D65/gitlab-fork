@@ -3,7 +3,6 @@
 module Geo
   class LfsObjectReplicator < Gitlab::Geo::Replicator
     include ::Geo::BlobReplicatorStrategy
-    extend ::Gitlab::Utils::Override
 
     def carrierwave_uploader
       model_record.file

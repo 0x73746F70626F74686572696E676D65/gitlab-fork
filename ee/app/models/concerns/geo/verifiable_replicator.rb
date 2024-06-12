@@ -232,14 +232,12 @@ module Geo
     end
 
     def verify_async
-      # Marking started prevents backfill (VerificationBatchWorker) from picking
-      # this up too.
-      # Also, if another verification job is running, this will make that job
-      # set state to pending after it finishes, since the calculated checksum
-      # is already invalidated.
-      verification_state_tracker.verification_started!
-
-      Geo::VerificationWorker.perform_async(replicable_name, model_record.id)
+      # Just let verification backfill pick it up to ensure
+      # the verification concurrency limit is applied to all
+      # create and update events.
+      #
+      # See issue: https://gitlab.com/gitlab-org/gitlab/-/issues/443875
+      verification_state_tracker.verification_pending!
     end
 
     # Calculates checksum and asks the model/registry to manage verification
