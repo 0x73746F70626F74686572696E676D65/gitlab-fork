@@ -19,17 +19,5 @@ RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::Base, feature_categor
           "/publishers/google/models/awesome-model:predict"
       )
     end
-
-    context 'when use_ai_gateway_proxy is disabled' do
-      before do
-        stub_feature_flags(use_ai_gateway_proxy: false)
-      end
-
-      it 'raises MissingConfigurationError' do
-        expect { subject.url }.to raise_error(
-          Gitlab::Llm::VertexAi::ModelConfigurations::Base::MissingConfigurationError
-        )
-      end
-    end
   end
 end

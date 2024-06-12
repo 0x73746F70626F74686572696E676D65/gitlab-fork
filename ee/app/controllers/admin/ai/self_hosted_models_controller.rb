@@ -8,6 +8,7 @@ module Admin
       feature_category :custom_models
       urgency :low
 
+      before_action :ensure_registration!
       before_action :ensure_feature_enabled!
 
       def index
@@ -54,6 +55,12 @@ module Admin
       end
 
       private
+
+      def ensure_registration!
+        return if ::Ai::TestingTermsAcceptance.has_accepted?
+
+        redirect_to admin_ai_terms_and_conditions_url
+      end
 
       def self_hosted_models_params
         params.require(:self_hosted_model).permit(:name, :model, :endpoint, :api_token)

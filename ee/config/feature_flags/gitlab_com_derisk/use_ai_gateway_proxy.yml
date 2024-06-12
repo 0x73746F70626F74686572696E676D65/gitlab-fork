@@ -1,9 +1,0 @@
----
-name: use_ai_gateway_proxy
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/458207
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/153215
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/461964
-milestone: '17.1'
-group: group::ai framework
-type: gitlab_com_derisk
-default_enabled: false
