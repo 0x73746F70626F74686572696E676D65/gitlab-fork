@@ -1025,6 +1025,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_77d9fbad5b12() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "packages_debian_project_distributions"
+  WHERE "packages_debian_project_distributions"."id" = NEW."distribution_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_7a8b08eed782() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -13618,6 +13634,7 @@ CREATE TABLE packages_debian_project_distribution_keys (
     encrypted_passphrase_iv text NOT NULL,
     public_key text NOT NULL,
     fingerprint text NOT NULL,
+    project_id bigint,
     CONSTRAINT check_9e8a5eef0a CHECK ((char_length(fingerprint) <= 255)),
     CONSTRAINT check_d188f6547f CHECK ((char_length(public_key) <= 524288))
 );
@@ -27508,6 +27525,8 @@ CREATE INDEX index_packages_debian_group_distributions_on_creator_id ON packages
 
 CREATE INDEX index_packages_debian_project_component_files_on_component_id ON packages_debian_project_component_files USING btree (component_id);
 
+CREATE INDEX index_packages_debian_project_distribution_keys_on_project_id ON packages_debian_project_distribution_keys USING btree (project_id);
+
 CREATE INDEX index_packages_debian_project_distributions_on_creator_id ON packages_debian_project_distributions USING btree (creator_id);
 
 CREATE INDEX index_packages_debian_publications_on_distribution_id ON packages_debian_publications USING btree (distribution_id);
@@ -30830,6 +30849,8 @@ CREATE TRIGGER trigger_56d49f4ed623 BEFORE INSERT OR UPDATE ON workspace_variabl
 
 CREATE TRIGGER trigger_57ad2742ac16 BEFORE INSERT OR UPDATE ON user_achievements FOR EACH ROW EXECUTE FUNCTION trigger_57ad2742ac16();
 
+CREATE TRIGGER trigger_77d9fbad5b12 BEFORE INSERT OR UPDATE ON packages_debian_project_distribution_keys FOR EACH ROW EXECUTE FUNCTION trigger_77d9fbad5b12();
+
 CREATE TRIGGER trigger_7a8b08eed782 BEFORE INSERT OR UPDATE ON boards_epic_board_positions FOR EACH ROW EXECUTE FUNCTION trigger_7a8b08eed782();
 
 CREATE TRIGGER trigger_7de792ddbc05 BEFORE INSERT OR UPDATE ON dast_site_validations FOR EACH ROW EXECUTE FUNCTION trigger_7de792ddbc05();
@@ -32127,6 +32148,9 @@ ALTER TABLE ONLY integrations
 
 ALTER TABLE ONLY pages_domains
     ADD CONSTRAINT fk_ea2f6dfc6f FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY packages_debian_project_distribution_keys
+    ADD CONSTRAINT fk_eb2224a3c0 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY dast_profiles_tags
     ADD CONSTRAINT fk_eb7e19f8da FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
