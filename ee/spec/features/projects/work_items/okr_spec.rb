@@ -342,6 +342,9 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     end
 
     it 'reorders children', :aggregate_failures do
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/467207
+      allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(300)
+
       create_okr('key result', 'KR 1')
       create_okr('key result', 'KR 2')
       create_okr('key result', 'KR 3')
