@@ -1003,12 +1003,14 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                   }
                 end
 
-                it 'only applies the changed params' do
+                it 'only applies the changed params and updated_at' do
                   subject
 
                   expect(epic.reload.description).to eq('New description')
                   expect(work_item.reload.description).to eq('New description')
-                  expect(work_item.reload.title).not_to eq('Outdated title')
+                  expect(work_item.updated_by).to eq(epic.updated_by)
+                  expect(work_item.updated_at).to eq(epic.updated_at)
+                  expect(work_item.title).not_to eq('Outdated title')
                 end
               end
             end
