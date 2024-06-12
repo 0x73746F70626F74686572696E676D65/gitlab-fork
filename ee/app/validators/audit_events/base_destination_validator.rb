@@ -15,12 +15,17 @@ module AuditEvents
       destinations.configs_of_parent(record.id, category)
     end
 
-    def validate_attribute_uniqueness(record, attribute_name, category)
+    def validate_attribute_uniqueness(record, attribute_names, category)
       existing_configs = configs(record, category)
 
       existing_configs.each do |existing_config|
-        if existing_config[attribute_name] == record.config[attribute_name]
-          record.errors.add(:config, format(_("%{attribute} is already taken."), attribute: attribute_name))
+        invalid = true
+        attribute_names.each do |attribute_name|
+          invalid &= existing_config[attribute_name] == record.config[attribute_name]
+        end
+
+        if invalid
+          record.errors.add(:config, format(_("%{attribute} already taken."), attribute: attribute_names.join(", ")))
           break
         end
       end

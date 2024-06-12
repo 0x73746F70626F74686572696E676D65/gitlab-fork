@@ -19,5 +19,17 @@ FactoryBot.define do
       end
       secret_token { SecureRandom.hex(8) }
     end
+
+    trait :gcp do
+      category { 'gcp' }
+      config do
+        {
+          googleProjectIdName: "#{FFaker::Lorem.word.downcase}-#{SecureRandom.hex(4)}",
+          clientEmail: FFaker::Internet.safe_email,
+          logIdName: SecureRandom.hex(4)
+        }
+      end
+      secret_token { OpenSSL::PKey::RSA.new(4096).to_pem }
+    end
   end
 end

@@ -9,6 +9,7 @@ module AuditEvents
 
     included do
       before_validation :assign_default_name
+      before_validation :assign_default_log_id, if: :gcp?
 
       enum category: {
         http: 0,
@@ -22,14 +23,14 @@ module AuditEvents
       validates :config, presence: true,
         json_schema: { filename: 'audit_events_http_external_streaming_destination_config' }, if: :http?
       validates :config, presence: true,
-        json_schema: { filename: 'audit_events_aws_external_streaming_destination_config' },
-        if: :aws?
-      validates :config, presence: true, json_schema: { filename: 'external_streaming_destination_config' },
-        if: :gcp?
+        json_schema: { filename: 'audit_events_aws_external_streaming_destination_config' }, if: :aws?
+      validates :config, presence: true,
+        json_schema: { filename: 'audit_events_gcp_external_streaming_destination_config' }, if: :gcp?
       validates :secret_token, presence: true
 
       validates_with AuditEvents::HttpDestinationValidator, if: :http?
       validates_with AuditEvents::AwsDestinationValidator, if: :aws?
+      validates_with AuditEvents::GcpDestinationValidator, if: :gcp?
       validate :no_more_than_5_namespace_filters?
 
       attr_encrypted :secret_token,
@@ -54,6 +55,10 @@ module AuditEvents
 
         errors.add(:namespace_filters,
           format(_("are limited to %{max_count} per destination"), max_count: MAXIMUM_NAMESPACE_FILTER_COUNT))
+      end
+
+      def assign_default_log_id
+        config["logIdName"] = "audit-events" if config["logIdName"].blank?
       end
     end
   end

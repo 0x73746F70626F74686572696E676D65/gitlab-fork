@@ -4,7 +4,7 @@ module AuditEvents
   class HttpDestinationValidator < BaseDestinationValidator
     def validate(record)
       if record.is_a?(AuditEvents::ExternallyStreamable) && record.http?
-        validate_attribute_uniqueness(record, "url", "http")
+        validate_attribute_uniqueness(record, ["url"], "http")
         validate_secret_token(record)
       else
         record.errors.add(:base, _('HttpDestinationValidator validates only http external audit event destinations.'))
