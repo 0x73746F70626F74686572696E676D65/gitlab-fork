@@ -17,18 +17,18 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  inject: [
-    'pageHeading',
-    'showEditButton',
-    'isPageTemplate',
-    'editButtonUrl',
-    'lastVersion',
-    'pageVersion',
-    'authorUrl',
-    'isEditingPath',
-    'wikiUrl',
-    'pagePersisted',
-  ],
+  inject: {
+    pageHeading: { default: null },
+    showEditButton: { default: null },
+    isPageTemplate: { default: null },
+    editButtonUrl: { default: null },
+    lastVersion: { default: null },
+    pageVersion: { default: null },
+    authorUrl: { default: null },
+    isEditingPath: { default: null },
+    wikiUrl: { default: null },
+    pagePersisted: { default: null },
+  },
   computed: {
     pageHeadingComputed() {
       let { pageHeading } = this;
