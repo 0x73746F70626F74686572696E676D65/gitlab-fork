@@ -88,6 +88,18 @@ describe('App', () => {
   const findPoliciesHeader = () => wrapper.findComponent(ListHeader);
   const findPoliciesList = () => wrapper.findComponent(ListComponent);
 
+  describe('loading', () => {
+    it('renders the policies list correctly when pipelineExecutionPolicyType is false', () => {
+      createWrapper();
+      expect(findPoliciesList().props('isLoadingPolicies')).toBe(true);
+    });
+
+    it('renders the policies list correctly when pipelineExecutionPolicyType is true', () => {
+      createWrapper({ provide: { glFeatures: { pipelineExecutionPolicyType: true } } });
+      expect(findPoliciesList().props('isLoadingPolicies')).toBe(true);
+    });
+  });
+
   describe('default', () => {
     beforeEach(async () => {
       createWrapper();

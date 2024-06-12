@@ -144,7 +144,10 @@ export default {
     isLoadingPolicies() {
       return (
         this.$apollo.queries.scanExecutionPolicies.loading ||
-        this.$apollo.queries.scanResultPolicies.loading
+        this.$apollo.queries.scanResultPolicies.loading ||
+        (this.pipelineExecutionPolicyEnabled
+          ? this.$apollo.queries.pipelineExecutionPolicies.loading
+          : false)
       );
     },
     pipelineExecutionPolicyEnabled() {
