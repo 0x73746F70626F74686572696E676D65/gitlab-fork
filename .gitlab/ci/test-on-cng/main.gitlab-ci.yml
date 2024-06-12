@@ -61,7 +61,7 @@ workflow:
       fi
     - cd qa
     - bundle exec cng log events --save
-    - bundle exec cng log pods --save --containers all
+    - bundle exec cng log pods --save --containers all --no-fail-on-missing-pods
     # This command prints all the necessary arguments to be able to recreate the same deployment as on CI
     - |
       bundle exec cng create deployment "${DEPLOYMENT_TYPE}" \
