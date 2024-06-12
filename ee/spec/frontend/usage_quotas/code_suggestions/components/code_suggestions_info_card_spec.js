@@ -110,6 +110,32 @@ describe('CodeSuggestionsInfoCard', () => {
       expect(wrapper.exists()).toBe(true);
     });
 
+    describe('with Duo Pro add-on enabled', () => {
+      beforeEach(async () => {
+        createComponent({ props: { duoTier: 'pro' } });
+
+        // wait for apollo to load
+        await waitForPromises();
+      });
+
+      it('renders the title text', () => {
+        expect(findCodeSuggestionsInfoTitle().text()).toBe('GitLab Duo Pro');
+      });
+    });
+
+    describe('with Duo Enterprise add-on enabled', () => {
+      beforeEach(async () => {
+        createComponent({ props: { duoTier: 'enterprise' } });
+
+        // wait for apollo to load
+        await waitForPromises();
+      });
+
+      it('renders the title text', () => {
+        expect(findCodeSuggestionsInfoTitle().text()).toBe('GitLab Duo Enterprise');
+      });
+    });
+
     it('renders the description text', () => {
       expect(findCodeSuggestionsDescription().text()).toBe(
         "Code Suggestions uses generative AI to suggest code while you're developing.",
@@ -120,10 +146,6 @@ describe('CodeSuggestionsInfoCard', () => {
       expect(findCodeSuggestionsLearnMoreLink().attributes('href')).toBe(
         `${PROMO_URL}/solutions/code-suggestions/`,
       );
-    });
-
-    it('renders the title text', () => {
-      expect(findCodeSuggestionsInfoTitle().text()).toBe('GitLab Duo Pro add-on');
     });
   });
 

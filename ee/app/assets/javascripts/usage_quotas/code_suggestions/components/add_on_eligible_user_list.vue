@@ -23,6 +23,8 @@ import {
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import {
+  DUO_PRO,
+  DUO_ENTERPRISE,
   addOnEligibleUserListTableFields,
   ASSIGN_SEATS_BULK_ACTION,
   UNASSIGN_SEATS_BULK_ACTION,
@@ -82,6 +84,12 @@ export default {
       required: false,
       default: '',
     },
+    duoTier: {
+      type: String,
+      required: false,
+      default: DUO_PRO,
+      validator: (val) => [DUO_PRO, DUO_ENTERPRISE].includes(val),
+    },
   },
   data() {
     return {
@@ -118,11 +126,14 @@ export default {
       }
       return s__('Billing|No users to display.');
     },
+    duoPlan() {
+      return this.duoTier === 'enterprise' ? 'duoEnterpriseAddon' : 'codeSuggestionsAddon';
+    },
     tableFieldsConfiguration() {
-      let fieldConfig = ['user', 'codeSuggestionsAddon', 'emailWide', 'lastActivityTimeWide'];
+      let fieldConfig = ['user', this.duoPlan, 'emailWide', 'lastActivityTimeWide'];
 
       if (this.isFilteringEnabled && this.hasMaxRoleField) {
-        fieldConfig = ['user', 'codeSuggestionsAddon', 'email', 'maxRole', 'lastActivityTime'];
+        fieldConfig = ['user', this.duoPlan, 'email', 'maxRole', 'lastActivityTime'];
       }
 
       if (this.isBulkAddOnAssignmentEnabled) {
