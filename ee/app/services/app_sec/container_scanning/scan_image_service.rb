@@ -26,7 +26,9 @@ module AppSec
         return unless user
 
         service = ::Ci::CreatePipelineService.new(project, user, ref: project.default_branch_or_main)
-        service.execute(SOURCE, content: pipeline_config)
+        result = service.execute(SOURCE, content: pipeline_config)
+
+        track(user, project, result)
       end
 
       def pipeline_config
@@ -58,6 +60,17 @@ module AppSec
           pipeline_source: SOURCE,
           limit_type: :container_scanning_for_registry_scans,
           message: 'Daily rate limit container_scanning_for_registry_scans reached'
+        )
+      end
+
+      def track(user, project, result)
+        Gitlab::InternalEvents.track_event(
+          'container_scanning_for_registry_pipeline',
+          user: user,
+          project: project,
+          additional_properties: {
+            property: result&.status&.to_s
+          }
         )
       end
     end
