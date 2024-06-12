@@ -5,10 +5,12 @@ require 'spec_helper'
 RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigation do
   let_it_be(:owner) { create(:user) }
   let_it_be(:auditor) { create(:user, :auditor) }
+  let_it_be(:maintainer) { create(:user, :maintainer) }
 
   let_it_be_with_refind(:group) do
     build(:group, :private).tap do |g|
       g.add_owner(owner)
+      g.add_member(maintainer, :maintainer)
       g.add_member(auditor, :reporter)
     end
   end
@@ -261,6 +263,36 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
           it { is_expected.not_to be_present }
         end
       end
+
+      describe 'Workspaces menu item' do
+        let(:item_id) { :workspaces_settings }
+
+        context 'when remote_development_namespace_agent_authorization feature flag is enabled' do
+          context 'when workspaces feature is available' do
+            before do
+              stub_licensed_features(remote_development: true)
+            end
+
+            it { is_expected.to be_present }
+          end
+
+          context 'when workspaces feature is not available' do
+            before do
+              stub_licensed_features(remote_development: false)
+            end
+
+            it { is_expected.not_to be_present }
+          end
+        end
+
+        context 'when remote_development_namespace_agent_authorization feature flag is disabled' do
+          before do
+            stub_feature_flags(remote_development_namespace_agent_authorization: false)
+          end
+
+          it { is_expected.not_to be_present }
+        end
+      end
     end
 
     context 'for auditor user' do
@@ -291,6 +323,33 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu, feature_category: :navigat
         it 'does not show any other menu items' do
           expect(menu.renderable_items.length).to equal(1)
         end
+      end
+
+      describe 'Workspaces menu item' do
+        let(:item_id) { :workspaces_settings }
+
+        before do
+          stub_licensed_features(remote_development: true)
+        end
+
+        it { is_expected.not_to be_present }
+      end
+    end
+
+    context 'for maintainer user' do
+      let(:user) { maintainer }
+
+      subject { menu.renderable_items.find { |e| e.item_id == item_id } }
+
+      describe 'Workspaces menu item' do
+        let(:item_id) { :workspaces_settings }
+
+        before do
+          stub_feature_flags(remote_development_namespace_agent_authorization: true)
+          stub_licensed_features(remote_development: true)
+        end
+
+        it { is_expected.to be_present }
       end
     end
 
