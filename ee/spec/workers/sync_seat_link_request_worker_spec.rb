@@ -154,12 +154,13 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :plan
       let(:body) { { success: true, next_reconciliation_date: today.to_s, display_alert_from: (today - 7.days).to_s }.to_json }
       let(:today) { Date.current }
 
-      it 'saves the reconciliation dates' do
+      it 'creates reconciliation record with correct attributes' do
         sync_seat_link
         upcoming_reconciliation = GitlabSubscriptions::UpcomingReconciliation.next
 
         expect(upcoming_reconciliation.next_reconciliation_date).to eq(today)
         expect(upcoming_reconciliation.display_alert_from).to eq(today - 7.days)
+        expect(upcoming_reconciliation.organization_id).to eq(1)
       end
 
       context 'when an upcoming_reconciliation already exists' do

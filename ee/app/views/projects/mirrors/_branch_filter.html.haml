@@ -28,7 +28,7 @@
       radio_options: { class: 'js-mirror-branch-setting' }) do |c|
       = c.with_label do
         = _('Mirror specific branches')
-        = text_field_tag :mirror_branch_regex, nil, class: 'form-control gl-form-input gl-mt-2  js-mirror-branch-regex gl-form-input-xl', placeholder: _('Example') + ':(feature|hotfix)\/*', disabled: true
+        = text_field_tag :mirror_branch_regex, nil, class: 'form-control gl-form-input gl-mt-2  js-mirror-branch-regex gl-form-input-xl', placeholder: _('Example') + ':(feature|hotfix)\/.*', disabled: true
 
 - else
   = render_ce 'projects/mirrors/branch_filter'

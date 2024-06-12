@@ -17781,7 +17781,8 @@ CREATE TABLE upcoming_reconciliations (
     next_reconciliation_date date NOT NULL,
     display_alert_from date NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    organization_id bigint DEFAULT 1 NOT NULL
 );
 
 CREATE SEQUENCE upcoming_reconciliations_id_seq
@@ -28609,6 +28610,8 @@ CREATE UNIQUE INDEX index_unresolved_alerts_on_project_id_and_fingerprint ON ale
 
 CREATE UNIQUE INDEX index_upcoming_reconciliations_on_namespace_id ON upcoming_reconciliations USING btree (namespace_id);
 
+CREATE INDEX index_upcoming_reconciliations_on_organization_id ON upcoming_reconciliations USING btree (organization_id);
+
 CREATE INDEX index_upload_states_failed_verification ON upload_states USING btree (verification_retry_at NULLS FIRST) WHERE (verification_state = 3);
 
 CREATE INDEX index_upload_states_needs_verification ON upload_states USING btree (verification_state) WHERE ((verification_state = 0) OR (verification_state = 3));
@@ -32129,6 +32132,9 @@ ALTER TABLE ONLY metrics_users_starred_dashboards
 
 ALTER TABLE ONLY ci_pipelines
     ADD CONSTRAINT fk_d80e161c54 FOREIGN KEY (ci_ref_id) REFERENCES ci_refs(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY upcoming_reconciliations
+    ADD CONSTRAINT fk_d81de6b493 FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY system_note_metadata
     ADD CONSTRAINT fk_d83a918cb1 FOREIGN KEY (note_id) REFERENCES notes(id) ON DELETE CASCADE;
