@@ -288,6 +288,14 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
     end
 
     context 'when the product_analytics_billing flag is enabled' do
+      context 'when the product_analytics_billing_override flag is disabled' do
+        before do
+          stub_feature_flags(product_analytics_billing_override: false)
+        end
+
+        it { is_expected.to be_falsey }
+      end
+
       context 'when product_analytics add on is not purchased' do
         it { is_expected.to be_falsey }
 

@@ -95,9 +95,7 @@ module Analytics
 
     def can_select_gitlab_managed_provider?(project)
       return false unless project?(project)
-
-      return false unless ::Feature.enabled?(:product_analytics_billing, project.root_ancestor) &&
-        ::Feature.disabled?(:product_analytics_billing_override, project.root_ancestor)
+      return false unless ::Feature.enabled?(:product_analytics_billing, project.root_ancestor)
 
       # rubocop:disable Gitlab/AvoidGitlabInstanceChecks -- GitLab-managed provider is currently ONLY available on .com
       Gitlab::CurrentSettings.should_check_namespace_plan?
@@ -107,10 +105,8 @@ module Analytics
     def managed_cluster_purchased?(project)
       return false unless project?(project)
 
-      return false unless ::Feature.enabled?(:product_analytics_billing, project.root_ancestor) &&
-        ::Feature.disabled?(:product_analytics_billing_override, project.root_ancestor)
-
-      ::GitlabSubscriptions::AddOnPurchase.active.for_product_analytics.by_namespace_id(project.root_ancestor.id).any?
+      ::Feature.enabled?(:product_analytics_billing_override, project.root_ancestor) ||
+        ::GitlabSubscriptions::AddOnPurchase.active.for_product_analytics.by_namespace_id(project.root_ancestor.id).any?
     end
 
     def project_dashboard_pointer(project)

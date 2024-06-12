@@ -102,8 +102,7 @@ module ProductAnalyticsHelpers
 
   def product_analytics_billing_enabled?
     root_ancestor.present? &&
-      ::Feature.enabled?(:product_analytics_billing, root_ancestor, type: :development) &&
-      ::Feature.disabled?(:product_analytics_billing_override, root_ancestor, type: :wip)
+      ::Feature.enabled?(:product_analytics_billing, root_ancestor, type: :development)
   end
 
   def connected_to_cluster?
@@ -127,7 +126,8 @@ module ProductAnalyticsHelpers
   private
 
   def product_analytics_add_on_purchased?
-    ::GitlabSubscriptions::AddOnPurchase.active.for_product_analytics.by_namespace_id(root_ancestor.id).any?
+    ::Feature.enabled?(:product_analytics_billing_override, root_ancestor) ||
+      ::GitlabSubscriptions::AddOnPurchase.active.for_product_analytics.by_namespace_id(root_ancestor.id).any?
   end
 
   def self_managed_product_analytics_cluster?
