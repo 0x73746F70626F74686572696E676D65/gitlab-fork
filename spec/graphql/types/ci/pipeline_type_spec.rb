@@ -32,9 +32,9 @@ RSpec.describe Types::Ci::PipelineType, feature_category: :continuous_integratio
   end
 
   describe 'manual_variables' do
-    let(:user) { create(:user) }
-    let(:project) { create(:project, :repository) }
-    let(:pipeline) { create(:ci_pipeline, project: project) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:project) { create(:project, :repository) }
+    let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
     let(:query) do
       %(
         {
@@ -61,8 +61,8 @@ RSpec.describe Types::Ci::PipelineType, feature_category: :continuous_integratio
     subject(:data) { GitlabSchema.execute(query, context: { current_user: user }).as_json }
 
     before do
+      project.add_role(user, user_access_level) # rubocop:disable RSpec/BeforeAllRoleAssignment -- need dynamic settings `user_access_level`
       create(:ci_pipeline_variable, pipeline: pipeline, key: 'TRIGGER_KEY_1', value: 'TRIGGER_VALUE_1')
-      project.add_role(user, user_access_level)
       sign_in(user)
     end
 
@@ -70,7 +70,7 @@ RSpec.describe Types::Ci::PipelineType, feature_category: :continuous_integratio
       let(:user_access_level) { :owner }
 
       it 'returns the manual variables' do
-        expect(manual_variables).to eq([{ 'key' => 'TRIGGER_KEY_1', 'value' => 'TRIGGER_VALUE_1' }])
+        expect(manual_variables).to match_array([{ 'key' => 'TRIGGER_KEY_1', 'value' => 'TRIGGER_VALUE_1' }])
       end
     end
 
@@ -78,7 +78,7 @@ RSpec.describe Types::Ci::PipelineType, feature_category: :continuous_integratio
       let(:user_access_level) { :developer }
 
       it 'returns the manual variables with nil values' do
-        expect(manual_variables).to eq([{ 'key' => 'TRIGGER_KEY_1', 'value' => nil }])
+        expect(manual_variables).to match_array([{ 'key' => 'TRIGGER_KEY_1', 'value' => nil }])
       end
     end
   end
