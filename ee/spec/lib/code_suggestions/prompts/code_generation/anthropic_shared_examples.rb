@@ -202,13 +202,15 @@ RSpec.shared_examples 'anthropic prompt' do
           }
         end
 
+        let(:skip_dependency_descriptions) { false }
         let(:params) do
           {
             project: xray.project,
             current_user: current_user,
             prefix: prefix,
             instruction: instruction,
-            current_file: unsafe_params['current_file'].with_indifferent_access
+            current_file: unsafe_params['current_file'].with_indifferent_access,
+            skip_dependency_descriptions: skip_dependency_descriptions
           }
         end
 
@@ -340,6 +342,43 @@ RSpec.shared_examples 'anthropic prompt' do
             }
 
             expect(subject.request_params).to eq(request_params.merge(prompt: expected_prompt))
+          end
+        end
+
+        context 'when skip_dependency_descriptions is true' do
+          let(:skip_dependency_descriptions) { true }
+          let(:expected_libs) do
+            <<~LIBS
+              <libs>
+              test library
+              other library
+              </libs>
+              The list of available libraries is provided in <libs></libs> tags.
+            LIBS
+          end
+
+          it 'provides only libs names' do
+            request_params = {
+              model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+              prompt_version: prompt_version
+            }
+
+            expect(subject.request_params).to eq(request_params.merge(prompt: expected_prompt))
+          end
+
+          context 'when X-Ray data exceeds maximum limit' do
+            before do
+              stub_const("CodeSuggestions::Prompts::CodeGeneration::AnthropicMessages::MAX_LIBS_COUNT", 1)
+            end
+
+            it 'does not trim libs content' do
+              request_params = {
+                model_provider: ::CodeSuggestions::TaskFactory::ANTHROPIC,
+                prompt_version: prompt_version
+              }
+
+              expect(subject.request_params).to eq(request_params.merge(prompt: expected_prompt))
+            end
           end
         end
       end
