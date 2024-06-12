@@ -30170,10 +30170,19 @@ msgstr ""
 msgid "KubernetesDashboard|You can select an agent from a project's environment page."
 msgstr ""
 
+msgid "KubernetesLogs|Container"
+msgstr ""
+
+msgid "KubernetesLogs|Namespace"
+msgstr ""
+
 msgid "KubernetesLogs|No logs available for container %{containerName} of pod %{podName}"
 msgstr ""
 
 msgid "KubernetesLogs|No logs available for pod %{podName}"
+msgstr ""
+
+msgid "KubernetesLogs|Pod"
 msgstr ""
 
 msgid "LDAP"
