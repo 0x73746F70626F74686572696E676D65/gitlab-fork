@@ -8,6 +8,7 @@ RSpec.describe Vulnerabilities::Export, feature_category: :vulnerability_managem
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:group) }
+    it { is_expected.to belong_to(:organization) }
     it { is_expected.to belong_to(:author).class_name('User').required }
   end
 
