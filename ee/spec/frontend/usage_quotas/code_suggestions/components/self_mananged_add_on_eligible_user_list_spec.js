@@ -77,6 +77,7 @@ describe('Add On Eligible User List', () => {
     it('displays add-on eligible user list', () => {
       const expectedProps = {
         addOnPurchaseId,
+        duoTier: 'pro',
         isLoading: false,
         pageInfo: pageInfoWithMorePages,
         search: '',
@@ -98,6 +99,7 @@ describe('Add On Eligible User List', () => {
       it('displays add-on eligible user list', () => {
         const expectedProps = {
           addOnPurchaseId,
+          duoTier: 'pro',
           isLoading: false,
           pageInfo: undefined,
           search: '',

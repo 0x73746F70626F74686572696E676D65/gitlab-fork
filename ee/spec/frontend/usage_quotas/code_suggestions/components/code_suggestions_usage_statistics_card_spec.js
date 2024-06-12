@@ -30,9 +30,9 @@ describe('CodeSuggestionsUsageStatisticsCard', () => {
     return waitForPromises();
   };
 
-  describe('with purchased Add-ons', () => {
+  describe('with purchased Duo Pro Add-ons', () => {
     beforeEach(() => {
-      return createComponent({ usageValue: 0, totalValue: 20 });
+      return createComponent({ usageValue: 0, totalValue: 20, duoTier: 'pro' });
     });
 
     it('renders the description text', () => {
@@ -52,28 +52,52 @@ describe('CodeSuggestionsUsageStatisticsCard', () => {
         'usage-value': '0',
       });
     });
+  });
 
-    describe('with no purchased Add-ons', () => {
-      beforeEach(() => {
-        return createComponent({ usageValue: 0, totalValue: 0 });
-      });
-
-      it('does not render usage statistics', () => {
-        expect(findUsageStatistics().exists()).toBe(false);
-      });
+  describe('with purchased Duo Enterprise Add-ons', () => {
+    beforeEach(() => {
+      return createComponent({ usageValue: 0, totalValue: 20, duoTier: 'enterprise' });
     });
 
-    describe('with assigned Add-ons', () => {
-      beforeEach(() => {
-        return createComponent({ usageValue: 5, totalValue: 20 });
-      });
+    it('renders the description text', () => {
+      expect(findCodeSuggestionsDescription().text()).toBe(
+        `A user can be assigned a GitLab Duo Enterprise seat only once each billable month.`,
+      );
+    });
 
-      it('passes the correct props to <usage-statistics>', () => {
-        expect(findUsageStatistics().attributes()).toMatchObject({
-          percentage: '25',
-          'total-value': '20',
-          'usage-value': '5',
-        });
+    it('renders the info text', () => {
+      expect(findCodeSuggestionsInfo().text()).toBe('GitLab Duo Enterprise seats used');
+    });
+
+    it('passes the correct props to <usage-statistics>', () => {
+      expect(findUsageStatistics().attributes()).toMatchObject({
+        percentage: '0',
+        'total-value': '20',
+        'usage-value': '0',
+      });
+    });
+  });
+
+  describe('with no purchased Add-ons', () => {
+    beforeEach(() => {
+      return createComponent({ usageValue: 0, totalValue: 0 });
+    });
+
+    it('does not render usage statistics', () => {
+      expect(findUsageStatistics().exists()).toBe(false);
+    });
+  });
+
+  describe('with assigned Add-ons', () => {
+    beforeEach(() => {
+      return createComponent({ usageValue: 5, totalValue: 20 });
+    });
+
+    it('passes the correct props to <usage-statistics>', () => {
+      expect(findUsageStatistics().attributes()).toMatchObject({
+        percentage: '25',
+        'total-value': '20',
+        'usage-value': '5',
       });
     });
   });

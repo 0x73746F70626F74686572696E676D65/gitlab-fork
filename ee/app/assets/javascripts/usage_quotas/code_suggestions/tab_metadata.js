@@ -22,7 +22,7 @@ export const getCodeSuggestionsTabMetadata = ({ includeEl = false } = {}) => {
   if (!el) return false;
 
   const codeSuggestionsTabMetadata = {
-    title: s__('UsageQuota|GitLab Duo Pro'),
+    title: s__('UsageQuota|GitLab Duo'),
     hash: '#code-suggestions-usage-tab',
     testid: 'code-suggestions-tab',
     component: {

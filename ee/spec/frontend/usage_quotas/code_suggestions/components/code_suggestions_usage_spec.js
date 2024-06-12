@@ -15,18 +15,26 @@ import {
   ADD_ON_ERROR_DICTIONARY,
   ADD_ON_PURCHASE_FETCH_ERROR_CODE,
 } from 'ee/usage_quotas/error_constants';
-import { noAssignedAddonData, noPurchasedAddonData, purchasedAddonFuzzyData } from '../mock_data';
+import {
+  noAssignedAddonData,
+  noAssignedEnterpriseAddonData,
+  noPurchasedAddonData,
+  purchasedAddonFuzzyData,
+} from '../mock_data';
 
 Vue.use(VueApollo);
 
 jest.mock('~/sentry/sentry_browser_wrapper');
 
-describe('GitLab Duo Pro Usage', () => {
+describe('GitLab Duo Usage', () => {
   let wrapper;
 
   const error = new Error('Something went wrong');
 
   const noAssignedAddonDataHandler = jest.fn().mockResolvedValue(noAssignedAddonData);
+  const noAssignedEnterpriseAddonDataHandler = jest
+    .fn()
+    .mockResolvedValue(noAssignedEnterpriseAddonData);
   const noPurchasedAddonDataHandler = jest.fn().mockResolvedValue(noPurchasedAddonData);
   const purchasedAddonFuzzyDataHandler = jest.fn().mockResolvedValue(purchasedAddonFuzzyData);
   const purchasedAddonErrorHandler = jest.fn().mockRejectedValue(error);
@@ -142,13 +150,54 @@ describe('GitLab Duo Pro Usage', () => {
         expect(findCodeSuggestionsIntro().exists()).toBe(false);
       });
 
-      it('renders code suggestions statistics card', () => {
-        expect(findCodeSuggestionsStatistics().props()).toEqual({ usageValue: 0, totalValue: 20 });
+      describe('with Duo Pro add-on enabled', () => {
+        beforeEach(() => {
+          return createComponent({
+            handler: noAssignedAddonDataHandler,
+            provideProps: { groupId: '289561' },
+          });
+        });
+
+        it('renders code suggestions statistics card for duo pro', () => {
+          expect(findCodeSuggestionsStatistics().props()).toEqual({
+            usageValue: 0,
+            totalValue: 20,
+            duoTier: 'pro',
+          });
+        });
+
+        it('renders code suggestions info card for duo pro', () => {
+          expect(findCodeSuggestionsInfo().exists()).toBe(true);
+          expect(findCodeSuggestionsInfo().props()).toEqual({
+            groupId: '289561',
+            duoTier: 'pro',
+          });
+        });
       });
 
-      it('renders code suggestions info card', () => {
-        expect(findCodeSuggestionsInfo().exists()).toBe(true);
-        expect(findCodeSuggestionsInfo().props()).toEqual({ groupId: '289561' });
+      describe('with Duo Enterprise add-on enabled', () => {
+        beforeEach(() => {
+          return createComponent({
+            handler: noAssignedEnterpriseAddonDataHandler,
+            provideProps: { groupId: '289561' },
+          });
+        });
+
+        it('renders code suggestions statistics card for duo enterprise', () => {
+          expect(findCodeSuggestionsStatistics().props()).toEqual({
+            usageValue: 0,
+            totalValue: 20,
+            duoTier: 'enterprise',
+          });
+        });
+
+        it('renders code suggestions info card for duo enterprise', () => {
+          expect(findCodeSuggestionsInfo().exists()).toBe(true);
+          expect(findCodeSuggestionsInfo().props()).toEqual({
+            groupId: '289561',
+            duoTier: 'enterprise',
+          });
+        });
       });
     });
 
@@ -175,7 +224,11 @@ describe('GitLab Duo Pro Usage', () => {
       });
 
       it('renders code suggestions statistics card', () => {
-        expect(findCodeSuggestionsStatistics().props()).toEqual({ usageValue: 0, totalValue: 20 });
+        expect(findCodeSuggestionsStatistics().props()).toEqual({
+          usageValue: 0,
+          totalValue: 20,
+          duoTier: 'pro',
+        });
       });
 
       it('renders code suggestions info card', () => {
@@ -191,6 +244,7 @@ describe('GitLab Duo Pro Usage', () => {
 
       expect(findSaasAddOnEligibleUserList().props()).toEqual({
         addOnPurchaseId: 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/3',
+        duoTier: 'pro',
       });
     });
 

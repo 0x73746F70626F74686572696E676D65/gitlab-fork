@@ -185,6 +185,7 @@ describe('Add On Eligible User List', () => {
           users: eligibleUsers,
           pageInfo: pageInfoWithNoPages,
           isLoading: false,
+          duoTier: 'pro',
           ...props,
         },
         provide: {
@@ -326,6 +327,26 @@ describe('Add On Eligible User List', () => {
       const actualUserListData = findSerializedTable(findTable());
 
       expect(actualUserListData).toEqual(expectedUserListData);
+    });
+
+    describe('with Duo Pro add-on enabled', () => {
+      it('passes the correct fields configuration', () => {
+        expect(findTableKeys()).toEqual([
+          'user',
+          'codeSuggestionsAddon',
+          'email',
+          'lastActivityTime',
+        ]);
+      });
+    });
+  });
+
+  describe('with Duo Enterprise add-on enabled', () => {
+    beforeEach(() => {
+      return createComponent({
+        mountFn: mount,
+        props: { duoTier: 'enterprise' },
+      });
     });
 
     it('passes the correct fields configuration', () => {

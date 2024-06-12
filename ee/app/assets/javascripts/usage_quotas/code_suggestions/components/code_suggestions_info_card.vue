@@ -10,7 +10,13 @@ import {
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { s__ } from '~/locale';
 import UsageStatistics from 'ee/usage_quotas/components/usage_statistics.vue';
-import { codeSuggestionsLearnMoreLink } from 'ee/usage_quotas/code_suggestions/constants';
+import {
+  DUO_PRO,
+  DUO_ENTERPRISE,
+  codeSuggestionsLearnMoreLink,
+  CODE_SUGGESTIONS_TITLE,
+  DUO_ENTERPRISE_TITLE,
+} from 'ee/usage_quotas/code_suggestions/constants';
 import { addSeatsText } from 'ee/usage_quotas/seats/constants';
 import Tracking from '~/tracking';
 import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
@@ -28,7 +34,7 @@ export default {
     description: s__(
       `CodeSuggestions|%{linkStart}Code Suggestions%{linkEnd} uses generative AI to suggest code while you're developing.`,
     ),
-    title: s__('CodeSuggestions|GitLab Duo Pro add-on'),
+    title: s__('CodeSuggestions|%{title}'),
     addSeatsText,
   },
   components: {
@@ -50,6 +56,12 @@ export default {
       type: String,
       required: false,
       default: null,
+    },
+    duoTier: {
+      type: String,
+      required: false,
+      default: DUO_PRO,
+      validator: (val) => [DUO_PRO, DUO_ENTERPRISE].includes(val),
     },
   },
   data() {
@@ -84,6 +96,9 @@ export default {
     },
     permissionReason() {
       return this.subscriptionPermissions?.reason;
+    },
+    duoTitle() {
+      return this.duoTier === DUO_ENTERPRISE ? DUO_ENTERPRISE_TITLE : CODE_SUGGESTIONS_TITLE;
     },
   },
   apollo: {
@@ -141,7 +156,9 @@ export default {
     </gl-skeleton-loader>
     <usage-statistics v-else>
       <template #description>
-        <p class="gl-font-bold gl-mb-0" data-testid="title">{{ $options.i18n.title }}</p>
+        <h4 class="gl-font-bold gl-mb-0" data-testid="title">
+          {{ sprintf($options.i18n.title, { title: duoTitle }) }}
+        </h4>
       </template>
       <template #additional-info>
         <p class="gl-mt-5" data-testid="description">

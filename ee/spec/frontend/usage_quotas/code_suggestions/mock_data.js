@@ -1,10 +1,25 @@
-import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import {
+  ADD_ON_CODE_SUGGESTIONS,
+  ADD_ON_DUO_ENTERPRISE,
+} from 'ee/usage_quotas/code_suggestions/constants';
 
 export const noAssignedAddonData = {
   data: {
     addOnPurchase: {
       id: 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/3',
       name: ADD_ON_CODE_SUGGESTIONS,
+      assignedQuantity: 0,
+      purchasedQuantity: 20,
+      __typename: 'AddOnPurchase',
+    },
+  },
+};
+
+export const noAssignedEnterpriseAddonData = {
+  data: {
+    addOnPurchase: {
+      id: 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/3',
+      name: ADD_ON_DUO_ENTERPRISE,
       assignedQuantity: 0,
       purchasedQuantity: 20,
       __typename: 'AddOnPurchase',
