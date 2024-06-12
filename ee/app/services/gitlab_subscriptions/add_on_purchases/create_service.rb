@@ -24,7 +24,7 @@ module GitlabSubscriptions
       def add_on_purchase
         @add_on_purchase ||= GitlabSubscriptions::AddOnPurchase.new(
           namespace: namespace,
-          organization_id: namespace&.organization_id || Organizations::Organization::DEFAULT_ORGANIZATION_ID,
+          organization_id: namespace&.organization_id || Organizations::Organization.first.id,
           add_on: add_on,
           quantity: quantity,
           started_at: started_at,

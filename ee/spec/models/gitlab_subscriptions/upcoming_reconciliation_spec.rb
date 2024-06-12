@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe GitlabSubscriptions::UpcomingReconciliation do
   describe 'associations' do
     it { is_expected.to belong_to(:namespace).optional }
+    it { is_expected.to belong_to(:organization) }
   end
 
   describe 'validations' do

@@ -7,6 +7,7 @@ module GitlabSubscriptions
     self.table_name = 'upcoming_reconciliations'
 
     belongs_to :namespace, inverse_of: :upcoming_reconciliation, optional: true
+    belongs_to :organization, class_name: 'Organizations::Organization'
 
     # Validate presence of namespace_id if this is running on a GitLab instance
     # that has paid namespaces.
