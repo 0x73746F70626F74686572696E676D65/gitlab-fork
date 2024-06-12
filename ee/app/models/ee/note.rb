@@ -60,14 +60,14 @@ module EE
     def banzai_render_context(field)
       return super unless for_epic?
 
-      super.merge(banzai_context_params)
+      super.merge(banzai_epic_context_params)
     end
 
     override :mentionable_params
     def mentionable_params
       return super unless for_epic?
 
-      super.merge(banzai_context_params)
+      super.merge(banzai_epic_context_params)
     end
 
     override :for_issuable?
@@ -138,8 +138,8 @@ module EE
       group.max_member_access_for_user(user) >= ::Gitlab::Access::REPORTER
     end
 
-    def banzai_context_params
-      { group: noteable.group, label_url_method: :group_epics_url }
+    def banzai_epic_context_params
+      { label_url_method: :group_epics_url }
     end
   end
 end
