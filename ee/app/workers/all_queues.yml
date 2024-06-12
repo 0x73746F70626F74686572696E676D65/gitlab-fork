@@ -1443,6 +1443,24 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: export_segmented_export
+  :worker_name: Gitlab::Export::SegmentedExportWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: export_segmented_export_finalisation
+  :worker_name: Gitlab::Export::SegmentedExportFinalisationWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: gitlab_subscriptions_add_on_purchases_bulk_refresh_user_assignments
   :worker_name: GitlabSubscriptions::AddOnPurchases::BulkRefreshUserAssignmentsWorker
   :feature_category: :seat_cost_management

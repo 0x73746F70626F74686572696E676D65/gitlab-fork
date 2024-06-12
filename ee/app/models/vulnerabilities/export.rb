@@ -2,7 +2,10 @@
 
 module Vulnerabilities
   class Export < ApplicationRecord
+    include Gitlab::Utils::StrongMemoize
     include FileStoreMounter
+
+    EXPORTER_CLASS = VulnerabilityExports::ExportService
 
     self.table_name = "vulnerability_exports"
 
@@ -10,6 +13,9 @@ module Vulnerabilities
     belongs_to :group
     belongs_to :author, optional: false, class_name: 'User'
     belongs_to :organization, class_name: 'Organizations::Organization'
+
+    has_many :export_parts, class_name: 'Vulnerabilities::Export::Part', foreign_key: 'vulnerability_export_id',
+      dependent: :destroy, inverse_of: :vulnerability_export
 
     mount_file_store_uploader AttachmentUploader
 
@@ -77,6 +83,11 @@ module Vulnerabilities
     def retrieve_upload(_identifier, paths)
       Upload.find_by(model: self, path: paths)
     end
+
+    def export_service
+      EXPORTER_CLASS.new(self)
+    end
+    strong_memoize_attr :export_service
 
     private
 
