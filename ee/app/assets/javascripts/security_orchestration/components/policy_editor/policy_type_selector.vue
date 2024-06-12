@@ -2,8 +2,7 @@
 import shieldCheckIllustrationUrl from '@gitlab/svgs/dist/illustrations/secure-sm.svg?url';
 import magnifyingGlassIllustrationUrl from '@gitlab/svgs/dist/illustrations/search-sm.svg?url';
 import pipelineIllustrationUrl from '@gitlab/svgs/dist/illustrations/milestone-sm.svg';
-import { GlButton, GlCard, GlIcon, GlLink, GlPopover, GlSprintf } from '@gitlab/ui';
-import { PROMO_URL } from '~/lib/utils/url_utility';
+import { GlButton, GlCard, GlIcon, GlSprintf } from '@gitlab/ui';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { s__, __, n__ } from '~/locale';
@@ -14,11 +13,6 @@ const i18n = {
   examples: __('Example'),
   selectPolicy: s__('SecurityOrchestration|Select policy'),
   scanResultPolicyTitle: s__('SecurityOrchestration|Merge request approval policy'),
-  scanResultPolicyTitlePopoverTitle: s__('SecurityOrchestration|Updated policy name'),
-  scanResultPolicyTitlePopoverDesc: s__(
-    'SecurityOrchestration|The Scan result policy is now called the Merge request approval policy to better align with its purpose. For more details, see %{linkStart}the release notes%{linkEnd}.',
-  ),
-  scanResultPolicySubTitle: s__('SecurityOrchestraation|(Formerly Scan result policy)'),
   scanResultPolicyDesc: s__(
     'SecurityOrchestration|Use a merge request approval policy to create rules that check for security vulnerabilities and license compliance before merging a merge request.',
   ),
@@ -49,8 +43,6 @@ export default {
     GlButton,
     GlCard,
     GlIcon,
-    GlLink,
-    GlPopover,
     GlSprintf,
   },
   directives: {
@@ -77,15 +69,11 @@ export default {
           text: POLICY_TYPE_COMPONENT_OPTIONS.approval.text.toLowerCase(),
           urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter,
           title: i18n.scanResultPolicyTitle,
-          titlePopover: i18n.scanResultPolicyTitlePopoverTitle,
-          titlePopoverDesc: i18n.scanResultPolicyTitlePopoverDesc,
-          titlePopoverLink: `${PROMO_URL}/releases/2024/03/21/gitlab-16-10-released/#scan-result-policies-are-now-merge-request-approval-policies`,
           description: i18n.scanResultPolicyDesc,
           example: i18n.scanResultPolicyExample,
           imageSrc: shieldCheckIllustrationUrl,
           hasMax: this.maxActiveScanResultPoliciesReached,
           maxPoliciesAllowed: this.maxScanResultPoliciesAllowed,
-          subtitle: i18n.scanResultPolicySubTitle,
         },
         {
           text: POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.text.toLowerCase(),
@@ -141,38 +129,7 @@ export default {
         <div class="gl-display-flex gl-flex-direction-column">
           <div>
             <h4 class="gl-display-inline-block gl-my-0">{{ option.title }}</h4>
-            <gl-icon
-              v-if="option.titlePopover"
-              id="change-icon"
-              name="status-active"
-              :size="12"
-              class="gl-display-inline-block gl-text-blue-500"
-            />
-            <gl-popover
-              v-if="option.titlePopover"
-              triggers="hover focus"
-              :title="option.titlePopover"
-              :show-close-button="false"
-              placement="top"
-              target="change-icon"
-              :content="option.titlePopoverDesc"
-              :show="false"
-            >
-              <slot>
-                <gl-sprintf :message="option.titlePopoverDesc">
-                  <template #link="{ content }">
-                    <gl-link
-                      v-if="option.titlePopoverLink"
-                      :href="option.titlePopoverLink"
-                      target="_blank"
-                      >{{ content }}</gl-link
-                    >
-                  </template>
-                </gl-sprintf>
-              </slot>
-            </gl-popover>
           </div>
-          <p v-if="option.subtitle" class="gl-text-gray-400 gl-mb-0">{{ option.subtitle }}</p>
           <p class="gl-mt-5">{{ option.description }}</p>
           <h5>{{ $options.i18n.examples }}</h5>
           <p class="gl-flex-grow-1">{{ option.example }}</p>
