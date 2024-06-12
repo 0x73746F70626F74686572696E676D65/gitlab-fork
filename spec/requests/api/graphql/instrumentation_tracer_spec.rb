@@ -46,6 +46,28 @@ RSpec.describe 'Gitlab::Graphql::Tracers::Instrumentation integration test', :ag
 
       expect(json_response.size).to eq(2)
     end
+
+    it "includes errors for failing queries" do
+      queries = [
+        { query: graphql_query_for('brokenQuery', {}, []),
+          variables: { test: "hello world" } },
+        { query: graphql_query_for('currentUser', {}, ["username"]) }
+      ]
+
+      expect(Gitlab::GraphqlLogger).to receive(:info).with(a_hash_including({
+        graphql_errors: [{
+          "message" => "Field 'brokenQuery' doesn't exist on type 'Query'",
+          "locations" => [{ "line" => 1, "column" => 3 }],
+          "path" => %w[query brokenQuery],
+          "extensions" => { "code" => "undefinedField", "typeName" => "Query", "fieldName" => "brokenQuery" }
+        }]
+      }))
+      expect(Gitlab::GraphqlLogger).to receive(:info).with(hash_excluding({ graphql_errors: [] }))
+
+      post_multiplex(queries, current_user: user)
+
+      expect(json_response.size).to eq(2)
+    end
   end
 
   describe "metrics" do
@@ -60,6 +82,12 @@ RSpec.describe 'Gitlab::Graphql::Tracers::Instrumentation integration test', :ag
       })
 
       post_graphql(graphql_query_for('echo', { 'text' => 'test' }, []))
+    end
+
+    it "does not track apdex for failed queries" do
+      expect(Gitlab::Metrics::RailsSlis.graphql_query_apdex).not_to receive(:increment)
+
+      post_graphql(graphql_query_for('brokenQuery', {}, []))
     end
   end
 

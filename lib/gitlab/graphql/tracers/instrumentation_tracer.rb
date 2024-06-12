@@ -29,15 +29,18 @@ module Gitlab
 
         def export_query_info(query:, duration_s:, exception:)
           operation = ::Gitlab::Graphql::KnownOperations.default.from_query(query)
+          successful_result = !exception && !query.result['errors'].present?
 
           ::Gitlab::ApplicationContext.with_context(caller_id: operation.to_caller_id) do
             log_execute_query(query: query, duration_s: duration_s, exception: exception)
-            increment_query_sli(operation: operation, duration_s: duration_s)
+            increment_query_sli(operation: operation, duration_s: duration_s, successful: successful_result)
           end
         end
 
-        def increment_query_sli(operation:, duration_s:)
+        def increment_query_sli(operation:, duration_s:, successful:)
           query_urgency = operation.query_urgency
+
+          return unless successful
 
           Gitlab::Metrics::RailsSlis.graphql_query_apdex.increment(
             labels: {
@@ -67,6 +70,8 @@ module Gitlab
 
           token_info = auth_token_info(query)
           info.merge!(token_info) if token_info
+
+          info[:graphql_errors] = query.result['errors'] if query.result['errors']
 
           Gitlab::ExceptionLogFormatter.format!(exception, info)
 
