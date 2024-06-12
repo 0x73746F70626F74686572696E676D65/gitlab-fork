@@ -1057,6 +1057,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_5f6432d2dccc() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "operations_user_lists"
+  WHERE "operations_user_lists"."id" = NEW."user_list_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_77d9fbad5b12() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -13258,7 +13274,8 @@ ALTER SEQUENCE operations_strategies_id_seq OWNED BY operations_strategies.id;
 CREATE TABLE operations_strategies_user_lists (
     id bigint NOT NULL,
     strategy_id bigint NOT NULL,
-    user_list_id bigint NOT NULL
+    user_list_id bigint NOT NULL,
+    project_id bigint
 );
 
 CREATE SEQUENCE operations_strategies_user_lists_id_seq
@@ -27524,6 +27541,8 @@ CREATE INDEX index_operations_strategies_on_feature_flag_id ON operations_strate
 
 CREATE INDEX index_operations_strategies_on_project_id ON operations_strategies USING btree (project_id);
 
+CREATE INDEX index_operations_strategies_user_lists_on_project_id ON operations_strategies_user_lists USING btree (project_id);
+
 CREATE INDEX index_operations_strategies_user_lists_on_user_list_id ON operations_strategies_user_lists USING btree (user_list_id);
 
 CREATE UNIQUE INDEX index_operations_user_lists_on_project_id_and_iid ON operations_user_lists USING btree (project_id, iid);
@@ -30924,6 +30943,8 @@ CREATE TRIGGER trigger_56d49f4ed623 BEFORE INSERT OR UPDATE ON workspace_variabl
 
 CREATE TRIGGER trigger_57ad2742ac16 BEFORE INSERT OR UPDATE ON user_achievements FOR EACH ROW EXECUTE FUNCTION trigger_57ad2742ac16();
 
+CREATE TRIGGER trigger_5f6432d2dccc BEFORE INSERT OR UPDATE ON operations_strategies_user_lists FOR EACH ROW EXECUTE FUNCTION trigger_5f6432d2dccc();
+
 CREATE TRIGGER trigger_77d9fbad5b12 BEFORE INSERT OR UPDATE ON packages_debian_project_distribution_keys FOR EACH ROW EXECUTE FUNCTION trigger_77d9fbad5b12();
 
 CREATE TRIGGER trigger_7a8b08eed782 BEFORE INSERT OR UPDATE ON boards_epic_board_positions FOR EACH ROW EXECUTE FUNCTION trigger_7a8b08eed782();
@@ -32114,6 +32135,9 @@ ALTER TABLE ONLY vulnerability_state_transitions
 
 ALTER TABLE ONLY ci_sources_pipelines
     ADD CONSTRAINT fk_d4e29af7d7 FOREIGN KEY (source_pipeline_id) REFERENCES ci_pipelines(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY operations_strategies_user_lists
+    ADD CONSTRAINT fk_d4f7076369 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY incident_management_timeline_events
     ADD CONSTRAINT fk_d606a2a890 FOREIGN KEY (promoted_from_note_id) REFERENCES notes(id) ON DELETE SET NULL;
