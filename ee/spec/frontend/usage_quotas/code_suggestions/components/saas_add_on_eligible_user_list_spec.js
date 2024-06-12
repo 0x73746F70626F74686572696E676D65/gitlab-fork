@@ -41,6 +41,7 @@ describe('Add On Eligible User List', () => {
 
   const fullPath = 'namespace/full-path';
   const addOnPurchaseId = 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/1';
+  const duoTier = 'pro';
   const error = new Error('Error');
   const defaultQueryVariables = {
     fullPath,
@@ -72,6 +73,7 @@ describe('Add On Eligible User List', () => {
       apolloProvider: createMockApolloProvider(handler),
       propsData: {
         addOnPurchaseId,
+        duoTier,
       },
       provide: {
         fullPath,
@@ -101,6 +103,7 @@ describe('Add On Eligible User List', () => {
       } = mockPaginatedAddOnEligibleUsers.data.namespace.addOnEligibleUsers;
       const expectedProps = {
         addOnPurchaseId,
+        duoTier,
         isLoading: false,
         pageInfo,
         users,

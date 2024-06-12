@@ -21,7 +21,12 @@ import {
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
-import { ADD_ON_CODE_SUGGESTIONS, SORT_OPTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import {
+  DUO_PRO,
+  DUO_ENTERPRISE,
+  ADD_ON_CODE_SUGGESTIONS,
+  SORT_OPTIONS,
+} from 'ee/usage_quotas/code_suggestions/constants';
 import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
 import GroupToken from 'ee/usage_quotas/code_suggestions/tokens/group_token.vue';
@@ -44,6 +49,12 @@ export default {
     addOnPurchaseId: {
       type: String,
       required: true,
+    },
+    duoTier: {
+      type: String,
+      required: false,
+      default: DUO_PRO,
+      validator: (val) => [DUO_PRO, DUO_ENTERPRISE].includes(val),
     },
   },
   addOnErrorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -193,6 +204,7 @@ export default {
     :is-loading="$apollo.loading"
     :page-info="pageInfo"
     :search="filterOptions.search"
+    :duo-tier="duoTier"
     @next="handleNext"
     @prev="handlePrev"
   >

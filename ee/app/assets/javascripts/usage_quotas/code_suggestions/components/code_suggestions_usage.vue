@@ -2,7 +2,11 @@
 import { GlSkeletonLoader } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import getAddOnPurchaseQuery from 'ee/usage_quotas/add_on/graphql/get_add_on_purchase.query.graphql';
-import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import {
+  DUO_PRO,
+  DUO_ENTERPRISE,
+  ADD_ON_CODE_SUGGESTIONS,
+} from 'ee/usage_quotas/code_suggestions/constants';
 import SaasAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/saas_add_on_eligible_user_list.vue';
 import SelfManagedAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/self_managed_add_on_eligible_user_list.vue';
 import { TYPENAME_GROUP } from '~/graphql_shared/constants';
@@ -56,6 +60,9 @@ export default {
     },
     isLoading() {
       return this.$apollo.queries.addOnPurchase.loading;
+    },
+    duoTier() {
+      return this.addOnPurchase?.name === 'DUO_ENTERPRISE' ? DUO_ENTERPRISE : DUO_PRO;
     },
     showTitleAndSubtitle() {
       if (this.isSaaS) {
@@ -134,10 +141,22 @@ export default {
         <section
           class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5 gl-bg-gray-10 gl-p-5"
         >
-          <code-suggestions-statistics-card :total-value="totalValue" :usage-value="usageValue" />
-          <code-suggestions-info-card :group-id="groupId" @error="handleAddOnPurchaseFetchError" />
+          <code-suggestions-statistics-card
+            :total-value="totalValue"
+            :usage-value="usageValue"
+            :duo-tier="duoTier"
+          />
+          <code-suggestions-info-card
+            :group-id="groupId"
+            :duo-tier="duoTier"
+            @error="handleAddOnPurchaseFetchError"
+          />
         </section>
-        <saas-add-on-eligible-user-list v-if="isSaaS" :add-on-purchase-id="addOnPurchase.id" />
+        <saas-add-on-eligible-user-list
+          v-if="isSaaS"
+          :add-on-purchase-id="addOnPurchase.id"
+          :duo-tier="duoTier"
+        />
         <self-managed-add-on-eligible-user-list v-else :add-on-purchase-id="addOnPurchase.id" />
       </section>
       <error-alert
