@@ -61053,6 +61053,9 @@ msgstr ""
 msgid "Your %{plan_name} subscription will expire on %{expires_on}"
 msgstr ""
 
+msgid "Your %{plan_name} subscription with a temporary extension will expire on %{expires_on}"
+msgstr ""
+
 msgid "Your %{plan} plan will be applied to your group."
 msgstr ""
 
@@ -61392,6 +61395,9 @@ msgid "Your subscription has %{remaining_seat_count} out of %{total_seat_count} 
 msgid_plural "Your subscription has %{remaining_seat_count} out of %{total_seat_count} seats remaining."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Your subscription with temporary extension expired!"
+msgstr ""
 
 msgid "Your top-level group %{namespace_name} has reached the %{free_limit} user limit"
 msgstr ""

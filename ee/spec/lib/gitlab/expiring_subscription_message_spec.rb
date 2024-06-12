@@ -11,7 +11,7 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
     subject(:message) { strip_tags(raw_message) }
 
     let(:subject) { strip_tags(raw_subject) }
-    let(:subscribable) { double(:license) }
+    let(:subscribable) { double(:license, temporary_extension?: false) }
     let(:namespace) { nil }
     let(:force_notification) { false }
     let(:raw_message) do
@@ -317,6 +317,52 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
 
                     it { is_expected.to be_nil }
                   end
+                end
+              end
+            end
+
+            context 'subscribable is a temporary extension license' do
+              let(:subscribable) { double(:license, temporary_extension?: true) }
+
+              before do
+                allow(subscribable).to receive(:is_a?).with(::License).and_return(true)
+                allow(subscribable).to receive_messages(
+                  will_block_changes?: true,
+                  block_changes_at: block_changes_date,
+                  expired?: expired?
+                )
+              end
+
+              context 'when expiring soon' do
+                let(:expired?) { false }
+
+                it 'has a subject and message indicating the temporary extension is expiring soon' do
+                  expect(subject).to include("Your #{plan_name.capitalize} subscription with a temporary extension will expire on #{expired_date.iso8601}")
+                  expect(message).to include("If you don\'t renew by #{block_changes_date.iso8601} your instance will become read-only, and you won't be able to create issues or merge requests. You will also lose access to your paid features and support entitlement. How do I renew my subscription?")
+                end
+              end
+
+              context 'when already expired' do
+                let(:expired?) { true }
+
+                before do
+                  allow(subscribable).to receive(:block_changes?).and_return(true)
+                end
+
+                it 'has a subject and message indicating the temporary extension has expired' do
+                  expect(subject).to include("Your subscription with temporary extension expired!")
+                  expect(message).to include("This instance is now read-only. Don't worry, your data is safe. To change to GitLab Free and restore write access to this instance, delete your expired license")
+                end
+              end
+
+              context 'when not in notification window' do
+                let(:expired?) { false }
+                let(:expired_date) { (today + 20.days).to_date }
+                let(:block_changes_date) { expired_date }
+
+                it 'does not return a subject and message' do
+                  expect(subject).to be_nil
+                  expect(message).to be_nil
                 end
               end
             end

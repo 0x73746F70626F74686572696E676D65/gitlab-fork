@@ -3,6 +3,7 @@
 module Gitlab
   class ExpiringSubscriptionMessage
     GRACE_PERIOD_EXTENSION_DAYS = 30.days
+    TEMP_EXTENSION_EXPIRING_SOON_NOTIFY_WITHIN = 7.days
 
     include Gitlab::Utils::StrongMemoize
     include Gitlab::Routing
@@ -46,6 +47,8 @@ module Gitlab
     end
 
     def expired_subject
+      return temporary_extension_expired_subject if display_temporary_extension_notification?
+
       if namespace && auto_renew
         _('Something went wrong with your automatic subscription renewal.')
       else
@@ -54,7 +57,21 @@ module Gitlab
     end
 
     def expiring_subject
+      return temporary_extension_expiring_subject if display_temporary_extension_notification?
+
       _('Your %{plan_name} subscription will expire on %{expires_on}') %
+        {
+          expires_on: subscribable.expires_at.iso8601,
+          plan_name: plan_name
+        }
+    end
+
+    def temporary_extension_expired_subject
+      _('Your subscription with temporary extension expired!')
+    end
+
+    def temporary_extension_expiring_subject
+      _("Your %{plan_name} subscription with a temporary extension will expire on %{expires_on}") %
         {
           expires_on: subscribable.expires_at.iso8601,
           plan_name: plan_name
@@ -168,6 +185,7 @@ module Gitlab
     def require_notification?
       return false if expiring_auto_renew? || ::License.future_dated.present?
       return true if force_notification && subscribable.block_changes?
+      return display_temporary_extension_notification? if temporary_extension?
 
       auto_renew_choice_exists? && expired_subscribable_within_notification_window? && !subscription_future_renewal?
     end
@@ -212,6 +230,19 @@ module Gitlab
 
     def self_managed?
       subscribable.is_a?(::License)
+    end
+
+    def display_temporary_extension_notification?
+      strong_memoize(:display_temporary_extension_notification) do
+        next false unless temporary_extension?
+
+        expiring_soon = Date.current >= (subscribable.expires_at - TEMP_EXTENSION_EXPIRING_SOON_NOTIFY_WITHIN)
+        subscribable.expired? || expiring_soon ? true : false
+      end
+    end
+
+    def temporary_extension?
+      self_managed? && subscribable.temporary_extension?
     end
 
     def remaining_days
