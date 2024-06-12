@@ -4,7 +4,11 @@ module QA
   RSpec.describe 'Fulfillment', :runner, :requires_admin,
     only: { subdomain: :staging },
     feature_flag: { name: 'namespace_storage_limit', scope: :group },
-    product_group: :utilization do
+    product_group: :utilization,
+    quarantine: {
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/466675',
+      type: :flaky
+    } do
     describe 'Utilization' do
       include Runtime::Fixtures
 
