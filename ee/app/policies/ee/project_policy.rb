@@ -902,7 +902,7 @@ module EE
       end
 
       condition(:container_scanning_for_registry_available) do
-        ::Feature.enabled?(:container_scanning_for_registry, @subject)
+        ::Feature.enabled?(:container_scanning_for_registry_flag, @subject)
       end
 
       rule { container_scanning_for_registry_available & can?(:maintainer_access) }.policy do

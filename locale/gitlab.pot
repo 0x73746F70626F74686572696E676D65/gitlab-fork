@@ -10117,12 +10117,6 @@ msgstr ""
 msgid "CVE|Why Request a CVE ID?"
 msgstr ""
 
-msgid "CVS|Continuous Container Scanning"
-msgstr ""
-
-msgid "CVS|Scan for vulnerabilities when a container image or the advisory database is updated."
-msgstr ""
-
 msgid "CVS|Toggle CVS"
 msgstr ""
 
@@ -14018,6 +14012,9 @@ msgid "Container Repository"
 msgstr ""
 
 msgid "Container Scanning"
+msgstr ""
+
+msgid "Container Scanning For Registry"
 msgstr ""
 
 msgid "Container expiration policy"
@@ -44726,6 +44723,9 @@ msgid "Run again"
 msgstr ""
 
 msgid "Run all manual"
+msgstr ""
+
+msgid "Run container scanning job whenever a container image with the latest tag is pushed."
 msgstr ""
 
 msgid "Run housekeeping"

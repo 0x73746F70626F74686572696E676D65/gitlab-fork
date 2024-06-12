@@ -13,7 +13,7 @@ module EE
           before_action :authorize_read_security_dashboard!, except: [:show]
 
           before_action only: [:show] do
-            push_frontend_feature_flag(:container_scanning_for_registry, project)
+            push_frontend_feature_flag(:container_scanning_for_registry_flag, project)
           end
 
           feature_category :static_application_security_testing, [:show]

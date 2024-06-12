@@ -4001,7 +4001,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     with_them do
       before do
-        stub_feature_flags(container_scanning_for_registry: container_scanning_for_registry)
+        stub_feature_flags(container_scanning_for_registry_flag: container_scanning_for_registry)
       end
 
       it { is_expected.to match_expected_result }

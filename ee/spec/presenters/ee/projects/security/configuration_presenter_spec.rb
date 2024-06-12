@@ -7,9 +7,10 @@ RSpec.describe Projects::Security::ConfigurationPresenter, feature_category: :so
 
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:current_user) { create(:user) }
+  let_it_be(:presenter) { described_class.new(project, current_user: current_user) }
 
   describe '#to_h' do
-    subject(:result) { described_class.new(project, current_user: current_user).to_h }
+    subject(:result) { presenter.to_h }
 
     it 'reports security_training_enabled' do
       allow(project).to receive(:security_training_available?).and_return(true)
@@ -31,27 +32,38 @@ RSpec.describe Projects::Security::ConfigurationPresenter, feature_category: :so
   end
 
   describe '#to_html_data_attribute' do
-    subject(:result) { described_class.new(project, current_user: current_user).to_h }
+    subject(:html_data) { presenter.to_html_data_attribute }
 
     before do
-      stub_licensed_features(security_on_demand_scans: true, security_configuration_in_ui: true)
+      stub_licensed_features(container_scanning_for_registry: true)
     end
 
-    let(:meta_info_path) { "/#{project.full_path}/-/on_demand_scans" }
-    let(:features) { result[:features] }
+    it 'includes container_scanning_for_registry feature information' do
+      feature = Gitlab::Json.parse(html_data[:features]).find do |scan|
+        scan['type'] == 'container_scanning_for_registry'
+      end
 
-    it 'includes feature meta information for dast scanner' do
-      feature = features.find { |scan| scan[:type].to_s == 'dast' }
-
-      expect(feature[:type].to_s).to eq('dast')
-      expect(feature[:meta_info_path]).to eq(meta_info_path)
+      expect(feature['type']).to eq('container_scanning_for_registry')
+      expect(feature['configured']).to eq(false)
+      expect(feature['configuration_path']).to be_nil
+      expect(feature['available']).to eq(true)
+      expect(feature['can_enable_by_merge_request']).to eq(false)
+      expect(feature['meta_info_path']).to be_nil
+      expect(feature['security_features']).not_to be_empty
     end
 
-    it 'does not include feature meta information for other scanner' do
-      feature = features.find { |scan| scan[:type].to_s == 'sast' }
+    context 'when feature flag `container_scanning_for_registry` is disabled' do
+      before do
+        stub_feature_flags(container_scanning_for_registry_flag: false)
+      end
 
-      expect(feature[:type].to_s).to eq('sast')
-      expect(feature[:meta_info_path]).to be_nil
+      it 'does not includes container_scanning_for_registry feature information' do
+        feature = Gitlab::Json.parse(html_data[:features]).find do |scan|
+          scan['type'] == 'container_scanning_for_registry'
+        end
+
+        expect(feature).to be_nil
+      end
     end
   end
 end

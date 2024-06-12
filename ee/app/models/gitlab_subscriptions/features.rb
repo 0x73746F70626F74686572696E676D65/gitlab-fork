@@ -264,6 +264,7 @@ module GitlabSubscriptions
       tracing
       unique_project_download_limit
       vulnerability_finding_signatures
+      container_scanning_for_registry
     ].freeze
 
     STARTER_FEATURES_WITH_USAGE_PING = %i[
