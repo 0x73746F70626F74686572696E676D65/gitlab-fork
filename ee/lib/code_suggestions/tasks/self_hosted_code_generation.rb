@@ -32,7 +32,13 @@ module CodeSuggestions
       end
 
       def prompt
-        CodeSuggestions::Prompts::CodeGeneration::MistralMessages.new(params)
+        model_name = feature_setting.self_hosted_model.model.to_sym
+        case model_name
+        when :mistral, :mixtral, :codegemma
+          CodeSuggestions::Prompts::CodeGeneration::MistralMessages.new(params)
+        else
+          raise "Unknown model: #{model_name}"
+        end
       end
       strong_memoize_attr :prompt
     end

@@ -115,4 +115,33 @@ RSpec.describe CodeSuggestions::Tasks::SelfHostedCodeGeneration, feature_categor
       expect(CodeSuggestions::Prompts::CodeGeneration::MistralMessages).to have_received(:new).with(params)
     end
   end
+
+  describe 'prompt selection per model name' do
+    let(:self_hosted_model) { create(:ai_self_hosted_model, model: model_name) }
+    let(:code_generations_feature_setting) { create(:ai_feature_setting, self_hosted_model: self_hosted_model) }
+
+    where(:model_name) do
+      %w[codegemma mistral mixtral]
+    end
+
+    with_them do
+      it 'returns an instance of MistralMessages' do
+        expect(
+          CodeSuggestions::Prompts::CodeGeneration::MistralMessages
+        ).to receive(:new).with(any_args).and_call_original
+
+        task.body
+      end
+    end
+
+    context 'when model name is unknown' do
+      let(:self_hosted_model) { create(:ai_self_hosted_model) }
+
+      it 'raises an error' do
+        allow(self_hosted_model).to receive(:model).and_return('unknown')
+
+        expect { task.body }.to raise_error("Unknown model: unknown")
+      end
+    end
+  end
 end
