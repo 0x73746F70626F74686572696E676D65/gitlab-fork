@@ -109,7 +109,6 @@ download-knapsack-report:
 cng-instance:
   extends: .cng-base
   variables:
-    QA_SCENARIO: Test::Instance::All
     DEPLOYMENT_TYPE: kind
   parallel: 5
   allow_failure: true
@@ -118,8 +117,8 @@ cng-instance:
 cng-qa-min-redis-version:
   extends: .cng-base
   variables:
-    QA_SCENARIO: Test::Instance::Smoke
     DEPLOYMENT_TYPE: kind
+    QA_RSPEC_TAGS: --tag health_check
   before_script:
     - |
       redis_version=$(awk -F "=" "/MIN_REDIS_VERSION =/ {print \$2}" $CI_PROJECT_DIR/lib/system_check/app/redis_version_check.rb | sed "s/['\" ]//g")
