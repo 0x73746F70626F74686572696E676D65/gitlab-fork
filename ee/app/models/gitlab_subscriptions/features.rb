@@ -242,6 +242,7 @@ module GitlabSubscriptions
       runner_upgrade_management
       runner_upgrade_management_for_namespace
       sast
+      sast_advanced
       sast_iac
       sast_custom_rulesets
       sast_fp_reduction

@@ -16,6 +16,7 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
       stub_licensed_features(
         security_dashboard: true,
         sast: true,
+        sast_advanced: true,
         sast_iac: true,
         dast: true,
         dependency_scanning: true,
@@ -51,6 +52,17 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
           expect(page).to have_text('SAST')
           expect(page).to have_text('Enabled')
           expect(page).to have_link('Configure SAST')
+        end
+      end
+    end
+
+    context 'enabling SAST Advanced' do
+      it 'shows SAST Advanced' do
+        visit_configuration_page
+
+        within_sast_advanced_card do
+          expect(page).to have_text('Advanced SAST')
+          expect(page).not_to have_button('Configure with a merge request')
         end
       end
     end
@@ -224,56 +236,62 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
     end
   end
 
-  def within_sast_iac_card
+  def within_sast_advanced_card
     within '[data-testid="security-testing-card"]:nth-of-type(2)' do
       yield
     end
   end
 
-  def within_dast_card
-    within '[data-testid="security-testing-card"]:nth-of-type(4)' do
-      yield
-    end
-  end
-
-  def within_dependency_scanning_card
-    within '[data-testid="security-testing-card"]:nth-of-type(5)' do
-      yield
-    end
-  end
-
-  def within_container_scanning_card
-    within '[data-testid="security-testing-card"]:nth-of-type(6)' do
-      yield
-    end
-  end
-
-  def within_pre_receive_secret_detection_card
-    within '[data-testid="security-testing-card"]:nth-of-type(7)' do
-      yield
-    end
-  end
-
-  def within_pipeline_secret_detection_card
-    within '[data-testid="security-testing-card"]:nth-of-type(8)' do
-      yield
-    end
-  end
-
-  def within_api_fuzzing_card
-    within '[data-testid="security-testing-card"]:nth-of-type(10)' do
-      yield
-    end
-  end
-
-  def within_coverage_fuzzing_card
-    within '[data-testid="security-testing-card"]:nth-of-type(9)' do
+  def within_sast_iac_card
+    within '[data-testid="security-testing-card"]:nth-of-type(3)' do
       yield
     end
   end
 
   def within_breach_and_attack_simulation_card
-    within '[data-testid="security-testing-card"]:nth-of-type(3)' do
+    within '[data-testid="security-testing-card"]:nth-of-type(4)' do
+      yield
+    end
+  end
+
+  def within_dast_card
+    within '[data-testid="security-testing-card"]:nth-of-type(5)' do
+      yield
+    end
+  end
+
+  def within_dependency_scanning_card
+    within '[data-testid="security-testing-card"]:nth-of-type(6)' do
+      yield
+    end
+  end
+
+  def within_container_scanning_card
+    within '[data-testid="security-testing-card"]:nth-of-type(7)' do
+      yield
+    end
+  end
+
+  def within_pre_receive_secret_detection_card
+    within '[data-testid="security-testing-card"]:nth-of-type(8)' do
+      yield
+    end
+  end
+
+  def within_pipeline_secret_detection_card
+    within '[data-testid="security-testing-card"]:nth-of-type(9)' do
+      yield
+    end
+  end
+
+  def within_api_fuzzing_card
+    within '[data-testid="security-testing-card"]:nth-of-type(11)' do
+      yield
+    end
+  end
+
+  def within_coverage_fuzzing_card
+    within '[data-testid="security-testing-card"]:nth-of-type(10)' do
       yield
     end
   end
