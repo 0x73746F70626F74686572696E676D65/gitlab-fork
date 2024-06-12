@@ -10,7 +10,18 @@ module Gitlab
           end
 
           def errors
-            @errors ||= [ai_response&.dig(:error, :message)].compact
+            @errors ||= begin
+              error_response = ai_response&.dig(:error)
+
+              case error_response
+              when nil
+                []
+              when String
+                [error_response]
+              else
+                [error_response[:message]].compact
+              end
+            end
           end
         end
       end

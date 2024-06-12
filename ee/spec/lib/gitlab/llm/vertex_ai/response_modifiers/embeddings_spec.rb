@@ -37,6 +37,14 @@ RSpec.describe Gitlab::Llm::VertexAi::ResponseModifiers::Embeddings, feature_cat
     subject(:errors) { described_class.new(ai_response.to_json).errors }
 
     context 'when the response contains errors' do
+      let(:ai_response) { { error: 'error' } }
+
+      it 'returns array of errors' do
+        expect(errors).to eq(['error'])
+      end
+    end
+
+    context 'when the response contains errors in a message object' do
       let(:ai_response) { { error: { message: 'error' } } }
 
       it 'returns array of errors' do
