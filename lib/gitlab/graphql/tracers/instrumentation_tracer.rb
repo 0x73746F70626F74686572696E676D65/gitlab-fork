@@ -29,25 +29,31 @@ module Gitlab
 
         def export_query_info(query:, duration_s:, exception:)
           operation = ::Gitlab::Graphql::KnownOperations.default.from_query(query)
-          successful_result = !exception && !query.result['errors'].present?
+          has_errors = exception || query.result['errors'].present?
 
           ::Gitlab::ApplicationContext.with_context(caller_id: operation.to_caller_id) do
             log_execute_query(query: query, duration_s: duration_s, exception: exception)
-            increment_query_sli(operation: operation, duration_s: duration_s, successful: successful_result)
+            increment_query_sli(operation: operation, duration_s: duration_s, has_errors: has_errors)
           end
         end
 
-        def increment_query_sli(operation:, duration_s:, successful:)
+        def increment_query_sli(operation:, duration_s:, has_errors:)
           query_urgency = operation.query_urgency
+          labels = {
+            endpoint_id: operation.to_caller_id,
+            feature_category: ::Gitlab::ApplicationContext.current_context_attribute(:feature_category),
+            query_urgency: query_urgency.name
+          }
 
-          return unless successful
+          Gitlab::Metrics::RailsSlis.graphql_query_error_rate.increment(
+            labels: labels,
+            error: has_errors
+          )
+
+          return if has_errors
 
           Gitlab::Metrics::RailsSlis.graphql_query_apdex.increment(
-            labels: {
-              endpoint_id: operation.to_caller_id,
-              feature_category: ::Gitlab::ApplicationContext.current_context_attribute(:feature_category),
-              query_urgency: query_urgency.name
-            },
+            labels: labels,
             success: duration_s <= query_urgency.duration
           )
         end

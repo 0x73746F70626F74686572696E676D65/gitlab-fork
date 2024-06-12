@@ -71,14 +71,23 @@ RSpec.describe 'Gitlab::Graphql::Tracers::Instrumentation integration test', :ag
   end
 
   describe "metrics" do
-    it "tracks the apdex for each query" do
+    let(:unknown_query_labels) do
+      {
+        endpoint_id: "graphql:unknown",
+        feature_category: 'not_owned',
+        query_urgency: :default
+      }
+    end
+
+    it "tracks SLI metrics for each query" do
       expect(Gitlab::Metrics::RailsSlis.graphql_query_apdex).to receive(:increment).with({
-        labels: {
-          endpoint_id: "graphql:unknown",
-          feature_category: 'not_owned',
-          query_urgency: :default
-        },
+        labels: unknown_query_labels,
         success: be_in([true, false])
+      })
+
+      expect(Gitlab::Metrics::RailsSlis.graphql_query_error_rate).to receive(:increment).with({
+        labels: unknown_query_labels,
+        error: false
       })
 
       post_graphql(graphql_query_for('echo', { 'text' => 'test' }, []))
@@ -88,6 +97,28 @@ RSpec.describe 'Gitlab::Graphql::Tracers::Instrumentation integration test', :ag
       expect(Gitlab::Metrics::RailsSlis.graphql_query_apdex).not_to receive(:increment)
 
       post_graphql(graphql_query_for('brokenQuery', {}, []))
+    end
+
+    it "tracks errors for failed queries" do
+      queries = [
+        { query: graphql_query_for('brokenQuery', {}, []),
+          variables: { test: "hello world" } },
+        { query: graphql_query_for('currentUser', {}, ["username"]) }
+      ]
+
+      expect(Gitlab::Metrics::RailsSlis.graphql_query_error_rate).to receive(:increment).with({
+        labels: unknown_query_labels,
+        error: false
+      })
+
+      expect(Gitlab::Metrics::RailsSlis.graphql_query_error_rate).to receive(:increment).with({
+        labels: unknown_query_labels,
+        error: true
+      })
+
+      post_multiplex(queries, current_user: user)
+
+      expect(json_response.size).to eq(2)
     end
   end
 
