@@ -33207,6 +33207,12 @@ msgstr ""
 msgid "MlModelRegistry|Are you sure you want to delete model version %{versionName}?"
 msgstr ""
 
+msgid "MlModelRegistry|Artifact file creation failed"
+msgstr ""
+
+msgid "MlModelRegistry|Artifact file is too large"
+msgstr ""
+
 msgid "MlModelRegistry|Artifacts"
 msgstr ""
 
@@ -33379,6 +33385,9 @@ msgid "MlModelRegistry|No logged parameters"
 msgstr ""
 
 msgid "MlModelRegistry|No registered versions"
+msgstr ""
+
+msgid "MlModelRegistry|Package creation failed"
 msgstr ""
 
 msgid "MlModelRegistry|Parameters"
