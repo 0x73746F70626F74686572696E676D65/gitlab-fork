@@ -2,6 +2,7 @@
 
 # Worker for storing security reports into the database.
 #
+# DEPRECATED: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/151541
 class StoreSecurityReportsWorker # rubocop:disable Scalability/IdempotentWorker
   include ApplicationWorker
   include SecurityScansQueue

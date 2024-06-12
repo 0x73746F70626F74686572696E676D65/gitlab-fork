@@ -948,6 +948,15 @@
   :weight: 2
   :idempotent: false
   :tags: []
+- :name: security_scans:security_store_security_reports_by_project
+  :worker_name: Security::StoreSecurityReportsByProjectWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :cpu
+  :weight: 2
+  :idempotent: true
+  :tags: []
 - :name: security_scans:security_track_secure_scans
   :worker_name: Security::TrackSecureScansWorker
   :feature_category: :vulnerability_management
