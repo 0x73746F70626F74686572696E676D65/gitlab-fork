@@ -89,6 +89,15 @@ RSpec.describe AppSec::ContainerScanning::ScanImageService, feature_category: :s
       end
 
       it_behaves_like 'does not creates a throttled log entry'
+
+      it_behaves_like 'internal event tracking' do
+        let(:event) { 'container_scanning_for_registry_pipeline' }
+        let(:additional_properties) do
+          {
+            property: 'success'
+          }
+        end
+      end
     end
 
     context 'when the project has exceeded the daily scan limit' do
