@@ -33,6 +33,7 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
     subject(:store_group_of_artifacts) { service_object.execute }
 
     before do
+      allow(Security::StoreSecurityReportsByProjectWorker).to receive(:perform_async)
       allow(StoreSecurityReportsWorker).to receive(:perform_async)
       allow(ScanSecurityReportSecretsWorker).to receive(:perform_async)
       allow(Security::StoreGroupedScansService).to receive(:execute)
@@ -56,10 +57,10 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
           allow(pipeline).to receive(:default_branch?).and_return(true)
         end
 
-        it 'does not schedule the `StoreSecurityReportsWorker`' do
+        it 'does not schedule the `StoreSecurityReportsByProjectWorker`' do
           store_group_of_artifacts
 
-          expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
+          expect(Security::StoreSecurityReportsByProjectWorker).not_to have_received(:perform_async)
         end
       end
     end
@@ -75,16 +76,42 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
           end
         end
 
-        context 'for StoreSecurityReportsWorker' do
+        context 'for StoreSecurityReportsByProjectWorker' do
           context 'when the pipeline is for the default branch' do
+            let(:project_id) { pipeline.project.id }
+            let(:cache_key) { Security::StoreSecurityReportsByProjectWorker.cache_key(project_id: project_id) }
+
             before do
               allow(pipeline).to receive(:default_branch?).and_return(true)
             end
 
-            it 'schedules the `StoreSecurityReportsWorker`' do
+            it 'schedules the `StoreSecurityReportsByProjectWorker`' do
               store_group_of_artifacts
 
-              expect(StoreSecurityReportsWorker).to have_received(:perform_async).with(pipeline.id)
+              expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
+              expect(Security::StoreSecurityReportsByProjectWorker).to have_received(:perform_async).with(
+                project_id
+              )
+            end
+
+            it 'sets the expected redis cache value', :clean_gitlab_redis_shared_state do
+              expect { store_group_of_artifacts }.to change {
+                Gitlab::Redis::SharedState.with { |redis| redis.get(cache_key) }
+              }.from(nil).to(pipeline.id.to_s)
+            end
+
+            context 'when deduplicate_security_report_ingestion_jobs FF is disabled' do
+              before do
+                stub_feature_flags(deduplicate_security_report_ingestion_jobs: false)
+                allow(StoreSecurityReportsWorker).to receive(:perform_async)
+              end
+
+              it 'schedules the `StoreSecurityReportsWorker`' do
+                store_group_of_artifacts
+
+                expect(StoreSecurityReportsWorker).to have_received(:perform_async).with(pipeline.id)
+                expect(Security::StoreSecurityReportsByProjectWorker).not_to have_received(:perform_async)
+              end
             end
           end
 
@@ -93,10 +120,25 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
               allow(pipeline).to receive(:default_branch?).and_return(false)
             end
 
-            it 'does not schedule the `StoreSecurityReportsWorker`' do
+            it 'does not schedule the `StoreSecurityReportsByProjectWorker`' do
               store_group_of_artifacts
 
               expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
+              expect(Security::StoreSecurityReportsByProjectWorker).not_to have_received(:perform_async)
+            end
+
+            context 'when deduplicate_security_report_ingestion_jobs FF is disabled' do
+              before do
+                stub_feature_flags(deduplicate_security_report_ingestion_jobs: false)
+                allow(StoreSecurityReportsWorker).to receive(:perform_async)
+              end
+
+              it 'does not schedules the `StoreSecurityReportsWorker`' do
+                store_group_of_artifacts
+
+                expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
+                expect(Security::StoreSecurityReportsByProjectWorker).not_to have_received(:perform_async)
+              end
             end
           end
         end
@@ -232,10 +274,11 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
           expect(ScanSecurityReportSecretsWorker).not_to have_received(:perform_async)
         end
 
-        it 'does not schedule the `StoreSecurityReportsWorker`' do
+        it 'does not schedule the `StoreSecurityReportsByProjectWorker`' do
           store_group_of_artifacts
 
           expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
+          expect(Security::StoreSecurityReportsByProjectWorker).not_to have_received(:perform_async)
         end
 
         describe 'scheduling `SyncFindingsToApprovalRulesWorker`' do

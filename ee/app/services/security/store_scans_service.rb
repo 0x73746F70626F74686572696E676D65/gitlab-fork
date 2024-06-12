@@ -58,7 +58,17 @@ module Security
     end
 
     def schedule_store_reports_worker
-      StoreSecurityReportsWorker.perform_async(pipeline.id) if pipeline.default_branch?
+      return unless pipeline.default_branch?
+
+      if ::Feature.enabled?(:deduplicate_security_report_ingestion_jobs, project)
+        Gitlab::Redis::SharedState.with do |redis|
+          redis.set(Security::StoreSecurityReportsByProjectWorker.cache_key(project_id: project.id), pipeline.id)
+        end
+
+        Security::StoreSecurityReportsByProjectWorker.perform_async(project.id)
+      else
+        StoreSecurityReportsWorker.perform_async(pipeline.id)
+      end
     end
 
     def schedule_scan_security_report_secrets_worker
