@@ -1,7 +1,6 @@
 <script>
 import { GlAlert, GlButton, GlForm, GlFormInput, GlFormGroup, GlFormRadioGroup } from '@gitlab/ui';
 import { cloneDeep, uniqueId } from 'lodash';
-import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 import { filterStagesByHiddenStatus } from '~/analytics/cycle_analytics/utils';
@@ -220,8 +219,8 @@ export default {
     },
     validate() {
       const { name } = this;
-      Vue.set(this, 'nameErrors', validateValueStreamName({ name }));
-      Vue.set(this, 'stageErrors', this.validateStages());
+      this.nameErrors = validateValueStreamName({ name });
+      this.stageErrors = this.validateStages();
     },
     moveItem(arr, index, direction) {
       return direction === STAGE_SORT_DIRECTION.UP
@@ -231,35 +230,35 @@ export default {
     handleMove({ index, direction }) {
       const newStages = this.moveItem(this.stages, index, direction);
       const newErrors = this.moveItem(this.stageErrors, index, direction);
-      Vue.set(this, 'stages', cloneDeep(newStages));
-      Vue.set(this, 'stageErrors', cloneDeep(newErrors));
+      this.stages = cloneDeep(newStages);
+      this.stageErrors = cloneDeep(newErrors);
     },
     validateStageFields(index) {
-      Vue.set(this.stageErrors, index, validateStage(this.stages[index]));
+      const copy = [...this.stageErrors];
+      copy[index] = validateStage(this.stages[index]);
+      this.stageErrors = copy;
     },
     fieldErrors(index) {
       return this.stageErrors && this.stageErrors[index] ? this.stageErrors[index] : {};
     },
     onHide(index) {
       const target = this.stages[index];
-      Vue.set(this, 'stages', [...this.stages.filter((_, i) => i !== index)]);
-      Vue.set(this, 'hiddenStages', [...this.hiddenStages, target]);
+      this.stages = [...this.stages.filter((_, i) => i !== index)];
+      this.hiddenStages = [...this.hiddenStages, target];
     },
     onRemove(index) {
       const newErrors = this.stageErrors.filter((_, idx) => idx !== index);
       const newStages = this.stages.filter((_, idx) => idx !== index);
-      Vue.set(this, 'stages', [...newStages]);
-      Vue.set(this, 'stageErrors', [...newErrors]);
+      this.stages = [...newStages];
+      this.stageErrors = [...newErrors];
     },
     onRestore(hiddenStageIndex) {
       const target = this.hiddenStages[hiddenStageIndex];
-      Vue.set(this, 'hiddenStages', [
-        ...this.hiddenStages.filter((_, i) => i !== hiddenStageIndex),
-      ]);
-      Vue.set(this, 'stages', [
+      this.hiddenStages = [...this.hiddenStages.filter((_, i) => i !== hiddenStageIndex)];
+      this.stages = [
         ...this.stages,
         { ...target, transitionKey: uniqueId(`stage-${target.name}-`) },
-      ]);
+      ];
     },
     lastStage() {
       const stages = this.$refs.formStages;
@@ -274,11 +273,11 @@ export default {
     addNewStage() {
       // validate previous stages only and add a new stage
       this.validate();
-      Vue.set(this, 'stages', [
+      this.stages = [
         ...this.stages,
         { ...defaultCustomStageFields, transitionKey: uniqueId('stage-') },
-      ]);
-      Vue.set(this, 'stageErrors', [...this.stageErrors, {}]);
+      ];
+      this.stageErrors = [...this.stageErrors, {}];
     },
     onAddStage() {
       this.addNewStage();
@@ -286,25 +285,23 @@ export default {
     },
     onFieldInput(activeStageIndex, { field, value }) {
       const updatedStage = { ...this.stages[activeStageIndex], [field]: value };
-      Vue.set(this.stages, activeStageIndex, updatedStage);
+      const copy = [...this.stages];
+      copy[activeStageIndex] = updatedStage;
+      this.stages = copy;
     },
     resetAllFieldsToDefault() {
-      Vue.set(this, 'stages', initializeStages(this.defaultStageConfig, this.selectedPreset));
-      Vue.set(
-        this,
-        'stageErrors',
-        initializeStageErrors(this.defaultStageConfig, this.selectedPreset),
-      );
+      this.stages = initializeStages(this.defaultStageConfig, this.selectedPreset);
+      this.stageErrors = initializeStageErrors(this.defaultStageConfig, this.selectedPreset);
     },
     handleResetDefaults() {
       if (this.isEditing) {
         const {
           initialData: { name: initialName, stages: initialStages },
         } = this;
-        Vue.set(this, 'name', initialName);
-        Vue.set(this, 'nameErrors', []);
-        Vue.set(this, 'stages', initializeStages(initialStages));
-        Vue.set(this, 'stageErrors', [{}]);
+        this.name = initialName;
+        this.nameErrors = [];
+        this.stages = initializeStages(initialStages);
+        this.stageErrors = [{}];
       } else {
         this.resetAllFieldsToDefault();
       }
