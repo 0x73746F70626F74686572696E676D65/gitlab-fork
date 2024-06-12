@@ -21364,7 +21364,7 @@ msgstr ""
 msgid "Example"
 msgstr ""
 
-msgid "Example: (feature|hotfix)\\/*"
+msgid "Example: (feature|hotfix)\\/.*"
 msgstr ""
 
 msgid "Example: (jar|exe)$"
