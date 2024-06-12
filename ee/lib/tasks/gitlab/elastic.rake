@@ -6,7 +6,7 @@ namespace :gitlab do
     task index: :environment do
       raise 'This task cannot be run on GitLab.com' if ::Gitlab::Saas.feature_available?(:advanced_search)
 
-      if Feature.enabled?(:elastic_index_use_trigger_indexing, type: :gitlab_com_derisk) # rubocop:disable Gitlab/FeatureFlagWithoutActor -- this ff cannot have an actor
+      if Feature.enabled?(:elastic_index_use_trigger_indexing) # rubocop:disable Gitlab/FeatureFlagWithoutActor -- this ff cannot have an actor
         if ::Gitlab::CurrentSettings.elasticsearch_pause_indexing?
           stdout_logger.warn('WARNING: `elasticsearch_pause_indexing` is enabled. ' \
             'This setting will be disabled to complete indexing'.color(:yellow))
