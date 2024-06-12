@@ -12,7 +12,7 @@ import { isEmpty, isNumber } from 'lodash';
 // eslint-disable-next-line no-restricted-imports
 import { mapState, mapActions } from 'vuex';
 
-import ItemWeight from 'ee/boards/components/issue_card_weight.vue';
+import ItemWeight from 'ee_component/issues/components/issue_weight.vue';
 import ItemDueDate from '~/boards/components/issue_due_date.vue';
 import { __ } from '~/locale';
 import { isScopedLabel } from '~/lib/utils/common_utils';
@@ -319,8 +319,7 @@ export default {
             <item-weight
               v-if="hasWeight"
               :weight="item.weight"
-              class="item-weight gl-display-flex gl-align-items-center gl-mr-4! gl-mb-1"
-              tag-name="span"
+              class="item-weight gl-flex gl-items-center !gl-mr-4 gl-mb-1"
             />
 
             <item-assignees

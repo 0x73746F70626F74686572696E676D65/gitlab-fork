@@ -6,7 +6,7 @@ import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
-import ItemWeight from 'ee/boards/components/issue_card_weight.vue';
+import ItemWeight from 'ee_component/issues/components/issue_weight.vue';
 import EpicHealthStatus from 'ee/related_items_tree/components/epic_health_status.vue';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import StateTooltip from 'ee/related_items_tree/components/state_tooltip.vue';

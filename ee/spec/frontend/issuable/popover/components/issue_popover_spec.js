@@ -6,7 +6,7 @@ import issueQuery from 'ee_else_ce/issuable/popover/queries/issue.query.graphql'
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import IssuePopover from '~/issuable/popover/components/issue_popover.vue';
-import IssueWeight from 'ee/boards/components/issue_card_weight.vue';
+import IssueWeight from 'ee_component/issues/components/issue_weight.vue';
 
 describe('Issue Popover', () => {
   let wrapper;
