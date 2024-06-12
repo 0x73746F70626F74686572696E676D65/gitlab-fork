@@ -30,7 +30,7 @@ module Llm
       end
 
       def perform_for(message, options = {})
-        perform_async(serialize_message(message), options)
+        with_ip_address_state.perform_async(serialize_message(message), options)
       end
     end
 
