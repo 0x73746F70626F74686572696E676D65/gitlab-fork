@@ -205,7 +205,7 @@ RSpec.describe ContainerRegistry::Event do
 
         context 'when feature flag `container_scanning_for_registry` is disabled' do
           before do
-            stub_feature_flags(container_scanning_for_registry: false)
+            stub_feature_flags(container_scanning_for_registry_flag: false)
           end
 
           it 'does not publish an event' do
