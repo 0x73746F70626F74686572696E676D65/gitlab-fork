@@ -118,11 +118,11 @@ export default {
           <gl-sprintf :message="$options.i18n.lastEdited">
             <template #author>
               <gl-link :href="authorUrl" class="gl-text-black-normal gl-font-bold">{{
-                pageVersion.commit.author_name
+                pageVersion.author_name
               }}</gl-link>
             </template>
             <template #timeago>
-              <time-ago :time="pageVersion.commit.authored_date" target="wiki-last-version" />
+              <time-ago :time="pageVersion.authored_date" target="wiki-last-version" />
             </template>
           </gl-sprintf>
         </div>
