@@ -45,7 +45,11 @@ RSpec.describe 'Creating a workspace', feature_category: :remote_development do
       cluster_agent_id: agent.to_global_id.to_s,
       project_id: workspace_project.to_global_id.to_s,
       devfile_ref: 'main',
-      devfile_path: '.devfile.yaml'
+      devfile_path: '.devfile.yaml',
+      variables: [
+        { key: 'VAR1', value: 'value 1', type: 'ENVIRONMENT' },
+        { key: 'VAR2', value: 'value 2', type: 'ENVIRONMENT' }
+      ]
     }
   end
 

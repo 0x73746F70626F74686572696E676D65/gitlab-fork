@@ -16,7 +16,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::Factory, feature
       previous_actual_state: previous_actual_state,
       current_actual_state: current_actual_state,
       workspace_exists: false,
-      workspace_variables_env_var: {},
+      workspace_variables_environment: {},
       workspace_variables_file: {}
     )
   end

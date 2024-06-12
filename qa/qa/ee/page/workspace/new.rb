@@ -12,6 +12,10 @@ module QA
             element 'create-workspace'
           end
 
+          view 'ee/app/assets/javascripts/workspaces/user/components/workspace_variables.vue' do
+            element 'add-variable'
+          end
+
           def select_devfile_project(project)
             click_element('workspace-devfile-project-id-field')
             search_and_select(project)
@@ -24,6 +28,12 @@ module QA
             raise "No agent available" if options.empty?
 
             agent_selector.select agent
+          end
+
+          def add_new_variable(key, value)
+            click_element('add-variable')
+            fill_in 'Variable Key', with: key
+            fill_in 'Variable Value', with: value
           end
 
           def save_workspace

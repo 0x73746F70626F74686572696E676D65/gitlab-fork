@@ -2,7 +2,7 @@
 
 require_relative '../../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
+RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Main, :rd_fast, feature_category: :remote_development do
   let(:context_passed_along_steps) { {} }
   let(:response_payload) do
     {

@@ -20,3 +20,7 @@ export const PROJECT_VISIBILITY = {
 export const DEFAULT_DESIRED_STATE = WORKSPACE_STATES.running;
 export const DEFAULT_DEVFILE_PATH = '.devfile.yaml';
 export const DEFAULT_EDITOR = 'webide';
+
+export const WORKSPACE_VARIABLE_INPUT_TYPE_ENUM = {
+  env: 'ENVIRONMENT',
+};

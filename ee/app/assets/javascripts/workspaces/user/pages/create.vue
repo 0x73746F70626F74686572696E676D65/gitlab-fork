@@ -13,6 +13,7 @@ import {
   GlTooltipDirective,
   GlLink,
 } from '@gitlab/ui';
+import { omit } from 'lodash';
 import { s__, __ } from '~/locale';
 import { createAlert } from '~/alert';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -20,6 +21,7 @@ import { logError } from '~/lib/logger';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import GetProjectDetailsQuery from '../../common/components/get_project_details_query.vue';
+import WorkspaceVariables from '../components/workspace_variables.vue';
 import SearchProjectsListbox from '../components/search_projects_listbox.vue';
 import workspaceCreateMutation from '../graphql/mutations/workspace_create.mutation.graphql';
 import { addWorkspace } from '../services/apollo_cache_mutators';
@@ -92,6 +94,7 @@ export default {
     RefSelector,
     SearchProjectsListbox,
     GetProjectDetailsQuery,
+    WorkspaceVariables,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -107,6 +110,8 @@ export default {
       devfilePath: DEFAULT_DEVFILE_PATH,
       projectId: null,
       maxHoursBeforeTermination: this.defaultMaxHoursBeforeTermination,
+      workspaceVariables: [],
+      showWorkspaceVariableValidations: false,
       projectDetailsLoaded: false,
       error: '',
     };
@@ -178,7 +183,16 @@ export default {
       this.selectedAgent = null;
       this.projectDetailsLoaded = false;
     },
+    validateWorkspaceVariables() {
+      this.showWorkspaceVariableValidations = true;
+      return this.workspaceVariables.every((variable) => {
+        return variable.valid === true;
+      });
+    },
     async createWorkspace() {
+      if (!this.validateWorkspaceVariables()) {
+        return;
+      }
       try {
         this.isCreatingWorkspace = true;
 
@@ -194,6 +208,7 @@ export default {
               devfileRef: this.devfileRef,
               devfilePath: this.devfilePath,
               maxHoursBeforeTermination: parseInt(this.maxHoursBeforeTermination, 10),
+              variables: this.workspaceVariables.map((v) => omit(v, 'valid')),
             },
           },
           update(store, { data }) {
@@ -242,9 +257,9 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-gap-5">
+  <div class="gl-flex gl-flex-row gl-gap-5">
     <div class="gl-flex-basis-third">
-      <div class="gl-display-flex gl-align-items-center">
+      <div class="gl-flex gl-items-center">
         <h2 ref="pageTitle" class="page-title gl-font-size-h-display">
           {{ $options.i18n.title }}
         </h2>
@@ -300,10 +315,7 @@ export default {
         </gl-form-group>
         <template v-if="selectedAgent">
           <gl-form-group class="gl-mb-2" data-testid="devfile-ref">
-            <label
-              class="gl-display-flex gl-align-items-center gl-gap-3"
-              for="workspace-devfile-ref"
-            >
+            <label class="gl-flex gl-items-center gl-gap-3" for="workspace-devfile-ref">
               {{ $options.i18n.form.gitReference }}
               <gl-icon
                 v-gl-tooltip="$options.i18n.devfileRefHelp"
@@ -311,7 +323,7 @@ export default {
                 :size="14"
               />
             </label>
-            <div class="gl-display-flex">
+            <div class="gl-flex">
               <ref-selector
                 id="workspace-devfile-ref"
                 v-model="devfileRef"
@@ -320,10 +332,8 @@ export default {
             </div>
           </gl-form-group>
           <gl-form-group data-testid="devfile-path">
-            <div
-              class="gl-display-flex gl-flex-direction-row gl-align-items-center gl-gap-3 gl-mb-3"
-            >
-              <label class="gl-display-flex gl-mb-0" for="workspace-devfile-path">
+            <div class="gl-flex gl-flex-row gl-items-center gl-gap-3 gl-mb-3">
+              <label class="gl-flex gl-mb-0" for="workspace-devfile-path">
                 {{ $options.i18n.form.devfileLocation.label }}
               </label>
               <gl-icon
@@ -338,7 +348,7 @@ export default {
                 placement="top"
                 target="devfile-location-popover"
               >
-                <div class="gl-display-flex gl-flex-direction-column">
+                <div class="gl-flex gl-flex-col">
                   <p>{{ $options.i18n.form.devfileLocation.contentParagraph1 }}</p>
                   <p>{{ $options.i18n.form.devfileLocation.contentParagraph2 }}</p>
                 </div>
@@ -379,11 +389,17 @@ export default {
               </template>
             </gl-form-input-group>
           </gl-form-group>
+          <workspace-variables
+            v-model="workspaceVariables"
+            class="mb-3"
+            :show-validations="showWorkspaceVariableValidations"
+            @addVariable="showWorkspaceVariableValidations = false"
+          />
         </template>
       </template>
-      <div class="gl-display-flex gl-gap-3">
+      <div class="gl-flex gl-gap-3">
         <gl-button
-          class="gl-display-flex"
+          class="gl-flex js-no-auto-disable"
           :loading="isCreatingWorkspace"
           :disabled="!saveWorkspaceEnabled"
           type="submit"
@@ -392,11 +408,7 @@ export default {
         >
           {{ $options.i18n.submitButton.create }}
         </gl-button>
-        <gl-button
-          class="gl-display-flex"
-          data-testid="cancel-workspace"
-          :to="$options.ROUTES.index"
-        >
+        <gl-button class="gl-flex" data-testid="cancel-workspace" :to="$options.ROUTES.index">
           {{ $options.i18n.cancelButton }}
         </gl-button>
       </div>

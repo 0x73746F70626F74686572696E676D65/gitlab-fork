@@ -2,7 +2,7 @@
 
 require_relative '../../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::Workspaces::Update::Main, :rd_fast, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
+RSpec.describe RemoteDevelopment::Workspaces::Update::Main, :rd_fast, feature_category: :remote_development do
   let(:context_passed_along_steps) { {} }
 
   let(:rop_steps) do
@@ -59,8 +59,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Update::Main, :rd_fast, feature_ca
       end
     end
 
-    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
-    # rubocop:disable Layout/LineLength -- we want to avoid excessive wrapping for RSpec::Parameterized Nested Array Style so we can have formatting consistency between entries
     where(:case_name, :err_result_for_step, :expected_response) do
       [
         [
@@ -73,7 +71,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Update::Main, :rd_fast, feature_ca
             status: :error,
             message: lazy { "Unauthorized: #{error_details}" },
             reason: :unauthorized
-          },
+          }
         ],
         [
           "when Updater returns WorkspaceUpdateFailed",
@@ -85,7 +83,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Update::Main, :rd_fast, feature_ca
             status: :error,
             message: lazy { "Workspace update failed: #{error_details}" },
             reason: :bad_request
-          },
+          }
         ],
         [
           "when an unmatched error is returned, an exception is raised",
@@ -98,8 +96,6 @@ RSpec.describe RemoteDevelopment::Workspaces::Update::Main, :rd_fast, feature_ca
 
       ]
     end
-    # rubocop:enable Style/TrailingCommaInArrayLiteral
-    # rubocop:enable Layout/LineLength
 
     with_them do
       it_behaves_like "rop invocation with error response"

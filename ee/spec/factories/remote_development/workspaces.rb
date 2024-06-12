@@ -89,7 +89,8 @@ FactoryBot.define do
                 item_url: "https://open-vsx.org/vscode/item",
                 resource_url_template: "https://open-vsx.org/api/{publisher}/{name}/{version}/file/{path}"
               }
-            }
+            },
+            variables: []
           )
 
           workspace_variables.each do |workspace_variable|

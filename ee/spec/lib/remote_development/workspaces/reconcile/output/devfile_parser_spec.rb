@@ -26,7 +26,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
   end
 
   let(:domain_template) { "{{.port}}-#{workspace.name}.#{workspace.dns_zone}" }
-  let(:env_var_secret_name) { "#{workspace.name}-env-var" }
+  let(:environment_secret_name) { "#{workspace.name}-env-var" }
   let(:file_secret_name) { "#{workspace.name}-file" }
   let(:egress_ip_rules) { RemoteDevelopment::AgentConfig::Updater::NETWORK_POLICY_EGRESS_DEFAULT }
   let(:max_resources_per_workspace) { {} }
@@ -38,7 +38,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
     YAML.load_stream(
       create_config_to_apply(
         workspace: workspace,
-        workspace_variables_env_var: {},
+        workspace_variables_environment: {},
         workspace_variables_file: {},
         started: true,
         include_inventory: false,
@@ -70,7 +70,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
         'workspaces.gitlab.com/max-resources-per-workspace-sha256' =>
           Digest::SHA256.hexdigest(max_resources_per_workspace.sort.to_h.to_s)
       },
-      env_secret_names: [env_var_secret_name],
+      env_secret_names: [environment_secret_name],
       file_secret_names: [file_secret_name],
       default_resources_per_workspace_container: default_resources_per_workspace_container,
       logger: logger
@@ -101,7 +101,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Output::DevfileParser, 
         domain_template: "",
         labels: {},
         annotations: {},
-        env_secret_names: [env_var_secret_name],
+        env_secret_names: [environment_secret_name],
         file_secret_names: [file_secret_name],
         default_resources_per_workspace_container: default_resources_per_workspace_container,
         logger: logger

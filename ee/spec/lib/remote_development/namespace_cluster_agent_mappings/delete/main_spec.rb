@@ -2,7 +2,7 @@
 
 require_relative '../../rd_fast_spec_helper'
 
-RSpec.describe RemoteDevelopment::NamespaceClusterAgentMappings::Delete::Main, :rd_fast, feature_category: :remote_development do # rubocop:disable RSpec/EmptyExampleGroup -- the context blocks are dynamically generated
+RSpec.describe RemoteDevelopment::NamespaceClusterAgentMappings::Delete::Main, :rd_fast, feature_category: :remote_development do
   let(:context_passed_along_steps) { {} }
   let(:rop_steps) do
     [

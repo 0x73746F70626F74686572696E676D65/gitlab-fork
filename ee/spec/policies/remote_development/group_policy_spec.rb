@@ -18,7 +18,6 @@ RSpec.describe RemoteDevelopment::GroupPolicy, feature_category: :remote_develop
   describe ':admin_remote_development_cluster_agent_mapping' do
     let(:ability) { :admin_remote_development_cluster_agent_mapping }
 
-    # rubocop:disable Layout/LineLength -- TableSyntax should not be split across lines
     where(:policy_class, :user, :result) do
       # In the future, there is a possibility that a common policy module may have to be mixed in to multiple
       # target policy types for ex. ProjectNamespacePolicy or UserNamespacePolicy. As a result, the policy_class
@@ -35,7 +34,6 @@ RSpec.describe RemoteDevelopment::GroupPolicy, feature_category: :remote_develop
       GroupPolicy | ref(:admin_in_admin_mode)     | true
       GroupPolicy | ref(:admin_in_non_admin_mode) | false
     end
-    # rubocop:enable Layout/LineLength
 
     with_them do
       subject(:policy) { policy_class.new(user, group) }
@@ -54,7 +52,6 @@ RSpec.describe RemoteDevelopment::GroupPolicy, feature_category: :remote_develop
   describe ':read_remote_development_cluster_agent_mapping' do
     let(:ability) { :read_remote_development_cluster_agent_mapping }
 
-    # rubocop:disable Layout/LineLength -- TableSyntax should not be split across lines
     where(:policy_class, :user, :result) do
       # In the future, there is a possibility that a common policy module may have to be mixed in to multiple
       # target policy types for ex. ProjectNamespacePolicy or UserNamespacePolicy. As a result, the policy_class
@@ -71,7 +68,6 @@ RSpec.describe RemoteDevelopment::GroupPolicy, feature_category: :remote_develop
       GroupPolicy | ref(:admin_in_admin_mode)     | true
       GroupPolicy | ref(:admin_in_non_admin_mode) | false
     end
-    # rubocop:enable Layout/LineLength
 
     with_them do
       subject(:policy) { policy_class.new(user, group) }

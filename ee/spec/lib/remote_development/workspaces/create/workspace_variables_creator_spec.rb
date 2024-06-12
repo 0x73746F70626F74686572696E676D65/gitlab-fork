@@ -11,12 +11,13 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
   let_it_be(:workspace) { create(:workspace, user: user, personal_access_token: personal_access_token) }
   let(:settings) { { some_setting: "context" } }
+  let(:user_provided_variables) { [{ key: "VAR1", value: "value 1" }, { key: "VAR2", value: "value 2" }] }
   let(:returned_workspace_variables) do
     [
       {
         key: "key1",
         value: "value1",
-        variable_type: RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_FILE,
+        variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:file],
         workspace_id: workspace.id
       },
       {
@@ -36,7 +37,8 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
       user_name: user.name,
       user_email: user.email,
       workspace_id: workspace.id,
-      settings: settings
+      settings: settings,
+      variables: user_provided_variables
     }
   end
 
@@ -45,7 +47,10 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
       workspace: workspace,
       personal_access_token: personal_access_token,
       current_user: user,
-      settings: settings
+      settings: settings,
+      params: {
+        variables: user_provided_variables
+      }
     }
   end
 
@@ -59,7 +64,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreato
   end
 
   context 'when workspace variables create is successful' do
-    let(:valid_variable_type) { RemoteDevelopment::Workspaces::Create::WorkspaceVariables::VARIABLE_TYPE_ENV_VAR }
+    let(:valid_variable_type) { RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES[:environment] }
     let(:variable_type) { valid_variable_type }
 
     it 'creates the workspace variable records and returns ok result containing original context' do

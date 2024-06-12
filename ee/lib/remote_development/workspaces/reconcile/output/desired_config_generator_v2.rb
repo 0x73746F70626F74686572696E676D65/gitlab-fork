@@ -102,16 +102,16 @@ module RemoteDevelopment
               agent_id: workspace.agent.id
             )
 
-            data_for_env_var = workspace.workspace_variables.with_variable_type_env_var
-            data_for_env_var = data_for_env_var.each_with_object({}) do |workspace_variable, hash|
+            data_for_environment = workspace.workspace_variables.with_variable_type_environment
+            data_for_environment = data_for_environment.each_with_object({}) do |workspace_variable, hash|
               hash[workspace_variable.key] = workspace_variable.value
             end
-            k8s_secret_for_env_var = get_secret(
+            k8s_secret_for_environment = get_secret(
               name: env_secret_name,
               namespace: workspace.namespace,
               labels: labels,
               annotations: annotations,
-              data: data_for_env_var
+              data: data_for_environment
             )
 
             data_for_file = workspace.workspace_variables.with_variable_type_file
@@ -126,7 +126,7 @@ module RemoteDevelopment
               data: data_for_file
             )
 
-            [k8s_inventory, k8s_secret_for_env_var, k8s_secret_for_file]
+            [k8s_inventory, k8s_secret_for_environment, k8s_secret_for_file]
           end
 
           # @param [String] desired_state

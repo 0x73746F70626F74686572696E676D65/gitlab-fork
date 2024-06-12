@@ -21,6 +21,12 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
   let(:processed_devfile) { YAML.safe_load(example_processed_devfile).to_h }
   let(:editor) { 'webide' }
   let(:workspace_root) { '/projects' }
+  let(:variables) do
+    [
+      { key: 'VAR1', value: 'value 1', type: 'ENVIRONMENT' },
+      { key: 'VAR2', value: 'value 2', type: 'ENVIRONMENT' }
+    ]
+  end
 
   let(:project) do
     files = { devfile_path => devfile_yaml }
@@ -40,7 +46,8 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
       max_hours_before_termination: 24,
       desired_state: RemoteDevelopment::Workspaces::States::RUNNING,
       devfile_ref: devfile_ref,
-      devfile_path: devfile_path
+      devfile_path: devfile_path,
+      variables: variables
     }
   end
 
@@ -106,6 +113,16 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
 
         actual_processed_devfile = YAML.safe_load(workspace.processed_devfile).to_h
         expect(actual_processed_devfile).to eq(processed_devfile)
+
+        variables.each do |variable|
+          expect(
+            RemoteDevelopment::WorkspaceVariable.where(
+              workspace: workspace,
+              key: variable[:key],
+              variable_type: RemoteDevelopment::Enums::Workspace::WORKSPACE_VARIABLE_TYPES_FOR_GRAPHQL[variable[:type]]
+            ).first&.value
+          ).to eq(variable[:value])
+        end
       end
     end
 
