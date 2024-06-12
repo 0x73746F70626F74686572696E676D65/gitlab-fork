@@ -266,7 +266,7 @@ export default {
 };
 </script>
 <template>
-  <div v-if="approvals" class="js-mr-approvals mr-section-container mr-widget-workflow">
+  <div v-if="approvals" class="js-mr-approvals mr-section-container">
     <state-container
       :is-loading="isLoading"
       :mr="mr"

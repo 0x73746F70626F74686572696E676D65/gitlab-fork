@@ -74,7 +74,7 @@ RSpec.describe 'Merge request > User sees approval widget', :js, feature_categor
 
         wait_for_requests
 
-        within('.mr-widget-workflow table') do
+        within('.mr-section-container table') do
           expect(page).to have_content(rule.name)
         end
       end
@@ -105,7 +105,7 @@ RSpec.describe 'Merge request > User sees approval widget', :js, feature_categor
 
           wait_for_requests
 
-          within('.mr-widget-workflow table .gl-font-monospace') do
+          within('.mr-section-container table .gl-font-monospace') do
             code_owner_row = find(:xpath, "//tr[td[contains(.,'#{code_owner_rule.name}')]]")
 
             expect(code_owner_row).to have_content('Optional')
@@ -130,7 +130,7 @@ RSpec.describe 'Merge request > User sees approval widget', :js, feature_categor
 
             wait_for_requests
 
-            within('.mr-widget-workflow table .gl-font-monospace') do
+            within('.mr-section-container table .gl-font-monospace') do
               code_owner_row = find(:xpath, "//tr[td[contains(.,'#{code_owner_rule.name}')]]")
 
               expect(code_owner_row).to have_content('0 of 1')
