@@ -13,13 +13,13 @@ require (
 	github.com/getsentry/raven-go v0.2.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f
-	github.com/gorilla/websocket v1.5.1
+	github.com/gorilla/websocket v1.5.2
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/johannesboyne/gofakes3 v0.0.0-20240217095638-c55a48f17be6
 	github.com/jpillora/backoff v1.0.0
 	github.com/mitchellh/copystructure v1.2.0
 	github.com/prometheus/client_golang v1.19.1
-	github.com/redis/go-redis/v9 v9.5.1
+	github.com/redis/go-redis/v9 v9.5.2
 	github.com/sebest/xff v0.0.0-20210106013422-671bd2870b3a
 	github.com/sirupsen/logrus v1.9.3
 	github.com/smartystreets/goconvey v1.8.1
