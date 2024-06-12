@@ -30,14 +30,6 @@ RSpec.describe Projects::Settings::AnalyticsController, feature_category: :produ
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to render_template(:show)
       end
-
-      it 'is unavailable when the combined_analytics_dashboards feature flag is disabled' do
-        stub_feature_flags(combined_analytics_dashboards: false)
-
-        subject
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
     end
 
     describe 'PATCH update' do

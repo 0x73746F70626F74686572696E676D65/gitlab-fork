@@ -34,10 +34,6 @@ RSpec.describe "Product Analytics Project Settings Update", feature_category: :p
       group.add_owner(user)
     end
 
-    before do
-      stub_feature_flags(combined_analytics_dashboards: project)
-    end
-
     it 'updates the settings' do
       post_graphql_mutation(mutation, current_user: user)
 

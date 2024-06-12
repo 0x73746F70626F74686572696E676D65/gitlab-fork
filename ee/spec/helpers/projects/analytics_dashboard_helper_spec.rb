@@ -12,17 +12,6 @@ RSpec.describe Projects::AnalyticsDashboardHelper, feature_category: :value_stre
   end
 
   describe '#project_analytics_dashboard_available?' do
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(combined_analytics_dashboards: false)
-      end
-
-      it 'is false for group and personal projects' do
-        expect(helper.project_analytics_dashboard_available?(group_project)).to be_falsey
-        expect(helper.project_analytics_dashboard_available?(personal_project)).to be_falsey
-      end
-    end
-
     context 'when licensed feature is not available' do
       before do
         stub_licensed_features(project_level_analytics_dashboard: false)
