@@ -16,7 +16,7 @@ export const initMergeTrainsApp = () => {
     return false;
   }
 
-  const { fullPath } = el.dataset;
+  const { fullPath, defaultBranch, projectId } = el.dataset;
 
   return new Vue({
     el,
@@ -24,6 +24,8 @@ export const initMergeTrainsApp = () => {
     apolloProvider,
     provide: {
       fullPath,
+      defaultBranch,
+      projectId,
     },
     render(createElement) {
       return createElement(MergeTrainsApp);

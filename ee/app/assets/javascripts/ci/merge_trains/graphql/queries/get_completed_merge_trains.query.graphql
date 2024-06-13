@@ -1,0 +1,22 @@
+#import "../fragments/merge_train_car.fragment.graphql"
+
+query getCompletedMergeTrains(
+  $fullPath: ID!
+  $status: MergeTrainStatus = COMPLETED
+  $targetBranch: String!
+) {
+  project(fullPath: $fullPath) {
+    id
+    mergeTrains(status: $status, targetBranches: [$targetBranch]) {
+      nodes {
+        targetBranch
+        cars(first: 20) {
+          count
+          nodes {
+            ...Car
+          }
+        }
+      }
+    }
+  }
+}
