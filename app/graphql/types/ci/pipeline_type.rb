@@ -206,7 +206,7 @@ module Types
 
       field :trigger, GraphQL::Types::Boolean, method: :trigger?, null: false, description: "If the pipeline was created by a Trigger request."
 
-      field :manual_variables, ManualVariableType.connection_type, null: true, description: 'Manual variables added to a pipeline.'
+      field :manual_variables, ManualVariableType.connection_type, null: true, description: 'CI/CD variables added to a manual pipeline.'
 
       def commit
         BatchLoader::GraphQL.wrap(object.commit)

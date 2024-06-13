@@ -26757,7 +26757,7 @@ Returns [`UserMergeRequestInteraction`](#usermergerequestinteraction).
 | <a id="pipelineiid"></a>`iid` | [`String!`](#string) | Internal ID of the pipeline. |
 | <a id="pipelinejobartifacts"></a>`jobArtifacts` | [`[CiJobArtifact!]`](#cijobartifact) | Job artifacts of the pipeline. |
 | <a id="pipelinelatest"></a>`latest` | [`Boolean!`](#boolean) | If the pipeline is the latest one or not. |
-| <a id="pipelinemanualvariables"></a>`manualVariables` | [`CiManualVariableConnection`](#cimanualvariableconnection) | Manual variables added to a pipeline. (see [Connections](#connections)) |
+| <a id="pipelinemanualvariables"></a>`manualVariables` | [`CiManualVariableConnection`](#cimanualvariableconnection) | CI/CD variables added to a manual pipeline. (see [Connections](#connections)) |
 | <a id="pipelinemergerequest"></a>`mergeRequest` | [`MergeRequest`](#mergerequest) | The MR which the Pipeline is attached to. |
 | <a id="pipelinemergerequesteventtype"></a>`mergeRequestEventType` | [`PipelineMergeRequestEventType`](#pipelinemergerequesteventtype) | Event type of the pipeline associated with a merge request. |
 | <a id="pipelinename"></a>`name` | [`String`](#string) | Name of the pipeline. |
