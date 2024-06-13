@@ -22,6 +22,19 @@ RSpec.describe 'Merge request > Batch comments', :js, :sidekiq_inline, feature_c
     wait_for_requests
   end
 
+  context 'when submitting a review with a comment' do
+    it 'publishes the review' do
+      click_button 'Finish review'
+
+      find('textarea[data-testid="comment-textarea"]').set('overview comment')
+
+      click_button 'Submit review'
+
+      wait_for_requests
+      expect(page).not_to have_content('Pending comments 1')
+    end
+  end
+
   context 'with approval' do
     context 'when user does not have permission to approve' do
       let(:current_user) { create(:user) }
