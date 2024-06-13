@@ -9,9 +9,53 @@ RSpec.describe CloudConnector::AvailableServices, feature_category: :cloud_conne
   end
 
   context 'when .com', :saas do
-    it 'includes GitlabCom::AccessDataReader' do
+    it 'includes SelfSigned::AccessDataReader' do
       expect(described_class.access_data_reader)
-        .to be_a_kind_of(CloudConnector::GitlabCom::AccessDataReader)
+        .to be_a_kind_of(CloudConnector::SelfSigned::AccessDataReader)
+    end
+  end
+
+  context 'when the ai gateway service is self hosted' do
+    it 'includes SelfManaged::AccessDataReader if the feature is used after the cut-off date' do
+      travel_to(Ai::SelfHostedModel::CUTOFF_DATE + 1.day) do
+        expect(described_class.access_data_reader)
+          .to be_a_kind_of(CloudConnector::SelfManaged::AccessDataReader)
+      end
+    end
+
+    context 'when the feature is used before the cut-off date' do
+      around do |example|
+        travel_to(Ai::SelfHostedModel::CUTOFF_DATE - 1.day) do
+          example.run
+        end
+      end
+
+      it 'includes SelfManaged::AccessDataReader if CLOUD_CONNECTOR_SELF_SIGN_TOKENS is disabled' do
+        expect(described_class.access_data_reader)
+          .to be_a_kind_of(CloudConnector::SelfManaged::AccessDataReader)
+      end
+
+      context 'when CLOUD_CONNECTOR_SELF_SIGN_TOKENS is enabled' do
+        before do
+          stub_env('CLOUD_CONNECTOR_SELF_SIGN_TOKENS', '1')
+        end
+
+        it 'includes SelfSigned::AccessDataReader' do
+          expect(described_class.access_data_reader)
+            .to be_a_kind_of(CloudConnector::SelfSigned::AccessDataReader)
+        end
+
+        context 'when ai_custom_model is disabled' do
+          before do
+            stub_feature_flags(ai_custom_model: false)
+          end
+
+          it 'returns false' do
+            expect(described_class.access_data_reader)
+              .to be_a_kind_of(CloudConnector::SelfManaged::AccessDataReader)
+          end
+        end
+      end
     end
   end
 

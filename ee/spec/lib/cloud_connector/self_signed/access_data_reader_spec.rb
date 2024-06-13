@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe CloudConnector::GitlabCom::AccessDataReader, feature_category: :cloud_connector do
+RSpec.describe CloudConnector::SelfSigned::AccessDataReader, feature_category: :cloud_connector do
   describe '#read_available_services' do
     let_it_be(:cs_cut_off_date) { Time.zone.parse("2024-02-15 00:00:00 UTC").utc }
     let_it_be(:cs_unit_primitives) { [:code_suggestions] }
@@ -46,7 +46,7 @@ RSpec.describe CloudConnector::GitlabCom::AccessDataReader, feature_category: :c
     end
 
     include_examples 'access data reader' do
-      let_it_be(:available_service_data_class) { CloudConnector::GitlabCom::AvailableServiceData }
+      let_it_be(:available_service_data_class) { CloudConnector::SelfSigned::AvailableServiceData }
       let_it_be(:arguments_map) do
         {
           code_suggestions: [cs_cut_off_date, cs_bundled_with, backend],

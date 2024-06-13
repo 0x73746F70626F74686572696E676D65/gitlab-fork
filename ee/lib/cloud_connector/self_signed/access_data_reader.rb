@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module CloudConnector
-  module GitlabCom
+  module SelfSigned
     class AccessDataReader
       include ::CloudConnector::Utils
 
