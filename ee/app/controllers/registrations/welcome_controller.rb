@@ -94,8 +94,9 @@ module Registrations
         jtbd: update_params[:registration_objective],
         product_interaction: onboarding_status.iterable_product_interaction,
         opt_in: current_user.onboarding_status_email_opt_in,
-        preferred_language: ::Gitlab::I18n.trimmed_language_name(current_user.preferred_language)
-      }.merge(update_params.slice(:setup_for_company, :role).to_h.symbolize_keys)
+        preferred_language: ::Gitlab::I18n.trimmed_language_name(current_user.preferred_language),
+        setup_for_company: current_user.setup_for_company
+      }.merge(update_params.slice(:role).to_h.symbolize_keys)
     end
 
     def update_success_path
