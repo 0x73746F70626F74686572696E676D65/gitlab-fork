@@ -28,6 +28,11 @@ exports[`DetailsDrawer component default policy renders the correct policy actio
         >
           Automatically selected runners
         </li>
+        <li
+          class="gl-mt-3"
+        >
+          With the default security job template
+        </li>
       </ul>
     </div>
     <div
@@ -72,6 +77,11 @@ exports[`DetailsDrawer component multiple action policy renders the correct poli
         >
           Automatically selected runners
         </li>
+        <li
+          class="gl-mt-3"
+        >
+          With the default security job template
+        </li>
       </ul>
     </div>
     <div
@@ -88,6 +98,11 @@ exports[`DetailsDrawer component multiple action policy renders the correct poli
         >
           Automatically selected runners
         </li>
+        <li
+          class="gl-mt-3"
+        >
+          With the default security job template
+        </li>
       </ul>
     </div>
     <div
@@ -103,6 +118,11 @@ exports[`DetailsDrawer component multiple action policy renders the correct poli
           class="gl-mt-3"
         >
           Automatically selected runners
+        </li>
+        <li
+          class="gl-mt-3"
+        >
+          With the default security job template
         </li>
       </ul>
     </div>
@@ -189,6 +209,11 @@ exports[`DetailsDrawer component policy with tags and CI variables renders the c
         <li
           class="gl-mt-3"
         >
+          With the default security job template
+        </li>
+        <li
+          class="gl-mt-3"
+        >
           With the following customized CI variables:
           <ul
             class="gl-list-none gl-mt-2 gl-pl-0"
@@ -241,6 +266,11 @@ exports[`DetailsDrawer component policy with unsupported attributes renders the 
           class="gl-mt-3"
         >
           Automatically selected runners
+        </li>
+        <li
+          class="gl-mt-3"
+        >
+          With the default security job template
         </li>
       </ul>
     </div>
