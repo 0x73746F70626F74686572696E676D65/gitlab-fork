@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe CloudConnector::GitlabCom::AvailableServiceData, feature_category: :cloud_connector do
+RSpec.describe CloudConnector::SelfSigned::AvailableServiceData, feature_category: :cloud_connector do
   describe '#access_token' do
     let(:resource) { create(:user) }
     let(:encoded_token_string) { 'token_string' }
