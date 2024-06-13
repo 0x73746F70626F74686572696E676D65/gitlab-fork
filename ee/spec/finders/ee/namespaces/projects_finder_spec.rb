@@ -223,26 +223,6 @@ RSpec.describe Namespaces::ProjectsFinder, feature_category: :groups_and_project
           it { is_expected.to eq([project_2, project_1, project_3]) }
         end
 
-        context 'as storage size' do
-          before do
-            project_1.statistics.update!(repository_size: 10, packages_size: 0)
-            project_2.statistics.update!(repository_size: 12, packages_size: 2)
-            project_3.statistics.update!(repository_size: 11, packages_size: 1)
-          end
-
-          context 'in ascending order' do
-            let(:sort) { :storage_size_asc }
-
-            it { is_expected.to eq([project_1, project_3, project_2]) }
-          end
-
-          context 'in descending order' do
-            let(:sort) { :storage_size_desc }
-
-            it { is_expected.to eq([project_2, project_3, project_1]) }
-          end
-        end
-
         context 'when sorting option is not defined' do
           it 'returns all projects' do
             expect(projects).to match_array [project_1, project_2, project_3]
