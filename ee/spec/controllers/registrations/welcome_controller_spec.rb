@@ -288,11 +288,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
         end
 
         context 'when onboarding is enabled' do
-          let_it_be(:user, reload: true) do
-            create(:user, onboarding_in_progress: true) do |record|
-              create(:user_detail, user: record, onboarding_status_step_url: '_url_')
-            end
-          end
+          let_it_be(:user, reload: true) { create(:user, onboarding_in_progress: true) }
 
           context 'when the new user already has any accepted group membership' do
             let!(:member1) { create(:group_member, user: user) }
@@ -332,14 +328,29 @@ RSpec.describe Registrations::WelcomeController, feature_category: :onboarding d
           end
 
           context 'when eligible for iterable trigger' do
-            before do
-              allow_next_instance_of(::Onboarding::Status) do |instance|
-                allow(instance).to receive(:eligible_for_iterable_trigger?).and_return(true)
-              end
+            let(:params) do
+              {
+                comment: '_jobs_to_be_done_other_',
+                jtbd: 'code_storage',
+                opt_in: false,
+                preferred_language: ::Gitlab::I18n.trimmed_language_name(user.preferred_language),
+                product_interaction: 'Personal SaaS Registration',
+                provider: 'gitlab',
+                role: 'software_developer',
+                setup_for_company: false,
+                uid: user.id,
+                work_email: user.email
+              }.stringify_keys
             end
 
-            it 'initiates iterable trigger creation' do
-              expect(::Onboarding::CreateIterableTriggerWorker).to receive(:perform_async)
+            before do
+              allow(Gitlab::SubscriptionPortal::Client).to receive(:generate_iterable)
+                                                             .with(params)
+                                                             .and_return({ success: true })
+            end
+
+            it 'initiates iterable trigger creation', :sidekiq_inline do
+              expect(::Onboarding::CreateIterableTriggerWorker).to receive(:perform_async).and_call_original
 
               patch_update
             end
