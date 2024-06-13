@@ -24792,6 +24792,8 @@ CREATE INDEX idx_ci_running_builds_on_runner_type_and_owner_xid_and_id ON ci_run
 
 CREATE INDEX idx_compliance_security_policies_on_policy_configuration_id ON compliance_framework_security_policies USING btree (policy_configuration_id);
 
+CREATE INDEX idx_component_usages_on_catalog_resource_used_by_proj_used_date ON ONLY p_catalog_resource_component_usages USING btree (catalog_resource_id, used_by_project_id, used_date);
+
 CREATE UNIQUE INDEX idx_component_usages_on_component_used_by_project_and_used_date ON ONLY p_catalog_resource_component_usages USING btree (component_id, used_by_project_id, used_date);
 
 CREATE INDEX idx_container_exp_policies_on_project_id_next_run_at ON container_expiration_policies USING btree (project_id, next_run_at) WHERE (enabled = true);
@@ -24907,8 +24909,6 @@ CREATE UNIQUE INDEX idx_on_external_status_checks_project_id_name ON external_st
 CREATE INDEX idx_on_protected_branch ON approval_group_rules_protected_branches USING btree (protected_branch_id);
 
 CREATE INDEX idx_open_issues_on_project_and_confidential_and_author_and_id ON issues USING btree (project_id, confidential, author_id, id) WHERE (state_id = 1);
-
-CREATE INDEX idx_p_catalog_resource_component_usages_on_catalog_resource_id ON ONLY p_catalog_resource_component_usages USING btree (catalog_resource_id);
 
 CREATE INDEX idx_packages_debian_group_component_files_on_architecture_id ON packages_debian_group_component_files USING btree (architecture_id);
 
@@ -25421,6 +25421,8 @@ CREATE UNIQUE INDEX index_catalog_resource_versions_on_release_id ON catalog_res
 CREATE INDEX index_catalog_resource_versions_on_resource_id_and_released_at ON catalog_resource_versions USING btree (catalog_resource_id, released_at);
 
 CREATE INDEX index_catalog_resources_on_last_30_day_usage_count ON catalog_resources USING btree (last_30_day_usage_count) WHERE (state = 1);
+
+CREATE INDEX index_catalog_resources_on_last_30_day_usage_count_updated_at ON catalog_resources USING btree (last_30_day_usage_count_updated_at);
 
 CREATE UNIQUE INDEX index_catalog_resources_on_project_id ON catalog_resources USING btree (project_id);
 
