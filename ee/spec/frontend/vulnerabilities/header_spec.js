@@ -132,7 +132,7 @@ describe('Vulnerability Header', () => {
       provide: {
         dismissalDescriptions,
         glFeatures: {
-          resolveVulnerability: true,
+          resolveVulnerabilityAiGateway: true,
           ...glFeatures,
         },
       },
@@ -535,6 +535,35 @@ describe('Vulnerability Header', () => {
         gon.current_user_id = 1;
       });
 
+      it('passes the category and tanuki icon', () => {
+        createWrapper({
+          vulnerability: getVulnerability({
+            canResolveWithAI: true,
+          }),
+        });
+
+        const buttons = findSplitButton().props('buttons');
+
+        expect(buttons[0]).toMatchObject({
+          icon: 'tanuki-ai',
+          category: 'primary',
+        });
+      });
+
+      // Note: when the `resolveVulnerability` is removed, these tests can be deleted as well
+      it('does not pass the experimental badge or tooltip', () => {
+        createWrapper({
+          vulnerability: getVulnerability({
+            canResolveWithAI: true,
+          }),
+        });
+
+        const buttons = findSplitButton().props('buttons');
+
+        expect(buttons[0]).not.toHaveProperty('badge');
+        expect(buttons[0]).not.toHaveProperty('tooltip');
+      });
+
       it('continues to show the loading state into the redirect call', async () => {
         await createWrapperWithAiApollo();
 
@@ -610,6 +639,7 @@ describe('Vulnerability Header', () => {
     it('does not pass the Resolve with AI button', async () => {
       createWrapper({
         glFeatures: {
+          resolveVulnerabilityAiGateway: false,
           resolveVulnerability: false,
         },
         vulnerability: getVulnerability({
@@ -629,9 +659,10 @@ describe('Vulnerability Header', () => {
   });
 
   describe('when using experimental "Resolve with AI" (deprecated)', () => {
-    it('passes the experiment badge, tooltip, and tanuki icon', () => {
+    it('passes the experiment badge, tooltip, category, and tanuki icon', () => {
       createWrapper({
         glFeatures: {
+          resolveVulnerabilityAiGateway: false,
           resolveVulnerability: true,
         },
         vulnerability: getVulnerability({
@@ -645,6 +676,7 @@ describe('Vulnerability Header', () => {
         tooltip:
           'This is an experiment feature that uses AI to provide recommendations for resolving this vulnerability. Use this feature with caution.',
         icon: 'tanuki-ai',
+        category: 'primary',
       });
     });
   });

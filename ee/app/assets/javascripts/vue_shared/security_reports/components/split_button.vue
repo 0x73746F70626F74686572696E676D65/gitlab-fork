@@ -45,7 +45,13 @@ export default {
       return this.buttons.map((button, index) => ({ ...button, value: index }));
     },
     category() {
-      if (this.selectedButton.badge || this.buttons.length > 1) {
+      const { category } = this.selectedButton;
+
+      if (category) {
+        return category;
+      }
+
+      if (this.buttons.length > 1) {
         return 'primary';
       }
 
