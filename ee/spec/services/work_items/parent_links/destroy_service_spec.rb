@@ -49,7 +49,9 @@ RSpec.describe WorkItems::ParentLinks::DestroyService, feature_category: :team_p
     end
 
     context "when parent nor child don't have a synced epic" do
-      let_it_be(:parent_link) { create(:parent_link, work_item: work_item_epic1, work_item_parent: work_item_epic2) }
+      let_it_be_with_refind(:parent_link) do
+        create(:parent_link, work_item: work_item_epic1, work_item_parent: work_item_epic2)
+      end
 
       it_behaves_like 'destroys parent link'
     end
@@ -78,7 +80,7 @@ RSpec.describe WorkItems::ParentLinks::DestroyService, feature_category: :team_p
           it_behaves_like 'destroys parent link'
 
           context 'with existing epic issue link' do
-            let_it_be(:parent_link) do
+            let_it_be_with_refind(:parent_link) do
               create(:parent_link, work_item: work_item_issue, work_item_parent: with_synced_epic1)
             end
 
@@ -93,9 +95,9 @@ RSpec.describe WorkItems::ParentLinks::DestroyService, feature_category: :team_p
                                      .and change { Note.count }.by(2)
 
               expect(work_item_issue.reload.notes.last.note)
-                .to eq("removed parent epic #{with_synced_epic1.to_reference}")
+                .to eq("removed parent epic #{with_synced_epic1.to_reference(full: true)}")
               expect(with_synced_epic1.reload.notes.last.note)
-                .to eq("removed child issue #{work_item_issue.to_reference}")
+                .to eq("removed child issue #{work_item_issue.to_reference(full: true)}")
             end
 
             context 'when destroying parent link fails' do
@@ -150,7 +152,9 @@ RSpec.describe WorkItems::ParentLinks::DestroyService, feature_category: :team_p
     end
 
     context 'when only child work item has a synced epic' do
-      let_it_be(:parent_link) { create(:parent_link, work_item: with_synced_epic1, work_item_parent: work_item_epic1) }
+      let_it_be_with_refind(:parent_link) do
+        create(:parent_link, work_item: with_synced_epic1, work_item_parent: work_item_epic1)
+      end
 
       context 'when synced_work_item param is true' do
         let(:params) { { synced_work_item: true } }
