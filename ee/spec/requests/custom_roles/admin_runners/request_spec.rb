@@ -12,8 +12,60 @@ RSpec.describe "User with admin_runners custom role", feature_category: :runner 
     stub_licensed_features(custom_roles: true)
   end
 
+  describe Groups::RunnersController do
+    let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, source: group) }
+
+    let_it_be(:runner) do
+      create(:ci_runner, :group, groups: [group], registration_type: :authenticated_user)
+    end
+
+    before do
+      sign_in(user)
+    end
+
+    it "#index" do
+      get group_runners_path(group)
+
+      expect(response).to have_gitlab_http_status(:ok)
+    end
+
+    it "#show" do
+      get group_runners_path(group, runner)
+
+      expect(response).to have_gitlab_http_status(:ok)
+    end
+
+    it "#new" do
+      get new_group_runner_path(group)
+
+      expect(response).to have_gitlab_http_status(:ok)
+    end
+
+    it "#register" do
+      get register_group_runner_path(group, runner)
+
+      expect(response).to have_gitlab_http_status(:ok)
+    end
+
+    it "#edit" do
+      get edit_group_runner_path(group, runner)
+
+      expect(response).to have_gitlab_http_status(:ok)
+    end
+
+    it "#update" do
+      put group_runner_path(group, runner), params: {
+        runner: {
+          description: "example"
+        }
+      }
+
+      expect(response).to have_gitlab_http_status(:found)
+    end
+  end
+
   describe Projects::RunnersController do
-    let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, project: project) }
+    let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, source: project) }
 
     before do
       sign_in(user)
@@ -45,6 +97,15 @@ RSpec.describe "User with admin_runners custom role", feature_category: :runner 
       expect(response).to have_gitlab_http_status(:ok)
     end
 
+    it "#register" do
+      runner = create(:ci_runner, :project, projects: [project], registration_type: :authenticated_user)
+
+      get register_namespace_project_runner_path(group, project, runner)
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to render_template(:register)
+    end
+
     it "#destroy" do
       runner = create(:ci_runner, :project, projects: [project])
 
@@ -67,7 +128,7 @@ RSpec.describe "User with admin_runners custom role", feature_category: :runner 
   end
 
   describe ::Projects::Settings::CiCdController do
-    let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, project: project) }
+    let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, source: project) }
 
     before do
       sign_in(user)
@@ -82,7 +143,7 @@ RSpec.describe "User with admin_runners custom role", feature_category: :runner 
   end
 
   describe ::Groups::Settings::CiCdController do
-    let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, group: group) }
+    let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, source: group) }
 
     before do
       sign_in(user)
@@ -96,10 +157,78 @@ RSpec.describe "User with admin_runners custom role", feature_category: :runner 
     end
   end
 
+  describe ::Projects::RunnerProjectsController do
+    let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, source: project) }
+
+    before do
+      sign_in(user)
+    end
+
+    it "#create" do
+      runner = create(:ci_runner, :project, projects: [project])
+
+      post namespace_project_runner_projects_path(group, project), params: {
+        runner_project: {
+          runner_id: runner.id
+        }
+      }
+
+      expect(response).to have_gitlab_http_status(:redirect)
+      expect(response).to redirect_to(project_runners_path(project))
+    end
+
+    it "#destroy" do
+      runner = create(:ci_runner, :project, projects: [project])
+
+      delete namespace_project_runner_project_path(group, project, runner.runner_projects.last)
+
+      expect(response).to have_gitlab_http_status(:redirect)
+      expect(response).to redirect_to(project_runners_path(project))
+    end
+  end
+
+  describe API::Ci::Runners do
+    include ApiHelpers
+
+    let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, source: group) }
+    let_it_be(:project_runner) { create(:ci_runner, :project, description: 'Project runner', projects: [project]) }
+
+    pending "GET /runners" do
+      get api("/runners", user)
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response).to match_array([
+        a_hash_including('description' => 'Project runner')
+      ])
+    end
+
+    it "GET /runners/:id" do
+      get api("/runners/#{project_runner.id}", user)
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response).to include('description' => 'Project runner')
+    end
+
+    it "PUT /runners/:id" do
+      put api("/runners/#{project_runner.id}", user), params: { description: "Example runner" }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response).to include('description' => 'Example runner')
+    end
+
+    it "DELETE /runners/:id" do
+      expect do
+        delete api("/runners/#{project_runner.id}", user)
+
+        expect(response).to have_gitlab_http_status(:no_content)
+      end.to change { ::Ci::Runner.count }.by(-1)
+    end
+  end
+
   describe API::Groups do
     include ApiHelpers
 
-    let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, group: group) }
+    let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, source: group) }
 
     pending "PUT /groups/:id" do
       put api("/groups/#{group.id}", user), params: {
@@ -114,9 +243,9 @@ RSpec.describe "User with admin_runners custom role", feature_category: :runner 
   describe Mutations::Ci::Runner::Create do
     include GraphqlHelpers
 
-    let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, project: project) }
+    let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, source: group) }
 
-    it "creates a runner" do
+    it "creates a project runner" do
       post_graphql_mutation(graphql_mutation(:runner_create, {
         runner_type: 'PROJECT_TYPE',
         project_id: project.to_global_id
@@ -130,12 +259,106 @@ RSpec.describe "User with admin_runners custom role", feature_category: :runner 
       expect(mutation_response['runner']).to be_present
       expect(mutation_response['errors']).to be_empty
     end
+
+    it "creates a group runner" do
+      post_graphql_mutation(graphql_mutation(:runner_create, {
+        runner_type: 'GROUP_TYPE',
+        group_id: group.to_global_id
+      }), current_user: user)
+
+      expect(response).to have_gitlab_http_status(:success)
+
+      mutation_response = graphql_mutation_response(:runner_create)
+
+      expect(mutation_response).to be_present
+      expect(mutation_response['runner']).to be_present
+      expect(mutation_response['errors']).to be_empty
+    end
+  end
+
+  describe Mutations::Ci::Runner::Update do
+    include GraphqlHelpers
+
+    let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, source: project) }
+    let_it_be(:runner) { create(:ci_runner, :project, active: true, projects: [project]) }
+
+    it "updates a runner" do
+      post_graphql_mutation(graphql_mutation(:runner_update, {
+        id: runner.to_global_id,
+        description: 'Example'
+      }), current_user: user)
+
+      expect(response).to have_gitlab_http_status(:success)
+
+      mutation_response = graphql_mutation_response(:runner_update)
+
+      expect(mutation_response).to be_present
+      expect(mutation_response['runner']).to be_present
+      expect(mutation_response['runner']['description']).to eq('Example')
+      expect(mutation_response['errors']).to be_empty
+    end
+  end
+
+  describe Mutations::Ci::Runner::Delete do
+    include GraphqlHelpers
+
+    let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, source: project) }
+    let_it_be(:runner) { create(:ci_runner, :project, active: true, projects: [project]) }
+
+    it "deletes a runner" do
+      post_graphql_mutation(graphql_mutation(:runner_delete, {
+        id: runner.to_global_id
+      }), current_user: user)
+
+      expect(response).to have_gitlab_http_status(:success)
+
+      mutation_response = graphql_mutation_response(:runner_delete)
+      expect(mutation_response).to be_present
+      expect(mutation_response['errors']).to be_empty
+    end
+  end
+
+  describe Mutations::Ci::Runner::BulkDelete do
+    include GraphqlHelpers
+
+    let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, source: project) }
+    let_it_be(:runners) { create_list(:ci_runner, 2, :project, active: true, projects: [project]) }
+
+    it "deletes the runners" do
+      post_graphql_mutation(graphql_mutation(:bulk_runner_delete, {
+        ids: runners.map(&:to_global_id)
+      }), current_user: user)
+
+      expect(response).to have_gitlab_http_status(:success)
+
+      mutation_response = graphql_mutation_response(:bulk_runner_delete)
+      expect(mutation_response).to be_present
+      expect(mutation_response['errors']).to be_empty
+    end
+  end
+
+  describe Mutations::Ci::Runner::Cache::Clear do
+    include GraphqlHelpers
+
+    let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, source: project) }
+
+    it "clears the runner cache" do
+      post_graphql_mutation(graphql_mutation(:runner_cache_clear, {
+        project_id: project.to_global_id
+      }, 'errors'), current_user: user)
+
+      expect(response).to have_gitlab_http_status(:success)
+
+      mutation_response = graphql_mutation_response(:runner_cache_clear)
+      expect(mutation_response).to be_present
+      expect(mutation_response['errors']).to be_empty
+    end
   end
 
   describe Mutations::Ci::NamespaceCiCdSettingsUpdate do
     include GraphqlHelpers
 
-    let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, group: group) }
+    let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, source: group) }
 
     pending "updates the `allow_stale_runner_pruning` setting" do
       post_graphql_mutation(graphql_mutation(:namespace_ci_cd_settings_update, {

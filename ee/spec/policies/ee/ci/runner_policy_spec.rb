@@ -45,42 +45,54 @@ RSpec.describe Ci::RunnerPolicy, feature_category: :runner do
         end
       end
     end
+  end
 
-    context 'with `admin_runner` access via a custom role' do
-      let_it_be_with_reload(:user) { create(:user) }
-      let_it_be(:role) { create(:member_role, :guest, :admin_runners, namespace: project.group) }
+  describe 'Custom Roles' do
+    using RSpec::Parameterized::TableSyntax
 
-      before do
-        stub_licensed_features(custom_roles: true)
-      end
+    let_it_be(:user, reload: true) { create(:user) }
+    let_it_be(:group, reload: true) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:group_runner) { create(:ci_runner, :group, groups: [group]) }
+    let_it_be(:project_runner) { create(:ci_runner, :project, projects: [project]) }
 
-      context 'with project runner' do
-        let_it_be(:membership) { create(:project_member, :guest, member_role: role, user: user, project: project) }
-        let_it_be_with_reload(:runner) { create(:ci_runner, :project, projects: [project]) }
+    before do
+      stub_licensed_features(custom_roles: true)
+    end
 
-        it { expect_allowed :read_runner }
+    where(:custom_permission, :abilities) do
+      :admin_runners | [:assign_runner, :read_runner, :update_runner, :delete_runner]
+    end
 
-        it 'avoids N+1 queries' do
-          control = ActiveRecord::QueryRecorder.new do
-            described_class.new(user, runner).allowed?(:read_runner)
+    with_them do
+      [:group_runner, :project_runner].each do |runner_type|
+        context "with a #{runner_type}" do
+          subject(:policy) { described_class.new(user, public_send(runner_type)) }
+
+          it { expect_disallowed(*abilities) }
+
+          context "when the user has the `#{params[:custom_permission]}` permission" do
+            let!(:role) { create(:member_role, :guest, custom_permission, namespace: group) }
+            let!(:membership) { create(:group_member, :guest, member_role: role, user: user, source: group) }
+
+            it { expect_allowed(*abilities) }
+
+            context "with the feature flag disabled" do
+              before do
+                stub_feature_flags("custom_ability_#{custom_permission}": false)
+              end
+
+              it { expect_disallowed(*abilities) }
+            end
+
+            context "with the custom roles feature disabled" do
+              before do
+                stub_licensed_features(custom_roles: false)
+              end
+
+              it { expect_disallowed(*abilities) }
+            end
           end
-
-          create_list(:project, 3).each do |project|
-            project.add_member(user, :guest)
-            runner.runner_projects.create!(project: project)
-          end
-
-          expect do
-            described_class.new(user, runner).allowed?(:read_runner)
-          end.not_to exceed_query_limit(control)
-        end
-
-        context 'with `custom_ability_admin_runners` disabled' do
-          before do
-            stub_feature_flags(custom_ability_admin_runners: false)
-          end
-
-          it { expect_disallowed :read_runner }
         end
       end
     end
