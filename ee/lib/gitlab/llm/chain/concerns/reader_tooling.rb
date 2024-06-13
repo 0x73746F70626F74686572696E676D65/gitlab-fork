@@ -15,8 +15,9 @@ module Gitlab
 
             "Please use this information about identified #{resource_name}: #{resource_serialized}"
           rescue ArgumentError
-            Answer.error_answer(context: context,
-              content: _("Unexpected error: Cannot serialize resource")
+            Answer.error_answer(
+              context: context,
+              error_code: "M5000"
             )
           end
         end

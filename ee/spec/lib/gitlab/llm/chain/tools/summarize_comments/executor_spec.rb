@@ -66,8 +66,12 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
             it 'responds with error' do
               expect(tool).not_to receive(:request)
 
-              response = "I am sorry, I am unable to find what you are looking for."
-              expect(tool.execute.content).to eq(response)
+              answer = tool.execute
+
+              response = "I'm sorry, I can't generate a response. " \
+                "The items you're asking about either don't exist, or you don't have access to them."
+              expect(answer.content).to eq(response)
+              expect(answer.error_code).to eq("M3003")
             end
           end
 

@@ -24,8 +24,12 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicReader::Executor, feature_category
     it 'returns response that epic was not found' do
       allow(tool).to receive(:request).and_return(ai_response)
 
-      response = "I am sorry, I am unable to find what you are looking for."
-      expect(tool.execute.content).to eq(response)
+      answer = tool.execute
+
+      response = "I'm sorry, I can't generate a response. " \
+        "The items you're asking about either don't exist, or you don't have access to them."
+      expect(answer.content).to eq(response)
+      expect(answer.error_code).to eq("M3003")
     end
   end
 
@@ -120,8 +124,12 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicReader::Executor, feature_category
 
             expect(tool).to receive(:request).exactly(3).times
 
-            response = "I am sorry, I am unable to find what you are looking for."
-            expect(tool.execute.content).to eq(response)
+            answer = tool.execute
+
+            response = "I'm sorry, I can't generate a response. " \
+              "The items you're asking about either don't exist, or you don't have access to them."
+            expect(answer.content).to eq(response)
+            expect(answer.error_code).to eq("M3003")
           end
         end
 
@@ -132,7 +140,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicReader::Executor, feature_category
 
             allow(tool).to receive(:request).and_raise(StandardError)
 
-            expect(tool.execute.content).to eq("Unexpected error")
+            expect(tool.execute.content).to eq("I'm sorry, I can't generate a response. Please try again.")
           end
         end
 
@@ -191,8 +199,16 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicReader::Executor, feature_category
           context 'when epic is identified by iid' do
             let(:identifier) { epic2.iid }
             let(:ai_response) { "iid\", \"ResourceIdentifier\": #{identifier}}" }
+            let(:response) do
+              "I'm sorry, I can't generate a response. The items you're asking about either don't exist, " \
+                "or you don't have access to them."
+            end
 
-            it_behaves_like 'epic not found response'
+            it 'returns response indicating the user does not have access' do
+              allow(tool).to receive(:request).and_return(ai_response)
+
+              expect(tool.execute.content).to eq(response)
+            end
           end
 
           context 'when epic is the current epic in context' do
@@ -258,14 +274,17 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicReader::Executor, feature_category
             "reference\", \"ResourceIdentifier\": \"#{identifier}\"}"
           end
 
+          let(:response) do
+            "I am sorry, I cannot access the information you are asking about. " \
+              "A group or project owner has turned off Duo features in this group or project."
+          end
+
           before do
             stub_licensed_features(epics: true, ai_chat: false)
           end
 
           it 'returns success response' do
             allow(tool).to receive(:request).and_return(ai_response)
-
-            response = 'This feature is only allowed in groups or projects that enable this feature.'
 
             expect(tool.execute.content).to eq(response)
           end

@@ -56,7 +56,7 @@ module Gitlab
         end
 
         def self.default_final_answer(context:)
-          logger.info_or_debug(context.current_user, message: "Default final answer")
+          logger.info_or_debug(context.current_user, message: "Default final answer", error_code: "A6000")
 
           track_event(context, 'default_answer')
 
@@ -64,10 +64,11 @@ module Gitlab
         end
 
         def self.default_final_message
-          s_("AI|I'm sorry, I can't find the answer, but it's my fault, not yours. Please try something different.")
+          s_("AI|I'm sorry, I couldn't respond in time. " \
+            "Please try a more specific request or enter /clear to start a new chat.")
         end
 
-        def self.error_answer(context:, content:, error_code: nil)
+        def self.error_answer(context:, error_code: nil, content: default_error_answer)
           logger.error(message: "Error", error: content, error_code: error_code)
           track_event(context, 'error_answer')
 
@@ -79,6 +80,10 @@ module Gitlab
             is_final: true,
             error_code: error_code
           )
+        end
+
+        def self.default_error_answer
+          s_("AI|I'm sorry, I can't generate a response. Please try again.")
         end
 
         def initialize(

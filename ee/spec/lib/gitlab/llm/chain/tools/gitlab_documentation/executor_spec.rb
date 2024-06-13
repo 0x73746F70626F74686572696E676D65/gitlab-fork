@@ -97,8 +97,11 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
       end
 
       it 'responds with the message from TanukiBot' do
-        expect(result.content)
-          .to eq("I am sorry, I am unable to find what you are looking for.")
+        response = "I'm sorry, I can't generate a response. " \
+          "The items you're asking about either don't exist, or you don't have access to them."
+
+        expect(result.content).to eq(response)
+        expect(result.error_code).to eq("M3003")
         expect(result.extras).to eq(nil)
       end
     end

@@ -21,6 +21,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::ReaderTooling, feature_category: :d
   describe '#passed_content' do
     context 'with not serializable content' do
       let(:resource) { double }
+      let(:response) { "I'm sorry, I can't generate a response. Please try again." }
 
       it 'returns error answer' do
         tool = dummy_tool_class.new(context: context, options: {})
@@ -30,7 +31,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::ReaderTooling, feature_category: :d
         stub_const("::Gitlab::Llm::Chain::Tools::IssueReader::Prompts::Anthropic::MAX_CHARACTERS", 4)
 
         expect(Gitlab::Llm::Chain::Answer).to receive(:track_event)
-        expect(tool.passed_content(nil).content).to include('Unexpected error: Cannot serialize resource')
+        expect(tool.passed_content(nil).content).to include(response)
       end
     end
   end

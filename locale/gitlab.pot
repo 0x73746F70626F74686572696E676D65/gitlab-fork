@@ -2180,7 +2180,22 @@ msgstr ""
 msgid "AI|How was the AI content?"
 msgstr ""
 
-msgid "AI|I'm sorry, I can't find the answer, but it's my fault, not yours. Please try something different."
+msgid "AI|I am sorry, I cannot access the information you are asking about. A group or project owner has turned off Duo features in this group or project."
+msgstr ""
+
+msgid "AI|I'm sorry, I can't generate a response. Please try again."
+msgstr ""
+
+msgid "AI|I'm sorry, I can't generate a response. The items you're asking about either don't exist, or you don't have access to them."
+msgstr ""
+
+msgid "AI|I'm sorry, I can't generate a response. You do not have access to GitLab Duo Chat."
+msgstr ""
+
+msgid "AI|I'm sorry, I couldn't find any documentation to answer your question."
+msgstr ""
+
+msgid "AI|I'm sorry, I couldn't respond in time. Please try a more specific request or enter /clear to start a new chat."
 msgstr ""
 
 msgid "AI|Populate issue description"
@@ -20723,6 +20738,9 @@ msgstr ""
 msgid "Error Tracking"
 msgstr ""
 
+msgid "Error code"
+msgstr ""
+
 msgid "Error creating epic"
 msgstr ""
 
@@ -23537,9 +23555,6 @@ msgstr ""
 msgid "GitLab Duo Pro seats"
 msgstr ""
 
-msgid "GitLab Duo could not connect to the AI provider."
-msgstr ""
-
 msgid "GitLab Enterprise Edition"
 msgstr ""
 
@@ -26276,9 +26291,6 @@ msgstr ""
 msgid "HttpDestinationValidator validates only http external audit event destinations."
 msgstr ""
 
-msgid "I am sorry, I am unable to find what you are looking for."
-msgstr ""
-
 msgid "I forgot my password"
 msgstr ""
 
@@ -26304,9 +26316,6 @@ msgid "I'm signing up for GitLab because:"
 msgstr ""
 
 msgid "I'm sorry, I couldn't respond in time. Please try again."
-msgstr ""
-
-msgid "I'm sorry, I was not able to find any documentation to answer your question."
 msgstr ""
 
 msgid "ID"
@@ -28869,9 +28878,6 @@ msgid "It seems like the Dependency Scanning job ran successfully, but no depend
 msgstr ""
 
 msgid "It seems that there is currently no available data for code coverage"
-msgstr ""
-
-msgid "It seems your question relates to GitLab documentation. Unfortunately, this feature is not yet available in this GitLab instance. Your feedback is welcome."
 msgstr ""
 
 msgid "It's you"
@@ -53788,9 +53794,6 @@ msgstr ""
 msgid "This feature is not enabled yet."
 msgstr ""
 
-msgid "This feature is only allowed in groups or projects that enable this feature."
-msgstr ""
-
 msgid "This feature is only available on paid plans."
 msgstr ""
 
@@ -56105,9 +56108,6 @@ msgid "Undo ignore"
 msgstr ""
 
 msgid "Unexpected error"
-msgstr ""
-
-msgid "Unexpected error: Cannot serialize resource"
 msgstr ""
 
 msgid "Unexpected scope"
@@ -60638,9 +60638,6 @@ msgid "You do not belong to any projects yet."
 msgstr ""
 
 msgid "You do not have access to any projects for creating incidents."
-msgstr ""
-
-msgid "You do not have access to chat feature."
 msgstr ""
 
 msgid "You do not have any subscriptions yet"

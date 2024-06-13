@@ -21,10 +21,14 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueReader::Executor, feature_categor
   end
 
   RSpec.shared_examples 'issue not found response' do
+    let(:response) do
+      "I'm sorry, I can't generate a response. The items you're asking about either don't exist, " \
+        "or you don't have access to them."
+    end
+
     it 'returns success response' do
       allow(tool).to receive(:request).and_return(ai_response)
 
-      response = "I am sorry, I am unable to find what you are looking for."
       expect(tool.execute.content).to eq(response)
     end
   end
@@ -98,8 +102,12 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueReader::Executor, feature_categor
 
             expect(tool).to receive(:request).exactly(3).times
 
-            response = "I am sorry, I am unable to find what you are looking for."
-            expect(tool.execute.content).to eq(response)
+            answer = tool.execute
+
+            response = "I'm sorry, I can't generate a response. " \
+              "The items you're asking about either don't exist, or you don't have access to them."
+            expect(answer.content).to eq(response)
+            expect(answer.error_code).to eq("M3003")
           end
         end
 
@@ -107,10 +115,12 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueReader::Executor, feature_categor
           it 'returns an error' do
             input_variables = { input: "user input", suggestions: "" }
             tool = described_class.new(context: context, options: input_variables)
+            answer = tool.execute
 
             allow(tool).to receive(:request).and_raise(StandardError)
 
-            expect(tool.execute.content).to eq("Unexpected error")
+            expect(answer.content).to eq("I'm sorry, I can't generate a response. Please try again.")
+            expect(answer.error_code).to eq("M4001")
           end
         end
 
@@ -232,6 +242,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueReader::Executor, feature_categor
           context 'when group does not have ai enabled' do
             let(:identifier) { 'current' }
             let(:ai_response) { "current\", \"ResourceIdentifier\": \"#{identifier}\"}" }
+            let(:response) do
+              "I am sorry, I cannot access the information you are asking about. " \
+                "A group or project owner has turned off Duo features in this group or project."
+            end
 
             before do
               stub_licensed_features(ai_chat: false)
@@ -239,8 +253,6 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueReader::Executor, feature_categor
 
             it 'returns success response' do
               allow(tool).to receive(:request).and_return(ai_response)
-
-              response = 'This feature is only allowed in groups or projects that enable this feature.'
 
               expect(tool.execute.content).to eq(response)
             end

@@ -28,4 +28,19 @@ RSpec.describe Gitlab::Llm::ResponseModifiers::EmptyResponseModifier, feature_ca
       expect(response_modifier.errors).to be_empty
     end
   end
+
+  context 'when error code is present is passed' do
+    let(:message) { 'Some message.' }
+    let(:error_code) { 'M3001' }
+
+    subject(:response_modifier) { described_class.new(message, error_code: error_code) }
+
+    it 'parses content from the ai response' do
+      expect(response_modifier.response_body).to eq("Some message. Error code: M3001")
+    end
+
+    it 'returns empty errors' do
+      expect(response_modifier.errors).to be_empty
+    end
+  end
 end

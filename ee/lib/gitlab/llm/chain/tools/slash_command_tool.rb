@@ -14,7 +14,10 @@ module Gitlab
           rescue StandardError => e
             Gitlab::ErrorTracking.track_exception(e)
 
-            Answer.error_answer(context: context, content: _("Unexpected error"))
+            Answer.error_answer(
+              context: context,
+              error_code: "M4000"
+            )
           end
           traceable :perform, run_type: 'tool'
 

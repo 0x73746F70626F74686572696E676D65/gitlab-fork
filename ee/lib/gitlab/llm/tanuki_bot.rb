@@ -156,16 +156,13 @@ module Gitlab
 
       def empty_response
         Gitlab::Llm::ResponseModifiers::EmptyResponseModifier.new(
-          _("I'm sorry, I was not able to find any documentation to answer your question.")
+          s_("AI|I'm sorry, I couldn't find any documentation to answer your question."),
+          error_code: empty_response_code
         )
       end
 
-      def unsupported_response
-        Gitlab::Llm::ResponseModifiers::EmptyResponseModifier.new(
-          _("It seems your question relates to GitLab documentation. " \
-            "Unfortunately, this feature is not yet available in this GitLab instance. " \
-            "Your feedback is welcome.")
-        )
+      def empty_response_code
+        "M2000"
       end
     end
   end
