@@ -1281,6 +1281,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_9699ea03bb37() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."group_id" IS NULL THEN
+  SELECT "group_id"
+  INTO NEW."group_id"
+  FROM "epics"
+  WHERE "epics"."id" = NEW."source_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_96a76ee9f147() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -16039,7 +16055,8 @@ CREATE TABLE related_epic_links (
     target_id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    link_type smallint DEFAULT 0 NOT NULL
+    link_type smallint DEFAULT 0 NOT NULL,
+    group_id bigint
 );
 
 CREATE SEQUENCE related_epic_links_id_seq
@@ -28170,6 +28187,8 @@ CREATE UNIQUE INDEX index_redirect_routes_on_path_unique_text_pattern_ops ON red
 
 CREATE INDEX index_redirect_routes_on_source_type_and_source_id ON redirect_routes USING btree (source_type, source_id);
 
+CREATE INDEX index_related_epic_links_on_group_id ON related_epic_links USING btree (group_id);
+
 CREATE INDEX index_related_epic_links_on_source_id ON related_epic_links USING btree (source_id);
 
 CREATE UNIQUE INDEX index_related_epic_links_on_source_id_and_target_id ON related_epic_links USING btree (source_id, target_id);
@@ -31042,6 +31061,8 @@ CREATE TRIGGER trigger_9259aae92378 BEFORE INSERT OR UPDATE ON packages_build_in
 
 CREATE TRIGGER trigger_94514aeadc50 BEFORE INSERT OR UPDATE ON deployment_approvals FOR EACH ROW EXECUTE FUNCTION trigger_94514aeadc50();
 
+CREATE TRIGGER trigger_9699ea03bb37 BEFORE INSERT OR UPDATE ON related_epic_links FOR EACH ROW EXECUTE FUNCTION trigger_9699ea03bb37();
+
 CREATE TRIGGER trigger_96a76ee9f147 BEFORE INSERT OR UPDATE ON design_management_versions FOR EACH ROW EXECUTE FUNCTION trigger_96a76ee9f147();
 
 CREATE TRIGGER trigger_a1bc7c70cbdf BEFORE INSERT OR UPDATE ON vulnerability_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_a1bc7c70cbdf();
@@ -31769,6 +31790,9 @@ ALTER TABLE ONLY group_import_states
 
 ALTER TABLE ONLY sprints
     ADD CONSTRAINT fk_80aa8a1f95 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY related_epic_links
+    ADD CONSTRAINT fk_8257080565 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY import_export_uploads
     ADD CONSTRAINT fk_83319d9721 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
