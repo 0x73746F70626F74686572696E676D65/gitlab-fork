@@ -35,4 +35,4 @@
                 = render Pajamas::ButtonComponent.new(variant: :confirm, block: true,
                   button_options: { type: :submit, data: { testid: 'get-started-button' },
                   class: 'js-trial-welcome-btn'}) do
-                  = welcome_submit_button_text
+                  = onboarding_status.welcome_submit_button_text

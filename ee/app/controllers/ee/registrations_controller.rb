@@ -109,6 +109,7 @@ module EE
 
       ::Onboarding::StatusCreateService
         .new(onboarding_status_params, session, resource, onboarding_first_step_path).execute
+      clear_memoization(:onboarding_status) # clear since registration_type is now set
 
       log_audit_event(user)
       # This must come after user has been onboarding to properly detect the label from the onboarded user.

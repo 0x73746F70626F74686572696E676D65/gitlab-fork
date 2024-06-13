@@ -64,7 +64,7 @@ class TrialRegistrationsController < RegistrationsController
 
   override :preregistration_tracking_label
   def preregistration_tracking_label
-    ::Onboarding::Status::TRACKING_LABEL[:trial]
+    ::Onboarding::TrialRegistration.tracking_label
   end
 end
 

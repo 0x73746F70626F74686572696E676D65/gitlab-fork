@@ -3,21 +3,6 @@
 module EE
   module Onboarding
     module Status
-      PRODUCT_INTERACTION = {
-        free: 'Personal SaaS Registration',
-        trial: 'SaaS Trial',
-        automatic_trial: 'SaaS Trial - defaulted',
-        invite: 'Invited User',
-        lead: 'SaaS Registration'
-      }.freeze
-
-      TRACKING_LABEL = {
-        free: 'free_registration',
-        trial: 'trial_registration',
-        invite: 'invite_registration',
-        subscription: 'subscription_registration'
-      }.freeze
-
       REGISTRATION_TYPE = {
         free: 'free',
         trial: 'trial',
@@ -44,12 +29,27 @@ module EE
 
       attr_reader :registration_type
 
+      # string delegations
+      delegate :tracking_label, :product_interaction, to: :registration_type
+      # translation delegations
+      delegate :setup_for_company_label_text, to: :registration_type
+      # predicate delegations
       delegate :redirect_to_company_form?, to: :registration_type
 
       def initialize(*)
         super
 
         @registration_type = calculate_registration_type_klass
+      end
+
+      def welcome_submit_button_text
+        base_value = registration_type.welcome_submit_button_text
+
+        return base_value if subscription? || invite?
+        return _('Get started!') if oauth?
+
+        # free, trial if not in oauth
+        base_value
       end
 
       def continue_full_onboarding?
@@ -88,26 +88,12 @@ module EE
         base_stored_user_location_path == ::Gitlab::Routing.url_helpers.oauth_authorization_path
       end
 
-      def tracking_label
-        return TRACKING_LABEL[:trial] if trial?
-        return TRACKING_LABEL[:invite] if invite?
-        return TRACKING_LABEL[:subscription] if subscription?
-
-        TRACKING_LABEL[:free]
-      end
-
       def preregistration_tracking_label
         # Trial registrations do not call this right now, so we'll omit it here from consideration.
-        return TRACKING_LABEL[:invite] if params[:invite_email]
-        return TRACKING_LABEL[:subscription] if subscription_from_stored_location?
+        return ::Onboarding::InviteRegistration.tracking_label if params[:invite_email]
+        return ::Onboarding::SubscriptionRegistration.tracking_label if subscription_from_stored_location?
 
-        TRACKING_LABEL[:free]
-      end
-
-      def group_creation_tracking_label
-        return TRACKING_LABEL[:trial] if trial?
-
-        TRACKING_LABEL[:free]
+        ::Onboarding::FreeRegistration.tracking_label
       end
 
       def setup_for_company?
@@ -124,21 +110,13 @@ module EE
         user.onboarding_status_registration_type == REGISTRATION_TYPE[:subscription]
       end
 
-      def iterable_product_interaction
-        if invite?
-          PRODUCT_INTERACTION[:invite]
-        else
-          PRODUCT_INTERACTION[:free]
-        end
-      end
-
       def company_lead_product_interaction
         if initial_trial?
-          PRODUCT_INTERACTION[:trial]
+          ::Onboarding::TrialRegistration.product_interaction
         else
           # Due to this only being called in an area where only trials reach,
           # we can assume and not check for free/invite/subscription/etc here.
-          PRODUCT_INTERACTION[:automatic_trial]
+          'SaaS Trial - defaulted'
         end
       end
 
