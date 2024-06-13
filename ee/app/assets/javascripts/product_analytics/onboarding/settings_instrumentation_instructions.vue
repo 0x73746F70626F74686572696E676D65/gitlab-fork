@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlModal, GlSprintf } from '@gitlab/ui';
+import { GlButton, GlModal, GlSprintf, GlLink } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import InstrumentationInstructionsSdkDetails from './components/instrumentation_instructions_sdk_details.vue';
 import InstrumentationInstructions from './components/instrumentation_instructions.vue';
@@ -10,6 +10,7 @@ export default {
     GlButton,
     GlModal,
     GlSprintf,
+    GlLink,
     InstrumentationInstructionsSdkDetails,
     InstrumentationInstructions,
   },
@@ -48,7 +49,7 @@ export default {
   },
   i18n: {
     viewInstrumentationInstructionsButton: s__(
-      'ProjectSettings|Your project is set up. %{linkStart}View instrumentation instructions%{linkEnd}.',
+      'ProjectSettings|Your project is set up. %{instructionsLinkStart}View instrumentation instructions%{instructionsLinkEnd} and %{dashboardsLinkStart}Analytics Dashboards%{dashboardsLinkEnd}.',
     ),
     modalTitle: s__('ProjectSettings|Instrumentation details'),
     modalPrimaryButton: {
@@ -62,8 +63,11 @@ export default {
     <instrumentation-instructions-sdk-details :tracking-key="trackingKey" />
 
     <gl-sprintf :message="$options.i18n.viewInstrumentationInstructionsButton">
-      <template #link="{ content }">
+      <template #instructionsLink="{ content }">
         <gl-button category="secondary" variant="link" @click="showModal">{{ content }}</gl-button>
+      </template>
+      <template #dashboardsLink="{ content }">
+        <gl-link :href="dashboardsPath">{{ content }}</gl-link>
       </template>
     </gl-sprintf>
 

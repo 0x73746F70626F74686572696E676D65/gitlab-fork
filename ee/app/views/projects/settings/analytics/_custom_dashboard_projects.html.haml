@@ -1,6 +1,8 @@
 - can_see_analytics_dashboards = project_analytics_dashboard_available?(@project)
 - return unless can_see_analytics_dashboards
 
+- dashboards_link = link_to('', project_analytics_dashboards_path(@project))
+
 %section.settings.no-animate#js-analytics-dashboards-settings{ class: ('expanded' if expanded) }
   .settings-header
     %h3.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= s_('ProjectSettings|Custom dashboard projects')
@@ -11,7 +13,7 @@
       = link_to _('Learn more.'), help_page_path('user/analytics/analytics_dashboards', anchor: 'change-the-location-of-dashboards'), target: '_blank', rel: 'noopener noreferrer'
   .settings-content
     %h4= s_('ProjectSettings|Analytics Dashboards')
-    %p= s_('ProjectSettings|Select the project containing Analytics Dashboards configuration files.')
+    %p= safe_format(s_('ProjectSettings|Select the project containing %{link_start}Analytics Dashboards%{link_end} configuration files.'), tag_pair(dashboards_link, :link_start, :link_end))
     = gitlab_ui_form_for @project, url: project_settings_analytics_path(@project, anchor: 'js-analytics-dashboards-settings'), html: { class: 'fieldset-form', data: { testid: 'analytics-dashboards-settings' } } do |form|
       = form_errors(@project)
 
