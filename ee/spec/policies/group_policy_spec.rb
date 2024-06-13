@@ -3743,9 +3743,8 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
         [
           :admin_runner,
           :create_runner,
-          :destroy_runner,
-          :read_runner,
-          :update_runner
+          :read_group_all_available_runners,
+          :read_group_runners
         ]
       end
 

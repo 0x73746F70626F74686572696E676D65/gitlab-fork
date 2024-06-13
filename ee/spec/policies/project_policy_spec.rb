@@ -2778,10 +2778,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       let(:allowed_abilities) do
         [
           :admin_runner,
-          :create_runner,
-          :destroy_runner,
-          :read_runner,
-          :update_runner
+          :create_runner
         ]
       end
 
