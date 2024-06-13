@@ -18,35 +18,30 @@ module ProductAnalytics
         config_project.repository.blob_data_at(sha, diff.new_path)
       )
 
+      name = ::ProductAnalytics::Funnel.name_from_file_path(diff.new_path)
+
       if commit
+        unless diff.old_path == diff.new_path
+          previous_name = ::ProductAnalytics::Funnel.name_from_file_path(diff.old_path)
+        end
+
         new(
-          name: config['name'],
+          name: name,
           project: project,
           config_project: config_project,
           seconds_to_convert: config['seconds_to_convert'],
           config_path: diff.new_path,
-          previous_name: ::ProductAnalytics::Funnel.previous_name(commit.parent,
-            diff.new_path,
-            current_name: config['name'],
-            config_project: config_project)
+          previous_name: previous_name
         )
       else
         new(
-          name: config['name'],
+          name: name,
           project: project,
           config_project: config_project,
           seconds_to_convert: config['seconds_to_convert'],
           config_path: diff.new_path
         )
       end
-    end
-
-    def self.previous_name(commit, path, current_name:, config_project:)
-      old_name = YAML.safe_load(
-        config_project.repository.blob_data_at(commit.sha, path)
-      )['name'].parameterize(separator: '_')
-
-      old_name if old_name != current_name
     end
 
     def self.names_within_project_repository(project)
@@ -58,9 +53,11 @@ module ProductAnalytics
           project.repository.blob_data_at(project.repository.root_ref_sha, tree.path)
         )
 
-        next unless config['name'] && config['seconds_to_convert'] && config['steps']
+        name = ::ProductAnalytics::Funnel.name_from_file_path(tree.path)
 
-        config['name']
+        next unless name && config['seconds_to_convert'] && config['steps']
+
+        name
       end
     end
 
@@ -74,10 +71,12 @@ module ProductAnalytics
           config_project.repository.blob_data_at(config_project.repository.root_ref_sha, tree.path)
         )
 
-        next unless config['name'] && config['seconds_to_convert'] && config['steps']
+        name = ::ProductAnalytics::Funnel.name_from_file_path(tree.path)
+
+        next unless name && config['seconds_to_convert'] && config['steps']
 
         new(
-          name: config['name'],
+          name: name,
           project: project,
           config_project: config_project,
           seconds_to_convert: config['seconds_to_convert'],
@@ -86,8 +85,12 @@ module ProductAnalytics
       end
     end
 
+    def self.name_from_file_path(path)
+      File.basename(path, File.extname(path))
+    end
+
     def initialize(name:, project:, seconds_to_convert:, config_path:, config_project:, previous_name: nil)
-      @name = name.parameterize.underscore
+      @name = name.parameterize(separator: '_').underscore
       @project = project
       @seconds_to_convert = seconds_to_convert
       @config_path = config_path

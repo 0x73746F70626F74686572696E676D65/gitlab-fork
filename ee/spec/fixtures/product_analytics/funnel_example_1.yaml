@@ -1,4 +1,3 @@
-name: Completed Purchase
 seconds_to_convert: 3600
 steps:
   - name: view_page_1

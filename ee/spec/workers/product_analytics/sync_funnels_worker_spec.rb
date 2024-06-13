@@ -54,7 +54,7 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
           expect(Gitlab::HTTP).to receive(:post)
                                     .with(URI.parse(url.to_s), {
                                       allow_local_requests: true,
-                                      body: /\"previous_name\":\"completed_purchase\"/
+                                      body: /\"previous_name\":\"example1\"/
                                     }).once
                                     .and_return(instance_double("HTTParty::Response", body: { result: 'success' }))
         end
@@ -261,10 +261,11 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
   def rename_funnel
     project.repository.update_file(
       project.creator,
-      '.gitlab/analytics/funnels/example1.yml',
-      File.read(Rails.root.join('ee/spec/fixtures/product_analytics/funnel_example_renamed.yaml')),
-      message: 'Update funnel',
-      branch_name: 'master'
+      '.gitlab/analytics/funnels/example2.yml',
+      File.read(Rails.root.join('ee/spec/fixtures/product_analytics/funnel_example_changed.yaml')),
+      message: 'Rename funnel',
+      branch_name: 'master',
+      previous_path: '.gitlab/analytics/funnels/example1.yml'
     )
   end
 
@@ -281,7 +282,7 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
   def delete_funnel
     project.repository.delete_file(
       project.creator,
-      '.gitlab/analytics/funnels/example1.yml',
+      '.gitlab/analytics/funnels/example2.yml',
       message: 'delete funnel',
       branch_name: 'master'
     )
