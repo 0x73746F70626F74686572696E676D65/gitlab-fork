@@ -12,7 +12,6 @@ export default {
     GlCollapsibleListbox,
   },
   mixins: [glFeatureFlagsMixin()],
-  inject: ['customCiToggleEnabled'],
   props: {
     value: {
       type: String,
@@ -22,7 +21,7 @@ export default {
   },
   computed: {
     pipelineExecutionPolicyEnabled() {
-      return this.glFeatures.pipelineExecutionPolicyType && this.customCiToggleEnabled;
+      return this.glFeatures.pipelineExecutionPolicyType;
     },
     policyTypeFilterOptions() {
       return this.pipelineExecutionPolicyEnabled

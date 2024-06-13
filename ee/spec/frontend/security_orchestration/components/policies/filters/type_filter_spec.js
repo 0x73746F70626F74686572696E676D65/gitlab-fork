@@ -15,7 +15,6 @@ describe('TypeFilter component', () => {
         value,
       },
       provide: {
-        customCiToggleEnabled: false,
         ...provide,
       },
       stubs: {
@@ -70,12 +69,7 @@ describe('TypeFilter component', () => {
         propsData: {
           value: PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value,
         },
-        provide: {
-          customCiToggleEnabled: true,
-          glFeatures: {
-            pipelineExecutionPolicyType: true,
-          },
-        },
+        provide: { glFeatures: { pipelineExecutionPolicyType: true } },
       });
 
       expect(findToggle().props('toggleText')).toBe(

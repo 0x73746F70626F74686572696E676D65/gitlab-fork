@@ -18,7 +18,6 @@ describe('PolicyTypeSelector component', () => {
         maxActiveScanExecutionPoliciesReached: true,
         maxActiveScanResultPoliciesReached: false,
         maxActivePipelineExecutionPoliciesReached: false,
-        customCiToggleEnabled: true,
         ...provide,
       },
     });

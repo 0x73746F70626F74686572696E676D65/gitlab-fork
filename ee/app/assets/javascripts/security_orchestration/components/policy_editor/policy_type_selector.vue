@@ -50,7 +50,6 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   inject: [
-    'customCiToggleEnabled',
     'maxActiveScanExecutionPoliciesReached',
     'maxActiveScanResultPoliciesReached',
     'maxActivePipelineExecutionPoliciesReached',
@@ -61,7 +60,7 @@ export default {
   ],
   computed: {
     showPipelineExecutionPolicyType() {
-      return this.customCiToggleEnabled && this.glFeatures.pipelineExecutionPolicyType;
+      return this.glFeatures.pipelineExecutionPolicyType;
     },
     policies() {
       const policies = [
