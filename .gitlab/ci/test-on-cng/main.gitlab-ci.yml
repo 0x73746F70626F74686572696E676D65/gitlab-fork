@@ -15,13 +15,11 @@ workflow:
   stage: test
   extends:
     - .qa-cache
+    - .docker-in-docker
     - .qa-run-e2e-with-bundler
   needs: [build-cng]
   tags: [e2e]
-  services:
-    - docker:${DOCKER_VERSION}-dind
   variables:
-    DOCKER_HOST: tcp://docker:2375
     FF_NETWORK_PER_BUILD: "true"
     NAMESPACE: gitlab
     KUBECONFIG: /root/.kube/config
