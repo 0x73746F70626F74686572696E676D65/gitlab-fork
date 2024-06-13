@@ -1297,6 +1297,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_98ad3a4c1d35() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "reviews"
+  WHERE "reviews"."id" = NEW."review_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_a1bc7c70cbdf() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -12224,6 +12240,7 @@ CREATE TABLE merge_request_review_llm_summaries (
     content text NOT NULL,
     cached_markdown_version integer,
     content_html text,
+    project_id bigint,
     CONSTRAINT check_72802358e9 CHECK ((char_length(content) <= 2056))
 );
 
@@ -27236,6 +27253,8 @@ CREATE INDEX index_merge_request_requested_changes_on_user_id ON merge_request_r
 
 CREATE INDEX index_merge_request_review_llm_summaries_on_mr_diff_id ON merge_request_review_llm_summaries USING btree (merge_request_diff_id);
 
+CREATE INDEX index_merge_request_review_llm_summaries_on_project_id ON merge_request_review_llm_summaries USING btree (project_id);
+
 CREATE INDEX index_merge_request_review_llm_summaries_on_review_id ON merge_request_review_llm_summaries USING btree (review_id);
 
 CREATE INDEX index_merge_request_review_llm_summaries_on_user_id ON merge_request_review_llm_summaries USING btree (user_id);
@@ -31044,6 +31063,8 @@ CREATE TRIGGER trigger_94514aeadc50 BEFORE INSERT OR UPDATE ON deployment_approv
 
 CREATE TRIGGER trigger_96a76ee9f147 BEFORE INSERT OR UPDATE ON design_management_versions FOR EACH ROW EXECUTE FUNCTION trigger_96a76ee9f147();
 
+CREATE TRIGGER trigger_98ad3a4c1d35 BEFORE INSERT OR UPDATE ON merge_request_review_llm_summaries FOR EACH ROW EXECUTE FUNCTION trigger_98ad3a4c1d35();
+
 CREATE TRIGGER trigger_a1bc7c70cbdf BEFORE INSERT OR UPDATE ON vulnerability_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_a1bc7c70cbdf();
 
 CREATE TRIGGER trigger_a253cb3cacdf BEFORE INSERT OR UPDATE ON dora_daily_metrics FOR EACH ROW EXECUTE FUNCTION trigger_a253cb3cacdf();
@@ -31913,6 +31934,9 @@ ALTER TABLE ONLY protected_branch_push_access_levels
 
 ALTER TABLE ONLY deployment_merge_requests
     ADD CONSTRAINT fk_a064ff4453 FOREIGN KEY (environment_id) REFERENCES environments(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY merge_request_review_llm_summaries
+    ADD CONSTRAINT fk_a09309bbeb FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY issues
     ADD CONSTRAINT fk_a194299be1 FOREIGN KEY (moved_to_id) REFERENCES issues(id) ON DELETE SET NULL;
