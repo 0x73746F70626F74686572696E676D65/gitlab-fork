@@ -89,4 +89,26 @@ RSpec.describe Subscriptions::HandRaiseLeadsHelper, feature_category: :acquisiti
       expect(helper.billing_action_hand_raise_lead_data('code')).to eq(result)
     end
   end
+
+  describe 'discover_duo_pro_hand_raise_lead_data' do
+    let_it_be(:namespace) { build_stubbed(:group) }
+
+    it 'provides the expected dataset' do
+      result = {
+        namespace_id: namespace.id,
+        glm_content: 'discover-duo-pro',
+        cta_tracking: {
+          action: 'click_contact_sales',
+          label: 'duo_pro_active_trial'
+        }.to_json,
+        button_attributes: {
+          'data-testid': 'discover-duo-pro-hand-raise-lead-button',
+          category: 'secondary',
+          variant: 'confirm'
+        }.to_json
+      }
+
+      expect(helper.discover_duo_pro_hand_raise_lead_data(namespace)).to eq(result)
+    end
+  end
 end

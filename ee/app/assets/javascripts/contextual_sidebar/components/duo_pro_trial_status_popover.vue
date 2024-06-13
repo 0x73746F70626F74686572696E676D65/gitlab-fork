@@ -11,7 +11,6 @@ import {
   RESIZE_EVENT_DEBOUNCE_MS,
   DUO_PRO_TRIAL_POPOVER_CONTENT,
   DUO_PRO_TRIAL_POPOVER_LEARN_TITLE,
-  DUO_PRO_TRIAL_POPOVER_LEARN_URL,
   DUO_PRO_TRIAL_POPOVER_PURCHASE_TITLE,
   DUO_PRO_TRIAL_POPOVER_TRACKING_CATEGORY,
   POPOVER_HIDE_DELAY,
@@ -46,6 +45,10 @@ export default {
       type: Date,
       default: null,
     },
+    learnAboutButtonUrl: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     return {
@@ -55,7 +58,6 @@ export default {
   popoverContent: DUO_PRO_TRIAL_POPOVER_CONTENT,
   purchaseNowTitle: DUO_PRO_TRIAL_POPOVER_PURCHASE_TITLE,
   learnAboutButtonTitle: DUO_PRO_TRIAL_POPOVER_LEARN_TITLE,
-  learnAboutButtonUrl: DUO_PRO_TRIAL_POPOVER_LEARN_URL,
   hideDelay: { hide: POPOVER_HIDE_DELAY },
   popoverClasses: ['gl-p-2'],
   handRaiseLeadAttributes: {
@@ -63,7 +65,7 @@ export default {
     variant: 'confirm',
     category: 'secondary',
     class: 'gl-w-full',
-    buttonTextClasses: 'gl-font-sm',
+    buttonTextClasses: 'gl-text-sm',
     'data-testid': 'duo-pro-trial-popover-hand-raise-lead-button',
     href: '#',
   },
@@ -166,8 +168,7 @@ export default {
       />
 
       <gl-button
-        :href="$options.learnAboutButtonUrl"
-        target="_blank"
+        :href="learnAboutButtonUrl"
         category="tertiary"
         variant="confirm"
         size="small"

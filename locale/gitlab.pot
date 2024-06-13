@@ -9921,6 +9921,9 @@ msgstr ""
 msgid "Buy more seats %{url}"
 msgstr ""
 
+msgid "Buy now"
+msgstr ""
+
 msgid "By default, all projects and groups use the global notifications setting."
 msgstr ""
 
@@ -19002,6 +19005,9 @@ msgstr ""
 msgid "DiscordService|Send notifications about project events to a Discord channel."
 msgstr ""
 
+msgid "Discover Duo Pro"
+msgstr ""
+
 msgid "Discover GitLab Geo"
 msgstr ""
 
@@ -19388,6 +19394,9 @@ msgid "DuoChat|Use AI to answer questions about things like:"
 msgstr ""
 
 msgid "DuoChat|What is a fork?"
+msgstr ""
+
+msgid "DuoProDiscover|Ship software faster and more securely with AI integrated into your entire DevSecOps lifecycle."
 msgstr ""
 
 msgid "DuoProTrial|Activate my trial"
