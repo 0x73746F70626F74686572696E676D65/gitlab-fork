@@ -519,45 +519,38 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
   end
 
   describe '.capped_count_by_severity' do
-    let(:test_limit) { 5 }
-    let(:vulnerabilities) { described_class.with_states([:confirmed]) }
+    let(:test_limit) { 2 }
+    let(:vulnerabilities) { described_class }
 
     subject(:count) { vulnerabilities.capped_count_by_severity }
 
-    before do
-      stub_const("#{described_class}::SEVERITY_COUNT_LIMIT", test_limit)
-
-      create_list(:vulnerability, 10, :with_read, :high, :confirmed)
-      create_list(:vulnerability, 8, :with_read, :low, :confirmed)
+    before_all do
+      create_list(:vulnerability, 3, :with_read, :high, :confirmed)
+      create_list(:vulnerability, 1, :with_read, :low, :detected)
     end
 
-    context 'without severity scope' do
-      it 'returns limited count for all applicable severity type' do
-        is_expected.to eq({ 'high' => test_limit, 'low' => test_limit })
-      end
+    before do
+      stub_const("#{described_class}::SEVERITY_COUNT_LIMIT", test_limit)
+    end
+
+    it { is_expected.to eq({ 'high' => test_limit, 'low' => 1 }) }
+
+    context 'with state scope' do
+      let(:vulnerabilities) { described_class.with_states([:detected]) }
+
+      it { is_expected.to eq({ 'low' => 1 }) }
     end
 
     context 'with severitiy scope' do
-      let(:vulnerabilities) { super().with_severities(:high) }
+      let(:vulnerabilities) { described_class.with_severities(:high) }
 
-      it 'returns limited count only for the severities that are scoped' do
-        expect(count['high']).to eq(test_limit)
-        expect(count['low']).to be_nil
-      end
+      it { is_expected.to eq({ 'high' => test_limit }) }
     end
 
     context 'when scope is none' do
       let(:vulnerabilities) { described_class.none }
 
       it { is_expected.to be_empty }
-    end
-
-    context 'when scope is nil' do
-      let(:vulnerabilities) { described_class }
-
-      it 'returns limited count for all applicable severity type' do
-        is_expected.to eq({ 'high' => test_limit, 'low' => test_limit })
-      end
     end
   end
 
