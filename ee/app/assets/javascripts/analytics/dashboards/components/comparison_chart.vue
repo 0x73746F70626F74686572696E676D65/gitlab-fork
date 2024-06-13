@@ -3,6 +3,7 @@ import { uniq } from 'lodash';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import { toYmd } from '~/analytics/shared/utils';
 import { CONTRIBUTOR_METRICS } from '~/analytics/shared/constants';
+import glAbilitiesMixin from '~/vue_shared/mixins/gl_abilities_mixin';
 import VulnerabilitiesQuery from '../graphql/vulnerabilities.query.graphql';
 import MergeRequestsQuery from '../graphql/merge_requests.query.graphql';
 import FlowMetricsQuery from '../graphql/flow_metrics.query.graphql';
@@ -10,7 +11,6 @@ import DoraMetricsQuery from '../graphql/dora_metrics.query.graphql';
 import GroupContributorCountQuery from '../graphql/group_contributor_count.query.graphql';
 import { BUCKETING_INTERVAL_ALL, MERGE_REQUESTS_STATE_MERGED } from '../graphql/constants';
 import {
-  TABLE_METRICS,
   DASHBOARD_LOADING_FAILURE,
   CHART_LOADING_FAILURE,
   SUPPORTED_DORA_METRICS,
@@ -18,6 +18,7 @@ import {
   SUPPORTED_MERGE_REQUEST_METRICS,
   SUPPORTED_VULNERABILITY_METRICS,
   SUPPORTED_CONTRIBUTOR_METRICS,
+  RESTRICTED_METRIC_ERROR,
 } from '../constants';
 import {
   fetchMetricsForTimePeriods,
@@ -36,6 +37,8 @@ import {
   generateDateRanges,
   generateChartTimePeriods,
   generateValueStreamDashboardStartDate,
+  getRestrictedTableMetrics,
+  generateTableAlerts,
 } from '../utils';
 import ComparisonTable from './comparison_table.vue';
 
@@ -48,6 +51,7 @@ export default {
   components: {
     ComparisonTable,
   },
+  mixins: [glAbilitiesMixin()],
   inject: {
     dataSourceClickhouse: {
       default: false,
@@ -94,6 +98,9 @@ export default {
         },
       ].filter(({ metrics }) => this.areAnyMetricsIncluded(metrics));
     },
+    restrictedMetrics() {
+      return getRestrictedTableMetrics(this.excludeMetrics, this.glAbilities);
+    },
     shouldRenderContributorsCountMetric() {
       // Contributors count metric is not supported at the project level or when the Clickhouse data store is disabled
       return !this.isProject && this.dataSourceClickhouse;
@@ -101,6 +108,7 @@ export default {
     skippedMetrics() {
       return uniq([
         ...(!this.shouldRenderContributorsCountMetric ? [CONTRIBUTOR_METRICS.COUNT] : []),
+        ...this.restrictedMetrics,
         ...this.excludeMetrics,
       ]);
     },
@@ -109,16 +117,14 @@ export default {
     const failedTableMetrics = await this.resolveQueries(this.fetchTableMetrics);
     const failedChartMetrics = await this.resolveQueries(this.fetchSparklineCharts);
 
-    if ([...failedTableMetrics, ...failedChartMetrics].length > 0) {
-      const errors = [];
-      if (failedTableMetrics) {
-        errors.push(`${DASHBOARD_LOADING_FAILURE}: ${failedTableMetrics.join(', ')}`);
-      }
-      if (failedChartMetrics) {
-        errors.push(`${CHART_LOADING_FAILURE}: ${failedChartMetrics.join(', ')}`);
-      }
+    const alerts = generateTableAlerts([[RESTRICTED_METRIC_ERROR, this.restrictedMetrics]]);
+    const warnings = generateTableAlerts([
+      [DASHBOARD_LOADING_FAILURE, failedTableMetrics],
+      [CHART_LOADING_FAILURE, failedChartMetrics],
+    ]);
 
-      this.$emit('set-alerts', { errors });
+    if (alerts.length > 0 || warnings.length > 0) {
+      this.$emit('set-alerts', { alerts, warnings, canRetry: warnings.length > 0 });
     }
   },
   created() {
@@ -133,9 +139,7 @@ export default {
       const result = await Promise.allSettled(this.filteredQueries.map((query) => handler(query)));
 
       // Return an array of the failed metric IDs
-      return result
-        .reduce((acc, { reason = [] }) => acc.concat(reason), [])
-        .map((metric) => TABLE_METRICS[metric].label);
+      return result.reduce((acc, { reason = [] }) => acc.concat(reason), []);
     },
 
     async fetchTableMetrics({ metrics, queryFn }) {

@@ -135,6 +135,9 @@ export const DASHBOARD_LOADING_FAILURE = s__('DORA4Metrics|Some metric compariso
 export const DASHBOARD_LABELS_LOAD_ERROR = s__(
   'DORA4Metrics|Failed to load labels matching the filter: %{labels}',
 );
+export const RESTRICTED_METRIC_ERROR = s__(
+  'DORA4Metrics|You have insufficient permissions to view',
+);
 
 export const CHART_GRADIENT = ['#499767', '#5252B5'];
 export const CHART_GRADIENT_INVERTED = [...CHART_GRADIENT].reverse();

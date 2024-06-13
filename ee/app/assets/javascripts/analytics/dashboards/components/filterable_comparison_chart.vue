@@ -61,7 +61,7 @@ export default {
       error() {
         this.hasLabelErrors = true;
         const labels = this.filterLabelsQuery.join(', ');
-        this.$emit('set-alerts', { alerts: [sprintf(DASHBOARD_LABELS_LOAD_ERROR, { labels })] });
+        this.$emit('set-alerts', { errors: [sprintf(DASHBOARD_LABELS_LOAD_ERROR, { labels })] });
       },
     },
   },
@@ -115,6 +115,7 @@ export default {
       :is-project="isProject"
       :exclude-metrics="excludeMetrics"
       :filter-labels="filterLabelNames"
+      @set-alerts="$emit('set-alerts', $event)"
     />
   </div>
 </template>

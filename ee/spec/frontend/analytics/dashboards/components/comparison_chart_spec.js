@@ -49,6 +49,12 @@ const mockTypePolicy = {
 };
 const mockProps = { requestPath: 'exec-group', isProject: false };
 const mockProvide = { dataSourceClickhouse: true };
+const mockGlAbilities = {
+  readDora4Analytics: true,
+  readCycleAnalytics: true,
+  readSecurityResource: true,
+};
+
 const groupPath = 'exec-group';
 const allTimePeriods = [...MOCK_TABLE_TIME_PERIODS, ...MOCK_CHART_TIME_PERIODS];
 
@@ -105,7 +111,12 @@ describe('Comparison chart', () => {
     );
   };
 
-  const createWrapper = async ({ props = {}, apolloProvider = null, provide = {} } = {}) => {
+  const createWrapper = async ({
+    props = {},
+    apolloProvider = null,
+    provide = {},
+    glAbilities = {},
+  } = {}) => {
     wrapper = shallowMountExtended(ComparisonChart, {
       apolloProvider,
       propsData: {
@@ -113,6 +124,10 @@ describe('Comparison chart', () => {
         ...props,
       },
       provide: {
+        glAbilities: {
+          ...mockGlAbilities,
+          ...glAbilities,
+        },
         ...mockProvide,
         ...provide,
       },
@@ -124,6 +139,7 @@ describe('Comparison chart', () => {
   const findComparisonTable = () => wrapper.findComponent(ComparisonTable);
 
   const getTableData = () => findComparisonTable().props('tableData');
+  const getTableMetricIds = () => getTableData().map(({ metric }) => metric.identifier);
   const getTableDataForMetric = (identifier) =>
     getTableData().filter(({ metric }) => metric.identifier === identifier)[0];
 
@@ -274,8 +290,7 @@ describe('Comparison chart', () => {
         apolloProvider: mockApolloProvider,
       });
 
-      const metricNames = getTableData().map(({ metric }) => metric.identifier);
-      expect(metricNames).not.toEqual(expect.arrayContaining(excludeMetrics));
+      expect(getTableMetricIds()).not.toEqual(expect.arrayContaining(excludeMetrics));
     });
 
     it('does not request DORA metrics if they are all excluded', async () => {
@@ -289,7 +304,7 @@ describe('Comparison chart', () => {
     });
 
     it('requests DORA metrics if at least one is included', async () => {
-      const excludeMetrics = SUPPORTED_DORA_METRICS.splice(1);
+      const excludeMetrics = SUPPORTED_DORA_METRICS.slice(1);
       await createWrapper({
         props: { excludeMetrics },
         apolloProvider: mockApolloProvider,
@@ -309,7 +324,7 @@ describe('Comparison chart', () => {
     });
 
     it('requests flow metrics if at least one is included', async () => {
-      const excludeMetrics = SUPPORTED_FLOW_METRICS.splice(1);
+      const excludeMetrics = SUPPORTED_FLOW_METRICS.slice(1);
       await createWrapper({
         props: { excludeMetrics },
         apolloProvider: mockApolloProvider,
@@ -329,7 +344,7 @@ describe('Comparison chart', () => {
     });
 
     it('requests vulnerability metrics if at least one is included', async () => {
-      const excludeMetrics = SUPPORTED_VULNERABILITY_METRICS.splice(1);
+      const excludeMetrics = SUPPORTED_VULNERABILITY_METRICS.slice(1);
       await createWrapper({
         props: { excludeMetrics },
         apolloProvider: mockApolloProvider,
@@ -373,8 +388,10 @@ describe('Comparison chart', () => {
       expect(Sentry.captureException).toHaveBeenCalled();
       expect(wrapper.emitted('set-alerts').length).toBe(1);
       expect(wrapper.emitted('set-alerts')[0][0]).toEqual({
-        errors: expect.arrayContaining([
-          'Some metric comparisons failed to load: Deployment frequency',
+        canRetry: true,
+        alerts: [],
+        warnings: expect.arrayContaining([
+          'Some metric comparisons failed to load: Deployment frequency, Lead time for changes, Time to restore service, Change failure rate',
         ]),
       });
     });
@@ -406,7 +423,11 @@ describe('Comparison chart', () => {
       expect(Sentry.captureException).toHaveBeenCalled();
       expect(wrapper.emitted('set-alerts').length).toBe(1);
       expect(wrapper.emitted('set-alerts')[0][0]).toEqual({
-        errors: expect.arrayContaining(['Some metric charts failed to load: Deployment frequency']),
+        canRetry: true,
+        alerts: [],
+        warnings: expect.arrayContaining([
+          'Some metric charts failed to load: Deployment frequency, Lead time for changes, Time to restore service, Change failure rate',
+        ]),
       });
     });
   });
@@ -454,6 +475,38 @@ describe('Comparison chart', () => {
 
     it('will not request contributor count data for the table and sparklines', () => {
       expect(contributorCountRequestHandler).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('restricted metrics', () => {
+    beforeEach(() => {
+      setGraphqlQueryHandlerResponses();
+      mockApolloProvider = createMockApolloProvider();
+
+      return createWrapper({
+        props: { excludeMetrics: ['deployment_frequency'] },
+        glAbilities: { readDora4Analytics: false },
+        apolloProvider: mockApolloProvider,
+      });
+    });
+
+    it('does not render the metrics in the chart', () => {
+      expect(getTableMetricIds()).not.toEqual(expect.arrayContaining(SUPPORTED_DORA_METRICS));
+    });
+
+    it('does not send an API request for the metrics', () => {
+      expect(doraMetricsRequestHandler).not.toHaveBeenCalled();
+    });
+
+    it('emits `set-alerts` warning with the restricted metrics', () => {
+      expect(wrapper.emitted('set-alerts').length).toBe(1);
+      expect(wrapper.emitted('set-alerts')[0][0]).toEqual({
+        canRetry: false,
+        warnings: [],
+        alerts: expect.arrayContaining([
+          'You have insufficient permissions to view: Lead time for changes, Time to restore service, Change failure rate',
+        ]),
+      });
     });
   });
 });

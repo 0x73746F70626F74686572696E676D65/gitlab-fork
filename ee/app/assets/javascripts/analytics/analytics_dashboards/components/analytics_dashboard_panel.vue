@@ -76,7 +76,7 @@ export default {
     return {
       errors: [],
       warnings: [],
-      alertVariant: null,
+      alerts: [],
       alertTitle: '',
       alertDescription: '',
       alertDescriptionLink: '',
@@ -103,6 +103,12 @@ export default {
     showEmptyState() {
       return !this.showAlertState && isEmptyPanelData(this.visualization.type, this.data);
     },
+    alertVariant() {
+      if (this.errors.length > 0) return VARIANT_DANGER;
+      if (this.warnings.length > 0) return VARIANT_WARNING;
+      if (this.alerts.length > 0 || this.alertDescription.length) return VARIANT_INFO;
+      return null;
+    },
     isErrorAlert() {
       return this.alertVariant === VARIANT_DANGER;
     },
@@ -113,9 +119,7 @@ export default {
       return Boolean(this.alertMessages.length > 0 || this.alertDescription.length);
     },
     alertMessages() {
-      if (this.errors.length > 0) return this.errors.filter(this.isValidAlertMessage);
-      if (this.warnings.length > 0) return this.warnings.filter(this.isValidAlertMessage);
-      return [];
+      return [...this.errors, ...this.warnings, ...this.alerts].filter(this.isValidAlertMessage);
     },
     namespace() {
       return this.namespaceFullPath;
@@ -211,7 +215,7 @@ export default {
     clearAlerts() {
       this.errors = [];
       this.warnings = [];
-      this.alertVariant = null;
+      this.alerts = [];
       this.alertDescription = '';
       this.descriptionLink = '';
       this.alertTitle = '';
@@ -219,6 +223,7 @@ export default {
     setAlerts({
       errors = [],
       warnings = [],
+      alerts = [],
       title = '',
       description = '',
       descriptionLink = '',
@@ -228,17 +233,11 @@ export default {
 
       this.errors = errors;
       this.warnings = warnings;
+      this.alerts = alerts;
 
-      if (errors.length > 0) {
-        this.alertVariant = VARIANT_DANGER;
-        // Only capture in sentry when we are using the error/danger variant
-        // Warning / Info variants do no correlate to errors
-        errors.forEach((alert) => Sentry.captureException(alert));
-      } else if (warnings.length > 0) {
-        this.alertVariant = VARIANT_WARNING;
-      } else {
-        this.alertVariant = VARIANT_INFO;
-      }
+      // Only capture in sentry when we are using the error/danger variant
+      // Warning / Info variants do no correlate to errors
+      errors.forEach((alert) => Sentry.captureException(alert));
 
       this.alertDescription = description;
       this.alertDescriptionLink = descriptionLink || this.$options.PANEL_TROUBLESHOOTING_URL;
