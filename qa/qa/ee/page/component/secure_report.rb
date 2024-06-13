@@ -23,6 +23,11 @@ module QA
                 element 'filter-status-dropdown'
               end
 
+              view 'ee/app/assets/javascripts/security_dashboard/components/shared/filtered_search/tokens/
+                    activity_token.vue' do
+                element 'activity-token'
+              end
+
               view 'ee/app/assets/javascripts/security_dashboard/components/
                     shared/vulnerability_report/vulnerability_list.vue' do
                 element 'vulnerability-status-content'
@@ -144,16 +149,18 @@ module QA
           end
 
           def filter_by_activity(activity_name)
-            find(activity_dropdown_button_selector, wait: 5).click
-            find(activity_item_selector(activity_name)).click
-          end
+            if has_element?('activity-token')
+              within_element('activity-token') do
+                click_element('close-icon')
+              end
+            end
 
-          def activity_dropdown_button_selector
-            "[data-testid='filter-activity-dropdown'] > button"
-          end
-
-          def activity_item_selector(activity_name)
-            "[data-testid='listbox-item-#{activity_name}']"
+            click_element('filtered-search-term')
+            click_link('Activity')
+            click_link(activity_name)
+            wait_for_requests
+            click_element('search-button')
+            click_element('search-button') # Second click clears the tool filter dropdown
           end
 
           def has_vulnerability?(name)
