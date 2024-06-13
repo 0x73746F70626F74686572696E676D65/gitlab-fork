@@ -5,7 +5,6 @@ import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { NEW_POLICY_BUTTON_TEXT } from '../constants';
-import BreakingChangesBanner from './banners/breaking_changes_banner.vue';
 import ExperimentFeaturesBanner from './banners/experiment_features_banner.vue';
 import InvalidPoliciesBanner from './banners/invalid_policies_banner.vue';
 import ProjectModal from './project_modal.vue';
@@ -13,7 +12,6 @@ import ProjectModal from './project_modal.vue';
 export default {
   BANNER_STORAGE_KEY: 'security_policies_scan_result_name_change',
   components: {
-    BreakingChangesBanner,
     ExperimentFeaturesBanner,
     GlAlert,
     GlButton,
@@ -169,7 +167,7 @@ export default {
       />
     </header>
 
-    <breaking-changes-banner class="gl-mt-3 gl-mb-6" />
+    <!-- <breaking-changes-banner class="gl-mt-3 gl-mb-6" /> -->
 
     <invalid-policies-banner v-if="hasInvalidPolicies" />
   </div>

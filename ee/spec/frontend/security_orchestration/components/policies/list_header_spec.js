@@ -129,12 +129,9 @@ describe('List Header Component', () => {
   });
 
   describe('alerts', () => {
-    beforeEach(() => {
+    it('hides breaking change alert by default', () => {
       createWrapper();
-    });
-
-    it('hides shows breaking change alert by default', () => {
-      expect(findBreakingChangesBanner().exists()).toBe(true);
+      expect(findBreakingChangesBanner().exists()).toBe(false);
     });
 
     it('displays the invalid policies banner when there are invalid policies', () => {
