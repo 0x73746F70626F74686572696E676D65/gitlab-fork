@@ -55,7 +55,7 @@ unresolved state or your pipelines may be dropped.
 
 ## Troubleshooting
 
-### Unexpected `rules:changes:compare_to` rules outcomes in CI
+### Jobs or pipelines run unexpectedly with `rules:changes:compare_to`
 
 You might have jobs or pipelines that run unexpectedly when using `rules:changes:compare_to` with merge request pipelines.
 
