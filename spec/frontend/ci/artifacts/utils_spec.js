@@ -4,7 +4,6 @@ import {
   totalArtifactsSizeForJob,
   mapArchivesToJobNodes,
   mapBooleansToJobNodes,
-  hasJobWithNoArtifacts,
 } from '~/ci/artifacts/utils';
 
 const job = getJobArtifactsResponse.data.project.jobs.nodes[0];
@@ -12,8 +11,6 @@ const emptyJob = {
   ...job,
   artifacts: { nodes: [] },
 };
-const mappedJobNodes = [job, job].map(mapBooleansToJobNodes);
-const mappedJobNodesWithEmptyJob = [job, emptyJob].map(mapBooleansToJobNodes);
 const artifacts = job.artifacts.nodes;
 
 describe('totalArtifactsSizeForJob', () => {
@@ -41,15 +38,5 @@ describe('mapBooleansToJobNodes', () => {
       { hasArtifacts: true, hasMetadata: true },
       { hasArtifacts: false, hasMetadata: false },
     ]);
-  });
-});
-
-describe('hasJobWithNoArtifacts', () => {
-  it.each`
-    description                  | jobArtifacts                  | expectedResult
-    ${'all jobs have artifacts'} | ${mappedJobNodes}             | ${false}
-    ${'a job has no artifacts'}  | ${mappedJobNodesWithEmptyJob} | ${true}
-  `('returns $expectedResult when $description', ({ jobArtifacts, expectedResult }) => {
-    expect(hasJobWithNoArtifacts(jobArtifacts)).toBe(expectedResult);
   });
 });

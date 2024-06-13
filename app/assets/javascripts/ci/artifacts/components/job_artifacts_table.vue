@@ -17,12 +17,7 @@ import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import getJobArtifactsQuery from '../graphql/queries/get_job_artifacts.query.graphql';
-import {
-  totalArtifactsSizeForJob,
-  mapArchivesToJobNodes,
-  mapBooleansToJobNodes,
-  hasJobWithNoArtifacts,
-} from '../utils';
+import { totalArtifactsSizeForJob, mapArchivesToJobNodes, mapBooleansToJobNodes } from '../utils';
 import bulkDestroyJobArtifactsMutation from '../graphql/mutations/bulk_destroy_job_artifacts.mutation.graphql';
 import { removeArtifactFromStore } from '../graphql/cache_update';
 import {
@@ -90,7 +85,8 @@ export default {
       },
       update({ project: { jobs: { nodes = [], pageInfo = {} } = {} } }) {
         this.pageInfo = pageInfo;
-        return nodes
+
+        const jobNodes = nodes
           .map(mapArchivesToJobNodes)
           .map(mapBooleansToJobNodes)
           .map((jobNode) => {
@@ -101,6 +97,12 @@ export default {
               _showDetails: this.expandedJobs.includes(jobNode.id),
             };
           });
+
+        if (jobNodes.some((jobNode) => !jobNode.hasArtifacts)) {
+          this.$apollo.queries.jobArtifacts.refetch();
+        }
+
+        return jobNodes;
       },
       error() {
         createAlert({
@@ -185,16 +187,6 @@ export default {
       return this.isSelectedArtifactsLimitReached && !this.isAnyVisibleArtifactSelected
         ? I18N_BULK_DELETE_MAX_SELECTED
         : '';
-    },
-    hasJobWithNoArtifacts() {
-      return hasJobWithNoArtifacts(this.jobArtifacts);
-    },
-  },
-  watch: {
-    hasJobWithNoArtifacts(newValue) {
-      if (newValue) {
-        this.refetchArtifacts();
-      }
     },
   },
   methods: {
