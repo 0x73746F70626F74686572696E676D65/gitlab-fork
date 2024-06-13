@@ -5,7 +5,8 @@
 # The jobs of the policy pipelines are merged onto the project pipeline later in the chain,
 # in the `PipelineExecutionPolicies::MergeJobs` step.
 #
-# The step needs to be executed before `Config::Content` step to be able to force the pipeline creation
+# The step needs to be executed before `Skip` step to enforce pipeline with policies regardless of `ci.skip` options.
+# It's also important that it runs before `Config::Content` step to be able to force the pipeline creation
 # with Pipeline Execution Policies if there is no `.gitlab-ci.yml` in the project.
 #
 # If there are applicable policies and they return an error, the pipeline creation will be aborted.
