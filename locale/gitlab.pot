@@ -12915,6 +12915,9 @@ msgstr ""
 msgid "CommandPalette|Project files"
 msgstr ""
 
+msgid "CommandPalette|Settings"
+msgstr ""
+
 msgid "CommandPalette|Type %{commandHandle} for command, %{userHandle} for user, %{projectHandle} for project, %{pathHandle} for project file, or perform generic search..."
 msgstr ""
 
