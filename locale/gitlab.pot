@@ -3084,6 +3084,9 @@ msgstr ""
 msgid "Add approvers"
 msgstr ""
 
+msgid "Add branch or merge request"
+msgstr ""
+
 msgid "Add branch target"
 msgstr ""
 
@@ -59746,6 +59749,9 @@ msgid "WorkItem|Delete %{workItemType}"
 msgstr ""
 
 msgid "WorkItem|Delete this %{workItemType} and release all child items? This action cannot be reversed."
+msgstr ""
+
+msgid "WorkItem|Development"
 msgstr ""
 
 msgid "WorkItem|Discard changes"

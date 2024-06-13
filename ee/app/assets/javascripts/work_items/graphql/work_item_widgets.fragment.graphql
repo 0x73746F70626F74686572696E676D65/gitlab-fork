@@ -173,4 +173,36 @@ fragment WorkItemWidgets on WorkItemWidget {
     color
     textColor
   }
+
+  ... on WorkItemWidgetDevelopment {
+    type
+    closingMergeRequests {
+      nodes {
+        fromMrDescription
+        mergeRequest {
+          iid
+          id
+          title
+          webUrl
+          state
+          project {
+            id
+            name
+            namespace {
+              path
+            }
+          }
+          assignees {
+            nodes {
+              webUrl
+              id
+              name
+              webPath
+              avatarUrl
+            }
+          }
+        }
+      }
+    }
+  }
 }
