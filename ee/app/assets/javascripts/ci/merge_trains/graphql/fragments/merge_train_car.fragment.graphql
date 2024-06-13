@@ -1,0 +1,24 @@
+fragment Car on MergeTrainCar {
+  id
+  createdAt
+  mergeRequest {
+    id
+    title
+    webPath
+  }
+  pipeline {
+    id
+    detailedStatus {
+      id
+      detailsPath
+      icon
+      text
+    }
+  }
+  user {
+    id
+    avatarUrl
+    name
+    webPath
+  }
+}
