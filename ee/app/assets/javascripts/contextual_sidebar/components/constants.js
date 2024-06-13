@@ -1,5 +1,4 @@
 import { s__ } from '~/locale';
-import { PROMO_URL } from '~/lib/utils/url_utility';
 
 const ACTIVE_TRIAL_POPOVER = 'trial_status_popover';
 const TRIAL_ENDED_POPOVER = 'trial_ended_popover';
@@ -75,6 +74,5 @@ export const DUO_PRO_TRIAL_POPOVER_CONTENT = s__(`DuoProTrial|Your trial ends on
       features of GitLab Duo Pro. To continue using your AI-powered assistant
       after you trial ends, you'll need to buy an add-on subscription.`);
 export const DUO_PRO_TRIAL_POPOVER_LEARN_TITLE = s__('DuoProTrial|Learn about features');
-export const DUO_PRO_TRIAL_POPOVER_LEARN_URL = `${PROMO_URL}/gitlab-duo/#features`;
 export const DUO_PRO_TRIAL_POPOVER_PURCHASE_TITLE = s__('DuoProTrial|Purchase now');
 export const DUO_PRO_TRIAL_POPOVER_TRACKING_CATEGORY = 'duo_pro_trial_status_popover';

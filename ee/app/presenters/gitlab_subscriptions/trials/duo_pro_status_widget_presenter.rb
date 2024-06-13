@@ -23,7 +23,7 @@ module GitlabSubscriptions
       def widget_data_attributes
         {
           container_id: 'duo-pro-trial-status-sidebar-widget',
-          widget_url: group_usage_quotas_path(namespace, anchor: 'code-suggestions-usage-tab'),
+          widget_url: group_add_ons_discover_duo_pro_path(namespace),
           trial_days_used: trial_status.days_used,
           trial_duration: trial_status.duration,
           percentage_complete: trial_status.percentage_complete
@@ -33,7 +33,8 @@ module GitlabSubscriptions
       def popover_data_attributes
         {
           days_remaining: trial_status.days_remaining,
-          trial_end_date: trial_status.ends_on
+          trial_end_date: trial_status.ends_on,
+          purchase_now_url: group_usage_quotas_path(namespace, anchor: 'code-suggestions-usage-tab')
         }
       end
 

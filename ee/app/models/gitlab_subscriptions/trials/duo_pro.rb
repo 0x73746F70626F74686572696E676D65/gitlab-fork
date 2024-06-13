@@ -11,6 +11,16 @@ module GitlabSubscriptions
 
         namespace_id.to_i.in?(eligible_namespaces.pluck_primary_key)
       end
+
+      def self.show_duo_pro_discover?(namespace, user)
+        return false unless namespace.present?
+        return false unless user.present?
+
+        ::Feature.enabled?(:duo_pro_trials, user, type: :wip) &&
+          ::Gitlab::Saas.feature_available?(:subscriptions_trials) &&
+          namespace.subscription_add_on_purchases.active.trial.for_gitlab_duo_pro.first.present? &&
+          user.can?(:admin_namespace, namespace)
+      end
     end
   end
 end

@@ -203,6 +203,10 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       resources :compliance_framework_reports, only: [:index], constraints: { format: :csv }
     end
 
+    namespace :add_ons do
+      resource :discover_duo_pro, only: [:show], controller: :discover_duo_pro
+    end
+
     resources :dependencies, only: [:index] do
       collection do
         get :licenses, format: :json

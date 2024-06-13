@@ -36,6 +36,7 @@ describe('DuoProTrialStatusPopover component', () => {
         purchaseNowUrl: 'usage_quota/path-for/group',
         targetId: 'target-element-identifier',
         trialEndDate: new Date('2021-02-21'),
+        learnAboutButtonUrl: 'add_ons/discover_duo_pro',
         ...providers,
       },
       stubs,
@@ -83,48 +84,55 @@ describe('DuoProTrialStatusPopover component', () => {
     });
   });
 
-  it('sets correct props to the hand raise lead button', () => {
-    const buttonAttributes = {
-      size: 'small',
-      variant: 'confirm',
-      category: 'secondary',
-      class: 'gl-w-full',
-      buttonTextClasses: 'gl-font-sm',
-      href: '#',
-      'data-testid': 'duo-pro-trial-popover-hand-raise-lead-button',
-    };
+  describe('buttons', () => {
+    it('sets correct props to the hand raise lead button', () => {
+      const buttonAttributes = {
+        size: 'small',
+        variant: 'confirm',
+        category: 'secondary',
+        class: 'gl-w-full',
+        buttonTextClasses: 'gl-text-sm',
+        href: '#',
+        'data-testid': 'duo-pro-trial-popover-hand-raise-lead-button',
+      };
 
-    expect(handRaiseLeadBtn().props()).toMatchObject({
-      buttonAttributes,
-      glmContent: 'duo-pro-trial-status-show-group',
-      ctaTracking: {
-        category: DUO_PRO_TRIAL_POPOVER_TRACKING_CATEGORY,
-        action: 'click_button',
-        label: 'contact_sales',
-      },
+      expect(handRaiseLeadBtn().props()).toMatchObject({
+        buttonAttributes,
+        glmContent: 'duo-pro-trial-status-show-group',
+        ctaTracking: {
+          category: DUO_PRO_TRIAL_POPOVER_TRACKING_CATEGORY,
+          action: 'click_button',
+          label: 'contact_sales',
+        },
+      });
     });
-  });
 
-  it('tracks when the purchase now button is clicked', () => {
-    const options = {
-      action: 'click_button',
-      label: 'purchase_now',
-    };
+    it('sets correct attributes to the learn more about features button', () => {
+      expect(findLearnAboutFeaturesBtn().attributes('href')).toBe('add_ons/discover_duo_pro');
+      expect(findLearnAboutFeaturesBtn().attributes('target')).toBe(undefined);
+    });
 
-    findPurchaseNowBtn().vm.$emit('click');
+    it('tracks when the purchase now button is clicked', () => {
+      const options = {
+        action: 'click_button',
+        label: 'purchase_now',
+      };
 
-    expectTracking(options);
-  });
+      findPurchaseNowBtn().vm.$emit('click');
 
-  it('tracks when the learn about button is clicked', () => {
-    const options = {
-      action: 'click_button',
-      label: 'learn_about_features',
-    };
+      expectTracking(options);
+    });
 
-    findLearnAboutFeaturesBtn().vm.$emit('click');
+    it('tracks when the learn about button is clicked', () => {
+      const options = {
+        action: 'click_button',
+        label: 'learn_about_features',
+      };
 
-    expectTracking(options);
+      findLearnAboutFeaturesBtn().vm.$emit('click');
+
+      expectTracking(options);
+    });
   });
 
   describe('correct date in different timezone', () => {

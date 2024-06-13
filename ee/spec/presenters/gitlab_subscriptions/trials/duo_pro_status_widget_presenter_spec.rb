@@ -24,14 +24,16 @@ RSpec.describe GitlabSubscriptions::Trials::DuoProStatusWidgetPresenter, :saas, 
         duo_pro_trial_status_widget_data_attrs = {
           container_id: 'duo-pro-trial-status-sidebar-widget',
           widget_url:
-            ::Gitlab::Routing.url_helpers.group_usage_quotas_path(group, anchor: 'code-suggestions-usage-tab'),
+            ::Gitlab::Routing.url_helpers.group_add_ons_discover_duo_pro_path(group),
           trial_days_used: 1,
           trial_duration: 60,
           percentage_complete: 1.67
         }
         duo_pro_trial_status_popover_data_attrs = {
           days_remaining: 60,
-          trial_end_date: 60.days.from_now.to_date
+          trial_end_date: 60.days.from_now.to_date,
+          purchase_now_url:
+            ::Gitlab::Routing.url_helpers.group_usage_quotas_path(group, anchor: 'code-suggestions-usage-tab')
         }
         result = {
           duo_pro_trial_status_widget_data_attrs: duo_pro_trial_status_widget_data_attrs,

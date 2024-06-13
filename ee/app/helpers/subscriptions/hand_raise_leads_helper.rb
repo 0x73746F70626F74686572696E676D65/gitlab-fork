@@ -67,5 +67,21 @@ module Subscriptions
         }.to_json
       }
     end
+
+    def discover_duo_pro_hand_raise_lead_data(namespace)
+      {
+        namespace_id: namespace.id,
+        glm_content: 'discover-duo-pro',
+        cta_tracking: {
+          action: 'click_contact_sales',
+          label: 'duo_pro_active_trial' # label needs to be dynamic for upcoming expired widget navigation
+        }.to_json,
+        button_attributes: {
+          'data-testid': 'discover-duo-pro-hand-raise-lead-button',
+          category: 'secondary',
+          variant: 'confirm'
+        }.to_json
+      }
+    end
   end
 end
