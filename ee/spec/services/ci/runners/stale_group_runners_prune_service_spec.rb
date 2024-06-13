@@ -8,14 +8,6 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService, feature_category: :fl
   subject(:execute) { service.execute(NamespaceCiCdSetting.allowing_stale_runner_pruning.select(:namespace_id)) }
 
   shared_context 'with some stale group runners on group1' do
-    let!(:active_runner) do
-      create(:ci_runner, :group, groups: [group1], created_at: 5.months.ago, contacted_at: 10.seconds.ago)
-    end
-
-    let!(:stale_runners) do
-      create_list(:ci_runner, 3, :group, groups: [group1], created_at: 5.months.ago, contacted_at: 8.days.ago)
-    end
-
     let(:group2) { create(:group) }
 
     before do
@@ -23,13 +15,18 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService, feature_category: :fl
 
       group1.ci_cd_settings.update!(allow_stale_runner_pruning: true)
       group2.ci_cd_settings.update!(allow_stale_runner_pruning: true)
+
+      create(:ci_runner, :group, :contacted_within_stale_deadline, groups: [group1])
+      create(:ci_runner, :group, :stale, groups: [group1])
+      create(:ci_runner, :group, :stale, groups: [group1])
+      create(:ci_runner, :group, :unregistered, :stale, groups: [group1])
     end
   end
 
   shared_examples 'perform on empty groups relation does not prune any runners' do
     context 'with empty groups relation' do
       let!(:stale_runner) do
-        create(:ci_runner, :group, groups: [group1], created_at: 5.months.ago, contacted_at: 4.months.ago)
+        create(:ci_runner, :group, :stale, groups: [group1])
       end
 
       it 'does not prune any runners and returns :success status' do
@@ -37,7 +34,7 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService, feature_category: :fl
 
         expect do
           expect(execute).to be_success
-          expect(execute.payload).to match({ total_pruned: 0 })
+          expect(execute.payload).to eq(total_pruned: 0)
         end.not_to change { Ci::Runner.count }.from(1)
       end
     end
@@ -47,7 +44,7 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService, feature_category: :fl
     it 'prunes all runners in batches' do
       expect do
         expect(execute).to be_success
-        expect(execute.payload).to match({ total_pruned: 3 })
+        expect(execute.payload).to eq(total_pruned: 3)
       end.to change { Ci::Runner.count }.from(4).to(1)
     end
   end
@@ -56,7 +53,7 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneService, feature_category: :fl
     it 'does not prune any runners' do
       expect do
         expect(execute).to be_success
-        expect(execute.payload).to match({ total_pruned: 0 })
+        expect(execute.payload).to eq(total_pruned: 0)
       end.not_to change { Ci::Runner.count }
     end
   end
