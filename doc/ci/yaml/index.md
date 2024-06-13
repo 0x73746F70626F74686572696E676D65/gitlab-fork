@@ -4223,8 +4223,6 @@ relative to `refs/heads/branch1` and the pipeline source is a merge request even
 **Related topics**:
 
 - You can use `rules:changes:compare_to` to [skip a job if the branch is empty](../jobs/job_rules.md#skip-jobs-if-the-branch-is-empty).
-- Using `compare_to` together with [merged results pipelines](../pipelines/merged_results_pipelines.md#troubleshooting)
-  can lead to unexpected results, because the comparison base is an internal commit that GitLab creates.
 
 #### `rules:exists`
 
