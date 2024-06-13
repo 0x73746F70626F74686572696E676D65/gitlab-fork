@@ -13,7 +13,7 @@ const CONFIRMATION_MODALS = {
     title: s__('Workspaces|Block this agent for all group members?'),
     body: [
       s__(
-        "Workspaces|Group members can't create a workspace with a blocked agent. Existing workspaces using this agent will continue to run, but can't restart if they are terminated.",
+        "Workspaces|Group members can't create a workspace with a blocked agent. Existing workspaces using this agent will continue to run and will not be affected by this.",
       ),
       s__(
         "Workspaces|Blocking an agent doesn't delete it. Agents can only be deleted in the project where they were created.",

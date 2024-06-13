@@ -60180,7 +60180,7 @@ msgstr ""
 msgid "Workspaces|Group members can use allowed agents to create workspaces."
 msgstr ""
 
-msgid "Workspaces|Group members can't create a workspace with a blocked agent. Existing workspaces using this agent will continue to run, but can't restart if they are terminated."
+msgid "Workspaces|Group members can't create a workspace with a blocked agent. Existing workspaces using this agent will continue to run and will not be affected by this."
 msgstr ""
 
 msgid "Workspaces|If your devfile is not in the root directory of your project, specify a relative path."
