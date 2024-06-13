@@ -30,6 +30,20 @@ module EE
         super
       end
 
+      # This is reached on a primary for a request orignating on a secondary
+      # only when the repository on the secondary is out of date with that on
+      # the primary
+      override :ssh_upload_pack
+      def ssh_upload_pack
+        if geo?
+          set_workhorse_internal_api_content_type
+
+          render json: ::Gitlab::Workhorse.git_http_ok(repository, repo_type, user, :git_upload_pack, show_all_refs: geo_request?, need_audit: need_git_audit_event?)
+        else
+          super
+        end
+      end
+
       # Git push over HTTP
       override :git_receive_pack
       def git_receive_pack

@@ -7,6 +7,7 @@ RSpec.describe Repositories::GitHttpController, type: :request, feature_category
   include ::EE::GeoHelpers
 
   let_it_be(:user) { create(:user) }
+  let_it_be(:user_personal_key) { create(:personal_key, user: user) }
   let_it_be(:project) { create(:project, :repository, :private, developers: user) }
 
   let(:env) { { user: user.username, password: user.password } }
@@ -62,6 +63,76 @@ RSpec.describe Repositories::GitHttpController, type: :request, feature_category
 
           expect(response).to have_gitlab_http_status(:ok)
         end
+      end
+    end
+  end
+
+  describe 'POST #ssh_upload_pack' do
+    subject(:make_request) { post "/#{path}/ssh-upload-pack", headers: headers }
+
+    let(:geo_node) { create(:geo_node, :primary) }
+    let(:headers) { workhorse_header.merge(geo_header) }
+    let(:workhorse_header) { workhorse_internal_api_request_header }
+    let(:geo_header) { Gitlab::Geo::BaseRequest.new(scope: project.full_path, gl_id: "key-#{user_personal_key.id}").headers }
+
+    before do
+      stub_current_geo_node(geo_node)
+    end
+
+    it 'allows access' do
+      make_request
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response).to include(
+        "GL_ID" => "user-#{user.id}",
+        "GL_REPOSITORY" => "project-#{project.id}",
+        "GL_USERNAME" => user.username,
+        "NeedAudit" => false,
+        "ShowAllRefs" => true
+      )
+    end
+
+    context 'when Workhorse header is missing' do
+      let(:workhorse_header) { {} }
+
+      it 'returns an error' do
+        make_request
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(response.body).to eq 'Nil JSON web token'
+      end
+    end
+
+    context 'when Workhorse header is incorrect' do
+      let(:workhorse_header) { { Gitlab::Workhorse::INTERNAL_API_REQUEST_HEADER => 'wrong' } }
+
+      it 'returns an error' do
+        make_request
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(response.body).to eq 'Not enough or too many segments'
+      end
+    end
+
+    context 'when Geo auth header is missing' do
+      let(:geo_header) { {} }
+
+      it 'returns an error' do
+        make_request
+
+        expect(response).to have_gitlab_http_status(:unauthorized)
+        expect(response.body).to include 'HTTP Basic: Access denied.'
+      end
+    end
+
+    context 'when Geo auth header is invalid' do
+      let(:geo_header) { { 'Authorization' => 'GL-Geo wrong' } }
+
+      it 'returns an error' do
+        make_request
+
+        expect(response).to have_gitlab_http_status(:unauthorized)
+        expect(response.body).to eq 'Geo JWT authentication failed: Bad token'
       end
     end
   end
