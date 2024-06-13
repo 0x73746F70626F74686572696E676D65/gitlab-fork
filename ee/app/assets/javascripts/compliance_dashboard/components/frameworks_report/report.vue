@@ -34,6 +34,10 @@ export default {
     },
   },
   props: {
+    rootAncestor: {
+      type: Object,
+      required: true,
+    },
     groupPath: {
       type: String,
       required: true,
@@ -57,7 +61,7 @@ export default {
       fetchPolicy: fetchPolicies.NETWORK_ONLY,
       variables() {
         return {
-          fullPath: this.groupPath,
+          fullPath: this.rootAncestor.path,
           search: this.searchString,
           ...this.cursor,
           [this.cursor.before ? 'last' : 'first']: FRAMEWORK_LIMIT,
@@ -161,6 +165,7 @@ export default {
 
     <template v-else>
       <frameworks-table
+        :root-ancestor="rootAncestor"
         :group-path="groupPath"
         :is-loading="isLoading"
         :frameworks="frameworks.nodes"

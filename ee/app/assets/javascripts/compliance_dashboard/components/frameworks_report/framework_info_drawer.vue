@@ -1,9 +1,19 @@
 <script>
-import { GlDrawer, GlBadge, GlButton, GlLabel, GlLink, GlTruncate } from '@gitlab/ui';
+import {
+  GlDrawer,
+  GlBadge,
+  GlButton,
+  GlLabel,
+  GlLink,
+  GlSprintf,
+  GlTooltip,
+  GlTruncate,
+} from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
+import { isTopLevelGroup } from '../../utils';
 
 export default {
   name: 'FrameworkInfoDrawer',
@@ -13,6 +23,8 @@ export default {
     GlButton,
     GlLabel,
     GlLink,
+    GlSprintf,
+    GlTooltip,
     GlTruncate,
   },
   inject: ['groupSecurityPoliciesPath'],
@@ -26,9 +38,16 @@ export default {
       required: false,
       default: null,
     },
+    rootAncestor: {
+      type: Object,
+      required: true,
+    },
   },
   emits: ['edit', 'close'],
   computed: {
+    editDisabled() {
+      return !isTopLevelGroup(this.groupPath, this.rootAncestor.path);
+    },
     showDrawer() {
       return Boolean(this.framework);
     },
@@ -68,6 +87,9 @@ export default {
   i18n: {
     defaultFramework: s__('ComplianceFrameworksReport|Default'),
     editFramework: s__('ComplianceFrameworksReport|Edit framework'),
+    editFrameworkButtonMessage: s__(
+      'ComplianceFrameworks|The compliance framework must be edited in top-level group %{linkStart}namespace%{linkEnd}',
+    ),
     frameworkDescription: s__('ComplianceFrameworksReport|Description'),
     associatedProjects: s__('ComplianceFrameworksReport|Associated Projects'),
     policies: s__('ComplianceFrameworksReport|Policies'),
@@ -93,9 +115,25 @@ export default {
             :title="$options.i18n.defaultFramework"
           />
         </h3>
-        <gl-button category="primary" variant="confirm" @click="$emit('edit', framework)">
-          {{ $options.i18n.editFramework }}
-        </gl-button>
+        <gl-tooltip v-if="editDisabled" :target="() => $refs.editButton">
+          <gl-sprintf :message="$options.i18n.editFrameworkButtonMessage">
+            <template #link>
+              <gl-link :href="rootAncestor.webUrl">
+                {{ rootAncestor.name }}
+              </gl-link>
+            </template>
+          </gl-sprintf>
+        </gl-tooltip>
+        <span ref="editButton">
+          <gl-button
+            :disabled="editDisabled"
+            category="primary"
+            variant="confirm"
+            @click="$emit('edit', framework)"
+          >
+            {{ $options.i18n.editFramework }}
+          </gl-button>
+        </span>
       </div>
     </template>
 

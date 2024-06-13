@@ -154,9 +154,9 @@ describe('ComplianceFrameworksReport component', () => {
       const projectsTable = findProjectsTable();
       expect(projectsTable.props('projects')).toHaveLength(1);
       expect(projectsTable.props('projects')[0]).toMatchObject({
-        fullPath: 'gitlab-org/gitlab-shell',
+        fullPath: 'foo/project0',
         id: 'gid://gitlab/Project/0',
-        name: 'Gitlab Shell',
+        name: 'Project 0',
         complianceFrameworks: [
           {
             color: '#3cb371',

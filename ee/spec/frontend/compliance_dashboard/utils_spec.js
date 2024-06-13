@@ -13,6 +13,24 @@ describe('compliance report utils', () => {
   const projectIds = ['1', '2'];
   const projectGraphQlIds = ['gid://gitlab/Project/1', 'gid://gitlab/Project/2'];
 
+  describe('isTopLevelGroup', () => {
+    const rootGroupPath = '/root';
+    const childGroupPath = '/root/child';
+    const otherGroupPath = '/other';
+
+    it('returns true for root group', () => {
+      expect(utils.isTopLevelGroup(rootGroupPath, rootGroupPath)).toBe(true);
+    });
+
+    it('returns false for child group', () => {
+      expect(utils.isTopLevelGroup(rootGroupPath, childGroupPath)).toBe(false);
+    });
+
+    it('returns false for other group', () => {
+      expect(utils.isTopLevelGroup(rootGroupPath, otherGroupPath)).toBe(false);
+    });
+  });
+
   describe('parseViolationsQueryFilter', () => {
     it('returns the expected result', () => {
       const query = {

@@ -58,6 +58,7 @@ query complianceFrameworksList(
             id
             name
             webUrl
+            fullPath
           }
         }
       }
