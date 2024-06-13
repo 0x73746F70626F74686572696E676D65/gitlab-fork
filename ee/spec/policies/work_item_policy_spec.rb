@@ -89,6 +89,30 @@ RSpec.describe WorkItemPolicy, feature_category: :team_planning do
           :admin_issuable_resource_link, :admin_timelog, :admin_issue_metrics, :admin_issue_metrics_list
         )
       end
+
+      context 'when related_epics feature is available' do
+        before do
+          stub_licensed_features(related_epics: true)
+        end
+
+        it 'allow linking of epic work items' do
+          expect(permissions(guest, work_item)).to be_allowed(
+            :admin_work_item_link
+          )
+        end
+      end
+
+      context 'when related_epics feature is not available' do
+        before do
+          stub_licensed_features(related_epics: false)
+        end
+
+        it 'does not allow linking of epic work items' do
+          expect(permissions(guest, work_item)).to be_disallowed(
+            :admin_work_item_link
+          )
+        end
+      end
     end
   end
 end
