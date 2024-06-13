@@ -1,5 +1,6 @@
 <script>
-import { GlDrawer, GlIcon, GlButton, GlLink } from '@gitlab/ui';
+import { GlDrawer, GlIcon, GlButton, GlLink, GlSprintf } from '@gitlab/ui';
+import { sprintf, s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { joinPaths } from '~/lib/utils/url_utility';
@@ -24,6 +25,7 @@ export default {
     GlButton,
     GlLink,
     FrameworkBadge,
+    GlSprintf,
   },
   props: {
     groupPath: {
@@ -68,6 +70,14 @@ export default {
     adherenceCheckLearnMoreLink() {
       return STANDARDS_ADHERENCE_CHECK_MR_FIX_LEARN_MORE_DOCS_LINKS[this.adherence.checkName];
     },
+    projectFrameworksText() {
+      return sprintf(
+        s__(
+          'ComplianceStandardsAdherence|Other compliance frameworks applied to %{linkStart}%{projectName}%{linkEnd}',
+        ),
+        { projectName: this.project.name },
+      );
+    },
   },
   standardsAdherenceCheckMRFixTitle: STANDARDS_ADHERENCE_CHECK_MR_FIX_TITLE,
   standardsAdherenceCheckMRFixes: STANDARDS_ADHERENCE_CHECK_MR_FIX_FEATURES,
@@ -95,38 +105,34 @@ export default {
           </span>
 
           <gl-link class="gl-mx-3" :href="project.webUrl"> {{ project.name }} </gl-link>
-
-          <span v-for="framework in project.complianceFrameworks.nodes" :key="framework.id">
-            <framework-badge :framework="framework" :show-edit="false" />
-          </span>
         </div>
       </div>
     </template>
 
     <template #default>
       <div>
-        <h4 data-testid="sidebar-requirement-title" class="gl-mt-0">
+        <h3 data-testid="sidebar-requirement-title" class="gl-mt-0">
           {{ s__('ComplianceStandardsAdherence|Requirement') }}
-        </h4>
+        </h3>
         <span data-testid="sidebar-requirement-content">{{ adherenceCheckDescription }}</span>
       </div>
 
       <div v-if="isFailedStatus">
-        <h4 data-testid="sidebar-failure-title" class="gl-mt-0">
+        <h3 data-testid="sidebar-failure-title" class="gl-mt-0">
           {{ s__('ComplianceStandardsAdherence|Failure reason') }}
-        </h4>
+        </h3>
         <span data-testid="sidebar-failure-content">{{ adherenceCheckFailureReason }}</span>
       </div>
       <div v-else>
-        <h4 data-testid="sidebar-success-title" class="gl-mt-0">
+        <h3 data-testid="sidebar-success-title" class="gl-mt-0">
           {{ s__('ComplianceStandardsAdherence|Success reason') }}
-        </h4>
+        </h3>
         <span data-testid="sidebar-success-content">{{ adherenceCheckSuccessReason }}</span>
       </div>
 
       <div v-if="isFailedStatus" data-testid="sidebar-how-to-fix">
         <div>
-          <h4 class="gl-mt-0">{{ s__('ComplianceStandardsAdherence|How to fix') }}</h4>
+          <h3 class="gl-mt-0">{{ s__('ComplianceStandardsAdherence|How to fix') }}</h3>
         </div>
         <div class="gl-my-5">
           {{ $options.standardsAdherenceCheckMRFixTitle }}
@@ -136,7 +142,7 @@ export default {
           :key="fix.title"
           class="gl-mb-4"
         >
-          <div class="gl-my-2 gl-font-bold">{{ fix.title }}</div>
+          <div class="gl-mb-4 gl-font-bold">{{ fix.title }}</div>
           <div class="gl-mb-4">{{ fix.description }}</div>
           <gl-button
             class="gl-my-3"
@@ -156,6 +162,24 @@ export default {
             {{ __('Learn more') }}
           </gl-button>
         </div>
+      </div>
+      <div v-if="project.complianceFrameworks.nodes.length">
+        <h3 class="gl-mt-0 gl-font-lg" data-testid="sidebar-frameworks-title">
+          {{ s__('ComplianceStandardsAdherence|All attached frameworks') }}
+        </h3>
+
+        <div data-testid="sidebar-frameworks-content">
+          <gl-sprintf :message="projectFrameworksText">
+            <template #link="{ content }">
+              <gl-link :href="project.webUrl">
+                {{ content }}
+              </gl-link>
+            </template>
+          </gl-sprintf>
+        </div>
+        <span v-for="framework in project.complianceFrameworks.nodes" :key="framework.id">
+          <framework-badge :framework="framework" show-edit class="gl-display-inline" />
+        </span>
       </div>
     </template>
   </gl-drawer>

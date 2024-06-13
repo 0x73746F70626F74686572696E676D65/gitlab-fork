@@ -1,5 +1,7 @@
+import { GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import FixSuggestionsSidebar from 'ee/compliance_dashboard/components/standards_adherence_report/fix_suggestions_sidebar.vue';
+import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
 import { DOCS_URL_IN_EE_DIR } from 'jh_else_ce/lib/utils/url_utility';
 
 describe('FixSuggestionsSidebar component', () => {
@@ -13,6 +15,19 @@ describe('FixSuggestionsSidebar component', () => {
   const findHowToFixSection = () => wrapper.findByTestId('sidebar-how-to-fix');
   const findManageRulesBtn = () => wrapper.findByTestId('sidebar-mr-settings-button');
   const findLearnMoreBtn = () => wrapper.findByTestId('sidebar-mr-settings-learn-more-button');
+  const findFrameworksTitle = () => wrapper.findByTestId('sidebar-frameworks-title');
+  const findFrameworksContent = () => wrapper.findByTestId('sidebar-frameworks-content');
+  const findFrameworksBadges = () => wrapper.findAllComponents(FrameworkBadge);
+
+  const complianceFrameworks = {
+    nodes: [
+      {
+        id: 1,
+        name: 'Framework 1',
+        color: '#fff',
+      },
+    ],
+  };
 
   const createComponent = ({ propsData = {} } = {}) => {
     wrapper = shallowMountExtended(FixSuggestionsSidebar, {
@@ -20,6 +35,9 @@ describe('FixSuggestionsSidebar component', () => {
         showDrawer: true,
         groupPath: 'example-group',
         ...propsData,
+      },
+      stubs: {
+        GlSprintf,
       },
     });
   };
@@ -34,6 +52,7 @@ describe('FixSuggestionsSidebar component', () => {
             project: {
               id: 'gid://gitlab/Project/21',
               name: 'example project',
+              complianceFrameworks,
             },
           },
         },
@@ -55,6 +74,14 @@ describe('FixSuggestionsSidebar component', () => {
           'The following features help satisfy this requirement',
         );
       });
+
+      it('renders the info about project`s compliance frameworks', () => {
+        expect(findFrameworksTitle().text()).toBe('All attached frameworks');
+        expect(findFrameworksContent().text()).toMatchInterpolatedText(
+          'Other compliance frameworks applied to example project',
+        );
+        expect(findFrameworksBadges()).toHaveLength(complianceFrameworks.nodes.length);
+      });
     });
   });
 
@@ -69,6 +96,7 @@ describe('FixSuggestionsSidebar component', () => {
               id: 'gid://gitlab/Project/21',
               name: 'example project',
               webUrl: 'example.com/groups/example-group/example-project',
+              complianceFrameworks,
             },
           },
         },
@@ -111,6 +139,7 @@ describe('FixSuggestionsSidebar component', () => {
                   project: {
                     id: 'gid://gitlab/Project/21',
                     name: 'example project',
+                    complianceFrameworks,
                   },
                 },
               },
@@ -148,6 +177,7 @@ describe('FixSuggestionsSidebar component', () => {
                 project: {
                   id: 'gid://gitlab/Project/21',
                   name: 'example project',
+                  complianceFrameworks,
                 },
               },
             },
