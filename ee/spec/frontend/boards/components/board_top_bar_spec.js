@@ -10,7 +10,6 @@ import BoardTopBar from '~/boards/components/board_top_bar.vue';
 import BoardOptions from '~/boards/components/board_options.vue';
 import BoardsSelector from '~/boards/components/boards_selector.vue';
 import ConfigToggle from '~/boards/components/config_toggle.vue';
-import NewBoardButton from '~/boards/components/new_board_button.vue';
 import ToggleFocus from '~/boards/components/toggle_focus.vue';
 import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 
@@ -75,10 +74,6 @@ describe('BoardTopBar', () => {
 
     it('renders BoardsSelector component', () => {
       expect(wrapper.findComponent(BoardsSelector).exists()).toBe(true);
-    });
-
-    it('renders NewBoardButton component', () => {
-      expect(wrapper.findComponent(NewBoardButton).exists()).toBe(true);
     });
 
     it('renders ConfigToggle component', () => {
