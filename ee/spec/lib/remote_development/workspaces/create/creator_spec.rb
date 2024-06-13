@@ -2,10 +2,8 @@
 
 require 'spec_helper'
 
-# frozen_string_literal: true
-# rubocop:disable Rails/SaveBang -- method shadowing
-
 Messages = RemoteDevelopment::Messages
+
 RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_category: :remote_development do
   let(:rop_steps) do
     [
@@ -55,7 +53,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
     it "returns expected response" do
       # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
       expect do
-        described_class.create(initial_value)
+        described_class.create(initial_value) # rubocop:disable Rails/SaveBang -- this is not an ActiveRecord call
       end
         .to invoke_rop_steps(rop_steps)
               .from_main_class(described_class)
@@ -72,7 +70,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
       it "returns expected response" do
         # noinspection RubyResolve - https://handbook.gitlab.com/handbook/tools-and-tips/editors-and-ides/jetbrains-ides/tracked-jetbrains-issues/#ruby-31542
         expect do
-          described_class.create(initial_value)
+          described_class.create(initial_value) # rubocop:disable Rails/SaveBang -- this is not an ActiveRecord call
         end
           .to invoke_rop_steps(rop_steps)
                 .from_main_class(described_class)
@@ -82,6 +80,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
       end
     end
 
+    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
     where(:case_name, :err_result_for_step, :expected_response) do
       [
         [
@@ -107,10 +106,10 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
             returned_message: lazy { Messages::WorkspaceVariablesModelCreateFailed.new(err_message_content) }
           },
           lazy { Result.err(Messages::WorkspaceCreateFailed.new(err_message_content)) }
-        ]
+        ],
       ]
     end
-    # rubocop:enable Rails/SaveBang
+    # rubocop:enable Style/TrailingCommaInArrayLiteral
     with_them do
       it_behaves_like "rop invocation with error response"
     end

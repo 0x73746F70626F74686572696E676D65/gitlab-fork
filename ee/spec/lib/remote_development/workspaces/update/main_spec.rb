@@ -59,6 +59,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Update::Main, :rd_fast, feature_ca
       end
     end
 
+    # rubocop:disable Style/TrailingCommaInArrayLiteral -- let the last element have a comma for simpler diffs
     where(:case_name, :err_result_for_step, :expected_response) do
       [
         [
@@ -92,10 +93,10 @@ RSpec.describe RemoteDevelopment::Workspaces::Update::Main, :rd_fast, feature_ca
             returned_message: lazy { Class.new(RemoteDevelopment::Message).new(err_message_content) }
           },
           RemoteDevelopment::UnmatchedResultError
-        ]
-
+        ],
       ]
     end
+    # rubocop:enable Style/TrailingCommaInArrayLiteral
 
     with_them do
       it_behaves_like "rop invocation with error response"

@@ -8,8 +8,8 @@ module RemoteDevelopment
 
       extend MessageSupport
 
-      # @param [Namespace] namespace
-      # @param [Clusters::Agent] cluster_agent
+      # @param [Namespace, BatchLoader::GraphQL] namespace
+      # @param [Clusters::Agent, BatchLoader::GraphQL] cluster_agent
       # @param [User] user
       # @return [ServiceResponse]
       def execute(namespace:, cluster_agent:, user:)
