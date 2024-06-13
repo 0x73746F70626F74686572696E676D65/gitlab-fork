@@ -6,7 +6,7 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
-      expose :has_opened_alert?, if: -> (*) { can_read_alert_management_alert? }, expose_nil: false, as: :has_opened_alert
+      expose :has_opened_alert?, if: ->(*) { can_read_alert_management_alert? }, expose_nil: false, as: :has_opened_alert
       expose :required_approval_count
     end
 
