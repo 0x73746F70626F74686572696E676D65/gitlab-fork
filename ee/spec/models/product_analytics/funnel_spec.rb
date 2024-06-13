@@ -22,7 +22,7 @@ RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics_da
     it 'returns a collection of funnels' do
       expect(funnels).to be_a(Array)
       expect(funnels.first).to be_a(described_class)
-      expect(funnels.first.name).to eq('completed_purchase')
+      expect(funnels.first.name).to eq('funnel_example_1')
       expect(funnels.first.project).to eq(project)
       expect(funnels.first.seconds_to_convert).to eq(3600)
     end
@@ -61,22 +61,81 @@ RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics_da
   end
 
   describe '.from_diff' do
-    before_all do
-      create_valid_funnel
+    context 'when a file is created' do
+      let_it_be(:project) { create(:project, :repository, group: group) }
+
+      before_all do
+        create_valid_funnel
+      end
+
+      subject(:funnel) { described_class.from_diff(project.repository.commit.deltas.last, project: project) }
+
+      it { is_expected.to be_a(described_class) }
+
+      it 'has the correct values', :aggregate_failures do
+        expect(funnel.name).to eq('example1')
+        expect(funnel.previous_name).to be_nil
+        expect(funnel.project).to eq(project)
+        expect(funnel.seconds_to_convert).to eq(3600)
+        expect(funnel.steps.size).to eq(2)
+        expect(funnel.steps.first.name).to eq('view_page_1')
+        expect(funnel.steps.first.target).to eq('/page1.html')
+        expect(funnel.steps.first.action).to eq('pageview')
+      end
     end
 
-    subject(:funnel) { described_class.from_diff(project.repository.commit.deltas.last, project: project) }
+    context 'when a file content is updated without renaming the file' do
+      let_it_be(:project) { create(:project, :repository, group: group) }
 
-    it { is_expected.to be_a(described_class) }
+      before_all do
+        create_valid_funnel
+        update_contents_of_funnel
+      end
 
-    it 'has the correct values', :aggregate_failures do
-      expect(funnel.name).to eq('completed_purchase')
-      expect(funnel.project).to eq(project)
-      expect(funnel.seconds_to_convert).to eq(3600)
-      expect(funnel.steps.size).to eq(2)
-      expect(funnel.steps.first.name).to eq('view_page_1')
-      expect(funnel.steps.first.target).to eq('/page1.html')
-      expect(funnel.steps.first.action).to eq('pageview')
+      subject(:funnel) do
+        described_class.from_diff(project.repository.commit.deltas.last, project: project,
+          commit: project.repository.commit)
+      end
+
+      it { is_expected.to be_a(described_class) }
+
+      it 'has the correct values', :aggregate_failures do
+        expect(funnel.name).to eq('example1')
+        expect(funnel.previous_name).to be_nil
+        expect(funnel.project).to eq(project)
+        expect(funnel.seconds_to_convert).to eq(3600)
+        expect(funnel.steps.size).to eq(2)
+        expect(funnel.steps.first.name).to eq('view_page_2')
+        expect(funnel.steps.first.target).to eq('/page2.html')
+        expect(funnel.steps.first.action).to eq('pageview')
+      end
+    end
+
+    context 'when a file is renamed' do
+      let_it_be(:project) { create(:project, :repository, group: group) }
+
+      before_all do
+        create_valid_funnel
+        rename_funnel
+      end
+
+      subject(:funnel) do
+        described_class.from_diff(project.repository.commit.deltas.last, project: project,
+          commit: project.repository.commit)
+      end
+
+      it { is_expected.to be_a(described_class) }
+
+      it 'has the correct values', :aggregate_failures do
+        expect(funnel.name).to eq('example2')
+        expect(funnel.previous_name).to eq('example1')
+        expect(funnel.project).to eq(project)
+        expect(funnel.seconds_to_convert).to eq(3600)
+        expect(funnel.steps.size).to eq(2)
+        expect(funnel.steps.first.name).to eq('view_page_1')
+        expect(funnel.steps.first.target).to eq('/page1.html')
+        expect(funnel.steps.first.action).to eq('pageview')
+      end
     end
   end
 
@@ -100,7 +159,7 @@ RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics_da
                     page_urlpath = '/page1.html', page_urlpath = '/page2.html'
                  ) AS level
                FROM gitlab_project_#{project.id}.snowplow_events
-               WHERE ${FILTER_PARAMS.completed_purchase.date.filter('derived_tstamp')}
+               WHERE ${FILTER_PARAMS.funnel_example_1.date.filter('derived_tstamp')}
                GROUP BY user_id
                )
            GROUP BY level
@@ -122,6 +181,27 @@ RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics_da
       File.read(Rails.root.join('ee/spec/fixtures/product_analytics/funnel_example_1.yaml')),
       message: 'Add funnel',
       branch_name: 'master'
+    )
+  end
+
+  def update_contents_of_funnel
+    project.repository.update_file(
+      project.creator,
+      '.gitlab/analytics/funnels/example1.yml',
+      File.read(Rails.root.join('ee/spec/fixtures/product_analytics/funnel_example_changed.yaml')),
+      message: 'Update funnel',
+      branch_name: 'master'
+    )
+  end
+
+  def rename_funnel
+    project.repository.update_file(
+      project.creator,
+      '.gitlab/analytics/funnels/example2.yml',
+      File.read(Rails.root.join('ee/spec/fixtures/product_analytics/funnel_example_1.yaml')),
+      message: 'Rename funnel',
+      branch_name: 'master',
+      previous_path: '.gitlab/analytics/funnels/example1.yml'
     )
   end
 end

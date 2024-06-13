@@ -50,9 +50,8 @@ module ProductAnalytics
     end
 
     def updated_funnels
-      # if a file is not new, renamed, or deleted, but is in a diff, we assume it is changed.
-      #
-      funnel_files.select { |f| !f.new_file && !f.renamed_file && !f.deleted_file }.map do |file|
+      # if a file is not new or deleted, but is in a diff, we assume it is changed.
+      funnel_files.select { |f| !f.new_file && !f.deleted_file }.map do |file|
         funnel = ProductAnalytics::Funnel.from_diff(file, project: @project, commit: @commit)
         o = {
           state: 'updated',
