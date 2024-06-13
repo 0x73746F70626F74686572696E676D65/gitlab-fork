@@ -45,7 +45,11 @@ module Gitlab
               options[:suggestions] += error_message
             rescue StandardError => e
               Gitlab::ErrorTracking.track_exception(e)
-              return Answer.error_answer(context: context, content: _("Unexpected error"))
+
+              return Answer.error_answer(
+                context: context,
+                error_code: "M4001"
+              )
             end
 
             not_found

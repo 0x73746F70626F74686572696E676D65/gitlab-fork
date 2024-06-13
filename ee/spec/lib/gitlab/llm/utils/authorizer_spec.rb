@@ -26,17 +26,26 @@ RSpec.describe Gitlab::Llm::Utils::Authorizer, feature_category: :ai_abstraction
 
     context 'when user is not allowed' do
       let(:allowed) { false }
+      let(:not_allowed_response) do
+        "I am sorry, I cannot access the information you are asking about. " \
+          "A group or project owner has turned off Duo features in this group or project."
+      end
+
+      let(:not_found_response) do
+        "I'm sorry, I can't generate a response. The items you're asking about either don't exist, " \
+          "or you don't have access to them."
+      end
 
       it "returns an error not found response when the user isn't a member of the container" do
         expect(response.allowed?).to be(false)
-        expect(response.message).to eq("I am sorry, I am unable to find what you are looking for.")
+        expect(response.message).to eq(not_found_response)
       end
 
       it "returns a not allowed response when the user is a member of the container" do
         container.add_guest(user)
 
         expect(response.allowed?).to be(false)
-        expect(response.message).to eq("This feature is only allowed in groups or projects that enable this feature.")
+        expect(response.message).to eq(not_allowed_response)
       end
     end
   end

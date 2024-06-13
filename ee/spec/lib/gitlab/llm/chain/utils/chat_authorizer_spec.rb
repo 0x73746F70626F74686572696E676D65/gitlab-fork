@@ -70,13 +70,17 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
           end
 
           context 'when resource is not authorized' do
+            let(:response) do
+              "I'm sorry, I can't generate a response. The items you're asking about either don't exist, " \
+                "or you don't have access to them."
+            end
+
             before do
               group.members.first.destroy!
             end
 
             it 'returns not found message' do
-              expect(authorizer.context(context: context).message)
-                .to include('I am unable to find what you are looking for.')
+              expect(authorizer.context(context: context).message).to eq(response)
             end
 
             it_behaves_like 'chat is not authorized'
@@ -84,13 +88,17 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
         end
 
         context 'when container is not authorized' do
+          let(:response) do
+            "I am sorry, I cannot access the information you are asking about. " \
+              "A group or project owner has turned off Duo features in this group or project."
+          end
+
           before do
             project.update!(duo_features_enabled: false)
           end
 
           it 'returns not allowed message' do
-            expect(authorizer.context(context: context).message)
-              .to eq('This feature is only allowed in groups or projects that enable this feature.')
+            expect(authorizer.context(context: context).message).to eq(response)
           end
 
           it_behaves_like 'chat is not authorized'
@@ -314,11 +322,13 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
       end
 
       context 'when ai is disabled for self-managed' do
+        let(:response) { "I'm sorry, I can't generate a response. You do not have access to GitLab Duo Chat." }
+
         include_context 'with duo features disabled and ai chat available for self-managed'
 
         it 'returns true when user has no groups with ai available' do
           expect(authorizer.user(user: user).allowed?).to be(false)
-          expect(authorizer.user(user: user).message).to eq('You do not have access to chat feature.')
+          expect(authorizer.user(user: user).message).to eq(response)
         end
       end
     end
@@ -345,26 +355,34 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
           end
 
           context 'when resource is not authorized' do
+            let(:response) do
+              "I'm sorry, I can't generate a response. The items you're asking about either don't exist, " \
+                "or you don't have access to them."
+            end
+
             before do
               group.members.first.destroy!
             end
 
             it 'returns not found message' do
-              expect(authorizer.context(context: context).message)
-                .to include('I am unable to find what you are looking for.')
+              expect(authorizer.context(context: context).message).to include(response)
             end
 
             it_behaves_like 'chat is not authorized'
           end
 
           context 'when container is not authorized' do
+            let(:response) do
+              "I am sorry, I cannot access the information you are asking about. " \
+                "A group or project owner has turned off Duo features in this group or project."
+            end
+
             before do
               project.update!(duo_features_enabled: false)
             end
 
             it 'returns not allowed message' do
-              expect(authorizer.context(context: context).message)
-                .to eq('This feature is only allowed in groups or projects that enable this feature.')
+              expect(authorizer.context(context: context).message).to eq(response)
             end
 
             it_behaves_like 'chat is not authorized'
@@ -372,11 +390,12 @@ RSpec.describe Gitlab::Llm::Chain::Utils::ChatAuthorizer, feature_category: :duo
         end
 
         context 'when ai is disabled for self-managed' do
+          let(:response) { "I'm sorry, I can't generate a response. You do not have access to GitLab Duo Chat." }
+
           include_context 'with duo features disabled and ai chat available for self-managed'
 
           it 'returns no access message' do
-            expect(authorizer.context(context: context).message)
-              .to eq('You do not have access to chat feature.')
+            expect(authorizer.context(context: context).message).to eq(response)
           end
 
           it_behaves_like 'chat is not authorized'

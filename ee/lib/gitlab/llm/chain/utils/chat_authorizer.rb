@@ -6,7 +6,10 @@ module Gitlab
       module Utils
         class ChatAuthorizer < Gitlab::Llm::Utils::Authorizer
           def self.context(context:)
-            return Response.new(allowed: false, message: no_access_message) unless context.current_user
+            unless context.current_user
+              return Response.new(allowed: false,
+                message: no_access_message(context.current_user))
+            end
 
             if context.resource && context.container
               authorization_container = container(container: context.container, user: context.current_user)
@@ -41,7 +44,7 @@ module Gitlab
             return response unless response.allowed?
 
             allowed = user.can?(:access_duo_chat)
-            message = no_access_message unless allowed
+            message = no_access_message(user) unless allowed
             Response.new(allowed: allowed, message: message)
           end
         end

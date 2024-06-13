@@ -92,9 +92,10 @@ module Gitlab
           end
 
           def not_found
-            content = "I am sorry, I am unable to find what you are looking for."
+            content = "I'm sorry, I can't generate a response. " \
+              "The items you're asking about either don't exist, or you don't have access to them."
 
-            Answer.error_answer(context: context, content: content)
+            Answer.error_answer(context: context, content: content, error_code: "M3003")
           end
 
           def error_with_message(content)

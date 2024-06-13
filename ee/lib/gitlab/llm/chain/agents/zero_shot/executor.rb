@@ -80,7 +80,7 @@ module Gitlab
               Gitlab::ErrorTracking.track_exception(error)
               Answer.error_answer(
                 context: context,
-                content: _("GitLab Duo could not connect to the AI provider.")
+                error_code: "A1001"
               )
             end
             traceable :execute, name: 'Run ReAct'

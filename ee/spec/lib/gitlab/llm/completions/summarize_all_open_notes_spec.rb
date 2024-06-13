@@ -84,7 +84,8 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
       response_service = double
       params = [user, issuable, response_modifier, { options: { request_id: 'uuid', ai_action: :summarize_comments } }]
 
-      content = "I am sorry, I am unable to find what you are looking for."
+      content = "I'm sorry, I can't generate a response. " \
+        "The items you're asking about either don't exist, or you don't have access to them."
 
       expect(Gitlab::Llm::ResponseModifiers::ToolAnswer).to receive(:new).with(
         { content: content }.to_json

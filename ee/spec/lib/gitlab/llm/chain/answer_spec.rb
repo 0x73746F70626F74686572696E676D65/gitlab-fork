@@ -168,7 +168,7 @@ RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :duo_chat do
     subject(:answer) { described_class.default_final_answer(context: context) }
 
     let(:expected_response) do
-      "I'm sorry, I can't find the answer, but it's my fault, not yours. Please try something different."
+      "I'm sorry, I couldn't respond in time. Please try a more specific request or enter /clear to start a new chat."
     end
 
     it 'returns final answer with the default response' do

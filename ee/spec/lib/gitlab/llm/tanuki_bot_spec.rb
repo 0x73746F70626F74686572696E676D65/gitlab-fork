@@ -7,7 +7,9 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
     let_it_be(:user) { create(:user) }
     let_it_be(:embeddings) { create_list(:vertex_gitlab_documentation, 2) }
 
-    let(:empty_response_message) { "I'm sorry, I was not able to find any documentation to answer your question." }
+    let(:empty_response_message) do
+      "I'm sorry, I couldn't find any documentation to answer your question. Error code: M2000"
+    end
 
     let(:question) { 'A question' }
     let(:answer) { 'The answer.' }

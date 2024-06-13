@@ -97,7 +97,10 @@ RSpec.describe Gitlab::Llm::Chain::Tools::WriteTests::Executor, feature_category
 
           expect(Gitlab::ErrorTracking).to receive(:track_exception).with(instance_of(StandardError))
 
-          expect(tool.execute.content).to eq('Unexpected error')
+          answer = tool.execute
+
+          expect(answer.content).to eq("I'm sorry, I can't generate a response. Please try again.")
+          expect(answer.error_code).to eq("M4000")
         end
       end
     end
@@ -111,8 +114,12 @@ RSpec.describe Gitlab::Llm::Chain::Tools::WriteTests::Executor, feature_category
       it 'returns error answer' do
         allow(tool).to receive(:authorize).and_return(false)
 
-        expect(tool.execute.content)
-          .to eq('I am sorry, I am unable to find what you are looking for.')
+        answer = tool.execute
+
+        response = "I'm sorry, I can't generate a response. " \
+          "The items you're asking about either don't exist, or you don't have access to them."
+        expect(answer.content).to eq(response)
+        expect(answer.error_code).to eq("M3003")
       end
     end
 
