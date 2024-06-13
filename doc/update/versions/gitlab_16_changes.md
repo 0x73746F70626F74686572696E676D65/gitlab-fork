@@ -112,8 +112,8 @@ see [Packaged PostgreSQL deployed in an HA/Geo Cluster](https://docs.gitlab.com/
   | 16.7                    |  All                    | None     |
   | 16.8                    |  All                    | None     |
   | 16.9                    |  All                    | None     |
-  | 16.10                   |  All                    | None     |
-  | 16.11                   |  All                    | None     |
+  | 16.10                   |  16.10.0 - 16.10.6      | 16.10.7  |
+  | 16.11                   |  16.11.0 - 16.11.3      | 16.11.4  |
 
 ## 16.10.0
 
@@ -178,8 +178,8 @@ For more information on the changes introduced between version 2.1.0 and version
   | 16.7                    |  All                    | None     |
   | 16.8                    |  All                    | None     |
   | 16.9                    |  All                    | None     |
-  | 16.10                   |  All                    | None     |
-  | 16.11                   |  All                    | None     |
+  | 16.10                   |  16.10.0 - 16.10.6      | 16.10.7  |
+  | 16.11                   |  16.11.0 - 16.11.3      | 16.11.4  |
 
 ## 16.9.0
 
@@ -236,8 +236,8 @@ planned for release in 16.9.1.
   | 16.7                    |  All                    | None     |
   | 16.8                    |  All                    | None     |
   | 16.9                    |  All                    | None     |
-  | 16.10                   |  All                    | None     |
-  | 16.11                   |  All                    | None     |
+  | 16.10                   |  16.10.0 - 16.10.6      | 16.10.7  |
+  | 16.11                   |  16.11.0 - 16.11.3      | 16.11.4  |
 
 ### Linux package installations
 
@@ -314,8 +314,8 @@ you must take one of the following actions based on your configuration:
   | 16.7                    |  All                    | None     |
   | 16.8                    |  All                    | None     |
   | 16.9                    |  All                    | None     |
-  | 16.10                   |  All                    | None     |
-  | 16.11                   |  All                    | None     |
+  | 16.10                   |  16.10.0 - 16.10.6      | 16.10.7  |
+  | 16.11                   |  16.11.0 - 16.11.3      | 16.11.4  |
 
 ## 16.7.0
 
@@ -404,8 +404,8 @@ take one of the following actions based on your configuration:
   | 16.7                    |  All                    | None     |
   | 16.8                    |  All                    | None     |
   | 16.9                    |  All                    | None     |
-  | 16.10                   |  All                    | None     |
-  | 16.11                   |  All                    | None     |
+  | 16.10                   |  16.10.0 - 16.10.6      | 16.10.7  |
+  | 16.11                   |  16.11.0 - 16.11.3      | 16.11.4  |
 
 ## 16.6.0
 
@@ -493,8 +493,8 @@ take one of the following actions based on your configuration:
   | 16.7                    |  All                    | None     |
   | 16.8                    |  All                    | None     |
   | 16.9                    |  All                    | None     |
-  | 16.10                   |  All                    | None     |
-  | 16.11                   |  All                    | None     |
+  | 16.10                   |  16.10.0 - 16.10.6      | 16.10.7  |
+  | 16.11                   |  16.11.0 - 16.11.3      | 16.11.4  |
 
 ## 16.5.0
 
@@ -649,8 +649,8 @@ Specific information applies to installations using Geo:
   | 16.7                    |  All                    | None     |
   | 16.8                    |  All                    | None     |
   | 16.9                    |  All                    | None     |
-  | 16.10                   |  All                    | None     |
-  | 16.11                   |  All                    | None     |
+  | 16.10                   |  16.10.0 - 16.10.6      | 16.10.7  |
+  | 16.11                   |  16.11.0 - 16.11.3      | 16.11.4  |
 
 ## 16.4.0
 
