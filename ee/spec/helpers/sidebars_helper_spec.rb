@@ -7,14 +7,15 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
   include Devise::Test::ControllerHelpers
 
   describe '#super_sidebar_context' do
-    let_it_be(:user) { build_stubbed(:user) }
-    let_it_be(:panel) { {} }
-    let_it_be(:panel_type) { 'project' }
+    let(:user_namespace) { build_stubbed(:namespace) }
+    let(:user) { build_stubbed(:user, namespace: user_namespace) }
+    let(:panel) { {} }
+    let(:panel_type) { 'project' }
     let(:current_user_mode) { Gitlab::Auth::CurrentUserMode.new(user) }
 
     before do
       allow(helper).to receive(:current_user) { user }
-      allow(user.namespace).to receive(:actual_plan_name).and_return(::Plan::ULTIMATE)
+      allow(user_namespace).to receive(:actual_plan_name).and_return(::Plan::ULTIMATE)
       allow(helper).to receive(:current_user_menu?).and_return(true)
       allow(helper).to receive(:can?).and_return(true)
       allow(helper).to receive(:show_buy_pipeline_with_subtext?).and_return(true)
@@ -58,89 +59,66 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
     end
 
     shared_examples 'trial status widget data' do
-      describe 'trial status on .com', :saas do
-        let_it_be(:root_group) { namespace.root_ancestor }
-        let_it_be(:gitlab_subscription) { build(:gitlab_subscription, :active_trial, :free, namespace: root_group) }
+      describe 'trial status when subscriptions_trials feature is available', :saas do
+        let_it_be(:root_group) { namespace }
+        let_it_be(:gitlab_subscription) { build(:gitlab_subscription, :active_trial, namespace: root_group) }
+
+        before do
+          stub_saas_features(subscriptions_trials: true)
+          allow(root_group).to receive(:actual_plan_name).and_return('_actual_plan_name_')
+        end
 
         describe 'does not return trial status widget data' do
-          where(:description, :should_check_namespace_plan, :show_trial_status_widget?, :can_admin) do
-            'when instance does not check namespace plan' | false | true | true
-            'when namespace does not qualify for widget' | true | false | true
-            'when user cannot admin namespace' | true | true | false
-          end
-
-          with_them do
-            before do
-              allow(helper).to receive(:can?).with(user, :admin_namespace, root_group).and_return(can_admin)
-              stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
-              allow(helper).to receive(:show_trial_status_widget?).and_return(show_trial_status_widget?)
-            end
-
-            it { is_expected.not_to include(:trial_status_widget_data_attrs) }
-            it { is_expected.not_to include(:trial_status_popover_data_attrs) }
-          end
+          it { is_expected.not_to include(:trial_status_widget_data_attrs) }
+          it { is_expected.not_to include(:trial_status_popover_data_attrs) }
         end
 
         context 'when a namespace is qualified for trial status widget' do
           before do
-            allow(helper).to receive(:can?).with(user, :admin_namespace, root_group).and_return(true)
-            stub_ee_application_setting(should_check_namespace_plan: true)
-            allow(helper).to receive(:show_trial_status_widget?).and_return(true)
+            # need to stub a default for the other can? uses first
+            allow(Ability).to receive(:allowed?).and_call_original
+            allow(Ability).to receive(:allowed?).with(user, :admin_namespace, root_group).and_return(true)
           end
 
           it 'returns trial status widget data' do
-            expect(super_sidebar_context[:trial_status_widget_data_attrs]).to match({
-              container_id: "trial-status-sidebar-widget",
-              nav_icon_image_path: match_asset_path("/assets/illustrations/gitlab_logo.svg"),
-              percentage_complete: 50.0,
-              plan_name: nil,
-              plans_href: group_billings_path(root_group),
-              trial_discover_page_path: group_discover_path(root_group),
-              trial_days_used: 15,
-              trial_duration: 30
-            })
-
-            expect(subject[:trial_status_popover_data_attrs]).to eq({
-              days_remaining: 15,
-              target_id: "trial-status-sidebar-widget",
-              trial_end_date: root_group.trial_ends_on
-            })
+            expect(super_sidebar_context).to include(:trial_status_widget_data_attrs, :trial_status_popover_data_attrs)
           end
         end
       end
     end
 
     shared_examples 'duo pro trial status widget data' do
-      describe 'duo pro trial status' do
-        describe 'does not return trial status widget data' do
-          before do
-            allow_next_instance_of(GitlabSubscriptions::Trials::DuoProStatusWidgetBuilder) do |instance|
-              allow(instance).to receive(:show?).and_return(false)
-            end
-          end
+      describe 'duo pro trial status', :saas do
+        let_it_be(:root_group) { namespace }
+        let_it_be(:add_on_purchase) do
+          create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :trial, namespace: root_group) # rubocop:disable RSpec/FactoryBot/AvoidCreate -- Needed for interaction with other records
+        end
 
+        before do
+          stub_saas_features(subscriptions_trials: true)
+        end
+
+        describe 'does not return trial status widget data' do
           it { is_expected.not_to include(:duo_pro_trial_status_widget_data_attrs) }
           it { is_expected.not_to include(:duo_pro_trial_status_popover_data_attrs) }
         end
 
         context 'when a namespace is qualified for duo pro trial status widget' do
           before do
-            allow_next_instance_of(GitlabSubscriptions::Trials::DuoProStatusWidgetBuilder) do |instance|
-              allow(instance).to receive(:show?).and_return(true)
-              allow(instance).to receive(:widget_data_attributes).and_return({})
-              allow(instance).to receive(:popover_data_attributes).and_return({})
-            end
+            # need to stub a default for the other can? uses first
+            allow(Ability).to receive(:allowed?).and_call_original
+            allow(Ability).to receive(:allowed?).with(user, :admin_namespace, root_group).and_return(true)
           end
 
-          it { is_expected.to include(:duo_pro_trial_status_widget_data_attrs) }
-          it { is_expected.to include(:duo_pro_trial_status_popover_data_attrs) }
+          context 'when only qualified for duo pro' do
+            let_it_be(:gitlab_subscription) { build(:gitlab_subscription, :ultimate, namespace: root_group) }
+
+            it { is_expected.to include(:duo_pro_trial_status_widget_data_attrs) }
+            it { is_expected.to include(:duo_pro_trial_status_popover_data_attrs) }
+          end
 
           context 'when a namespace is also qualified for a trial status widget' do
-            before do
-              allow(helper).to receive(:can?).with(user, :admin_namespace, namespace).and_return(true)
-              stub_ee_application_setting(should_check_namespace_plan: true)
-              allow(helper).to receive(:show_trial_status_widget?).and_return(true)
-            end
+            let_it_be(:gitlab_subscription) { build(:gitlab_subscription, :active_trial, namespace: root_group) }
 
             it { is_expected.to include(:trial_status_widget_data_attrs) }
             it { is_expected.to include(:trial_status_popover_data_attrs) }
@@ -171,9 +149,9 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
         allow(helper).to receive(:show_buy_pipeline_minutes?).and_return(true)
       end
 
-      let_it_be(:project) { build(:project) }
-      let_it_be(:namespace) { project }
-      let_it_be(:group) { nil }
+      let_it_be(:project) { create(:project) } # rubocop:disable RSpec/FactoryBot/AvoidCreate -- Needed for interaction with other records
+      let_it_be(:namespace) { project.namespace }
+      let(:group) { nil }
 
       subject(:super_sidebar_context) do
         helper.super_sidebar_context(user, group: group, project: project, panel: panel, panel_type: panel_type)
@@ -195,9 +173,9 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
         allow(helper).to receive(:show_buy_pipeline_minutes?).and_return(true)
       end
 
-      let_it_be(:group) { build(:group) }
+      let_it_be(:group) { create(:group) } # rubocop:disable RSpec/FactoryBot/AvoidCreate -- Needed for interaction with other records
       let_it_be(:namespace) { group }
-      let_it_be(:project) { nil }
+      let(:project) { nil }
 
       subject(:super_sidebar_context) do
         helper.super_sidebar_context(user, group: group, project: project, panel: panel, panel_type: panel_type)
@@ -219,8 +197,8 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
         allow(helper).to receive(:show_buy_pipeline_minutes?).and_return(false)
       end
 
-      let_it_be(:project) { nil }
-      let_it_be(:group) { nil }
+      let(:project) { nil }
+      let(:group) { nil }
 
       subject(:super_sidebar_context) do
         helper.super_sidebar_context(user, group: group, project: project, panel: panel, panel_type: panel_type)

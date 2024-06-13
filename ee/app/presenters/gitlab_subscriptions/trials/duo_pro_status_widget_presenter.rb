@@ -2,18 +2,28 @@
 
 module GitlabSubscriptions
   module Trials
-    class DuoProStatusWidgetBuilder
-      include ::Gitlab::Utils::StrongMemoize
+    class DuoProStatusWidgetPresenter < Gitlab::View::Presenter::Simple
+      include Gitlab::Utils::StrongMemoize
 
-      def initialize(user, namespace)
-        @user = user
-        @namespace = namespace
+      presents ::Namespace, as: :namespace
+
+      def eligible_for_widget?
+        ::Feature.enabled?(:duo_pro_trials, user, type: :wip) && duo_pro_trial_add_on_purchase.present?
       end
+
+      def attributes
+        {
+          duo_pro_trial_status_widget_data_attrs: widget_data_attributes,
+          duo_pro_trial_status_popover_data_attrs: popover_data_attributes
+        }
+      end
+
+      private
 
       def widget_data_attributes
         {
           container_id: 'duo-pro-trial-status-sidebar-widget',
-          widget_url: widget_url,
+          widget_url: group_usage_quotas_path(namespace, anchor: 'code-suggestions-usage-tab'),
           trial_days_used: trial_status.days_used,
           trial_duration: trial_status.duration,
           percentage_complete: trial_status.percentage_complete
@@ -23,25 +33,8 @@ module GitlabSubscriptions
       def popover_data_attributes
         {
           days_remaining: trial_status.days_remaining,
-          trial_end_date: trial_status.ends_on,
-          purchase_now_url: widget_url
+          trial_end_date: trial_status.ends_on
         }
-      end
-
-      def show?
-        namespace.present? &&
-          ::Gitlab::Saas.feature_available?(:subscriptions_trials) &&
-          user.can?(:admin_namespace, namespace) &&
-          ::Feature.enabled?(:duo_pro_trials, user, type: :wip) &&
-          duo_pro_trial_add_on_purchase.present?
-      end
-
-      private
-
-      attr_reader :namespace, :user
-
-      def widget_url
-        ::Gitlab::Routing.url_helpers.group_usage_quotas_path(namespace, anchor: 'code-suggestions-usage-tab')
       end
 
       def duo_pro_trial_add_on_purchase
