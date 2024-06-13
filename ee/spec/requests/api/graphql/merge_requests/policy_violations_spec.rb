@@ -146,7 +146,7 @@ RSpec.describe 'Query.project.mergeRequest.policyViolations', feature_category: 
           end
 
           before do
-            create(:security_finding, :with_finding_data, scan: pipeline_scan, scanner: scanner,
+            create(:security_finding, scan: pipeline_scan, scanner: scanner,
               severity: 'high', uuid: uuid, location: { start_line: 3, file: '.env' })
             create(:scan_result_policy_violation, :new_scan_finding, merge_request: merge_request, project: project,
               scan_result_policy_read: policy2, uuids: [uuid],

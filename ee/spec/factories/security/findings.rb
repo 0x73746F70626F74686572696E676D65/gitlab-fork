@@ -19,35 +19,33 @@ FactoryBot.define do
     end
 
     transient do
-      remediation_byte_offsets { [{ "end_byte" => 13602, "start_byte" => 12719 }] }
+      remediation_byte_offsets { [] }
     end
 
     transient do
       location { {} }
     end
 
-    trait :with_finding_data do
-      finding_data do
-        {
-          name: 'Test finding',
-          description: 'The cipher does not provide data integrity update 1',
-          solution: solution,
-          identifiers: [],
-          links: [
-            {
-              name: 'Cipher does not check for integrity first?',
-              url: 'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first'
-            }
-          ],
-          false_positive?: false_positive,
-          location: location,
-          evidence: {},
-          assets: [],
-          details: {},
-          raw_source_code_extract: 'AES/ECB/NoPadding',
-          remediation_byte_offsets: remediation_byte_offsets
-        }
-      end
+    finding_data do
+      {
+        name: 'Test finding',
+        description: 'The cipher does not provide data integrity update 1',
+        solution: solution,
+        identifiers: [],
+        links: [
+          {
+            name: 'Cipher does not check for integrity first?',
+            url: 'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first'
+          }
+        ],
+        false_positive?: false_positive,
+        location: location,
+        evidence: {},
+        assets: [],
+        details: {},
+        raw_source_code_extract: 'AES/ECB/NoPadding',
+        remediation_byte_offsets: remediation_byte_offsets
+      }
     end
   end
 end

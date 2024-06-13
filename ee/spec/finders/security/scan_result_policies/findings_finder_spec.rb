@@ -18,16 +18,15 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
   let_it_be(:container_scanning_finding) { create(:security_finding, scan: container_scan) }
   let_it_be(:dismissed_finding) { create(:security_finding, scan: dependency_scan) }
   let_it_be(:false_positive_finding) do
-    create(:security_finding, :with_finding_data, false_positive: true, scan: dependency_scan)
+    create(:security_finding, false_positive: true, scan: dependency_scan)
   end
 
   let_it_be(:non_false_positive_finding) do
-    create(:security_finding, :with_finding_data, false_positive: false, scan: dependency_scan)
+    create(:security_finding, false_positive: false, scan: dependency_scan)
   end
 
-  let_it_be(:fix_available_finding) { create(:security_finding, :with_finding_data, scan: dependency_scan) }
   let_it_be(:no_fix_available_finding) do
-    create(:security_finding, :with_finding_data, solution: '', remediation_byte_offsets: [], scan: dependency_scan)
+    create(:security_finding, solution: '', remediation_byte_offsets: [], scan: dependency_scan)
   end
 
   before do
@@ -106,16 +105,21 @@ RSpec.describe Security::ScanResultPolicies::FindingsFinder, feature_category: :
     context 'with fix_available true' do
       let(:params) { { fix_available: true } }
 
-      it { is_expected.to contain_exactly(fix_available_finding, false_positive_finding, non_false_positive_finding) }
+      it do
+        is_expected.to contain_exactly(
+          high_severity_finding,
+          container_scanning_finding,
+          dismissed_finding,
+          false_positive_finding,
+          non_false_positive_finding
+        )
+      end
     end
 
     context 'with fix_available false' do
       let(:params) { { fix_available: false } }
 
-      it do
-        is_expected.to contain_exactly(no_fix_available_finding, high_severity_finding, container_scanning_finding,
-          dismissed_finding)
-      end
+      it { is_expected.to contain_exactly(no_fix_available_finding) }
     end
 
     context 'when pipeline is empty' do

@@ -305,7 +305,7 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
       context 'when the given object is a Security::Finding' do
         let(:pipeline) { create(:ci_pipeline, project: project) }
         let(:scan) { create(:security_scan, pipeline: pipeline) }
-        let(:vulnerability) { create(:security_finding, :with_finding_data, scan: scan) }
+        let(:vulnerability) { create(:security_finding, scan: scan) }
         let(:expected_jira_issue_description) do
           <<~TEXT
             h3. Description:

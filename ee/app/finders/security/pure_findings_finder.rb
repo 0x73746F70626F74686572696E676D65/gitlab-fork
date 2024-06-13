@@ -23,11 +23,9 @@ module Security
       security_findings
     end
 
-    # rubocop: disable CodeReuse/ActiveRecord
     def available?
-      pipeline.security_findings.exists?(["finding_data <> ?", "{}"])
+      pipeline.security_findings.exists?
     end
-    # rubocop: enable CodeReuse/ActiveRecord
 
     private
 

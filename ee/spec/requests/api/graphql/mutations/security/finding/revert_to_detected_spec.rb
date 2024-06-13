@@ -7,7 +7,7 @@ RSpec.describe Mutations::Security::Finding::RevertToDetected, feature_category:
   let(:mutation) { described_class.new(object: nil, context: { current_user: current_user }, field: nil) }
 
   describe '#resolve' do
-    let_it_be(:security_finding) { create(:security_finding, :with_finding_data) }
+    let_it_be(:security_finding) { create(:security_finding) }
     let_it_be(:current_user) { create(:user) }
     let_it_be(:finding_uuid) { security_finding.uuid }
     let_it_be(:comment) { 'Revert to detected' }

@@ -30,14 +30,8 @@ RSpec.describe Security::PureFindingsFinder, feature_category: :vulnerability_ma
           it { is_expected.not_to be_available }
         end
 
-        context 'when there is a security finding without finding data' do
-          let_it_be(:security_finding) { create(:security_finding, scan: scan, finding_data: {}) }
-
-          it { is_expected.not_to be_available }
-        end
-
-        context 'when there is a security finding with finding data' do
-          let_it_be(:security_finding) { create(:security_finding, :with_finding_data, scan: scan) }
+        context 'when there is a security finding' do
+          let_it_be(:security_finding) { create(:security_finding, scan: scan) }
 
           it { is_expected.to be_available }
         end

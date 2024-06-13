@@ -142,7 +142,7 @@ RSpec.describe Security::ScanResultPolicies::DetailedPolicyViolationComment, fea
 
         before_all do
           pipeline_scan = create(:security_scan, :succeeded, build: ci_build, scan_type: 'dependency_scanning')
-          create(:security_finding, :with_finding_data, scan: pipeline_scan, scanner: scanner, severity: 'high',
+          create(:security_finding, scan: pipeline_scan, scanner: scanner, severity: 'high',
             uuid: uuid)
           create(:vulnerabilities_finding, :with_secret_detection, project: project, scanner: scanner, uuid: uuid,
             name: 'AWS API key')

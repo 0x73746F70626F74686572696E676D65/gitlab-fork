@@ -251,7 +251,7 @@ RSpec.describe Vulnerabilities::FindingEntity, feature_category: :vulnerability_
       end
 
       context 'when the serialized object is a security finding' do
-        let(:occurrence) { build(:security_finding, :with_finding_data) }
+        let(:occurrence) { build(:security_finding) }
 
         it { is_expected.not_to have_key(:found_by_pipeline) }
       end

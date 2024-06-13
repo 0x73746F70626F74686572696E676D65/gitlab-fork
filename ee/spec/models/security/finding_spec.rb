@@ -247,8 +247,8 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
 
   describe '.false_positives' do
     let_it_be(:finding_without_data) { create(:security_finding) }
-    let_it_be(:finding_1) { create(:security_finding, :with_finding_data, false_positive: true) }
-    let_it_be(:finding_2) { create(:security_finding, :with_finding_data, false_positive: false) }
+    let_it_be(:finding_1) { create(:security_finding, false_positive: true) }
+    let_it_be(:finding_2) { create(:security_finding, false_positive: false) }
 
     subject { described_class.false_positives }
 
@@ -256,62 +256,56 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
   end
 
   describe '.non_false_positives' do
-    let_it_be(:finding_without_data) { create(:security_finding) }
-    let_it_be(:finding_1) { create(:security_finding, :with_finding_data, false_positive: true) }
-    let_it_be(:finding_2) { create(:security_finding, :with_finding_data, false_positive: false) }
+    let_it_be(:finding_1) { create(:security_finding, false_positive: true) }
+    let_it_be(:finding_2) { create(:security_finding, false_positive: false) }
 
     subject { described_class.non_false_positives }
 
-    it { is_expected.to include(finding_2, finding_without_data) }
+    it { is_expected.to include(finding_2) }
 
     it { is_expected.not_to include(finding_1) }
   end
 
   describe '.fix_available' do
-    let_it_be(:finding_without_data) { create(:security_finding) }
-    let_it_be(:finding_with_solution) { create(:security_finding, :with_finding_data) }
-    let_it_be(:finding_without_solution) { create(:security_finding, :with_finding_data, solution: '') }
-    let_it_be(:finding_without_remediation_with_solution) {
-      create(:security_finding, :with_finding_data, remediation_byte_offsets: [])
-    }
+    let_it_be(:finding_with_remediation_without_solution) do
+      create(:security_finding, solution: '', remediation_byte_offsets: [{ "end_byte" => 2, "start_byte" => 1 }])
+    end
 
-    let_it_be(:finding_without_remediation_without_solution) {
-      create(:security_finding, :with_finding_data, remediation_byte_offsets: [], solution: '')
-    }
+    let_it_be(:finding_without_remediation_with_solution) do
+      create(:security_finding, remediation_byte_offsets: [])
+    end
+
+    let_it_be(:finding_without_remediation_without_solution) do
+      create(:security_finding, remediation_byte_offsets: [], solution: '')
+    end
 
     subject { described_class.fix_available }
 
-    it {
+    it do
       is_expected.to contain_exactly(
-        finding_with_solution, finding_without_solution, finding_without_remediation_with_solution
+        finding_1,
+        finding_2,
+        finding_with_remediation_without_solution,
+        finding_without_remediation_with_solution
       )
-    }
+    end
   end
 
   describe '.no_fix_available' do
+    let_it_be(:finding_with_solution_without_remediation) { create(:security_finding, remediation_byte_offsets: []) }
     let_it_be(:finding_with_remediation_without_solution) do
-      create(:security_finding, :with_finding_data,
+      create(:security_finding,
         solution: '', remediation_byte_offsets: [{ "end_byte" => 1, "start_byte" => 2 }]
       )
     end
 
-    let_it_be(:finding_with_solution_without_remediation) {
-      create(:security_finding, :with_finding_data, remediation_byte_offsets: [])
-    }
-
-    let_it_be(:finding_without_remediation_without_solution) {
-      create(:security_finding, :with_finding_data, solution: '', remediation_byte_offsets: [])
-    }
-
-    let_it_be(:finding_without_data) { create(:security_finding) }
+    let_it_be(:finding_without_remediation_without_solution) do
+      create(:security_finding, solution: '', remediation_byte_offsets: [])
+    end
 
     subject { described_class.no_fix_available }
 
-    it { is_expected.to include(finding_without_remediation_without_solution, finding_without_data) }
-
-    it {
-      is_expected.not_to include(finding_with_remediation_without_solution, finding_with_solution_without_remediation)
-    }
+    it { is_expected.to contain_exactly(finding_without_remediation_without_solution) }
   end
 
   describe '.count_by_scan_type' do
