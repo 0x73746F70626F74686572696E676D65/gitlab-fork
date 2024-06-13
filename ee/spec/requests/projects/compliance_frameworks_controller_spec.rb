@@ -30,7 +30,7 @@ RSpec.describe Projects::ComplianceFrameworksController, feature_category: :comp
       it 'sets the compliance framework' do
         assign_framework
 
-        expect(project.reload.compliance_framework_setting.compliance_management_framework).to eq(framework)
+        expect(project.reload.compliance_framework_settings.first.compliance_management_framework).to eq(framework)
       end
     end
 

@@ -18,11 +18,11 @@ describe('ee/ProjectsStore', () => {
       expect(updatedGroupItem.complianceFramework).toStrictEqual({
         id: convertToGraphQLId(
           'ComplianceManagement::Framework',
-          mockRawChildren[1].compliance_management_framework.id,
+          mockRawChildren[1].compliance_management_frameworks[0].id,
         ),
-        name: mockRawChildren[1].compliance_management_framework.name,
-        color: mockRawChildren[1].compliance_management_framework.color,
-        description: mockRawChildren[1].compliance_management_framework.description,
+        name: mockRawChildren[1].compliance_management_frameworks[0].name,
+        color: mockRawChildren[1].compliance_management_frameworks[0].color,
+        description: mockRawChildren[1].compliance_management_frameworks[0].description,
       });
     });
   });

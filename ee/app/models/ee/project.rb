@@ -73,8 +73,8 @@ module EE
       has_one :git_guardian_integration, class_name: 'Integrations::GitGuardian'
 
       has_one :status_page_setting, inverse_of: :project, class_name: 'StatusPage::ProjectSetting'
-      has_one :compliance_framework_setting, class_name: 'ComplianceManagement::ComplianceFramework::ProjectSettings', inverse_of: :project
-      has_one :compliance_management_framework, through: :compliance_framework_setting, source: 'compliance_management_framework'
+      has_many :compliance_framework_settings, class_name: 'ComplianceManagement::ComplianceFramework::ProjectSettings', inverse_of: :project
+      has_many :compliance_management_frameworks, through: :compliance_framework_settings, source: 'compliance_management_framework'
       has_one :security_setting, class_name: 'ProjectSecuritySetting'
       has_one :vulnerability_statistic, class_name: 'Vulnerabilities::Statistic'
 
@@ -261,7 +261,7 @@ module EE
       scope :with_groups_level_repos_templates, -> { joins("INNER JOIN namespaces ON projects.namespace_id = namespaces.custom_project_templates_group_id") }
       scope :with_designs, -> { where(id: ::DesignManagement::Design.select(:project_id).distinct) }
       scope :with_deleting_user, -> { includes(:deleting_user) }
-      scope :with_compliance_framework_settings, -> { preload(:compliance_framework_setting) }
+      scope :with_compliance_framework_settings, -> { preload(:compliance_framework_settings) }
       scope :has_vulnerabilities, -> { joins(:project_setting).merge(::ProjectSetting.has_vulnerabilities) }
       scope :has_vulnerability_statistics, -> { joins(:vulnerability_statistic) }
       scope :with_vulnerability_statistics, -> { includes(:vulnerability_statistic) }
@@ -314,17 +314,17 @@ module EE
       scope :with_project_setting, -> { includes(:project_setting) }
 
       scope :compliance_framework_id_in, ->(ids) do
-        joins(:compliance_framework_setting).where(compliance_framework_setting: { framework_id: ids })
+        joins(:compliance_framework_settings).where(compliance_framework_settings: { framework_id: ids })
       end
 
       scope :compliance_framework_id_not_in, ->(ids) do
-        left_outer_joins(:compliance_framework_setting).where.not(compliance_framework_setting: { framework_id: ids }).or(
-          left_outer_joins(:compliance_framework_setting).where(compliance_framework_setting: { framework_id: nil }))
+        left_outer_joins(:compliance_framework_settings).where.not(compliance_framework_settings: { framework_id: ids }).or(
+          left_outer_joins(:compliance_framework_settings).where(compliance_framework_settings: { framework_id: nil }))
       end
 
-      scope :missing_compliance_framework, -> { where.missing(:compliance_framework_setting) }
+      scope :missing_compliance_framework, -> { where.missing(:compliance_framework_settings) }
 
-      scope :any_compliance_framework, -> { joins(:compliance_framework_setting) }
+      scope :any_compliance_framework, -> { joins(:compliance_framework_settings) }
 
       scope :available_verifiables, -> { joins(:project_state) }
 
@@ -370,7 +370,6 @@ module EE
       end
 
       delegate :requirements_access_level, to: :project_feature, allow_nil: true
-      delegate :pipeline_configuration_full_path, to: :compliance_management_framework, allow_nil: true
       alias_attribute :compliance_pipeline_configuration_full_path, :pipeline_configuration_full_path
 
       delegate :prevent_merge_without_jira_issue,
@@ -405,11 +404,15 @@ module EE
       end
 
       accepts_nested_attributes_for :status_page_setting, update_only: true, allow_destroy: true
-      accepts_nested_attributes_for :compliance_framework_setting, update_only: true, allow_destroy: true
+      accepts_nested_attributes_for :compliance_framework_settings, update_only: true, allow_destroy: true
 
       alias_attribute :fallback_approvals_required, :approvals_before_merge
 
       with_replicator Geo::ProjectRepositoryReplicator
+
+      def pipeline_configuration_full_path
+        compliance_management_frameworks.first&.pipeline_configuration_full_path
+      end
 
       def verification_state_object
         project_state
@@ -527,7 +530,7 @@ module EE
 
       override :with_web_entity_associations
       def with_web_entity_associations
-        super.preload(:compliance_framework_setting, :invited_groups, group: [:ip_restrictions, :saml_provider])
+        super.preload(:compliance_framework_settings, :invited_groups, group: [:ip_restrictions, :saml_provider])
       end
 
       override :with_api_entity_associations

@@ -108,7 +108,6 @@ module Audit
 
       audit_merge_method
       audit_project_feature_changes
-      audit_compliance_framework_changes
       audit_project_setting_changes
       audit_project_ci_cd_setting_changes
       audit_analytics_setting_changes
@@ -140,10 +139,6 @@ module Audit
 
     def audit_project_feature_changes
       Audit::ProjectFeatureChangesAuditor.new(@current_user, model.project_feature, model).execute
-    end
-
-    def audit_compliance_framework_changes
-      Audit::ComplianceFrameworkChangesAuditor.new(@current_user, model.compliance_framework_setting, model).execute
     end
 
     def audit_project_setting_changes

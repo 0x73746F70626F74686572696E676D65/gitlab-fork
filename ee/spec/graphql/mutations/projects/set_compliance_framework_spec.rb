@@ -20,16 +20,16 @@ RSpec.describe Mutations::Projects::SetComplianceFramework do
 
   shared_examples "the user can change a project's compliance framework" do
     it 'changes the compliance framework of the project' do
-      expect { subject }.to change { project.reload.compliance_management_framework }.from(nil).to(framework)
+      expect { subject }.to change { project.reload.compliance_management_frameworks }.from([]).to([framework])
     end
 
     context 'when a project had a compliance framework' do
       before do
-        project.update!(compliance_management_framework: framework)
+        create(:compliance_framework_project_setting, project: project, compliance_management_framework: framework)
       end
 
       it 'can remove the compliance framework of the project' do
-        expect { mutation.resolve(project_id: GitlabSchema.id_from_object(project), compliance_framework_id: nil) }.to change { project.reload.compliance_management_framework }.to(nil)
+        expect { mutation.resolve(project_id: GitlabSchema.id_from_object(project), compliance_framework_id: nil) }.to change { project.reload.compliance_management_frameworks }.to([])
       end
     end
 

@@ -27,7 +27,7 @@ RSpec.describe 'getting a compliance frameworks list for a project', feature_cat
 
   context 'when the project has a compliance framework assigned' do
     before do
-      project.update!(compliance_framework_setting: create(:compliance_framework_project_setting, :sox))
+      create(:compliance_framework_project_setting, :sox, project: project)
     end
 
     it 'includes its name' do

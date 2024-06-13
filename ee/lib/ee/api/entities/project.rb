@@ -39,7 +39,7 @@ module EE
             project.feature_available?(:security_and_compliance, options[:current_user])
           end
           expose :compliance_frameworks do |project, _|
-            [project.compliance_framework_setting&.compliance_management_framework&.name].compact
+            [project.compliance_framework_settings.first&.compliance_management_framework&.name].compact
           end
           expose :issues_template, if: ->(project, options) do
             project.feature_available?(:issuable_default_templates) &&

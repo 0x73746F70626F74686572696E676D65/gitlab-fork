@@ -16,8 +16,6 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     it { is_expected.to delegate_method(:ci_minutes_usage).to(:shared_runners_limit_namespace) }
     it { is_expected.to delegate_method(:shared_runners_minutes_limit_enabled?).to(:shared_runners_limit_namespace) }
 
-    it { is_expected.to delegate_method(:pipeline_configuration_full_path).to(:compliance_management_framework) }
-
     it { is_expected.to delegate_method(:prevent_merge_without_jira_issue).to(:project_setting) }
     it { is_expected.to delegate_method(:prevent_merge_without_jira_issue=).to(:project_setting).with_arguments(true) }
     it { is_expected.to delegate_method(:only_allow_merge_if_all_status_checks_passed).to(:project_setting) }
@@ -29,8 +27,8 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     it { is_expected.to have_one(:wiki_repository).class_name('Projects::WikiRepository').inverse_of(:project) }
     it { is_expected.to have_one(:push_rule).inverse_of(:project) }
     it { is_expected.to have_one(:status_page_setting).class_name('StatusPage::ProjectSetting') }
-    it { is_expected.to have_one(:compliance_framework_setting).class_name('ComplianceManagement::ComplianceFramework::ProjectSettings') }
-    it { is_expected.to have_one(:compliance_management_framework).class_name('ComplianceManagement::Framework') }
+    it { is_expected.to have_many(:compliance_framework_settings).class_name('ComplianceManagement::ComplianceFramework::ProjectSettings') }
+    it { is_expected.to have_many(:compliance_management_frameworks).class_name('ComplianceManagement::Framework') }
     it { is_expected.to have_many(:compliance_standards_adherence).class_name('Projects::ComplianceStandards::Adherence') }
     it { is_expected.to have_one(:security_setting).class_name('ProjectSecuritySetting') }
     it { is_expected.to have_one(:vulnerability_statistic).class_name('Vulnerabilities::Statistic') }

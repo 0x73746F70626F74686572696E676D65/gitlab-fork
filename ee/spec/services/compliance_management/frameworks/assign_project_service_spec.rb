@@ -18,7 +18,7 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
 
     shared_examples 'no framework update' do
       it 'does not update the framework' do
-        expect { update_framework }.not_to change { project.reload.compliance_management_framework }
+        expect { update_framework }.not_to change { project.reload.compliance_management_frameworks.to_a }
       end
 
       it 'does not publish Projects::ComplianceFrameworkChangedEvent' do
@@ -29,8 +29,8 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
     shared_examples 'framework update' do
       it 'updates the framework' do
         expect { update_framework }.to change {
-          project.reload.compliance_management_framework
-        }.from(old_framework).to(framework)
+          project.reload.compliance_management_frameworks
+        }.from(old_framework).to([framework])
       end
 
       it 'publishes Projects::ComplianceFrameworkChangedEvent' do
@@ -48,7 +48,7 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
 
         context 'when assigning a compliance framework to a project' do
           context 'when no framework is assigned' do
-            let(:old_framework) { nil }
+            let(:old_framework) { [] }
 
             it_behaves_like 'framework update'
           end
@@ -56,7 +56,7 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
           context 'when a framework is assigned' do
             let_it_be(:other_framework) { create(:compliance_framework, name: 'other fr', namespace: group) }
 
-            let(:old_framework) { other_framework }
+            let(:old_framework) { [other_framework] }
 
             before do
               create(:compliance_framework_project_setting,
@@ -95,8 +95,8 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
 
             it 'unassigns a framework from a project' do
               expect { update_framework }.to change {
-                project.reload.compliance_management_framework
-              }.from(framework).to(nil)
+                project.reload.compliance_management_frameworks
+              }.from([framework]).to([])
             end
 
             it 'publishes Projects::ComplianceFrameworkChangedEvent with removed event type' do

@@ -50,8 +50,8 @@ RSpec.describe 'Set project compliance framework', feature_category: :compliance
 
       it 'updates the framework' do
         expect { post_graphql_mutation(mutation, current_user: current_user) }.to change {
-          project.reload.compliance_management_framework
-        }.from(nil).to(framework)
+          project.reload.compliance_management_frameworks
+        }.from([]).to([framework])
       end
     end
   end

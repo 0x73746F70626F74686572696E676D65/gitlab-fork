@@ -14,11 +14,11 @@ RSpec.describe ComplianceManagement::UpdateDefaultFrameworkWorker, feature_categ
 
   shared_examples 'updates the compliance framework for the project' do
     it do
-      expect(project.compliance_management_framework).to eq(nil)
+      expect(project.compliance_management_frameworks).to eq([])
 
       worker.perform(*job_args)
 
-      expect(project.reload.compliance_management_framework).to eq(framework)
+      expect(project.reload.compliance_management_frameworks).to eq([framework])
     end
   end
 

@@ -11,8 +11,8 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
   let_it_be(:framework1) { create(:compliance_framework) }
   let_it_be(:framework2) { create(:compliance_framework) }
 
-  let_it_be(:subgroup_project) { create(:project, namespace: subgroup, compliance_framework_setting: create(:compliance_framework_project_setting, compliance_management_framework: framework1)) }
-  let_it_be(:project) { create(:project, :repository, :public, namespace: group, compliance_framework_setting: create(:compliance_framework_project_setting, compliance_management_framework: framework2)) }
+  let_it_be(:subgroup_project) { create(:project, namespace: subgroup, compliance_framework_settings: [create(:compliance_framework_project_setting, compliance_management_framework: framework1)]) }
+  let_it_be(:project) { create(:project, :repository, :public, namespace: group, compliance_framework_settings: [create(:compliance_framework_project_setting, compliance_management_framework: framework2)]) }
   let_it_be(:project_2) { create(:project, :repository, :public, namespace: group) }
 
   let(:compliance_framework_ff) { false }

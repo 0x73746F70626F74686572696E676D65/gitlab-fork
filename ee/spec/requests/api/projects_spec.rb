@@ -222,12 +222,12 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
       context 'when compliance_framework feature is available' do
         context 'when project has a compliance framework' do
           before do
-            project.update!(compliance_framework_setting: create(:compliance_framework_project_setting, :sox))
+            create(:compliance_framework_project_setting, :sox, project: project)
             get api("/projects/#{project.id}", user)
           end
 
           it 'exposes framework names as array of strings' do
-            expect(json_response['compliance_frameworks']).to contain_exactly(project.compliance_framework_setting.compliance_management_framework.name)
+            expect(json_response['compliance_frameworks']).to contain_exactly(project.compliance_framework_settings.first.compliance_management_framework.name)
           end
         end
 

@@ -46,11 +46,11 @@ module ComplianceManagement
         {
           'Project' => 'name',
           'Project Path' => 'full_path',
-          'Framework' => ->(project) { project.compliance_management_framework&.name },
+          'Framework' => ->(project) { project.compliance_management_frameworks.first&.name },
           'isDefaultFramework' => ->(project) {
-            return unless project.compliance_management_framework
+            return unless project.compliance_management_frameworks.present?
 
-            project.compliance_management_framework.id == project.root_ancestor.default_compliance_framework_id
+            project.compliance_management_frameworks.first.id == project.root_ancestor.default_compliance_framework_id
           }
         }
       end

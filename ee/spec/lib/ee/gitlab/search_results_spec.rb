@@ -25,6 +25,6 @@ RSpec.describe Gitlab::SearchResults do
   end
 
   def search
-    subject.objects('projects').map { |project| project.compliance_framework_setting }
+    subject.objects('projects').map { |project| project.compliance_framework_settings }
   end
 end
