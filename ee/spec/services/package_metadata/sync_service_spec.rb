@@ -193,6 +193,7 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
     let(:observer) { instance_double(described_class) }
     let(:lease) { instance_double(Gitlab::ExclusiveLease) }
     let(:stop_signal) { instance_double(PackageMetadata::StopSignal, stop?: should_stop) }
+    let(:enabled_purl_types) { ApplicationSetting.create_from_defaults.package_metadata_purl_types_names }
 
     subject(:execute) { described_class.execute(data_type: data_type, lease: lease) }
 
@@ -206,8 +207,8 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
       let(:should_stop) { false }
 
       specify do
-        expect(observer).to receive(:execute).exactly(::Enums::Sbom.purl_types.count).times
-        ::Enums::Sbom.purl_types.each do |purl_type, _|
+        expect(observer).to receive(:execute).exactly(enabled_purl_types.size).times
+        enabled_purl_types.each do |purl_type, _|
           expect(described_class).to receive(:new)
             .with(having_attributes(data_type: data_type, purl_type: purl_type), stop_signal)
             .and_return(observer)

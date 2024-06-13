@@ -20,7 +20,8 @@ module PackageMetadata
       rpm: "rpm",
       deb: "deb",
       'cbl-mariner': "cbl-mariner",
-      wolfi: "wolfi"
+      wolfi: "wolfi",
+      cargo: "cargo"
     }.with_indifferent_access.freeze
 
     def self.configs_for(data_type)
