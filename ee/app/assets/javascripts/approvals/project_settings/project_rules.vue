@@ -109,6 +109,10 @@ export default {
       );
     },
     canEdit(rule) {
+      if (this.isBranchRulesEdit) {
+        return this.glFeatures.editBranchRules;
+      }
+
       const { canEdit, allowMultiRule } = this.settings;
 
       return canEdit && (!allowMultiRule || !rule.hasSource);
@@ -171,7 +175,7 @@ export default {
               data-testid="approvals-table-approvals-required"
               :data-label="approvalsRequired"
             >
-              <rule-input :rule="rule" />
+              <rule-input :rule="rule" :is-branch-rules-edit="isBranchRulesEdit" />
             </td>
             <td
               class="text-nowrap gl-md-pl-0! gl-md-pr-0!"

@@ -11,7 +11,7 @@ describe('Approvals ProjectSettings App', () => {
   const findScanResultPolicies = () => wrapper.findComponent(ScanResultPolicies);
   const findProjectApprovalSettings = () => wrapper.findComponent(ProjectApprovalSettings);
 
-  const factory = (provide = { canReadSecurityPolicies: true }) => {
+  const factory = (provide = { canReadSecurityPolicies: true, editBranchRules: true }) => {
     wrapper = shallowMount(App, {
       provide,
     });

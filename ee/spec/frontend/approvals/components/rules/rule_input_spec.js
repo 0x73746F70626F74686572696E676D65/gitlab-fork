@@ -22,6 +22,11 @@ describe('Rule Input', () => {
         ...props,
       },
       store: new Vuex.Store(store),
+      provide: {
+        glFeatures: {
+          editBranchRules: true,
+        },
+      },
     });
   };
 

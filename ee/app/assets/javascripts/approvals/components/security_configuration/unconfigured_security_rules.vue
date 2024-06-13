@@ -64,7 +64,7 @@ export default {
 </script>
 
 <template>
-  <tr>
+  <tr v-if="glFeatures.editBranchRules">
     <td v-if="isRulesLoading" colspan="3">
       <gl-skeleton-loader :lines="3" />
     </td>

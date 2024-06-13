@@ -12,6 +12,11 @@ describe('Empty Rule', () => {
         rule: {},
         ...props,
       },
+      provide: {
+        glFeatures: {
+          editBranchRules: true,
+        },
+      },
     });
   };
 

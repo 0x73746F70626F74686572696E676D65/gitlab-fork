@@ -22,6 +22,11 @@ describe('UnconfiguredSecurityRules component', () => {
       propsData: {
         ...props,
       },
+      provide: {
+        glFeatures: {
+          editBranchRules: true,
+        },
+      },
     });
   };
 

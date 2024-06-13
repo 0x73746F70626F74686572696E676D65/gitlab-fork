@@ -50,6 +50,13 @@ export default {
     rulesLength() {
       return this.isMrEdit ? this.rules.length : this.pagination.total;
     },
+    canAddApprovalRule() {
+      if (this.isBranchRulesEdit) {
+        return this.glFeatures.editBranchRules;
+      }
+
+      return this.settings.canEdit && this.settings.allowMultiRule;
+    },
   },
   mounted() {
     if (!this.isBranchRulesEdit) {
@@ -100,7 +107,7 @@ export default {
           </span>
         </h5>
       </div>
-      <div v-if="settings.canEdit && settings.allowMultiRule" class="gl-new-card-actions">
+      <div v-if="canAddApprovalRule" class="gl-new-card-actions">
         <gl-button
           :class="{ 'gl-mr-3': targetBranch, 'gl-mr-0': !targetBranch }"
           :disabled="isLoading"
