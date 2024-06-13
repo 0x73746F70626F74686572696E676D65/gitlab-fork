@@ -7,7 +7,14 @@ module Gitlab
         BLOB_BYTES_LIMIT = 1.megabyte
 
         LOG_MESSAGE = 'Starting GitGuardian scan...'
-        SPECIAL_COMMIT_FLAG = /\[skip secret detection\]/i
+        # Secret Push Protection is changing the skip option names to reflect the feature being renamed.
+        # We want to keep the GitGuardian skip options consistent with SPP's, but changing the options here
+        # would be a breaking change. To avoid a breaking change, we're keeping the old skip option names,
+        # but also introduce the new options to match SPP. In 18.0, remove the old name and only support
+        # the new one going forward.
+        # More details: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/155922#note_1945663581
+        OLD_SPECIAL_COMMIT_FLAG = /\[skip secret detection\]/i
+        NEW_SPECIAL_COMMIT_FLAG = /\[skip secret push protection\]/i
 
         REMEDIATION_MESSAGE = <<~MESSAGE
           How to remediate:
@@ -19,7 +26,7 @@ module Gitlab
 
           [To apply with caution] If you want to bypass the secrets check:
 
-          1. Add [skip secret detection] flag to the commit message or add the following Git push option: `-o secret_detection.skip_all`.
+          1. Add [skip secret push protection] flag to the commit message or add the following Git push option: `-o secret_push_protection.skip_all`.
           2. Commit and try pushing again.
         MESSAGE
 
@@ -57,10 +64,12 @@ module Gitlab
 
         def skip_secret_detection?
           return true if changes_access.commits.any? do |commit|
-            commit.safe_message =~ ::Gitlab::Checks::SecretsCheck::SPECIAL_COMMIT_FLAG
+            commit.safe_message =~ OLD_SPECIAL_COMMIT_FLAG ||
+              commit.safe_message =~ NEW_SPECIAL_COMMIT_FLAG
           end
 
-          return true if changes_access.push_options&.get(:secret_detection, :skip_all)
+          return true if changes_access.push_options&.get(:secret_detection, :skip_all) ||
+            changes_access.push_options&.get(:secret_push_protection, :skip_all)
 
           false
         end
