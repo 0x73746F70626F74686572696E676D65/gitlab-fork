@@ -115,6 +115,16 @@ describe('Split Button', () => {
       expect(selectedButton.attributes('title')).toBe(tooltipText);
       expect(selectedButton.attributes('aria-label')).toBe(tooltipText);
     });
+
+    it('renders the button category', () => {
+      const category = 'secondary';
+      const { buttons } = defaultProps;
+      createComponent({ buttons: [{ ...buttons[0], category }, buttons[1]] }, mountExtended);
+
+      const selectedButton = findButton();
+
+      expect(selectedButton.props('category')).toBe(category);
+    });
   });
 
   describe('dropdown listbox', () => {
