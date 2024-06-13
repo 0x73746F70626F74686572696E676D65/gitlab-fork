@@ -64,7 +64,11 @@ module EE
       def delete_compliance_framework_setting(old_group)
         return if old_group&.root_ancestor == project.group&.root_ancestor
 
-        project.compliance_framework_setting&.delete
+        deleted_framework_settings = project.compliance_framework_settings.each(&:delete)
+
+        deleted_framework_settings.each do |framework_setting|
+          Audit::ComplianceFrameworkChangesAuditor.new(current_user, framework_setting, project).execute
+        end
       end
 
       def update_compliance_standards_adherence

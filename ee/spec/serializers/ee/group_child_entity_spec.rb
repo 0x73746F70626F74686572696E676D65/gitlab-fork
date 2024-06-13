@@ -24,7 +24,7 @@ RSpec.describe GroupChildEntity do
   describe 'with compliance framework' do
     shared_examples 'does not have the compliance framework' do
       it do
-        expect(json[:compliance_management_framework]).to be_nil
+        expect(json[:compliance_management_frameworks]).to be_nil
       end
     end
 
@@ -55,14 +55,16 @@ RSpec.describe GroupChildEntity do
         let(:object) { project }
 
         it 'has the compliance framework' do
-          expect(json[:compliance_management_framework]['name']).to eq('SOX')
+          expect(json[:compliance_management_frameworks][0]['name']).to eq('SOX')
         end
       end
 
       context 'for a project without a compliance framework' do
         let(:object) { project_without_compliance_framework }
 
-        it_behaves_like 'does not have the compliance framework'
+        it 'returns empty array' do
+          expect(json[:compliance_management_frameworks]).to eq([])
+        end
       end
 
       context 'for a group' do

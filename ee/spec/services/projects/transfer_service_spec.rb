@@ -165,7 +165,7 @@ RSpec.describe Projects::TransferService, feature_category: :groups_and_projects
         it 'does not delete the compliance framework setting' do
           subject.execute(sub_group)
 
-          expect(project.reload.compliance_framework_setting).to eq(compliance_framework_setting)
+          expect(project.reload.compliance_framework_settings).to eq([compliance_framework_setting])
         end
       end
 
@@ -181,22 +181,29 @@ RSpec.describe Projects::TransferService, feature_category: :groups_and_projects
         it 'does not delete the compliance framework setting' do
           subject.execute(nested_sub_group)
 
-          expect(project.reload.compliance_framework_setting).to eq(compliance_framework_setting)
+          expect(project.reload.compliance_framework_settings).to eq([compliance_framework_setting])
         end
       end
 
       context 'when the project is transferring to a new group' do
         let_it_be(:old_group) { create(:group, :public) }
-        let_it_be(:project) { create(:project, group: old_group) }
+        let_it_be_with_reload(:project) { create(:project, group: old_group) }
 
         before do
           old_group.add_owner(user)
+          stub_licensed_features(extended_audit_events: true, external_audit_events: true)
         end
 
         it 'deletes the compliance framework setting' do
           subject.execute(group)
 
-          expect(project.reload.compliance_framework_setting).to be nil
+          expect(project.reload.compliance_framework_settings).to eq([])
+        end
+
+        it 'creates an audit event' do
+          expect { subject.execute(group) }.to change { AuditEvent.count }.by(2)
+
+          expect(AuditEvent.last.details[:event_name]).to eq("compliance_framework_deleted")
         end
       end
     end

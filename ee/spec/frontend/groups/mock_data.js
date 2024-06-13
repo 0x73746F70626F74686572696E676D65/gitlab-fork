@@ -128,13 +128,15 @@ export const mockRawChildren = [
     can_leave: false,
     children: [],
     updated_at: '2017-04-09T18:40:39.101Z',
-    compliance_management_framework: {
-      id: 1,
-      namespace_id: 1,
-      name: 'GDPR',
-      description: 'General Data Protection Regulation',
-      color: '#009966',
-      pipeline_configuration_full_path: null,
-    },
+    compliance_management_frameworks: [
+      {
+        id: 1,
+        namespace_id: 1,
+        name: 'GDPR',
+        description: 'General Data Protection Regulation',
+        color: '#009966',
+        pipeline_configuration_full_path: null,
+      },
+    ],
   },
 ];

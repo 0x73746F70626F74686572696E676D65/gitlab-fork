@@ -19,37 +19,17 @@ module Audit
           message: 'Unassigned project compliance framework',
           name: 'compliance_framework_deleted'
         }
-
-        ::Gitlab::Audit::Auditor.audit(audit_context)
       else
-        audit_changes(
-          :framework_id,
-          as: 'compliance framework',
-          model: model,
-          entity: @project,
-          event_type: 'compliance_framework_id_updated'
-        )
+        audit_context = {
+          author: @current_user,
+          scope: @project,
+          target: model,
+          message: "Assigned project compliance framework #{model.compliance_management_framework.name}",
+          name: 'compliance_framework_id_updated'
+        }
       end
-    end
 
-    def framework_changes
-      model.previous_changes["framework_id"]
-    end
-
-    def old_framework_name
-      ComplianceManagement::Framework.find_by_id(framework_changes.first)&.name || "None"
-    end
-
-    def new_framework_name
-      ComplianceManagement::Framework.find_by_id(framework_changes.last)&.name || "None"
-    end
-
-    def attributes_from_auditable_model(column)
-      {
-        from: old_framework_name,
-        to: new_framework_name,
-        target_details: @project.full_path
-      }
+      ::Gitlab::Audit::Auditor.audit(audit_context)
     end
   end
 end

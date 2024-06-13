@@ -9,7 +9,7 @@ RSpec.describe Audit::ComplianceFrameworkChangesAuditor do
     let_it_be(:destination) { create(:external_audit_event_destination, group: group) }
 
     let(:project) { create(:project, group: group) }
-    let(:subject) { described_class.new(user, project.compliance_framework_setting, project) }
+    let(:subject) { described_class.new(user, project.compliance_framework_settings.first, project) }
 
     before do
       project.reload
@@ -21,16 +21,12 @@ RSpec.describe Audit::ComplianceFrameworkChangesAuditor do
         let_it_be(:framework) { create(:compliance_framework) }
 
         before do
-          project.update!(compliance_management_framework: framework)
+          project.update!(compliance_management_frameworks: [framework])
         end
 
         it 'adds an audit event' do
           expect { subject.execute }.to change(AuditEvent, :count).by(1)
-          expect(AuditEvent.last.details).to include({
-            change: 'compliance framework',
-            from: 'None',
-            to: 'GDPR'
-          })
+          expect(AuditEvent.last.details[:custom_message]).to eq("Assigned project compliance framework GDPR")
         end
 
         it 'streams correct audit event stream' do
@@ -43,15 +39,13 @@ RSpec.describe Audit::ComplianceFrameworkChangesAuditor do
     end
 
     context 'when a project has a compliance framework' do
-      let_it_be(:framework) { create(:compliance_framework) }
-
-      before do
-        project.update!(compliance_management_framework: framework)
-      end
+      let(:framework_project_setting) { create(:compliance_framework_project_setting, project: project) }
 
       context 'when the framework is removed' do
+        let(:subject) { described_class.new(user, framework_project_setting, project) }
+
         before do
-          project.update!(compliance_management_framework: nil)
+          framework_project_setting.delete
         end
 
         it 'adds an audit event' do
@@ -71,17 +65,13 @@ RSpec.describe Audit::ComplianceFrameworkChangesAuditor do
 
       context 'when the framework is changed' do
         before do
-          project.update!(compliance_management_framework:
-            create(:compliance_framework, namespace: project.group, name: 'SOX'))
+          project.update!(compliance_management_frameworks:
+            [create(:compliance_framework, namespace: project.group, name: 'SOX')])
         end
 
         it 'adds an audit event' do
           expect { subject.execute }.to change(AuditEvent, :count).by(1)
-          expect(AuditEvent.last.details).to include({
-            change: 'compliance framework',
-            from: 'GDPR',
-            to: 'SOX'
-          })
+          expect(AuditEvent.last.details[:custom_message]).to eq("Assigned project compliance framework SOX")
         end
       end
     end

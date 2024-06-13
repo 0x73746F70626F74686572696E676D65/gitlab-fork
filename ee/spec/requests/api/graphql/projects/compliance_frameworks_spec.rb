@@ -17,7 +17,7 @@ RSpec.describe 'getting compliance frameworks for a collection of projects', fea
 
   before_all do
     project_members.map(&:project).each do |project|
-      project.compliance_framework_setting = create(:compliance_framework_project_setting)
+      project.compliance_framework_settings = [create(:compliance_framework_project_setting)]
     end
   end
 
@@ -70,8 +70,8 @@ RSpec.describe 'getting compliance frameworks for a collection of projects', fea
 
   context 'projects that share the same compliance framework' do
     let_it_be(:framework) { create(:compliance_framework) }
-    let_it_be(:project_1) { create(:project, compliance_framework_setting: create(:compliance_framework_project_setting, compliance_management_framework: framework)) }
-    let_it_be(:project_2) { create(:project, compliance_framework_setting: create(:compliance_framework_project_setting, compliance_management_framework: framework)) }
+    let_it_be(:project_1) { create(:project, compliance_framework_settings: create_list(:compliance_framework_project_setting, 1, compliance_management_framework: framework)) }
+    let_it_be(:project_2) { create(:project, compliance_framework_settings: create_list(:compliance_framework_project_setting, 1, compliance_management_framework: framework)) }
 
     let(:projects) { [project_1, project_2] }
     let(:project_ids) { projects.map { |p| global_id_of(p) } }

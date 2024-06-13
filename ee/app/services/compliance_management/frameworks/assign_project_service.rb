@@ -41,7 +41,7 @@ module ComplianceManagement
       end
 
       def unassign_compliance_framework
-        project.compliance_framework_setting&.destroy!
+        project.compliance_framework_settings.each(&:destroy!)
 
         publish_event(::Projects::ComplianceFrameworkChangedEvent::EVENT_TYPES[:removed])
 
@@ -49,11 +49,11 @@ module ComplianceManagement
       end
 
       def publish_event(event_type)
-        return unless project.compliance_framework_setting
+        return unless project.compliance_framework_settings.present?
 
         event = ::Projects::ComplianceFrameworkChangedEvent.new(data: {
           project_id: project.id,
-          compliance_framework_id: project.compliance_framework_setting.framework_id,
+          compliance_framework_id: project.compliance_framework_settings.first.framework_id,
           event_type: event_type
         })
 

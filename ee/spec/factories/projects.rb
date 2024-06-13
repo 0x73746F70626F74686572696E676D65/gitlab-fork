@@ -60,11 +60,16 @@ FactoryBot.modify do
     end
 
     trait :with_compliance_framework do
-      association :compliance_framework_setting, factory: :compliance_framework_project_setting
+      after(:build) do |project|
+        project.compliance_framework_settings = create_list(:compliance_framework_project_setting, 1, project: project)
+      end
     end
 
     trait :with_sox_compliance_framework do
-      association :compliance_framework_setting, :sox, factory: :compliance_framework_project_setting
+      after(:build) do |project|
+        project.compliance_framework_settings = create_list(:compliance_framework_project_setting, 1, :sox,
+          project: project)
+      end
     end
 
     trait :with_cve_request do

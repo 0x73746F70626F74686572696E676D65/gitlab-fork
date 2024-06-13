@@ -15,7 +15,7 @@ module Security
         policy_scope_compliance_frameworks = policy.dig(:policy_scope, :compliance_frameworks).to_a
         return true if policy_scope_compliance_frameworks.blank?
 
-        compliance_framework_id = project.compliance_framework_setting&.framework_id
+        compliance_framework_id = project.compliance_framework_settings.first&.framework_id
         return false if compliance_framework_id.nil?
 
         policy_scope_compliance_frameworks.any? { |framework| framework[:id] == compliance_framework_id }

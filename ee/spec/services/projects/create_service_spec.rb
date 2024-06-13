@@ -503,14 +503,14 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
             framework.id
           ).and_call_original
 
-          expect(created_project.compliance_management_framework.id).to eq(framework.id)
-          expect(created_project.compliance_management_framework.name).to eq('GDPR')
+          expect(created_project.compliance_management_frameworks.first.id).to eq(framework.id)
+          expect(created_project.compliance_management_frameworks.first.name).to eq('GDPR')
         end
 
         it 'does not set the default compliance framework for new projects when not licensed' do
           expect(::ComplianceManagement::UpdateDefaultFrameworkWorker).not_to receive(:perform_async)
 
-          expect(created_project.compliance_framework_setting).to eq(nil)
+          expect(created_project.compliance_framework_settings).to eq([])
         end
       end
 
@@ -526,7 +526,7 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
 
           expect(::ComplianceManagement::UpdateDefaultFrameworkWorker).not_to receive(:perform_async)
 
-          expect(created_project.compliance_framework_setting).to eq(nil)
+          expect(created_project.compliance_framework_settings).to eq([])
         end
       end
 
@@ -536,7 +536,7 @@ RSpec.describe Projects::CreateService, '#execute', feature_category: :groups_an
 
           expect(::ComplianceManagement::UpdateDefaultFrameworkWorker).not_to receive(:perform_async)
 
-          expect(created_project.compliance_framework_setting).to eq(nil)
+          expect(created_project.compliance_framework_settings).to eq([])
         end
       end
     end
