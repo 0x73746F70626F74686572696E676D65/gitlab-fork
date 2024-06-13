@@ -26,7 +26,7 @@ export function createRouter(basePath, props) {
     groupPath,
     rootAncestorPath,
     rootAncestorName,
-    rootAncestorWebUrl,
+    rootAncestorComplianceCenterPath,
   } = props;
 
   const defaultRoute = ROUTE_STANDARDS_ADHERENCE;
@@ -54,6 +54,7 @@ export function createRouter(basePath, props) {
           props: {
             groupPath,
             globalProjectId,
+            rootAncestorPath,
           },
         },
         {
@@ -74,8 +75,8 @@ export function createRouter(basePath, props) {
             groupPath,
             rootAncestor: {
               path: rootAncestorPath,
-              webUrl: rootAncestorWebUrl,
               name: rootAncestorName,
+              complianceCenterPath: rootAncestorComplianceCenterPath,
             },
           },
         },

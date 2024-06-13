@@ -13,8 +13,9 @@ import { mapViolations } from '../../graphql/mappers';
 import { DEFAULT_PAGINATION_CURSORS, DEFAULT_SORT, GRAPHQL_PAGE_SIZE } from '../../constants';
 import {
   buildDefaultViolationsFilterParams,
-  parseViolationsQueryFilter,
   convertProjectIdsToGraphQl,
+  isTopLevelGroup,
+  parseViolationsQueryFilter,
 } from '../../utils';
 import MergeRequestDrawer from './drawer.vue';
 import ViolationReason from './violations/reason.vue';
@@ -34,6 +35,7 @@ export default {
     ViolationFilter,
     UrlSync,
   },
+  inject: ['rootAncestorPath'],
   props: {
     mergeCommitsCsvExportPath: {
       type: String,
@@ -105,6 +107,9 @@ export default {
     },
   },
   computed: {
+    isTopLevelGroup() {
+      return isTopLevelGroup(this.groupPath, this.rootAncestorPath);
+    },
     isLoading() {
       return this.$apollo.queries.violations.loading;
     },
@@ -298,6 +303,7 @@ export default {
       />
     </div>
     <merge-request-drawer
+      :is-framework-edit-enabled="isTopLevelGroup"
       :show-drawer="showDrawer"
       :merge-request="drawerMergeRequest"
       :project="drawerProject"

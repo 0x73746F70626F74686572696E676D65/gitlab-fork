@@ -124,7 +124,7 @@ export default {
     noFrameworksFound: s__('ComplianceReport|No frameworks found'),
     editTitle: s__('ComplianceFrameworks|Edit compliance framework'),
     newFrameworkButtonMessage: s__(
-      'ComplianceFrameworks|New compliance framework must be created in top-level group %{linkStart}namespace%{linkEnd}',
+      'ComplianceFrameworks|You can only create the compliance framework in top-level group %{linkStart}namespace%{linkEnd}',
     ),
   },
 };
@@ -140,7 +140,7 @@ export default {
       <gl-tooltip v-if="!isTopLevelGroup" :target="() => $refs.newFrameworkButton">
         <gl-sprintf :message="$options.i18n.newFrameworkButtonMessage">
           <template #link>
-            <gl-link :href="rootAncestor.webUrl">
+            <gl-link :href="rootAncestor.complianceCenterPath">
               {{ rootAncestor.name }}
             </gl-link>
           </template>
@@ -168,7 +168,7 @@ export default {
       @row-clicked="toggleDrawer"
     >
       <template #cell(frameworkName)="{ item }">
-        <framework-badge :framework="item" />
+        <framework-badge :framework="item" :show-edit="isTopLevelGroup" />
       </template>
       <template
         #cell(associatedProjects)="{

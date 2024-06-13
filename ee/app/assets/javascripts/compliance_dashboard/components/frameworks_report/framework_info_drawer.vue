@@ -115,16 +115,21 @@ export default {
             :title="$options.i18n.defaultFramework"
           />
         </h3>
-        <gl-tooltip v-if="editDisabled" :target="() => $refs.editButton">
+        <gl-tooltip
+          v-if="editDisabled"
+          :target="() => $refs.editButton"
+          placement="left"
+          boundary="viewport"
+        >
           <gl-sprintf :message="$options.i18n.editFrameworkButtonMessage">
             <template #link>
-              <gl-link :href="rootAncestor.webUrl">
+              <gl-link :href="rootAncestor.complianceCenterPath">
                 {{ rootAncestor.name }}
               </gl-link>
             </template>
           </gl-sprintf>
         </gl-tooltip>
-        <span ref="editButton">
+        <span ref="editButton" class="gl-inline-block">
           <gl-button
             :disabled="editDisabled"
             category="primary"

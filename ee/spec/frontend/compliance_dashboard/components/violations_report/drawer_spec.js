@@ -45,6 +45,7 @@ describe('MergeRequestDrawer component', () => {
       propsData: {
         mergeRequest: data.mergeRequest,
         project: data.project,
+        isFrameworkEditEnabled: true,
         ...props,
       },
     });
@@ -99,6 +100,7 @@ describe('MergeRequestDrawer component', () => {
         complianceFramework: data.project.complianceFramework,
         name: data.project.name,
         url: data.project.webUrl,
+        isFrameworkEditEnabled: true,
       });
     });
 

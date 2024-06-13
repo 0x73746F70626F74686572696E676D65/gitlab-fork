@@ -54,6 +54,9 @@ describe('ComplianceStandardsAdherenceTable component', () => {
             },
           };
         },
+        provide: {
+          rootAncestorPath: groupPath,
+        },
         propsData: {
           groupPath,
           ...props,

@@ -7,6 +7,7 @@ import getProjectComplianceStandardsAdherence from 'ee/compliance_dashboard/grap
 import FrameworkBadge from '../shared/framework_badge.vue';
 import Pagination from '../shared/pagination.vue';
 import { GRAPHQL_PAGE_SIZE } from '../../constants';
+import { isTopLevelGroup } from '../../utils';
 import {
   FAIL_STATUS,
   STANDARDS_ADHERENCE_CHECK_LABELS,
@@ -28,6 +29,7 @@ export default {
     Pagination,
     FrameworkBadge,
   },
+  inject: ['rootAncestorPath'],
   props: {
     groupPath: {
       type: String,
@@ -90,6 +92,9 @@ export default {
     },
   },
   computed: {
+    isTopLevelGroup() {
+      return isTopLevelGroup(this.groupPath, this.rootAncestorPath);
+    },
     isLoading() {
       return Boolean(this.$apollo.queries.adherences.loading);
     },
@@ -293,7 +298,7 @@ export default {
           class="gl-label"
           :title="framework.name"
         >
-          <framework-badge :framework="framework" />
+          <framework-badge :framework="framework" :show-edit="isTopLevelGroup" />
         </div>
       </template>
 

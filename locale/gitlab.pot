@@ -13469,9 +13469,6 @@ msgstr ""
 msgid "ComplianceFrameworks|New compliance framework"
 msgstr ""
 
-msgid "ComplianceFrameworks|New compliance framework must be created in top-level group %{linkStart}namespace%{linkEnd}"
-msgstr ""
-
 msgid "ComplianceFrameworks|New framework"
 msgstr ""
 
@@ -13521,6 +13518,9 @@ msgid "ComplianceFrameworks|Unable to save this compliance framework. Please try
 msgstr ""
 
 msgid "ComplianceFrameworks|You are about to permanently delete the compliance framework %{framework} from all projects which currently have it applied, which may remove other functionality. This cannot be undone."
+msgstr ""
+
+msgid "ComplianceFrameworks|You can only create the compliance framework in top-level group %{linkStart}namespace%{linkEnd}"
 msgstr ""
 
 msgid "ComplianceFrameworks|Your Compliance Project Frameworks CSV export for the group \"%{group_name}\" has been attached to this email."

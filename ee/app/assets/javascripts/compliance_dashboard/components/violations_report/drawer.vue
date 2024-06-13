@@ -29,6 +29,10 @@ export default {
       type: Object,
       required: true,
     },
+    isFrameworkEditEnabled: {
+      type: Boolean,
+      required: true,
+    },
     showDrawer: {
       type: Boolean,
       required: false,
@@ -60,6 +64,7 @@ export default {
       <project
         :avatar-url="project.avatarUrl"
         :compliance-framework="project.complianceFramework"
+        :is-framework-edit-enabled="isFrameworkEditEnabled"
         :name="project.name"
         :url="project.webUrl"
       />
