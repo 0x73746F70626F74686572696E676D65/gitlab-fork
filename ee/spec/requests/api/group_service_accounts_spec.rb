@@ -323,6 +323,123 @@ RSpec.describe API::GroupServiceAccounts, :aggregate_failures, feature_category:
     end
   end
 
+  describe "GET /groups/:id/service_accounts" do
+    let(:group_id) { group.id }
+    let(:path) { "/groups/#{group_id}/service_accounts" }
+    let(:params) { {} }
+
+    subject(:perform_request) { get api(path, user), params: params }
+
+    before do
+      stub_licensed_features(service_accounts: true)
+    end
+
+    context 'when request is correct' do
+      let(:service_account_user2) { create(:user, :service_account) }
+      let(:regular_user) { create(:user) }
+
+      before do
+        service_account_user2.provisioned_by_group_id = group.id
+        regular_user.provisioned_by_group_id = group.id
+
+        regular_user.save!
+        service_account_user2.save!
+
+        group.add_owner(user)
+      end
+
+      it 'returns 200 status and service account users list' do
+        perform_request
+
+        expect(response).to have_gitlab_http_status(:ok)
+
+        expect(response).to match_response_schema('public_api/v4/user/safes')
+        expect(json_response.size).to eq(2)
+
+        expect(json_response.pluck("id")).not_to include(regular_user.id)
+      end
+
+      context 'when order by is specified' do
+        let(:params) { { order_by: "username" } }
+        let(:username1) { "Auser" }
+        let(:username2) { "Buser" }
+
+        before do
+          service_account_user.username = username1
+          service_account_user2.username = username2
+          service_account_user.save!
+        end
+
+        it "returns ordered list by username in desc order" do
+          perform_request
+
+          expect(response).to match_response_schema('public_api/v4/user/safes')
+          expect(json_response.size).to eq(2)
+          expect_paginated_array_response(service_account_user2.id, service_account_user.id)
+        end
+
+        context "when sort order_by is specified" do
+          let(:params) { { order_by: "username", sort: "asc" } }
+
+          it "follows sorting order" do
+            perform_request
+
+            expect(response).to match_response_schema('public_api/v4/user/safes')
+            expect(json_response.size).to eq(2)
+            expect_paginated_array_response(service_account_user.id, service_account_user2.id)
+          end
+
+          it 'does not order by any other column than username and id' do
+            get api(path, user), params: { order_by: "name" }
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+        end
+      end
+
+      it_behaves_like 'an endpoint with keyset pagination', invalid_order: nil do
+        let(:first_record) { service_account_user2 }
+        let(:second_record) { service_account_user }
+        let(:api_call) { api(path, user) }
+      end
+    end
+
+    context 'when group does not exist' do
+      let(:group_id) { non_existing_record_id }
+
+      it "returns error" do
+        perform_request
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when user is not group owner' do
+      before do
+        group.add_maintainer(user)
+      end
+
+      it "throws forbidden error" do
+        perform_request
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'when feature is not licensed' do
+      before do
+        stub_licensed_features(service_accounts: false)
+        group.add_owner(user)
+      end
+
+      it 'returns error' do
+        perform_request
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
+
   describe "DELETE /groups/:id/service_accounts/:user_id" do
     let(:issue) { create(:issue, author: service_account_user) }
     let(:group_id) { group.id }
