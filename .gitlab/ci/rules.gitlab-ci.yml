@@ -679,6 +679,9 @@
   - "tooling/custom_roles/docs/templates/custom_abilities.md.erb"
   - "ee/{lib/,spec/}tasks/gitlab/custom_roles/*"
 
+.cng-orchestrator-patterns: &cng-orchestrator-patterns
+  - gems/gitlab-cng/**/*.rb
+
 ##################
 # Conditions set #
 ##################
@@ -1247,6 +1250,8 @@
       changes: *dependency-patterns
     - <<: *if-default-refs
       changes: *code-qa-patterns
+    - <<: *if-merge-request
+      changes: *cng-orchestrator-patterns
 
 .frontend:rules:compile-production-assets:
   rules:
@@ -1698,9 +1703,6 @@
     - <<: *if-merge-request-targeting-stable-branch
       changes: *setup-test-env-patterns
     - <<: *if-ruby-branch
-    # Certain components trigger a rebuild of the e2e GDK image so we want to test it too
-    - <<: *if-merge-request
-      changes: *gdk-component-patterns
     - <<: *if-merge-request
       changes: *code-patterns
       variables:
@@ -1784,17 +1786,17 @@
     - <<: *if-default-branch-schedule-nightly  # already executed in the 2-hourly schedule
       when: never
     - !reference [".qa:rules:e2e-blocking", rules]
+    # Certain components trigger a rebuild of the e2e GDK image so we want to test it too
+    - <<: *if-merge-request
+      changes: *gdk-component-patterns
     - !reference [".qa:rules:e2e-schedule-blocking", rules]
 
 .qa:rules:e2e:test-on-cng:
   rules:
-    - !reference [".qa:rules:package-and-test-never-run", rules]
-    - <<: [*if-dot-com-gitlab-org-schedule, *qa-e2e-test-schedule-variables]
+    - !reference [".qa:rules:e2e-blocking", rules]
+    - !reference [".qa:rules:e2e-schedule-blocking", rules]
     - <<: *if-merge-request
-      changes: *qa-patterns
-    - <<: *if-merge-request
-      changes:
-        - gems/gitlab-cng/**/*.rb
+      changes: *cng-orchestrator-patterns
 
 .qa:rules:package-and-test-nightly:
   rules:
