@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Geo::BaseRequest,
+RSpec.describe Gitlab::Geo::RepoSyncRequest,
   feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
@@ -25,8 +25,8 @@ RSpec.describe Gitlab::Geo::BaseRequest,
       expect(token).to start_with(described_class::GITLAB_GEO_AUTH_TOKEN_TYPE)
     end
 
-    it 'defaults to 1-minute expiration time', :freeze_time do
-      expect(jwt.first['exp']).to eq(1.minute.from_now.to_i)
+    it 'defaults to 60-minute expiration time', :freeze_time do
+      expect(jwt.first['exp']).to eq(120.minutes.from_now.to_i)
     end
   end
 end

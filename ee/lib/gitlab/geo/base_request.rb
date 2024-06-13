@@ -29,7 +29,12 @@ module Gitlab
       private
 
       def geo_auth_token(message)
-        signed_data = Gitlab::Geo::SignedData.new(geo_node: requesting_node).sign_and_encode_data(message)
+        signed_data = Gitlab::Geo::SignedData
+          .new(
+            geo_node: requesting_node,
+            validity_period: expiration_time
+          )
+          .sign_and_encode_data(message)
 
         "#{GITLAB_GEO_AUTH_TOKEN_TYPE} #{signed_data}"
       end
