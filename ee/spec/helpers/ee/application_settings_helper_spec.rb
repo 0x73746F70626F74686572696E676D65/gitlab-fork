@@ -141,9 +141,10 @@ RSpec.describe EE::ApplicationSettingsHelper, feature_category: :shared do
 
   describe '#sync_purl_types_checkboxes', feature_category: :software_composition_analysis do
     let_it_be(:application_setting) { build(:application_setting) }
+    let_it_be(:enabled_purl_types) { [1, 5] }
 
     before do
-      application_setting.package_metadata_purl_types = [1, 5]
+      application_setting.package_metadata_purl_types = enabled_purl_types
 
       helper.instance_variable_set(:@application_setting, application_setting)
     end
@@ -152,19 +153,15 @@ RSpec.describe EE::ApplicationSettingsHelper, feature_category: :shared do
       helper.gitlab_ui_form_for(application_setting, url: '/admin/application_settings/security_and_compliance') do |form|
         result = helper.sync_purl_types_checkboxes(form)
 
-        expect(result[0]).to have_checked_field('composer', with: 1)
-        expect(result[1]).to have_unchecked_field('conan', with: 2)
-        expect(result[2]).to have_unchecked_field('gem', with: 3)
-        expect(result[3]).to have_unchecked_field('golang', with: 4)
-        expect(result[4]).to have_checked_field('maven', with: 5)
-        expect(result[5]).to have_unchecked_field('npm', with: 6)
-        expect(result[6]).to have_unchecked_field('nuget', with: 7)
-        expect(result[7]).to have_unchecked_field('pypi', with: 8)
-        expect(result[8]).to have_unchecked_field('apk', with: 9)
-        expect(result[9]).to have_unchecked_field('rpm', with: 10)
-        expect(result[10]).to have_unchecked_field('deb', with: 11)
-        expect(result[11]).to have_unchecked_field('cbl-mariner', with: 12)
-        expect(result[12]).to have_unchecked_field('wolfi', with: 13)
+        expected = ::Enums::Sbom.purl_types.map do |name, num|
+          if enabled_purl_types.include?(num)
+            have_checked_field(name, with: num)
+          else
+            have_unchecked_field(name, with: num)
+          end
+        end
+
+        expect(result).to match_array(expected)
       end
     end
   end
