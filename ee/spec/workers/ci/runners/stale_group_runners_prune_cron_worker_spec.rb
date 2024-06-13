@@ -9,7 +9,7 @@ RSpec.describe Ci::Runners::StaleGroupRunnersPruneCronWorker, feature_category: 
     let_it_be(:group2) { create(:group) }
 
     let!(:runner1) do
-      create(:ci_runner, :group, groups: [group1], created_at: 3.months.ago, contacted_at: 3.months.ago)
+      create(:ci_runner, :group, :stale, groups: [group1])
     end
 
     let!(:runner2) { create(:ci_runner, :group, groups: [group1]) }
