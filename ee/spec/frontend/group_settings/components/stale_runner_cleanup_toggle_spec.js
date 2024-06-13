@@ -114,7 +114,7 @@ describe('StaleRunnerCleanupToggle', () => {
     mockPruningQueryHandler();
     createComponent({ mountFn: mountExtended });
 
-    expect(findToggle().text()).toMatch('3 months');
+    expect(findToggle().text()).toMatch('1 week');
   });
 
   describe.each`
