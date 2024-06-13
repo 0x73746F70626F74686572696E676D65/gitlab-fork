@@ -16516,6 +16516,9 @@ msgstr ""
 msgid "DORA4Metrics|Total projects (%{count}) with DORA metrics"
 msgstr ""
 
+msgid "DORA4Metrics|You have insufficient permissions to view"
+msgstr ""
+
 msgid "DSN"
 msgstr ""
 

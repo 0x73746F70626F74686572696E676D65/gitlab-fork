@@ -225,8 +225,9 @@ describe('AnalyticsDashboardPanel', () => {
             beforeEach(() => {
               findVisualization().vm.$emit('set-alerts', {
                 errors: [error],
+                warnings: [error],
+                alerts: [error],
                 canRetry: false,
-                alertVariant: VARIANT_DANGER,
               });
             });
 
@@ -255,6 +256,7 @@ describe('AnalyticsDashboardPanel', () => {
             beforeEach(() => {
               findVisualization().vm.$emit('set-alerts', {
                 warnings: [error],
+                alerts: [error],
                 canRetry: false,
               });
             });
@@ -280,7 +282,36 @@ describe('AnalyticsDashboardPanel', () => {
             });
           });
 
-          describe('with no errors or warnings', () => {
+          describe('with alerts', () => {
+            beforeEach(() => {
+              findVisualization().vm.$emit('set-alerts', {
+                alerts: [error],
+                canRetry: false,
+              });
+            });
+
+            it('sets the alert state on the panels base component', () => {
+              expect(findPanelsBase().props()).toMatchObject({
+                loading: false,
+                showAlertState: true,
+                alertVariant: VARIANT_INFO,
+              });
+            });
+
+            it('shows visualization', () => {
+              expect(findVisualization().exists()).toBe(true);
+            });
+
+            it('does not show the error body', () => {
+              expect(findAlertBody().exists()).toBe(false);
+            });
+
+            it('does not log to Sentry', () => {
+              expect(captureExceptionSpy).not.toHaveBeenCalled();
+            });
+          });
+
+          describe('with only alert description', () => {
             beforeEach(() => {
               findVisualization().vm.$emit('set-alerts', {
                 description: 'This is just information',

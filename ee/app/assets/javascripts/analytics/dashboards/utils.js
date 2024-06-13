@@ -9,7 +9,15 @@ import {
   nDaysBefore,
 } from '~/lib/utils/datetime_utility';
 import { days, percentHundred } from '~/lib/utils/unit_format';
-import { TABLE_METRICS, UNITS, CHART_TOOLTIP_UNITS, METRICS_WITH_NO_TREND } from './constants';
+import {
+  TABLE_METRICS,
+  SUPPORTED_DORA_METRICS,
+  SUPPORTED_FLOW_METRICS,
+  SUPPORTED_VULNERABILITY_METRICS,
+  UNITS,
+  CHART_TOOLTIP_UNITS,
+  METRICS_WITH_NO_TREND,
+} from './constants';
 
 /**
  * Checks if a string representation of a value contains an
@@ -326,3 +334,59 @@ export const generateValueStreamDashboardStartDate = () => {
   const now = new Date();
   return now.getDate() === 1 ? nDaysBefore(now, 1) : now;
 };
+
+/**
+ * @typedef {Object} Permissions
+ * @property {Boolean} readDora4Analytics
+ * @property {Boolean} readCycleAnalytics
+ * @property {Boolean} readSecurityResource
+ */
+
+/**
+ * Determines the metrics that should not be rendered in the comparison table due to
+ * lack of permissions. The returned list will be mutually exclusive from the metrics
+ * already excluded from the table (`exludeMetrics`)
+ *
+ * @param {Array} excludeMetrics List of metric identifiers that are already removed
+ * @param {Permissions}
+ * @returns {Array} The metrics restricted due to lack of permissions
+ */
+export const getRestrictedTableMetrics = (
+  excludeMetrics,
+  { readDora4Analytics, readCycleAnalytics, readSecurityResource },
+) => {
+  const restricted = [
+    [SUPPORTED_DORA_METRICS, readDora4Analytics],
+    [SUPPORTED_FLOW_METRICS, readCycleAnalytics],
+    [SUPPORTED_VULNERABILITY_METRICS, readSecurityResource],
+  ].reduce((acc, [metrics, isAllowed]) => {
+    return isAllowed ? acc : [...acc, ...metrics];
+  }, []);
+
+  // Excluded/restricted metric sets should be mutually exclusive,
+  // so we need to remove any overlap.
+  return restricted.filter((metric) => !excludeMetrics.includes(metric));
+};
+
+/**
+ * @typedef {Array<String>} MetricIds
+ */
+
+/**
+ * @typedef {Array<[String, MetricIds]>} AlertGroup
+ */
+
+/**
+ * Creates a list of panel alerts to be rendered for the comparison chart.
+ *
+ * @param {Array<AlertGroup>} alertGroups - In the format [message, metrics]. The list of
+ *    potential alerts to show, if there are any metrics present.
+ * @returns {Array<String>} The list of alerts to be rendered for the comparison chart.
+ */
+export const generateTableAlerts = (alertGroups) =>
+  alertGroups.reduce((acc, [message, metrics]) => {
+    if (metrics.length === 0) return acc;
+
+    const formattedMetrics = metrics.map((metric) => TABLE_METRICS[metric].label).join(', ');
+    return [...acc, `${message}: ${formattedMetrics}`];
+  }, []);

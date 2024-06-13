@@ -14,6 +14,10 @@ module Projects
         push_frontend_feature_flag(:ai_impact_analytics_dashboard, project.group, type: :gitlab_com_derisk)
         push_frontend_feature_flag(:enable_vsd_visual_editor, project.group)
         push_frontend_feature_flag(:analytics_visualization_designer_filtering, project)
+
+        [:read_dora4_analytics, :read_cycle_analytics, :read_security_resource].each do |ability|
+          push_frontend_ability(ability: ability, resource: project.group, user: current_user)
+        end
       end
 
       before_action :track_usage, only: [:index], if: :viewing_single_dashboard?

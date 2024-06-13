@@ -1,6 +1,11 @@
 import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
-import { UNITS } from 'ee/analytics/dashboards/constants';
+import {
+  UNITS,
+  SUPPORTED_DORA_METRICS,
+  SUPPORTED_FLOW_METRICS,
+  SUPPORTED_VULNERABILITY_METRICS,
+} from 'ee/analytics/dashboards/constants';
 import { useFakeDate } from 'helpers/fake_date';
 import {
   percentChange,
@@ -15,6 +20,8 @@ import {
   generateChartTimePeriods,
   generateDashboardTableFields,
   generateValueStreamDashboardStartDate,
+  getRestrictedTableMetrics,
+  generateTableAlerts,
 } from 'ee/analytics/dashboards/utils';
 import { LEAD_TIME_METRIC_TYPE, CYCLE_TIME_METRIC_TYPE } from '~/api/analytics_api';
 import {
@@ -303,6 +310,53 @@ describe('Analytics Dashboards utils', () => {
           '2023-06-30T00:00:00.000Z',
         );
       });
+    });
+  });
+
+  describe('getRestrictedTableMetrics', () => {
+    it('restricts DORA metrics when the permission is disabled', () => {
+      const permissions = { readCycleAnalytics: true, readSecurityResource: true };
+      expect(getRestrictedTableMetrics([], permissions)).toEqual(SUPPORTED_DORA_METRICS);
+    });
+
+    it('restricts flow metrics when the permission is disabled', () => {
+      const permissions = { readDora4Analytics: true, readSecurityResource: true };
+      expect(getRestrictedTableMetrics([], permissions)).toEqual(SUPPORTED_FLOW_METRICS);
+    });
+
+    it('restricts vulnerability metrics when the permission is disabled', () => {
+      const permissions = { readDora4Analytics: true, readCycleAnalytics: true };
+      expect(getRestrictedTableMetrics([], permissions)).toEqual(SUPPORTED_VULNERABILITY_METRICS);
+    });
+
+    it('does not restrict metrics that are already excluded', () => {
+      const excludeMetrics = [
+        ...SUPPORTED_DORA_METRICS.slice(1),
+        ...SUPPORTED_FLOW_METRICS.slice(1),
+        ...SUPPORTED_VULNERABILITY_METRICS.slice(1),
+      ];
+      expect(getRestrictedTableMetrics(excludeMetrics, {})).toEqual([
+        SUPPORTED_DORA_METRICS[0],
+        SUPPORTED_FLOW_METRICS[0],
+        SUPPORTED_VULNERABILITY_METRICS[0],
+      ]);
+    });
+  });
+
+  describe('generateTableAlerts', () => {
+    it('returns the list of alerts that have associated metrics', () => {
+      const errors = 'errors';
+      const warnings = 'warnings';
+      expect(
+        generateTableAlerts([
+          [errors, SUPPORTED_FLOW_METRICS.slice(0, 2)],
+          [warnings, SUPPORTED_DORA_METRICS.slice(0, 2)],
+          ['no error', []],
+        ]),
+      ).toEqual([
+        `${errors}: Lead time, Cycle time`,
+        `${warnings}: Deployment frequency, Lead time for changes`,
+      ]);
     });
   });
 });

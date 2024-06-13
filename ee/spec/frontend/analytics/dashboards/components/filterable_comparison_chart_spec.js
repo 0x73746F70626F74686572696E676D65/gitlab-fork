@@ -89,6 +89,12 @@ describe('FilterableComparisonChart', () => {
         requestPath: 'group-namespace',
       });
     });
+
+    it('propagates `set-alerts` event from the chart', () => {
+      const payload = { errors: ['test'] };
+      findComparisonChart().vm.$emit('set-alerts', payload);
+      expect(wrapper.emitted('set-alerts')[0]).toEqual([payload]);
+    });
   });
 
   describe('with filters', () => {
@@ -102,7 +108,7 @@ describe('FilterableComparisonChart', () => {
 
       it('emits the `set-alerts` event', () => {
         expect(wrapper.emitted('set-alerts')[0]).toEqual([
-          { alerts: ['Failed to load labels matching the filter: test::one, test::two'] },
+          { errors: ['Failed to load labels matching the filter: test::one, test::two'] },
         ]);
       });
 
