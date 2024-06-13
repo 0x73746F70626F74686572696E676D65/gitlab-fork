@@ -193,6 +193,7 @@ export default {
     querystring-key="activity"
     :value="querySyncValues"
     :valid-values="$options.VALID_VALUES"
+    data-testid="activity-token"
     @input="updateSelectedFromQS"
   >
     <gl-filtered-search-token
