@@ -1489,6 +1489,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_dc13168b8025() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "vulnerability_occurrences"
+  WHERE "vulnerability_occurrences"."id" = NEW."vulnerability_occurrence_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_ebab34f83f1d() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -18595,6 +18611,7 @@ CREATE TABLE vulnerability_flags (
     flag_type smallint DEFAULT 0 NOT NULL,
     origin text NOT NULL,
     description text NOT NULL,
+    project_id bigint,
     CONSTRAINT check_45e743349f CHECK ((char_length(description) <= 1024)),
     CONSTRAINT check_49c1d00032 CHECK ((char_length(origin) <= 255))
 );
@@ -28924,6 +28941,8 @@ CREATE INDEX index_vulnerability_findings_remediations_on_remediation_id ON vuln
 
 CREATE UNIQUE INDEX index_vulnerability_findings_remediations_on_unique_keys ON vulnerability_findings_remediations USING btree (vulnerability_occurrence_id, vulnerability_remediation_id);
 
+CREATE INDEX index_vulnerability_flags_on_project_id ON vulnerability_flags USING btree (project_id);
+
 CREATE UNIQUE INDEX index_vulnerability_flags_on_unique_columns ON vulnerability_flags USING btree (vulnerability_occurrence_id, flag_type, origin);
 
 CREATE INDEX index_vulnerability_flags_on_vulnerability_occurrence_id ON vulnerability_flags USING btree (vulnerability_occurrence_id);
@@ -31068,6 +31087,8 @@ CREATE TRIGGER trigger_dadd660afe2c BEFORE INSERT OR UPDATE ON packages_debian_g
 
 CREATE TRIGGER trigger_dbdd61a66a91 BEFORE INSERT OR UPDATE ON agent_activity_events FOR EACH ROW EXECUTE FUNCTION trigger_dbdd61a66a91();
 
+CREATE TRIGGER trigger_dc13168b8025 BEFORE INSERT OR UPDATE ON vulnerability_flags FOR EACH ROW EXECUTE FUNCTION trigger_dc13168b8025();
+
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
 
 CREATE TRIGGER trigger_ebab34f83f1d BEFORE INSERT OR UPDATE ON packages_debian_publications FOR EACH ROW EXECUTE FUNCTION trigger_ebab34f83f1d();
@@ -32172,6 +32193,9 @@ ALTER TABLE ONLY external_status_checks_protected_branches
 
 ALTER TABLE ONLY dast_profiles_pipelines
     ADD CONSTRAINT fk_cc206a8c13 FOREIGN KEY (dast_profile_id) REFERENCES dast_profiles(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY vulnerability_flags
+    ADD CONSTRAINT fk_cc3b7b4548 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY todos
     ADD CONSTRAINT fk_ccf0373936 FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE;
