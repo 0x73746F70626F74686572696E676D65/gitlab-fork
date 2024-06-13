@@ -1089,6 +1089,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_5ca97b87ee30() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "target_project_id"
+  INTO NEW."project_id"
+  FROM "merge_requests"
+  WHERE "merge_requests"."id" = NEW."merge_request_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_5f6432d2dccc() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -12027,7 +12043,8 @@ CREATE TABLE merge_request_context_commits (
     committer_email text,
     message text,
     merge_request_id bigint,
-    trailers jsonb DEFAULT '{}'::jsonb NOT NULL
+    trailers jsonb DEFAULT '{}'::jsonb NOT NULL,
+    project_id bigint
 );
 
 CREATE SEQUENCE merge_request_context_commits_id_seq
@@ -27190,6 +27207,8 @@ CREATE UNIQUE INDEX index_merge_request_cleanup_schedules_on_merge_request_id ON
 
 CREATE INDEX index_merge_request_cleanup_schedules_on_status ON merge_request_cleanup_schedules USING btree (status);
 
+CREATE INDEX index_merge_request_context_commits_on_project_id ON merge_request_context_commits USING btree (project_id);
+
 CREATE UNIQUE INDEX index_merge_request_diff_commit_users_on_name_and_email ON merge_request_diff_commit_users USING btree (name, email);
 
 CREATE INDEX index_merge_request_diff_commits_on_sha ON merge_request_diff_commits USING btree (sha);
@@ -31018,6 +31037,8 @@ CREATE TRIGGER trigger_56d49f4ed623 BEFORE INSERT OR UPDATE ON workspace_variabl
 
 CREATE TRIGGER trigger_57ad2742ac16 BEFORE INSERT OR UPDATE ON user_achievements FOR EACH ROW EXECUTE FUNCTION trigger_57ad2742ac16();
 
+CREATE TRIGGER trigger_5ca97b87ee30 BEFORE INSERT OR UPDATE ON merge_request_context_commits FOR EACH ROW EXECUTE FUNCTION trigger_5ca97b87ee30();
+
 CREATE TRIGGER trigger_5f6432d2dccc BEFORE INSERT OR UPDATE ON operations_strategies_user_lists FOR EACH ROW EXECUTE FUNCTION trigger_5f6432d2dccc();
 
 CREATE TRIGGER trigger_77d9fbad5b12 BEFORE INSERT OR UPDATE ON packages_debian_project_distribution_keys FOR EACH ROW EXECUTE FUNCTION trigger_77d9fbad5b12();
@@ -32363,6 +32384,9 @@ ALTER TABLE ONLY work_item_widget_definitions
 
 ALTER TABLE ONLY coverage_fuzzing_corpuses
     ADD CONSTRAINT fk_ef5ebf339f FOREIGN KEY (package_id) REFERENCES packages_packages(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY merge_request_context_commits
+    ADD CONSTRAINT fk_ef6766ed57 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY approval_project_rules
     ADD CONSTRAINT fk_efa5a1e3fb FOREIGN KEY (security_orchestration_policy_configuration_id) REFERENCES security_orchestration_policy_configurations(id) ON DELETE CASCADE;
