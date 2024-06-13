@@ -4,8 +4,6 @@ module EE
   module SidebarsHelper
     extend ::Gitlab::Utils::Override
 
-    include TrialStatusWidgetHelper
-
     override :project_sidebar_context_data
     def project_sidebar_context_data(project, user, current_ref, **args)
       super.merge({
@@ -38,12 +36,10 @@ module EE
       root_namespace = (project || group)&.root_ancestor
 
       context.merge!(
-        trial_data(root_namespace),
+        GitlabSubscriptions::Trials::WidgetPresenter.new(root_namespace, user: current_user).attributes,
+        # GitlabSubscriptions::Trials::WidgetBuilder.new(current_user, root_namespace).attributes,
         show_tanuki_bot: ::Gitlab::Llm::TanukiBot.enabled_for?(user: current_user, container: nil)
       )
-
-      # do not add overriding data if there is already an ultimate trial widget to show
-      context.merge!(duo_pro_trial_data(root_namespace)) unless context.key?(:trial_status_widget_data_attrs)
 
       context[:trial] = {
         has_start_trial: trials_allowed?(user),
@@ -79,38 +75,6 @@ module EE
     end
 
     private
-
-    def trial_data(root_namespace)
-      if root_namespace.present? &&
-          ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-          show_trial_status_widget?(root_namespace) &&
-          can?(current_user, :admin_namespace, root_namespace)
-
-        trial_status = trial_status(root_namespace)
-
-        return {
-          trial_status_widget_data_attrs: trial_status_widget_data_attrs(root_namespace, trial_status),
-          trial_status_popover_data_attrs: trial_status_popover_data_attrs(trial_status)
-        }
-      end
-
-      {}
-    end
-
-    def duo_pro_trial_data(root_namespace)
-      widget = GitlabSubscriptions::Trials::DuoProStatusWidgetBuilder.new(current_user, root_namespace)
-
-      return {} unless widget.show?
-
-      {
-        duo_pro_trial_status_widget_data_attrs: widget.widget_data_attributes,
-        duo_pro_trial_status_popover_data_attrs: widget.popover_data_attributes
-      }
-    end
-
-    def trial_status(group)
-      GitlabSubscriptions::TrialStatus.new(group.trial_starts_on, group.trial_ends_on)
-    end
 
     def super_sidebar_default_pins(panel_type)
       case panel_type

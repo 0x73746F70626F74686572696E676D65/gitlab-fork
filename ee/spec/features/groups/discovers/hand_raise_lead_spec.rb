@@ -7,7 +7,10 @@ RSpec.describe 'Groups > Discovers > Hand Raise Lead', :js, :saas, feature_categ
 
   let_it_be(:user) { create(:user, :with_namespace, organization: 'YMCA') }
   let_it_be(:group) do
-    create(:group_with_plan, plan: :ultimate_trial_plan, trial_ends_on: Date.tomorrow, owners: user)
+    create(
+      :group_with_plan, plan: :ultimate_trial_plan,
+      trial_starts_on: Date.today, trial_ends_on: Date.tomorrow, owners: user
+    )
   end
 
   before do
