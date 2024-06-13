@@ -145,11 +145,6 @@ export default {
           tdClass: columnWidth,
         },
         {
-          key: 'project',
-          label: this.$options.i18n.tableHeaders.project,
-          sortable: false,
-        },
-        {
           key: 'check',
           label: this.$options.i18n.tableHeaders.check,
           sortable: false,
@@ -162,6 +157,11 @@ export default {
           sortable: false,
           thClass: columnWidth,
           tdClass: columnWidth,
+        },
+        {
+          key: 'project',
+          label: this.$options.i18n.tableHeaders.project,
+          sortable: false,
         },
         {
           key: 'lastScanned',

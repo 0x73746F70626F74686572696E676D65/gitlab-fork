@@ -13613,6 +13613,9 @@ msgstr ""
 msgid "ComplianceStandardsAdherence|A rule is configured to require two approvals."
 msgstr ""
 
+msgid "ComplianceStandardsAdherence|All attached frameworks"
+msgstr ""
+
 msgid "ComplianceStandardsAdherence|At least one non-author approval"
 msgstr ""
 
@@ -13674,6 +13677,9 @@ msgid "ComplianceStandardsAdherence|No rule is configured to require two approva
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|None"
+msgstr ""
+
+msgid "ComplianceStandardsAdherence|Other compliance frameworks applied to %{linkStart}%{projectName}%{linkEnd}"
 msgstr ""
 
 msgid "ComplianceStandardsAdherence|Prevent authors as approvers"

@@ -105,9 +105,9 @@ describe('AdherencesBaseTable component', () => {
 
       expect(headerTexts).toStrictEqual([
         'Status',
-        'Project',
         'Check',
         'Standard',
+        'Project',
         'Date since last status change',
         'More information',
       ]);
@@ -169,9 +169,9 @@ describe('AdherencesBaseTable component', () => {
       it('renders the table row properly', () => {
         const [
           rowStatus,
-          rowProject,
           rowCheck,
           rowStandard,
+          rowProject,
           rowDate,
         ] = findFirstTableRowData().wrappers.map((e) => e.text());
 
@@ -200,9 +200,9 @@ describe('AdherencesBaseTable component', () => {
       it('renders the table row properly', () => {
         const [
           rowStatus,
-          rowProject,
           rowCheck,
           rowStandard,
+          rowProject,
           rowDate,
         ] = findFirstTableRowData().wrappers.map((e) => e.text());
 
@@ -229,9 +229,9 @@ describe('AdherencesBaseTable component', () => {
       it('renders the table row properly', () => {
         const [
           rowStatus,
-          rowProject,
           rowCheck,
           rowStandard,
+          rowProject,
           rowDate,
         ] = findFirstTableRowData().wrappers.map((e) => e.text());
 
