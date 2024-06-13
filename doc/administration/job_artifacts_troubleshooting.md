@@ -542,7 +542,3 @@ sequenceDiagram
       W->>C: 401 Unauthorized
     end
 ```
-
-Instead, GitLab instructs Workhorse to fetch the data and stream it back
-to the runner. From the runner perspective, the original GET request to
-`/api/v4/jobs/:id/artifacts` returns the binary data directly.
