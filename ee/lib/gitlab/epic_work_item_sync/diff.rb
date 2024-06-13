@@ -134,7 +134,7 @@ module Gitlab
         related_epic_issues = epic.unauthorized_related_epics
 
         related_epic_issue_ids = related_epic_issues.map(&:issue_id)
-        related_work_item_ids = work_item.related_issues(authorize: false).map(&:id)
+        related_work_item_ids = work_item.related_issues(authorize: false).filter(&:epic_work_item?).map(&:id)
 
         return if related_work_item_ids == related_epic_issue_ids
 
