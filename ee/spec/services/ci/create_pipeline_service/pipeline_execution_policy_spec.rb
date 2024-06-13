@@ -174,4 +174,20 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :security_policy_man
       expect(stages.find_by(name: 'test').builds.map(&:name)).to contain_exactly('project_policy_job')
     end
   end
+
+  context 'when commit contains a [ci skip] directive' do
+    before do
+      allow_next_instance_of(Ci::Pipeline) do |instance|
+        allow(instance).to receive(:git_commit_message).and_return('some message[ci skip]')
+      end
+    end
+
+    it 'does not skip pipeline creation and injects policy jobs' do
+      expect { execute }.to change { Ci::Build.count }.from(0).to(4)
+
+      stages = execute.payload.stages
+      expect(stages.find_by(name: 'build').builds.map(&:name)).to contain_exactly('build', 'namespace_policy_job')
+      expect(stages.find_by(name: 'test').builds.map(&:name)).to contain_exactly('rspec', 'project_policy_job')
+    end
+  end
 end
