@@ -87,4 +87,83 @@ RSpec.describe API::ServiceAccounts, :aggregate_failures, feature_category: :use
       end
     end
   end
+
+  describe "GET /service_accounts" do
+    let_it_be(:service_account_buser) { create(:user, :service_account, username: "Buser") }
+    let_it_be(:service_account_auser) { create(:user, :service_account, username: "Auser") }
+    let_it_be(:regular_user) { create(:user) }
+    let(:path) { "/service_accounts" }
+    let_it_be(:params) { {} }
+
+    subject(:perform_request) { get api(path, admin, admin_mode: true), params: params }
+
+    context 'when feature is licensed' do
+      before do
+        stub_licensed_features(service_accounts: true)
+        allow(License).to receive(:current).and_return(license)
+      end
+
+      context 'when params are empty' do
+        before do
+          perform_request
+        end
+
+        it 'returns 200 status service account users list' do
+          expect(response).to have_gitlab_http_status(:ok)
+
+          expect(response).to match_response_schema('public_api/v4/user/safes')
+          expect(json_response.size).to eq(2)
+
+          expect_paginated_array_response(service_account_auser.id, service_account_buser.id)
+          expect(json_response.pluck("id")).not_to include(regular_user.id)
+        end
+      end
+
+      context 'when params has order_by specified' do
+        context 'when username' do
+          let_it_be(:params) { { order_by: "username" } }
+
+          it 'orders by username in desc order' do
+            perform_request
+
+            expect_paginated_array_response(service_account_buser.id, service_account_auser.id)
+          end
+
+          context 'when sort order is specified' do
+            let_it_be(:params) { { order_by: "username", sort: "asc" } }
+
+            it 'follows sort order' do
+              perform_request
+
+              expect_paginated_array_response(service_account_auser.id, service_account_buser.id)
+            end
+          end
+        end
+
+        context 'when order_by is neither id or username' do
+          let_it_be(:params) { { order_by: "name" } }
+
+          it 'throws error' do
+            perform_request
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+        end
+      end
+
+      it_behaves_like 'an endpoint with keyset pagination', invalid_order: nil do
+        let(:first_record) { service_account_auser }
+        let(:second_record) { service_account_buser }
+        let(:api_call) { api(path, admin, admin_mode: true) }
+      end
+    end
+
+    context 'when feature is not licensed' do
+      it "returns error" do
+        get api(path, admin, admin_mode: true), params: {}
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
 end
