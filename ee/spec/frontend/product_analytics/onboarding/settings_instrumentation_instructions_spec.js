@@ -1,5 +1,5 @@
 import { nextTick } from 'vue';
-import { GlModal } from '@gitlab/ui';
+import { GlModal, GlLink } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import {
   TEST_COLLECTOR_HOST,
@@ -17,6 +17,7 @@ describe('ProductAnalyticsSettingsInstrumentationInstructions', () => {
   const onboardingPath = '/foo/bar/dashboards/onboarding';
 
   const findModal = () => wrapper.findComponent(GlModal);
+  const findLink = () => wrapper.findComponent(GlLink);
   const findInstrumentationInstructionsButton = () =>
     wrapper.findByRole('button', {
       name: 'View instrumentation instructions',
@@ -74,6 +75,10 @@ describe('ProductAnalyticsSettingsInstrumentationInstructions', () => {
         dashboardsPath,
         trackingKey: TEST_TRACKING_KEY,
       });
+    });
+
+    it('shows the link to the dashboards path', () => {
+      expect(findLink().attributes('href')).toBe(dashboardsPath);
     });
   });
 });

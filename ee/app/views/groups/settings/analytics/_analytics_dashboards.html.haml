@@ -1,7 +1,9 @@
+- dashboards_link = link_to('', group_analytics_dashboards_path(@group))
+
 .sub-section
   %h4.warning-title= s_('GroupSettings|Analytics Dashboards')
   %p
-    = s_('GroupSettings|Select the project containing Analytics Dashboards configuration files.')
+    = safe_format(s_('GroupSettings|Select the project containing %{link_start}Analytics Dashboards%{link_end} configuration files.'), tag_pair(dashboards_link, :link_start, :link_end))
     = link_to(s_('GroupSettings|What is Analytics Dashboards?'), help_page_path('user/analytics/value_streams_dashboard'))
 
   .settings-content#js-analytics-dashboards-settings
@@ -11,7 +13,7 @@
       - pointer = @group.analytics_dashboards_pointer || @group.build_analytics_dashboards_pointer
       = form.fields_for :analytics_dashboards_pointer_attributes, pointer do |pointer_form|
         = pointer_form.hidden_field :id
-        .js-vue-project-select{ data: { label: s_('GroupSettings|Select the project containing Analytics Dashboards configuration files'),
+        .js-vue-project-select{ data: { label: s_('GroupSettings|Select a project'),
           input_name: 'group[analytics_dashboards_pointer_attributes][target_project_id]',
           input_id: 'group_analytics_dashboards_pointer_attributes_target_project_id',
           group_id: @group.id,
