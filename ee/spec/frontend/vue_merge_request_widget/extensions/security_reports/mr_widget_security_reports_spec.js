@@ -108,7 +108,7 @@ describe('MR Widget Security Reports', () => {
   const findReportSummaryText = (at) => wrapper.findAllComponents(SummaryText).at(at);
   const findSummaryHighlights = () => wrapper.findComponent(SummaryHighlights);
   const findDismissedBadge = () => wrapper.findComponent(GlBadge);
-  const findStandaloneModal = () => wrapper.findComponent(VulnerabilityFindingModal);
+  const findStandaloneModal = () => wrapper.findByTestId('vulnerability-finding-modal');
   const findDynamicScroller = () => wrapper.findByTestId('dynamic-content-scroller');
 
   beforeEach(() => {

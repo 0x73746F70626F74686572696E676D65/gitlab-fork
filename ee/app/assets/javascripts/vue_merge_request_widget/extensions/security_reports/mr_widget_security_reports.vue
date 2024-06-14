@@ -239,7 +239,10 @@ export default {
               testId: this.$options.testId[reportType],
             };
 
-            this.$set(this.collapsedData, reportType, report);
+            this.collapsedData = {
+              ...this.collapsedData,
+              [reportType]: report,
+            };
 
             return {
               headers,
@@ -249,7 +252,11 @@ export default {
           })
           .catch(({ response: { status, headers } }) => {
             const report = { ...props, error: true };
-            this.$set(this.collapsedData, reportType, report);
+
+            this.collapsedData = {
+              ...this.collapsedData,
+              [reportType]: report,
+            };
 
             if (status === 400) {
               this.topLevelErrorMessage = s__(
@@ -363,6 +370,7 @@ export default {
         :finding-uuid="modalData.vulnerability.uuid"
         :pipeline-iid="pipelineIid"
         :project-full-path="mr.targetProjectFullPath"
+        data-testid="vulnerability-finding-modal"
         @hidden="clearModalData"
         @dismissed="updateFindingState('dismissed')"
         @detected="updateFindingState('detected')"
