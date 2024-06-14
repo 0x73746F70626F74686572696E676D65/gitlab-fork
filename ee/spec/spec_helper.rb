@@ -46,8 +46,15 @@ RSpec.configure do |config|
     TestLicense.init
   end
 
-  config.before(:context, :with_cloud_connector) do
+  config.around(:example, :with_cloud_connector) do |example|
     create(:cloud_connector_access)
+    CloudConnector::AvailableServices.clear_memoization(:access_data_reader)
+    CloudConnector::AvailableServices.clear_memoization(:available_services)
+
+    example.run
+
+    CloudConnector::AvailableServices.clear_memoization(:access_data_reader)
+    CloudConnector::AvailableServices.clear_memoization(:available_services)
   end
 
   config.around(:each, :geo_tracking_db) do |example|
