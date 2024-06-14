@@ -33415,13 +33415,16 @@ msgstr ""
 msgid "MlModelRegistry|Drop to start upload"
 msgstr ""
 
+msgid "MlModelRegistry|Enter a description for this version of the model."
+msgstr ""
+
+msgid "MlModelRegistry|Enter a model description"
+msgstr ""
+
 msgid "MlModelRegistry|Enter a semver version."
 msgstr ""
 
 msgid "MlModelRegistry|Enter some description"
-msgstr ""
-
-msgid "MlModelRegistry|Enter some model description"
 msgstr ""
 
 msgid "MlModelRegistry|Experiment"
@@ -33445,6 +33448,9 @@ msgstr ""
 msgid "MlModelRegistry|For example 1.0.0"
 msgstr ""
 
+msgid "MlModelRegistry|For example 1.0.0. Must be a semantic version."
+msgstr ""
+
 msgid "MlModelRegistry|For example my-model"
 msgstr ""
 
@@ -33455,9 +33461,6 @@ msgid "MlModelRegistry|Import your machine learning models"
 msgstr ""
 
 msgid "MlModelRegistry|Info"
-msgstr ""
-
-msgid "MlModelRegistry|Initial version name. Must be a semantic version."
 msgstr ""
 
 msgid "MlModelRegistry|Latest version"
@@ -33559,10 +33562,10 @@ msgstr ""
 msgid "MlModelRegistry|Using the MLflow client"
 msgstr ""
 
-msgid "MlModelRegistry|Version Description"
+msgid "MlModelRegistry|Version candidates"
 msgstr ""
 
-msgid "MlModelRegistry|Version candidates"
+msgid "MlModelRegistry|Version description"
 msgstr ""
 
 msgid "MlModelRegistry|Versions"
