@@ -17,11 +17,10 @@ DETAILS:
 GitLab administrators can use the Runner Fleet Dashboard to assess the health of your instance runners.
 The Runner Fleet Dashboard shows:
 
-- Recent CI errors related caused by runner infrastructure.
-- Number of concurrent jobs executed on most busy runners.
-- Histogram of job queue times [(available only with ClickHouse)](#enable-more-ci-analytics-features-with-clickhouse).
-
-Support for usage and cost analysis are proposed in [epic 11183](https://gitlab.com/groups/gitlab-org/-/epics/11183).
+- Recent CI errors caused by runner infrastructure
+- Number of concurrent jobs executed on most busy runners
+- Compute minutes used by instance runners
+- Job queue times (available only with [ClickHouse](#enable-more-ci-analytics-features-with-clickhouse))
 
 ![Runner Fleet Dashboard](img/runner_fleet_dashboard.png)
 
@@ -45,7 +44,8 @@ These features require [setting up an additional infrastructure](#enable-more-ci
 
 Prerequisites:
 
-- You must be an administrator.
+- You must have administrator access to the instance.
+- You must enable the [ClickHouse integration](../../integration/clickhouse.md).
 
 To analyze runner usage, you can export a CSV file that contains the number of jobs and executed runner minutes. The
 CSV file shows the runner type and job status for each project. The CSV is sent to your email when the export is completed.
