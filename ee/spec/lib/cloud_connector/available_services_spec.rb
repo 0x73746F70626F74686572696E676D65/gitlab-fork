@@ -9,14 +9,35 @@ RSpec.describe CloudConnector::AvailableServices, feature_category: :cloud_conne
   end
 
   context 'when .com', :saas do
-    it 'includes SelfSigned::AccessDataReader' do
+    it 'returns SelfSigned::AccessDataReader' do
       expect(described_class.access_data_reader)
         .to be_a_kind_of(CloudConnector::SelfSigned::AccessDataReader)
     end
   end
 
-  context 'when the ai gateway service is self hosted' do
-    it 'includes SelfManaged::AccessDataReader if the feature is used after the cut-off date' do
+  context 'when CLOUD_CONNECTOR_SELF_SIGN_TOKENS is set' do
+    before do
+      stub_env('CLOUD_CONNECTOR_SELF_SIGN_TOKENS', '1')
+      # Need to disable this so as not to mix up this use case with the
+      # Custom Models experiment.
+      stub_feature_flags(ai_custom_model: false)
+    end
+
+    it 'returns SelfSigned::SelfManaged outside of development' do
+      expect(described_class.access_data_reader)
+        .to be_a_kind_of(CloudConnector::SelfManaged::AccessDataReader)
+    end
+
+    it 'returns SelfSigned::AccessDataReader in development' do
+      stub_rails_env('development')
+
+      expect(described_class.access_data_reader)
+        .to be_a_kind_of(CloudConnector::SelfSigned::AccessDataReader)
+    end
+  end
+
+  context 'when the AI gateway service is self-hosted' do
+    it 'returns SelfManaged::AccessDataReader if the feature is used after the cut-off date' do
       travel_to(Ai::SelfHostedModel::CUTOFF_DATE + 1.day) do
         expect(described_class.access_data_reader)
           .to be_a_kind_of(CloudConnector::SelfManaged::AccessDataReader)
@@ -30,7 +51,7 @@ RSpec.describe CloudConnector::AvailableServices, feature_category: :cloud_conne
         end
       end
 
-      it 'includes SelfManaged::AccessDataReader if CLOUD_CONNECTOR_SELF_SIGN_TOKENS is disabled' do
+      it 'returns SelfManaged::AccessDataReader if CLOUD_CONNECTOR_SELF_SIGN_TOKENS is disabled' do
         expect(described_class.access_data_reader)
           .to be_a_kind_of(CloudConnector::SelfManaged::AccessDataReader)
       end
@@ -40,7 +61,7 @@ RSpec.describe CloudConnector::AvailableServices, feature_category: :cloud_conne
           stub_env('CLOUD_CONNECTOR_SELF_SIGN_TOKENS', '1')
         end
 
-        it 'includes SelfSigned::AccessDataReader' do
+        it 'returns SelfSigned::AccessDataReader' do
           expect(described_class.access_data_reader)
             .to be_a_kind_of(CloudConnector::SelfSigned::AccessDataReader)
         end
@@ -50,7 +71,7 @@ RSpec.describe CloudConnector::AvailableServices, feature_category: :cloud_conne
             stub_feature_flags(ai_custom_model: false)
           end
 
-          it 'returns false' do
+          it 'returns SelfManaged::AccessDataReader' do
             expect(described_class.access_data_reader)
               .to be_a_kind_of(CloudConnector::SelfManaged::AccessDataReader)
           end
@@ -60,7 +81,7 @@ RSpec.describe CloudConnector::AvailableServices, feature_category: :cloud_conne
   end
 
   context 'when self_managed' do
-    it 'includes SelfManaged::AccessDataReader' do
+    it 'returns SelfManaged::AccessDataReader' do
       expect(described_class.access_data_reader)
         .to be_a_kind_of(CloudConnector::SelfManaged::AccessDataReader)
     end
