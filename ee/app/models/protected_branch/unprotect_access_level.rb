@@ -29,7 +29,7 @@ class ProtectedBranch::UnprotectAccessLevel < ApplicationRecord
   include ProtectedRefAccess
 
   belongs_to :protected_branch
-  delegate :project, to: :protected_branch
+  delegate :project, to: :protected_branch, allow_nil: true
 
   def self.declarative_policy_class
     'ProtectedBranchPolicy'
