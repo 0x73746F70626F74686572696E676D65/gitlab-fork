@@ -165,20 +165,6 @@ In this example, Akismet and CAPTCHA are enabled:
 
 1. [Initial request](#initial-request).
 
-<!-- TODO in future edit
-
-Some example videos:
-
-- REST API:
-
-![CAPTCHA REST API](/uploads/b148cbe45496e6f4a4f63d00bb9fbd8a/captcha_rest_api.mov)
-
-GraphQL API:
-
-![CAPTCHA GraphQL API](/uploads/3c7ef0fad0b84bd588572bae51519463/captcha_graphql_api.mov)
-
--->
-
 #### Initial request
 
 This initial request fails because no CAPTCHA response is provided.
