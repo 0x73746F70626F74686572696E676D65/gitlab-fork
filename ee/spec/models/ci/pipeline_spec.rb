@@ -911,7 +911,8 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
 
       context 'when the pipeline has security reports' do
         before do
-          create(:ee_ci_build, :sast, pipeline: pipeline, project: project)
+          stage = create(:ci_stage)
+          create(:ee_ci_build, :sast, pipeline: pipeline, project: project, ci_stage: stage)
         end
 
         it { is_expected.to be_truthy }
