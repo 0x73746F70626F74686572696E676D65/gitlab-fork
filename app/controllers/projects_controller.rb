@@ -73,7 +73,7 @@ class ProjectsController < Projects::ApplicationController
   # TODO: Set high urgency for #show https://gitlab.com/gitlab-org/gitlab/-/issues/334444
 
   urgency :low, [:refs, :show, :toggle_star, :transfer, :archive, :destroy, :update, :create,
-                 :activity, :edit, :new, :export, :remove_export, :generate_new_export, :download_export]
+    :activity, :edit, :new, :export, :remove_export, :generate_new_export, :download_export]
 
   urgency :high, [:unfoldered_environment_names]
 
