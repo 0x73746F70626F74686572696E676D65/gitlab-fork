@@ -53,12 +53,15 @@ describe('ProjectTemplateSelector', () => {
     it('selects tempate', async () => {
       createComponent();
 
-      findGlCollapsibleListbox().vm.$emit('select', templateName);
+      const listbox = findGlCollapsibleListbox();
+
+      listbox.vm.$emit('select', templateName);
 
       await nextTick();
 
       expect(wrapper.emitted('select')).toEqual([[templateName]]);
       expect(wrapper.text()).toEqual(DEFAULT_PROJECT_TEMPLATES[templateName].text);
+      expect(listbox.props('selected')).toBe(templateName);
       expect(findSelectedLogo().exists()).toBe(true);
     });
   });
@@ -67,12 +70,15 @@ describe('ProjectTemplateSelector', () => {
     it('resets tempate', async () => {
       createComponent({ selectedTemplateName: templateName });
 
-      findGlCollapsibleListbox().vm.$emit('reset');
+      const listbox = findGlCollapsibleListbox();
+
+      listbox.vm.$emit('reset');
 
       await nextTick();
 
       expect(wrapper.emitted('select')).toEqual([[templateName], ['']]);
       expect(wrapper.text()).toEqual(DEFAULT_SELECTED_LABEL);
+      expect(listbox.props('selected')).toBe('');
       expect(findSelectedLogo().exists()).toBe(false);
     });
   });
