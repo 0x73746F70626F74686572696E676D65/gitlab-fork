@@ -5,7 +5,7 @@ class Vulnerabilities::FindingEntity < Grape::Entity
   include VulnerabilitiesHelper
   include MarkupHelper
 
-  expose :id, :report_type, :name, :severity, :confidence
+  expose :id, :report_type, :name, :severity
   expose :scanner, using: Vulnerabilities::ScannerEntity
   expose :identifiers, using: Vulnerabilities::IdentifierEntity
   expose :project_fingerprint
