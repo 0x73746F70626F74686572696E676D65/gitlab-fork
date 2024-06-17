@@ -953,7 +953,7 @@
   :feature_category: :vulnerability_management
   :has_external_dependencies: false
   :urgency: :low
-  :resource_boundary: :cpu
+  :resource_boundary: :memory
   :weight: 2
   :idempotent: true
   :tags: []
