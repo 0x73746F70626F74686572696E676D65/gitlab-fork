@@ -49,3 +49,7 @@ module GitlabSubscriptions
     end
   end
 end
+
+# Added for JiHu
+# Used in https://jihulab.com/gitlab-cn/gitlab/-/blob/main-jh/jh/app/presenters/jh/gitlab_subscriptions/trials/status_widget_presenter.rb
+GitlabSubscriptions::Trials::StatusWidgetPresenter.prepend_mod
