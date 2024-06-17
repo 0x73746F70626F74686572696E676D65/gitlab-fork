@@ -3,6 +3,7 @@ import { cloneDeep } from 'lodash';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import { GlLink, GlTableLite } from '@gitlab/ui';
+import { useFakeDate } from 'helpers/fake_date';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import WorkspacesTable from 'ee/workspaces/common/components/workspaces_list/workspaces_table.vue';
 import WorkspaceActions from 'ee/workspaces/common/components/workspace_actions.vue';
@@ -29,21 +30,23 @@ const findTableRowsAsData = (wrapper) =>
       workspaceState: tds.at(0).findComponent(WorkspaceStateIndicator).props('workspaceState'),
       nameText: tds.at(1).text(),
       createdAt: tds.at(2).findComponent(TimeAgoTooltip).props().time,
-      actionsProps: tds.at(5).findComponent(WorkspaceActions).props(),
+      terminates: tds.at(3).text(),
+      actionsProps: tds.at(6).findComponent(WorkspaceActions).props(),
     };
 
-    const td3 = tds.at(3);
-    const devfileLink = td3.findComponent(GlLink);
+    const devfileLinkTd = tds.at(4);
+    const devfileLink = devfileLinkTd.findComponent(GlLink);
     if (devfileLink.exists()) {
-      rowData.devfileText = td3.text();
+      rowData.devfileText = devfileLinkTd.text();
       rowData.devfileHref = devfileLink.attributes('href');
       rowData.devfileTooltipTitle = devfileLink.attributes('title');
       rowData.devfileTooltipAriaLabel = devfileLink.attributes('aria-label');
     }
 
-    if (tds.at(4).findComponent(GlLink).exists()) {
-      rowData.previewText = tds.at(4).text();
-      rowData.previewHref = tds.at(4).findComponent(GlLink).attributes('href');
+    const previewLinkTd = tds.at(5);
+    if (previewLinkTd.findComponent(GlLink).exists()) {
+      rowData.previewText = previewLinkTd.text();
+      rowData.previewHref = previewLinkTd.findComponent(GlLink).attributes('href');
     }
 
     return rowData;
@@ -51,6 +54,8 @@ const findTableRowsAsData = (wrapper) =>
 const findWorkspaceActions = (tableRow) => tableRow.findComponent(WorkspaceActions);
 
 describe('workspaces/common/components/workspaces_list/workspaces_table.vue', () => {
+  useFakeDate(2023, 4, 4, 17, 30);
+
   let wrapper;
   let updateWorkspaceMutationMock;
   const UpdateWorkspaceMutationStub = {
@@ -114,6 +119,7 @@ describe('workspaces/common/components/workspaces_list/workspaces_table.vue', ()
             nameText: `${x.projectName}   ${x.name}`,
             workspaceState: x.actualState,
             createdAt: x.createdAt,
+            terminates: x.name === 'workspace-1-1-idmi02' ? 'in 54 minutes' : 'in 2 days',
             actionsProps: {
               actualState: x.actualState,
               desiredState: x.desiredState,

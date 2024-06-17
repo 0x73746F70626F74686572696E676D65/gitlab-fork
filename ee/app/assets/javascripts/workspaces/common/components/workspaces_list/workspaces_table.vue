@@ -1,5 +1,6 @@
 <script>
 import { GlTableLite, GlLink, GlTooltipDirective } from '@gitlab/ui';
+import { getTimeago, nSecondsAfter } from '~/lib/utils/datetime_utility';
 import { __, sprintf } from '~/locale';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { WORKSPACE_STATES } from '../../constants';
@@ -7,29 +8,13 @@ import WorkspaceStateIndicator from '../workspace_state_indicator.vue';
 import UpdateWorkspaceMutation from '../update_workspace_mutation.vue';
 import WorkspaceActions from '../workspace_actions.vue';
 
-const isTerminated = (w) => w.actualState === WORKSPACE_STATES.terminated;
-
-// Moves terminated workspaces to the end of the list
-const sortWorkspacesByTerminatedState = (workspaceA, workspaceB) => {
-  const isWorkspaceATerminated = isTerminated(workspaceA);
-  const isWorkspaceBTerminated = isTerminated(workspaceB);
-
-  if (isWorkspaceATerminated === isWorkspaceBTerminated) {
-    return 0; // Preserve default order when neither workspace is terminated, or both workspaces are terminated.
-  }
-  if (isWorkspaceATerminated) {
-    return 1; // Place workspaceA after workspaceB since it is terminated.
-  }
-
-  return -1; // Place workspaceA before workspaceB since it is not terminated.
-};
-
 export const i18n = {
   tableColumnHeaders: {
     name: __('Name'),
     devfile: __('Devfile'),
     preview: __('Preview'),
     created: __('Created'),
+    terminates: __('Terminates'),
   },
 };
 
@@ -53,7 +38,7 @@ export default {
   },
   computed: {
     sortedWorkspaces() {
-      return [...this.workspaces].sort(sortWorkspacesByTerminatedState);
+      return [...this.workspaces].sort(this.sortWorkspacesByTerminatedState);
     },
   },
   methods: {
@@ -62,6 +47,32 @@ export default {
         return '';
       }
       return sprintf(__(`%{path} on %{ref}`), { ref, path });
+    },
+    terminatesIn(workspace) {
+      const createdAt = new Date(workspace.createdAt);
+      const terminationDate = nSecondsAfter(
+        createdAt,
+        workspace.maxHoursBeforeTermination * 60 * 60,
+      );
+
+      return getTimeago().format(terminationDate, { relativeDate: createdAt });
+    },
+    // Moves terminated workspaces to the end of the list
+    sortWorkspacesByTerminatedState(workspaceA, workspaceB) {
+      const isWorkspaceATerminated = this.isTerminated(workspaceA);
+      const isWorkspaceBTerminated = this.isTerminated(workspaceB);
+
+      if (isWorkspaceATerminated === isWorkspaceBTerminated) {
+        return 0; // Preserve default order when neither workspace is terminated, or both workspaces are terminated.
+      }
+      if (isWorkspaceATerminated) {
+        return 1; // Place workspaceA after workspaceB since it is terminated.
+      }
+
+      return -1; // Place workspaceA before workspaceB since it is not terminated.
+    },
+    isTerminated(workspace) {
+      return workspace.actualState === WORKSPACE_STATES.terminated;
     },
   },
   fields: [
@@ -85,7 +96,12 @@ export default {
     {
       key: 'created',
       label: i18n.tableColumnHeaders.created,
-      thClass: 'gl-w-3/20',
+      thClass: 'gl-w-2/20',
+    },
+    {
+      key: 'terminates',
+      label: i18n.tableColumnHeaders.terminates,
+      thClass: 'gl-w-2/20',
     },
     {
       key: 'devfile',
@@ -133,6 +149,15 @@ export default {
             class="gl-whitespace-nowrap gl-font-sm-600 gl-text-secondary"
             :time="item.createdAt"
           />
+        </template>
+        <template #cell(terminates)="{ item }">
+          <div
+            v-if="!isTerminated(item)"
+            class="gl-whitespace-nowrap gl-font-sm-600 gl-text-secondary"
+            :data-testid="`${item.name}-terminates`"
+          >
+            {{ terminatesIn(item) }}
+          </div>
         </template>
         <template #cell(devfile)="{ item }">
           <gl-link
