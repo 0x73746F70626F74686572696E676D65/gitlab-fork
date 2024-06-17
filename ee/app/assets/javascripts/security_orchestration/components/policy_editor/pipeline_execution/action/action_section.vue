@@ -126,6 +126,7 @@ export default {
 
 <template>
   <code-block-file-path
+    is-pipeline-execution
     :file-path="filePath"
     :strategy="strategy"
     :selected-ref="selectedRef"

@@ -86,7 +86,7 @@ describe('CodeBlockFilePath', () => {
   describe('pipeline execution policy', () => {
     it('renders message for "inject" pipeline execution policy', () => {
       createComponent({
-        provide: { glFeatures: { pipelineExecutionPolicyType: true } },
+        propsData: { isPipelineExecution: true },
         stubs: { GlSprintf: false },
       });
       expect(findGlSprintf().attributes('message')).toBe(
@@ -96,8 +96,7 @@ describe('CodeBlockFilePath', () => {
 
     it('renders message for "override" pipeline execution policy', () => {
       createComponent({
-        propsData: { strategy: OVERRIDE },
-        provide: { glFeatures: { pipelineExecutionPolicyType: true } },
+        propsData: { strategy: OVERRIDE, isPipelineExecution: true },
         stubs: { GlSprintf: false },
       });
       expect(findGlSprintf().attributes('message')).toBe(
@@ -106,9 +105,7 @@ describe('CodeBlockFilePath', () => {
     });
 
     it('renders icon tooltip message for inject pipeline execution policy', () => {
-      createComponent({
-        provide: { glFeatures: { pipelineExecutionPolicyType: true } },
-      });
+      createComponent({ propsData: { isPipelineExecution: true } });
       expect(findIcon().attributes('title')).toBe(
         'The content of this pipeline execution YAML file is injected into the .gitlab-ci.yml file of the target project. All GitLab CI/CD features are supported.',
       );
@@ -116,8 +113,7 @@ describe('CodeBlockFilePath', () => {
 
     it('renders icon tooltip message for override pipeline execution policy', () => {
       createComponent({
-        propsData: { strategy: OVERRIDE },
-        provide: { glFeatures: { pipelineExecutionPolicyType: true } },
+        propsData: { strategy: OVERRIDE, isPipelineExecution: true },
       });
       expect(findIcon().attributes('title')).toBe(
         'The content of this pipeline execution YAML file overrides the .gitlab-ci.yml file of the target project. All GitLab CI/CD features are supported.',
@@ -125,15 +121,13 @@ describe('CodeBlockFilePath', () => {
     });
 
     it('renders the help icon', () => {
-      createComponent({
-        provide: { glFeatures: { pipelineExecutionPolicyType: true } },
-      });
+      createComponent({ propsData: { isPipelineExecution: true } });
       expect(findIcon().exists()).toBe(true);
     });
 
     it('renders pipeline execution ref selector', () => {
       createComponent({
-        provide: { glFeatures: { pipelineExecutionPolicyType: true } },
+        propsData: { isPipelineExecution: true },
         stubs: { GlSprintf: false },
       });
       expect(findRefSelector().exists()).toBe(false);
@@ -209,8 +203,7 @@ describe('CodeBlockFilePath', () => {
 
     it('renders selected override', () => {
       createComponent({
-        propsData: { strategy: OVERRIDE },
-        provide: { glFeatures: { pipelineExecutionPolicyType: true } },
+        propsData: { strategy: OVERRIDE, isPipelineExecution: true },
       });
       expect(findStrategySelector().props('strategy')).toBe(OVERRIDE);
     });
@@ -256,10 +249,7 @@ describe('CodeBlockFilePath', () => {
     });
 
     it('can select strategy for pipeline execution policy', () => {
-      createComponent({
-        propsData: { strategy: INJECT },
-        provide: { glFeatures: { pipelineExecutionPolicyType: true } },
-      });
+      createComponent({ propsData: { strategy: INJECT, isPipelineExecution: true } });
       findStrategySelector().vm.$emit('select', OVERRIDE);
       expect(wrapper.emitted('select-strategy')).toEqual([[OVERRIDE]]);
     });

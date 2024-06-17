@@ -387,26 +387,17 @@ enabled: true`;
 
   describe('execute yaml block section', () => {
     it.each`
-      compliancePipelineInPolicies | customCiToggleEnabled | pipelineExecutionPolicyType | output
-      ${true}                      | ${true}               | ${true}                     | ${false}
-      ${true}                      | ${true}               | ${false}                    | ${true}
-      ${true}                      | ${false}              | ${true}                     | ${false}
-      ${true}                      | ${false}              | ${false}                    | ${false}
-      ${false}                     | ${true}               | ${true}                     | ${false}
-      ${false}                     | ${true}               | ${false}                    | ${false}
-      ${false}                     | ${false}              | ${true}                     | ${false}
-      ${false}                     | ${false}              | ${false}                    | ${false}
+      compliancePipelineInPolicies | customCiToggleEnabled | output
+      ${true}                      | ${true}               | ${true}
+      ${true}                      | ${false}              | ${false}
+      ${false}                     | ${true}               | ${false}
+      ${false}                     | ${false}              | ${false}
     `(
-      'should render the correct action builder when compliancePipelineInPolicies is $compliancePipelineInPolicies, customCiToggleEnabled is $customCiToggleEnabled, and pipelineExecutionPolicyType is $pipelineExecutionPolicyType',
-      ({
-        compliancePipelineInPolicies,
-        customCiToggleEnabled,
-        pipelineExecutionPolicyType,
-        output,
-      }) => {
+      'should render the correct action builder when compliancePipelineInPolicies is $compliancePipelineInPolicies and  customCiToggleEnabled is $customCiToggleEnabled',
+      ({ compliancePipelineInPolicies, customCiToggleEnabled, output }) => {
         factory({
           provide: {
-            glFeatures: { compliancePipelineInPolicies, pipelineExecutionPolicyType },
+            glFeatures: { compliancePipelineInPolicies },
             customCiToggleEnabled,
           },
         });
