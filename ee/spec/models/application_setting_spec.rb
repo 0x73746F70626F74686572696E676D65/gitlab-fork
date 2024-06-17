@@ -23,6 +23,7 @@ RSpec.describe ApplicationSetting, feature_category: :shared, type: :model do
 
     it { expect(setting.security_approval_policies_limit).to eq(5) }
     it { expect(setting.use_clickhouse_for_analytics).to eq(false) }
+    it { expect(setting.zoekt_auto_index_root_namespace).to eq(false) }
     it { expect(setting.zoekt_indexing_enabled).to eq(false) }
     it { expect(setting.zoekt_indexing_paused).to eq(false) }
     it { expect(setting.zoekt_search_enabled).to eq(false) }

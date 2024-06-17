@@ -20018,6 +20018,9 @@ msgstr ""
 msgid "Enable email notification"
 msgstr ""
 
+msgid "Enable exact code search"
+msgstr ""
+
 msgid "Enable feature to choose access level"
 msgstr ""
 
@@ -20031,6 +20034,9 @@ msgid "Enable header and footer in emails"
 msgstr ""
 
 msgid "Enable incident management inbound alert limit"
+msgstr ""
+
+msgid "Enable indexing for exact code search"
 msgstr ""
 
 msgid "Enable instance runners for all projects and subgroups in this group."
@@ -27671,6 +27677,9 @@ msgid "Index all projects"
 msgstr ""
 
 msgid "Index deletion is canceled"
+msgstr ""
+
+msgid "Index root namespaces automatically"
 msgstr ""
 
 msgid "Indexing status"
@@ -37816,6 +37825,9 @@ msgid "Paths with rate limiting for POST requests"
 msgstr ""
 
 msgid "Pause"
+msgstr ""
+
+msgid "Pause indexing for exact code search"
 msgstr ""
 
 msgid "Pause time (ms)"

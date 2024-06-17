@@ -135,6 +135,10 @@ module EE
         joins('INNER JOIN group_wiki_repositories ON namespaces.id = group_wiki_repositories.group_id')
       end
 
+      scope :root_namespaces_without_zoekt_enabled_namespace, -> do
+        top_most.left_outer_joins(:zoekt_enabled_namespace).where(zoekt_enabled_namespace: { root_namespace_id: nil })
+      end
+
       delegate :eligible_additional_purchased_storage_size, :additional_purchased_storage_size=,
         :additional_purchased_storage_ends_on, :additional_purchased_storage_ends_on=,
         to: :namespace_limit, allow_nil: true
