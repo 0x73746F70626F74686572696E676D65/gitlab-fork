@@ -261,12 +261,10 @@ describe('EE IssuesListApp component', () => {
 
     describe('when all tokens are available', () => {
       beforeEach(() => {
-        window.gon = {
-          current_user_id: mockCurrentUser.id,
-          current_user_fullname: mockCurrentUser.name,
-          current_username: mockCurrentUser.username,
-          current_user_avatar_url: mockCurrentUser.avatar_url,
-        };
+        gon.current_user_id = mockCurrentUser.id;
+        gon.current_user_fullname = mockCurrentUser.name;
+        gon.current_username = mockCurrentUser.username;
+        gon.current_user_avatar_url = mockCurrentUser.avatar_url;
 
         wrapper = mountComponent({
           provide: {
