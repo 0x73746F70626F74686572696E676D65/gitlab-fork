@@ -11,12 +11,7 @@ module Gitlab
             RESOURCE_NAME = 'epic'
             NAME = 'EpicReader'
             HUMAN_NAME = 'Epic Search'
-            DESCRIPTION = 'Useful tool when you need to retrieve information about a specific epic. ' \
-                          'In this context, word `epic` means high-level building block in GitLab that encapsulates ' \
-                          'high-level plans and discussions. Epic can contain multiple issues. ' \
-                          'Action Input for this tool should be the original question or epic identifier.'
-
-            EXPERIMENTAL_TOOL_DESCRIPTION = <<~PROMPT
+            DESCRIPTION = <<~PROMPT
             This tool retrieves the content of a specific epic
             ONLY if the user question fulfills the strict usage conditions below.
 

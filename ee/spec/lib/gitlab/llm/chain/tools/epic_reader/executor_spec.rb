@@ -46,7 +46,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::EpicReader::Executor, feature_category
   describe '#description' do
     it 'returns tool description' do
       expect(described_class::DESCRIPTION)
-        .to include('Useful tool when you need to retrieve information about a specific epic.')
+        .to include('This tool retrieves the content of a specific epic')
     end
   end
 

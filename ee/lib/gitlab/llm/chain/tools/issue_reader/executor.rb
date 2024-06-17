@@ -11,13 +11,7 @@ module Gitlab
             RESOURCE_NAME = 'issue'
             NAME = "IssueReader"
             HUMAN_NAME = 'Issue Search'
-            DESCRIPTION = 'Gets the content of the current issue (also referenced as this or that) the user sees ' \
-                          'or a specific issue identified by an ID or a URL.' \
-                          'In this context, word `issue` means core building block in GitLab that enable ' \
-                          'collaboration, discussions, planning and tracking of work.' \
-                          'Action Input for this tool should be the original question or issue identifier.'
-
-            EXPERIMENTAL_TOOL_DESCRIPTION = <<~PROMPT
+            DESCRIPTION = <<~PROMPT
             This tool retrieves the content of a specific issue
             ONLY if the user question fulfills the strict usage conditions below.
 

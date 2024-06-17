@@ -23,12 +23,6 @@ module Ai
 
       def current_page_short_description
         <<~SENTENCE
-          The user is currently on a page that displays an epic with a description, comments, etc., which the user might refer to, for example, as 'current', 'this' or 'that'. The title of the epic is '#{resource.title}'. Remember to use the 'EpicReader' tool if they ask a question about the epic.
-        SENTENCE
-      end
-
-      def current_page_experimental_short_description
-        <<~SENTENCE
           The user is currently on a page that displays an epic with a description, comments, etc., which the user might refer to, for example, as 'current', 'this' or 'that'. The title of the epic is '#{resource.title}'.
         SENTENCE
       end

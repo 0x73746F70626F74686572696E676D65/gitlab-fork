@@ -30,10 +30,6 @@ module Gitlab
           authorized_resource&.current_page_short_description
         end
 
-        def current_page_experimental_short_description
-          authorized_resource&.current_page_experimental_short_description
-        end
-
         def resource_serialized(content_limit:)
           return '' unless authorized_resource
 
