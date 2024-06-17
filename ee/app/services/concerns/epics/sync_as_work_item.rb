@@ -3,6 +3,7 @@
 module Epics
   module SyncAsWorkItem
     extend ActiveSupport::Concern
+    include ::Gitlab::Utils::StrongMemoize
 
     SyncAsWorkItemError = Class.new(StandardError)
 
@@ -23,7 +24,7 @@ module Epics
       end
 
       sync_color(epic, work_item)
-      sync_dates(epic, work_item)
+      sync_dates_on_epic_creation(epic, work_item)
 
       work_item.save!(touch: false)
       work_item
@@ -34,8 +35,8 @@ module Epics
     def update_work_item_for!(epic)
       return true unless epic.work_item
 
-      sync_color(epic, epic.work_item)
-      sync_dates(epic, epic.work_item)
+      sync_color(epic, epic.work_item) if changed_attributes(epic).include?(:color)
+      sync_dates_on_epic_update(epic, epic.work_item)
       epic.work_item.assign_attributes(update_params(epic))
 
       epic.work_item.save!(touch: false)
@@ -47,11 +48,11 @@ module Epics
 
     def create_params(epic)
       ALLOWED_PARAMS.index_with { |attr| epic[attr] }
-                    .merge(work_item_type: WorkItems::Type.default_by_type(:epic), namespace_id: group.id)
+        .merge(work_item_type: WorkItems::Type.default_by_type(:epic), namespace_id: group.id)
     end
 
     def update_params(epic)
-      filtered_attributes = epic.previous_changes.keys.map(&:to_sym)
+      filtered_attributes = changed_attributes(epic)
         .intersection(ALLOWED_PARAMS + %i[title_html description_html])
         .index_with { |attr| epic[attr] }
 
@@ -70,7 +71,7 @@ module Epics
       end
     end
 
-    def sync_dates(epic, work_item)
+    def sync_dates_on_epic_creation(epic, work_item)
       dates_source = work_item.dates_source || work_item.build_dates_source
 
       dates_source.start_date = epic.start_date
@@ -84,6 +85,32 @@ module Epics
       dates_source.due_date_is_fixed = epic.due_date_is_fixed || false
       dates_source.due_date_sourcing_milestone_id = epic.due_date_sourcing_milestone_id
       dates_source.due_date_sourcing_work_item_id = epic.due_date_sourcing_epic&.issue_id
+
+      work_item.dates_source = dates_source
+    end
+
+    def sync_dates_on_epic_update(epic, work_item)
+      changed_attributes = changed_date_attributes(epic)
+      return if changed_attributes.blank?
+
+      dates_source = work_item.dates_source || work_item.build_dates_source
+
+      if changed_attributes.include?(:start_date_sourcing_epic_id)
+        dates_source.start_date_sourcing_work_item_id = epic.start_date_sourcing_epic&.issue_id
+        changed_attributes.delete(:start_date_sourcing_epic_id)
+      end
+
+      if changed_attributes.include?(:due_date_sourcing_epic_id)
+        dates_source.due_date_sourcing_work_item_id = epic.due_date_sourcing_epic&.issue_id
+        changed_attributes.delete(:due_date_sourcing_epic_id)
+      end
+
+      if changed_attributes.include?(:end_date)
+        dates_source.due_date = epic.end_date
+        changed_attributes.delete(:end_date)
+      end
+
+      dates_source.assign_attributes(changed_attributes.index_with { |attr| epic[attr] })
 
       work_item.dates_source = dates_source
     end
@@ -106,6 +133,21 @@ module Epics
         error_message: error_message,
         group_id: group.id,
         epic_id: epic&.id)
+    end
+
+    def changed_date_attributes(epic)
+      changed_attributes(epic).intersection(
+        %i[
+          start_date start_date_fixed start_date_is_fixed start_date_sourcing_milestone_id start_date_sourcing_epic_id
+          end_date due_date_fixed due_date_is_fixed due_date_sourcing_milestone_id due_date_sourcing_epic_id
+        ]
+      )
+    end
+
+    def changed_attributes(epic)
+      strong_memoize_with(:changed_attributes, epic) do
+        epic.previous_changes.keys.map(&:to_sym)
+      end
     end
   end
 end

@@ -844,6 +844,17 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                   create(:parent_link, work_item_parent: epic.work_item, work_item: WorkItem.find(child_issue.id))
                 end
 
+                context 'when updating only due date' do
+                  let(:opts) { { due_date: 2.days.from_now.to_date } }
+
+                  it 'syncs due date' do
+                    subject
+
+                    expect(work_item.dates_source.due_date).to eq(epic.end_date)
+                    expect(work_item.dates_source.due_date).to eq(opts[:due_date].to_date)
+                  end
+                end
+
                 it 'sets rolledup dated for the work item', :aggregate_failures do
                   subject
 
@@ -992,9 +1003,11 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                 end
               end
 
-              context 'when params are different than the epic attributes' do
+              context 'when params are different than the epic attributes', :aggregate_failures do
                 before do
-                  epic.update!(title: "Outdated title")
+                  epic.work_item.create_dates_source!(start_date: 3.days.ago, due_date: 3.days.from_now)
+                  epic.work_item.create_color!(color: "#123123")
+                  epic.update!(title: "Outdated title", color: "#aabbcc", due_date_fixed: 3.days.ago)
                 end
 
                 let(:opts) do
@@ -1011,6 +1024,8 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                   expect(work_item.updated_by).to eq(epic.updated_by)
                   expect(work_item.updated_at).to eq(epic.updated_at)
                   expect(work_item.title).not_to eq('Outdated title')
+                  expect(work_item.color.color).not_to eq(epic.color)
+                  expect(work_item.dates_source.due_date_fixed).not_to eq(epic.due_date_fixed)
                 end
               end
             end
