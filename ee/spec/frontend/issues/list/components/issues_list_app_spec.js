@@ -107,7 +107,7 @@ describe('EE IssuesListApp component', () => {
   const mountComponent = ({
     provide = {},
     okrsMvc = false,
-    workItemsMvc2 = false,
+    workItemsAlpha = false,
     issuesQueryResponse = jest.fn().mockResolvedValue(defaultQueryResponse),
     issuesCountsQueryResponse = jest.fn().mockResolvedValue(getIssuesCountsQueryResponse),
   } = {}) => {
@@ -120,7 +120,7 @@ describe('EE IssuesListApp component', () => {
       provide: {
         glFeatures: {
           okrsMvc,
-          workItemsMvc2,
+          workItemsAlpha,
         },
         ...defaultProvide,
         ...provide,
@@ -190,16 +190,16 @@ describe('EE IssuesListApp component', () => {
 
   describe('typeTokenOptions', () => {
     describe.each`
-      hasEpicsFeature | isProject | workItemsMvc2 | eeWorkItemTypeTokens        | message
-      ${false}        | ${true}   | ${false}      | ${[]}                       | ${'NOT include'}
-      ${true}         | ${true}   | ${false}      | ${[]}                       | ${'NOT include'}
-      ${true}         | ${false}  | ${false}      | ${[]}                       | ${'NOT include'}
-      ${true}         | ${false}  | ${true}       | ${[TYPE_TOKEN_EPIC_OPTION]} | ${'include'}
+      hasEpicsFeature | isProject | workItemsAlpha | eeWorkItemTypeTokens        | message
+      ${false}        | ${true}   | ${false}       | ${[]}                       | ${'NOT include'}
+      ${true}         | ${true}   | ${false}       | ${[]}                       | ${'NOT include'}
+      ${true}         | ${false}  | ${false}       | ${[]}                       | ${'NOT include'}
+      ${true}         | ${false}  | ${true}        | ${[TYPE_TOKEN_EPIC_OPTION]} | ${'include'}
     `(
-      'when hasEpicsFeature is "$hasEpicsFeature" and isProject is "$isProject" and workItemsMvc2 is "$workItemsMvc2"',
-      ({ hasEpicsFeature, isProject, workItemsMvc2, eeWorkItemTypeTokens, message }) => {
+      'when hasEpicsFeature is "$hasEpicsFeature" and isProject is "$isProject" and workItemsAlpha is "$workItemsAlpha"',
+      ({ hasEpicsFeature, isProject, workItemsAlpha, eeWorkItemTypeTokens, message }) => {
         beforeEach(() => {
-          wrapper = mountComponent({ provide: { hasEpicsFeature, isProject }, workItemsMvc2 });
+          wrapper = mountComponent({ provide: { hasEpicsFeature, isProject }, workItemsAlpha });
         });
 
         it(`should ${message} epic in type tokens`, () => {

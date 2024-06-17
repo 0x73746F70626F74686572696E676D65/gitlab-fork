@@ -9,7 +9,7 @@ module EE
       prepended do
         argument :status_widget, ::Types::WorkItems::Widgets::StatusFilterInputType,
           required: false,
-          description: 'Input for status widget filter. Ignored if `work_items_mvc_2` is disabled.'
+          description: 'Input for status widget filter. Ignored if `work_items_alpha` is disabled.'
         argument :requirement_legacy_widget, ::Types::WorkItems::Widgets::RequirementLegacyFilterInputType,
           required: false,
           deprecated: { reason: 'Use work item IID filter instead', milestone: '15.9' },
@@ -18,7 +18,7 @@ module EE
 
       override :resolve_with_lookahead
       def resolve_with_lookahead(**args)
-        args.delete(:status_widget) unless resource_parent&.work_items_mvc_2_feature_flag_enabled?
+        args.delete(:status_widget) unless resource_parent&.work_items_alpha_feature_flag_enabled?
 
         super
       end

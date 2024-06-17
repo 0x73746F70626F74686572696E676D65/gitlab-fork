@@ -75,7 +75,7 @@ export default {
     },
     typeTokenOptions() {
       const typeTokens = [];
-      if (this.hasEpicsFeature && !this.isProject && this.glFeatures.workItemsMvc2) {
+      if (this.hasEpicsFeature && !this.isProject && this.glFeatures.workItemsAlpha) {
         typeTokens.push(TYPE_TOKEN_EPIC_OPTION);
       }
       if (this.isOkrsEnabled) {
