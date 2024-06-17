@@ -4,6 +4,9 @@ export const NEW_POLICY_BUTTON_TEXT = s__('SecurityOrchestration|New policy');
 export const PIPELINE_EXECUTION_POLICY_TYPE_HEADER = s__(
   'SecurityOrchestration|Pipeline execution',
 );
+export const VULNERABILITY_MANAGEMENT_POLICY_TYPE_HEADER = s__(
+  'SecurityOrchestration|Vulnerability management',
+);
 
 export const POLICY_TYPE_COMPONENT_OPTIONS = {
   scanExecution: {
@@ -26,6 +29,13 @@ export const POLICY_TYPE_COMPONENT_OPTIONS = {
     typeName: 'PipelineExecutionPolicy',
     urlParameter: 'pipeline_execution_policy',
     value: 'pipeline',
+  },
+  vulnerabilityManagement: {
+    component: 'vulnerability-management-policy-editor',
+    text: VULNERABILITY_MANAGEMENT_POLICY_TYPE_HEADER,
+    typeName: 'VulnerabilityManagementPolicy',
+    urlParameter: 'vulnerability_management_policy',
+    value: 'vulnerabilityManagement',
   },
 };
 
