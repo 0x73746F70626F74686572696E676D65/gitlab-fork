@@ -102,7 +102,7 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, :sid
       source: group
     )
 
-    visit invite_path(invitation.raw_invite_token, invite_type: Emails::Members::INITIAL_INVITE)
+    visit invite_path(invitation.raw_invite_token, invite_type: ::Members::InviteMailer::INITIAL_INVITE)
 
     # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/438017
     allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(110)
