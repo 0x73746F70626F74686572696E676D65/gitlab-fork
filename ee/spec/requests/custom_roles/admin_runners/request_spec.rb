@@ -230,7 +230,7 @@ RSpec.describe "User with admin_runners custom role", feature_category: :runner 
 
     let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, source: group) }
 
-    pending "PUT /groups/:id" do
+    it "PUT /groups/:id" do
       put api("/groups/#{group.id}", user), params: {
         shared_runners_setting: 'disabled_and_unoverridable'
       }
