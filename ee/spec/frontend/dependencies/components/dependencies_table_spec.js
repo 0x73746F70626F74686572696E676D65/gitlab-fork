@@ -111,10 +111,8 @@ describe('DependenciesTable component', () => {
       occurrenceCount,
       projectCount,
       location: { path },
-      project: { name },
     } = dependency;
     const locationCellText = occurrenceCount > 1 ? occurrenceCount.toString() : path;
-    const projectCellText = projectCount > 1 ? projectCount.toString() : name;
 
     const isVulnerableCellText = normalizeWhitespace(isVulnerableCell.text());
     const vulns = vulnerabilityInfo[dependency.occurrenceId];
@@ -125,7 +123,7 @@ describe('DependenciesTable component', () => {
       expect(isVulnerableCellText).toBe('');
     }
     expect(locationCell.text()).toContain(locationCellText);
-    expect(projectCell.text()).toContain(projectCellText);
+    expect(projectCell.text()).toContain(projectCount.toString());
   };
 
   const expectOrganizationDependencyRow = (rowWrapper, dependency) => {

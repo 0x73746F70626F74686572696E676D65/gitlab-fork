@@ -223,7 +223,6 @@ export default {
     <template #cell(projects)="{ item }">
       <dependency-project-count
         v-if="!isProjectNamespace"
-        :project="item.project"
         :project-count="item.projectCount"
         :component-id="item.componentId"
       />
