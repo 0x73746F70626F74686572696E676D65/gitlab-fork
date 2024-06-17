@@ -19,6 +19,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     )
   end
 
+  let(:stage) { build(:ci_stage) }
   let(:job) { create(:ci_build, pipeline: pipeline) }
   let(:artifact) { create(:ee_ci_job_artifact, :sast, job: job, project: job.project) }
   let_it_be(:valid_secrets) do
@@ -925,7 +926,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
       Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS.each do |provider|
         context "when using #{provider}" do
           let(:valid_secret) { valid_secret_configs.fetch(provider) }
-          let(:ci_build) { build(:ci_build, secrets: valid_secret) }
+          let(:ci_build) { build(:ci_build, secrets: valid_secret, ci_stage: stage) }
 
           it_behaves_like 'not tracking usage for provider', provider: provider
         end
@@ -943,7 +944,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
             let(:valid_secret) { valid_secret_configs.fetch(provider) }
 
             context 'on create' do
-              let(:ci_build) { build(:ci_build, secrets: valid_secret, user: user) }
+              let(:ci_build) { build(:ci_build, secrets: valid_secret, user: user, ci_stage: stage) }
 
               it_behaves_like 'tracking usage for provider', provider: provider
             end
@@ -963,7 +964,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
         context 'when using multiple providers' do
           let(:valid_secret) { valid_secret_configs.values.inject(:merge) }
 
-          let(:ci_build) { build(:ci_build, secrets: valid_secret, user: user) }
+          let(:ci_build) { build(:ci_build, secrets: valid_secret, user: user, ci_stage: stage) }
 
           it 'tracks RedisHLL event with user_id on all providers' do
             Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS.each do |provider|
@@ -1014,7 +1015,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
             }
           end
 
-          let(:ci_build) { build(:ci_build, secrets: valid_secret, user: user) }
+          let(:ci_build) { build(:ci_build, secrets: valid_secret, user: user, ci_stage: stage) }
 
           it 'tracks a single RedisHLL event with user_id on the provider' do
             expect(::Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event)
@@ -1046,7 +1047,7 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     end
 
     context 'when there are no secrets defined' do
-      let(:ci_build) { build(:ci_build, user: user) }
+      let(:ci_build) { build(:ci_build, user: user, ci_stage: stage) }
 
       context 'on create' do
         Gitlab::Ci::Config::Entry::Secret::SUPPORTED_PROVIDERS.each do |provider|
