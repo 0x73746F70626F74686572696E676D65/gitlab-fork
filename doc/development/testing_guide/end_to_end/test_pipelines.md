@@ -207,7 +207,7 @@ This pipeline is executed every two hours on scheduled pipelines and runs the fo
 The pipeline setup consists of several jobs in the main GitLab pipeline:
 
 - `compile-production-assets` and `build-assets-image` jobs are responsible for compiling frontend assets which are required
-by [CNG](https://gitlab.com/gitlab-org/build/CNG-mirror) build pipeline.
+  by [CNG](https://gitlab.com/gitlab-org/build/CNG-mirror) build pipeline.
 - `e2e-test-pipeline-generate` job is responsible for generating `e2e:test-on-cng` child pipeline
 
 ### `e2e:test-on-cng` child pipeline

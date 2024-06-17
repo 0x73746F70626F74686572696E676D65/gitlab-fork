@@ -2003,8 +2003,8 @@ DETAILS:
 **Tier:** Premium, Ultimate
 **Offering:** Self-managed
 
- - Information specific to Geo.
- - ...
+- Information specific to Geo.
+- ...
 
 ## X.Y.0
 

@@ -59,7 +59,7 @@ MR. Also add the Guideline to the "SAST Coverage" table above.
 ### Creating new RuboCop rule
 
 1. Follow the [RuboCop development doc](rubocop_development_guide.md#creating-new-rubocop-cops).
-For an example, see [this merge request](https://gitlab.com/gitlab-org/gitlab-qa/-/merge_requests/1280) on adding a rule to the `gitlab-qa` project.
+   For an example, see [this merge request](https://gitlab.com/gitlab-org/gitlab-qa/-/merge_requests/1280) on adding a rule to the `gitlab-qa` project.
 1. The cop itself should reside in the `gitlab-security` [gem project](https://gitlab.com/gitlab-org/ruby/gems/gitlab-styles/-/tree/master/lib/rubocop/cop/gitlab_security)
 
 ## Permissions

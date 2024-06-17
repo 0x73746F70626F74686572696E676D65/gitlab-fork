@@ -55,16 +55,16 @@ best place to integrate your own product and its results into GitLab.
   vulnerabilities that need to be addressed in the code.
 - When the developer reads the details about a vulnerability, they are
   presented with additional information and choices on next steps:
-    1. Create Issue (Confirm finding): Creates a new issue to be prioritized.
-    1. Add Comment and Dismiss Vulnerability: When dismissing a finding, users
-       can comment to note items that they
-       have mitigated, that they accept the vulnerability, or that the
-       vulnerability is a false positive.
-    1. Auto-Remediation / Create Merge Request: A fix for the vulnerability can
-       be offered, allowing an easy solution that does not require extra effort
-       from users. This should be offered whenever possible.
-    1. Links: Vulnerabilities can link out external sites or sources for users
-       to get more data around the vulnerability.
+  1. Create Issue (Confirm finding): Creates a new issue to be prioritized.
+  1. Add Comment and Dismiss Vulnerability: When dismissing a finding, users
+     can comment to note items that they
+     have mitigated, that they accept the vulnerability, or that the
+     vulnerability is a false positive.
+  1. Auto-Remediation / Create Merge Request: A fix for the vulnerability can
+     be offered, allowing an easy solution that does not require extra effort
+     from users. This should be offered whenever possible.
+  1. Links: Vulnerabilities can link out external sites or sources for users
+     to get more data around the vulnerability.
 
 ## How to onboard
 
