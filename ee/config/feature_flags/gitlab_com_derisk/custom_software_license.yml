@@ -1,0 +1,9 @@
+---
+name: custom_software_license
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/155325
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/465358
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/441078
+milestone: '17.1'
+type: gitlab_com_derisk
+group: group::security policies
+default_enabled: false
