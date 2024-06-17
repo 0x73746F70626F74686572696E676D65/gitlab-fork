@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Subscriptions::Trials::DuoProController, :saas, :unlimited_max_formatted_output_length, feature_category: :plan_provisioning do
+RSpec.describe GitlabSubscriptions::Trials::DuoProController, :saas, :unlimited_max_formatted_output_length, feature_category: :plan_provisioning do
   let_it_be(:user) { create(:user) }
   let_it_be(:user_without_eligible_groups) { create(:user) }
   let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }

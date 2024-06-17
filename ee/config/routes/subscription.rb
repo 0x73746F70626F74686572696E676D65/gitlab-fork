@@ -15,8 +15,4 @@ end
 
 scope module: :subscriptions do
   resources :trials, only: [:new, :create]
-
-  namespace :trials do
-    resource :duo_pro, only: [:new, :create]
-  end
 end
