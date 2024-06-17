@@ -136,7 +136,7 @@ module Gitlab
         related_epic_issue_ids = related_epic_issues.map(&:issue_id)
         related_work_item_ids = work_item.related_issues(authorize: false).filter(&:epic_work_item?).map(&:id)
 
-        return if related_work_item_ids == related_epic_issue_ids
+        return if related_work_item_ids.sort == related_epic_issue_ids.sort
 
         mismatched_attributes.push("related_links")
       end
