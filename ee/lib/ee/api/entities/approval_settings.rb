@@ -22,6 +22,9 @@ module EE
 
         expose :require_password_to_approve?,
           as: :require_password_to_approve
+
+        expose :require_reauthentication_to_approve?,
+          as: :require_reauthentication_to_approve
       end
     end
   end

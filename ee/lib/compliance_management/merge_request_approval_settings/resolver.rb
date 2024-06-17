@@ -14,7 +14,8 @@ module ComplianceManagement
           allow_overrides_to_approver_list_per_merge_request: allow_overrides_to_approver_list_per_merge_request,
           retain_approvals_on_push: retain_approvals_on_push,
           selective_code_owner_removals: selective_code_owner_removals,
-          require_password_to_approve: require_password_to_approve
+          require_password_to_approve: require_password_to_approve,
+          require_reauthentication_to_approve: require_reauthentication_to_approve
         }
       end
 
@@ -59,6 +60,17 @@ module ComplianceManagement
         )
       end
 
+      def require_reauthentication_to_approve
+        group_value = group_settings&.require_reauthentication_to_approve
+        project_value = @project && @project.project_setting.read_attribute(:require_reauthentication_to_approve)
+
+        ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+          value: require_password_value(group_value, project_value),
+          locked: require_password_locked?(group_value, false),
+          inherited_from: (:group if require_password_locked?(group_value, false))
+        )
+      end
+
       def require_password_to_approve
         group_value = group_settings&.require_password_to_approve
         project_value = @project && @project.read_attribute(:require_password_to_approve)
@@ -80,6 +92,7 @@ module ComplianceManagement
         @group&.group_merge_request_approval_setting
       end
 
+      # TODO: rename to require_reauthentication_value after: https://gitlab.com/gitlab-org/gitlab/-/issues/431346
       def require_password_value(group_value, project_value)
         [group_value, project_value].any?
       end

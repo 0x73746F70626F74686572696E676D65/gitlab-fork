@@ -44,7 +44,7 @@ module Audit
     end
 
     def should_audit_params_column?(column)
-      if column == :require_password_to_approve
+      if column == :require_password_to_approve || column == :require_reauthentication_to_approve
         @params[column]
       else
         # we are comparing with false here because on UI we show negative statements.
@@ -55,7 +55,7 @@ module Audit
     end
 
     def attributes_from_auditable_model(column)
-      if column == :require_password_to_approve
+      if column == :require_password_to_approve || column == :require_reauthentication_to_approve
         {
           from: model.previous_changes[column].first,
           to: model.previous_changes[column].last

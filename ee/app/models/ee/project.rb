@@ -384,6 +384,9 @@ module EE
         :allow_pipeline_trigger_approve_deployment=,
         :product_analytics_instrumentation_key,
         to: :project_setting
+      with_options prefix: :delegated, to: :project_setting do
+        delegate :require_reauthentication_to_approve=
+      end
 
       delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :project_state)
 
@@ -1267,6 +1270,27 @@ module EE
     override :supports_saved_replies?
     def supports_saved_replies?
       ::Feature.enabled?(:project_saved_replies_flag, self, type: :beta) && licensed_feature_available?(:project_saved_replies)
+    end
+
+    # Temporary code to facilitate: https://gitlab.com/gitlab-org/gitlab/-/issues/431346
+    def require_password_to_approve=(status)
+      write_attribute(:require_password_to_approve, status)
+      self.delegated_require_reauthentication_to_approve = status
+    end
+
+    # Temporary code to facilitate: https://gitlab.com/gitlab-org/gitlab/-/issues/431346
+    def require_reauthentication_to_approve=(status)
+      write_attribute(:require_password_to_approve, status)
+      self.delegated_require_reauthentication_to_approve = status
+    end
+
+    # Temporary code to facilitate: https://gitlab.com/gitlab-org/gitlab/-/issues/431346
+    def require_reauthentication_to_approve
+      require_password_to_approve
+    end
+
+    def require_reauthentication_to_approve?
+      !!require_reauthentication_to_approve
     end
 
     private

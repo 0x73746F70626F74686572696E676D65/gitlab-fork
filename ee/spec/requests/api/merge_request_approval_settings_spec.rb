@@ -95,6 +95,7 @@ RSpec.describe API::MergeRequestApprovalSettings, feature_category: :source_code
           expect(json_response['retain_approvals_on_push']['value']).to eq(true)
           expect(json_response['selective_code_owner_removals']['value']).to eq(false)
           expect(json_response['require_password_to_approve']['value']).to eq(false)
+          expect(json_response['require_reauthentication_to_approve']['value']).to eq(false)
         end
       end
 
@@ -116,7 +117,7 @@ RSpec.describe API::MergeRequestApprovalSettings, feature_category: :source_code
 
   describe 'PUT /groups/:id/merge_request_approval_setting' do
     let(:url) { "/groups/#{group.id}/merge_request_approval_setting" }
-    let(:params) { { allow_author_approval: true } }
+    let(:params) { { require_reauthentication_to_approve: true, allow_author_approval: true } }
 
     before do
       allow(Ability).to receive(:allowed?).and_call_original
@@ -134,12 +135,42 @@ RSpec.describe API::MergeRequestApprovalSettings, feature_category: :source_code
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response['allow_author_approval']['value']).to eq(true)
+        expect(json_response['require_reauthentication_to_approve']['value']).to eq(true)
       end
 
       it 'matches the response schema' do
         put api(url, user), params: params
 
         expect(response).to match_response_schema('public_api/v4/group_merge_request_approval_settings', dir: 'ee')
+      end
+
+      context 'when password and reauthentication are set' do
+        using RSpec::Parameterized::TableSyntax
+        where(:reauth, :password, :outcome) do
+          false | false | false
+          false | nil   | false
+          false | true  | false
+          nil   | false | false
+          nil   | true  | true
+          true  | false | true
+          true  | nil   | true
+          true  | true  | true
+        end
+
+        with_them do
+          let(:params) { {} }
+
+          it "sets with precedence for require_reauthentication_to_approve and mirors" do
+            params[:require_password_to_approve] = password unless password.nil?
+            params[:require_reauthentication_to_approve] = reauth unless reauth.nil?
+
+            put api(url, user), params: params
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response['require_password_to_approve']['value']).to eq(outcome)
+            expect(json_response['require_reauthentication_to_approve']['value']).to eq(outcome)
+          end
+        end
       end
 
       context 'when update fails' do
@@ -205,7 +236,8 @@ RSpec.describe API::MergeRequestApprovalSettings, feature_category: :source_code
           merge_requests_disable_committers_approval: nil,
           disable_overriding_approvers_per_merge_request: nil,
           reset_approvals_on_push: nil,
-          require_password_to_approve: nil
+          require_password_to_approve: nil,
+          require_reauthentication_to_approve: nil
         )
       end
 
@@ -219,6 +251,7 @@ RSpec.describe API::MergeRequestApprovalSettings, feature_category: :source_code
         expect(json_response['retain_approvals_on_push']['value']).to eq(false)
         expect(json_response['selective_code_owner_removals']['value']).to eq(false)
         expect(json_response['require_password_to_approve']['value']).to eq(false)
+        expect(json_response['require_reauthentication_to_approve']['value']).to eq(false)
       end
     end
   end

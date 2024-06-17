@@ -46,6 +46,13 @@ module Audit
         model: model,
         event_type: 'selective_code_owner_removals_updated'
       )
+      audit_changes(
+        :require_reauthentication_to_approve,
+        as: 'require_reauthentication_to_approve',
+        entity: @project,
+        model: model,
+        event_type: 'require_reauthentication_to_approve_updated'
+      )
     end
 
     def attributes_from_auditable_model(column)

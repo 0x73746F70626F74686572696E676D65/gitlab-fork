@@ -19,12 +19,32 @@ module API
         optional :require_password_to_approve,
           type: Boolean, desc: 'Require approver to authenticate before approving', allow_blank: false
 
+        optional :require_reauthentication_to_approve,
+          type: Boolean, desc: 'Require approver to authenticate before approving', allow_blank: false
+
         at_least_one_of :allow_author_approval,
           :allow_committer_approval,
           :allow_overrides_to_approver_list_per_merge_request,
           :retain_approvals_on_push,
           :selective_code_owner_removals,
-          :require_password_to_approve
+          :require_password_to_approve,
+          :require_reauthentication_to_approve
+      end
+
+      # If the new version of the parameter is used mirror it to the old param
+      # in order to keep both field in sync until full removal
+      # Mirror reauthentication to password for approval
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/431346
+      def setting_params
+        normalized_params = declared_params(include_missing: false)
+
+        if normalized_params.key?(:require_reauthentication_to_approve)
+          normalized_params[:require_password_to_approve] = normalized_params[:require_reauthentication_to_approve]
+        elsif normalized_params.key?(:require_password_to_approve)
+          normalized_params[:require_reauthentication_to_approve] = normalized_params[:require_password_to_approve]
+        end
+
+        normalized_params
       end
     end
 
@@ -61,8 +81,6 @@ module API
           use :merge_request_approval_settings
         end
         put do
-          setting_params = declared_params(include_missing: false)
-
           response = ::MergeRequestApprovalSettings::UpdateService
                        .new(container: user_project, current_user: current_user, params: setting_params).execute
 
@@ -112,8 +130,6 @@ module API
           use :merge_request_approval_settings
         end
         put do
-          setting_params = declared_params(include_missing: false)
-
           response = ::MergeRequestApprovalSettings::UpdateService
             .new(container: user_group, current_user: current_user, params: setting_params).execute
 

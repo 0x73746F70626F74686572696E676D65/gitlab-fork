@@ -222,9 +222,55 @@ RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
         it_behaves_like 'project_audit_events_from_to'
       end
 
+      context 'when project require_reauthentication_to_approve is updated' do
+        let(:change_from) { false }
+        let(:change_to) { true }
+
+        before do
+          project.update!(require_reauthentication_to_approve: true)
+        end
+
+        it 'audits require_reauthentication_to_approve and require_password_to_approve in sync' do
+          pw_change = "require user password for approvals"
+          expect(Gitlab::Audit::Auditor).to receive(:audit).with(
+            {
+              name: "project_require_password_to_approve_updated",
+              author: user,
+              scope: project,
+              target: project,
+              message: "Changed #{pw_change} from #{change_from} to #{change_to}",
+              additional_details: {
+                change: pw_change.to_s,
+                from: change_from,
+                target_details: project.full_path.to_s,
+                to: change_to
+              },
+              target_details: project.full_path.to_s
+            }
+          ).and_call_original
+
+          expect(Gitlab::Audit::Auditor).to receive(:audit).with(
+            {
+              name: 'require_reauthentication_to_approve_updated',
+              author: user,
+              scope: project,
+              target: project.project_setting,
+              message: "Changed require_reauthentication_to_approve from false to true",
+              additional_details: {
+                change: 'require_reauthentication_to_approve',
+                from: change_from,
+                target_details: project.full_path.to_s,
+                to: change_to
+              },
+              target_details: project.full_path.to_s
+            }
+          ).and_call_original
+
+          auditor_instance.execute
+        end
+      end
+
       context 'when project require_password_to_approve is updated' do
-        let(:change) { "require user password for approvals" }
-        let(:event) { "project_require_password_to_approve_updated" }
         let(:change_from) { false }
         let(:change_to) { true }
 
@@ -232,7 +278,44 @@ RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
           project.update!(require_password_to_approve: true)
         end
 
-        it_behaves_like 'project_audit_events_from_to'
+        it 'audits require_password_to_approve and require_reauthentication_to_approve in sync' do
+          pw_change = "require user password for approvals"
+          expect(Gitlab::Audit::Auditor).to receive(:audit).with(
+            {
+              name: "project_require_password_to_approve_updated",
+              author: user,
+              scope: project,
+              target: project,
+              message: "Changed #{pw_change} from #{change_from} to #{change_to}",
+              additional_details: {
+                change: pw_change.to_s,
+                from: change_from,
+                target_details: project.full_path.to_s,
+                to: change_to
+              },
+              target_details: project.full_path.to_s
+            }
+          ).and_call_original
+
+          expect(Gitlab::Audit::Auditor).to receive(:audit).with(
+            {
+              name: 'require_reauthentication_to_approve_updated',
+              author: user,
+              scope: project,
+              target: project.project_setting,
+              message: "Changed require_reauthentication_to_approve from false to true",
+              additional_details: {
+                change: 'require_reauthentication_to_approve',
+                from: change_from,
+                target_details: project.full_path.to_s,
+                to: change_to
+              },
+              target_details: project.full_path.to_s
+            }
+          ).and_call_original
+
+          auditor_instance.execute
+        end
       end
 
       context 'when project disable_overriding_approvers_per_merge_request is updated' do
