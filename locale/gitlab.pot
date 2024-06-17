@@ -33627,6 +33627,9 @@ msgstr[1] ""
 msgid "Mlmodelregistry|Provide the max allowed file size"
 msgstr ""
 
+msgid "Mlmodelregistry|Subfolder cannot contain spaces"
+msgstr ""
+
 msgid "Mock an external CI integration."
 msgstr ""
 
