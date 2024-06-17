@@ -11,7 +11,11 @@ import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
 import getComplianceViolationsQuery from '../../graphql/compliance_violations.query.graphql';
 import { mapViolations } from '../../graphql/mappers';
 import { DEFAULT_PAGINATION_CURSORS, DEFAULT_SORT, GRAPHQL_PAGE_SIZE } from '../../constants';
-import { buildDefaultViolationsFilterParams, parseViolationsQueryFilter } from '../../utils';
+import {
+  buildDefaultViolationsFilterParams,
+  parseViolationsQueryFilter,
+  convertProjectIdsToGraphQl,
+} from '../../utils';
 import MergeRequestDrawer from './drawer.vue';
 import ViolationReason from './violations/reason.vue';
 import ViolationFilter from './violations/filter.vue';
@@ -39,6 +43,11 @@ export default {
     groupPath: {
       type: String,
       required: true,
+    },
+    globalProjectId: {
+      type: Number,
+      required: false,
+      default: null,
     },
   },
   data() {
@@ -70,9 +79,14 @@ export default {
     violations: {
       query: getComplianceViolationsQuery,
       variables() {
+        const filters = parseViolationsQueryFilter(this.urlQuery);
+        if (this.globalProjectId) {
+          filters.projectIds = convertProjectIdsToGraphQl([this.globalProjectId]);
+        }
+
         return {
           fullPath: this.groupPath,
-          filters: parseViolationsQueryFilter(this.urlQuery),
+          filters,
           sort: this.sortParam,
           ...this.paginationCursors,
         };
@@ -225,6 +239,7 @@ export default {
       {{ $options.i18n.queryError }}
     </gl-alert>
     <violation-filter
+      :show-project-filter="!globalProjectId"
       :group-path="groupPath"
       :default-query="defaultFilterParams"
       @filters-changed="updateUrlQuery"

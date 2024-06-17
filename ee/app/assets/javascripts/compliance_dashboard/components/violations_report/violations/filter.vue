@@ -101,12 +101,14 @@ export default {
   <div
     class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row row-content-block gl-pb-0 gl-gap-5 gl-border-0"
   >
-    <div class="gl-display-flex gl-flex-direction-column gl-mb-5 gl-sm-gap-3">
+    <div
+      v-if="showProjectFilter"
+      class="gl-display-flex gl-flex-direction-column gl-mb-5 gl-sm-gap-3"
+    >
       <label data-testid="dropdown-label" class="gl-leading-normal">{{
         $options.i18n.projectFilterLabel
       }}</label>
       <projects-dropdown-filter
-        v-if="showProjectFilter"
         data-testid="violations-project-dropdown"
         class="gl-mb-2 gl-lg-mb-0"
         toggle-classes="compliance-filter-dropdown-input"

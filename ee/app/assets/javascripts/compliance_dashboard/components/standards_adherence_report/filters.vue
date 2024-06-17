@@ -13,8 +13,8 @@ export default {
   props: {
     projects: {
       type: Array,
-      required: true,
-      default: () => [],
+      required: false,
+      default: null,
     },
     groupPath: {
       type: String,
@@ -32,16 +32,20 @@ export default {
           token: ComplianceStandardNameToken,
           operators: [{ value: 'matches', description: 'matches' }],
         },
-        {
-          unique: true,
-          type: 'project',
-          title: __('Project'),
-          entityType: 'project',
-          token: ProjectsToken,
-          operators: [{ value: 'matches', description: 'matches' }],
-          groupPath: this.groupPath,
-          projects: this.projects,
-        },
+        ...(this.projects
+          ? [
+              {
+                unique: true,
+                type: 'project',
+                title: __('Project'),
+                entityType: 'project',
+                token: ProjectsToken,
+                operators: [{ value: 'matches', description: 'matches' }],
+                groupPath: this.groupPath,
+                projects: this.projects,
+              },
+            ]
+          : []),
         {
           unique: true,
           type: 'check',

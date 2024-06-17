@@ -7,6 +7,7 @@ describe('ComplianceStandardsAdherenceReport component', () => {
   let wrapper;
 
   const groupPath = 'example-group';
+  const globalProjectId = 26;
 
   const findErrorMessage = () => wrapper.findComponent(GlAlert);
   const findAdherencesTable = () => wrapper.findComponent(ComplianceStandardsAdherenceTable);
@@ -15,6 +16,7 @@ describe('ComplianceStandardsAdherenceReport component', () => {
     wrapper = shallowMount(ComplianceStandardsAdherenceReport, {
       propsData: {
         groupPath,
+        globalProjectId,
       },
     });
   };
@@ -33,7 +35,7 @@ describe('ComplianceStandardsAdherenceReport component', () => {
     });
 
     it('passes props to the standards adherence table component', () => {
-      expect(findAdherencesTable().props()).toMatchObject({ groupPath });
+      expect(findAdherencesTable().props()).toMatchObject({ groupPath, globalProjectId });
     });
   });
 });

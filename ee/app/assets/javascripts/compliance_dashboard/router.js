@@ -20,8 +20,7 @@ import ProjectsReport from './components/projects_report/report.vue';
 import StandardsReport from './components/standards_adherence_report/report.vue';
 
 export function createRouter(basePath, props) {
-  const { mergeCommitsCsvExportPath, groupPath, rootAncestorPath } = props;
-
+  const { mergeCommitsCsvExportPath, globalProjectId, groupPath, rootAncestorPath } = props;
   const defaultRoute = ROUTE_STANDARDS_ADHERENCE;
   const FrameworkReport = FrameworksReport;
 
@@ -46,6 +45,7 @@ export function createRouter(basePath, props) {
           component: StandardsReport,
           props: {
             groupPath,
+            globalProjectId,
           },
         },
         {
@@ -55,6 +55,7 @@ export function createRouter(basePath, props) {
           props: {
             mergeCommitsCsvExportPath,
             groupPath,
+            globalProjectId,
           },
         },
         {
