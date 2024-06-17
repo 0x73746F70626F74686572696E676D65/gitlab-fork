@@ -1,5 +1,52 @@
 # frozen_string_literal: true
 
+RSpec.shared_examples 'ee protected ref access' do |association|
+  let_it_be(:described_instance) { described_class.model_name.singular }
+  let_it_be(:project) { create(:project) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:user) { create(:user, developer_of: project) }
+  let_it_be(:protected_ref) { create(association, project: project) }
+  let_it_be(:protected_ref_fk) { "#{association}_id" }
+
+  before_all do
+    create(:project_group_link, group: group, project: project)
+  end
+
+  describe '#type' do
+    context 'when group is present and group_id is nil' do
+      let(:access_level) { build(described_instance, group: build(:group)) }
+
+      it 'returns :group' do
+        expect(access_level.type).to eq(:group)
+      end
+    end
+
+    context 'when group_id is present and group is nil' do
+      let(:access_level) { build(described_instance, group_id: 1) }
+
+      it 'returns :group' do
+        expect(access_level.type).to eq(:group)
+      end
+    end
+
+    context 'when user is present and user_id is nil' do
+      let(:access_level) { build(described_instance, user: build(:user)) }
+
+      it 'returns :user' do
+        expect(access_level.type).to eq(:user)
+      end
+    end
+
+    context 'when user_id is present and user is nil' do
+      let(:access_level) { build(described_instance, user_id: 1) }
+
+      it 'returns :user' do
+        expect(access_level.type).to eq(:user)
+      end
+    end
+  end
+end
+
 RSpec.shared_examples 'protected ref access configured for users' do |association|
   let_it_be(:project) { create(:project) }
   let_it_be(:protected_ref) { create(association, project: project) }

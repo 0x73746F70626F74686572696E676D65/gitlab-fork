@@ -44,8 +44,8 @@ module EE
 
     override :type
     def type
-      return :user if user.present?
-      return :group if group.present?
+      return :user if user_id || user
+      return :group if group_id || group
 
       super
     end
