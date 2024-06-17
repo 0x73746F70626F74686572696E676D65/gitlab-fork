@@ -12,7 +12,6 @@ export default () => {
 
   const {
     basePath,
-    canAddEdit,
     mergeCommitsCsvExportPath,
     violationsCsvExportPath,
     projectFrameworksCsvExportPath,
@@ -27,6 +26,7 @@ export default () => {
     migratePipelineToPolicyPath,
     groupSecurityPoliciesPath,
     disableScanPolicyUpdate,
+    projectId,
   } = el.dataset;
 
   Vue.use(VueApollo);
@@ -36,8 +36,11 @@ export default () => {
     defaultClient: createDefaultClient(),
   });
 
+  const globalProjectId = projectId ? parseInt(projectId, 10) : null;
+
   const router = createRouter(basePath, {
     mergeCommitsCsvExportPath,
+    globalProjectId,
     groupPath,
     rootAncestorPath,
   });
@@ -50,7 +53,6 @@ export default () => {
     provide: {
       namespaceType: 'group',
       groupPath,
-      canAddEdit,
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
       pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
       featurePipelineMaintenanceModeEnabled: parseBoolean(featurePipelineMaintenanceModeEnabled),

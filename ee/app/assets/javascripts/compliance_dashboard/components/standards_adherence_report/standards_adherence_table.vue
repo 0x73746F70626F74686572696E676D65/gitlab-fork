@@ -1,7 +1,10 @@
 <script>
 import { GlAlert, GlDisclosureDropdown } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { mapStandardsAdherenceQueryToFilters } from 'ee/compliance_dashboard/utils';
+import {
+  mapStandardsAdherenceQueryToFilters,
+  convertProjectIdsToGraphQl,
+} from 'ee/compliance_dashboard/utils';
 import getProjectsInComplianceStandardsAdherence from 'ee/compliance_dashboard/graphql/compliance_projects_in_standards_adherence.query.graphql';
 import { ALLOWED_FILTER_TOKENS, NONE, CHECKS, PROJECTS, STANDARDS } from './constants';
 import AdherencesBaseTable from './base_table.vue';
@@ -21,6 +24,11 @@ export default {
     groupPath: {
       type: String,
       required: true,
+    },
+    globalProjectId: {
+      type: Number,
+      required: false,
+      default: null,
     },
   },
   data() {
@@ -51,6 +59,14 @@ export default {
     },
   },
   computed: {
+    graphQLGlobalProjectId() {
+      return this.globalProjectId && convertProjectIdsToGraphQl([this.globalProjectId])[0];
+    },
+
+    projectsForFilter() {
+      return this.globalProjectId ? null : this.projects.list;
+    },
+
     dropdownItems() {
       return [
         {
@@ -59,9 +75,7 @@ export default {
         {
           text: CHECKS,
         },
-        {
-          text: PROJECTS,
-        },
+        ...(!this.globalProjectId ? [{ text: PROJECTS }] : []),
         {
           text: STANDARDS,
         },
@@ -154,7 +168,7 @@ export default {
         </label>
         <filters
           class="gl-mb-2 gl-lg-mb-0"
-          :projects="projects.list"
+          :projects="projectsForFilter"
           :group-path="groupPath"
           @submit="onFiltersChanged"
           @clear="clearFilters"
@@ -170,7 +184,11 @@ export default {
       />
     </div>
     <div v-else>
-      <adherences-base-table :group-path="groupPath" :filters="filters" />
+      <adherences-base-table
+        :group-path="groupPath"
+        :filters="filters"
+        :project-id="graphQLGlobalProjectId"
+      />
     </div>
   </section>
 </template>

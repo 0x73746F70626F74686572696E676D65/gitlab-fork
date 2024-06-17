@@ -483,4 +483,39 @@ describe('ComplianceViolationsReport component', () => {
       );
     });
   });
+
+  describe('when initialized with global project id', () => {
+    const GLOBAL_PROJECT_ID = 4;
+
+    beforeEach(() => {
+      setWindowLocation(TEST_HOST + defaultQueryParams);
+      wrapper = createComponent(
+        mount,
+        {
+          globalProjectId: GLOBAL_PROJECT_ID,
+        },
+        mockGraphQlSuccess,
+      );
+
+      return waitForPromises();
+    });
+
+    it('ignores project ids from filters', async () => {
+      await changeFilters({ projectIds: [5, 6, 7] });
+
+      expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
+      expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
+        fullPath: groupPath,
+        filters: expect.objectContaining({
+          projectIds: [`gid://gitlab/Project/${GLOBAL_PROJECT_ID}`],
+        }),
+        sort: DEFAULT_SORT,
+        ...DEFAULT_PAGINATION_CURSORS,
+      });
+    });
+
+    it('hides project ids from violation filter', () => {
+      expect(wrapper.findComponent(ViolationFilter).props('showProjectFilter')).toEqual(false);
+    });
+  });
 });

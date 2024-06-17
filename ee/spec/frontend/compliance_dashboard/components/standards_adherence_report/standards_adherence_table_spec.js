@@ -133,11 +133,20 @@ describe('ComplianceStandardsAdherenceTable component', () => {
   });
 
   describe('grouping', () => {
-    it('contains the correct dropdown options', () => {
+    it('contains the correct dropdown options when no global project id provided', () => {
       expect(findDropdown().props('items')).toEqual([
         { text: 'None' },
         { text: 'Checks' },
         { text: 'Projects' },
+        { text: 'Standards' },
+      ]);
+    });
+
+    it('contains the correct dropdown options when global project id provided', () => {
+      createComponent({ globalProjectId: 26 }, mockGraphQlSuccess);
+      expect(findDropdown().props('items')).toEqual([
+        { text: 'None' },
+        { text: 'Checks' },
         { text: 'Standards' },
       ]);
     });

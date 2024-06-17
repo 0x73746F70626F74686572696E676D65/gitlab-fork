@@ -11,10 +11,18 @@ export default {
       type: String,
       required: true,
     },
+    globalProjectId: {
+      type: Number,
+      required: false,
+      default: null,
+    },
   },
 };
 </script>
 
 <template>
-  <compliance-standards-adherence-table :group-path="groupPath" />
+  <compliance-standards-adherence-table
+    :group-path="groupPath"
+    :global-project-id="globalProjectId"
+  />
 </template>
