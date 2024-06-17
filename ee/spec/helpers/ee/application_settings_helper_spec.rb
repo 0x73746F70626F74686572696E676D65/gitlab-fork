@@ -17,7 +17,8 @@ RSpec.describe EE::ApplicationSettingsHelper, feature_category: :shared do
     end
 
     it 'contains zoekt parameters' do
-      expect(visible_attributes).to include(*%i[zoekt_indexing_enabled zoekt_indexing_paused zoekt_search_enabled])
+      expect(visible_attributes).to include(*%i[zoekt_auto_index_root_namespace zoekt_indexing_enabled zoekt_indexing_paused
+        zoekt_search_enabled])
     end
 
     context 'when identity verification is enabled' do
@@ -170,6 +171,7 @@ RSpec.describe EE::ApplicationSettingsHelper, feature_category: :shared do
     let_it_be(:application_setting) { build(:application_setting) }
 
     before do
+      application_setting.zoekt_auto_index_root_namespace = false
       application_setting.zoekt_indexing_enabled = true
       application_setting.zoekt_indexing_paused = false
       application_setting.zoekt_search_enabled = true
@@ -179,9 +181,10 @@ RSpec.describe EE::ApplicationSettingsHelper, feature_category: :shared do
     it 'returns correctly checked checkboxes' do
       helper.gitlab_ui_form_for(application_setting, url: advanced_search_admin_application_settings_path) do |form|
         result = helper.zoekt_settings_checkboxes(form)
-        expect(result[0]).to have_checked_field('Enable indexing for exact code search', with: 1)
-        expect(result[1]).not_to have_checked_field('Pause indexing for exact code search', with: 1)
-        expect(result[2]).to have_checked_field('Enable exact code search', with: 1)
+        expect(result[0]).not_to have_checked_field('Index all the namespaces', with: 1)
+        expect(result[1]).to have_checked_field('Enable indexing for exact code search', with: 1)
+        expect(result[2]).not_to have_checked_field('Pause indexing for exact code search', with: 1)
+        expect(result[3]).to have_checked_field('Enable exact code search', with: 1)
       end
     end
   end

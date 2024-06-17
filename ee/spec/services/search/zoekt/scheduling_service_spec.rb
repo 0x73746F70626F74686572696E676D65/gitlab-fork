@@ -439,4 +439,41 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
       end
     end
   end
+
+  describe '#auto_index_self_managed' do
+    let(:task) { :auto_index_self_managed }
+    let_it_be(:sub_group) { create(:group, :nested) }
+    let_it_be(:top_group) { create(:group) }
+    let_it_be(:top_group2) { create(:group) }
+
+    before do
+      stub_ee_application_setting(zoekt_auto_index_root_namespace: true)
+      create(:zoekt_enabled_namespace, root_namespace_id: top_group2.id)
+    end
+
+    context 'for gitlab.com', :saas do
+      it 'does not create any record of Search::Zoekt::EnabledNamespace' do
+        expect { execute_task }.not_to change { Search::Zoekt::EnabledNamespace.count }
+      end
+    end
+
+    context 'when application setting zoekt_auto_index_root_namespace is false' do
+      before do
+        stub_ee_application_setting(zoekt_auto_index_root_namespace: false)
+      end
+
+      it 'does not create any record of Search::Zoekt::EnabledNamespace' do
+        expect { execute_task }.not_to change { Search::Zoekt::EnabledNamespace.count }
+      end
+    end
+
+    it "creates zoekt_enabled_namespace for the root groups that don't have zoekt_enabled_namespace already" do
+      expect(sub_group.root_ancestor.zoekt_enabled_namespace).to be_nil
+      expect(top_group.zoekt_enabled_namespace).to be_nil
+      expect(top_group2.zoekt_enabled_namespace).not_to be_nil
+      expect { execute_task }.to change { Search::Zoekt::EnabledNamespace.count }.by(2)
+      expect(sub_group.root_ancestor.reload.zoekt_enabled_namespace).not_to be_nil
+      expect(top_group.reload.zoekt_enabled_namespace).not_to be_nil
+    end
+  end
 end

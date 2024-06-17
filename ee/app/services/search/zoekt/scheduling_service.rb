@@ -12,6 +12,7 @@ module Search
         node_assignment
         mark_indices_as_ready
         initial_indexing
+        auto_index_self_managed
       ].freeze
 
       BUFFER_FACTOR = ::Gitlab::Saas.feature_available?(:exact_code_search) ? 2 : 3
@@ -282,6 +283,17 @@ module Search
             arguments_proc: ->(zoekt_index) { zoekt_index.id },
             context_proc: ->(zoekt_index) { { namespace: zoekt_index.zoekt_enabled_namespace&.namespace } }
           )
+        end
+      end
+
+      # This task does not need to run on .com
+      def auto_index_self_managed
+        return if Gitlab::Saas.feature_available?(:exact_code_search)
+        return unless Gitlab::CurrentSettings.zoekt_auto_index_root_namespace?
+
+        Namespace.group_namespaces.root_namespaces_without_zoekt_enabled_namespace.each_batch do |batch|
+          data = batch.pluck_primary_key.map { |id| { root_namespace_id: id } }
+          Search::Zoekt::EnabledNamespace.insert_all(data)
         end
       end
     end

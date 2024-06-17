@@ -74,6 +74,7 @@ module EE
         :use_clickhouse_for_analytics,
         :duo_features_enabled,
         :lock_duo_features_enabled,
+        :zoekt_auto_index_root_namespace,
         :zoekt_indexing_enabled,
         :zoekt_indexing_paused,
         :zoekt_search_enabled
@@ -230,18 +231,23 @@ module EE
     def zoekt_settings_checkboxes(form)
       [
         form.gitlab_ui_checkbox_component(
+          :zoekt_auto_index_root_namespace,
+          _('Index root namespaces automatically'),
+          checkbox_options: { checked: @application_setting.zoekt_auto_index_root_namespace, multiple: false }
+        ),
+        form.gitlab_ui_checkbox_component(
           :zoekt_indexing_enabled,
-          'Enable indexing for exact code search',
+          _('Enable indexing for exact code search'),
           checkbox_options: { checked: @application_setting.zoekt_indexing_enabled, multiple: false }
         ),
         form.gitlab_ui_checkbox_component(
           :zoekt_indexing_paused,
-          'Pause indexing for exact code search',
+          _('Pause indexing for exact code search'),
           checkbox_options: { checked: @application_setting.zoekt_indexing_paused, multiple: false }
         ),
         form.gitlab_ui_checkbox_component(
           :zoekt_search_enabled,
-          'Enable exact code search',
+          _('Enable exact code search'),
           checkbox_options: { checked: @application_setting.zoekt_search_enabled, multiple: false }
         )
       ]

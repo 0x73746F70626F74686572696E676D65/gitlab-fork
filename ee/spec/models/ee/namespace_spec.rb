@@ -508,6 +508,22 @@ RSpec.describe Namespace, feature_category: :groups_and_projects do
 
       it { is_expected.to contain_exactly(namespace_with_group_wiki_repository) }
     end
+
+    describe '.root_namespaces_without_zoekt_enabled_namespace' do
+      let_it_be(:sub_namespace) { create(:group, :nested) }
+      let_it_be(:top_namespace) { create(:namespace) }
+      let_it_be(:top_namespace2) { create(:namespace) }
+      let(:results) { described_class.root_namespaces_without_zoekt_enabled_namespace }
+
+      before do
+        create(:zoekt_enabled_namespace, root_namespace_id: top_namespace2.id) # Create zoekt_enabled_namespace for top_namespace2
+      end
+
+      it 'returns only root namespaces without zoekt_enabled_namespace' do
+        expect(results).to include(sub_namespace.root_ancestor, top_namespace)
+        expect(results).not_to include(top_namespace2)
+      end
+    end
   end
 
   context 'validation' do

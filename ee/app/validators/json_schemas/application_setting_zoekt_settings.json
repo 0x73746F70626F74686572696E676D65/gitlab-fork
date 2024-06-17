@@ -4,6 +4,10 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
+    "zoekt_auto_index_root_namespace": {
+      "type": "boolean",
+      "description": "If all root namespaces need to be indexed automatically for the instance"
+    },
     "zoekt_indexing_enabled": {
       "type": "boolean",
       "description": "If zoekt indexing is enabled for the instance"
