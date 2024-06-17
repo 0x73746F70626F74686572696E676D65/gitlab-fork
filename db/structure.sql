@@ -1530,6 +1530,22 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_fbd42ed69453() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "external_status_checks"
+  WHERE "external_status_checks"."id" = NEW."external_status_check_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_fbd8825b3057() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -10049,7 +10065,8 @@ ALTER SEQUENCE external_status_checks_id_seq OWNED BY external_status_checks.id;
 CREATE TABLE external_status_checks_protected_branches (
     id bigint NOT NULL,
     external_status_check_id bigint NOT NULL,
-    protected_branch_id bigint NOT NULL
+    protected_branch_id bigint NOT NULL,
+    project_id bigint
 );
 
 CREATE SEQUENCE external_status_checks_protected_branches_id_seq
@@ -26659,6 +26676,8 @@ CREATE UNIQUE INDEX index_external_audit_event_destinations_on_namespace_id ON a
 
 CREATE UNIQUE INDEX index_external_pull_requests_on_project_and_branches ON external_pull_requests USING btree (project_id, source_branch, target_branch);
 
+CREATE INDEX index_external_status_checks_protected_branches_on_project_id ON external_status_checks_protected_branches USING btree (project_id);
+
 CREATE UNIQUE INDEX index_feature_flag_scopes_on_flag_id_and_environment_scope ON operations_feature_flag_scopes USING btree (feature_flag_id, environment_scope);
 
 CREATE UNIQUE INDEX index_feature_flags_clients_on_project_id_and_token_encrypted ON operations_feature_flags_clients USING btree (project_id, token_encrypted);
@@ -31095,6 +31114,8 @@ CREATE TRIGGER trigger_ebab34f83f1d BEFORE INSERT OR UPDATE ON packages_debian_p
 
 CREATE TRIGGER trigger_fb587b1ae7ad BEFORE INSERT OR UPDATE ON merge_requests FOR EACH ROW EXECUTE FUNCTION trigger_fb587b1ae7ad();
 
+CREATE TRIGGER trigger_fbd42ed69453 BEFORE INSERT OR UPDATE ON external_status_checks_protected_branches FOR EACH ROW EXECUTE FUNCTION trigger_fbd42ed69453();
+
 CREATE TRIGGER trigger_fbd8825b3057 BEFORE INSERT OR UPDATE ON boards_epic_board_labels FOR EACH ROW EXECUTE FUNCTION trigger_fbd8825b3057();
 
 CREATE TRIGGER trigger_fd041fe2d1a7 BEFORE INSERT OR UPDATE ON merge_request_metrics FOR EACH ROW EXECUTE FUNCTION trigger_fd041fe2d1a7();
@@ -31167,6 +31188,9 @@ ALTER TABLE ONLY service_desk_settings
 
 ALTER TABLE ONLY design_management_designs_versions
     ADD CONSTRAINT fk_03c671965c FOREIGN KEY (design_id) REFERENCES design_management_designs(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY external_status_checks_protected_branches
+    ADD CONSTRAINT fk_0480f2308c FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY sbom_occurrences_vulnerabilities
     ADD CONSTRAINT fk_058f258503 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
