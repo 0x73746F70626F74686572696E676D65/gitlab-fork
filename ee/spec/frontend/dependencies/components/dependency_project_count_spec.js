@@ -40,11 +40,9 @@ describe('Dependency Project Count component', () => {
 
   const createComponent = ({ propsData, mountFn = shallowMount, belowGroupLimit = true } = {}) => {
     const endpoint = 'groups/endpoint/-/dependencies.json';
-    const project = { fullPath, name: projectName };
 
     const basicProps = {
       projectCount: 1,
-      project,
       componentId: 1,
     };
 
@@ -68,17 +66,14 @@ describe('Dependency Project Count component', () => {
       createComponent();
     });
 
-    it('renders link to project path', () => {
-      expect(findProjectLink().exists()).toBe(true);
-      expect(findProjectLink().attributes('href')).toContain(fullPath);
-    });
-
-    it('renders project name', () => {
-      expect(findProjectLink().text()).toContain(projectName);
-    });
-
-    it('does not render listbox', () => {
-      expect(findProjectList().exists()).toBe(false);
+    it('renders the listbox', () => {
+      expect(findProjectList().props()).toMatchObject({
+        headerText: '1 project',
+        searchable: false,
+        items: [],
+        loading: false,
+        searching: false,
+      });
     });
   });
 
@@ -118,10 +113,6 @@ describe('Dependency Project Count component', () => {
           searchable,
         });
       });
-    });
-
-    it('renders project count instead project name', () => {
-      expect(findProjectList().props('headerText')).toBe('2 projects');
     });
 
     describe('with fetched data', () => {
@@ -211,7 +202,7 @@ describe('Dependency Project Count component', () => {
       expect(findProjectList().exists()).toBe(false);
     });
 
-    it('does not renderd link to project path', () => {
+    it('does not render link to project path', () => {
       expect(findProjectLink().exists()).toBe(false);
     });
   });

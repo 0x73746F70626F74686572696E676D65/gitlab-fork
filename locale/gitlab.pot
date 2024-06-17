@@ -17541,8 +17541,10 @@ msgstr[1] ""
 msgid "Dependencies|%{locationCount} locations"
 msgstr ""
 
-msgid "Dependencies|%{projectCount} projects"
-msgstr ""
+msgid "Dependencies|%{projectCount} project"
+msgid_plural "Dependencies|%{projectCount} projects"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Dependencies|%{remainingLicensesCount} more"
 msgstr ""

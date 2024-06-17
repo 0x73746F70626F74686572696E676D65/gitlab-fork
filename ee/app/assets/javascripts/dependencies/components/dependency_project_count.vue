@@ -1,8 +1,8 @@
 <script>
 import { GlLink, GlTruncate, GlCollapsibleListbox, GlAvatar } from '@gitlab/ui';
 import { debounce } from 'lodash';
-import { s__, sprintf } from '~/locale';
-import { getBaseURL, joinPaths } from '~/lib/utils/url_utility';
+import { n__, sprintf } from '~/locale';
+import { joinPaths } from '~/lib/utils/url_utility';
 import { filterBySearchTerm } from '~/analytics/shared/utils';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
@@ -25,10 +25,6 @@ export default {
   },
   inject: ['endpoint', 'belowGroupLimit'],
   props: {
-    project: {
-      type: Object,
-      required: true,
-    },
     projectCount: {
       type: Number,
       required: true,
@@ -46,20 +42,16 @@ export default {
     };
   },
   computed: {
-    projectPath() {
-      const projectAbsolutePath = joinPaths(getBaseURL(), this.project.fullPath);
-
-      return this.hasMultipleProjects ? '' : projectAbsolutePath;
-    },
-    projectText() {
-      return this.hasMultipleProjects
-        ? sprintf(s__('Dependencies|%{projectCount} projects'), {
-            projectCount: Number.isNaN(this.projectCount) ? 0 : this.projectCount,
-          })
-        : this.project.name;
-    },
-    hasMultipleProjects() {
-      return this.projectCount > 1;
+    headerText() {
+      const projectCount = this.projectCount || 0;
+      return sprintf(
+        n__(
+          'Dependencies|%{projectCount} project',
+          'Dependencies|%{projectCount} projects',
+          projectCount,
+        ),
+        { projectCount },
+      );
     },
     availableProjects() {
       return filterBySearchTerm(this.projects, this.searchTerm);
@@ -121,8 +113,8 @@ export default {
 <template>
   <span>
     <gl-collapsible-listbox
-      v-if="hasMultipleProjects && belowGroupLimit"
-      :header-text="projectText"
+      v-if="belowGroupLimit"
+      :header-text="headerText"
       :items="availableProjects"
       :searching="loading"
       :searchable="searchEnabled"
@@ -135,7 +127,7 @@ export default {
           <gl-truncate
             class="gl-hidden md:gl-inline-flex"
             position="start"
-            :text="projectText"
+            :text="headerText"
             with-tooltip
           />
         </span>
@@ -157,18 +149,6 @@ export default {
         </div>
       </template>
     </gl-collapsible-listbox>
-    <dependency-project-count-popover
-      v-else-if="!belowGroupLimit"
-      :target-id="targetId"
-      :target-text="projectText"
-    />
-    <gl-link v-else class="md:gl-whitespace-nowrap" :href="projectPath">
-      <gl-truncate
-        class="gl-hidden md:gl-inline-flex"
-        position="start"
-        :text="projectText"
-        with-tooltip
-      />
-    </gl-link>
+    <dependency-project-count-popover v-else :target-id="targetId" :target-text="headerText" />
   </span>
 </template>
