@@ -14231,6 +14231,9 @@ msgstr ""
 msgid "ContainerRegistry|Partial cleanup complete"
 msgstr ""
 
+msgid "ContainerRegistry|Path pattern with %{linkStart}wildcards%{linkEnd} such as `my-scope/my-container-*` are supported."
+msgstr ""
+
 msgid "ContainerRegistry|Please try different search criteria"
 msgstr ""
 
