@@ -67,7 +67,7 @@ module EE
 
       override :user
       def user
-        super || geo_push_user&.user
+        super || (geo_push_user&.deploy_key&.user || geo_push_user&.user)
       end
 
       def geo_push_user
@@ -103,7 +103,8 @@ module EE
 
         # A deploy key access actor must be extracted before checking git access.
         # This is necessary for proxied requests from secondary sites.
-        return geo_push_user.deploy_key || geo_push_user.user if geo_push_user&.user
+        actor = geo_push_user.deploy_key || geo_push_user.user
+        return actor if actor
 
         raise ::Gitlab::GitAccess::ForbiddenError, 'Geo push user is invalid.'
       end
