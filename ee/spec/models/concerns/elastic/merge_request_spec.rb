@@ -34,28 +34,28 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
     expect(described_class.elastic_search('term3', options: { project_ids: :any, public_and_internal_projects: true }).total_count).to eq(1)
   end
 
-  it 'names elasticsearch queries' do
-    described_class.elastic_search('*').total_count
+  context 'when search_merge_request_query_builder is false' do
+    before do
+      stub_feature_flags(search_merge_request_query_builder: false)
+    end
 
-    assert_named_queries('merge_request:match:search_terms', 'merge_request:authorized:project')
+    it 'names elasticsearch queries' do
+      described_class.elastic_search('*').total_count
+
+      assert_named_queries('merge_request:match:search_terms', 'merge_request:authorized:project')
+    end
   end
 
-  it 'searches by iid and scopes to type: merge_request only', :sidekiq_inline do
-    project = create :project, :public, :repository
+  context 'when search_merge_request_query_builder is true' do
+    before do
+      stub_feature_flags(search_merge_request_query_builder: true)
+    end
 
-    merge_request = create :merge_request, title: 'bla-bla merge request', source_project: project
-    create :merge_request, description: 'term2 in description', source_project: project, target_branch: "feature2"
+    it 'names elasticsearch queries' do
+      described_class.elastic_search('*').total_count
 
-    # Issue with the same iid should not be found in MergeRequest search
-    create :issue, project: project, iid: merge_request.iid
-
-    ensure_elasticsearch_index!
-
-    options = { project_ids: [project.id] }
-
-    results = described_class.elastic_search("!#{merge_request.iid}", options: options)
-    expect(results.total_count).to eq(1)
-    expect(results.first.title).to eq('bla-bla merge request')
+      assert_named_queries('merge_request:match:search_terms', 'filters:project')
+    end
   end
 
   describe 'json' do

@@ -2,14 +2,14 @@
 
 module Search
   module Elastic
-    class IssueQueryBuilder < QueryBuilder
+    class MergeRequestQueryBuilder < QueryBuilder
       extend ::Gitlab::Utils::Override
 
-      DOC_TYPE = 'issue'
+      DOC_TYPE = 'merge_request'
 
       def build
         query_hash =
-          if query =~ /#(\d+)\z/
+          if query =~ /!(\d+)\z/
             ::Search::Elastic::Queries.by_iid(iid: Regexp.last_match(1), doc_type: DOC_TYPE)
           else
             # iid field can be added here as lenient option will
@@ -25,13 +25,12 @@ module Search
           end
 
         query_hash = ::Search::Elastic::Filters.by_authorization(query_hash: query_hash, options: options)
-        query_hash = ::Search::Elastic::Filters.by_confidentiality(query_hash: query_hash, options: options)
         query_hash = ::Search::Elastic::Filters.by_state(query_hash: query_hash, options: options)
-        query_hash = ::Search::Elastic::Filters.by_not_hidden(query_hash: query_hash, options: options)
-        query_hash = ::Search::Elastic::Filters.by_label_ids(query_hash: query_hash, options: options)
         query_hash = ::Search::Elastic::Filters.by_archived(query_hash: query_hash, options: options)
 
-        return ::Search::Elastic::Aggregations.by_label_ids(query_hash: query_hash) if options[:aggregation]
+        if Feature.enabled?(:hide_merge_requests_from_banned_users) # rubocop: disable Gitlab/FeatureFlagWithoutActor -- existing flag
+          query_hash = ::Search::Elastic::Filters.by_not_hidden(query_hash: query_hash, options: options)
+        end
 
         query_hash = ::Search::Elastic::Formats.source_fields(query_hash: query_hash, options: options)
         query_hash = ::Search::Elastic::Formats.size(query_hash: query_hash, options: options)
@@ -45,9 +44,9 @@ module Search
       def extra_options
         {
           doc_type: DOC_TYPE,
-          features: 'issues',
-          traversal_ids_prefix: :namespace_ancestry_ids,
-          authorization_use_traversal_ids: true
+          features: 'merge_requests',
+          project_id_field: :target_project_id,
+          authorization_use_traversal_ids: false # https://gitlab.com/gitlab-org/gitlab/-/issues/351279
         }
       end
     end
