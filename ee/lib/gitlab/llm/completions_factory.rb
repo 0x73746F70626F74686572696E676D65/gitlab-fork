@@ -8,8 +8,14 @@ module Gitlab
         name = prompt_message.ai_action.to_sym
         raise NameError, "completion class for action #{name} not found" unless features_list.key?(name)
 
-        service_class, prompt_class = features_list[name].values_at(:service_class, :prompt_class)
-        service_class.new(prompt_message, prompt_class, options.merge(action: name))
+        feature = features_list[name]
+        service_class = if feature[:aigw_service_class] && Feature.enabled?(:ai_gateway_agents, prompt_message.user)
+                          feature[:aigw_service_class]
+                        else
+                          feature[:service_class]
+                        end
+
+        service_class.new(prompt_message, feature[:prompt_class], options.merge(action: name))
       end
     end
   end
