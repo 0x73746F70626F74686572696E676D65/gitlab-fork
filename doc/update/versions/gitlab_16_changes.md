@@ -1051,7 +1051,7 @@ Specific information applies to installations using Geo:
     Affected artifacts are automatically resynced upon upgrade to 16.1.5, 16.2.5, 16.3.1, 16.4.0, or later.
     You can [manually resync affected job artifacts](https://gitlab.com/gitlab-org/gitlab/-/issues/419742#to-fix-data) if needed.
 
-#### Cloning LFS objects from secondary site downloads from the primary site even when secondary is fully synced
+#### Cloning LFS objects from secondary site downloads from the primary site
 
 A [bug](https://gitlab.com/gitlab-org/gitlab/-/issues/410413) in the Geo proxying logic for LFS objects meant that all LFS clone requests against a secondary site are proxied to the primary even if the secondary site is up-to-date. This can result in increased load on the primary site and longer access times for LFS objects for users cloning from the secondary site.
 
@@ -1136,7 +1136,7 @@ Specific information applies to installations using Geo:
   - While running an affected version, artifacts which appeared to become synced may actually be missing on the secondary site.
     Affected artifacts are automatically resynced upon upgrade to 16.1.5, 16.2.5, 16.3.1, 16.4.0, or later.
     You can [manually resync affected job artifacts](https://gitlab.com/gitlab-org/gitlab/-/issues/419742#to-fix-data) if needed.
-  - Cloning LFS objects from secondary site downloads from the primary site even when secondary is fully synced. See [the details and workaround](#cloning-lfs-objects-from-secondary-site-downloads-from-the-primary-site-even-when-secondary-is-fully-synced).
+  - Cloning LFS objects from secondary site downloads from the primary site even when secondary is fully synced. See [the details and workaround](#cloning-lfs-objects-from-secondary-site-downloads-from-the-primary-site).
 
 #### Wiki repositories not initialized on project creation
 
@@ -1217,7 +1217,7 @@ Specific information applies to installations using Geo:
 
 - Some project imports do not initialize wiki repositories on project creation. See
   [the details and workaround](#wiki-repositories-not-initialized-on-project-creation).
-- Cloning LFS objects from secondary site downloads from the primary site even when secondary is fully synced. See [the details and workaround](#cloning-lfs-objects-from-secondary-site-downloads-from-the-primary-site-even-when-secondary-is-fully-synced).
+- Cloning LFS objects from secondary site downloads from the primary site even when secondary is fully synced. See [the details and workaround](#cloning-lfs-objects-from-secondary-site-downloads-from-the-primary-site).
 
 ### Gitaly configuration structure change
 
