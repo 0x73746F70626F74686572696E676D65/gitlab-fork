@@ -9441,7 +9441,6 @@ CREATE TABLE design_management_designs (
     cached_markdown_version integer,
     description text,
     description_html text,
-    imported smallint DEFAULT 0 NOT NULL,
     imported_from smallint DEFAULT 0 NOT NULL,
     namespace_id bigint,
     CONSTRAINT check_07155e2715 CHECK ((char_length((filename)::text) <= 255)),
@@ -10060,7 +10059,6 @@ CREATE TABLE events (
     fingerprint bytea,
     id bigint NOT NULL,
     target_id bigint,
-    imported smallint DEFAULT 0 NOT NULL,
     imported_from smallint DEFAULT 0 NOT NULL,
     CONSTRAINT check_97e06e05ad CHECK ((octet_length(fingerprint) <= 128))
 );
@@ -11538,7 +11536,6 @@ CREATE TABLE issues (
     namespace_id bigint,
     start_date date,
     tmp_epic_id bigint,
-    imported smallint DEFAULT 0 NOT NULL,
     imported_from smallint DEFAULT 0 NOT NULL,
     CONSTRAINT check_2addf801cd CHECK ((work_item_type_id IS NOT NULL)),
     CONSTRAINT check_c33362cd43 CHECK ((namespace_id IS NOT NULL)),
@@ -12448,7 +12445,6 @@ CREATE TABLE merge_requests (
     merged_commit_sha bytea,
     override_requested_changes boolean DEFAULT false NOT NULL,
     head_pipeline_id_convert_to_bigint bigint,
-    imported smallint DEFAULT 0 NOT NULL,
     imported_from smallint DEFAULT 0 NOT NULL,
     CONSTRAINT check_970d272570 CHECK ((lock_version IS NOT NULL))
 );
@@ -13147,7 +13143,6 @@ CREATE TABLE notes (
     internal boolean DEFAULT false NOT NULL,
     id bigint NOT NULL,
     namespace_id bigint,
-    imported smallint DEFAULT 0 NOT NULL,
     imported_from smallint DEFAULT 0 NOT NULL,
     CONSTRAINT check_1244cbd7d0 CHECK ((noteable_type IS NOT NULL))
 );
@@ -16415,7 +16410,6 @@ CREATE TABLE resource_label_events (
     cached_markdown_version integer,
     reference text,
     reference_html text,
-    imported smallint DEFAULT 0 NOT NULL,
     imported_from smallint DEFAULT 0 NOT NULL
 );
 
@@ -16456,7 +16450,6 @@ CREATE TABLE resource_milestone_events (
     action smallint NOT NULL,
     state smallint NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    imported smallint DEFAULT 0 NOT NULL,
     imported_from smallint DEFAULT 0 NOT NULL
 );
 
@@ -16481,7 +16474,6 @@ CREATE TABLE resource_state_events (
     close_after_error_tracking_resolve boolean DEFAULT false NOT NULL,
     close_auto_resolve_prometheus_alert boolean DEFAULT false NOT NULL,
     source_merge_request_id bigint,
-    imported smallint DEFAULT 0 NOT NULL,
     imported_from smallint DEFAULT 0 NOT NULL,
     CONSTRAINT check_f0bcfaa3a2 CHECK ((char_length(source_commit) <= 40)),
     CONSTRAINT state_events_must_belong_to_issue_or_merge_request_or_epic CHECK ((((issue_id <> NULL::bigint) AND (merge_request_id IS NULL) AND (epic_id IS NULL)) OR ((issue_id IS NULL) AND (merge_request_id <> NULL::bigint) AND (epic_id IS NULL)) OR ((issue_id IS NULL) AND (merge_request_id IS NULL) AND (epic_id <> NULL::integer))))
@@ -17346,7 +17338,6 @@ CREATE TABLE snippets (
     encrypted_secret_token_iv character varying(255),
     secret boolean DEFAULT false NOT NULL,
     repository_read_only boolean DEFAULT false NOT NULL,
-    imported smallint DEFAULT 0 NOT NULL,
     imported_from smallint DEFAULT 0 NOT NULL,
     organization_id bigint DEFAULT 1
 );
