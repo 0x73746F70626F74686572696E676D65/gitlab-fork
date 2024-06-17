@@ -27,7 +27,7 @@ RSpec.describe Search::Zoekt::IndexingTaskWorker, feature_category: :global_sear
     it_behaves_like 'an idempotent worker' do
       it 'calls the IndexingTaskService service' do
         expect(Search::Zoekt::IndexingTaskService).to receive(:execute)
-          .with(project, 'index_repo', node_id: 1, force: false, delay: 3)
+          .with(project.id, 'index_repo', node_id: 1, force: false, delay: 3)
         perform_worker
       end
     end

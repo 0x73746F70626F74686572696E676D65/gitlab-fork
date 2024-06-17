@@ -18,8 +18,8 @@ module Search
 
       validate :project_id_matches_project_identifier
 
-      validates :project_id, uniqueness: {
-        scope: :zoekt_index_id, message: 'violates unique constraint between [:zoekt_index_id, :project_id]'
+      validates :project_identifier, uniqueness: {
+        scope: :zoekt_index_id, message: 'violates unique constraint between [:zoekt_index_id, :project_identifier]'
       }
 
       enum state: {
@@ -30,14 +30,11 @@ module Search
 
       scope :non_ready, -> { where.not(state: :ready) }
 
-      def self.create_tasks(project:, zoekt_index:, task_type:, perform_at:)
-        find_or_initialize_by(project: project, zoekt_index: zoekt_index).tap do |record|
-          record.save! if record.new_record?
-          record.tasks.create!(
-            zoekt_node_id: zoekt_index.zoekt_node_id,
-            task_type: task_type,
-            perform_at: perform_at
-          )
+      def self.create_tasks(project_id:, zoekt_index:, task_type:, perform_at:)
+        project = Project.find_by_id(project_id)
+        find_or_initialize_by(project_identifier: project_id, project: project, zoekt_index: zoekt_index).tap do |item|
+          item.save! if item.new_record?
+          item.tasks.create!(zoekt_node_id: zoekt_index.zoekt_node_id, task_type: task_type, perform_at: perform_at)
         end
       end
 

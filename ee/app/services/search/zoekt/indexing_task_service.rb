@@ -9,8 +9,9 @@ module Search
         new(...).execute
       end
 
-      def initialize(project, task_type, node_id: nil, root_namespace_id: nil, force: false, delay: nil)
-        @project = project
+      def initialize(project_id, task_type, node_id: nil, root_namespace_id: nil, force: false, delay: nil)
+        @project_id = project_id
+        @project = Project.find_by_id(project_id)
         @task_type = task_type.to_sym
         @node_id = node_id
         @root_namespace_id = root_namespace_id
@@ -26,21 +27,20 @@ module Search
           perform_at = Time.current
           perform_at += delay if delay
           ApplicationRecord.transaction do
-            Repository.create_tasks(project: project, zoekt_index: index, task_type: current_task_type,
-              perform_at: perform_at)
+            Repository.create_tasks(
+              project_id: project_id, zoekt_index: index, task_type: current_task_type, perform_at: perform_at
+            )
           end
         end
       end
 
       private
 
-      attr_reader :project, :node_id, :root_namespace_id, :force, :task_type, :delay
+      attr_reader :project_id, :project, :node_id, :root_namespace_id, :force, :task_type, :delay
 
       def preflight_check?
-        return false if Feature.disabled?(:zoekt_create_indexing_tasks, project)
-        # should return true even the project is nil but the task_type is :delete_repo
         return true if task_type == :delete_repo
-        return false unless project
+        return false unless project && Feature.enabled?(:zoekt_create_indexing_tasks, project)
 
         true
       end
