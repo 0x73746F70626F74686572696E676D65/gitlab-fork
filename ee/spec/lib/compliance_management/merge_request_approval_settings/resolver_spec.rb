@@ -224,4 +224,41 @@ RSpec.describe ::ComplianceManagement::MergeRequestApprovalSettings::Resolver, f
       it_behaves_like 'a MR approval setting'
     end
   end
+
+  describe '#require_reauthentication_to_approve' do
+    where(:group_requires_reauth, :project_requires_reauth, :value, :locked, :inherited_from) do
+      true  | nil | true  | false | nil
+      false | nil | false | false | nil
+
+      # Cases which do not include a group
+      nil | true  | true  | false | nil
+      nil | false | false | false | nil
+
+      # Cases with a project
+      true  | false | true  | true  | :group
+      true  | true  | true  | true  | :group
+      false | false | false | false | nil
+      false | true  | true  | false | nil
+    end
+
+    with_them do
+      before do
+        group.group_merge_request_approval_setting
+          .update!(require_reauthentication_to_approve: !!group_requires_reauth)
+        project.update!(require_reauthentication_to_approve: project_requires_reauth)
+      end
+
+      let(:object) do
+        if project_requires_reauth.nil?
+          described_class.new(group).require_reauthentication_to_approve
+        elsif group_requires_reauth.nil?
+          described_class.new(nil, project: project).require_reauthentication_to_approve
+        else
+          described_class.new(group, project: project).require_reauthentication_to_approve
+        end
+      end
+
+      it_behaves_like 'a MR approval setting'
+    end
+  end
 end

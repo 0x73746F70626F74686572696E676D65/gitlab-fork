@@ -38,7 +38,10 @@ module QA
 
         group.update_members(author.reload!, approver.reload!, access_level: Resource::Members::AccessLevel::MAINTAINER)
 
+        # TODO: remove with DB field https://gitlab.com/gitlab-org/gitlab/-/issues/431346
         project.update_approval_configuration(require_password_to_approve: true)
+
+        project.update_approval_configuration(require_reauthentication_to_approve: true)
       end
 
       after do

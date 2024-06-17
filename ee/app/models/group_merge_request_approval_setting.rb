@@ -11,7 +11,8 @@ class GroupMergeRequestApprovalSetting < ApplicationRecord
     :allow_overrides_to_approver_list_per_merge_request,
     :retain_approvals_on_push,
     :require_password_to_approve,
-    :require_saml_auth_to_approve, # I think this is unused
+    :require_saml_auth_to_approve, # TODO: Deprecated, can be removed along with DB column
+    :require_reauthentication_to_approve,
     inclusion: { in: [true, false], message: N_('must be a boolean value') }
 
   scope :find_or_initialize_by_group, ->(group) { find_or_initialize_by(group: group) }
@@ -22,10 +23,25 @@ class GroupMergeRequestApprovalSetting < ApplicationRecord
     allow_overrides_to_approver_list_per_merge_request:
     'prevent users from modifying MR approval rules in merge requests',
     retain_approvals_on_push: 'require new approvals when new commits are added to an MR',
-    require_password_to_approve: 'require user password for approvals'
+    require_password_to_approve: 'require user password for approvals',
+    require_reauthentication_to_approve: 'require user authentication for approvals'
   }.freeze
 
   def selective_code_owner_removals
     false
+  end
+
+  def require_password_to_approve=(status)
+    write_attribute(:require_password_to_approve, status)
+    write_attribute(:require_reauthentication_to_approve, status)
+  end
+
+  def require_reauthentication_to_approve=(status)
+    write_attribute(:require_reauthentication_to_approve, status)
+    write_attribute(:require_password_to_approve, status)
+  end
+
+  def require_reauthentication_to_approve
+    require_password_to_approve
   end
 end

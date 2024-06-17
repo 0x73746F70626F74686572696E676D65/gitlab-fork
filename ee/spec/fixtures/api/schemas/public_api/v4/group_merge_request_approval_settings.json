@@ -77,6 +77,17 @@
       "inherited_from": {
         "type": "string"
       }
+    },
+    "require_reauthentication_to_approve": {
+      "value": {
+        "type": "boolean"
+      },
+      "locked": {
+        "type": "boolean"
+      },
+      "inherited_from": {
+        "type": "string"
+      }
     }
   },
   "additionalProperties": false

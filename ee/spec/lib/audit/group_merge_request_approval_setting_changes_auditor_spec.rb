@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Audit::GroupMergeRequestApprovalSettingChangesAuditor do
+RSpec.describe Audit::GroupMergeRequestApprovalSettingChangesAuditor, feature_category: :compliance_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
@@ -12,6 +12,7 @@ RSpec.describe Audit::GroupMergeRequestApprovalSettingChangesAuditor do
         allow_committer_approval: false,
         allow_overrides_to_approver_list_per_merge_request: false,
         retain_approvals_on_push: false,
+        require_reauthentication_to_approve: true,
         require_password_to_approve: true }
     end
 
@@ -20,14 +21,18 @@ RSpec.describe Audit::GroupMergeRequestApprovalSettingChangesAuditor do
     subject { described_class.new(user, approval_setting, params) }
 
     it 'creates audit events' do
-      expect { subject.execute }.to change { AuditEvent.count }.by(5)
-      expect(AuditEvent.last(5).map { |e| e.details[:custom_message] })
+      expect { subject.execute }.to change { AuditEvent.count }.by(6)
+
+      events = AuditEvent.last(6).map { |e| e.details[:custom_message] }
+
+      expect(events.sort)
         .to match_array ["Changed prevent merge request approval from committers from false to true",
                          "Changed prevent users from modifying MR approval rules in merge requests "\
                            "from false to true",
                          "Changed prevent merge request approval from authors from false to true",
                          "Changed require new approvals when new commits are added to an MR from false to true",
-                         "Changed require user password for approvals from false to true"]
+                         "Changed require user authentication for approvals from false to true",
+                         "Changed require user password for approvals from false to true"].sort
     end
   end
 
@@ -40,6 +45,7 @@ RSpec.describe Audit::GroupMergeRequestApprovalSettingChangesAuditor do
         allow_committer_approval: false,
         allow_overrides_to_approver_list_per_merge_request: false,
         retain_approvals_on_push: false,
+        require_reauthentication_to_approve: false,
         require_password_to_approve: false
       )
     end
@@ -47,23 +53,30 @@ RSpec.describe Audit::GroupMergeRequestApprovalSettingChangesAuditor do
     let_it_be(:subject) { described_class.new(user, approval_setting, {}) }
 
     ::GroupMergeRequestApprovalSetting::AUDIT_LOG_ALLOWLIST.each do |column, desc|
-      it 'creates an audit event' do
+      it "creates an audit event for #{column}" do
         approval_setting.update_attribute(column, true)
 
-        expect { subject.execute }.to change { AuditEvent.count }.by(1)
+        if column == :require_password_to_approve || column == :require_reauthentication_to_approve
+          # both values shoudl be kept in sync
+          expect { subject.execute }.to change { AuditEvent.count }.by(2)
 
-        if column == :require_password_to_approve
-          expect(AuditEvent.last.details).to include({ change: desc, from: false, to: true })
+          last_two = AuditEvent.last(2)
+          reauth = last_two.detect do |event|
+            event.details[:event_name] == "require_reauthentication_to_approve_updated"
+          end
+          password = last_two.detect { |event| event.details[:event_name] == "require_password_to_approve_updated" }
+          if column == :require_reauthentication_to_approve
+            expect(reauth.details).to include({ change: desc, from: false, to: true })
+          else
+            expect(password.details).to include({ change: desc, from: false, to: true })
+          end
         else
+          expect(::Gitlab::Audit::Auditor)
+            .to receive(:audit).with(hash_including({ name: "#{column}_updated" })).and_call_original
+
+          expect { subject.execute }.to change { AuditEvent.count }.by(1)
           expect(AuditEvent.last.details).to include({ change: desc, from: true, to: false })
         end
-      end
-
-      it 'passes correct event type to auditor' do
-        expect(::Gitlab::Audit::Auditor)
-          .to receive(:audit).with(hash_including({ name: "#{column}_updated" })).and_call_original
-
-        subject.execute
       end
     end
   end

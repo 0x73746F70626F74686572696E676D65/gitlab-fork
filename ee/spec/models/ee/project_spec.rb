@@ -1201,6 +1201,47 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       end
     end
 
+    describe '#require_reauthentication_to_approve?' do
+      let_it_be(:root_ancestor) { create(:group) }
+      let_it_be(:sub_group) { create(:group, parent: root_ancestor) }
+
+      before do
+        allow(project).to receive(:group).and_return(sub_group)
+      end
+
+      it 'returns true when the resolver returns true' do
+        expect(ComplianceManagement::MergeRequestApprovalSettings::Resolver).to receive(:new).with(root_ancestor, project: project)
+
+        allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
+          # internally still maps to require_password_to_approve so mock that call
+          allow(resolver).to receive(:require_password_to_approve)
+            .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+              value: true,
+              locked: false,
+              inherited_from: nil
+            ))
+        end
+
+        expect(project.require_reauthentication_to_approve).to be true
+      end
+
+      it 'returns false when the resolver returns false' do
+        expect(ComplianceManagement::MergeRequestApprovalSettings::Resolver).to receive(:new).with(root_ancestor, project: project)
+
+        allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
+          # internally still maps to require_password_to_approve so mock that call
+          allow(resolver).to receive(:require_password_to_approve)
+            .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+              value: false,
+              locked: false,
+              inherited_from: nil
+            ))
+        end
+
+        expect(project.require_reauthentication_to_approve).to be false
+      end
+    end
+
     describe '#require_password_to_approve?' do
       let_it_be(:root_ancestor) { create(:group) }
       let_it_be(:sub_group) { create(:group, parent: root_ancestor) }
@@ -1237,6 +1278,43 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         end
 
         expect(project.require_password_to_approve).to be false
+      end
+
+      it 'sets require_reauthentication_to_approve along with require_password_to_approve' do
+        project.require_password_to_approve = false
+
+        expect(project.project_setting.require_reauthentication_to_approve).to be_falsy
+        expect(project.require_password_to_approve).to be_falsy
+
+        project.require_password_to_approve = true
+
+        expect(project.project_setting.require_reauthentication_to_approve).to be_truthy
+
+        project.save!
+        project.reload
+
+        # persisted the change
+        expect(project.project_setting.require_reauthentication_to_approve).to be_truthy
+        expect(project.require_password_to_approve).to be_truthy
+      end
+
+      it 'sets require_password_to_approve along with require_reauthentication_to_approve' do
+        project.require_reauthentication_to_approve = false
+
+        expect(project.project_setting.require_reauthentication_to_approve).to be_falsy
+        expect(project.require_password_to_approve).to be_falsy
+
+        project.require_reauthentication_to_approve = true
+
+        expect(project.require_password_to_approve).to be_truthy
+        expect(project.project_setting.require_reauthentication_to_approve).to be_truthy
+
+        project.save!
+        project.reload
+
+        # persisted the change
+        expect(project.project_setting.require_reauthentication_to_approve).to be_truthy
+        expect(project.require_password_to_approve).to be_truthy
       end
     end
 

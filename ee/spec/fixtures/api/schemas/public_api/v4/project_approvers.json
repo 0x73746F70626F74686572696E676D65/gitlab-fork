@@ -28,6 +28,12 @@
         "null"
       ]
     },
+    "require_reauthentication_to_approve": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
     "require_password_to_approve": {
       "type": [
         "boolean",
