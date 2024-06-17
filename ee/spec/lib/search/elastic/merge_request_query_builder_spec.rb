@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Search::Elastic::IssueQueryBuilder, :elastic_helpers, feature_category: :global_search do
+RSpec.describe ::Search::Elastic::MergeRequestQueryBuilder, :elastic_helpers, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
   let(:base_options) do
     {
       current_user: user,
       project_ids: project_ids,
       group_ids: [],
-      public_and_internal_projects: false
+      public_and_internal_projects: true
     }
   end
 
@@ -21,46 +21,37 @@ RSpec.describe ::Search::Elastic::IssueQueryBuilder, :elastic_helpers, feature_c
 
   it 'contains all expected filters' do
     assert_names_in_query(build, with: %w[
-      issue:multi_match:or:search_terms
-      issue:multi_match:and:search_terms
-      issue:multi_match_phrase:search_terms
+      merge_request:multi_match:or:search_terms
+      merge_request:multi_match:and:search_terms
+      merge_request:multi_match_phrase:search_terms
       filters:not_hidden
       filters:non_archived
-      filters:non_confidential
-      filters:confidential
-      filters:as_author
-      filters:as_assignee
-      filters:project:membership:id
     ])
   end
 
   describe 'query' do
     context 'when query is an iid' do
-      let(:query) { '#1' }
+      let(:query) { '!1' }
 
       it 'returns the expected query' do
-        assert_names_in_query(build, with: %w[issue:related:iid doc:is_a:issue])
+        assert_names_in_query(build, with: %w[merge_request:related:iid doc:is_a:merge_request])
       end
     end
 
     context 'when query is text' do
       it 'returns the expected query' do
         assert_names_in_query(build,
-          with: %w[issue:multi_match:or:search_terms
-            issue:multi_match:and:search_terms
-            issue:multi_match_phrase:search_terms],
-          without: %w[issue:match:search_terms])
+          with: %w[merge_request:multi_match:or:search_terms
+            merge_request:multi_match:and:search_terms
+            merge_request:multi_match_phrase:search_terms],
+          without: %w[merge_request:match:search_terms])
       end
 
       context 'when advanced query syntax is used' do
         let(:query) { 'foo -default' }
 
         it 'returns the expected query' do
-          assert_names_in_query(build,
-            with: %w[issue:match:search_terms],
-            without: %w[issue:multi_match:or:search_terms
-              issue:multi_match:and:search_terms
-              issue:multi_match_phrase:search_terms])
+          assert_names_in_query(build, with: %w[merge_request:match:search_terms])
         end
       end
 
@@ -71,10 +62,10 @@ RSpec.describe ::Search::Elastic::IssueQueryBuilder, :elastic_helpers, feature_c
 
         it 'returns the expected query' do
           assert_names_in_query(build,
-            with: %w[issue:match:search_terms],
-            without: %w[issue:multi_match:or:search_terms
-              issue:multi_match:and:search_terms
-              issue:multi_match_phrase:search_terms])
+            with: %w[merge_request:match:search_terms],
+            without: %w[merge_request:multi_match:or:search_terms
+              merge_request:multi_match:and:search_terms
+              merge_request:multi_match_phrase:search_terms])
         end
       end
     end
@@ -88,25 +79,10 @@ RSpec.describe ::Search::Elastic::IssueQueryBuilder, :elastic_helpers, feature_c
     it_behaves_like 'a query filtered by archived'
     it_behaves_like 'a query filtered by hidden'
     it_behaves_like 'a query filtered by state'
-    it_behaves_like 'a query filtered by confidentiality'
 
     describe 'authorization' do
       it 'applies authorization filters' do
         assert_names_in_query(build, with: %w[filters:project:membership:id])
-      end
-    end
-
-    describe 'labels' do
-      it 'does not include labels filter by default' do
-        assert_names_in_query(build, without: %w[filters:label_ids])
-      end
-
-      context 'when labels option is provided' do
-        let(:options) { base_options.merge(labels: [1]) }
-
-        it 'applies label filters' do
-          assert_names_in_query(build, with: %w[filters:label_ids])
-        end
       end
     end
   end

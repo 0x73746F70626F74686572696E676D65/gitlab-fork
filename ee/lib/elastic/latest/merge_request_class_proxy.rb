@@ -7,29 +7,37 @@ module Elastic
       include StateFilter
 
       def elastic_search(query, options: {})
-        options[:features] = 'merge_requests'
-        options[:no_join_project] = true
+        query_hash = if Feature.enabled?(:search_merge_request_query_builder, options[:current_user])
+                       ::Search::Elastic::MergeRequestQueryBuilder.build(query: query, options: options)
+                     else
+                       options[:features] = 'merge_requests'
+                       options[:no_join_project] = true
 
-        query_hash =
-          if query =~ /\!(\d+)\z/
-            iid_query_hash(Regexp.last_match(1))
-          else
-            # iid field can be added here as lenient option will
-            # pardon format errors, like integer out of range.
-            fields = %w[iid^3 title^2 description]
+                       query_hash =
+                         if query =~ /!(\d+)\z/
+                           iid_query_hash(Regexp.last_match(1))
+                         else
+                           # iid field can be added here as lenient option will
+                           # pardon format errors, like integer out of range.
+                           fields = %w[iid^3 title^2 description]
 
-            basic_query_hash(fields, query, options)
-          end
+                           basic_query_hash(fields, query, options)
+                         end
 
-        context.name(:merge_request) do
-          query_hash = context.name(:authorized) { project_ids_filter(query_hash, options) }
-          query_hash = context.name(:match) { state_filter(query_hash, options) }
-          query_hash = context.name(:archived) { archived_filter(query_hash) } if archived_filter_applicable?(options)
-          if hidden_filter_applicable?(options[:current_user])
-            query_hash = context.name(:hidden) { hidden_filter(query_hash) }
-          end
-        end
-        query_hash = apply_sort(query_hash, options)
+                       context.name(:merge_request) do
+                         query_hash = context.name(:authorized) { project_ids_filter(query_hash, options) }
+                         query_hash = context.name(:match) { state_filter(query_hash, options) }
+                         if archived_filter_applicable?(options)
+                           query_hash = context.name(:archived) { archived_filter(query_hash) }
+                         end
+
+                         if hidden_filter_applicable?(options[:current_user])
+                           query_hash = context.name(:hidden) { hidden_filter(query_hash) }
+                         end
+                       end
+
+                       apply_sort(query_hash, options)
+                     end
 
         search(query_hash, options)
       end

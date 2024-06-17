@@ -138,9 +138,12 @@ module Search
           user = options[:current_user]
           project_ids = options[:project_ids]
           group_ids = options[:group_ids]
+          use_traversal_ids = options.fetch(:authorization_use_traversal_ids)
 
           context.name(:filters) do
-            next project_ids_filter(query_hash, options) if project_ids == :any || group_ids.blank?
+            if project_ids == :any || group_ids.blank? || !use_traversal_ids
+              next project_ids_filter(query_hash, options)
+            end
 
             namespaces = Namespace.find(authorized_namespace_ids(user, group_ids))
 
@@ -210,7 +213,8 @@ module Search
               {
                 terms: {
                   _name: context.name,
-                  project_id: filter_ids_by_feature(scoped_project_ids, current_user, options[:features])
+                  "#{options[:project_id_field]}":
+                    filter_ids_by_feature(scoped_project_ids, current_user, options[:features])
                 }
               }
             end
@@ -433,7 +437,7 @@ module Search
           {
             terms: {
               _name: context.name,
-              project_id: rejected_ids
+              "#{options[:project_id_field]}": rejected_ids
             }
           }
         end

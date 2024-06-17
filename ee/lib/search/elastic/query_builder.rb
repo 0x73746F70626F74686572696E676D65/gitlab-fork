@@ -11,7 +11,8 @@ module Search
 
       def initialize(query:, options: {})
         @query = query
-        @options = options.merge(extra_options)
+        # allow extra_options to overwrite base_options
+        @options = options.merge(base_options.merge(extra_options))
       end
 
       def build
@@ -21,6 +22,14 @@ module Search
       private
 
       attr_reader :query, :options
+
+      def base_options
+        {
+          project_id_field: :project_id,
+          no_join_project: true,
+          source_fields: ['id']
+        }
+      end
 
       # Subclasses should override this method to provide additional options to builder
       def extra_options

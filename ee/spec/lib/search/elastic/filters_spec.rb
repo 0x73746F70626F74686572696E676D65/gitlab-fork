@@ -343,13 +343,18 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
     let(:project_ids) { [] }
     let(:group_ids) { [] }
     let(:features) { 'issues' }
+    let(:no_join_project) { false }
+    let(:authorization_use_traversal_ids) { true }
     let(:base_options) do
       {
         current_user: user,
         project_ids: project_ids,
         group_ids: group_ids,
         features: features,
-        public_and_internal_projects: public_and_internal_projects
+        public_and_internal_projects: public_and_internal_projects,
+        no_join_project: no_join_project,
+        authorization_use_traversal_ids: authorization_use_traversal_ids,
+        project_id_field: :project_id
       }
     end
 
@@ -375,7 +380,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
         end
 
         context 'when no_join_project is true' do
-          let(:options) { base_options.merge(no_join_project: true) }
+          let(:no_join_project) { true }
 
           it 'returns the expected query' do
             expected_filter = [{ terms: { _name: 'filters:project', project_id: [] } }]
@@ -421,7 +426,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
         end
 
         context 'when no_join_project is true' do
-          let(:options) { base_options.merge(no_join_project: true) }
+          let(:no_join_project) { true }
 
           it 'returns the expected query' do
             expected_filter = [
@@ -452,6 +457,41 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
             expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
             expect(by_authorization.dig(:query, :bool, :must)).to be_empty
             expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+          end
+
+          context 'when project_id_field is set in options' do
+            let(:options) { base_options.merge(project_id_field: :foo) }
+
+            it 'returns the expected query' do
+              expected_filter = [
+                { bool: {
+                  _name: 'filters:project',
+                  should: [
+                    { bool:
+                      { filter: [
+                        { terms: { _name: 'filters:project:membership:id', foo: [] } },
+                        { terms: {
+                          _name: 'filters:project:issues:enabled_or_private', 'issues_access_level' => [20, 10]
+                        } }
+                      ] } },
+                    { bool:
+                      { _name: 'filters:project:visibility:20:issues:access_level',
+                        filter: [
+                          { term: { visibility_level: { _name: 'filters:project:visibility:20', value: 20 } } },
+                          { term: {
+                            'issues_access_level' =>
+                              { _name: 'filters:project:visibility:20:issues:access_level:enabled', value: 20 }
+                          } }
+                        ] } }
+                  ]
+                } }
+              ]
+
+              expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+              expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+            end
           end
         end
       end
@@ -484,7 +524,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
         end
 
         context 'when no_join_project is true' do
-          let(:options) { base_options.merge(no_join_project: true) }
+          let(:no_join_project) { true }
 
           it 'returns the expected query' do
             expected_filter = [
@@ -502,6 +542,28 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
             expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
             expect(by_authorization.dig(:query, :bool, :must)).to be_empty
             expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+          end
+
+          context 'when project_id_field is set in options' do
+            let(:options) { base_options.merge(project_id_field: :foo) }
+
+            it 'returns the expected query' do
+              expected_filter = [
+                { bool: { _name: 'filters:project',
+                          should: [{ bool: { filter: [
+                            { term: { visibility_level: { _name: 'filters:project:any', value: 0 } } },
+                            { terms: {
+                              _name: 'filters:project:issues:enabled_or_private',
+                              'issues_access_level' => [20, 10]
+                            } }
+                          ] } }] } }
+              ]
+
+              expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+              expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+            end
           end
         end
       end
@@ -549,7 +611,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
         end
 
         context 'when no_join_project is true' do
-          let(:options) { base_options.merge(no_join_project: true) }
+          let(:no_join_project) { true }
 
           it 'returns the expected query' do
             expected_filter = [
@@ -587,6 +649,47 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
             expect(by_authorization.dig(:query, :bool, :must)).to be_empty
             expect(by_authorization.dig(:query, :bool, :should)).to be_empty
           end
+
+          context 'when project_id_field is set in options' do
+            let(:options) { base_options.merge(project_id_field: :foo) }
+
+            it 'returns the expected query' do
+              expected_filter = [
+                { bool: { _name: 'filters:project',
+                          should: [
+                            { bool:
+                              { filter: [
+                                { term: { visibility_level: { _name: 'filters:project:any', value: 0 } } },
+                                { terms: { _name: 'filters:project:issues:enabled_or_private',
+                                           'issues_access_level' => [20, 10] } }
+                              ] } },
+                            { bool:
+                              { _name: 'filters:project:visibility:10:issues:access_level',
+                                filter: [
+                                  { term: { visibility_level: { _name: 'filters:project:visibility:10', value: 10 } } },
+                                  { terms: {
+                                    _name: 'filters:project:visibility:10:issues:access_level:enabled_or_private',
+                                    'issues_access_level' => [20, 10]
+                                  } }
+                                ] } },
+                            { bool:
+                              { _name: 'filters:project:visibility:20:issues:access_level',
+                                filter: [
+                                  { term: { visibility_level: { _name: 'filters:project:visibility:20', value: 20 } } },
+                                  { terms: {
+                                    _name: 'filters:project:visibility:20:issues:access_level:enabled_or_private',
+                                    'issues_access_level' => [20, 10]
+                                  } }
+                                ] } }
+                          ] } }
+              ]
+
+              expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+              expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+            end
+          end
         end
       end
     end
@@ -612,7 +715,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
         end
 
         context 'when no_join_project is true' do
-          let(:options) { base_options.merge(no_join_project: true) }
+          let(:no_join_project) { true }
 
           it 'returns the expected query' do
             expected_filter = [
@@ -626,6 +729,21 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
             expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
             expect(by_authorization.dig(:query, :bool, :must)).to be_empty
             expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+          end
+
+          context 'when project_id_field is set in options' do
+            let(:options) { base_options.merge(project_id_field: :foo) }
+
+            it 'returns the expected query' do
+              expected_filter = [
+                { terms: { _name: 'filters:project', foo: [authorized_project.id, public_project.id] } }
+              ]
+
+              expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+              expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+            end
           end
         end
       end
@@ -677,7 +795,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
         end
 
         context 'when no_join_project is true' do
-          let(:options) { base_options.merge(no_join_project: true) }
+          let(:no_join_project) { true }
 
           it 'returns the expected query' do
             expected_filter = [{ bool: {
@@ -720,6 +838,52 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
             expect(by_authorization.dig(:query, :bool, :must)).to be_empty
             expect(by_authorization.dig(:query, :bool, :should)).to be_empty
           end
+
+          context 'and project_id_field is provided in options' do
+            let(:options) { base_options.merge(project_id_field: :foo) }
+
+            it 'returns the expected query' do
+              expected_filter = [{ bool: {
+                _name: 'filters:project',
+                should: [
+                  { bool:
+                    { filter: [
+                      { terms: {
+                        _name: 'filters:project:membership:id',
+                        foo: [authorized_project.id, public_project.id]
+                      } },
+                      { terms: {
+                        _name: 'filters:project:issues:enabled_or_private',
+                        'issues_access_level' => [20, 10]
+                      } }
+                    ] } },
+                  { bool:
+                    { _name: 'filters:project:visibility:10:issues:access_level',
+                      filter: [
+                        { term: { visibility_level: { _name: 'filters:project:visibility:10', value: 10 } } },
+                        { term: {
+                          'issues_access_level' =>
+                            { _name: 'filters:project:visibility:10:issues:access_level:enabled', value: 20 }
+                        } }
+                      ] } },
+                  { bool:
+                    { _name: 'filters:project:visibility:20:issues:access_level',
+                      filter: [
+                        { term: { visibility_level: { _name: 'filters:project:visibility:20', value: 20 } } },
+                        { term: {
+                          'issues_access_level' =>
+                            { _name: 'filters:project:visibility:20:issues:access_level:enabled', value: 20 }
+                        } }
+                      ] } }
+                ]
+              } }]
+
+              expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+              expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+            end
+          end
         end
       end
     end
@@ -748,8 +912,44 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
           expect(by_authorization.dig(:query, :bool, :should)).to be_empty
         end
 
+        context 'when traversal_ids_prefix is set in options' do
+          let(:options) { base_options.merge(traversal_ids_prefix: :foo) }
+
+          it 'returns the expected query' do
+            expected_filter = [
+              { bool: { should: [
+                { prefix: { foo:
+                  { _name: 'filters:namespace:ancestry_filter:descendants', value: "#{public_group.id}-" } } }
+              ] } }
+            ]
+            expected_must_not = [
+              { terms: { _name: 'filters:reject_projects', project_id: [private_project.id] } }
+            ]
+
+            expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+            expect(by_authorization.dig(:query, :bool, :must_not)).to eq(expected_must_not)
+            expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+            expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+          end
+        end
+
+        context 'when authorization_use_traversal_ids is false in options' do
+          let(:authorization_use_traversal_ids) { false }
+
+          it 'returns the expected query' do
+            expected_filter = [
+              { terms: { _name: 'filters:project', project_id: [authorized_project.id, public_project.id] } }
+            ]
+
+            expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+            expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
+            expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+            expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+          end
+        end
+
         context 'when no_join_project is true' do
-          let(:options) { base_options.merge(no_join_project: true) }
+          let(:no_join_project) { true }
 
           it 'returns the expected query' do
             expected_filter = [
@@ -769,6 +969,69 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
             expect(by_authorization.dig(:query, :bool, :must)).to be_empty
             expect(by_authorization.dig(:query, :bool, :must_not)).to eq(expected_must_not)
             expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+          end
+
+          context 'when authorization_use_traversal_ids is false in options' do
+            let(:authorization_use_traversal_ids) { false }
+
+            it 'returns the expected query' do
+              expected_filter = [
+                { terms: { _name: 'filters:project', project_id: [authorized_project.id, public_project.id] } }
+              ]
+
+              expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+              expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+            end
+          end
+
+          context 'when traversal_ids_prefix is set in options' do
+            let(:options) { base_options.merge(traversal_ids_prefix: :foo) }
+
+            it 'returns the expected query' do
+              expected_filter = [
+                { bool: {
+                  should: [
+                    { prefix: { foo: {
+                      _name: 'filters:namespace:ancestry_filter:descendants', value: "#{public_group.id}-"
+                    } } }
+                  ]
+                } }
+              ]
+              expected_must_not = [
+                { terms: { _name: 'filters:reject_projects', project_id: [private_project.id] } }
+              ]
+
+              expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+              expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :must_not)).to eq(expected_must_not)
+              expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+            end
+          end
+
+          context 'when project_id_field is set in options' do
+            let(:options) { base_options.merge(project_id_field: :foo) }
+
+            it 'returns the expected query' do
+              expected_filter = [
+                { bool: {
+                  should: [
+                    { prefix: { traversal_ids: {
+                      _name: 'filters:namespace:ancestry_filter:descendants', value: "#{public_group.id}-"
+                    } } }
+                  ]
+                } }
+              ]
+              expected_must_not = [
+                { terms: { _name: 'filters:reject_projects', foo: [private_project.id] } }
+              ]
+
+              expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+              expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :must_not)).to eq(expected_must_not)
+              expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+            end
           end
         end
       end
@@ -795,7 +1058,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
         end
 
         context 'when no_join_project is true' do
-          let(:options) { base_options.merge(no_join_project: true) }
+          let(:no_join_project) { true }
 
           it 'returns the expected query' do
             expected_filter = [
@@ -815,6 +1078,30 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
             expect(by_authorization.dig(:query, :bool, :must_not)).to eq(expected_must_not)
             expect(by_authorization.dig(:query, :bool, :must)).to be_empty
             expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+          end
+
+          context 'when project_id_field is set in options' do
+            let(:options) { base_options.merge(project_id_field: :foo) }
+
+            it 'returns the expected query' do
+              expected_filter = [
+                { bool: {
+                  should: [
+                    { prefix:
+                      { traversal_ids:
+                        { _name: 'filters:namespace:ancestry_filter:descendants', value: "#{public_group.id}-" } } }
+                  ]
+                } }
+              ]
+              expected_must_not = [
+                { terms: { _name: 'filters:reject_projects', foo: [private_project.id] } }
+              ]
+
+              expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+              expect(by_authorization.dig(:query, :bool, :must_not)).to eq(expected_must_not)
+              expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+              expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+            end
           end
         end
       end
@@ -842,7 +1129,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
           end
 
           context 'when no_join_project is true' do
-            let(:options) { base_options.merge(no_join_project: true) }
+            let(:no_join_project) { true }
 
             it 'returns the expected query' do
               expected_filter = [
@@ -853,6 +1140,21 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
               expect(by_authorization.dig(:query, :bool, :must)).to be_empty
               expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
               expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+            end
+
+            context 'when project_id_field is set in options' do
+              let(:options) { base_options.merge(project_id_field: :foo) }
+
+              it 'returns the expected query' do
+                expected_filter = [
+                  { terms: { _name: 'filters:project', foo: [internal_project.id] } }
+                ]
+
+                expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+                expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+                expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
+                expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+              end
             end
           end
         end
@@ -904,7 +1206,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
           end
 
           context 'when no_join_project is true' do
-            let(:options) { base_options.merge(no_join_project: true) }
+            let(:no_join_project) { true }
 
             it 'returns the expected query' do
               expected_filter = [
@@ -941,6 +1243,47 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
               expect(by_authorization.dig(:query, :bool, :must)).to be_empty
               expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
               expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+            end
+
+            context 'when project_id_field is set in options' do
+              let(:options) { base_options.merge(project_id_field: :foo) }
+
+              it 'returns the expected query' do
+                expected_filter = [
+                  { bool:
+                    { _name: 'filters:project',
+                      should: [
+                        { bool: { filter: [
+                          { terms: { _name: 'filters:project:membership:id', foo: [internal_project.id] } },
+                          { terms: { _name: 'filters:project:issues:enabled_or_private',
+                                     'issues_access_level' => [20, 10] } }
+                        ] } },
+                        { bool:
+                          { _name: 'filters:project:visibility:10:issues:access_level',
+                            filter: [
+                              { term: { visibility_level: { _name: 'filters:project:visibility:10', value: 10 } } },
+                              { term: {
+                                'issues_access_level' =>
+                                  { _name: 'filters:project:visibility:10:issues:access_level:enabled', value: 20 }
+                              } }
+                            ] } },
+                        { bool:
+                          { _name: 'filters:project:visibility:20:issues:access_level',
+                            filter: [
+                              { term: { visibility_level: { _name: 'filters:project:visibility:20', value: 20 } } },
+                              { term: {
+                                'issues_access_level' =>
+                                  { _name: 'filters:project:visibility:20:issues:access_level:enabled', value: 20 }
+                              } }
+                            ] } }
+                      ] } }
+                ]
+
+                expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+                expect(by_authorization.dig(:query, :bool, :must)).to be_empty
+                expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
+                expect(by_authorization.dig(:query, :bool, :should)).to be_empty
+              end
             end
           end
         end
