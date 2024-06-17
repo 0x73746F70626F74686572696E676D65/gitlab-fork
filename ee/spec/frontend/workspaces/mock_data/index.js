@@ -19,6 +19,7 @@ export const WORKSPACE = {
   devfilePath: '.devfile.yaml',
   devfileWebUrl: 'http://gdk.test:3000/gitlab-org/gitlab-shell/-/blob/main/.devfile.yaml',
   createdAt: '2023-05-01T18:24:34Z',
+  maxHoursBeforeTermination: 120,
 };
 
 export const PROJECT_ID = 1;
@@ -49,6 +50,7 @@ export const USER_WORKSPACES_LIST_QUERY_RESULT = {
             devfileWebUrl: 'http://gdk.test:3000/gitlab-org/gitlab-shell/-/blob/main/.devfile.yaml',
             projectId: 'gid://gitlab/Project/1',
             createdAt: '2023-04-29T18:24:34Z',
+            maxHoursBeforeTermination: 120,
           },
           {
             __typename: 'Workspace',
@@ -63,6 +65,7 @@ export const USER_WORKSPACES_LIST_QUERY_RESULT = {
             devfileWebUrl: 'http://gdk.test:3000/gitlab-org/gitlab-shell/-/blob/main/.devfile.yaml',
             projectId: 'gid://gitlab/Project/1',
             createdAt: '2023-05-01T18:24:34Z',
+            maxHoursBeforeTermination: 120,
           },
         ],
         pageInfo: {
@@ -115,6 +118,7 @@ export const AGENT_WORKSPACES_LIST_QUERY_RESULT = {
                 'http://gdk.test:3000/gitlab-org/gitlab-shell/-/blob/main/.devfile.yaml',
               projectId: 'gid://gitlab/Project/1',
               createdAt: '2023-04-29T18:24:34Z',
+              maxHoursBeforeTermination: 120,
             },
             {
               __typename: 'Workspace',
@@ -130,6 +134,7 @@ export const AGENT_WORKSPACES_LIST_QUERY_RESULT = {
                 'http://gdk.test:3000/gitlab-org/gitlab-shell/-/blob/main/.devfile.yaml',
               projectId: 'gid://gitlab/Project/1',
               createdAt: '2023-05-01T18:24:34Z',
+              maxHoursBeforeTermination: 120,
             },
           ],
           pageInfo: {
