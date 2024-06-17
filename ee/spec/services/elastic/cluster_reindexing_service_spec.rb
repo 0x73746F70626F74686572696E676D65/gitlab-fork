@@ -239,7 +239,8 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
           it 'increases retry_attempt and tries the slice again' do
             expect { cluster_reindexing_service.execute }.to change { slices.first.reload.retry_attempt }.by(1).and change { slices.first.reload.elastic_task }
             expect(task.reload.state).to eq('reindexing')
-            expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: 3, slice: 0).twice
+            expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to,
+              max_slice: 3, slice: 0, scroll: described_class::REINDEX_SCROLL).twice
           end
         end
 
@@ -285,7 +286,8 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
             it 'increases retry_attempt and tries the slice again' do
               expect { cluster_reindexing_service.execute }.to change { slices.first.reload.retry_attempt }.by(1).and change { slices.first.reload.elastic_task }
               expect(task.reload.state).to eq('reindexing')
-              expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: 3, slice: 0).twice
+              expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to,
+                max_slice: 3, slice: 0, scroll: described_class::REINDEX_SCROLL).twice
             end
           end
         end
@@ -322,7 +324,8 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
             # once for initial reindex, once for retry
             expect(helper)
               .to have_received(:reindex)
-              .with(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: 3, slice: 0).twice
+              .with(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: 3, slice: 0,
+                scroll: described_class::REINDEX_SCROLL).twice
           end
         end
       end
@@ -345,13 +348,16 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
     context 'for slice batching' do
       it 'kicks off the next set of slices if the current slice is finished', :aggregate_failures do
         expect { cluster_reindexing_service.execute }.to change { slice_1.reload.elastic_task }
-        expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: 3, slice: 0)
+        expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to,
+          max_slice: 3, slice: 0, scroll: described_class::REINDEX_SCROLL)
 
         expect { cluster_reindexing_service.execute }.to change { slice_2.reload.elastic_task }
-        expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: 3, slice: 1)
+        expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to,
+          max_slice: 3, slice: 1, scroll: described_class::REINDEX_SCROLL)
 
         expect { cluster_reindexing_service.execute }.to change { slice_3.reload.elastic_task }
-        expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: 3, slice: 2)
+        expect(helper).to have_received(:reindex).with(from: subtask.index_name_from, to: subtask.index_name_to,
+          max_slice: 3, slice: 2, scroll: described_class::REINDEX_SCROLL)
       end
     end
 

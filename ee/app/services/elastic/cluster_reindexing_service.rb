@@ -12,8 +12,8 @@ module Elastic
     }.freeze
 
     DELETE_ORIGINAL_INDEX_AFTER = 14.days
-
-    REINDEX_MAX_RETRY_LIMIT = 10
+    REINDEX_MAX_RETRY_LIMIT = 20
+    REINDEX_SCROLL = '2h'
 
     def execute
       case current_task.state.to_sym
@@ -232,7 +232,8 @@ module Elastic
         task_id: slice.elastic_task,
         **additional_options))
 
-      task_id = elastic_helper.reindex(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: slice.elastic_max_slice, slice: slice.elastic_slice)
+      task_id = elastic_helper.reindex(from: subtask.index_name_from, to: subtask.index_name_to,
+        max_slice: slice.elastic_max_slice, slice: slice.elastic_slice, scroll: REINDEX_SCROLL)
       retry_attempt = slice.retry_attempt + 1
 
       logger.info(build_structured_payload(
@@ -275,7 +276,8 @@ module Elastic
         break if slices_to_start == 0
 
         subtask.slices.not_started.limit(slices_to_start).each do |slice|
-          task_id = elastic_helper.reindex(from: subtask.index_name_from, to: subtask.index_name_to, max_slice: slice.elastic_max_slice, slice: slice.elastic_slice)
+          task_id = elastic_helper.reindex(from: subtask.index_name_from, to: subtask.index_name_to,
+            max_slice: slice.elastic_max_slice, slice: slice.elastic_slice, scroll: REINDEX_SCROLL)
           logger.info(build_structured_payload(
             message: 'Reindex task started',
             task_id: task_id,
