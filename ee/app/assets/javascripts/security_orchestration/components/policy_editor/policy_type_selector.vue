@@ -2,6 +2,7 @@
 import shieldCheckIllustrationUrl from '@gitlab/svgs/dist/illustrations/secure-sm.svg?url';
 import magnifyingGlassIllustrationUrl from '@gitlab/svgs/dist/illustrations/search-sm.svg?url';
 import pipelineIllustrationUrl from '@gitlab/svgs/dist/illustrations/milestone-sm.svg';
+import vulnerabilityIllustrationUrl from '@gitlab/svgs/dist/illustrations/scan-alert-sm.svg';
 import { GlButton, GlCard, GlIcon, GlSprintf } from '@gitlab/ui';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
@@ -36,6 +37,13 @@ const i18n = {
   pipelineExecutionPolicyExample: s__(
     'SecurityOrchestration|Run customized Gitlab security templates across my projects.',
   ),
+  vulnerabilityManagementPolicyTitle: s__('SecurityOrchestration|Vulnerability management policy'),
+  vulnerabilityManagementPolicyDesc: s__(
+    'SecurityOrchestration|Automate vulnerability management workflows.',
+  ),
+  vulnerabilityManagementPolicyExample: s__(
+    'SecurityOrchestration|If any scanner finds a vulnerability that was previously detected but no longer found in a subsequent scan, then automatically set the status to Resolved.',
+  ),
 };
 
 export default {
@@ -61,6 +69,12 @@ export default {
   computed: {
     showPipelineExecutionPolicyType() {
       return this.glFeatures.pipelineExecutionPolicyType;
+    },
+    showVulnerabilityManagementPolicyType() {
+      return (
+        this.glFeatures.vulnerabilityManagementPolicyType ||
+        this.glFeatures.vulnerabilityManagementPolicyTypeGroup
+      );
     },
     policies() {
       const policies = [
@@ -96,6 +110,17 @@ export default {
           imageSrc: pipelineIllustrationUrl,
           hasMax: this.maxActivePipelineExecutionPoliciesReached,
           maxPoliciesAllowed: this.maxPipelineExecutionPoliciesAllowed,
+        });
+      }
+
+      if (this.showVulnerabilityManagementPolicyType) {
+        policies.push({
+          text: POLICY_TYPE_COMPONENT_OPTIONS.vulnerabilityManagement.text.toLowerCase(),
+          urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.vulnerabilityManagement.urlParameter,
+          title: i18n.vulnerabilityManagementPolicyTitle,
+          description: i18n.vulnerabilityManagementPolicyDesc,
+          example: i18n.vulnerabilityManagementPolicyExample,
+          imageSrc: vulnerabilityIllustrationUrl,
         });
       }
 

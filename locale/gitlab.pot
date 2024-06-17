@@ -47456,6 +47456,9 @@ msgstr ""
 msgid "SecurityOrchestration|At least one framework label should be selected"
 msgstr ""
 
+msgid "SecurityOrchestration|Automate vulnerability management workflows."
+msgstr ""
+
 msgid "SecurityOrchestration|Automatically selected runners"
 msgstr ""
 
@@ -47625,6 +47628,9 @@ msgid "SecurityOrchestration|Hide extra projects"
 msgstr ""
 
 msgid "SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the main branch, then require two approvals from any two members of the application security team are required."
+msgstr ""
+
+msgid "SecurityOrchestration|If any scanner finds a vulnerability that was previously detected but no longer found in a subsequent scan, then automatically set the status to Resolved."
 msgstr ""
 
 msgid "SecurityOrchestration|Individual users"
@@ -48026,6 +48032,12 @@ msgid "SecurityOrchestration|Vulnerability age is less than %{vulnerabilityAge}.
 msgstr ""
 
 msgid "SecurityOrchestration|Vulnerability age requires previously existing vulnerability states (detected, confirmed, resolved, or dismissed)"
+msgstr ""
+
+msgid "SecurityOrchestration|Vulnerability management"
+msgstr ""
+
+msgid "SecurityOrchestration|Vulnerability management policy"
 msgstr ""
 
 msgid "SecurityOrchestration|What does an example message look like?"

@@ -15,6 +15,7 @@ module Projects
         push_frontend_feature_flag(:pipeline_execution_policy_type, project.group) if project.group
         push_frontend_feature_flag(:approval_policy_disable_bot_comment, project)
         push_frontend_feature_flag(:merge_request_approval_policies_fallback_behavior, project)
+        push_frontend_feature_flag(:vulnerability_management_policy_type, project)
       end
 
       feature_category :security_policy_management

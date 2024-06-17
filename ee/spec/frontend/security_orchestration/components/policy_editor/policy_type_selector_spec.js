@@ -68,6 +68,31 @@ describe('PolicyTypeSelector component', () => {
       });
     });
 
+    describe.each(['vulnerabilityManagementPolicyType', 'vulnerabilityManagementPolicyTypeGroup'])(
+      'feature flag `%s` is enabled',
+      () => {
+        beforeEach(() => {
+          factory({
+            glFeatures: {
+              vulnerabilityManagementPolicyType: true,
+            },
+          });
+        });
+
+        it(`displays the title`, () => {
+          expect(
+            wrapper.findByText(PolicyTypeSelector.i18n.vulnerabilityManagementPolicyTitle).exists(),
+          ).toBe(true);
+        });
+
+        it(`displays the description`, () => {
+          expect(
+            wrapper.findByText(PolicyTypeSelector.i18n.vulnerabilityManagementPolicyDesc).exists(),
+          ).toBe(true);
+        });
+      },
+    );
+
     describe('navigation button', () => {
       beforeEach(() => {
         factory();
@@ -134,12 +159,14 @@ describe('PolicyTypeSelector component', () => {
     POLICY_TYPE_COMPONENT_OPTIONS.approval.urlParameter,
     POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
     POLICY_TYPE_COMPONENT_OPTIONS.pipelineExecution.urlParameter,
+    POLICY_TYPE_COMPONENT_OPTIONS.vulnerabilityManagement.urlParameter,
   ])('should emit selected policy type', (parameter) => {
     factory({
       maxActiveScanExecutionPoliciesReached: false,
       maxActiveScanResultPoliciesReached: false,
       glFeatures: {
         pipelineExecutionPolicyType: true,
+        vulnerabilityManagementPolicyType: true,
       },
     });
 
