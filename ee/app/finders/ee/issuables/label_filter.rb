@@ -20,8 +20,9 @@ module EE
 
       override :target_label_links_query
       def target_label_links_query(target_model, label_ids)
+        return super if project.present?
         return super unless %w[Epic Issue].include?(target_model.name)
-        return super unless namespace&.epic_and_work_item_labels_unification_enabled?
+        return super unless group&.epic_and_work_item_labels_unification_enabled?
 
         multi_target_label_links_query(target_model, label_ids)
       end
@@ -102,12 +103,6 @@ module EE
         end
       end
       # rubocop: enable CodeReuse/ActiveRecord
-
-      def namespace
-        return project.group if project
-
-        group
-      end
     end
   end
 end

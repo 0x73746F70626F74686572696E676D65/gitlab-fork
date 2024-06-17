@@ -43,7 +43,7 @@ module EE
             ::Label.for_targets(objects_relation),
             ::Label.for_targets(sync_objects_relation)
           ],
-          remove_duplicates: false
+          remove_duplicates: true
         ).with_preloaded_container.group_by { |label| [label.target_id, label.target_type] }
       end
     end

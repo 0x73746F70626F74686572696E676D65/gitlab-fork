@@ -366,6 +366,90 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
         expect(epic.due_date).to eq(due_date)
       end
 
+      context 'when updating labels' do
+        let_it_be(:label_on_epic) { create(:group_label, group: group) }
+        let_it_be(:label_on_epic_work_item) { create(:group_label, group: group) }
+        let_it_be(:new_labels) { create_list(:group_label, 2, group: group) }
+
+        let(:labels_widget) { {} }
+        let(:labels_params) { {} }
+        let(:service) do
+          described_class.new(
+            container: group,
+            current_user: current_user,
+            params: params.merge(labels_params),
+            widget_params: widget_params.merge(labels_widget)
+          )
+        end
+
+        before do
+          epic.labels << label_on_epic
+          epic.work_item.labels << label_on_epic_work_item
+        end
+
+        context 'and replacing labels with `label_ids` param' do
+          let(:labels_params) { { label_ids: new_labels.map(&:id) } }
+          let(:expected_labels) { new_labels }
+          let(:expected_epic_own_labels) { [] }
+          let(:expected_epic_work_item_own_labels) { new_labels }
+
+          it_behaves_like 'syncs labels between epics and epic work items'
+        end
+
+        context 'and adding and removing labels through params' do
+          context 'and removing label assigned to epic' do
+            let(:labels_params) { { add_label_ids: new_labels.map(&:id), remove_label_ids: [label_on_epic.id] } }
+            let(:expected_labels) { [new_labels, label_on_epic_work_item].flatten }
+            let(:expected_epic_own_labels) { [] }
+            let(:expected_epic_work_item_own_labels) { [new_labels, label_on_epic_work_item].flatten }
+
+            it_behaves_like 'syncs labels between epics and epic work items'
+          end
+
+          context 'and removing label assigned to epic work item' do
+            let(:labels_params) do
+              { add_label_ids: new_labels.map(&:id), remove_label_ids: [label_on_epic_work_item.id] }
+            end
+
+            let(:expected_labels) { [new_labels, label_on_epic].flatten }
+            let(:expected_epic_own_labels) { [label_on_epic] }
+            let(:expected_epic_work_item_own_labels) { [new_labels].flatten }
+
+            it_behaves_like 'syncs labels between epics and epic work items'
+          end
+        end
+
+        context 'and adding and removing labels through widget params' do
+          context 'and removing label assigned to epic' do
+            let(:labels_widget) do
+              { labels_widget: { add_label_ids: new_labels.map(&:id), remove_label_ids: [label_on_epic.id] } }
+            end
+
+            let(:expected_labels) { [new_labels, label_on_epic_work_item].flatten }
+            let(:expected_epic_own_labels) { [] }
+            let(:expected_epic_work_item_own_labels) { [new_labels, label_on_epic_work_item].flatten }
+
+            it_behaves_like 'syncs labels between epics and epic work items'
+          end
+
+          context 'and removing label assigned to epic work item' do
+            let(:labels_widget) do
+              {
+                labels_widget: {
+                  add_label_ids: new_labels.map(&:id), remove_label_ids: [label_on_epic_work_item.id]
+                }
+              }
+            end
+
+            let(:expected_labels) { [new_labels, label_on_epic].flatten }
+            let(:expected_epic_own_labels) { [label_on_epic] }
+            let(:expected_epic_work_item_own_labels) { [new_labels].flatten }
+
+            it_behaves_like 'syncs labels between epics and epic work items'
+          end
+        end
+      end
+
       context 'when updating the work item fails' do
         before do
           allow_next_found_instance_of(WorkItem) do |work_item|

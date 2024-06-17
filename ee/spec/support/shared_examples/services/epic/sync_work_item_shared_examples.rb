@@ -130,3 +130,18 @@ RSpec.shared_examples 'syncs all data from a work_item to an epic' do
     expect(epic.labels).to be_empty
   end
 end
+
+RSpec.shared_examples 'syncs labels between epics and epic work items' do
+  it 'returns same labels for epic and epic work item', :aggregate_failures do
+    subject
+
+    epic.reload
+    work_item = epic.work_item
+
+    expect(epic.labels).to eq(work_item.labels)
+
+    expect(epic.labels).to match_array(expected_labels)
+    expect(epic.own_labels).to match_array(expected_epic_own_labels)
+    expect(epic.work_item.own_labels).to match_array(expected_epic_work_item_own_labels)
+  end
+end
