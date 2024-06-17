@@ -315,7 +315,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     let(:invitation) { create(:group_member, :invited, :developer, invite_email: user_email) }
 
     before do
-      visit invite_path(invitation.raw_invite_token, invite_type: Emails::Members::INITIAL_INVITE)
+      visit invite_path(invitation.raw_invite_token, invite_type: ::Members::InviteMailer::INITIAL_INVITE)
     end
 
     context 'when Arkose is up' do
