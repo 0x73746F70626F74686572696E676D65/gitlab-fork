@@ -72,7 +72,7 @@ RSpec.describe Vulnerabilities::FindingEntity, feature_category: :vulnerability_
 
     it 'contains required fields' do
       expect(subject).to include(:id)
-      expect(subject).to include(:name, :report_type, :severity, :confidence, :project_fingerprint)
+      expect(subject).to include(:name, :report_type, :severity, :project_fingerprint)
       expect(subject).to include(:scanner, :project, :identifiers)
       expect(subject).to include(:dismissal_feedback, :issue_feedback)
       expect(subject).to include(:description, :links, :location, :remediations, :solution, :evidence)
