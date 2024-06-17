@@ -223,3 +223,6 @@ export const EVENT_LABEL_EXCLUDE_ANONYMISED_USERS = 'exclude_anonymised_users';
 export const PANEL_TROUBLESHOOTING_URL = helpPagePath(
   '/user/analytics/analytics_dashboards#troubleshooting',
 );
+
+export const MEASURE = 'measure';
+export const DIMENSION = 'dimension';

@@ -272,6 +272,7 @@ describe('AnalyticsVisualizationDesigner', () => {
           },
           queryBuilderData: {
             availableMeasures: mockMetaData.cubes.at(0).availableMeasures,
+            availableDimensions: mockMetaData.cubes.at(0).dimensions,
           },
         });
       });
