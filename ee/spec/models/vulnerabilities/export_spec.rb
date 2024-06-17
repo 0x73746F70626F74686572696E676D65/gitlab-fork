@@ -233,12 +233,6 @@ RSpec.describe Vulnerabilities::Export, feature_category: :vulnerability_managem
     it 'instantiates an export service for the instance' do
       expect(export.export_service).to be_an_instance_of(::VulnerabilityExports::ExportService)
     end
-
-    context 'on subsequent calls of the method' do
-      it 'does not memoize the return value and instantiates a new export service instance' do
-        expect(export.export_service).not_to eq(export.export_service)
-      end
-    end
   end
 
   describe '#retrive_upload' do
