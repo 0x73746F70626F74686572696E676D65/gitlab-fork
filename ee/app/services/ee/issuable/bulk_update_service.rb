@@ -14,7 +14,7 @@ module EE
         model_class
           .id_in(ids)
           .in_selected_groups(parent.self_and_descendants)
-          .includes_for_bulk_update
+          .includes_for_bulk_update.each(&:lazy_labels) # preload unified labels
       end
 
       override :permitted_attrs

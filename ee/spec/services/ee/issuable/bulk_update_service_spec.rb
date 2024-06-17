@@ -216,6 +216,40 @@ RSpec.describe Issuable::BulkUpdateService, feature_category: :team_planning do
             expect(epic2.reload.labels).to contain_exactly(label2, label3)
           end
         end
+
+        context 'when labels are spread across epic and epic work item' do
+          # epic1 and epic2 have label1
+          # epic1 work_item - has label2
+          # epic2 work_item - has label3
+          # we'll remove label1 and label2 and we'll add label4 to both epics
+          let(:label4) { create(:group_label, group: group, title: 'feature') }
+
+          let(:params) do
+            {
+              issuable_ids: issuables.map(&:id).join(','),
+              add_label_ids: [label4.id],
+              remove_label_ids: [label1.id, label2.id]
+            }
+          end
+
+          before do
+            epic1.work_item.labels = [label2]
+            epic2.work_item.labels = [label3]
+          end
+
+          it 'keeps existing labels' do
+            # sanity check
+            expect(epic1.reload.labels).to match_array([label1, label2])
+            expect(epic2.reload.labels).to match_array([label1, label3])
+
+            # bulk update
+            expect(subject.success?).to be_truthy
+            expect(subject.payload[:count]).to eq(issuables.count)
+
+            expect(epic1.reload.labels).to contain_exactly(label4)
+            expect(epic2.reload.labels).to contain_exactly(label3, label4)
+          end
+        end
       end
 
       context 'when epics are disabled' do

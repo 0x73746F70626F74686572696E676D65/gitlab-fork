@@ -35,7 +35,7 @@ module EE
         )
       end
       scope :grouped_by_work_item, -> { group(:id) }
-      scope :preload_for_indexing, -> { includes(:namespace, :labels, project: :project_feature) }
+      scope :preload_for_indexing, -> { includes(:namespace, :sync_object, project: :project_feature) }
     end
 
     class_methods do

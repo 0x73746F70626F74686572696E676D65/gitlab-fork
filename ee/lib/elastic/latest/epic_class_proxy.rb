@@ -32,7 +32,7 @@ module Elastic
       end
 
       def preload_indexing_data(relation)
-        relation = relation.preload_for_indexing
+        relation = relation.preload_for_indexing.each(&:lazy_labels)
         groups = relation.map(&:group)
         Preloaders::GroupRootAncestorPreloader.new(groups).execute
 

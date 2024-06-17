@@ -1014,6 +1014,47 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                 end
               end
             end
+
+            context 'when updating labels' do
+              let_it_be(:label_on_epic) { create(:group_label, group: group) }
+              let_it_be(:label_on_epic_work_item) { create(:group_label, group: group) }
+              let_it_be(:new_labels) { create_list(:group_label, 2, group: group) }
+
+              before do
+                epic.labels << label_on_epic
+                epic.work_item.labels << label_on_epic_work_item
+              end
+
+              context 'and replacing labels with `label_ids` param' do
+                let(:opts) { { label_ids: new_labels.map(&:id) } }
+                let(:expected_labels) { new_labels }
+                let(:expected_epic_own_labels) { new_labels }
+                let(:expected_epic_work_item_own_labels) { [] }
+
+                it_behaves_like 'syncs labels between epics and epic work items'
+              end
+
+              context 'and removing label assigned to epic' do
+                let(:opts) { { add_label_ids: new_labels.map(&:id), remove_label_ids: [label_on_epic.id] } }
+                let(:expected_labels) { [new_labels, label_on_epic_work_item].flatten }
+                let(:expected_epic_own_labels) { [new_labels].flatten }
+                let(:expected_epic_work_item_own_labels) { [label_on_epic_work_item] }
+
+                it_behaves_like 'syncs labels between epics and epic work items'
+              end
+
+              context 'and removing label assigned to epic work item' do
+                let(:opts) do
+                  { add_label_ids: new_labels.map(&:id), remove_label_ids: [label_on_epic_work_item.id] }
+                end
+
+                let(:expected_labels) { [new_labels, label_on_epic].flatten }
+                let(:expected_epic_own_labels) { [new_labels, label_on_epic].flatten }
+                let(:expected_epic_work_item_own_labels) { [] }
+
+                it_behaves_like 'syncs labels between epics and epic work items'
+              end
+            end
           end
 
           context 'when changes are invalid', :aggregate_failures do
