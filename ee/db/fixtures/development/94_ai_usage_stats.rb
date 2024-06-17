@@ -43,7 +43,7 @@ class Gitlab::Seeder::AiUsageStats # rubocop:disable Style/ClassAndModuleChildre
       AI_EVENT_COUNT_SAMPLE.times do
         event_data = {
           user_id: user.id,
-          event: Gitlab::Tracking::AiTracking::EVENTS['code_suggestion_shown_in_ide'],
+          event: Ai::CodeSuggestionsUsage::EVENTS['code_suggestion_shown_in_ide'],
           timestamp: rand(TIME_PERIOD_DAYS).days.ago
         }
         ClickHouse::WriteBuffer.add(Ai::CodeSuggestionsUsage.table_name, event_data)
