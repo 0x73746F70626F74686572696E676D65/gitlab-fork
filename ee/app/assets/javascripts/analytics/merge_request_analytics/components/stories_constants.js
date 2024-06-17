@@ -127,3 +127,16 @@ export const stats = [
     value: '23',
   },
 ];
+
+export const noDataStats = [
+  {
+    title: 'Mean time to merge',
+    unit: 'days',
+    value: '0',
+  },
+  {
+    title: 'MRs per engineer',
+    unit: 'MRs per engineer (per month)',
+    value: '0',
+  },
+];
