@@ -99,13 +99,15 @@ export default {
       return Api.buildUrl(Api.vulnerabilityIssueLinksPath).replace(':id', this.vulnerability.id);
     },
     vulnerabilityDetectionData() {
-      const { pipeline } = this.vulnerability;
+      const { pipeline, scanner, detectedAt } = this.vulnerability;
 
       // manually submitted vulnerabilities have no associated pipeline, in that case we don't display the detection data
       return pipeline
         ? {
             state: 'detected',
             pipeline,
+            scanner,
+            detectedAt,
           }
         : null;
     },
