@@ -9756,13 +9756,13 @@ msgstr ""
 msgid "BulkImport|Import failed: Destination cannot be a subgroup of the source group. Change the destination and try again."
 msgstr ""
 
+msgid "BulkImport|Import from %{hostname} completed"
+msgstr ""
+
 msgid "BulkImport|Import groups by direct transfer"
 msgstr ""
 
 msgid "BulkImport|Import is finished. Pick another name for re-import"
-msgstr ""
-
-msgid "BulkImport|Import of %{source_group} from %{hostname}"
 msgstr ""
 
 msgid "BulkImport|Import with projects"
@@ -9867,7 +9867,7 @@ msgstr ""
 msgid "BulkImport|Template / File-based import / Direct transfer"
 msgstr ""
 
-msgid "BulkImport|The import of %{strong_open}%{source_group}%{strong_close} from %{strong_open}%{hostname}%{strong_close} to %{strong_color_open}%{destination_group}%{strong_color_close} is complete. You can view the results of the import."
+msgid "BulkImport|The import you started on %{start_date} from %{strong_open}%{hostname}%{strong_close} has completed. You can now review your import results."
 msgstr ""
 
 msgid "BulkImport|This %{importable} was imported from another instance."
