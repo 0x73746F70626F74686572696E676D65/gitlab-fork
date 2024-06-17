@@ -194,12 +194,16 @@ module IdentityVerifiable
     when 'credit_card'
       Feature.enabled?(:identity_verification_credit_card, self)
     when 'email'
-      !active_user?
+      !opt_in_flow?
     end
   end
 
   def active_user?
     last_sign_in_at.present?
+  end
+
+  def opt_in_flow?
+    active_user? && email_verified?
   end
 
   def risk_profile
@@ -227,7 +231,7 @@ module IdentityVerifiable
   end
 
   def determine_required_methods
-    if active_user?
+    if opt_in_flow?
       active_user_required_methods
     else
       new_user_required_methods

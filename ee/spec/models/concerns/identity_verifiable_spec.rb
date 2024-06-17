@@ -322,19 +322,22 @@ RSpec.describe IdentityVerifiable, :saas, feature_category: :instance_resiliency
     end
 
     context 'when user is already active i.e. signed in at least once' do
-      let(:user) { create(:user, last_sign_in_at: Time.zone.now) }
+      let(:user) { create(:user, :unconfirmed, last_sign_in_at: Time.zone.now) }
 
-      where(:phone_exempt, :assumed_high_risk, :affected_by_phone_verifications_limit, :result) do
-        false | false | false | %w[phone]
-        true  | false | false | %w[credit_card]
-        false | true  | false | %w[credit_card phone]
-        false | false | true  | %w[credit_card]
+      where(:phone_exempt, :email_verified, :assumed_high_risk, :affected_by_phone_verifications_limit, :result) do
+        false | true  | false | false | %w[phone]
+        false | false | false | false | %w[email]
+        true  | true  | false | false | %w[credit_card]
+        false | true  | true  | false | %w[credit_card phone]
+        false | false | true  | false | %w[email credit_card phone]
+        false | true  | false | true  | %w[credit_card]
       end
 
       with_them do
         before do
           add_phone_exemption if phone_exempt
           assume_high_risk(user) if assumed_high_risk
+          user.confirm if email_verified
 
           # Disables phone number verification method
           allow(PhoneVerification::Users::RateLimitService)
