@@ -81,6 +81,10 @@ module Gitlab
             ascii_only: ascii_only
           )
 
+          unless deny_all_requests_except_allowed || dns_rebind_protection || !allow_local_network || !allow_localhost
+            return Result.new(uri, nil, true)
+          end
+
           validate_resolved_uri(uri,
             allow_localhost: allow_localhost,
             allow_local_network: allow_local_network,
