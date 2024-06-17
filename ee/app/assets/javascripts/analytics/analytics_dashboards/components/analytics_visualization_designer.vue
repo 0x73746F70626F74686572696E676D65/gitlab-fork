@@ -426,12 +426,14 @@ export default {
             addFilters,
             setSegments,
             availableMeasures,
+            availableDimensions,
           }"
         >
           <visualization-filtered-search
             v-if="filteringUiEnabled"
             :query="queryState.query"
             :available-measures="availableMeasures"
+            :available-dimensions="availableDimensions"
             data-testid="visualization-filtered-search"
             @input="onFilterChange"
             @submit="onFilterChange"

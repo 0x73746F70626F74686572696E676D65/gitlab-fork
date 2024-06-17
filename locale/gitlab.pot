@@ -39880,6 +39880,9 @@ msgstr ""
 msgid "ProductAnalytics|Details on how to configure product analytics to collect data."
 msgstr ""
 
+msgid "ProductAnalytics|Dimension"
+msgstr ""
+
 msgid "ProductAnalytics|Dimensions"
 msgstr ""
 

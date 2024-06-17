@@ -16,6 +16,7 @@ describe('ProductAnalyticsVisualizationFilteredSearch', () => {
       propsData: {
         query: {},
         availableMeasures: mockMetaData.cubes.at(0).availableMeasures,
+        availableDimensions: [mockMetaData.cubes.at(0).dimensions[0]],
       },
     });
   };
@@ -26,7 +27,7 @@ describe('ProductAnalyticsVisualizationFilteredSearch', () => {
     it('renders the filtered search component', () => {
       const filteredSearch = findFilteredSearch();
 
-      expect(filteredSearch.props('availableTokens')).toEqual([
+      expect(filteredSearch.props('availableTokens')).toStrictEqual([
         expect.objectContaining({
           operators: expect.any(Array),
           options: [
@@ -43,7 +44,7 @@ describe('ProductAnalyticsVisualizationFilteredSearch', () => {
       expect(filteredSearch.props('clearButtonTitle')).toEqual('Clear');
     });
 
-    describe('when the query changes', () => {
+    describe('when the query contains a measure', () => {
       beforeEach(() => {
         wrapper.setProps({ query: { measures: ['TrackedEvents.count'] } });
       });
@@ -58,6 +59,70 @@ describe('ProductAnalyticsVisualizationFilteredSearch', () => {
             },
           },
         ]);
+      });
+
+      it('adds dimension tokens to the availableTokens', () => {
+        expect(findFilteredSearch().props('availableTokens')).toContainEqual(
+          expect.objectContaining({
+            operators: expect.any(Array),
+            options: [
+              {
+                title: 'Tracked Events Page Urlhosts',
+                value: 'TrackedEvents.pageUrlhosts',
+              },
+            ],
+            title: 'Dimension',
+          }),
+        );
+      });
+
+      describe('and a dimension is added', () => {
+        beforeEach(() => {
+          wrapper.setProps({
+            query: {
+              measures: ['TrackedEvents.count'],
+              dimensions: ['TrackedEvents.pageUrlhosts'],
+            },
+          });
+        });
+
+        it('updates the filtered search component value with the dimension', () => {
+          expect(findFilteredSearch().props('value')).toContainEqual({
+            type: 'dimension',
+            value: {
+              data: 'TrackedEvents.pageUrlhosts',
+              operator: '=',
+            },
+          });
+        });
+
+        describe('and the measure is removed', () => {
+          beforeEach(() => {
+            wrapper.setProps({ query: { dimensions: ['TrackedEvents.pageUrlhosts'] } });
+          });
+
+          it('empties the filtered search component value', () => {
+            expect(findFilteredSearch().props('value')).toStrictEqual([]);
+          });
+        });
+
+        describe('and the dimension is removed', () => {
+          beforeEach(() => {
+            wrapper.setProps({ query: { measures: ['TrackedEvents.count'] } });
+          });
+
+          it('retains the measure token', () => {
+            expect(findFilteredSearch().props('value')).toStrictEqual([
+              {
+                type: 'measure',
+                value: {
+                  data: 'TrackedEvents.count',
+                  operator: '=',
+                },
+              },
+            ]);
+          });
+        });
       });
     });
 
