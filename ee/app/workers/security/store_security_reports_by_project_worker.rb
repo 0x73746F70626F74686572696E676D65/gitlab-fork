@@ -12,7 +12,7 @@ module Security
     # rubocop:enable SidekiqLoadBalancing/WorkerDataConsistency
     sidekiq_options retry: 3
     feature_category :vulnerability_management
-    worker_resource_boundary :cpu
+    worker_resource_boundary :memory
 
     idempotent!
     deduplicate :until_executing
