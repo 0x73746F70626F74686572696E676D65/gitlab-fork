@@ -187,9 +187,7 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
   end
 
   describe 'identity verification', :js, :saas do
-    let_it_be_with_reload(:user) do
-      create(:user, :with_sign_ins, created_at: IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day)
-    end
+    let_it_be_with_reload(:user) { create(:user, :identity_verification_eligible, :with_sign_ins) }
 
     before do
       sign_in(user)

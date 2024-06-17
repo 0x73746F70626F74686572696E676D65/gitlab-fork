@@ -18,7 +18,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
   end
 
   shared_examples 'it redirects to root_path when user is already verified' do
-    let_it_be_with_reload(:user) { create(:user, :with_sign_ins) }
+    let_it_be_with_reload(:user) { create(:user) }
 
     subject do
       do_request

@@ -3,10 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Projects::RunnersController, :saas, feature_category: :fleet_visibility do
-  let_it_be(:user) do
-    create(:user, :with_sign_ins, created_at: IdentityVerifiable::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day)
-  end
-
+  let_it_be(:user) { create(:user, :identity_verification_eligible, :with_sign_ins) }
   let_it_be(:namespace) { create(:namespace) }
 
   let(:project) { create(:project, namespace: namespace, creator: user) }

@@ -49,7 +49,7 @@ RSpec.describe IdentityVerifiable, :saas, feature_category: :instance_resiliency
   end
 
   describe('#identity_verification_enabled?') do
-    let_it_be(:user) { create(:user, :with_sign_ins) }
+    let_it_be(:user) { build_stubbed(:user) }
 
     subject { user.identity_verification_enabled? }
 
@@ -79,14 +79,23 @@ RSpec.describe IdentityVerifiable, :saas, feature_category: :instance_resiliency
         )
       end
 
-      it { is_expected.to eq(false) }
+      context 'when the user is not active' do
+        it 'is enabled for email verification', :aggregate_failures do
+          expect(subject).to eq(true)
+          expect(user.required_identity_verification_methods).to eq(['email'])
+        end
+      end
+
+      context 'when the user is active' do
+        let_it_be(:user) { build_stubbed(:user, :with_sign_ins) }
+
+        it { is_expected.to eq(false) }
+      end
     end
   end
 
   describe('#identity_verified?') do
-    let_it_be(:user) do
-      create(:user, :with_sign_ins, created_at: described_class::IDENTITY_VERIFICATION_RELEASE_DATE + 1.day)
-    end
+    let_it_be(:user) { create(:user, :identity_verification_eligible) }
 
     subject(:identity_verified?) { user.identity_verified? }
 
@@ -166,7 +175,6 @@ RSpec.describe IdentityVerifiable, :saas, feature_category: :instance_resiliency
       with_them do
         before do
           allow(user).to receive(:identity_verification_enabled?).and_return(true)
-          allow(user).to receive(:active_user?).and_return(true)
           allow(user).to receive(:identity_verification_state).and_return({ phone: false })
 
           stub_feature_flags(require_identity_verification_for_old_users: require_for_old_users?)
