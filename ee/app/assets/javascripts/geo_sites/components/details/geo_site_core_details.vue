@@ -42,7 +42,7 @@ export default {
     <div class="gl-display-flex gl-flex-direction-column gl-lg-mb-5">
       <span>{{ $options.i18n.url }}</span>
       <gl-link
-        class="gl-text-gray-900 gl-font-bold gl-text-decoration-underline"
+        class="gl-text-gray-900 gl-font-bold gl-underline"
         :href="site.url"
         target="_blank"
         rel="noopener noreferrer"
