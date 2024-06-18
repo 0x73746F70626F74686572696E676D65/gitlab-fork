@@ -53,7 +53,6 @@ module EE
         field :merge_request_diffs, ::Types::MergeRequestDiffType.connection_type,
           null: true,
           alpha: { milestone: '16.2' },
-          extras: [:lookahead],
           description: 'Diff versions of a merge request.'
 
         field :finding_reports_comparer,
@@ -93,22 +92,6 @@ module EE
       def base_merge_request
         object
       end
-
-      # rubocop:disable CodeReuse/ActiveRecord -- Cop is disabled because we only want to call `includes` in this class.
-      def merge_request_diffs(lookahead:)
-        # We include `merge_request` by default because of policy check in `MergeRequestDiffType`
-        # which can result to N+1.
-        includes = [:merge_request]
-
-        selects_review_llm_summaries =
-          lookahead.selection(:nodes).selects?(:review_llm_summaries) ||
-          lookahead.selection(:edges).selection(:node).selects?(:review_llm_summaries)
-
-        includes << [merge_request_review_llm_summaries: [:user, { review: [:author] }]] if selects_review_llm_summaries
-
-        object.merge_request_diffs.includes(includes)
-      end
-      # rubocop:enable CodeReuse/ActiveRecord
 
       def mergeable
         lazy_committers { object.mergeable? }
