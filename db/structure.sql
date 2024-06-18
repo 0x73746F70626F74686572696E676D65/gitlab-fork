@@ -18041,6 +18041,12 @@ CREATE TABLE user_credit_card_validations (
     expiration_date_hash text,
     network_hash text,
     zuora_payment_method_xid text,
+    stripe_setup_intent_xid text,
+    stripe_payment_method_xid text,
+    stripe_card_fingerprint text,
+    CONSTRAINT check_126615a57d CHECK ((char_length(stripe_payment_method_xid) <= 255)),
+    CONSTRAINT check_209503e313 CHECK ((char_length(stripe_card_fingerprint) <= 255)),
+    CONSTRAINT check_5d9e69ede5 CHECK ((char_length(stripe_setup_intent_xid) <= 255)),
     CONSTRAINT check_7721e1961a CHECK ((char_length(network_hash) <= 44)),
     CONSTRAINT check_83f1e2ace3 CHECK ((char_length(expiration_date_hash) <= 44)),
     CONSTRAINT check_9a15d14e37 CHECK ((char_length(zuora_payment_method_xid) <= 50)),
@@ -28789,6 +28795,8 @@ CREATE INDEX index_user_canonical_emails_on_canonical_email ON user_canonical_em
 CREATE UNIQUE INDEX index_user_canonical_emails_on_user_id ON user_canonical_emails USING btree (user_id);
 
 CREATE UNIQUE INDEX index_user_canonical_emails_on_user_id_and_canonical_email ON user_canonical_emails USING btree (user_id, canonical_email);
+
+CREATE INDEX index_user_credit_card_validations_on_stripe_card_fingerprint ON user_credit_card_validations USING btree (stripe_card_fingerprint);
 
 CREATE INDEX index_user_custom_attributes_on_key_and_value ON user_custom_attributes USING btree (key, value);
 
