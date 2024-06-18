@@ -1,5 +1,5 @@
 import ThroughputStats from './throughput_stats.vue';
-import { stats } from './stories_constants';
+import { stats, noDataStats } from './stories_constants';
 
 export default {
   component: ThroughputStats,
@@ -17,6 +17,9 @@ Default.args = {
   stats,
   isLoading: false,
 };
+
+export const NoData = Template.bind({});
+NoData.args = { stats: noDataStats };
 
 export const Loading = Template.bind({});
 Loading.args = { stats, isLoading: true };

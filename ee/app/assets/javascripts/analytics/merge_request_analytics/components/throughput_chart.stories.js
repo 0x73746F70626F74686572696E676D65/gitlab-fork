@@ -47,7 +47,7 @@ export const Default = {
 
 export const NoData = {
   render: createStory({
-    requestHandler: throughputChartNoData,
+    requestHandler: { data: { throughputChartData: throughputChartNoData } },
   }),
   args: Default.args,
 };
