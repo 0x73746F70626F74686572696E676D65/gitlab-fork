@@ -77,7 +77,6 @@ description: with missing properties
 
       before do
         allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
-        allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         project.project_setting.update!(product_analytics_instrumentation_key: "key")
         allow_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
           allow(instance).to receive(:execute).and_return(ServiceResponse.success(payload: {

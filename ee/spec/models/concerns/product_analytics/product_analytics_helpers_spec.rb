@@ -141,7 +141,6 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
       let_it_be(:config_project) { create(:project, :with_product_analytics_dashboard, group: group) }
 
       before do
-        allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_licensed_features(product_analytics: true)
         project.update!(analytics_dashboards_configuration_project: config_project)
       end
@@ -154,7 +153,6 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
     context 'without configuration project' do
       before do
         allow(::Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return true
-        allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_licensed_features(product_analytics: true)
         project.project_setting.update!(product_analytics_instrumentation_key: "key")
         allow_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
@@ -183,10 +181,6 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
 
   describe '#product_analytics_funnels' do
     subject { create(:project, :with_product_analytics_funnel, group: group).product_analytics_funnels }
-
-    before do
-      allow(group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
-    end
 
     context 'when the feature is not available' do
       before do

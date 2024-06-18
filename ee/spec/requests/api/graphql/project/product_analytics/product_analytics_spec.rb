@@ -57,7 +57,6 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
     with_them do
       before do
         allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
-        allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
         stub_licensed_features(product_analytics: licensed)
         project.add_role(user, user_role) # rubocop:disable RSpec/BeforeAllRoleAssignment
         project.project_setting.update!(product_analytics_instrumentation_key: snowplow_instrumentation_key)
@@ -97,7 +96,6 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics_d
 
     before do
       allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
-      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true)
       stub_application_setting(product_analytics_enabled: true)
       stub_feature_flags(product_analytics_billing_override: false)

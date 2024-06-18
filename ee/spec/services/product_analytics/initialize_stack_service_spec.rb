@@ -55,7 +55,6 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
     subject { described_class.new(container: project, current_user: user).execute }
 
     before do
-      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true)
       stub_ee_application_setting(product_analytics_enabled: true)
       stub_feature_flags(product_analytics_billing: false)

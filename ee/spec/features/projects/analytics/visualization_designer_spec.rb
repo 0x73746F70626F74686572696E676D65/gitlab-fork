@@ -205,7 +205,6 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
     def setup_valid_state
       sign_in(user)
       stub_licensed_features(combined_project_analytics_dashboards: true, product_analytics: true)
-      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_application_setting(product_analytics_enabled?: true)
       stub_application_setting(product_analytics_data_collector_host: 'https://collector.example.com')
       stub_application_setting(product_analytics_configurator_connection_string: 'https://configurator.example.com')
