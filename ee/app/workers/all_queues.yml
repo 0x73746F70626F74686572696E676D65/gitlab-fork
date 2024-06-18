@@ -129,15 +129,6 @@
   :weight: 1
   :idempotent: true
   :tags: []
-- :name: cronjob:click_house_code_suggestion_events_cron
-  :worker_name: ClickHouse::CodeSuggestionEventsCronWorker
-  :feature_category: :database
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: cronjob:click_house_dump_all_write_buffers_cron
   :worker_name: ClickHouse::DumpAllWriteBuffersCronWorker
   :feature_category: :database
