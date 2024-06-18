@@ -50,7 +50,7 @@ module QA
           end
 
           def click_menu_item(item)
-            click_element("li[title='#{item}']")
+            click_element("a[aria-label='#{item}']")
           end
 
           def click_upload_menu_item
@@ -106,11 +106,11 @@ module QA
           end
 
           def click_new_branch
-            click_element('.monaco-button[title="Create new branch"]')
+            click_element('.monaco-button', text: "Create new branch")
           end
 
           def click_continue_with_existing_branch
-            click_element('.monaco-button[title="Continue"]')
+            click_element('.monaco-button', text: "Continue")
           end
 
           def has_branch_input_field?
