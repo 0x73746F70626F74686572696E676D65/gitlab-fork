@@ -239,6 +239,37 @@ const NO_ITEM_SELECTED = 0;
 const ONE_ITEM_SELECTED = 1;
 
 /**
+ * Renders either itemA + n items or ItemA, itemB + n pattern
+ * @param useSingleOption flag difference what pattern to choose
+ * @param commonItems common items between total items and selected items
+ * @param items total items from selection
+ * @returns {*}
+ */
+export const renderMultiselectLabel = ({
+  useSingleOption = false,
+  commonItems = [],
+  items = {},
+} = {}) => {
+  if (commonItems.length === 0) return '';
+
+  const TEXT_TEMPLATE = useSingleOption
+    ? MULTIPLE_SELECTED_LABEL_SINGLE_OPTION
+    : MULTIPLE_SELECTED_LABEL;
+  const NUMBER_TO_EXTRACT = useSingleOption ? 1 : 2;
+
+  const moreLabel =
+    commonItems.length > NUMBER_TO_EXTRACT
+      ? sprintf(MORE_LABEL, { numberOfAdditionalLabels: commonItems.length - NUMBER_TO_EXTRACT })
+      : undefined;
+
+  return sprintf(TEXT_TEMPLATE, {
+    firstLabel: items[commonItems[0]],
+    ...(useSingleOption ? {} : { secondLabel: items[commonItems[1]] }),
+    moreLabel,
+  }).trim();
+};
+
+/**
  * This method returns text based on selected items
  * For single selected option it is (itemA +n selected items)
  * For multiple selected options it is (itemA, itemB +n selected items)
@@ -258,6 +289,7 @@ export const renderMultiSelectText = ({
   useSingleOption = false,
 }) => {
   const itemsKeys = Object.keys(items);
+  const itemsKeysLength = itemsKeys.length;
 
   const defaultPlaceholder = sprintf(
     SELECTED_ITEMS_LABEL,
@@ -276,42 +308,23 @@ export const renderMultiSelectText = ({
    * @type {string[]}
    */
   const commonItems = intersection(itemsKeys, selected);
+  const commonItemsLength = commonItems.length;
   /**
    * Edge case for loading states when initial items are empty
    */
-  if (itemsKeys.length === 0 || commonItems.length === 0) {
+  if (itemsKeysLength === 0 || commonItemsLength === 0) {
     return defaultPlaceholder;
   }
 
-  const numberToExtract = useSingleOption ? 1 : 2;
-  const moreLabel =
-    commonItems.length > numberToExtract
-      ? sprintf(MORE_LABEL, { numberOfAdditionalLabels: commonItems.length - numberToExtract })
-      : undefined;
-
-  const multiSelectLabel = useSingleOption
-    ? sprintf(MULTIPLE_SELECTED_LABEL_SINGLE_OPTION, {
-        firstLabel: items[commonItems[0]],
-        moreLabel: commonItems.length > 1 ? moreLabel : undefined,
-      }).trim()
-    : sprintf(MULTIPLE_SELECTED_LABEL, {
-        firstLabel: items[commonItems[0]],
-        secondLabel: items[commonItems[1]],
-        moreLabel: commonItems.length > 2 ? moreLabel : undefined,
-      }).trim();
-
   const oneItemLabel = items[commonItems[0]] || defaultPlaceholder;
+  const multiSelectLabel = renderMultiselectLabel({ useSingleOption, items, commonItems });
 
-  if (commonItems.length === itemsKeys.length && !useAllSelected) {
-    if (itemsKeys.length === 1) {
-      return oneItemLabel;
-    }
-
-    return multiSelectLabel;
+  if (commonItemsLength === itemsKeysLength && !useAllSelected) {
+    return itemsKeysLength === 1 ? oneItemLabel : multiSelectLabel;
   }
 
-  switch (commonItems.length) {
-    case itemsKeys.length:
+  switch (commonItemsLength) {
+    case itemsKeysLength:
       return sprintf(ALL_SELECTED_LABEL, { itemTypeName }, false);
     case NO_ITEM_SELECTED:
       return defaultPlaceholder;
