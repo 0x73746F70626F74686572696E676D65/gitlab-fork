@@ -50,7 +50,7 @@ module EE
               private
 
               def pipeline_execution_policy_contents
-                ::Gitlab::Security::Orchestration::ProjectPipelineExecutionPolicies.new(project).yaml_contents
+                ::Gitlab::Security::Orchestration::ProjectPipelineExecutionPolicies.new(project).configs
               end
               strong_memoize_attr :pipeline_execution_policy_contents
 

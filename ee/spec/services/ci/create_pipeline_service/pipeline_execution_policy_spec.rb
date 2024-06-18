@@ -9,10 +9,20 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :security_policy_man
 
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, group: group) }
-  let_it_be(:user) { create(:user, developer_of: project) }
+  let_it_be_with_reload(:compliance_project) { create(:project, :empty_repo, group: group) }
+  let_it_be(:user) { create(:user, developer_of: [project, compliance_project]) }
 
   let(:namespace_policy_content) { { namespace_policy_job: { stage: 'build', script: 'namespace script' } } }
-  let(:namespace_policy) { build(:pipeline_execution_policy, content: namespace_policy_content) }
+  let(:namespace_policy_file) { 'namespace-policy.yml' }
+  let(:namespace_policy) do
+    build(:pipeline_execution_policy,
+      content: { include: [{
+        project: compliance_project.full_path,
+        file: namespace_policy_file,
+        ref: compliance_project.default_branch_or_main
+      }] })
+  end
+
   let(:namespace_policy_yaml) do
     build(:orchestration_policy_yaml, pipeline_execution_policy: [namespace_policy])
   end
@@ -25,7 +35,16 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :security_policy_man
   end
 
   let(:project_policy_content) { { project_policy_job: { script: 'project script' } } }
-  let(:project_policy) { build(:pipeline_execution_policy, content: project_policy_content) }
+  let(:project_policy_file) { 'project-policy.yml' }
+  let(:project_policy) do
+    build(:pipeline_execution_policy,
+      content: { include: [{
+        project: compliance_project.full_path,
+        file: project_policy_file,
+        ref: compliance_project.default_branch_or_main
+      }] })
+  end
+
   let(:project_policy_yaml) do
     build(:orchestration_policy_yaml, pipeline_execution_policy: [project_policy])
   end
@@ -60,7 +79,14 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :security_policy_man
         create_and_delete_files(
           namespace_policies_project, { '.gitlab/security-policies/policy.yml' => namespace_policy_yaml }
         ) do
-          example.run
+          create_and_delete_files(
+            compliance_project, {
+              project_policy_file => project_policy_content.to_yaml,
+              namespace_policy_file => namespace_policy_content.to_yaml
+            }
+          ) do
+            example.run
+          end
         end
       end
     end
@@ -146,6 +172,31 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :security_policy_man
 
       expect(stages.find_by(name: 'build').builds.map(&:name)).to contain_exactly('namespace_policy_job')
       expect(stages.find_by(name: 'test').builds.map(&:name)).to contain_exactly('rspec', 'project_policy_job')
+    end
+  end
+
+  context 'when policy content does not match the valid schema' do
+    # A valid `content` should reference an external file via `include` and not include the jobs in the policy directly
+    # The schema is defined in `ee/app/validators/json_schemas/security_orchestration_policy.json`.
+    let(:namespace_policy) { build(:pipeline_execution_policy, content: namespace_policy_content) }
+    let(:project_policy) { build(:pipeline_execution_policy, content: project_policy_content) }
+
+    it 'responds with success' do
+      expect(execute).to be_success
+    end
+
+    it 'persists pipeline' do
+      expect(execute.payload).to be_persisted
+    end
+
+    it 'only includes project jobs and ignores the invalid policy jobs', :aggregate_failures do
+      expect { execute }.to change { Ci::Build.count }.from(0).to(2)
+
+      stages = execute.payload.stages
+      expect(stages.map(&:name)).to contain_exactly('build', 'test')
+
+      expect(stages.find_by(name: 'build').builds.map(&:name)).to contain_exactly('build')
+      expect(stages.find_by(name: 'test').builds.map(&:name)).to contain_exactly('rspec')
     end
   end
 

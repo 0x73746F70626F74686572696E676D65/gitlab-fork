@@ -118,7 +118,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           max_active_scan_result_policies_reached: 'false',
           max_scan_result_policies_allowed: Gitlab::CurrentSettings.security_approval_policies_limit,
           max_scan_execution_policies_allowed: 5,
-          max_pipeline_execution_policies_allowed: 1,
+          max_pipeline_execution_policies_allowed: 5,
           custom_ci_toggle_enabled: 'false'
         }
       end
@@ -223,7 +223,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           max_active_scan_result_policies_reached: 'false',
           max_scan_result_policies_allowed: Gitlab::CurrentSettings.security_approval_policies_limit,
           max_scan_execution_policies_allowed: 5,
-          max_pipeline_execution_policies_allowed: 1,
+          max_pipeline_execution_policies_allowed: 5,
           custom_ci_toggle_enabled: 'false'
         }
       end
@@ -307,7 +307,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
     it { is_expected.to be_falsey }
   end
 
-  shared_examples 'when source has active scan policies' do |limited_reached: false|
+  shared_examples 'when source has active scan policies' do |limit_reached: false|
     before do
       allow_next_instance_of(Repository) do |repository|
         allow(repository).to receive(:blob_data_at).and_return(policy_yaml)
@@ -315,7 +315,7 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
     end
 
     it 'returns if max active scan policies limit was reached' do
-      is_expected.to eq(limited_reached)
+      is_expected.to eq(limit_reached)
     end
   end
 
@@ -324,16 +324,16 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
       it_behaves_like 'when source does not have a security policy project'
     end
 
-    context 'when a source did not reach the limited of active scan execution policies' do
+    context 'when a source did not reach the limit of active scan execution policies' do
       it_behaves_like 'when source has active scan policies'
     end
 
-    context 'when a source reached the limited of active scan execution policies' do
+    context 'when a source reached the limit of active scan execution policies' do
       before do
         stub_const('::Security::ScanExecutionPolicy::POLICY_LIMIT', 1)
       end
 
-      it_behaves_like 'when source has active scan policies', limited_reached: true
+      it_behaves_like 'when source has active scan policies', limit_reached: true
     end
   end
 
@@ -374,16 +374,16 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
       it_behaves_like 'when source does not have a security policy project'
     end
 
-    context 'when a source did not reach the limited of active pipeline execution policies' do
-      before do
-        stub_const('::Security::PipelineExecutionPolicy::POLICY_LIMIT', 2)
-      end
-
-      it_behaves_like 'when source has active scan policies', limited_reached: false
+    context 'when a source did not reach the limit of active pipeline execution policies' do
+      it_behaves_like 'when source has active scan policies', limit_reached: false
     end
 
-    context 'when a source reached the limited of active pipeline execution policies' do
-      it_behaves_like 'when source has active scan policies', limited_reached: true
+    context 'when a source reached the limit of active pipeline execution policies' do
+      before do
+        stub_const('::Security::PipelineExecutionPolicy::POLICY_LIMIT', 1)
+      end
+
+      it_behaves_like 'when source has active scan policies', limit_reached: true
     end
   end
 
@@ -426,16 +426,16 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
       it_behaves_like 'when source does not have a security policy project'
     end
 
-    context 'when a source did not reach the limited of active scan result policies' do
+    context 'when a source did not reach the limit of active scan result policies' do
       it_behaves_like 'when source has active scan policies'
     end
 
-    context 'when a source reached the limited of active scan result policies' do
+    context 'when a source reached the limit of active scan result policies' do
       before do
         allow(::Gitlab::CurrentSettings).to receive(:security_approval_policies_limit).and_return(1)
       end
 
-      it_behaves_like 'when source has active scan policies', limited_reached: true
+      it_behaves_like 'when source has active scan policies', limit_reached: true
     end
   end
 

@@ -32,7 +32,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::FindConfi
 
   before do
     allow_next_instance_of(::Gitlab::Security::Orchestration::ProjectPipelineExecutionPolicies) do |instance|
-      allow(instance).to receive(:yaml_contents).and_return(policy_contents)
+      allow(instance).to receive(:configs).and_return(policy_contents)
     end
   end
 

@@ -1514,6 +1514,82 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       it { expect(errors).to be_empty }
 
       it_behaves_like "policy_scope"
+
+      describe 'max items' do
+        let(:policy_yaml) do
+          {
+            pipeline_execution_policy: pipeline_execution_policies
+          }
+        end
+
+        context 'when policies are at the limit' do
+          let(:pipeline_execution_policies) do
+            build_list(:pipeline_execution_policy, ::Security::PipelineExecutionPolicy::POLICY_LIMIT)
+          end
+
+          it { expect(errors).to be_empty }
+        end
+
+        context 'when policies are over the limit' do
+          let(:pipeline_execution_policies) do
+            build_list(:pipeline_execution_policy, ::Security::PipelineExecutionPolicy::POLICY_LIMIT + 1)
+          end
+
+          it do
+            expect(errors).to contain_exactly("property '/pipeline_execution_policy' is invalid: error_type=maxItems")
+          end
+        end
+      end
+
+      describe 'content' do
+        context 'without content' do
+          let(:pipeline_execution_policy) { build(:pipeline_execution_policy, content: {}) }
+
+          it do
+            expect(errors).to contain_exactly(
+              "property '/pipeline_execution_policy/0/content' is missing required keys: include"
+            )
+          end
+        end
+
+        context 'when include is missing required properties' do
+          let(:pipeline_execution_policy) { build(:pipeline_execution_policy, content: { include: [{}] }) }
+
+          it do
+            expect(errors).to contain_exactly(
+              "property '/pipeline_execution_policy/0/content/include/0' is missing required keys: project, file"
+            )
+          end
+        end
+
+        context 'when include is an empty array' do
+          let(:pipeline_execution_policy) do
+            build(:pipeline_execution_policy, content: { include: [] })
+          end
+
+          it do
+            expect(errors).to contain_exactly(
+              "property '/pipeline_execution_policy/0/content/include' is invalid: error_type=minItems"
+            )
+          end
+        end
+
+        context 'when include is contains more than 1 item' do
+          let(:pipeline_execution_policy) do
+            build(:pipeline_execution_policy, content: {
+              include: [
+                { project: '', file: '' }, { project: '', file: '' }
+              ]
+            })
+          end
+
+          it do
+            expect(errors).to contain_exactly(
+              "property '/pipeline_execution_policy/0/content/include' is invalid: error_type=maxItems"
+            )
+          end
+        end
+      end
     end
 
     context 'when file is valid' do
@@ -2281,8 +2357,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       expect(active_pipeline_execution_policies.pluck(:enabled).uniq).to contain_exactly(true)
     end
 
-    it 'returns only 1 from all active policies' do
-      expect(active_pipeline_execution_policies.count).to be(1)
+    it 'returns only 5 from all active policies' do
+      expect(active_pipeline_execution_policies.count).to be(5)
     end
 
     context 'when policy configuration is configured for namespace' do
@@ -2294,8 +2370,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
         expect(active_pipeline_execution_policies.pluck(:enabled).uniq).to contain_exactly(true)
       end
 
-      it 'returns only 1 from all active policies' do
-        expect(active_pipeline_execution_policies.count).to be(1)
+      it 'returns only 5 from all active policies' do
+        expect(active_pipeline_execution_policies.count).to be(5)
       end
     end
   end

@@ -271,3 +271,23 @@ pipeline_execution_policy:
     enabled: true
     content: {}
     policy_scope: {}
+  - name: Third pipeline execution policy
+    description: Third enabled pipeline execution policy
+    enabled: true
+    content: {}
+    policy_scope: {}
+  - name: Fourth pipeline execution policy
+    description: Fourth enabled pipeline execution policy
+    enabled: true
+    content: {}
+    policy_scope: {}
+  - name: Fifth pipeline execution policy
+    description: Fifth enabled pipeline execution policy
+    enabled: true
+    content: {}
+    policy_scope: {}
+  - name: Sixth pipeline execution policy
+    description: Sixth enabled pipeline execution policy
+    enabled: true
+    content: {}
+    policy_scope: {}
