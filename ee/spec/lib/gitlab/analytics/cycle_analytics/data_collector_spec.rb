@@ -649,9 +649,9 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector, feature_categor
     let(:aggregated_data_collector_enabled) { true }
 
     it_behaves_like 'test various start and end event combinations' do
-      let_it_be(:group) { create(:group) }
+      let_it_be(:group) { create(:group, :with_organization) }
       let_it_be(:group_value_stream) { create(:cycle_analytics_value_stream, namespace: group) }
-      let_it_be(:project) { create(:project, :repository, group: group) }
+      let_it_be(:project) { create(:project, :repository, namespace: group) }
       let_it_be(:label) { create(:group_label, group: group) }
       let_it_be(:other_label) { create(:group_label, group: group) }
 
@@ -680,9 +680,9 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector, feature_categor
     end
 
     context 'when filter parameters are given' do
-      let_it_be(:group) { create(:group) }
-      let_it_be(:project1) { create(:project, :repository, group: group) }
-      let_it_be(:project2) { create(:project, :repository, group: group) }
+      let_it_be(:group) { create(:group, :with_organization) }
+      let_it_be(:project1) { create(:project, :repository, namespace: group) }
+      let_it_be(:project2) { create(:project, :repository, namespace: group) }
       let_it_be(:stage) do
         create(:cycle_analytics_stage,
           name: 'My Stage',

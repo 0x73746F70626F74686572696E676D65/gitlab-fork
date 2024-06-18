@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::ValueStreamErrorsSerializer do
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, :with_organization) }
   let_it_be(:value_stream) { create(:cycle_analytics_value_stream, name: 'name', namespace: group) }
 
   subject { described_class.new(value_stream).as_json }

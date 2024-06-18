@@ -3,16 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Analytics::CycleAnalytics::Aggregated::BaseQueryBuilder, feature_category: :value_stream_management do
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, :with_organization) }
   let_it_be(:user) { create(:user, developer_of: group) }
 
   let_it_be(:other_user) { create(:user, developer_of: group) }
-  let_it_be(:sub_group) { create(:group, parent: group) }
-  let_it_be(:project_1) { create(:project, group: sub_group) }
-  let_it_be(:project_2) { create(:project, group: sub_group) }
+  let_it_be(:sub_group) { create(:group, parent: group, organization_id: group.organization_id) }
+  let_it_be(:project_1) { create(:project, namespace: sub_group) }
+  let_it_be(:project_2) { create(:project, namespace: sub_group) }
 
-  let_it_be(:other_group) { create(:group) }
-  let_it_be(:other_project) { create(:project, group: other_group) }
+  let_it_be(:other_group) { create(:group, :with_organization) }
+  let_it_be(:other_project) { create(:project, namespace: other_group) }
 
   let_it_be(:milestone) { create(:milestone, group: group) }
   let_it_be(:iteration) { create(:iteration, group: group) }

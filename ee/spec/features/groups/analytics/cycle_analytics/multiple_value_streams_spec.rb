@@ -4,9 +4,9 @@ require 'spec_helper'
 RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_management do
   include CycleAnalyticsHelpers
 
-  let_it_be(:group) { create(:group, name: 'CA-test-group') }
-  let_it_be(:project) { create(:project, :repository, namespace: group, group: group, name: 'Cool fun project') }
-  let_it_be(:sub_group) { create(:group, name: 'CA-sub-group', parent: group) }
+  let_it_be(:group) { create(:group, :with_organization, name: 'CA-test-group') }
+  let_it_be(:project) { create(:project, :repository, namespace: group, name: 'Cool fun project') }
+  let_it_be(:sub_group) { create(:group, name: 'CA-sub-group', parent: group, organization_id: group.organization_id) }
   let_it_be(:group_label1) { create(:group_label, group: group) }
   let_it_be(:group_label2) { create(:group_label, group: group) }
   let_it_be(:user) do

@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe Projects::Analytics::CycleAnalytics::ValueStreamsController, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:another_user) { create(:user) }
-  let_it_be(:group) { create(:group) }
-  let_it_be(:project, refind: true) { create(:project, group: group) }
+  let_it_be(:group) { create(:group, :with_organization) }
+  let_it_be(:project, refind: true) { create(:project, namespace: group) }
   let_it_be(:namespace) { project.project_namespace }
 
   let(:path_prefix) { %i[namespace project] }

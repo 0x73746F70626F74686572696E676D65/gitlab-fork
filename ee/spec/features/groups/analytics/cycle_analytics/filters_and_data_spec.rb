@@ -5,11 +5,11 @@ require 'spec_helper'
 RSpec.describe 'Group value stream analytics filters and data', :js, feature_category: :value_stream_management do
   include CycleAnalyticsHelpers
 
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, :with_organization) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :repository, namespace: group, group: group, name: 'Cool fun project') }
-  let_it_be(:sub_group) { create(:group, name: 'CA-sub-group', parent: group) }
-  let_it_be(:sub_group_project) { create(:project, :repository, namespace: group, group: sub_group, name: 'Cool sub group project') }
+  let_it_be(:project) { create(:project, :repository, namespace: group, name: 'Cool fun project') }
+  let_it_be(:sub_group) { create(:group, name: 'CA-sub-group', parent: group, organization_id: group.organization_id) }
+  let_it_be(:sub_group_project) { create(:project, :repository, namespace: group, name: 'Cool sub group project') }
   let_it_be(:group_label1) { create(:group_label, group: group) }
   let_it_be(:group_label2) { create(:group_label, group: group) }
   let_it_be(:custom_value_stream_name) { "First custom value stream" }

@@ -6,7 +6,7 @@ RSpec.describe 'Create a new value stream', feature_category: :value_stream_mana
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, :with_organization) }
 
   let(:mutation_name) { :value_stream_create }
   let(:value_stream_name) { 'New value stream' }
@@ -149,7 +149,7 @@ RSpec.describe 'Create a new value stream', feature_category: :value_stream_mana
   end
 
   context 'when namespace is a project' do
-    let_it_be(:namespace_object) { create(:project, group: group) }
+    let_it_be(:namespace_object) { create(:project, namespace: group) }
     let(:namespace) { namespace_object.project_namespace }
 
     it_behaves_like 'a request to create value streams'
@@ -162,8 +162,8 @@ RSpec.describe 'Create a new value stream', feature_category: :value_stream_mana
     it_behaves_like 'a request to create value streams'
 
     context 'when setting argument is present' do
-      let_it_be(:project_1) { create(:project, group: group) }
-      let_it_be(:project_2) { create(:project, group: group) }
+      let_it_be(:project_1) { create(:project, namespace: group) }
+      let_it_be(:project_2) { create(:project, namespace: group) }
 
       let(:extra_parameters) do
         {

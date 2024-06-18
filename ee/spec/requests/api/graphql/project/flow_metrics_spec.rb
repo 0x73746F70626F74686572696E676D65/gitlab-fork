@@ -5,10 +5,10 @@ require 'spec_helper'
 RSpec.describe 'getting project flow metrics', feature_category: :value_stream_management do
   include GraphqlHelpers
 
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, :with_organization) }
   let(:full_path) { project1.full_path }
   let(:context) { :project }
-  let_it_be(:project1) { create(:project, :repository, group: group) }
+  let_it_be(:project1) { create(:project, :repository, namespace: group) }
   # This is done so we can use the same count expectations in the shared examples and
   # reuse the shared example for the group-level test.
   let_it_be(:project2) { project1 }

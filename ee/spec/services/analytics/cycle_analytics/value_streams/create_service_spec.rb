@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::ValueStreams::CreateService, feature_category: :value_stream_management do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group, refind: true) { create(:group) }
-  let_it_be(:project, refind: true) { create(:project, group: group) }
+  let_it_be(:group, refind: true) { create(:group, :with_organization) }
+  let_it_be(:project, refind: true) { create(:project, namespace: group) }
 
   let(:params) { {} }
 

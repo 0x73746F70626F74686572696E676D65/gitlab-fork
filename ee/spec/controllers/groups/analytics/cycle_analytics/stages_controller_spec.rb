@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Groups::Analytics::CycleAnalytics::StagesController, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group, refind: true) { create(:group) }
+  let_it_be(:group, refind: true) { create(:group, :with_organization) }
 
   let_it_be(:stages) do
     [

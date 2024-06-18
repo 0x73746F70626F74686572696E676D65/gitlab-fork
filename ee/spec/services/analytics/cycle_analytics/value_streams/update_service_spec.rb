@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::ValueStreams::UpdateService do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group, refind: true) { create(:group) }
+  let_it_be(:group, refind: true) { create(:group, :with_organization) }
 
   let(:params) { {} }
 

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::Stages::ListService, feature_category: :value_stream_management do
-  let_it_be(:group, refind: true) { create(:group) }
+  let_it_be(:group, refind: true) { create(:group, :with_organization) }
   let_it_be(:value_stream, refind: true) { create(:cycle_analytics_value_stream, namespace: group) }
   let_it_be(:user) { create(:user, reporter_of: group) }
 

@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:group) { create(:group, :with_organization) }
+  let_it_be(:project) { create(:project, namespace: group) }
 
   let(:params) { { namespace_id: project.namespace.to_param, project_id: project.to_param, created_after: '2010-01-01', created_before: '2020-01-02' } }
 

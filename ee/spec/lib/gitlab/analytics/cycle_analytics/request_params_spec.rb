@@ -4,10 +4,10 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_category: :value_stream_management do
   let_it_be(:user) { create(:user) }
-  let_it_be(:root_group) { create(:group, owners: user) }
-  let_it_be(:sub_group) { create(:group, parent: root_group) }
-  let_it_be(:sub_group_project) { create(:project, group: sub_group) }
-  let_it_be(:root_group_projects) { Array.new(2) { create(:project, group: root_group) } }
+  let_it_be(:root_group) { create(:group, :with_organization, owners: user) }
+  let_it_be(:sub_group) { create(:group, parent: root_group, organization_id: root_group.organization_id) }
+  let_it_be(:sub_group_project) { create(:project, namespace: sub_group) }
+  let_it_be(:root_group_projects) { Array.new(2) { create(:project, namespace: root_group) } }
 
   let(:request_params) { described_class.new(params) }
   let(:project_ids) { root_group_projects.collect(&:id) }

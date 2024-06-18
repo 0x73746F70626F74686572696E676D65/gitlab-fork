@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :value_stream_management do
-  let_it_be_with_refind(:top_level_group) { create(:group) }
+  let_it_be_with_refind(:top_level_group) { create(:group, :with_organization) }
 
   describe 'validations' do
     let(:namespace) { top_level_group }
@@ -76,7 +76,7 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
     end
 
     context 'when sub-group is given' do
-      let(:namespace) { create(:group, parent: top_level_group) }
+      let(:namespace) { create(:group, parent: top_level_group, organization_id: top_level_group.organization_id) }
 
       it 'returns service error response' do
         stub_licensed_features(cycle_analytics_for_groups: true)
@@ -88,11 +88,11 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
   end
 
   describe 'data loading into stage tables' do
-    let_it_be(:sub_group) { create(:group, parent: top_level_group) }
-    let_it_be(:other_group) { create(:group) }
-    let_it_be(:project1) { create(:project, :repository, group: top_level_group) }
-    let_it_be(:project2) { create(:project, :repository, group: sub_group) }
-    let_it_be(:project_outside) { create(:project, group: other_group) }
+    let_it_be(:sub_group) { create(:group, parent: top_level_group, organization_id: top_level_group.organization_id) }
+    let_it_be(:other_group) { create(:group, :with_organization) }
+    let_it_be(:project1) { create(:project, :repository, namespace: top_level_group) }
+    let_it_be(:project2) { create(:project, :repository, namespace: sub_group) }
+    let_it_be(:project_outside) { create(:project, namespace: other_group) }
 
     let_it_be(:stage1) do
       create(:cycle_analytics_stage, {
@@ -308,8 +308,8 @@ RSpec.describe Analytics::CycleAnalytics::DataLoaderService, feature_category: :
 
   describe 'data loading for stages with label based events' do
     let_it_be(:user) { create(:user) }
-    let_it_be(:group) { create(:group, developers: user) }
-    let_it_be(:project) { create(:project, :repository, group: group) }
+    let_it_be(:group) { create(:group, :with_organization, developers: user) }
+    let_it_be(:project) { create(:project, :repository, namespace: group) }
 
     let_it_be(:label1) { create(:group_label, group: group) }
 

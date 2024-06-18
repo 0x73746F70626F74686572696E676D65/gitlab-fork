@@ -6,8 +6,8 @@ require_relative '../product_analytics/dashboards_shared_examples'
 RSpec.describe 'Analytics Dashboard - Product Analytics', :js, feature_category: :product_analytics_data_management do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:user) { current_user }
-  let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, :repository, group: group) }
+  let_it_be(:group) { create(:group, :with_organization) }
+  let_it_be(:project) { create(:project, :repository, namespace: group) }
 
   before do
     sign_in(user)
@@ -34,8 +34,8 @@ RSpec.describe 'Analytics Dashboard - Value Streams Dashboard', :js, feature_cat
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:user) { current_user }
-  let_it_be(:group) { create(:group, name: "vsd test group") }
-  let_it_be(:project) { create(:project, :repository, name: "vsd project", group: group) }
+  let_it_be(:group) { create(:group, :with_organization, name: "vsd test group") }
+  let_it_be(:project) { create(:project, :repository, name: "vsd project", namespace: group) }
 
   let(:metric_table) { find_by_testid('panel-dora-chart') }
 

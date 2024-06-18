@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Analytics::CycleAnalytics::DistinctStageLoader, feature_category: :value_stream_management do
-  let_it_be(:group) { create(:group) }
+  let_it_be(:group) { create(:group, :with_organization) }
   let_it_be(:stage_1) { create(:cycle_analytics_stage, namespace: group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_closed) }
   let_it_be(:common_stage_params) { { start_event_identifier: :issue_created, end_event_identifier: :issue_first_associated_with_milestone } }
   let_it_be(:stage_2) { create(:cycle_analytics_stage, namespace: group, **common_stage_params) }
