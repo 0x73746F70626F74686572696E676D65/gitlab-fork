@@ -52,20 +52,6 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
       ).to eq('AiImpactTable')
     end
 
-    context 'when the visualization does not exist' do
-      before do
-        allow_next_instance_of(ProductAnalytics::Panel) do |panel|
-          allow(panel).to receive(:visualization).and_return(nil)
-        end
-      end
-
-      it 'returns an error' do
-        get_graphql(query, current_user: user)
-
-        expect(graphql_errors).to include(a_hash_including('message' => 'Visualization does not exist'))
-      end
-    end
-
     context 'when `ai_impact_analytics_dashboard` is disabled' do
       before do
         stub_feature_flags(ai_impact_analytics_dashboard: false)
@@ -77,75 +63,6 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
         expect(
           graphql_data_at(:project, :customizable_dashboards, :nodes, 0, :panels, :nodes, 0, :visualization, :type)
         ).to eq('LineChart')
-      end
-    end
-
-    context 'when an older VSD config has missing visualization' do
-      let_it_be(:project) { create(:project, :with_product_analytics_invalid_custom_visualization) }
-      let_it_be(:user) { create(:user, developer_of: project) }
-
-      let(:slug) { "value_streams" }
-      let(:query) do
-        <<~GRAPHQL
-          query {
-            project(fullPath: "#{project.full_path}") {
-              customizableDashboards(slug: "#{slug}") {
-                nodes {
-                  slug
-                  description
-                  panels {
-                    nodes {
-                      title
-                      visualization {
-                        slug
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        GRAPHQL
-      end
-
-      let(:config_without_visualization) do
-        {
-          'title' => 'test title',
-          'description' => 'description',
-          'panels' => [
-            {
-              'title' => 'My custom dashboard',
-              'slug' => 'test',
-              'data' => {
-                'namespace' => 'group/my-custom-project'
-              }
-            }
-          ]
-        }
-      end
-
-      before do
-        stub_feature_flags(project_analytics_dashboard_dynamic_vsd: true)
-
-        other_project = create(:project, :repository, namespace: project.namespace)
-        other_project.repository.create_file(
-          other_project.creator,
-          '.gitlab/analytics/dashboards/value_streams/value_streams.yaml',
-          YAML.dump(config_without_visualization),
-          message: 'commit default VSD config',
-          branch_name: 'master'
-        )
-
-        create(:analytics_dashboards_pointer, :project_based, project: project, target_project: other_project)
-      end
-
-      it 'includes global error in the response about the missing visualization' do
-        get_graphql(query, current_user: user)
-
-        expect(graphql_data_at(:project, :customizable_dashboards, :nodes, 0, :slug)).to eq('value_streams')
-
-        global_error = json_response['errors'].first
-        expect(global_error['message']).to eq('Visualization does not exist')
       end
     end
 

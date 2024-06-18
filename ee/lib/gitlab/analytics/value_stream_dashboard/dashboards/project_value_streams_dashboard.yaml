@@ -1,6 +1,7 @@
 ---
 title: Value Streams Dashboard
 description: Track key DevSecOps metrics throughout the development lifecycle.
+version: "2"
 panels:
   - visualization: dora_chart
     title: Metrics comparison for %{namespaceName} %{namespaceType}

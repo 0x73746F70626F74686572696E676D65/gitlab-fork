@@ -1,5 +1,5 @@
 ---
-version: '1'
+version: '2'
 title: Dashboard Example 1
 description: North Star Metrics across all departments for the last 3 quarters.
 panels:
@@ -12,9 +12,11 @@ panels:
     visualization: cube_line_chart
     queryOverrides:
       timeDimensions:
-        dateRange:
-          - '2016-01-01'
-          - '2016-01-30'
+        - dimension: Stories.time
+          dateRange:
+            - '2016-01-01'
+            - '2016-02-30'
+          granularity: month
   - title: Overall Conversion Rate
     gridAttributes:
       yPos: 4
@@ -24,6 +26,8 @@ panels:
     visualization: cube_line_chart
     queryOverrides:
       timeDimensions:
-        dateRange:
-          - '2016-01-01'
-          - '2016-01-30'
+        - dimension: Stories.time
+          dateRange:
+            - '2016-01-01'
+            - '2016-02-30'
+          granularity: month

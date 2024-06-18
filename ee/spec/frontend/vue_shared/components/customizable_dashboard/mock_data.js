@@ -49,6 +49,8 @@ export const dashboard = {
       id: getUniquePanelId(),
     },
   ],
+  status: null,
+  errors: null,
 };
 
 export const builtinDashboard = {

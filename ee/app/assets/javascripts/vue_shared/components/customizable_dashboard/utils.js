@@ -12,6 +12,7 @@ import {
   convertObjectPropsToSnakeCase,
   parseBoolean,
 } from '~/lib/utils/common_utils';
+import { DASHBOARD_SCHEMA_VERSION } from 'ee/analytics/analytics_dashboards/constants';
 import {
   DATE_RANGE_OPTIONS,
   CUSTOM_DATE_RANGE_KEY,
@@ -106,6 +107,7 @@ export const getDashboardConfig = (hydratedDashboard) => {
   const { __typename: dashboardTypename, userDefined, slug, ...dashboardRest } = hydratedDashboard;
   return {
     ...dashboardRest,
+    version: DASHBOARD_SCHEMA_VERSION,
     panels: hydratedDashboard.panels.map((panel) => {
       const { __typename: panelTypename, id, ...panelRest } = panel;
       return {

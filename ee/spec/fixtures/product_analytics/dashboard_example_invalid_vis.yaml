@@ -12,6 +12,8 @@ panels:
     visualization: example_invalid_custom_visualization
     queryOverrides:
       timeDimensions:
-        dateRange:
-          - '2016-01-01'
-          - '2016-01-30'
+        - dimension: Stories.time
+          dateRange:
+            - '2016-01-01'
+            - '2016-02-30'
+          granularity: month

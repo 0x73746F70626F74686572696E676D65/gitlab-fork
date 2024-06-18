@@ -172,11 +172,16 @@ export const ANALYTICS_FIELDS = [
   },
 ];
 
+export const DASHBOARD_SCHEMA_VERSION = '2';
+
 export const NEW_DASHBOARD = () => ({
   title: '',
+  version: DASHBOARD_SCHEMA_VERSION,
   description: '',
   panels: [],
   userDefined: true,
+  status: null,
+  errors: null,
 });
 
 export const DEFAULT_VISUALIZATION_QUERY_STATE = () => ({
