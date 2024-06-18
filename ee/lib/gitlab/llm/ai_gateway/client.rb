@@ -5,7 +5,6 @@ module Gitlab
     module AiGateway
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
-        include ::API::Helpers::CloudConnector
         include Langsmith::RunHelpers
 
         DEFAULT_TIMEOUT = 30.seconds
@@ -66,7 +65,7 @@ module Gitlab
 
           Gitlab::HTTP.post(
             "#{Gitlab::AiGateway.url}#{endpoint}",
-            headers: request_headers,
+            headers: Gitlab::AiGateway.headers(user: user, token: access_token),
             body: body.to_json,
             timeout: timeout,
             allow_local_requests: true,
@@ -78,15 +77,6 @@ module Gitlab
 
         def enabled?
           access_token.present?
-        end
-
-        def request_headers
-          {
-            'X-Gitlab-Authentication-Type' => 'oidc',
-            'Authorization' => "Bearer #{access_token}",
-            'Content-Type' => 'application/json',
-            'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
-          }.merge(cloud_connector_headers(user))
         end
       end
     end

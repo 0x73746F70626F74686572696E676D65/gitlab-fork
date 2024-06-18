@@ -9,13 +9,12 @@ RSpec.describe Gitlab::Llm::AiGateway::Client, feature_category: :ai_abstraction
   let_it_be(:active_token) { create(:service_access_token, :active) }
 
   let(:expected_body) { { prompt: 'anything' } }
-  let(:gitlab_global_id) { API::Helpers::GlobalIds::Generator.new.generate(user) }
   let(:timeout) { described_class::DEFAULT_TIMEOUT }
   let(:expected_access_token) { active_token.token }
   let(:expected_gitlab_realm) { Gitlab::CloudConnector::GITLAB_REALM_SELF_MANAGED }
   let(:expected_gitlab_host_name) { Gitlab.config.gitlab.host }
-  let(:expected_instance_id) { gitlab_global_id.first }
-  let(:expected_user_id) { gitlab_global_id.second }
+  let(:expected_instance_id) { Gitlab::GlobalAnonymousId.instance_id }
+  let(:expected_user_id) { Gitlab::GlobalAnonymousId.user_id(user) }
   let(:expected_request_headers) do
     {
       'X-Gitlab-Instance-Id' => expected_instance_id,

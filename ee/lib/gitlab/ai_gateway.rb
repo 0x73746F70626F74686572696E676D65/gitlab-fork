@@ -11,5 +11,19 @@ module Gitlab
 
       "#{base_url}/v1/code/user_access_token"
     end
+
+    def self.headers(user:, token:, agent: nil)
+      {
+        'X-Gitlab-Authentication-Type' => 'oidc',
+        'Authorization' => "Bearer #{token}",
+        'Content-Type' => 'application/json',
+        'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id,
+        # Forward the request time to the model gateway to calculate latency
+        'X-Gitlab-Rails-Send-Start' => Time.now.to_f.to_s
+      }.merge(Gitlab::CloudConnector.headers(user))
+        .tap do |result|
+          result['User-Agent'] = agent if agent # Forward the User-Agent on to the model gateway
+        end
+    end
   end
 end

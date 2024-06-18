@@ -4,8 +4,6 @@ module Gitlab
   module Llm
     module VertexAi
       class Configuration
-        include ::API::Helpers::CloudConnector
-
         DEFAULT_TEMPERATURE = 0.2
         DEFAULT_MAX_OUTPUT_TOKENS = 1024
         DEFAULT_TOP_K = 40
@@ -39,13 +37,9 @@ module Gitlab
         def headers
           {
             "Accept" => "application/json",
-            "Authorization" => "Bearer #{access_token}",
             "Host" => model_config.host,
-            "Content-Type" => "application/json",
-            'X-Gitlab-Authentication-Type' => 'oidc',
-            'X-Gitlab-Unit-Primitive' => unit_primitive,
-            'X-Request-ID' => Labkit::Correlation::CorrelationId.current_or_new_id
-          }.merge(cloud_connector_headers(user))
+            'X-Gitlab-Unit-Primitive' => unit_primitive
+          }.merge(Gitlab::AiGateway.headers(user: user, token: access_token))
         end
 
         private

@@ -30,12 +30,13 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
         "X-Gitlab-Authentication-Type" => ["oidc"],
         "Authorization" => ["Bearer #{ai_gateway_token}"],
         "Content-Type" => ["application/json"],
-        "User-Agent" => [],
         "X-Gitlab-Host-Name" => [hostname],
         "X-Gitlab-Instance-Id" => [instance_uuid],
         "X-Gitlab-Realm" => [gitlab_realm],
         "X-Gitlab-Global-User-Id" => [global_user_id],
-        "X-Gitlab-Version" => [Gitlab.version_info.to_s]
+        "X-Gitlab-Version" => [Gitlab.version_info.to_s],
+        "X-Request-ID" => [an_instance_of(String)],
+        "X-Gitlab-Rails-Send-Start" => [an_instance_of(String)]
       }
     end
 
@@ -44,11 +45,8 @@ RSpec.describe API::Internal::Ai::XRay::Scan, feature_category: :code_suggestion
     end
 
     before do
-      allow_next_instance_of(API::Helpers::GlobalIds::Generator) do |generator|
-        allow(generator).to receive(:generate)
-                              .with(job.user)
-                              .and_return([instance_uuid, global_user_id])
-      end
+      allow(Gitlab::GlobalAnonymousId).to receive(:user_id).and_return(global_user_id)
+      allow(Gitlab::GlobalAnonymousId).to receive(:instance_id).and_return(instance_uuid)
     end
 
     context 'when job token is missing' do
