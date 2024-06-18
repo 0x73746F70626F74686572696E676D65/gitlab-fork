@@ -24,9 +24,7 @@ module QA
                 expect(duo_chat).to be_empty_state
 
                 duo_chat.send_duo_chat_prompt('hi')
-                expect do
-                  duo_chat.latest_response
-                end.to eventually_match(/GitLab/).within(max_duration: 30)
+                expect(duo_chat.has_response?('GitLab')).to be_truthy, 'Expected "GitLab" within Duo Chat response.'
               end
             end
           end

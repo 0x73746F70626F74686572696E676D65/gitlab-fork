@@ -16,10 +16,8 @@ module QA
               duo_chat.number_of_messages > 1
             end
 
-            # Since the response is streamed we have to use eventually
-            expect do
-              duo_chat.latest_response
-            end.to eventually_match(/#{expected_response}/).within(max_duration: 30)
+            expect(duo_chat.has_response?(expected_response)).to be_truthy,
+              "Expected \"#{expected_response}\" within Duo Chat response."
           end
         end
       end

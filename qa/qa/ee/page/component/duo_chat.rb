@@ -23,8 +23,8 @@ module QA
             has_element?('gl-empty-state-content')
           end
 
-          def latest_response
-            find_all('.duo-chat-message p').last.text
+          def has_response?(expected_response)
+            has_css?('.duo-chat-message p', text: expected_response, wait: 30)
           end
 
           def number_of_messages
