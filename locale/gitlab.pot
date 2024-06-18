@@ -20618,6 +20618,9 @@ msgstr ""
 msgid "Environments|Updating"
 msgstr ""
 
+msgid "Environments|View logs"
+msgstr ""
+
 msgid "Environments|by %{avatar}"
 msgstr ""
 
@@ -30182,6 +30185,9 @@ msgstr ""
 msgid "KubernetesDashboard|Completed"
 msgstr ""
 
+msgid "KubernetesDashboard|Containers"
+msgstr ""
+
 msgid "KubernetesDashboard|CronJob"
 msgstr ""
 
@@ -30222,6 +30228,9 @@ msgid "KubernetesDashboard|Labels"
 msgstr ""
 
 msgid "KubernetesDashboard|Learn more"
+msgstr ""
+
+msgid "KubernetesDashboard|Logs"
 msgstr ""
 
 msgid "KubernetesDashboard|Name"
