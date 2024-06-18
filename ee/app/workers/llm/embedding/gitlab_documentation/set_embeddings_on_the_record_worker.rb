@@ -9,6 +9,7 @@ module Llm
         include EmbeddingsWorkerContext
 
         TRACKING_CONTEXT = { action: 'documentation_embedding' }.freeze
+        UNIT_PRIMITIVE = 'documentation_search'
 
         idempotent!
         deduplicate :until_executing
@@ -36,7 +37,12 @@ module Llm
           return unless record
 
           embedding = Gitlab::Llm::VertexAi::Embeddings::Text
-                        .new(record.content, user: nil, tracking_context: TRACKING_CONTEXT)
+                        .new(
+                          record.content,
+                          user: nil,
+                          tracking_context: TRACKING_CONTEXT,
+                          unit_primitive: UNIT_PRIMITIVE
+                        )
                         .execute
 
           record.update!(embedding: embedding)

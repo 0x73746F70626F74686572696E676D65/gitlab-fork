@@ -9,8 +9,11 @@ RSpec.describe Gitlab::Llm::VertexAi::Embeddings::Text, feature_category: :ai_ab
   let(:embeddings) { [1, 2, 3] }
   let(:success) { true }
   let(:context) { { action: 'embedding' } }
+  let(:primitive) { 'documentation_search' }
 
-  subject(:execute) { described_class.new(text, user: user, tracking_context: context).execute }
+  subject(:execute) do
+    described_class.new(text, user: user, tracking_context: context, unit_primitive: primitive).execute
+  end
 
   describe '#execute' do
     let(:example_response) do

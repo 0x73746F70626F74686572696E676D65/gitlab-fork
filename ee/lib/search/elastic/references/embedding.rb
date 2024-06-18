@@ -9,6 +9,7 @@ module Search
         extend Search::Elastic::Concerns::DatabaseClassReference
 
         MODEL_VERSIONS = { 0 => 'textembedding-gecko@003' }.freeze
+        UNIT_PRIMITIVE = 'semantic_search_issue'
 
         override :serialize
         def self.serialize(record)
@@ -64,7 +65,9 @@ module Search
             raise ReferenceFailure, "Rate limited endpoint '#{ENDPOINT}' is throttled"
           end
 
-          Gitlab::Llm::VertexAi::Embeddings::Text.new(content, user: nil, tracking_context: tracking_context).execute
+          Gitlab::Llm::VertexAi::Embeddings::Text
+            .new(content, user: nil, tracking_context: tracking_context, unit_primitive: UNIT_PRIMITIVE)
+            .execute
         rescue StandardError => error
           raise ReferenceFailure, "Failed to generate embedding: #{error}"
         end

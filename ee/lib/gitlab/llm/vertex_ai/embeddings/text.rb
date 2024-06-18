@@ -5,13 +5,14 @@ module Gitlab
     module VertexAi
       module Embeddings
         class Text
-          def initialize(text, user:, tracking_context:)
+          def initialize(text, user:, tracking_context:, unit_primitive:)
             @text = text
             @user = user
             @tracking_context = tracking_context
+            @unit_primitive = unit_primitive
           end
 
-          attr_reader :user, :text, :tracking_context
+          attr_reader :user, :text, :tracking_context, :unit_primitive
 
           def execute
             result = client.text_embeddings(content: text)
@@ -31,7 +32,7 @@ module Gitlab
 
           def client
             ::Gitlab::Llm::VertexAi::Client.new(user,
-              unit_primitive: 'documentation_search',
+              unit_primitive: unit_primitive,
               tracking_context: tracking_context)
           end
         end

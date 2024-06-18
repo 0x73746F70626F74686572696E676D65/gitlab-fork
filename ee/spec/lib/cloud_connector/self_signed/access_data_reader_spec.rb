@@ -37,6 +37,7 @@ RSpec.describe CloudConnector::SelfSigned::AccessDataReader, feature_category: :
           generate_cube_query
           resolve_vulnerability
           review_merge_request
+          semantic_search_issue
           summarize_issue_discussions
           summarize_merge_request
           summarize_review
