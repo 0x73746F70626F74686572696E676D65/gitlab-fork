@@ -1,6 +1,7 @@
 ---
 title: Behavior
 description: All insights on user activity
+version: "2"
 panels:
   - visualization: page_views_over_time
     title: Page views over time

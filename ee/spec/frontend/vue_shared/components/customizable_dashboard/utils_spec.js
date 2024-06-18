@@ -31,6 +31,7 @@ import {
   TEST_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
   getGraphQLDashboard,
 } from 'ee_jest/analytics/analytics_dashboards/mock_data';
+import { DASHBOARD_SCHEMA_VERSION } from 'ee/analytics/analytics_dashboards/constants';
 import { mockDateRangeFilterChangePayload, dashboard, mockPanel } from './mock_data';
 
 const option = DATE_RANGE_OPTIONS[0];
@@ -184,6 +185,7 @@ describe('getDashboardConfig', () => {
 
     expect(result).toMatchObject({
       id: 'analytics_overview',
+      version: DASHBOARD_SCHEMA_VERSION,
       panels: [
         {
           gridAttributes: {
@@ -207,6 +209,8 @@ describe('getDashboardConfig', () => {
         },
       ],
       title: 'Analytics Overview',
+      status: null,
+      errors: null,
     });
   });
 

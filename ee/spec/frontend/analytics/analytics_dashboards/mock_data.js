@@ -65,6 +65,7 @@ export const getGraphQLDashboard = (options = {}, withPanels = true) => {
     status: null,
     description: 'Understand your audience',
     __typename: 'CustomizableDashboard',
+    errors: [],
     ...options,
   };
 
@@ -280,6 +281,36 @@ export const TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE = {
             { slug: 'new_dashboard', title: 'new_dashboard', userDefined: true },
             false,
           ),
+        ],
+        __typename: 'CustomizableDashboardConnection',
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
+export const mockInvalidDashboardErrors = [
+  'root is missing required keys: version',
+  "property '/panels/0' is missing required keys: queryOverrides",
+  "property '/panels/0/id' is invalid: error_type=schema",
+  "property '/panels/1' is missing required keys: queryOverrides",
+  "property '/panels/1/id' is invalid: error_type=schema",
+  "property '/panels/2' is missing required keys: queryOverrides",
+  "property '/panels/2/id' is invalid: error_type=schema",
+];
+
+export const TEST_INVALID_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      customizableDashboards: {
+        nodes: [
+          getGraphQLDashboard({
+            slug: 'custom_dashboard',
+            title: 'Custom Dashboard',
+            userDefined: true,
+            errors: mockInvalidDashboardErrors,
+          }),
         ],
         __typename: 'CustomizableDashboardConnection',
       },

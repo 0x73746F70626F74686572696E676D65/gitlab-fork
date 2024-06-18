@@ -17,6 +17,11 @@ module QA
                 element 'dashboard-edit-btn'
               end
 
+              view 'ee/app/assets/javascripts/analytics/analytics_dashboards/components/' \
+                     'analytics_dashboard.vue' do
+                element 'analytics-dashboard-invalid-config-alert'
+              end
+
               def panels
                 all_elements('grid-stack-panel', minimum: 1)
               end
@@ -65,6 +70,10 @@ module QA
 
               def edit_dashboard
                 click_element 'dashboard-edit-btn'
+              end
+
+              def has_invalid_config_alert?(wait: 1)
+                has_element?('analytics-dashboard-invalid-config-alert', wait: wait)
               end
             end
           end

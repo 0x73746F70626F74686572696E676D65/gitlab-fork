@@ -48,6 +48,8 @@ import {
   TEST_VISUALIZATIONS_GRAPHQL_SUCCESS_RESPONSE,
   createDashboardGraphqlSuccessResponse,
   getGraphQLDashboard,
+  TEST_INVALID_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
+  mockInvalidDashboardErrors,
 } from '../mock_data';
 
 jest.mock('~/sentry/sentry_browser_wrapper');
@@ -88,6 +90,8 @@ describe('AnalyticsDashboard', () => {
   const findProductAnalyticsFeedbackBanner = () =>
     wrapper.findComponent(ProductAnalyticsFeedbackBanner);
   const findValueStreamFeedbackBanner = () => wrapper.findComponent(ValueStreamFeedbackBanner);
+  const findInvalidDashboardAlert = () =>
+    wrapper.findByTestId('analytics-dashboard-invalid-config-alert');
 
   const mockSaveDashboardImplementation = async (responseCallback, dashboardToSave = dashboard) => {
     saveCustomDashboard.mockImplementation(responseCallback);
@@ -269,6 +273,14 @@ describe('AnalyticsDashboard', () => {
       expect(findDashboard().exists()).toBe(true);
     });
 
+    it('should not render invalid dashboard alert', async () => {
+      createWrapper();
+
+      await waitForPromises();
+
+      expect(findInvalidDashboardAlert().exists()).toBe(false);
+    });
+
     it('should add unique panel ids to each panel', async () => {
       createWrapper();
 
@@ -399,6 +411,37 @@ describe('AnalyticsDashboard', () => {
         primaryButtonText: 'View available dashboards',
         primaryButtonLink: TEST_ROUTER_BACK_HREF,
       });
+    });
+  });
+
+  describe("when the dashboard's configuration is invalid", () => {
+    beforeEach(() => {
+      mockDashboardResponse(TEST_INVALID_CUSTOM_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+
+      createWrapper();
+
+      return waitForPromises();
+    });
+
+    it('does not render the loader', () => {
+      expect(findLoader().exists()).toBe(false);
+    });
+
+    it('renders the dashboard', () => {
+      expect(findDashboard().exists()).toBe(true);
+    });
+
+    it('renders an alert with error messages', () => {
+      expect(findInvalidDashboardAlert().props()).toMatchObject({
+        title: 'Invalid dashboard configuration',
+        primaryButtonText: 'Learn more',
+        primaryButtonLink: '/help/user/analytics/analytics_dashboards#troubleshooting',
+        dismissible: false,
+      });
+
+      mockInvalidDashboardErrors.forEach((error) =>
+        expect(findInvalidDashboardAlert().text()).toContain(error),
+      );
     });
   });
 

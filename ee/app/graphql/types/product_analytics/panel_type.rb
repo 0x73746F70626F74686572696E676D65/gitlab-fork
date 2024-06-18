@@ -9,7 +9,7 @@ module Types
 
       field :title,
         type: GraphQL::Types::String,
-        null: false,
+        null: true,
         description: 'Title of the panel.'
 
       field :grid_attributes,
@@ -24,7 +24,7 @@ module Types
 
       field :visualization,
         type: Types::ProductAnalytics::VisualizationType,
-        null: false,
+        null: true,
         description: 'Visualization of the panel.',
         resolver: Resolvers::ProductAnalytics::VisualizationResolver
     end

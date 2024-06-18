@@ -29,7 +29,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
       expect(dashboard.title).to eq('Value Streams Dashboard')
       expect(dashboard.slug).to eq('value_streams_dashboard')
       expect(dashboard.description).to eq('Track key DevSecOps metrics throughout the development lifecycle.')
-      expect(dashboard.schema_version).to eq(nil)
+      expect(dashboard.schema_version).to eq('2')
     end
   end
 
@@ -64,7 +64,7 @@ description: with missing properties
       end
 
       it 'returns schema errors' do
-        expect(dashboard.errors).to eq(["root is missing required keys: version, panels"])
+        expect(dashboard.errors).to eq(["root is missing required keys: panels"])
       end
     end
   end
@@ -105,7 +105,7 @@ description: with missing properties
           expect(subject.last.title).to eq('Dashboard Example 1')
           expect(subject.last.slug).to eq('dashboard_example_1')
           expect(subject.last.description).to eq('North Star Metrics across all departments for the last 3 quarters.')
-          expect(subject.last.schema_version).to eq('1')
+          expect(subject.last.schema_version).to eq('2')
           expect(subject.last.errors).to be_nil
         end
       end
@@ -226,9 +226,11 @@ description: with missing properties
 
     it 'is expected to contain a panel with the correct query overrides' do
       expect(subject.first.query_overrides).to eq({
-        'timeDimensions' => {
-          'dateRange' => ['2016-01-01', '2016-01-30'] # rubocop:disable Style/WordArray
-        }
+        'timeDimensions' => [{
+          'dimension' => 'Stories.time',
+          'dateRange' => %w[2016-01-01 2016-02-30],
+          'granularity' => 'month'
+        }]
       })
     end
   end
@@ -314,7 +316,7 @@ description: with missing properties
       it 'returns the dashboard' do
         expect(subject.title).to eq('AI impact analytics')
         expect(subject.slug).to eq('ai_impact')
-        expect(subject.schema_version).to eq(nil)
+        expect(subject.schema_version).to eq('2')
       end
 
       context 'when feature is not available' do
@@ -332,7 +334,7 @@ description: with missing properties
       it 'returns the dashboard' do
         expect(subject.title).to eq('AI impact analytics')
         expect(subject.slug).to eq('ai_impact')
-        expect(subject.schema_version).to eq(nil)
+        expect(subject.schema_version).to eq('2')
       end
 
       context 'when feature is not available' do
@@ -372,7 +374,7 @@ description: with missing properties
 
       it 'loads the dashboard config' do
         expect(subject["title"]).to eq('Behavior')
-        expect(subject.size).to eq(3)
+        expect(subject.size).to eq(4)
       end
     end
   end

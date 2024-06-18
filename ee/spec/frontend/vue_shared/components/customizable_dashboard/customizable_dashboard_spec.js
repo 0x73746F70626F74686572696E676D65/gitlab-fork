@@ -20,6 +20,7 @@ import {
   NEW_DASHBOARD,
   EVENT_LABEL_VIEWED_DASHBOARD_DESIGNER,
   EVENT_LABEL_EXCLUDE_ANONYMISED_USERS,
+  DASHBOARD_SCHEMA_VERSION,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { CUSTOM_VALUE_STREAM_DASHBOARD } from 'ee/analytics/dashboards/constants';
 import {
@@ -893,10 +894,13 @@ describe('CustomizableDashboard', () => {
               'new_title',
               {
                 slug: 'new_title',
+                version: DASHBOARD_SCHEMA_VERSION,
                 title: 'New Title',
                 description: '',
                 panels: newPanels,
                 userDefined: true,
+                status: null,
+                errors: null,
               },
             ],
           ]);
