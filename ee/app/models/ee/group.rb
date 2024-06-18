@@ -378,7 +378,19 @@ module EE
       end
 
       def hierarchy_group_ids_authorized_by_share(user, groups_hierarchy, access_level)
-        where('traversal_ids && ARRAY(?)::int[]',
+        # Explicit casting can be removed once namespaces.traversal_ids is converted to bigint[]
+        type_name = connection.select_value(
+          "SELECT typname FROM pg_attribute INNER JOIN pg_type ON pg_attribute.atttypid = pg_type.oid " \
+            "WHERE attname = 'traversal_ids' AND attrelid = 'namespaces'::regclass"
+        )
+        traversal_ids_type = case type_name
+                             when '_int4'
+                               'integer[]'
+                             when '_int8'
+                               'bigint[]'
+                             end
+
+        where("traversal_ids && ARRAY(?)::#{traversal_ids_type}",
           ::GroupGroupLink
             .where(shared_group_id: groups_hierarchy.select(:id))
             .where('group_access >= ?', access_level)
@@ -978,7 +990,7 @@ module EE
     end
 
     def count_within_namespaces
-      ::Group.where("traversal_ids @> ARRAY[?]", id).count
+      ::Group.where("traversal_ids @> '{?}'", id).count
     end
 
     # Thin wrapper to promote a source of truth for filtering billed users as we
