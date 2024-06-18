@@ -7,7 +7,7 @@
       %p
         - duo_pro_link = link_to('', 'https://about.gitlab.com/gitlab-duo/', target: '_blank', rel: 'noopener noreferrer')
 
-        = safe_format(s_('CodeSuggestions|Boost productivity across the software development life cycle by using Code Suggestions and GitLab Duo Chat (Beta) as part of the %{duoLinkStart}GitLab Duo Pro%{duoLinkEnd} add-on. You can now try GitLab Duo Pro for free for %{days} days, no credit card required.'),
+        = safe_format(s_('CodeSuggestions|Boost productivity across the software development life cycle by using Code Suggestions and GitLab Duo Chat as part of the %{duoLinkStart}GitLab Duo Pro%{duoLinkEnd} add-on. You can now try GitLab Duo Pro for free for %{days} days, no credit card required.'),
           { days: GitlabSubscriptions::Trials::DuoPro::DURATION_NUMBER },
           tag_pair(duo_pro_link, :duoLinkStart, :duoLinkEnd))
       .gl-display-flex.gl-flex-direction-column.gl-sm-flex-direction-row.gl-gap-3

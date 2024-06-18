@@ -12791,7 +12791,7 @@ msgstr ""
 msgid "CodeSuggestions|A user can be assigned a %{title} seat only once each billable month."
 msgstr ""
 
-msgid "CodeSuggestions|Boost productivity across the software development life cycle by using Code Suggestions and GitLab Duo Chat (Beta) as part of the %{duoLinkStart}GitLab Duo Pro%{duoLinkEnd} add-on. You can now try GitLab Duo Pro for free for %{days} days, no credit card required."
+msgid "CodeSuggestions|Boost productivity across the software development life cycle by using Code Suggestions and GitLab Duo Chat as part of the %{duoLinkStart}GitLab Duo Pro%{duoLinkEnd} add-on. You can now try GitLab Duo Pro for free for %{days} days, no credit card required."
 msgstr ""
 
 msgid "CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}GitLab Duo Pro%{linkEnd} offers features that use generative AI to suggest code."

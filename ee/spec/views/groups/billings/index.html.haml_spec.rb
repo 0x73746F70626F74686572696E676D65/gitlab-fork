@@ -148,7 +148,7 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
 
           expect(rendered).to have_content(
             'Boost productivity across the software development life cycle by using ' \
-            'Code Suggestions and GitLab Duo Chat (Beta)'
+            'Code Suggestions and GitLab Duo Chat'
           )
 
           expect(rendered).to have_content(_('You can now try GitLab Duo Pro for free for 60 days'))
