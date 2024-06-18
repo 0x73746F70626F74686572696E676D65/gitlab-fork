@@ -15,7 +15,6 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
 
   context 'without correct license' do
     before do
-      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: false)
 
       visit project_settings_analytics_path(project)
@@ -44,7 +43,6 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
   context 'when product analytics is disabled on an instance' do
     before do
       allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(false)
-      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true)
       visit project_settings_analytics_path(project)
       project.reload
@@ -58,7 +56,6 @@ RSpec.describe 'Project > Settings > Analytics -> Data sources -> Product analyt
   context 'with valid license and toggle' do
     before do
       allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
-      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true)
       visit project_settings_analytics_path(project)
       project.reload

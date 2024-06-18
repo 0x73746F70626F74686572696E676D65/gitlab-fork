@@ -17,7 +17,6 @@ RSpec.describe Resolvers::ProductAnalytics::DashboardsResolver, feature_category
 
     before do
       allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
-      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true, project_level_analytics_dashboard: false)
       stub_feature_flags(ai_impact_analytics_dashboard: false)
       project.project_setting.update!(product_analytics_instrumentation_key: "key")

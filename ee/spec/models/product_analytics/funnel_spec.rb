@@ -8,7 +8,6 @@ RSpec.describe ProductAnalytics::Funnel, feature_category: :product_analytics_da
 
   before do
     allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
-    allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
     stub_licensed_features(product_analytics: true)
   end
 

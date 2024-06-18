@@ -15,7 +15,6 @@ RSpec.describe 'Project > Settings > Analytics -> Instrumentation instructions',
 
   context 'without correct license' do
     before do
-      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: false)
 
       visit project_settings_analytics_path(project)
@@ -44,7 +43,6 @@ RSpec.describe 'Project > Settings > Analytics -> Instrumentation instructions',
   context 'when product analytics is disabled on an instance' do
     before do
       allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(false)
-      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true)
     end
 
@@ -56,7 +54,6 @@ RSpec.describe 'Project > Settings > Analytics -> Instrumentation instructions',
   context 'with valid license, toggle and feature flags' do
     before do
       allow(Gitlab::CurrentSettings).to receive(:product_analytics_enabled?).and_return(true)
-      allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
       stub_licensed_features(product_analytics: true)
     end
 

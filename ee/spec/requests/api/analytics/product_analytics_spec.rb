@@ -77,7 +77,6 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
     stub_ee_application_setting(product_analytics_enabled: true)
     stub_ee_application_setting(cube_api_key: 'testtest')
     stub_ee_application_setting(cube_api_base_url: 'http://cube.dev')
-    allow(project.group.root_ancestor.namespace_settings).to receive(:experiment_settings_allowed?).and_return(true)
   end
 
   def stub_cube_product_analytics_enabled
