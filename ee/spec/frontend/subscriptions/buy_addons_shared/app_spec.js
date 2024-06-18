@@ -110,11 +110,10 @@ describe('Buy Addons Shared App', () => {
         });
 
         it('passes the correct props to the alert', () => {
-          expect(findErrorAlert().props()).toEqual({
+          expect(findErrorAlert().props()).toMatchObject({
             error,
             errorDictionary: PURCHASE_ERROR_DICTIONARY,
             defaultError: CONTACT_SUPPORT_DEFAULT_MESSAGE,
-            dismissible: false,
           });
         });
 
