@@ -11,10 +11,9 @@
           { days: GitlabSubscriptions::Trials::DuoPro::DURATION_NUMBER },
           tag_pair(duo_pro_link, :duoLinkStart, :duoLinkEnd))
       .gl-display-flex.gl-flex-direction-column.gl-sm-flex-direction-row.gl-gap-3
-        - if Feature.enabled?(:duo_pro_trials, current_user, type: :wip)
-          = render 'duo_pro_trial_cta',
-            namespace: namespace,
-            button_category: 'primary',
-            button_options: { data: { event_tracking: 'click_duo_pro_trial_billing_page' } }
+        = render 'duo_pro_trial_cta',
+          namespace: namespace,
+          button_category: 'primary',
+          button_options: { data: { event_tracking: 'click_duo_pro_trial_billing_page' } }
 
         .js-hand-raise-lead-trigger{ data: code_suggestions_billing_card_hand_raise_lead_data }

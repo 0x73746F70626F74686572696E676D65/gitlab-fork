@@ -9,7 +9,6 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, :unlimited_max_fo
   let_it_be(:another_free_group) { create(:group) }
   let_it_be(:another_ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
 
-  let(:duo_pro_trials_feature_flag) { true }
   let(:subscriptions_trials_saas_feature) { true }
 
   before_all do
@@ -18,8 +17,6 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, :unlimited_max_fo
   end
 
   before do
-    stub_feature_flags(duo_pro_trials: duo_pro_trials_feature_flag)
-
     stub_saas_features(
       subscriptions_trials: subscriptions_trials_saas_feature,
       marketing_google_tag_manager: false
@@ -84,12 +81,6 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, :unlimited_max_fo
             get new_trials_duo_pro_path, params: { namespace_id: group.id }
           end
         end
-      end
-
-      context 'when duo_pro_trials feature flag is disabled' do
-        let(:duo_pro_trials_feature_flag) { false }
-
-        it { is_expected.to have_gitlab_http_status(:not_found) }
       end
 
       context 'when subscriptions_trials saas feature is not available' do
@@ -242,12 +233,6 @@ RSpec.describe Subscriptions::Trials::DuoProController, :saas, :unlimited_max_fo
 
           it { is_expected.to render_select_namespace_duo }
         end
-      end
-
-      context 'when duo_pro_trials feature flag is disabled' do
-        let(:duo_pro_trials_feature_flag) { false }
-
-        it { is_expected.to have_gitlab_http_status(:not_found) }
       end
 
       context 'when subscriptions_trials saas feature is not available' do

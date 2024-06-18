@@ -46,25 +46,12 @@ RSpec.describe GitlabSubscriptions::Trials::DuoProStatusWidgetPresenter, :saas, 
   end
 
   describe '#eligible_for_widget?' do
-    let(:duo_pro_trials_enabled) { true }
     let(:root_group) { group }
     let(:current_user) { user }
 
-    before do
-      stub_feature_flags(duo_pro_trials: duo_pro_trials_enabled)
-    end
-
     subject { described_class.new(root_group, user: current_user).eligible_for_widget? }
 
-    context 'with a duo pro trial add on' do
-      it { is_expected.to be(true) }
-
-      context 'with duo_pro_trials disabled' do
-        let(:duo_pro_trials_enabled) { false }
-
-        it { is_expected.to be(false) }
-      end
-    end
+    it { is_expected.to be(true) }
 
     context 'without a duo pro trial add on' do
       let(:root_group) { build(:group) }
