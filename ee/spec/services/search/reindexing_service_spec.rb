@@ -9,6 +9,7 @@ RSpec.describe ::Search::ReindexingService, feature_category: :global_search do
   let(:slice) { 1 }
   let(:max_slices) { 10 }
   let(:wait_for_completion) { true }
+  let(:scroll) { '2h' }
   let(:params) do
     {
       from: from_index,
@@ -16,7 +17,8 @@ RSpec.describe ::Search::ReindexingService, feature_category: :global_search do
       query: query,
       wait_for_completion: wait_for_completion,
       slice: slice,
-      max_slices: max_slices
+      max_slices: max_slices,
+      scroll: scroll
     }
   end
 
@@ -37,6 +39,7 @@ RSpec.describe ::Search::ReindexingService, feature_category: :global_search do
       expect(::Gitlab::Search::Client).to receive(:new).and_return client
       expect(client).to receive(:reindex).with({
         wait_for_completion: wait_for_completion,
+        scroll: scroll,
         body: {
           source: {
             index: from_index,
@@ -59,6 +62,7 @@ RSpec.describe ::Search::ReindexingService, feature_category: :global_search do
     it 'formats request correctly' do
       expect(subject.request).to eq({
         wait_for_completion: wait_for_completion,
+        scroll: scroll,
         body: {
           source: {
             index: from_index,
@@ -218,6 +222,7 @@ RSpec.describe ::Search::ReindexingService, feature_category: :global_search do
       it 'formats request correctly' do
         expect(subject.request).to eq({
           wait_for_completion: wait_for_completion,
+          scroll: scroll,
           body: {
             source: {
               index: from_index

@@ -27,6 +27,7 @@ module Search
 
       r = {
         wait_for_completion: params[:wait_for_completion],
+        scroll: params[:scroll],
         body: {
           conflicts: params[:conflicts],
           max_docs: params[:max_docs],

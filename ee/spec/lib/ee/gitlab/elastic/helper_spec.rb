@@ -786,16 +786,17 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
     let(:max_slice) { :max_slice }
     let(:to) { :to }
     let(:wait_for_completion) { :wait_for_completion }
+    let(:scroll) { '3h' }
     let(:result) { { 'task' => '8675-309' } }
 
     it 'passes correct arguments to Search::ReindexingService' do
       expect(::Search::ReindexingService).to receive(:execute).with(
-        from: from, to: to, slice: slice, max_slices: max_slice, wait_for_completion: wait_for_completion
+        from: from, to: to, slice: slice, max_slices: max_slice,
+        wait_for_completion: wait_for_completion, scroll: scroll
       ).and_return(result)
 
-      expect(helper.reindex(
-        from: from, to: to, slice: slice, max_slice: max_slice, wait_for_completion: wait_for_completion)
-            ).to eq(result['task'])
+      expect(helper.reindex(from: from, to: to, slice: slice, max_slice: max_slice,
+        wait_for_completion: wait_for_completion, scroll: scroll)).to eq(result['task'])
     end
   end
 

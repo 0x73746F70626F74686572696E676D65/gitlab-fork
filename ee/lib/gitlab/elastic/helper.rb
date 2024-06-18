@@ -265,9 +265,10 @@ module Gitlab
         client.cluster.stats['nodes']['fs']['free_in_bytes']
       end
 
-      def reindex(to:, max_slice:, slice:, from: target_index_name, wait_for_completion: false)
+      def reindex(to:, max_slice:, slice:, from: target_index_name, wait_for_completion: false, scroll: nil)
         response = ::Search::ReindexingService.execute(
-          from: from, to: to, slice: slice, max_slices: max_slice, wait_for_completion: wait_for_completion
+          from: from, to: to, slice: slice, max_slices: max_slice,
+          wait_for_completion: wait_for_completion, scroll: scroll
         )
 
         response['task']
