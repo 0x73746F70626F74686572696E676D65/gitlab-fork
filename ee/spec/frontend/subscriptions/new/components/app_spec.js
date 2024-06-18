@@ -94,11 +94,10 @@ describe('App component', () => {
       });
 
       it('passes the correct props', () => {
-        expect(findErrorAlert().props()).toEqual({
+        expect(findErrorAlert().props()).toMatchObject({
           error,
           errorDictionary: PURCHASE_ERROR_DICTIONARY,
           defaultError: CONTACT_SUPPORT_DEFAULT_MESSAGE,
-          dismissible: false,
         });
       });
 

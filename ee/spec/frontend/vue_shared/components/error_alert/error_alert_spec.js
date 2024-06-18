@@ -26,12 +26,18 @@ jest.mock('~/lib/utils/error_utils', () => ({
 
 describe('Error Alert', () => {
   let wrapper;
+  let dismissListenerSpy;
 
   const findAlert = () => wrapper.findComponent(GlAlert);
 
   const createComponent = (props = {}) => {
+    dismissListenerSpy = jest.fn();
+
     wrapper = shallowMount(ErrorAlert, {
       propsData: props,
+      listeners: {
+        dismiss: dismissListenerSpy,
+      },
     });
   };
 
@@ -73,7 +79,31 @@ describe('Error Alert', () => {
     it('emits a dismiss event when dismissing the error', () => {
       findAlert().vm.$emit('dismiss');
 
-      expect(wrapper.emitted('dismiss')).toHaveLength(1);
+      expect(dismissListenerSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('passes no button properties', () => {
+      expect(findAlert().props()).toMatchObject({
+        primaryButtonText: null,
+        primaryButtonLink: null,
+        secondaryButtonText: null,
+        secondaryButtonLink: null,
+      });
+    });
+  });
+
+  describe('with error and button text and links', () => {
+    it('passes correct properties for buttons', () => {
+      const buttonInformation = {
+        primaryButtonText: 'Primary',
+        primaryButtonLink: 'https://example.com',
+        secondaryButtonText: 'Secondary',
+        secondaryButtonLink: 'https://example.com',
+      };
+
+      createComponent({ error, ...buttonInformation });
+
+      expect(findAlert().props()).toMatchObject(buttonInformation);
     });
   });
 });

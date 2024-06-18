@@ -30,6 +30,26 @@ export default {
       required: false,
       default: false,
     },
+    primaryButtonLink: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    primaryButtonText: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    secondaryButtonLink: {
+      type: String,
+      required: false,
+      default: null,
+    },
+    secondaryButtonText: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   computed: {
     friendlyError() {
@@ -47,7 +67,11 @@ export default {
     variant="danger"
     :title="friendlyError.title"
     :dismissible="dismissible"
-    @dismiss="$emit('dismiss')"
+    :primary-button-link="primaryButtonLink"
+    :primary-button-text="primaryButtonText"
+    :secondary-button-link="secondaryButtonLink"
+    :secondary-button-text="secondaryButtonText"
+    v-on="$listeners"
   >
     <span v-safe-html="friendlyErrorMessage"></span>
   </gl-alert>
