@@ -15,15 +15,8 @@ class StoreSecurityReportsWorker # rubocop:disable Scalability/IdempotentWorker
   feature_category :vulnerability_management
   worker_resource_boundary :cpu
 
-  def perform(pipeline_id)
-    pipeline = Ci::Pipeline.find_by_id(pipeline_id)
-
-    return unless pipeline&.project&.can_store_security_reports?
-
-    in_lock(lease_key(pipeline.project), ttl: LEASE_TTL) do
-      ::Security::Ingestion::IngestReportsService.execute(pipeline)
-    end
-  end
+  # TODO: remove in https://gitlab.com/gitlab-org/gitlab/-/issues/467944
+  def perform(pipeline_id); end
 
   private
 
