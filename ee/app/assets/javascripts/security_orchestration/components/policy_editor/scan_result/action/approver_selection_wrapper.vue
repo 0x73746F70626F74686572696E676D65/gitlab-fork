@@ -130,15 +130,14 @@ export default {
 
 <template>
   <section-layout
-    class="gl-w-full gl-py-0 gl-pr-0 gl-rounded-0 gl-bg-white"
+    class="gl-w-full gl-py-0 gl-pr-0 gl-rounded-0 gl-bg-white gl-items-end md:gl-items-start"
+    content-classes="gl-flex gl-w-full "
     :show-remove-button="showRemoveButton"
     @remove="handleRemoveApprover"
   >
     <template #content>
-      <gl-form class="gl-block md:!gl-flex gl-align-items-center" @submit.prevent>
-        <div
-          class="gl-display-flex gl-align-items-center gl-justify-content-end gl-w-30 gl-mb-3 gl-md-mb-0!"
-        >
+      <gl-form class="md:gl-flex gl-items-center gl-w-full" @submit.prevent>
+        <div class="gl-flex gl-items-center md:gl-justify-end gl-w-30 gl-mb-3 md:!gl-mb-0">
           <gl-sprintf :message="actionText">
             <template #require="{ content }">
               <strong>{{ content }}</strong>
@@ -164,7 +163,7 @@ export default {
         </div>
 
         <gl-collapsible-listbox
-          class="gl-mx-0 gl-md-ml-3 gl-md-mr-3"
+          class="gl-mx-0 md:gl-ml-3 md:gl-mr-3 gl-mb-3 md:gl-mb-0 gl-block md:gl-inline-flex"
           data-testid="available-types"
           :items="availableTypes"
           :selected="selected"
@@ -190,10 +189,9 @@ export default {
       </gl-form>
       <gl-button
         v-if="showAddButton"
-        class="gl-ml-auto"
+        class="gl-mt-4 gl-ml-2"
         variant="link"
         data-testid="add-approver"
-        icon="plus"
         @click="addApproverType"
       >
         {{ $options.i18n.ADD_APPROVER_LABEL }}

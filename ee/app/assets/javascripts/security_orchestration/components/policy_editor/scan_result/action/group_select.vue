@@ -111,10 +111,11 @@ export default {
 <template>
   <gl-collapsible-listbox
     :items="groups"
+    block
     searchable
     is-check-centered
     multiple
-    :toggle-class="['gl-max-w-26', { '!gl-shadow-inner-1-red-500': !state }]"
+    :toggle-class="['gl-max-w-30', { '!gl-shadow-inner-1-red-500': !state }]"
     :searching="$apollo.loading"
     :selected="selectedGroupsValues"
     :toggle-text="toggleText"

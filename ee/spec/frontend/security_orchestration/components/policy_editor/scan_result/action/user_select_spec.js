@@ -117,7 +117,7 @@ describe('UserSelect component', () => {
 
     it('displays the correct listbox toggle class', () => {
       expect(findListbox().props('toggleClass')).toEqual([
-        'gl-max-w-15',
+        'gl-max-w-30',
         { '!gl-shadow-inner-1-red-500': false },
       ]);
     });
@@ -154,6 +154,7 @@ describe('UserSelect component', () => {
     it('emits when a user is selected', async () => {
       findListbox().vm.$emit('select', [user.id]);
       await nextTick();
+      expect(findListbox().props('toggleText')).toBe('Name 1');
       expect(wrapper.emitted('updateSelectedApprovers')).toEqual([
         [
           [
@@ -186,7 +187,7 @@ describe('UserSelect component', () => {
 
     it('displays the correct listbox toggle class', () => {
       expect(findListbox().props('toggleClass')).toEqual([
-        'gl-max-w-15',
+        'gl-max-w-30',
         { '!gl-shadow-inner-1-red-500': true },
       ]);
     });

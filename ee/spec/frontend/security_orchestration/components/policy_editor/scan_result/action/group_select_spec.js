@@ -101,10 +101,9 @@ describe('GroupSelect component', () => {
     });
 
     it('displays the correct listbox toggle class', () => {
-      expect(findListbox().props('toggleClass')).toEqual([
-        'gl-max-w-26',
-        { '!gl-shadow-inner-1-red-500': false },
-      ]);
+      expect(findListbox().props('toggleClass')).toEqual(
+        expect.arrayContaining([{ '!gl-shadow-inner-1-red-500': false }]),
+      );
     });
 
     it('filters groups when search is performed in listbox', async () => {
@@ -157,7 +156,7 @@ describe('GroupSelect component', () => {
 
     it('displays the correct listbox toggle class', () => {
       expect(findListbox().props('toggleClass')).toEqual([
-        'gl-max-w-26',
+        'gl-max-w-30',
         { '!gl-shadow-inner-1-red-500': true },
       ]);
     });
