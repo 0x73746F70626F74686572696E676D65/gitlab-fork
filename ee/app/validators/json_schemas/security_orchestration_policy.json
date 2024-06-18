@@ -30,8 +30,8 @@
       "type": "array",
       "description": "Declares custom pipeline configuration for a policy.",
       "additionalItems": false,
+      "maxItems": 5,
       "items": {
-        "maxItems": 1,
         "required": [
           "name",
           "enabled",
@@ -52,7 +52,40 @@
           },
           "content": {
             "description": "Specifies the content of custom configuration.",
-            "type": "object"
+            "type": "object",
+            "properties": {
+              "include": {
+                "type": "array",
+                "maxItems": 1,
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "project": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "file": {
+                      "type": "string"
+                    },
+                    "ref": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "project",
+                    "file"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "include"
+            ],
+            "additionalProperties": false
           },
           "pipeline_config_strategy": {
             "description": "Defines the method for merging the policy configuration with the project pipeline. `inject_ci` preserves the project CI configuration and injects additional jobs from the policy. Having multiple policies enabled injects all jobs additively. `override_project_ci` replaces the project CI configuration and keeps only the policy jobs in the pipeline.",

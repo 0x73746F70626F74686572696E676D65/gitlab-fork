@@ -313,7 +313,7 @@ RSpec.describe GitlabSchema.types['Project'] do
     it 'returns associated approval policies' do
       policies = subject.dig('data', 'project', 'pipelineExecutionPolicies', 'nodes')
 
-      expect(policies.count).to be(3)
+      expect(policies.count).to be(7)
     end
   end
 

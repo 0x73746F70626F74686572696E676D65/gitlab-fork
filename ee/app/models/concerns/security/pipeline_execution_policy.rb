@@ -2,7 +2,8 @@
 
 module Security
   module PipelineExecutionPolicy
-    POLICY_LIMIT = 1
+    # This is the maximum number of PEPs in a policy config file
+    POLICY_LIMIT = 5
 
     def active_pipeline_execution_policies
       pipeline_execution_policy.select { |config| config[:enabled] }.first(POLICY_LIMIT)

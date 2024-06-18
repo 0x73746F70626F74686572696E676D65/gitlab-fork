@@ -99,7 +99,7 @@ FactoryBot.define do
     sequence(:name) { |n| "test-pipeline-execution-policy-#{n}" }
     description { 'This policy enforces execution of custom CI in the pipeline' }
     enabled { true }
-    content { {} }
+    sequence(:content) { |n| { include: [{ project: 'compliance-project', file: "compliance-pipeline-#{n}.yml" }] } }
     pipeline_config_strategy { 'inject_ci' }
     policy_scope { {} }
 
