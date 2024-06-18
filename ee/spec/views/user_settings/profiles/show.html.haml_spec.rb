@@ -22,7 +22,7 @@ RSpec.describe 'user_settings/profiles/show', feature_category: :user_profile do
           render
 
           expect(rendered).to render_template('user_settings/profiles/_private_profile')
-          expect(rendered).to have_link 'Learn more',
+          expect(rendered).to have_link 'What information is hidden?',
             href: help_page_path('user/profile/index', anchor: 'make-your-user-profile-page-private')
           expect(rendered).not_to have_selector('.js-vue-popover')
           expect(rendered).not_to have_selector("input[type=checkbox][id='user_private_profile'][disabled]")
@@ -36,7 +36,7 @@ RSpec.describe 'user_settings/profiles/show', feature_category: :user_profile do
           render
 
           expect(rendered).to render_template('user_settings/profiles/_private_profile')
-          expect(rendered).not_to have_link 'Learn more',
+          expect(rendered).not_to have_link 'What information is hidden?',
             href: help_page_path('user/profile/index', anchor: 'make-your-user-profile-page-private')
           expect(rendered).to have_selector('.js-vue-popover')
           expect(rendered).to have_selector("input[type=checkbox][id='user_private_profile'][disabled]")
