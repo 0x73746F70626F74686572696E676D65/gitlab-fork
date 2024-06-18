@@ -130,7 +130,7 @@ module EE
       when :code_suggestions
         gitlab_com_subscription? &&
           gitlab_duo_available?(group) &&
-          !group.has_free_or_no_subscription? &&
+          (!group.has_free_or_no_subscription? || group.subscription_add_on_purchases.active.for_gitlab_duo_pro.any?) &&
           License.feature_available?(:code_suggestions)
       when :pipelines
         Ability.allowed?(current_user, :admin_ci_minutes, group) &&
