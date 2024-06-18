@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Types::Ci::PipelineType, feature_category: :continuous_integration do
-  include Devise::Test::IntegrationHelpers
-
   specify { expect(described_class.graphql_name).to eq('Pipeline') }
 
   specify { expect(described_class).to expose_permissions_using(Types::PermissionTypes::Ci::Pipeline) }
@@ -63,7 +61,6 @@ RSpec.describe Types::Ci::PipelineType, feature_category: :continuous_integratio
     before do
       project.add_role(user, user_access_level) # rubocop:disable RSpec/BeforeAllRoleAssignment -- need dynamic settings `user_access_level`
       create(:ci_pipeline_variable, pipeline: pipeline, key: 'TRIGGER_KEY_1', value: 'TRIGGER_VALUE_1')
-      sign_in(user)
     end
 
     context 'when user has access to read variables' do
