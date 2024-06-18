@@ -622,11 +622,7 @@ module EE
       cache_key = format(DUO_PRO_ADD_ON_CACHE_KEY, user_id: self.id)
 
       Rails.cache.fetch(cache_key, expires_in: 1.hour) do
-        if ::Feature.enabled?(:code_suggestions_user_assignments, self)
-          GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_gitlab_duo_pro_purchase.pluck('subscription_add_on_purchases.namespace_id')
-        else
-          GitlabSubscriptions::AddOnPurchase.for_user(self).for_gitlab_duo_pro.active.pluck(:namespace_id)
-        end
+        GitlabSubscriptions::UserAddOnAssignment.by_user(self).for_active_gitlab_duo_pro_purchase.pluck('subscription_add_on_purchases.namespace_id')
       end
     end
 
