@@ -68,4 +68,14 @@ RSpec.describe Gitlab::Duo::Developments::Setup, :saas, :gitlab_duo, :silence_st
       expect { setup }.to raise_error(RuntimeError)
     end
   end
+
+  context 'when updating application setting' do
+    it 'changes application settings' do
+      expect { setup }.to change { Gitlab::CurrentSettings.current_application_settings.check_namespace_plan }.to(true)
+       .and change {
+              Gitlab::CurrentSettings.current_application_settings
+                                            .allow_local_requests_from_web_hooks_and_services
+            }.to(true)
+    end
+  end
 end
