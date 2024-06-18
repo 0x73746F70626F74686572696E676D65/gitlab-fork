@@ -19,6 +19,8 @@ export default () => {
     frameworksCsvExportPath,
     groupPath,
     rootAncestorPath,
+    rootAncestorName,
+    rootAncestorComplianceCenterPath,
     pipelineConfigurationFullPathEnabled,
     pipelineConfigurationEnabled,
     featurePipelineMaintenanceModeEnabled,
@@ -43,6 +45,8 @@ export default () => {
     globalProjectId,
     groupPath,
     rootAncestorPath,
+    rootAncestorName,
+    rootAncestorComplianceCenterPath,
   });
 
   return new Vue({
@@ -53,6 +57,7 @@ export default () => {
     provide: {
       namespaceType: 'group',
       groupPath,
+      rootAncestorPath,
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
       pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
       featurePipelineMaintenanceModeEnabled: parseBoolean(featurePipelineMaintenanceModeEnabled),

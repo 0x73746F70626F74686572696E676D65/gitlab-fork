@@ -71,6 +71,9 @@ describe('AdherencesBaseTable component', () => {
             },
           };
         },
+        provide: {
+          rootAncestorPath: groupPath,
+        },
         propsData: {
           groupPath,
           ...props,

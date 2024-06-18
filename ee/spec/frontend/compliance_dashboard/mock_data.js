@@ -171,11 +171,11 @@ export const complianceFramework = {
   name: 'GDPR',
 };
 
-const createProject = ({ id } = {}) => ({
+const createProject = ({ id, groupPath } = {}) => ({
   id: `gid://gitlab/Project/${id}`,
-  name: 'Gitlab Shell',
-  fullPath: 'gitlab-org/gitlab-shell',
-  webUrl: 'https://example.com/gitlab-org/gitlab-shell',
+  name: `Project ${id}`,
+  fullPath: `${groupPath}/project${id}`,
+  webUrl: `${groupPath}/project${id}`,
   complianceFrameworks: {
     nodes: [
       {
@@ -192,7 +192,11 @@ const createProject = ({ id } = {}) => ({
   __typename: 'Project',
 });
 
-export const createComplianceFrameworksResponse = ({ count = 1, pageInfo = {} } = {}) => {
+export const createComplianceFrameworksResponse = ({
+  count = 1,
+  pageInfo = {},
+  groupPath = 'foo',
+} = {}) => {
   return {
     data: {
       group: {
@@ -200,7 +204,7 @@ export const createComplianceFrameworksResponse = ({ count = 1, pageInfo = {} } 
         projects: {
           nodes: Array(count)
             .fill(null)
-            .map((_, id) => createProject({ id })),
+            .map((_, id) => createProject({ id, groupPath })),
           pageInfo: {
             hasNextPage: true,
             hasPreviousPage: false,
@@ -236,7 +240,12 @@ const mockPageInfo = () => ({
   __typename: 'PageInfo',
 });
 
-export const createFramework = ({ id, isDefault = false, projects = 0 } = {}) => ({
+export const createFramework = ({
+  id,
+  isDefault = false,
+  projects = 0,
+  groupPath = 'foo',
+} = {}) => ({
   id: `gid://gitlab/ComplianceManagement::Framework/${id}`,
   name: `Some framework ${id}`,
   default: isDefault,
@@ -245,7 +254,7 @@ export const createFramework = ({ id, isDefault = false, projects = 0 } = {}) =>
   projects: {
     nodes: Array(projects)
       .fill(null)
-      .map((_, pid) => createProject({ id: pid })),
+      .map((_, pid) => createProject({ id: pid, groupPath })),
   },
   scanResultPolicies: {
     nodes: [
@@ -310,7 +319,11 @@ export const createComplianceFrameworksTokenResponse = () => {
   };
 };
 
-export const createComplianceFrameworksReportResponse = ({ count = 1, projects = 0 } = {}) => {
+export const createComplianceFrameworksReportResponse = ({
+  count = 1,
+  projects = 0,
+  groupPath = 'group',
+} = {}) => {
   return {
     data: {
       namespace: {
@@ -320,7 +333,7 @@ export const createComplianceFrameworksReportResponse = ({ count = 1, projects =
           pageInfo: mockPageInfo(),
           nodes: Array(count)
             .fill(null)
-            .map((_, id) => createFramework({ id, projects })),
+            .map((_, id) => createFramework({ id, projects, groupPath })),
           __typename: 'ComplianceFrameworkConnection',
         },
         __typename: 'Namespace',

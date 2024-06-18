@@ -96,6 +96,9 @@ describe('ComplianceViolationsReport component', () => {
     return extendedWrapper(
       mountFn(ComplianceViolationsReport, {
         apolloProvider: createMockApolloProvider(resolverMock),
+        provide: {
+          rootAncestorPath: groupPath,
+        },
         propsData: {
           mergeCommitsCsvExportPath,
           groupPath,

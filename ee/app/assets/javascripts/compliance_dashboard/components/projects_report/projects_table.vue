@@ -16,6 +16,7 @@ import { createAlert } from '~/alert';
 import CreateForm from 'ee/groups/settings/compliance_frameworks/components/create_form.vue';
 import EditForm from 'ee/groups/settings/compliance_frameworks/components/edit_form.vue';
 import FrameworkBadge from '../shared/framework_badge.vue';
+import { isTopLevelGroup } from '../../utils';
 import setComplianceFrameworkMutation from '../../graphql/set_compliance_framework.mutation.graphql';
 import SelectionOperations from './selection_operations.vue';
 import FrameworkSelectionBox from './framework_selection_box.vue';
@@ -74,6 +75,20 @@ export default {
     };
   },
   computed: {
+    isEditingEnabled() {
+      return isTopLevelGroup(this.groupPath, this.rootAncestorPath);
+    },
+
+    tableFields() {
+      const selectionField = {
+        key: 'selected',
+        sortable: false,
+        thClass: '!gl-align-middle',
+        tdClass: '!gl-align-middle',
+      };
+      return [...(this.isEditingEnabled ? [selectionField] : []), ...this.$options.fields];
+    },
+
     hasProjects() {
       return this.projects.length > 0;
     },
@@ -203,12 +218,6 @@ export default {
   },
   fields: [
     {
-      key: 'selected',
-      sortable: false,
-      thClass: '!gl-align-middle',
-      tdClass: '!gl-align-middle',
-    },
-    {
       key: 'projectName',
       label: __('Project name'),
       thClass: '!gl-align-middle',
@@ -270,6 +279,7 @@ export default {
       />
     </gl-modal>
     <selection-operations
+      v-if="isEditingEnabled"
       :selection="selectedRows"
       :root-ancestor-path="rootAncestorPath"
       :is-apply-in-progress="isApplyInProgress"
@@ -278,7 +288,7 @@ export default {
       @create="createComplianceFramework($options.BULK_FRAMEWORK_ID)"
     />
     <gl-table
-      :fields="$options.fields"
+      :fields="tableFields"
       :busy="isLoading"
       :items="projects"
       no-local-sorting
@@ -286,7 +296,7 @@ export default {
       stacked="lg"
       hover
       :tbody-tr-attr="qaRowAttributes"
-      selectable
+      :selectable="isEditingEnabled"
       select-mode="multi"
       selected-variant="primary"
       @row-selected="updateSelectedRows"
@@ -319,7 +329,7 @@ export default {
       <template #cell(complianceFramework)="{ item: { id, complianceFrameworks } }">
         <gl-loading-icon v-if="hasPendingSingleOperation(id)" size="sm" inline />
         <framework-selection-box
-          v-else-if="!complianceFrameworks.length"
+          v-else-if="!complianceFrameworks.length && isEditingEnabled"
           :root-ancestor-path="rootAncestorPath"
           @select="
             applySingleItemOperation({
@@ -340,7 +350,8 @@ export default {
           v-for="framework in complianceFrameworks"
           v-else
           :key="framework.id"
-          closeable
+          :closeable="isEditingEnabled"
+          :show-edit="isEditingEnabled"
           :framework="framework"
           @close="
             applySingleItemOperation({

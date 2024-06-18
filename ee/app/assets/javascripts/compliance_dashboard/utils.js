@@ -9,6 +9,8 @@ import {
 } from 'ee/compliance_dashboard/constants';
 import { CURRENT_DATE } from '../audit_events/constants';
 
+export const isTopLevelGroup = (groupPath, rootPath) => groupPath === rootPath;
+
 export const convertProjectIdsToGraphQl = (projectIds) =>
   convertToGraphQLIds(
     TYPENAME_PROJECT,

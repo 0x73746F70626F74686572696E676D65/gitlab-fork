@@ -38,8 +38,8 @@ describe('Compliance report graphql mappers', () => {
 
       expect(mappedProject).toMatchObject({
         id: 'gid://gitlab/Project/0',
-        name: 'Gitlab Shell',
-        fullPath: 'gitlab-org/gitlab-shell',
+        name: 'Project 0',
+        fullPath: 'foo/project0',
         complianceFrameworks: [
           {
             id: 'gid://gitlab/ComplianceManagement::Framework/0',

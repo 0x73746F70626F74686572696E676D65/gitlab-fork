@@ -33,6 +33,11 @@ export default {
       type: String,
       required: true,
     },
+    isFrameworkEditEnabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
     hasComplianceFramework() {
@@ -62,6 +67,7 @@ export default {
         v-if="hasComplianceFramework"
         :framework="complianceFramework"
         :show-default="false"
+        :show-edit="isFrameworkEditEnabled"
         class="gl-ml-3"
       />
     </div>

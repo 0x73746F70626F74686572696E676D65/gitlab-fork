@@ -15,7 +15,12 @@ Vue.use(VueApollo);
 describe('FrameworksTable component', () => {
   let wrapper;
 
-  const frameworksResponse = createComplianceFrameworksReportResponse({ count: 2, projects: 2 });
+  const GROUP_PATH = 'group';
+  const frameworksResponse = createComplianceFrameworksReportResponse({
+    count: 2,
+    projects: 2,
+    groupPath: GROUP_PATH,
+  });
   const frameworks = frameworksResponse.data.namespace.complianceFrameworks.nodes;
   const projects = frameworks[0].projects.nodes;
   const rowCheckIndex = 0;
@@ -29,7 +34,7 @@ describe('FrameworksTable component', () => {
   const findEmptyState = () => wrapper.findByText('No frameworks found');
   const findTableLinks = (idx) => findTableRow(idx).findAllComponents(GlLink);
   const findFrameworkInfoSidebar = () => wrapper.findComponent(FrameworkInfoDrawer);
-  const findNewFrameworkButton = () => wrapper.findByText('New framework');
+  const findNewFrameworkButton = () => wrapper.findByRole('button', { name: 'New framework' });
   const findSearchBox = () => wrapper.findComponent(GlSearchBoxByClick);
 
   const openSidebar = async () => {
@@ -42,7 +47,10 @@ describe('FrameworksTable component', () => {
     routerPushMock = jest.fn();
     return mountExtended(FrameworksTable, {
       propsData: {
-        groupPath: 'foo',
+        groupPath: GROUP_PATH,
+        rootAncestor: {
+          path: GROUP_PATH,
+        },
         frameworks: [],
         isLoading: true,
         ...props,
@@ -185,6 +193,42 @@ describe('FrameworksTable component', () => {
           );
         });
       });
+    });
+  });
+
+  describe('when opened in a subgroup', () => {
+    const SUBGROUP_PATH = `${GROUP_PATH}/subgroup`;
+    const subgroupFrameworksResponse = createComplianceFrameworksReportResponse({
+      count: 2,
+      projects: 2,
+      groupPath: GROUP_PATH,
+    });
+    const subgroupFrameworks = subgroupFrameworksResponse.data.namespace.complianceFrameworks.nodes;
+    const subgroupProjects = subgroupFrameworks[0].projects.nodes;
+    subgroupProjects[1].fullPath = `${SUBGROUP_PATH}/project1`;
+
+    beforeEach(() => {
+      wrapper = createComponent({
+        groupPath: SUBGROUP_PATH,
+        frameworks: subgroupFrameworks,
+        isLoading: false,
+      });
+    });
+
+    it('does not include projects not from a subgroup', () => {
+      const [, associatedProjects] = findTableRowData(0).wrappers.map((d) => d.text());
+
+      expect(associatedProjects).not.toContain(projects[0].name);
+    });
+
+    it('include projects from a subgroup', () => {
+      const [, associatedProjects] = findTableRowData(0).wrappers.map((d) => d.text());
+
+      expect(associatedProjects).toContain(projects[1].name);
+    });
+
+    it('disables new framework button', () => {
+      expect(findNewFrameworkButton().props('disabled')).toBe(true);
     });
   });
 });

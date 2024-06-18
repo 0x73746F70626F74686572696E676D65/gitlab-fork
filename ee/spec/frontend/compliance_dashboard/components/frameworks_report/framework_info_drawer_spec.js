@@ -1,4 +1,4 @@
-import { GlLabel, GlLink, GlTruncate } from '@gitlab/ui';
+import { GlLabel, GlLink, GlTruncate, GlPopover, GlSprintf } from '@gitlab/ui';
 import FrameworkInfoDrawer from 'ee/compliance_dashboard/components/frameworks_report/framework_info_drawer.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createFramework } from 'ee_jest/compliance_dashboard/mock_data';
@@ -27,12 +27,19 @@ describe('FrameworkInfoDrawer component', () => {
   const findPoliciesTitle = () => wrapper.findByTestId('sidebar-policies-title');
   const findPoliciesLinks = () =>
     wrapper.findByTestId('sidebar-policies').findAllComponents(GlLink);
+  const findPopover = () => wrapper.findComponent(GlPopover);
 
   const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(FrameworkInfoDrawer, {
       propsData: {
         showDrawer: true,
         ...props,
+      },
+      stubs: {
+        GlSprintf,
+        GlLilnk: {
+          template: '<a>{{ $attrs.href }}</a>',
+        },
       },
       provide,
     });
@@ -43,6 +50,9 @@ describe('FrameworkInfoDrawer component', () => {
       createComponent({
         props: {
           groupPath: GROUP_PATH,
+          rootAncestor: {
+            path: GROUP_PATH,
+          },
           framework: defaultFramework,
         },
         provide: {
@@ -91,6 +101,10 @@ describe('FrameworkInfoDrawer component', () => {
           `/group-policies/${defaultFramework.scanResultPolicies.nodes[0].name}/edit?type=approval_policy`,
         );
       });
+
+      it('does not render edit button popover', () => {
+        expect(findPopover().exists()).toBe(false);
+      });
     });
   });
 
@@ -100,6 +114,9 @@ describe('FrameworkInfoDrawer component', () => {
         props: {
           framework: nonDefaultFramework,
           groupPath: GROUP_PATH,
+          rootAncestor: {
+            path: GROUP_PATH,
+          },
         },
         provide: {
           groupSecurityPoliciesPath: '/group-policies',
@@ -111,6 +128,35 @@ describe('FrameworkInfoDrawer component', () => {
       it('does not renders the default badge', () => {
         expect(findDefaultBadge().exists()).toBe(false);
       });
+    });
+  });
+
+  describe('when viewing framework in a subgroup', () => {
+    beforeEach(() => {
+      createComponent({
+        props: {
+          groupPath: `${GROUP_PATH}/child`,
+          rootAncestor: {
+            path: GROUP_PATH,
+            webUrl: `/web/${GROUP_PATH}`,
+            name: 'Root',
+          },
+          framework: defaultFramework,
+        },
+        provide: {
+          groupSecurityPoliciesPath: '/group-policies',
+        },
+      });
+    });
+
+    it('renders disabled edit framework button', () => {
+      expect(findEditFrameworkBtn().props('disabled')).toBe(true);
+    });
+
+    it('renders popover', () => {
+      expect(findPopover().text()).toMatchInterpolatedText(
+        'The compliance framework must be edited in top-level group Root',
+      );
     });
   });
 });

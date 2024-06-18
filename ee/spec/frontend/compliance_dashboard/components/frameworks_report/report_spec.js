@@ -71,6 +71,9 @@ describe('ComplianceFrameworksReport component', () => {
         apolloProvider,
         propsData: {
           groupPath: fullPath,
+          rootAncestor: {
+            path: fullPath,
+          },
           ...props,
         },
         provide: {
@@ -130,7 +133,7 @@ describe('ComplianceFrameworksReport component', () => {
     });
   });
 
-  describe('when initializing', () => {
+  describe('when initializing in top-level group', () => {
     beforeEach(() => {
       createComponent(mount, {}, mockGraphQlLoading);
     });
@@ -144,6 +147,31 @@ describe('ComplianceFrameworksReport component', () => {
       expect(mockGraphQlLoading).toHaveBeenCalledWith({
         ...defaultPagination(),
         fullPath,
+      });
+    });
+  });
+
+  describe('when initializing in subgroup', () => {
+    const rootPath = '/root';
+    const subgroupPath = '/root/subgroup';
+
+    beforeEach(() => {
+      createComponent(
+        mount,
+        {
+          groupPath: subgroupPath,
+          rootAncestor: {
+            path: rootPath,
+          },
+        },
+        mockGraphQlLoading,
+      );
+    });
+
+    it('fetches the list of frameworks from root ancestor', () => {
+      expect(mockGraphQlLoading).toHaveBeenCalledWith({
+        ...defaultPagination(),
+        fullPath: rootPath,
       });
     });
   });

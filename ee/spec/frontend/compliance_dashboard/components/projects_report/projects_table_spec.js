@@ -15,6 +15,8 @@ import {
 import FrameworkSelectionBox from 'ee/compliance_dashboard/components/projects_report/framework_selection_box.vue';
 import ProjectsTable from 'ee/compliance_dashboard/components/projects_report/projects_table.vue';
 import SelectionOperations from 'ee/compliance_dashboard/components/projects_report/selection_operations.vue';
+import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
+
 import { mapProjects } from 'ee/compliance_dashboard/graphql/mappers';
 
 import setComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/set_compliance_framework.mutation.graphql';
@@ -30,7 +32,7 @@ describe('ProjectsTable component', () => {
   const GlModalStub = stubComponent(GlModal, { methods: { show: jest.fn(), hide: jest.fn() } });
 
   const groupPath = 'group-path';
-  const rootAncestorPath = 'root-ancestor-path';
+  const subgroupPath = 'group-path/child';
   const hasFilters = false;
 
   const COMPLIANCE_FRAMEWORK_COLUMN_IDX = 3;
@@ -70,7 +72,7 @@ describe('ProjectsTable component', () => {
       apolloProvider,
       propsData: {
         groupPath,
-        rootAncestorPath,
+        rootAncestorPath: groupPath,
         hasFilters,
         ...props,
       },
@@ -128,7 +130,7 @@ describe('ProjectsTable component', () => {
   });
 
   describe('when there are projects', () => {
-    const projectsResponse = createComplianceFrameworksResponse({ count: 2 });
+    const projectsResponse = createComplianceFrameworksResponse({ count: 2, groupPath });
     projectsResponse.data.group.projects.nodes[1].complianceFrameworks.nodes = [];
 
     const projects = mapProjects(projectsResponse.data.group.projects.nodes);
@@ -195,9 +197,7 @@ describe('ProjectsTable component', () => {
     });
 
     it('passes root ancestor path to selection operations component', () => {
-      expect(wrapper.findComponent(SelectionOperations).props().rootAncestorPath).toBe(
-        rootAncestorPath,
-      );
+      expect(wrapper.findComponent(SelectionOperations).props().rootAncestorPath).toBe(groupPath);
     });
 
     it.each(Object.keys(projects))('has the correct data for row %s', (idx) => {
@@ -207,8 +207,8 @@ describe('ProjectsTable component', () => {
       const expectedFrameworkName =
         projects[idx].complianceFrameworks[0]?.name ?? 'add-framework-stub';
 
-      expect(projectName).toBe('Gitlab Shell');
-      expect(projectPath).toBe('gitlab-org/gitlab-shell');
+      expect(projectName).toBe(`Project ${idx}`);
+      expect(projectPath).toBe(`${groupPath}/project${idx}`);
       expect(framework).toContain(expectedFrameworkName);
     });
 
@@ -358,6 +358,41 @@ describe('ProjectsTable component', () => {
             .exists(),
         ).toBe(true);
       });
+    });
+  });
+
+  describe('when used in subgroup', () => {
+    const projectsResponse = createComplianceFrameworksResponse({
+      count: 2,
+      groupPath: subgroupPath,
+    });
+    const projects = mapProjects(projectsResponse.data.group.projects.nodes);
+
+    beforeEach(() => {
+      wrapper = createComponent({
+        projects,
+        groupPath: subgroupPath,
+        isLoading: false,
+      });
+    });
+
+    it('does not render bulk operations panel', () => {
+      expect(wrapper.findComponent(SelectionOperations).exists()).toBe(false);
+    });
+
+    it('does not render checkboxes in table', () => {
+      expect(findTableRowData(0).at(0).find('input').exists()).toBe(false);
+    });
+
+    it('does not allow framework editing', () => {
+      const COMPLIANCE_FRAMEWORK_COLUMN_IDX_WHEN_NO_CHECKBOX_PRESENT =
+        COMPLIANCE_FRAMEWORK_COLUMN_IDX - 1;
+      const badge = findTableRowData(0)
+        .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX_WHEN_NO_CHECKBOX_PRESENT)
+        .findComponent(FrameworkBadge);
+
+      expect(badge.props('closeable')).toBe(false);
+      expect(badge.props('showEdit')).toBe(false);
     });
   });
 });
