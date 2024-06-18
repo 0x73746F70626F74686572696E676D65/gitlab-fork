@@ -691,6 +691,11 @@ export default {
     addBlankHeader() {
       this.headers.push(createBlankHeader());
     },
+    setHeaders(index, value) {
+      const copy = [...this.headers];
+      copy[index] = value;
+      this.headers = copy;
+    },
     handleHeaderNameInput(index, name) {
       const header = this.headers[index];
 
@@ -707,13 +712,13 @@ export default {
         updatedHeader.validationErrors.name = ADD_STREAM_EDITOR_I18N.HEADER_INPUT_DUPLICATE_ERROR;
       }
 
-      this.$set(this.headers, index, updatedHeader);
+      this.setHeaders(index, updatedHeader);
     },
     handleHeaderValueInput(index, value) {
-      this.$set(this.headers, index, { ...this.headers[index], value });
+      this.setHeaders(index, { ...this.headers[index], value });
     },
     handleHeaderActiveInput(index, active) {
-      this.$set(this.headers, index, { ...this.headers[index], active });
+      this.setHeaders(index, { ...this.headers[index], active });
     },
     removeHeader(index) {
       const [removedHeader] = this.headers.splice(index, 1);
