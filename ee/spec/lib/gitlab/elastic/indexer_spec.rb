@@ -622,10 +622,6 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
 
     subject { envvars }
 
-    before do
-      allow(Gitlab::Elastic::Client).to receive(:aws_credential_provider).and_return(credentials)
-    end
-
     context 'when AWS config is not enabled' do
       it 'credentials env vars will not be included' do
         expect(subject).not_to include('AWS_ACCESS_KEY_ID')
@@ -636,15 +632,39 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
 
     context 'when AWS config is enabled' do
       before do
-        stub_application_setting(elasticsearch_aws: true)
+        stub_ee_application_setting(elasticsearch_aws: true)
       end
 
       it 'credentials env vars will be included' do
+        expect(Gitlab::Elastic::Client).to receive(:resolve_aws_credentials).and_call_original
+
+        expect_next_instance_of(Aws::CredentialProviderChain) do |chain|
+          expect(chain).to receive(:resolve).and_return(credentials)
+        end
+
         expect(subject).to include({
           'AWS_ACCESS_KEY_ID' => access_key_id,
           'AWS_SECRET_ACCESS_KEY' => secret_access_key,
           'AWS_SESSION_TOKEN' => session_token
         })
+      end
+
+      context 'when static credentials are set' do
+        before do
+          stub_ee_application_setting(elasticsearch_aws_access_key: access_key_id)
+          stub_ee_application_setting(elasticsearch_aws_secret_access_key: secret_access_key)
+        end
+
+        it 'uses static credentials to set env vars' do
+          expect(Gitlab::Elastic::Client).to receive(:resolve_aws_credentials).and_call_original
+          expect(Aws::CredentialProviderChain).not_to receive(:new)
+
+          expect(subject).to include({
+            'AWS_ACCESS_KEY_ID' => access_key_id,
+            'AWS_SECRET_ACCESS_KEY' => secret_access_key,
+            'AWS_SESSION_TOKEN' => nil
+          })
+        end
       end
     end
   end

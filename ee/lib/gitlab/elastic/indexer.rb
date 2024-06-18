@@ -208,7 +208,10 @@ module Gitlab
         # environment variable in case of using IAM role based authentication in AWS
         # The credentials are buffered to prevent from hitting rate limit. They will be
         # refreshed when expired
-        credentials = Gitlab::Elastic::Client.aws_credential_provider&.credentials
+        # Static credentials will be used if it is set
+        elastic_config = Gitlab::CurrentSettings.elasticsearch_config
+        credentials = Gitlab::Elastic::Client.resolve_aws_credentials(elastic_config)&.credentials
+
         return vars unless credentials&.set?
 
         vars.merge(
