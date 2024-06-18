@@ -203,24 +203,18 @@ describe('GitLab Duo Chat', () => {
         ${MOCK_RESOURCE_ID} | ${MOCK_RESOURCE_ID}
         ${null}             | ${MOCK_USER_ID}
       `(`with resourceId = $resourceId`, ({ resourceId, expectedResourceId }) => {
-        it.each`
-          isFlagEnabled | expectedMutation
-          ${true}       | ${chatMutationHandlerMock}
-        `(
-          'calls correct GraphQL mutation with fallback to userId when input is submitted and feature flag is $isFlagEnabled',
-          async ({ expectedMutation } = {}) => {
-            createComponent({ propsData: { userId: MOCK_USER_ID, resourceId } });
-            findGlDuoChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.content);
+        it('calls correct GraphQL mutation with fallback to userId when input is submitted', async () => {
+          createComponent({ propsData: { userId: MOCK_USER_ID, resourceId } });
+          findGlDuoChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.content);
 
-            await nextTick();
+          await nextTick();
 
-            expect(expectedMutation).toHaveBeenCalledWith({
-              resourceId: expectedResourceId,
-              question: MOCK_USER_MESSAGE.content,
-              clientSubscriptionId: '123',
-            });
-          },
-        );
+          expect(chatMutationHandlerMock).toHaveBeenCalledWith({
+            resourceId: expectedResourceId,
+            question: MOCK_USER_MESSAGE.content,
+            clientSubscriptionId: '123',
+          });
+        });
 
         it('passes correct resourceId or uses userId as a fallback', () => {
           createComponent({
