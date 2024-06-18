@@ -70,13 +70,19 @@ describe('~/environments/components/new_environment_item.vue', () => {
     expect(alert.exists()).toBe(false);
   });
 
-  it('emits a change if approval changes', async () => {
+  it('provides necessary data to environment-approval component', async () => {
     const upcomingDeployment = resolvedEnvironment.lastDeployment;
-    const environment = { ...resolvedEnvironment, lastDeployment: null, upcomingDeployment };
+    const environment = {
+      ...resolvedEnvironment,
+      lastDeployment: null,
+      upcomingDeployment,
+      requiredApprovalCount: 2,
+    };
     await createWrapper({ propsData: { environment }, apolloProvider: createApolloProvider() });
 
-    approval.vm.$emit('change');
-
-    expect(wrapper.emitted('change')).toEqual([[]]);
+    expect(approval.props()).toMatchObject({
+      requiredApprovalCount: 2,
+      deploymentWebPath: upcomingDeployment.webPath,
+    });
   });
 });
