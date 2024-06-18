@@ -23,7 +23,6 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
     render
 
     expect(rendered).to have_selector('#js-compliance-report')
-    expect(rendered).to have_selector("[data-can-add-edit='true']")
     expect(rendered)
       .to have_selector("[data-project-frameworks-csv-export-path='#{project_framework_csv_export_path}']")
     expect(rendered).to have_selector("[data-violations-csv-export-path='#{violations_csv_export_path}']")
@@ -32,6 +31,11 @@ RSpec.describe "groups/security/compliance_dashboards/show", type: :view, featur
     expect(rendered).to have_selector("[data-root-ancestor-path='#{group.root_ancestor.full_path}']")
     expect(rendered).to have_selector("[data-base-path='#{group_security_compliance_dashboard_path(group)}']")
     expect(rendered).to have_selector("[data-pipeline-configuration-enabled='false']")
+    expect(rendered).to have_selector("[data-feature-adherence-report-enabled='true']")
+    expect(rendered).to have_selector("[data-feature-violations-report-enabled='true']")
+    expect(rendered).to have_selector("[data-feature-frameworks-report-enabled='true']")
+    expect(rendered).to have_selector("[data-feature-adherence-report-enabled='true']")
+    expect(rendered).to have_selector("[data-feature-security-policies-enabled='false']")
   end
 
   context 'for violations export' do

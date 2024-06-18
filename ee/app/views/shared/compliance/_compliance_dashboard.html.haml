@@ -1,0 +1,27 @@
+- group = local_assigns[:group]
+
+#js-compliance-report{ data: {
+  violations_csv_export_path: group_security_compliance_violation_reports_path(group, format: :csv),
+  project_frameworks_csv_export_path: group_security_compliance_project_framework_reports_path(group, format: :csv),
+  adherences_csv_export_path: group_security_compliance_standards_adherence_reports_path(group, format: :csv),
+  frameworks_csv_export_path: group_security_compliance_framework_reports_path(group, format: :csv),
+  merge_commits_csv_export_path: group_security_merge_commit_reports_path(group),
+  group_path: group.full_path,
+  root_ancestor_path: group.root_ancestor.full_path,
+  root_ancestor_name: group.root_ancestor.name,
+  root_ancestor_compliance_center_path: group_security_compliance_dashboard_path(group.root_ancestor, vueroute: 'frameworks'),
+  pipeline_configuration_full_path_enabled: can?(current_user, :admin_compliance_pipeline_configuration, group).to_s,
+  base_path: group_security_compliance_dashboard_path(group),
+  pipeline_configuration_enabled: group.licensed_feature_available?(:compliance_pipeline_configuration).to_s,
+  migrate_pipeline_to_policy_path: help_page_path('user/application_security/policies/scan-execution-policies'),
+  pipeline_execution_policy_path: new_group_security_policy_url(group, type: :scan_execution_policy),
+  group_security_policies_path: group_security_policies_path(group),
+  disable_scan_policy_update: !can_modify_security_policy?(group).to_s,
+
+  feature_pipeline_maintenance_mode_enabled: Feature.enabled?(:ff_compliance_pipeline_maintenance_mode, group).to_s,
+  feature_adherence_report_enabled: true.to_s,
+  feature_violations_report_enabled: true.to_s,
+  feature_frameworks_report_enabled: true.to_s,
+  feature_projects_report_enabled: true.to_s,
+  feature_security_policies_enabled: can?(current_user, :read_security_orchestration_policies, group).to_s
+  } }

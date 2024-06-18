@@ -31,6 +31,7 @@ describe('Edit Framework Form', () => {
     pipelineConfigurationFullPathEnabled: true,
     pipelineConfigurationEnabled: true,
     disableScanPolicyUpdate: false,
+    featureSecurityPoliciesEnabled: true,
   };
 
   const showDeleteModal = jest.fn();
@@ -286,6 +287,16 @@ describe('Edit Framework Form', () => {
       wrapper = createComponent(shallowMountExtended);
       await waitForPromises();
       expect(wrapper.findComponent(PoliciesSection).exists()).toBe(true);
+    });
+
+    it('does not render policies section if feature is disabled', async () => {
+      wrapper = createComponent(shallowMountExtended, {
+        provide: {
+          featureSecurityPoliciesEnabled: false,
+        },
+      });
+      await waitForPromises();
+      expect(wrapper.findComponent(PoliciesSection).exists()).toBe(false);
     });
   });
 });

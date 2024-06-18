@@ -6,6 +6,12 @@ import { parseBoolean } from '~/lib/utils/common_utils';
 import createDefaultClient from '~/lib/graphql';
 
 import { createRouter } from 'ee/compliance_dashboard/router';
+import {
+  ROUTE_FRAMEWORKS,
+  ROUTE_STANDARDS_ADHERENCE,
+  ROUTE_VIOLATIONS,
+  ROUTE_PROJECTS,
+} from './constants';
 
 export default () => {
   const el = document.getElementById('js-compliance-report');
@@ -23,12 +29,18 @@ export default () => {
     rootAncestorComplianceCenterPath,
     pipelineConfigurationFullPathEnabled,
     pipelineConfigurationEnabled,
-    featurePipelineMaintenanceModeEnabled,
     pipelineExecutionPolicyPath,
     migratePipelineToPolicyPath,
     groupSecurityPoliciesPath,
     disableScanPolicyUpdate,
     projectId,
+
+    featurePipelineMaintenanceModeEnabled,
+    featureAdherenceReportEnabled,
+    featureViolationsReportEnabled,
+    featureFrameworksReportEnabled,
+    featureProjectsReportEnabled,
+    featureSecurityPoliciesEnabled,
   } = el.dataset;
 
   Vue.use(VueApollo);
@@ -40,6 +52,15 @@ export default () => {
 
   const globalProjectId = projectId ? parseInt(projectId, 10) : null;
 
+  const routes = Object.entries({
+    [ROUTE_STANDARDS_ADHERENCE]: parseBoolean(featureAdherenceReportEnabled),
+    [ROUTE_VIOLATIONS]: parseBoolean(featureViolationsReportEnabled),
+    [ROUTE_FRAMEWORKS]: parseBoolean(featureFrameworksReportEnabled),
+    [ROUTE_PROJECTS]: parseBoolean(featureProjectsReportEnabled),
+  })
+    .filter(([, status]) => status)
+    .map(([route]) => route);
+
   const router = createRouter(basePath, {
     mergeCommitsCsvExportPath,
     globalProjectId,
@@ -47,6 +68,7 @@ export default () => {
     rootAncestorPath,
     rootAncestorName,
     rootAncestorComplianceCenterPath,
+    routes,
   });
 
   return new Vue({
@@ -60,7 +82,6 @@ export default () => {
       rootAncestorPath,
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
       pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
-      featurePipelineMaintenanceModeEnabled: parseBoolean(featurePipelineMaintenanceModeEnabled),
       disableScanPolicyUpdate: parseBoolean(disableScanPolicyUpdate),
       mergeCommitsCsvExportPath,
       violationsCsvExportPath,
@@ -70,7 +91,11 @@ export default () => {
       pipelineExecutionPolicyPath,
       migratePipelineToPolicyPath,
       groupSecurityPoliciesPath,
+
+      featurePipelineMaintenanceModeEnabled: parseBoolean(featurePipelineMaintenanceModeEnabled),
+      featureSecurityPoliciesEnabled: parseBoolean(featureSecurityPoliciesEnabled),
     },
+
     render: (createElement) => createElement('router-view'),
   });
 };
