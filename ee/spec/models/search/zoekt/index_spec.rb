@@ -15,6 +15,7 @@ RSpec.describe ::Search::Zoekt::Index, feature_category: :global_search do
   describe 'relations' do
     it { is_expected.to belong_to(:zoekt_enabled_namespace).inverse_of(:indices) }
     it { is_expected.to belong_to(:node).inverse_of(:indices) }
+    it { is_expected.to belong_to(:replica).inverse_of(:indices) }
     it { is_expected.to have_many(:zoekt_repositories).inverse_of(:zoekt_index) }
   end
 

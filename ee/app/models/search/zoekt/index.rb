@@ -5,16 +5,16 @@ module Search
     class Index < ApplicationRecord
       self.table_name = 'zoekt_indices'
       include EachBatch
+      include NamespaceValidateable
 
       SEARCHEABLE_STATES = %i[ready].freeze
 
       belongs_to :zoekt_enabled_namespace, inverse_of: :indices, class_name: '::Search::Zoekt::EnabledNamespace'
       belongs_to :node, foreign_key: :zoekt_node_id, inverse_of: :indices, class_name: '::Search::Zoekt::Node'
+      belongs_to :replica, foreign_key: :zoekt_replica_id, inverse_of: :indices
 
       has_many :zoekt_repositories, foreign_key: :zoekt_index_id, inverse_of: :zoekt_index,
         class_name: '::Search::Zoekt::Repository'
-
-      validate :zoekt_enabled_root_namespace_matches_namespace_id
 
       after_commit :index, on: :create
       after_commit :delete_from_index, on: :destroy
@@ -55,13 +55,6 @@ module Search
       scope :preload_node, -> { includes(:node) }
 
       private
-
-      def zoekt_enabled_root_namespace_matches_namespace_id
-        return unless zoekt_enabled_namespace.present? && namespace_id.present?
-        return if zoekt_enabled_namespace.root_namespace_id == namespace_id
-
-        errors.add(:namespace_id, :invalid)
-      end
 
       def index
         ::Search::Zoekt::NamespaceIndexerWorker.perform_async(zoekt_enabled_namespace.root_namespace_id, :index)

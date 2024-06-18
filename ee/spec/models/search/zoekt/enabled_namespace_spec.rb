@@ -10,6 +10,7 @@ RSpec.describe ::Search::Zoekt::EnabledNamespace, feature_category: :global_sear
   describe 'relations' do
     it { is_expected.to belong_to(:namespace).inverse_of(:zoekt_enabled_namespace) }
     it { is_expected.to have_many(:indices) }
+    it { is_expected.to have_many(:replicas) }
     it { is_expected.to have_many(:nodes).through(:indices) }
   end
 

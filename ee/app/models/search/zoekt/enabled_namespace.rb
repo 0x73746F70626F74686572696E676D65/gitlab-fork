@@ -15,6 +15,9 @@ module Search
         dependent: :destroy # TODO: Remove this after the cleanup task is implemented
       has_many :nodes, through: :indices
 
+      has_many :replicas, dependent: :destroy,
+        foreign_key: :zoekt_enabled_namespace_id, inverse_of: :zoekt_enabled_namespace
+
       validate :only_root_namespaces_can_be_indexed
 
       scope :for_root_namespace_id, ->(root_namespace_id) { where(root_namespace_id: root_namespace_id) }
