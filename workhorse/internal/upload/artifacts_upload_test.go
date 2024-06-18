@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"compress/gzip"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -143,6 +144,7 @@ func setupWithTmpPath(t *testing.T, filename string, includeFormat bool, format 
 	t.Cleanup(func() {
 		ts.Close()
 		require.NoError(t, writer.Close())
+		testhelper.VerifyNoGoroutineLeaks(t)
 	})
 
 	qs := ""
@@ -155,7 +157,10 @@ func setupWithTmpPath(t *testing.T, filename string, includeFormat bool, format 
 }
 
 func testUploadArtifacts(t *testing.T, contentType, url string, body io.Reader) *httptest.ResponseRecorder {
-	httpRequest, err := http.NewRequest("POST", url, body)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	httpRequest, err := http.NewRequestWithContext(ctx, "POST", url, body)
 	require.NoError(t, err)
 
 	httpRequest.Header.Set("Content-Type", contentType)
