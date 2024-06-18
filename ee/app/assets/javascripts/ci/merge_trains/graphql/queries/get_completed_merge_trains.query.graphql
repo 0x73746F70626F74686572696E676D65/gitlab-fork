@@ -10,7 +10,7 @@ query getCompletedMergeTrains(
     mergeTrains(status: $status, targetBranches: [$targetBranch]) {
       nodes {
         targetBranch
-        cars(first: 20) {
+        cars(activityStatus: $status, first: 20) {
           count
           nodes {
             ...Car

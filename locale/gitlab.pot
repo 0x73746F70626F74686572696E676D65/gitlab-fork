@@ -26117,6 +26117,9 @@ msgstr ""
 msgid "Help translate to your language"
 msgstr ""
 
+msgid "Help us improve the merge train visualization by sharing your feedback with us."
+msgstr ""
+
 msgid "Helpful"
 msgstr ""
 
@@ -52317,6 +52320,9 @@ msgid "TelegramIntegration|Unique authentication token."
 msgstr ""
 
 msgid "Telephone number"
+msgstr ""
+
+msgid "Tell us what you think"
 msgstr ""
 
 msgid "Template"
