@@ -262,8 +262,10 @@ RSpec.describe API::License, :aggregate_failures, api: true, feature_category: :
 
       expect(response).to have_gitlab_http_status(:ok)
 
+      expected_json_response = json_response.dup
+
       2.times do
-        expect(json_response.shift.symbolize_keys).to contain_exactly(*license_json(licenses.pop))
+        expect(expected_json_response.shift.symbolize_keys).to contain_exactly(*license_json(licenses.pop))
       end
     end
 

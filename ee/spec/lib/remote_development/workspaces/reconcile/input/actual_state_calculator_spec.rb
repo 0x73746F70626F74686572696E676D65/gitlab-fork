@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../../rd_fast_spec_helper'
+require 'spec_helper'
 
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalculator, :rd_fast, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
@@ -31,6 +31,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::Input::ActualStateCalcu
           [RemoteDevelopment::Workspaces::States::STOPPING, RemoteDevelopment::Workspaces::States::STOPPED, nil],
           [RemoteDevelopment::Workspaces::States::STOPPING, RemoteDevelopment::Workspaces::States::FAILED, nil],
           [RemoteDevelopment::Workspaces::States::STOPPED, RemoteDevelopment::Workspaces::States::STARTING, nil],
+          [RemoteDevelopment::Workspaces::States::STOPPED, RemoteDevelopment::Workspaces::States::STOPPED, true],
           [RemoteDevelopment::Workspaces::States::STOPPED, RemoteDevelopment::Workspaces::States::FAILED, nil],
           [RemoteDevelopment::Workspaces::States::STARTING, RemoteDevelopment::Workspaces::States::STARTING, true],
           [RemoteDevelopment::Workspaces::States::STARTING, RemoteDevelopment::Workspaces::States::RUNNING, true],

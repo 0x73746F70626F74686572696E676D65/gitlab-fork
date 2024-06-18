@@ -146,6 +146,23 @@ RSpec.shared_context 'with remote development shared fixtures' do
             type: Progressing
           observedGeneration: 2
         STATUS_YAML
+      in [RemoteDevelopment::Workspaces::States::STOPPED, RemoteDevelopment::Workspaces::States::STOPPED, true]
+        <<~STATUS_YAML
+          conditions:
+          - lastTransitionTime: "2023-04-10T10:40:24Z"
+            lastUpdateTime: "2023-04-10T10:40:35Z"
+            message: Deployment has minimum availability.
+            reason: MinimumReplicasAvailable
+            status: "True"
+            type: Available
+          - lastTransitionTime: "2023-04-10T10:49:59Z"
+            lastUpdateTime: "2023-04-10T10:49:59Z"
+            message: ReplicaSet "#{workspace.name}-hash" has successfully progressed.
+            reason: NewReplicaSetAvailable
+            status: "True"
+            type: Progressing
+          observedGeneration: 2
+        STATUS_YAML
       in [RemoteDevelopment::Workspaces::States::STOPPING, RemoteDevelopment::Workspaces::States::FAILED, _]
         raise RemoteDevelopment::AgentInfoStatusFixtureNotImplementedError
       in [RemoteDevelopment::Workspaces::States::STOPPED, RemoteDevelopment::Workspaces::States::STARTING, _]
@@ -310,7 +327,9 @@ RSpec.shared_context 'with remote development shared fixtures' do
     dns_zone: 'workspaces.localdev.me',
     egress_ip_rules: RemoteDevelopment::AgentConfig::Updater::NETWORK_POLICY_EGRESS_DEFAULT,
     max_resources_per_workspace: {},
-    default_resources_per_workspace_container: {}
+    default_resources_per_workspace_container: {},
+    project_name: "test-project",
+    namespace_path: "test-group"
   )
     spec_replicas = started == true ? 1 : 0
     host_template_annotation = get_workspace_host_template_annotation(workspace.name, dns_zone)
@@ -418,7 +437,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
     resources << workspace_secret_file if include_all_resources
 
     resources.map do |resource|
-      YAML.dump(Gitlab::Utils.deep_sort_hash(resource).deep_stringify_keys)
+      yaml = YAML.dump(Gitlab::Utils.deep_sort_hash(resource).deep_stringify_keys)
+      yaml.gsub!('test-project', project_name)
+      yaml.gsub!('test-group', namespace_path)
+      yaml
     end.join
   end
 
@@ -1102,15 +1124,17 @@ RSpec.shared_context 'with remote development shared fixtures' do
     read_devfile('example.flattened-devfile.yaml')
   end
 
-  def example_processed_devfile
-    read_devfile('example.processed-devfile.yaml')
+  def example_processed_devfile(project_name: "test-project", namespace_path: "test-group")
+    read_devfile('example.processed-devfile.yaml', project_name: project_name, namespace_path: namespace_path)
   end
 
   # TODO: Rename this method and all methods which use it to end in `_yaml`, to clearly distinguish between
   #       a String YAML representation of a devfile, and a devfile which has been converted to a Hash.
-  def read_devfile(filename)
+  def read_devfile(filename, project_name: "test-project", namespace_path: "test-group")
     devfile_contents = File.read(Rails.root.join('ee/spec/fixtures/remote_development', filename).to_s)
     devfile_contents.gsub!('http://localhost/', root_url)
+    devfile_contents.gsub!('test-project', project_name)
+    devfile_contents.gsub!('test-group', namespace_path)
     devfile_contents
   end
 
