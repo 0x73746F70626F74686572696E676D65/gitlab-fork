@@ -34,7 +34,7 @@ export default {
     GlLoadingIcon,
     GlTooltip,
   },
-  inject: ['pipelineConfigurationFullPathEnabled', 'groupPath'],
+  inject: ['pipelineConfigurationFullPathEnabled', 'groupPath', 'featureSecurityPoliciesEnabled'],
   data() {
     return {
       errorMessage: '',
@@ -133,7 +133,7 @@ export default {
     },
 
     shouldRenderPolicySection() {
-      return !this.isNewFramework;
+      return !this.isNewFramework && this.featureSecurityPoliciesEnabled;
     },
   },
 

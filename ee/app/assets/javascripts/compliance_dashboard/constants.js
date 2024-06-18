@@ -51,3 +51,14 @@ export const FRAMEWORKS_FILTER_VALUE_NO_FRAMEWORK = {
   pipelineConfigurationFullPath: '',
   __typename: 'ComplianceFramework',
 };
+
+export const i18n = {
+  frameworksTab: s__('Compliance Center|Frameworks'),
+  projectsTab: __('Projects'),
+  heading: __('Compliance center'),
+  standardsAdherenceTab: s__('Compliance Center|Standards Adherence'),
+  subheading: __(
+    'Report and manage standards adherence, violations, and compliance frameworks for the group.',
+  ),
+  violationsTab: s__('Compliance Center|Violations'),
+};

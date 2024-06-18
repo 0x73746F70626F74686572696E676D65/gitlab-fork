@@ -3,11 +3,8 @@ import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 import { formatDate, getDateInPast, pikadayToString } from '~/lib/utils/datetime_utility';
 import { ISO_SHORT_FORMAT } from '~/vue_shared/constants';
 import { queryToObject } from '~/lib/utils/url_utility';
-import {
-  FRAMEWORKS_FILTER_TYPE_FRAMEWORK,
-  FRAMEWORKS_FILTER_TYPE_PROJECT,
-} from 'ee/compliance_dashboard/constants';
 import { CURRENT_DATE } from '../audit_events/constants';
+import { FRAMEWORKS_FILTER_TYPE_FRAMEWORK, FRAMEWORKS_FILTER_TYPE_PROJECT } from './constants';
 
 export const isTopLevelGroup = (groupPath, rootPath) => groupPath === rootPath;
 

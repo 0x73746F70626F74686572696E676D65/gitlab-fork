@@ -27,10 +27,55 @@ export function createRouter(basePath, props) {
     rootAncestorPath,
     rootAncestorName,
     rootAncestorComplianceCenterPath,
+    routes: availableRoutes,
   } = props;
 
-  const defaultRoute = ROUTE_STANDARDS_ADHERENCE;
-  const FrameworkReport = FrameworksReport;
+  const availableTabRoutes = [
+    {
+      path: 'standards_adherence',
+      name: ROUTE_STANDARDS_ADHERENCE,
+      component: StandardsReport,
+      props: {
+        groupPath,
+        globalProjectId,
+        rootAncestorPath,
+      },
+    },
+    {
+      path: 'violations',
+      name: ROUTE_VIOLATIONS,
+      component: ViolationsReport,
+      props: {
+        mergeCommitsCsvExportPath,
+        groupPath,
+        globalProjectId,
+      },
+    },
+    {
+      path: 'frameworks',
+      name: ROUTE_FRAMEWORKS,
+      component: FrameworksReport,
+      props: {
+        groupPath,
+        rootAncestor: {
+          path: rootAncestorPath,
+          name: rootAncestorName,
+          complianceCenterPath: rootAncestorComplianceCenterPath,
+        },
+      },
+    },
+    {
+      path: '/projects',
+      name: ROUTE_PROJECTS,
+      component: ProjectsReport,
+      props: {
+        groupPath,
+        rootAncestorPath,
+      },
+    },
+  ].filter(({ name }) => availableRoutes.includes(name));
+
+  const defaultRoute = availableTabRoutes[0].name;
 
   const routes = [
     {
@@ -46,52 +91,10 @@ export function createRouter(basePath, props) {
     {
       path: '/',
       component: MainLayout,
-      children: [
-        {
-          path: 'standards_adherence',
-          name: ROUTE_STANDARDS_ADHERENCE,
-          component: StandardsReport,
-          props: {
-            groupPath,
-            globalProjectId,
-            rootAncestorPath,
-          },
-        },
-        {
-          path: 'violations',
-          name: ROUTE_VIOLATIONS,
-          component: ViolationsReport,
-          props: {
-            mergeCommitsCsvExportPath,
-            groupPath,
-            globalProjectId,
-          },
-        },
-        {
-          path: 'frameworks',
-          name: ROUTE_FRAMEWORKS,
-          component: FrameworkReport,
-          props: {
-            groupPath,
-            rootAncestor: {
-              path: rootAncestorPath,
-              name: rootAncestorName,
-              complianceCenterPath: rootAncestorComplianceCenterPath,
-            },
-          },
-        },
-
-        {
-          path: '/projects',
-          name: ROUTE_PROJECTS,
-          component: ProjectsReport,
-          props: {
-            groupPath,
-            rootAncestorPath,
-          },
-        },
-        { path: '*', redirect: { name: defaultRoute } },
-      ],
+      props: {
+        availableTabs: availableRoutes,
+      },
+      children: [...availableTabRoutes, { path: '*', redirect: { name: defaultRoute } }],
     },
   ];
 

@@ -8,6 +8,7 @@ import ReportHeader from 'ee/compliance_dashboard/components/shared/report_heade
 import { stubComponent } from 'helpers/stub_component';
 import { mockTracking } from 'helpers/tracking_helper';
 import {
+  ROUTE_STANDARDS_ADHERENCE,
   ROUTE_FRAMEWORKS,
   ROUTE_PROJECTS,
   ROUTE_VIOLATIONS,
@@ -23,7 +24,6 @@ describe('ComplianceReportsApp component', () => {
     violationsCsvExportPath: '/compliance_violation_reports.csv',
     adherencesCsvExportPath: '/compliance_standards_adherences.csv',
     frameworksCsvExportPath: '/compliance_frameworks_report.csv',
-    complianceFrameworkReportUiEnabled: true,
   };
 
   const findHeader = () => wrapper.findComponent(ReportHeader);
@@ -39,7 +39,12 @@ describe('ComplianceReportsApp component', () => {
   const findViolationsTab = () => wrapper.findByTestId('violations-tab-content');
   const findStandardsAdherenceTab = () => wrapper.findByTestId('standards-adherence-tab-content');
 
-  const createComponent = (mountFn = shallowMountExtended, mocks = {}, provide = {}) => {
+  const createComponent = (
+    mountFn = shallowMountExtended,
+    mocks = {},
+    provide = {},
+    props = {},
+  ) => {
     return extendedWrapper(
       mountFn(MainLayout, {
         mocks: {
@@ -48,6 +53,15 @@ describe('ComplianceReportsApp component', () => {
             name: ROUTE_VIOLATIONS,
           },
           ...mocks,
+        },
+        propsData: {
+          availableTabs: [
+            ROUTE_STANDARDS_ADHERENCE,
+            ROUTE_VIOLATIONS,
+            ROUTE_PROJECTS,
+            ROUTE_FRAMEWORKS,
+          ],
+          ...props,
         },
         stubs: {
           'router-view': stubComponent({}),
@@ -183,6 +197,41 @@ describe('ComplianceReportsApp component', () => {
     it('does not render the adherences export button when there is no CSV path', () => {
       wrapper = createComponent(mount, {}, { frameworksCsvExportPath: null });
       expect(findFrameworksExportButton().exists()).toBe(false);
+    });
+  });
+
+  describe.each`
+    route                        | finder
+    ${ROUTE_STANDARDS_ADHERENCE} | ${findStandardsAdherenceTab}
+    ${ROUTE_VIOLATIONS}          | ${findViolationsTab}
+    ${ROUTE_PROJECTS}            | ${findProjectsTab}
+    ${ROUTE_FRAMEWORKS}          | ${findProjectFrameworksTab}
+  `('for $route', ({ route, finder }) => {
+    const allTabs = [ROUTE_STANDARDS_ADHERENCE, ROUTE_VIOLATIONS, ROUTE_PROJECTS, ROUTE_FRAMEWORKS];
+    it('does not render the tab when relevant tab is not passed', () => {
+      wrapper = createComponent(
+        mount,
+        {},
+        {},
+        {
+          availableTabs: allTabs.filter((r) => r !== route),
+        },
+      );
+
+      expect(finder().exists()).toBe(false);
+    });
+
+    it('render the tab when relevant tab is passed', () => {
+      wrapper = createComponent(
+        mount,
+        {},
+        {},
+        {
+          availableTabs: [route],
+        },
+      );
+
+      expect(finder().exists()).toBe(true);
     });
   });
 

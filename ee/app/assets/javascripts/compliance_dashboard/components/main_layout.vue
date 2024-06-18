@@ -1,7 +1,6 @@
 <script>
 import { GlTab, GlTabs, GlTooltipDirective } from '@gitlab/ui';
 
-import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
 import Tracking from '~/tracking';
@@ -10,9 +9,30 @@ import {
   ROUTE_FRAMEWORKS,
   ROUTE_PROJECTS,
   ROUTE_VIOLATIONS,
+  i18n,
 } from '../constants';
+
 import ReportHeader from './shared/report_header.vue';
 import ReportsExport from './shared/export_disclosure_dropdown.vue';
+
+const tabConfigs = {
+  [ROUTE_STANDARDS_ADHERENCE]: {
+    testId: 'standards-adherence-tab',
+    title: i18n.standardsAdherenceTab,
+  },
+  [ROUTE_VIOLATIONS]: {
+    testId: 'violations-tab',
+    title: i18n.violationsTab,
+  },
+  [ROUTE_FRAMEWORKS]: {
+    testId: 'frameworks-tab',
+    title: i18n.frameworksTab,
+  },
+  [ROUTE_PROJECTS]: {
+    testId: 'projects-tab',
+    title: i18n.projectsTab,
+  },
+};
 
 export default {
   name: 'ComplianceReportsApp',
@@ -32,30 +52,28 @@ export default {
     'violationsCsvExportPath',
     'adherencesCsvExportPath',
     'frameworksCsvExportPath',
-    'complianceFrameworkReportUiEnabled',
   ],
+  props: {
+    availableTabs: {
+      type: Array,
+      required: true,
+    },
+  },
   computed: {
+    tabs() {
+      return this.availableTabs.map((tabName) => {
+        const tabConfig = tabConfigs[tabName];
+        return {
+          title: tabConfig.title,
+          titleAttributes: { 'data-testid': tabConfig.testId },
+          target: tabName,
+          // eslint-disable-next-line @gitlab/require-i18n-strings
+          contentTestId: `${tabConfig.testId}-content`,
+        };
+      });
+    },
     tabIndex() {
-      const currentTabs = [
-        ROUTE_STANDARDS_ADHERENCE,
-        ROUTE_VIOLATIONS,
-        ROUTE_FRAMEWORKS,
-        ROUTE_PROJECTS,
-      ];
-
-      return currentTabs.indexOf(this.$route.name);
-    },
-    standardsAdherenceTabLinkAttributes() {
-      return { 'data-testid': 'standards-adherence-tab' };
-    },
-    violationsTabLinkAttributes() {
-      return { 'data-testid': 'violations-tab' };
-    },
-    frameworksTabLinkAttributes() {
-      return { 'data-testid': 'frameworks-tab' };
-    },
-    projectsTabLinkAttributes() {
-      return { 'data-testid': 'projects-tab' };
+      return this.tabs.findIndex((tab) => tab.target === this.$route.name);
     },
   },
   methods: {
@@ -70,16 +88,7 @@ export default {
   ROUTE_VIOLATIONS,
   ROUTE_FRAMEWORKS,
   ROUTE_PROJECTS,
-  i18n: {
-    frameworksTab: s__('Compliance Center|Frameworks'),
-    projectsTab: __('Projects'),
-    heading: __('Compliance center'),
-    standardsAdherenceTab: s__('Compliance Center|Standards Adherence'),
-    subheading: __(
-      'Report and manage standards adherence, violations, and compliance frameworks for the group.',
-    ),
-    violationsTab: s__('Compliance Center|Violations'),
-  },
+  i18n,
   documentationPath: helpPagePath('user/compliance/compliance_center/index.md'),
 };
 </script>
@@ -104,28 +113,12 @@ export default {
 
     <gl-tabs :value="tabIndex" content-class="gl-p-0" lazy>
       <gl-tab
-        :title="$options.i18n.standardsAdherenceTab"
-        :title-link-attributes="standardsAdherenceTabLinkAttributes"
-        data-testid="standards-adherence-tab-content"
-        @click="goTo($options.ROUTE_STANDARDS)"
-      />
-      <gl-tab
-        :title="$options.i18n.violationsTab"
-        :title-link-attributes="violationsTabLinkAttributes"
-        data-testid="violations-tab-content"
-        @click="goTo($options.ROUTE_VIOLATIONS)"
-      />
-      <gl-tab
-        :title="$options.i18n.frameworksTab"
-        :title-link-attributes="frameworksTabLinkAttributes"
-        data-testid="frameworks-tab-content"
-        @click="goTo($options.ROUTE_FRAMEWORKS)"
-      />
-      <gl-tab
-        :title="$options.i18n.projectsTab"
-        :title-link-attributes="projectsTabLinkAttributes"
-        data-testid="projects-tab-content"
-        @click="goTo($options.ROUTE_PROJECTS)"
+        v-for="tab in tabs"
+        :key="tab.target"
+        :title="tab.title"
+        :title-link-attributes="tab.titleAttributes"
+        :data-testid="tab.contentTestId"
+        @click="goTo(tab.target)"
       />
     </gl-tabs>
     <router-view />
