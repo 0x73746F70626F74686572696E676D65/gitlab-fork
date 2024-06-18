@@ -66,10 +66,7 @@ module Subscriptions
       strong_memoize_attr :eligible_namespaces
 
       def check_feature_available!
-        if Feature.enabled?(:duo_pro_trials, current_user, type: :wip) &&
-            ::Gitlab::Saas.feature_available?(:subscriptions_trials)
-          return
-        end
+        return if ::Gitlab::Saas.feature_available?(:subscriptions_trials)
 
         render_404
       end

@@ -1,9 +1,0 @@
----
-name: duo_pro_trials
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/432302
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/141597
-rollout_issue_url:
-milestone: '16.9'
-group: group::acquisition
-type: wip
-default_enabled: false
