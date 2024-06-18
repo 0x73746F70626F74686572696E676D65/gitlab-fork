@@ -7855,7 +7855,8 @@ CREATE TABLE ci_runner_projects (
     runner_id integer NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    project_id integer
+    project_id integer,
+    CONSTRAINT check_db297016c6 CHECK ((project_id IS NOT NULL))
 );
 
 CREATE SEQUENCE ci_runner_projects_id_seq
