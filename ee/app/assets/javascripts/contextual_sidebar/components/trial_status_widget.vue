@@ -87,7 +87,7 @@ export default {
           :href="trialDiscoverPagePath"
           variant="link"
           size="small"
-          class="gl-mt-3 gl-text-decoration-underline"
+          class="gl-mt-3 gl-underline"
           data-testid="learn-about-features-btn"
           :title="$options.i18n.learnAboutButtonTitle"
           @click.stop="onLearnAboutFeaturesClick()"
@@ -105,7 +105,7 @@ export default {
             {{ $options.i18n.widgetBodyExpiredTrial }}
             <gl-button
               :href="trialDiscoverPagePath"
-              class="gl-mb-1 gl-text-black-normal! gl-text-decoration-underline"
+              class="gl-mb-1 gl-text-black-normal! gl-underline"
               variant="link"
               size="small"
               data-testid="learn-about-features-btn"

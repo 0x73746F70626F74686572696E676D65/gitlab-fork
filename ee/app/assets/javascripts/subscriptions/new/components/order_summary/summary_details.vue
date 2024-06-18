@@ -115,7 +115,7 @@ export default {
           <gl-sprintf :message="taxLine">
             <template #link="{ content }">
               <gl-link
-                class="gl-text-decoration-underline gl-text-gray-500"
+                class="gl-underline gl-text-gray-500"
                 :href="$options.taxHelpUrl"
                 target="_blank"
                 data-testid="tax-help-link"

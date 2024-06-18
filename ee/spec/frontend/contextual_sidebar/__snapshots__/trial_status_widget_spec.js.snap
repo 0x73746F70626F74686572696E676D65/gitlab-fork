@@ -44,7 +44,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
         />
       </div>
       <b-button-stub
-        class="gl-button gl-mt-3 gl-text-decoration-underline"
+        class="gl-button gl-mt-3 gl-underline"
         data-testid="learn-about-features-btn"
         href="discover-path"
         size="sm"
@@ -93,7 +93,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
         >
           Looking to do more with GitLab?
           <b-button-stub
-            class="gl-button gl-mb-1 gl-text-black-normal! gl-text-decoration-underline"
+            class="gl-button gl-mb-1 gl-text-black-normal! gl-underline"
             data-testid="learn-about-features-btn"
             href="discover-path"
             size="sm"
