@@ -194,6 +194,10 @@ export const MORE_LABEL = s__('SecurityOrchestration|+%{numberOfAdditionalLabels
 export const MULTIPLE_SELECTED_LABEL = s__(
   'PolicyRuleMultiSelect|%{firstLabel}, %{secondLabel} %{moreLabel}',
 );
+export const MULTIPLE_SELECTED_LABEL_SINGLE_OPTION = s__(
+  'PolicyRuleMultiSelect|%{firstLabel} %{moreLabel}',
+);
+
 export const SELECTED_ITEMS_LABEL = s__('PolicyRuleMultiSelect|Select %{itemTypeName}');
 export const ALL_SELECTED_LABEL = s__('PolicyRuleMultiSelect|All %{itemTypeName}');
 

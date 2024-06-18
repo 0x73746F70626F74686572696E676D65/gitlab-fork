@@ -1,13 +1,14 @@
 <script>
 import { uniqBy } from 'lodash';
 import { GlAvatarLabeled, GlCollapsibleListbox } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { __ } from '~/locale';
 import searchProjectMembers from '~/graphql_shared/queries/project_user_members_search.query.graphql';
 import searchGroupMembers from '~/graphql_shared/queries/group_users_search.query.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { USER_TYPE } from 'ee/security_orchestration/constants';
 import { isProject } from 'ee/security_orchestration/components/utils';
+import { renderMultiSelectText } from '../../utils';
 
 const createUserObject = (user) => ({
   ...user,
@@ -60,16 +61,27 @@ export default {
     return {
       selectedUsers: this.existingApprovers.map((a) => createUserObject(a)),
       search: '',
+      users: [],
     };
   },
   computed: {
     selectedUsersValues() {
       return this.selectedUsers.map((u) => u.value);
     },
+    userItems() {
+      return this.users.reduce((acc, { id, name }) => {
+        acc[id] = name;
+        return acc;
+      }, {});
+    },
     toggleText() {
-      return this.selectedUsers.length
-        ? this.selectedUsers.map((u) => u.text).join(', ')
-        : s__('SecurityOrchestration|Select users');
+      return renderMultiSelectText({
+        selected: this.selectedUsersValues,
+        items: this.userItems,
+        itemTypeName: __('users'),
+        useAllSelected: false,
+        useSingleOption: true,
+      });
     },
   },
   methods: {
@@ -105,10 +117,11 @@ export default {
 <template>
   <gl-collapsible-listbox
     :items="users"
+    block
     searchable
     is-check-centered
     multiple
-    :toggle-class="['gl-max-w-15', { '!gl-shadow-inner-1-red-500': !state }]"
+    :toggle-class="['gl-max-w-30', { '!gl-shadow-inner-1-red-500': !state }]"
     :searching="$apollo.loading"
     :selected="selectedUsersValues"
     :toggle-text="toggleText"

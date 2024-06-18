@@ -39357,6 +39357,9 @@ msgstr ""
 msgid "Policy project doesn't exist"
 msgstr ""
 
+msgid "PolicyRuleMultiSelect|%{firstLabel} %{moreLabel}"
+msgstr ""
+
 msgid "PolicyRuleMultiSelect|%{firstLabel} +%{numberOfAdditionalLabels} more"
 msgstr ""
 
@@ -47902,9 +47905,6 @@ msgid "SecurityOrchestration|Select scan type"
 msgstr ""
 
 msgid "SecurityOrchestration|Select security policy project"
-msgstr ""
-
-msgid "SecurityOrchestration|Select users"
 msgstr ""
 
 msgid "SecurityOrchestration|Send a bot message when the conditions match."
@@ -63827,6 +63827,9 @@ msgid "user namespace cannot be the parent of another namespace"
 msgstr ""
 
 msgid "username"
+msgstr ""
+
+msgid "users"
 msgstr ""
 
 msgid "v%{version} published %{timeAgo}"

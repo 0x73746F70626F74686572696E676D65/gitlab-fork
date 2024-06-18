@@ -18,6 +18,7 @@ import {
   ALL_SELECTED_LABEL,
   SELECTED_ITEMS_LABEL,
   MULTIPLE_SELECTED_LABEL,
+  MULTIPLE_SELECTED_LABEL_SINGLE_OPTION,
   MORE_LABEL,
 } from './constants';
 
@@ -238,14 +239,24 @@ const NO_ITEM_SELECTED = 0;
 const ONE_ITEM_SELECTED = 1;
 
 /**
- *
+ * This method returns text based on selected items
+ * For single selected option it is (itemA +n selected items)
+ * For multiple selected options it is (itemA, itemB +n selected items)
+ * When all options selected, text would indicate that all items are selected
  * @param selected items
  * @param items items used to render list
  * @param itemTypeName
  * @param useAllSelected all selected option can be disabled
+ * @param useSingleOption use format `itemA +n` (Default is `itemA, itemB +n`)
  * @returns {*}
  */
-export const renderMultiSelectText = ({ selected, items, itemTypeName, useAllSelected = true }) => {
+export const renderMultiSelectText = ({
+  selected,
+  items,
+  itemTypeName,
+  useAllSelected = true,
+  useSingleOption = false,
+}) => {
   const itemsKeys = Object.keys(items);
 
   const defaultPlaceholder = sprintf(
@@ -272,15 +283,22 @@ export const renderMultiSelectText = ({ selected, items, itemTypeName, useAllSel
     return defaultPlaceholder;
   }
 
-  const moreLabel = sprintf(MORE_LABEL, {
-    numberOfAdditionalLabels: commonItems.length - 2,
-  });
+  const numberToExtract = useSingleOption ? 1 : 2;
+  const moreLabel =
+    commonItems.length > numberToExtract
+      ? sprintf(MORE_LABEL, { numberOfAdditionalLabels: commonItems.length - numberToExtract })
+      : undefined;
 
-  const multiSelectLabel = sprintf(MULTIPLE_SELECTED_LABEL, {
-    firstLabel: items[commonItems[0]],
-    secondLabel: items[commonItems[1]],
-    moreLabel: commonItems.length > 2 ? moreLabel : undefined,
-  }).trim();
+  const multiSelectLabel = useSingleOption
+    ? sprintf(MULTIPLE_SELECTED_LABEL_SINGLE_OPTION, {
+        firstLabel: items[commonItems[0]],
+        moreLabel: commonItems.length > 1 ? moreLabel : undefined,
+      }).trim()
+    : sprintf(MULTIPLE_SELECTED_LABEL, {
+        firstLabel: items[commonItems[0]],
+        secondLabel: items[commonItems[1]],
+        moreLabel: commonItems.length > 2 ? moreLabel : undefined,
+      }).trim();
 
   const oneItemLabel = items[commonItems[0]] || defaultPlaceholder;
 
