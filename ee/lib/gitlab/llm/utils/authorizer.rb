@@ -50,8 +50,9 @@ module Gitlab
 
         private_class_method def self.not_found_message(user)
           logger.info_or_debug(user, message: "Resource not found", error_code: "M3003")
-          s_("AI|I'm sorry, I can't generate a response. " \
-            "The items you're asking about either don't exist, or you don't have access to them.")
+          s_("AI|I'm sorry, I can't generate a response. You might want to try again. " \
+            "You could also be getting this error because the items you're asking about " \
+            "either don't exist, you don't have access to them, or your session has expired.")
         end
 
         private_class_method def self.no_access_message(user)

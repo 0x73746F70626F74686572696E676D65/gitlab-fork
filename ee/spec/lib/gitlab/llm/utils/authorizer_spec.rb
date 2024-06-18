@@ -32,8 +32,9 @@ RSpec.describe Gitlab::Llm::Utils::Authorizer, feature_category: :ai_abstraction
       end
 
       let(:not_found_response) do
-        "I'm sorry, I can't generate a response. The items you're asking about either don't exist, " \
-          "or you don't have access to them."
+        "I'm sorry, I can't generate a response. You might want to try again. " \
+          "You could also be getting this error because the items you're asking about " \
+          "either don't exist, you don't have access to them, or your session has expired."
       end
 
       it "returns an error not found response when the user isn't a member of the container" do
