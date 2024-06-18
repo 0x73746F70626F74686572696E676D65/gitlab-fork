@@ -5,8 +5,6 @@ import createPolicyProject from 'ee/security_orchestration/graphql/mutations/cre
 import createScanExecutionPolicy from 'ee/security_orchestration/graphql/mutations/create_scan_execution_policy.mutation.graphql';
 import { gqClient } from 'ee/security_orchestration/utils';
 import createMergeRequestMutation from '~/graphql_shared/mutations/create_merge_request.mutation.graphql';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPENAME_PROJECT } from '~/graphql_shared/constants';
 
 import {
   BRANCHES_KEY,
@@ -338,12 +336,10 @@ export const renderMultiSelectText = ({
 /**
  * Create project object based on provided properties
  * @param fullPath
- * @param id
  * @returns {{}}
  */
-export const createProjectWithMinimumValues = ({ fullPath, id }) => ({
+export const createProjectWithMinimumValues = ({ fullPath }) => ({
   ...(fullPath && { fullPath }),
-  ...(id && { id: convertToGraphQLId(TYPENAME_PROJECT, id) }),
 });
 
 /**
@@ -353,18 +349,13 @@ export const createProjectWithMinimumValues = ({ fullPath, id }) => ({
  */
 export const parseCustomFileConfiguration = (configuration = {}) => {
   const projectPath = configuration?.project;
-  const projectId = configuration?.id;
   const hasFilePath = Boolean(configuration?.file);
   const hasRef = Boolean(configuration?.ref);
   const hasProjectPath = Boolean(projectPath);
-  const hasProjectId = Boolean(projectId);
-  const project =
-    hasProjectPath || hasProjectId
-      ? createProjectWithMinimumValues({ fullPath: projectPath, id: projectId })
-      : null;
+  const project = hasProjectPath ? createProjectWithMinimumValues({ fullPath: projectPath }) : null;
 
   return {
-    showLinkedFile: hasFilePath || hasRef || hasProjectPath || hasProjectId,
+    showLinkedFile: hasFilePath || hasRef || hasProjectPath,
     project,
   };
 };

@@ -14,6 +14,7 @@ import {
   fromYaml,
   toYaml,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
+import getProjectId from 'ee/security_orchestration/graphql/queries/get_project_id.query.graphql';
 import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL } from '../../constants';
 import {
@@ -68,7 +69,7 @@ export default {
     },
   },
   data() {
-    const { project: selectedProject, showLinkedFile } = parseCustomFileConfiguration(
+    const { showLinkedFile } = parseCustomFileConfiguration(
       fromYaml({ manifest: this.initAction?.ci_configuration || '' })?.include,
     );
 
@@ -76,7 +77,7 @@ export default {
 
     return {
       doesFileExist: true,
-      selectedProject,
+      selectedProject: undefined,
       selectedType: showLinkedFile ? LINKED_EXISTING_FILE : INSERTED_CODE_BLOCK,
       yamlEditorValue,
     };
@@ -124,10 +125,33 @@ export default {
   created() {
     this.handleFileValidation = debounce(this.validateFilePath, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
   },
-  mounted() {
+  async mounted() {
+    const { project: selectedProject } = parseCustomFileConfiguration(
+      fromYaml({ manifest: this.initAction?.ci_configuration || '' })?.include,
+    );
+
+    if (selectedProject && selectedProject.fullPath) {
+      selectedProject.id = await this.getProjectId(selectedProject.fullPath);
+      this.selectedProject = selectedProject;
+    }
+
     this.validateFilePath();
   },
   methods: {
+    async getProjectId(fullPath) {
+      try {
+        const { data } = await this.$apollo.query({
+          query: getProjectId,
+          variables: {
+            fullPath,
+          },
+        });
+
+        return data.project?.id || '';
+      } catch (e) {
+        return '';
+      }
+    },
     resetActionToDefault() {
       this.$emit('changed', buildCustomCodeAction(this.initAction.id));
     },
@@ -166,10 +190,8 @@ export default {
 
         if (project) {
           config.project = project?.fullPath;
-          config.id = getIdFromGraphQLId(project?.id);
         } else {
           delete config.project;
-          delete config.id;
         }
 
         this.setCiConfigurationPath({ ...config });

@@ -4,6 +4,7 @@ import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import Api from 'ee/api';
 import { parseCustomFileConfiguration } from 'ee/security_orchestration/components/policy_editor/utils';
+import getProjectId from 'ee/security_orchestration/graphql/queries/get_project_id.query.graphql';
 import CodeBlockFilePath from '../../scan_execution/action/code_block_file_path.vue';
 
 export default {
@@ -21,11 +22,9 @@ export default {
     },
   },
   data() {
-    const { project: selectedProject } = parseCustomFileConfiguration(this.action.include);
-
     return {
       doesFileExist: true,
-      selectedProject,
+      selectedProject: undefined,
     };
   },
   computed: {
@@ -56,10 +55,36 @@ export default {
   created() {
     this.handleFileValidation = debounce(this.validateFilePath, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
   },
-  mounted() {
-    this.validateFilePath();
+  async mounted() {
+    const { project: selectedProject } = parseCustomFileConfiguration(this.action.include);
+
+    if (selectedProject && selectedProject.fullPath) {
+      selectedProject.id = await this.getProjectId(selectedProject.fullPath);
+      this.selectedProject = selectedProject;
+    }
+
+    if (!this.selectedProject) {
+      this.validateFilePath();
+    }
+  },
+  destroyed() {
+    this.handleFileValidation.cancel();
   },
   methods: {
+    async getProjectId(fullPath) {
+      try {
+        const { data } = await this.$apollo.query({
+          query: getProjectId,
+          variables: {
+            fullPath,
+          },
+        });
+
+        return data.project?.id || '';
+      } catch (e) {
+        return '';
+      }
+    },
     resetValidation() {
       if (!this.doesFileExist) {
         this.doesFileExist = true;
@@ -82,10 +107,8 @@ export default {
 
         if (project) {
           config.project = project?.fullPath;
-          config.id = getIdFromGraphQLId(project?.id);
         } else {
           delete config.project;
-          delete config.id;
         }
 
         this.setCiConfigurationPath({ ...config });
