@@ -1361,6 +1361,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_af3f17817e4d() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "protected_tags"
+  WHERE "protected_tags"."id" = NEW."protected_tag_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_b2612138515d() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -15964,7 +15980,8 @@ CREATE TABLE protected_tag_create_access_levels (
     group_id integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    deploy_key_id integer
+    deploy_key_id integer,
+    project_id bigint
 );
 
 CREATE SEQUENCE protected_tag_create_access_levels_id_seq
@@ -28210,6 +28227,8 @@ CREATE INDEX index_protected_tag_create_access_levels_on_deploy_key_id ON protec
 
 CREATE INDEX index_protected_tag_create_access_levels_on_group_id ON protected_tag_create_access_levels USING btree (group_id);
 
+CREATE INDEX index_protected_tag_create_access_levels_on_project_id ON protected_tag_create_access_levels USING btree (project_id);
+
 CREATE INDEX index_protected_tag_create_access_levels_on_user_id ON protected_tag_create_access_levels USING btree (user_id);
 
 CREATE UNIQUE INDEX index_protected_tags_on_project_id_and_name ON protected_tags USING btree (project_id, name);
@@ -31116,6 +31135,8 @@ CREATE TRIGGER trigger_a253cb3cacdf BEFORE INSERT OR UPDATE ON dora_daily_metric
 
 CREATE TRIGGER trigger_a4e4fb2451d9 BEFORE INSERT OR UPDATE ON epic_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_a4e4fb2451d9();
 
+CREATE TRIGGER trigger_af3f17817e4d BEFORE INSERT OR UPDATE ON protected_tag_create_access_levels FOR EACH ROW EXECUTE FUNCTION trigger_af3f17817e4d();
+
 CREATE TRIGGER trigger_b2612138515d BEFORE INSERT OR UPDATE ON project_relation_exports FOR EACH ROW EXECUTE FUNCTION trigger_b2612138515d();
 
 CREATE TRIGGER trigger_b4520c29ea74 BEFORE INSERT OR UPDATE ON approval_merge_request_rule_sources FOR EACH ROW EXECUTE FUNCTION trigger_b4520c29ea74();
@@ -31776,6 +31797,9 @@ ALTER TABLE ONLY software_license_policies
 
 ALTER TABLE ONLY cluster_agent_tokens
     ADD CONSTRAINT fk_75008f3553 FOREIGN KEY (created_by_user_id) REFERENCES users(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY protected_tag_create_access_levels
+    ADD CONSTRAINT fk_7537413f9d FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY environments
     ADD CONSTRAINT fk_75c2098045 FOREIGN KEY (cluster_agent_id) REFERENCES cluster_agents(id) ON DELETE SET NULL;
