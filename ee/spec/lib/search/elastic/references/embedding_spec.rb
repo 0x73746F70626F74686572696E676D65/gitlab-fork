@@ -97,10 +97,11 @@ RSpec.describe ::Search::Elastic::References::Embedding, feature_category: :glob
     it 'calls embedding API' do
       content = "issue with title '#{issue.title}' and description '#{issue.description}'"
       tracking_context = { action: 'issue_embedding' }
+      primitive = 'semantic_search_issue'
 
       expect(Gitlab::Llm::VertexAi::Embeddings::Text)
         .to receive(:new)
-        .with(content, user: nil, tracking_context: tracking_context)
+        .with(content, user: nil, tracking_context: tracking_context, unit_primitive: primitive)
         .and_return(embedding_service)
 
       embedding_ref.as_indexed_json
