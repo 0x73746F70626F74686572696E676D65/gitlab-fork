@@ -91,7 +91,12 @@ RSpec.describe "Code owner approvals reset after pushing merge conflict to sourc
       project.add_developer(user)
     end
 
-    context 'when the first merge request has been approved' do
+    # We're ignoring server errors here because we're getting flaky failures
+    # about `Gitlab::ExclusiveLease::LeaseWithinTransactionError` being raised
+    # when `MergeRequests::MergeabilityCheckService` gets executed.
+    #
+    # We don't execute that service within a transaction and this error was not reproducible locally.
+    context 'when the first merge request has been approved', :capybara_ignore_server_errors do
       before do
         stub_licensed_features(code_owner_approval_required: true, multiple_approval_rules: true)
         ::MergeRequests::SyncCodeOwnerApprovalRules.new(merge_request).execute
@@ -103,15 +108,8 @@ RSpec.describe "Code owner approvals reset after pushing merge conflict to sourc
         )
         sign_in(user)
 
-        # We're skipping transaction check here because we're getting failures
-        # about `Gitlab::ExclusiveLease::LeaseWithinTransactionError` being raised
-        # when `MergeRequests::MergeabilityCheckService` gets executed.
-        #
-        # We don't execute that service within a transaction though.
-        Gitlab::ExclusiveLease.skipping_transaction_check do
-          visit project_merge_request_path(project, merge_request)
-          wait_for_all_requests
-        end
+        visit project_merge_request_path(project, merge_request)
+        wait_for_all_requests
       end
 
       it 'is ready to merge' do
