@@ -48,6 +48,12 @@ module Vulnerabilities
     scope :order_severity_asc_traversal_ids_asc, -> { reorder(severity: :asc, traversal_ids: :asc, vulnerability_id: :asc) }
     scope :order_severity_desc_traversal_ids_desc, -> { reorder(severity: :desc, traversal_ids: :desc, vulnerability_id: :desc) }
 
+    scope :in_parent_group_after, ->(vulnerability_read) do
+      where(arel_grouping_by_traversal_ids_and_vulnerability_id.gteq(vulnerability_read.arel_grouping_by_traversal_ids_and_id))
+    end
+    scope :in_parent_group_before, ->(vulnerability_read) do
+      where(arel_grouping_by_traversal_ids_and_vulnerability_id.lteq(vulnerability_read.arel_grouping_by_traversal_ids_and_id))
+    end
     scope :by_group, ->(group) { traversal_ids_gteq(group.traversal_ids).traversal_ids_lt(group.next_traversal_ids) }
     scope :traversal_ids_gteq, ->(traversal_ids) { where(arel_table[:traversal_ids].gteq(traversal_ids)) }
     scope :traversal_ids_lt, ->(traversal_ids) { where(arel_table[:traversal_ids].lt(traversal_ids)) }
@@ -105,6 +111,10 @@ module Vulnerabilities
 
     scope :by_group_using_nested_loop, ->(group) do
       where(traversal_ids: all_vulnerable_traversal_ids_for(group))
+    end
+
+    def self.arel_grouping_by_traversal_ids_and_vulnerability_id
+      arel_table.grouping([arel_table['traversal_ids'], arel_table['vulnerability_id']])
     end
 
     def self.all_vulnerable_traversal_ids_for(group)
@@ -183,6 +193,19 @@ module Vulnerabilities
 
     def self.fetch_uuids
       pluck(:uuid)
+    end
+
+    def arel_grouping_by_traversal_ids_and_id
+      self.class.arel_table.grouping([database_serialized_traversal_ids, id])
+    end
+
+    private
+
+    def database_serialized_traversal_ids
+      self.class.attribute_types['traversal_ids']
+                .serialize(traversal_ids)
+                .then { |serialized_array| self.class.connection.quote(serialized_array) }
+                .then { |quoted_array| Arel::Nodes::SqlLiteral.new(quoted_array) }
     end
   end
 end
