@@ -53,7 +53,8 @@ module Gitlab
         def ensure_application_settings
           puts "Enabling application settings...."
 
-          Gitlab::CurrentSettings.current_application_settings.update!(check_namespace_plan: true)
+          Gitlab::CurrentSettings.current_application_settings
+            .update!(check_namespace_plan: true, allow_local_requests_from_web_hooks_and_services: true)
         end
 
         def ensure_group
