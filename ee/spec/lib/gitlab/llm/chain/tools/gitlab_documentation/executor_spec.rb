@@ -97,8 +97,9 @@ RSpec.describe Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor, :saas, 
       end
 
       it 'responds with the message from TanukiBot' do
-        response = "I'm sorry, I can't generate a response. " \
-          "The items you're asking about either don't exist, or you don't have access to them."
+        response = "I'm sorry, I can't generate a response. You might want to try again. " \
+          "You could also be getting this error because the items you're asking about " \
+          "either don't exist, you don't have access to them, or your session has expired."
 
         expect(result.content).to eq(response)
         expect(result.error_code).to eq("M3003")

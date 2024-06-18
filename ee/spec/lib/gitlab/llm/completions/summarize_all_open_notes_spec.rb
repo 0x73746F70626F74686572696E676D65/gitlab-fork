@@ -84,8 +84,9 @@ RSpec.describe Gitlab::Llm::Completions::SummarizeAllOpenNotes, feature_category
       response_service = double
       params = [user, issuable, response_modifier, { options: { request_id: 'uuid', ai_action: :summarize_comments } }]
 
-      content = "I'm sorry, I can't generate a response. " \
-        "The items you're asking about either don't exist, or you don't have access to them."
+      content = "I'm sorry, I can't generate a response. You might want to try again. " \
+        "You could also be getting this error because the items you're asking about " \
+        "either don't exist, you don't have access to them, or your session has expired."
 
       expect(Gitlab::Llm::ResponseModifiers::ToolAnswer).to receive(:new).with(
         { content: content }.to_json
