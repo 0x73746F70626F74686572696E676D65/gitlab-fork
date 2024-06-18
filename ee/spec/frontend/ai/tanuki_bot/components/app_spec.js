@@ -108,7 +108,7 @@ describe('GitLab Duo Chat', () => {
   };
 
   const findGlDuoChat = () => wrapper.findComponent(GlDuoChat);
-
+  let perfTrackingSpy;
   beforeEach(() => {
     uuidv4.mockImplementation(() => '123');
     getMarkdown.mockImplementation(({ text }) => Promise.resolve({ data: { html: text } }));
@@ -184,10 +184,25 @@ describe('GitLab Duo Chat', () => {
     });
 
     describe('@send-chat-prompt', () => {
+      beforeEach(() => {
+        perfTrackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+        performance.mark = jest.fn();
+      });
+
+      afterEach(() => {
+        unmockTracking();
+      });
+
       it('does set loading to `true` for a message other than the reset or clean ones', () => {
         findGlDuoChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.content);
         expect(actionSpies.setLoading).toHaveBeenCalled();
       });
+
+      it('starts the performance measurement when sending a prompt', () => {
+        findGlDuoChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.content);
+        expect(performance.mark).toHaveBeenCalledWith('prompt-sent');
+      });
+
       it.each([GENIE_CHAT_RESET_MESSAGE, GENIE_CHAT_CLEAN_MESSAGE, GENIE_CHAT_CLEAR_MESSAGE])(
         'does not set loading to `true` for "%s" message',
         async (msg) => {
@@ -362,7 +377,15 @@ describe('GitLab Duo Chat', () => {
   describe('Subscriptions', () => {
     let mockSubscriptionComplete;
     let mockSubscriptionStream;
+
     beforeEach(() => {
+      performance.mark = jest.fn();
+      performance.measure = jest.fn();
+      performance.getEntriesByName = jest.fn(() => [{ duration: 123 }]);
+      performance.clearMarks = jest.fn();
+      performance.clearMeasures = jest.fn();
+      perfTrackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
       mockSubscriptionComplete = createMockSubscription();
       mockSubscriptionStream = createMockSubscription();
       aiResponseSubscriptionHandler = () => mockSubscriptionComplete;
@@ -459,6 +482,32 @@ describe('GitLab Duo Chat', () => {
       mockSubscriptionStream.next(firstChunkNewRequest);
       await waitForPromises();
       expect(actionSpies.addDuoChatMessage).toHaveBeenCalledTimes(3);
+    });
+
+    it('tracks performance metrics correctly when a chunk is received', async () => {
+      const chunkMessage = MOCK_CHUNK_MESSAGE('chunk content', 1, 'requestId-123');
+
+      helpCenterState.showTanukiBotChatDrawer = true;
+      createComponent();
+
+      await waitForPromises();
+
+      mockSubscriptionStream.next(chunkMessage);
+
+      expect(performance.mark).toHaveBeenCalledWith('response-received');
+      expect(performance.measure).toHaveBeenCalledWith(
+        'prompt-to-response',
+        'prompt-sent',
+        'response-received',
+      );
+      expect(performance.getEntriesByName).toHaveBeenCalledWith('prompt-to-response');
+      expect(performance.clearMarks).toHaveBeenCalled();
+      expect(performance.clearMeasures).toHaveBeenCalled();
+
+      expect(perfTrackingSpy).toHaveBeenCalledWith(undefined, 'ai_response_time', {
+        property: chunkMessage.data.aiCompletionResponse.requestId,
+        value: 123,
+      });
     });
   });
 });

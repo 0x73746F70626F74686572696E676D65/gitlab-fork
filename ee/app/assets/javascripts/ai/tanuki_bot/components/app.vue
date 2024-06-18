@@ -98,6 +98,18 @@ export default {
           if (data?.aiCompletionResponse?.requestId !== this.responseCompleted) {
             this.addDuoChatMessage(data?.aiCompletionResponse);
           }
+          if (data?.aiCompletionResponse?.chunkId && !this.isResponseTracked) {
+            performance.mark('response-received');
+            performance.measure('prompt-to-response', 'prompt-sent', 'response-received');
+            const [{ duration }] = performance.getEntriesByName('prompt-to-response');
+            this.track('ai_response_time', {
+              property: data.aiCompletionResponse.requestId,
+              value: duration,
+            });
+            performance.clearMarks();
+            performance.clearMeasures();
+            this.isResponseTracked = true;
+          }
         },
         error(err) {
           this.error = err.toString();
@@ -126,6 +138,7 @@ export default {
       toolName: i18n.GITLAB_DUO,
       error: '',
       responseCompleted: undefined,
+      isResponseTracked: false,
     };
   },
   computed: {
@@ -142,6 +155,9 @@ export default {
     },
     onSendChatPrompt(question) {
       this.responseCompleted = undefined;
+      performance.mark('prompt-sent');
+      this.isResponseTracked = false;
+
       if (!this.isClearOrResetMessage(question)) {
         this.setLoading();
       }
