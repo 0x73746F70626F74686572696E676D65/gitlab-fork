@@ -1,10 +1,10 @@
-import { GlSkeletonLoader } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
-import Markdown from 'ee/vulnerabilities/components/generic_report/types/report_type_markdown.vue';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import MarkdownContent from '~/vue_shared/components/markdown/markdown_content.vue';
 import { buildApiUrl } from '~/api/api_utils';
 import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import { HTTP_STATUS_OK, HTTP_STATUS_INTERNAL_SERVER_ERROR } from '~/lib/utils/http_status';
 
 const MARKDOWN_PATH = '/api/:version/markdown';
 
@@ -17,35 +17,26 @@ const RENDERED_MARKDOWN =
 const HTML_SAFE_RENDERED_MARKDOWN =
   '\u003cp dir="auto" data-sourcepos="1:1-1:79"\u003eCheckout \u003ca href="http://gitlab.com"\u003eGitLab\u003c/a\u003e Hello! Welcome "\u0026gt;\u003c/p\u003e';
 
-describe('ee/vulnerabilities/components/generic_report/types/report_type_markdown.vue', () => {
+describe('markdown_content.vue', () => {
   let wrapper;
   let mock;
 
   const createWrapper = () => {
-    return shallowMount(Markdown, {
+    wrapper = shallowMountExtended(MarkdownContent, {
       propsData: {
         value: MARKDOWN,
       },
     });
   };
 
-  const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
-  const findMarkdown = () => wrapper.find('[data-testid="markdown"]');
+  const url = buildApiUrl(MARKDOWN_PATH);
 
-  const setUpMockMarkdown = () => {
-    const url = buildApiUrl(MARKDOWN_PATH);
-    mock
-      .onPost(url, {
-        text: MARKDOWN,
-        gfm: true,
-      })
-      .replyOnce(HTTP_STATUS_OK, { html: RENDERED_MARKDOWN });
-  };
+  const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findMarkdown = () => wrapper.findByTestId('markdown');
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
-
-    setUpMockMarkdown();
   });
 
   afterEach(() => {
@@ -54,19 +45,51 @@ describe('ee/vulnerabilities/components/generic_report/types/report_type_markdow
 
   describe('when loading', () => {
     it('shows the loading icon', () => {
-      wrapper = createWrapper();
+      createWrapper();
 
       expect(findSkeletonLoader().exists()).toBe(true);
     });
   });
 
   describe('when loaded', () => {
+    beforeEach(() => {
+      mock
+        .onPost(url, {
+          text: MARKDOWN,
+          gfm: true,
+        })
+        .replyOnce(HTTP_STATUS_OK, { html: RENDERED_MARKDOWN });
+    });
+
     it('shows markdown', async () => {
-      wrapper = createWrapper();
+      createWrapper();
 
       await axios.waitForAll();
       expect(findSkeletonLoader().exists()).toBe(false);
       expect(findMarkdown().element.innerHTML).toBe(HTML_SAFE_RENDERED_MARKDOWN);
+    });
+  });
+
+  describe('on error', () => {
+    beforeEach(() => {
+      mock
+        .onPost(url, {
+          text: MARKDOWN,
+          gfm: true,
+        })
+        .replyOnce(HTTP_STATUS_INTERNAL_SERVER_ERROR, new Error('error'));
+    });
+
+    it('shows the error message', async () => {
+      createWrapper();
+
+      await axios.waitForAll();
+      expect(findSkeletonLoader().exists()).toBe(false);
+      expect(findAlert().props()).toMatchObject({
+        variant: 'danger',
+        dismissible: false,
+      });
+      expect(findAlert().text()).toBe('Failed to format markdown.');
     });
   });
 });

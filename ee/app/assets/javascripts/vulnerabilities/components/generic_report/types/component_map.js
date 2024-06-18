@@ -31,6 +31,7 @@ export const REPORT_COMPONENTS = {
     import('./report_type_file_location.vue'),
   [getComponentNameForType(REPORT_TYPE_TABLE)]: () => import('./report_type_table.vue'),
   [getComponentNameForType(REPORT_TYPE_CODE)]: () => import('./report_type_code.vue'),
-  [getComponentNameForType(REPORT_TYPE_MARKDOWN)]: () => import('./report_type_markdown.vue'),
+  [getComponentNameForType(REPORT_TYPE_MARKDOWN)]: () =>
+    import('~/vue_shared/components/markdown/markdown_content.vue'),
   [getComponentNameForType(REPORT_TYPE_COMMIT)]: () => import('./report_type_commit.vue'),
 };

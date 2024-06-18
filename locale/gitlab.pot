@@ -21878,6 +21878,9 @@ msgstr ""
 msgid "Failed to find users for %{missing}"
 msgstr ""
 
+msgid "Failed to format markdown."
+msgstr ""
+
 msgid "Failed to generate description"
 msgstr ""
 
@@ -37418,6 +37421,9 @@ msgid "PackageRegistry|Published to the %{project} Terraform Module Registry %{d
 msgstr ""
 
 msgid "PackageRegistry|PyPI"
+msgstr ""
+
+msgid "PackageRegistry|Readme"
 msgstr ""
 
 msgid "PackageRegistry|Recipe: %{recipe}"

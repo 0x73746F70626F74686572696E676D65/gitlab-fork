@@ -1,11 +1,11 @@
 <script>
-import { GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { getMarkdown } from '~/rest_api';
 
 export default {
-  components: { GlSkeletonLoader },
+  components: { GlAlert, GlSkeletonLoader },
   directives: {
     SafeHtml,
   },
@@ -36,9 +36,9 @@ export default {
       } catch (e) {
         Sentry.captureException(e);
         this.error = true;
+      } finally {
+        this.loading = false;
       }
-
-      this.loading = false;
     },
   },
 };
@@ -47,6 +47,9 @@ export default {
 <template>
   <div>
     <gl-skeleton-loader v-if="loading" :width="200" :lines="2" />
-    <div v-if="markdown" v-safe-html="markdown" data-testid="markdown"></div>
+    <gl-alert v-else-if="error" :dismissible="false" variant="danger">
+      {{ __('Failed to format markdown.') }}
+    </gl-alert>
+    <div v-else-if="markdown" v-safe-html="markdown" data-testid="markdown" class="md"></div>
   </div>
 </template>

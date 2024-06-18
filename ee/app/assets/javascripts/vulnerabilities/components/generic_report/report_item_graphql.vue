@@ -8,7 +8,8 @@ const GRAPHQL_TYPENAME_TO_COMPONENT_MAP = {
   VulnerabilityDetailCommit: () => import('./types/report_type_commit.vue'),
   VulnerabilityDetailValue: () => import('./types/report_type_value.vue'),
   VulnerabilityDetailText: () => import('./types/report_type_value.vue'),
-  VulnerabilityDetailMarkdown: () => import('./types/report_type_markdown.vue'),
+  VulnerabilityDetailMarkdown: () =>
+    import('~/vue_shared/components/markdown/markdown_content.vue'),
   VulnerabilityDetailBoolean: () => import('./types/report_type_value.vue'),
   VulnerabilityDetailInt: () => import('./types/report_type_value.vue'),
   VulnerabilityDetailList: () => import('./types/report_type_list_graphql.vue'),
