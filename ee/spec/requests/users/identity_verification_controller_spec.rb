@@ -117,7 +117,10 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
       end
     end
 
-    it_behaves_like 'it successfully sends phone number verification code'
+    it_behaves_like 'it successfully sends phone number verification code' do
+      let(:phone_number_details) { params[:identity_verification] }
+    end
+
     it_behaves_like 'it handles failed phone number verification code send'
   end
 

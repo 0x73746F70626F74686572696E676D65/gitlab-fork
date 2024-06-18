@@ -411,7 +411,10 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
       it_behaves_like 'it verifies arkose token', 'phone'
     end
 
-    it_behaves_like 'it successfully sends phone number verification code'
+    it_behaves_like 'it successfully sends phone number verification code' do
+      let(:phone_number_details) { params[:registrations_identity_verification] }
+    end
+
     it_behaves_like 'it handles failed phone number verification code send'
   end
 

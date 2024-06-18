@@ -49,7 +49,6 @@ RSpec.describe PhoneVerification::TelesignClient::SendVerificationCodeService, f
             event: 'Sent a phone verification code with Telesign',
             telesign_reference_id: telesign_reference_xid,
             telesign_response: telesign_response.json['status']['description'],
-            telesign_risk_score: telesign_response.json.dig('risk', 'score'),
             telesign_status_code: telesign_response.status_code,
             username: user.username
           )

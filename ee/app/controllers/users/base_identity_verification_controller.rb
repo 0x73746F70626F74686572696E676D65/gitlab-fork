@@ -46,7 +46,9 @@ module Users
     end
 
     def send_phone_verification_code
-      result = ::PhoneVerification::Users::SendVerificationCodeService.new(@user, phone_verification_params).execute
+      result = ::PhoneVerification::Users::SendVerificationCodeService.new(
+        @user, ip_address: request.ip, **phone_verification_params
+      ).execute
 
       unless result.success?
         log_event(:phone, :failed_attempt, result.reason) unless result.reason == :related_to_high_risk_user

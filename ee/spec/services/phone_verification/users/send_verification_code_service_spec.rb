@@ -9,11 +9,12 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
   let_it_be(:high_risk_score) { 750 }
 
   let_it_be_with_reload(:user) { create(:user) }
-  let(:params) { { country: 'US', international_dial_code: 1, phone_number: '555' } }
+  let(:ip_address) { '1.2.3.4' }
+  let(:phone_number_details) { { country: 'US', international_dial_code: 1, phone_number: '555' } }
   let(:risk_score) { low_risk_score }
   let(:risk_service_response) { ServiceResponse.success(payload: { risk_score: risk_score }) }
 
-  subject(:service) { described_class.new(user, params) }
+  subject(:service) { described_class.new(user, ip_address: ip_address, **phone_number_details) }
 
   describe '#execute' do
     before do
@@ -28,7 +29,11 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
           .to receive(:throttled?).with(rate_limit_name, scope: nil).and_return(false)
       end
 
-      allow_next_instance_of(PhoneVerification::TelesignClient::RiskScoreService) do |instance|
+      allow_next_instance_of(PhoneVerification::TelesignClient::RiskScoreService,
+        phone_number: "#{phone_number_details[:international_dial_code]}#{phone_number_details[:phone_number]}",
+        user: user,
+        ip_address: ip_address
+      ) do |instance|
         allow(instance).to receive(:execute).and_return(risk_service_response)
       end
 
@@ -46,8 +51,8 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
       end
     end
 
-    context 'when params are invalid' do
-      let(:params) { { country: 'US', international_dial_code: 1 } }
+    context 'when phone number details are invalid' do
+      let(:phone_number_details) { { country: 'US', international_dial_code: 1 } }
 
       it 'returns an error', :aggregate_failures do
         response = service.execute
@@ -88,7 +93,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
       let(:banned_user) { create(:user, :banned) }
       let(:record) { create(:phone_number_validation, :validated, user: banned_user) }
 
-      let(:params) do
+      let(:phone_number_details) do
         {
           country: 'AU',
           international_dial_code: record.international_dial_code,
@@ -111,8 +116,8 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
 
         record = user.phone_number_validation
 
-        expect(record.international_dial_code).to eq(params[:international_dial_code])
-        expect(record.phone_number).to eq(params[:phone_number])
+        expect(record.international_dial_code).to eq(phone_number_details[:international_dial_code])
+        expect(record.phone_number).to eq(phone_number_details[:phone_number])
       end
 
       it 'returns an error', :aggregate_failures do
@@ -127,7 +132,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
     end
 
     context 'when intelligence score has already been determined' do
-      let(:phone_number) { params[:phone_number] }
+      let(:phone_number) { phone_number_details[:phone_number] }
 
       before do
         create(:phone_number_validation, phone_number: phone_number, risk_score: low_risk_score, user: user)
@@ -220,8 +225,8 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         before do
           create(
             :phone_number_validation,
-            international_dial_code: params[:international_dial_code],
-            phone_number: params[:phone_number]
+            international_dial_code: phone_number_details[:international_dial_code],
+            phone_number: phone_number_details[:phone_number]
           )
         end
 
@@ -247,8 +252,8 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         before do
           create(
             :phone_number_validation,
-            international_dial_code: params[:international_dial_code],
-            phone_number: params[:phone_number],
+            international_dial_code: phone_number_details[:international_dial_code],
+            phone_number: phone_number_details[:phone_number],
             created_at: 8.days.ago
           )
         end
