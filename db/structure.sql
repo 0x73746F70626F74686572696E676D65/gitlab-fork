@@ -7882,7 +7882,8 @@ ALTER SEQUENCE ci_runner_machines_id_seq OWNED BY ci_runner_machines.id;
 CREATE TABLE ci_runner_namespaces (
     id integer NOT NULL,
     runner_id integer,
-    namespace_id integer
+    namespace_id integer,
+    CONSTRAINT check_5f3dce48df CHECK ((namespace_id IS NOT NULL))
 );
 
 CREATE SEQUENCE ci_runner_namespaces_id_seq
