@@ -18,6 +18,16 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
 
       subject(:track_event) { described_class.new(user, resource, options).execute }
     end
+
+    it 'tracks AI metric', :click_house do
+      stub_application_setting(use_clickhouse_for_analytics: true)
+
+      expect(Gitlab::Tracking::AiTracking).to receive(:track_event)
+                                                .with('request_duo_chat_response', user: user)
+                                                .and_call_original
+
+      described_class.new(user, resource, options).execute
+    end
   end
 
   context 'for self-managed', :with_cloud_connector do
