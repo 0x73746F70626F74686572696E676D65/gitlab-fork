@@ -1,4 +1,4 @@
-import { GlLabel, GlLink, GlTruncate, GlTooltip, GlSprintf } from '@gitlab/ui';
+import { GlLabel, GlLink, GlTruncate, GlPopover, GlSprintf } from '@gitlab/ui';
 import FrameworkInfoDrawer from 'ee/compliance_dashboard/components/frameworks_report/framework_info_drawer.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createFramework } from 'ee_jest/compliance_dashboard/mock_data';
@@ -27,7 +27,7 @@ describe('FrameworkInfoDrawer component', () => {
   const findPoliciesTitle = () => wrapper.findByTestId('sidebar-policies-title');
   const findPoliciesLinks = () =>
     wrapper.findByTestId('sidebar-policies').findAllComponents(GlLink);
-  const findTooltip = () => wrapper.findComponent(GlTooltip);
+  const findPopover = () => wrapper.findComponent(GlPopover);
 
   const createComponent = ({ props = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(FrameworkInfoDrawer, {
@@ -102,8 +102,8 @@ describe('FrameworkInfoDrawer component', () => {
         );
       });
 
-      it('does not render edit button tooltip', () => {
-        expect(findTooltip().exists()).toBe(false);
+      it('does not render edit button popover', () => {
+        expect(findPopover().exists()).toBe(false);
       });
     });
   });
@@ -153,8 +153,8 @@ describe('FrameworkInfoDrawer component', () => {
       expect(findEditFrameworkBtn().props('disabled')).toBe(true);
     });
 
-    it('renders tooltip', () => {
-      expect(findTooltip().text()).toMatchInterpolatedText(
+    it('renders popover', () => {
+      expect(findPopover().text()).toMatchInterpolatedText(
         'The compliance framework must be edited in top-level group Root',
       );
     });

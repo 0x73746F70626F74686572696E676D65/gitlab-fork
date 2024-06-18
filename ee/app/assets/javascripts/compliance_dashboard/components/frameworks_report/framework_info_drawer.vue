@@ -6,7 +6,7 @@ import {
   GlLabel,
   GlLink,
   GlSprintf,
-  GlTooltip,
+  GlPopover,
   GlTruncate,
 } from '@gitlab/ui';
 import { s__ } from '~/locale';
@@ -24,7 +24,7 @@ export default {
     GlLabel,
     GlLink,
     GlSprintf,
-    GlTooltip,
+    GlPopover,
     GlTruncate,
   },
   inject: ['groupSecurityPoliciesPath'],
@@ -115,9 +115,9 @@ export default {
             :title="$options.i18n.defaultFramework"
           />
         </h3>
-        <gl-tooltip
+        <gl-popover
           v-if="editDisabled"
-          :target="() => $refs.editButton"
+          target="framework-info-drawer-edit-button"
           placement="left"
           boundary="viewport"
         >
@@ -128,8 +128,8 @@ export default {
               </gl-link>
             </template>
           </gl-sprintf>
-        </gl-tooltip>
-        <span ref="editButton" class="gl-inline-block">
+        </gl-popover>
+        <span id="framework-info-drawer-edit-button" class="gl-inline-block">
           <gl-button
             :disabled="editDisabled"
             category="primary"
