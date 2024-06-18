@@ -1,3 +1,5 @@
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -17,6 +19,8 @@ import {
   INSERTED_CODE_BLOCK,
   LINKED_EXISTING_FILE,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
+import getProjectId from 'ee/security_orchestration/graphql/queries/get_project_id.query.graphql';
+import createMockApollo from 'helpers/mock_apollo_helper';
 
 const actionId = 'action_0';
 jest.mock('lodash/uniqueId', () => jest.fn().mockReturnValue(actionId));
@@ -25,6 +29,7 @@ jest.mock('ee/api');
 
 describe('CodeBlockAction', () => {
   let wrapper;
+  let requestHandler;
 
   const project = {
     id: 'gid://gitlab/Project/29',
@@ -34,8 +39,25 @@ describe('CodeBlockAction', () => {
     },
   };
 
+  const projectId = 29;
+  const defaultProjectId = jest.fn().mockResolvedValue({
+    data: {
+      project: {
+        id: projectId,
+      },
+    },
+  });
+
+  const createMockApolloProvider = (handler) => {
+    Vue.use(VueApollo);
+    requestHandler = handler;
+
+    return createMockApollo([[getProjectId, handler]]);
+  };
+
   const createComponent = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMount(CodeBlockAction, {
+      apolloProvider: createMockApolloProvider(defaultProjectId),
       propsData: {
         initAction: buildCustomCodeAction(),
         ...propsData,
@@ -222,7 +244,7 @@ describe('CodeBlockAction', () => {
       expect(findCodeBlockFilePath().props('filePath')).toBe('file');
     });
 
-    it('should render linked file mode when project exist', () => {
+    it('should render linked file mode when project exist', async () => {
       createComponent({
         propsData: {
           initAction: {
@@ -234,27 +256,13 @@ describe('CodeBlockAction', () => {
           },
         },
       });
+      await waitForPromises();
 
-      expect(findCodeBlockFilePath().props('selectedType')).toBe(LINKED_EXISTING_FILE);
-      expect(findCodeBlockFilePath().props('selectedProject')).toEqual({ fullPath: 'file' });
-    });
-
-    it('should render linked file mode when project id exist', () => {
-      createComponent({
-        propsData: {
-          initAction: {
-            ci_configuration: toYaml({
-              include: {
-                id: 1,
-              },
-            }),
-          },
-        },
-      });
-
+      expect(requestHandler).toHaveBeenCalledWith({ fullPath: 'file' });
       expect(findCodeBlockFilePath().props('selectedType')).toBe(LINKED_EXISTING_FILE);
       expect(findCodeBlockFilePath().props('selectedProject')).toEqual({
-        id: 'gid://gitlab/Project/1',
+        fullPath: 'file',
+        id: 29,
       });
     });
 
@@ -321,7 +329,7 @@ describe('CodeBlockAction', () => {
       expect(wrapper.emitted('changed')[1]).toEqual([
         {
           ...buildCustomCodeAction(),
-          ci_configuration: toYaml({ include: { project: project.fullPath, id: 29 } }),
+          ci_configuration: toYaml({ include: { project: project.fullPath } }),
         },
       ]);
     });
@@ -358,13 +366,14 @@ describe('CodeBlockAction', () => {
               initAction: {
                 ci_configuration: toYaml({
                   include: {
-                    id: 1,
+                    project: 'fullPath',
                   },
                 }),
               },
             },
           });
           await waitForPromises();
+          expect(requestHandler).toHaveBeenCalledWith({ fullPath: 'fullPath' });
           expect(Api.getFile).not.toHaveBeenCalled();
           expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
         });
@@ -377,7 +386,7 @@ describe('CodeBlockAction', () => {
               initAction: {
                 ci_configuration: toYaml({
                   include: {
-                    id: 1,
+                    project: 'fullPath',
                     ref: 'main',
                   },
                 }),
@@ -385,7 +394,8 @@ describe('CodeBlockAction', () => {
             },
           });
           await waitForPromises();
-          expect(Api.getFile).toHaveBeenCalledTimes(1);
+          expect(Api.getFile).toHaveBeenCalledTimes(2);
+          expect(requestHandler).toHaveBeenCalledWith({ fullPath: 'fullPath' });
           expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
         });
 
@@ -396,7 +406,7 @@ describe('CodeBlockAction', () => {
               initAction: {
                 ci_configuration: toYaml({
                   include: {
-                    id: 1,
+                    project: 'fullPath',
                     ref: 'not-main',
                   },
                 }),
@@ -404,7 +414,8 @@ describe('CodeBlockAction', () => {
             },
           });
           await waitForPromises();
-          expect(Api.getFile).toHaveBeenCalledTimes(1);
+          expect(Api.getFile).toHaveBeenCalledTimes(2);
+          expect(requestHandler).toHaveBeenCalledWith({ fullPath: 'fullPath' });
           expect(findCodeBlockFilePath().props('doesFileExist')).toBe(false);
         });
       });
@@ -415,7 +426,9 @@ describe('CodeBlockAction', () => {
             createComponent({
               propsData: {
                 initAction: {
-                  ci_configuration: toYaml({ include: { id: 1, ref: 'main', file: 'path' } }),
+                  ci_configuration: toYaml({
+                    include: { project: 'fullPath', ref: 'main', file: 'path' },
+                  }),
                 },
               },
             });
@@ -435,7 +448,7 @@ describe('CodeBlockAction', () => {
           it('verifies on project change when ref is selected', async () => {
             await findCodeBlockFilePath().vm.$emit('select-project', project);
             await waitForPromises();
-            expect(Api.getFile).toHaveBeenCalledTimes(2);
+            expect(Api.getFile).toHaveBeenCalledTimes(3);
             expect(findCodeBlockFilePath().props('doesFileExist')).toBe(true);
           });
 
@@ -456,10 +469,13 @@ describe('CodeBlockAction', () => {
             await createComponent({
               propsData: {
                 initAction: {
-                  ci_configuration: toYaml({ include: { id: 1, file: 'path' } }),
+                  ci_configuration: toYaml({ include: { project: 'fullPath', file: 'path' } }),
                 },
               },
             });
+            await waitForPromises();
+
+            expect(requestHandler).toHaveBeenCalledWith({ fullPath: 'fullPath' });
             await findCodeBlockFilePath().vm.$emit('select-project', project);
             await waitForPromises();
             expect(Api.getFile).toHaveBeenCalledTimes(1);
@@ -477,7 +493,7 @@ describe('CodeBlockAction', () => {
               initAction: {
                 ci_configuration: toYaml({
                   include: {
-                    id: 1,
+                    project: 'fullPath',
                     ref: 'not-main',
                   },
                 }),
@@ -507,7 +523,7 @@ describe('CodeBlockAction', () => {
               initAction: {
                 ci_configuration: toYaml({
                   include: {
-                    id: 1,
+                    project: 'fullPath',
                     ref: 'main',
                   },
                 }),
