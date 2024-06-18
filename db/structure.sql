@@ -4104,6 +4104,34 @@ CREATE SEQUENCE abuse_report_events_id_seq
 
 ALTER SEQUENCE abuse_report_events_id_seq OWNED BY abuse_report_events.id;
 
+CREATE TABLE abuse_report_notes (
+    id bigint NOT NULL,
+    abuse_report_id bigint NOT NULL,
+    author_id bigint NOT NULL,
+    updated_by_id bigint,
+    resolved_by_id bigint,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    resolved_at timestamp with time zone,
+    last_edited_at timestamp with time zone,
+    cached_markdown_version integer,
+    discussion_id text,
+    note text,
+    note_html text,
+    CONSTRAINT check_0de721e87e CHECK ((char_length(note) <= 10000)),
+    CONSTRAINT check_13235633b5 CHECK ((char_length(discussion_id) <= 255)),
+    CONSTRAINT check_21b51956e3 CHECK ((char_length(note_html) <= 20000))
+);
+
+CREATE SEQUENCE abuse_report_notes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE abuse_report_notes_id_seq OWNED BY abuse_report_notes.id;
+
 CREATE TABLE abuse_report_user_mentions (
     id bigint NOT NULL,
     abuse_report_id bigint NOT NULL,
@@ -19874,6 +19902,8 @@ ALTER TABLE ONLY abuse_report_assignees ALTER COLUMN id SET DEFAULT nextval('abu
 
 ALTER TABLE ONLY abuse_report_events ALTER COLUMN id SET DEFAULT nextval('abuse_report_events_id_seq'::regclass);
 
+ALTER TABLE ONLY abuse_report_notes ALTER COLUMN id SET DEFAULT nextval('abuse_report_notes_id_seq'::regclass);
+
 ALTER TABLE ONLY abuse_report_user_mentions ALTER COLUMN id SET DEFAULT nextval('abuse_report_user_mentions_id_seq'::regclass);
 
 ALTER TABLE ONLY abuse_reports ALTER COLUMN id SET DEFAULT nextval('abuse_reports_id_seq'::regclass);
@@ -21610,6 +21640,9 @@ ALTER TABLE ONLY abuse_report_assignees
 
 ALTER TABLE ONLY abuse_report_events
     ADD CONSTRAINT abuse_report_events_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY abuse_report_notes
+    ADD CONSTRAINT abuse_report_notes_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY abuse_report_user_mentions
     ADD CONSTRAINT abuse_report_user_mentions_pkey PRIMARY KEY (id);
@@ -25381,6 +25414,14 @@ CREATE UNIQUE INDEX index_abuse_report_assignees_on_user_id_and_abuse_report_id 
 CREATE INDEX index_abuse_report_events_on_abuse_report_id ON abuse_report_events USING btree (abuse_report_id);
 
 CREATE INDEX index_abuse_report_events_on_user_id ON abuse_report_events USING btree (user_id);
+
+CREATE INDEX index_abuse_report_notes_on_abuse_report_id ON abuse_report_notes USING btree (abuse_report_id);
+
+CREATE INDEX index_abuse_report_notes_on_author_id ON abuse_report_notes USING btree (author_id);
+
+CREATE INDEX index_abuse_report_notes_on_resolved_by_id ON abuse_report_notes USING btree (resolved_by_id);
+
+CREATE INDEX index_abuse_report_notes_on_updated_by_id ON abuse_report_notes USING btree (updated_by_id);
 
 CREATE UNIQUE INDEX index_abuse_report_user_mentions_on_abuse_report_id_and_note_id ON abuse_report_user_mentions USING btree (abuse_report_id, note_id);
 
@@ -31210,6 +31251,9 @@ ALTER TABLE ONLY sbom_occurrences_vulnerabilities
 ALTER TABLE ONLY ai_agent_version_attachments
     ADD CONSTRAINT fk_07db0a0e5b FOREIGN KEY (ai_agent_version_id) REFERENCES ai_agent_versions(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY abuse_report_notes
+    ADD CONSTRAINT fk_0801b83126 FOREIGN KEY (updated_by_id) REFERENCES users(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY vulnerability_issue_links
     ADD CONSTRAINT fk_081e11030b FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
@@ -31525,6 +31569,9 @@ ALTER TABLE ONLY geo_event_log
 ALTER TABLE ONLY remote_mirrors
     ADD CONSTRAINT fk_43a9aa4ca8 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY abuse_report_notes
+    ADD CONSTRAINT fk_44166fe70f FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY incident_management_timeline_events
     ADD CONSTRAINT fk_4432fc4d78 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
@@ -31599,6 +31646,9 @@ ALTER TABLE ONLY merge_request_diffs
 
 ALTER TABLE ONLY ml_candidates
     ADD CONSTRAINT fk_56d6ed4d3d FOREIGN KEY (experiment_id) REFERENCES ml_experiments(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY abuse_report_notes
+    ADD CONSTRAINT fk_57fb3e3bf2 FOREIGN KEY (resolved_by_id) REFERENCES users(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY approval_merge_request_rules
     ADD CONSTRAINT fk_5822f009ea FOREIGN KEY (security_orchestration_policy_configuration_id) REFERENCES security_orchestration_policy_configurations(id) ON DELETE CASCADE;
@@ -31740,6 +31790,9 @@ ALTER TABLE ONLY vulnerabilities
 
 ALTER TABLE ONLY index_statuses
     ADD CONSTRAINT fk_74b2492545 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY abuse_report_notes
+    ADD CONSTRAINT fk_74e1990397 FOREIGN KEY (abuse_report_id) REFERENCES abuse_reports(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY software_license_policies
     ADD CONSTRAINT fk_74f6d8328a FOREIGN KEY (custom_software_license_id) REFERENCES custom_software_licenses(id) ON DELETE CASCADE;
