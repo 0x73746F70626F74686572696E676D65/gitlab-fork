@@ -1617,6 +1617,9 @@ msgstr ""
 msgid "+ %{numberOfHiddenAssignees} more"
 msgstr ""
 
+msgid "+ %{n} more deployments"
+msgstr ""
+
 msgid "+%d more"
 msgid_plural "+%d more"
 msgstr[0] ""
@@ -37687,6 +37690,21 @@ msgid "Pages Domain"
 msgstr ""
 
 msgid "PagesDomain|Certificate Key is too long. (Max %d bytes)"
+msgstr ""
+
+msgid "Pages|Deployments"
+msgstr ""
+
+msgid "Pages|Environment deployments"
+msgstr ""
+
+msgid "Pages|Include stopped deployments"
+msgstr ""
+
+msgid "Pages|No deployments yet"
+msgstr ""
+
+msgid "Pages|Some Pages deployments could not be loaded. Try reloading the page."
 msgstr ""
 
 msgid "Pagination|First"
