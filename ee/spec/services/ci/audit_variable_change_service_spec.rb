@@ -70,6 +70,20 @@ RSpec.describe Ci::AuditVariableChangeService, feature_category: :secrets_manage
   shared_examples 'audit value change' do
     let(:action) { :update }
 
+    it 'does not log CI variable value' do
+      variable.value = 'Super Secret'
+      variable.save!
+
+      execute
+
+      audit_event = AuditEvent.last.presence
+
+      expect(audit_event.details[:custom_message]).to eq('Changed value')
+      expect(audit_event.details[:custom_message]).not_to include('Super Secret')
+      expect(audit_event.details[:custom_message]).not_to include('VARIABLE_VALUE')
+      expect(audit_event.details[:target_details]).to eq(variable.key)
+    end
+
     context 'when updated masked' do
       before do
         variable.masked = true
