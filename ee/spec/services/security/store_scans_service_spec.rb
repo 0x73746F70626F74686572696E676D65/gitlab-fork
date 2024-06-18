@@ -34,7 +34,6 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
 
     before do
       allow(Security::StoreSecurityReportsByProjectWorker).to receive(:perform_async)
-      allow(StoreSecurityReportsWorker).to receive(:perform_async)
       allow(ScanSecurityReportSecretsWorker).to receive(:perform_async)
       allow(Security::StoreGroupedScansService).to receive(:execute)
 
@@ -88,7 +87,6 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
             it 'schedules the `StoreSecurityReportsByProjectWorker`' do
               store_group_of_artifacts
 
-              expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
               expect(Security::StoreSecurityReportsByProjectWorker).to have_received(:perform_async).with(
                 project_id
               )
@@ -98,20 +96,6 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
               expect { store_group_of_artifacts }.to change {
                 Gitlab::Redis::SharedState.with { |redis| redis.get(cache_key) }
               }.from(nil).to(pipeline.id.to_s)
-            end
-
-            context 'when deduplicate_security_report_ingestion_jobs FF is disabled' do
-              before do
-                stub_feature_flags(deduplicate_security_report_ingestion_jobs: false)
-                allow(StoreSecurityReportsWorker).to receive(:perform_async)
-              end
-
-              it 'schedules the `StoreSecurityReportsWorker`' do
-                store_group_of_artifacts
-
-                expect(StoreSecurityReportsWorker).to have_received(:perform_async).with(pipeline.id)
-                expect(Security::StoreSecurityReportsByProjectWorker).not_to have_received(:perform_async)
-              end
             end
           end
 
@@ -123,22 +107,7 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
             it 'does not schedule the `StoreSecurityReportsByProjectWorker`' do
               store_group_of_artifacts
 
-              expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
               expect(Security::StoreSecurityReportsByProjectWorker).not_to have_received(:perform_async)
-            end
-
-            context 'when deduplicate_security_report_ingestion_jobs FF is disabled' do
-              before do
-                stub_feature_flags(deduplicate_security_report_ingestion_jobs: false)
-                allow(StoreSecurityReportsWorker).to receive(:perform_async)
-              end
-
-              it 'does not schedules the `StoreSecurityReportsWorker`' do
-                store_group_of_artifacts
-
-                expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
-                expect(Security::StoreSecurityReportsByProjectWorker).not_to have_received(:perform_async)
-              end
             end
           end
         end
@@ -277,7 +246,6 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
         it 'does not schedule the `StoreSecurityReportsByProjectWorker`' do
           store_group_of_artifacts
 
-          expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
           expect(Security::StoreSecurityReportsByProjectWorker).not_to have_received(:perform_async)
         end
 
