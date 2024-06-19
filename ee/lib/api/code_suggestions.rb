@@ -6,10 +6,8 @@ module API
 
     feature_category :code_suggestions
 
-    # a limit used for overall body size when forwarding request to ai-assist, overall size should not be bigger than
-    # summary of limits on accepted parameters
-    # (https://gitlab.com/gitlab-org/modelops/applied-ml/code-suggestions/ai-assist#completions)
-    MAX_BODY_SIZE = 500_000
+    # a limit used for overall body size when forwarding request to ai-assist
+    MAX_BODY_SIZE = 600_000
     MAX_CONTENT_SIZE = 400_000
 
     MAX_CONTEXT_NAME_SIZE = 255
