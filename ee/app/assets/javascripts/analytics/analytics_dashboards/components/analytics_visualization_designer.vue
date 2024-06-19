@@ -427,6 +427,7 @@ export default {
             setSegments,
             availableMeasures,
             availableDimensions,
+            availableTimeDimensions,
           }"
         >
           <visualization-filtered-search
@@ -434,6 +435,7 @@ export default {
             :query="queryState.query"
             :available-measures="availableMeasures"
             :available-dimensions="availableDimensions"
+            :available-time-dimensions="availableTimeDimensions"
             data-testid="visualization-filtered-search"
             @input="onFilterChange"
             @submit="onFilterChange"
