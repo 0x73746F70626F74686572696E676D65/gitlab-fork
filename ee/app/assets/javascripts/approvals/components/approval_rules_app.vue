@@ -93,7 +93,7 @@ export default {
   <gl-card
     class="gl-new-card"
     header-class="gl-new-card-header"
-    body-class="gl-new-card-body gl-px-0 gl-overflow-hidden"
+    body-class="gl-new-card-body gl-px-0"
     footer-class="gl-new-card-footer"
     data-testid="mr-approval-rules"
   >
