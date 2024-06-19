@@ -6,7 +6,6 @@ module Security
       include ApplicationWorker
 
       data_consistency :sticky
-      deduplicate :until_executing, including_scheduled: true
 
       feature_category :security_policy_management
 

@@ -33,10 +33,6 @@ module Security
       )
     end
 
-    DEFAULT_BATCH_SIZE = 50
-    DEFAULT_BATCH_INTERVAL_UNIT = 'minute'
-    DEFAULT_BATCH_INTERVAL_VALUE = 1
-
     def policy
       strong_memoize(:policy) do
         security_orchestration_policy_configuration.active_scan_execution_policies.at(policy_index)
@@ -70,33 +66,6 @@ module Security
 
     def worker_cron_expression
       Settings.cron_jobs['security_orchestration_policy_rule_schedule_worker']['cron']
-    end
-
-    def delay
-      case batch_interval_unit
-      when 'minute', 'minutes'
-        batch_interval_value * 60
-      when 'second', 'seconds'
-        batch_interval_value
-      end
-    end
-
-    def batch_size
-      policy&.dig(:configuration, :pipeline_optimization, :batch) || DEFAULT_BATCH_SIZE
-    end
-
-    private
-
-    def batch_interval_value
-      batch_interval&.dig(:value) || DEFAULT_BATCH_INTERVAL_VALUE
-    end
-
-    def batch_interval_unit
-      batch_interval&.dig(:unit) || DEFAULT_BATCH_INTERVAL_UNIT
-    end
-
-    def batch_interval
-      policy&.dig(:configuration, :pipeline_optimization, :interval)
     end
   end
 end
