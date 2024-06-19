@@ -45,6 +45,10 @@ module EE
           push_licensed_feature(:okrs, project)
         end
 
+        before_action do
+          push_frontend_feature_flag(:namespace_level_work_items, project&.group)
+        end
+
         before_action only: %i[show index] do
           @seat_count_data = generate_seat_count_alert_data(@project)
         end
