@@ -64,6 +64,18 @@ describe('PanelsBase', () => {
     it('does not render the tooltip icon', () => {
       expect(findPanelTitleTooltipIcon().exists()).toBe(false);
     });
+
+    it('does not set an alert border color', () => {
+      const alertClasses = [
+        'gl-border-t-red-500',
+        'gl-border-t-orange-500',
+        'gl-border-t-blue-500',
+      ];
+
+      alertClasses.forEach((alertClass) => {
+        expect(wrapper.attributes('class')).not.toContain(alertClass);
+      });
+    });
   });
 
   describe('with a body slot', () => {

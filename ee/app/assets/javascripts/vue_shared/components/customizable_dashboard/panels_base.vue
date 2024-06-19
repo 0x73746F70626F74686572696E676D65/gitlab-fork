@@ -73,7 +73,10 @@ export default {
   },
   computed: {
     alertClasses() {
-      const borderColor = this.$options.alertBorderColorMap[this.alertVariant];
+      const borderColor = this.showAlertState
+        ? this.$options.alertBorderColorMap[this.alertVariant]
+        : '';
+
       return `gl-border-t-2 gl-border-t-solid ${borderColor}`;
     },
     alertIconClasses() {
