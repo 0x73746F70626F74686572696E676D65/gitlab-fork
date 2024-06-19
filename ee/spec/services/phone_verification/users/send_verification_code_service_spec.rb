@@ -515,7 +515,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
       end
 
       it 'does not store risk score in abuse trust scores' do
-        expect { service.execute }.not_to change { Abuse::TrustScore.count }
+        expect { service.execute }.not_to change { AntiAbuse::TrustScore.count }
       end
     end
   end

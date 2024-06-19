@@ -11,7 +11,7 @@ RSpec.describe Arkose::RecordUserDataService, feature_category: :instance_resili
 
   let(:response) { Arkose::VerifyResponse.new(arkose_verify_response) }
   let(:service) { described_class.new(response: response, user: user) }
-  let(:user_scores) { Abuse::UserTrustScore.new(user) }
+  let(:user_scores) { AntiAbuse::UserTrustScore.new(user) }
 
   describe '#execute' do
     it 'adds new custom attributes to the user' do

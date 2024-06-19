@@ -55,21 +55,15 @@ RSpec.describe Abuse::NewAbuseReportWorker, :saas, feature_category: :instance_r
       end
 
       context 'when the user is a member of a namespace with a paid plan trial subscription' do
-        let_it_be(:trial_group) { create(:group_with_plan, plan: :ultimate_plan, trial_ends_on: 1.day.from_now) }
-
-        before do
-          trial_group.add_reporter(user)
+        let_it_be(:trial_group) do
+          create(:group_with_plan, plan: :ultimate_plan, trial_ends_on: 1.day.from_now, reporters: user)
         end
 
         it_behaves_like 'bans user'
       end
 
       context 'when the user is a member of a namespace with a paid plan subscription' do
-        let_it_be(:paid_group) { create(:group_with_plan, plan: :ultimate_plan) }
-
-        before do
-          paid_group.add_reporter(user)
-        end
+        let_it_be(:paid_group) { create(:group_with_plan, plan: :ultimate_plan, reporters: user) }
 
         it_behaves_like 'does not ban user'
       end
@@ -125,12 +119,7 @@ RSpec.describe Abuse::NewAbuseReportWorker, :saas, feature_category: :instance_r
       end
 
       context 'when user owns namespaces with more than five members' do
-        let_it_be(:group) { create(:group) }
-
-        before do
-          group.add_owner(user)
-          5.times { group.add_guest(create(:user)) }
-        end
+        let_it_be(:group) { create(:group, owners: user, guests: create_list(:user, 5)) }
 
         it_behaves_like 'does not ban user'
       end
