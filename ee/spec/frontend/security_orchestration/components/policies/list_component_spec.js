@@ -7,7 +7,6 @@ import ListComponentScope from 'ee/security_orchestration/components/policies/li
 import DrawerWrapper from 'ee/security_orchestration/components/policy_drawer/drawer_wrapper.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
-
 import {
   POLICY_SOURCE_OPTIONS,
   POLICY_TYPE_FILTER_OPTIONS,
@@ -30,9 +29,10 @@ describe('List component', () => {
   const factory = (mountFn = mountExtended) => ({ props = {}, provide = {} } = {}) => {
     wrapper = mountFn(ListComponent, {
       propsData: {
-        pipelineExecutionPolicies: mockPipelineExecutionPoliciesResponse,
-        scanExecutionPolicies: mockScanExecutionPoliciesResponse,
-        scanResultPolicies: mockScanResultPoliciesResponse,
+        policiesByType: {
+          [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: mockScanExecutionPoliciesResponse,
+          [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: mockScanResultPoliciesResponse,
+        },
         ...props,
       },
       provide: {
@@ -72,7 +72,7 @@ describe('List component', () => {
     window.gon.features = { pipelineExecutionPolicyType: false };
   });
 
-  describe('initial state', () => {
+  describe('initial state while loading', () => {
     it('renders closed editor drawer', () => {
       mountShallowWrapper();
 
@@ -88,13 +88,8 @@ describe('List component', () => {
     });
   });
 
-  describe('given policies have been fetched', () => {
+  describe('initial state with data', () => {
     let rows;
-
-    beforeEach(() => {
-      mountWrapper();
-      rows = wrapper.findAll('tr');
-    });
 
     describe.each`
       rowIndex | expectedPolicyName                           | expectedPolicyType
@@ -104,6 +99,8 @@ describe('List component', () => {
       let row;
 
       beforeEach(() => {
+        mountWrapper();
+        rows = wrapper.findAll('tr');
         row = rows.at(rowIndex);
       });
 
@@ -117,11 +114,12 @@ describe('List component', () => {
     });
 
     it.each`
-      description         | filterBy                                     | hiddenTypes
+      type                | filterBy                                     | hiddenTypes
       ${'scan execution'} | ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION} | ${[POLICY_TYPE_FILTER_OPTIONS.APPROVAL]}
       ${'scan result'}    | ${POLICY_TYPE_FILTER_OPTIONS.APPROVAL}       | ${[POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION]}
-    `('policies filtered by $description type', async ({ filterBy, hiddenTypes }) => {
-      findPolicyTypeFilter().vm.$emit('input', filterBy.value);
+    `('filtered by $type type', async ({ filterBy, hiddenTypes }) => {
+      mountWrapper({ props: { selectedPolicyType: filterBy.value } });
+      rows = wrapper.findAll('tr');
       await nextTick();
 
       expect(findPoliciesTable().text()).toContain(filterBy.text);
@@ -131,6 +129,8 @@ describe('List component', () => {
     });
 
     it('updates url when type filter is selected', () => {
+      mountWrapper();
+      rows = wrapper.findAll('tr');
       findPolicyTypeFilter().vm.$emit('input', POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value);
       expect(urlUtils.updateHistory).toHaveBeenCalledWith({
         title: 'Test title',
@@ -140,7 +140,7 @@ describe('List component', () => {
     });
   });
 
-  describe('selected policy', () => {
+  describe('policy drawer', () => {
     beforeEach(() => {
       mountWrapper();
     });
@@ -160,64 +160,15 @@ describe('List component', () => {
       await nextTick();
       expect(findPolicyDrawer().props('policy')).toEqual(null);
     });
-  });
 
-  describe('status column', () => {
-    beforeEach(() => {
-      mountWrapper();
-    });
-
-    it('renders a checkmark icon for enabled policies', () => {
-      const icon = findPolicyStatusCells().at(0).find('svg');
-
-      expect(icon.exists()).toBe(true);
-      expect(icon.props()).toMatchObject({
-        name: 'check-circle-filled',
-        ariaLabel: 'Enabled',
-      });
-    });
-
-    it('renders a "Disabled" label for screen readers for disabled policies', () => {
-      const span = findPolicyStatusCells().at(2).find('span');
-
-      expect(span.exists()).toBe(true);
-      expect(span.attributes('class')).toBe('gl-sr-only');
-      expect(span.text()).toBe('Disabled');
-    });
-  });
-
-  describe('source column', () => {
-    it('renders when the policy is not inherited', () => {
-      mountWrapper();
-      expect(findPolicySourceCells().at(0).text()).toBe('This project');
-    });
-
-    it('renders when the policy is inherited', () => {
-      mountWrapper();
-      expect(trimText(findPolicySourceCells().at(1).text())).toBe(
-        'Inherited from parent-group-name',
-      );
-    });
-
-    it('renders inherited policy without namespace', () => {
-      mountWrapper({ provide: { namespaceType: NAMESPACE_TYPES.PROJECT } });
-      expect(trimText(findPolicySourceCells().at(1).text())).toBe(
-        'Inherited from parent-group-name',
-      );
-    });
-  });
-
-  describe.each`
-    description         | policy                                  | policyType
-    ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}
-    ${'scan result'}    | ${mockScanResultPoliciesResponse[0]}    | ${POLICY_TYPE_COMPONENT_OPTIONS.approval.value}
-  `('given there is a $description policy selected', ({ policy, policyType }) => {
-    beforeEach(() => {
+    it.each`
+      type                | policy                                  | policyType
+      ${'scan execution'} | ${mockScanExecutionPoliciesResponse[0]} | ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}
+      ${'scan result'}    | ${mockScanResultPoliciesResponse[0]}    | ${POLICY_TYPE_COMPONENT_OPTIONS.approval.value}
+    `('renders opened editor drawer for a $type policy', async ({ policy, policyType }) => {
       mountWrapper();
       findPoliciesTable().vm.$emit('row-selected', [policy]);
-    });
-
-    it('renders opened editor drawer', () => {
+      await nextTick();
       const editorDrawer = findPolicyDrawer();
       expect(editorDrawer.exists()).toBe(true);
       expect(editorDrawer.props()).toMatchObject({
@@ -226,9 +177,7 @@ describe('List component', () => {
         policyType,
       });
     });
-  });
 
-  describe('policy drawer', () => {
     it('should close drawer when new security project is selected', async () => {
       const scanExecutionPolicy = mockScanExecutionPoliciesResponse[0];
 
@@ -247,133 +196,223 @@ describe('List component', () => {
     });
   });
 
-  describe('inherited filter', () => {
-    beforeEach(() => {
-      mountWrapper({
-        props: {
-          scanExecutionPolicies: [mockScanExecutionPoliciesResponse[1]],
-          scanResultPolicies: [mockScanResultPoliciesResponse[1]],
+  describe('columns', () => {
+    describe('status', () => {
+      beforeEach(() => {
+        mountWrapper();
+      });
+
+      it('renders a checkmark icon for enabled policies', () => {
+        const icon = findPolicyStatusCells().at(0).find('svg');
+
+        expect(icon.exists()).toBe(true);
+        expect(icon.props()).toMatchObject({
+          name: 'check-circle-filled',
+          ariaLabel: 'Enabled',
+        });
+      });
+
+      it('renders a "Disabled" label for screen readers for disabled policies', () => {
+        const span = findPolicyStatusCells().at(2).find('span');
+
+        expect(span.exists()).toBe(true);
+        expect(span.attributes('class')).toBe('gl-sr-only');
+        expect(span.text()).toBe('Disabled');
+      });
+
+      describe('breaking changes icon', () => {
+        it('does not render breaking changes icon when flag is disabled', () => {
+          mountWrapper();
+          const icons = findPolicyStatusCells().at(0).findAll('svg');
+          expect(icons.length).toBe(1);
+          expect(icons.at(0).props('name')).toBe('check-circle-filled');
+        });
+
+        it('does not render breaking changes icon when there are no deprecated properties', () => {
+          mountWrapper();
+          const icons = findPolicyStatusCells().at(0).findAll('svg');
+          expect(icons.length).toBe(1);
+          expect(icons.at(0).props('name')).toBe('check-circle-filled');
+        });
+
+        it('renders breaking changes icon when there are deprecated properties', () => {
+          mountWrapper({
+            props: {
+              policiesByType: {
+                [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: [],
+                [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: [
+                  { ...mockScanResultPoliciesResponse[0], deprecatedProperties: ['test', 'test1'] },
+                ],
+              },
+            },
+          });
+          const icon = findPolicyStatusCells().at(0).find('svg');
+          expect(icon.props('name')).toBe('warning');
+        });
+      });
+    });
+
+    describe('source', () => {
+      it('renders when the policy is not inherited', () => {
+        mountWrapper();
+        expect(findPolicySourceCells().at(0).text()).toBe('This project');
+      });
+
+      it('renders when the policy is inherited', () => {
+        mountWrapper();
+        expect(trimText(findPolicySourceCells().at(1).text())).toBe(
+          'Inherited from parent-group-name',
+        );
+      });
+
+      it('renders inherited policy without namespace', () => {
+        mountWrapper({ provide: { namespaceType: NAMESPACE_TYPES.PROJECT } });
+        expect(trimText(findPolicySourceCells().at(1).text())).toBe(
+          'Inherited from parent-group-name',
+        );
+      });
+    });
+
+    describe('scope', () => {
+      it.each([NAMESPACE_TYPES.GROUP, NAMESPACE_TYPES.PROJECT])(
+        'renders policy scope column inside table on %s level',
+        (namespaceType) => {
+          mountWrapper({ provide: { namespaceType } });
+          expect(findPolicyScopeCells()).toHaveLength(4);
+          expect(findListComponentScope().exists()).toBe(true);
         },
-      });
-      findPolicySourceFilter().vm.$emit('input', POLICY_SOURCE_OPTIONS.INHERITED.value);
-    });
-
-    it('displays inherited policies only', () => {
-      expect(findPolicySourceCells()).toHaveLength(2);
-      expect(trimText(findPolicySourceCells().at(0).text())).toBe(
-        'Inherited from parent-group-name',
-      );
-      expect(trimText(findPolicySourceCells().at(1).text())).toBe(
-        'Inherited from parent-group-name',
-      );
-    });
-
-    it('updates url when source filter is selected', () => {
-      expect(urlUtils.updateHistory).toHaveBeenCalledWith({
-        title: 'Test title',
-        url: `http://test.host/?source=${POLICY_SOURCE_OPTIONS.INHERITED.value.toLowerCase()}`,
-        replace: true,
-      });
-    });
-
-    it('displays inherited scan execution policies', () => {
-      expect(trimText(findPolicyTypeCells().at(0).text())).toBe(
-        POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.text,
-      );
-    });
-
-    it('displays inherited scan result policies', () => {
-      expect(trimText(findPolicyTypeCells().at(1).text())).toBe(
-        POLICY_TYPE_FILTER_OPTIONS.APPROVAL.text,
       );
     });
   });
 
-  describe('selected url parameters', () => {
-    it.each`
-      value
-      ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}
-      ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value}
-    `('should select type filter value $value parameters are in url', ({ value }) => {
-      jest.spyOn(urlUtils, 'getParameterByName').mockReturnValue(value);
-      mountWrapper();
-      expect(findPolicySourceFilter().props('value')).toBe(POLICY_SOURCE_OPTIONS.ALL.value);
-      expect(findPolicyTypeFilter().props('value')).toBe(value);
-    });
-
-    it.each`
-      value
-      ${POLICY_SOURCE_OPTIONS.DIRECT.value}
-      ${POLICY_SOURCE_OPTIONS.INHERITED.value}
-    `('should select source filter value $value when parameters are in url', ({ value }) => {
-      mountWrapper({ props: { selectedPolicySource: value } });
-      expect(findPolicySourceFilter().props('value')).toBe(value);
-      expect(findPolicyTypeFilter().props('value')).toBe(POLICY_TYPE_FILTER_OPTIONS.ALL.value);
-    });
-  });
-
-  describe('scope column', () => {
-    it.each([NAMESPACE_TYPES.GROUP, NAMESPACE_TYPES.PROJECT])(
-      'renders policy scope column inside table on %s level',
-      (namespaceType) => {
-        mountWrapper({ provide: { namespaceType } });
-        expect(findPolicyScopeCells()).toHaveLength(4);
-        expect(findListComponentScope().exists()).toBe(true);
-      },
-    );
-  });
-
-  describe('breaking changes icon', () => {
-    it('does not render breaking changes icon when flag is disabled', () => {
-      mountWrapper();
-      const icons = findPolicyStatusCells().at(0).findAll('svg');
-      expect(icons.length).toBe(1);
-      expect(icons.at(0).props('name')).toBe('check-circle-filled');
-    });
-
-    it('does not render breaking changes icon when there are no deprecated properties', () => {
-      mountWrapper();
-      const icons = findPolicyStatusCells().at(0).findAll('svg');
-      expect(icons.length).toBe(1);
-      expect(icons.at(0).props('name')).toBe('check-circle-filled');
-    });
-
-    it('renders breaking changes icon when there are deprecated properties', () => {
-      mountWrapper({
-        props: {
-          scanResultPolicies: [
-            { ...mockScanResultPoliciesResponse[0], deprecatedProperties: ['test', 'test1'] },
-          ],
-        },
-      });
-      const icon = findPolicyStatusCells().at(2).find('svg');
-      expect(icon.props('name')).toBe('warning');
-    });
-  });
-
-  describe('pipeline execution filter option', () => {
-    beforeEach(() => {
-      window.gon.features = { pipelineExecutionPolicyType: true };
-    });
-
-    it('updates url when type filter is selected', () => {
-      mountWrapper({
-        provide: {
-          glFeatures: {
-            pipelineExecutionPolicyType: true,
+  describe('filters', () => {
+    describe('type', () => {
+      beforeEach(() => {
+        mountWrapper({
+          props: {
+            policiesByType: {
+              [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: [
+                mockScanExecutionPoliciesResponse[1],
+              ],
+              [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: [mockScanResultPoliciesResponse[1]],
+            },
           },
-        },
+        });
+        findPolicyTypeFilter().vm.$emit('input', POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value);
       });
 
-      findPolicyTypeFilter().vm.$emit(
-        'input',
-        PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value,
-      );
+      it('emits when the type filter is changed', () => {
+        expect(wrapper.emitted('update-policy-type')).toEqual([
+          [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value],
+        ]);
+      });
 
-      expect(urlUtils.updateHistory).toHaveBeenCalledWith({
-        title: 'Test title',
-        url: `http://test.host/?type=${PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value.toLowerCase()}`,
-        replace: true,
+      it.each`
+        value
+        ${POLICY_TYPE_FILTER_OPTIONS.ALL.value}
+        ${POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value}
+      `('should select type filter value $value parameters are in url', ({ value }) => {
+        mountWrapper({ props: { selectedPolicyType: value } });
+        expect(findPolicySourceFilter().props('value')).toBe(POLICY_SOURCE_OPTIONS.ALL.value);
+        expect(findPolicyTypeFilter().props('value')).toBe(value);
+      });
+
+      describe('pipeline execution filter option', () => {
+        beforeEach(() => {
+          window.gon.features = { pipelineExecutionPolicyType: true };
+        });
+
+        it('updates url when type filter is selected', () => {
+          mountWrapper({
+            props: {
+              policiesByType: {
+                [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION
+                  .value]: mockScanExecutionPoliciesResponse,
+                [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: mockScanResultPoliciesResponse,
+                [PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION
+                  .value]: mockPipelineExecutionPoliciesResponse,
+              },
+            },
+            provide: {
+              glFeatures: {
+                pipelineExecutionPolicyType: true,
+              },
+            },
+          });
+
+          findPolicyTypeFilter().vm.$emit(
+            'input',
+            PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value,
+          );
+
+          expect(urlUtils.updateHistory).toHaveBeenCalledWith({
+            title: 'Test title',
+            url: `http://test.host/?type=${PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value.toLowerCase()}`,
+            replace: true,
+          });
+        });
+      });
+    });
+
+    describe('source', () => {
+      beforeEach(() => {
+        mountWrapper({
+          props: {
+            policiesByType: {
+              [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: [
+                mockScanExecutionPoliciesResponse[1],
+              ],
+              [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: [mockScanResultPoliciesResponse[1]],
+            },
+          },
+        });
+        findPolicySourceFilter().vm.$emit('input', POLICY_SOURCE_OPTIONS.INHERITED.value);
+      });
+
+      it('displays inherited policies only', () => {
+        expect(findPolicySourceCells()).toHaveLength(2);
+        expect(trimText(findPolicySourceCells().at(0).text())).toBe(
+          'Inherited from parent-group-name',
+        );
+        expect(trimText(findPolicySourceCells().at(1).text())).toBe(
+          'Inherited from parent-group-name',
+        );
+      });
+
+      it('updates url when source filter is selected', () => {
+        expect(urlUtils.updateHistory).toHaveBeenCalledWith({
+          title: 'Test title',
+          url: `http://test.host/?source=${POLICY_SOURCE_OPTIONS.INHERITED.value.toLowerCase()}`,
+          replace: true,
+        });
+      });
+
+      it('displays inherited scan execution policies', () => {
+        expect(trimText(findPolicyTypeCells().at(0).text())).toBe(
+          POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.text,
+        );
+      });
+
+      it('displays inherited scan result policies', () => {
+        expect(trimText(findPolicyTypeCells().at(1).text())).toBe(
+          POLICY_TYPE_FILTER_OPTIONS.APPROVAL.text,
+        );
+      });
+
+      it.each`
+        value
+        ${POLICY_SOURCE_OPTIONS.DIRECT.value}
+        ${POLICY_SOURCE_OPTIONS.INHERITED.value}
+      `('should select source filter value $value when parameters are in url', ({ value }) => {
+        mountWrapper({ props: { selectedPolicySource: value } });
+        expect(findPolicySourceFilter().props('value')).toBe(value);
+        expect(findPolicyTypeFilter().props('value')).toBe(POLICY_TYPE_FILTER_OPTIONS.ALL.value);
+      });
+
+      it('emits when the source filter is changed', () => {
+        expect(wrapper.emitted('update-policy-source')).toEqual([
+          [POLICY_SOURCE_OPTIONS.INHERITED.value],
+        ]);
       });
     });
   });

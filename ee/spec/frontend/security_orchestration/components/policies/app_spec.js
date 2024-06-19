@@ -6,7 +6,10 @@ import ListHeader from 'ee/security_orchestration/components/policies/list_heade
 import ListComponent from 'ee/security_orchestration/components/policies/list_component.vue';
 import App from 'ee/security_orchestration/components/policies/app.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { POLICY_SOURCE_OPTIONS } from 'ee/security_orchestration/components/policies/constants';
+import {
+  POLICY_SOURCE_OPTIONS,
+  POLICY_TYPE_FILTER_OPTIONS,
+} from 'ee/security_orchestration/components/policies/constants';
 import getSppLinkedProjectsNamespaces from 'ee/security_orchestration/graphql/queries/get_spp_linked_projects_namespaces.graphql';
 import projectScanExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/project_scan_execution_policies.query.graphql';
 import groupScanExecutionPoliciesQuery from 'ee/security_orchestration/graphql/queries/group_scan_execution_policies.query.graphql';
@@ -87,6 +90,10 @@ describe('App', () => {
   const findPoliciesHeader = () => wrapper.findComponent(ListHeader);
   const findPoliciesList = () => wrapper.findComponent(ListComponent);
 
+  beforeEach(() => {
+    gon.features = {};
+  });
+
   describe('loading', () => {
     it('renders the policies list correctly when pipelineExecutionPolicyType is false', () => {
       createWrapper();
@@ -106,8 +113,18 @@ describe('App', () => {
     });
 
     it('renders the policies list correctly', () => {
-      expect(findPoliciesList().props('shouldUpdatePolicyList')).toBe(false);
-      expect(findPoliciesList().props('hasPolicyProject')).toBe(false);
+      expect(findPoliciesList().props()).toEqual(
+        expect.objectContaining({
+          shouldUpdatePolicyList: false,
+          hasPolicyProject: false,
+          selectedPolicySource: POLICY_SOURCE_OPTIONS.ALL.value,
+          selectedPolicyType: POLICY_TYPE_FILTER_OPTIONS.ALL.value,
+        }),
+      );
+      expect(findPoliciesList().props('policiesByType')).toEqual({
+        [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: mockScanExecutionPoliciesResponse,
+        [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: mockScanResultPoliciesResponse,
+      });
     });
 
     it('renders the policy header correctly', () => {
@@ -139,7 +156,6 @@ describe('App', () => {
     `(
       'fetches project-level $type policies instead of group-level',
       ({ groupHandler, projectHandler }) => {
-        createWrapper();
         expect(requestHandlers[groupHandler]).not.toHaveBeenCalled();
         expect(requestHandlers[projectHandler]).toHaveBeenCalledWith({
           fullPath: namespacePath,
@@ -155,7 +171,6 @@ describe('App', () => {
       `(
         'does not fetch group-level or project-level $type policies',
         ({ groupHandler, projectHandler }) => {
-          createWrapper();
           expect(requestHandlers[projectHandler]).not.toHaveBeenCalled();
           expect(requestHandlers[groupHandler]).not.toHaveBeenCalledWith();
         },
@@ -164,6 +179,8 @@ describe('App', () => {
 
     describe('when pipelineExecutionPolicyEnabled is true', () => {
       beforeEach(async () => {
+        gon.features = { pipelineExecutionPolicyType: true };
+
         createWrapper({
           provide: { glFeatures: { pipelineExecutionPolicyType: true } },
         });

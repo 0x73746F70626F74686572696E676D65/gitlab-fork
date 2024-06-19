@@ -5,7 +5,10 @@ import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { createAlert } from '~/alert';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { getParameterByName } from '~/lib/utils/url_utility';
-import { extractSourceParameter } from 'ee/security_orchestration/components/policies/utils';
+import {
+  extractSourceParameter,
+  extractTypeParameter,
+} from 'ee/security_orchestration/components/policies/utils';
 import { isGroup } from '../utils';
 import projectScanExecutionPoliciesQuery from '../../graphql/queries/project_scan_execution_policies.query.graphql';
 import groupScanExecutionPoliciesQuery from '../../graphql/queries/group_scan_execution_policies.query.graphql';
@@ -15,6 +18,7 @@ import projectPipelineExecutionPoliciesQuery from '../../graphql/queries/project
 import groupPipelineExecutionPoliciesQuery from '../../graphql/queries/group_pipeline_execution_policies.query.graphql';
 import ListHeader from './list_header.vue';
 import ListComponent from './list_component.vue';
+import { POLICY_TYPE_FILTER_OPTIONS, PIPELINE_EXECUTION_FILTER_OPTION } from './constants';
 
 const NAMESPACE_QUERY_DICT = {
   scanExecution: {
@@ -125,11 +129,13 @@ export default {
   },
   data() {
     const selectedPolicySource = extractSourceParameter(getParameterByName('source'));
+    const selectedPolicyType = extractTypeParameter(getParameterByName('type'));
 
     return {
       hasInvalidPolicies: false,
       hasPolicyProject: Boolean(this.assignedPolicyProject?.id),
       selectedPolicySource,
+      selectedPolicyType,
       shouldUpdatePolicyList: false,
       linkedSppItems: [],
       pipelineExecutionPolicies: [],
@@ -138,6 +144,18 @@ export default {
     };
   },
   computed: {
+    policiesByType() {
+      return {
+        [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: this.scanExecutionPolicies,
+        [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: this.scanResultPolicies,
+        ...(this.pipelineExecutionPolicyEnabled
+          ? {
+              [PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value]: this
+                .pipelineExecutionPolicies,
+            }
+          : {}),
+      };
+    },
     isLoadingPolicies() {
       return (
         this.$apollo.queries.scanExecutionPolicies.loading ||
@@ -165,8 +183,11 @@ export default {
       this.$apollo.queries.scanExecutionPolicies.refetch();
       this.$apollo.queries.scanResultPolicies.refetch();
     },
-    handleUpdatePolicySource(selectedPolicySource) {
-      this.selectedPolicySource = selectedPolicySource;
+    handleUpdatePolicySource(value) {
+      this.selectedPolicySource = value;
+    },
+    handleUpdatePolicyType(value) {
+      this.selectedPolicyType = value;
     },
   },
 };
@@ -182,12 +203,12 @@ export default {
       :should-update-policy-list="shouldUpdatePolicyList"
       :is-loading-policies="isLoadingPolicies"
       :selected-policy-source="selectedPolicySource"
+      :selected-policy-type="selectedPolicyType"
       :linked-spp-items="linkedSppItems"
-      :scan-execution-policies="scanExecutionPolicies"
-      :scan-result-policies="scanResultPolicies"
-      :pipeline-execution-policies="pipelineExecutionPolicies"
+      :policies-by-type="policiesByType"
       @cleared-selected="handleClearedSelected"
       @update-policy-source="handleUpdatePolicySource"
+      @update-policy-type="handleUpdatePolicyType"
     />
   </div>
 </template>
