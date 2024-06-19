@@ -10,7 +10,7 @@ import { getParameterByName, setUrlParams, updateHistory } from '~/lib/utils/url
 import { extractTypeParameter } from 'ee/security_orchestration/components/policies/utils';
 import { getPolicyType } from '../../utils';
 import DrawerWrapper from '../policy_drawer/drawer_wrapper.vue';
-import { isPolicyInherited, policyHasNamespace, isGroup, isProject } from '../utils';
+import { isPolicyInherited, policyHasNamespace, isGroup } from '../utils';
 import {
   POLICY_SOURCE_OPTIONS,
   POLICY_TYPE_FILTER_OPTIONS,
@@ -51,11 +51,6 @@ export default {
   inject: ['namespacePath', 'namespaceType', 'disableScanPolicyUpdate'],
   props: {
     hasPolicyProject: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-    isLoadingLinkedSpps: {
       type: Boolean,
       required: false,
       default: false,
@@ -115,12 +110,6 @@ export default {
     },
     pipelineExecutionPolicyEnabled() {
       return this.glFeatures.pipelineExecutionPolicyType;
-    },
-    showLoader() {
-      return this.isLoadingLinkedSpps && this.isProject;
-    },
-    isProject() {
-      return isProject(this.namespaceType);
     },
     isGroup() {
       return isGroup(this.namespaceType);
@@ -374,11 +363,7 @@ export default {
       </template>
 
       <template #cell(scope)="{ item: { policyScope } }">
-        <list-component-scope
-          :policy-scope="policyScope"
-          :linked-spp-items="linkedSppItems"
-          :loading="showLoader"
-        />
+        <list-component-scope :policy-scope="policyScope" :linked-spp-items="linkedSppItems" />
       </template>
 
       <template #cell(updatedAt)="{ value: updatedAt }">
