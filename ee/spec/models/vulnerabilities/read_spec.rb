@@ -838,6 +838,63 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     end
   end
 
+  describe 'before & after in parent group scopes' do
+    let_it_be(:parent_group) { create(:group) }
+    let_it_be(:child_group_1) { create(:group, parent: parent_group) }
+    let_it_be(:child_group_2) { create(:group, parent: parent_group) }
+    let_it_be(:child_group_1_1) { create(:group, parent: child_group_1) }
+    let_it_be(:project_on_parent) { create(:project, group: parent_group) }
+    let_it_be(:project_on_child_1) { create(:project, group: child_group_1) }
+    let_it_be(:project_on_child_2) { create(:project, :archived, group: child_group_2) }
+    let_it_be(:project_on_child_1_1) { create(:project, group: child_group_1_1) }
+
+    let_it_be(:vulnerability_on_project_on_parent) { create(:vulnerability_read, project: project_on_parent) }
+    let_it_be(:vulnerability_on_project_on_child_1) { create(:vulnerability_read, project: project_on_child_1) }
+    let_it_be(:another_vulnerability_on_project_on_child_1) { create(:vulnerability_read, project: project_on_child_1) }
+    let_it_be(:vulnerability_on_project_on_child_2) { create(:vulnerability_read, project: project_on_child_2) }
+    let_it_be(:vulnerability_on_project_on_child_1_1) { create(:vulnerability_read, project: project_on_child_1_1) }
+
+    describe '.in_parent_group_after' do
+      subject { described_class.in_parent_group_after(another_vulnerability_on_project_on_child_1) }
+
+      it do
+        is_expected.to match_array([
+          another_vulnerability_on_project_on_child_1,
+          vulnerability_on_project_on_child_2,
+          vulnerability_on_project_on_child_1_1
+        ])
+      end
+    end
+
+    describe '.in_parent_group_before' do
+      subject { described_class.in_parent_group_before(another_vulnerability_on_project_on_child_1) }
+
+      it do
+        is_expected.to match_array([
+          vulnerability_on_project_on_parent,
+          vulnerability_on_project_on_child_1,
+          another_vulnerability_on_project_on_child_1
+        ])
+      end
+    end
+  end
+
+  describe '.arel_grouping_by_traversal_ids_and_vulnerability_id' do
+    subject { described_class.arel_grouping_by_traversal_ids_and_vulnerability_id.to_sql }
+
+    it { is_expected.to eq('("vulnerability_reads"."traversal_ids", "vulnerability_reads"."vulnerability_id")') }
+  end
+
+  describe '#arel_grouping_by_traversal_ids_and_id' do
+    let(:group) { build(:group, traversal_ids: [1, 2]) }
+    let(:project) { build(:project, namespace: group) }
+    let(:vulnerability_read) { build(:vulnerability_read, id: 1, project: project) }
+
+    subject { vulnerability_read.arel_grouping_by_traversal_ids_and_id.to_sql }
+
+    it { is_expected.to eq("('{1,2}', 1)") }
+  end
+
   private
 
   def create_vulnerability(severity: 7, confidence: 7, report_type: 0)
