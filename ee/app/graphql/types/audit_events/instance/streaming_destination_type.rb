@@ -9,6 +9,10 @@ module Types
         authorize :admin_instance_external_audit_events
 
         implements AuditEventStreamingDestinationInterface
+
+        field :namespace_filters, [::Types::AuditEvents::Instance::NamespaceFilterType],
+          null: true,
+          description: 'List of subgroup or project filters for the destination.'
       end
     end
   end
