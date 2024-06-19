@@ -211,6 +211,9 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
     context 'in child metadata' do
       it 'displays progress of 0% by default, in tree and modal' do
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/467207
+        allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(300)
+
         create_okr('objective', 'Objective 2')
 
         within_testid('work-item-tree') do
@@ -255,12 +258,18 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     end
 
     it 'creates objective' do
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/467207
+      allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(300)
+
       create_okr('objective', 'Objective 2')
 
       expect(find_by_testid('work-item-tree')).to have_content('Objective 2')
     end
 
     it 'removes direct child of objective with undoing' do
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/467207
+      allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(300)
+
       create_okr('objective', 'Objective 2')
 
       find_by_testid('links-child').hover
@@ -286,6 +295,9 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     end
 
     it 'removes indirect child of objective with undoing' do
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/467207
+      allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(300)
+
       create_okr('objective', 'Objective 2')
 
       within_testid('work-item-tree') do
@@ -336,6 +348,9 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     end
 
     it 'creates key result' do
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/467207
+      allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(300)
+
       create_okr('key result', 'KR 2')
 
       expect(find_by_testid('work-item-tree')).to have_content('KR 2')
