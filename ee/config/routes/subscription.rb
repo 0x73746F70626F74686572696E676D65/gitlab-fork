@@ -8,7 +8,7 @@ resource :subscriptions, only: [:new, :create] do
   post :validate_payment_method
 
   scope module: :subscriptions do
-    resources :groups, only: [:edit, :update]
+    resources :groups, only: [:new, :edit, :update, :create]
     resources :hand_raise_leads, only: :create
   end
 end
