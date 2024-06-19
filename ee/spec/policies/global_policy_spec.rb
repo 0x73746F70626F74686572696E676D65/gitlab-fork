@@ -693,6 +693,54 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     end
   end
 
+  describe 'access_x_ray_on_instance' do
+    context 'when on .org or .com', :saas do
+      context 'when x ray available' do
+        before do
+          stub_saas_features(code_suggestions_x_ray: true)
+        end
+
+        it { is_expected.to be_allowed(:access_x_ray_on_instance) }
+      end
+
+      context 'when x ray not available' do
+        before do
+          stub_saas_features(code_suggestions_x_ray: false)
+        end
+
+        context 'when code suggestions available' do
+          before do
+            stub_licensed_features(code_suggestions: true)
+          end
+
+          it { is_expected.to be_allowed(:access_x_ray_on_instance) }
+        end
+
+        context 'when code suggestions not available' do
+          before do
+            stub_licensed_features(code_suggestions: false)
+          end
+
+          it { is_expected.to be_disallowed(:access_x_ray_on_instance) }
+        end
+      end
+    end
+
+    context 'when not on .org or .com' do
+      context 'when code suggestions available' do
+        before do
+          stub_licensed_features(code_suggestions: true)
+        end
+
+        it { is_expected.to be_allowed(:access_x_ray_on_instance) }
+      end
+
+      context 'when code suggestions not available' do
+        it { is_expected.to be_disallowed(:access_x_ray_on_instance) }
+      end
+    end
+  end
+
   describe 'git access' do
     context 'security policy bot' do
       let(:current_user) { security_policy_bot }
