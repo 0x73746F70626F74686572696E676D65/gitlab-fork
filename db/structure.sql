@@ -26238,10 +26238,6 @@ CREATE INDEX index_ci_sources_projects_on_pipeline_id ON ci_sources_projects USI
 
 CREATE UNIQUE INDEX index_ci_sources_projects_on_source_project_id_and_pipeline_id ON ci_sources_projects USING btree (source_project_id, pipeline_id);
 
-CREATE INDEX p_ci_stages_pipeline_id_idx ON ONLY p_ci_stages USING btree (pipeline_id);
-
-CREATE INDEX index_ci_stages_on_pipeline_id ON ci_stages USING btree (pipeline_id);
-
 CREATE INDEX p_ci_stages_pipeline_id_id_idx ON ONLY p_ci_stages USING btree (pipeline_id, id) WHERE (status = ANY (ARRAY[0, 1, 2, 8, 9, 10]));
 
 CREATE INDEX index_ci_stages_on_pipeline_id_and_id ON ci_stages USING btree (pipeline_id, id) WHERE (status = ANY (ARRAY[0, 1, 2, 8, 9, 10]));
@@ -31035,8 +31031,6 @@ ALTER INDEX p_ci_job_artifacts_partition_id_job_id_idx ATTACH PARTITION index_ci
 ALTER INDEX p_ci_job_artifacts_project_id_id_idx1 ATTACH PARTITION index_ci_job_artifacts_on_project_id_and_id;
 
 ALTER INDEX p_ci_job_artifacts_project_id_idx1 ATTACH PARTITION index_ci_job_artifacts_on_project_id_for_security_reports;
-
-ALTER INDEX p_ci_stages_pipeline_id_idx ATTACH PARTITION index_ci_stages_on_pipeline_id;
 
 ALTER INDEX p_ci_stages_pipeline_id_id_idx ATTACH PARTITION index_ci_stages_on_pipeline_id_and_id;
 
