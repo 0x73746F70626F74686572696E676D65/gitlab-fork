@@ -9,6 +9,8 @@ module Security
       feature_category :security_policy_management
       idempotent!
 
+      concurrency_limit -> { 200 }
+
       def handle_event(event)
         user_ids = event.data[:user_ids]
         return if user_ids.blank?
