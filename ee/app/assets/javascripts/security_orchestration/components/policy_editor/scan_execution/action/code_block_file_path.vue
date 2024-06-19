@@ -76,6 +76,11 @@ export default {
   mixins: [glFeatureFlagMixin()],
   inject: ['namespacePath', 'rootNamespacePath', 'namespaceType'],
   props: {
+    isPipelineExecution: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     strategy: {
       type: String,
       required: false,
@@ -109,9 +114,6 @@ export default {
     },
   },
   computed: {
-    isPipelineExecution() {
-      return this.glFeatures.pipelineExecutionPolicyType;
-    },
     fileBlockMessage() {
       return this.isPipelineExecution
         ? this.$options.i18n.pipelineFilePathCopy[this.strategy]
