@@ -33,6 +33,25 @@ for any reason, the security dashboard does not show SAST scanner output. For ex
 job finishes but the DAST job fails, the security dashboard does not show SAST results. On failure,
 the analyzer outputs an [exit code](../../../development/integrations/secure.md#exit-code).
 
+## Summary of features per tier
+
+Different features are available in different [GitLab tiers](https://about.gitlab.com/pricing/),
+as shown in the following table:
+
+| Capability                                                        | In Free & Premium   | In Ultimate        |
+|:---------------------------------------------------------------- -|:--------------------|:-------------------|
+| Automatically scan code with [appropriate analyzers](#supported-languages-and-frameworks) | **{check-circle}**  | **{check-circle}** |
+| [Configure SAST scanners](#configuration)                         | **{check-circle}**  | **{check-circle}** |
+| [Customize SAST settings](#available-cicd-variables)              | **{check-circle}**  | **{check-circle}** |
+| Download [SAST output](#output)                                   | **{check-circle}**  | **{check-circle}** |
+| See new findings in merge request widget                          | **{dotted-circle}** | **{check-circle}** |
+| See new findings in merge request changes                         | **{dotted-circle}** | **{check-circle}** |
+| [Manage vulnerabilities](../vulnerabilities/index.md)             | **{dotted-circle}** | **{check-circle}** |
+| [Access the Security Dashboard](../security_dashboard/index.md)   | **{dotted-circle}** | **{check-circle}** |
+| [Configure SAST by using the UI](#configure-sast-by-using-the-ui) | **{dotted-circle}** | **{check-circle}** |
+| [Customize SAST rulesets](customize_rulesets.md)                  | **{dotted-circle}** | **{check-circle}** |
+| [Track moved vulnerabilities](#advanced-vulnerability-tracking)   | **{dotted-circle}** | **{check-circle}** |
+
 ## Requirements
 
 SAST runs in the `test` stage, which is available by default. If you redefine the stages in the `.gitlab-ci.yml` file, the `test` stage is required.
@@ -203,25 +222,6 @@ A FIPS-compliant image is only available for the Semgrep-based analyzer.
 
 WARNING:
 To use SAST in a FIPS-compliant manner, you must [exclude other analyzers from running](analyzers.md#customize-analyzers). If you use a FIPS-enabled image to run Semgrep in [a runner with non-root user](https://docs.gitlab.com/runner/install/kubernetes.html#running-with-non-root-user), you must update the `run_as_user` attribute under `runners.kubernetes.pod_security_context` to use the ID of `gitlab` user [created by the image](https://gitlab.com/gitlab-org/security-products/analyzers/semgrep/-/blob/a5d822401014f400b24450c92df93467d5bbc6fd/Dockerfile.fips#L58), which is `1000`.
-
-## Summary of features per tier
-
-Different features are available in different [GitLab tiers](https://about.gitlab.com/pricing/),
-as shown in the following table:
-
-| Capability                                                        | In Free & Premium   | In Ultimate        |
-|:---------------------------------------------------------------- -|:--------------------|:-------------------|
-| Automatically scan code with [appropriate analyzers](#supported-languages-and-frameworks) | **{check-circle}**  | **{check-circle}** |
-| [Configure SAST scanners](#configuration)                         | **{check-circle}**  | **{check-circle}** |
-| [Customize SAST settings](#available-cicd-variables)              | **{check-circle}**  | **{check-circle}** |
-| Download [SAST output](#output)                                   | **{check-circle}**  | **{check-circle}** |
-| See new findings in merge request widget                          | **{dotted-circle}** | **{check-circle}** |
-| See new findings in merge request changes                         | **{dotted-circle}** | **{check-circle}** |
-| [Manage vulnerabilities](../vulnerabilities/index.md)             | **{dotted-circle}** | **{check-circle}** |
-| [Access the Security Dashboard](../security_dashboard/index.md)   | **{dotted-circle}** | **{check-circle}** |
-| [Configure SAST by using the UI](#configure-sast-by-using-the-ui) | **{dotted-circle}** | **{check-circle}** |
-| [Customize SAST rulesets](customize_rulesets.md)                  | **{dotted-circle}** | **{check-circle}** |
-| [Track moved vulnerabilities](#advanced-vulnerability-tracking)   | **{dotted-circle}** | **{check-circle}** |
 
 ## Output
 
