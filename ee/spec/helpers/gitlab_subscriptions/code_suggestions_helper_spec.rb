@@ -120,20 +120,56 @@ RSpec.describe GitlabSubscriptions::CodeSuggestionsHelper, feature_category: :se
       end
     end
 
-    context 'when GitLab is not .com' do
+    context 'when GitLab is self managed' do
       before do
         stub_saas_features(gitlab_com_subscriptions: false)
       end
 
       context 'when duo pro is available' do
-        it 'returns false' do
-          expect(helper.duo_pro_bulk_user_assignment_available?).to be_falsey
+        context 'when sm feature flag is enabled' do
+          before do
+            stub_feature_flags(sm_duo_pro_bulk_user_assignment: true)
+          end
+
+          it 'returns true' do
+            expect(helper.duo_pro_bulk_user_assignment_available?).to be_truthy
+          end
+        end
+
+        context 'when sm feature flag is disabled' do
+          before do
+            stub_feature_flags(sm_duo_pro_bulk_user_assignment: false)
+          end
+
+          it 'returns false' do
+            expect(helper.duo_pro_bulk_user_assignment_available?).to be_falsey
+          end
         end
       end
 
       context 'when duo pro is not available' do
         before do
           stub_feature_flags(self_managed_code_suggestions: false)
+        end
+
+        context 'when sm feature flag is enabled' do
+          before do
+            stub_feature_flags(sm_duo_pro_bulk_user_assignment: true)
+          end
+
+          it 'returns false' do
+            expect(helper.duo_pro_bulk_user_assignment_available?).to be_falsey
+          end
+        end
+
+        context 'when sm feature flag is disabled' do
+          before do
+            stub_feature_flags(sm_duo_pro_bulk_user_assignment: false)
+          end
+
+          it 'returns false' do
+            expect(helper.duo_pro_bulk_user_assignment_available?).to be_falsey
+          end
         end
 
         it 'returns false' do
