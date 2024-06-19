@@ -862,4 +862,82 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
       it { is_expected.to eq(outcome) }
     end
   end
+
+  describe '#home_panel_data_attributes' do
+    let_it_be(:user) { create(:user) }
+
+    before do
+      allow(helper).to receive(:current_user).and_return(user)
+      allow(helper).to receive(:groups_projects_more_actions_dropdown_data).and_return(nil)
+      allow(helper).to receive(:fork_button_data_attributes).and_return(nil)
+      allow(helper).to receive(:notification_data_attributes).and_return(nil)
+      allow(helper).to receive(:star_count_data_attributes).and_return({})
+    end
+
+    context "when project is not marked for deletion" do
+      before do
+        allow(project).to receive(:marked_for_deletion?).and_return(false)
+      end
+
+      subject { helper.home_panel_data_attributes }
+
+      it { is_expected.to include({ is_project_marked_for_deletion: "false" }) }
+    end
+
+    context "when project is marked for deletion" do
+      before do
+        allow(project).to receive(:marked_for_deletion?).and_return(true)
+      end
+
+      subject { helper.home_panel_data_attributes }
+
+      it { is_expected.to include({ is_project_marked_for_deletion: "true" }) }
+    end
+  end
+
+  describe '#compliance_framework_data_attributes' do
+    let_it_be(:user) { create(:user) }
+
+    where(:custom_compliance_frameworks, :compliance_framework, :has_framework, :color, :name, :description, :expected) do
+      true  | true  | true    | "#FF0000" | "Framework 1"   | "New framework" | ref(:data_attributes)
+      false | true  | true    | "#00FF00" | "Framework 2"   | "Another framework" | {}
+      true  | false | false   | nil | nil | nil | {}
+      false | false | false   | nil | nil | nil | {}
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(
+          custom_compliance_frameworks: custom_compliance_frameworks,
+          compliance_framework: compliance_framework)
+
+        if has_framework
+          framework = create(:compliance_framework,
+            color: color,
+            name: name,
+            description: description
+          )
+          create(:compliance_framework_project_setting,
+            project: project, compliance_management_framework: framework)
+        end
+
+        allow(helper).to receive(:current_user).and_return(user)
+      end
+
+      let(:data_attributes) do
+        {
+          has_compliance_framework_feature: compliance_framework.to_s,
+          frameworks: [{
+            compliance_framework_badge_color: color,
+            compliance_framework_badge_name: name,
+            compliance_framework_badge_title: description
+          }]
+        }
+      end
+
+      subject { helper.compliance_framework_data_attributes(project) }
+
+      it { is_expected.to eq(expected) }
+    end
+  end
 end

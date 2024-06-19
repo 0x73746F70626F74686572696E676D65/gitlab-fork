@@ -283,7 +283,8 @@ module EE
     end
 
     def show_compliance_framework_badge?(project)
-      project&.licensed_feature_available?(:custom_compliance_frameworks) && project&.compliance_framework_settings&.first&.compliance_management_framework.present?
+      project&.licensed_feature_available?(:custom_compliance_frameworks) &&
+        project&.compliance_framework_settings&.first&.compliance_management_framework.present?
     end
 
     def scheduled_for_deletion?(project)
@@ -328,6 +329,38 @@ module EE
       return false unless current_user.can?(:modify_product_analytics_settings, project)
 
       true
+    end
+
+    def compliance_framework_data_attributes(project)
+      return {} unless show_compliance_framework_badge?(project)
+
+      framework_data = {
+        has_compliance_framework_feature: License.feature_available?(:compliance_framework).to_s,
+        frameworks: []
+      }
+
+      framework_settings = project.compliance_framework_settings
+      framework_settings.find_each do |settings|
+        framework = settings.compliance_management_framework
+
+        framework_data[:frameworks].push({
+          compliance_framework_badge_color: framework.color,
+          compliance_framework_badge_name: framework.name,
+          compliance_framework_badge_title: framework.description
+        })
+      end
+
+      framework_data
+    end
+
+    override :home_panel_data_attributes
+    def home_panel_data_attributes
+      project = @project.is_a?(ProjectPresenter) ? @project.project : @project
+
+      super.merge(
+        is_project_marked_for_deletion: project.marked_for_deletion?.to_s,
+        **compliance_framework_data_attributes(project)
+      )
     end
 
     private
