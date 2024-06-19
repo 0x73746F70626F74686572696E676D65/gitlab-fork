@@ -97,31 +97,6 @@ module EE
             present namespace.gitlab_subscription || {}, with: ::API::Entities::GitlabSubscription
           end
 
-          desc 'Update the subscription for the namespace' do
-            success ::API::Entities::GitlabSubscription
-          end
-          params do
-            use :gitlab_subscription_optional_attributes
-          end
-          put ":id/gitlab_subscription", urgency: :low, feature_category: :subscription_management do
-            authenticated_as_admin!
-
-            namespace = find_namespace!(params[:id])
-            subscription = namespace.gitlab_subscription
-
-            not_found!('GitlabSubscription') unless subscription
-
-            subscription_params = declared_params(include_missing: false)
-            subscription_params[:trial_starts_on] ||= subscription_params[:start_date] if subscription_params[:trial]
-            subscription_params[:updated_at] = Time.current
-
-            if subscription.update(subscription_params)
-              present subscription, with: ::API::Entities::GitlabSubscription
-            else
-              render_validation_error!(subscription)
-            end
-          end
-
           desc 'Creates a storage limit exclusion for a Namespace' do
             detail 'Creates a Namespaces::Storage::LimitExclusion'
             success code: 201, model: ::API::Entities::Namespaces::Storage::LimitExclusion
