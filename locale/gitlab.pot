@@ -50388,16 +50388,13 @@ msgstr ""
 msgid "SnippetsEmptyState|Code snippets"
 msgstr ""
 
-msgid "SnippetsEmptyState|Documentation"
-msgstr ""
-
 msgid "SnippetsEmptyState|New snippet"
 msgstr ""
 
-msgid "SnippetsEmptyState|No snippets found"
+msgid "SnippetsEmptyState|Store, share, and embed small pieces of code and text."
 msgstr ""
 
-msgid "SnippetsEmptyState|Store, share, and embed small pieces of code and text."
+msgid "SnippetsEmptyState|There are no snippets found"
 msgstr ""
 
 msgid "SnippetsEmptyState|There are no snippets to show."
