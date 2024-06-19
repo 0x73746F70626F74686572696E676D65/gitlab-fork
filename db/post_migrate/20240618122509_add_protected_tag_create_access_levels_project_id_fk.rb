@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AddProtectedTagCreateAccessLevelsProjectIdFk < Gitlab::Database::Migration[2.2]
-  milestone '17.1'
+  milestone '17.2'
   disable_ddl_transaction!
 
   def up

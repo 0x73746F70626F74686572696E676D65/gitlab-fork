@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class QueueBackfillProtectedTagCreateAccessLevelsProjectId < Gitlab::Database::Migration[2.2]
-  milestone '17.1'
+  milestone '17.2'
   restrict_gitlab_migration gitlab_schema: :gitlab_main_cell
 
   MIGRATION = "BackfillProtectedTagCreateAccessLevelsProjectId"
