@@ -11,7 +11,7 @@ RSpec.describe WorkItems::ParentLinks::DestroyService, feature_category: :team_p
     let_it_be(:work_item_epic2) { create(:work_item, :epic, namespace: group) }
     let_it_be(:work_item_issue) { create(:work_item, :issue, project: project) }
     let_it_be(:issue) { Issue.find(work_item_issue.id) }
-    let_it_be(:synced_epic1) { create(:epic, :with_synced_work_item, group: group) }
+    let_it_be_with_refind(:synced_epic1) { create(:epic, :with_synced_work_item, group: group) }
     let_it_be(:synced_epic2) { create(:epic, :with_synced_work_item, group: group) }
     let_it_be(:with_synced_epic1) { synced_epic1.work_item }
     let_it_be(:with_synced_epic2) { synced_epic2.work_item }
@@ -72,9 +72,9 @@ RSpec.describe WorkItems::ParentLinks::DestroyService, feature_category: :team_p
 
         it_behaves_like 'does not remove relationship'
 
-        context 'when make_synced_work_item_read_only feature flag is disabled' do
+        context 'when synced_epic_work_item_editable feature flag is enabled' do
           before do
-            stub_feature_flags(make_synced_work_item_read_only: false)
+            stub_feature_flags(synced_epic_work_item_editable: true)
           end
 
           it_behaves_like 'destroys parent link'
@@ -167,9 +167,9 @@ RSpec.describe WorkItems::ParentLinks::DestroyService, feature_category: :team_p
 
         it_behaves_like 'does not remove relationship'
 
-        context 'when make_synced_work_item_read_only feature flag is disabled' do
+        context 'when synced_epic_work_item_editable feature flag is enabled' do
           before do
-            stub_feature_flags(make_synced_work_item_read_only: false)
+            stub_feature_flags(synced_epic_work_item_editable: true)
           end
 
           it_behaves_like 'destroys parent link'
@@ -193,9 +193,9 @@ RSpec.describe WorkItems::ParentLinks::DestroyService, feature_category: :team_p
 
         it_behaves_like 'does not remove relationship'
 
-        context 'when make_synced_work_item_read_only feature flag is disabled' do
+        context 'when synced_epic_work_item_editable feature flag is enabled' do
           before do
-            stub_feature_flags(make_synced_work_item_read_only: false)
+            stub_feature_flags(synced_epic_work_item_editable: true)
           end
 
           it_behaves_like 'destroys parent link'
@@ -206,7 +206,6 @@ RSpec.describe WorkItems::ParentLinks::DestroyService, feature_category: :team_p
             end
 
             it 'destroys parent link and remove legacy parent' do
-              synced_epic1.update!(parent: synced_epic2)
               expect { destroy_link }.to change { WorkItems::ParentLink.count }.by(-1)
                                      .and change { synced_epic2.reload.children.count }.by(-1)
                                      .and change { WorkItems::ResourceLinkEvent.count }.by(1)
