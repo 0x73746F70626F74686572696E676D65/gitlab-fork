@@ -1,7 +1,7 @@
 <script>
 import { GlIcon, GlTruncate, GlCollapsibleListbox, GlLink } from '@gitlab/ui';
 import { debounce } from 'lodash';
-import { s__, sprintf } from '~/locale';
+import { n__, s__, sprintf } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { filterPathBySearchTerm } from '../store/utils';
@@ -41,9 +41,17 @@ export default {
   },
   computed: {
     locationText() {
-      return sprintf(s__('Dependencies|%{locationCount} locations'), {
-        locationCount: Number.isNaN(this.locationCount) ? 0 : this.locationCount,
-      });
+      const locationCount = this.locationCount || 0;
+      return sprintf(
+        n__(
+          'Dependencies|%{locationCount} location',
+          'Dependencies|%{locationCount} locations',
+          locationCount,
+        ),
+        {
+          locationCount,
+        },
+      );
     },
     availableLocations() {
       return filterPathBySearchTerm(this.locations, this.searchTerm);
