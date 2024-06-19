@@ -280,7 +280,7 @@
                 = sprite_icon('clock', size: 16, css_class: 'gl-text-gray-700')
                 .gl-font-size-h1.gl-font-bold.gl-m-0.gl-ml-3{ data: { testid: 'initial_queue_size' } }
                   = @initial_queue_size
-              .gl-mt-3.gl-text-transform-uppercase
+              .gl-mt-3.gl-uppercase
                 = s_('GlobalSearch|Initial indexing queue length')
             = render Pajamas::ButtonComponent.new(href: help_page_path('integration/advanced_search/elasticsearch_troubleshooting'), button_options: { data: { testid: 'initial_indexing_documentation' } }) do
               = s_('AdminArea|Documentation')
@@ -292,7 +292,7 @@
                 = sprite_icon('retry', size: 16, css_class: 'gl-text-gray-700')
                 .gl-font-size-h1.gl-font-bold.gl-m-0.gl-ml-3{ data: { testid: 'incremental_queue_size' } }
                   = @incremental_queue_size
-              .gl-mt-3.gl-text-transform-uppercase
+              .gl-mt-3.gl-uppercase
                 = s_('GlobalSearch|Incremental indexing queue length')
             = render Pajamas::ButtonComponent.new(href: help_page_path('integration/advanced_search/elasticsearch_troubleshooting'), button_options: { data: { testid: 'incremental_indexing_documentation' } }) do
               = s_('AdminArea|Documentation')
@@ -306,7 +306,7 @@
                   = sprite_icon('project', size: 16, css_class: 'gl-text-gray-700')
                   .gl-font-size-h1.gl-font-bold.gl-m-0.gl-ml-3{ data: { testid: 'projects_not_indexed_size' } }
                     = @projects_not_indexed_count
-                .gl-mt-3.gl-text-transform-uppercase
+                .gl-mt-3.gl-uppercase
                   = s_('GlobalSearch|projects not indexed')
             - if @projects_not_indexed_count > 0
               - c.with_footer do
