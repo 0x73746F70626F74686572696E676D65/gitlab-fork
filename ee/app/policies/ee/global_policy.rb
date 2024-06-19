@@ -104,6 +104,14 @@ module EE
         ::License.current&.paid? # Replace with license :ai_self_hosted_model for GA
       end
 
+      condition(:x_ray_available) do
+        next true if ::Gitlab::Saas.feature_available?(:code_suggestions_x_ray)
+
+        ::License.feature_available?(:code_suggestions)
+      end
+
+      rule { x_ray_available }.enable :access_x_ray_on_instance
+
       rule { ~anonymous & operations_dashboard_available }.enable :read_operations_dashboard
 
       condition(:remote_development_feature_licensed) do

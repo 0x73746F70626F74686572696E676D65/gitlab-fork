@@ -16,19 +16,13 @@ module API
 
           before do
             authenticate_job!
-            not_found! unless x_ray_enabled_on_instance?
+            not_found! unless can?(current_user, :access_x_ray_on_instance)
             unauthorized!(TOKEN_NOT_FOUND_MESSAGE) unless token_available?
             unauthorized!(PURCHASE_NOT_FOUND_MESSAGE) unless x_ray_available?
           end
 
           helpers do
             include ::Gitlab::Utils::StrongMemoize
-
-            def x_ray_enabled_on_instance?
-              return true if ::Gitlab::Saas.feature_available?(:code_suggestions_x_ray)
-
-              ::License.feature_available?(:code_suggestions)
-            end
 
             def x_ray_available?
               code_suggestions_data.purchased?(current_namespace)
