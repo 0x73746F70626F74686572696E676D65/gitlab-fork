@@ -138,9 +138,6 @@ export default {
     };
   },
   computed: {
-    isLoadingLinkedSpps() {
-      return this.$apollo.queries.linkedSppItems?.loading;
-    },
     isLoadingPolicies() {
       return (
         this.$apollo.queries.scanExecutionPolicies.loading ||
@@ -183,7 +180,6 @@ export default {
     <list-component
       :has-policy-project="hasPolicyProject"
       :should-update-policy-list="shouldUpdatePolicyList"
-      :is-loading-linked-spps="isLoadingLinkedSpps"
       :is-loading-policies="isLoadingPolicies"
       :selected-policy-source="selectedPolicySource"
       :linked-spp-items="linkedSppItems"

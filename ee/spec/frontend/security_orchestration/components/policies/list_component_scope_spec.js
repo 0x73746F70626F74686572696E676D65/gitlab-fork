@@ -1,6 +1,5 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ListComponentScope from 'ee/security_orchestration/components/policies/list_component_scope.vue';
-import LoaderWithMessage from 'ee/security_orchestration/components/loader_with_message.vue';
 import ComplianceFrameworksToggleList from 'ee/security_orchestration/components/policy_drawer/compliance_frameworks_toggle_list.vue';
 import ProjectsToggleList from 'ee/security_orchestration/components/policy_drawer/projects_toggle_list.vue';
 import ScopeDefaultLabel from 'ee/security_orchestration/components/scope_default_label.vue';
@@ -24,7 +23,6 @@ describe('ListComponentScope', () => {
   const findScopeDefaultLabel = () => wrapper.findComponent(ScopeDefaultLabel);
   const findProjectsToggleList = () => wrapper.findComponent(ProjectsToggleList);
   const findDefaultText = () => wrapper.findByTestId('default-text');
-  const findLoaderWithMessage = () => wrapper.findComponent(LoaderWithMessage);
 
   describe('policy without policy scope', () => {
     it('renders default label', () => {
@@ -51,23 +49,6 @@ describe('ListComponentScope', () => {
 
       expect(findComplianceFrameworksToggleList().exists()).toBe(false);
       expect(findScopeDefaultLabel().exists()).toBe(true);
-    });
-  });
-
-  describe('loading state', () => {
-    beforeEach(() => {
-      createComponent({
-        propsData: {
-          loading: true,
-        },
-      });
-    });
-
-    it('renders loader when loading', () => {
-      expect(findLoaderWithMessage().exists()).toBe(true);
-      expect(findScopeDefaultLabel().exists()).toBe(false);
-      expect(findComplianceFrameworksToggleList().exists()).toBe(false);
-      expect(findProjectsToggleList().exists()).toBe(false);
     });
   });
 

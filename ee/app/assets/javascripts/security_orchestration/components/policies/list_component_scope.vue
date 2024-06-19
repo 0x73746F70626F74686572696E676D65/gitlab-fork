@@ -3,7 +3,6 @@ import ComplianceFrameworksToggleList from 'ee/security_orchestration/components
 import ProjectsToggleList from 'ee/security_orchestration/components/policy_drawer/projects_toggle_list.vue';
 import { s__ } from '~/locale';
 import ScopeDefaultLabel from 'ee/security_orchestration/components/scope_default_label.vue';
-import LoaderWithMessage from 'ee/security_orchestration/components/loader_with_message.vue';
 import {
   policyScopeHasComplianceFrameworks,
   policyScopeComplianceFrameworks,
@@ -23,7 +22,6 @@ export default {
   name: 'ListComponentScope',
   components: {
     ComplianceFrameworksToggleList,
-    LoaderWithMessage,
     ScopeDefaultLabel,
     ProjectsToggleList,
   },
@@ -38,11 +36,6 @@ export default {
       type: Array,
       required: false,
       default: () => [],
-    },
-    loading: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
   },
   computed: {
@@ -87,35 +80,32 @@ export default {
 
 <template>
   <div class="gl-display-flex gl-align-items-baseline gl-gap-3">
-    <loader-with-message v-if="loading" :message="$options.i18n.loaderMessage" />
-    <div v-else>
-      <compliance-frameworks-toggle-list
-        v-if="showComplianceFrameworks"
-        :compliance-frameworks="policyScopeComplianceFrameworks"
-        :labels-to-show="$options.MAX_NUMBER_OF_VISIBLE_LABELS"
-      />
+    <compliance-frameworks-toggle-list
+      v-if="showComplianceFrameworks"
+      :compliance-frameworks="policyScopeComplianceFrameworks"
+      :labels-to-show="$options.MAX_NUMBER_OF_VISIBLE_LABELS"
+    />
 
-      <projects-toggle-list
-        v-else-if="showProjects"
-        inline-list
-        :is-group="isGroup"
-        :bullet-style="false"
-        :including="policyScopeHasIncludingProjects"
-        :projects="policyScopeProjects.projects"
-        :projects-to-show="$options.MAX_NUMBER_OF_VISIBLE_LABELS"
-      />
+    <projects-toggle-list
+      v-else-if="showProjects"
+      inline-list
+      :is-group="isGroup"
+      :bullet-style="false"
+      :including="policyScopeHasIncludingProjects"
+      :projects="policyScopeProjects.projects"
+      :projects-to-show="$options.MAX_NUMBER_OF_VISIBLE_LABELS"
+    />
 
-      <scope-default-label
-        v-else-if="showDefaultLabel"
-        :policy-scope="policyScope"
-        :is-group="isGroup"
-        :linked-items="linkedSppItems"
-        :items-to-show="$options.MAX_NUMBER_OF_VISIBLE_LABELS"
-      />
+    <scope-default-label
+      v-else-if="showDefaultLabel"
+      :policy-scope="policyScope"
+      :is-group="isGroup"
+      :linked-items="linkedSppItems"
+      :items-to-show="$options.MAX_NUMBER_OF_VISIBLE_LABELS"
+    />
 
-      <p v-else class="gl-m-0" data-testid="default-text">
-        {{ $options.i18n.defaultText }}
-      </p>
-    </div>
+    <p v-else class="gl-m-0" data-testid="default-text">
+      {{ $options.i18n.defaultText }}
+    </p>
   </div>
 </template>
