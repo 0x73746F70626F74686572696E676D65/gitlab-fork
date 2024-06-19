@@ -73,19 +73,15 @@ export default {
           class="inline-findings-severity-icon gl-mr-4"
         />
         <span class="!gl-whitespace-nowrap gl-text-truncate gl-display-flex findings-dropdown-width"
-          ><span
-            class="gl-font-bold gl-text-transform-capitalize gl-text-black-normal gl-align-self-center"
+          ><span class="gl-font-bold gl-capitalize gl-text-black-normal gl-align-self-center"
             >{{ item.severity }}: </span
           ><gl-truncate
             class="findings-dropdown-truncate gl-align-self-center"
             :text="firstSentence(item.text)"
           />
-          <gl-badge
-            v-if="findingsStatus(item)"
-            variant="neutral"
-            class="gl-text-transform-capitalize gl-ml-3"
-            >{{ item.state }}</gl-badge
-          >
+          <gl-badge v-if="findingsStatus(item)" variant="neutral" class="gl-capitalize gl-ml-3">{{
+            item.state
+          }}</gl-badge>
         </span>
       </span>
     </template>
