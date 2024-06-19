@@ -81,29 +81,6 @@ module EE
             end
           end
 
-          desc 'Create a subscription for the namespace' do
-            success ::API::Entities::GitlabSubscription
-          end
-          params do
-            use :gitlab_subscription_optional_attributes
-
-            requires :start_date, type: Date, desc: 'The date when subscription was started'
-          end
-          post ":id/gitlab_subscription", urgency: :low, feature_category: :subscription_management do
-            authenticated_as_admin!
-
-            namespace = find_namespace!(params[:id])
-
-            subscription_params = declared_params(include_missing: false)
-            subscription_params[:trial_starts_on] ||= subscription_params[:start_date] if subscription_params[:trial]
-            subscription = namespace.create_gitlab_subscription(subscription_params)
-            if subscription.persisted?
-              present subscription, with: ::API::Entities::GitlabSubscription
-            else
-              render_validation_error!(subscription)
-            end
-          end
-
           desc 'Returns the subscription for the namespace' do
             success ::API::Entities::GitlabSubscription
           end
