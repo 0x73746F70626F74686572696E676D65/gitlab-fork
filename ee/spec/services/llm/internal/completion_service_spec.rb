@@ -73,6 +73,45 @@ RSpec.describe Llm::Internal::CompletionService, :saas, feature_category: :ai_ab
         execute
       end
 
+      context 'when a start_time option is provided', :freeze_time do
+        let(:start_time) { ::Gitlab::Metrics::System.monotonic_time - 20 }
+        let(:options) { { start_time: start_time } }
+
+        it 'calculates the duration based off of start_time' do
+          expect(Gitlab::Llm::CompletionsFactory)
+            .to receive(:completion!)
+            .with(an_object_having_attributes(
+              user: user,
+              resource: resource,
+              request_id: 'uuid',
+              ai_action: ai_action_name
+            ),
+              options.symbolize_keys.merge(extra_resource: extra_resource))
+            .and_return(completion)
+
+          expect(completion).to receive(:execute)
+
+          expect(Gitlab::Metrics::Sli::Apdex[:llm_completion])
+            .to receive(:increment)
+            .with(labels: { feature_category: anything, service_class: an_instance_of(String) }, success: true)
+
+          execute
+        end
+
+        context 'when the duration is more than the MAX_RUN_TIME' do
+          let(:start_time) { ::Gitlab::Metrics::System.monotonic_time - 60 }
+          let(:options) { { start_time: start_time } }
+
+          it 'sets the Apdex success as false' do
+            expect(Gitlab::Metrics::Sli::Apdex[:llm_completion])
+              .to receive(:increment)
+              .with(labels: { feature_category: anything, service_class: an_instance_of(String) }, success: false)
+
+            execute
+          end
+        end
+      end
+
       context 'when extra resource is found' do
         let(:referer_url) { "foobar" }
         let(:extra_resource) { { blob: fake_blob(path: 'file.md') } }

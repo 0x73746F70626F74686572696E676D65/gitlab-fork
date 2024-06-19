@@ -33,7 +33,7 @@ RSpec.describe 'AiAction for Generate Commit Message', :saas, feature_category: 
         user: current_user,
         resource: merge_request,
         ai_action: :generate_commit_message),
-      { user_agent: nil }
+      anything
     )
 
     post_graphql_mutation(mutation, current_user: current_user)
