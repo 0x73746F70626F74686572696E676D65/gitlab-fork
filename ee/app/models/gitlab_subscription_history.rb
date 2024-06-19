@@ -8,6 +8,7 @@ class GitlabSubscriptionHistory < ApplicationRecord
                      :gitlab_subscription_destroyed]
 
   validates :gitlab_subscription_id, presence: true
+  validates :namespace_id, presence: true
 
   PREFIXED_ATTRIBUTES = %w[
     id
