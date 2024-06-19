@@ -34740,6 +34740,9 @@ msgstr ""
 msgid "No group provided"
 msgstr ""
 
+msgid "No groups found"
+msgstr ""
+
 msgid "No issues found"
 msgstr ""
 
