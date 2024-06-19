@@ -231,7 +231,7 @@ module QA
 
           def push_to_new_branch
             within_vscode_editor do
-              page.find('.monaco-button[title="Create new branch"]').click
+              click_new_branch
               has_branch_input_field?
               # Typing enter to 'New branch name' popup to take the default branch name
               send_keys(:enter)
@@ -243,7 +243,7 @@ module QA
             within_vscode_editor do
               within_element('.notification-toast-container') do
                 has_element?('div[title="GitLab Web IDE Extension (Extension)"]')
-                click_element('.monaco-text-button[title="Create MR"]')
+                click_element('.monaco-button', text: "Create MR")
               end
             end
           end
