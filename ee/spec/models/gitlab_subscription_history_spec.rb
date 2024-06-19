@@ -16,13 +16,22 @@ RSpec.describe GitlabSubscriptionHistory do
     end
 
     context 'when the required attributes are not present' do
-      it 'returns an error' do
+      it 'returns an error when gitlab_subscription_id is not present' do
         record = described_class.create_from_change(
           :gitlab_subscription_updated,
-          { 'id' => nil }
+          { 'id' => nil, 'namespace_id' => 2 }
         )
 
         expect(record.errors.attribute_names).to include(:gitlab_subscription_id)
+      end
+
+      it 'returns an error when namespace_id is not present' do
+        record = described_class.create_from_change(
+          :gitlab_subscription_updated,
+          { 'id' => 1, 'namespace_id' => nil }
+        )
+
+        expect(record.errors.attribute_names).to include(:namespace_id)
       end
     end
 
@@ -34,6 +43,7 @@ RSpec.describe GitlabSubscriptionHistory do
           :gitlab_subscription_updated,
           {
             'id' => 1,
+            'namespace_id' => 2,
             'created_at' => current_time,
             'updated_at' => current_time,
             'non_existent_attribute' => true,
@@ -48,6 +58,7 @@ RSpec.describe GitlabSubscriptionHistory do
 
         expect(record).to have_attributes(
           'gitlab_subscription_id' => 1,
+          'namespace_id' => 2,
           'gitlab_subscription_created_at' => current_time,
           'gitlab_subscription_updated_at' => current_time,
           'trial' => true,
