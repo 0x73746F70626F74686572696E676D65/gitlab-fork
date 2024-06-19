@@ -173,7 +173,6 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               "--repository-access-level=#{project.repository_access_level}",
               "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
               "--schema-version-blob=2308",
-              '--schema-version-commits',
               "--schema-version-commit=2306",
               "--archived=#{project.archived}",
               "--traversal-ids=#{project.namespace_ancestry}",
@@ -216,7 +215,6 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               "--repository-access-level=#{project.repository_access_level}",
               "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
               "--schema-version-blob=2308",
-              '--schema-version-commits',
               "--schema-version-commit=2306",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.repository.disk_path}.git"
@@ -258,7 +256,6 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               "--repository-access-level=#{project.repository_access_level}",
               "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
               "--schema-version-blob=2308",
-              '--schema-version-commits',
               "--schema-version-commit=2306",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.repository.disk_path}.git"
@@ -295,7 +292,6 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
             "--repository-access-level=#{project.repository_access_level}",
             "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
             "--schema-version-blob=2308",
-            '--schema-version-commits',
             "--schema-version-commit=2306",
             "--archived=#{project.archived}",
             "--traversal-ids=#{project.namespace_ancestry}",
