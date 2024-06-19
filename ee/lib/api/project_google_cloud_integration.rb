@@ -16,62 +16,6 @@ module API
     end
     resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       namespace ':id/google_cloud/setup' do
-        desc 'Get shell script to create and configure Workload Identity Federation' do
-          detail 'This feature is experimental.'
-        end
-        params do
-          requires :google_cloud_project_id, types: String
-          optional(
-            :google_cloud_workload_identity_pool_id,
-            { types: String, default: 'gitlab-wlif' })
-          optional(
-            :google_cloud_workload_identity_pool_display_name,
-            { types: String, default: 'WLIF for GitLab integration' })
-          optional(
-            :google_cloud_workload_identity_pool_provider_id,
-            { types: String, default: 'gitlab-wlif-oidc-provider' })
-          optional(
-            :google_cloud_workload_identity_pool_provider_display_name,
-            { types: String, default: 'GitLab OIDC provider' })
-        end
-        get '/wlif.sh' do
-          env['api.format'] = :binary
-          content_type 'text/plain'
-
-          template_path = File.join(
-            'ee', 'lib', 'api', 'templates', 'google_cloud_integration_wlif_create.sh.erb')
-          template = ERB.new(File.read(template_path))
-
-          locals = {
-            google_cloud_project_id:
-              declared_params[:google_cloud_project_id],
-            google_cloud_workload_identity_pool_id:
-              declared_params[:google_cloud_workload_identity_pool_id],
-            google_cloud_workload_identity_pool_display_name:
-              declared_params[:google_cloud_workload_identity_pool_display_name],
-            google_cloud_workload_identity_pool_provider_id:
-              declared_params[:google_cloud_workload_identity_pool_provider_id],
-            google_cloud_workload_identity_pool_provider_display_name:
-              declared_params[:google_cloud_workload_identity_pool_provider_display_name],
-            google_cloud_workload_identity_pool_provider_issuer_uri:
-              ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.wlif_issuer_url(user_project),
-            google_cloud_workload_identity_pool_attribute_mapping:
-              ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.jwt_claim_mapping_script_value,
-            api_integrations_url:
-              Gitlab::Utils.append_path(
-                Gitlab.config.gitlab.url,
-                api_v4_projects_integrations_path(id: params[:id])
-              ),
-            api_wlif_integration_url:
-              Gitlab::Utils.append_path(
-                Gitlab.config.gitlab.url,
-                api_v4_projects_integrations_google_cloud_platform_workload_identity_federation_path(id: params[:id])
-              )
-          }
-
-          template.result_with_hash(locals)
-        end
-
         desc 'Get shell script to setup an integration in Google Cloud' do
           detail 'This feature is experimental.'
         end
