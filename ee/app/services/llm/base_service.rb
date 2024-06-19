@@ -86,6 +86,8 @@ module Llm
     def schedule_completion_worker(job_options = options)
       message = prompt_message
 
+      job_options[:start_time] = ::Gitlab::Metrics::System.monotonic_time
+
       logger.info_or_debug(
         message.user,
         message: "Enqueuing CompletionWorker",

@@ -48,6 +48,7 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
 
     it_behaves_like 'schedules completion worker' do
       let(:action_name) { :test }
+      let(:options) { { start_time: ::Gitlab::Metrics::System.monotonic_time } }
     end
   end
 

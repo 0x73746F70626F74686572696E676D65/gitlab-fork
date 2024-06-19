@@ -36,7 +36,7 @@ module Llm
       private
 
       def with_tracking(ai_action)
-        start_time = ::Gitlab::Metrics::System.monotonic_time
+        start_time = options[:start_time] || ::Gitlab::Metrics::System.monotonic_time
 
         response = yield
 

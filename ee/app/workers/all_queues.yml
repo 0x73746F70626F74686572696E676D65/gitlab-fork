@@ -1653,8 +1653,8 @@
 - :name: llm_completion
   :worker_name: Llm::CompletionWorker
   :feature_category: :ai_abstraction_layer
-  :has_external_dependencies: false
-  :urgency: :high
+  :has_external_dependencies: true
+  :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
