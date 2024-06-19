@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['InstanceAuditEventStreamingDestination'], feature_category: :audit_events do
   let(:fields) do
-    %i[id name category config event_type_filters]
+    %i[id name category config event_type_filters namespace_filters]
   end
 
   specify { expect(described_class.graphql_name).to eq('InstanceAuditEventStreamingDestination') }
