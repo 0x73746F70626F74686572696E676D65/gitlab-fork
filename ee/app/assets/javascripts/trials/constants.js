@@ -24,7 +24,7 @@ export const TRIAL_REGISTRATION_FORM_SUBMIT_TEXT = s__(
 );
 
 export const TRIAL_TERMS_TEXT = s__(
-  'Trial| By clicking Continue or registering through a third party, you accept the %{gitlabSubscriptionAgreement} and acknowledge the %{privacyStatement} and %{cookiePolicy}.',
+  'Trial| By selecting Continue or registering through a third party, you accept the %{gitlabSubscriptionAgreement} and acknowledge the %{privacyStatement} and %{cookiePolicy}.',
 );
 export const TRIAL_GITLAB_SUBSCRIPTION_AGREEMENT = {
   text: s__('Trial|GitLab Subscription Agreement'),
