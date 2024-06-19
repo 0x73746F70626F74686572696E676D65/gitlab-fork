@@ -29,11 +29,13 @@ module EE
         (is_project_member? && can?(:read_issue)) || (support_bot? && service_desk_enabled?)
       end
 
-      condition(:has_synced_epic, scope: :subject) do
+      condition(:can_edit_synced_epic_work_item, scope: :subject) do
+        next true unless @subject.work_item_type&.epic?
+        next true unless @subject.synced_epic.present?
+
         scope = group_issue? ? subject_container : subject_container.group
 
-        @subject.work_item_type&.epic? && @subject.synced_epic.present? &&
-          ::Feature.enabled?(:make_synced_work_item_read_only, scope)
+        ::Feature.enabled?(:synced_epic_work_item_editable, scope, type: :wip)
       end
 
       rule { can_be_promoted_to_epic }.policy do
@@ -48,7 +50,7 @@ module EE
         prevent :admin_issue_relation
       end
 
-      rule { has_synced_epic }.policy do
+      rule { ~can_edit_synced_epic_work_item }.policy do
         prevent(*synced_work_item_disallowed_abilities)
       end
     end

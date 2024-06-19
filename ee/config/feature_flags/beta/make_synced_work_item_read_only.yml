@@ -1,9 +1,0 @@
----
-name: make_synced_work_item_read_only
-feature_issue_url:
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/145549
-rollout_issue_url:
-milestone: '16.10'
-group: group::product planning
-type: beta
-default_enabled: true

@@ -51,7 +51,11 @@ RSpec.describe WorkItems::RelatedWorkItemLinks::DestroyService, feature_category
         stub_licensed_features(epics: true, related_epics: true)
       end
 
-      context 'when make_synced_work_item_read_only is enabled' do
+      context 'when synced_epic_work_item_editable is disabled' do
+        before do
+          stub_feature_flags(synced_epic_work_item_editable: false)
+        end
+
         it 'does not destroy the links' do
           expect { destroy_links }.to not_change { WorkItems::RelatedWorkItemLink.count }
         end
@@ -73,7 +77,7 @@ RSpec.describe WorkItems::RelatedWorkItemLinks::DestroyService, feature_category
 
       context 'when synced_work_item: false' do
         before do
-          stub_feature_flags(make_synced_work_item_read_only: false)
+          stub_feature_flags(synced_epic_work_item_editable: true)
         end
 
         it 'creates system notes' do

@@ -55,7 +55,7 @@ RSpec.describe Issues::ReopenService, feature_category: :team_planning do
       end
 
       before do
-        stub_feature_flags(make_synced_work_item_read_only: false)
+        stub_feature_flags(synced_epic_work_item_editable: true)
       end
 
       it_behaves_like 'syncs all data from an epic to a work item'
@@ -131,7 +131,7 @@ RSpec.describe Issues::ReopenService, feature_category: :team_planning do
 
       context 'when feature flag is disabled' do
         before do
-          stub_feature_flags(sync_work_item_to_epic: false, make_synced_work_item_read_only: false)
+          stub_feature_flags(sync_work_item_to_epic: false, synced_epic_work_item_editable: true)
         end
 
         it 'does not change the epic' do

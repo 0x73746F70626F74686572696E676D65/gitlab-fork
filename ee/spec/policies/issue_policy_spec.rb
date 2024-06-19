@@ -158,6 +158,7 @@ RSpec.describe IssuePolicy, feature_category: :team_planning do
 
       before do
         stub_licensed_features(issuable_resource_links: true)
+        stub_feature_flags(synced_epic_work_item_editable: false)
       end
 
       it 'does allow' do
@@ -187,9 +188,9 @@ RSpec.describe IssuePolicy, feature_category: :team_planning do
         )
       end
 
-      context 'when feature flag is disabled' do
+      context 'when editing epic work item is enabled' do
         before do
-          stub_feature_flags(make_synced_work_item_read_only: false)
+          stub_feature_flags(synced_epic_work_item_editable: true)
         end
 
         it 'does allow' do

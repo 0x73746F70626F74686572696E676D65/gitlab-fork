@@ -135,9 +135,9 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
 
         it_behaves_like 'creates parent link only'
 
-        context 'when make_synced_work_item_read_only feature flag is disabled' do
+        context 'when synced_epic_work_item_editable feature flag is enabled' do
           before do
-            stub_feature_flags(make_synced_work_item_read_only: false)
+            stub_feature_flags(synced_epic_work_item_editable: true)
           end
 
           it_behaves_like 'creates parent link only'
@@ -175,7 +175,7 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
 
         it_behaves_like 'does not create parent link'
 
-        context 'when make_synced_work_item_read_only feature flag is disabled' do
+        context 'when synced_epic_work_item_editable feature flag is enabled' do
           let_it_be(:other_epic_work_item) { create(:work_item, :epic_with_legacy_epic, namespace: group) }
           let_it_be(:other_epic_work_item_link) do
             create(:parent_link, work_item: other_epic_work_item, work_item_parent: parent_work_item,
@@ -187,7 +187,7 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
           end
 
           before do
-            stub_feature_flags(make_synced_work_item_read_only: false)
+            stub_feature_flags(synced_epic_work_item_editable: true)
           end
 
           context 'when child is type :epic' do
@@ -278,9 +278,9 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
 
         it_behaves_like 'does not create parent link'
 
-        context 'when make_synced_work_item_read_only feature flag is disabled' do
+        context 'when synced_epic_work_item_editable feature flag is enabled' do
           before do
-            stub_feature_flags(make_synced_work_item_read_only: false)
+            stub_feature_flags(synced_epic_work_item_editable: true)
           end
 
           it_behaves_like 'creates parent link only'
@@ -318,7 +318,7 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
 
         it_behaves_like 'does not create parent link'
 
-        context 'when make_synced_work_item_read_only feature flag is disabled' do
+        context 'when synced_epic_work_item_editable feature flag is enabled' do
           let_it_be(:other_epic_work_item) { create(:work_item, :epic_with_legacy_epic, namespace: group) }
           let_it_be(:other_epic_work_item_link) do
             create(:parent_link, work_item: other_epic_work_item, work_item_parent: parent_work_item,
@@ -330,7 +330,7 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
           end
 
           before do
-            stub_feature_flags(make_synced_work_item_read_only: false)
+            stub_feature_flags(synced_epic_work_item_editable: true)
           end
 
           context 'when child is type :epic' do

@@ -129,7 +129,7 @@ RSpec.describe WorkItems::CreateService, feature_category: :team_planning do
 
     before do
       stub_licensed_features(epics: true, epic_colors: true)
-      stub_feature_flags(make_synced_work_item_read_only: false)
+      stub_feature_flags(synced_epic_work_item_editable: true)
     end
 
     subject(:service_result) { service.execute }
@@ -237,7 +237,7 @@ RSpec.describe WorkItems::CreateService, feature_category: :team_planning do
 
     context 'when feature flag is disabled' do
       before do
-        stub_feature_flags(make_synced_work_item_read_only: false, sync_work_item_to_epic: false)
+        stub_feature_flags(synced_epic_work_item_editable: true, sync_work_item_to_epic: false)
       end
 
       it 'only creates a work item but not the epic' do

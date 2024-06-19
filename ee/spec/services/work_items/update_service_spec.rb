@@ -318,7 +318,7 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
       end
 
       before do
-        stub_feature_flags(make_synced_work_item_read_only: false)
+        stub_feature_flags(synced_epic_work_item_editable: true)
         stub_licensed_features(epics: true, subepics: true, epic_colors: true)
       end
 
@@ -510,7 +510,7 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
 
       context 'when feature flag is disabled' do
         before do
-          stub_feature_flags(make_synced_work_item_read_only: false, sync_work_item_to_epic: false)
+          stub_feature_flags(synced_epic_work_item_editable: true, sync_work_item_to_epic: false)
         end
 
         it 'updates work item but not the epic' do

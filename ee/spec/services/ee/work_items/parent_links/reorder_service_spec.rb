@@ -97,7 +97,7 @@ RSpec.describe WorkItems::ParentLinks::ReorderService, feature_category: :portfo
     end
 
     before do
-      stub_feature_flags(make_synced_work_item_read_only: false)
+      stub_feature_flags(synced_epic_work_item_editable: true)
     end
 
     context 'when adjacent_work_item parent link is missing' do
@@ -160,7 +160,7 @@ RSpec.describe WorkItems::ParentLinks::ReorderService, feature_category: :portfo
 
         context 'when sync_work_item_to_epic feature flag is disabled' do
           before do
-            stub_feature_flags(sync_work_item_to_epic: false, make_synced_work_item_read_only: false)
+            stub_feature_flags(sync_work_item_to_epic: false, synced_epic_work_item_editable: true)
           end
 
           it_behaves_like 'only changes work item'
@@ -214,7 +214,7 @@ RSpec.describe WorkItems::ParentLinks::ReorderService, feature_category: :portfo
 
       context 'when sync_work_item_to_epic feature flag is disabled' do
         before do
-          stub_feature_flags(sync_work_item_to_epic: false, make_synced_work_item_read_only: false)
+          stub_feature_flags(sync_work_item_to_epic: false, synced_epic_work_item_editable: true)
         end
 
         it_behaves_like 'only changes work item'
