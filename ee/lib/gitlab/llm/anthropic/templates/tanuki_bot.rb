@@ -21,31 +21,7 @@ module Gitlab
             %<content>s
           PROMPT
 
-          def self.final_prompt(user, question:, documents:)
-            if Feature.enabled?(:ai_claude_3_for_docs, user)
-              claude_3_prompt(question: question, documents: documents)
-            else
-              prompt(question: question, documents: documents)
-            end
-          end
-
-          def self.prompt(question:, documents:)
-            content = documents_prompt(documents)
-
-            prompt = <<~PROMPT
-              \n\nHuman: #{main_prompt(question: question, content: content)}
-
-              Assistant: FINAL ANSWER:
-            PROMPT
-
-            {
-              method: :completions,
-              prompt: prompt,
-              options: { model: ::Gitlab::Llm::Anthropic::Client::CLAUDE_2_1 }.merge(OPTIONS)
-            }
-          end
-
-          def self.claude_3_prompt(question:, documents:)
+          def self.final_prompt(question:, documents:)
             content = documents_prompt(documents)
 
             conversation = Gitlab::Llm::Chain::Utils::Prompt.role_conversation([

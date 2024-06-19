@@ -1,9 +1,0 @@
----
-name: ai_claude_3_for_docs
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/458811
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/152374
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/461321
-milestone: '17.1'
-group: group::ai framework
-type: gitlab_com_derisk
-default_enabled: false
