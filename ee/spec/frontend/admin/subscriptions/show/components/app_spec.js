@@ -2,6 +2,7 @@ import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 import SubscriptionManagementApp from 'ee/admin/subscriptions/show/components/app.vue';
 import SubscriptionBreakdown from 'ee/admin/subscriptions/show/components/subscription_breakdown.vue';
 import NoActiveSubscription from 'ee_else_ce/admin/subscriptions/show/components/no_active_subscription.vue';
@@ -58,7 +59,7 @@ describe('SubscriptionManagementApp', () => {
 
   const findSubscriptionBreakdown = () => wrapper.findComponent(SubscriptionBreakdown);
   const findNoActiveSubscription = () => wrapper.findComponent(NoActiveSubscription);
-  const findSubscriptionMainTitle = () => wrapper.findByTestId('subscription-main-title');
+  const findSubscriptionMainTitle = () => wrapper.findComponent(PageHeading);
   const findSubscriptionActivationSuccessAlert = () =>
     wrapper.findByTestId('subscription-activation-success-alert');
   const findSubscriptionFetchErrorAlert = () =>
@@ -116,7 +117,9 @@ describe('SubscriptionManagementApp', () => {
     });
 
     it('shows the main title', () => {
-      expect(findSubscriptionMainTitle().text()).toBe(subscriptionMainTitle);
+      expect(findSubscriptionMainTitle().props()).toMatchObject({
+        heading: subscriptionMainTitle,
+      });
     });
 
     it('shows the customers portal button', () => {
@@ -191,7 +194,9 @@ describe('SubscriptionManagementApp', () => {
       pastSubscriptionsResolver,
       futureSubscriptionsResolver,
     ]);
-    expect(findSubscriptionMainTitle().text()).toBe(subscriptionMainTitle);
+    expect(findSubscriptionMainTitle().props()).toMatchObject({
+      heading: subscriptionMainTitle,
+    });
   });
 
   describe('Subscription Activation Form', () => {

@@ -160,68 +160,58 @@ export default {
       </template>
     </user-callout-dismisser>
     <subscription-sync-notifications v-if="shouldShowNotifications" class="gl-mb-4" />
-    <section class="row gl-mb-5">
-      <div class="col-md-6 gl-mb-5">
-        <subscription-details-card
-          class="gl-h-full"
-          :details-fields="subscriptionDetailsFields"
-          :header-text="$options.i18n.subscriptionDetailsHeaderText"
-          :subscription="subscription"
-          data-testid="subscription-details"
-        >
-          <template v-if="shouldShowFooter" #footer>
-            <div
-              class="gl-display-flex gl-flex-wrap gl-align-items-flex-start gl-justify-content-space-between"
-            >
-              <div>
-                <gl-button
-                  v-gl-modal-directive="$options.removeLicenseModal.id"
-                  category="secondary"
-                  :loading="hasAsyncActivity"
-                  :title="$options.i18n.removeLicenseButtonLabel"
-                  :aria-label="$options.i18n.removeLicenseButtonLabel"
-                  variant="danger"
-                  class="gl-mr-3"
-                  data-testid="remove-license"
-                >
-                  {{ $options.i18n.removeLicense }}
-                </gl-button>
-                <gl-modal
-                  :modal-id="$options.removeLicenseModal.id"
-                  v-bind="$options.removeLicenseModal"
-                  @primary="removeLicense"
-                >
-                  <div
-                    v-if="$options.isDotCom"
-                    v-safe-html="$options.i18n.removeLicenseConfirmSaaS"
-                  ></div>
-                  <br />
-                  <div>{{ $options.i18n.removeLicenseConfirm }}</div>
-                </gl-modal>
-              </div>
+    <div class="gl-grid sm:gl-grid-cols-2 gl-gap-5 gl-mb-5">
+      <subscription-details-card
+        :details-fields="subscriptionDetailsFields"
+        :header-text="$options.i18n.subscriptionDetailsHeaderText"
+        :subscription="subscription"
+        data-testid="subscription-details"
+      >
+        <template v-if="shouldShowFooter" #footer>
+          <div
+            class="gl-display-flex gl-flex-wrap gl-align-items-flex-start gl-justify-content-space-between"
+          >
+            <div class="gl-flex gl-gap-3">
               <gl-button
                 v-gl-modal-directive="$options.activateSubscriptionModal.id"
-                category="secondary"
                 variant="confirm"
-                class="gl-mr-3 gl-mb-3 gl-lg-mb-0"
                 data-testid="subscription-activate-subscription-action"
               >
                 {{ $options.i18n.addActivationCode }}
               </gl-button>
+              <gl-button
+                v-gl-modal-directive="$options.removeLicenseModal.id"
+                category="tertiary"
+                :loading="hasAsyncActivity"
+                :title="$options.i18n.removeLicenseButtonLabel"
+                :aria-label="$options.i18n.removeLicenseButtonLabel"
+                variant="danger"
+                data-testid="remove-license"
+              >
+                {{ $options.i18n.removeLicense }}
+              </gl-button>
+              <gl-modal
+                :modal-id="$options.removeLicenseModal.id"
+                v-bind="$options.removeLicenseModal"
+                @primary="removeLicense"
+              >
+                <div
+                  v-if="$options.isDotCom"
+                  v-safe-html="$options.i18n.removeLicenseConfirmSaaS"
+                ></div>
+                <br />
+                <div>{{ $options.i18n.removeLicenseConfirm }}</div>
+              </gl-modal>
             </div>
-          </template>
-        </subscription-details-card>
-      </div>
-
-      <div class="col-md-6 gl-mb-5">
-        <subscription-details-card
-          class="gl-h-full"
-          :details-fields="licensedToFields"
-          :header-text="$options.i18n.licensedToHeaderText"
-          :subscription="subscription"
-        />
-      </div>
-    </section>
+          </div>
+        </template>
+      </subscription-details-card>
+      <subscription-details-card
+        :details-fields="licensedToFields"
+        :header-text="$options.i18n.licensedToHeaderText"
+        :subscription="subscription"
+      />
+    </div>
     <subscription-details-user-info v-if="hasSubscription" :subscription="subscription" />
     <subscription-details-history
       v-if="hasSubscription"

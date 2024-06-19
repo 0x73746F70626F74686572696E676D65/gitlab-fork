@@ -1,6 +1,7 @@
 <script>
 import { GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
 import { isInFuture } from '~/lib/utils/datetime/date_calculation_utility';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 import { sprintf } from '~/locale';
 import {
   subscriptionActivationNotificationText,
@@ -28,6 +29,7 @@ export default {
     GlAlert,
     GlButton,
     GlSprintf,
+    PageHeading,
     SubscriptionBreakdown,
     NoActiveSubscription,
   },
@@ -132,30 +134,26 @@ export default {
 
 <template>
   <div>
-    <div
-      class="gl-display-flex gl-flex-direction-row gl-justify-content-space-between gl-align-items-center gl-flex-wrap"
-    >
-      <h4 data-testid="subscription-main-title" class="gl-w-full gl-sm-w-auto">
-        {{ $options.i18n.subscriptionMainTitle }}
-      </h4>
-      <gl-button
-        v-if="canShowSubscriptionDetails"
-        class="gl-ml-auto gl-mr-3"
-        data-testid="export-license-usage-btn"
-        :href="licenseUsageFilePath"
-        >{{ $options.i18n.exportLicenseUsageBtnText }}
-      </gl-button>
-      <gl-button
-        category="secondary"
-        variant="confirm"
-        icon="external-link"
-        target="_blank"
-        data-testid="customers-portal-btn"
-        :href="customersPortalUrl"
-        >{{ $options.i18n.customersPortalBtnText }}
-      </gl-button>
-    </div>
-    <hr />
+    <page-heading :heading="$options.i18n.subscriptionMainTitle">
+      <template #actions>
+        <gl-button
+          v-if="canShowSubscriptionDetails"
+          class="gl-ml-auto"
+          data-testid="export-license-usage-btn"
+          :href="licenseUsageFilePath"
+          >{{ $options.i18n.exportLicenseUsageBtnText }}
+        </gl-button>
+        <gl-button
+          category="secondary"
+          variant="confirm"
+          icon="external-link"
+          target="_blank"
+          data-testid="customers-portal-btn"
+          :href="customersPortalUrl"
+          >{{ $options.i18n.customersPortalBtnText }}
+        </gl-button>
+      </template>
+    </page-heading>
     <gl-alert
       v-if="activationNotification"
       variant="success"
