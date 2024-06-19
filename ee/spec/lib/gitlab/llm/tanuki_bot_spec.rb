@@ -116,7 +116,6 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
     describe 'execute' do
       before do
-        stub_feature_flags(ai_claude_3_for_docs: false)
         allow(License).to receive(:feature_available?).and_return(true)
         allow(logger).to receive(:info_or_debug)
 
@@ -131,7 +130,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
       it 'executes calls and returns ResponseModifier' do
         expect(ai_gateway_request).to receive(:request)
-          .with(prompt: a_string_including('content'), options: { model: 'claude-2.1', max_tokens: 256 })
+          .with(prompt: instance_of(Array),
+            options: { model: ::Gitlab::Llm::Anthropic::Client::CLAUDE_3_SONNET, max_tokens: 256 })
           .once.and_return(completion_response)
         expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
 
@@ -143,7 +143,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
         expect(ai_gateway_request)
           .to receive(:request)
-          .with(prompt: a_string_including('content'), options: { model: 'claude-2.1', max_tokens: 256 })
+          .with(prompt: instance_of(Array), options:
+            { model: ::Gitlab::Llm::Anthropic::Client::CLAUDE_3_SONNET, max_tokens: 256 })
           .once
           .and_yield(answer)
           .and_return(completion_response)
@@ -153,31 +154,10 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
         expect { |b| instance.execute(&b) }.to yield_with_args(answer)
       end
 
-      context 'with ai_claude_3_for_docs enabled' do
-        before do
-          stub_feature_flags(ai_claude_3_for_docs: true)
-        end
-
-        it 'yields the streamed response to the given block' do
-          allow(Banzai).to receive(:render).and_return('absolute_links_content')
-
-          expect(ai_gateway_request)
-            .to receive(:request)
-            .with(prompt: an_instance_of(Array),
-              options: { model: ::Gitlab::Llm::Anthropic::Client::CLAUDE_3_SONNET, max_tokens: 256 })
-            .once
-            .and_yield(answer)
-            .and_return(completion_response)
-
-          expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
-
-          expect { |b| instance.execute(&b) }.to yield_with_args(answer)
-        end
-      end
-
       it 'raises an error when request failed' do
-        expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
-        allow(ai_gateway_request).to receive(:request).once.and_yield({ "error" => { "message" => "some error" } })
+        expect(logger).to receive(:info).with(message: "Streaming error", error: anything)
+        allow(ai_gateway_request).to receive(:request).once
+                                                      .and_raise(::Gitlab::Llm::AiGateway::Client::ConnectionError.new)
 
         execute
       end

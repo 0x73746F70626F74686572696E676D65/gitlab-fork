@@ -106,17 +106,9 @@ module Gitlab
           tracking_context: tracking_context)
       end
 
-      def get_completions(search_documents, &block)
-        if Feature.enabled?(:ai_claude_3_for_docs, current_user)
-          get_completions_ai_gateway(search_documents, &block)
-        else
-          get_completions_anthropic(search_documents, &block)
-        end
-      end
-
       def get_completions_anthropic(search_documents)
         final_prompt = Gitlab::Llm::Anthropic::Templates::TanukiBot
-            .final_prompt(current_user, question: question, documents: search_documents)
+            .final_prompt(question: question, documents: search_documents)
 
         final_prompt_result = anthropic_client.stream(
           prompt: final_prompt[:prompt], **final_prompt[:options]
@@ -136,7 +128,7 @@ module Gitlab
 
       def get_completions_ai_gateway(search_documents)
         final_prompt = Gitlab::Llm::Anthropic::Templates::TanukiBot
-          .final_prompt(current_user, question: question, documents: search_documents)
+          .final_prompt(question: question, documents: search_documents)
 
         final_prompt_result = ai_gateway_request.request(
           prompt: final_prompt[:prompt], options: final_prompt[:options]
@@ -152,6 +144,11 @@ module Gitlab
           current_user,
           search_documents: search_documents
         )
+
+      rescue Gitlab::Llm::AiGateway::Client::ConnectionError => error
+        Gitlab::ErrorTracking.track_exception(error)
+
+        logger.info(message: "Streaming error", error: error.message)
       end
 
       def empty_response
