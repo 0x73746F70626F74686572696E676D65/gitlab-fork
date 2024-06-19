@@ -58,7 +58,7 @@ export default {
     <gl-card
       class="gl-new-card"
       header-class="gl-new-card-header"
-      body-class="gl-new-card-body gl-px-0 gl-overflow-hidden"
+      body-class="gl-new-card-body gl-px-0"
     >
       <template #header>
         <div class="gl-new-card-title-wrapper gl-flex-direction-column">
