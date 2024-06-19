@@ -42,7 +42,7 @@ func TestMain(m *testing.M) {
 		log.WithError(err).Fatal()
 	}
 
-	os.Exit(m.Run())
+	testhelper.VerifyNoGoroutines(m)
 }
 
 func testArtifactsUploadServer(t *testing.T, authResponse *api.Response, bodyProcessor func(w http.ResponseWriter, r *http.Request)) *httptest.Server {
@@ -144,7 +144,6 @@ func setupWithTmpPath(t *testing.T, filename string, includeFormat bool, format 
 	t.Cleanup(func() {
 		ts.Close()
 		require.NoError(t, writer.Close())
-		testhelper.VerifyNoGoroutineLeaks(t)
 	})
 
 	qs := ""

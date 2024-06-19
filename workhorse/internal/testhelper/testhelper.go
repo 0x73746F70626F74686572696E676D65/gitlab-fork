@@ -146,15 +146,25 @@ func ReadAll(t *testing.T, r io.Reader) []byte {
 	return b
 }
 
-// VerifyNoGoroutineLeaks stops any known global Goroutine handlers and verifies that no
+// VerifyNoGoroutines stops any known global Goroutine handlers and verifies that no
 // lingering Goroutines are present.
-func VerifyNoGoroutineLeaks(t *testing.T) {
-	// Workaround for https://github.com/census-instrumentation/opencensus-go/issues/1191#issuecomment-610440163
-	ignoreOpenCensus := goleak.IgnoreTopFunction("go.opencensus.io/stats/view.(*worker).start")
-	// Workaround for https://github.com/getsentry/raven-go/issues/90
-	ignoreSentry := goleak.IgnoreTopFunction("github.com/getsentry/raven-go.(*Client).worker")
+func VerifyNoGoroutines(m *testing.M) {
+	code := m.Run()
+
 	regexp2.StopTimeoutClock() // https://github.com/dlclark/regexp2/issues/63
-	goleak.VerifyNone(t, ignoreOpenCensus, ignoreSentry)
+
+	err := goleak.Find(
+		// Workaround for https://github.com/census-instrumentation/opencensus-go/issues/1191#issuecomment-610440163
+		goleak.IgnoreTopFunction("go.opencensus.io/stats/view.(*worker).start"),
+		// Workaround for https://github.com/getsentry/raven-go/issues/90
+		goleak.IgnoreTopFunction("github.com/getsentry/raven-go.(*Client).worker"),
+	)
+
+	if err != nil {
+		panic(err)
+	}
+
+	os.Exit(code)
 }
 
 // ParseJWT parses the given JWT token and returns the parsed claims.

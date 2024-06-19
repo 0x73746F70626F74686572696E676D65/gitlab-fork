@@ -35,8 +35,6 @@ func testEntryServer(t *testing.T, archive string, entry string) *httptest.Respo
 }
 
 func TestDownloadingFromValidArchive(t *testing.T) {
-	defer testhelper.VerifyNoGoroutineLeaks(t)
-
 	tempFile, err := os.CreateTemp("", "uploads")
 	require.NoError(t, err)
 	defer tempFile.Close()
@@ -64,8 +62,6 @@ func TestDownloadingFromValidArchive(t *testing.T) {
 }
 
 func TestDownloadingFromValidHTTPArchive(t *testing.T) {
-	defer testhelper.VerifyNoGoroutineLeaks(t)
-
 	tempDir := t.TempDir()
 
 	f, err := os.Create(filepath.Join(tempDir, "archive.zip"))
@@ -98,8 +94,6 @@ func TestDownloadingFromValidHTTPArchive(t *testing.T) {
 }
 
 func TestDownloadingNonExistingFile(t *testing.T) {
-	defer testhelper.VerifyNoGoroutineLeaks(t)
-
 	tempFile, err := os.CreateTemp(t.TempDir(), "uploads")
 	require.NoError(t, err)
 	defer tempFile.Close()
