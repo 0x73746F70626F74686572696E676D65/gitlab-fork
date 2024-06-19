@@ -2,11 +2,17 @@ import { shallowMount } from '@vue/test-utils';
 import { GlToggle } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { s__, sprintf } from '~/locale';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import CodeSuggestionsAddonAssignment from 'ee/usage_quotas/code_suggestions/components/code_suggestions_addon_assignment.vue';
-import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import {
+  ADD_ON_CODE_SUGGESTIONS,
+  CODE_SUGGESTIONS_TITLE,
+  DUO_ENTERPRISE,
+  DUO_ENTERPRISE_TITLE,
+} from 'ee/usage_quotas/code_suggestions/constants';
 import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/saas_add_on_eligible_users.query.graphql';
 import userAddOnAssignmentCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_create.mutation.graphql';
 import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_remove.mutation.graphql';
@@ -136,6 +142,25 @@ describe('CodeSuggestionsAddonAssignment', () => {
   };
 
   const findToggle = () => wrapper.findComponent(GlToggle);
+
+  it('shows correct label on the toggle', () => {
+    createComponent({ props: {} });
+    expect(findToggle().props('label')).toBe(
+      sprintf(s__('CodeSuggestions|%{addOnName} status'), { addOnName: CODE_SUGGESTIONS_TITLE }),
+    );
+  });
+
+  describe('with Duo Enterprise add-on enabled', () => {
+    beforeEach(() => {
+      return createComponent({ props: { duoTier: DUO_ENTERPRISE } });
+    });
+
+    it('shows correct label on the toggle', () => {
+      expect(findToggle().props('label')).toBe(
+        sprintf(s__('CodeSuggestions|%{addOnName} status'), { addOnName: DUO_ENTERPRISE_TITLE }),
+      );
+    });
+  });
 
   describe.each([
     {

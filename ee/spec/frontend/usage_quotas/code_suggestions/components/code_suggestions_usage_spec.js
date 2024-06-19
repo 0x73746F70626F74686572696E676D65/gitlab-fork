@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import { s__, sprintf } from '~/locale';
 import addOnPurchaseQuery from 'ee/usage_quotas/add_on/graphql/get_add_on_purchase.query.graphql';
 import CodeSuggestionsIntro from 'ee/usage_quotas/code_suggestions/components/code_suggestions_intro.vue';
 import CodeSuggestionsInfo from 'ee/usage_quotas/code_suggestions/components/code_suggestions_info_card.vue';
@@ -11,6 +12,12 @@ import SelfManagedAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/c
 import CodeSuggestionsUsage from 'ee/usage_quotas/code_suggestions/components/code_suggestions_usage.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import {
+  CODE_SUGGESTIONS_TITLE,
+  DUO_ENTERPRISE,
+  DUO_ENTERPRISE_TITLE,
+  DUO_PRO,
+} from 'ee/usage_quotas/code_suggestions/constants';
 import {
   ADD_ON_ERROR_DICTIONARY,
   ADD_ON_PURCHASE_FETCH_ERROR_CODE,
@@ -162,7 +169,7 @@ describe('GitLab Duo Usage', () => {
           expect(findCodeSuggestionsStatistics().props()).toEqual({
             usageValue: 0,
             totalValue: 20,
-            duoTier: 'pro',
+            duoTier: DUO_PRO,
           });
         });
 
@@ -170,7 +177,7 @@ describe('GitLab Duo Usage', () => {
           expect(findCodeSuggestionsInfo().exists()).toBe(true);
           expect(findCodeSuggestionsInfo().props()).toEqual({
             groupId: '289561',
-            duoTier: 'pro',
+            duoTier: DUO_PRO,
           });
         });
       });
@@ -187,7 +194,7 @@ describe('GitLab Duo Usage', () => {
           expect(findCodeSuggestionsStatistics().props()).toEqual({
             usageValue: 0,
             totalValue: 20,
-            duoTier: 'enterprise',
+            duoTier: DUO_ENTERPRISE,
           });
         });
 
@@ -195,7 +202,7 @@ describe('GitLab Duo Usage', () => {
           expect(findCodeSuggestionsInfo().exists()).toBe(true);
           expect(findCodeSuggestionsInfo().props()).toEqual({
             groupId: '289561',
-            duoTier: 'enterprise',
+            duoTier: DUO_ENTERPRISE,
           });
         });
       });
@@ -210,13 +217,38 @@ describe('GitLab Duo Usage', () => {
       });
 
       it('renders code suggestions title', () => {
-        expect(findCodeSuggestionsTitle().text()).toBe('GitLab Duo Pro');
+        expect(findCodeSuggestionsTitle().text()).toBe(CODE_SUGGESTIONS_TITLE);
       });
 
       it('renders code suggestions subtitle', () => {
         expect(findCodeSuggestionsSubtitle().text()).toBe(
-          'Manage seat assignments for GitLab Duo Pro across your instance.',
+          sprintf(
+            s__('CodeSuggestions|Manage seat assignments for %{addOnName} across your instance.'),
+            { addOnName: CODE_SUGGESTIONS_TITLE },
+          ),
         );
+      });
+
+      describe('with Duo Enterprise add-on enabled', () => {
+        beforeEach(() => {
+          return createComponent({
+            handler: noAssignedEnterpriseAddonDataHandler,
+            provideProps: { isSaaS: false },
+          });
+        });
+
+        it('renders code suggestions title', () => {
+          expect(findCodeSuggestionsTitle().text()).toBe(DUO_ENTERPRISE_TITLE);
+        });
+
+        it('renders code suggestions subtitle', () => {
+          expect(findCodeSuggestionsSubtitle().text()).toBe(
+            sprintf(
+              s__('CodeSuggestions|Manage seat assignments for %{addOnName} across your instance.'),
+              { addOnName: DUO_ENTERPRISE_TITLE },
+            ),
+          );
+        });
       });
 
       it('does not render code suggestions intro', () => {
@@ -227,7 +259,7 @@ describe('GitLab Duo Usage', () => {
         expect(findCodeSuggestionsStatistics().props()).toEqual({
           usageValue: 0,
           totalValue: 20,
-          duoTier: 'pro',
+          duoTier: DUO_PRO,
         });
       });
 
@@ -244,7 +276,7 @@ describe('GitLab Duo Usage', () => {
 
       expect(findSaasAddOnEligibleUserList().props()).toEqual({
         addOnPurchaseId: 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/3',
-        duoTier: 'pro',
+        duoTier: DUO_PRO,
       });
     });
 
@@ -254,6 +286,7 @@ describe('GitLab Duo Usage', () => {
 
       expect(findSelfManagedAddOnEligibleUserList().props()).toEqual({
         addOnPurchaseId: 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/3',
+        duoTier: DUO_PRO,
       });
     });
   });
@@ -309,12 +342,15 @@ describe('GitLab Duo Usage', () => {
       });
 
       it('renders code suggestions title', () => {
-        expect(findCodeSuggestionsTitle().text()).toBe('GitLab Duo Pro');
+        expect(findCodeSuggestionsTitle().text()).toBe(CODE_SUGGESTIONS_TITLE);
       });
 
       it('renders code suggestions subtitle', () => {
         expect(findCodeSuggestionsSubtitle().text()).toBe(
-          'Manage seat assignments for GitLab Duo Pro across your instance.',
+          sprintf(
+            s__('CodeSuggestions|Manage seat assignments for %{addOnName} across your instance.'),
+            { addOnName: CODE_SUGGESTIONS_TITLE },
+          ),
         );
       });
 

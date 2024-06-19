@@ -450,6 +450,7 @@ export default {
           :user-id="item.id"
           :add-on-assignments="item.addOnAssignments"
           :add-on-purchase-id="addOnPurchaseId"
+          :duo-tier="duoTier"
           @handleAddOnAssignmentError="handleAddOnAssignmentError"
           @clearAddOnAssignmentError="clearAlerts"
         />

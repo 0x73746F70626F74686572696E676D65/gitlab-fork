@@ -1,11 +1,14 @@
 <script>
 import { GlSkeletonLoader } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
+import { s__, sprintf } from '~/locale';
 import getAddOnPurchaseQuery from 'ee/usage_quotas/add_on/graphql/get_add_on_purchase.query.graphql';
 import {
-  DUO_PRO,
-  DUO_ENTERPRISE,
   ADD_ON_CODE_SUGGESTIONS,
+  CODE_SUGGESTIONS_TITLE,
+  DUO_ENTERPRISE,
+  DUO_ENTERPRISE_TITLE,
+  DUO_PRO,
 } from 'ee/usage_quotas/code_suggestions/constants';
 import SaasAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/saas_add_on_eligible_user_list.vue';
 import SelfManagedAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/self_managed_add_on_eligible_user_list.vue';
@@ -70,6 +73,20 @@ export default {
       }
       return !this.isLoading && (this.hasCodeSuggestions || this.addOnPurchaseFetchError);
     },
+    codeSuggestionsSubtitle() {
+      return sprintf(
+        s__('CodeSuggestions|Manage seat assignments for %{addOnName} across your instance.'),
+        {
+          addOnName: this.codeSuggestionsFriendlyName,
+        },
+      );
+    },
+    codeSuggestionsTitle() {
+      return this.codeSuggestionsFriendlyName;
+    },
+    codeSuggestionsFriendlyName() {
+      return this.duoTier === DUO_ENTERPRISE ? DUO_ENTERPRISE_TITLE : CODE_SUGGESTIONS_TITLE;
+    },
   },
   apollo: {
     addOnPurchase: {
@@ -128,13 +145,11 @@ export default {
     <template v-else>
       <section v-if="showTitleAndSubtitle">
         <h1 data-testid="code-suggestions-title" class="page-title gl-font-size-h-display">
-          {{ s__('CodeSuggestions|GitLab Duo Pro') }}
+          {{ codeSuggestionsTitle }}
         </h1>
 
         <p data-testid="code-suggestions-subtitle">
-          {{
-            s__('CodeSuggestions|Manage seat assignments for GitLab Duo Pro across your instance.')
-          }}
+          {{ codeSuggestionsSubtitle }}
         </p>
       </section>
       <section v-if="hasCodeSuggestions">
@@ -157,7 +172,11 @@ export default {
           :add-on-purchase-id="addOnPurchase.id"
           :duo-tier="duoTier"
         />
-        <self-managed-add-on-eligible-user-list v-else :add-on-purchase-id="addOnPurchase.id" />
+        <self-managed-add-on-eligible-user-list
+          v-else
+          :add-on-purchase-id="addOnPurchase.id"
+          :duo-tier="duoTier"
+        />
       </section>
       <error-alert
         v-else-if="addOnPurchaseFetchError"

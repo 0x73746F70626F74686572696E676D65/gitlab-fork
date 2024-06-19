@@ -9,7 +9,11 @@ import {
 } from 'ee/usage_quotas/error_constants';
 import ErrorAlert from 'ee/vue_shared/components/error_alert/error_alert.vue';
 import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
-import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import {
+  ADD_ON_CODE_SUGGESTIONS,
+  DUO_PRO,
+  DUO_ENTERPRISE,
+} from 'ee/usage_quotas/code_suggestions/constants';
 import SearchAndSortBar from 'ee/usage_quotas/code_suggestions/components/search_and_sort_bar.vue';
 
 export default {
@@ -23,6 +27,12 @@ export default {
     addOnPurchaseId: {
       type: String,
       required: true,
+    },
+    duoTier: {
+      type: String,
+      required: false,
+      default: DUO_PRO,
+      validator: (value) => [DUO_PRO, DUO_ENTERPRISE].includes(value),
     },
   },
   addOnErrorDictionary: ADD_ON_ERROR_DICTIONARY,
@@ -112,6 +122,7 @@ export default {
     :is-loading="$apollo.loading"
     :page-info="pageInfo"
     :search="filterOptions.search"
+    :duo-tier="duoTier"
     @next="handleNext"
     @prev="handlePrev"
   >

@@ -1,8 +1,14 @@
 <script>
 import { GlToggle } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import { s__ } from '~/locale';
-import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import { s__, sprintf } from '~/locale';
+import {
+  ADD_ON_CODE_SUGGESTIONS,
+  CODE_SUGGESTIONS_TITLE,
+  DUO_ENTERPRISE,
+  DUO_ENTERPRISE_TITLE,
+  DUO_PRO,
+} from 'ee/usage_quotas/code_suggestions/constants';
 import {
   CANNOT_ASSIGN_ADDON_ERROR_CODE,
   CANNOT_UNASSIGN_ADDON_ERROR_CODE,
@@ -14,9 +20,6 @@ import userAddOnAssignmentRemoveMutation from 'ee/usage_quotas/add_on/graphql/us
 
 export default {
   name: 'CodeSuggestionsAddonAssignment',
-  i18n: {
-    toggleLabel: s__('CodeSuggestions|GitLab Duo Pro add-on status'),
-  },
   components: {
     GlToggle,
   },
@@ -33,6 +36,12 @@ export default {
     addOnPurchaseId: {
       type: String,
       required: true,
+    },
+    duoTier: {
+      type: String,
+      required: false,
+      default: DUO_PRO,
+      validator: (value) => [DUO_PRO, DUO_ENTERPRISE].includes(value),
     },
   },
   data() {
@@ -54,6 +63,11 @@ export default {
         userId: this.userId,
         addOnPurchaseId: this.addOnPurchaseId,
       };
+    },
+    toggleLabel() {
+      return sprintf(s__('CodeSuggestions|%{addOnName} status'), {
+        addOnName: this.duoTier === DUO_ENTERPRISE ? DUO_ENTERPRISE_TITLE : CODE_SUGGESTIONS_TITLE,
+      });
     },
   },
   methods: {
@@ -117,7 +131,7 @@ export default {
     <gl-toggle
       :id="toggleId"
       :value="isAssigned"
-      :label="$options.i18n.toggleLabel"
+      :label="toggleLabel"
       :is-loading="isLoading"
       class="gl-display-inline-block gl-align-middle"
       label-position="hidden"
