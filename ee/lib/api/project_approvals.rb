@@ -56,7 +56,8 @@ module API
           optional :merge_requests_author_approval, type: Boolean, desc: 'Should merge request authors be able to self approve merge requests; `true` means authors cannot self approve'
           optional :merge_requests_disable_committers_approval, type: Boolean, desc: 'Should committers be able to self approve merge requests'
           optional :require_password_to_approve, type: Boolean, desc: 'Should approvers authenticate via password before adding approval'
-          at_least_one_of :approvals_before_merge, :reset_approvals_on_push, :selective_code_owner_removals, :disable_overriding_approvers_per_merge_request, :merge_requests_author_approval, :merge_requests_disable_committers_approval, :require_password_to_approve
+          optional :require_reauthentication_to_approve, type: Boolean, desc: 'Should approvers authenticate via password or SAML before adding approval'
+          at_least_one_of :approvals_before_merge, :reset_approvals_on_push, :selective_code_owner_removals, :disable_overriding_approvers_per_merge_request, :merge_requests_author_approval, :merge_requests_disable_committers_approval, :require_password_to_approve, :require_reauthentication_to_approve
         end
         post '/' do
           authorize! :update_approvers, user_project

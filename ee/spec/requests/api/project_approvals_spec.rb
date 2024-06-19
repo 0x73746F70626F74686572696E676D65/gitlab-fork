@@ -26,6 +26,7 @@ RSpec.describe API::ProjectApprovals, :aggregate_failures, feature_category: :so
         expect(json_response["merge_requests_author_approval"]).to be false
         expect(json_response["merge_requests_disable_committers_approval"]).to be false
         expect(json_response["require_password_to_approve"]).to be false
+        expect(json_response["require_reauthentication_to_approve"]).to be false
         expect(json_response["selective_code_owner_removals"]).to be false
       end
 
@@ -123,6 +124,7 @@ RSpec.describe API::ProjectApprovals, :aggregate_failures, feature_category: :so
           project.merge_requests_author_approval = false
           project.merge_requests_disable_committers_approval = true
           project.require_password_to_approve = false
+          project.project_setting.require_reauthentication_to_approve = false
           project.save!
 
           settings = {
