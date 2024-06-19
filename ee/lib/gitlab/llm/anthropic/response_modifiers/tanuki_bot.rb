@@ -63,7 +63,10 @@ module Gitlab
           strong_memoize_attr :parsed_response
 
           def find_sources(source_ids)
-            ids = source_ids.match(CONTENT_ID_REGEX).captures.map(&:to_i)
+            matches = source_ids.match(CONTENT_ID_REGEX)
+            return [] if matches.nil?
+
+            ids = matches.captures.map(&:to_i)
             documents = ::Embedding::Vertex::GitlabDocumentation.id_in(ids).select(:url, :metadata)
             documents.map do |doc|
               { source_url: doc.url }.merge(doc.metadata)
@@ -72,6 +75,8 @@ module Gitlab
 
           def find_sources_with_search_documents(source_ids)
             ids = source_ids.scan(/CNT-IDX-(?<id>[0-9a-z]+)/).flatten
+            return [] if ids.empty?
+
             documents = search_documents.select { |doc| ids.include?(doc[:id]) }
             documents.map! do |doc|
               { source_url: doc[:metadata]['filename'] }.merge(doc[:metadata]).symbolize_keys

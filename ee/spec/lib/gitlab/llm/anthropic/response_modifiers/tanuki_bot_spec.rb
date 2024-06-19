@@ -47,6 +47,14 @@ RSpec.describe Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot, feature_cat
       end
     end
 
+    context "when there is error in place of ids" do
+      let(:ai_response) { { completion: "#{text} ATTRS: error" }.to_json }
+
+      it 'sets extras as empty' do
+        expect(subject).to eq(sources: [])
+      end
+    end
+
     context "when the message contains the text I don't know" do
       let(:text) { "I don't know the answer to your question" }
       let(:record_id) { non_existing_record_id }
@@ -92,6 +100,14 @@ RSpec.describe Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot, feature_cat
 
     context "when the there are no ids" do
       let(:ai_response) { { completion: "#{text} ATTRS:" }.to_json }
+
+      it 'sets extras as empty' do
+        expect(subject).to eq(sources: [])
+      end
+    end
+
+    context "when there is error in place of ids" do
+      let(:ai_response) { { completion: "#{text} ATTRS: error" }.to_json }
 
       it 'sets extras as empty' do
         expect(subject).to eq(sources: [])
