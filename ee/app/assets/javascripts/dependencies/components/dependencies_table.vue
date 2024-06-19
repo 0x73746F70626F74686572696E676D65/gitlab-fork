@@ -117,9 +117,6 @@ export default {
         vulnerabilities: vulnerabilities ? cloneDeep(vulnerabilities) : [],
       }));
     },
-    displayLocation(item) {
-      return !item.occurrenceCount || item.occurrenceCount < 2;
-    },
     packager(dependency) {
       return dependency.packager || this.$options.i18n.unknown;
     },
@@ -208,12 +205,12 @@ export default {
     </template>
 
     <template #cell(location)="{ item }">
-      <dependency-location v-if="displayLocation(item)" :location="item.location" />
       <dependency-location-count
-        v-else
+        v-if="item.occurrenceCount !== undefined"
         :location-count="item.occurrenceCount"
         :component-id="item.componentId"
       />
+      <dependency-location v-else :location="item.location" />
     </template>
 
     <template #cell(license)="{ item }">

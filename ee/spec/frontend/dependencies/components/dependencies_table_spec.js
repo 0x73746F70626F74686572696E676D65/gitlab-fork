@@ -107,12 +107,7 @@ describe('DependenciesTable component', () => {
     sharedExpectations(rowWrapper, dependency);
     const [, , locationCell, , projectCell, isVulnerableCell] = rowWrapper.findAll('td').wrappers;
 
-    const {
-      occurrenceCount,
-      projectCount,
-      location: { path },
-    } = dependency;
-    const locationCellText = occurrenceCount > 1 ? occurrenceCount.toString() : path;
+    const { occurrenceCount, projectCount } = dependency;
 
     const isVulnerableCellText = normalizeWhitespace(isVulnerableCell.text());
     const vulns = vulnerabilityInfo[dependency.occurrenceId];
@@ -122,7 +117,7 @@ describe('DependenciesTable component', () => {
     } else {
       expect(isVulnerableCellText).toBe('');
     }
-    expect(locationCell.text()).toContain(locationCellText);
+    expect(locationCell.text()).toContain(occurrenceCount.toString());
     expect(projectCell.text()).toContain(projectCount.toString());
   };
 

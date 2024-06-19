@@ -66,6 +66,23 @@ describe('Dependency Location Count component', () => {
     expect(findIcon().props('name')).toBe('doc-text');
   });
 
+  it.each`
+    locationCount | headerText
+    ${1}          | ${'1 location'}
+    ${2}          | ${'2 locations'}
+  `(
+    'renders correct location text when `locationCount` is $locationCount',
+    ({ locationCount, headerText }) => {
+      createComponent({
+        propsData: {
+          locationCount,
+        },
+      });
+
+      expect(findLocationList().props('headerText')).toBe(headerText);
+    },
+  );
+
   it('renders the listbox', () => {
     createComponent();
 
