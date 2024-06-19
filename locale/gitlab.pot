@@ -49047,6 +49047,9 @@ msgstr ""
 msgid "ServiceDesk|Add external participants from the %{codeStart}Cc%{codeEnd} header"
 msgstr ""
 
+msgid "ServiceDesk|Any project member can view new tickets."
+msgstr ""
+
 msgid "ServiceDesk|CRAM-MD5"
 msgstr ""
 
@@ -49122,6 +49125,9 @@ msgstr ""
 msgid "ServiceDesk|Enable custom email address"
 msgstr ""
 
+msgid "ServiceDesk|External participants"
+msgstr ""
+
 msgid "ServiceDesk|Forward all emails to the custom email address to %{incomingEmail}."
 msgstr ""
 
@@ -49153,6 +49159,15 @@ msgid "ServiceDesk|Login"
 msgstr ""
 
 msgid "ServiceDesk|Minimum 8 characters long."
+msgstr ""
+
+msgid "ServiceDesk|New tickets are confidential by default"
+msgstr ""
+
+msgid "ServiceDesk|On public projects, tickets are always confidential by default."
+msgstr ""
+
+msgid "ServiceDesk|Only project members with at least the Reporter role can view new tickets."
 msgstr ""
 
 msgid "ServiceDesk|Or reset and connect a new custom email address to this Service Desk."
@@ -49249,6 +49264,9 @@ msgid "ServiceDesk|This issue has been converted to a Service Desk ticket. The e
 msgstr ""
 
 msgid "ServiceDesk|This issue has been reopened because it received a new comment from an external participant."
+msgstr ""
+
+msgid "ServiceDesk|Ticket visibility"
 msgstr ""
 
 msgid "ServiceDesk|To use a custom email address for this Service Desk, you'll need to configure and verify an email address again."
