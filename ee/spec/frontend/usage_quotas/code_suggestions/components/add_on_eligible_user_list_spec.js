@@ -24,7 +24,12 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import AddOnBulkActionConfirmationModal from 'ee/usage_quotas/code_suggestions/components/add_on_bulk_action_confirmation_modal.vue';
-import { ADD_ON_CODE_SUGGESTIONS } from 'ee/usage_quotas/code_suggestions/constants';
+import {
+  ADD_ON_CODE_SUGGESTIONS,
+  CODE_SUGGESTIONS_TITLE,
+  DUO_ENTERPRISE,
+  DUO_ENTERPRISE_TITLE,
+} from 'ee/usage_quotas/code_suggestions/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/saas_add_on_eligible_users.query.graphql';
 import userAddOnAssignmentBulkCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_create.mutation.graphql';
@@ -212,6 +217,10 @@ describe('Add On Eligible User List', () => {
     findTable()
       .props('fields')
       .map(({ key }) => key);
+  const findTableLabels = () =>
+    findTable()
+      .props('fields')
+      .map(({ label }) => label);
   const findAllCodeSuggestionsAddonComponents = () =>
     wrapper.findAllComponents(CodeSuggestionsAddOnAssignment);
   const findAddOnAssignmentError = () => wrapper.findByTestId('add-on-assignment-error');
@@ -329,26 +338,6 @@ describe('Add On Eligible User List', () => {
       expect(actualUserListData).toEqual(expectedUserListData);
     });
 
-    describe('with Duo Pro add-on enabled', () => {
-      it('passes the correct fields configuration', () => {
-        expect(findTableKeys()).toEqual([
-          'user',
-          'codeSuggestionsAddon',
-          'email',
-          'lastActivityTime',
-        ]);
-      });
-    });
-  });
-
-  describe('with Duo Enterprise add-on enabled', () => {
-    beforeEach(() => {
-      return createComponent({
-        mountFn: mount,
-        props: { duoTier: 'enterprise' },
-      });
-    });
-
     it('passes the correct fields configuration', () => {
       expect(findTableKeys()).toEqual([
         'user',
@@ -356,6 +345,23 @@ describe('Add On Eligible User List', () => {
         'email',
         'lastActivityTime',
       ]);
+    });
+
+    it('labels add-on column as Duo Pro', () => {
+      expect(findTableLabels()).toContain(CODE_SUGGESTIONS_TITLE);
+    });
+
+    describe('with Duo Enterprise add-on enabled', () => {
+      beforeEach(() => {
+        return createComponent({
+          mountFn: mount,
+          props: { duoTier: DUO_ENTERPRISE },
+        });
+      });
+
+      it('labels add-on column as Duo Enterprise', () => {
+        expect(findTableLabels()).toContain(DUO_ENTERPRISE_TITLE);
+      });
     });
 
     describe('with enableAddOnUsersFiltering enabled', () => {
