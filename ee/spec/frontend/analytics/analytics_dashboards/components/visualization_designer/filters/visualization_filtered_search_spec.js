@@ -3,7 +3,7 @@ import { GlFilteredSearch } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
 import VisualizationFilteredSearch from 'ee/analytics/analytics_dashboards/components/visualization_designer/filters/visualization_filtered_search.vue';
-import { mockMetaData } from 'ee_jest/analytics/analytics_dashboards/mock_data';
+import { mockQueryBuilderValues } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 
 describe('ProductAnalyticsVisualizationFilteredSearch', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
@@ -15,8 +15,9 @@ describe('ProductAnalyticsVisualizationFilteredSearch', () => {
     wrapper = shallowMountExtended(VisualizationFilteredSearch, {
       propsData: {
         query: {},
-        availableMeasures: mockMetaData.cubes.at(0).availableMeasures,
-        availableDimensions: [mockMetaData.cubes.at(0).dimensions[0]],
+        availableMeasures: mockQueryBuilderValues.availableMeasures,
+        availableDimensions: mockQueryBuilderValues.availableDimensions,
+        availableTimeDimensions: mockQueryBuilderValues.availableTimeDimensions,
       },
     });
   };
@@ -65,13 +66,29 @@ describe('ProductAnalyticsVisualizationFilteredSearch', () => {
         expect(findFilteredSearch().props('availableTokens')).toContainEqual(
           expect.objectContaining({
             operators: expect.any(Array),
-            options: [
+            options: expect.arrayContaining([
               {
                 title: 'Tracked Events Page Urlhosts',
                 value: 'TrackedEvents.pageUrlhosts',
               },
-            ],
+            ]),
             title: 'Dimension',
+          }),
+        );
+      });
+
+      it('adds timeDimension token to the availableTokens', () => {
+        expect(findFilteredSearch().props('availableTokens')).toContainEqual(
+          expect.objectContaining({
+            operators: expect.any(Array),
+            options: expect.arrayContaining([
+              {
+                title: 'Seconds',
+                value: '{"dimension":"TrackedEvents.derivedTstamp","granularity":"seconds"}',
+              },
+            ]),
+            type: 'timeDimension',
+            title: 'Group by',
           }),
         );
       });
@@ -96,16 +113,6 @@ describe('ProductAnalyticsVisualizationFilteredSearch', () => {
           });
         });
 
-        describe('and the measure is removed', () => {
-          beforeEach(() => {
-            wrapper.setProps({ query: { dimensions: ['TrackedEvents.pageUrlhosts'] } });
-          });
-
-          it('empties the filtered search component value', () => {
-            expect(findFilteredSearch().props('value')).toStrictEqual([]);
-          });
-        });
-
         describe('and the dimension is removed', () => {
           beforeEach(() => {
             wrapper.setProps({ query: { measures: ['TrackedEvents.count'] } });
@@ -117,6 +124,126 @@ describe('ProductAnalyticsVisualizationFilteredSearch', () => {
                 type: 'measure',
                 value: {
                   data: 'TrackedEvents.count',
+                  operator: '=',
+                },
+              },
+            ]);
+          });
+        });
+
+        describe('and the measure is removed', () => {
+          beforeEach(() => {
+            wrapper.setProps({ query: { dimensions: ['TrackedEvents.pageUrlhosts'] } });
+          });
+
+          it('empties the filtered search component value', () => {
+            expect(findFilteredSearch().props('value')).toStrictEqual([]);
+          });
+        });
+      });
+
+      describe('with the Sessions cube', () => {
+        beforeEach(() => {
+          wrapper.setProps({
+            query: {
+              measures: ['Sessions.count'],
+            },
+          });
+        });
+
+        it('selects the expected timeDimension token for availableTokens', () => {
+          const availableTokens = findFilteredSearch().props('availableTokens');
+          expect(availableTokens).toContainEqual(
+            expect.objectContaining({
+              operators: expect.any(Array),
+              options: expect.arrayContaining([
+                {
+                  title: 'Seconds',
+                  value: '{"dimension":"Sessions.startAt","granularity":"seconds"}',
+                },
+              ]),
+              type: 'timeDimension',
+              title: 'Group by',
+            }),
+          );
+
+          expect(availableTokens).not.toContainEqual(
+            expect.objectContaining({
+              operators: expect.any(Array),
+              options: expect.arrayContaining([
+                {
+                  title: 'Seconds',
+                  value: '{"dimension":"Sessions.endAt","granularity":"seconds"}',
+                },
+              ]),
+              type: 'timeDimension',
+              title: 'Group by',
+            }),
+          );
+        });
+      });
+
+      describe('and a timeDimension is added', () => {
+        beforeEach(() => {
+          wrapper.setProps({
+            query: {
+              measures: ['TrackedEvents.count'],
+              timeDimensions: [
+                { dimension: 'TrackedEvents.derivedTstamp', granularity: 'seconds' },
+              ],
+            },
+          });
+        });
+
+        it('updates the filtered search component value with the timeDimension', () => {
+          expect(findFilteredSearch().props('value')).toContainEqual({
+            type: 'timeDimension',
+            value: {
+              data: '{"dimension":"TrackedEvents.derivedTstamp","granularity":"seconds"}',
+              operator: '=',
+            },
+          });
+        });
+
+        describe('and the measure is removed', () => {
+          beforeEach(() => {
+            wrapper.setProps({
+              query: {
+                timeDimensions: [
+                  { dimension: 'TrackedEvents.derivedTstamp', granularity: 'seconds' },
+                ],
+              },
+            });
+          });
+
+          it('empties the filtered search component value', () => {
+            expect(findFilteredSearch().props('value')).toStrictEqual([]);
+          });
+        });
+
+        describe('and the timeDimension is removed', () => {
+          beforeEach(() => {
+            wrapper.setProps({
+              query: {
+                measures: ['TrackedEvents.count'],
+                dimensions: ['TrackedEvents.pageUrlhosts'],
+              },
+            });
+          });
+
+          it('retains the measure and dimension token', () => {
+            expect(findFilteredSearch().props('value')).toStrictEqual([
+              {
+                type: 'measure',
+                value: {
+                  data: 'TrackedEvents.count',
+                  operator: '=',
+                },
+              },
+              {
+                type: 'dimension',
+                value: {
+                  data: 'TrackedEvents.pageUrlhosts',
                   operator: '=',
                 },
               },

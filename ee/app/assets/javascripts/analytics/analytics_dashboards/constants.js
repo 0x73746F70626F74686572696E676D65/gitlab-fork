@@ -231,3 +231,4 @@ export const PANEL_TROUBLESHOOTING_URL = helpPagePath(
 
 export const MEASURE = 'measure';
 export const DIMENSION = 'dimension';
+export const TIME_DIMENSION = 'timeDimension';
