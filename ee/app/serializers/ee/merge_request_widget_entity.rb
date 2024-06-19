@@ -18,7 +18,7 @@ module EE
         merge_request.target_project.multiple_approval_rules_available?
       end
 
-      expose :browser_performance, if: -> (mr, _) { head_pipeline_downloadable_path_for_report_type(:browser_performance) } do
+      expose :browser_performance, if: ->(mr, _) { head_pipeline_downloadable_path_for_report_type(:browser_performance) } do
         expose :degradation_threshold do |merge_request|
           merge_request.head_pipeline&.present(current_user: current_user)
             &.degradation_threshold(:browser_performance)
@@ -33,7 +33,7 @@ module EE
         end
       end
 
-      expose :load_performance, if: -> (mr, _) { head_pipeline_downloadable_path_for_report_type(:load_performance) } do
+      expose :load_performance, if: ->(mr, _) { head_pipeline_downloadable_path_for_report_type(:load_performance) } do
         expose :head_path do |merge_request|
           head_pipeline_downloadable_path_for_report_type(:load_performance)
         end
@@ -43,25 +43,25 @@ module EE
         end
       end
 
-      expose :license_scanning, if: -> (mr, _) { can?(current_user, :read_licenses, mr.target_project) } do
+      expose :license_scanning, if: ->(mr, _) { can?(current_user, :read_licenses, mr.target_project) } do
         expose :can_manage_licenses do |merge_request|
           can?(current_user, :admin_software_license_policy, merge_request)
         end
 
-        expose :full_report_path, if: -> (mr, _) { mr.head_pipeline } do |merge_request|
+        expose :full_report_path, if: ->(mr, _) { mr.head_pipeline } do |merge_request|
           licenses_project_pipeline_path(merge_request.project, merge_request.head_pipeline)
         end
       end
 
-      expose :metrics_reports_path, if: -> (mr, _) { mr.has_metrics_reports? } do |merge_request|
+      expose :metrics_reports_path, if: ->(mr, _) { mr.has_metrics_reports? } do |merge_request|
         metrics_reports_project_merge_request_path(merge_request.project, merge_request, format: :json)
       end
 
-      expose :pipeline_id, if: -> (mr, _) { mr.head_pipeline } do |merge_request|
+      expose :pipeline_id, if: ->(mr, _) { mr.head_pipeline } do |merge_request|
         merge_request.head_pipeline.id
       end
 
-      expose :pipeline_iid, if: -> (mr, _) { mr.head_pipeline } do |merge_request|
+      expose :pipeline_iid, if: ->(mr, _) { mr.head_pipeline } do |merge_request|
         merge_request.head_pipeline.iid
       end
 

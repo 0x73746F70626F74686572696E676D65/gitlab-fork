@@ -27,7 +27,7 @@ module EE
       end
 
       expose :current_user, merge: true do
-        expose :can_update_escalation_policy, if: -> (issue, _) { issue.escalation_policies_available? } do |issue|
+        expose :can_update_escalation_policy, if: ->(issue, _) { issue.escalation_policies_available? } do |issue|
           can?(current_user, :update_escalation_status, issue.project)
         end
       end

@@ -11,19 +11,19 @@ class DashboardOperationsProjectEntity < Grape::Entity
   end
 
   expose :upgrade_required
-  expose :upgrade_path, if: -> (*) { upgrade_required && user_can_upgrade? } do |_|
+  expose :upgrade_path, if: ->(*) { upgrade_required && user_can_upgrade? } do |_|
     project&.group ? group_billings_path(project.group) : profile_billings_path
   end
 
-  expose :last_pipeline, if: -> (*) { !upgrade_required && last_pipeline } do |_, options|
+  expose :last_pipeline, if: ->(*) { !upgrade_required && last_pipeline } do |_, options|
     PipelineDetailsEntity.represent(last_pipeline, options.merge(request: new_request))
   end
 
-  expose :last_deployment, if: -> (*) { !upgrade_required && last_deployment } do |_, options|
+  expose :last_deployment, if: ->(*) { !upgrade_required && last_deployment } do |_, options|
     DeploymentEntity.represent(last_deployment, options.merge(request: new_request))
   end
 
-  expose :alert_count, if: -> (*) { !upgrade_required }
+  expose :alert_count, if: ->(*) { !upgrade_required }
 
   private
 

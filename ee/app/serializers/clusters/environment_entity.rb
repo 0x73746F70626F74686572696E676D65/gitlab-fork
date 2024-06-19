@@ -12,7 +12,7 @@ module Clusters
       project_environment_path(environment.project, environment)
     end
 
-    expose :rollout_status, if: -> (*) { can_read_cluster_deployments? }, using: ::RolloutStatusEntity
+    expose :rollout_status, if: ->(*) { can_read_cluster_deployments? }, using: ::RolloutStatusEntity
 
     expose :updated_at
 

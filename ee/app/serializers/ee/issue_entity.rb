@@ -6,7 +6,7 @@ module EE
     prepended do
       expose :weight, if: ->(issue, _) { issue.weight_available? }
 
-      with_options if: -> (_, options) { options[:with_blocking_issues] } do
+      with_options if: ->(_, options) { options[:with_blocking_issues] } do
         expose :blocked?, as: :blocked
 
         expose :blocked_by_issues do |issue|
