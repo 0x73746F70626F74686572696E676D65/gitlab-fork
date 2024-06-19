@@ -68,6 +68,7 @@ module IdentityVerifiable
   end
 
   def identity_verified?
+    return bot_identity_verified? unless human?
     return true unless identity_verification_enabled?
     return true unless created_after_require_identity_verification_release_day?
 
@@ -301,5 +302,20 @@ module IdentityVerifiable
     return true if ::Feature.enabled?(:require_identity_verification_for_old_users, self)
 
     created_at >= IDENTITY_VERIFICATION_RELEASE_DATE
+  end
+
+  def bot_identity_verified?
+    return true unless project_bot?
+
+    member = members.first
+    return true if member && member.source.root_ancestor.actual_plan.paid_excluding_trials?
+
+    if created_by
+      return false if created_by.banned?
+
+      return created_by.identity_verified?
+    end
+
+    !created_after_require_identity_verification_release_day?
   end
 end

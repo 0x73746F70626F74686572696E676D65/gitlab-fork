@@ -164,6 +164,76 @@ RSpec.describe IdentityVerifiable, :saas, feature_category: :instance_resiliency
       end
     end
 
+    context 'when the user is a bot' do
+      let_it_be(:user) { create(:user, :project_bot) }
+      let_it_be(:human_user) { build_stubbed(:user, :with_sign_ins, :identity_verification_eligible) }
+
+      before do
+        allow(user).to receive(:created_by).and_return(human_user)
+      end
+
+      it 'verifies the identity of the bot creator', :aggregate_failures do
+        expect(human_user).to receive(:identity_verified?).and_call_original
+
+        expect(identity_verified?).to eq(false)
+      end
+
+      context 'when the user is not a project bot' do
+        let(:user) { build_stubbed(:user, :admin_bot) }
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'when the bot is in a paid namespace' do
+        before do
+          create(:group_with_plan, plan: :ultimate_plan, developers: user)
+        end
+
+        it { is_expected.to eq(true) }
+      end
+
+      context 'when the bot is in a trial namespace' do
+        before do
+          create(:group_with_plan, plan: :ultimate_trial_plan, developers: user)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when the bot creator is nil' do
+        before do
+          allow(user).to receive(:created_by).and_return(nil)
+        end
+
+        context 'when the bot was created after the feature release date' do
+          let(:created_after_release_day) { true }
+
+          it 'does not verify the user', :aggregate_failures do
+            expect(user).to receive(:created_after_require_identity_verification_release_day?).and_return(true)
+            expect(identity_verified?).to eq(false)
+          end
+        end
+
+        context 'when the bot was created before the feature release date' do
+          let(:created_after_release_day) { false }
+
+          it 'verifies the user' do
+            expect(user).to receive(:created_after_require_identity_verification_release_day?).and_return(false)
+            expect(identity_verified?).to eq(true)
+          end
+        end
+      end
+
+      context 'when the bot creator has been banned' do
+        it 'does not verify the user', :aggregate_failures do
+          expect(human_user).to receive(:banned?).and_return(true)
+          expect(human_user).not_to receive(:identity_verified?)
+
+          expect(identity_verified?).to eq(false)
+        end
+      end
+    end
+
     describe 'created_at relative to release date' do
       where(:require_for_old_users?, :old_user?, :result) do
         false | false | false
