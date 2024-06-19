@@ -37,6 +37,12 @@ module CloudConnector
       def use_self_signed_token?
         return true if Gitlab.org_or_com?
 
+        # All remaining code paths require requesting self-signed tokens.
+        return false unless Gitlab::Utils.to_boolean(ENV['CLOUD_CONNECTOR_SELF_SIGN_TOKENS'])
+
+        # Permit self-signed tokens in development for testing purposes.
+        return true if Rails.env.development?
+
         # Identifies whether AI Gateway is self-hosted by the customer
         # Currently, it's controlled by a feature flag, env var and a deadline until the proper solution is implemented
         #
@@ -48,10 +54,8 @@ module CloudConnector
         # Unlike for GitLab.com, we cannot control the availability of the features for offline SM customers if
         # they do not upgrade regularly. This is why we introduce a cut-off date to make the features unavailable if the
         # customers do not upgrade.
-        return false if ::Feature.disabled?(:ai_custom_model) # rubocop:disable Gitlab/FeatureFlagWithoutActor -- The feature flag is global
-        return false if Date.today >= Ai::SelfHostedModel::CUTOFF_DATE
-
-        Gitlab::Utils.to_boolean(ENV['CLOUD_CONNECTOR_SELF_SIGN_TOKENS'])
+        ::Feature.enabled?(:ai_custom_model) && # rubocop:disable Gitlab/FeatureFlagWithoutActor -- The feature flag is global
+          Date.today < Ai::SelfHostedModel::CUTOFF_DATE
       end
       # rubocop:enable Gitlab/AvoidGitlabInstanceChecks
     end
