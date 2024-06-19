@@ -36,9 +36,7 @@ module Resolvers
 
         return unless service_response.success?
 
-        service_response.payload.tap do |data|
-          data[:code_suggestions_usage_rate] = percentage(data[:code_suggestions_usage_rate])
-        end
+        service_response.payload
       end
 
       private
@@ -57,10 +55,6 @@ module Resolvers
 
       def namespace
         object.respond_to?(:project_namespace) ? object.project_namespace : object
-      end
-
-      def percentage(value)
-        (value * 100).round(2)
       end
     end
   end

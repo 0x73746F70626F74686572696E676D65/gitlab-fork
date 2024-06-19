@@ -10,9 +10,6 @@ module Types
       field :code_suggestions_contributors_count, GraphQL::Types::Int,
         description: 'Number of code contributors who used GitLab Duo Code Suggestions features.',
         null: false
-      field :code_suggestions_usage_rate, GraphQL::Types::Float,
-        description: 'Percentage of contributors who used GitLab Duo Code Suggestions features.',
-        null: false
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end
