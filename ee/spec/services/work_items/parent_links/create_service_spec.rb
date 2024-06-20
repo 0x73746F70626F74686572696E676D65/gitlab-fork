@@ -18,6 +18,10 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
 
     subject(:create_link) { described_class.new(parent_work_item, user, params).execute }
 
+    before do
+      stub_licensed_features(subepics: true)
+    end
+
     shared_examples 'does not create parent link' do
       it 'no relationship is created' do
         expect { create_link }.not_to change { WorkItems::ParentLink.count }
@@ -117,6 +121,20 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
 
           expect(create_link).to eq(message: error_message, status: :error, http_status: 422)
         end
+      end
+    end
+
+    context 'when epic work item type' do
+      context 'when subepics are not available' do
+        let(:synced_work_item_param) { false }
+        let(:parent_work_item) { work_item1 }
+        let(:child_work_item) { work_item2 }
+
+        before do
+          stub_licensed_features(subepics: false)
+        end
+
+        it_behaves_like 'does not create parent link'
       end
     end
 

@@ -97,6 +97,7 @@ RSpec.describe WorkItems::ParentLinks::ReorderService, feature_category: :portfo
     end
 
     before do
+      stub_licensed_features(subepics: true)
       stub_feature_flags(synced_epic_work_item_editable: true)
     end
 

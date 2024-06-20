@@ -10,7 +10,7 @@ RSpec.describe WorkItems::CreateService, feature_category: :team_planning do
       subject(:service_result) { service.execute }
 
       before do
-        stub_licensed_features(epics: true, epic_colors: true)
+        stub_licensed_features(epics: true, subepics: true, epic_colors: true)
       end
 
       context 'when user is not allowed to create a work item in the container' do
@@ -128,7 +128,7 @@ RSpec.describe WorkItems::CreateService, feature_category: :team_planning do
     let(:current_user) { reporter }
 
     before do
-      stub_licensed_features(epics: true, epic_colors: true)
+      stub_licensed_features(epics: true, subepics: true, epic_colors: true)
       stub_feature_flags(synced_epic_work_item_editable: true)
     end
 

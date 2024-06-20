@@ -13,6 +13,14 @@ module EE
           super
         end
 
+        override :linkable?
+        def linkable?(work_item)
+          return true if synced_work_item
+          return false if work_item.work_item_type.epic? && !work_item.namespace.licensed_feature_available?(:subepics)
+
+          super
+        end
+
         private
 
         attr_reader :synced_work_item

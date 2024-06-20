@@ -82,6 +82,7 @@ module EE
         override :can_admin_link?
         def can_admin_link?(work_item)
           return true if synced_work_item
+          return false if work_item.work_item_type.epic? && !work_item.namespace.licensed_feature_available?(:subepics)
 
           super
         end
