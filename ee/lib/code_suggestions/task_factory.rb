@@ -22,28 +22,42 @@ module CodeSuggestions
     def task
       trim_context!
 
-      file_content = CodeSuggestions::FileContent.new(language, prefix, suffix)
-      instruction = CodeSuggestions::InstructionsExtractor
-        .new(file_content, intent, params[:generation_type], params[:user_instruction]).extract
+      instruction = extract_instruction(CodeSuggestions::FileContent.new(language, prefix, suffix))
 
-      unless instruction
-        if code_completions_feature_setting&.self_hosted?
-          return CodeSuggestions::Tasks::SelfHostedCodeCompletion.new(
-            feature_setting: code_completions_feature_setting,
-            params: params,
-            unsafe_passthrough_params: unsafe_passthrough_params
-          )
-        else
-          return CodeSuggestions::Tasks::CodeCompletion.new(
-            params: params,
-            unsafe_passthrough_params: unsafe_passthrough_params
-          )
-        end
+      return code_completion_task unless instruction
+
+      code_generation_task(instruction)
+    end
+
+    private
+
+    attr_reader :current_user, :params, :unsafe_passthrough_params, :prefix, :suffix, :intent
+
+    def extract_instruction(file_content)
+      CodeSuggestions::InstructionsExtractor
+        .new(file_content, intent, params[:generation_type], params[:user_instruction])
+        .extract
+    end
+
+    def code_completion_task
+      if code_completion_feature_setting&.self_hosted?
+        CodeSuggestions::Tasks::SelfHostedCodeCompletion.new(
+          feature_setting: code_completion_feature_setting,
+          params: params,
+          unsafe_passthrough_params: unsafe_passthrough_params
+        )
+      else
+        CodeSuggestions::Tasks::CodeCompletion.new(
+          params: params,
+          unsafe_passthrough_params: unsafe_passthrough_params
+        )
       end
+    end
 
-      if code_generations_feature_setting&.self_hosted?
+    def code_generation_task(instruction)
+      if code_generation_feature_setting&.self_hosted?
         CodeSuggestions::Tasks::SelfHostedCodeGeneration.new(
-          feature_setting: code_generations_feature_setting,
+          feature_setting: code_generation_feature_setting,
           params: params,
           unsafe_passthrough_params: unsafe_passthrough_params
         )
@@ -54,10 +68,6 @@ module CodeSuggestions
         )
       end
     end
-
-    private
-
-    attr_reader :current_user, :params, :unsafe_passthrough_params, :prefix, :suffix, :intent
 
     def anthropic_model
       Feature.enabled?(:claude_3_code_generation_haiku, current_user) ? 'claude-3-haiku-20240307' : ANTHROPIC_MODEL
@@ -88,11 +98,11 @@ module CodeSuggestions
     end
     strong_memoize_attr(:project)
 
-    def code_generations_feature_setting
+    def code_generation_feature_setting
       ::Ai::FeatureSetting.find_by_feature(:code_generations)
     end
 
-    def code_completions_feature_setting
+    def code_completion_feature_setting
       ::Ai::FeatureSetting.find_by_feature(:code_completions)
     end
 

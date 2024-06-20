@@ -83,7 +83,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
 
         let(:feature_setting) { create(:ai_feature_setting, feature: :code_completions) }
 
-        context 'when code_completions is self hosted' do
+        context 'when code completion is self-hosted' do
           it_behaves_like 'correct task initializer'
         end
       end
@@ -170,7 +170,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
 
         let(:feature_setting) { create(:ai_feature_setting, feature: :code_generations) }
 
-        context 'when code_generations is self hosted' do
+        context 'when code generations is self-hosted' do
           it_behaves_like 'correct task initializer'
         end
       end
