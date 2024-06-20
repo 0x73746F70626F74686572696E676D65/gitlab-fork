@@ -29167,6 +29167,8 @@ CREATE UNIQUE INDEX index_vulnerability_occurrences_on_uuid_1 ON vulnerability_o
 
 CREATE INDEX index_vulnerability_occurrences_on_vulnerability_id ON vulnerability_occurrences USING btree (vulnerability_id);
 
+CREATE INDEX index_vulnerability_occurrences_prim_iden_id_and_vuln_id ON vulnerability_occurrences USING btree (primary_identifier_id, vulnerability_id);
+
 CREATE INDEX index_vulnerability_reads_common_attrs_and_detection_for_groups ON vulnerability_reads USING btree (resolved_on_default_branch, state, report_type, severity, traversal_ids, vulnerability_id) WHERE (archived = false);
 
 CREATE INDEX index_vulnerability_reads_common_finder_query_2 ON vulnerability_reads USING btree (project_id, state, report_type, severity, vulnerability_id DESC, dismissal_reason);
