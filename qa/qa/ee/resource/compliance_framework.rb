@@ -129,6 +129,12 @@ module QA
           %(pipelineConfigurationFullPath: "#{pipeline_configuration_full_path}")
         end
 
+        def process_api_response(parsed_response)
+          framework_response = extract_graphql_resource(parsed_response, 'framework')
+
+          super(framework_response)
+        end
+
         # Return subset of fields for comparing/inspecting compliance frameworks
         #
         # @return [Hash]

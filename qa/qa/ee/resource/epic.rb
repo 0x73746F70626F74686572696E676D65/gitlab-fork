@@ -29,6 +29,7 @@ module QA
           @start_date_is_fixed = false
           @due_date_is_fixed = false
           @confidential = false
+          @description = "This is an epic description"
         end
 
         def fabricate!
@@ -60,6 +61,7 @@ module QA
         def api_post_body
           {
             title: title,
+            description: @description,
             labels: @labels,
             start_date_is_fixed: @start_date_is_fixed,
             start_date_fixed: @start_date_fixed,
@@ -80,6 +82,34 @@ module QA
           parse_body(response)
         end
 
+        # Return subset of variable date fields for comparing work item epics with legacy epics
+        # Can be removed after migration to work item epics is complete
+        #
+        # @return [Hash]
+        def epic_dates
+          reload! if api_response.nil?
+
+          api_resource.slice(
+            :created_at,
+            :updated_at,
+            :closed_at
+          )
+        end
+
+        # Return author field for comparing work item epics with legacy epics
+        # Can be removed after migration to work item epics is complete
+        #
+        # @return [Hash]
+        def epic_author
+          reload! if api_response.nil?
+
+          api_resource[:author] = { id: api_resource.dig(:author, :id) }
+
+          api_resource.slice(
+            :author
+          )
+        end
+
         protected
 
         # Return subset of fields for comparing epics
@@ -92,6 +122,8 @@ module QA
             :title,
             :description,
             :state,
+            :start_date,
+            :due_date,
             :start_date_is_fixed,
             :start_date_fixed,
             :due_date_is_fixed,
@@ -99,7 +131,9 @@ module QA
             :confidential,
             :labels,
             :upvotes,
-            :downvotes
+            :downvotes,
+            :color,
+            :text_color
           )
         end
       end

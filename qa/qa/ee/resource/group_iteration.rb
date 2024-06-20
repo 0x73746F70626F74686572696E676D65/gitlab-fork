@@ -125,6 +125,13 @@ module QA
           GQL
         end
 
+        def process_api_response(parsed_response)
+          iteration_response = parsed_response[:iteration] || parsed_response
+          iteration_response[:id] = extract_graphql_id(iteration_response)
+
+          super(iteration_response)
+        end
+
         protected
 
         # Return subset of fields for comparing iterations

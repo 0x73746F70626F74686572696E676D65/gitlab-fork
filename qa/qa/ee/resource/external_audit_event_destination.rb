@@ -36,7 +36,7 @@ module QA
             .find { |node| node[:destination_url] == destination_url }
           raise ResourceNotFoundError if resource.nil?
 
-          resource[:id] = resource.fetch(:id).split('/').last if resource.key?(:id)
+          resource[:id] = extract_graphql_id(resource) if resource.key?(:id)
           process_api_response(resource)
         end
 
@@ -142,6 +142,22 @@ module QA
             GQL
             api_post_to(api_get_path, mutation)
           end
+        end
+
+        def process_api_response(parsed_response)
+          event_response = if parsed_response.key?(:external_audit_event_destinations)
+                             response = parsed_response[:external_audit_event_destinations]
+                             response[:nodes].each do |node|
+                               node[:id] = extract_graphql_id(node)
+                             end
+                             response
+                           elsif parsed_response.key?(:external_audit_event_destination)
+                             extract_graphql_resource(parsed_response, 'external_audit_event_destination')
+                           else
+                             parsed_response
+                           end
+
+          super(event_response)
         end
 
         protected
