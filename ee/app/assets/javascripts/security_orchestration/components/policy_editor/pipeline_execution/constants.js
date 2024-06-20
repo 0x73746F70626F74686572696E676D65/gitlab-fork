@@ -7,7 +7,7 @@ enabled: true
 pipeline_config_strategy: inject_ci
 content:
   include:
-    project: ''
+    - project: ''
 `;
 
 export const DEFAULT_PIPELINE_EXECUTION_POLICY_WITH_SCOPE = `type: pipeline_execution_policy
@@ -20,7 +20,7 @@ policy_scope:
     excluding: []
 content:
   include:
-    project: ''
+    - project: ''
 `;
 
 export const CONDITIONS_LABEL = s__('ScanExecutionPolicy|Conditions');

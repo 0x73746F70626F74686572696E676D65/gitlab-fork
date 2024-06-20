@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     ciConfigurationPath() {
-      return this.action.include || {};
+      return this.action?.include?.[0] || {};
     },
     filePath() {
       return this.ciConfigurationPath.file;
@@ -56,7 +56,7 @@ export default {
     this.handleFileValidation = debounce(this.validateFilePath, DEFAULT_DEBOUNCE_AND_THROTTLE_MS);
   },
   async mounted() {
-    const { project: selectedProject } = parseCustomFileConfiguration(this.action.include);
+    const { project: selectedProject } = parseCustomFileConfiguration(this.action.include?.[0]);
 
     if (selectedProject && selectedProject.fullPath) {
       selectedProject.id = await this.getProjectId(selectedProject.fullPath);
@@ -141,7 +141,7 @@ export default {
       }
     },
     setCiConfigurationPath(pathConfig) {
-      this.$emit('changed', 'content', { include: pathConfig });
+      this.$emit('changed', 'content', { include: [pathConfig] });
     },
   },
 };

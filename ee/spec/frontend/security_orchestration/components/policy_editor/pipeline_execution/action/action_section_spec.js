@@ -88,7 +88,7 @@ describe('ActionSection', () => {
     });
 
     it('should render linked file mode when project fullPath exist', async () => {
-      factory({ propsData: { action: { include: { project: fullPath } } } });
+      factory({ propsData: { action: { include: [{ project: fullPath }] } } });
       await waitForPromises();
       expect(requestHandler).toHaveBeenCalledWith({ fullPath });
       expect(findCodeBlockFilePath().props('selectedProject')).toEqual({
@@ -98,7 +98,7 @@ describe('ActionSection', () => {
     });
 
     it('should render linked file mode when ref is selected', () => {
-      factory({ propsData: { action: { include: { ref: 'ref' } } } });
+      factory({ propsData: { action: { include: [{ ref: 'ref' }] } } });
 
       expect(requestHandler).not.toHaveBeenCalled();
       expect(findCodeBlockFilePath().props('selectedProject')).toEqual(null);
@@ -114,21 +114,21 @@ describe('ActionSection', () => {
     it('selects ref', () => {
       findCodeBlockFilePath().vm.$emit('select-ref', ref);
       expect(wrapper.emitted('changed')).toEqual([
-        ['content', { include: { ...defaultAction.include, ref } }],
+        ['content', { include: [{ ...defaultAction.include[0], ref }] }],
       ]);
     });
 
     it('updates file path', () => {
       findCodeBlockFilePath().vm.$emit('update-file-path', filePath);
       expect(wrapper.emitted('changed')).toEqual([
-        ['content', { include: { ...defaultAction.include, file: filePath } }],
+        ['content', { include: [{ ...defaultAction.include[0], file: filePath }] }],
       ]);
     });
 
     it('updates project', async () => {
       await findCodeBlockFilePath().vm.$emit('select-project', project);
       expect(wrapper.emitted('changed')).toEqual([
-        ['content', { include: { ...defaultAction.include, project: project.fullPath } }],
+        ['content', { include: [{ ...defaultAction.include[0], project: project.fullPath }] }],
       ]);
     });
 
@@ -140,7 +140,7 @@ describe('ActionSection', () => {
     it('clears project on deselect', async () => {
       await findCodeBlockFilePath().vm.$emit('select-project', undefined);
       expect(wrapper.emitted('changed')).toEqual([
-        ['content', { include: { file: defaultAction.include.file } }],
+        ['content', { include: [{ file: defaultAction.include[0].file }] }],
       ]);
     });
   });
@@ -161,7 +161,7 @@ describe('ActionSection', () => {
       });
 
       it('does not validate when ref is not selected', async () => {
-        factory({ propsData: { action: { include: { project: fullPath } } } });
+        factory({ propsData: { action: { include: [{ project: fullPath }] } } });
         await waitForPromises();
         expect(Api.getFile).not.toHaveBeenCalled();
         expect(requestHandler).toHaveBeenCalledWith({ fullPath });
@@ -171,13 +171,13 @@ describe('ActionSection', () => {
 
     describe('existing selection', () => {
       it('makes a call to validate the selection', async () => {
-        factory({ propsData: { action: { include: { project: fullPath, ref } } } });
+        factory({ propsData: { action: { include: [{ project: fullPath, ref }] } } });
         await waitForPromises();
         expect(Api.getFile).toHaveBeenCalledWith(projectId, undefined, { ref });
       });
 
       it('succeeds validation', async () => {
-        factory({ propsData: { action: { include: { project: fullPath, ref } } } });
+        factory({ propsData: { action: { include: [{ project: fullPath, ref }] } } });
         await waitForPromises();
         expect(Api.getFile).toHaveBeenCalledTimes(1);
         expect(requestHandler).toHaveBeenCalledWith({ fullPath });
@@ -186,7 +186,7 @@ describe('ActionSection', () => {
 
       it('fails validation', async () => {
         jest.spyOn(Api, 'getFile').mockRejectedValue();
-        factory({ propsData: { action: { include: { project: fullPath, ref: 'not-main' } } } });
+        factory({ propsData: { action: { include: [{ project: fullPath, ref: 'not-main' }] } } });
         await waitForPromises();
         expect(requestHandler).toHaveBeenCalledWith({ fullPath });
         expect(Api.getFile).toHaveBeenCalledTimes(1);
@@ -198,14 +198,14 @@ describe('ActionSection', () => {
       describe('simple scenarios', () => {
         beforeEach(async () => {
           factory({
-            propsData: { action: { include: { project: fullPath, ref, file: filePath } } },
+            propsData: { action: { include: [{ project: fullPath, ref, file: filePath }] } },
           });
           await waitForPromises();
         });
 
         it('verifies on file path change', async () => {
           expect(Api.getFile).toHaveBeenCalledTimes(1);
-          await wrapper.setProps({ action: { include: { ref, file: 'new-path' } } });
+          await wrapper.setProps({ action: { include: [{ ref, file: 'new-path' }] } });
           await waitForPromises();
           expect(Api.getFile).toHaveBeenCalledTimes(2);
           expect(Api.getFile).toHaveBeenLastCalledWith(projectId, 'new-path', { ref });
@@ -223,7 +223,7 @@ describe('ActionSection', () => {
 
         it('verifies on ref change', async () => {
           expect(Api.getFile).toHaveBeenCalledTimes(1);
-          await wrapper.setProps({ action: { include: { ref: 'new-ref', file: filePath } } });
+          await wrapper.setProps({ action: { include: [{ ref: 'new-ref', file: filePath }] } });
           await waitForPromises();
           expect(Api.getFile).toHaveBeenCalledTimes(2);
           expect(Api.getFile).toHaveBeenLastCalledWith(projectId, filePath, { ref: 'new-ref' });
@@ -233,7 +233,9 @@ describe('ActionSection', () => {
 
       describe('complex scenarios', () => {
         it('verifies on project change when ref is not selected', async () => {
-          await factory({ propsData: { action: { include: { id: projectId, file: filePath } } } });
+          await factory({
+            propsData: { action: { include: [{ project: fullPath, file: filePath }] } },
+          });
           await findCodeBlockFilePath().vm.$emit('select-project', project);
           await waitForPromises();
           expect(Api.getFile).toHaveBeenCalledWith(projectId, filePath, {
@@ -247,15 +249,15 @@ describe('ActionSection', () => {
     describe('failed validation', () => {
       it('fails when a file does not exists on a ref', async () => {
         jest.spyOn(Api, 'getFile').mockRejectedValue();
-        factory({ propsData: { action: { include: { project: fullPath, ref: 'not-main' } } } });
-        await wrapper.setProps({ action: { include: { ref: 'new-ref' } } });
+        factory({ propsData: { action: { include: [{ project: fullPath, ref: 'not-main' }] } } });
+        await wrapper.setProps({ action: { include: [{ ref: 'new-ref' }] } });
         await waitForPromises();
         expect(Api.getFile).toHaveBeenCalledTimes(1);
         expect(findCodeBlockFilePath().props('doesFileExist')).toBe(false);
       });
 
       it('fails validation when a project is not selected', async () => {
-        await factory({ propsData: { action: { include: {} } } });
+        await factory({ propsData: { action: { include: [{}] } } });
         expect(findCodeBlockFilePath().props('doesFileExist')).toBe(false);
       });
     });
@@ -263,7 +265,7 @@ describe('ActionSection', () => {
     describe('updating validation status', () => {
       it('updates a failed validation to a successful one', async () => {
         jest.spyOn(Api, 'getFile').mockRejectedValue();
-        factory({ propsData: { action: { include: { project: fullPath, ref } } } });
+        factory({ propsData: { action: { include: [{ project: fullPath, ref }] } } });
         await waitForPromises();
         expect(requestHandler).toHaveBeenCalledWith({ fullPath });
         expect(findCodeBlockFilePath().props('doesFileExist')).toBe(false);

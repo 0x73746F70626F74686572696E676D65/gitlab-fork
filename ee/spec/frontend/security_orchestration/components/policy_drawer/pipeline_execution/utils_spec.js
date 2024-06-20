@@ -13,29 +13,16 @@ const mockActions = [
     content: { include: [{ ref: 'main', file: 'README.md', template: 'Template.md' }] },
   },
   {
-    content: { include: { project: 'gitlab-policies/js9', file: 'README.md' } },
+    content: { include: [{ project: 'gitlab-policies/js9', file: 'README.md' }] },
   },
-  { content: { include: { file: 'README.md' } } },
-  { content: { include: {} } },
+  { content: { include: [{ file: 'README.md' }] } },
+  { content: { include: [{}] } },
   { content: {} },
   { content: undefined },
   { scan: 'invalid' },
-  { include: ['/templates/.local.yml', '/templates/.remote.yml'] },
+  { include: [['/templates/.local.yml', '/templates/.remote.yml']] },
   { include: ['/templates/.local.yml'] },
-  {
-    include: [
-      '/templates/.local.yml',
-      '/templates/.remote.yml',
-      { template: 'Auto-DevOps.gitlab-ci.yml' },
-      {
-        project: 'my-group/my-project',
-        ref: 'main',
-        file: '/templates/.gitlab-ci-template.yml',
-        id: 1,
-      },
-    ],
-  },
-  { content: { include: { file: '' } } },
+  { content: { include: [{ file: '' }] } },
 ];
 
 describe('humanizeExternalFileAction', () => {
@@ -51,7 +38,6 @@ describe('humanizeExternalFileAction', () => {
     ${mockActions[7]}  | ${{}}
     ${mockActions[8]}  | ${{ local: 'Local: /templates/.local.yml', remote: 'Remote: /templates/.remote.yml' }}
     ${mockActions[9]}  | ${{ local: 'Local: /templates/.local.yml' }}
-    ${mockActions[10]} | ${{ local: 'Local: /templates/.local.yml', remote: 'Remote: /templates/.remote.yml', template: 'Template: Auto-DevOps.gitlab-ci.yml', project: 'Project: my-group/my-project', ref: 'Reference: main', file: 'Path: /templates/.gitlab-ci-template.yml', id: 'Id: 1' }}
     ${mockActions[11]} | ${{}}
   `('should parse action to messages', ({ action, output }) => {
     expect(humanizeExternalFileAction(action)).toEqual(output);
@@ -71,15 +57,6 @@ describe('humanizeActions', () => {
       { file: 'Path: README.md' },
       { local: 'Local: /templates/.local.yml', remote: 'Remote: /templates/.remote.yml' },
       { local: 'Local: /templates/.local.yml' },
-      {
-        local: 'Local: /templates/.local.yml',
-        remote: 'Remote: /templates/.remote.yml',
-        template: 'Template: Auto-DevOps.gitlab-ci.yml',
-        project: 'Project: my-group/my-project',
-        ref: 'Reference: main',
-        file: 'Path: /templates/.gitlab-ci-template.yml',
-        id: 'Id: 1',
-      },
     ]);
   });
 });
