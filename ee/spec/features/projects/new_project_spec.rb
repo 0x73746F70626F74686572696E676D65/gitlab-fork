@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'New project', :js, feature_category: :groups_and_projects do
+RSpec.describe 'New project', :js, feature_category: :importers do
   include ListboxHelpers
 
   let(:user) { create(:admin) }
