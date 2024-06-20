@@ -4207,7 +4207,6 @@ Gitlab/BoundedContexts:
     - 'lib/event_filter.rb'
     - 'lib/expand_variables.rb'
     - 'lib/extracts_path.rb'
-    - 'lib/extracts_ref.rb'
     - 'lib/extracts_ref/ref_extractor.rb'
     - 'lib/extracts_ref/requested_ref.rb'
     - 'lib/feature.rb'
