@@ -15809,12 +15809,6 @@ msgstr ""
 msgid "Created on:"
 msgstr ""
 
-msgid "Creates a LLM-generated review"
-msgstr ""
-
-msgid "Creates a LLM-generated review."
-msgstr ""
-
 msgid "Creates a branch and a merge request to resolve this issue."
 msgstr ""
 
@@ -44511,7 +44505,7 @@ msgstr ""
 msgid "Request details"
 msgstr ""
 
-msgid "Request for review queued."
+msgid "Request for a Duo Code Review queued."
 msgstr ""
 
 msgid "Request review from"
@@ -44539,6 +44533,9 @@ msgid "Requested states are invalid"
 msgstr ""
 
 msgid "Requests"
+msgstr ""
+
+msgid "Requests a Duo Code Review"
 msgstr ""
 
 msgid "Requests for pages at %{code_start}%{help_text_url}%{code_end} redirect to the URL. The destination must meet certain requirements. %{docs_link_start}Learn more%{docs_link_end}."
