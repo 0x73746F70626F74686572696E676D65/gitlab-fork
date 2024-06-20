@@ -53,7 +53,9 @@ module Ci
     end
 
     def skip_changes?(variable, column)
-      return false unless column == :value
+      # Do not log value anywhere
+      return true if column == :value
+
       # do not include masked values in audit, if masking or unmasking
       return true if variable.masked?
 
