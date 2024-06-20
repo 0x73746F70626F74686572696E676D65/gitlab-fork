@@ -130,6 +130,12 @@ module QA
           end
         end
 
+        def process_api_response(parsed_response)
+          event_response = extract_graphql_resource(parsed_response, 'instance_external_audit_event_destination')
+
+          super(event_response)
+        end
+
         protected
 
         # Return fields for comparing issues

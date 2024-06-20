@@ -123,7 +123,7 @@ module QA
         post request.url
 
         expect_status(201)
-        expect_json('epic.title', 'My New Epic*')
+        expect_json('epic.title', 'My New Epic')
         expect_json('issue.title', 'My Test Issue')
       end
 

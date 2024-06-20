@@ -43,6 +43,12 @@ module QA
           GQL
         end
 
+        def process_api_response(parsed_response)
+          project_response = extract_graphql_resource(parsed_response, 'project')
+
+          super(project_response)
+        end
+
         # GraphQl endpoint to create a vulnerability
         alias_method :api_post_path, :api_get_path
       end

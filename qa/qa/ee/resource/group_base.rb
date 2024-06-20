@@ -22,6 +22,41 @@ module QA
           end
         end
 
+        # Get group work item epics
+        #
+        # @return [Array<QA::EE::Resource::WorkItemEpic>]
+        def work_item_epics
+          response = process_api_response(
+            api_post_to(
+              '/graphql',
+              <<~GQL
+                query {
+                  group(fullPath: "#{full_path}") {
+                    id
+                    name
+                    workItems {
+                      nodes {
+                        id
+                        workItemType {
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              GQL
+            )
+          )
+          nodes = response.dig(:work_items, :nodes)
+          nodes.map do |node|
+            WorkItemEpic.init do |resource|
+              resource.group = self
+              # `id` field format: "gid://gitlab/WorkItem/:id"
+              resource.id = node[:id].rpartition('/')[2]
+            end.reload!
+          end
+        end
+
         # Get group iterations
         #
         # @return [Array<QA::EE::Resource::GroupIteration>]
