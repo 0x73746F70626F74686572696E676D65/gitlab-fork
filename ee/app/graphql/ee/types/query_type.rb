@@ -180,7 +180,7 @@ module EE
         field :ai_self_hosted_models,
           ::Types::Ai::SelfHostedModels::SelfHostedModelType.connection_type,
           null: true,
-          description: 'List of Self-Hosted LLM servers.',
+          description: 'List of self-hosted LLM servers.',
           resolver: ::Resolvers::Ai::SelfHostedModels::SelfHostedModelsResolver,
           alpha: { milestone: '17.1' }
       end

@@ -8,18 +8,18 @@ module Types
         graphql_name 'AiSelfHostedModel'
         description 'Self-hosted LLM servers'
 
-        field :created_at, Types::TimeType, null: false, description: 'Date of creation.'
-        field :endpoint, String, null: false, description: 'Endpoint of the Self-Hosted model server.'
+        field :created_at, Types::TimeType, null: false, description: 'Timestamp of creation.'
+        field :endpoint, String, null: false, description: 'Endpoint of the self-hosted model server.'
         field :has_api_token, Boolean,
           null: false,
-          description: 'Indicates if an API key is set for the Self-Hosted model server.'
+          description: 'Indicates if an API key is set for the self-hosted model server.'
         field :id,
           ::Types::GlobalIDType[::Ai::SelfHostedModel],
           null: false,
-          description: 'ID of the Self-Hosted model server.'
-        field :model, String, null: false, description: 'Model running the Self-Hosted model server.'
-        field :modified_at, Types::TimeType, null: false, description: 'Date of last modification.'
-        field :name, String, null: false, description: 'Given name of the Self-Hosted model server.'
+          description: 'ID of the self-hosted model server.'
+        field :model, String, null: false, description: 'AI model deployed.'
+        field :name, String, null: false, description: 'Deployment name of the self-hosted model.'
+        field :updated_at, Types::TimeType, null: true, description: 'Timestamp of last update.'
 
         def has_api_token # rubocop:disable Naming/PredicateName -- otherwise resolver matcher don't work
           object.api_token.present?
