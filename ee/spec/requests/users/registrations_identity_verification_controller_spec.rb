@@ -262,14 +262,6 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
           end
 
           it { is_expected.to match_array(methods_requiring_challenge) }
-
-          context 'when identity_verification_arkose_challenge is disabled' do
-            before do
-              stub_feature_flags(identity_verification_arkose_challenge: false)
-            end
-
-            it { is_expected.to eq [] }
-          end
         end
       end
     end

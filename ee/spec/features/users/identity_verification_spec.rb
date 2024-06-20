@@ -10,7 +10,6 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     create(:user, :identity_verification_eligible)
   end
 
-  let(:require_challenge) { true }
   let(:require_iv_for_old_users) { false }
 
   before do
@@ -19,7 +18,6 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       .with(:phone_verification_send_code, scope: user).and_return(false)
 
     stub_feature_flags(require_identity_verification_for_old_users: require_iv_for_old_users)
-    stub_feature_flags(identity_verification_arkose_challenge: require_challenge)
     stub_saas_features(identity_verification: true)
     stub_application_setting(
       arkose_labs_public_api_key: 'public_key',
@@ -67,16 +65,6 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       it 'does not verify the user' do
         expect_to_see_dashboard_page
       end
-    end
-  end
-
-  context 'when identity_verification_arkose_challenge is disabled' do
-    let(:require_challenge) { false }
-
-    it 'does not require the user to solve an Arkose challenge' do
-      verify_phone_number
-
-      expect(page).to have_content(_('Completed'))
     end
   end
 
