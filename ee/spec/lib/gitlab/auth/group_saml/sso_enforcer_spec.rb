@@ -12,6 +12,8 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
   end
 
   around do |example|
+    session['warden.user.user.key'] = [[user.id], user.authenticatable_salt] if user.is_a?(User)
+
     Gitlab::Session.with_session(session) do
       example.run
     end
@@ -430,6 +432,8 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
           around do |example|
             session = {}
 
+            session['warden.user.user.key'] = [[user.id], user.authenticatable_salt] if user.is_a?(User)
+
             # Deploy Tokens are considered sessionless
             session = nil if user.is_a?(DeployToken)
 
@@ -465,6 +469,43 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
 
               include_examples params[:shared_examples]
             end
+          end
+        end
+      end
+
+      context 'when in context of another user web activity' do
+        let(:user) { create(:user) }
+        let(:another_user) { create(:user) }
+
+        before do
+          saml_provider.update!(enforced_sso: true)
+          project.update!(visibility_level: Gitlab::VisibilityLevel.string_options['private'])
+        end
+
+        around do |example|
+          session = {}
+
+          session['warden.user.user.key'] = [[another_user.id], another_user.authenticatable_salt]
+
+          Gitlab::Session.with_session(session) do
+            example.run
+          end
+        end
+
+        it 'only applies to current_user', :aggregate_failures do
+          expect(described_class.access_restricted?(user: another_user, resource: project)).to eq(true)
+          expect(described_class.access_restricted?(user: user, resource: project)).to eq(false)
+        end
+
+        context 'when fix_sso_enforcement_for_web_activity FF is disabled' do
+          before do
+            stub_feature_flags(fix_sso_enforcement_for_web_activity: false)
+          end
+
+          # This is the root cause of https://gitlab.com/gitlab-org/gitlab/-/issues/467267
+          it 'applies to all users', :aggregate_failures do
+            expect(described_class.access_restricted?(user: another_user, resource: project)).to eq(true)
+            expect(described_class.access_restricted?(user: user, resource: project)).to eq(true)
           end
         end
       end
