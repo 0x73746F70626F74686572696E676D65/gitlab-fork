@@ -31,19 +31,6 @@ module Groups::SecurityFeaturesHelper
     }
   end
 
-  def group_security_showcase_data(group)
-    {
-      billing_vulnerability_management: group_billings_path(group.root_ancestor, glm_content: 'security-showcase-vulnerability-management', glm_source: 'gitlab.com'),
-      billing_dependency_scanning: group_billings_path(group.root_ancestor, glm_content: 'security-showcase-dependency-scanning', glm_source: 'gitlab.com'),
-      billing_dast: group_billings_path(group.root_ancestor, glm_content: 'security-showcase-dast', glm_source: 'gitlab.com'),
-      billing_container_scanning: group_billings_path(group.root_ancestor, glm_content: 'security-showcase-container-scanning', glm_source: 'gitlab.com'),
-      trial_vulnerability_management: new_trial_registration_path(group.root_ancestor, glm_content: 'security-showcase-vulnerability-management', glm_source: 'gitlab.com'),
-      trial_dependency_scanning: new_trial_registration_path(group.root_ancestor, glm_content: 'security-showcase-dependency-scanning', glm_source: 'gitlab.com'),
-      trial_dast: new_trial_registration_path(group.root_ancestor, glm_content: 'security-showcase-dast', glm_source: 'gitlab.com'),
-      trial_container_scanning: new_trial_registration_path(group.root_ancestor, glm_content: 'security-showcase-container-scanning', glm_source: 'gitlab.com')
-    }
-  end
-
   def group_security_discover_data(group)
     content = 'discover-group-security'
 
