@@ -28,6 +28,6 @@ class ElasticClusterReindexingCronWorker
   private
 
   def service
-    Elastic::ClusterReindexingService.new
+    ::Search::Elastic::ClusterReindexingService.new
   end
 end
