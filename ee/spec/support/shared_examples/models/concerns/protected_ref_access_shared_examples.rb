@@ -7,42 +7,62 @@ RSpec.shared_examples 'ee protected ref access' do |association|
   let_it_be(:user) { create(:user, developer_of: project) }
   let_it_be(:protected_ref) { create(association, project: project) }
   let_it_be(:protected_ref_fk) { "#{association}_id" }
+  let_it_be(:test_group) { create(:group) }
+  let_it_be(:test_user) { create(:user) }
 
   before_all do
     create(:project_group_link, group: group, project: project)
   end
 
   describe '#type' do
-    context 'when group is present and group_id is nil' do
-      let(:access_level) { build(described_instance, group: build(:group)) }
+    using RSpec::Parameterized::TableSyntax
 
-      it 'returns :group' do
-        expect(access_level.type).to eq(:group)
-      end
+    where(
+      :group,            :group_id, :user,            :user_id, :expectation
+    ) do
+      ref(:test_group) | nil      | nil             | nil     | :group
+      nil              | 1        | nil             | nil     | :group
+      nil              | nil      | ref(:test_user) | nil     | :user
+      nil              | nil      | nil             | 1       | :user
     end
 
-    context 'when group_id is present and group is nil' do
-      let(:access_level) { build(described_instance, group_id: 1) }
-
-      it 'returns :group' do
-        expect(access_level.type).to eq(:group)
+    with_them do
+      let(:access_level) do
+        build(described_instance, group_id: group_id, user_id: user_id).tap do |access_level|
+          access_level.group = group if group
+          access_level.user = user if user
+        end
       end
+
+      subject { access_level.type }
+
+      it { is_expected.to eq(expectation) }
+    end
+  end
+
+  describe '#humanize' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(
+      :group,            :group_id, :user,            :user_id, :expectation
+    ) do
+      ref(:test_group) | nil      | nil             | nil     | lazy { test_group.name }
+      nil              | 1        | nil             | nil     | 'Group'
+      nil              | nil      | ref(:test_user) | nil     | lazy { test_user.name }
+      nil              | nil      | nil             | 1       | 'User'
     end
 
-    context 'when user is present and user_id is nil' do
-      let(:access_level) { build(described_instance, user: build(:user)) }
-
-      it 'returns :user' do
-        expect(access_level.type).to eq(:user)
+    with_them do
+      let(:access_level) do
+        build(described_instance, group_id: group_id, user_id: user_id).tap do |access_level|
+          access_level.group = group if group
+          access_level.user = user if user
+        end
       end
-    end
 
-    context 'when user_id is present and user is nil' do
-      let(:access_level) { build(described_instance, user_id: 1) }
+      subject { access_level.humanize }
 
-      it 'returns :user' do
-        expect(access_level.type).to eq(:user)
-      end
+      it { is_expected.to eq(expectation) }
     end
   end
 end

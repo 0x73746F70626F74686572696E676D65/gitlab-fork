@@ -52,8 +52,8 @@ module EE
 
     override :humanize
     def humanize
-      return user.name if user?
-      return group.name if group?
+      return humanize_user if user?
+      return humanize_group if group?
 
       super
     end
@@ -69,6 +69,14 @@ module EE
     end
 
     private
+
+    def humanize_user
+      user&.name || 'User'
+    end
+
+    def humanize_group
+      group&.name || 'Group'
+    end
 
     def group_access_allowed?(current_user)
       group.has_user?(current_user)
