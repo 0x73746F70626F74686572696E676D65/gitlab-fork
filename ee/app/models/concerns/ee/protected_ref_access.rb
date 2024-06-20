@@ -19,15 +19,23 @@ module EE
         belongs_to :user
         belongs_to :group
 
-        with_options uniqueness: { scope: "#{module_parent.model_name.singular}_id", allow_nil: true } do
+        protected_ref_fk = "#{module_parent.model_name.singular}_id"
+        with_options uniqueness: { scope: protected_ref_fk, allow_nil: true } do
           validates :group_id
           validates :user_id
         end
-        validates :group, :user, absence: true,
-          unless: -> { importing? || protected_refs_for_users_required_and_available }
 
-        validate :validate_group_membership, if: -> { !importing? && protected_refs_for_users_required_and_available }
-        validate :validate_user_membership, if: -> { !importing? && protected_refs_for_users_required_and_available }
+        # Skip validations when importing
+        # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/108342
+        with_options unless: :importing? do
+          validates :group_id, :user_id, absence: true, if: :user_and_group_not_assignable?
+
+          validates :group, presence: true, if: %i[group_id user_or_group_assignable?]
+          validates :user, presence: true, if: %i[user_id user_or_group_assignable?]
+
+          validate :validate_group_membership, if: %i[group user_or_group_assignable?]
+          validate :validate_user_membership, if: %i[user user_or_group_assignable?]
+        end
 
         scope :by_user, ->(user) { where(user_id: user) }
         scope :by_group, ->(group) { where(group_id: group) }
@@ -94,24 +102,24 @@ module EE
     #
     # If it applies to a user/group we can only skip validation `nil`-validation
     # if the feature is available
-    def protected_refs_for_users_required_and_available
-      type != :role && project&.feature_available?(:protected_refs_for_users)
+    def user_or_group_assignable?
+      !role? && project&.feature_available?(:protected_refs_for_users)
+    end
+
+    def user_and_group_not_assignable?
+      !user_or_group_assignable?
     end
 
     def validate_group_membership
-      return unless group
+      return if project.project_group_links.where(group: group).exists?
 
-      unless project.project_group_links.where(group: group).exists?
-        errors.add(:group, 'does not have access to the project')
-      end
+      errors.add(:group, 'does not have access to the project')
     end
 
     def validate_user_membership
-      return unless user
+      return if project.member?(user)
 
-      unless project.member?(user)
-        errors.add(:user, 'is not a member of the project')
-      end
+      errors.add(:user, 'is not a member of the project')
     end
   end
 end

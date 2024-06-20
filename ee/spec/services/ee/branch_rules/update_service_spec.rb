@@ -69,8 +69,15 @@ RSpec.describe BranchRules::UpdateService, feature_category: :source_code_manage
         let(:push_access_levels) { [{ user_id: 0 }, { group_id: 0 }] }
         let(:merge_access_levels) { [{ user_id: 0 }, { group_id: 0 }] }
 
-        it 'raises an error' do
-          expect { execute }.to raise_error(ActiveRecord::InvalidForeignKey)
+        it 'returns an error response' do
+          response = execute
+          expect(response).to be_error
+          expect(response[:message]).to match_array([
+            "Merge access levels user can't be blank",
+            "Merge access levels group can't be blank",
+            "Push access levels user can't be blank",
+            "Push access levels group can't be blank"
+          ])
         end
       end
     end
