@@ -276,6 +276,49 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
           end
         end
       end
+
+      context 'for rolledup dates widget' do
+        let_it_be(:work_item, refind: true) { create(:work_item, :epic, namespace: group) }
+
+        context 'when widget params are present' do
+          let_it_be(:dates_source) do
+            create(
+              :work_items_dates_source,
+              work_item: work_item,
+              start_date: 1.day.ago,
+              due_date: 1.day.from_now,
+              due_date_is_fixed: true,
+              start_date_is_fixed: true)
+          end
+
+          let(:widget_params) do
+            { rolledup_dates_widget: { start_date_is_fixed: false, due_date_is_fixed: false } }
+          end
+
+          it 'updates rolledup dates' do
+            expect(WorkItems::Widgets::RolledupDatesService::HierarchyUpdateService)
+              .to receive(:new)
+              .with(work_item)
+              .and_call_original
+
+            expect { subject }.not_to change { WorkItems::DatesSource.count }
+
+            expect(work_item.dates_source.due_date_is_fixed).to be_falsey
+            expect(work_item.dates_source.start_date_is_fixed).to be_falsey
+          end
+        end
+
+        context 'when widget params are not present' do
+          let(:widget_params) { { rolledup_dates_widget: {} } }
+
+          it 'does not update rolledup dates' do
+            expect(WorkItems::Widgets::RolledupDatesService::HierarchyUpdateService)
+              .not_to receive(:new)
+
+            expect { subject }.not_to change { WorkItems::DatesSource.count }
+          end
+        end
+      end
     end
 
     context 'with a synced epic' do

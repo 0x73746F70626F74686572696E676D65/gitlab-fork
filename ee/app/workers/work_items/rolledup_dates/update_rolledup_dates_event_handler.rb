@@ -18,7 +18,6 @@ module WorkItems
 
       UPDATE_TRIGGER_WIDGETS = %w[
         start_and_due_date_widget
-        rolledup_dates_widget
         hierarchy_widget
       ].freeze
 
