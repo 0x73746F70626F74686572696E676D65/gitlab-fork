@@ -855,6 +855,27 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
                   end
                 end
 
+                context 'when date sourcing epic is changed' do
+                  let_it_be(:child_epic) { create(:epic, group: group, parent: epic) }
+
+                  let(:opts) { { due_date: 2.days.from_now.to_date } }
+
+                  before do
+                    epic.update!(due_date_sourcing_epic_id: child_epic.id, start_date_sourcing_epic_id: child_epic.id)
+
+                    allow(epic).to receive(:previous_changes).and_return({
+                      due_date_sourcing_epic_id: child_epic.id, start_date_sourcing_epic_id: child_epic.id
+                    })
+                  end
+
+                  it 'sets date sourcing epic to the work item', :aggregate_failures do
+                    subject
+
+                    expect(work_item.dates_source.due_date_sourcing_work_item_id).to eq(child_epic.work_item.id)
+                    expect(work_item.dates_source.start_date_sourcing_work_item_id).to eq(child_epic.work_item.id)
+                  end
+                end
+
                 it 'sets rolledup dated for the work item', :aggregate_failures do
                   subject
 
