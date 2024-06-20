@@ -44,7 +44,7 @@ enabled: true
 pipeline_config_strategy: inject_ci
 content:
   include:
-    project: ''
+    - project: ''
 policy_scope:
   compliance_frameworks:
     - id: 1
@@ -94,7 +94,7 @@ enabled: true
 pipeline_config_strategy: inject_ci
 content:
   include:
-    project: ''
+    - project: ''
 policy_scope:
   projects:
     excluding:

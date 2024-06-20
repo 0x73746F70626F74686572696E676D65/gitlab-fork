@@ -52,7 +52,7 @@ export const humanizeIncludeArrayItem = (acc = {}, item) => {
 export const humanizeExternalFileAction = (action) => {
   const source = action?.content || action || {};
 
-  const { include } = source;
+  const include = source?.include?.[0] || {};
 
   return Array.isArray(include)
     ? include?.reduce(humanizeIncludeArrayItem, {})

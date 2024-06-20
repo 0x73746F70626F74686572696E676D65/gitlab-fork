@@ -23,8 +23,8 @@ enabled: true
 pipeline_config_strategy: inject_ci
 content:
   include:
-    project: GitLab.org/GitLab
-    file: .pipeline-execution.yml
+    - project: GitLab.org/GitLab
+      file: .pipeline-execution.yml
 `;
 
 export const mockWithoutRefPipelineExecutionObject = fromYaml({
@@ -37,8 +37,8 @@ enabled: true
 pipeline_config_strategy: this_is_wrong
 content:
   include:
-    project: GitLab.org/GitLab
-    file: .pipeline-execution.yml
+    - project: GitLab.org/GitLab
+      file: .pipeline-execution.yml
 `;
 
 export const mockPipelineExecutionManifest = `type: pipeline_execution_policy
@@ -47,9 +47,9 @@ description: This policy enforces pipeline execution with configuration from ext
 enabled: false
 content:
    include:
-     project: gitlab-policies/js6
-     ref: main
-     file: test_path
+     - project: gitlab-policies/js6
+       ref: main
+       file: test_path
 `;
 
 export const mockPipelineScanExecutionObject = {

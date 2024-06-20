@@ -5,5 +5,5 @@ enabled: true
 pipeline_config_strategy: inject_ci
 content:
   include:
-    project: ''
+    - project: ''
 `;
