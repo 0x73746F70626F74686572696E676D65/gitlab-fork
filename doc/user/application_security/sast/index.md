@@ -417,25 +417,6 @@ repositories and thus require credentials like username and password to download
 Depending on the analyzer, such credentials can be provided to
 it via [custom CI/CD variables](#custom-cicd-variables).
 
-#### Using a CI/CD variable to pass username and password to a private Go repository
-
-If your Go project depends on private modules, see
-[Fetch modules from private projects](../../packages/go_proxy/index.md#fetch-modules-from-private-projects)
-for how to provide authentication over HTTPS.
-
-To specify credentials via `~/.netrc` provide a `before_script` containing the following:
-
-```yaml
-gosec-sast:
-  before_script:
-    - |
-      cat <<EOF > ~/.netrc
-      machine gitlab.com
-      login $CI_DEPLOY_USER
-      password $CI_DEPLOY_PASSWORD
-      EOF
-```
-
 #### Using a CI/CD variable to pass username and password to a private Maven repository
 
 If your private Maven repository requires login credentials,
@@ -493,9 +474,9 @@ To scan Rust applications, you must:
 ### Pre-compilation
 
 Most GitLab SAST analyzers directly scan your source code without compiling it first.
-However, for technical reasons, some analyzers can only scan compiled code.
+However, for technical reasons, the SpotBugs-based analyzer scans compiled bytecode.
 
-By default, these analyzers automatically attempt to fetch dependencies and compile your code so it can be scanned.
+By default, the SpotBugs-based analyzer automatically attempts to fetch dependencies and compile your code so it can be scanned.
 Automatic compilation can fail if:
 
 - your project requires custom build configurations.
@@ -504,21 +485,19 @@ Automatic compilation can fail if:
 To resolve these issues, you can skip the analyzer's compilation step and directly provide artifacts from an earlier stage in your pipeline instead.
 This strategy is called _pre-compilation_.
 
-Pre-compilation is available for the analyzers that support the `COMPILE` CI/CD variable.
-See [Analyzer settings](#analyzer-settings) for the current list.
-
 To use pre-compilation:
 
 1. Output your project's dependencies to a directory in the project's working directory, then save that directory as an artifact by [setting the `artifacts: paths` configuration](../../../ci/yaml/index.md#artifactspaths).
-1. Provide the `COMPILE: "false"` CI/CD variable to the analyzer to disable automatic compilation.
+1. Provide the `COMPILE: "false"` CI/CD variable to the analyzer job to disable automatic compilation.
 1. Add your compilation stage as a dependency for the analyzer job.
 
 To allow the analyzer to recognize the compiled artifacts, you must explicitly specify the path to
 the vendored directory.
-This configuration can vary per analyzer. For Maven projects, you can use `MAVEN_REPO_PATH`.
+This configuration can vary depending on how the project is set up.
+For Maven projects, you can use `MAVEN_REPO_PATH`.
 See [Analyzer settings](#analyzer-settings) for the complete list of available options.
 
-The following example pre-compiles a Maven project and provides it to the SpotBugs SAST analyzer:
+The following example pre-compiles a Maven project and provides it to the SpotBugs-based SAST analyzer:
 
 ```yaml
 stages:
@@ -625,7 +604,7 @@ Some analyzers can be customized with CI/CD variables.
 | `SCAN_KUBERNETES_MANIFESTS` | Kubesec    | Set to `"true"` to scan Kubernetes manifests.                                                                                                                                                                                      |
 | `KUBESEC_HELM_CHARTS_PATH`  | Kubesec    | Optional path to Helm charts that `helm` uses to generate a Kubernetes manifest that `kubesec` scans. If dependencies are defined, `helm dependency build` should be ran in a `before_script` to fetch the necessary dependencies. |
 | `KUBESEC_HELM_OPTIONS`      | Kubesec    | Additional arguments for the `helm` executable.                                                                                                                                                                                    |
-| `COMPILE`                   | Gosec, SpotBugs   | Set to `false` to disable project compilation and dependency fetching.                                                                                                                                                                                                        |
+| `COMPILE`                   | SpotBugs   | Set to `false` to disable project compilation and dependency fetching.                                                                                                                                                                                                        |
 | `ANT_HOME`                  | SpotBugs   | The `ANT_HOME` variable.                                                                                                                                                                                                        |
 | `ANT_PATH`                  | SpotBugs   | Path to the `ant` executable.                                                                                                                                                                                                     |
 | `GRADLE_PATH`               | SpotBugs   | Path to the `gradle` executable.                                                                                                                                                                                                   |
