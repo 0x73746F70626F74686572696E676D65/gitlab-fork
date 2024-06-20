@@ -11,14 +11,13 @@ RSpec.describe 'aiMetrics', :freeze_time, feature_category: :value_stream_manage
   let(:filter_params) { {} }
   let(:ai_metrics_fields) do
     query_graphql_field(:aiMetrics, filter_params,
-      %w[codeSuggestionsUsageRate codeSuggestionsContributorsCount codeContributorsCount])
+      %w[codeSuggestionsContributorsCount codeContributorsCount])
   end
 
   shared_examples 'common ai metrics' do
     before do
       allow_next_instance_of(::Analytics::AiAnalytics::CodeSuggestionUsageRateService) do |instance|
         allow(instance).to receive(:execute).and_return(ServiceResponse.success(payload: {
-          code_suggestions_usage_rate: 0.3,
           code_contributors_count: 10,
           code_suggestions_contributors_count: 3
         }))
@@ -29,7 +28,6 @@ RSpec.describe 'aiMetrics', :freeze_time, feature_category: :value_stream_manage
 
     it 'returns code suggestion metric' do
       expect(ai_metrics).to eq({
-        'codeSuggestionsUsageRate' => 30.0,
         'codeSuggestionsContributorsCount' => 3,
         'codeContributorsCount' => 10
       })

@@ -37,14 +37,7 @@ module Analytics
 
         data = usage_data
 
-        usage_rate = if data['code_contributors_count'] > 0
-                       data['code_contributors_with_ai'] / data['code_contributors_count'].to_f
-                     else
-                       0
-                     end
-
         ServiceResponse.success(payload: {
-          code_suggestions_usage_rate: usage_rate,
           code_contributors_count: data['code_contributors_count'],
           code_suggestions_contributors_count: data['code_contributors_with_ai']
         })
