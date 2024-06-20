@@ -154,7 +154,7 @@ export default {
         required
       />
     </gl-form-group>
-    <gl-button type="submit" variant="confirm" class="gl-w-20" data-testid="continue-button">
+    <gl-button type="submit" variant="confirm" data-testid="continue-button">
       {{ $options.i18n.formSubmitText }}
     </gl-button>
 
