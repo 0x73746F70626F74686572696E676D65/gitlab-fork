@@ -30,23 +30,100 @@ RSpec.describe 'Epic index', feature_category: :global_search do
     context 'when an epic is created' do
       let(:epic) { build(:epic, group: group) }
 
-      it 'tracks the epic' do
-        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+      context 'when elastic_index_work_items flag is disabled' do
+        before do
+          stub_feature_flags(elastic_index_work_items: false)
+        end
+
+        it 'tracks the epic' do
+          expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+          epic.save!
+        end
+      end
+
+      context 'when create_work_items_index migration is not complete' do
+        before do
+          allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
+            .with(:create_work_items_index).and_return(false)
+        end
+
+        it 'tracks the epic' do
+          expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+          epic.save!
+        end
+      end
+
+      it 'tracks the epic and work item' do
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once do |*tracked_refs|
+          expect(tracked_refs.count).to eq(2)
+          expect(tracked_refs[0].class).to eq(Epic)
+          expect(tracked_refs[0].id).to eq(epic.id)
+          expect(tracked_refs[1]).to be_a_kind_of(Search::Elastic::References::WorkItem)
+          expect(tracked_refs[1].identifier).to eq(epic.issue_id)
+        end
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once do |*tracked_refs|
+          expect(tracked_refs.count).to eq(1)
+          expect(tracked_refs[0].class).to eq(User)
+        end
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once do |*tracked_refs|
+          expect(tracked_refs.count).to eq(2)
+          expect(tracked_refs[0].class).to eq(WorkItem)
+          expect(tracked_refs[0].id).to eq(epic.issue_id)
+          expect(tracked_refs[1].class).to eq(Epic)
+          expect(tracked_refs[1].id).to eq(epic.id)
+        end
         epic.save!
       end
     end
 
     context 'when an epic is updated' do
       it 'tracks the epic' do
-        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once do |*tracked_refs|
+          expect(tracked_refs.count).to eq(2)
+          expect(tracked_refs[0].class).to eq(Epic)
+          expect(tracked_refs[0].id).to eq(epic.id)
+          expect(tracked_refs[1]).to be_a_kind_of(Search::Elastic::References::WorkItem)
+          expect(tracked_refs[1].identifier).to eq(epic.issue_id)
+        end
         epic.update!(title: 'A new title')
       end
     end
 
     context 'when an epic is deleted' do
-      it 'tracks the epic' do
-        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+      it 'tracks the epic and work item' do
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(*[WorkItem.find(epic.issue_id),
+          epic]).once
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once do |*tracked_refs|
+          expect(tracked_refs.count).to eq(2)
+          expect(tracked_refs[0].class).to eq(Epic)
+          expect(tracked_refs[0].id).to eq(epic.id)
+          expect(tracked_refs[1]).to be_a_kind_of(Search::Elastic::References::WorkItem)
+          expect(tracked_refs[1].identifier).to eq(epic.issue_id)
+        end
         epic.destroy!
+      end
+
+      context 'when elastic_index_work_items flag is disabled' do
+        before do
+          stub_feature_flags(elastic_index_work_items: false)
+        end
+
+        it 'tracks the epic' do
+          expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+          epic.destroy!
+        end
+      end
+
+      context 'when create_work_items_index migration is not complete' do
+        before do
+          allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
+            .with(:create_work_items_index).and_return(false)
+        end
+
+        it 'tracks the epic' do
+          expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+          epic.destroy!
+        end
       end
 
       it 'deletes the epic from elasticsearch', :elastic_clean do
@@ -123,7 +200,13 @@ RSpec.describe 'Epic index', feature_category: :global_search do
 
     context 'when an epic is moved to another group' do
       it 'tracks the epic' do
-        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once do |*tracked_refs|
+          expect(tracked_refs.count).to eq(2)
+          expect(tracked_refs[0].class).to eq(Epic)
+          expect(tracked_refs[0].id).to eq(epic.id)
+          expect(tracked_refs[1]).to be_a_kind_of(Search::Elastic::References::WorkItem)
+          expect(tracked_refs[1].identifier).to eq(epic.issue_id)
+        end
         epic.update!(group: parent_group)
       end
     end
