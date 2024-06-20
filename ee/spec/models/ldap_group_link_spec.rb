@@ -63,4 +63,8 @@ RSpec.describe LdapGroupLink do
       end
     end
   end
+
+  it_behaves_like 'model with member role relation' do
+    subject(:model) { ldap_group_link }
+  end
 end
