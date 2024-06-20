@@ -20,7 +20,7 @@ module CodeSuggestions
 
       return context unless last_idx
 
-      context.take(last_idx) # rubocop:disable CodeReuse/ActiveRecord -- context is an array
+      context[...last_idx]
     end
 
     private
