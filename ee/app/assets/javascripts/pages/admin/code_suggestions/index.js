@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import apolloProvider from 'ee/usage_quotas/shared/provider';
 import CodeSuggestionsUsage from 'ee/usage_quotas/code_suggestions/components/code_suggestions_usage.vue';
 
@@ -17,6 +18,7 @@ function mountCodeSuggestionsUsageApp() {
       isSaaS: false,
       addDuoProHref: el.dataset.addDuoProSeatsUrl,
       subscriptionName: el.dataset.subscriptionName,
+      isBulkAddOnAssignmentEnabled: parseBoolean(el.dataset.isBulkAddOnAssignmentEnabled),
     },
     render: (h) => h(CodeSuggestionsUsage),
   });
