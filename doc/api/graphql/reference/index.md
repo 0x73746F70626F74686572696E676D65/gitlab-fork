@@ -113,7 +113,7 @@ four standard [pagination arguments](#pagination-arguments):
 
 ### `Query.aiSelfHostedModels`
 
-List of Self-Hosted LLM servers.
+List of self-hosted LLM servers.
 
 DETAILS:
 **Introduced** in GitLab 17.1.
@@ -1609,6 +1609,32 @@ Input type: `AiAgentUpdateInput`
 | <a id="mutationaiagentupdateagent"></a>`agent` | [`AiAgent`](#aiagent) | Agent after mutation. |
 | <a id="mutationaiagentupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationaiagentupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
+### `Mutation.aiSelfHostedModelCreate`
+
+DETAILS:
+**Introduced** in GitLab 17.1.
+**Status**: Experiment.
+
+Input type: `AiSelfHostedModelCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationaiselfhostedmodelcreateapitoken"></a>`apiToken` | [`String`](#string) | API token to access the self-hosted model, if any. |
+| <a id="mutationaiselfhostedmodelcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationaiselfhostedmodelcreateendpoint"></a>`endpoint` | [`String!`](#string) | Endpoint of the self-hosted model. |
+| <a id="mutationaiselfhostedmodelcreatemodel"></a>`model` | [`AiAcceptedSelfHostedModels!`](#aiacceptedselfhostedmodels) | AI model deployed. |
+| <a id="mutationaiselfhostedmodelcreatename"></a>`name` | [`String!`](#string) | Deployment name of the self-hosted model. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationaiselfhostedmodelcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationaiselfhostedmodelcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationaiselfhostedmodelcreateselfhostedmodel"></a>`selfHostedModel` | [`AiSelfHostedModel`](#aiselfhostedmodel) | Created self-hosted model. |
 
 ### `Mutation.alertSetAssignees`
 
@@ -16465,13 +16491,13 @@ Self-hosted LLM servers.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="aiselfhostedmodelcreatedat"></a>`createdAt` | [`Time!`](#time) | Date of creation. |
-| <a id="aiselfhostedmodelendpoint"></a>`endpoint` | [`String!`](#string) | Endpoint of the Self-Hosted model server. |
-| <a id="aiselfhostedmodelhasapitoken"></a>`hasApiToken` | [`Boolean!`](#boolean) | Indicates if an API key is set for the Self-Hosted model server. |
-| <a id="aiselfhostedmodelid"></a>`id` | [`AiSelfHostedModelID!`](#aiselfhostedmodelid) | ID of the Self-Hosted model server. |
-| <a id="aiselfhostedmodelmodel"></a>`model` | [`String!`](#string) | Model running the Self-Hosted model server. |
-| <a id="aiselfhostedmodelmodifiedat"></a>`modifiedAt` | [`Time!`](#time) | Date of last modification. |
-| <a id="aiselfhostedmodelname"></a>`name` | [`String!`](#string) | Given name of the Self-Hosted model server. |
+| <a id="aiselfhostedmodelcreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of creation. |
+| <a id="aiselfhostedmodelendpoint"></a>`endpoint` | [`String!`](#string) | Endpoint of the self-hosted model server. |
+| <a id="aiselfhostedmodelhasapitoken"></a>`hasApiToken` | [`Boolean!`](#boolean) | Indicates if an API key is set for the self-hosted model server. |
+| <a id="aiselfhostedmodelid"></a>`id` | [`AiSelfHostedModelID!`](#aiselfhostedmodelid) | ID of the self-hosted model server. |
+| <a id="aiselfhostedmodelmodel"></a>`model` | [`String!`](#string) | AI model deployed. |
+| <a id="aiselfhostedmodelname"></a>`name` | [`String!`](#string) | Deployment name of the self-hosted model. |
+| <a id="aiselfhostedmodelupdatedat"></a>`updatedAt` | [`Time`](#time) | Timestamp of last update. |
 
 ### `AlertManagementAlert`
 
@@ -33143,6 +33169,16 @@ Agent token statuses.
 | ----- | ----------- |
 | <a id="agenttokenstatusactive"></a>`ACTIVE` | Active agent token. |
 | <a id="agenttokenstatusrevoked"></a>`REVOKED` | Revoked agent token. |
+
+### `AiAcceptedSelfHostedModels`
+
+LLMs supported by the self-hosted model features.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="aiacceptedselfhostedmodelscodegemma"></a>`CODEGEMMA` | CodeGemma 2b or 7b model. |
+| <a id="aiacceptedselfhostedmodelsmistral"></a>`MISTRAL` | Mistral7B model from Mistral AI. |
+| <a id="aiacceptedselfhostedmodelsmixtral"></a>`MIXTRAL` | Mixtral8x22B model from Mistral AI. |
 
 ### `AiAction`
 

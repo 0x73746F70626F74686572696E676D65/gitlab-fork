@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'List of self-hosted LLM servers.', feature_category: :mlops do
+RSpec.describe 'List of self-hosted LLM servers.', feature_category: :custom_models do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:admin) }
@@ -50,15 +50,6 @@ RSpec.describe 'List of self-hosted LLM servers.', feature_category: :mlops do
   end
 
   subject(:request) { post_graphql(query, current_user: current_user) }
-
-  shared_examples 'performs the right authorization' do
-    it 'performs the right authorization correctly' do
-      allow(Ability).to receive(:allowed?).and_call_original
-      expect(Ability).to receive(:allowed?).with(current_user, :manage_ai_settings)
-
-      request
-    end
-  end
 
   context 'when user has the required authorization' do
     let(:expect_to_be_authorized) { true }

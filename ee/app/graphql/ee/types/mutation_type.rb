@@ -202,6 +202,8 @@ module EE
           alpha: { milestone: '17.0' }
         mount_mutation ::Mutations::AuditEvents::Group::NamespaceFilters::Delete,
           alpha: { milestone: '17.0' }
+        mount_mutation ::Mutations::Ai::SelfHostedModels::Create,
+          alpha: { milestone: '17.1' }
         mount_mutation ::Mutations::AuditEvents::Instance::NamespaceFilters::Create,
           alpha: { milestone: '17.2' }
         mount_mutation ::Mutations::AuditEvents::Instance::NamespaceFilters::Delete,
