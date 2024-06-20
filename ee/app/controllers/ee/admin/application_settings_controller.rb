@@ -186,6 +186,10 @@ module EE
           defaults[:default_branch_protection_defaults] << :code_owner_approval_required
         end
 
+        if CloudConnector::AvailableServices.find_by_name(:code_suggestions)&.purchased?
+          attrs << :disabled_direct_code_suggestions
+        end
+
         attrs
       end
       # rubocop:enable Metrics/PerceivedComplexity

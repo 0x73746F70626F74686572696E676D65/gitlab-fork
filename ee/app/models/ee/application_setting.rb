@@ -25,6 +25,8 @@ module EE
         zoekt_indexing_paused: [:boolean, { default: false }],
         zoekt_search_enabled: [:boolean, { default: false }]
 
+      jsonb_accessor :code_creation, disabled_direct_code_suggestions: [:boolean, { default: false }]
+
       validates :clickhouse, json_schema: { filename: "application_setting_clickhouse" }
 
       validates :shared_runners_minutes,
@@ -197,6 +199,8 @@ module EE
       validates :security_policy_scheduled_scans_max_concurrency,
         presence: true,
         numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+
+      validates :code_creation, json_schema: { filename: 'application_setting_code_creation' }
 
       after_commit :update_personal_access_tokens_lifetime, if: :saved_change_to_max_personal_access_token_lifetime?
       after_commit :resume_elasticsearch_indexing

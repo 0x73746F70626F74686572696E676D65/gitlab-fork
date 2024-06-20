@@ -137,6 +137,7 @@ module EE
           maintenance_mode_message
           globally_allowed_ips
           service_access_tokens_expiration_enforced
+          disabled_direct_code_suggestions
         ]
     end
 

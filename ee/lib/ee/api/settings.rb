@@ -90,6 +90,10 @@ module EE
               attrs = attrs.except(:duo_features_enabled, :lock_duo_features_enabled)
             end
 
+            unless CloudConnector::AvailableServices.find_by_name(:code_suggestions)&.purchased?
+              attrs = attrs.except(:disabled_direct_code_suggestions)
+            end
+
             attrs
           end
           # rubocop:enable Metrics/CyclomaticComplexity

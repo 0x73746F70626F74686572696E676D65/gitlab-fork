@@ -93,6 +93,36 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
       end
     end
 
+    context 'with disabled_direct_code_suggestions settings', :with_cloud_connector do
+      let(:params) { { disabled_direct_code_suggestions: true } }
+
+      it_behaves_like 'PUT request permissions for admin mode'
+
+      subject(:api_request) do
+        put api(path, admin, admin_mode: true), params: params
+      end
+
+      it 'sets setting when code suggestions are available' do
+        allow(CloudConnector::AvailableServices)
+          .to receive_message_chain(:find_by_name, :purchased?).and_return(true)
+
+        api_request
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['disabled_direct_code_suggestions']).to eq(true)
+      end
+
+      it 'does not set the value when code suggestions are not available' do
+        allow(CloudConnector::AvailableServices)
+          .to receive_message_chain(:find_by_name, :purchased?).and_return(false)
+
+        api_request
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['disabled_direct_code_suggestions']).to eq(nil)
+      end
+    end
+
     context 'elasticsearch settings' do
       it 'limits namespaces and projects properly' do
         namespace_ids = create_list(:namespace, 2).map(&:id)
