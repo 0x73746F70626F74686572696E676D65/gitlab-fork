@@ -230,13 +230,40 @@ RSpec.describe "User with admin_runners custom role", feature_category: :runner 
 
     let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, source: group) }
 
-    pending "PUT /groups/:id" do
-      put api("/groups/#{group.id}", user), params: {
-        shared_runners_setting: 'disabled_and_unoverridable'
-      }
+    describe "PUT /groups/:id" do
+      it "updates the shared_runners_setting" do
+        expect do
+          put api("/groups/#{group.id}", user), params: {
+            shared_runners_setting: 'disabled_and_unoverridable'
+          }
 
-      expect(response).to have_gitlab_http_status(:ok)
-      expect(group.reload.shared_runners_setting).to eq('disabled_and_unoverridable')
+          expect(response).to have_gitlab_http_status(:ok)
+        end.to change { group.reload.shared_runners_setting }.to('disabled_and_unoverridable')
+      end
+
+      it "cannot update other attributes", :aggregate_failures do
+        expect do
+          put api("/groups/#{group.id}", user), params: {
+            name: 'new-name'
+          }
+
+          expect(response).to have_gitlab_http_status(:unauthorized)
+        end.to not_change { group.reload.name }
+      end
+
+      context "with the `custom_ability_admin_runners` feature flag disabled" do
+        before do
+          stub_feature_flags(custom_ability_admin_runners: false)
+        end
+
+        it "is forbidden" do
+          put api("/groups/#{group.id}", user), params: {
+            shared_runners_setting: 'disabled_and_unoverridable'
+          }
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
     end
   end
 
