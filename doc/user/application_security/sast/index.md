@@ -115,23 +115,6 @@ GitLab-managed rules.
 | PHP                          | [phpcs-security-audit](https://gitlab.com/gitlab-org/security-products/analyzers/phpcs-security-audit)       | 10.8                                     | [17.0](https://gitlab.com/groups/gitlab-org/-/epics/13050)  |
 | C++                          | [Flawfinder](https://gitlab.com/gitlab-org/security-products/analyzers/flawfinder)                           | 10.7                                     | [17.0](https://gitlab.com/groups/gitlab-org/-/epics/13050)  |
 
-## Multi-project support
-
-GitLab SAST can scan repositories that contain multiple projects.
-
-The following analyzers have multi-project support:
-
-- Kubesec
-- PMD
-- Semgrep
-- SpotBugs
-- Sobelow
-
-### Enable multi-project support for Security Code Scan
-
-Multi-project support in the Security Code Scan requires a Solution (`.sln`) file in the root of
-the repository. For details on the Solution format, see the Microsoft reference [Solution (`.sln`) file](https://learn.microsoft.com/en-us/visualstudio/extensibility/internals/solution-dot-sln-file?view=vs-2019).
-
 ## Advanced vulnerability tracking
 
 DETAILS:
