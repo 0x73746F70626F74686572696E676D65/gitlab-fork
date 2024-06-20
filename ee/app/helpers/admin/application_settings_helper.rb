@@ -14,7 +14,13 @@ module Admin
         tag_pair_for_link(ai_powered_docs_url))
     end
 
-    def admin_display_ai_powered_toggle?
+    def direct_connections_description
+      safe_format(
+        s_('AIPoweredSM|Disable %{link_start}direct connections%{link_end} for this instance.'),
+        tag_pair_for_link(direct_connections_docs_url))
+    end
+
+    def admin_display_ai_powered_chat_settings?
       License.feature_available?(:ai_chat) && CloudConnector::AvailableServices.find_by_name(:duo_chat).free_access?
     end
 
@@ -29,6 +35,10 @@ module Admin
 
     def gitlab_testing_agreement_url
       'https://about.gitlab.com/handbook/legal/testing-agreement/'
+    end
+
+    def direct_connections_docs_url
+      'https://docs.gitlab.com/ee/user/project/repository/code_suggestions/index.html#disable-direct-connections-to-the-ai-gateway'
     end
     # rubocop:enable Gitlab/DocUrl
 

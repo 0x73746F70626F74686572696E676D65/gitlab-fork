@@ -853,6 +853,19 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
           expect(response).to have_gitlab_http_status(:not_found)
         end
       end
+
+      context 'when disabled_direct_code_suggestions setting is true' do
+        before do
+          allow(Gitlab::CurrentSettings).to receive(:disabled_direct_code_suggestions).and_return(true)
+        end
+
+        include_examples 'a response', 'unauthorized' do
+          let(:result) { :forbidden }
+          let(:response_body) do
+            { 'message' => '403 Forbidden - Direct connections are disabled' }
+          end
+        end
+      end
     end
   end
 

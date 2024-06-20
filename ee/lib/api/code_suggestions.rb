@@ -130,6 +130,7 @@ module API
 
         post do
           not_found! unless Feature.enabled?(:code_suggestions_direct_completions, current_user)
+          forbidden!('Direct connections are disabled') if Gitlab::CurrentSettings.disabled_direct_code_suggestions
 
           check_rate_limit!(:code_suggestions_direct_access, scope: current_user) do
             Gitlab::InternalEvents.track_event(

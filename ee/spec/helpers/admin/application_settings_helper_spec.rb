@@ -19,7 +19,7 @@ RSpec.describe Admin::ApplicationSettingsHelper, feature_category: :code_suggest
     end
   end
 
-  describe '#admin_display_ai_powered_toggle?', :freeze_time, feature_category: :duo_chat do
+  describe '#admin_display_ai_powered_chat_settings?', :freeze_time, feature_category: :duo_chat do
     let(:feature_enabled) { true }
     let(:past) { Time.current - 1.second }
     let(:future) { Time.current + 1.second }
@@ -47,7 +47,7 @@ RSpec.describe Admin::ApplicationSettingsHelper, feature_category: :code_suggest
       it 'returns expectation' do
         stub_licensed_features(ai_chat: feature_available)
 
-        expect(helper.admin_display_ai_powered_toggle?).to eq(expectation)
+        expect(helper.admin_display_ai_powered_chat_settings?).to eq(expectation)
       end
     end
   end

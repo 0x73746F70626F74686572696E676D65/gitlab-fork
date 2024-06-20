@@ -1,8 +1,9 @@
 - return if Gitlab.org_or_com?
 
-- visible_duo_chat = admin_display_ai_powered_toggle?
+- visible_duo_chat = admin_display_ai_powered_chat_settings?
+- visible_duo_pro = CloudConnector::AvailableServices.find_by_name(:code_suggestions)&.purchased?
 
-- return if !visible_duo_chat
+- return unless visible_duo_chat || visible_duo_pro
 
 - expanded = false
 
@@ -21,12 +22,17 @@
 
       %fieldset
         .form-group
-          = f.gitlab_ui_checkbox_component :duo_features_enabled,
-            s_('AIPoweredSM|Enable GitLab Duo features')
-          = f.gitlab_ui_checkbox_component :lock_duo_features_enabled,
-            s_('AIPoweredSM|Enforce Duo features setting for all subgroups')
-          = f.gitlab_ui_checkbox_component :instance_level_ai_beta_features_enabled,
-            s_('AIPoweredSM|Enable experiment and beta AI-powered features'),
-            help_text: ai_powered_testing_agreement
+          - if visible_duo_chat
+            = f.gitlab_ui_checkbox_component :duo_features_enabled,
+              s_('AIPoweredSM|Enable GitLab Duo features')
+            = f.gitlab_ui_checkbox_component :lock_duo_features_enabled,
+              s_('AIPoweredSM|Enforce Duo features setting for all subgroups')
+            = f.gitlab_ui_checkbox_component :instance_level_ai_beta_features_enabled,
+              s_('AIPoweredSM|Enable experiment and beta AI-powered features'),
+              help_text: ai_powered_testing_agreement
+          - if visible_duo_pro
+            = f.gitlab_ui_checkbox_component :disabled_direct_code_suggestions,
+              s_('AIPoweredSM|Disable direct connections for Code Suggestions'),
+              help_text: direct_connections_description
 
       = f.submit _('Save changes'), pajamas_button: true

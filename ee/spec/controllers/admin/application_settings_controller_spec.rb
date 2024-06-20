@@ -367,6 +367,25 @@ RSpec.describe Admin::ApplicationSettingsController do
 
       it_behaves_like 'settings for licensed features'
     end
+
+    context 'when setting disabled_direct_code_suggestions' do
+      it 'does not update settings when duo pro is not available' do
+        allow(CloudConnector::AvailableServices)
+          .to receive_message_chain(:find_by_name, :purchased?).and_return(false)
+
+        expect { put :update, params: { application_setting: { disabled_direct_code_suggestions: true } } }
+          .not_to change { ApplicationSetting.current.reload.disabled_direct_code_suggestions }
+      end
+
+      it 'updates settings when duo pro is available' do
+        allow(CloudConnector::AvailableServices)
+          .to receive_message_chain(:find_by_name, :purchased?).and_return(true)
+
+        put :update, params: { application_setting: { disabled_direct_code_suggestions: true } }
+
+        expect(ApplicationSetting.current.disabled_direct_code_suggestions).to be_truthy
+      end
+    end
   end
 
   describe '#advanced_search', feature_category: :global_search do
