@@ -84,6 +84,7 @@ export default {
     resetTemplate() {
       this.$emit('select', '');
 
+      this.selected = '';
       this.selectedLogo = null;
       this.selectedLabel = DEFAULT_SELECTED_LABEL;
     },
