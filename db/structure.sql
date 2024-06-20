@@ -1089,6 +1089,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_6cdea9559242() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."namespace_id" IS NULL THEN
+  SELECT "namespace_id"
+  INTO NEW."namespace_id"
+  FROM "issues"
+  WHERE "issues"."id" = NEW."source_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_77d9fbad5b12() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -11378,7 +11394,8 @@ CREATE TABLE issue_links (
     target_id integer NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    link_type smallint DEFAULT 0 NOT NULL
+    link_type smallint DEFAULT 0 NOT NULL,
+    namespace_id bigint
 );
 
 CREATE SEQUENCE issue_links_id_seq
@@ -27067,6 +27084,8 @@ CREATE INDEX index_issue_emails_on_email_message_id ON issue_emails USING btree 
 
 CREATE INDEX index_issue_emails_on_issue_id ON issue_emails USING btree (issue_id);
 
+CREATE INDEX index_issue_links_on_namespace_id ON issue_links USING btree (namespace_id);
+
 CREATE INDEX index_issue_links_on_source_id ON issue_links USING btree (source_id);
 
 CREATE UNIQUE INDEX index_issue_links_on_source_id_and_target_id ON issue_links USING btree (source_id, target_id);
@@ -31169,6 +31188,8 @@ CREATE TRIGGER trigger_57ad2742ac16 BEFORE INSERT OR UPDATE ON user_achievements
 
 CREATE TRIGGER trigger_5f6432d2dccc BEFORE INSERT OR UPDATE ON operations_strategies_user_lists FOR EACH ROW EXECUTE FUNCTION trigger_5f6432d2dccc();
 
+CREATE TRIGGER trigger_6cdea9559242 BEFORE INSERT OR UPDATE ON issue_links FOR EACH ROW EXECUTE FUNCTION trigger_6cdea9559242();
+
 CREATE TRIGGER trigger_77d9fbad5b12 BEFORE INSERT OR UPDATE ON packages_debian_project_distribution_keys FOR EACH ROW EXECUTE FUNCTION trigger_77d9fbad5b12();
 
 CREATE TRIGGER trigger_7a8b08eed782 BEFORE INSERT OR UPDATE ON boards_epic_board_positions FOR EACH ROW EXECUTE FUNCTION trigger_7a8b08eed782();
@@ -31448,6 +31469,9 @@ ALTER TABLE ONLY analytics_devops_adoption_segments
 
 ALTER TABLE ONLY project_statistics
     ADD CONSTRAINT fk_198ad46fdc FOREIGN KEY (root_namespace_id) REFERENCES namespaces(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY issue_links
+    ADD CONSTRAINT fk_1cce06b868 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY agent_project_authorizations
     ADD CONSTRAINT fk_1d30bb4987 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
