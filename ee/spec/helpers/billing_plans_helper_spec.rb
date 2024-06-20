@@ -168,54 +168,6 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
     end
   end
 
-  describe '#use_new_purchase_flow?' do
-    where type: [Group.sti_name, Namespaces::UserNamespace.sti_name],
-      plan: Plan.all_plans,
-      trial_active: [true, false]
-
-    with_them do
-      let_it_be(:user) { create(:user) }
-      let(:namespace) { create(:namespace_with_plan, plan: "#{plan}_plan".to_sym, type: type) }
-
-      before do
-        allow(helper).to receive(:current_user).and_return(user)
-        allow(namespace).to receive(:trial_active?).and_return(trial_active)
-      end
-
-      subject { helper.use_new_purchase_flow?(namespace) }
-
-      it do
-        result = type == Group.sti_name && (plan == Plan::FREE || trial_active)
-
-        is_expected.to be(result)
-      end
-    end
-
-    context 'when the group is on a plan eligible for the new purchase flow' do
-      let(:namespace) { create(:namespace_with_plan, plan: :free_plan, type: Group) }
-
-      before do
-        allow(helper).to receive(:current_user).and_return(user)
-      end
-
-      context 'when the user has a last name' do
-        let(:user) { build(:user, last_name: 'Lastname') }
-
-        it 'returns true' do
-          expect(helper.use_new_purchase_flow?(namespace)).to eq true
-        end
-      end
-
-      context 'when the user does not have a last name' do
-        let(:user) { build(:user, last_name: nil, name: 'Firstname') }
-
-        it 'returns false' do
-          expect(helper.use_new_purchase_flow?(namespace)).to eq false
-        end
-      end
-    end
-  end
-
   describe '#can_edit_billing?' do
     let(:auditor_group) { build(:group) }
     let(:auditor) { create(:auditor) }
@@ -325,27 +277,29 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
 
   describe '#plan_purchase_url' do
     let_it_be(:group) { create(:group) }
-    let_it_be(:user) { create(:user) }
 
-    let(:plan) { double('Plan', id: '123456789', purchase_link: double('PurchaseLink', href: '987654321')) }
+    let(:plan) { double('Plan', id: 'plan-id') }
 
     before do
-      allow(helper).to receive(:current_user).and_return(user)
+      stub_feature_flags(migrate_purchase_flows_for_existing_customers: false)
     end
 
-    it 'builds correct url with some source' do
-      allow(helper).to receive(:use_new_purchase_flow?).and_return(true)
+    it 'builds correct gitlab url with some source' do
+      user = create(:user)
+
+      allow(helper).to receive(:current_user).and_return(user)
       allow(helper).to receive(:params).and_return({ source: 'some_source' })
 
-      expect(helper).to receive(:new_subscriptions_path).with(plan_id: plan.id, namespace_id: group.id, source: 'some_source')
-
-      helper.plan_purchase_url(group, plan)
+      expect(helper.plan_purchase_url(group, plan))
+        .to include "/-/subscriptions/new?namespace_id=#{group.id}&plan_id=plan-id&source=some_source"
     end
 
     it 'builds correct url for the old purchase flow' do
-      allow(helper).to receive(:use_new_purchase_flow?).and_return(false)
+      user = create(:user, name: 'First')
+      allow(helper).to receive(:current_user).and_return(user)
 
-      expect(helper.plan_purchase_url(group, plan)).to eq("#{plan.purchase_link.href}&gl_namespace_id=#{group.id}")
+      expect(helper.plan_purchase_url(group, plan))
+        .to eq("#{subscription_portal_url}/subscriptions/new?gl_namespace_id=#{group.id}&plan_id=plan-id")
     end
   end
 
@@ -370,20 +324,24 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
   end
 
   describe '#upgrade_button_css_classes' do
-    let(:plan) { double('Plan', deprecated?: plan_is_deprecated) }
-    let(:namespace) { double('Namespace', trial_active?: trial_active) }
+    let(:plan_data) { double(deprecated?: plan_is_deprecated) }
+    let(:namespace) do
+      build(
+        :group,
+        gitlab_subscription: build(:gitlab_subscription, trial: trial_active, trial_ends_on: 1.week.from_now))
+    end
 
-    subject { helper.upgrade_button_css_classes(namespace, plan, is_current_plan) }
+    subject { helper.upgrade_button_css_classes(namespace, plan_data, is_current_plan) }
 
     before do
-      allow(helper).to receive(:use_new_purchase_flow?).and_return(use_new_purchase_flow)
+      allow(namespace.gitlab_subscription).to receive(:upgradable?).and_return(upgradable)
     end
 
     where(
       is_current_plan: [true, false],
       trial_active: [true, false],
       plan_is_deprecated: [true, false],
-      use_new_purchase_flow: [true, false]
+      upgradable: [true, false]
     )
 
     with_them do
@@ -391,7 +349,7 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
         expected_classes = [].tap do |ary|
           ary << 'disabled' if is_current_plan && !trial_active
           ary << 'invisible' if plan_is_deprecated
-          ary << "billing-cta-purchase#{'-new' if use_new_purchase_flow}"
+          ary << "billing-cta-purchase#{'-new' unless upgradable}"
         end.join(' ')
 
         is_expected.to eq(expected_classes)
