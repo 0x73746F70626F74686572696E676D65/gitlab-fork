@@ -1,0 +1,9 @@
+---
+name: search_issues_hybrid_search
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/440424
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/156904
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/468870
+milestone: '17.2'
+group: group::global search
+type: beta
+default_enabled: false

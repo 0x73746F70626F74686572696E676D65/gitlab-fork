@@ -88,6 +88,8 @@ module Gitlab
         case scope
         when :users
           super.merge(project_id: project.id)
+        when :issues
+          super.merge(filters.slice(:hybrid_similarity))
         when :blobs
           base_options.merge(filters.slice(:language, :num_context_lines))
         else

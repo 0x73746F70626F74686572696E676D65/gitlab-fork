@@ -4,9 +4,13 @@ module Search
   module Elastic
     module Queries
       ADVANCED_QUERY_SYNTAX_REGEX = /[+*"\-|()~\\]/
+      UNIT_PRIMITIVE = 'semantic_search_issue'
+      KNN_K = 25
+      KNN_NUM_CANDIDATES = 100
 
       class << self
         include ::Elastic::Latest::QueryContext::Aware
+        include Search::Elastic::Concerns::RateLimiter
 
         def by_iid(iid:, doc_type:)
           bool_expr = Gitlab::Elastic::BoolExpr.new
@@ -98,6 +102,30 @@ module Search
           query_hash
         end
 
+        def by_knn(query_hash:, query:, options:)
+          embedding = embedding(query, options)
+
+          return query_hash unless embedding
+
+          filters = query_hash.dig(:query, :bool, :filter)
+
+          knn_query = {
+            knn: {
+              field: 'embedding',
+              query_vector: embedding,
+              k: KNN_K,
+              num_candidates: KNN_NUM_CANDIDATES,
+              similarity: options[:hybrid_similarity],
+              filter: filters
+            }
+          }
+
+          query_hash.merge(knn_query)
+        rescue StandardError => e
+          Gitlab::ErrorTracking.track_exception(e)
+          query_hash
+        end
+
         private
 
         def remove_fields_boost(fields)
@@ -153,6 +181,19 @@ module Search
             pre_tags: [::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG],
             post_tags: [::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG]
           }
+        end
+
+        def embedding(query, options)
+          tracking_context = { action: 'hybrid_issue_search_embedding' }
+          user = options[:current_user]
+
+          if embeddings_throttled_after_increment?
+            raise StandardError, "Rate limited endpoint '#{ENDPOINT}' is throttled"
+          end
+
+          Gitlab::Llm::VertexAi::Embeddings::Text
+            .new(query, user: user, tracking_context: tracking_context, unit_primitive: UNIT_PRIMITIVE)
+            .execute
         end
       end
     end
