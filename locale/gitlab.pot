@@ -2037,6 +2037,9 @@ msgstr ""
 msgid "A release with a date in the future is labeled as an %{linkStart}Upcoming Release%{linkEnd}."
 msgstr ""
 
+msgid "A rule must have at least a minimum access role for push or delete."
+msgstr ""
+
 msgid "A sign-in to your account has been made from the following IP address: %{ip}"
 msgstr ""
 
@@ -18647,6 +18650,9 @@ msgid "DevOps adoption"
 msgstr ""
 
 msgid "Developer"
+msgstr ""
+
+msgid "Developer (default)"
 msgstr ""
 
 msgid "Development widget is not enabled for this work item type"
