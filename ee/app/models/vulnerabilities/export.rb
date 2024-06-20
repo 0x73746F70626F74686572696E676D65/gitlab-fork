@@ -87,7 +87,6 @@ module Vulnerabilities
     def export_service
       EXPORTER_CLASS.new(self)
     end
-    strong_memoize_attr :export_service
 
     private
 
