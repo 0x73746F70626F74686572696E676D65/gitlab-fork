@@ -14370,7 +14370,7 @@ msgstr ""
 msgid "ContainerRegistry|Published %{timeInfo}"
 msgstr ""
 
-msgid "ContainerRegistry|Published to the %{repositoryPath} image repository at %{time} on %{date}"
+msgid "ContainerRegistry|Published to the %{repositoryPath} image repository on %{dateTime}"
 msgstr ""
 
 msgid "ContainerRegistry|Push an image"
