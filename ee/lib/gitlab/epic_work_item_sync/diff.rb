@@ -86,15 +86,20 @@ module Gitlab
         mismatched_attributes.push("parent_id")
       end
 
+      # rubocop:disable CodeReuse/ActiveRecord -- temporary, this is to be removed once epic sync is done.
       def check_child_issues
         return if epic.epic_issues.blank? && work_item.child_links.blank?
 
-        epic.epic_issues.each do |epic_issue|
-          unless work_item.child_links.for_children(epic_issue.issue_id).exists?
-            mismatched_attributes.push("epic_issue")
-          end
-        end
+        epic_issue_ids = epic.epic_issues.pluck(:issue_id).sort
+        epic_work_item_issue_child_ids = work_item.child_links.joins(work_item: :work_item_type).where(
+          ::WorkItems::Type.arel_table[:name].lower.eq('issue')
+        ).pluck(:work_item_id).sort
+
+        return if epic_issue_ids == epic_work_item_issue_child_ids
+
+        mismatched_attributes.push("epic_issue")
       end
+      # rubocop:enable CodeReuse/ActiveRecord
 
       def check_relative_position
         # if there is no parent_link there is nothing to compare with
