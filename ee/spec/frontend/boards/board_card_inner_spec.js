@@ -55,6 +55,7 @@ describe('Board card component', () => {
         allowSubEpics: isEpicBoard,
         issuableType: TYPE_ISSUE,
         isGroupBoard: true,
+        disabled: false,
       },
       stubs: {
         GlSprintf,
