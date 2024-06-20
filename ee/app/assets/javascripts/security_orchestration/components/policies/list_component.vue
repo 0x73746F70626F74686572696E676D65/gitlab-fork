@@ -6,8 +6,7 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { getSecurityPolicyListUrl } from '~/editor/extensions/source_editor_security_policy_schema_ext';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { DATE_ONLY_FORMAT } from '~/lib/utils/datetime_utility';
-import { getParameterByName, setUrlParams, updateHistory } from '~/lib/utils/url_utility';
-import { extractTypeParameter } from 'ee/security_orchestration/components/policies/utils';
+import { setUrlParams, updateHistory } from '~/lib/utils/url_utility';
 import { getPolicyType } from '../../utils';
 import DrawerWrapper from '../policy_drawer/drawer_wrapper.vue';
 import { isPolicyInherited, policyHasNamespace, isGroup } from '../utils';
@@ -60,10 +59,19 @@ export default {
       required: false,
       default: false,
     },
+    policiesByType: {
+      type: Object,
+      required: true,
+    },
     selectedPolicySource: {
       type: String,
       required: false,
       default: POLICY_SOURCE_OPTIONS.ALL.value,
+    },
+    selectedPolicyType: {
+      type: String,
+      required: false,
+      default: POLICY_TYPE_FILTER_OPTIONS.ALL.value,
     },
     linkedSppItems: {
       type: Array,
@@ -75,28 +83,10 @@ export default {
       required: false,
       default: false,
     },
-    pipelineExecutionPolicies: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-    scanExecutionPolicies: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
-    scanResultPolicies: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
   },
   data() {
-    const selectedPolicyType = extractTypeParameter(getParameterByName('type'));
-
     return {
       selectedPolicy: null,
-      selectedPolicyType,
     };
   },
   computed: {
@@ -114,22 +104,10 @@ export default {
     isGroup() {
       return isGroup(this.namespaceType);
     },
-    allPolicyTypes() {
-      return {
-        [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: this.scanExecutionPolicies,
-        [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: this.scanResultPolicies,
-        ...(this.pipelineExecutionPolicyEnabled
-          ? {
-              [PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value]: this
-                .pipelineExecutionPolicies,
-            }
-          : {}),
-      };
-    },
     policies() {
       let policyTypes =
         this.selectedPolicyType === POLICY_TYPE_FILTER_OPTIONS.ALL.value
-          ? Object.keys(this.allPolicyTypes)
+          ? Object.keys(this.policiesByType)
           : [this.selectedPolicyType];
 
       if (this.selectedPolicySource === POLICY_SOURCE_OPTIONS.INHERITED.value) {
@@ -137,7 +115,7 @@ export default {
       }
 
       const policies = policyTypes.map((type) =>
-        getPoliciesWithType(this.allPolicyTypes[type], this.policyTypeFilterOptions[type].text),
+        getPoliciesWithType(this.policiesByType[type], this.policyTypeFilterOptions[type].text),
       );
 
       return policies.flat();
@@ -261,7 +239,7 @@ export default {
         title: document.title,
         replace: true,
       });
-      this.selectedPolicyType = type;
+      this.$emit('update-policy-type', type);
     },
     setSourceFilter(source) {
       this.deselectPolicy();
