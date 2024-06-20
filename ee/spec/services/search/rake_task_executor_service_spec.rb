@@ -30,7 +30,7 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
     end
   end
 
-  describe '#create_empty_index', :elastic_clean do
+  describe '#create_empty_index' do
     before do
       es_helper.delete_index
       es_helper.delete_standalone_indices
@@ -65,13 +65,13 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
           .not_to change { es_helper.index_exists?(index_name: migration_index_name) }
       end
 
-      Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.each do |class_name|
-        describe "for #{class_name}" do
-          it "does not create a standalone index" do
-            proxy = ::Elastic::Latest::ApplicationClassProxy.new(class_name, use_separate_indices: true)
-            expect { service.execute(:create_empty_index) }
-              .not_to change { es_helper.alias_exists?(name: proxy.index_name) }
-          end
+      it 'does not create standalone indices' do
+        service.execute(:create_empty_index)
+
+        Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.each do |class_name|
+          proxy = ::Elastic::Latest::ApplicationClassProxy.new(class_name, use_separate_indices: true)
+
+          expect(es_helper.alias_exists?(name: proxy.index_name)).to eq(false), "#{proxy.index_name} shouldn't exist"
         end
       end
     end
@@ -84,13 +84,13 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
         .to change { es_helper.index_exists?(index_name: migration_index_name) }.from(false).to(true)
     end
 
-    Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.each do |class_name|
-      describe "for #{class_name}" do
-        it 'creates a standalone index' do
-          proxy = ::Elastic::Latest::ApplicationClassProxy.new(class_name, use_separate_indices: true)
-          expect { service.execute(:create_empty_index) }
-            .to change { es_helper.index_exists?(index_name: proxy.index_name) }.from(false).to(true)
-        end
+    it 'creates standalone indices' do
+      service.execute(:create_empty_index)
+
+      Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.each do |class_name|
+        proxy = ::Elastic::Latest::ApplicationClassProxy.new(class_name, use_separate_indices: true)
+
+        expect(es_helper.index_exists?(index_name: proxy.index_name)).to eq(true), "#{proxy.index_name} shouldn exist"
       end
     end
 
