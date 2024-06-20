@@ -23,7 +23,7 @@ module EE
       include EachBatch
       include ::Exportable
       include Epics::MetadataCacheUpdate
-      include Elastic::ApplicationVersionedSearch
+      include ::Search::Elastic::EpicsSearch
       include Elastic::UpdateAssociatedEpicsOnDateChange
 
       # we'd need to make sure these override the existing associations so we prepend this.

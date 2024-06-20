@@ -6,7 +6,7 @@ RSpec.describe ::Search::Elastic::IssuesSearch, :elastic_helpers, feature_catego
   let_it_be(:project) { create(:project, :public) }
   let_it_be(:issue) { create(:issue, project: project) }
   let_it_be(:issue_epic_type) { create(:issue, :epic) }
-  let_it_be(:work_item) { create(:work_item, :epic, :group_level) }
+  let_it_be(:work_item) { create(:work_item, :epic_with_legacy_epic, :group_level) }
   let_it_be(:non_group_work_item) { create(:work_item) }
   let(:helper) { Gitlab::Elastic::Helper.default }
 
@@ -40,10 +40,8 @@ RSpec.describe ::Search::Elastic::IssuesSearch, :elastic_helpers, feature_catego
       issue_epic_type.maintain_elasticsearch_update
     end
 
-    it 'calls track! for group level WorkItem' do
-      expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once do |*tracked_refs|
-        expect(tracked_refs.count).to eq(0)
-      end
+    it 'calls track! for synced_epic' do
+      expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(*[work_item.synced_epic])
       work_item.maintain_elasticsearch_update
     end
 
@@ -198,10 +196,8 @@ RSpec.describe ::Search::Elastic::IssuesSearch, :elastic_helpers, feature_catego
       issue_epic_type.maintain_elasticsearch_destroy
     end
 
-    it 'calls track! for group level WorkItem' do
-      expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once do |*tracked_refs|
-        expect(tracked_refs.count).to eq(0)
-      end
+    it 'calls track! for synced_epic' do
+      expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(*[work_item.synced_epic])
       work_item.maintain_elasticsearch_destroy
     end
 
@@ -228,10 +224,8 @@ RSpec.describe ::Search::Elastic::IssuesSearch, :elastic_helpers, feature_catego
       non_group_work_item.maintain_elasticsearch_create
     end
 
-    it 'calls track! for group level WorkItem' do
-      expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once do |*tracked_refs|
-        expect(tracked_refs.count).to eq(0)
-      end
+    it 'calls track! for synced_epic' do
+      expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(*[work_item.synced_epic])
       work_item.maintain_elasticsearch_create
     end
 

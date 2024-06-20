@@ -1300,6 +1300,8 @@ RSpec.describe Epic, feature_category: :portfolio_management do
     context 'when create epic index migration is finished' do
       before do
         allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
+          .with(:create_work_items_index).and_return(true)
+        allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
           .with(:create_epic_index).and_return(true)
       end
 
@@ -1318,9 +1320,37 @@ RSpec.describe Epic, feature_category: :portfolio_management do
               .to receive(:elasticsearch_indexing?).and_return(true)
           end
 
-          it 'calls ::Elastic::ProcessBookkeepingService.track! when the epic is updated' do
-            expect(Elastic::ProcessBookkeepingService).to receive(:track!).with(*epic).once
+          context 'when elastic_index_work_items flag is disabled' do
+            before do
+              stub_feature_flags(elastic_index_work_items: false)
+            end
 
+            it 'tracks the epic' do
+              expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+              epic.update!(title: 'A new title')
+            end
+          end
+
+          context 'when create_work_items_index migration is not complete' do
+            before do
+              allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
+                .with(:create_work_items_index).and_return(false)
+            end
+
+            it 'tracks the epic' do
+              expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+              epic.update!(title: 'A new title')
+            end
+          end
+
+          it 'calls ::Elastic::ProcessBookkeepingService.track! when the epic is updated' do
+            expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once do |*tracked_refs|
+              expect(tracked_refs.count).to eq(2)
+              expect(tracked_refs[0].class).to eq(Epic)
+              expect(tracked_refs[0].id).to eq(epic.id)
+              expect(tracked_refs[1]).to be_a_kind_of(Search::Elastic::References::WorkItem)
+              expect(tracked_refs[1].identifier).to eq(epic.issue_id)
+            end
             epic.update!(title: 'A new title')
           end
         end

@@ -80,6 +80,7 @@ module Search
 
           indexing_data << self unless indexing_issue_of_epic_type?
         end
+        indexing_data << synced_epic if synced_epic.present?
         indexing_data.compact
       end
     end
