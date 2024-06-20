@@ -13,14 +13,14 @@ module WorkItems
       argument :confidential,
         GraphQL::Types::Boolean,
         required: false,
-        description: 'Filter for confidential work items. If "false", excludes confidential work items. ' \
-          'If "true", returns only confidential work items.'
+        description: 'Filter for confidential work items. If `false`, excludes confidential work items. ' \
+          'If `true`, returns only confidential work items.'
       argument :assignee_usernames, [GraphQL::Types::String],
         required: false,
         description: 'Usernames of users assigned to the work item.'
       argument :assignee_wildcard_id, ::Types::AssigneeWildcardIdEnum,
         required: false,
-        description: 'Filter by assignee wildcard. Incompatible with assigneeUsernames.'
+        description: 'Filter by assignee wildcard. Incompatible with `assigneeUsernames`.'
       argument :label_name, [GraphQL::Types::String],
         required: false,
         description: 'Labels applied to the work item.'
@@ -29,11 +29,11 @@ module WorkItems
         description: 'Milestone applied to the work item.'
       argument :milestone_wildcard_id, ::Types::MilestoneWildcardIdEnum,
         required: false,
-        description: 'Filter by milestone ID wildcard. Incompatible with milestoneTitle.'
+        description: 'Filter by milestone ID wildcard. Incompatible with `milestoneTitle`.'
       argument :my_reaction_emoji, GraphQL::Types::String,
         required: false,
         description: 'Filter by reaction emoji applied by the current user. ' \
-          'Wildcard values "NONE" and "ANY" are supported.'
+          'Wildcard values `NONE` and `ANY` are supported.'
       argument :iids,
         [GraphQL::Types::String],
         required: false,
@@ -60,7 +60,7 @@ module WorkItems
           value.to_h
         }
       argument :or, Types::WorkItems::UnionedWorkItemFilterInputType,
-        description: 'List of arguments with inclusive OR.',
+        description: 'List of arguments with inclusive `OR`.',
         required: false,
         prepare: ->(value, _ctx) {
           value.to_h
