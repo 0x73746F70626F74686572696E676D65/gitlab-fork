@@ -48,7 +48,7 @@ RSpec.describe GitlabSubscriptions::CurrentActivePlansForUserFinder, feature_cat
           create(:group_with_plan, plan: :free_plan, owners: user)
           # prove distinct
           create(:group_with_plan, plan: :free_plan, owners: user)
-          create(:group_with_plan, plan: :premium_plan, developers: user)
+          create(:group_with_plan, plan: :premium_plan)
           create(:group_with_plan, plan: :ultimate_plan) do |g|
             # do not consider requests
             create(:group_member, :owner, :access_request, source: g, user: user)
@@ -58,11 +58,11 @@ RSpec.describe GitlabSubscriptions::CurrentActivePlansForUserFinder, feature_cat
         it { is_expected.to match_array([free_plan]) }
       end
 
-      context 'when user owns groups for each current plan' do
+      context 'when user is in groups for each current plan' do
         before_all do
           create(:group_with_plan, plan: :free_plan, owners: user)
-          create(:group_with_plan, plan: :premium_plan, owners: user)
-          create(:group_with_plan, plan: :ultimate_plan, owners: user)
+          create(:group_with_plan, plan: :premium_plan, developers: user)
+          create(:group_with_plan, plan: :ultimate_plan, guests: user)
         end
 
         it { is_expected.to match_array([free_plan, premium_plan, ultimate_plan]) }
