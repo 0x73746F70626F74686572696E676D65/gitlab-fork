@@ -17,7 +17,15 @@ module Gitlab
         end
 
         def errors
-          @errors ||= ai_response.status == :error ? [ai_response.content] : []
+          @errors ||= ai_response.status == :error ? [error_message] : []
+        end
+
+        private
+
+        def error_message
+          message = ai_response.content
+          message += " #{_('Error code')}: #{ai_response.error_code}" if ai_response.error_code.present?
+          message
         end
       end
     end
