@@ -28,11 +28,10 @@ module GitlabSubscriptions
     end
 
     def members_cte
-      query = Member
+      query = GroupMember
                 .non_request
-                .all_owners
+                .non_minimal_access
                 .with_user(user)
-                .with_group
                 .select(:source_id)
 
       Gitlab::SQL::CTE.new(:members, query, materialized: true)

@@ -56,10 +56,6 @@ module EE
         ).left_outer_joins(:member_role)
       end
 
-      scope :with_group, -> do
-        where(source_type: ::GroupMember::SOURCE_TYPE)
-      end
-
       before_create :set_membership_activation
 
       scope :with_csv_entity_associations, -> do

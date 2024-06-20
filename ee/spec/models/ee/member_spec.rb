@@ -833,15 +833,4 @@ RSpec.describe Member, type: :model, feature_category: :groups_and_projects do
       expect(described_class.with_elevated_guests).not_to include(member3)
     end
   end
-
-  describe '.with_group scope' do
-    let!(:member1) { create(:group_member, :developer, source: group) }
-    let!(:member2) { create(:group_member, :developer, source: group) }
-    let!(:member3) { create(:project_member, :developer, source: project) }
-
-    it 'returns only group members' do
-      expect(described_class.with_group).to match_array([member1, member2])
-      expect(described_class.with_group).not_to include(member3)
-    end
-  end
 end
