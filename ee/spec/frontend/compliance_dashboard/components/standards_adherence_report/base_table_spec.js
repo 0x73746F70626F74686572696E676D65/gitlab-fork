@@ -12,6 +12,7 @@ import FixSuggestionsSidebar from 'ee/compliance_dashboard/components/standards_
 import Pagination from 'ee/compliance_dashboard/components/shared/pagination.vue';
 import { ROUTE_STANDARDS_ADHERENCE } from 'ee/compliance_dashboard/constants';
 import { createComplianceAdherencesResponse } from 'ee_jest/compliance_dashboard/mock_data';
+import FrameworksInfo from 'ee/compliance_dashboard/components/shared/frameworks_info.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 
 Vue.use(VueApollo);
@@ -45,6 +46,7 @@ describe('AdherencesBaseTable component', () => {
   const findFirstTableRowData = () => findNthTableRow(1).findAll('td');
   const findViewDetails = () => wrapper.findComponent(GlLink);
   const findPagination = () => wrapper.findComponent(Pagination);
+  const findFrameworksInfoComponents = () => wrapper.findAllComponents(FrameworksInfo);
 
   function createComponent(
     mountFn = shallowMount,
@@ -317,6 +319,39 @@ describe('AdherencesBaseTable component', () => {
         it('does not show the pagination', () => {
           expect(findPagination().exists()).toBe(false);
         });
+      });
+    });
+  });
+
+  describe('compliance frameworks info', () => {
+    describe('with compliance frameworks', () => {
+      beforeEach(() => {
+        createComponent(mount, {}, mockGraphQlSuccess);
+
+        return waitForPromises();
+      });
+
+      it('renders compliance info component for every row', async () => {
+        await waitForPromises();
+
+        expect(findFrameworksInfoComponents()).toHaveLength(2);
+      });
+    });
+
+    describe('without compliance frameworks', () => {
+      const noFrameworksResponse = createComplianceAdherencesResponse({
+        complianceFrameworksNodes: [],
+      });
+      beforeEach(() => {
+        createComponent(mount, {}, noFrameworksResponse);
+
+        return waitForPromises();
+      });
+
+      it('renders compliance info component for every row', async () => {
+        await waitForPromises();
+
+        expect(findFrameworksInfoComponents()).toHaveLength(0);
       });
     });
   });

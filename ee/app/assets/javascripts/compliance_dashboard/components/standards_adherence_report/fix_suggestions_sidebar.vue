@@ -178,7 +178,11 @@ export default {
           </gl-sprintf>
         </div>
         <span v-for="framework in project.complianceFrameworks.nodes" :key="framework.id">
-          <framework-badge :framework="framework" show-edit class="gl-display-inline" />
+          <framework-badge
+            :framework="framework"
+            show-edit
+            class="gl-display-inline-block gl-mt-3 gl-mr-2"
+          />
         </span>
       </div>
     </template>

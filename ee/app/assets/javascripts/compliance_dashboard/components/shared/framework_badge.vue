@@ -21,6 +21,11 @@ export default {
       required: false,
       default: true,
     },
+    showPopover: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
     closeable: {
       type: Boolean,
       required: false,
@@ -63,7 +68,7 @@ export default {
 </script>
 <template>
   <div ref="badge">
-    <gl-popover ref="popover" :target="() => $refs.label">
+    <gl-popover v-if="showPopover" ref="popover" :target="() => $refs.label">
       <h5 v-if="framework.name" class="gl-text-left">{{ framework.name }}</h5>
       <p v-if="framework.description" class="gl-text-left">{{ framework.description }}</p>
       <div v-if="showEdit" class="gl-text-left">
@@ -84,7 +89,7 @@ export default {
         :background-color="framework.color"
         :title="frameworkName"
         :show-close-button="closeable"
-        class="gl-md-max-w-26 gl-mt-3"
+        class="gl-md-max-w-26"
         @close="$emit('close')"
       />
     </span>
