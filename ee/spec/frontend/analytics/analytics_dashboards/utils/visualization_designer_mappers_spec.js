@@ -139,6 +139,44 @@ describe('visualization_designer_mappers', () => {
           });
         });
       });
+
+      describe('with custom event names filters', () => {
+        it('maps values correctly', () => {
+          const query = {
+            measures: ['TrackedEvents.count'],
+            filters: [
+              {
+                member: 'TrackedEvents.customEventName',
+                operator: 'equals',
+                values: ['custom_event', 'another_custom_event'],
+              },
+            ],
+          };
+          expect(mapQueryToTokenValues(query)).toStrictEqual([
+            {
+              type: 'measure',
+              value: {
+                data: 'TrackedEvents.count',
+                operator: '=',
+              },
+            },
+            {
+              type: 'customEventName',
+              value: {
+                data: 'custom_event',
+                operator: '=',
+              },
+            },
+            {
+              type: 'customEventName',
+              value: {
+                data: 'another_custom_event',
+                operator: '=',
+              },
+            },
+          ]);
+        });
+      });
     });
   });
 
@@ -174,6 +212,13 @@ describe('visualization_designer_mappers', () => {
         operator: '=',
       },
     };
+    const createCustomEventNameToken = (eventName) => ({
+      type: 'customEventName',
+      value: {
+        data: eventName,
+        operator: '=',
+      },
+    });
 
     it('returns the default empty query when no token values are provided', () => {
       expect(mapTokenValuesToQuery([], availableTokens)).toEqual({});
@@ -302,6 +347,25 @@ describe('visualization_designer_mappers', () => {
             expect(mapTokenValuesToQuery(tokenValues, availableTokens)).toEqual({
               measures: ['Sessions.count'],
               dimensions: ['Sessions.osName'],
+            });
+          });
+        });
+
+        describe('with custom event names', () => {
+          it('maps valid custom event name tokens to the query filter', () => {
+            const tokenValues = [
+              createCustomEventNameToken('custom_event'),
+              createCustomEventNameToken('another_custom_event'),
+            ];
+
+            expect(mapTokenValuesToQuery(tokenValues, availableTokens)).toStrictEqual({
+              filters: [
+                {
+                  member: 'TrackedEvents.customEventName',
+                  operator: 'equals',
+                  values: ['custom_event', 'another_custom_event'],
+                },
+              ],
             });
           });
         });

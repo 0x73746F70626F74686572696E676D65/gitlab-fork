@@ -232,3 +232,13 @@ export const PANEL_TROUBLESHOOTING_URL = helpPagePath(
 export const MEASURE = 'measure';
 export const DIMENSION = 'dimension';
 export const TIME_DIMENSION = 'timeDimension';
+export const CUSTOM_EVENT_NAME = 'customEventName';
+
+export const CUSTOM_EVENT_NAME_MEMBER = `${EVENTS_TABLE_NAME}.${CUSTOM_EVENT_NAME}`;
+
+export const CUBE_OPERATOR_EQUALS = 'equals';
+
+export const CUSTOM_EVENT_FILTER_SUPPORTED_MEASURES = [
+  `${EVENTS_TABLE_NAME}.count`,
+  `${EVENTS_TABLE_NAME}.uniqueUsersCount`,
+];

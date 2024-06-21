@@ -39992,6 +39992,9 @@ msgstr ""
 msgid "ProductAnalytics|Current month to date"
 msgstr ""
 
+msgid "ProductAnalytics|Custom event name"
+msgstr ""
+
 msgid "ProductAnalytics|Details on how to configure product analytics to collect data."
 msgstr ""
 

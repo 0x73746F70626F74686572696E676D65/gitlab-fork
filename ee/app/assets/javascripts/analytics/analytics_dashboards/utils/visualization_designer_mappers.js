@@ -1,4 +1,11 @@
-import { MEASURE, DIMENSION, TIME_DIMENSION } from '../constants';
+import {
+  MEASURE,
+  DIMENSION,
+  TIME_DIMENSION,
+  CUSTOM_EVENT_NAME,
+  CUSTOM_EVENT_NAME_MEMBER,
+  CUBE_OPERATOR_EQUALS,
+} from '../constants';
 
 /**
  * Given a timeDimension CubeJS query property, map it to a string value which can be used by gl-filtered-search
@@ -34,6 +41,24 @@ function createToken(type, value) {
   };
 }
 
+function getFilterTokenValues(tokenValues) {
+  const filters = [];
+
+  const customEventNames = tokenValues
+    .filter((token) => token.type === CUSTOM_EVENT_NAME)
+    .map((token) => token.value.data);
+
+  if (customEventNames.length > 0) {
+    filters.push({
+      member: CUSTOM_EVENT_NAME_MEMBER,
+      operator: CUBE_OPERATOR_EQUALS,
+      values: customEventNames,
+    });
+  }
+
+  return filters;
+}
+
 export function mapQueryToTokenValues(query) {
   const values = [];
 
@@ -53,6 +78,14 @@ export function mapQueryToTokenValues(query) {
     );
   }
 
+  if (query?.filters?.length > 0) {
+    const customEventNames = query.filters
+      .filter((f) => f.member === CUSTOM_EVENT_NAME_MEMBER)
+      .flatMap((f) => f.values);
+
+    values.push(...customEventNames.map((e) => createToken(CUSTOM_EVENT_NAME, e)));
+  }
+
   return values;
 }
 
@@ -62,10 +95,13 @@ export function mapTokenValuesToQuery(tokenValues, availableTokens) {
   const timeDimensions = getValidTokenValues(tokenValues, availableTokens, TIME_DIMENSION).map(
     mapTimeDimensionValueToQuery,
   );
+  // Filters are free text so we don't match against availableTokens
+  const filters = getFilterTokenValues(tokenValues);
 
   return {
     ...(measures.length > 0 && { measures }),
     ...(dimensions.length > 0 && { dimensions }),
     ...(timeDimensions.length > 0 && { timeDimensions }),
+    ...(filters.length > 0 && { filters }),
   };
 }

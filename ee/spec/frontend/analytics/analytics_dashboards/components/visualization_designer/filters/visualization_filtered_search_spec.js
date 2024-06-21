@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { GlFilteredSearch } from '@gitlab/ui';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -249,6 +250,98 @@ describe('ProductAnalyticsVisualizationFilteredSearch', () => {
               },
             ]);
           });
+        });
+      });
+
+      describe('and a custom event name filter is added', () => {
+        const customEventQuery = {
+          measures: ['TrackedEvents.count'],
+          filters: [
+            {
+              member: 'TrackedEvents.customEventName',
+              operator: 'equals',
+              values: ['custom_event'],
+            },
+          ],
+        };
+
+        beforeEach(() => {
+          wrapper.setProps({
+            query: { ...customEventQuery },
+          });
+        });
+
+        it('updates the filtered search component value with the custom event names', () => {
+          expect(findFilteredSearch().props('value')).toContainEqual({
+            type: 'customEventName',
+            value: {
+              data: 'custom_event',
+              operator: '=',
+            },
+          });
+        });
+
+        describe('and the measure is changed from tracked events', () => {
+          beforeEach(() => {
+            wrapper.setProps({
+              query: {
+                ...customEventQuery,
+                measures: ['Sessions.count'],
+              },
+            });
+          });
+
+          it('removes the custom event name token from the filtered search component value', () => {
+            expect(findFilteredSearch().props('value')).toStrictEqual([
+              {
+                type: 'measure',
+                value: {
+                  data: 'Sessions.count',
+                  operator: '=',
+                },
+              },
+            ]);
+          });
+        });
+
+        describe('and the measure is removed', () => {
+          beforeEach(() => {
+            wrapper.setProps({
+              query: {
+                ...customEventQuery,
+                measures: [],
+              },
+            });
+          });
+
+          it('empties the filtered search component value', () => {
+            expect(findFilteredSearch().props('value')).toStrictEqual([]);
+          });
+        });
+      });
+
+      describe('custom event name filter supported measures', () => {
+        it.each`
+          measure                              | supported
+          ${'TrackedEvents.count'}             | ${true}
+          ${'TrackedEvents.uniqueUsersCount'}  | ${true}
+          ${'TrackedEvents.linkClicksCount'}   | ${false}
+          ${'Sessions.count'}                  | ${false}
+          ${'ReturningUsers.allSessionsCount'} | ${false}
+        `('when measure is $measure, support is $supported', async ({ measure, supported }) => {
+          wrapper.setProps({ query: { measures: [measure] } });
+
+          await nextTick();
+
+          const availableTokenTitles = findFilteredSearch()
+            .props('availableTokens')
+            .map(({ title }) => title);
+
+          if (supported) {
+            expect(availableTokenTitles).toContain('Custom event name');
+          } else {
+            expect(availableTokenTitles).not.toContain('Custom event name');
+          }
         });
       });
     });
