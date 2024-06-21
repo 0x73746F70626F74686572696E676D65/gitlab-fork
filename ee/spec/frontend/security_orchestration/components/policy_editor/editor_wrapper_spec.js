@@ -5,6 +5,7 @@ import EditorWrapper from 'ee/security_orchestration/components/policy_editor/ed
 import PipelineExecutionPolicyEditor from 'ee/security_orchestration/components/policy_editor/pipeline_execution/editor_component.vue';
 import ScanExecutionPolicyEditor from 'ee/security_orchestration/components/policy_editor/scan_execution/editor_component.vue';
 import ScanResultPolicyEditor from 'ee/security_orchestration/components/policy_editor/scan_result/editor_component.vue';
+import VulnerabilityManagementPolicyEditor from 'ee/security_orchestration/components/policy_editor/vulnerability_management/editor_component.vue';
 import {
   DEFAULT_ASSIGNED_POLICY_PROJECT,
   NAMESPACE_TYPES,
@@ -19,6 +20,8 @@ describe('EditorWrapper component', () => {
     wrapper.findComponent(PipelineExecutionPolicyEditor);
   const findScanExecutionPolicyEditor = () => wrapper.findComponent(ScanExecutionPolicyEditor);
   const findScanResultPolicyEditor = () => wrapper.findComponent(ScanResultPolicyEditor);
+  const findVulnerabilityManagementPolicyEditor = () =>
+    wrapper.findComponent(VulnerabilityManagementPolicyEditor);
 
   const factory = ({ provide = {}, propsData = {} } = {}) => {
     wrapper = shallowMountExtended(EditorWrapper, {
@@ -70,10 +73,11 @@ describe('EditorWrapper component', () => {
       });
 
       it.each`
-        policyTypeId                                             | findComponent
-        ${POLICY_TYPE_COMPONENT_OPTIONS.pipelineExecution.value} | ${findPipelineExecutionPolicyEditor}
-        ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}     | ${findScanExecutionPolicyEditor}
-        ${POLICY_TYPE_COMPONENT_OPTIONS.approval.value}          | ${findScanResultPolicyEditor}
+        policyTypeId                                                   | findComponent
+        ${POLICY_TYPE_COMPONENT_OPTIONS.pipelineExecution.value}       | ${findPipelineExecutionPolicyEditor}
+        ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value}           | ${findScanExecutionPolicyEditor}
+        ${POLICY_TYPE_COMPONENT_OPTIONS.approval.value}                | ${findScanResultPolicyEditor}
+        ${POLICY_TYPE_COMPONENT_OPTIONS.vulnerabilityManagement.value} | ${findVulnerabilityManagementPolicyEditor}
       `(
         'renders the policy editor of type $policyType when selected',
         async ({ findComponent, policyTypeId }) => {

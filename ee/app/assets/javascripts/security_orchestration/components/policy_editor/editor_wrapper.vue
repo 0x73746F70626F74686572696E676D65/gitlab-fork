@@ -5,6 +5,7 @@ import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import PipelineExecutionPolicyEditor from './pipeline_execution/editor_component.vue';
 import ScanExecutionPolicyEditor from './scan_execution/editor_component.vue';
 import ScanResultPolicyEditor from './scan_result/editor_component.vue';
+import VulnerabilityManagementPolicyEditor from './vulnerability_management/editor_component.vue';
 
 export default {
   components: {
@@ -14,6 +15,7 @@ export default {
     PipelineExecutionPolicyEditor,
     ScanExecutionPolicyEditor,
     ScanResultPolicyEditor,
+    VulnerabilityManagementPolicyEditor,
   },
   inject: {
     assignedPolicyProject: { default: null },
