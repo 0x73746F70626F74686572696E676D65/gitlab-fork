@@ -1,6 +1,14 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
-import { CRITICAL, HIGH, MEDIUM, LOW, INFO, UNKNOWN } from '~/vulnerabilities/constants';
+import {
+  CRITICAL,
+  HIGH,
+  MEDIUM,
+  LOW,
+  INFO,
+  UNKNOWN,
+  SEVERITY_COUNT_LIMIT,
+} from '~/vulnerabilities/constants';
 import { s__ } from '~/locale';
 import { SEVERITY_CLASS_NAME_MAP } from './constants';
 
@@ -30,22 +38,49 @@ export default {
       validate: (highlights) =>
         [CRITICAL, HIGH].every((requiredField) => typeof highlights[requiredField] !== 'undefined'),
     },
+    capped: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
     criticalSeverity() {
-      return this.highlights[CRITICAL];
+      return this.formattedCounts(this.highlights[CRITICAL]);
     },
     highSeverity() {
-      return this.highlights[HIGH];
+      return this.formattedCounts(this.highlights[HIGH]);
     },
     otherSeverity() {
       if (typeof this.highlights.other !== 'undefined') {
-        return this.highlights.other;
+        return this.formattedCounts(this.highlights.other);
       }
 
-      return Object.keys(this.highlights).reduce((total, key) => {
-        return [MEDIUM, LOW, INFO, UNKNOWN].includes(key) ? total + this.highlights[key] : total;
-      }, 0);
+      let totalCounts = 0;
+      let isCapped = false;
+
+      [MEDIUM, LOW, INFO, UNKNOWN].forEach((severity) => {
+        const count = this.highlights[severity];
+
+        if (count) {
+          totalCounts += count;
+        }
+
+        if (this.capped && count > SEVERITY_COUNT_LIMIT) {
+          isCapped = true;
+        }
+      });
+
+      return isCapped ? this.formattedCounts(totalCounts) : totalCounts;
+    },
+  },
+  methods: {
+    formattedCounts(count) {
+      if (this.capped) {
+        return count > SEVERITY_COUNT_LIMIT ? `${SEVERITY_COUNT_LIMIT}+` : count;
+      }
+
+      return count;
     },
   },
   cssClass: SEVERITY_CLASS_NAME_MAP,
@@ -55,7 +90,7 @@ export default {
 <template>
   <div class="gl-font-sm">
     <strong v-if="showSingleSeverity" :class="$options.cssClass[showSingleSeverity]">{{
-      highlights[showSingleSeverity]
+      formattedCounts(highlights[showSingleSeverity])
     }}</strong>
     <gl-sprintf v-else :message="$options.i18n.highlights">
       <template #critical="{ content }"
