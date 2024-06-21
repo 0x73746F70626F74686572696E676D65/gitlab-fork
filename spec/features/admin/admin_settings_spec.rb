@@ -670,7 +670,7 @@ RSpec.describe 'Admin updates settings', feature_category: :shared do
       end
 
       it 'change Prometheus settings' do
-        page.within('.as-prometheus') do
+        within_testid('prometheus-settings') do
           check 'Enable GitLab Prometheus metrics endpoint'
           click_button 'Save changes'
         end
@@ -682,7 +682,7 @@ RSpec.describe 'Admin updates settings', feature_category: :shared do
       it 'change Performance bar settings' do
         group = create(:group)
 
-        page.within('.as-performance-bar') do
+        within_testid('performance-bar-settings-content') do
           check 'Allow non-administrators access to the performance bar'
           fill_in 'Allow access to members of the following group', with: group.path
           click_on 'Save changes'
@@ -692,7 +692,7 @@ RSpec.describe 'Admin updates settings', feature_category: :shared do
         expect(find_field('Allow non-administrators access to the performance bar')).to be_checked
         expect(find_field('Allow access to members of the following group').value).to eq group.path
 
-        page.within('.as-performance-bar') do
+        within_testid('performance-bar-settings-content') do
           uncheck 'Allow non-administrators access to the performance bar'
           click_on 'Save changes'
         end
