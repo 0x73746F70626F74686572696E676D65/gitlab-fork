@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
   let_it_be(:user) { create(:user) }
 
-  let(:options) { {} }
+  let(:action_name) { :test }
+  let(:options) { { ai_action: action_name } }
 
   subject { described_class.new(user, resource, options) }
 
@@ -15,15 +16,6 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
 
       expect(result).to be_error
       expect(result.message).to eq(described_class::INVALID_MESSAGE)
-    end
-  end
-
-  shared_examples 'returns a missing resource error' do
-    it 'returns a missing resource error' do
-      result = subject.execute
-
-      expect(result).to be_error
-      expect(result.message).to eq(described_class::MISSING_RESOURCE_ID_MESSAGE)
     end
   end
 
@@ -52,34 +44,6 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
     end
   end
 
-  shared_examples 'success when implemented with slash command' do
-    subject do
-      Class.new(described_class) do
-        def perform
-          schedule_completion_worker
-        end
-      end.new(user, resource, options)
-    end
-
-    it_behaves_like 'schedules completion worker' do
-      let(:action_name) { "/explain def" }
-    end
-  end
-
-  shared_examples 'success when implemented with invalid slash command' do
-    subject do
-      Class.new(described_class) do
-        def perform
-          schedule_completion_worker
-        end
-      end.new(user, resource, options)
-    end
-
-    it_behaves_like 'schedules completion worker' do
-      let(:action_name) { "/where can credentials be set" }
-    end
-  end
-
   shared_examples 'authorizing a resource' do
     let(:authorizer_response) { instance_double(Gitlab::Llm::Utils::Authorizer::Response, allowed?: allowed) }
 
@@ -105,6 +69,11 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
     let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:project) { create(:project, group: group) }
     let_it_be(:resource) { create(:issue, project: project) }
+
+    before do
+      stub_const('::Gitlab::Llm::Utils::AiFeaturesCatalogue::LIST',
+        { action_name => { self_managed: false } })
+    end
 
     context 'when user does not have access to AI features' do
       it_behaves_like 'returns an error'
@@ -165,47 +134,6 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
 
           it_behaves_like 'success when implemented'
         end
-
-        context 'when require_resource_id FF is enabled' do
-          context 'when resource is missing' do
-            let(:resource) { nil }
-            let(:options) { { ai_action: "/explain def" } }
-
-            before do
-              stub_feature_flags(require_resource_id: true)
-            end
-
-            it_behaves_like 'returns a missing resource error'
-          end
-
-          context 'when non slash command request starts with a slash' do
-            let(:resource) { nil }
-            let(:options) { { ai_action: "/where can credentials be set" } }
-
-            before do
-              stub_feature_flags(require_resource_id: true)
-            end
-
-            it_behaves_like 'success when implemented with invalid slash command'
-          end
-
-          context 'when non slash command request is received' do
-            let(:resource) { nil }
-
-            before do
-              stub_feature_flags(require_resource_id: true)
-            end
-
-            it_behaves_like 'success when implemented'
-          end
-        end
-
-        context 'when resource is missing and require_resource_id FF is disabled, slash command request ' do
-          let(:resource) { nil }
-          let(:options) { { ai_action: "/explain def" } }
-
-          it_behaves_like 'success when implemented with slash command'
-        end
       end
     end
   end
@@ -214,6 +142,13 @@ RSpec.describe Llm::BaseService, feature_category: :ai_abstraction_layer do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, group: group) }
     let_it_be(:resource) { create(:issue, project: project) }
+
+    before do
+      stub_const(
+        '::Gitlab::Llm::Utils::AiFeaturesCatalogue::LIST',
+        { action_name => { self_managed: true } }
+      )
+    end
 
     context 'when user has no access' do
       it_behaves_like 'returns an error'

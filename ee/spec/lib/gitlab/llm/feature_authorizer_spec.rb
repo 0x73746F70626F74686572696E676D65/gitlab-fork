@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Llm::FeatureAuthorizer, feature_category: :ai_abstraction_layer do
   let_it_be_with_reload(:group) { create(:group) }
 
-  let(:feature_name) { :chat }
+  let(:feature_name) { :summarize_review }
   let(:instance) do
     described_class.new(
       container: group,

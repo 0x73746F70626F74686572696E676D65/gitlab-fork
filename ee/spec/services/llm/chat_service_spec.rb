@@ -10,6 +10,7 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
   let(:content) { "Summarize issue" }
   let(:default_options) { { content: content } }
   let(:options) { default_options }
+  let(:action_name) { :chat }
 
   shared_examples_for 'track internal event for Duo Chat' do
     it_behaves_like 'internal event tracking' do
@@ -17,6 +18,14 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
       let(:category) { described_class.name }
 
       subject(:track_event) { described_class.new(user, resource, options).execute }
+    end
+  end
+
+  shared_examples 'returns a missing resource error' do
+    it 'returns a missing resource error' do
+      expect(Llm::CompletionWorker).not_to receive(:perform_for)
+      expect(subject.execute).to be_error
+      expect(subject.execute.message).to eq(described_class::MISSING_RESOURCE_ID_MESSAGE)
     end
   end
 
@@ -117,6 +126,51 @@ RSpec.describe Llm::ChatService, feature_category: :duo_chat do
             expect(Llm::CompletionWorker).not_to receive(:perform_for)
             expect(subject.execute).to be_error
           end
+        end
+      end
+
+      context 'when require_resource_id FF is enabled' do
+        context 'when resource is missing' do
+          let(:resource) { nil }
+          let(:content) { "/explain def" }
+
+          before do
+            stub_feature_flags(require_resource_id: true)
+          end
+
+          it_behaves_like 'returns a missing resource error'
+        end
+
+        context 'when non slash command request starts with a slash' do
+          let(:resource) { nil }
+          let(:content) { "/where can credentials be set" }
+
+          before do
+            stub_feature_flags(require_resource_id: true)
+          end
+
+          it_behaves_like 'schedules completion worker'
+        end
+
+        context 'when non slash command request is received' do
+          let(:resource) { nil }
+
+          before do
+            stub_feature_flags(require_resource_id: true)
+          end
+
+          it_behaves_like 'schedules completion worker'
+        end
+
+        context 'when resource is missing and require_resource_id FF is disabled, slash command request' do
+          let(:resource) { nil }
+          let(:content) { "/explain def" }
+
+          before do
+            stub_feature_flags(require_resource_id: false)
+          end
+
+          it_behaves_like 'schedules completion worker'
         end
       end
     end

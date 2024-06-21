@@ -94,15 +94,15 @@ RSpec.describe Gitlab::Llm::StageCheck, feature_category: :ai_abstraction_layer 
       let_it_be_with_reload(:project) { create(:project, group: group) }
 
       where(:container, :feature_type, :instance_experiment_features_enabled, :result) do
-        ref(:group)   | :experimental | true  | false
+        ref(:group)   | :experimental | true  | true
         ref(:group)   | :experimental | false | false
-        ref(:group)   | :beta         | true  | false
+        ref(:group)   | :beta         | true  | true
         ref(:group)   | :beta         | false | false
         ref(:group)   | :ga           | true  | true
         ref(:group)   | :ga           | false | true
-        ref(:project) | :experimental | true  | false
+        ref(:project) | :experimental | true  | true
         ref(:project) | :experimental | false | false
-        ref(:project) | :beta         | true  | false
+        ref(:project) | :beta         | true  | true
         ref(:project) | :beta         | false | false
         ref(:project) | :ga           | true  | true
         ref(:project) | :ga           | false | true

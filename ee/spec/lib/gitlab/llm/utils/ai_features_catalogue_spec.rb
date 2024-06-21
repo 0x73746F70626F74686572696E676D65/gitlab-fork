@@ -39,4 +39,18 @@ RSpec.describe Gitlab::Llm::Utils::AiFeaturesCatalogue, feature_category: :ai_ab
         .not_to include(nil)
     end
   end
+
+  describe '#for_saas' do
+    it 'returns Saas-only actions' do
+      expect(described_class.for_saas.values.pluck(:self_managed))
+        .not_to include(true)
+    end
+  end
+
+  describe '#for_sm' do
+    it 'returns sm actions' do
+      expect(described_class.for_sm.values.pluck(:self_managed))
+        .not_to include(false)
+    end
+  end
 end

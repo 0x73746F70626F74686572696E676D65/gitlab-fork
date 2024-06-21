@@ -4,6 +4,8 @@ module Llm
   class ChatService < BaseService
     include Gitlab::InternalEventsTracking
 
+    MISSING_RESOURCE_ID_MESSAGE = 'ResourceId is required for slash command request.'
+
     private
 
     def ai_action
@@ -11,6 +13,11 @@ module Llm
     end
 
     def perform
+      if Feature.enabled?(:require_resource_id, @group) && invalid_slash_command_request?
+        logger.info(message: "Returning from Service due to missing resource id. Associated group: #{@group}")
+        return error(MISSING_RESOURCE_ID_MESSAGE)
+      end
+
       if options[:agent_version_id]
         agent_version = Ai::AgentVersion.find_by_id(options[:agent_version_id].model_id)
         return error(agent_not_found_message) if agent_version.nil?
@@ -41,6 +48,10 @@ module Llm
 
     def ai_integration_enabled?
       ::Feature.enabled?(:ai_duo_chat_switch, type: :ops)
+    end
+
+    def invalid_slash_command_request?
+      true if prompt_message.slash_command_prompt? && !prompt_message.resource.present?
     end
 
     def user_can_send_to_ai?

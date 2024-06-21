@@ -14,6 +14,10 @@ module Llm
 
     private
 
+    def ai_action
+      :ai_git_command
+    end
+
     def perform
       config = ::Gitlab::Llm::VertexAi::Configuration.new(
         model_config: ::Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat.new(user: user),

@@ -149,7 +149,6 @@ RSpec.describe Llm::Internal::CompletionService, :saas, feature_category: :ai_ab
 
       context 'when resource is nil' do
         let_it_be(:resource) { nil }
-        let(:ai_action_name) { :chat }
 
         it_behaves_like 'performs successfully'
       end
@@ -163,6 +162,22 @@ RSpec.describe Llm::Internal::CompletionService, :saas, feature_category: :ai_ab
 
         before do
           stub_feature_flags(ai_duo_chat_switch: true, ai_global_switch: false)
+        end
+
+        it_behaves_like 'performs successfully'
+      end
+
+      context 'when it is self-managed feature request' do
+        before do
+          stub_feature_flags(ai_duo_chat_switch: false, ai_global_switch: false)
+          stub_const(
+            "::Gitlab::Llm::Utils::AiFeaturesCatalogue::LIST",
+            summarize_comments: {
+              self_managed: true,
+              service_class: ::Gitlab::Llm::Completions::SummarizeAllOpenNotes,
+              prompt_class: nil
+            }
+          )
         end
 
         it_behaves_like 'performs successfully'
