@@ -12,7 +12,7 @@ module Arkose
     end
 
     def execute
-      return ServiceResponse.success unless send_truth_data?
+      return success(message: 'truth data is not applicable for user') unless send_truth_data?
 
       perform_request
     end
@@ -23,16 +23,16 @@ module Arkose
 
     def perform_request
       result = Arkose::TruthDataAuthorizationService.execute
-      return result unless result.success?
+      return error(result.message) unless result.success?
 
       token = result.payload[:token]
       headers = { 'Authorization' => "Bearer #{token}" }
 
       response = Gitlab::HTTP.perform_request(Net::HTTP::Post, TRUTH_DATA_API_ENDPOINT, body: body, headers: headers)
 
-      return ServiceResponse.success if response.code == HTTP::Status::OK
+      return success if response.code == HTTP::Status::OK
 
-      ServiceResponse.error(message: "Unable to send truth data. Response code: #{response.code}")
+      error("Unable to send truth data. Response code: #{response.code}")
     end
 
     def body
@@ -70,6 +70,30 @@ module Arkose
 
     def arkose_medium_risk?
       arkose_risk_band.casecmp('medium') == 0
+    end
+
+    def success(message: 'sent arkose truth data')
+      log_result(message: message, status: 'success')
+
+      ServiceResponse.success
+    end
+
+    def error(message)
+      log_result(message: message, status: 'failure')
+
+      ServiceResponse.error(message: message)
+    end
+
+    def log_result(message:, status:)
+      Gitlab::AppLogger.info(
+        message: message,
+        event: 'Arkose truth data',
+        status: status,
+        username: user.username,
+        arkose_session: arkose_session || 'none',
+        arkose_risk_band: arkose_risk_band || 'none',
+        is_legit: is_legit
+      )
     end
   end
 end
