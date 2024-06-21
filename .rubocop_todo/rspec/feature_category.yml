@@ -1651,7 +1651,6 @@ RSpec/FeatureCategory:
     - 'spec/graphql/resolvers/project_packages_resolver_spec.rb'
     - 'spec/graphql/resolvers/project_pipeline_resolver_spec.rb'
     - 'spec/graphql/resolvers/project_pipeline_schedules_resolver_spec.rb'
-    - 'spec/graphql/resolvers/project_pipeline_statistics_resolver_spec.rb'
     - 'spec/graphql/resolvers/project_pipelines_resolver_spec.rb'
     - 'spec/graphql/resolvers/project_resolver_spec.rb'
     - 'spec/graphql/resolvers/projects/fork_targets_resolver_spec.rb'

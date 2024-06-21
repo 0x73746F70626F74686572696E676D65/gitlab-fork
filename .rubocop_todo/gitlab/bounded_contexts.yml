@@ -349,7 +349,6 @@ Gitlab/BoundedContexts:
     - 'app/graphql/resolvers/project_packages_resolver.rb'
     - 'app/graphql/resolvers/project_pipeline_resolver.rb'
     - 'app/graphql/resolvers/project_pipeline_schedules_resolver.rb'
-    - 'app/graphql/resolvers/project_pipeline_statistics_resolver.rb'
     - 'app/graphql/resolvers/project_pipelines_resolver.rb'
     - 'app/graphql/resolvers/project_resolver.rb'
     - 'app/graphql/resolvers/projects_resolver.rb'
