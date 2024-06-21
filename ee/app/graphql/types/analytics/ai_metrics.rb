@@ -6,10 +6,16 @@ module Types
     class AiMetrics < BaseObject
       field :code_contributors_count, GraphQL::Types::Int,
         description: 'Number of code contributors.',
-        null: false
+        null: true
+      field :code_suggestions_accepted_count, GraphQL::Types::Int,
+        description: 'Total count of code suggestions accepted by code contributors.',
+        null: true
       field :code_suggestions_contributors_count, GraphQL::Types::Int,
         description: 'Number of code contributors who used GitLab Duo Code Suggestions features.',
-        null: false
+        null: true
+      field :code_suggestions_shown_count, GraphQL::Types::Int,
+        description: 'Total count of code suggestions shown to code contributors.',
+        null: true
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::AiAnalytics::CodeSuggestionUsageRateService, feature_category: :value_stream_management do
+RSpec.describe Analytics::AiAnalytics::CodeSuggestionUsageService, feature_category: :value_stream_management do
   subject(:service_response) do
     described_class.new(current_user, namespace: container, from: from, to: to).execute
   end
@@ -46,18 +46,35 @@ RSpec.describe Analytics::AiAnalytics::CodeSuggestionUsageRateService, feature_c
           expect(service_response).to be_success
           expect(service_response.payload).to eq({
             code_contributors_count: 0,
-            code_suggestions_contributors_count: 0
+            code_suggestions_contributors_count: 0,
+            code_suggestions_accepted_count: 0,
+            code_suggestions_shown_count: 0
           })
+        end
+      end
+
+      context 'with only few fields selected' do
+        it 'returns only selected fields' do
+          response = described_class.new(current_user,
+            namespace: container,
+            from: from,
+            to: to,
+            fields: %i[code_contributors_count]).execute
+
+          expect(response.payload).to match(code_contributors_count: 0)
         end
       end
 
       context 'with data' do
         before do
           clickhouse_fixture(:code_suggestion_usages, [
-            { user_id: user1.id, event: 1, timestamp: to - 3.days },
-            { user_id: user1.id, event: 1, timestamp: to - 4.days },
-            { user_id: user2.id, event: 1, timestamp: to - 2.days },
-            { user_id: unmatched_user.id, event: 1, timestamp: to - 2.days }
+            { user_id: user1.id, event: 2, timestamp: to - 3.days }, # shown
+            { user_id: user1.id, event: 3, timestamp: to - 3.days + 1.second }, # accepted
+            { user_id: user1.id, event: 2, timestamp: to - 4.days }, # shown
+            { user_id: user2.id, event: 2, timestamp: to - 2.days }, # shown
+            { user_id: user2.id, event: 2, timestamp: to - 2.days }, # shown
+            { user_id: unmatched_user.id, event: 2, timestamp: to - 2.days }, # shown
+            { user_id: unmatched_user.id, event: 3, timestamp: to - 2.days + 1.second } # accepted
           ])
 
           insert_events_into_click_house([
@@ -68,11 +85,13 @@ RSpec.describe Analytics::AiAnalytics::CodeSuggestionUsageRateService, feature_c
           ])
         end
 
-        it 'returns percentage of matched code contributors who used AI' do
+        it 'returns matched code contributors AI usage stats' do
           expect(service_response).to be_success
           expect(service_response.payload).to match(
             code_contributors_count: 3,
-            code_suggestions_contributors_count: 2
+            code_suggestions_contributors_count: 2,
+            code_suggestions_accepted_count: 1,
+            code_suggestions_shown_count: 4
           )
         end
       end

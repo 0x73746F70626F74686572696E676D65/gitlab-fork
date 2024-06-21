@@ -18,13 +18,24 @@ class Gitlab::Seeder::AiUsageStats # rubocop:disable Style/ClassAndModuleChildre
 
   attr_reader :project
 
+  def self.sync_to_click_house
+    ClickHouse::DumpAllWriteBuffersCronWorker.new.buffered_tables.each do |table_name|
+      ClickHouse::DumpWriteBufferWorker.new.perform(table_name)
+    end
+
+    # Re-sync data with ClickHouse
+    ClickHouse::SyncCursor.update_cursor_for('events', 0)
+    Gitlab::ExclusiveLease.skipping_transaction_check do
+      ClickHouse::EventsSyncWorker.new.perform
+    end
+  end
+
   def initialize(project)
     @project = project
   end
 
   def seed!
     create_ai_usage_data
-    sync_to_click_house
   end
 
   def create_ai_usage_data
@@ -41,25 +52,18 @@ class Gitlab::Seeder::AiUsageStats # rubocop:disable Style/ClassAndModuleChildre
       end
 
       AI_EVENT_COUNT_SAMPLE.times do
-        event_data = {
-          user_id: user.id,
-          event: Ai::CodeSuggestionsUsage::EVENTS['code_suggestion_shown_in_ide'],
-          timestamp: rand(TIME_PERIOD_DAYS).days.ago
-        }
-        ClickHouse::WriteBuffer.add(Ai::CodeSuggestionsUsage.table_name, event_data)
+        Ai::CodeSuggestionsUsage.new(
+          user: user,
+          event: 'code_suggestion_shown_in_ide',
+          timestamp: rand(TIME_PERIOD_DAYS).days.ago).store
+
+        next unless rand(100) < 35 # 35% acceptance rate
+
+        Ai::CodeSuggestionsUsage.new(
+          user: user,
+          event: 'code_suggestion_accepted_in_ide',
+          timestamp: rand(TIME_PERIOD_DAYS).days.ago + 2.seconds).store
       end
-    end
-  end
-
-  def sync_to_click_house
-    ClickHouse::DumpAllWriteBuffersCronWorker.new.buffered_tables.each do |table_name|
-      ClickHouse::DumpWriteBufferWorker.perform_inline(table_name)
-    end
-
-    # Re-sync data with ClickHouse
-    ClickHouse::SyncCursor.update_cursor_for('events', 0)
-    Gitlab::ExclusiveLease.skipping_transaction_check do
-      ClickHouse::EventsSyncWorker.new.perform
     end
   end
 end
@@ -71,6 +75,7 @@ Gitlab::Seeder.quiet do
     puts "
     WARNING:
     To use this seed file, you need to make sure that ClickHouse is configured and enabled with your GDK.
+    Please check `doc/development/database/clickhouse/clickhouse_within_gitlab.md` for setup instructions.
     Once you've configured the config/click_house.yml file, run the migrations:
 
     > bundle exec rake gitlab:clickhouse:migrate
@@ -87,7 +92,9 @@ Gitlab::Seeder.quiet do
 
   projects.find_each do |project|
     seeder = Gitlab::Seeder::AiUsageStats.new(project)
-    seeder.seed!
+    seeder.create_ai_usage_data
   end
+
+  Gitlab::Seeder::AiUsageStats.sync_to_click_house
 end
 # rubocop:enable Rails/Output

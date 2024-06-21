@@ -194,6 +194,7 @@ module EE
           null: true,
           description: 'AI-related metrics.',
           resolver: ::Resolvers::Analytics::AiMetricsResolver,
+          extras: [:lookahead],
           alpha: { milestone: '16.11' }
 
         field :project_compliance_standards_adherence,
