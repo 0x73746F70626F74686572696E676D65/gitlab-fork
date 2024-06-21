@@ -16,6 +16,8 @@ import {
   MEASURE,
   DIMENSION,
   TIME_DIMENSION,
+  CUSTOM_EVENT_NAME,
+  CUSTOM_EVENT_FILTER_SUPPORTED_MEASURES,
 } from '../../../constants';
 
 export default {
@@ -85,30 +87,47 @@ export default {
         token: GlFilteredSearchToken,
       };
     },
+    customEventNameToken() {
+      return {
+        title: s__('ProductAnalytics|Custom event name'),
+        type: CUSTOM_EVENT_NAME,
+        operators: OPERATORS_IS,
+        token: GlFilteredSearchToken,
+      };
+    },
     availableTokens() {
       const tokens = [this.measureToken];
+
       if (this.schemaDimensions.length > 0) {
         tokens.push(this.dimensionToken);
       }
       if (this.schemaTimeDimension) {
         tokens.push(this.timeDimensionToken);
       }
-
+      if (this.customEventFilterSupported) {
+        tokens.push(this.customEventNameToken);
+      }
       return tokens;
     },
-    selectedSchema() {
+    selectedMeasure() {
       if (this.value.length < 1) return null;
       const measureToken = this.value.find((token) => token.type === MEASURE);
 
       if (!measureToken) return null;
 
-      return getMetricSchema(measureToken.value.data);
+      return measureToken.value.data;
+    },
+    selectedSchema() {
+      return getMetricSchema(this.selectedMeasure);
     },
     schemaDimensions() {
       return getDimensionsForSchema(this.selectedSchema, this.availableDimensions);
     },
     schemaTimeDimension() {
       return getTimeDimensionForSchema(this.selectedSchema, this.availableTimeDimensions);
+    },
+    customEventFilterSupported() {
+      return CUSTOM_EVENT_FILTER_SUPPORTED_MEASURES.includes(this.selectedMeasure);
     },
   },
   watch: {
@@ -119,6 +138,7 @@ export default {
       const measures = value.filter((token) => token.type === MEASURE);
       const dimensions = value.filter((token) => token.type === DIMENSION);
       const timeDimensions = value.filter((token) => token.type === TIME_DIMENSION);
+      const customEventNames = value.filter((token) => token.type === CUSTOM_EVENT_NAME);
 
       // Remove dangling dimensions/timeDimensions after dependent tokens removed
       if (measures.length < 1 && dimensions.length > 0) {
@@ -126,6 +146,10 @@ export default {
       }
       if (measures.length < 1 && timeDimensions.length > 0) {
         this.value = this.value.filter((token) => token.type !== TIME_DIMENSION);
+      }
+      // Remove custom event name token if the measure is not supported
+      if (!this.customEventFilterSupported && customEventNames.length > 0) {
+        this.value = this.value.filter((token) => token.type !== CUSTOM_EVENT_NAME);
       }
     },
   },
