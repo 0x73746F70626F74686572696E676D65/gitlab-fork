@@ -4,7 +4,7 @@ import MergeTrainSvg from '@gitlab/svgs/dist/illustrations/train-sm.svg?url';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 
 export default {
-  name: 'FeedbackBanner',
+  name: 'MergeTrainsFeedbackBanner',
   components: {
     GlBanner,
     LocalStorageSync,
@@ -20,11 +20,12 @@ export default {
     },
   },
   MergeTrainSvg,
+  MERGE_TRAINS_STORAGE_KEY: 'merge_trains_viz_feedback_banner',
 };
 </script>
 
 <template>
-  <local-storage-sync v-model="bannerClosed" storage-key="merge_trains_viz_feedback_banner">
+  <local-storage-sync v-model="bannerClosed" :storage-key="$options.MERGE_TRAINS_STORAGE_KEY">
     <gl-banner
       v-if="!bannerClosed"
       class="gl-mt-4"

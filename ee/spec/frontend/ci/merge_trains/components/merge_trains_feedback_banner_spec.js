@@ -1,13 +1,13 @@
 import { GlBanner } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import FeedbackBanner from 'ee/ci/merge_trains/components/feedback_banner.vue';
+import MergeTrainsFeedbackBanner from 'ee/ci/merge_trains/components/merge_trains_feedback_banner.vue';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 
 describe('FeedbackBanner', () => {
   let wrapper;
 
   const createComponent = () => {
-    wrapper = shallowMount(FeedbackBanner);
+    wrapper = shallowMount(MergeTrainsFeedbackBanner);
   };
 
   const findBanner = () => wrapper.findComponent(GlBanner);
@@ -25,8 +25,12 @@ describe('FeedbackBanner', () => {
     });
   });
 
+  it('sets localStorage storageKey to the expected key', () => {
+    expect(findLocalStorageSync().props('storageKey')).toBe('merge_trains_viz_feedback_banner');
+  });
+
   it('uses localStorage with default value as false', () => {
-    expect(findLocalStorageSync().props().value).toBe(false);
+    expect(findLocalStorageSync().props('value')).toBe(false);
   });
 
   describe('when the banner is dimsissed', () => {
@@ -39,7 +43,7 @@ describe('FeedbackBanner', () => {
     });
 
     it('updates localStorage value to true', () => {
-      expect(findLocalStorageSync().props().value).toBe(true);
+      expect(findLocalStorageSync().props('value')).toBe(true);
     });
   });
 });

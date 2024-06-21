@@ -28,8 +28,8 @@ export default {
 </script>
 
 <template>
-  <div class="gl-mt-5 gl-flex gl-items-center">
-    <span class="gl-mr-2">{{ s__('Pipelines|Filter by target branch') }}</span>
+  <div class="gl-flex gl-items-center gl-mt-3">
+    <span class="gl-mr-3">{{ s__('Pipelines|Filter by target branch') }}</span>
     <ref-selector
       :value="branch"
       :project-id="projectId"
