@@ -13436,6 +13436,9 @@ msgstr ""
 msgid "ComplianceFrameworks|Compliance framework created"
 msgstr ""
 
+msgid "ComplianceFrameworks|Compliance frameworks applied to %{projectName}"
+msgstr ""
+
 msgid "ComplianceFrameworks|Compliance frameworks that are linked to an active policy can't be deleted"
 msgstr ""
 
@@ -13476,6 +13479,9 @@ msgid "ComplianceFrameworks|Invalid format"
 msgstr ""
 
 msgid "ComplianceFrameworks|Linked"
+msgstr ""
+
+msgid "ComplianceFrameworks|Multiple frameworks"
 msgstr ""
 
 msgid "ComplianceFrameworks|Name"

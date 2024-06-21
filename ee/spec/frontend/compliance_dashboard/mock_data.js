@@ -36,7 +36,18 @@ export const createDefaultProjectsResponse = (projects) => ({
   },
 });
 
-export const createComplianceAdherence = (id, checkName) => ({
+const complianceFrameworksNodesMock = [
+  {
+    id: 'gid://gitlab/ComplianceManagement::Framework/1',
+    name: 'Example Framework',
+    description: 'asds',
+    color: '#0000ff',
+    __typename: 'ComplianceFramework',
+    default: true,
+  },
+];
+
+export const createComplianceAdherence = (id, checkName, complianceFrameworksNodes) => ({
   id: `gid://gitlab/Projects::ComplianceStandards::Adherence/${id}`,
   updatedAt: 'July 1, 2023',
   status: id % 2 === 0 ? 'SUCCESS' : 'FAIL',
@@ -47,16 +58,7 @@ export const createComplianceAdherence = (id, checkName) => ({
     name: 'Example Project',
     webUrl: 'example.com/groups/example-group/example-project',
     complianceFrameworks: {
-      nodes: [
-        {
-          id: 'gid://gitlab/ComplianceManagement::Framework/1',
-          name: 'Example Framework',
-          description: 'asds',
-          color: '#0000ff',
-          __typename: 'ComplianceFramework',
-          default: true,
-        },
-      ],
+      nodes: complianceFrameworksNodes,
     },
   },
 });
@@ -65,6 +67,7 @@ export const createComplianceAdherencesResponse = ({
   count = 1,
   checkName = 'PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR',
   pageInfo = {},
+  complianceFrameworksNodes = complianceFrameworksNodesMock,
 } = {}) => ({
   data: {
     group: {
@@ -74,7 +77,7 @@ export const createComplianceAdherencesResponse = ({
         __typename: 'ComplianceAdherenceConnection',
         nodes: Array(count)
           .fill(null)
-          .map((_, id) => createComplianceAdherence(id, checkName)),
+          .map((_, id) => createComplianceAdherence(id, checkName, complianceFrameworksNodes)),
         pageInfo: {
           endCursor: 'abc',
           hasNextPage: true,

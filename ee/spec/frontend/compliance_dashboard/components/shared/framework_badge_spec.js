@@ -88,6 +88,12 @@ describe('FrameworkBadge component', () => {
       expect(findLabel().props('title')).toEqual(complianceFramework.name);
     });
 
+    it('does not render the popover when showPopover prop is false', () => {
+      wrapper = createComponent({ framework: complianceFramework, showPopover: false });
+
+      expect(findTooltip().exists()).toBe(false);
+    });
+
     it('renders closeable label when closeable is true', () => {
       wrapper = createComponent({ framework: complianceFramework, closeable: true });
 

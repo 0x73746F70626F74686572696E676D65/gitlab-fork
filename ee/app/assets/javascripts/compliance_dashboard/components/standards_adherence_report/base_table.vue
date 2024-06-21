@@ -4,7 +4,7 @@ import { formatDate } from '~/lib/utils/datetime_utility';
 import { s__ } from '~/locale';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
 import getProjectComplianceStandardsAdherence from 'ee/compliance_dashboard/graphql/compliance_standards_adherence.query.graphql';
-import FrameworkBadge from '../shared/framework_badge.vue';
+import FrameworksInfo from '../shared/frameworks_info.vue';
 import Pagination from '../shared/pagination.vue';
 import { GRAPHQL_PAGE_SIZE } from '../../constants';
 import { isTopLevelGroup } from '../../utils';
@@ -27,7 +27,7 @@ export default {
     GlLoadingIcon,
     FixSuggestionsSidebar,
     Pagination,
-    FrameworkBadge,
+    FrameworksInfo,
   },
   inject: ['rootAncestorPath'],
   props: {
@@ -291,15 +291,13 @@ export default {
       </template>
 
       <template #cell(project)="{ item: { project } }">
-        <div>{{ project.name }}</div>
-        <div
-          v-for="framework in project.complianceFrameworks.nodes"
-          :key="framework.id"
-          class="gl-label"
-          :title="framework.name"
-        >
-          <framework-badge :framework="framework" :show-edit="isTopLevelGroup" />
-        </div>
+        {{ project.name }}
+        <frameworks-info
+          v-if="project.complianceFrameworks.nodes.length"
+          :frameworks="project.complianceFrameworks.nodes"
+          :project-name="project.name"
+          :show-edit-single-framework="isTopLevelGroup"
+        />
       </template>
 
       <template #cell(check)="{ item: { checkName } }">

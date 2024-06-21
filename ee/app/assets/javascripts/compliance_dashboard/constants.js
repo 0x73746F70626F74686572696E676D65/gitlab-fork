@@ -39,6 +39,7 @@ export const ROUTE_PROJECTS = 'projects';
 export const ROUTE_FRAMEWORKS = 'frameworks';
 export const ROUTE_NEW_FRAMEWORK = 'new_framework';
 export const ROUTE_EDIT_FRAMEWORK = 'frameworks/:id';
+export const FRAMEWORKS_LABEL_BACKGROUND = '#737278';
 
 export const FRAMEWORKS_FILTER_TYPE_PROJECT = 'project';
 export const FRAMEWORKS_FILTER_TYPE_FRAMEWORK = 'framework';
