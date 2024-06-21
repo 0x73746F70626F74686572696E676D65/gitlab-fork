@@ -66,8 +66,7 @@ Prerequisites:
 1. Sign in to your GitLab instance as an administrator.
 1. On the left sidebar, at the bottom, select **Admin Area**.
 1. Select **Settings > Security and Compliance**.
-1. Expand **Secret Detection**.
-1. Select the **Allow secret push protection** checkbox.
+1. Under **Secret Detection**, select or clear **Allow secret push protection**.
 
 ### Enable secret push protection in a project
 

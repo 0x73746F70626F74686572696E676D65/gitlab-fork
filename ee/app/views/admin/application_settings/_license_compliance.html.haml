@@ -2,7 +2,7 @@
   = form_errors(@application_setting)
 
   %fieldset
-    .form-group
+    .form-group.gl-mb-0
       = f.label :package_metadata_purl_types, s_('AdminSettings|Package registry metadata to sync'), class: 'label-bold gl-mb-0'
       %span.form-text.gl-mt-0.gl-mb-3#package_metadata_purl_types-help
         = _('Package registry types for which metadata is stored, required for License Compliance for CycloneDX files.')
