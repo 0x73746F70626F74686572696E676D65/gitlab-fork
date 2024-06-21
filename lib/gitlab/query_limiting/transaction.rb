@@ -18,6 +18,11 @@ module Gitlab
         100
       end
 
+      # Deprecated, use default_threshold
+      def self.threshold
+        default_threshold
+      end
+
       # Error that is raised whenever exceeding the maximum number of queries.
       ThresholdExceededError = Class.new(StandardError)
 
@@ -91,7 +96,7 @@ module Gitlab
       end
 
       def threshold
-        ::Gitlab::QueryLimiting.threshold || self.class.default_threshold
+        ::Gitlab::QueryLimiting.threshold || self.class.threshold
       end
 
       def log_threshold
