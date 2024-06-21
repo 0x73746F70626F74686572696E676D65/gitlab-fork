@@ -41,7 +41,7 @@ export default {
   },
   i18n: {
     searchInputPlaceholder: s__('ObservabilityMetrics|Search metrics...'),
-    attributeFilterTitle: s__('ObservabilityMetrics|Attribute'),
+    attributeFilterTitle: s__('ObservabilityMetrics|Dimension'),
     pageTitle: s__(`ObservabilityMetrics|Metrics`),
     description: s__(
       `ObservabilityMetrics|Track health data from your systems. Send metric data to this project using OpenTelemetry. %{docsLink}`,

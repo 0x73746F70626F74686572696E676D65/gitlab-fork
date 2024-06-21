@@ -37,7 +37,7 @@ export default {
     },
     {
       key: 'attributes',
-      label: s__('ObservabilityMetrics|Attributes'),
+      label: s__('ObservabilityMetrics|Dimensions'),
       tdAttr: { 'data-testid': 'metric-attributes' },
       thClass: 'gl-w-6/20',
       tdClass: `gl-break-anywhere`,

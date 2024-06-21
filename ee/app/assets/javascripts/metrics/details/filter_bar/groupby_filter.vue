@@ -7,10 +7,10 @@ export default {
     GlCollapsibleListbox,
   },
   i18n: {
-    noAttributesSelectedLabel: s__('ObservabilityMetrics|Select attributes'),
+    noAttributesSelectedLabel: s__('ObservabilityMetrics|Select dimensions'),
     noFunctionSelectedLabel: s__('ObservabilityMetrics|Select function'),
-    selectedAttributesHeader: s__('ObservabilityMetrics|Selected attributes'),
-    availableAttributesHeader: s__('ObservabilityMetrics|Attributes'),
+    selectedAttributesHeader: s__('ObservabilityMetrics|Selected dimensions'),
+    availableAttributesHeader: s__('ObservabilityMetrics|Dimensions'),
   },
   props: {
     supportedFunctions: {
