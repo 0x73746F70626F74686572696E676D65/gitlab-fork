@@ -154,6 +154,11 @@ RSpec.describe Vulnerabilities::Export, feature_category: :vulnerability_managem
       it 'changes the exportable of the export to given project' do
         expect { set_exportable }.to change { vulnerability_export.exportable }.to(exportable)
       end
+
+      it 'sets the organization of the export' do
+        expect { set_exportable }.to change { vulnerability_export.organization_id }
+          .to(exportable.namespace.organization_id)
+      end
     end
 
     context 'when the exportable is a Group' do
@@ -162,17 +167,28 @@ RSpec.describe Vulnerabilities::Export, feature_category: :vulnerability_managem
       it 'changes the exportable of the export to given group' do
         expect { set_exportable }.to change { vulnerability_export.exportable }.to(exportable)
       end
+
+      it 'sets the organization of the export' do
+        expect { set_exportable }.to change { vulnerability_export.organization_id }.to(exportable.organization_id)
+      end
     end
 
     context 'when the exportable is an InstanceSecurityDashboard' do
+      let(:namespace) { create(:namespace) }
       let(:exportable) { InstanceSecurityDashboard.new(vulnerability_export.author) }
 
       before do
         allow(vulnerability_export.author).to receive(:security_dashboard).and_return(exportable)
+        allow(vulnerability_export.author).to receive(:namespace).and_return(namespace)
       end
 
       it 'changes the exportable of the export to security dashboard of the author' do
         expect { set_exportable }.to change { vulnerability_export.exportable }.to(exportable)
+      end
+
+      it 'sets the organization of the export' do
+        expect { set_exportable }.to change { vulnerability_export.organization_id }
+          .to(vulnerability_export.author.namespace.organization_id)
       end
     end
 

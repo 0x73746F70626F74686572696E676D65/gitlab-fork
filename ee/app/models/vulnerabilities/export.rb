@@ -93,15 +93,22 @@ module Vulnerabilities
     def make_project_level_export(project)
       self.project = project
       self.group = nil
+      self.organization_id = set_organization(project.namespace)
     end
 
     def make_group_level_export(group)
       self.group = group
       self.project = nil
+      self.organization_id = set_organization(group)
     end
 
     def make_instance_level_export
       self.project = self.group = nil
+      self.organization_id = set_organization(author.namespace)
+    end
+
+    def set_organization(namespace)
+      namespace&.organization_id || Organizations::Organization::DEFAULT_ORGANIZATION_ID
     end
 
     def only_one_exportable
