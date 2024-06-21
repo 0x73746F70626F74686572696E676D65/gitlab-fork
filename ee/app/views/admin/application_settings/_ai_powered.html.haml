@@ -5,18 +5,12 @@
 
 - return unless visible_duo_chat || visible_duo_pro
 
-- expanded = false
-
-%section.settings.no-animate#js-ai-powered-settings{ class: ('expanded' if expanded) }
-  .settings-header
-    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
-      = s_('AIPoweredSM|AI-powered features')
-    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
-      = expanded ? _('Collapse') : _('Expand')
-    %p.gl-text-secondary
-      = ai_powered_description
-
-  .settings-content
+= render ::Layouts::SettingsBlockComponent.new(s_('AIPoweredSM|AI-powered features'),
+  id: 'js-ai-powered-settings',
+  expanded: false) do |c|
+  - c.with_description do
+    = ai_powered_description
+  - c.with_body do
     = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-ai-powered-settings'), html: { class: 'fieldset-form', id: 'ai-powered-settings' } do |f|
       = form_errors(@application_setting)
 

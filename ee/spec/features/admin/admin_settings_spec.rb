@@ -45,7 +45,7 @@ RSpec.describe 'Admin updates EE-only settings' do
 
   it 'enables external authentication', feature_category: :system_access do
     visit general_admin_application_settings_path
-    page.within('.as-external-auth') do
+    within_testid('external-auth-settings') do
       check 'Enable classification control using an external service'
       fill_in 'Default classification label', with: 'default'
       click_button 'Save changes'
@@ -222,7 +222,7 @@ RSpec.describe 'Admin updates EE-only settings' do
       let(:ldap_setting) { true }
 
       it 'changes to allow group owners to manage ldap' do
-        page.within('.as-visibility-access') do
+        within_testid('admin-visibility-access-settings') do
           find('#application_setting_allow_group_owners_to_manage_ldap').set(false)
           click_button 'Save'
         end
