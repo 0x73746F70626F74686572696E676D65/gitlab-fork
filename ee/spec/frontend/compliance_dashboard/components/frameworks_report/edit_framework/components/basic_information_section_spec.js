@@ -15,8 +15,11 @@ describe('Basic information section', () => {
   };
 
   const provideData = {
+    featurePipelineMaintenanceModeEnabled: true,
+    migratePipelineToPolicyPath: '/migratepipelinetopolicypath',
     pipelineConfigurationFullPathEnabled: true,
     pipelineConfigurationEnabled: true,
+    pipelineExecutionPolicyPath: '/policypath',
   };
 
   const invalidFeedback = (input) =>

@@ -13601,6 +13601,9 @@ msgstr ""
 msgid "ComplianceReport|Create a new framework"
 msgstr ""
 
+msgid "ComplianceReport|Dismiss"
+msgstr ""
+
 msgid "ComplianceReport|Do you want to refresh the filtered results to include your change?"
 msgstr ""
 
@@ -13620,6 +13623,9 @@ msgid "ComplianceReport|Full target branch name"
 msgstr ""
 
 msgid "ComplianceReport|Less than 2 approvers"
+msgstr ""
+
+msgid "ComplianceReport|Migrate pipeline to a policy"
 msgstr ""
 
 msgid "ComplianceReport|No frameworks found"
