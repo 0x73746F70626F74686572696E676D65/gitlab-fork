@@ -9,45 +9,53 @@ RSpec.describe Issuable::DestroyService, feature_category: :team_planning do
 
   describe '#execute' do
     context 'when destroying an epic' do
-      context 'and epic does not have a synced work item' do
-        let_it_be_with_refind(:issuable) { create(:epic) }
+      let_it_be(:group) { create(:group) }
+      let_it_be(:label1) { create(:group_label, group: group, title: 'epic-label-1') }
+      let_it_be(:label2) { create(:group_label, group: group, title: 'epic-label-2') }
+      let_it_be(:epic) { create(:epic, group: group, labels: [label1]) }
+      let(:work_item) { epic.sync_object }
 
-        let(:group) { issuable.group }
+      let(:issuable) { epic }
+      let(:sync_object) { work_item }
 
-        it 'records usage ping epic destroy event' do
-          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_destroyed).with(
-            author: user, namespace: group
-          )
-
-          subject.execute(issuable)
-        end
-
-        it_behaves_like 'service deleting todos'
-        it_behaves_like 'service deleting label links'
+      before do
+        sync_object.labels << label2
       end
 
-      context 'and epic has a synced work item' do
-        let_it_be(:issuable) { create(:epic, :with_synced_work_item) }
-        let(:epic_work_item_id) { issuable.work_item.id }
-        let(:group) { issuable.group }
+      it 'deletes the epic and the epic work item' do
+        # making sure we have this work item
+        expect(WorkItem.find_by_id(sync_object.id)).to be_present
+
+        expect { subject.execute(issuable) }.to change { Epic.count }.by(-1).and(
+          change { WorkItem.count }.by(-1)
+        )
+
+        expect(sync_object.id).not_to be_nil
+        expect(WorkItem.find_by_id(sync_object.id)).to be_nil
+      end
+
+      it 'records usage ping epic destroy event' do
+        expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(
+          :track_epic_destroyed).with(author: user, namespace: group)
+
+        subject.execute(issuable)
+      end
+
+      it_behaves_like 'service deleting todos'
+      it_behaves_like 'service deleting label links'
+
+      context 'when destroying an epic work item' do
+        let(:issuable) { work_item }
+        let(:sync_object) { epic }
 
         it 'deletes the epic and the epic work item' do
           # making sure we have this work item
-          expect(WorkItem.find_by_id(epic_work_item_id)).to be_present
-
           expect { subject.execute(issuable) }.to change { Epic.count }.by(-1).and(
             change { WorkItem.count }.by(-1)
           )
 
-          expect(epic_work_item_id).not_to be_nil
-          expect(WorkItem.find_by_id(epic_work_item_id)).to be_nil
-        end
-
-        it 'records usage ping epic destroy event' do
-          expect(Gitlab::UsageDataCounters::EpicActivityUniqueCounter).to receive(:track_epic_destroyed)
-                                                                            .with(author: user, namespace: group)
-
-          subject.execute(issuable)
+          expect(sync_object.id).not_to be_nil
+          expect(Epic.find_by_id(sync_object.id)).to be_nil
         end
 
         it_behaves_like 'service deleting todos'
