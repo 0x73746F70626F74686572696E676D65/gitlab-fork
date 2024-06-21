@@ -215,6 +215,8 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
         create(:zoekt_enabled_namespace, namespace: namespace_with_statistics.root_ancestor)
       end
 
+      let_it_be(:zoekt_replica) { create(:zoekt_replica, :ready, zoekt_enabled_namespace: zkt_enabled_namespace2) }
+
       before do
         allow(Search::Zoekt::Logger).to receive(:build).and_return(logger)
       end
@@ -325,6 +327,22 @@ RSpec.describe ::Search::Zoekt::SchedulingService, :clean_gitlab_redis_shared_st
           expect(index).not_to be_nil
           expect(index.namespace_id).to eq zkt_enabled_namespace2.root_namespace_id
           expect(index).to be_ready
+        end
+
+        it 'assigns the index to a replica' do
+          expect(zkt_enabled_namespace.indices).to be_empty
+          expect(zkt_enabled_namespace2.indices).to be_empty
+          expect(Search::Zoekt::Node).to receive(:online).and_call_original
+          expect(logger).to receive(:error).with({ 'class' => described_class.to_s, 'task' => task,
+                                                  'message' => "RootStorageStatistics isn't available",
+                                                  'zoekt_enabled_namespace_id' => zkt_enabled_namespace.id }
+          )
+          expect { execute_task }.to change { Search::Zoekt::Index.count }.by(1)
+          expect(zkt_enabled_namespace.indices).to be_empty
+          execute_task
+
+          index = zkt_enabled_namespace2.indices.last
+          expect(index.replica).to be_present
         end
       end
     end

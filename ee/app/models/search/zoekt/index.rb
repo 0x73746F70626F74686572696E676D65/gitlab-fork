@@ -16,6 +16,8 @@ module Search
       has_many :zoekt_repositories, foreign_key: :zoekt_index_id, inverse_of: :zoekt_index,
         class_name: '::Search::Zoekt::Repository'
 
+      validates_presence_of :replica
+
       after_commit :index, on: :create
       after_commit :delete_from_index, on: :destroy
 

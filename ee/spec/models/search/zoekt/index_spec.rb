@@ -25,6 +25,12 @@ RSpec.describe ::Search::Zoekt::Index, feature_category: :global_search do
         node: zoekt_node, namespace_id: 0)
       expect(zoekt_index).to be_invalid
     end
+
+    it 'validates presence of replica' do
+      expect(zoekt_index).to be_valid
+      zoekt_index.replica = nil
+      expect(zoekt_index).not_to be_valid
+    end
   end
 
   describe 'callbacks' do
@@ -36,8 +42,10 @@ RSpec.describe ::Search::Zoekt::Index, feature_category: :global_search do
         expect(::Search::Zoekt::NamespaceIndexerWorker).to receive(:perform_async)
           .with(another_enabled_namespace.root_namespace_id, :index)
 
+        another_replica = create(:zoekt_replica, zoekt_enabled_namespace: another_enabled_namespace)
+
         described_class.create!(zoekt_enabled_namespace: another_enabled_namespace, node: zoekt_node,
-          namespace_id: another_enabled_namespace.root_namespace_id)
+          namespace_id: another_enabled_namespace.root_namespace_id, replica: another_replica)
       end
     end
 
