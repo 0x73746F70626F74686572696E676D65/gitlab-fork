@@ -194,6 +194,7 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, :zoekt_settings_enabled, featu
           put api(path, admin, admin_mode: true)
         end.to change { ::Search::Zoekt::EnabledNamespace.count }.from(0).to(1)
           .and change { ::Search::Zoekt::Index.count }.from(0).to(1)
+          .and change { ::Search::Zoekt::Replica.where(namespace_id: namespace_id).count }.from(0).to(1)
 
         expect(response).to have_gitlab_http_status(:ok)
         np = ::Search::Zoekt::EnabledNamespace.find_by(namespace: namespace)

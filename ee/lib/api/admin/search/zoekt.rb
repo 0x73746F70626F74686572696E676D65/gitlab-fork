@@ -126,6 +126,7 @@ module API
                     }
                     ::Search::Zoekt::Index.create_or_find_by(attributes) do |record| # rubocop:disable Performance/ActiveRecordSubtransactionMethods -- only be called from this API
                       record.state = ::Search::Zoekt::Index.states[:ready]
+                      record.replica = ::Search::Zoekt::Replica.for_enabled_namespace!(zoekt_enabled_namespace)
                     end
                   end
 
