@@ -9,7 +9,7 @@ module WorkItems
     BASE_ATTRIBUTE_PARAMS = %i[
       iid author_id created_at updated_at title title_html description description_html
       confidential state_id last_edited_by_id last_edited_at external_key updated_by_id
-      closed_at closed_by_id imported_from
+      closed_at closed_by_id imported_from start_date due_date
     ].freeze
 
     def create_epic_for!(work_item)
@@ -51,14 +51,14 @@ module WorkItems
       epic_params
         .merge(base_attributes_params(work_item))
         .merge(color_params(work_item))
-        .merge(date_params(work_item))
     end
 
     def update_params(work_item)
-      {}
-        .merge(base_attributes_params(work_item))
+      changed_attributes(work_item)
+        .intersection(BASE_ATTRIBUTE_PARAMS)
+        .index_with { |attr| work_item[attr] }
         .merge(color_params(work_item))
-        .merge(date_params(work_item))
+        .merge(updated_at: work_item.updated_at)
     end
 
     def base_attributes_params(work_item)
@@ -66,16 +66,10 @@ module WorkItems
     end
 
     def color_params(work_item)
+      return {} unless widget_params[:color_widget].present?
       return {} unless work_item.color
 
       { color: work_item.color.color }
-    end
-
-    def date_params(work_item)
-      {
-        start_date: work_item.start_date,
-        due_date: work_item.due_date
-      }
     end
 
     def handle_error!(action, error, work_item)
@@ -87,6 +81,12 @@ module WorkItems
       )
 
       ::Gitlab::ErrorTracking.track_and_raise_exception(error, group_id: work_item.namespace_id)
+    end
+
+    def changed_attributes(work_item)
+      strong_memoize_with(:changed_attributes, work_item) do
+        work_item.previous_changes.keys.map(&:to_sym)
+      end
     end
   end
 end

@@ -562,6 +562,51 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
             .and not_change { epic.reload.title }
         end
       end
+
+      context 'when work item record is outdated' do
+        let(:widget_params) { {} }
+        let(:params) do
+          {
+            title: 'new title'
+          }
+        end
+
+        context 'for base attributes' do
+          before do
+            epic.update!(confidential: true)
+            work_item.update!(confidential: false)
+          end
+
+          it 'only syncs changed attributes' do
+            expect { execute }
+              .to change { epic.reload.title }
+              .and not_change { epic.reload.confidential }
+          end
+        end
+
+        context 'for color' do
+          before do
+            epic.update!(color: '#FF0000')
+            work_item.build_color
+            work_item.color.update!(color: '#00FF00')
+          end
+
+          it 'does not sync when color did not change as part of the request' do
+            expect { execute }.to not_change { epic.reload.color.to_s }
+          end
+        end
+
+        context 'for dates' do
+          before do
+            epic.update!(start_date: start_date, due_date: due_date)
+            work_item.update!(start_date: start_date + 1.day, due_date: due_date + 1.day)
+          end
+
+          it 'does not sync when date did not change as part of the request' do
+            expect { execute }.to not_change { epic.reload.start_date }.and not_change { epic.reload.due_date }
+          end
+        end
+      end
     end
   end
 end
