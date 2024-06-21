@@ -47,10 +47,5 @@
         - c.with_body do
           = s_('AdvancedSearch|You have %{count} pending %{migrations_link_start}advanced search migrations%{link_end} that are obsolete. These migrations might affect your search experience. To resolve the issue, you must %{recreate_link_start}recreate your index%{link_end}.').html_safe % { count: @elasticsearch_pending_obsolete_migrations.count, migrations_link_start: help_advanced_search_migrations_link_start, recreate_link_start: help_recreate_index_link_start, link_end: '</a>'.html_safe }
 
-%h2.settings-title
-  Advanced search configuration
 = render_if_exists 'admin/application_settings/elasticsearch_form'
-
-%h2.settings-title
-  Exact code search configuration
 = render_if_exists 'admin/application_settings/zoekt_configuration_settings' if ::License.feature_available?(:zoekt_code_search)
