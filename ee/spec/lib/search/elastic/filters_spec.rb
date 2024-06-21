@@ -704,7 +704,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
           expected_filter = [
             { terms: {
               _name: 'filters:project',
-              project_id: match_array([authorized_project.id, public_project.id])
+              project_id: contain_exactly(authorized_project.id, public_project.id)
             } }
           ]
 
@@ -721,7 +721,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
             expected_filter = [
               { terms: {
                 _name: 'filters:project',
-                project_id: match_array([authorized_project.id, public_project.id])
+                project_id: contain_exactly(authorized_project.id, public_project.id)
               } }
             ]
 
@@ -736,10 +736,10 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
 
             it 'returns the expected query' do
               expected_filter = [
-                { terms: { _name: 'filters:project', foo: [authorized_project.id, public_project.id] } }
+                { terms: { _name: 'filters:project', foo: contain_exactly(authorized_project.id, public_project.id) } }
               ]
 
-              expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+              expect(by_authorization.dig(:query, :bool, :filter)).to match(expected_filter)
               expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
               expect(by_authorization.dig(:query, :bool, :must)).to be_empty
               expect(by_authorization.dig(:query, :bool, :should)).to be_empty
@@ -760,7 +760,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
                     { filter: [
                       { terms: {
                         _name: 'filters:project:membership:id',
-                        id: match_array([authorized_project.id, public_project.id])
+                        id: contain_exactly(authorized_project.id, public_project.id)
                       } },
                       { terms: {
                         _name: 'filters:project:issues:enabled_or_private',
@@ -805,7 +805,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
                   { filter: [
                     { terms: {
                       _name: 'filters:project:membership:id',
-                      project_id: match_array([authorized_project.id, public_project.id])
+                      project_id: contain_exactly(authorized_project.id, public_project.id)
                     } },
                     { terms: {
                       _name: 'filters:project:issues:enabled_or_private',
@@ -850,7 +850,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
                     { filter: [
                       { terms: {
                         _name: 'filters:project:membership:id',
-                        foo: [authorized_project.id, public_project.id]
+                        foo: contain_exactly(authorized_project.id, public_project.id)
                       } },
                       { terms: {
                         _name: 'filters:project:issues:enabled_or_private',
@@ -878,7 +878,7 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
                 ]
               } }]
 
-              expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+              expect(by_authorization.dig(:query, :bool, :filter)).to match(expected_filter)
               expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
               expect(by_authorization.dig(:query, :bool, :must)).to be_empty
               expect(by_authorization.dig(:query, :bool, :should)).to be_empty
@@ -938,10 +938,11 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
 
           it 'returns the expected query' do
             expected_filter = [
-              { terms: { _name: 'filters:project', project_id: [authorized_project.id, public_project.id] } }
+              { terms: { _name: 'filters:project',
+                         project_id: contain_exactly(authorized_project.id, public_project.id) } }
             ]
 
-            expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+            expect(by_authorization.dig(:query, :bool, :filter)).to match(expected_filter)
             expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
             expect(by_authorization.dig(:query, :bool, :must)).to be_empty
             expect(by_authorization.dig(:query, :bool, :should)).to be_empty
@@ -976,10 +977,11 @@ RSpec.describe ::Search::Elastic::Filters, feature_category: :global_search do
 
             it 'returns the expected query' do
               expected_filter = [
-                { terms: { _name: 'filters:project', project_id: [authorized_project.id, public_project.id] } }
+                { terms: { _name: 'filters:project',
+                           project_id: contain_exactly(authorized_project.id, public_project.id) } }
               ]
 
-              expect(by_authorization.dig(:query, :bool, :filter)).to eq(expected_filter)
+              expect(by_authorization.dig(:query, :bool, :filter)).to match(expected_filter)
               expect(by_authorization.dig(:query, :bool, :must_not)).to be_empty
               expect(by_authorization.dig(:query, :bool, :must)).to be_empty
               expect(by_authorization.dig(:query, :bool, :should)).to be_empty
