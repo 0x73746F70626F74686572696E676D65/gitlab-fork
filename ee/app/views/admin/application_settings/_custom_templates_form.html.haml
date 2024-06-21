@@ -1,15 +1,12 @@
 - if ::Gitlab::CurrentSettings.custom_project_templates_enabled?
-  %section.settings.as-custom-project-templates.no-animate#js-custom-project-templates-settings{ class: ('expanded' if expanded), data: { testid: 'custom-project-template-container' } }
-    .settings-header
-      %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
-        = _('Custom project templates')
-      = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
-        = expanded ? _('Collapse') : _('Expand')
-      %p.gl-text-secondary
-        - link = link_to('', help_page_path('administration/custom_project_templates'))
-        = safe_format(s_('AdminSettings|Select a group to use as a source of custom templates for new projects. %{link_start}Learn more%{link_end}.'), tag_pair(link, :link_start, :link_end))
-    .settings-content
-
+  = render ::Layouts::SettingsBlockComponent.new(_('Custom project templates'),
+    id: 'js-custom-project-templates-settings',
+    testid: 'custom-project-template-container',
+    expanded: expanded_by_default?) do |c|
+    - c.with_description do
+      - link = link_to('', help_page_path('administration/custom_project_templates'))
+      = safe_format(s_('AdminSettings|Select a group to use as a source of custom templates for new projects. %{link_start}Learn more%{link_end}.'), tag_pair(link, :link_start, :link_end))
+    - c.with_body do
       = gitlab_ui_form_for @application_setting, url: templates_admin_application_settings_path(anchor: 'js-custom-project-templates-settings') do |f|
         = form_errors(@application_setting)
 

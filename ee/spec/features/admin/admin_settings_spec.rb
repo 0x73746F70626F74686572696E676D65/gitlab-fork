@@ -199,13 +199,13 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
 
     it 'render "Templates" section' do
-      page.within('.as-visibility-access') do
+      within_testid('templates-settings') do
         expect(page).to have_content 'Templates'
       end
     end
 
     it 'render "Custom project templates" section' do
-      page.within('.as-custom-project-templates') do
+      within_testid('custom-project-template-container') do
         expect(page).to have_content 'Custom project templates'
       end
     end
