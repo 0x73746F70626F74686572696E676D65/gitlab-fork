@@ -23,6 +23,8 @@ describe('~/environments/environment_details/components/deployment_actions.vue',
     },
   };
 
+  const deploymentWebPath = '/path/to/deployment';
+
   const mockSetEnvironmentToRollback = jest.fn();
   const mockResolvers = {
     Mutation: {
@@ -40,6 +42,7 @@ describe('~/environments/environment_details/components/deployment_actions.vue',
         actions,
         rollback,
         approvalEnvironment,
+        deploymentWebPath,
       },
     });
   };
@@ -65,9 +68,9 @@ describe('~/environments/environment_details/components/deployment_actions.vue',
       it('should render environment-approval component with correct props', () => {
         const environmentApproval = wrapper.findComponent(EnvironmentApprovalComponent);
 
-        expect(environmentApproval.props()).toMatchObject({
-          environment: approvalEnvironmentData.environment,
-          deploymentIid: approvalEnvironmentData.deploymentIid,
+        expect(environmentApproval.props()).toEqual({
+          deploymentWebPath,
+          requiredApprovalCount: 1,
           showText: false,
         });
       });
