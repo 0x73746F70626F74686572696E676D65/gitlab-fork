@@ -16,13 +16,12 @@ module DependencyManagement
     end
 
     def execute
-      group = distinct_columns.map { |column| "outer_occurrences.#{column}" }
+      group_columns = distinct_columns.map { |column| "outer_occurrences.#{column}" }
 
       Sbom::Occurrence.with(namespaces_cte.to_arel)
         .select(
+          *group_columns,
           'MIN(outer_occurrences.id)::bigint AS id',
-          'outer_occurrences.component_id',
-          'outer_occurrences.component_version_id',
           'MIN(outer_occurrences.package_manager) AS package_manager',
           'MIN(outer_occurrences.input_file_path) AS input_file_path',
           'JSONB_AGG(outer_occurrences.licenses->0) AS licenses',
@@ -31,7 +30,7 @@ module DependencyManagement
           'SUM(counts.project_count)::integer AS project_count'
         )
         .from("(#{outer_occurrences.to_sql}) outer_occurrences, LATERAL (#{counts.to_sql}) counts")
-        .group(*group)
+        .group(*group_columns)
         .order(outer_order)
     end
 
@@ -62,7 +61,7 @@ module DependencyManagement
 
     def outer_order
       keyset_order(
-        column_expression_evaluator: ->(column) { Arel.sql("outer_occurrences.#{column}") },
+        column_expression_evaluator: ->(column) { Sbom::Occurrence.arel_table.alias('outer_occurrences')[column] },
         order_expression_evaluator: ->(column) { Arel.sql("MIN(outer_occurrences.#{column})") }
       )
     end

@@ -91,9 +91,9 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
     end
 
     context 'with JSON format' do
-      subject { get group_dependencies_path(group_id: group.full_path), params: params, as: :json }
+      subject { get group_dependencies_path(group_id: group.full_path, format: :json, params: params) }
 
-      let(:params) { { group_id: group.to_param } }
+      let(:params) { {} }
 
       context 'when security dashboard feature is enabled' do
         before do
@@ -203,14 +203,38 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               expect(response.headers['X-Page-Type']).to eq('cursor')
             end
 
+            context 'when params are given' do
+              include KeysetPaginationHelpers
+
+              let(:params) do
+                { per_page: '1', sort_by: 'severity', sort: 'asc', filter: 'all' }
+              end
+
+              it 'preserves params in link header' do
+                subject
+
+                next_url_params = pagination_params_from_next_url(response)
+                expect(next_url_params).to match(
+                  {
+                    'cursor' => String,
+                    'per_page' => '1',
+                    'sort_by' => 'severity',
+                    'sort' => 'asc',
+                    'filter' => 'all'
+                  }
+                )
+              end
+            end
+
             context 'when using a cursor' do
               let(:cursor_data) do
-                { component_id: sbom_occurrence_npm.component_id,
+                { highest_severity: sbom_occurrence_npm.highest_severity,
+                  component_id: sbom_occurrence_npm.component_id,
                   component_version_id: sbom_occurrence_npm.component_version_id }
               end
 
               let(:cursor) { Base64.urlsafe_encode64(cursor_data.to_json) }
-              let(:params) { { group_id: group.to_param, cursor: cursor } }
+              let(:params) { { group_id: group.to_param, cursor: cursor, sort_by: 'severity', sort: 'asc' } }
 
               it 'returns data at the cursor' do
                 subject
