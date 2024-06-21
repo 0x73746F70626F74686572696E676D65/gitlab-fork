@@ -9,7 +9,7 @@ RSpec.describe Gitlab::SecretDetectionLogger, feature_category: :secret_detectio
 
   describe '#file_name_noext' do
     it 'returns log file name without extension' do
-      expect(described_class.file_name_noext).to eq('secret_detection')
+      expect(described_class.file_name_noext).to eq('secret_push_protection')
     end
   end
 end

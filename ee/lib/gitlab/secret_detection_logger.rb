@@ -3,7 +3,7 @@
 module Gitlab
   class SecretDetectionLogger < Gitlab::JsonLogger
     def self.file_name_noext
-      'secret_detection'
+      'secret_push_protection'
     end
   end
 end
