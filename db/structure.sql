@@ -1660,6 +1660,22 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_fff8735b6b9a() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "vulnerability_occurrences"
+  WHERE "vulnerability_occurrences"."id" = NEW."finding_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION unset_has_issues_on_vulnerability_reads() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -18701,7 +18717,8 @@ CREATE TABLE vulnerability_finding_signatures (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     algorithm_type smallint NOT NULL,
-    signature_sha bytea NOT NULL
+    signature_sha bytea NOT NULL,
+    project_id bigint
 );
 
 CREATE SEQUENCE vulnerability_finding_signatures_id_seq
@@ -29124,6 +29141,8 @@ CREATE INDEX index_vulnerability_feedback_on_pipeline_id ON vulnerability_feedba
 
 CREATE INDEX index_vulnerability_finding_signatures_on_finding_id ON vulnerability_finding_signatures USING btree (finding_id);
 
+CREATE INDEX index_vulnerability_finding_signatures_on_project_id ON vulnerability_finding_signatures USING btree (project_id);
+
 CREATE INDEX index_vulnerability_finding_signatures_on_signature_sha ON vulnerability_finding_signatures USING btree (signature_sha);
 
 CREATE INDEX index_vulnerability_findings_remediations_on_project_id ON vulnerability_findings_remediations USING btree (project_id);
@@ -31310,6 +31329,8 @@ CREATE TRIGGER trigger_fd041fe2d1a7 BEFORE INSERT OR UPDATE ON merge_request_met
 
 CREATE TRIGGER trigger_ff16c1fd43ea BEFORE INSERT OR UPDATE ON geo_event_log FOR EACH ROW EXECUTE FUNCTION trigger_ff16c1fd43ea();
 
+CREATE TRIGGER trigger_fff8735b6b9a BEFORE INSERT OR UPDATE ON vulnerability_finding_signatures FOR EACH ROW EXECUTE FUNCTION trigger_fff8735b6b9a();
+
 CREATE TRIGGER trigger_has_external_issue_tracker_on_delete AFTER DELETE ON integrations FOR EACH ROW WHEN ((((old.category)::text = 'issue_tracker'::text) AND (old.active = true) AND (old.project_id IS NOT NULL))) EXECUTE FUNCTION set_has_external_issue_tracker();
 
 CREATE TRIGGER trigger_has_external_issue_tracker_on_insert AFTER INSERT ON integrations FOR EACH ROW WHEN ((((new.category)::text = 'issue_tracker'::text) AND (new.active = true) AND (new.project_id IS NOT NULL))) EXECUTE FUNCTION set_has_external_issue_tracker();
@@ -32432,6 +32453,9 @@ ALTER TABLE ONLY agent_activity_events
 
 ALTER TABLE ONLY issue_links
     ADD CONSTRAINT fk_c900194ff2 FOREIGN KEY (source_id) REFERENCES issues(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY vulnerability_finding_signatures
+    ADD CONSTRAINT fk_c909c7e07b FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY personal_access_tokens
     ADD CONSTRAINT fk_c951fbf57e FOREIGN KEY (previous_personal_access_token_id) REFERENCES personal_access_tokens(id) ON DELETE SET NULL;
