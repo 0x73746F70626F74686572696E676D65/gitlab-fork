@@ -6,7 +6,7 @@ property_description: "`voluntary`"
 value_description: "Remaining trial days"
 extra_properties:
 identifiers:
-product_group: group::conversion
+product_group: acquisition
 milestone: "14.2"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/66199
 distributions:
