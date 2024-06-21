@@ -5,11 +5,12 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 describe('MR Widget Security Reports - Summary Highlights', () => {
   let wrapper;
 
-  const createComponent = ({ highlights, showSingleSeverity } = {}) => {
+  const createComponent = ({ highlights, showSingleSeverity, capped } = {}) => {
     wrapper = shallowMountExtended(SummaryHighlights, {
       propsData: {
         highlights,
         showSingleSeverity,
+        capped,
       },
       stubs: { GlSprintf },
     });
@@ -66,4 +67,36 @@ describe('MR Widget Security Reports - Summary Highlights', () => {
       expect(wrapper.text()).toBe(count.toString());
     },
   );
+
+  it('shows capped results when capped property is true', () => {
+    const others = { medium: 50, low: 1001, unknown: 20 };
+
+    createComponent({
+      capped: true,
+      highlights: {
+        critical: 1001,
+        high: 20,
+        ...others,
+      },
+    });
+
+    expect(wrapper.text()).toContain('1000+ critical');
+    expect(wrapper.text()).toContain('20 high');
+    expect(wrapper.text()).toContain('1000+ others');
+  });
+
+  it('shows capped results when `other` is specified and capped property is true', () => {
+    createComponent({
+      capped: true,
+      highlights: {
+        critical: 1001,
+        high: 20,
+        other: 1001,
+      },
+    });
+
+    expect(wrapper.text()).toContain('1000+ critical');
+    expect(wrapper.text()).toContain('20 high');
+    expect(wrapper.text()).toContain('1000+ others');
+  });
 });
