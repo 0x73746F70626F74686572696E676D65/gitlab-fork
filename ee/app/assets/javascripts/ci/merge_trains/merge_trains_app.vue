@@ -2,7 +2,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
-import FeedbackBanner from './components/feedback_banner.vue';
+import MergeTrainsFeedbackBanner from './components/merge_trains_feedback_banner.vue';
 import MergeTrainBranchSelector from './components/merge_train_branch_selector.vue';
 import MergeTrainTabs from './components/merge_train_tabs.vue';
 import MergeTrainsTable from './components/merge_trains_table.vue';
@@ -13,7 +13,7 @@ export default {
   name: 'MergeTrainsApp',
   components: {
     GlLoadingIcon,
-    FeedbackBanner,
+    MergeTrainsFeedbackBanner,
     MergeTrainBranchSelector,
     MergeTrainTabs,
     MergeTrainsTable,
@@ -106,7 +106,7 @@ export default {
     <gl-loading-icon v-if="loading" class="gl-float-left gl-mt-5" size="md" />
 
     <template v-else>
-      <feedback-banner />
+      <merge-trains-feedback-banner />
 
       <div class="gl-flex gl-justify-between gl-mb-5">
         <h1 class="gl-font-size-h1">{{ s__('Pipelines|Merge train') }}</h1>
