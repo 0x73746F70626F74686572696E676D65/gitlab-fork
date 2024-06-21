@@ -40,6 +40,10 @@ class SearchService
     # overridden in EE
   end
 
+  def search_type_errors
+    # overridden in EE
+  end
+
   def global_search?
     project.blank? && group.blank?
   end

@@ -418,6 +418,42 @@ RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: 
         end
       end
     end
+
+    context 'with search_type param' do
+      using RSpec::Parameterized::TableSyntax
+
+      subject(:search) { get api(endpoint, user), params: { scope: 'issues', search: 'john doe', search_type: search_type } }
+
+      where(:search_type, :scope, :use_elastic, :use_zoekt, :error_expected) do
+        'basic' | 'blobs' | false | false | false
+        'advanced' | 'blobs' | false | false | true
+        'advanced' | 'blobs' | true | false | false
+        'zoekt' | 'blobs' | false | false | true
+        'zoekt' | 'blobs' | false | true | false
+        'zoekt' | 'issue' | false | true | true
+      end
+
+      with_them do
+        before do
+          allow_next_instance_of(SearchService) do |search_service|
+            allow(search_service).to receive(:use_elasticsearch?).and_return(use_elastic)
+            allow(search_service).to receive(:use_zoekt?).and_return(use_zoekt)
+            allow(search_service).to receive(:scope).and_return(scope)
+            allow(search_service).to receive(:search_objects).and_return([])
+          end
+        end
+
+        it do
+          search
+
+          if error_expected
+            expect(response).to have_gitlab_http_status(:bad_request)
+          else
+            expect(response).not_to have_gitlab_http_status(:bad_request)
+          end
+        end
+      end
+    end
   end
 
   describe "GET /groups/:id/-/search" do

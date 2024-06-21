@@ -119,6 +119,48 @@ RSpec.describe SearchController, :elastic, feature_category: :global_search do
     end
 
     it_behaves_like 'support for elasticsearch timeouts', :show, { search: 'hello' }, :search_objects, :html
+
+    describe 'when search_type is present in params' do
+      it 'verifies search type' do
+        expect_next_instance_of(SearchService) do |service|
+          expect(service).to receive(:search_type_errors).once
+        end
+
+        get :show, params: { scope: 'blobs', search: 'test' }
+      end
+
+      using RSpec::Parameterized::TableSyntax
+
+      where(:search_type, :scope, :use_elastic, :use_zoekt, :flash_expected) do
+        'basic' | 'blobs' | false | false | false
+        'advanced' | 'blobs' | false | false | true
+        'advanced' | 'blobs' | true | false | false
+        'zoekt' | 'blobs' | false | false | true
+        'zoekt' | 'blobs' | false | true | false
+        'zoekt' | 'issue' | false | true | true
+      end
+
+      with_them do
+        before do
+          allow_next_instance_of(SearchService) do |search_service|
+            allow(search_service).to receive(:use_elasticsearch?).and_return(use_elastic)
+            allow(search_service).to receive(:use_zoekt?).and_return(use_zoekt)
+            allow(search_service).to receive(:scope).and_return(scope)
+            allow(search_service).to receive(:search_objects).and_return([])
+          end
+        end
+
+        it do
+          get :show, params: { scope: scope, search: 'test', search_type: search_type }
+
+          if flash_expected
+            expect(controller).to set_flash[:alert]
+          else
+            expect(controller).not_to set_flash[:alert]
+          end
+        end
+      end
+    end
   end
 
   describe 'GET #autocomplete' do

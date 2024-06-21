@@ -21,6 +21,7 @@ module EE
 
     override :search_type
     def search_type
+      return params[:search_type] if params[:search_type]
       return 'zoekt' if scope == 'blobs' && use_zoekt?
       return 'advanced' if use_elasticsearch?
 
@@ -56,6 +57,23 @@ module EE
       else
         super
       end
+    end
+
+    override :search_type_errors
+    def search_type_errors
+      errors = []
+
+      case params[:search_type]
+      when 'advanced'
+        errors << 'Elasticsearch is not available' unless use_elasticsearch?
+      when 'zoekt'
+        errors << 'Zoekt is not available' unless use_zoekt?
+        errors << 'Zoekt can only be used for blobs' unless scope == 'blobs'
+      end
+
+      return if errors.empty?
+
+      errors.join(', ')
     end
 
     private
