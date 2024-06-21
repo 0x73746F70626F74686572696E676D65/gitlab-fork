@@ -11,6 +11,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::ContainerScanning do
   let(:report) { Gitlab::Ci::Reports::Security::Report.new(artifact.file_type, pipeline, 2.weeks.ago) }
   let(:image) { 'registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:bc09fe2e0721dfaeee79364115aeedf2174cce0947b9ae5fe7c33312ee019a4e' }
   let(:default_branch_image) { 'registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest' }
+  let(:expected_name) { 'registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0@sha256:glibc' }
 
   shared_examples 'report' do
     it "parses all identifiers and findings for unapproved vulnerabilities" do
@@ -39,6 +40,10 @@ RSpec.describe Gitlab::Ci::Parsers::Security::ContainerScanning do
 
     it "adds report image's name to raw_metadata" do
       expect(Gitlab::Json.parse(report.findings.first.raw_metadata).dig('location', 'image')).to eq(image)
+    end
+
+    it 'returns name based on image' do
+      expect(report.findings.first.name).to include(expected_name)
     end
   end
 
