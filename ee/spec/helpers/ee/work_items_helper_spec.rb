@@ -48,6 +48,24 @@ RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
     end
   end
 
+  describe '#add_work_item_show_breadcrumb' do
+    subject(:add_work_item_show_breadcrumb) { helper.add_work_item_show_breadcrumb(resource_parent, work_item.iid) }
+
+    # rubocop:disable RSpec/FactoryBot/AvoidCreate -- Needed for querying the work item type
+    let_it_be(:resource_parent) { create(:group) }
+
+    context 'when an epic' do
+      let(:work_item) { create(:work_item, :epic, namespace: resource_parent) }
+
+      it 'adds the correct breadcrumb' do
+        expect(helper).to receive(:add_to_breadcrumbs).with('Epics', group_epics_path(resource_parent))
+
+        add_work_item_show_breadcrumb
+      end
+    end
+    # rubocop:enable RSpec/FactoryBot/AvoidCreate
+  end
+
   describe '#work_items_list_data' do
     let_it_be(:group) { build(:group) }
 
