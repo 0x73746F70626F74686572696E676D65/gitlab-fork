@@ -36,6 +36,15 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      transitionProps: {
+        name: 'fade',
+        delay: 200,
+        duration: 300,
+      },
+    };
+  },
   computed: {
     sortedWorkspaces() {
       return [...this.workspaces].sort(this.sortWorkspacesByTerminatedState);
@@ -133,6 +142,8 @@ export default {
         :items="sortedWorkspaces"
         stacked="sm"
         :fields="$options.fields"
+        :tbody-transition-props="transitionProps"
+        primary-key="name"
         :tbody-tr-attr="(item) => ({ 'data-testid': item.name })"
       >
         <template #cell(status)="{ item }">
