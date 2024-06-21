@@ -80,6 +80,8 @@ module EE
         end
 
         def create_synced_related_epic_link!
+          return unless referenced_synced_epics.any?
+
           sync_params = {
             link_type: params[:link_type],
             target_issuable: referenced_synced_epics,
