@@ -53,9 +53,7 @@ module Gitlab
           if ::Gitlab::Saas.feature_available?(:gitlab_duo_saas_only)
             true
           else
-            # experiment features are only available on .com until we implement
-            # https://gitlab.com/groups/gitlab-org/-/epics/13400
-            false
+            ::Gitlab::CurrentSettings.instance_level_ai_beta_features_enabled?
           end
         end
 

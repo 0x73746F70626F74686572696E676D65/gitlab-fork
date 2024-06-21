@@ -95,11 +95,7 @@ module Llm
       end
 
       def ai_action_enabled?(prompt_message)
-        if prompt_message.chat?
-          Feature.enabled?(:ai_duo_chat_switch, type: :ops)
-        else
-          Feature.enabled?(:ai_global_switch, type: :ops)
-        end
+        Gitlab::Llm::Utils::FlagChecker.flag_enabled_for_feature?(prompt_message.ai_action.to_sym)
       end
 
       def logger

@@ -45,7 +45,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
       mutation.resolve(**input)
     end
 
-    shared_examples_for 'an AI action when feature flag disabled' do
+    shared_examples_for 'an AI action when feature flag disabled' do |feature_flag = :ai_global_switch|
       context 'when the user can perform AI action' do
         before do
           resource.project.add_developer(user)
@@ -53,7 +53,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
 
         context 'when feature flag is disabled' do
           before do
-            stub_feature_flags(ai_global_switch: false)
+            stub_feature_flags(feature_flag => false)
           end
 
           it 'raises error' do
@@ -205,29 +205,12 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
     context 'when chat input is set ' do
       let_it_be(:project) { create(:project, :repository, developers: user) }
       let_it_be(:issue) { create(:issue, project: project) }
-
       let(:input) { { chat: { resource_id: resource_id } } }
+      let(:expected_method) { :chat }
+      let(:expected_options) { { referer_url: "foobar", user_agent: "user-agent" } }
 
-      it_behaves_like 'an AI action' do
-        let(:expected_method) { :chat }
-        let(:expected_options) { { referer_url: "foobar", user_agent: "user-agent" } }
-      end
-
-      context 'when the user can perform AI action' do
-        before do
-          resource.project.add_developer(user)
-        end
-
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(ai_duo_chat_switch: false)
-          end
-
-          it 'raises error' do
-            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-          end
-        end
-      end
+      it_behaves_like 'an AI action'
+      it_behaves_like 'an AI action when feature flag disabled', :ai_duo_chat_switch
     end
 
     context 'when summarize_comments input is set' do
@@ -246,6 +229,25 @@ RSpec.describe Mutations::Ai::Action, feature_category: :ai_abstraction_layer do
 
       it_behaves_like 'an AI action'
       it_behaves_like 'an AI action when feature flag disabled'
+    end
+
+    context 'when input is set for feature in self-managed' do
+      let(:input) { { summarize_comments: { resource_id: resource_id }, client_subscription_id: 'id' } }
+      let(:expected_method) { :summarize_comments }
+      let(:expected_options) { { client_subscription_id: 'id', user_agent: 'user-agent' } }
+
+      before do
+        stub_const(
+          "::Gitlab::Llm::Utils::AiFeaturesCatalogue::LIST",
+          summarize_comments: {
+            self_managed: true,
+            execute_method: ::Llm::GenerateSummaryService,
+            internal: false
+          }
+        )
+      end
+
+      it_behaves_like 'an AI action'
     end
 
     context 'when explain_vulnerability input is set', :saas do

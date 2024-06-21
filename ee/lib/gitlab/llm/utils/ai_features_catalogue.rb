@@ -158,6 +158,14 @@ module Gitlab
         def self.with_service_class
           LIST.select { |_, v| v[:service_class].present? }
         end
+
+        def self.for_saas
+          LIST.select { |_, v| v[:self_managed] == false }
+        end
+
+        def self.for_sm
+          LIST.select { |_, v| v[:self_managed] == true }
+        end
       end
     end
   end

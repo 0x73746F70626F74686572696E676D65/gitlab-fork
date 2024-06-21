@@ -63,10 +63,7 @@ module Mutations
       private
 
       def check_feature_flag_enabled!(method)
-        is_chat = method.eql?(:chat)
-
-        return if Feature.enabled?(:ai_duo_chat_switch, type: :ops) && is_chat
-        return if Feature.enabled?(:ai_global_switch, type: :ops) && !is_chat
+        return if Gitlab::Llm::Utils::FlagChecker.flag_enabled_for_feature?(method)
 
         raise Gitlab::Graphql::Errors::ResourceNotAvailable, 'required feature flag is disabled.'
       end
