@@ -3,7 +3,6 @@ import {
   GlButtonGroup,
   GlButton,
   GlCollapsibleListbox,
-  GlIcon,
   GlBadge,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
@@ -15,7 +14,6 @@ export default {
     GlButtonGroup,
     GlButton,
     GlCollapsibleListbox,
-    GlIcon,
     GlBadge,
   },
   directives: {
@@ -105,7 +103,6 @@ export default {
       <template #list-item="{ item }">
         <div :data-testid="`${item.action}-button`">
           <strong>
-            <gl-icon v-if="item.icon" data-testid="item-icon" :name="item.icon" class="gl-mr-2" />
             {{ item.name }}
           </strong>
           <p class="gl-m-0">

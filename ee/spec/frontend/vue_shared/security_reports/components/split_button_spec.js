@@ -28,7 +28,6 @@ describe('Split Button', () => {
   const findButton = () => wrapper.findComponent(GlButton);
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findListboxItem = () => wrapper.findComponent(GlListboxItem);
-  const findListboxIcon = () => wrapper.findComponent('[data-testid="item-icon"]');
   const findListboxBadge = () => findListbox().findComponent(GlBadge);
   const findButtonBadge = () => findButton().findComponent(GlBadge);
 
@@ -140,14 +139,6 @@ describe('Split Button', () => {
       const item = findListboxItem();
       expect(item.text()).toContain('button one');
       expect(item.text()).toContain("button one's tagline");
-    });
-
-    it('renders the icon', () => {
-      const icon = 'tanuki-ai';
-      const { buttons } = defaultProps;
-      createComponent({ buttons: [{ ...buttons[0], icon }, buttons[1]] }, mountExtended);
-
-      expect(findListboxIcon().props('name')).toBe(icon);
     });
 
     it('renders the badge', () => {
