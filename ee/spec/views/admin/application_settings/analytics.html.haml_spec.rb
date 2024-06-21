@@ -17,7 +17,6 @@ RSpec.describe 'admin/application_settings/analytics.html.haml', feature_categor
     it 'renders the content' do
       render
 
-      expect(rendered).to have_css '#js-product-analytics-settings'
       expect(rendered).to have_css "[data-name='application_setting[product_analytics_configurator_connection_string]']"
       expect(rendered).to have_field s_('AdminSettings|Collector host')
       expect(rendered).to have_field s_('AdminSettings|Cube API URL')

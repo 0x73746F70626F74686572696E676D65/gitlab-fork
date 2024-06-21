@@ -1,20 +1,24 @@
 - page_title _("Analytics")
 - add_page_specific_style 'page_bundles/settings'
-- expanded = integration_expanded?('product_analytics_')
+- @hide_search_settings = true
 
-= render ::Layouts::SettingsBlockComponent.new(_('Product analytics'),
-  id: 'js-product-analytics-settings',
-  expanded: expanded) do |c|
-  - c.with_description do
+.settings-section
+  .settings-sticky-header
+    .settings-sticky-header-inner
+      %h2.gl-heading-2{ class: '!gl-mb-2' }
+        = _('Product analytics')
+  %p.gl-text-secondary
     = s_('AdminSettings|Configure product analytics to track events within your project applications.')
     = link_to _('Learn more.'), help_page_path('user/product_analytics/index')
-  - c.with_body do
-    %p
+
+  = render Pajamas::AlertComponent.new(dismissible: false) do |c|
+    - c.with_body do
       - link = link_to('', help_page_path('user/product_analytics/index', anchor: 'product-analytics-provider'), target: '_blank', rel: 'noopener noreferrer')
       = safe_format(s_('AdminSettings|If GitLab manages your cluster, then GitLab retains your analytics data for 1 year. %{link_start}Learn more about data retention policy%{link_end}.'), tag_pair(link, :link_start, :link_end))
-    = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-product-analytics-settings'), html: { class: 'fieldset-form', id: 'product-analytics-settings', autocomplete: 'off' } do |f|
-      = form_errors(@application_setting)
 
+  .gl-mt-4
+    = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path, html: { class: 'fieldset-form', id: 'product-analytics-settings', autocomplete: 'off' } do |f|
+      = form_errors(@application_setting)
       %fieldset
         .form-group
           = f.gitlab_ui_checkbox_component :product_analytics_enabled, s_('AdminSettings|Enable product analytics')
