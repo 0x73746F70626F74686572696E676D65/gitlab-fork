@@ -149,7 +149,7 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
 
     let_it_be_with_reload(:policy1_security_finding) do
       pipeline_scan = create(:security_scan, :succeeded, build: ci_build, scan_type: 'dependency_scanning')
-      create(:security_finding, :with_finding_data, scan: pipeline_scan, scanner: scanner, severity: 'high',
+      create(:security_finding, scan: pipeline_scan, scanner: scanner, severity: 'high',
         uuid: uuid, location: { start_line: 3, file: '.env' })
     end
 
@@ -195,7 +195,7 @@ RSpec.describe Security::ScanResultPolicies::PolicyViolationDetails, feature_cat
         before_all do
           pipeline_scan = create(:security_scan, :succeeded, build: other_pipeline.builds.first,
             scan_type: 'dependency_scanning')
-          create(:security_finding, :with_finding_data, scan: pipeline_scan, scanner: scanner, severity: 'high',
+          create(:security_finding, scan: pipeline_scan, scanner: scanner, severity: 'high',
             uuid: uuid, location: { start_line: 3, file: '.env' })
           policy1_violation.update!(violation_data: policy1_violation.violation_data.merge(
             context: { pipeline_ids: [pipeline.id, other_pipeline.id] }

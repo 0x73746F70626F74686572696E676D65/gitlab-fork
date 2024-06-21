@@ -32,7 +32,6 @@ RSpec.describe "Pipeline > User sees security tab", :js, feature_category: :vuln
     create_list(
       :security_finding,
       21, # rubocop:disable FactoryBot/ExcessiveCreateList -- see note above
-      :with_finding_data,
       scanner: vulnerabilities_scanner,
       scan: security_scan,
       deduplicated: true

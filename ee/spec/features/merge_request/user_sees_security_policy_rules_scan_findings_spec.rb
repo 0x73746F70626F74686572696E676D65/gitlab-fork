@@ -59,7 +59,7 @@ RSpec.describe 'Merge request > User sees security policy with scan finding rule
       create(:ee_ci_pipeline, :success, :with_sast_report, merge_requests_as_head_pipeline: [merge_request],
         project: project, ref: branch_ref, sha: sha).tap do |p|
         pipeline_scan = create(:security_scan, :succeeded, project: project, pipeline: p, scan_type: 'sast')
-        create(:security_finding, :with_finding_data, severity: 'high', scan: pipeline_scan)
+        create(:security_finding, severity: 'high', scan: pipeline_scan)
       end
     end
 

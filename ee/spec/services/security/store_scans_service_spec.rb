@@ -134,7 +134,7 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
 
             context 'when secret detection security scans exist for the pipeline' do
               let_it_be(:scan) { create(:security_scan, scan_type: :secret_detection, build: sast_build) }
-              let_it_be(:finding) { create(:security_finding, :with_finding_data, scan: scan) }
+              let_it_be(:finding) { create(:security_finding, scan: scan) }
 
               context 'and the pipeline is in a private project' do
                 before do
