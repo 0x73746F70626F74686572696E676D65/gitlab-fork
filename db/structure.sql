@@ -29461,8 +29461,6 @@ CREATE INDEX scan_finding_approval_project_rule_index_created_at_project_id ON a
 
 CREATE INDEX scan_finding_approval_project_rule_index_project_id ON approval_project_rules USING btree (project_id) WHERE (report_type = 4);
 
-CREATE INDEX security_findings_confidence_idx ON ONLY security_findings USING btree (confidence);
-
 CREATE INDEX security_findings_project_fingerprint_idx ON ONLY security_findings USING btree (project_fingerprint);
 
 CREATE INDEX security_findings_scan_id_deduplicated_idx ON ONLY security_findings USING btree (scan_id, deduplicated);
