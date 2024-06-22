@@ -28,8 +28,8 @@ module Gitlab
     #
     # The new_threshold is so that we don't allow unlimited number of SQL
     # queries while the issue is being fixed.
-    def self.disable!(issue_url, new_threshold: 1000)
-      raise ArgumentError, 'new_threshold cannot exceed 5_000' unless new_threshold < 5_000
+    def self.disable!(issue_url, new_threshold: 200)
+      raise ArgumentError, 'new_threshold cannot exceed 2_000' unless new_threshold < 2_000
 
       unless issue_url.start_with?('https://')
         raise(

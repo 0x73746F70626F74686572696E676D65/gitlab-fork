@@ -61,7 +61,7 @@ RSpec.describe Gitlab::QueryLimiting, :request_store, feature_category: :databas
     it 'sets a new threshold' do
       described_class.disable!('https://example.com')
 
-      expect(described_class.threshold).to eq(1_000)
+      expect(described_class.threshold).to eq(200)
     end
 
     it 'allows the number of SQL queries to be incremented' do
