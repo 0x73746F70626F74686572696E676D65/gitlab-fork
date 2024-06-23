@@ -203,6 +203,19 @@ RSpec.describe WorkItems::RelatedWorkItemLinks::CreateService, feature_category:
           end
         end
 
+        context 'when the target work item does not a have synced epic' do
+          let_it_be(:task) { create(:work_item, :task, project: project) }
+
+          let(:params) do
+            { target_issuable: [task], synced_work_item: synced_work_item, link_type: 'blocks' }
+          end
+
+          it 'does not create related epic links for targets' do
+            expect { link_items }.to change { ::WorkItems::RelatedWorkItemLink.count }.by(1)
+                                 .and not_change { Epic::RelatedEpicLink.count }
+          end
+        end
+
         context 'when something goes wrong creating work item link' do
           before do
             allow_next_instance_of(link_class) do |instance|
