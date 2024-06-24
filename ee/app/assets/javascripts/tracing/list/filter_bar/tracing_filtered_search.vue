@@ -1,9 +1,12 @@
 <script>
+import { GlIcon, GlAlert, GlTooltipDirective } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import DateRangeFilter from '~/observability/components/date_range_filter.vue';
 import { SORTING_OPTIONS } from '~/observability/constants';
+import { isTracingDateRangeOutOfBounds } from '~/observability/utils';
+import { nDaysBefore, getCurrentUtcDate } from '~/lib/utils/datetime_utility';
 import {
   SERVICE_NAME_FILTER_TOKEN_TYPE,
   OPERATION_FILTER_TOKEN_TYPE,
@@ -23,11 +26,22 @@ import BaseSearchToken from './tracing_base_search_token.vue';
 
 export default {
   components: {
+    GlAlert,
     FilteredSearch,
     DateRangeFilter,
+    GlIcon,
+  },
+  directives: {
+    tooltip: GlTooltipDirective,
   },
   i18n: {
     searchInputPlaceholder: s__('Tracing|Filter traces'),
+    dateRangeLimitInfoMessage: s__(
+      'Tracing|Time range is currently limited to a maximum of 12 hours.',
+    ),
+    dateRangeWarningMessage: s__(
+      'Tracing|Time range is currently limited to a maximum of 12 hours. Please select a smaller range.',
+    ),
   },
   props: {
     attributesFilters: {
@@ -55,6 +69,9 @@ export default {
     };
   },
   computed: {
+    defaultMinDate() {
+      return nDaysBefore(getCurrentUtcDate(), 30, { utc: true });
+    },
     sortOptions() {
       return [
         {
@@ -124,6 +141,9 @@ export default {
         },
       ];
     },
+    dateRangeValid() {
+      return !isTracingDateRangeOutOfBounds(this.dateRangeFilterValue);
+    },
   },
   methods: {
     onAttributesFilters(attributesFilters) {
@@ -132,7 +152,9 @@ export default {
     },
     onDateRangeSelected(dateRangeFilter) {
       this.dateRangeFilterValue = dateRangeFilter;
-      this.submitFilter();
+      if (this.dateRangeValid) {
+        this.submitFilter();
+      }
     },
     submitFilter() {
       this.$emit('filter', {
@@ -166,11 +188,26 @@ export default {
 
     <hr class="gl-my-3" />
 
-    <date-range-filter
-      :selected="dateRangeFilterValue"
-      :max-date-range="$options.MAX_PERIOD_DAYS"
-      :date-options="$options.PERIOD_FILTER_OPTIONS"
-      @onDateRangeSelected="onDateRangeSelected"
-    />
+    <div class="gl-flex gl-gap-3">
+      <date-range-filter
+        :selected="dateRangeFilterValue"
+        :max-date-range="2"
+        :default-min-date="defaultMinDate"
+        :date-options="$options.PERIOD_FILTER_OPTIONS"
+        @onDateRangeSelected="onDateRangeSelected"
+      />
+
+      <div class="gl-text-secondary gl-align-self-center">
+        <gl-icon
+          v-tooltip="$options.i18n.dateRangeLimitInfoMessage"
+          name="information-o"
+          :size="16"
+        />
+      </div>
+    </div>
+
+    <gl-alert v-if="!dateRangeValid" variant="danger" class="gl-my-3" :dismissible="false">{{
+      $options.i18n.dateRangeWarningMessage
+    }}</gl-alert>
   </div>
 </template>
