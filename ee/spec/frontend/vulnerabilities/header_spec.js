@@ -362,7 +362,7 @@ describe('Vulnerability Header', () => {
         index | name                            | tagline
         ${0}  | ${'Resolve with merge request'} | ${'Automatically apply the patch in a new branch'}
         ${1}  | ${'Download patch to resolve'}  | ${'Download the patch to apply it manually'}
-        ${2}  | ${'Resolve with AI'}            | ${'Use GitLab Duo AI to generate a merge request with a suggested solution'}
+        ${2}  | ${'Resolve with merge request'} | ${'Use GitLab Duo AI to generate a merge request with a suggested solution'}
         ${3}  | ${'Explain vulnerability'}      | ${'Use GitLab Duo AI to provide insights about the vulnerability and suggested solutions'}
       `('passes the button for $name at index $index', async ({ index, name, tagline }) => {
         createWrapper({

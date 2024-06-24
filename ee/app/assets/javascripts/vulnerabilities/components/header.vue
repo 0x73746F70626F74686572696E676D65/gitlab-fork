@@ -29,7 +29,7 @@ import ResolutionAlert from './resolution_alert.vue';
 import StatusDescription from './status_description.vue';
 
 export const CREATE_MR_AI_ACTION = {
-  name: s__('ciReport|Resolve with AI'),
+  name: s__('ciReport|Resolve with merge request'),
   tagline: s__('ciReport|Use GitLab Duo AI to generate a merge request with a suggested solution'),
   action: 'start-subscription',
   icon: 'tanuki-ai',

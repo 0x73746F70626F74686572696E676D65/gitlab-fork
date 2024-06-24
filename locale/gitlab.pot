@@ -62263,9 +62263,6 @@ msgstr ""
 msgid "ciReport|RPS"
 msgstr ""
 
-msgid "ciReport|Resolve with AI"
-msgstr ""
-
 msgid "ciReport|Resolve with merge request"
 msgstr ""
 
