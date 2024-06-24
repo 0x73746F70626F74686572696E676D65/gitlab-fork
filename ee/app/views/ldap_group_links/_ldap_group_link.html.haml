@@ -1,20 +1,18 @@
 %li{ class: 'gl-align-items-center gl-display-flex!' }
   %div
-    %p.gl-font-bold.gl-mb-0
-      = ldap_group_link.cn ? "Group: #{ldap_group_link.cn}" : "Filter: #{ldap_group_link.filter}"
+    %p.gl-font-weight-bold.gl-mb-0
+      = ldap_group_link.cn ? _("Group: %{group_name}") % { group_name: ldap_group_link.cn } : _("Filter: %{filter_name})") % {filter_name: ldap_group_link.filter}
 
     - if ldap_group_link.config
       .light
-        As #{ldap_group_link.human_access} on #{ldap_group_link.provider_label} server
+        = s_("LDAP|As %{human_access} on %{provider_label} server") % { human_access: ldap_group_link.human_access, provider_label: ldap_group_link.provider_label }
     - else
       .cred
         = sprite_icon('warning-solid')
-        Config for LDAP server
-        %code= ldap_group_link.provider
-        is not present in GitLab
+        = safe_format(s_("LDAP|Config for LDAP server %{provider} is not present in GitLab"), provider: content_tag(:code, ldap_group_link.provider))
 
     - unless ldap_group_link.active?
-      (Inactive because syncing with an LDAP user filter is not included in the current license)
+      = s_('LDAP|(Inactive because syncing with an LDAP user filter is not included in the current license)')
 
   = link_button_to group_ldap_group_link_path(group, ldap_group_link), method: :delete, variant: :danger, size: :small, icon: 'unlink', class: 'gl-ml-auto' do
     = _('Remove')

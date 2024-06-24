@@ -27,9 +27,9 @@
         .col-sm-10{ data: { testid: 'ldap-group-field' } }
           #js-ldap-groups-select
           .form-text.text-muted
-            Synchronize #{group.name}'s members with this LDAP group.
+            = s_("LDAP|Synchronize %{group_name}'s members with this LDAP group.") % { group_name: group.name }
             %br
-            If you select an LDAP group you do not belong to you will lose ownership of #{group.name}.
+            = s_("LDAP|If you select an LDAP group you do not belong to you will lose ownership of %{group_name}.") % { group_name: group.name }
 
       - if ::License.feature_available?(:ldap_group_sync_filter)
         .form-group.row.filter-link
@@ -38,10 +38,10 @@
           .col-sm-10
             = f.text_field :filter, placeholder: 'Ex. (&(objectCategory=person)(objectClass=developer))', class: 'form-control xxlarge input-mn-300', data: { testid: 'ldap-user-filter-field' }
             .form-text.text-muted
-              - ldap_link = link_to 'LDAP Search Filter Syntax', 'https://msdn.microsoft.com/en-us/library/aa746475(v=vs.85).aspx'
-              This query must use valid #{ldap_link}. Synchronize #{group.name}'s members with this LDAP user filter.
+              - ldap_link = link_to '', 'https://msdn.microsoft.com/en-us/library/aa746475(v=vs.85).aspx'
+              = safe_format(s_("LDAP|This query must use valid %{ldap_link_start}LDAP Search Filter Syntax%{ldap_link_end}. Synchronize %{group_name}'s members with this LDAP user filter."), tag_pair(ldap_link, :ldap_link_start, :ldap_link_end), group_name: group.name)
               %br
-              If you do not belong to this LDAP user filter you will lose ownership of #{group.name}.
+              = s_("LDAP|If you do not belong to this LDAP user filter you will lose ownership of %{group_name}.") % { group_name: group.name }
 
       .form-group.row
         .col-sm-2.col-form-label
@@ -49,9 +49,9 @@
         .col-sm-10
           = f.select :group_access, options_for_select(GroupMember.access_level_roles), {}, class: 'form-control'
           .form-text.text-muted
-            Default, minimum permission level for LDAP group members of #{group.name}.
+            = s_("LDAP|Default, minimum permission level for LDAP group members of %{group_name}.") % { group_name: group.name }
             %br
-            You can manage permission levels for individual group members in the Members tab.
+            = s_('LDAP|You can manage permission levels for individual group members in the Members tab.')
 
     .form-actions.gl-mb-5
       = f.submit s_("LDAP|Add synchronization"), pajamas_button: true, data: { testid: 'add-sync-button' }
