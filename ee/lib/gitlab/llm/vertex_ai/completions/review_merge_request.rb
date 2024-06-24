@@ -64,7 +64,7 @@ module Gitlab
 
             @draft_notes_params << {
               merge_request: merge_request,
-              author: Users::Internal.llm_bot,
+              author: Users::Internal.duo_code_review_bot,
               note: response_modifier.response_body,
               position: {
                 base_sha: diff_refs.base_sha,
@@ -88,7 +88,7 @@ module Gitlab
             end
 
             DraftNote.bulk_insert!(draft_notes, batch_size: 20)
-            DraftNotes::PublishService.new(merge_request, Users::Internal.llm_bot).execute
+            DraftNotes::PublishService.new(merge_request, Users::Internal.duo_code_review_bot).execute
           end
         end
       end

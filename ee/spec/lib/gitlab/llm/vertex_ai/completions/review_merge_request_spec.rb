@@ -7,7 +7,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
   let(:tracking_context) { { action: :review_merge_request, request_id: 'uuid' } }
   let(:options) { {} }
   let(:response_modifier) { double }
-  let_it_be(:llm_bot) { create(:user, :llm_bot) }
+  let_it_be(:duo_code_review_bot) { create(:user, :duo_code_review_bot) }
   let_it_be(:user) { create(:user) }
   let_it_be(:merge_request) { create(:merge_request) }
   let_it_be(:diff_refs) { merge_request.diff_refs }
@@ -126,7 +126,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
       it 'builds draft note and publish to create diff note on new and updated files' do
         new_file_draft_note_params = {
           merge_request: merge_request,
-          author: llm_bot,
+          author: duo_code_review_bot,
           note: example_answer,
           position: {
             base_sha: diff_refs.base_sha,
@@ -143,7 +143,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
 
         updated_file_draft_note_params = {
           merge_request: merge_request,
-          author: llm_bot,
+          author: duo_code_review_bot,
           note: example_answer,
           position: {
             base_sha: diff_refs.base_sha,
@@ -164,7 +164,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
         expect(DraftNote).to receive(:new).with(new_file_draft_note_params).and_return(draft_note_1)
         expect(DraftNote).to receive(:new).with(updated_file_draft_note_params).and_return(draft_note_2)
         expect(DraftNote).to receive(:bulk_insert!).with([draft_note_1, draft_note_2], batch_size: 20)
-        expect_next_instance_of(DraftNotes::PublishService, merge_request, llm_bot) do |svc|
+        expect_next_instance_of(DraftNotes::PublishService, merge_request, duo_code_review_bot) do |svc|
           expect(svc).to receive(:execute)
         end
 
@@ -179,7 +179,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
         it 'builds draft note and publish to create diff note on new and updated files' do
           new_file_draft_note_params = {
             merge_request: merge_request,
-            author: llm_bot,
+            author: duo_code_review_bot,
             note: example_answer,
             position: {
               base_sha: diff_refs.base_sha,
@@ -198,7 +198,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Completions::ReviewMergeRequest, feature_c
 
           expect(DraftNote).to receive(:new).with(new_file_draft_note_params).and_return(draft_note_1)
           expect(DraftNote).to receive(:bulk_insert!).with([draft_note_1], batch_size: 20)
-          expect_next_instance_of(DraftNotes::PublishService, merge_request, llm_bot) do |svc|
+          expect_next_instance_of(DraftNotes::PublishService, merge_request, duo_code_review_bot) do |svc|
             expect(svc).to receive(:execute)
           end
 

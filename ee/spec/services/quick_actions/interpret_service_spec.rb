@@ -1384,8 +1384,8 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
 
     it_behaves_like 'quick actions that change work item type ee'
 
-    context 'ai_review command' do
-      let(:content) { '/ai_review' }
+    context 'duo_code_review command' do
+      let(:content) { '/duo_code_review' }
       let(:allowed?) { true }
 
       before do
