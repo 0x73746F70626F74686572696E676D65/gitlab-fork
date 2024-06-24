@@ -4,6 +4,7 @@ import { toYmd } from '~/analytics/shared/utils';
 import { AI_METRICS } from '~/analytics/shared/constants';
 import { dasherize } from '~/lib/utils/text_utility';
 import { formatNumber, s__ } from '~/locale';
+import glAbilitiesMixin from '~/vue_shared/mixins/gl_abilities_mixin';
 import { BUCKETING_INTERVAL_ALL } from '../../graphql/constants';
 import VulnerabilitiesQuery from '../graphql/vulnerabilities.query.graphql';
 import FlowMetricsQuery from '../graphql/flow_metrics.query.graphql';
@@ -11,16 +12,17 @@ import DoraMetricsQuery from '../graphql/dora_metrics.query.graphql';
 import AiMetricsQuery from '../graphql/ai_metrics.query.graphql';
 import MetricTableCell from '../../components/metric_table_cell.vue';
 import TrendIndicator from '../../components/trend_indicator.vue';
-import { DASHBOARD_LOADING_FAILURE } from '../../constants';
+import { DASHBOARD_LOADING_FAILURE, RESTRICTED_METRIC_ERROR } from '../../constants';
 import { mergeTableData, generateValueStreamDashboardStartDate } from '../../utils';
 import {
   generateDateRanges,
   generateTableColumns,
   generateSkeletonTableData,
   generateTableRows,
+  getRestrictedTableMetrics,
+  generateTableAlerts,
 } from '../utils';
 import {
-  AI_IMPACT_TABLE_METRICS,
   SUPPORTED_DORA_METRICS,
   SUPPORTED_FLOW_METRICS,
   SUPPORTED_VULNERABILITY_METRICS,
@@ -49,6 +51,7 @@ export default {
     MetricTableCell,
     TrendIndicator,
   },
+  mixins: [glAbilitiesMixin()],
   props: {
     namespace: {
       type: String,
@@ -77,20 +80,29 @@ export default {
           metrics: SUPPORTED_VULNERABILITY_METRICS,
           queryFn: this.fetchVulnerabilitiesMetricsQuery,
         },
-      ];
+      ].filter(({ metrics }) => !this.areAllMetricsRestricted(metrics));
+    },
+    restrictedMetrics() {
+      return getRestrictedTableMetrics(this.glAbilities);
     },
   },
   async mounted() {
     const failedTableMetrics = await this.resolveQueries();
-    if (failedTableMetrics.length > 0) {
-      const errors = [`${DASHBOARD_LOADING_FAILURE}: ${failedTableMetrics.join(', ')}`];
-      this.$emit('set-alerts', { errors });
+
+    const alerts = generateTableAlerts([[RESTRICTED_METRIC_ERROR, this.restrictedMetrics]]);
+    const warnings = generateTableAlerts([[DASHBOARD_LOADING_FAILURE, failedTableMetrics]]);
+    if (alerts.length > 0 || warnings.length > 0) {
+      this.$emit('set-alerts', { alerts, warnings, canRetry: warnings.length > 0 });
     }
   },
   created() {
-    this.tableData = generateSkeletonTableData();
+    this.tableData = generateSkeletonTableData(this.restrictedMetrics);
   },
   methods: {
+    areAllMetricsRestricted(metrics) {
+      return metrics.every((metric) => this.restrictedMetrics.includes(metric));
+    },
+
     rowAttributes({ metric: { identifier } }) {
       return {
         'data-testid': `ai-impact-metric-${dasherize(identifier)}`,
@@ -103,9 +115,7 @@ export default {
       );
 
       // Return an array of the failed metric IDs
-      return result
-        .reduce((acc, { reason = [] }) => acc.concat(reason), [])
-        .map((metric) => AI_IMPACT_TABLE_METRICS[metric].label);
+      return result.reduce((failedMetrics, { reason = [] }) => failedMetrics.concat(reason), []);
     },
 
     async fetchTableMetrics({ metrics, queryFn }) {
