@@ -8,7 +8,12 @@ import {
 } from '~/lib/utils/datetime_utility';
 import { isPositiveInteger } from '~/lib/utils/number_utils';
 import { formatMetric, percentChange, isMetricInTimePeriods } from '../utils';
-import { AI_IMPACT_TABLE_METRICS } from './constants';
+import {
+  AI_IMPACT_TABLE_METRICS,
+  SUPPORTED_DORA_METRICS,
+  SUPPORTED_FLOW_METRICS,
+  SUPPORTED_VULNERABILITY_METRICS,
+} from './constants';
 
 const getColumnKeyForMonth = (monthsAgo) => `${monthsAgo}-months-ago`;
 const getStartOfMonth = (now) => dateAtFirstDayOfMonth(getStartOfDay(now));
@@ -73,13 +78,16 @@ export const generateTableColumns = (now) => [
  * Creates the table rows filled with blank data. Once the data has loaded,
  * it can be filled into the returned skeleton using `mergeTableData`.
  *
+ * @param {Array} excludeMetrics - Array of metric identifiers to remove from the table
  * @returns {Array} array of data-less table rows
  */
-export const generateSkeletonTableData = () =>
-  Object.entries(AI_IMPACT_TABLE_METRICS).map(([identifier, { label, invertTrendColor }]) => ({
-    metric: { identifier, value: label },
-    invertTrendColor,
-  }));
+export const generateSkeletonTableData = (excludeMetrics = []) =>
+  Object.entries(AI_IMPACT_TABLE_METRICS)
+    .filter(([identifier]) => !excludeMetrics.includes(identifier))
+    .map(([identifier, { label, invertTrendColor }]) => ({
+      metric: { identifier, value: label },
+      invertTrendColor,
+    }));
 
 /**
  * Takes N time periods for a single metric and generates the row for the table.
@@ -149,3 +157,53 @@ export const calculateCodeSuggestionsUsageRate = ({
 
   return (codeSuggestionsContributorsCount / codeContributorsCount) * 100;
 };
+
+/**
+ * @typedef {Object} Permissions
+ * @property {Boolean} readDora4Analytics
+ * @property {Boolean} readCycleAnalytics
+ * @property {Boolean} readSecurityResource
+ */
+
+/**
+ * Determines the metrics that should not be rendered in the comparison table due to
+ * lack of permissions.
+ *
+ * @param {Permissions}
+ * @returns {Array} The metrics restricted due to lack of permissions
+ */
+export const getRestrictedTableMetrics = ({
+  readDora4Analytics,
+  readCycleAnalytics,
+  readSecurityResource,
+}) =>
+  [
+    [SUPPORTED_DORA_METRICS, readDora4Analytics],
+    [SUPPORTED_FLOW_METRICS, readCycleAnalytics],
+    [SUPPORTED_VULNERABILITY_METRICS, readSecurityResource],
+  ].reduce((restrictedMetrics, [metrics, isAllowed]) => {
+    return isAllowed ? restrictedMetrics : [...restrictedMetrics, ...metrics];
+  }, []);
+
+/**
+ * @typedef {Array<String>} MetricIds
+ */
+
+/**
+ * @typedef {Array<[String, MetricIds]>} AlertGroup
+ */
+
+/**
+ * Creates a list of panel alerts to be rendered for the metric table.
+ *
+ * @param {Array<AlertGroup>} alertGroups - In the format [message, metrics]. The list of
+ *    potential alerts to show, if there are any metrics present.
+ * @returns {Array<String>} The list of alerts to be rendered for the metric table.
+ */
+export const generateTableAlerts = (alertGroups) =>
+  alertGroups.reduce((alerts, [message, metrics]) => {
+    if (metrics.length === 0) return alerts;
+
+    const formattedMetrics = metrics.map((metric) => AI_IMPACT_TABLE_METRICS[metric].label);
+    return [...alerts, `${message}: ${formattedMetrics.join(', ')}`];
+  }, []);

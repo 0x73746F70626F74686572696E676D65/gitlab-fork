@@ -29,6 +29,11 @@ import { mockTableValues, mockTableLargeValues, mockAiMetricsValues } from '../m
 const mockTypePolicy = {
   Query: { fields: { project: { merge: false }, group: { merge: false } } },
 };
+const mockGlAbilities = {
+  readDora4Analytics: true,
+  readCycleAnalytics: true,
+  readSecurityResource: true,
+};
 
 Vue.use(VueApollo);
 
@@ -78,22 +83,10 @@ describe('Metric table', () => {
     );
   };
 
-  const createWrapper = ({ props = {}, apolloProvider = createMockApolloProvider() } = {}) => {
-    wrapper = mountExtended(MetricTable, {
-      apolloProvider,
-      propsData: {
-        namespace,
-        isProject,
-        ...props,
-      },
-    });
-
-    return waitForPromises();
-  };
-
-  const createLargeValuesWrapper = ({
+  const createWrapper = ({
     props = {},
-    apolloProvider = createMockApolloProviderLargeValues(),
+    glAbilities = {},
+    apolloProvider = createMockApolloProvider(),
   } = {}) => {
     wrapper = mountExtended(MetricTable, {
       apolloProvider,
@@ -101,6 +94,12 @@ describe('Metric table', () => {
         namespace,
         isProject,
         ...props,
+      },
+      provide: {
+        glAbilities: {
+          ...mockGlAbilities,
+          ...glAbilities,
+        },
       },
     });
 
@@ -160,8 +159,7 @@ describe('Metric table', () => {
 
       it('emits `set-alerts` with the name of the failed metric', () => {
         expect(wrapper.emitted('set-alerts')).toHaveLength(1);
-        expect(wrapper.emitted('set-alerts')[0][0].errors).toHaveLength(1);
-        expect(wrapper.emitted('set-alerts')[0][0].errors[0]).toContain(name);
+        expect(wrapper.emitted('set-alerts')[0][0].warnings[0]).toContain(name);
       });
     });
 
@@ -206,6 +204,32 @@ describe('Metric table', () => {
     });
   });
 
+  describe('restricted metrics', () => {
+    beforeEach(() => {
+      return createWrapper({
+        glAbilities: { readDora4Analytics: false },
+      });
+    });
+
+    it.each(['ai-impact-metric-deployment-frequency', 'ai-impact-metric-change-failure-rate'])(
+      'does not render the `%s` metric',
+      (testId) => {
+        expect(findTableRow(testId).exists()).toBe(false);
+      },
+    );
+
+    it('emits `set-alerts` warning with the restricted metrics', () => {
+      expect(wrapper.emitted('set-alerts').length).toBe(1);
+      expect(wrapper.emitted('set-alerts')[0][0]).toEqual({
+        canRetry: false,
+        warnings: [],
+        alerts: expect.arrayContaining([
+          'You have insufficient permissions to view: Deployment frequency, Change failure rate',
+        ]),
+      });
+    });
+  });
+
   describe('i18n', () => {
     describe.each`
       language   | formattedValue
@@ -214,7 +238,7 @@ describe('Metric table', () => {
     `('When the language is $language', ({ formattedValue, language }) => {
       beforeEach(() => {
         setLanguage(language);
-        return createLargeValuesWrapper();
+        return createWrapper({ apolloProvider: createMockApolloProviderLargeValues() });
       });
 
       it('formats numbers correctly', () => {
