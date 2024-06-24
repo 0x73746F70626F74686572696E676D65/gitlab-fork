@@ -59,3 +59,7 @@ end
 direct :subscription_portal_renew_subscription do |group_id|
   Addressable::URI.join(subscription_portal_url, "/gitlab/namespaces/#{group_id}/renew").to_s
 end
+
+direct :subscription_portal_new_subscription do
+  Addressable::URI.join(subscription_portal_url, "/subscriptions/new").to_s
+end
