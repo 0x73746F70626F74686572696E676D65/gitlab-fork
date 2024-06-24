@@ -65,6 +65,7 @@ Example response:
     "id": 2,
     "name": "rule1",
     "rule_type": "any_approver",
+    "report_type": null,
     "eligible_approvers": [],
     "approvals_required": 3,
     "users": [],
@@ -77,6 +78,20 @@ Example response:
     "id": 3,
     "name": "rule2",
     "rule_type": "code_owner",
+    "report_type": null,
+    "eligible_approvers": [],
+    "approvals_required": 2,
+    "users": [],
+    "groups": [],
+    "contains_hidden_groups": false,
+    "protected_branches": [],
+    "applies_to_all_protected_branches": true
+  },
+  {
+    "id": 4,
+    "name": "rule2",
+    "rule_type": "report_approver",
+    "report_type": "code_coverage",
     "eligible_approvers": [],
     "approvals_required": 2,
     "users": [],
@@ -327,6 +342,7 @@ Supported attributes:
     "id": 1,
     "name": "security",
     "rule_type": "regular",
+    "report_type": null,
     "eligible_approvers": [
       {
         "id": 5,
@@ -400,7 +416,87 @@ Supported attributes:
         "code_owner_approval_required": "false"
       }
     ],
-    "contains_hidden_groups": false
+    "contains_hidden_groups": false,
+  },
+  {
+    "id": 2,
+    "name": "Coverage-Check",
+    "rule_type": "report_approver",
+    "report_type": "code_coverage",
+    "eligible_approvers": [
+      {
+        "id": 5,
+        "name": "John Doe",
+        "username": "jdoe",
+        "state": "active",
+        "avatar_url": "https://www.gravatar.com/avatar/0?s=80&d=identicon",
+        "web_url": "http://localhost/jdoe"
+      },
+      {
+        "id": 50,
+        "name": "Group Member 1",
+        "username": "group_member_1",
+        "state": "active",
+        "avatar_url": "https://www.gravatar.com/avatar/0?s=80&d=identicon",
+        "web_url": "http://localhost/group_member_1"
+      }
+    ],
+    "approvals_required": 3,
+    "users": [
+      {
+        "id": 5,
+        "name": "John Doe",
+        "username": "jdoe",
+        "state": "active",
+        "avatar_url": "https://www.gravatar.com/avatar/0?s=80&d=identicon",
+        "web_url": "http://localhost/jdoe"
+      }
+    ],
+    "groups": [
+      {
+        "id": 5,
+        "name": "group1",
+        "path": "group1",
+        "description": "",
+        "visibility": "public",
+        "lfs_enabled": false,
+        "avatar_url": null,
+        "web_url": "http://localhost/groups/group1",
+        "request_access_enabled": false,
+        "full_name": "group1",
+        "full_path": "group1",
+        "parent_id": null,
+        "ldap_cn": null,
+        "ldap_access": null
+      }
+    ],
+    "applies_to_all_protected_branches": false,
+    "protected_branches": [
+      {
+        "id": 1,
+        "name": "main",
+        "push_access_levels": [
+          {
+            "access_level": 30,
+            "access_level_description": "Developers + Maintainers"
+          }
+        ],
+        "merge_access_levels": [
+          {
+            "access_level": 30,
+            "access_level_description": "Developers + Maintainers"
+          }
+        ],
+        "unprotect_access_levels": [
+          {
+            "access_level": 40,
+            "access_level_description": "Maintainers"
+          }
+        ],
+        "code_owner_approval_required": "false"
+      }
+    ],
+    "contains_hidden_groups": false,
   }
 ]
 ```
@@ -428,6 +524,7 @@ Supported attributes:
   "id": 1,
   "name": "security",
   "rule_type": "regular",
+  "report_type": null,
   "eligible_approvers": [
     {
       "id": 5,
@@ -906,6 +1003,63 @@ Supported attributes:
     "id": 1,
     "name": "security",
     "rule_type": "regular",
+    "report_type": null,
+    "eligible_approvers": [
+      {
+        "id": 5,
+        "name": "John Doe",
+        "username": "jdoe",
+        "state": "active",
+        "avatar_url": "https://www.gravatar.com/avatar/0?s=80&d=identicon",
+        "web_url": "http://localhost/jdoe"
+      },
+      {
+        "id": 50,
+        "name": "Group Member 1",
+        "username": "group_member_1",
+        "state": "active",
+        "avatar_url": "https://www.gravatar.com/avatar/0?s=80&d=identicon",
+        "web_url": "http://localhost/group_member_1"
+      }
+    ],
+    "approvals_required": 3,
+    "source_rule": null,
+    "users": [
+      {
+        "id": 5,
+        "name": "John Doe",
+        "username": "jdoe",
+        "state": "active",
+        "avatar_url": "https://www.gravatar.com/avatar/0?s=80&d=identicon",
+        "web_url": "http://localhost/jdoe"
+      }
+    ],
+    "groups": [
+      {
+        "id": 5,
+        "name": "group1",
+        "path": "group1",
+        "description": "",
+        "visibility": "public",
+        "lfs_enabled": false,
+        "avatar_url": null,
+        "web_url": "http://localhost/groups/group1",
+        "request_access_enabled": false,
+        "full_name": "group1",
+        "full_path": "group1",
+        "parent_id": null,
+        "ldap_cn": null,
+        "ldap_access": null
+      }
+    ],
+    "contains_hidden_groups": false,
+    "overridden": false
+  },
+  {
+    "id": 2,
+    "name": "Coverage-Check",
+    "rule_type": "report_approver",
+    "report_type": "code_coverage",
     "eligible_approvers": [
       {
         "id": 5,
@@ -981,6 +1135,7 @@ Supported attributes:
   "id": 1,
   "name": "security",
   "rule_type": "regular",
+  "report_type": null,
   "eligible_approvers": [
     {
       "id": 5,

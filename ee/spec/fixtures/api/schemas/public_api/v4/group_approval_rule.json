@@ -19,6 +19,12 @@
     "rule_type": {
       "type": "string"
     },
+    "report_type": {
+      "type": [
+        "null",
+        "string"
+      ]
+    },
     "eligible_approvers": {
       "type": "array",
       "items": {
