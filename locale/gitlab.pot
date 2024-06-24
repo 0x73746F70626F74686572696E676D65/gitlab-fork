@@ -30441,6 +30441,9 @@ msgid_plural "Labels added: %{labels}"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Label name"
+msgstr ""
+
 msgid "Label priority"
 msgstr ""
 
@@ -33959,9 +33962,6 @@ msgid "Name is already taken."
 msgstr ""
 
 msgid "Name must start with a letter, digit, emoji, or underscore."
-msgstr ""
-
-msgid "Name new label"
 msgstr ""
 
 msgid "Name the deployment (must be unique)"
