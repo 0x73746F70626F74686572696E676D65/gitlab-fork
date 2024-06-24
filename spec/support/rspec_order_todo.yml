@@ -2777,7 +2777,7 @@
 - './ee/spec/views/admin/users/index.html.haml_spec.rb'
 - './ee/spec/views/admin/users/show.html.haml_spec.rb'
 - './ee/spec/views/clusters/clusters/show.html.haml_spec.rb'
-- './ee/spec/views/compliance_management/compliance_framework/_compliance_framework_badge.html.haml_spec.rb'
+- './ee/spec/views/compliance_management/compliance_framework/_compliance_frameworks_info.html.haml_spec.rb'
 - './ee/spec/views/devise/sessions/new.html.haml_spec.rb'
 - './ee/spec/views/groups/billings/index.html.haml_spec.rb'
 - './ee/spec/views/groups/edit.html.haml_spec.rb'
