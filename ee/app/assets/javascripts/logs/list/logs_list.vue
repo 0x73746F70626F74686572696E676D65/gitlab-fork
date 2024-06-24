@@ -9,6 +9,7 @@ import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import axios from '~/lib/utils/axios_utils';
 import { queryToObject, DOCS_URL_IN_EE_DIR } from '~/lib/utils/url_utility';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
+import ObservabilityNoDataEmptyState from '~/observability/components/observability_no_data_empty_state.vue';
 import { InternalEvents } from '~/tracking';
 import { VIEW_LOGS_PAGE } from '../events';
 import LogsTable from './logs_table.vue';
@@ -33,6 +34,7 @@ export default {
     UrlSync,
     LogsVolume,
     GlLink,
+    ObservabilityNoDataEmptyState,
   },
   mixins: [InternalEvents.mixin()],
   i18n: {
@@ -247,7 +249,8 @@ export default {
       @bottomReached="bottomReached"
     >
       <template #items>
-        <logs-table :logs="logs" @reload="fetchLogs" @log-selected="onToggleDrawer" />
+        <observability-no-data-empty-state v-if="!logs.length" />
+        <logs-table v-else :logs="logs" @log-selected="onToggleDrawer" />
       </template>
 
       <template #default>

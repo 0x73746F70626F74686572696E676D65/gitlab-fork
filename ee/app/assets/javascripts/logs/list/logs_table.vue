@@ -1,5 +1,5 @@
 <script>
-import { GlTable, GlLink, GlLabel } from '@gitlab/ui';
+import { GlTable, GlLabel } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { severityNumberToConfig } from '../utils';
@@ -9,8 +9,6 @@ const thClass = 'gl-px-2!';
 export default {
   i18n: {
     title: s__('ObservabilityLogs|Logs'),
-    emptyText: s__('ObservabilityLogs|No logs to display.'),
-    emptyLinkText: s__('ObservabilityLogs|Check again'),
   },
   fields: [
     {
@@ -48,7 +46,6 @@ export default {
   ],
   components: {
     GlTable,
-    GlLink,
     GlLabel,
   },
   props: {
@@ -83,7 +80,6 @@ export default {
     <gl-table
       :items="formattedLogs"
       :fields="$options.fields"
-      show-empty
       fixed
       stacked="sm"
       selectable
@@ -102,13 +98,6 @@ export default {
       <template #cell(body)="{ item }">
         <div class="gl-text-truncate">
           {{ item.body }}
-        </div>
-      </template>
-      <!-- no date template -->
-      <template #empty>
-        <div class="gl-text-center">
-          {{ $options.i18n.emptyText }}
-          <gl-link @click="$emit('reload')">{{ $options.i18n.emptyLinkText }}</gl-link>
         </div>
       </template>
     </gl-table>

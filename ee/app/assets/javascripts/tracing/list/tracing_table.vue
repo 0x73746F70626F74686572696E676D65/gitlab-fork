@@ -1,6 +1,6 @@
 <script>
 import { GlTable, GlBadge, GlIcon } from '@gitlab/ui';
-import { s__, __, n__ } from '~/locale';
+import { s__, n__ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { formatTraceDuration } from '../trace_utils';
 
@@ -8,7 +8,6 @@ export default {
   name: 'TracingTable',
   i18n: {
     title: s__('Tracing|Traces'),
-    emptyText: __('No results found'),
     inProgress: s__('Tracing|In progress'),
   },
   fields: [
@@ -99,7 +98,6 @@ export default {
     <gl-table
       :items="formattedTraces"
       :fields="$options.fields"
-      show-empty
       fixed
       stacked="md"
       :tbody-tr-class="rowClass"
@@ -120,12 +118,6 @@ export default {
             <gl-icon name="status-alert" class="gl-mr-2 gl-text-red-500" />
             {{ errorBadgeContent(item) }}
           </gl-badge>
-        </div>
-      </template>
-
-      <template #empty>
-        <div class="gl-text-center">
-          <span>{{ $options.i18n.emptyText }}</span>
         </div>
       </template>
     </gl-table>

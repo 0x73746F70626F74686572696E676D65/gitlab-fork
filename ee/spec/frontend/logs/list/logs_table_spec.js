@@ -74,21 +74,6 @@ describe('LogsTable', () => {
     });
   });
 
-  it('renders the empty state when no logs are provided', () => {
-    mountComponent({ logs: [] });
-
-    expect(getRows().length).toBe(1);
-
-    const row = getRows().at(0);
-    expect(row.text()).toContain('No logs to display');
-
-    const link = row.findComponent({ name: 'GlLink' });
-    expect(link.text()).toBe('Check again');
-
-    link.trigger('click');
-    expect(wrapper.emitted('reload')).toHaveLength(1);
-  });
-
   it('emits log-selected on row-clicked', async () => {
     mountComponent();
 

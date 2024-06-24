@@ -16,6 +16,7 @@ import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { logError } from '~/lib/logger';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
+import ObservabilityNoDataEmptyState from '~/observability/components/observability_no_data_empty_state.vue';
 import {
   queryToFilterObj,
   filterObjToQuery,
@@ -38,6 +39,7 @@ export default {
     UrlSync,
     GlLink,
     GlSprintf,
+    ObservabilityNoDataEmptyState,
   },
   i18n: {
     searchInputPlaceholder: s__('ObservabilityMetrics|Search metrics...'),
@@ -181,7 +183,8 @@ export default {
       <gl-loading-icon v-if="loading && metrics.length > 0" size="lg" />
       <gl-infinite-scroll v-else :fetched-items="metrics.length" :max-list-height="listHeight">
         <template #items>
-          <metrics-table :metrics="metrics" @metric-clicked="onMetricClicked" />
+          <observability-no-data-empty-state v-if="!metrics.length" />
+          <metrics-table v-else :metrics="metrics" @metric-clicked="onMetricClicked" />
         </template>
         <template #default>
           <!-- Override default footer -->
