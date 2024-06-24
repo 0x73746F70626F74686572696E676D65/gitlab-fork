@@ -140,4 +140,8 @@ module DuoChatFixtureHelpers
       .map { |f| Gitlab::Json.parse(File.read(f)) }
       .map(&:deep_symbolize_keys)
   end
+
+  def vertex_embedding_fixture
+    load_fixture('embeddings').first[:embedding].map(&:to_f)
+  end
 end
