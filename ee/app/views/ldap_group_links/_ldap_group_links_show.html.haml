@@ -1,13 +1,11 @@
 - group = local_assigns.fetch(:group)
 - return unless Gitlab::Auth::Ldap::Config.group_sync_enabled? && group.ldap_synced?
 
-= render Pajamas::CardComponent.new(card_options: { class: 'gl-mb-5'}, body_options: { class: 'gl-p-0 gl-px-5' }) do |c|
-  - c.with_header do
-    = s_('LDAP|Active synchronizations')
+= render ::Layouts::CrudComponent.new(s_('LDAP|Active synchronizations')) do |c|
   - c.with_body do
     %ul.content-list
-      - group.ldap_group_links.select(&:active?).each do |ldap_group_link|
-        %li
-          %strong= ldap_group_link.cn ? _("Group: %{group_name}") % { group_name: ldap_group_link.cn } : _("Filter: %{filter_name})") % {filter_name: truncate(ldap_group_link.filter, length: 40)}
-          _('as')
-          %strong= ldap_group_link.human_access
+    - group.ldap_group_links.select(&:active?).each do |ldap_group_link|
+      %li
+        %strong= ldap_group_link.cn ? _("Group: %{group_name}") % { group_name: ldap_group_link.cn } : _("Filter: %{filter_name})") % {filter_name: truncate(ldap_group_link.filter, length: 40)}
+        _('as')
+        %strong= ldap_group_link.human_access

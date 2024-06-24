@@ -832,9 +832,6 @@ msgstr ""
 msgid "%{group_name} activity"
 msgstr ""
 
-msgid "%{group_name} group members"
-msgstr ""
-
 msgid "%{group_name} is approaching the limit of available seats"
 msgstr ""
 
@@ -16079,6 +16076,9 @@ msgstr ""
 msgid "Custom analyzers: language support"
 msgstr ""
 
+msgid "Custom attributes"
+msgstr ""
+
 msgid "Custom confirmation message: %{message}"
 msgstr ""
 
@@ -25075,9 +25075,6 @@ msgid "Group import could not be scheduled"
 msgstr ""
 
 msgid "Group import requests"
-msgstr ""
-
-msgid "Group info:"
 msgstr ""
 
 msgid "Group information"
@@ -34941,6 +34938,9 @@ msgid "No project selected"
 msgstr ""
 
 msgid "No project subscribes to the pipelines in this project."
+msgstr ""
+
+msgid "No projects"
 msgstr ""
 
 msgid "No projects available."
