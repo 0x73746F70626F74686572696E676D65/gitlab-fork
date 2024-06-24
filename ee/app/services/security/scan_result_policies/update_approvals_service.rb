@@ -243,15 +243,8 @@ module Security
       end
 
       def fail_open?(approval_rule)
-        return false unless fallback_behavior_enabled?
-
         approval_rule.scan_result_policy_read&.fail_open?
       end
-
-      def fallback_behavior_enabled?
-        Feature.enabled?(:merge_request_approval_policies_fallback_behavior, merge_request.project)
-      end
-      strong_memoize_attr :fallback_behavior_enabled?
     end
   end
 end

@@ -62,16 +62,9 @@ module Security
     strong_memoize_attr :related_pipelines
 
     def unblock_fail_open_rules(report_type)
-      return unless fallback_behavior_enabled?
-
       Security::ScanResultPolicies::UnblockFailOpenApprovalRulesService
         .new(merge_request: merge_request, report_types: [report_type])
         .execute
     end
-
-    def fallback_behavior_enabled?
-      Feature.enabled?(:merge_request_approval_policies_fallback_behavior, merge_request.project)
-    end
-    strong_memoize_attr :fallback_behavior_enabled?
   end
 end

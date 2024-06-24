@@ -84,22 +84,6 @@ RSpec.describe Security::ScanResultPolicies::UnblockFailOpenApprovalRulesService
     rule.scan_result_policy_read.violations.count
   end
 
-  shared_examples "sensitive to feature flag" do
-    context "with feature disabled" do
-      before do
-        stub_feature_flags(merge_request_approval_policies_fallback_behavior: false)
-      end
-
-      it "does not remove required approvals" do
-        expect { execute }.not_to change { ApprovalMergeRequestRule.sum(:approvals_required) }
-      end
-
-      it "does not delete violations" do
-        expect { execute }.not_to change { Security::ScanResultPolicyViolation.count }
-      end
-    end
-  end
-
   shared_examples "unblocks all report types" do
     it "unblocks both scan_finding and license_scanning rules" do
       execute
@@ -132,8 +116,6 @@ RSpec.describe Security::ScanResultPolicies::UnblockFailOpenApprovalRulesService
                               .and not_change { violation_count(license_scanning_fail_open_rule) }.from(1)
                               .and not_change { violation_count(license_scanning_fail_closed_rule) }.from(1)
     end
-
-    it_behaves_like "sensitive to feature flag"
   end
 
   context "with license_finding report_type" do
@@ -152,8 +134,6 @@ RSpec.describe Security::ScanResultPolicies::UnblockFailOpenApprovalRulesService
                               .and not_change { violation_count(scan_finding_fail_open_rule) }.from(1)
                               .and not_change { violation_count(scan_finding_fail_closed_rule) }.from(1)
     end
-
-    it_behaves_like "sensitive to feature flag"
   end
 
   context "with unrecognized report_type" do

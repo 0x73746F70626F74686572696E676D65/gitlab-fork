@@ -17,6 +17,10 @@ const SETTINGS = `approval_settings:
   require_password_to_approve: false
 `;
 
+const FALLBACK = `fallback_behavior:
+  fail: closed
+`;
+
 export const mockScanExecutionActionManifest = `type: scan_execution_policy
 name: ''
 description: ''
@@ -64,7 +68,9 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-`.concat(SETTINGS);
+`
+  .concat(SETTINGS)
+  .concat(FALLBACK);
 
 export const mockApprovalActionProjectManifest = putPolicyScopeComplianceFrameworksToEndOfYaml(
   mockApprovalActionManifest,
@@ -115,7 +121,9 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-`.concat(SETTINGS),
+`
+    .concat(SETTINGS)
+    .concat(FALLBACK),
 };
 
 export const EXCLUDING_PROJECTS_PROJECTS_LEVEL_MOCKS = {

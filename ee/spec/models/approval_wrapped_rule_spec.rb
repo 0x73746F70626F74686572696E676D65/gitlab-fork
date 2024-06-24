@@ -66,16 +66,6 @@ RSpec.describe ApprovalWrappedRule, feature_category: :code_review_workflow do
         it 'requires no approvals' do
           expect(approval_wrapped_rule.approvals_left).to be(0)
         end
-
-        context 'with feature disabled' do
-          before do
-            stub_feature_flags(merge_request_approval_policies_fallback_behavior: false)
-          end
-
-          it 'requires approvals' do
-            expect(approval_wrapped_rule.approvals_left).to be(1)
-          end
-        end
       end
     end
   end
@@ -210,14 +200,6 @@ RSpec.describe ApprovalWrappedRule, feature_category: :code_review_workflow do
           let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read, :fail_open) }
 
           it { is_expected.to be(true) }
-
-          context 'with feature disabled' do
-            before do
-              stub_feature_flags(merge_request_approval_policies_fallback_behavior: false)
-            end
-
-            it { is_expected.to be(false) }
-          end
         end
       end
     end

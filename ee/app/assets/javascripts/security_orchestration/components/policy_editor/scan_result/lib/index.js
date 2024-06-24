@@ -26,6 +26,10 @@ const DEFAULT_SETTINGS = `approval_settings:
   ${REQUIRE_PASSWORD_TO_APPROVE}: false
 `;
 
+const FALLBACK = `fallback_behavior:
+  fail: closed
+`;
+
 export const DEFAULT_SCAN_RESULT_POLICY = `type: approval_policy
 name: ''
 description: ''
@@ -35,7 +39,9 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-`.concat(DEFAULT_SETTINGS);
+`
+  .concat(DEFAULT_SETTINGS)
+  .concat(FALLBACK);
 
 export const DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE = `type: approval_policy
 name: ''
@@ -48,7 +54,9 @@ actions:
     approvals_required: 1
   - type: send_bot_message
     enabled: true
-`.concat(DEFAULT_SETTINGS);
+`
+  .concat(DEFAULT_SETTINGS)
+  .concat(FALLBACK);
 
 export const DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE = `type: approval_policy
 name: ''
@@ -62,32 +70,18 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-`.concat(DEFAULT_SETTINGS);
+`
+  .concat(DEFAULT_SETTINGS)
+  .concat(FALLBACK);
 
-export const DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK = DEFAULT_SCAN_RESULT_POLICY.concat(
-  'fallback_behavior:\n  fail: closed',
-);
-
-export const DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE_WITH_FALLBACK = DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE.concat(
-  'fallback_behavior:\n  fail: closed',
-);
-
-export const DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK = DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE.concat(
-  'fallback_behavior:\n  fail: closed',
-);
-
-export const getPolicyYaml = ({ includeBotComment, includeFallback, isGroup }) => {
+export const getPolicyYaml = ({ includeBotComment, isGroup }) => {
   if (isGroup) {
-    return includeFallback
-      ? DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_FALLBACK
-      : DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE;
+    return DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE;
   }
 
   if (includeBotComment) {
-    return includeFallback
-      ? DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE_WITH_FALLBACK
-      : DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE;
+    return DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE;
   }
 
-  return includeFallback ? DEFAULT_SCAN_RESULT_POLICY_WITH_FALLBACK : DEFAULT_SCAN_RESULT_POLICY;
+  return DEFAULT_SCAN_RESULT_POLICY;
 };

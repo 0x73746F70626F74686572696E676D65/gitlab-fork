@@ -144,8 +144,6 @@ class ApprovalWrappedRule
   private
 
   def fail_open?
-    return false unless Feature.enabled?(:merge_request_approval_policies_fallback_behavior, merge_request.project)
-
     approval_rule.scan_result_policy_read&.fail_open? || false
   end
 

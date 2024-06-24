@@ -1,9 +1,0 @@
----
-name: merge_request_approval_policies_fallback_behavior
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/451784
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/147838
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/452017
-milestone: '16.11'
-group: group::security policies
-type: beta
-default_enabled: true

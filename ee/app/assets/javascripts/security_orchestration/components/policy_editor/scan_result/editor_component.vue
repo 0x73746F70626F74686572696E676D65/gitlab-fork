@@ -129,13 +129,9 @@ export default {
   },
   data() {
     const includeBotComment = this.glFeatures.approvalPolicyDisableBotComment;
-    const includeFallback =
-      this.glFeatures.mergeRequestApprovalPoliciesFallbackBehavior ||
-      this.glFeatures.mergeRequestApprovalPoliciesFallbackBehaviorGroup;
 
     const newPolicyYaml = getPolicyYaml({
       includeBotComment,
-      includeFallback,
       isGroup: isGroup(this.namespaceType),
     });
 

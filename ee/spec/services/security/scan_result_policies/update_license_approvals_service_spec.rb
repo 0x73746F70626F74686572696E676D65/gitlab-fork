@@ -162,14 +162,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateLicenseApprovalsService, feat
 
         it_behaves_like 'does not require approvals'
         it_behaves_like 'triggers policy bot comment', :license_scanning, false
-
-        context 'with feature disabled' do
-          before do
-            stub_feature_flags(merge_request_approval_policies_fallback_behavior: false)
-          end
-
-          it_behaves_like 'triggers policy bot comment', :license_scanning, true
-        end
       end
     end
   end
@@ -215,14 +207,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateLicenseApprovalsService, feat
 
         it_behaves_like 'does not require approvals'
         it_behaves_like 'triggers policy bot comment', :license_scanning, false
-
-        context 'with feature disabled' do
-          before do
-            stub_feature_flags(merge_request_approval_policies_fallback_behavior: false)
-          end
-
-          it_behaves_like 'triggers policy bot comment', :license_scanning, true
-        end
       end
     end
   end
