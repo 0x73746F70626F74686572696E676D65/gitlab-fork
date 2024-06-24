@@ -34,6 +34,17 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
     expect(test_stage.statuses.map(&:name)).to contain_exactly('rake', 'rspec')
   end
 
+  it 'marks the jobs as execution_policy_jobs' do
+    execute
+
+    test_stage = pipeline.stages.find { |stage| stage.name == 'test' }
+    project_rake_job = test_stage.statuses.find { |status| status.name == 'rake' }
+    policy_rspec_job = test_stage.statuses.find { |status| status.name == 'rspec' }
+
+    expect(project_rake_job.execution_policy_job?).to eq(false)
+    expect(policy_rspec_job.execution_policy_job?).to eq(true)
+  end
+
   context 'with conflicting jobs' do
     context 'when two policy pipelines have the same job names' do
       let(:execution_policy_pipelines) do

@@ -107,6 +107,83 @@ RSpec.describe Gitlab::Ci::Variables::Builder, feature_category: :secrets_manage
           'O' => '14', 'P' => '15',
           'Q' => '16', 'R' => '16')
       end
+
+      context 'when job is marked as a policy job' do
+        before do
+          job.set_execution_policy_job!
+        end
+
+        it 're-applies yaml_variables with the highest precedence' do
+          expect(scoped_variables.to_runner_variables).to eq(
+            [var('A', 1), var('B', 1),
+              var('B', 2), var('C', 2),
+              var('C', 3), var('D', 3),
+              var('D', 4), var('E', 4),
+              var('E', 5), var('F', 5),
+              var('G', 7), var('H', 7),
+              var('H', 8), var('I', 8),
+              var('I', 9), var('J', 9),
+              var('J', 10), var('K', 10),
+              var('K', 11), var('L', 11),
+              var('L', 12), var('M', 12),
+              var('M', 13), var('N', 13),
+              var('N', 14), var('O', 14),
+              var('P', 15), var('Q', 15),
+              var('Q', 16), var('R', 16),
+              var('G', 7), var('H', 7)])
+        end
+
+        it 'overrides duplicate keys depending on resource hierarchy' do
+          expect(scoped_variables.to_hash).to match(
+            'A' => '1', 'B' => '2',
+            'C' => '3', 'D' => '4',
+            'E' => '5', 'F' => '5',
+            'G' => '7', 'H' => '7',
+            'I' => '9', 'J' => '10',
+            'K' => '11', 'L' => '12',
+            'M' => '13', 'N' => '14',
+            'O' => '14', 'P' => '15',
+            'Q' => '16', 'R' => '16')
+        end
+
+        context 'when feature flag "pipeline_execution_policy_type" is disabled' do
+          before do
+            stub_feature_flags(pipeline_execution_policy_type: false)
+          end
+
+          it 'keeps the original precedence' do
+            expect(scoped_variables.to_runner_variables).to eq(
+              [var('A', 1), var('B', 1),
+                var('B', 2), var('C', 2),
+                var('C', 3), var('D', 3),
+                var('D', 4), var('E', 4),
+                var('E', 5), var('F', 5),
+                var('G', 7), var('H', 7),
+                var('H', 8), var('I', 8),
+                var('I', 9), var('J', 9),
+                var('J', 10), var('K', 10),
+                var('K', 11), var('L', 11),
+                var('L', 12), var('M', 12),
+                var('M', 13), var('N', 13),
+                var('N', 14), var('O', 14),
+                var('P', 15), var('Q', 15),
+                var('Q', 16), var('R', 16)])
+          end
+
+          it 'does not override keys with job yaml_variables' do
+            expect(scoped_variables.to_hash).to match(
+              'A' => '1', 'B' => '2',
+              'C' => '3', 'D' => '4',
+              'E' => '5', 'F' => '5',
+              'G' => '7', 'H' => '8',
+              'I' => '9', 'J' => '10',
+              'K' => '11', 'L' => '12',
+              'M' => '13', 'N' => '14',
+              'O' => '14', 'P' => '15',
+              'Q' => '16', 'R' => '16')
+          end
+        end
+      end
     end
 
     context 'with policies_variables' do
