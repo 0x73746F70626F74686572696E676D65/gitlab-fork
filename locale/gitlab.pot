@@ -58846,6 +58846,12 @@ msgstr ""
 msgid "Vulnerability|Warning: possible secrets detected"
 msgstr ""
 
+msgid "Vulnerability|You can also %{message}."
+msgstr ""
+
+msgid "Vulnerability|use AI by asking GitLab Duo Chat to explain this vulnerability and suggest a solution"
+msgstr ""
+
 msgid "WARNING:"
 msgstr ""
 
