@@ -137,7 +137,7 @@ RSpec.describe "User with admin_runners custom role", feature_category: :runner 
 
     let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, group: group) }
 
-    pending "updates the `allow_stale_runner_pruning` setting" do
+    it "updates the `allow_stale_runner_pruning` setting" do
       post_graphql_mutation(graphql_mutation(:namespace_ci_cd_settings_update, {
         full_path: group.full_path,
         allow_stale_runner_pruning: true
@@ -150,6 +150,14 @@ RSpec.describe "User with admin_runners custom role", feature_category: :runner 
       expect(mutation_response).to be_present
       expect(mutation_response['ciCdSettings']).to be_present
       expect(mutation_response['errors']).to be_empty
+    end
+
+    it "does not allow updating settings that are not related to runners" do
+      arguments = described_class
+        .own_arguments
+        .map { |key, _value| key.underscore.to_sym }
+        .excluding(:allow_stale_runner_pruning, :full_path)
+      expect(arguments).to be_empty
     end
   end
 end
