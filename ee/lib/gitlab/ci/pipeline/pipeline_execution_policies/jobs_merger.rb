@@ -51,6 +51,7 @@ module Gitlab
               # We need to assign the new stage_idx for the jobs
               # because the policy stages could have had different positions
               job.assign_attributes(pipeline: pipeline, stage_idx: to_stage.position)
+              job.set_execution_policy_job!
               to_stage.statuses << job
             end
           end

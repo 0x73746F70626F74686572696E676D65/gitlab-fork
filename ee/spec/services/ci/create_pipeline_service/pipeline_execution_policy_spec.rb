@@ -5,8 +5,9 @@ require 'spec_helper'
 RSpec.describe Ci::CreatePipelineService, feature_category: :security_policy_management do
   include RepoHelpers
 
-  subject(:execute) { service.execute(:push) }
+  subject(:execute) { service.execute(:push, **opts) }
 
+  let(:opts) { {} }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be_with_reload(:compliance_project) { create(:project, :empty_repo, group: group) }
@@ -200,6 +201,82 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :security_policy_man
     end
   end
 
+  describe 'variables precedence' do
+    let(:opts) { { variables_attributes: [{ key: 'TEST_TOKEN', value: 'run token' }] } }
+    let(:project_ci_yaml) do
+      <<~YAML
+        variables:
+          TEST_TOKEN: 'global token'
+        project-build:
+          stage: build
+          variables:
+            TEST_TOKEN: 'job token'
+          script:
+            - echo 'build'
+        project-test:
+          stage: test
+          script:
+            - echo 'test'
+      YAML
+    end
+
+    let(:project_policy_content) do
+      {
+        project_policy_job: {
+          variables: { 'TEST_TOKEN' => 'project policy token' },
+          script: 'project script'
+        }
+      }
+    end
+
+    let(:namespace_policy_content) do
+      {
+        namespace_policy_job: {
+          variables: { 'TEST_TOKEN' => 'namespace policy token', 'POLICY_TOKEN' => 'namespace policy token' },
+          script: 'namespace script'
+        }
+      }
+    end
+
+    it 'applies the policy variables in policy jobs with highest precedence', :aggregate_failures do
+      stages = execute.payload.stages
+
+      build_stage = stages.find_by(name: 'build')
+      test_stage = stages.find_by(name: 'test')
+
+      project_policy_job = test_stage.builds.find_by(name: 'project_policy_job')
+      expect(get_job_variable(project_policy_job, 'TEST_TOKEN')).to eq('project policy token')
+
+      namespace_policy_job = test_stage.builds.find_by(name: 'namespace_policy_job')
+      expect(get_job_variable(namespace_policy_job, 'TEST_TOKEN')).to eq('namespace policy token')
+
+      project_build_job = build_stage.builds.find_by(name: 'project-build')
+      expect(get_job_variable(project_build_job, 'TEST_TOKEN')).to eq('run token')
+
+      project_test_job = test_stage.builds.find_by(name: 'project-test')
+      expect(get_job_variable(project_test_job, 'TEST_TOKEN')).to eq('run token')
+    end
+
+    it 'does not leak policy variables into the project jobs and other policy jobs', :aggregate_failures do
+      stages = execute.payload.stages
+
+      build_stage = stages.find_by(name: 'build')
+      test_stage = stages.find_by(name: 'test')
+
+      project_policy_job = test_stage.builds.find_by(name: 'project_policy_job')
+      expect(get_job_variable(project_policy_job, 'POLICY_TOKEN')).to be_nil
+
+      namespace_policy_job = test_stage.builds.find_by(name: 'namespace_policy_job')
+      expect(get_job_variable(namespace_policy_job, 'POLICY_TOKEN')).to eq('namespace policy token')
+
+      project_build_job = build_stage.builds.find_by(name: 'project-build')
+      expect(get_job_variable(project_build_job, 'POLICY_TOKEN')).to be_nil
+
+      project_test_job = test_stage.builds.find_by(name: 'project-test')
+      expect(get_job_variable(project_test_job, 'POLICY_TOKEN')).to be_nil
+    end
+  end
+
   context 'when project CI configuration is missing' do
     let(:project_ci_yaml) { nil }
 
@@ -240,5 +317,11 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :security_policy_man
       expect(stages.find_by(name: 'build').builds.map(&:name)).to contain_exactly('build', 'namespace_policy_job')
       expect(stages.find_by(name: 'test').builds.map(&:name)).to contain_exactly('rspec', 'project_policy_job')
     end
+  end
+
+  private
+
+  def get_job_variable(job, key)
+    job.scoped_variables.to_hash[key]
   end
 end
