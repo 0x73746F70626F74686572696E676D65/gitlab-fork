@@ -144,7 +144,7 @@ describe('CodeSuggestionsInfoCard', () => {
 
     it('renders the learn more link', () => {
       expect(findCodeSuggestionsLearnMoreLink().attributes('href')).toBe(
-        `${PROMO_URL}/solutions/code-suggestions/`,
+        `${PROMO_URL}/gitlab-duo/`,
       );
     });
   });

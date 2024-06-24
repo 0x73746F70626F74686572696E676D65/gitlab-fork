@@ -5,7 +5,7 @@ export const DUO_PRO = 'pro';
 export const DUO_ENTERPRISE = 'enterprise';
 export const ADD_ON_CODE_SUGGESTIONS = 'CODE_SUGGESTIONS';
 export const ADD_ON_DUO_ENTERPRISE = 'DUO_ENTERPRISE';
-export const codeSuggestionsLearnMoreLink = `${PROMO_URL}/solutions/code-suggestions/`;
+export const codeSuggestionsLearnMoreLink = `${PROMO_URL}/gitlab-duo/`;
 
 export const CODE_SUGGESTIONS_TITLE = s__('CodeSuggestions|GitLab Duo Pro');
 export const DUO_ENTERPRISE_TITLE = s__('CodeSuggestions|GitLab Duo Enterprise');

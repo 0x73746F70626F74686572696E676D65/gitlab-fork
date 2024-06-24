@@ -438,6 +438,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       {
         full_path: group.full_path,
         group_id: group.id,
+        duo_pro_trial_href: ::Gitlab::Routing.url_helpers.new_trials_duo_pro_path(namespace_id: group.id),
         add_duo_pro_href: ::Gitlab::Routing.url_helpers.subscription_portal_add_saas_duo_pro_seats_url(group.id)
       }
     end
@@ -456,6 +457,24 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
       end
 
       it { is_expected.to eql(data.merge(duo_pro_bulk_user_assignment_available: 'false')) }
+    end
+  end
+
+  describe '#duo_pro_trial_link' do
+    it 'returns the trial link when group has no previous or active duo pro trial' do
+      expect(helper.duo_pro_trial_link(group)).to eq({
+        duo_pro_trial_href: new_trials_duo_pro_path(namespace_id: group.id)
+      })
+    end
+
+    context 'when group has a previous or active duo pro trial' do
+      before do
+        create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, namespace: group)
+      end
+
+      it 'returns empty' do
+        expect(helper.duo_pro_trial_link(group)).to eq({})
+      end
     end
   end
 
