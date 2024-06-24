@@ -17,6 +17,7 @@ module Gitlab
       def licensed_feature_available?(feature)
         ::License.feature_available?(feature)
       end
+      alias_method :feature_available?, :licensed_feature_available?
     end
   end
 end
