@@ -2,7 +2,7 @@ import Vue, { nextTick } from 'vue';
 import { GlBadge } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import createMockApollo from 'helpers/mock_apollo_helper';
+import { createMockClient } from 'helpers/mock_apollo_helper';
 import AddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/add_on_eligible_user_list.vue';
 import SaasAddOnEligibleUserList from 'ee/usage_quotas/code_suggestions/components/saas_add_on_eligible_user_list.vue';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -12,6 +12,7 @@ import {
 } from 'ee_jest/usage_quotas/code_suggestions/mock_data';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/saas_add_on_eligible_users.query.graphql';
+import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
 import {
   ADD_ON_ELIGIBLE_USERS_FETCH_ERROR_CODE,
   ADD_ON_ERROR_DICTIONARY,
@@ -62,8 +63,16 @@ describe('Add On Eligible User List', () => {
     .mockResolvedValue(mockPaginatedAddOnEligibleUsersWithMembershipType);
   const addOnEligibleUsersErrorHandler = jest.fn().mockRejectedValue(error);
 
-  const createMockApolloProvider = (handler) =>
-    createMockApollo([[getAddOnEligibleUsers, handler]]);
+  const createMockApolloProvider = (handler) => {
+    const mockClient = createMockClient([[getAddOnEligibleUsers, handler]]);
+    const mockClientCustomersDot = createMockClient([
+      [getSubscriptionPermissionsData, jest.fn().mockResolvedValue({})],
+    ]);
+    return new VueApollo({
+      defaultClient: mockClient,
+      clients: { customersDotClient: mockClientCustomersDot },
+    });
+  };
 
   const createComponent = (
     handler = addOnEligibleUsersDataHandler,
@@ -80,6 +89,9 @@ describe('Add On Eligible User List', () => {
         glFeatures: {
           enableAddOnUsersFiltering,
         },
+        addDuoProHref: 'http://customers.gitlab.com/namespaces/0/duo_pro_seats',
+        groupId: 1,
+        subscriptionName: null,
       },
     });
     return waitForPromises();

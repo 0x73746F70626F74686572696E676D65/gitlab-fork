@@ -12,13 +12,16 @@ import {
   GlKeysetPagination,
 } from '@gitlab/ui';
 import { pick, escape } from 'lodash';
-import { s__, n__, sprintf } from '~/locale';
+import { __, s__, n__, sprintf } from '~/locale';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import {
   ADD_ON_ERROR_DICTIONARY,
   CANNOT_BULK_ASSIGN_ADDON_ERROR_CODE,
   CANNOT_BULK_UNASSIGN_ADDON_ERROR_CODE,
   NO_ASSIGNMENTS_FOUND_ERROR_CODE,
+  NO_SEATS_AVAILABLE_ERROR_CODE,
+  NOT_ENOUGH_SEATS_ERROR_CODE,
+  ADD_ON_PURCHASE_FETCH_ERROR_CODE,
 } from 'ee/usage_quotas/error_constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
@@ -36,9 +39,16 @@ import CodeSuggestionsAddonAssignment from 'ee/usage_quotas/code_suggestions/com
 import AddOnBulkActionConfirmationModal from 'ee/usage_quotas/code_suggestions/components/add_on_bulk_action_confirmation_modal.vue';
 import userAddOnAssignmentBulkCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_create.mutation.graphql';
 import userAddOnAssignmentBulkRemoveMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_remove.mutation.graphql';
+import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
+import { addSeatsText } from 'ee/usage_quotas/seats/constants';
+import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
+import { LIMITED_ACCESS_KEYS } from 'ee/usage_quotas/components/constants';
 
 export default {
   name: 'AddOnEligibleUserList',
+  links: {
+    sales: `${PROMO_URL}/solutions/code-suggestions/sales/`,
+  },
   directives: {
     GlTooltip: GlTooltipDirective,
     SafeHtml,
@@ -58,7 +68,12 @@ export default {
     GlTable,
   },
   mixins: [glFeatureFlagMixin()],
-  inject: { isBulkAddOnAssignmentEnabled: { default: false } },
+  inject: {
+    addDuoProHref: {},
+    groupId: {},
+    isBulkAddOnAssignmentEnabled: { default: false },
+    subscriptionName: { default: null },
+  },
   props: {
     addOnPurchaseId: {
       type: String,
@@ -91,6 +106,10 @@ export default {
       validator: (val) => [DUO_PRO, DUO_ENTERPRISE].includes(val),
     },
   },
+  i18n: {
+    addSeatsText,
+    contactSalesText: __('Contact sales'),
+  },
   data() {
     return {
       addOnAssignmentError: undefined,
@@ -106,6 +125,25 @@ export default {
   assignSeatsBulkAction: ASSIGN_SEATS_BULK_ACTION,
   unassignSeatsBulkAction: UNASSIGN_SEATS_BULK_ACTION,
   avatarSize: 32,
+  apollo: {
+    subscriptionPermissions: {
+      query: getSubscriptionPermissionsData,
+      client: 'customersDotClient',
+      variables() {
+        return this.subscriptionPermissionsVariables;
+      },
+      skip() {
+        return this.hasNoRequestInformation;
+      },
+      update: (data) => ({
+        canAddDuoProSeats: data.subscription?.canAddDuoProSeats,
+        reason: data.userActionAccess?.limitedAccessReason,
+      }),
+      error(error) {
+        this.forwardException(Object.assign(error, { cause: ADD_ON_PURCHASE_FETCH_ERROR_CODE }));
+      },
+    },
+  },
   computed: {
     hasMaxRoleField() {
       return this.tableItems?.some(({ maxRole }) => maxRole);
@@ -174,6 +212,34 @@ export default {
     },
     isBulkActionToAssignSeats() {
       return this.bulkAction === ASSIGN_SEATS_BULK_ACTION;
+    },
+    errorAlertAddOnAssigmentPrimaryButtonText() {
+      return this.getAddSeatsButtonText(
+        this.addOnAssignmentError === NO_SEATS_AVAILABLE_ERROR_CODE,
+      );
+    },
+    errorAlertBulkActionPrimaryButtonText() {
+      return this.getAddSeatsButtonText(this.bulkActionError === NOT_ENOUGH_SEATS_ERROR_CODE);
+    },
+    hideAddSeatsButton() {
+      return !this.subscriptionPermissions?.canAddDuoProSeats && this.hasLimitedAccess;
+    },
+    subscriptionPermissionsVariables() {
+      return this.groupId
+        ? { namespaceId: this.parsedGroupId }
+        : { subscriptionName: this.subscriptionName };
+    },
+    hasLimitedAccess() {
+      return LIMITED_ACCESS_KEYS.includes(this.permissionReason);
+    },
+    permissionReason() {
+      return this.subscriptionPermissions?.reason;
+    },
+    hasNoRequestInformation() {
+      return !(this.groupId || this.subscriptionName);
+    },
+    parsedGroupId() {
+      return parseInt(this.groupId, 10);
     },
   },
   methods: {
@@ -326,6 +392,18 @@ export default {
       this.isBulkActionInProgress = false;
       this.isConfirmationModalVisible = false;
     },
+    getAddSeatsButtonText(isErrorKnown) {
+      if (this.hideAddSeatsButton || !isErrorKnown) {
+        return '';
+      }
+
+      return this.$options.i18n.addSeatsText;
+    },
+    forwardException(error) {
+      this.$emit('error', error);
+
+      Sentry.captureException(error, { tags: { vue_component: this.$options.name } });
+    },
   },
 };
 </script>
@@ -340,6 +418,10 @@ export default {
       :error="addOnAssignmentError"
       :error-dictionary="$options.addOnErrorDictionary"
       :dismissible="true"
+      :primary-button-link="addDuoProHref"
+      :primary-button-text="errorAlertAddOnAssigmentPrimaryButtonText"
+      :secondary-button-link="$options.links.sales"
+      :secondary-button-text="$options.i18n.contactSalesText"
       @dismiss="addOnAssignmentError = undefined"
     />
     <gl-alert
@@ -357,6 +439,10 @@ export default {
       :error="bulkActionError"
       :error-dictionary="$options.addOnErrorDictionary"
       :dismissible="true"
+      :primary-button-link="addDuoProHref"
+      :primary-button-text="errorAlertBulkActionPrimaryButtonText"
+      :secondary-button-link="$options.links.sales"
+      :secondary-button-text="$options.i18n.contactSalesText"
       @dismiss="bulkActionError = undefined"
     />
     <div
