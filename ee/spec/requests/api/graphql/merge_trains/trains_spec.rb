@@ -47,6 +47,7 @@ RSpec.describe 'Query.project.mergeTrains.cars', feature_category: :merge_trains
 
   let_it_be(:reporter) { create(:user) }
   let_it_be(:guest) { create(:user) }
+  let_it_be(:maintainer) { create(:user) }
   let(:query) { graphql_query_for(:project, { full_path: target_project.full_path }, train_query) }
   let(:user) { reporter }
   let(:params) { {} }
@@ -64,11 +65,14 @@ RSpec.describe 'Query.project.mergeTrains.cars', feature_category: :merge_trains
     target_project.ci_cd_settings.update!(merge_trains_enabled: true)
     target_project.add_reporter(reporter)
     target_project.add_guest(guest)
-    create_merge_request_on_train(project: target_project)
-    create_merge_request_on_train(project: target_project, source_branch: 'branch-1')
-    create_merge_request_on_train(project: target_project, source_branch: 'branch-2', status: :merged)
-    create_merge_request_on_train(project: target_project, target_branch: 'feature-1')
-    create_merge_request_on_train(project: target_project, target_branch: 'feature-2', status: :merged)
+    target_project.add_maintainer(maintainer)
+    create_merge_request_on_train(project: target_project, author: maintainer)
+    create_merge_request_on_train(project: target_project, source_branch: 'branch-1', author: maintainer)
+    create_merge_request_on_train(project: target_project, source_branch: 'branch-2', status: :merged,
+      author: maintainer)
+    create_merge_request_on_train(project: target_project, target_branch: 'feature-1', author: maintainer)
+    create_merge_request_on_train(project: target_project, target_branch: 'feature-2', status: :merged,
+      author: maintainer)
     create(:merge_train_car, target_project: create(:project), target_branch: 'master')
   end
 
@@ -79,6 +83,19 @@ RSpec.describe 'Query.project.mergeTrains.cars', feature_category: :merge_trains
 
     it 'returns relevant merge trains' do
       expect(result).to contain_exactly(*expected_branches)
+    end
+
+    it 'does not have N+1 problem', :use_sql_query_cache do
+      # warm up the query to avoid flakiness
+      run_query
+
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) { run_query }
+
+      create_merge_request_on_train(project: target_project, source_branch: 'branch-7', author: maintainer)
+      create_merge_request_on_train(project: target_project, source_branch: 'branch-6', target_branch: 'feature-1',
+        author: maintainer)
+
+      expect { run_query }.to issue_same_number_of_queries_as(control)
     end
   end
 
@@ -159,35 +176,44 @@ RSpec.describe 'Query.project.mergeTrains.cars', feature_category: :merge_trains
       let(:result) { graphql_data_at(:project, :merge_trains, :nodes, :cars, :nodes) }
 
       before do
-        create_merge_request_on_train(project: target_project, source_branch: 'branch-4')
-        create_merge_request_on_train(project: target_project, source_branch: 'branch-5', status: :merged)
-        create_merge_request_on_train(project: target_project, source_branch: 'branch-6', status: :merged)
+        create_merge_request_on_train(project: target_project, source_branch: 'branch-4', author: maintainer)
+        create_merge_request_on_train(project: target_project, source_branch: 'branch-5', status: :merged,
+          author: maintainer)
+        create_merge_request_on_train(project: target_project, source_branch: 'branch-6', status: :merged,
+          author: maintainer)
+      end
+
+      it 'fetches the active cars for each train' do
+        post_query
+        result.each { |car| expect(car['status']).to eq('IDLE') }
       end
 
       context 'when the status is COMPLETED' do
         let(:car_params) { { activity_status: :COMPLETED } }
 
-        it 'fetches the first complete cars each a train' do
+        it 'fetches the first completed cars for each train' do
           post_query
-          result.each { |car| expect(car["status"]).to eq('MERGED') }
-        end
-      end
-
-      context 'when the status is ACTIVE' do
-        it 'fetches the first active cars each a train' do
-          post_query
-          result.each { |car| expect(car["status"]).to eq('IDLE') }
+          result.each { |car| expect(car['status']).to eq('MERGED') }
         end
       end
     end
   end
 
-  def create_merge_request_on_train(project:, target_branch: 'master', source_branch: 'feature', status: :idle)
-    create(:merge_request, :on_train,
+  private
+
+  def create_merge_request_on_train(project:, author:, target_branch: 'master', source_branch: 'feature', status: :idle)
+    merge_request = create(:merge_request, :on_train,
       source_project: project,
       target_project: project,
       target_branch: target_branch,
       source_branch: source_branch,
+      author: author,
       status: MergeTrains::Car.state_machines[:status].states[status].value)
+
+    merge_request.merge_train_car.update!(pipeline: create(:ci_pipeline, user: author, project: project))
+  end
+
+  def run_query
+    post_graphql(query, current_user: user)
   end
 end
