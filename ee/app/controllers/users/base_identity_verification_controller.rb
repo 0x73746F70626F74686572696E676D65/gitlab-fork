@@ -168,8 +168,6 @@ module Users
     end
 
     def arkose_challenge_required?(method:)
-      return false unless Feature.enabled?(:identity_verification_arkose_challenge, @user, type: :gitlab_com_derisk)
-
       if Feature.enabled?(:skip_arkose_challenge_when_previously_solved, @user, type: :gitlab_com_derisk) &&
           session[:arkose_challenge_solved]
         return false

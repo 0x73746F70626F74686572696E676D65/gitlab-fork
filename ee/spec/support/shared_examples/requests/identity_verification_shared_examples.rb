@@ -250,18 +250,6 @@ RSpec.shared_examples 'it verifies arkose token' do |method|
       expect(response).to have_gitlab_http_status(:ok)
     end
   end
-
-  context 'when identity_verification_arkose_challenge is disabled' do
-    before do
-      stub_feature_flags(identity_verification_arkose_challenge: false)
-    end
-
-    it 'skips verification' do
-      expect(Arkose::TokenVerificationService).not_to receive(:new)
-
-      do_request
-    end
-  end
 end
 
 # GET verification_state

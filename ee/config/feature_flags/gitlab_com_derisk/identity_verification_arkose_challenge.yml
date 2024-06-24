@@ -1,9 +1,0 @@
----
-name: identity_verification_arkose_challenge
-feature_issue_url: https://gitlab.com/gitlab-org/modelops/anti-abuse/team-tasks/-/issues/672
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/152335
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/461939
-milestone: '17.1'
-group: group::anti-abuse
-type: gitlab_com_derisk
-default_enabled: false
