@@ -2,6 +2,7 @@ import { GlLink, GlSprintf, GlDisclosureDropdown, GlDisclosureDropdownItem } fro
 import { nextTick } from 'vue';
 import MergeImmediatelyConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_immediately_confirmation_dialog.vue';
 import MergeTrainRestartTrainConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_train_restart_train_confirmation_dialog.vue';
+import MergeFailedPipelineConfirmationDialog from '~/vue_merge_request_widget/components/states/merge_failed_pipeline_confirmation_dialog.vue';
 import MergeTrainFailedPipelineConfirmationDialog from 'ee/vue_merge_request_widget/components/merge_train_failed_pipeline_confirmation_dialog.vue';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
@@ -101,6 +102,8 @@ describe('ReadyToMerge', () => {
     wrapper.findByTestId('mt-merge-now-restart-button');
   const findMergeTrainMergeNowSkipTrainButton = () =>
     wrapper.findByTestId('mt-merge-now-skip-restart-button');
+  const findPipelineFailedConfirmationDialog = () =>
+    wrapper.findComponent(MergeFailedPipelineConfirmationDialog);
   const findMergeTrainFailedPipelineConfirmationDialog = () =>
     wrapper.findComponent(MergeTrainFailedPipelineConfirmationDialog);
   const findMergeImmediatelyConfirmationDialog = () =>
@@ -204,10 +207,14 @@ describe('ReadyToMerge', () => {
           mountExtended,
         );
         const modalConfirmation = findMergeTrainFailedPipelineConfirmationDialog();
+        const pipelineFailedModalConfirmation = findPipelineFailedConfirmationDialog();
 
         await findMergeButton().vm.$emit('click');
 
         expect(modalConfirmation.props('visible')).toBe(isVisible);
+        expect(pipelineFailedModalConfirmation.props('visible')).toBe(
+          isPipelineFailed && !isVisible,
+        );
       },
     );
   });
