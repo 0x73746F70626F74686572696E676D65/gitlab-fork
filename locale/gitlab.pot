@@ -33464,9 +33464,6 @@ msgid_plural "MlModelRegistry|%d versions"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "MlModelRegistry|A semver version like 1.0.0"
-msgstr ""
-
 msgid "MlModelRegistry|Add a model"
 msgstr ""
 
@@ -33557,7 +33554,10 @@ msgstr ""
 msgid "MlModelRegistry|Enter a model description"
 msgstr ""
 
-msgid "MlModelRegistry|Enter a semver version."
+msgid "MlModelRegistry|Enter a semantic version."
+msgstr ""
+
+msgid "MlModelRegistry|Enter a semantic version. Latest version is %{latestVersion}"
 msgstr ""
 
 msgid "MlModelRegistry|Enter some description"
@@ -33581,6 +33581,9 @@ msgstr ""
 msgid "MlModelRegistry|File \"%{name}\" is %{size}. It is larger than max allowed size of %{maxAllowedFileSize}"
 msgstr ""
 
+msgid "MlModelRegistry|For example 1.0.0"
+msgstr ""
+
 msgid "MlModelRegistry|For example 1.0.0. Must be a semantic version."
 msgstr ""
 
@@ -33597,9 +33600,6 @@ msgid "MlModelRegistry|Info"
 msgstr ""
 
 msgid "MlModelRegistry|Latest version"
-msgstr ""
-
-msgid "MlModelRegistry|Latest version is %{latestVersion}"
 msgstr ""
 
 msgid "MlModelRegistry|Leave empty to skip version creation."
@@ -33705,6 +33705,12 @@ msgid "MlModelRegistry|Version candidates"
 msgstr ""
 
 msgid "MlModelRegistry|Version description"
+msgstr ""
+
+msgid "MlModelRegistry|Version is not a valid semantic version."
+msgstr ""
+
+msgid "MlModelRegistry|Version is valid semantic version."
 msgstr ""
 
 msgid "MlModelRegistry|Versions"
