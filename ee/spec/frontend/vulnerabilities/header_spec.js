@@ -81,19 +81,12 @@ describe('Vulnerability Header', () => {
 
   const diff = 'some diff to download';
 
-  const getVulnerability = ({
-    canCreateMergeRequest,
-    canDownloadPatch,
-    canResolveWithAI,
-    canExplainWithAI,
-    canAdmin = true,
-  }) => ({
+  const getVulnerability = ({ canCreateMergeRequest, canDownloadPatch, canAdmin = true } = {}) => ({
     remediations: canCreateMergeRequest || canDownloadPatch ? [{ diff }] : null,
     state: canDownloadPatch ? 'detected' : 'resolved',
     mergeRequestLinks: canCreateMergeRequest || canDownloadPatch ? [] : [{}],
     mergeRequestFeedback: canCreateMergeRequest ? null : {},
     canAdmin,
-    ...(canResolveWithAI || canExplainWithAI ? { reportType: 'sast' } : {}),
     ...(canDownloadPatch && canCreateMergeRequest === undefined ? { createMrUrl: '' } : {}),
   });
 
@@ -121,7 +114,7 @@ describe('Vulnerability Header', () => {
     dropdown.vm.$emit('change', { action });
   };
 
-  const createWrapper = ({ vulnerability = {}, apolloProvider, glFeatures }) => {
+  const createWrapper = ({ vulnerability = {}, apolloProvider, glFeatures, glAbilities }) => {
     wrapper = shallowMount(Header, {
       apolloProvider,
       directives: {
@@ -139,6 +132,11 @@ describe('Vulnerability Header', () => {
           explainVulnerabilityTool: true,
           resolveVulnerabilityAiGateway: true,
           ...glFeatures,
+        },
+        glAbilities: {
+          explainVulnerabilityWithAi: true,
+          resolveVulnerabilityWithAi: true,
+          ...glAbilities,
         },
       },
     });
@@ -349,8 +347,6 @@ describe('Vulnerability Header', () => {
           vulnerability: getVulnerability({
             canCreateMergeRequest: true,
             canDownloadPatch: true,
-            canResolveWithAI: true,
-            canExplainWithAI: true,
           }),
         });
         await waitForPromises();
@@ -369,8 +365,6 @@ describe('Vulnerability Header', () => {
           vulnerability: getVulnerability({
             canCreateMergeRequest: true,
             canDownloadPatch: true,
-            canResolveWithAI: true,
-            canExplainWithAI: true,
           }),
         });
         await waitForPromises();
@@ -385,9 +379,11 @@ describe('Vulnerability Header', () => {
           vulnerability: getVulnerability({
             canCreateMergeRequest: false,
             canDownloadPatch: false,
-            canResolveWithAI: false,
-            canExplainWithAI: false,
           }),
+          glAbilities: {
+            explainVulnerabilityWithAi: false,
+            resolveVulnerabilityWithAi: false,
+          },
         });
 
         expect(findSplitButton().exists()).toBe(false);
@@ -402,6 +398,10 @@ describe('Vulnerability Header', () => {
           vulnerability: getVulnerability({
             [state]: true,
           }),
+          glAbilities: {
+            explainVulnerabilityWithAi: false,
+            resolveVulnerabilityWithAi: false,
+          },
         });
 
         const buttons = findSplitButton().props('buttons');
@@ -424,10 +424,14 @@ describe('Vulnerability Header', () => {
           ...defaultVulnerability,
           canCreateMergeRequest: true,
           canDownloadPatch: true,
-          canResolveWithAI: false,
         };
 
-        createWrapper({ vulnerability: getVulnerability(vulnerability) });
+        createWrapper({
+          vulnerability: getVulnerability(vulnerability),
+          glAbilities: {
+            resolveVulnerabilityWithAi: false,
+          },
+        });
         await waitForPromises();
         const mergeRequestPath = '/group/project/merge_request/123';
         mockAxios.onPost(vulnerability.createMrUrl).reply(HTTP_STATUS_OK, {
@@ -459,7 +463,6 @@ describe('Vulnerability Header', () => {
           vulnerability: getVulnerability({
             canCreateMergeRequest: true,
             canDownloadPatch: true,
-            canResolveWithAI: true,
           }),
         });
         await waitForPromises();
@@ -490,7 +493,6 @@ describe('Vulnerability Header', () => {
           vulnerability: getVulnerability({
             canCreateMergeRequest: true,
             canDownloadPatch: true,
-            canResolveWithAI: true,
           }),
         });
         await waitForPromises();
@@ -511,7 +513,6 @@ describe('Vulnerability Header', () => {
 
       const createWrapperWithAiApollo = ({
         mutationResponse = MUTATION_AI_ACTION_DEFAULT_RESPONSE,
-        getVulnerabilityParam = { canResolveWithAI: true },
       } = {}) => {
         mockSubscription = createMockSubscription();
         subscriptionSpy = jest.fn().mockReturnValue(mockSubscription);
@@ -520,7 +521,7 @@ describe('Vulnerability Header', () => {
         apolloProvider.defaultClient.setRequestHandler(aiResponseSubscription, subscriptionSpy);
 
         createWrapper({
-          vulnerability: getVulnerability(getVulnerabilityParam),
+          vulnerability: getVulnerability(),
           apolloProvider,
         });
 
@@ -547,9 +548,7 @@ describe('Vulnerability Header', () => {
 
       it('passes the category and tanuki icon', () => {
         createWrapper({
-          vulnerability: getVulnerability({
-            canResolveWithAI: true,
-          }),
+          vulnerability: getVulnerability(),
         });
 
         expect(findResolveWithAIButton()).toMatchObject({
@@ -561,9 +560,7 @@ describe('Vulnerability Header', () => {
       // Note: when the `resolveVulnerability` is removed, these tests can be deleted as well
       it('does not pass the experimental badge or tooltip', () => {
         createWrapper({
-          vulnerability: getVulnerability({
-            canResolveWithAI: true,
-          }),
+          vulnerability: getVulnerability(),
         });
 
         expect(findResolveWithAIButton()).not.toHaveProperty('badge');
@@ -629,7 +626,6 @@ describe('Vulnerability Header', () => {
         await createWrapperWithAiApollo({
           canCreateMergeRequest: true,
           canDownloadPatch: true,
-          canResolveWithAI: true,
         });
         await clickButton('start-subscription');
         expect(subscriptionSpy).toHaveBeenCalled();
@@ -651,9 +647,7 @@ describe('Vulnerability Header', () => {
         const apolloProvider = createApolloProvider([chatMutation, chatMutationHandlerMock]);
 
         createWrapper({
-          vulnerability: getVulnerability({
-            canExplainWithAI: true,
-          }),
+          vulnerability: getVulnerability(),
           apolloProvider,
         });
       });
@@ -695,10 +689,12 @@ describe('Vulnerability Header', () => {
           resolveVulnerabilityAiGateway: false,
           resolveVulnerability: false,
         },
+        glAbilities: {
+          resolveVulnerabilityWithAi: false,
+        },
         vulnerability: getVulnerability({
           canCreateMergeRequest: true,
           canDownloadPatch: true,
-          canResolveWithAI: true,
         }),
       });
       await waitForPromises();
@@ -720,9 +716,7 @@ describe('Vulnerability Header', () => {
           resolveVulnerabilityAiGateway: false,
           resolveVulnerability: true,
         },
-        vulnerability: getVulnerability({
-          canResolveWithAI: true,
-        }),
+        vulnerability: getVulnerability(),
       });
 
       const buttons = findSplitButton().props('buttons');
@@ -742,9 +736,7 @@ describe('Vulnerability Header', () => {
         glFeatures: {
           explainVulnerabilityTool: false,
         },
-        vulnerability: getVulnerability({
-          canExplainWithAI: true,
-        }),
+        vulnerability: getVulnerability(),
       });
       await waitForPromises();
 
