@@ -270,7 +270,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
       end
     end
 
-    context 'when asking about how to use GitLab', :ai_embedding_fixtures do
+    context 'when asking about how to use GitLab' do
       where(:input_template, :tools) do
         'How do I change my password in GitLab' | ['GitlabDocumentation']
         'How do I fork a project?' | ['GitlabDocumentation']
@@ -317,6 +317,14 @@ RSpec.describe Gitlab::Llm::Completions::Chat, :clean_gitlab_redis_chat, feature
 
       with_them do
         let(:input) { input_template }
+
+        before do
+          allow_next_instance_of(Gitlab::Llm::Chain::Tools::GitlabDocumentation::Executor) do |instance|
+            allow(instance).to receive(:perform).and_return(
+              Gitlab::Llm::Chain::Answer.final_answer(context: instance.context, content: 'foo')
+            )
+          end
+        end
 
         it_behaves_like 'successful prompt processing'
       end
