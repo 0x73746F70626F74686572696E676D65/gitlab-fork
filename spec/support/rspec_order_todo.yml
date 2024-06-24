@@ -4,10 +4,6 @@
 # See https://docs.gitlab.com/ee/development/testing_guide/best_practices.html#test-order.
 #
 ---
-- './ee/spec/components/billing/plan_component_spec.rb'
-- './ee/spec/components/namespaces/free_user_cap/usage_quota_alert_component_spec.rb'
-- './ee/spec/components/namespaces/free_user_cap/usage_quota_trial_alert_component_spec.rb'
-- './ee/spec/components/namespaces/storage/limit_alert_component_spec.rb'
 - './ee/spec/config/metrics/every_metric_definition_spec.rb'
 - './ee/spec/controllers/admin/applications_controller_spec.rb'
 - './ee/spec/controllers/admin/application_settings_controller_spec.rb'
