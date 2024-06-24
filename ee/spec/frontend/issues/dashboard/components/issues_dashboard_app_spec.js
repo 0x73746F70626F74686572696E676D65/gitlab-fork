@@ -48,7 +48,6 @@ describe('EE IssuesDashboardApp component', () => {
 
   const mountComponent = ({
     provide = {},
-    okrsMvc = false,
     issuesQueryHandler = jest.fn().mockResolvedValue(defaultQueryResponse),
     issuesCountsQueryHandler = jest.fn().mockResolvedValue(issuesCountsQueryResponse),
   } = {}) => {
@@ -58,9 +57,6 @@ describe('EE IssuesDashboardApp component', () => {
         [getIssuesCountsQuery, issuesCountsQueryHandler],
       ]),
       provide: {
-        glFeatures: {
-          okrsMvc,
-        },
         ...defaultProvide,
         ...provide,
       },
@@ -69,15 +65,14 @@ describe('EE IssuesDashboardApp component', () => {
 
   describe('tokens', () => {
     describe.each`
-      hasOkrsFeature | okrsMvc  | eeWorkItemTypeTokens                                           | message
-      ${false}       | ${true}  | ${[]}                                                          | ${'not include'}
-      ${true}        | ${false} | ${[]}                                                          | ${'not include'}
-      ${true}        | ${true}  | ${[TYPE_TOKEN_OBJECTIVE_OPTION, TYPE_TOKEN_KEY_RESULT_OPTION]} | ${'include'}
+      hasOkrsFeature | eeWorkItemTypeTokens                                           | message
+      ${false}       | ${[]}                                                          | ${'not include'}
+      ${true}        | ${[TYPE_TOKEN_OBJECTIVE_OPTION, TYPE_TOKEN_KEY_RESULT_OPTION]} | ${'include'}
     `(
-      'when hasOkrsFeature is "$hasOkrsFeature" and okrsMvc is "$okrsMvc"',
-      ({ hasOkrsFeature, okrsMvc, eeWorkItemTypeTokens, message }) => {
+      'when hasOkrsFeature is "$hasOkrsFeature"',
+      ({ hasOkrsFeature, eeWorkItemTypeTokens, message }) => {
         beforeEach(() => {
-          mountComponent({ provide: { hasOkrsFeature }, okrsMvc });
+          mountComponent({ provide: { hasOkrsFeature } });
         });
 
         it(`should ${message} objective and key result in type tokens`, () => {
