@@ -45,6 +45,9 @@ export default {
         return { detail, value };
       });
     },
+    hasFooterContent() {
+      return Boolean(this.$scopedSlots.footer);
+    },
   },
 };
 </script>
@@ -55,7 +58,7 @@ export default {
       <h6 class="gl-m-0">{{ headerText }}</h6>
     </template>
     <subscription-details-table :details="details" :subscription-type="subscription.type" />
-    <template #footer>
+    <template v-if="hasFooterContent" #footer>
       <slot name="footer"></slot>
     </template>
   </gl-card>

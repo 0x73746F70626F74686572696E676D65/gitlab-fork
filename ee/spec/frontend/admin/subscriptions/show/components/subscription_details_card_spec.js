@@ -49,6 +49,10 @@ describe('Subscription Details Card', () => {
       expect(findSubscriptionDetailsTable().exists()).toBe(true);
     });
 
+    it('does not display footer by default', () => {
+      expect(findCardFooter().exists()).toBe(false);
+    });
+
     it('passes the details to the table component', () => {
       expect(findSubscriptionDetailsTable().props('details')).toEqual([
         {

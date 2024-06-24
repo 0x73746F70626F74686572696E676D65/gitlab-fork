@@ -79,67 +79,59 @@ export default {
 </script>
 
 <template>
-  <section class="row">
-    <div class="col-md-6 gl-mb-5">
-      <gl-card class="gl-h-full">
-        <header>
-          <h2 data-testid="users-in-subscription">{{ usersInSubscription }}</h2>
-          <h5 class="gl-font-normal text-uppercase">{{ usersInSubscriptionTitle }}</h5>
-        </header>
-        <p v-if="isUsersInSubscriptionVisible" data-testid="users-in-subscription-desc">
-          {{ $options.i18n.usersInSubscriptionText }}
-        </p>
-      </gl-card>
-    </div>
+  <div class="gl-grid sm:gl-grid-cols-2 gl-gap-5 gl-mb-6">
+    <gl-card>
+      <header>
+        <h5 class="gl-font-normal gl-text-secondary gl-mt-0">{{ usersInSubscriptionTitle }}</h5>
+        <h2 class="!gl-mt-0" data-testid="users-in-subscription">{{ usersInSubscription }}</h2>
+      </header>
+      <div v-if="isUsersInSubscriptionVisible" data-testid="users-in-subscription-desc">
+        {{ $options.i18n.usersInSubscriptionText }}
+      </div>
+    </gl-card>
 
-    <div class="col-md-6 gl-mb-5">
-      <gl-card class="gl-h-full" data-testid="billable-users">
-        <header>
-          <h2 data-testid="billable-users-count">{{ billableUsers }}</h2>
-          <h5 class="gl-font-normal text-uppercase">
-            {{ $options.i18n.billableUsersTitle }}
-          </h5>
-        </header>
-        <p>
-          <gl-sprintf :message="$options.i18n.billableUsersText">
-            <template #billableUsersLink="{ content }">
-              <gl-link :href="$options.links.billableUsersURL" target="_blank">
-                {{ content }}
-              </gl-link>
-            </template>
-          </gl-sprintf>
-        </p>
-      </gl-card>
-    </div>
+    <gl-card data-testid="billable-users">
+      <header>
+        <h5 class="gl-font-normal gl-text-secondary gl-mt-0">
+          {{ $options.i18n.billableUsersTitle }}
+        </h5>
+        <h2 class="!gl-mt-0" data-testid="billable-users-count">{{ billableUsers }}</h2>
+      </header>
+      <div>
+        <gl-sprintf :message="$options.i18n.billableUsersText">
+          <template #billableUsersLink="{ content }">
+            <gl-link :href="$options.links.billableUsersURL" target="_blank">
+              {{ content }}
+            </gl-link>
+          </template>
+        </gl-sprintf>
+      </div>
+    </gl-card>
 
-    <div class="col-md-6 gl-mb-5">
-      <gl-card class="gl-h-full" data-testid="maximum-users">
-        <header>
-          <h2>{{ maximumUsers }}</h2>
-          <h5 class="gl-font-normal text-uppercase">
-            {{ $options.i18n.maximumUsersTitle }}
-          </h5>
-        </header>
-        <p>{{ $options.i18n.maximumUsersText }}</p>
-      </gl-card>
-    </div>
+    <gl-card data-testid="maximum-users">
+      <header>
+        <h5 class="gl-font-normal gl-text-secondary gl-mt-0">
+          {{ $options.i18n.maximumUsersTitle }}
+        </h5>
+        <h2 class="!gl-mt-0">{{ maximumUsers }}</h2>
+      </header>
+      <div>{{ $options.i18n.maximumUsersText }}</div>
+    </gl-card>
 
-    <div class="col-md-6 gl-mb-5">
-      <gl-card class="gl-h-full" data-testid="users-over-license">
-        <header>
-          <h2>{{ usersOverSubscription }}</h2>
-          <h5 class="gl-font-normal text-uppercase">
-            {{ $options.i18n.usersOverSubscriptionTitle }}
-          </h5>
-        </header>
-        <p>
-          <gl-sprintf :message="$options.i18n.usersOverSubscriptionText">
-            <template #trueUpLink="{ content }">
-              <gl-link :href="$options.links.trueUpURL">{{ content }}</gl-link>
-            </template>
-          </gl-sprintf>
-        </p>
-      </gl-card>
-    </div>
-  </section>
+    <gl-card data-testid="users-over-license">
+      <header>
+        <h5 class="gl-font-normal gl-text-secondary gl-mt-0">
+          {{ $options.i18n.usersOverSubscriptionTitle }}
+        </h5>
+        <h2 class="!gl-mt-0">{{ usersOverSubscription }}</h2>
+      </header>
+      <div>
+        <gl-sprintf :message="$options.i18n.usersOverSubscriptionText">
+          <template #trueUpLink="{ content }">
+            <gl-link :href="$options.links.trueUpURL">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </div>
+    </gl-card>
+  </div>
 </template>
