@@ -12,7 +12,7 @@ module AuditEvents
       private
 
       def track_and_stream(destination)
-        track_audit_event_count
+        track_audit_event
 
         @logger.log(destination.client_email, destination.private_key, json_payload(destination))
       end

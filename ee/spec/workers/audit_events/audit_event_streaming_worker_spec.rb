@@ -10,25 +10,27 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
   end
 
   shared_context 'a successful audit event stream' do
+    let(:event_name) { 'event_type_filters_created' }
+
     context 'when audit event id is passed' do
-      subject { worker.perform('event_type_filters_created', event.id) }
+      subject { worker.perform(event_name, audit_event.id) }
 
       include_context 'audit event stream'
     end
 
     context 'when audit event json is passed' do
       context 'when audit event is streamed as well as database saved' do
-        subject { worker.perform('event_type_filters_created', nil, event.to_json) }
+        subject { worker.perform(event_name, nil, audit_event.to_json) }
 
         include_context 'audit event stream'
       end
 
       context 'when audit event is stream only' do
         before do
-          event.id = nil # id is nil in case of stream only events because they are not stored in database.
+          audit_event.id = nil # id is nil in case of stream only events because they are not stored in database.
         end
 
-        subject { worker.perform('event_type_filters_created', nil, event.to_json) }
+        subject { worker.perform(event_name, nil, audit_event.to_json) }
 
         include_context 'audit event stream'
       end
@@ -37,19 +39,19 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
 
   shared_context 'a error is raised' do
     context 'when audit event id is passed' do
-      subject { worker.perform('audit_operation', event.id) }
+      subject { worker.perform('audit_operation', audit_event.id) }
 
       include_context 'http post error'
     end
 
     context 'when audit event json is passed' do
-      subject { worker.perform('audit_operation', nil, event.to_json) }
+      subject { worker.perform('audit_operation', nil, audit_event.to_json) }
 
       include_context 'http post error'
     end
 
     context 'when both audit event id and audit event json is passed' do
-      subject { worker.perform('audit_operation', event.id, event.to_json) }
+      subject { worker.perform('audit_operation', audit_event.id, audit_event.to_json) }
 
       it 'a argument error is raised' do
         expect { subject }.to raise_error(ArgumentError, 'audit_event_id and audit_event_json cannot be passed together')
@@ -97,9 +99,9 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
         end
 
         it 'sends correct id in request body' do
-          if event.id.present?
+          if audit_event.id.present?
             expect(Gitlab::HTTP).to receive(:post)
-              .with(an_instance_of(String), hash_including(body: a_string_including("id\":#{event.id}")))
+              .with(an_instance_of(String), hash_including(body: a_string_including("id\":#{audit_event.id}")))
           else
             expect(Gitlab::HTTP).to receive(:post)
               .with(an_instance_of(String), hash_including(body: a_string_including("id\":\"randomtoken\"")))
@@ -133,6 +135,27 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
           expect(Gitlab::HTTP).to receive(:post).once
 
           subject
+        end
+      end
+
+      context 'when audit event type is tracked as an internal event' do
+        let(:event_name) { AuditEvents::Strategies::ExternalDestinationStrategy::INTERNAL_EVENTS.first }
+
+        it 'makes http call' do
+          expect(Gitlab::HTTP).to receive(:post).once
+
+          subject
+        end
+
+        it_behaves_like 'internal event tracking' do
+          let(:event) { 'trigger_audit_event' }
+          let(:label) { event_name }
+          let(:category) { 'AuditEvents::Strategies::GroupExternalDestinationStrategy' }
+          let(:event_attribute_overrides) { { project: nil, namespace: nil } }
+
+          before do
+            allow(Gitlab::HTTP).to receive(:post).once
+          end
         end
       end
 
@@ -261,7 +284,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
 
   shared_examples 'no HTTP calls are made' do
     context 'when audit event id is passed as param' do
-      subject { worker.perform('audit_operation', event.id) }
+      subject { worker.perform('audit_operation', audit_event.id) }
 
       it 'makes no HTTP calls' do
         expect(Gitlab::HTTP).not_to receive(:post)
@@ -271,7 +294,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
     end
 
     context 'when audit event json is passed as param' do
-      subject { worker.perform('audit_operation', nil, event.to_json) }
+      subject { worker.perform('audit_operation', nil, audit_event.to_json) }
 
       it 'makes no HTTP calls' do
         expect(Gitlab::HTTP).not_to receive(:post)
@@ -284,15 +307,15 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
   describe "#perform" do
     context 'when the entity type is a group' do
       it_behaves_like 'a successful audit event stream' do
-        let_it_be(:event) { create(:audit_event, :group_event) }
+        let_it_be(:audit_event) { create(:audit_event, :group_event) }
 
-        let(:group) { event.entity }
+        let(:group) { audit_event.entity }
       end
 
       it_behaves_like 'a error is raised' do
-        let_it_be(:event) { create(:audit_event, :group_event) }
+        let_it_be(:audit_event) { create(:audit_event, :group_event) }
 
-        let(:group) { event.entity }
+        let(:group) { audit_event.entity }
       end
     end
 
@@ -300,27 +323,27 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
       it_behaves_like 'a successful audit event stream' do
         let_it_be(:group) { create(:group) }
         let_it_be(:project) { create(:project, group: group) }
-        let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
+        let_it_be(:audit_event) { create(:audit_event, :project_event, target_project: project) }
       end
 
       it_behaves_like 'a error is raised' do
         let_it_be(:group) { create(:group) }
         let_it_be(:project) { create(:project, group: group) }
-        let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
+        let_it_be(:audit_event) { create(:audit_event, :project_event, target_project: project) }
       end
     end
 
     context 'when the entity type is a project at a root namespace level' do
-      let_it_be(:event) { create(:audit_event, :project_event) }
+      let_it_be(:audit_event) { create(:audit_event, :project_event) }
 
       it_behaves_like 'no HTTP calls are made'
     end
 
     context 'when the entity is a NullEntity' do
-      let_it_be(:event) { create(:audit_event, :project_event) }
+      let_it_be(:audit_event) { create(:audit_event, :project_event) }
 
       before do
-        event.entity_id = non_existing_record_id
+        audit_event.entity_id = non_existing_record_id
       end
 
       it_behaves_like 'no HTTP calls are made'
@@ -328,22 +351,23 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
       context 'when root_group_entity_id is passed in audit event json' do
         let(:group) { create(:group) }
         let(:project) { create(:project, group: group) }
-        let(:event) { create(:audit_event, :project_event, target_project: project) }
+        let(:audit_event) { create(:audit_event, :project_event, target_project: project) }
+        let(:event_name) { 'event_type_filters_created' }
 
         before do
-          event.root_group_entity_id = group.id
+          audit_event.root_group_entity_id = group.id
         end
 
-        subject { worker.perform('event_type_filters_created', nil, event.to_json(methods: [:root_group_entity_id])) }
+        subject { worker.perform(event_name, nil, audit_event.to_json(methods: [:root_group_entity_id])) }
 
         include_context 'audit event stream'
       end
     end
 
     context 'when the entity is InstanceScope' do
-      let_it_be(:event) { create(:audit_event, :instance_event) }
+      let_it_be(:audit_event) { create(:audit_event, :instance_event) }
 
-      subject { worker.perform('audit_operation', nil, event.to_json) }
+      subject { worker.perform('audit_operation', nil, audit_event.to_json) }
 
       context 'when the gitlab instance has an external destination' do
         let_it_be(:destination) { create(:instance_external_audit_event_destination) }
@@ -356,9 +380,9 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
       end
 
       context 'when the gitlab instance does not have any external destination' do
-        let_it_be(:event) { create(:audit_event, :instance_event) }
+        let_it_be(:audit_event) { create(:audit_event, :instance_event) }
 
-        subject { worker.perform('audit_operation', nil, event.to_json) }
+        subject { worker.perform('audit_operation', nil, audit_event.to_json) }
 
         it_behaves_like 'no HTTP calls are made'
       end
@@ -373,7 +397,7 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
     it_behaves_like 'a successful audit event stream' do
       let_it_be(:group) { create(:group) }
       let_it_be(:project) { create(:project, group: group) }
-      let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
+      let_it_be(:audit_event) { create(:audit_event, :project_event, target_project: project) }
     end
   end
 end
