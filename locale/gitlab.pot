@@ -20563,6 +20563,9 @@ msgstr ""
 msgid "Environments|Search by environment name"
 msgstr ""
 
+msgid "Environments|See all environments."
+msgstr ""
+
 msgid "Environments|Select Flux resource"
 msgstr ""
 
@@ -20582,6 +20585,9 @@ msgid "Environments|Select which environments to clean up.     Protected environ
 msgstr ""
 
 msgid "Environments|Show all"
+msgstr ""
+
+msgid "Environments|Showing %{listedEnvironmentsCount} of %{totalEnvironmentsCount} environments in this folder."
 msgstr ""
 
 msgid "Environments|Stop"
