@@ -26,7 +26,7 @@ RSpec.describe ::Search::Zoekt::Index, feature_category: :global_search do
       expect(zoekt_index).to be_invalid
     end
 
-    it 'validates presence of replica' do
+    it 'validates presence of replica', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/468476' do
       expect(zoekt_index).to be_valid
       zoekt_index.replica = nil
       expect(zoekt_index).not_to be_valid
