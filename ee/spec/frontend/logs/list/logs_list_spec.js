@@ -14,6 +14,7 @@ import { createMockClient } from 'helpers/mock_observability_client';
 import * as commonUtils from '~/lib/utils/common_utils';
 import axios from '~/lib/utils/axios_utils';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 import { mockLogs, mockMetadata } from './mock_data';
 
 jest.mock('~/lib/utils/axios_utils');
@@ -59,6 +60,8 @@ describe('LogsList', () => {
     await waitForPromises();
   };
 
+  const { bindInternalEventDocument } = useMockInternalEventsTracking();
+
   beforeEach(() => {
     observabilityClientMock = createMockClient();
     observabilityClientMock.fetchLogs.mockResolvedValue({
@@ -66,6 +69,13 @@ describe('LogsList', () => {
       nextPageToken: 'page-2',
     });
     observabilityClientMock.fetchLogsSearchMetadata.mockResolvedValue(mockMetadata);
+  });
+
+  it('tracks view_logs_page', () => {
+    mountComponent();
+
+    const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+    expect(trackEventSpy).toHaveBeenCalledWith('view_logs_page', {}, undefined);
   });
 
   it('renders the loading indicator while fetching logs data', () => {

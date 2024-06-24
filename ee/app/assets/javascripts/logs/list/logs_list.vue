@@ -9,6 +9,8 @@ import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import axios from '~/lib/utils/axios_utils';
 import { queryToObject, DOCS_URL_IN_EE_DIR } from '~/lib/utils/url_utility';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
+import { InternalEvents } from '~/tracking';
+import { VIEW_LOGS_PAGE } from '../events';
 import LogsTable from './logs_table.vue';
 import LogsDrawer from './logs_drawer.vue';
 import LogsFilteredSearch from './filter_bar/logs_filtered_search.vue';
@@ -32,6 +34,7 @@ export default {
     LogsVolume,
     GlLink,
   },
+  mixins: [InternalEvents.mixin()],
   i18n: {
     infiniteScrollLegend: s__(`ObservabilityLogs|Showing %{count} logs`),
     pageTitle: s__(`ObservabilityLogs|Logs`),
@@ -86,6 +89,8 @@ export default {
     this.fetchMetadata();
   },
   mounted() {
+    this.trackEvent(VIEW_LOGS_PAGE);
+
     this.$nextTick(() => this.resize());
     this.resizeThrottled = throttle(() => {
       this.resize();
