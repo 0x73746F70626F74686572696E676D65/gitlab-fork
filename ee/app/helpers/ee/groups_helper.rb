@@ -112,7 +112,15 @@ module EE
         group_id: group.id,
         add_duo_pro_href: duo_pro_url(group),
         duo_pro_bulk_user_assignment_available: duo_pro_bulk_user_assignment_available?(group).to_s
-      }
+      }.merge(duo_pro_trial_link(group))
+    end
+
+    def duo_pro_trial_link(group)
+      if group.subscription_add_on_purchases.for_gitlab_duo_pro.none?
+        return { duo_pro_trial_href: new_trials_duo_pro_path(namespace_id: group.id) }
+      end
+
+      {}
     end
 
     def product_analytics_usage_quota_app_data(group)

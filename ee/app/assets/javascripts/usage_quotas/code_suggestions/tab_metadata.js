@@ -5,11 +5,18 @@ import { CODE_SUGGESTIONS_TAB_METADATA_EL_SELECTOR } from '../constants';
 import CodeSuggestionsUsage from './components/code_suggestions_usage.vue';
 
 export const parseProvideData = (el) => {
-  const { fullPath, groupId, addDuoProHref, duoProBulkUserAssignmentAvailable } = el.dataset;
+  const {
+    fullPath,
+    groupId,
+    duoProTrialHref,
+    addDuoProHref,
+    duoProBulkUserAssignmentAvailable,
+  } = el.dataset;
 
   return {
     fullPath,
     groupId,
+    duoProTrialHref,
     addDuoProHref,
     isSaaS: true,
     isBulkAddOnAssignmentEnabled: parseBoolean(duoProBulkUserAssignmentAvailable),
