@@ -10,8 +10,8 @@ class FinalizeBackfillUsersColorModeId < Gitlab::Database::Migration[2.2]
   def up
     ensure_batched_background_migration_is_finished(
       job_class_name: 'BackfillUsersColorModeId',
-      table_name: TABLE_NAME,
-      column_name: BATCH_COLUMN,
+      table_name: :users,
+      column_name: :id,
       job_arguments: [],
       finalize: true
     )
