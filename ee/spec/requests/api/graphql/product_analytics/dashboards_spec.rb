@@ -46,10 +46,6 @@ RSpec.describe 'Query.resource(id).dashboards', feature_category: :product_analy
     end
   end
 
-  before do
-    stub_feature_flags(ai_impact_analytics_dashboard: false)
-  end
-
   context 'when resource parent is a project' do
     let_it_be_with_reload(:group) { create(:group) }
     let_it_be_with_reload(:config_project) { create(:project, :with_product_analytics_dashboard, group: group) }

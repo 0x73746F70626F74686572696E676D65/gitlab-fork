@@ -49,20 +49,20 @@ RSpec.describe 'Query.project(id).dashboards.panels(id).visualization', feature_
 
       expect(
         graphql_data_at(:project, :customizable_dashboards, :nodes, 0, :panels, :nodes, 0, :visualization, :type)
-      ).to eq('AiImpactTable')
+      ).to eq('LineChart')
     end
 
-    context 'when `ai_impact_analytics_dashboard` is disabled' do
+    context 'when clickhouse is enabled' do
       before do
-        stub_feature_flags(ai_impact_analytics_dashboard: false)
+        allow(Gitlab::ClickHouse).to receive(:globally_enabled_for_analytics?).and_return(true)
       end
 
-      it 'does not return the `AiImpactTable` visualization' do
+      it 'returns the `AiImpactTable` visualization' do
         get_graphql(query, current_user: user)
 
         expect(
           graphql_data_at(:project, :customizable_dashboards, :nodes, 0, :panels, :nodes, 0, :visualization, :type)
-        ).to eq('LineChart')
+        ).to eq('AiImpactTable')
       end
     end
 

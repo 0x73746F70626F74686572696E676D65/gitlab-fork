@@ -11,6 +11,7 @@ module ProductAnalytics
 
     PRODUCT_ANALYTICS_DASHBOARDS_LIST = %w[audience behavior].freeze
     VALUE_STREAMS_DASHBOARD_NAME = 'value_streams_dashboard'
+    AI_IMPACT_DASHBOARD_NAME = 'ai_impact'
     PROJECT_VALUE_STREAMS_DASHBOARD_NAME = 'project_value_streams_dashboard'
     SCHEMA_PATH = 'ee/app/validators/json_schemas/analytics_dashboard.json'
 
@@ -130,7 +131,7 @@ module ProductAnalytics
       config = load_yaml_dashboard_config('dashboard', 'ee/lib/gitlab/analytics/ai_impact_dashboard')
 
       new(
-        slug: 'ai_impact',
+        slug: AI_IMPACT_DASHBOARD_NAME,
         container: container,
         config: config,
         config_project: config_project,

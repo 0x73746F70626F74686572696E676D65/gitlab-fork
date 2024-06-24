@@ -1,9 +1,0 @@
----
-name: ai_impact_analytics_dashboard
-feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/451482
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/148078
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/451873
-milestone: '16.11'
-group: group::optimize
-type: gitlab_com_derisk
-default_enabled: false

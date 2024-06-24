@@ -113,14 +113,14 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
   describe '#ai_impact_dashboard_available?' do
     subject { group.ai_impact_dashboard_available? }
 
-    where(:flag, :outcome) do
+    where(:enabled, :outcome) do
       false | false
       true | true
     end
 
     with_them do
       before do
-        stub_feature_flags(ai_impact_analytics_dashboard: flag)
+        allow(Gitlab::ClickHouse).to receive(:globally_enabled_for_analytics?).and_return(enabled)
       end
 
       it { is_expected.to eq(outcome) }
@@ -128,10 +128,6 @@ RSpec.describe ProductAnalyticsHelpers, feature_category: :product_analytics_dat
   end
 
   describe '#product_analytics_dashboards' do
-    before do
-      stub_feature_flags(ai_impact_analytics_dashboard: false)
-    end
-
     it 'returns nothing if product analytics disabled' do
       stub_licensed_features(product_analytics: false)
       expect(project.product_analytics_dashboards(user)).to be_empty

@@ -11,7 +11,6 @@ module Projects
       before_action :authorize_read_product_analytics!
       before_action :authorize_read_combined_project_analytics_dashboards!
       before_action do
-        push_frontend_feature_flag(:ai_impact_analytics_dashboard, project.group, type: :gitlab_com_derisk)
         push_frontend_feature_flag(:enable_vsd_visual_editor, project.group)
         push_frontend_feature_flag(:analytics_visualization_designer_filtering, project)
 

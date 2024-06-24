@@ -48,7 +48,7 @@ module ProductAnalyticsHelpers
   end
 
   def ai_impact_dashboard_available?
-    Feature.enabled?(:ai_impact_analytics_dashboard, is_a?(Project) ? group : self)
+    Gitlab::ClickHouse.globally_enabled_for_analytics?
   end
 
   def product_analytics_dashboards(user)
