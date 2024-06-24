@@ -68,6 +68,18 @@ RSpec.describe ApprovalRules::ProjectRuleDestroyService do
 
         include_context 'an audit event is added'
       end
+
+      context 'when originating from a security policy' do
+        let(:policy_configuration) { create(:security_orchestration_policy_configuration) }
+
+        before do
+          project_rule.update!(security_orchestration_policy_configuration: policy_configuration)
+        end
+
+        it 'raises an AccessDeniedError' do
+          expect { subject }.to raise_error(Gitlab::Access::AccessDeniedError)
+        end
+      end
     end
   end
 end

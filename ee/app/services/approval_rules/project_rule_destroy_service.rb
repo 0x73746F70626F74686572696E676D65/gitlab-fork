@@ -11,6 +11,8 @@ module ApprovalRules
     end
 
     def execute
+      raise Gitlab::Access::AccessDeniedError if originates_from_security_policy?
+
       ApplicationRecord.transaction do
         # Removes only MR rules associated with project rule
         remove_associated_approval_rules_from_unmerged_merge_requests
@@ -22,6 +24,10 @@ module ApprovalRules
     end
 
     private
+
+    def originates_from_security_policy?
+      rule.security_orchestration_policy_configuration_id?
+    end
 
     def success
       audit_deletion

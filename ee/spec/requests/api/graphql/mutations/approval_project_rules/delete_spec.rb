@@ -57,5 +57,26 @@ RSpec.describe 'approvalProjectRuleDelete', feature_category: :source_code_manag
         expect(graphql_errors).to include(global_id_error)
       end
     end
+
+    context 'when approval rule originates from security policy' do
+      let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration) }
+      let_it_be(:approval_project_rule) do
+        create(:approval_project_rule,
+          project: project,
+          security_orchestration_policy_configuration: policy_configuration)
+      end
+
+      let(:resource_not_available_error) { a_hash_including('message' => a_string_including(error_message)) }
+      let(:error_message) do
+        "The resource that you are attempting to access does not exist " \
+          "or you don't have permission to perform this action"
+      end
+
+      it 'returns an error' do
+        post_mutation
+
+        expect(graphql_errors).to include(resource_not_available_error)
+      end
+    end
   end
 end
