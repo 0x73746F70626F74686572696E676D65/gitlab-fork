@@ -6,7 +6,7 @@
 - early_access_program_link_start = '<a href="https://about.gitlab.com/community/early-access/" target="_blank" rel="noopener noreferrer">'.html_safe
 
 %h5
-  = s_('GroupSettings|Experiment and beta features')
+  = s_('GroupSettings|GitLab Duo experiment and beta features')
 
 %p
   = s_('GroupSettings|These features are being developed and might be unstable.')
@@ -15,7 +15,7 @@
 
 .form-group.gl-mb-3
   = f.gitlab_ui_checkbox_component :experiment_features_enabled,
-    s_('GroupSettings|Use experiment and beta features'),
+    s_('GroupSettings|Use experiment and beta Duo features'),
     checkbox_options: { data: { testid: 'use-experimental-features-checkbox' } },
     help_text: s_('GroupSettings|Enabling these features is your acceptance of the %{link_start}GitLab Testing Agreement%{link_end}.').html_safe % { link_start: terms_link_start, link_end: '</a>'.html_safe }
   - if ::Feature.enabled?(:early_access_program_toggle, current_user)
