@@ -87,10 +87,7 @@ module Security
       end
 
       def schedule_sbom_records
-        return if pipeline.child?
-        return unless pipeline.default_branch? && pipeline.can_ingest_sbom_reports?
-
-        Sbom::IngestReportsWorker.perform_async(pipeline.id)
+        ::Sbom::ScheduleIngestReportsService.new(pipeline).execute
       end
 
       def schedule_updating_archived_status_if_needed

@@ -101,51 +101,18 @@ RSpec.describe Security::Ingestion::IngestReportsService, feature_category: :vul
       end
     end
 
-    context 'when scheduling the Sbom::IngestReportsWorker' do
-      let(:default_branch) { true }
-      let(:can_ingest_sbom_reports) { true }
+    context 'when scheduling the SBOM ingestion' do
+      let(:sbom_ingestion_scheduler) { instance_double(::Sbom::ScheduleIngestReportsService, execute: nil) }
 
       before do
-        allow(pipeline).to receive(:default_branch?).and_return(default_branch)
-        allow(pipeline).to receive(:can_ingest_sbom_reports?).and_return(can_ingest_sbom_reports)
+        allow(::Sbom::ScheduleIngestReportsService).to receive(:new).with(pipeline).and_return(sbom_ingestion_scheduler)
       end
 
-      context 'with child pipeline' do
-        before do
-          allow(pipeline).to receive(:child?).and_return(true)
-        end
-
-        it 'does not schedule Sbom::IngestReportsWorker' do
-          ingest_reports
-
-          expect(Sbom::IngestReportsWorker).not_to have_received(:perform_async)
-        end
-      end
-
-      context 'with a non-default branch' do
-        let(:default_branch) { false }
-
-        it 'does not schedule Sbom::IngestReportsWorker' do
-          ingest_reports
-
-          expect(Sbom::IngestReportsWorker).not_to have_received(:perform_async)
-        end
-      end
-
-      context 'when it cannot ingest sbom reports' do
-        let(:can_ingest_sbom_reports) { false }
-
-        it 'does not schedule Sbom::IngestReportsWorker' do
-          ingest_reports
-
-          expect(Sbom::IngestReportsWorker).not_to have_received(:perform_async)
-        end
-      end
-
-      it 'schedules Sbom::IngestReportsWorker' do
+      it 'defers to ScheduleIngestReportsService' do
         ingest_reports
 
-        expect(Sbom::IngestReportsWorker).to have_received(:perform_async).with(pipeline.id)
+        expect(::Sbom::ScheduleIngestReportsService).to have_received(:new).with(pipeline)
+        expect(sbom_ingestion_scheduler).to have_received(:execute)
       end
     end
 
