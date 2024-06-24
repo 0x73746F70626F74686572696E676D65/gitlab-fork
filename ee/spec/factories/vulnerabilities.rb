@@ -101,7 +101,8 @@ FactoryBot.define do
           :vulnerability_state_transition,
           vulnerability: vulnerability,
           from_state: evaluator.from_state,
-          to_state: evaluator.to_state
+          to_state: evaluator.to_state,
+          created_at: evaluator.created_at
         )
       end
     end
