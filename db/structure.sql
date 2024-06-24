@@ -29254,7 +29254,7 @@ CREATE INDEX index_upload_states_pending_verification ON upload_states USING btr
 
 CREATE INDEX index_uploads_on_checksum ON uploads USING btree (checksum);
 
-CREATE INDEX index_uploads_on_model_id_and_model_type ON uploads USING btree (model_id, model_type);
+CREATE INDEX index_uploads_on_model_id_model_type_uploader_created_at ON uploads USING btree (model_id, model_type, uploader, created_at);
 
 CREATE INDEX index_uploads_on_store ON uploads USING btree (store);
 
