@@ -1,4 +1,5 @@
 import { nextTick } from 'vue';
+import { GlAlert } from '@gitlab/ui';
 import OperationToken from 'ee/tracing/list/filter_bar/operation_search_token.vue';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -7,8 +8,9 @@ import AttributeSearchToken from 'ee/tracing/list/filter_bar/attribute_search_to
 import TracingListFilteredSearch from 'ee/tracing/list/filter_bar/tracing_filtered_search.vue';
 import TracingBaseSearchToken from 'ee/tracing/list/filter_bar/tracing_base_search_token.vue';
 import { createMockClient } from 'helpers/mock_observability_client';
-import { filterObjToFilterToken } from 'ee/tracing/list/filter_bar/filters';
+import { filterObjToFilterToken, PERIOD_FILTER_OPTIONS } from 'ee/tracing/list/filter_bar/filters';
 import DateRangeFilter from '~/observability/components/date_range_filter.vue';
+import { useFakeDate } from 'helpers/fake_date';
 
 describe('TracingListFilteredSearch', () => {
   let wrapper;
@@ -26,6 +28,9 @@ describe('TracingListFilteredSearch', () => {
     initialSort: 'duration_desc',
   };
 
+  // June 7thth, 2024
+  useFakeDate(2024, 5, 7);
+
   beforeEach(() => {
     observabilityClientMock = createMockClient();
 
@@ -39,27 +44,28 @@ describe('TracingListFilteredSearch', () => {
 
   const findDateRangeFilter = () => wrapper.findComponent(DateRangeFilter);
   const findFilteredSearch = () => wrapper.findComponent(FilteredSearch);
+  const findAlert = () => wrapper.findComponent(GlAlert);
+
   const getTokens = () => findFilteredSearch().props('tokens');
 
   describe('date range filter', () => {
-    it('renders the date range filter', () => {
+    it('initialise the date range filter', () => {
       expect(findDateRangeFilter().exists()).toBe(true);
-    });
 
-    it('sets the selected date range', () => {
       expect(findDateRangeFilter().props('selected')).toEqual(defaultProps.dateRangeFilter);
+      expect(findDateRangeFilter().props('maxDateRange')).toEqual(2);
+      expect(findDateRangeFilter().props('dateOptions')).toEqual(PERIOD_FILTER_OPTIONS);
+      expect(findDateRangeFilter().props('defaultMinDate')).toEqual(new Date('2024-05-08'));
     });
 
     it('emits the filter event when the date range is changed', async () => {
       const dateRange = {
-        value: '24h',
-        startDate: new Date('2022-01-01'),
-        endDate: new Date('2022-01-02'),
+        value: '5m',
       };
 
-      findDateRangeFilter().vm.$emit('onDateRangeSelected', dateRange);
-      await nextTick();
+      await findDateRangeFilter().vm.$emit('onDateRangeSelected', dateRange);
 
+      expect(findAlert().exists()).toBe(false);
       expect(wrapper.emitted('filter')).toEqual([
         [
           {
@@ -69,6 +75,34 @@ describe('TracingListFilteredSearch', () => {
         ],
       ]);
       expect(findDateRangeFilter().props('selected')).toEqual(dateRange);
+    });
+
+    describe('if date range is larger than 12h', () => {
+      beforeEach(async () => {
+        await findDateRangeFilter().vm.$emit('onDateRangeSelected', {
+          value: 'custom',
+          startDate: new Date('2022-01-01'),
+          endDate: new Date('2022-01-02'),
+        });
+      });
+      it('does not emit a filter event', () => {
+        expect(wrapper.emitted('filter')).toBeUndefined();
+      });
+
+      it('shows an alert and does not emi', () => {
+        expect(findAlert().exists()).toBe(true);
+      });
+
+      it('clears the alert when selecting a correct date range', async () => {
+        await findDateRangeFilter().vm.$emit('onDateRangeSelected', {
+          value: 'custom',
+          startDate: new Date('2022-01-01'),
+          endDate: new Date('2022-01-01T01:00:00'),
+        });
+
+        expect(findAlert().exists()).toBe(false);
+        expect(wrapper.emitted('filter')).toHaveLength(1);
+      });
     });
   });
 

@@ -55612,6 +55612,12 @@ msgstr ""
 msgid "Tracing|Time range"
 msgstr ""
 
+msgid "Tracing|Time range is currently limited to a maximum of 12 hours."
+msgstr ""
+
+msgid "Tracing|Time range is currently limited to a maximum of 12 hours. Please select a smaller range."
+msgstr ""
+
 msgid "Tracing|Timestamp"
 msgstr ""
 
