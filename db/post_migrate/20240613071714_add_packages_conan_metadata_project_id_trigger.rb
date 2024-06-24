@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class AddPackagesConanMetadataProjectIdTrigger < Gitlab::Database::Migration[2.2]
-  milestone '17.1'
+  milestone '17.2'
 
   def up
     install_sharding_key_assignment_trigger(
