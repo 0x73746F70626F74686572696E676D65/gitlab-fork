@@ -38,11 +38,11 @@ describe('GroupByFilter', () => {
   it('renders the group by attributes dropdown in groups', () => {
     expect(findGroupByAttributesDropdown().props('items')).toEqual([
       {
-        text: 'Selected attributes',
+        text: 'Selected dimensions',
         options: [{ value: 'attribute_one', text: 'attribute_one' }],
       },
       {
-        text: 'Attributes',
+        text: 'Dimensions',
         options: [
           { value: 'attribute_two', text: 'attribute_two' },
           { value: 'attribute_three', text: 'attribute_three' },
@@ -59,7 +59,7 @@ describe('GroupByFilter', () => {
 
     expect(findGroupByAttributesDropdown().props('items')).toEqual([
       {
-        text: 'Attributes',
+        text: 'Dimensions',
         options: [
           { value: 'attribute_one', text: 'attribute_one' },
           { value: 'attribute_two', text: 'attribute_two' },
@@ -75,7 +75,7 @@ describe('GroupByFilter', () => {
 
     expect(findGroupByAttributesDropdown().props('items')).toEqual([
       {
-        text: 'Selected attributes',
+        text: 'Selected dimensions',
         options: [
           { value: 'attribute_one', text: 'attribute_one' },
           { value: 'attribute_two', text: 'attribute_two' },
@@ -132,7 +132,7 @@ describe('GroupByFilter', () => {
 
     await findGroupByAttributesDropdown().vm.$emit('select', []);
 
-    expect(findGroupByAttributesDropdown().props('toggleText')).toBe('Select attributes');
+    expect(findGroupByAttributesDropdown().props('toggleText')).toBe('Select dimensions');
   });
 
   it('updates the function dropdown text depending on value', async () => {
