@@ -26,8 +26,10 @@ describe('WorkItemLabels component', () => {
     wrapper = shallowMountExtended(WorkItemLabels, {
       apolloProvider: createMockApollo([[workItemByIidQuery, workItemQueryHandler]]),
       provide: {
+        canAdminLabel: true,
         isGroup,
         issuesListPath,
+        labelsManagePath: 'test-project-path/labels',
       },
       propsData: {
         fullPath,

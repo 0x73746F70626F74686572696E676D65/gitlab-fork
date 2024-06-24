@@ -30447,6 +30447,9 @@ msgid_plural "Labels added: %{labels}"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Label name"
+msgstr ""
+
 msgid "Label priority"
 msgstr ""
 
@@ -33973,9 +33976,6 @@ msgstr ""
 msgid "Name must start with a letter, digit, emoji, or underscore."
 msgstr ""
 
-msgid "Name new label"
-msgstr ""
-
 msgid "Name the deployment (must be unique)"
 msgstr ""
 
@@ -35829,9 +35829,6 @@ msgstr ""
 msgid "ObservabilityLogs|Attributes"
 msgstr ""
 
-msgid "ObservabilityLogs|Check again"
-msgstr ""
-
 msgid "ObservabilityLogs|Count"
 msgstr ""
 
@@ -35863,9 +35860,6 @@ msgid "ObservabilityLogs|Metadata"
 msgstr ""
 
 msgid "ObservabilityLogs|Monitor log events captured from your systems. Send log data to this project using OpenTelemetry. %{docsLink}"
-msgstr ""
-
-msgid "ObservabilityLogs|No logs to display."
 msgstr ""
 
 msgid "ObservabilityLogs|Resource Attribute"
@@ -36025,6 +36019,12 @@ msgid "Observability|Last 7 days"
 msgstr ""
 
 msgid "Observability|Monitor your applications with GitLab Observability."
+msgstr ""
+
+msgid "Observability|Sorry, your filter produced no results"
+msgstr ""
+
+msgid "Observability|To widen your search, change or remove filters above"
 msgstr ""
 
 msgid "Oct"

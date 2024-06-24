@@ -14,7 +14,7 @@ RSpec.describe Sbom::Ingestion::IngestReportsService, feature_category: :depende
 
   before do
     allow(wrapper).to receive(:reports).and_return(reports)
-    allow(pipeline).to receive(:sbom_reports).and_return(wrapper)
+    allow(pipeline).to receive(:sbom_reports).with(self_and_project_descendants: true).and_return(wrapper)
     allow(::Sbom::Ingestion::Vulnerabilities).to receive(:new).and_return(vulnerability_info)
   end
 

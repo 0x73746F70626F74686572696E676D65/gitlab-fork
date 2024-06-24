@@ -11,6 +11,7 @@ import { createMockClient } from 'helpers/mock_observability_client';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
+import ObservabilityNoDataEmptyState from '~/observability/components/observability_no_data_empty_state.vue';
 import { mockMetrics } from './mock_data';
 
 jest.mock('~/alert');
@@ -29,7 +30,9 @@ describe('MetricsComponent', () => {
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findFilteredSearch = () => wrapper.findComponent(FilteredSearch);
   const findInfiniteScrolling = () => wrapper.findComponent(GlInfiniteScroll);
-  const findMetricsTable = () => findInfiniteScrolling().getComponent(MetricsTable);
+  const findMetricsTable = () => wrapper.findComponent(MetricsTable);
+  const findNoDataEmptyState = () => wrapper.findComponent(ObservabilityNoDataEmptyState);
+
   const findUrlSync = () => wrapper.findComponent(UrlSync);
   const setFilters = async (filters) => {
     findFilteredSearch().vm.$emit('onFilter', filterObjToFilterToken(filters));
@@ -63,6 +66,7 @@ describe('MetricsComponent', () => {
       expect(findLoadingIcon().exists()).toBe(true);
       expect(findInfiniteScrolling().exists()).toBe(false);
       expect(findFilteredSearch().exists()).toBe(false);
+      expect(findNoDataEmptyState().exists()).toBe(false);
 
       expect(observabilityClientMock.fetchMetrics).toHaveBeenCalledWith({
         filters: { search: undefined },
@@ -92,6 +96,7 @@ describe('MetricsComponent', () => {
 
       it('renders the metrics table within the infinite-scrolling', () => {
         expect(findMetricsTable().exists()).toBe(true);
+        expect(findNoDataEmptyState().exists()).toBe(false);
         expect(findMetricsTable().props('metrics')).toEqual(mockResponse.metrics);
       });
 
@@ -100,6 +105,15 @@ describe('MetricsComponent', () => {
         expect(wrapper.find('header').text()).toBe(
           'Track health data from your systems. Send metric data to this project using OpenTelemetry. Learn more.',
         );
+      });
+
+      it('renders the empty state if no data is found', async () => {
+        observabilityClientMock.fetchMetrics.mockResolvedValue({ metrics: [] });
+
+        await mountComponent();
+
+        expect(findNoDataEmptyState().exists()).toBe(true);
+        expect(findMetricsTable().exists()).toBe(false);
       });
     });
   });
@@ -195,13 +209,13 @@ describe('MetricsComponent', () => {
   });
 
   describe('error handling', () => {
-    it('if fetchMetrics fails, it renders an alert and empty list', async () => {
+    it('if fetchMetrics fails, it renders an alert and empty state', async () => {
       observabilityClientMock.fetchMetrics.mockRejectedValue('error');
       await mountComponent();
 
       expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to load metrics.' });
-      expect(findMetricsTable().exists()).toBe(true);
-      expect(findMetricsTable().props('metrics')).toEqual([]);
+      expect(findMetricsTable().exists()).toBe(false);
+      expect(findNoDataEmptyState().exists()).toBe(true);
     });
   });
 

@@ -30,11 +30,11 @@ module Sbom
       delegate :project, to: :pipeline, private: true
 
       def ingest_reports
-        sbom_reports.select(&:valid?).flat_map { |report| ingest_report(report) }
+        sbom_reports.flat_map { |report| ingest_report(report) }
       end
 
       def sbom_reports
-        pipeline.sbom_reports.reports
+        pipeline.sbom_reports(self_and_project_descendants: true).reports.select(&:valid?)
       end
 
       def ingest_report(sbom_report)

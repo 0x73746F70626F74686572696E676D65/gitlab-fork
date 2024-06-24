@@ -284,14 +284,14 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
           page.within('.js-labels-block') do
             click_button 'Create group label'
 
-            expect(page).to have_field _('Name new label')
+            expect(page).to have_field _('Label name')
           end
         end
 
         it 'creates new label using create view', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/446136' do
           page.within('.js-labels-block') do
             click_button 'Create group label'
-            fill_in 'Name new label', with: 'Test label'
+            fill_in 'Label name', with: 'Test label'
             click_link 'Magenta-pink'
             click_button 'Create'
           end

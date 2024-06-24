@@ -13,6 +13,7 @@ module Search
       estimate_cluster_size
       estimate_shard_sizes
       index_epics
+      index_work_items
       index_group_entities
       index_group_wikis
       index_namespaces
@@ -367,7 +368,27 @@ module Search
 
       logger.info('Enqueuing Group level entities…')
       index_epics
+      index_work_items
       index_group_wikis
+    end
+
+    def index_work_items
+      return unless work_item_index_available?
+
+      logger.info('Indexing work_items...')
+
+      work_items = if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
+                     groups = ::Gitlab::CurrentSettings.elasticsearch_limited_namespaces.group_namespaces
+                     WorkItem.where(namespace: groups) # rubocop: disable CodeReuse/ActiveRecord -- we need to fetch work items in the indexed groups
+                   else
+                     WorkItem.all
+                   end
+
+      work_items.each_batch do |batch|
+        ::Elastic::ProcessInitialBookkeepingService.track!(*batch)
+      end
+
+      logger.info("Indexing work_items... #{'done'.color(:green)}")
     end
 
     def index_group_wikis

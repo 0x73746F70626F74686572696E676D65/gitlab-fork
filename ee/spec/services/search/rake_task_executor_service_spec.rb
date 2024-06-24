@@ -69,7 +69,7 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
         service.execute(:create_empty_index)
 
         Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.each do |class_name|
-          proxy = ::Elastic::Latest::ApplicationClassProxy.new(class_name, use_separate_indices: true)
+          proxy = get_class_proxy(class_name: class_name, use_separate_indices: true)
 
           expect(es_helper.alias_exists?(name: proxy.index_name)).to eq(false), "#{proxy.index_name} shouldn't exist"
         end
@@ -88,7 +88,7 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
       service.execute(:create_empty_index)
 
       Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.each do |class_name|
-        proxy = ::Elastic::Latest::ApplicationClassProxy.new(class_name, use_separate_indices: true)
+        proxy = get_class_proxy(class_name: class_name, use_separate_indices: true)
 
         expect(es_helper.index_exists?(index_name: proxy.index_name)).to eq(true), "#{proxy.index_name} shouldn exist"
       end
@@ -647,6 +647,60 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
     end
   end
 
+  describe '#index_work_items', :elastic do
+    let_it_be(:work_item) { create(:work_item) }
+
+    context 'when work_item index is not available' do
+      before do
+        set_elasticsearch_migration_to(:create_work_items_index, including: false)
+      end
+
+      it 'does not call track for work_items' do
+        expect(Elastic::ProcessInitialBookkeepingService).not_to receive(:track!)
+      end
+    end
+
+    it 'calls track! for work_items' do
+      expect(logger).to receive(:info).with(/Indexing work_items/).twice
+      expect(Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(work_item)
+
+      service.execute(:index_work_items)
+    end
+
+    it 'avoids N+1 queries', :use_sql_query_cache do
+      control = ActiveRecord::QueryRecorder.new(skip_cached: false) { service.execute(:index_work_items) }
+
+      create_list(:work_item, 3)
+
+      expect(Elastic::ProcessInitialBookkeepingService).to receive(:track!)
+
+      expect { service.execute(:index_work_items) }.to issue_same_number_of_queries_as(control).or_fewer
+    end
+
+    context 'with limited indexing enabled' do
+      let_it_be(:group1) { create(:group) }
+      let_it_be(:group2) { create(:group) }
+      let_it_be(:group3) { create(:group) }
+      let_it_be(:work_item_1) { create(:work_item, namespace: group1) }
+      let_it_be(:_work_item_2) { create(:work_item, namespace: group2) }
+      let_it_be(:work_item_3) { create(:work_item, namespace: group3) }
+
+      before do
+        create(:elasticsearch_indexed_namespace, namespace: group1)
+        create(:elasticsearch_indexed_namespace, namespace: group3)
+
+        stub_ee_application_setting(elasticsearch_limit_indexing: true)
+      end
+
+      it 'does not call track! for work_items that should not be indexed' do
+        expect(logger).to receive(:info).with(/Indexing work_items/).twice
+        expect(Elastic::ProcessBookkeepingService).to receive(:track!).with(work_item_1, work_item_3)
+
+        service.execute(:index_work_items)
+      end
+    end
+  end
+
   describe '#index_epics' do
     let!(:epic) { create(:epic) }
 
@@ -1085,5 +1139,14 @@ RSpec.describe ::Search::RakeTaskExecutorService, :elastic_helpers, :silence_std
 
       recreate_index
     end
+  end
+
+  def get_class_proxy(class_name:, use_separate_indices:)
+    type_class(class_name) || ::Elastic::Latest::ApplicationClassProxy.new(class_name,
+      use_separate_indices: use_separate_indices)
+  end
+
+  def type_class(class_name)
+    [::Search::Elastic::Types, class_name].join('::').safe_constantize
   end
 end

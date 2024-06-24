@@ -10,6 +10,7 @@ import { contentTop, isMetaClick } from '~/lib/utils/common_utils';
 import { DEFAULT_SORTING_OPTION } from '~/observability/constants';
 import axios from '~/lib/utils/axios_utils';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
+import ObservabilityNoDataEmptyState from '~/observability/components/observability_no_data_empty_state.vue';
 import { VIEW_TRACING_PAGE } from '../events';
 import { queryToFilterObj, filterObjToQuery } from './filter_bar/filters';
 import TracingTableList from './tracing_table.vue';
@@ -30,6 +31,7 @@ export default {
     GlInfiniteScroll,
     TracingAnalytics,
     GlLink,
+    ObservabilityNoDataEmptyState,
   },
   mixins: [InternalEvents.mixin()],
   i18n: {
@@ -220,7 +222,8 @@ export default {
       @bottomReached="bottomReached"
     >
       <template #items>
-        <tracing-table-list :traces="traces" @trace-clicked="onTraceClicked" />
+        <observability-no-data-empty-state v-if="!traces.length" />
+        <tracing-table-list v-else :traces="traces" @trace-clicked="onTraceClicked" />
       </template>
 
       <template #default>
