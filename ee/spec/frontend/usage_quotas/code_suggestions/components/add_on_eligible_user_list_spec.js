@@ -21,7 +21,10 @@ import {
   mockAddOnEligibleUsers,
 } from 'ee_jest/usage_quotas/code_suggestions/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { ADD_ON_ERROR_DICTIONARY } from 'ee/usage_quotas/error_constants';
+import {
+  ADD_ON_ERROR_DICTIONARY,
+  ADD_ON_PURCHASE_FETCH_ERROR_CODE,
+} from 'ee/usage_quotas/error_constants';
 import { scrollToElement } from '~/lib/utils/common_utils';
 import AddOnBulkActionConfirmationModal from 'ee/usage_quotas/code_suggestions/components/add_on_bulk_action_confirmation_modal.vue';
 import {
@@ -30,10 +33,12 @@ import {
   DUO_ENTERPRISE,
   DUO_ENTERPRISE_TITLE,
 } from 'ee/usage_quotas/code_suggestions/constants';
-import createMockApollo from 'helpers/mock_apollo_helper';
+import { createMockClient } from 'helpers/mock_apollo_helper';
 import getAddOnEligibleUsers from 'ee/usage_quotas/add_on/graphql/saas_add_on_eligible_users.query.graphql';
 import userAddOnAssignmentBulkCreateMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_create.mutation.graphql';
 import userAddOnAssignmentBulkRemoveMutation from 'ee/usage_quotas/add_on/graphql/user_add_on_assignment_bulk_remove.mutation.graphql';
+import { getSubscriptionPermissionsData } from 'ee/fulfillment/shared_queries/subscription_actions_reason.customer.query.graphql';
+import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 
 Vue.use(VueApollo);
 
@@ -49,6 +54,7 @@ describe('Add On Eligible User List', () => {
   let wrapper;
 
   const addOnPurchaseId = 'gid://gitlab/GitlabSubscriptions::AddOnPurchase/1';
+  const addDuoProHref = 'http://customers.gitlab.com/namespaces/0/duo_pro_seats';
 
   const codeSuggestionsAddOn = { addOnPurchase: { name: ADD_ON_CODE_SUGGESTIONS } };
 
@@ -147,14 +153,33 @@ describe('Add On Eligible User List', () => {
     data: { userAddOnAssignmentBulkRemove: bulkAddOnUnassignmentSuccess },
   });
 
+  let mockHandlerGetSubscriptionPermissionData = jest.fn().mockResolvedValue({
+    data: {
+      subscription: {
+        canAddSeats: false,
+        canRenew: false,
+        communityPlan: false,
+        canAddDuoProSeats: true,
+      },
+      userActionAccess: { limitedAccessReason: 'INVALID_REASON' },
+    },
+  });
+
   const createMockApolloProvider = (
     addonAssignmentBulkCreateHandler,
     addonAssignmentBulkRemoveHandler,
   ) => {
-    const mockApollo = createMockApollo([
+    const mockClient = createMockClient([
       [userAddOnAssignmentBulkCreateMutation, addonAssignmentBulkCreateHandler],
       [userAddOnAssignmentBulkRemoveMutation, addonAssignmentBulkRemoveHandler],
     ]);
+    const mockClientCustomersDot = createMockClient([
+      [getSubscriptionPermissionsData, mockHandlerGetSubscriptionPermissionData],
+    ]);
+    const mockApollo = new VueApollo({
+      defaultClient: mockClient,
+      clients: { customersDotClient: mockClientCustomersDot },
+    });
 
     // Needed to check if cache update is successful on successful mutation
     mockApollo.clients.defaultClient.cache.writeQuery({
@@ -194,10 +219,13 @@ describe('Add On Eligible User List', () => {
           ...props,
         },
         provide: {
+          addDuoProHref,
           glFeatures: {
             enableAddOnUsersFiltering,
           },
           isBulkAddOnAssignmentEnabled,
+          groupId: 1,
+          subscriptionName: null,
         },
         slots,
       }),
@@ -290,6 +318,28 @@ describe('Add On Eligible User List', () => {
 
     findConfirmationModal().vm.$emit('confirm-seat-unassignment');
     await nextTick();
+  };
+
+  const triggerErrorAlertNoSeatsAvailable = async () => {
+    await createComponent({
+      mountFn: mount,
+    });
+    findAllCodeSuggestionsAddonComponents()
+      .at(0)
+      .vm.$emit('handleAddOnAssignmentError', 'NO_SEATS_AVAILABLE');
+    await nextTick();
+  };
+
+  const triggerErrorAlertNotEnoughSeats = async () => {
+    await createComponent({
+      mountFn: mount,
+      isBulkAddOnAssignmentEnabled: true,
+      addonAssignmentBulkCreateHandler: jest.fn().mockResolvedValue({
+        data: { userAddOnAssignmentBulkCreate: knownAddOnBulkAssignmentError },
+      }),
+    });
+    await confirmSeatAssignment();
+    await waitForPromises();
   };
 
   describe('renders table', () => {
@@ -918,29 +968,159 @@ describe('Add On Eligible User List', () => {
             errorDictionary: ADD_ON_ERROR_DICTIONARY,
           });
         });
+
+        it('shows no add seats button', async () => {
+          await waitForPromises();
+
+          expect(findBulkActionErrorAlert().props()).toMatchObject({
+            dismissible: true,
+            error: 'CANNOT_BULK_ASSIGN_ADDON',
+            errorDictionary: ADD_ON_ERROR_DICTIONARY,
+            primaryButtonLink: addDuoProHref,
+            primaryButtonText: '',
+            secondaryButtonLink: `${PROMO_URL}/solutions/code-suggestions/sales/`,
+            secondaryButtonText: 'Contact sales',
+          });
+        });
       });
 
       describe('known error code', () => {
-        beforeEach(async () => {
-          await createComponent({
-            mountFn: mount,
-            isBulkAddOnAssignmentEnabled: true,
-            addonAssignmentBulkCreateHandler: jest.fn().mockResolvedValue({
-              data: { userAddOnAssignmentBulkCreate: knownAddOnBulkAssignmentError },
-            }),
-          });
-
-          await confirmSeatAssignment();
-        });
-
-        it('shows not enough seats error', async () => {
-          await waitForPromises();
+        it('shows not enough seats error and buttons', async () => {
+          await triggerErrorAlertNotEnoughSeats();
 
           expect(findBulkActionErrorAlert().props()).toMatchObject({
             dismissible: true,
             error: 'NOT_ENOUGH_SEATS',
             errorDictionary: ADD_ON_ERROR_DICTIONARY,
+            primaryButtonLink: addDuoProHref,
+            primaryButtonText: 'Add seats',
+            secondaryButtonLink: `${PROMO_URL}/solutions/code-suggestions/sales/`,
+            secondaryButtonText: 'Contact sales',
           });
+        });
+
+        it('shows no seats available error and buttons', async () => {
+          await triggerErrorAlertNoSeatsAvailable();
+
+          expect(findAddOnAssignmentError().props()).toMatchObject({
+            dismissible: true,
+            error: 'NO_SEATS_AVAILABLE',
+            errorDictionary: ADD_ON_ERROR_DICTIONARY,
+            primaryButtonLink: addDuoProHref,
+            primaryButtonText: 'Add seats',
+            secondaryButtonLink: `${PROMO_URL}/solutions/code-suggestions/sales/`,
+            secondaryButtonText: 'Contact sales',
+          });
+        });
+
+        describe('when subscriptionPermissions returns error', () => {
+          const mockError = new Error('Woops, error in permissions call');
+
+          beforeEach(async () => {
+            mockHandlerGetSubscriptionPermissionData = jest.fn().mockRejectedValueOnce(mockError);
+            await triggerErrorAlertNoSeatsAvailable();
+          });
+
+          it('captures the original error for sentry', () => {
+            expect(Sentry.captureException).toHaveBeenCalledWith(mockError, {
+              tags: { vue_component: 'AddOnEligibleUserList' },
+            });
+          });
+
+          it('emits the error', () => {
+            expect(wrapper.emitted('error')).toHaveLength(1);
+            expect(wrapper.emitted('error')[0][0].cause).toBe(ADD_ON_PURCHASE_FETCH_ERROR_CODE);
+          });
+
+          it('shows error, sales button and add seats button', () => {
+            // When clicked the button will redirect a customer and we will handle the error on CustomersPortal side
+            expect(findAddOnAssignmentError().props()).toMatchObject({
+              dismissible: true,
+              error: 'NO_SEATS_AVAILABLE',
+              errorDictionary: ADD_ON_ERROR_DICTIONARY,
+              primaryButtonLink: addDuoProHref,
+              primaryButtonText: 'Add seats',
+              secondaryButtonLink: `${PROMO_URL}/solutions/code-suggestions/sales/`,
+              secondaryButtonText: 'Contact sales',
+            });
+          });
+        });
+
+        describe('when subscriptionPermissions succeeds', () => {
+          describe.each`
+            canAddDuoProSeats | limitedAccessReason
+            ${false}          | ${'MANAGED_BY_RESELLER'}
+            ${false}          | ${'RAMP_SUBSCRIPTION'}
+          `(
+            'when canAddDuoProSeats=$canAddDuoProSeats and limitedAccessReason=$limitedAccessReason',
+            ({ canAddDuoProSeats, limitedAccessReason }) => {
+              beforeEach(async () => {
+                mockHandlerGetSubscriptionPermissionData = jest.fn().mockResolvedValue({
+                  data: {
+                    subscription: {
+                      canAddSeats: false,
+                      canRenew: false,
+                      communityPlan: false,
+                      canAddDuoProSeats,
+                    },
+                    userActionAccess: { limitedAccessReason },
+                  },
+                });
+
+                await triggerErrorAlertNoSeatsAvailable();
+              });
+
+              it('shows error, sales button and no add seats button', () => {
+                expect(findAddOnAssignmentError().props()).toMatchObject({
+                  dismissible: true,
+                  error: 'NO_SEATS_AVAILABLE',
+                  errorDictionary: ADD_ON_ERROR_DICTIONARY,
+                  primaryButtonLink: addDuoProHref,
+                  primaryButtonText: '',
+                  secondaryButtonLink: `${PROMO_URL}/solutions/code-suggestions/sales/`,
+                  secondaryButtonText: 'Contact sales',
+                });
+              });
+            },
+          );
+
+          describe.each`
+            canAddDuoProSeats | limitedAccessReason
+            ${true}           | ${'MANAGED_BY_RESELLER'}
+            ${true}           | ${'RAMP_SUBSCRIPTION'}
+            ${false}          | ${'SOME_OTHER_ACCESS_REASON'}
+          `(
+            'when canAddDuoProSeats=$canAddDuoProSeats and limitedAccessReason=$limitedAccessReason',
+            ({ canAddDuoProSeats, limitedAccessReason }) => {
+              beforeEach(async () => {
+                mockHandlerGetSubscriptionPermissionData = jest.fn().mockResolvedValue({
+                  data: {
+                    subscription: {
+                      canAddSeats: false,
+                      canRenew: false,
+                      communityPlan: false,
+                      canAddDuoProSeats,
+                    },
+                    userActionAccess: { limitedAccessReason },
+                  },
+                });
+
+                await triggerErrorAlertNoSeatsAvailable();
+              });
+
+              it('shows error, sales button and add seats button', () => {
+                expect(findAddOnAssignmentError().props()).toMatchObject({
+                  dismissible: true,
+                  error: 'NO_SEATS_AVAILABLE',
+                  errorDictionary: ADD_ON_ERROR_DICTIONARY,
+                  primaryButtonLink: addDuoProHref,
+                  primaryButtonText: 'Add seats',
+                  secondaryButtonLink: `${PROMO_URL}/solutions/code-suggestions/sales/`,
+                  secondaryButtonText: 'Contact sales',
+                });
+              });
+            },
+          );
         });
       });
     });

@@ -8651,7 +8651,7 @@ msgstr ""
 msgid "Billing|Something went wrong when un-assigning the add-on to this member. If the problem persists, please %{supportLinkStart}contact support%{supportLinkEnd}."
 msgstr ""
 
-msgid "Billing|There are not enough seats to assign the GitLab Duo Pro add-on to all selected members. To purchase more seats for your subscription, please %{salesLinkStart}contact sales%{salesLinkEnd}."
+msgid "Billing|There are not enough seats to assign the GitLab Duo Pro add-on to all selected members."
 msgstr ""
 
 msgid "Billing|This action will assign a GitLab Duo Pro seat to 1 user"
@@ -8685,7 +8685,7 @@ msgstr ""
 msgid "Billing|You can upgrade to a paid tier to get access to more features."
 msgstr ""
 
-msgid "Billing|You have assigned all available GitLab Duo Pro add-on seats. Please %{salesLinkStart}contact sales%{salesLinkEnd} if you would like to purchase more seats."
+msgid "Billing|You have assigned all available GitLab Duo Pro add-on seats."
 msgstr ""
 
 msgid "Billing|Your group recently changed to use the Free plan. %{over_limit_message} You can free up space for new members by removing those who no longer need access or toggling them to over-limit. To get an unlimited number of members, you can %{link_start}upgrade%{link_end} to a paid tier."

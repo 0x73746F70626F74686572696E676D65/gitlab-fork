@@ -2,15 +2,12 @@ import { s__ } from '~/locale';
 import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 import { convertObjectPropsToLowerCase } from '~/lib/utils/common_utils';
 
-const salesLink = `${PROMO_URL}/solutions/code-suggestions/sales/`;
 const supportLink = `${PROMO_URL}/support/`;
 
 const NO_SEATS_AVAILABLE_ERROR = {
   title: s__('Billing|No seats available'),
-  message: s__(
-    'Billing|You have assigned all available GitLab Duo Pro add-on seats. Please %{salesLinkStart}contact sales%{salesLinkEnd} if you would like to purchase more seats.',
-  ),
-  links: { salesLink },
+  message: s__('Billing|You have assigned all available GitLab Duo Pro add-on seats.'),
+  links: {},
 };
 
 const GENERAL_ADD_ON_ASSIGNMENT_ERROR = {
@@ -32,9 +29,9 @@ const GENERAL_ADD_ON_UNASSIGNMENT_ERROR = {
 const NOT_ENOUGH_SEATS_ERROR = {
   title: s__('Billing|Not enough seats'),
   message: s__(
-    'Billing|There are not enough seats to assign the GitLab Duo Pro add-on to all selected members. To purchase more seats for your subscription, please %{salesLinkStart}contact sales%{salesLinkEnd}.',
+    'Billing|There are not enough seats to assign the GitLab Duo Pro add-on to all selected members.',
   ),
-  links: { salesLink },
+  links: {},
 };
 
 const GENERAL_ADD_ON_BULK_ASSIGNMENT_ERROR = {
@@ -67,11 +64,11 @@ export const ADD_ON_ELIGIBLE_USERS_FETCH_ERROR = {
   links: { supportLink },
 };
 
-const NO_SEATS_AVAILABLE_ERROR_CODE = 'NO_SEATS_AVAILABLE';
+export const NO_SEATS_AVAILABLE_ERROR_CODE = 'NO_SEATS_AVAILABLE';
 export const CANNOT_ASSIGN_ADDON_ERROR_CODE = 'CANNOT_ASSIGN_ADDON';
 export const CANNOT_UNASSIGN_ADDON_ERROR_CODE = 'CANNOT_UNASSIGN_ADDON';
 export const NO_ASSIGNMENTS_FOUND_ERROR_CODE = 'NO_ASSIGNMENTS_FOUND';
-const NOT_ENOUGH_SEATS_ERROR_CODE = 'NOT_ENOUGH_SEATS';
+export const NOT_ENOUGH_SEATS_ERROR_CODE = 'NOT_ENOUGH_SEATS';
 export const CANNOT_BULK_ASSIGN_ADDON_ERROR_CODE = 'CANNOT_BULK_ASSIGN_ADDON';
 export const CANNOT_BULK_UNASSIGN_ADDON_ERROR_CODE = 'CANNOT_BULK_UNASSIGN_ADDON';
 export const ADD_ON_PURCHASE_FETCH_ERROR_CODE = 'ADD_ON_PURCHASE_FETCH_ERROR';
