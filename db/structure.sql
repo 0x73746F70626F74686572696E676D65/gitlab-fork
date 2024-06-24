@@ -1409,6 +1409,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_9f3745f8fe32() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "target_project_id"
+  INTO NEW."project_id"
+  FROM "merge_requests"
+  WHERE "merge_requests"."id" = NEW."merge_request_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_a1bc7c70cbdf() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -12554,7 +12570,8 @@ CREATE TABLE merge_requests_closing_issues (
     issue_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
-    from_mr_description boolean DEFAULT true NOT NULL
+    from_mr_description boolean DEFAULT true NOT NULL,
+    project_id bigint
 );
 
 CREATE SEQUENCE merge_requests_closing_issues_id_seq
@@ -27535,6 +27552,8 @@ CREATE INDEX index_merge_requests_closing_issues_on_issue_id ON merge_requests_c
 
 CREATE INDEX index_merge_requests_closing_issues_on_merge_request_id ON merge_requests_closing_issues USING btree (merge_request_id);
 
+CREATE INDEX index_merge_requests_closing_issues_on_project_id ON merge_requests_closing_issues USING btree (project_id);
+
 CREATE INDEX index_merge_requests_compliance_violations_on_violating_user_id ON merge_requests_compliance_violations USING btree (violating_user_id);
 
 CREATE UNIQUE INDEX index_merge_requests_compliance_violations_unique_columns ON merge_requests_compliance_violations USING btree (merge_request_id, violating_user_id, reason);
@@ -31371,6 +31390,8 @@ CREATE TRIGGER trigger_98ad3a4c1d35 BEFORE INSERT OR UPDATE ON merge_request_rev
 
 CREATE TRIGGER trigger_9e137c16de79 BEFORE INSERT OR UPDATE ON vulnerability_findings_remediations FOR EACH ROW EXECUTE FUNCTION trigger_9e137c16de79();
 
+CREATE TRIGGER trigger_9f3745f8fe32 BEFORE INSERT OR UPDATE ON merge_requests_closing_issues FOR EACH ROW EXECUTE FUNCTION trigger_9f3745f8fe32();
+
 CREATE TRIGGER trigger_a1bc7c70cbdf BEFORE INSERT OR UPDATE ON vulnerability_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_a1bc7c70cbdf();
 
 CREATE TRIGGER trigger_a253cb3cacdf BEFORE INSERT OR UPDATE ON dora_daily_metrics FOR EACH ROW EXECUTE FUNCTION trigger_a253cb3cacdf();
@@ -32343,6 +32364,9 @@ ALTER TABLE ONLY lfs_objects_projects
 
 ALTER TABLE ONLY merge_requests
     ADD CONSTRAINT fk_a6963e8447 FOREIGN KEY (target_project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY merge_requests_closing_issues
+    ADD CONSTRAINT fk_a8703820ae FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY ssh_signatures
     ADD CONSTRAINT fk_aa1efbe865 FOREIGN KEY (key_id) REFERENCES keys(id) ON DELETE SET NULL;
