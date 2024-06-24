@@ -19,6 +19,10 @@ RSpec.describe Security::ScanResultPolicies::AddApproversToRulesWorker, feature_
   it_behaves_like 'subscribes to event' do
     let(:event) { authorizations_event }
 
+    before do
+      create(:scan_result_policy_read, project: project)
+    end
+
     it 'calls Security::ScanResultPolicies::AddApproversToRulesService' do
       expect_next_instance_of(
         Security::ScanResultPolicies::AddApproversToRulesService,
@@ -61,6 +65,40 @@ RSpec.describe Security::ScanResultPolicies::AddApproversToRulesWorker, feature_
       expect(Security::ScanResultPolicies::AddApproversToRulesService).not_to receive(:new)
 
       expect { consume_event(subscriber: described_class, event: authorizations_event) }.not_to raise_exception
+    end
+  end
+
+  describe '.dispatch?' do
+    subject { described_class.dispatch?(authorizations_event) }
+
+    context 'when project does not exist' do
+      let(:project_id) { non_existing_record_id }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when project exists' do
+      context 'when feature is not licensed' do
+        let(:licensed_feature) { false }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when feature is licensed' do
+        let(:licensed_feature) { true }
+
+        context 'when project does not have scan_result_policy_reads' do
+          it { is_expected.to be_falsey }
+        end
+
+        context 'when project has scan_result_policy_reads' do
+          before do
+            create(:scan_result_policy_read, project: project)
+          end
+
+          it { is_expected.to be true }
+        end
+      end
     end
   end
 end
