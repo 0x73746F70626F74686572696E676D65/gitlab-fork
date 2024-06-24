@@ -20,7 +20,7 @@ module QA
           create(:group, path: "group-to-test-creating-automatic-iterations-#{SecureRandom.hex(8)}")
         end
 
-        it 'creates a group iteration automatically through an iteration cadence', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347943' do
+        it 'creates a group iteration automatically through an iteration cadence', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347943' do
           EE::Resource::GroupCadence.fabricate_via_browser_ui! do |cadence|
             cadence.group = iteration_group
             cadence.title = title
@@ -57,7 +57,7 @@ module QA
           create(:group, path: "group-to-test-creating-manual-iterations-#{SecureRandom.hex(8)}")
         end
 
-        it 'creates a group iteration manually through an iteration cadence', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/426809' do
+        it 'creates a group iteration manually through an iteration cadence', :blocking, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/426809' do
           EE::Resource::GroupIteration.fabricate_via_browser_ui! do |iteration|
             iteration.group = iteration_group
             iteration.title = title
