@@ -12,7 +12,7 @@ import {
 } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { sprintf, s__, __ } from '~/locale';
-import { BASE_ROLES_INC_MINIMAL_ACCESS, ACCESS_LEVEL_INTEGERS } from '~/access_level/constants';
+import { BASE_ROLES_INC_MINIMAL_ACCESS } from '~/access_level/constants';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
@@ -218,9 +218,6 @@ export default {
         visitUrl(this.listPagePath);
       }
     },
-    getAccessLevelInteger(accessLevel) {
-      return ACCESS_LEVEL_INTEGERS[accessLevel] || null;
-    },
   },
   BASE_ROLES_INC_MINIMAL_ACCESS,
 };
@@ -295,11 +292,7 @@ export default {
       />
     </gl-form-group>
 
-    <permissions-selector
-      v-model="memberRole.permissions"
-      :is-valid="isPermissionsValid"
-      :base-role-access-level="getAccessLevelInteger(memberRole.baseAccessLevel)"
-    />
+    <permissions-selector v-model="memberRole.permissions" :is-valid="isPermissionsValid" />
 
     <div class="gl-display-flex gl-flex-wrap gl-gap-3">
       <gl-button
