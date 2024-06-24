@@ -22,7 +22,7 @@ module QA
       end
 
       it(
-        'finds note that matches note body',
+        'finds note that matches note body', :blocking,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347634'
       ) do
         QA::Support::Retrier.retry_on_exception(
