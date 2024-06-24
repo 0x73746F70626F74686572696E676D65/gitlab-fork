@@ -326,82 +326,38 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     end
   end
 
-  describe '::Sbom::IngestReportsWorker' do
-    let(:can_ingest_sbom_reports) { true }
-    let(:default_branch) { true }
+  describe 'Sbom Ingestion' do
+    let(:sbom_ingestion_scheduler) { instance_double(::Sbom::ScheduleIngestReportsService, execute: nil) }
 
     subject(:transition_pipeline) { pipeline.update!(status_event: transition) }
 
     before do
-      allow(::Sbom::IngestReportsWorker).to receive(:perform_async)
-      allow(pipeline).to receive(:can_ingest_sbom_reports?).and_return(can_ingest_sbom_reports)
-      allow(pipeline).to receive(:default_branch?).and_return(default_branch)
+      allow(::Sbom::ScheduleIngestReportsService).to receive(:new).with(pipeline).and_return(sbom_ingestion_scheduler)
     end
 
     shared_examples_for 'ingesting sbom reports' do
-      context 'when sbom reports can be ingested for the pipeline' do
-        context 'on the default branch' do
-          it 'schedules ingest sbom reports job' do
-            transition_pipeline
-
-            expect(::Sbom::IngestReportsWorker).to have_received(:perform_async).with(pipeline.id)
-          end
-
-          context 'if pipeline is a child' do
-            before do
-              allow(pipeline).to receive(:child?).and_return(true)
-            end
-
-            it 'does not schedule ingest sbom reports job' do
-              transition_pipeline
-
-              expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
-            end
-          end
-
-          context 'when security reports are available' do
-            before do
-              allow(pipeline).to receive(:can_store_security_reports?).and_return(true)
-            end
-
-            it 'does not schedule ingest sbom reports job' do
-              transition_pipeline
-
-              expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
-            end
-          end
+      context 'when security reports are available' do
+        before do
+          allow(pipeline).to receive(:can_store_security_reports?).and_return(true)
         end
 
-        context 'on a non-default branch' do
-          let(:default_branch) { false }
+        it 'does not try to ingest the SBOM reports' do
+          transition_pipeline
 
-          it 'does not schedule ingest sbom reports job' do
-            transition_pipeline
-
-            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
-          end
+          expect(::Sbom::ScheduleIngestReportsService).not_to have_received(:new)
         end
       end
 
-      context 'when sbom reports can not be ingested for the pipeline' do
-        let(:can_ingest_sbom_reports) { false }
-
-        context 'on the default branch' do
-          it 'does not schedule ingest sbom reports job' do
-            transition_pipeline
-
-            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
-          end
+      context 'when security reports are not available' do
+        before do
+          allow(pipeline).to receive(:can_store_security_reports?).and_return(false)
         end
 
-        context 'on a non-default branch' do
-          let(:default_branch) { false }
+        it 'tries to ingest sbom reports' do
+          transition_pipeline
 
-          it 'does not schedule ingest sbom reports job' do
-            transition_pipeline
-
-            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
-          end
+          expect(::Sbom::ScheduleIngestReportsService).to have_received(:new).with(pipeline)
+          expect(sbom_ingestion_scheduler).to have_received(:execute)
         end
       end
     end
@@ -434,10 +390,10 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
           end
 
           with_them do
-            it 'does not ingest sbom reports' do
+            it 'does not try to ingest sbom reports' do
               transition_pipeline
 
-              expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+              expect(::Sbom::ScheduleIngestReportsService).not_to have_received(:new)
             end
           end
         end
@@ -456,10 +412,10 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
       end
 
       with_them do
-        it 'does not ingest sbom reports' do
+        it 'does not try to ingest sbom reports' do
           transition_pipeline
 
-          expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+          expect(::Sbom::ScheduleIngestReportsService).not_to have_received(:new)
         end
       end
 
@@ -480,10 +436,10 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
         end
 
         with_them do
-          it 'does not ingest sbom reports' do
+          it 'does not try to ingest sbom reports' do
             transition_pipeline
 
-            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+            expect(::Sbom::ScheduleIngestReportsService).not_to have_received(:new)
           end
         end
       end
@@ -597,6 +553,20 @@ RSpec.describe Ci::Pipeline, feature_category: :continuous_integration do
     context 'when pipeline does not have any builds with sbom reports' do
       it 'returns an empty reports list' do
         expect(subject.reports).to be_empty
+      end
+    end
+
+    context 'when pipeline has children with sbom reports' do
+      let_it_be(:child_pipeline) do
+        create(:ci_empty_pipeline, child_of: pipeline, status: :created, project: project)
+      end
+
+      let_it_be(:build_sbom) { create(:ee_ci_build, :success, :cyclonedx, pipeline: child_pipeline, project: project) }
+
+      subject { pipeline.sbom_reports(self_and_project_descendants: true) }
+
+      it 'the sbom should be accessible from the pipeline', :aggregate_failures do
+        expect(subject.reports.count).to eq(4)
       end
     end
   end

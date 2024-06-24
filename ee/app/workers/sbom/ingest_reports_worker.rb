@@ -14,8 +14,6 @@ module Sbom
 
     def perform(pipeline_id)
       ::Ci::Pipeline.find_by_id(pipeline_id).try do |pipeline|
-        break unless pipeline.can_ingest_sbom_reports?
-
         ::Sbom::Ingestion::IngestReportsService.execute(pipeline)
       end
     end

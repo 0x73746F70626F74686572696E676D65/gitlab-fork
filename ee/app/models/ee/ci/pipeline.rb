@@ -80,12 +80,11 @@ module EE
 
           after_transition any => ::Ci::Pipeline.completed_with_manual_statuses do |pipeline|
             next if pipeline.manual? && !pipeline.include_manual_to_pipeline_completion_enabled?
+
             next if pipeline.can_store_security_reports?
-            next if pipeline.child?
-            next unless pipeline.default_branch? && pipeline.can_ingest_sbom_reports?
 
             pipeline.run_after_commit do
-              ::Sbom::IngestReportsWorker.perform_async(pipeline.id)
+              ::Sbom::ScheduleIngestReportsService.new(pipeline).execute
             end
           end
 
@@ -174,9 +173,15 @@ module EE
         end
       end
 
-      def sbom_reports
+      def sbom_reports(self_and_project_descendants: false)
+        report_builds = if self_and_project_descendants
+                          method(:latest_report_builds_in_self_and_project_descendants)
+                        else
+                          method(:latest_report_builds)
+                        end
+
         ::Gitlab::Ci::Reports::Sbom::Reports.new.tap do |sbom_reports|
-          latest_report_builds(::Ci::JobArtifact.of_report_type(:sbom)).each do |build|
+          report_builds.call(::Ci::JobArtifact.of_report_type(:sbom)).each do |build|
             build.collect_sbom_reports!(sbom_reports)
           end
         end

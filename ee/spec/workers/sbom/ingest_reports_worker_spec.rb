@@ -10,9 +10,6 @@ RSpec.describe Sbom::IngestReportsWorker, feature_category: :dependency_manageme
 
     before do
       allow(Sbom::Ingestion::IngestReportsService).to receive(:execute)
-      allow_next_found_instance_of(Ci::Pipeline) do |record|
-        allow(record).to receive(:can_ingest_sbom_reports?).and_return(can_ingest_sbom_reports)
-      end
     end
 
     context 'when there is no pipeline with the given ID' do
@@ -23,24 +20,10 @@ RSpec.describe Sbom::IngestReportsWorker, feature_category: :dependency_manageme
       end
     end
 
-    context 'when sbom reports can not be stored for the pipeline' do
-      let(:can_ingest_sbom_reports) { false }
+    it 'calls `Sbom::Ingestion::IngestReportsService`' do
+      run_worker
 
-      it 'does not call `Sbom::Ingestion::IngestReportsService`' do
-        run_worker
-
-        expect(Sbom::Ingestion::IngestReportsService).not_to have_received(:execute)
-      end
-    end
-
-    context 'when sbom reports can be stored for the pipeline' do
-      let(:can_ingest_sbom_reports) { true }
-
-      it 'calls `Sbom::Ingestion::IngestReportsService`' do
-        run_worker
-
-        expect(Sbom::Ingestion::IngestReportsService).to have_received(:execute)
-      end
+      expect(Sbom::Ingestion::IngestReportsService).to have_received(:execute)
     end
   end
 end
