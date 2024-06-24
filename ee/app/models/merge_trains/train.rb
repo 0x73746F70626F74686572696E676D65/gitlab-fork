@@ -3,6 +3,8 @@
 # This model represents a merge train with many Merge Request 'Cars' for a projects branch
 module MergeTrains
   class Train
+    include Gitlab::Utils::StrongMemoize
+
     STATUSES = {
       active: 'active',
       completed: 'completed'
@@ -49,6 +51,7 @@ module MergeTrains
     def project
       Project.find_by_id(project_id)
     end
+    strong_memoize_attr :project
 
     def refresh_async
       MergeTrains::RefreshWorker.perform_async(project_id, target_branch)
