@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe EE::WorkItemsHelper, feature_category: :team_planning do
+  include Devise::Test::ControllerHelpers
+
   describe '#work_items_show_data' do
     subject(:work_items_show_data) { helper.work_items_show_data(project) }
 
