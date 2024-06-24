@@ -34,12 +34,8 @@ module QA
             end
           end
 
-          def job_artifacts_count_by_row(row: 1)
-            all_elements('job-artifacts-count', minimum: row)[row - 1].text.gsub(/[^0-9]/, '').to_i
-          end
-
-          def job_artifacts_size_by_row(row: 1)
-            all_elements('job-artifacts-size', minimum: row)[row - 1].text.gsub(/[^0-9]/, '').to_f
+          def has_no_artifacts?
+            has_no_element?('job-artifact-table-row')
           end
         end
       end
