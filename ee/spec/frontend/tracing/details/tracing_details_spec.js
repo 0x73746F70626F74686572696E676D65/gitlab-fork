@@ -9,6 +9,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
 import { mapTraceToSpanTrees } from 'ee/tracing/trace_utils';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/url_utility');
@@ -45,10 +46,19 @@ describe('TracingDetails', () => {
     await waitForPromises();
   };
 
+  const { bindInternalEventDocument } = useMockInternalEventsTracking();
+
   beforeEach(() => {
     isSafeURL.mockReturnValue(true);
 
     observabilityClientMock = createMockClient();
+  });
+
+  it('tracks view_tracing_details_page', () => {
+    mountComponent();
+
+    const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+    expect(trackEventSpy).toHaveBeenCalledWith('view_tracing_details_page', {}, undefined);
   });
 
   it('renders the loading indicator while checking if tracing is enabled', () => {
