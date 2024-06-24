@@ -12,7 +12,7 @@ RSpec.describe Peek::Views::Zoekt, :zoekt, :request_store, feature_category: :gl
   end
 
   describe '#results' do
-    let_it_be(:project) { create(:project, :repository) }
+    let_it_be(:project) { create(:project, :public, :repository) }
     let(:node_id) { ::Search::Zoekt::Node.last.id }
 
     let(:results) { described_class.new.results }
