@@ -75,7 +75,9 @@ module API
         end
 
         search_results = search_service.search_results
-        bad_request!(search_results.error) if search_results.respond_to?(:failed?) && search_results.failed?
+        if search_results.respond_to?(:failed?) && search_results.failed?(search_scope)
+          bad_request!(search_results.error)
+        end
 
         set_global_search_log_information(additional_params)
 

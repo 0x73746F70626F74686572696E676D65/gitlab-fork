@@ -74,7 +74,7 @@ module Search
         nil
       end
 
-      def failed?
+      def failed?(_scope)
         error.present?
       end
 

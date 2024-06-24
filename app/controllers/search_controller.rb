@@ -73,7 +73,7 @@ class SearchController < ApplicationController
       @search_highlight = @search_service_presenter.search_highlight
     end
 
-    return if @search_results.respond_to?(:failed?) && @search_results.failed?
+    return if @search_results.respond_to?(:failed?) && @search_results.failed?(@scope)
 
     Gitlab::Metrics::GlobalSearchSlis.record_apdex(
       elapsed: @global_search_duration_s,
