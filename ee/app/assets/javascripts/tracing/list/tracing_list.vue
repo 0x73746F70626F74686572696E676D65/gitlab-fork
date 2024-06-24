@@ -10,6 +10,7 @@ import { contentTop, isMetaClick } from '~/lib/utils/common_utils';
 import { DEFAULT_SORTING_OPTION } from '~/observability/constants';
 import axios from '~/lib/utils/axios_utils';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
+import { VIEW_TRACING_PAGE } from '../events';
 import { queryToFilterObj, filterObjToQuery } from './filter_bar/filters';
 import TracingTableList from './tracing_table.vue';
 import FilteredSearch from './filter_bar/tracing_filtered_search.vue';
@@ -78,8 +79,8 @@ export default {
     this.fetchAnalytics();
   },
   mounted() {
+    this.trackEvent(VIEW_TRACING_PAGE);
     this.resize();
-    this.trackEvent('view_tracing_page');
     this.resizeThrottled = throttle(() => {
       this.resize();
     }, 400);

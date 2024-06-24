@@ -3,7 +3,9 @@ import { GlLoadingIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
+import { InternalEvents } from '~/tracking';
 import { mapTraceToSpanTrees } from '../trace_utils';
+import { VIEW_TRACING_DETAILS_PAGE } from '../events';
 import TracingChart from './tracing_chart.vue';
 import TracingHeader from './tracing_header.vue';
 import TracingDrawer from './tracing_drawer.vue';
@@ -18,6 +20,7 @@ export default {
     TracingHeader,
     TracingDrawer,
   },
+  mixins: [InternalEvents.mixin()],
   props: {
     observabilityClient: {
       required: true,
@@ -44,6 +47,9 @@ export default {
   },
   created() {
     this.validateAndFetch();
+  },
+  mounted() {
+    this.trackEvent(VIEW_TRACING_DETAILS_PAGE);
   },
   methods: {
     async validateAndFetch() {
