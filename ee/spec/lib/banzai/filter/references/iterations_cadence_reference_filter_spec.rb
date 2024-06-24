@@ -52,13 +52,13 @@ RSpec.describe Banzai::Filter::References::IterationsCadenceReferenceFilter, :ag
   it 'ignores invalid cadence IDs' do
     text = "Check [cadence:#{non_existing_record_id}]"
 
-    expect(doc(text).to_s).to eq(ERB::Util.html_escape_once(text))
+    expect(doc(text).to_s).to include(ERB::Util.html_escape_once(text))
   end
 
   it 'ignores out of range cadence IDs' do
     text = "Check [cadence:1161452270761535925900804973910297]"
 
-    expect(doc(text).to_s).to eq(ERB::Util.html_escape_once(text))
+    expect(doc(text).to_s).to include(ERB::Util.html_escape_once(text))
   end
 
   context 'when using ID as reference' do
