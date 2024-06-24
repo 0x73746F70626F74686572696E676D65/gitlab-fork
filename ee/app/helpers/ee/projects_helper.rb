@@ -282,9 +282,14 @@ module EE
         can?(current_user, :admin_namespace, project.root_ancestor)
     end
 
-    def show_compliance_framework_badge?(project)
+    def show_compliance_frameworks_info?(project)
       project&.licensed_feature_available?(:custom_compliance_frameworks) &&
         project&.compliance_framework_settings&.first&.compliance_management_framework.present?
+    end
+
+    def compliance_center_path(project)
+      group = project.root_ancestor
+      group_security_compliance_dashboard_path(group, vueroute: "frameworks")
     end
 
     def scheduled_for_deletion?(project)
@@ -332,7 +337,7 @@ module EE
     end
 
     def compliance_framework_data_attributes(project)
-      return {} unless show_compliance_framework_badge?(project)
+      return {} unless show_compliance_frameworks_info?(project)
 
       framework_data = {
         has_compliance_framework_feature: License.feature_available?(:compliance_framework).to_s,

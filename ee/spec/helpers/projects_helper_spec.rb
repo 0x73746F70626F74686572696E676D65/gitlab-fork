@@ -54,20 +54,20 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
     end
   end
 
-  describe '#show_compliance_framework_badge?' do
+  describe '#show_compliance_frameworks_info?' do
     context 'when feature is licensed' do
       before do
         stub_licensed_features(custom_compliance_frameworks: true)
       end
 
       it 'returns false if compliance framework setting is not present' do
-        expect(helper.show_compliance_framework_badge?(project)).to be_falsey
+        expect(helper.show_compliance_frameworks_info?(project)).to be_falsey
       end
 
       it 'returns true if compliance framework setting is present' do
         project = build(:project, :with_compliance_framework)
 
-        expect(helper.show_compliance_framework_badge?(project)).to be_truthy
+        expect(helper.show_compliance_frameworks_info?(project)).to be_truthy
       end
     end
 
@@ -77,14 +77,26 @@ RSpec.describe ProjectsHelper, feature_category: :shared do
       end
 
       it 'returns false if compliance framework setting is not present' do
-        expect(helper.show_compliance_framework_badge?(project)).to be_falsey
+        expect(helper.show_compliance_frameworks_info?(project)).to be_falsey
       end
 
       it 'returns false if compliance framework setting is present' do
         project = build_stubbed(:project, :with_compliance_framework)
 
-        expect(helper.show_compliance_framework_badge?(project)).to be_falsey
+        expect(helper.show_compliance_frameworks_info?(project)).to be_falsey
       end
+    end
+  end
+
+  describe '#compliance_center_path' do
+    let(:group) { create(:group) }
+
+    before do
+      project.update!(namespace: group)
+    end
+
+    it 'returns the path to the group security compliance dashboard' do
+      expect(helper.compliance_center_path(project)).to eq(group_security_compliance_dashboard_path(group, vueroute: "frameworks"))
     end
   end
 
