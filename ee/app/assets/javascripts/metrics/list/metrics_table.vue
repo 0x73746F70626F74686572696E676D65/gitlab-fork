@@ -1,6 +1,6 @@
 <script>
 import { GlTable, GlLabel, GlTooltipDirective, GlSprintf } from '@gitlab/ui';
-import { s__, __ } from '~/locale';
+import { s__ } from '~/locale';
 import { ingestedAtTimeAgo } from '../utils';
 import { METRIC_TYPE } from '../constants';
 
@@ -12,7 +12,6 @@ export default {
   },
   i18n: {
     title: s__('ObservabilityMetrics|Metrics'),
-    emptyText: __('No results found'),
     moreAttributes: s__(`ObservabilityMetrics|+%{count} more`),
   },
   fields: [
@@ -110,7 +109,6 @@ export default {
     <gl-table
       :items="formattedMetrics"
       :fields="$options.fields"
-      show-empty
       fixed
       stacked="md"
       :tbody-tr-attr="{ 'data-testid': 'metric-row' }"
@@ -137,13 +135,6 @@ export default {
             <template #count>{{ metricAttributesTruncatedItems(item) }}</template>
           </gl-sprintf>
         </span>
-      </template>
-
-      <!-- no date template -->
-      <template #empty>
-        <div class="gl-text-center">
-          {{ $options.i18n.emptyText }}
-        </div>
       </template>
     </gl-table>
   </div>

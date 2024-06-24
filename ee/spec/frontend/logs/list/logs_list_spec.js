@@ -14,6 +14,7 @@ import { createMockClient } from 'helpers/mock_observability_client';
 import * as commonUtils from '~/lib/utils/common_utils';
 import axios from '~/lib/utils/axios_utils';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
+import ObservabilityNoDataEmptyState from '~/observability/components/observability_no_data_empty_state.vue';
 import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 import { mockLogs, mockMetadata } from './mock_data';
 
@@ -29,6 +30,7 @@ describe('LogsList', () => {
   const findInfiniteScrolling = () => wrapper.findComponent(GlInfiniteScroll);
   const findInfiniteScrollingLegend = () =>
     findInfiniteScrolling().find('[data-testid="logs-infinite-scrolling-legend"]');
+  const findNoDataEmptyState = () => wrapper.findComponent(ObservabilityNoDataEmptyState);
 
   const bottomReached = async () => {
     findInfiniteScrolling().vm.$emit('bottomReached');
@@ -85,6 +87,7 @@ describe('LogsList', () => {
     expect(findLogsVolumeChart().props('loading')).toBe(true);
     expect(findLoadingIcon().exists()).toBe(true);
     expect(findLogsTable().exists()).toBe(false);
+    expect(findNoDataEmptyState().exists()).toBe(false);
     expect(observabilityClientMock.fetchLogs).toHaveBeenCalled();
     expect(observabilityClientMock.fetchLogsSearchMetadata).toHaveBeenCalled();
   });
@@ -94,7 +97,17 @@ describe('LogsList', () => {
 
     expect(findLoadingIcon().exists()).toBe(false);
     expect(findLogsTable().exists()).toBe(true);
+    expect(findNoDataEmptyState().exists()).toBe(false);
     expect(findLogsTable().props('logs')).toEqual(mockLogs);
+  });
+
+  it('renders the empty state if no data is found', async () => {
+    observabilityClientMock.fetchLogs.mockResolvedValue({ logs: [] });
+
+    await mountComponent();
+
+    expect(findNoDataEmptyState().exists()).toBe(true);
+    expect(findLogsTable().exists()).toBe(false);
   });
 
   it('renders the header', async () => {
@@ -106,24 +119,14 @@ describe('LogsList', () => {
     );
   });
 
-  it('calls fetchLogs method when LogsTable emits reload event', async () => {
-    await mountComponent();
-
-    observabilityClientMock.fetchLogs.mockClear();
-
-    findLogsTable().vm.$emit('reload');
-
-    expect(observabilityClientMock.fetchLogs).toHaveBeenCalledTimes(1);
-  });
-
-  it('if fetchLogs fails, it renders an alert and empty list', async () => {
+  it('if fetchLogs fails, it renders an alert and empty state', async () => {
     observabilityClientMock.fetchLogs.mockRejectedValue('error');
 
     await mountComponent();
 
     expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to load logs.' });
-    expect(findLogsTable().exists()).toBe(true);
-    expect(findLogsTable().props('logs')).toEqual([]);
+    expect(findLogsTable().exists()).toBe(false);
+    expect(findNoDataEmptyState().exists()).toBe(true);
   });
 
   it('renders an alert when fetchLogsSearchMetadata fails', async () => {

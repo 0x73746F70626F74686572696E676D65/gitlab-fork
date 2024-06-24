@@ -123,14 +123,6 @@ describe('TracingTable', () => {
     ]);
   });
 
-  it('renders the empty state when no traces are provided', () => {
-    mountComponent({ traces: [] });
-
-    expect(getRows().length).toBe(1);
-
-    expect(getRows().at(0).text()).toContain('No results found');
-  });
-
   it('sets the correct variant when a trace is highlighted', () => {
     mountComponent({ highlightedTraceId: 'trace-2' });
 

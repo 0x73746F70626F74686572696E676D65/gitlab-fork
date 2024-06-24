@@ -15,6 +15,7 @@ import { createMockClient } from 'helpers/mock_observability_client';
 import * as commonUtils from '~/lib/utils/common_utils';
 import axios from '~/lib/utils/axios_utils';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
+import ObservabilityNoDataEmptyState from '~/observability/components/observability_no_data_empty_state.vue';
 
 jest.mock('~/lib/utils/axios_utils');
 
@@ -30,10 +31,12 @@ describe('TracingList', () => {
   const findUrlSync = () => wrapper.findComponent(UrlSync);
   const findInfiniteScrolling = () => wrapper.findComponent(GlInfiniteScroll);
   const findAnalytics = () => wrapper.findComponent(TracingAnalytics);
+  const findNoDataEmptyState = () => wrapper.findComponent(ObservabilityNoDataEmptyState);
   const bottomReached = async () => {
     findInfiniteScrolling().vm.$emit('bottomReached');
     await waitForPromises();
   };
+
   const setFilters = async (filters) => {
     findFilteredSearch().vm.$emit('filter', filters);
     await waitForPromises();
@@ -106,6 +109,7 @@ describe('TracingList', () => {
       it('renders the loading icon while fetching traces', () => {
         expect(findLoadingIcon().exists()).toBe(true);
         expect(findTableList().exists()).toBe(false);
+        expect(findNoDataEmptyState().exists()).toBe(false);
         expect(findFilteredSearch().exists()).toBe(true);
         expect(findInfiniteScrolling().exists()).toBe(false);
       });
@@ -122,6 +126,7 @@ describe('TracingList', () => {
         expect(findTableList().exists()).toBe(true);
         expect(findFilteredSearch().exists()).toBe(true);
         expect(findUrlSync().exists()).toBe(true);
+        expect(findNoDataEmptyState().exists()).toBe(false);
         expect(findTableList().props('traces')).toEqual(mockResponse.traces);
         expect(findInfiniteScrolling().exists()).toBe(true);
       });
@@ -131,6 +136,15 @@ describe('TracingList', () => {
         expect(wrapper.find('header').text()).toBe(
           'Inspect application requests across services. Send trace data to this project using OpenTelemetry. Learn more.',
         );
+      });
+
+      it('renders the empty state if no data is found', async () => {
+        observabilityClientMock.fetchTraces.mockResolvedValue({ traces: [] });
+
+        await mountComponent();
+
+        expect(findNoDataEmptyState().exists()).toBe(true);
+        expect(findTableList().exists()).toBe(false);
       });
     });
   });
@@ -714,14 +728,14 @@ describe('TracingList', () => {
     beforeEach(() => {
       axios.isCancel = jest.fn().mockReturnValue(false);
     });
-    it('if fetchTraces fails, it renders an alert and empty list', async () => {
+    it('if fetchTraces fails, it renders the empty state with an alert', async () => {
       observabilityClientMock.fetchTraces.mockRejectedValue('error');
 
       await mountComponent();
 
       expect(createAlert).toHaveBeenLastCalledWith({ message: 'Failed to load traces.' });
-      expect(findTableList().exists()).toBe(true);
-      expect(findTableList().props('traces')).toEqual([]);
+      expect(findTableList().exists()).toBe(false);
+      expect(findNoDataEmptyState().exists()).toBe(true);
       expect(findAnalytics().exists()).toBe(true);
     });
 

@@ -81,14 +81,6 @@ describe('MetricsTable', () => {
     );
   });
 
-  it('renders the empty state when no metrics are provided', () => {
-    mountComponent({ metrics: [] });
-
-    expect(getRows().length).toBe(1);
-
-    expect(getRows().at(0).text()).toContain('No results found');
-  });
-
   it('emits metric-clicked on row-clicked', async () => {
     mountComponent();
 
