@@ -70,4 +70,49 @@ RSpec.describe 'Deleting a BranchRule', feature_category: :source_code_managemen
       expect { mutation_request }.not_to change { MergeRequests::ExternalStatusCheck.count }
     end
   end
+
+  context 'when deleting a branch rule associated to security policy approval rules' do
+    let(:policy_configuration) { create(:security_orchestration_policy_configuration) }
+
+    shared_examples 'rejects mutation' do
+      let(:expected_error) { a_hash_including('message' => a_string_including(error_message)) }
+      let(:error_message) do
+        "The resource that you are attempting to access does not exist " \
+          "or you don't have permission to perform this action"
+      end
+
+      specify do
+        mutation_request
+
+        expect(graphql_errors).to include(expected_error)
+      end
+    end
+
+    context 'with approval rule applied to all protected branches' do
+      let!(:rule_for_protected_branches) do
+        create(
+          :approval_project_rule,
+          project: project,
+          applies_to_all_protected_branches: true,
+          security_orchestration_policy_configuration: policy_configuration)
+      end
+
+      let(:global_id) { "gid://gitlab/Projects::AllProtectedBranchesRule/#{project.id}" }
+
+      it_behaves_like 'rejects mutation'
+    end
+
+    context 'with approval rule applied to no protected branches' do
+      let!(:rule_for_all_branches) do
+        create(
+          :approval_project_rule,
+          project: project,
+          security_orchestration_policy_configuration: policy_configuration)
+      end
+
+      let(:global_id) { "gid://gitlab/Projects::AllBranchesRule/#{project.id}" }
+
+      it_behaves_like 'rejects mutation'
+    end
+  end
 end
