@@ -3,12 +3,15 @@
 module AuditEvents
   module Strategies
     class ExternalDestinationStrategy
+      include Gitlab::InternalEventsTracking
+
       attr_reader :audit_operation, :audit_event
 
       EVENT_TYPE_HEADER_KEY = "X-Gitlab-Audit-Event-Type"
       REQUEST_BODY_SIZE_LIMIT = 25.megabytes
       STREAMABLE_ERROR_MESSAGE = 'Subclasses must implement the `streamable?` method'
       DESTINATIONS_ERROR_MESSAGE = 'Subclasses must implement the `destinations` method'
+      INTERNAL_EVENTS = %w[delete_epic delete_issue delete_merge_request delete_work_item].freeze
 
       def initialize(audit_operation, audit_event)
         @audit_operation = audit_operation
@@ -36,7 +39,7 @@ module AuditEvents
       def track_and_stream(destination)
         headers = build_headers(destination)
 
-        track_audit_event_count
+        track_audit_event
 
         Gitlab::HTTP.post(
           destination.destination_url,
@@ -54,10 +57,14 @@ module AuditEvents
         headers
       end
 
-      def track_audit_event_count
+      def track_audit_event
         return unless Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter::KNOWN_EVENTS.include? audit_operation
 
-        Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter.count(audit_operation)
+        if audit_operation.in?(INTERNAL_EVENTS)
+          track_internal_event("trigger_audit_event", additional_properties: { label: audit_operation })
+        else
+          Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter.count(audit_operation)
+        end
       rescue Redis::CannotConnectError => e
         Gitlab::ErrorTracking.log_exception(e)
       end

@@ -6,7 +6,7 @@ module AuditEvents
       private
 
       def track_and_stream(destination)
-        track_audit_event_count
+        track_audit_event
 
         payload = request_body
         Aws::S3Client.new(destination.access_key_xid, destination.secret_access_key, destination.aws_region)

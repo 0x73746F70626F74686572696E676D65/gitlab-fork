@@ -16,7 +16,7 @@ RSpec.shared_examples 'validate Amazon S3 destination strategy' do
         time_in_ms = (Time.now.to_f * 1000).to_i
         date = Date.current.strftime("%Y/%m")
 
-        expect(instance).to receive(:track_audit_event_count)
+        expect(instance).to receive(:track_audit_event)
 
         allow_next_instance_of(Aws::S3::Client) do |s3_client|
           expect(s3_client).to receive(:put_object).with(
@@ -41,7 +41,7 @@ RSpec.shared_examples 'validate Amazon S3 destination strategy' do
         time_in_ms = (Time.now.to_f * 1000).to_i
         date = Date.current.strftime("%Y/%m")
 
-        expect(instance).to receive(:track_audit_event_count)
+        expect(instance).to receive(:track_audit_event)
 
         allow_next_instance_of(Aws::S3::Client) do |s3_client|
           expect(s3_client).to receive(:put_object).with(
@@ -66,7 +66,7 @@ RSpec.shared_examples 'validate Amazon S3 destination strategy' do
         time_in_ms = (Time.now.to_f * 1000).to_i
         date = Date.current.strftime("%Y/%m")
 
-        expect(instance).to receive(:track_audit_event_count)
+        expect(instance).to receive(:track_audit_event)
 
         allow_next_instance_of(Aws::S3::Client) do |s3_client|
           expect(s3_client).to receive(:put_object).with(
@@ -91,7 +91,7 @@ RSpec.shared_examples 'validate Amazon S3 destination strategy' do
         time_in_ms = (Time.now.to_f * 1000).to_i
         date = Date.current.strftime("%Y/%m")
 
-        expect(instance).to receive(:track_audit_event_count)
+        expect(instance).to receive(:track_audit_event)
 
         allow_next_instance_of(Aws::S3::Client) do |s3_client|
           expect(s3_client).to receive(:put_object).with(
