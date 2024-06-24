@@ -1,0 +1,9 @@
+---
+name: migrate_purchase_flows_for_existing_customers
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/463207
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/156864
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/463210
+milestone: '17.2'
+group: group::subscription management
+type: wip
+default_enabled: false

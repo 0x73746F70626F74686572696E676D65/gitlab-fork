@@ -49,14 +49,6 @@ module BillingPlansHelper
     end
   end
 
-  def use_new_purchase_flow?(namespace)
-    # new flow requires the user to already have a last name.
-    # This can be removed once https://gitlab.com/gitlab-org/gitlab/-/issues/298715 is complete.
-    return false unless current_user.last_name.present?
-
-    namespace.group_namespace? && (namespace.actual_plan_name == Plan::FREE || namespace.trial_active?)
-  end
-
   def plan_feature_list(plan)
     plans_features[plan.code] || []
   end
@@ -91,7 +83,7 @@ module BillingPlansHelper
 
     css_classes << 'disabled' if is_current_plan && !namespace.trial_active?
     css_classes << 'invisible' if plan.deprecated?
-    css_classes << "billing-cta-purchase#{'-new' if use_new_purchase_flow?(namespace)}"
+    css_classes << "billing-cta-purchase#{'-new' unless namespace.upgradable?}"
 
     css_classes.join(' ')
   end
@@ -111,11 +103,11 @@ module BillingPlansHelper
   end
 
   def plan_purchase_url(group, plan)
-    if use_new_purchase_flow?(group)
-      new_subscriptions_path(plan_id: plan.id, namespace_id: group.id, source: params[:source])
-    else
-      "#{plan.purchase_link.href}&gl_namespace_id=#{group.id}"
-    end
+    GitlabSubscriptions::PurchaseUrlBuilder.new(
+      current_user: current_user,
+      plan_id: plan.id,
+      namespace: group
+    ).build(source: params[:source])
   end
 
   def show_code_suggestions_card?(namespace)
