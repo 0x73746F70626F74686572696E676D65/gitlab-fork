@@ -10,6 +10,7 @@ module ClickHouse
     data_consistency :delayed
     worker_has_external_dependencies! # the worker interacts with a ClickHouse database
     feature_category :database
+    loggable_arguments 0
 
     MAX_RUNTIME = 200.seconds
     BATCH_SIZE = 1000

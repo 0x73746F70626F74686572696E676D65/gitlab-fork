@@ -35,6 +35,7 @@ module Llm
         namespace: namespace,
         feature_enabled_by_namespace_ids: user.ai_chat_enabled_namespace_ids
       )
+      Gitlab::Tracking::AiTracking.track_event('request_duo_chat_response', user: user)
 
       prompt_message.save!
       GraphqlTriggers.ai_completion_response(prompt_message)

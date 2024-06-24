@@ -6,6 +6,10 @@ class ClickHouseModel
 
   class << self
     attr_accessor :table_name
+
+    def related_event?(event_name)
+      const_defined?(:EVENTS) && event_name.in?(const_get(:EVENTS, false))
+    end
   end
 
   def store
