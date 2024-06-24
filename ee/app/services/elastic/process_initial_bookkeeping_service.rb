@@ -7,7 +7,8 @@ module Elastic
       :merge_requests,
       :snippets,
       :notes,
-      :milestones
+      :milestones,
+      :work_items
     ].freeze
 
     class << self
