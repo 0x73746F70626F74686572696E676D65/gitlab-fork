@@ -5,7 +5,11 @@ module Ci
     include ::Audit::Changes
 
     AUDITABLE_VARIABLE_CLASSES = [::Ci::Variable, ::Ci::GroupVariable, ::Ci::InstanceVariable].freeze
-    TEXT_COLUMNS = %i[key value].freeze
+    TEXT_COLUMNS = {
+      key: 'name of key',
+      value: 'value(hidden)'
+    }.freeze
+
     SECURITY_COLUMNS = {
       protected: 'variable protection',
       masked: 'variable masking'
@@ -37,39 +41,29 @@ module Ci
         )
       end
 
-      TEXT_COLUMNS.compact.each do |column|
-        # instance variables don't have a :value column
-        next if column == :value && variable.is_a?(::Ci::InstanceVariable)
-
+      TEXT_COLUMNS.each do |column, as_text|
         audit_changes(
           column,
+          as: as_text,
           entity: container,
           model: variable,
           target_details: variable.key,
           event_type: event_type_name(variable, :update),
-          skip_changes: skip_changes?(variable, column)
+          skip_changes: (column == :value)
         )
       end
     end
 
-    def skip_changes?(variable, column)
-      # Do not log value anywhere
-      return true if column == :value
-
-      # do not include masked values in audit, if masking or unmasking
-      return true if variable.masked?
-
-      variable.masked_changed? && variable.masked_change.any?
-    end
-
     def log_audit_event(action, variable)
+      event_name = event_type_name(variable, action)
+
       audit_context = {
-        name: event_type_name(variable, action),
+        name: event_name,
         author: current_user || ::Gitlab::Audit::UnauthenticatedAuthor.new,
         scope: container,
         target: variable,
         message: message(variable, action),
-        additional_details: build_additional_details(variable, action)
+        additional_details: build_additional_details(variable, action).merge({ event_name: event_name })
       }
 
       ::Gitlab::Audit::Auditor.audit(audit_context)

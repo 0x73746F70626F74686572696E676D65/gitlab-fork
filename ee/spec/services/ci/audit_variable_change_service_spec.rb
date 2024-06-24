@@ -8,6 +8,7 @@ RSpec.describe Ci::AuditVariableChangeService, feature_category: :secrets_manage
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
+  let(:container) { group }
   let(:instance_variable) { create(:ci_instance_variable, key: 'CI_DEBUG_TRACE', value: true) }
   let(:group_variable) { create(:ci_group_variable, group: group) }
   let(:destination) { create(:external_audit_event_destination, group: group) }
@@ -16,7 +17,7 @@ RSpec.describe Ci::AuditVariableChangeService, feature_category: :secrets_manage
 
   let(:service) do
     described_class.new(
-      container: group, current_user: user,
+      container: container, current_user: user,
       params: { action: action, variable: variable }
     )
   end
@@ -78,7 +79,7 @@ RSpec.describe Ci::AuditVariableChangeService, feature_category: :secrets_manage
 
       audit_event = AuditEvent.last.presence
 
-      expect(audit_event.details[:custom_message]).to eq('Changed value')
+      expect(audit_event.details[:custom_message]).to eq('Changed value(hidden)')
       expect(audit_event.details[:custom_message]).not_to include('Super Secret')
       expect(audit_event.details[:custom_message]).not_to include('VARIABLE_VALUE')
       expect(audit_event.details[:target_details]).to eq(variable.key)
@@ -174,14 +175,16 @@ RSpec.describe Ci::AuditVariableChangeService, feature_category: :secrets_manage
   end
 
   context 'when audits are available' do
+    let_it_be(:instance_destination) { create :instance_external_audit_event_destination }
+
     before do
       stub_licensed_features(audit_events: true)
       stub_licensed_features(external_audit_events: true)
-      group.external_audit_event_destinations.create!(destination_url: 'http://example.com')
     end
 
     context 'with instance variables' do
       let(:variable) { instance_variable }
+      let(:container) { ::Gitlab::Audit::InstanceScope.new }
 
       context 'when creating instance variable' do
         it_behaves_like 'audit creation' do

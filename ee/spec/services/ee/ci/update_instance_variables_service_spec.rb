@@ -3,44 +3,62 @@
 require 'spec_helper'
 
 RSpec.describe Ci::UpdateInstanceVariablesService, feature_category: :secrets_management do
+  let_it_be(:current_user) { create :user }
   let(:params) { { variables_attributes: variables_attributes } }
-  let(:current_user) { build :user }
 
   subject(:service) { described_class.new(params, current_user) }
 
-  describe '#execute' do
-    context 'without variables' do
-      let(:variables_attributes) { [] }
+  before do
+    stub_licensed_features(admin_audit_log: true, audit_events: true, extended_audit_events: true)
+  end
 
-      it { expect(service.execute).to be_truthy }
+  def expect_to_stream(event_name:)
+    expect_any_instance_of(AuditEvent) do |event|
+      expect(event).to receive(:stream_to_external_destinations).with(use_json: anything, event_name: event_name)
+    end
+  end
+
+  context 'with insert only variables' do
+    let(:variables_attributes) do
+      [
+        { key: 'var_a', secret_value: 'dummy_value_for_a', protected: true },
+        { key: 'var_b', secret_value: 'dummy_value_for_b', protected: false }
+      ]
     end
 
-    context 'with insert only variables' do
-      let(:variables_attributes) do
-        [
-          { key: 'var_a', secret_value: 'dummy_value_for_a', protected: true },
-          { key: 'var_b', secret_value: 'dummy_value_for_b', protected: false }
-        ]
-      end
+    it 'persists attributes' do
+      expect { service.execute }.to change { Ci::InstanceVariable.count }.by(2)
+    end
+  end
 
-      it { expect(service.execute).to be_truthy }
+  context 'with update only variables' do
+    let!(:var_a) { create(:ci_instance_variable) }
+    let!(:var_b) { create(:ci_instance_variable, protected: false) }
 
-      it 'persists all the records' do
-        expect { service.execute }
-          .to change { Ci::InstanceVariable.count }
-          .by variables_attributes.size
-      end
-
-      it 'persists attributes' do
-        service.execute
-
-        expect(Ci::InstanceVariable.all).to contain_exactly(
-          have_attributes(key: 'var_a', secret_value: 'dummy_value_for_a', protected: true),
-          have_attributes(key: 'var_b', secret_value: 'dummy_value_for_b', protected: false)
-        )
-      end
+    let(:variables_attributes) do
+      [
+        {
+          id: var_a.id,
+          key: var_a.key,
+          secret_value: 'new_dummy_value_for_a',
+          protected: var_a.protected?.to_s
+        },
+        {
+          id: var_b.id,
+          key: 'var_b_key',
+          secret_value: 'new_dummy_value_for_b',
+          protected: 'true'
+        }
+      ]
     end
 
+    it 'does not change the count' do
+      expect { service.execute }
+        .to change { Ci::InstanceVariable.count }.by(0)
+    end
+  end
+
+  describe 'auditing' do
     context 'with update only variables' do
       let!(:var_a) { create(:ci_instance_variable) }
       let!(:var_b) { create(:ci_instance_variable, protected: false) }
@@ -62,20 +80,9 @@ RSpec.describe Ci::UpdateInstanceVariablesService, feature_category: :secrets_ma
         ]
       end
 
-      it { expect(service.execute).to be_truthy }
-
       it 'does not change the count' do
         expect { service.execute }
-          .not_to change { Ci::InstanceVariable.count }
-      end
-
-      it 'updates the records in place', :aggregate_failures do
-        service.execute
-
-        expect(var_a.reload).to have_attributes(secret_value: 'new_dummy_value_for_a')
-
-        expect(var_b.reload).to have_attributes(
-          key: 'var_b_key', secret_value: 'new_dummy_value_for_b', protected: true)
+          .to change { Ci::InstanceVariable.count }.by(0)
       end
     end
 
@@ -93,24 +100,16 @@ RSpec.describe Ci::UpdateInstanceVariablesService, feature_category: :secrets_ma
           {
             key: 'var_b',
             secret_value: 'dummy_value_for_b',
-            protected: true
+            protected: 'true'
           }
         ]
       end
 
-      it { expect(service.execute).to be_truthy }
+      it 'audits changes' do
+        expect_to_stream event_name: :ci_instance_variable_updated
+        expect_to_stream event_name: :ci_instance_variable_created
 
-      it 'inserts only one record' do
-        expect { service.execute }
-          .to change { Ci::InstanceVariable.count }.by 1
-      end
-
-      it 'persists all the records', :aggregate_failures do
-        service.execute
-        var_b = Ci::InstanceVariable.find_by(key: 'var_b')
-
-        expect(var_a.reload.secret_value).to eq('new_dummy_value_for_a')
-        expect(var_b.secret_value).to eq('dummy_value_for_b')
+        expect { service.execute }.to change { AuditEvent.count }.by(2)
       end
     end
 
@@ -141,15 +140,12 @@ RSpec.describe Ci::UpdateInstanceVariablesService, feature_category: :secrets_ma
         ]
       end
 
-      it { expect(service.execute).to be_truthy }
+      it 'audits changes' do
+        expect_to_stream event_name: :ci_instance_variable_updated
+        expect_to_stream event_name: :ci_instance_variable_created
+        expect_to_stream event_name: :ci_instance_variable_destroyed
 
-      it 'persists all the records', :aggregate_failures do
-        service.execute
-        var_c = Ci::InstanceVariable.find_by(key: 'var_c')
-
-        expect(var_a.reload.secret_value).to eq('new_dummy_value_for_a')
-        expect { var_b.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        expect(var_c.secret_value).to eq('dummy_value_for_c')
+        expect { service.execute }.to change { AuditEvent.count }.by(3)
       end
     end
 
@@ -182,20 +178,8 @@ RSpec.describe Ci::UpdateInstanceVariablesService, feature_category: :secrets_ma
           .not_to change { Ci::InstanceVariable.count }
       end
 
-      it 'does not update existing records' do
-        service.execute
-
-        expect(var_a.reload.secret_value).to eq('dummy_value_for_a')
-      end
-
-      it 'returns errors' do
-        service.execute
-
-        expect(service.errors).to match_array(
-          [
-            "Key (#{var_a.key}) has already been taken",
-            "Key can contain only letters, digits and '_'."
-          ])
+      it 'does not audit' do
+        expect { service.execute }.not_to change { AuditEvent.count }
       end
     end
 
@@ -211,7 +195,10 @@ RSpec.describe Ci::UpdateInstanceVariablesService, feature_category: :secrets_ma
         ]
       end
 
-      it { expect { service.execute }.to raise_error(ActiveRecord::RecordNotFound) }
+      it 'does not audit' do
+        expect { service.execute }.to raise_error ActiveRecord::RecordNotFound
+        expect(AuditEvent.count).to eq(0)
+      end
     end
 
     context 'when updating non existing variables' do
@@ -225,7 +212,10 @@ RSpec.describe Ci::UpdateInstanceVariablesService, feature_category: :secrets_ma
         ]
       end
 
-      it { expect { service.execute }.to raise_error(ActiveRecord::RecordNotFound) }
+      it 'does not audit' do
+        expect { service.execute }.to raise_error ActiveRecord::RecordNotFound
+        expect(AuditEvent.count).to eq(0)
+      end
     end
   end
 end

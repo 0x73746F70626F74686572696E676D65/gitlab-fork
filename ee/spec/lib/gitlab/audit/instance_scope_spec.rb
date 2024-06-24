@@ -11,7 +11,7 @@ RSpec.describe Gitlab::Audit::InstanceScope, feature_category: :audit_events do
     end
 
     describe '#licensed_feature_available?' do
-      subject { described_class.new.licensed_feature_available?(:external_audit_events) }
+      subject(:instance_scope) { described_class.new.licensed_feature_available?(:external_audit_events) }
 
       context 'when license is available' do
         before do
@@ -23,6 +23,25 @@ RSpec.describe Gitlab::Audit::InstanceScope, feature_category: :audit_events do
 
       context 'when license is not available' do
         it { is_expected.to be_falsey }
+      end
+
+      context 'when aliased to feature_available?' do
+        # rubocop:disable Gitlab/FeatureAvailableUsage -- intentional, see below
+        # Intentionally use feature_available here since we need consistent
+        # call pattern between project, namespace, group, and now instance scopes.
+        subject(:instance_scope) { described_class.new.feature_available?(:external_audit_events) }
+
+        # rubocop:enable Gitlab/FeatureAvailableUsage
+
+        it { is_expected.to be_falsey }
+
+        context 'when license is available' do
+          before do
+            stub_licensed_features(external_audit_events: true)
+          end
+
+          it { is_expected.to be_truthy }
+        end
       end
     end
   end
