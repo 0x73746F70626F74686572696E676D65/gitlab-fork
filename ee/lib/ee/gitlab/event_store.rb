@@ -54,7 +54,8 @@ module EE
           store.subscribe ::MergeRequests::RemoveUserApprovalRulesWorker,
             to: ::ProjectAuthorizations::AuthorizationsRemovedEvent
           store.subscribe ::Security::ScanResultPolicies::AddApproversToRulesWorker,
-            to: ::ProjectAuthorizations::AuthorizationsAddedEvent
+            to: ::ProjectAuthorizations::AuthorizationsAddedEvent,
+            if: ->(event) { ::Security::ScanResultPolicies::AddApproversToRulesWorker.dispatch?(event) }
           store.subscribe ::Security::RefreshComplianceFrameworkSecurityPoliciesWorker,
             to: ::Projects::ComplianceFrameworkChangedEvent
           store.subscribe ::AppSec::ContainerScanning::ScanImageWorker,
