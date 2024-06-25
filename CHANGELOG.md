@@ -3450,6 +3450,16 @@ No changes.
 - [Add sharding keys for system_access](gitlab-org/gitlab@62c2fd4788e62e46f1469e2f18d178840e8e3df2) ([merge request](gitlab-org/gitlab!142501))
 - [Add sharding keys for purchase](gitlab-org/gitlab@9c3843da74714c72483c17489d5d3d68ceffd2c8) ([merge request](gitlab-org/gitlab!142505))
 
+## 16.9.9 (2024-06-25)
+
+### Fixed (1 change)
+
+- [Update an expired test certificate](gitlab-org/gitlab@8fb9c678564e11392eab4d2001e60f751d6a86bc) ([merge request](gitlab-org/gitlab!156395))
+
+### Changed (1 change)
+
+- [Add a banner informing about token expiration](gitlab-org/gitlab@a079122ed2976df0f023ef55cef4a1585e31b5ce) ([merge request](gitlab-org/gitlab!155267))
+
 ## 16.9.8 (2024-05-09)
 
 No changes.
