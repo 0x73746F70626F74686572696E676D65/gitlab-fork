@@ -5864,6 +5864,16 @@ No changes.
 
 - [Move export buttons next to each other](gitlab-org/gitlab@106bea7a6246cd153cf66d133936a09d46369ae3) ([merge request](gitlab-org/gitlab!137461))
 
+## 16.6.8 (2024-06-25)
+
+### Fixed (1 change)
+
+- [Update an expired test certificate](gitlab-org/gitlab@5df73aee0ffd7904fce472b2dc65ffbf8b0c6794) ([merge request](gitlab-org/gitlab!156398))
+
+### Changed (1 change)
+
+- [Add a banner informing about token expiration](gitlab-org/gitlab@882e550f0353f8a4c46a9ef21829c91d474d50a6) ([merge request](gitlab-org/gitlab!155270))
+
 ## 16.6.7 (2024-02-07)
 
 ### Security (3 changes)
