@@ -17,6 +17,8 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { logError } from '~/lib/logger';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
 import ObservabilityNoDataEmptyState from '~/observability/components/observability_no_data_empty_state.vue';
+import { InternalEvents } from '~/tracking';
+import { VIEW_METRICS_PAGE } from '../events';
 import {
   queryToFilterObj,
   filterObjToQuery,
@@ -41,6 +43,7 @@ export default {
     GlSprintf,
     ObservabilityNoDataEmptyState,
   },
+  mixins: [InternalEvents.mixin()],
   i18n: {
     searchInputPlaceholder: s__('ObservabilityMetrics|Search metrics...'),
     attributeFilterTitle: s__('ObservabilityMetrics|Dimension'),
@@ -95,6 +98,9 @@ export default {
   },
   created() {
     this.fetchMetrics();
+  },
+  mounted() {
+    this.trackEvent(VIEW_METRICS_PAGE);
   },
   methods: {
     async fetchMetrics() {

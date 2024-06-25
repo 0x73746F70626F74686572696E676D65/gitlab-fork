@@ -11,8 +11,10 @@ import {
 import axios from '~/lib/utils/axios_utils';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import { TIME_RANGE_OPTIONS } from '~/observability/constants';
+import { InternalEvents } from '~/tracking';
 import { ingestedAtTimeAgo } from '../utils';
 import { METRIC_TYPE } from '../constants';
+import { VIEW_METRICS_DETAILS_PAGE } from '../events';
 import MetricsLineChart from './metrics_line_chart.vue';
 import FilteredSearch from './filter_bar/metrics_filtered_search.vue';
 import { filterObjToQuery, queryToFilterObj } from './filters';
@@ -38,6 +40,7 @@ export default {
     UrlSync,
     MetricsHeatMap,
   },
+  mixins: [InternalEvents.mixin()],
   props: {
     observabilityClient: {
       required: true,
@@ -109,6 +112,9 @@ export default {
   },
   created() {
     this.validateAndFetch();
+  },
+  mounted() {
+    this.trackEvent(VIEW_METRICS_DETAILS_PAGE);
   },
   methods: {
     async validateAndFetch() {
