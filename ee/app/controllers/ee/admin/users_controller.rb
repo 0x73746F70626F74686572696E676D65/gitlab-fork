@@ -35,7 +35,7 @@ module EE
         credit_card_validation = user.credit_card_validation
 
         if credit_card_validation.present?
-          @similar_credit_card_validations = credit_card_validation.similar_records.page(params[:page]).per(100)
+          @similar_credit_card_validations = credit_card_validation.similar_records.page(pagination_params[:page]).per(100)
         else
           redirect_to [:admin, @user], notice: _('No credit card data for matching')
         end
@@ -47,7 +47,7 @@ module EE
         phone_number_validation = user.phone_number_validation
 
         if phone_number_validation.present?
-          @similar_phone_number_validations = phone_number_validation.similar_records.page(params[:page]).per(100)
+          @similar_phone_number_validations = phone_number_validation.similar_records.page(pagination_params[:page]).per(100)
         else
           redirect_to [:admin, @user], notice: _('No phone number data for matching')
         end
