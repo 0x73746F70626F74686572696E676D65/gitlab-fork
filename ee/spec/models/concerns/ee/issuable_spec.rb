@@ -179,10 +179,11 @@ RSpec.describe EE::Issuable do
           user: user,
           changes: hash_including(
             'escalation_policy' => [nil, expected_policy_hash]
-          )
+          ),
+          action: 'open'
         )
 
-        issue.to_hook_data(user, old_associations: old_associations)
+        issue.to_hook_data(user, old_associations: old_associations, action: 'open')
       end
 
       context 'with policy and status changes' do
@@ -194,10 +195,11 @@ RSpec.describe EE::Issuable do
             changes: hash_including(
               'escalation_status' => %i[triggered acknowledged],
               'escalation_policy' => [nil, expected_policy_hash]
-            )
+            ),
+            action: 'open'
           )
 
-          issue.to_hook_data(user, old_associations: old_associations)
+          issue.to_hook_data(user, old_associations: old_associations, action: 'open')
         end
       end
     end
