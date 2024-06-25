@@ -130,7 +130,7 @@ export default {
 
 <template>
   <section-layout
-    class="gl-w-full gl-py-0 gl-pr-0 gl-rounded-0 gl-bg-white gl-items-end md:gl-items-start"
+    class="gl-w-full gl-py-0 gl-pr-0 gl-rounded-none gl-bg-white gl-items-end md:gl-items-start"
     content-classes="gl-flex gl-w-full "
     :show-remove-button="showRemoveButton"
     @remove="handleRemoveApprover"
@@ -177,6 +177,7 @@ export default {
             :is="approverComponent"
             :existing-approvers="existingApprovers[approverType]"
             :state="!isApproversErrored"
+            class="security-policies-approver-max-width"
             @error="$emit('error')"
             @updateSelectedApprovers="
               handleApproversUpdate({

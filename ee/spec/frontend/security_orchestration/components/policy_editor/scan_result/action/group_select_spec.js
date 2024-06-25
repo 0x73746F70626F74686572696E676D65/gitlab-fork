@@ -126,6 +126,7 @@ describe('GroupSelect component', () => {
     it('emits when a group is selected', async () => {
       findListbox().vm.$emit('select', [group.id]);
       await nextTick();
+
       expect(wrapper.emitted('updateSelectedApprovers')).toEqual([
         [
           [
@@ -139,6 +140,13 @@ describe('GroupSelect component', () => {
           ],
         ],
       ]);
+    });
+
+    it('sets correct toggle text', async () => {
+      findListbox().vm.$emit('select', [group.id]);
+      await nextTick();
+
+      expect(findListbox().props('toggleText')).toBe('Name 2');
     });
 
     it('emits when a group is deselected', () => {
@@ -155,10 +163,7 @@ describe('GroupSelect component', () => {
     });
 
     it('displays the correct listbox toggle class', () => {
-      expect(findListbox().props('toggleClass')).toEqual([
-        'gl-max-w-30',
-        { '!gl-shadow-inner-1-red-500': true },
-      ]);
+      expect(findListbox().props('toggleClass')).toEqual([{ '!gl-shadow-inner-1-red-500': true }]);
     });
   });
 
