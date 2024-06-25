@@ -10,7 +10,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::ToolsComponentInjector, :r
   let(:expected_processed_devfile_name) { 'example.tools-injected-devfile.yaml' }
   let(:expected_processed_devfile) { YAML.safe_load(read_devfile(expected_processed_devfile_name)).to_h }
   let(:tools_injector_image_from_settings) do
-    "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:9"
+    "registry.gitlab.com/gitlab-org/remote-development/gitlab-workspaces-tools:1.0.0"
   end
 
   let(:settings) do

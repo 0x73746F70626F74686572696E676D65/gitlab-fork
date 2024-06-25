@@ -52,7 +52,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Main, :freeze_time, feat
   end
 
   let(:tools_injector_image_from_settings) do
-    "registry.gitlab.com/gitlab-org/gitlab-web-ide-vscode-fork/web-ide-injector:9"
+    "registry.gitlab.com/gitlab-org/remote-development/gitlab-workspaces-tools:1.0.0"
   end
 
   let(:settings) do
