@@ -15,6 +15,7 @@ module EE
         expose :users, using: ::API::Entities::UserBasic, documentation: { is_array: true }
         expose :groups, using: ::API::Entities::Group, documentation: { is_array: true }
         expose :contains_hidden_groups?, as: :contains_hidden_groups, documentation: { type: 'boolean' }
+        expose :report_type
       end
     end
   end

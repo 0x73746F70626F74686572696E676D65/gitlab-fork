@@ -131,6 +131,7 @@ RSpec.describe API::ProjectApprovalRules, :aggregate_failures, feature_category:
 
           expect(json.size).to eq(2)
           expect(json.map { |rule| rule['name'] }).to contain_exactly(rule.name, report_approver_rule.name)
+          expect(json.map { |rule| rule['report_type'] }).to contain_exactly(nil, 'code_coverage')
         end
       end
 
