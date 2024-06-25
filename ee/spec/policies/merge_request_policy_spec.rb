@@ -361,59 +361,6 @@ RSpec.describe MergeRequestPolicy, :aggregate_failures, feature_category: :code_
     end
   end
 
-  describe 'summarize_submitted_review policy' do
-    let_it_be(:project) { create(:project) }
-    let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
-    let_it_be(:current_user) { developer }
-
-    let(:authorizer) { instance_double(::Gitlab::Llm::FeatureAuthorizer) }
-
-    subject { described_class.new(current_user, merge_request) }
-
-    before do
-      stub_licensed_features(summarize_submitted_review: true)
-      allow(::Gitlab::Llm::FeatureAuthorizer).to receive(:new).and_return(authorizer)
-    end
-
-    context "when feature is authorized" do
-      before do
-        allow(authorizer).to receive(:allowed?).and_return(true)
-      end
-
-      it { is_expected.to be_allowed(:summarize_submitted_review) }
-
-      context 'when automatically_summarize_mr_review feature flag is disabled' do
-        before do
-          stub_feature_flags(automatically_summarize_mr_review: false)
-        end
-
-        it { is_expected.to be_disallowed(:summarize_submitted_review) }
-      end
-
-      context 'when license is not set' do
-        before do
-          stub_licensed_features(summarize_submitted_review: false)
-        end
-
-        it { is_expected.to be_disallowed(:summarize_submitted_review) }
-      end
-
-      context 'when user cannot read merge request' do
-        let(:current_user) { guest }
-
-        it { is_expected.to be_disallowed(:summarize_submitted_review) }
-      end
-    end
-
-    context "when feature is not authorized" do
-      before do
-        allow(authorizer).to receive(:allowed?).and_return(false)
-      end
-
-      it { is_expected.to be_disallowed(:summarize_submitted_review) }
-    end
-  end
-
   describe "Custom roles `admin_merge_request` ability" do
     let_it_be(:project) { create(:project, :public, :in_group) }
     let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project) }

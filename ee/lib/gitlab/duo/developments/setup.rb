@@ -46,7 +46,6 @@ module Gitlab
           puts "Enabling feature flags...."
 
           ::Feature.enable(:summarize_my_code_review)
-          ::Feature.enable(:automatically_summarize_mr_review)
           ::Feature.enable(:fill_in_mr_template)
         end
 

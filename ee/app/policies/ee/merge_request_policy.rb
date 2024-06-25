@@ -42,16 +42,6 @@ module EE
           @subject.target_project.licensed_feature_available?(:report_approver_rules)
       end
 
-      with_scope :subject
-      condition(:summarize_submitted_review_enabled) do
-        ::Feature.enabled?(:automatically_summarize_mr_review, subject.project) &&
-          subject.project.licensed_feature_available?(:summarize_submitted_review) &&
-          ::Gitlab::Llm::FeatureAuthorizer.new(
-            container: subject.project,
-            feature_name: :summarize_submitted_review
-          ).allowed?
-      end
-
       condition(:role_enables_admin_merge_request) do
         ::Authz::CustomAbility.allowed?(@user, :admin_merge_request, subject&.project)
       end
@@ -89,10 +79,6 @@ module EE
       end
 
       rule { approval_rules_licence_enabled }.enable :create_merge_request_approval_rules
-
-      rule do
-        summarize_submitted_review_enabled & can?(:read_merge_request)
-      end.enable :summarize_submitted_review
 
       rule { custom_roles_allowed & role_enables_admin_merge_request }.policy do
         enable :approve_merge_request
