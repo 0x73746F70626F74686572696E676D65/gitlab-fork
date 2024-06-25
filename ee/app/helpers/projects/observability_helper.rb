@@ -26,7 +26,9 @@ module Projects
     end
 
     def observability_logs_view_model(project)
-      generate_model(project)
+      generate_model(project) do |model|
+        model[:tracingIndexUrl] = namespace_project_tracing_index_path(project.group, project)
+      end
     end
 
     def observability_usage_quota_view_model(project)
