@@ -51,11 +51,7 @@ module Arkose
     end
 
     def track_arkose_challenge_result
-      interactive = arkose_interactive_challenge_solved?
-
-      session[:arkose_challenge_solved] = true if interactive
-
-      log_arkose_challenge_solved(interactive: interactive)
+      log_arkose_challenge_solved(interactive: arkose_interactive_challenge_solved?)
     end
 
     def log_arkose_challenge_solved(interactive: false)

@@ -62,7 +62,7 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
       expect { create_user }.to change { UserCustomAttribute.count }.from(0)
     end
 
-    it 'sets arkose_challenge_solved session variable to true and logs the event', :aggregate_failures do
+    it 'logs challenge solved event', :aggregate_failures do
       expect(Gitlab::AppLogger).to receive(:info).with(an_instance_of(String))
       expect(Gitlab::AppLogger).to receive(:info).with(
         hash_including(
@@ -73,8 +73,6 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
       )
 
       create_user
-
-      expect(request.session[:arkose_challenge_solved]).to eq true
     end
   end
 
