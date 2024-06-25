@@ -1,0 +1,9 @@
+---
+name: ai_doc_tool_hide_reference
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/464461
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/156876
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/468298
+milestone: '17.2'
+group: group::duo chat
+type: gitlab_com_derisk
+default_enabled: false
