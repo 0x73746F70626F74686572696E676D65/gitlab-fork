@@ -3264,6 +3264,9 @@ msgstr ""
 msgid "Add request manually"
 msgstr ""
 
+msgid "Add search filter"
+msgstr ""
+
 msgid "Add suggestion to batch"
 msgstr ""
 
@@ -43987,6 +43990,9 @@ msgid "Remove reviewer"
 msgstr ""
 
 msgid "Remove runner"
+msgstr ""
+
+msgid "Remove search filter"
 msgstr ""
 
 msgid "Remove secondary email"
