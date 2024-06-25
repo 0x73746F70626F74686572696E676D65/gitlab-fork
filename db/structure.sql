@@ -18096,6 +18096,7 @@ CREATE TABLE uploads (
     store integer DEFAULT 1,
     mount_point character varying,
     secret character varying,
+    version integer DEFAULT 1 NOT NULL,
     CONSTRAINT check_5e9547379c CHECK ((store IS NOT NULL))
 );
 
