@@ -63,7 +63,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
 
     it 'changes elasticsearch settings' do
-      page.within('.as-elasticsearch') do
+      within_testid('elasticsearch-settings') do
         check 'Elasticsearch indexing'
         check 'Search with Elasticsearch enabled'
 
@@ -117,7 +117,7 @@ RSpec.describe 'Admin updates EE-only settings' do
       project = create(:project)
       namespace = create(:namespace)
 
-      page.within('.as-elasticsearch') do
+      within_testid('elasticsearch-settings') do
         expect(page).not_to have_content('Namespaces to index')
         expect(page).not_to have_content('Projects to index')
 
@@ -155,7 +155,7 @@ RSpec.describe 'Admin updates EE-only settings' do
       expect(ElasticsearchIndexedNamespace.count).to be > 0
       expect(ElasticsearchIndexedProject.count).to be > 0
 
-      page.within('.as-elasticsearch') do
+      within_testid('elasticsearch-settings') do
         expect(page).to have_content('Namespaces to index')
         expect(page).to have_content('Projects to index')
         expect(page).to have_content(namespace.full_path)
@@ -176,7 +176,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
 
     it 'zero-downtime reindexing shows popup', :js do
-      page.within('.as-elasticsearch-reindexing') do
+      within_testid('elasticsearch-reindexing-settings') do
         expect(page).to have_content 'Trigger cluster reindexing'
         click_button 'Trigger cluster reindexing'
       end
