@@ -12,6 +12,11 @@ export default {
       required: false,
       default: 0,
     },
+    epicsHaveChildren: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     children: {
       type: Array,
       required: true,
@@ -33,6 +38,7 @@ export default {
       v-for="child in children"
       :key="generateKey(child)"
       :epic="child"
+      :epics-have-children="epicsHaveChildren"
       :client-width="clientWidth"
       :child-level="childLevel"
     />

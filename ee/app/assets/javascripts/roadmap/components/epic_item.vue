@@ -45,6 +45,11 @@ export default {
       type: Object,
       required: true,
     },
+    epicsHaveChildren: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     clientWidth: {
       type: Number,
       required: false,
@@ -166,6 +171,7 @@ export default {
     >
       <epic-item-details
         :epic="epic"
+        :epics-have-children="epicsHaveChildren"
         :timeframe-string="timeframeString(epic)"
         :child-level="childLevel"
         :is-expanded="isExpanded"
@@ -203,6 +209,7 @@ export default {
     </div>
     <epic-item-container
       v-if="hasChildrenToShow"
+      :epics-have-children="epicsHaveChildren"
       :client-width="clientWidth"
       :children="childEpics"
       :child-level="childLevel + 1"
