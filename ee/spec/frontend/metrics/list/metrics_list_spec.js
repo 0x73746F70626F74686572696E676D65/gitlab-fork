@@ -12,6 +12,7 @@ import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered
 import UrlSync from '~/vue_shared/components/url_sync.vue';
 import PageHeading from '~/vue_shared/components/page_heading.vue';
 import ObservabilityNoDataEmptyState from '~/observability/components/observability_no_data_empty_state.vue';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 import { mockMetrics } from './mock_data';
 
 jest.mock('~/alert');
@@ -54,9 +55,18 @@ describe('MetricsComponent', () => {
     await waitForPromises();
   };
 
+  const { bindInternalEventDocument } = useMockInternalEventsTracking();
+
   beforeEach(() => {
     observabilityClientMock = createMockClient();
     observabilityClientMock.fetchMetrics.mockResolvedValue(mockResponse);
+  });
+
+  it('tracks view_metrics_page', () => {
+    mountComponent();
+
+    const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+    expect(trackEventSpy).toHaveBeenCalledWith('view_metrics_page', {}, undefined);
   });
 
   describe('initial metrics fetching', () => {
