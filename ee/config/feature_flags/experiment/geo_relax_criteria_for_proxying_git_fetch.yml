@@ -1,0 +1,9 @@
+---
+name: geo_relax_criteria_for_proxying_git_fetch
+feature_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/468826
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/157240
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/469158
+milestone: '17.2'
+group: group::geo
+type: experiment
+default_enabled: false
