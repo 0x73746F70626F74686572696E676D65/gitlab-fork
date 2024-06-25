@@ -49,7 +49,7 @@ module EE
         def fetch_protected_branches(project)
           return super unless group_protected_branches_feature_available?(project.group)
 
-          project.all_protected_branches.sorted_by_namespace_and_name.page(params[:page])
+          project.all_protected_branches.sorted_by_namespace_and_name.page(pagination_params[:page])
         end
 
         def fetch_branches_protected_from_push(project)

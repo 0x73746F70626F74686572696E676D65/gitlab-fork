@@ -46,7 +46,7 @@ class Groups::AuditEventsController < Groups::ApplicationController
       events = AuditEventFinder
         .new(level: level, params: audit_params)
         .execute
-        .page(params[:page])
+        .page(pagination_params[:page])
         .without_count
 
       Gitlab::Audit::Events::Preloader.preload!(events)

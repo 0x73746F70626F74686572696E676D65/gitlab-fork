@@ -76,7 +76,7 @@ module Explore
 
     def per_page
       Gitlab::Pagination::Keyset::Page
-        .new(per_page: params[:per_page].to_i)
+        .new(per_page: pagination_params[:per_page].to_i)
         .per_page
     end
 

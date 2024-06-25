@@ -54,7 +54,7 @@ class Admin::AuditLogsController < Admin::ApplicationController
       events = AuditEventFinder
         .new(level: level, params: audit_events_params)
         .execute
-        .page(params[:page])
+        .page(pagination_params[:page])
         .per(PER_PAGE)
         .without_count
 
