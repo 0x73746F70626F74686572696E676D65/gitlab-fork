@@ -15,3 +15,5 @@ class AddArchivedToMergeRequests < Elastic::Migration
     }
   end
 end
+
+AddArchivedToMergeRequests.prepend ::Elastic::MigrationObsolete
