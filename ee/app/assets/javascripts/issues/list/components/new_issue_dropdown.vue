@@ -44,6 +44,8 @@ export default {
       placement="right"
       text-sr-only
       variant="confirm"
+      toggle-class="!gl-h-7"
+      class="!gl-m-0 !gl-w-7"
     >
       <gl-disclosure-dropdown-item :item="newIssueItem" />
       <create-work-item-modal

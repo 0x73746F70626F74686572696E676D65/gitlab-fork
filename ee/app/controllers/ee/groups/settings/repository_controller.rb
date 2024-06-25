@@ -29,7 +29,7 @@ module EE
         # rubocop:disable Gitlab/ModuleWithInstanceVariables
         # rubocop:disable CodeReuse/ActiveRecord
         def define_protected_branches
-          @protected_branches = group.protected_branches.order(:name).page(params[:page])
+          @protected_branches = group.protected_branches.order(:name).page(pagination_params[:page])
           @protected_branch = group.protected_branches.new
           gon.push(helpers.protected_access_levels_for_dropdowns)
 

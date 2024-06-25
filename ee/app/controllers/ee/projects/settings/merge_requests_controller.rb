@@ -17,7 +17,7 @@ module EE
             end
 
             if can?(current_user, :read_target_branch_rule, @project)
-              @target_branch_rules = @project.target_branch_rules.page(params[:page])
+              @target_branch_rules = @project.target_branch_rules.page(pagination_params[:page])
             end
           end
         end

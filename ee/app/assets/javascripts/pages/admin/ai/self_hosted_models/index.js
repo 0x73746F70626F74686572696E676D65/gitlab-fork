@@ -1,23 +1,35 @@
 import Vue from 'vue';
-import CustomModelsSettingsApp from './app.vue';
+import VueApollo from 'vue-apollo';
+import createDefaultClient from '~/lib/graphql';
+import SelfHostedModelsApp from './components/app.vue';
 
-function mountCustomModelsApp() {
-  const el = document.getElementById('js-custom-models');
+Vue.use(VueApollo);
+
+const apolloProvider = new VueApollo({
+  defaultClient: createDefaultClient(),
+});
+
+function mountSelfHostedModelsApp() {
+  const el = document.getElementById('js-self-hosted-models');
 
   if (!el) {
     return null;
   }
 
+  const { basePath, newSelfHostedModelPath } = el.dataset;
+
   return new Vue({
     el,
-    name: 'CustomModelsApp',
+    name: 'SelfHostedModelsApp',
+    apolloProvider,
     render: (h) =>
-      h(CustomModelsSettingsApp, {
+      h(SelfHostedModelsApp, {
         props: {
-          models: JSON.parse(el.dataset.customModels),
+          basePath,
+          newSelfHostedModelPath,
         },
       }),
   });
 }
 
-mountCustomModelsApp();
+mountSelfHostedModelsApp();

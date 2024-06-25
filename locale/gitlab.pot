@@ -3714,16 +3714,43 @@ msgstr ""
 msgid "AdminProjects|Delete Project %{projectName}?"
 msgstr ""
 
+msgid "AdminSelfHostedModels|An error occurred while loading self-hosted models. Please try again."
+msgstr ""
+
 msgid "AdminSelfHostedModels|By enabling Self-Hosted Models, you accept the %{link_start}GitLab Testing Agreement%{link_end}."
 msgstr ""
 
 msgid "AdminSelfHostedModels|Define your set of self-hosted models"
 msgstr ""
 
+msgid "AdminSelfHostedModels|Delete model"
+msgstr ""
+
 msgid "AdminSelfHostedModels|Enable Self-hosted models"
 msgstr ""
 
+msgid "AdminSelfHostedModels|Endpoint"
+msgstr ""
+
+msgid "AdminSelfHostedModels|Model does not have API key"
+msgstr ""
+
+msgid "AdminSelfHostedModels|Model has API key"
+msgstr ""
+
+msgid "AdminSelfHostedModels|New model"
+msgstr ""
+
+msgid "AdminSelfHostedModels|New self-hosted model"
+msgstr ""
+
 msgid "AdminSelfHostedModels|Self-Hosted models"
+msgstr ""
+
+msgid "AdminSelfHostedModels|Self-hosted AI models can be used to power GitLab AI features."
+msgstr ""
+
+msgid "AdminSelfHostedModels|Self-hosted models"
 msgstr ""
 
 msgid "AdminSelfHostedModels|Self-hosted models are an experimental feature."
@@ -33740,6 +33767,9 @@ msgid "Modal updated"
 msgstr ""
 
 msgid "Modal|Close"
+msgstr ""
+
+msgid "Model"
 msgstr ""
 
 msgid "Model experiments"
