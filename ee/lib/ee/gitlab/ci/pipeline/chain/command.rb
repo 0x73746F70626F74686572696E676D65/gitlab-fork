@@ -14,6 +14,14 @@ module EE
 
               !!execution_policy_dry_run
             end
+
+            override :pipeline_policy_context
+            def pipeline_policy_context
+              @pipeline_policy_context ||= ::Gitlab::Ci::Pipeline::PipelineExecutionPolicies::PipelineContext.new(
+                project: project,
+                command: self
+              )
+            end
           end
         end
       end

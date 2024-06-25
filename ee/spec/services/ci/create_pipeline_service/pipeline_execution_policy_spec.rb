@@ -176,6 +176,66 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :security_policy_man
     end
   end
 
+  describe 'reserved stages' do
+    context 'when policy pipelines use reserved stages' do
+      let(:namespace_policy_content) do
+        { namespace_pre_job: { stage: '.pipeline-policy-pre', script: 'pre script' } }
+      end
+
+      let(:project_policy_content) do
+        { project_post_job: { stage: '.pipeline-policy-post', script: 'post script' } }
+      end
+
+      it 'responds with success' do
+        expect(execute).to be_success
+      end
+
+      it 'persists pipeline' do
+        expect(execute.payload).to be_persisted
+      end
+
+      it 'persists jobs in the reserved stages', :aggregate_failures do
+        expect { execute }.to change { Ci::Build.count }.from(0).to(4)
+
+        stages = execute.payload.stages
+        expect(stages.map(&:name)).to contain_exactly('.pipeline-policy-pre', 'build', 'test', '.pipeline-policy-post')
+
+        expect(stages.find_by(name: '.pipeline-policy-pre').builds.map(&:name)).to contain_exactly('namespace_pre_job')
+        expect(stages.find_by(name: 'build').builds.map(&:name)).to contain_exactly('build')
+        expect(stages.find_by(name: 'test').builds.map(&:name)).to contain_exactly('rspec')
+        expect(stages.find_by(name: '.pipeline-policy-post').builds.map(&:name)).to contain_exactly('project_post_job')
+      end
+    end
+
+    context 'when reserved stages are declared in project CI YAML' do
+      let(:project_ci_yaml) do
+        <<~YAML
+          pre-compliance:
+            stage: .pipeline-policy-pre
+            script:
+              - echo 'pre'
+          rspec:
+            stage: test
+            script:
+              - echo 'rspec'
+          post-compliance:
+            stage: .pipeline-policy-post
+            script:
+              - echo 'post'
+        YAML
+      end
+
+      it 'responds with error', :aggregate_failures do
+        expect(execute).to be_error
+        expect(execute.payload).to be_persisted
+        expect(execute.payload.errors.full_messages)
+          .to contain_exactly(
+            'pre-compliance job: chosen stage `.pipeline-policy-pre` is reserved for Pipeline Execution Policies'
+          )
+      end
+    end
+  end
+
   context 'when policy content does not match the valid schema' do
     # A valid `content` should reference an external file via `include` and not include the jobs in the policy directly
     # The schema is defined in `ee/app/validators/json_schemas/security_orchestration_policy.json`.

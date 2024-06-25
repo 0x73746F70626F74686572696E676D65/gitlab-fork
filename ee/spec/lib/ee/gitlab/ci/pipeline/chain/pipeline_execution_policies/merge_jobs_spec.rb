@@ -47,7 +47,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
         .to receive(:new).with(
           pipeline: pipeline,
           execution_policy_pipelines: execution_policy_pipelines,
-          declared_stages: %w[.pre build test deploy .post]
+          declared_stages: %w[.pipeline-policy-pre .pre build test deploy .post .pipeline-policy-post]
         ).and_call_original
 
       run_chain
@@ -70,7 +70,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
           .to receive(:new).with(
             pipeline: pipeline,
             execution_policy_pipelines: execution_policy_pipelines,
-            declared_stages: %w[.pre pre-test test post-test .post]
+            declared_stages: %w[.pipeline-policy-pre .pre pre-test test post-test .post .pipeline-policy-post]
           ).and_call_original
 
         run_chain
@@ -85,7 +85,7 @@ RSpec.describe Gitlab::Ci::Pipeline::Chain::PipelineExecutionPolicies::MergeJobs
           .to receive(:new).with(
             pipeline: pipeline,
             execution_policy_pipelines: execution_policy_pipelines,
-            declared_stages: %w[.pre build test deploy .post]
+            declared_stages: %w[.pipeline-policy-pre .pre build test deploy .post .pipeline-policy-post]
           ).and_call_original
 
         run_chain

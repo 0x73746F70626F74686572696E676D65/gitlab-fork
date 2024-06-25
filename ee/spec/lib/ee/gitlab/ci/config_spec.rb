@@ -111,4 +111,67 @@ RSpec.describe Gitlab::Ci::Config, feature_category: :pipeline_composition do
       end
     end
   end
+
+  describe '#inject_pipeline_execution_policy_stages' do
+    subject(:config) { described_class.new(ci_yml, project: project, pipeline_policy_context: pipeline_policy_context) }
+
+    include_context 'with pipeline policy context'
+
+    let(:ci_yml) do
+      YAML.dump(
+        rspec: {
+          script: 'rspec'
+        }
+      )
+    end
+
+    it 'does not inject the reserved stages by default' do
+      expect(config.stages).to contain_exactly('.pre', 'build', 'deploy', 'test', '.post')
+    end
+
+    shared_examples_for 'injects reserved policy stages' do
+      let(:default_stages) { %w[.pre build test deploy .post] }
+
+      it 'injects reserved stages into yaml_processor_result' do
+        expect(config.stages).to eq(['.pipeline-policy-pre', *default_stages, '.pipeline-policy-post'])
+      end
+
+      context 'when the config already specifies reserved stages' do
+        let(:ci_yml) do
+          YAML.dump(
+            stages: ['.pipeline-policy-pre', *default_stages, '.pipeline-policy-post'],
+            rspec: {
+              script: 'rspec'
+            }
+          )
+        end
+
+        it 'does not inject the reserved stages multiple times' do
+          expect(config.stages).to eq(['.pipeline-policy-pre', *default_stages, '.pipeline-policy-post'])
+        end
+      end
+
+      context 'when feature flag "pipeline_execution_policy_type" is disabled' do
+        before do
+          stub_feature_flags(pipeline_execution_policy_type: false)
+        end
+
+        it 'does not inject the reserved stages' do
+          expect(config.stages).to eq(default_stages)
+        end
+      end
+    end
+
+    context 'when execution_policy_mode is true' do
+      let(:execution_policy_dry_run) { true }
+
+      it_behaves_like 'injects reserved policy stages'
+    end
+
+    context 'when execution_policy_pipelines are present' do
+      let(:execution_policy_pipelines) { build_list(:ci_empty_pipeline, 2) }
+
+      it_behaves_like 'injects reserved policy stages'
+    end
+  end
 end
