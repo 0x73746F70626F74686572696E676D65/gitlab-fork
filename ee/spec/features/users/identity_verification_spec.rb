@@ -112,45 +112,4 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       expect_to_see_dashboard_page
     end
   end
-
-  context 'when user previously solved a challenge' do
-    it 'does not require the challenge on successive attempts' do
-      expect_to_see_identity_verification_page
-
-      send_phone_number_verification_code(solve_arkose_challenge: true, arkose_opts: { challenge_shown: true })
-
-      # Destroy the user's phone_number_validation record so that code send is
-      # allowed again immediately instead of having to wait for one minute
-      user.reload.phone_number_validation.destroy!
-
-      visit current_path
-
-      # Verify phone number without solving a challenge
-      verify_phone_number
-
-      expect(page).to have_content(_('Completed'))
-    end
-
-    context 'when skip_arkose_challenge_when_previously_solved is disabled' do
-      before do
-        stub_feature_flags(skip_arkose_challenge_when_previously_solved: false)
-      end
-
-      it 'does not skip the challenge requirement on successive attempts' do
-        expect_to_see_identity_verification_page
-
-        send_phone_number_verification_code(solve_arkose_challenge: true, arkose_opts: { challenge_shown: true })
-
-        # Destroy the user's phone_number_validation record so that code send is
-        # allowed again immediately instead of having to wait for one minute
-        user.reload.phone_number_validation.destroy!
-
-        visit current_path
-
-        verify_phone_number(solve_arkose_challenge: true)
-
-        expect(page).to have_content(_('Completed'))
-      end
-    end
-  end
 end

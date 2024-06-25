@@ -527,7 +527,7 @@ RSpec.describe Users::RegistrationsIdentityVerificationController, :clean_gitlab
           expect(response).to redirect_to(signup_identity_verification_path)
         end
 
-        it_behaves_like 'sets arkose_challenge_solved session variable'
+        it_behaves_like 'logs challenge solved event'
 
         describe 'phone verification service daily transaction limit check' do
           it 'is executed' do
