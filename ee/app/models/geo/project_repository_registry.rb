@@ -5,6 +5,7 @@ module Geo
     include IgnorableColumns
     include ::Geo::ReplicableRegistry
     include ::Geo::VerifiableRegistry
+    extend ::Gitlab::Geo::LogHelpers
 
     MODEL_CLASS = ::Project
     MODEL_FOREIGN_KEY = :project_id
@@ -17,41 +18,86 @@ module Geo
     def self.repository_out_of_date?(project_id, synchronous_request_required = false)
       return false unless ::Gitlab::Geo.secondary_with_primary?
 
-      registry = find_by(project_id: project_id)
+      registry = find_or_initialize_by(project_id: project_id)
 
-      # Out-of-date if registry or project don't exist
-      return true if registry.nil? || registry.project.nil?
+      registry.repository_out_of_date?(synchronous_request_required)
+    end
 
-      # Out-of-date if sync failed
-      return true if registry.failed?
+    # @return [Boolean] whether the project repository is out-of-date on this site
+    def repository_out_of_date?(synchronous_request_required = false)
+      return out_of_date("registry doesn't exist") unless persisted?
+      return out_of_date("project doesn't exist") if project.nil?
+      return out_of_date("sync failed") if failed?
 
-      # Up-to-date if there is no timestamp for the latest change to the repo
-      return false unless registry.project.last_repository_updated_at
-
-      # Out-of-date if the repo has never been synced
-      return true unless registry.last_synced_at
-
-      # Out-of-date unless verification succeeded
-      return true unless registry.verification_succeeded?
-
-      if synchronous_request_required
-        secondary_pipeline_refs = registry.project.repository.list_refs(['refs/pipelines/']).collect(&:name)
-        primary_pipeline_refs = ::Gitlab::Geo.primary_pipeline_refs(project_id)
-
-        return !(primary_pipeline_refs - secondary_pipeline_refs).empty?
+      unless project.last_repository_updated_at
+        return up_to_date("there is no timestamp for the latest change to the repo")
       end
 
-      # Return whether the latest change is replicated
-      #
-      # Current limitations:
-      #
-      # - We assume last_repository_updated_at is a timestamp of the latest change
-      # - last_repository_updated_at touches are throttled within Event::REPOSITORY_UPDATED_AT_INTERVAL minutes
-      last_updated_at = registry.project.last_repository_updated_at
+      return out_of_date("it has never been synced") unless last_synced_at
+      return out_of_date("not verified yet") unless verification_succeeded?
 
-      last_synced_at = registry.last_synced_at
+      # Relatively expensive check
+      return synchronous_pipeline_check if synchronous_request_required
 
-      last_synced_at <= last_updated_at
+      best_guess_with_local_information
+    end
+
+    # @return [Boolean] whether the latest pipeline refs are present on the secondary
+    def synchronous_pipeline_check
+      secondary_pipeline_refs = project.repository.list_refs(['refs/pipelines/']).collect(&:name)
+      primary_pipeline_refs = ::Gitlab::Geo.primary_pipeline_refs(project_id)
+      missing_refs = primary_pipeline_refs - secondary_pipeline_refs
+
+      if !missing_refs.empty?
+        out_of_date("secondary is missing pipeline refs", missing_refs: missing_refs.take(30))
+      else
+        up_to_date("secondary has all pipeline refs")
+      end
+    end
+
+    # Current limitations:
+    #
+    # - We assume last_repository_updated_at is a timestamp of the latest change
+    # - But last_repository_updated_at touches are throttled within Event::REPOSITORY_UPDATED_AT_INTERVAL minutes
+    # - And Postgres replication is asynchronous so it may be lagging behind
+    #
+    # @return [Boolean] whether the latest change is replicated
+    def best_guess_with_local_information
+      last_updated_at = project.last_repository_updated_at
+
+      if last_synced_at <= last_updated_at
+        out_of_date("last successfully synced before latest change",
+          last_synced_at: last_synced_at, last_updated_at: last_updated_at)
+      else
+        up_to_date("last successfully synced after latest change",
+          last_synced_at: last_synced_at, last_updated_at: last_updated_at)
+      end
+    end
+
+    def out_of_date(reason, details = {})
+      details
+        .merge!(replicator.replicable_params)
+        .merge!({
+          class: self.class.name,
+          reason: reason
+        })
+
+      log_info("out-of-date", details)
+
+      true
+    end
+
+    def up_to_date(reason, details = {})
+      details
+        .merge!(replicator.replicable_params)
+        .merge!({
+          class: self.class.name,
+          reason: reason
+        })
+
+      log_info("up-to-date", details)
+
+      false
     end
   end
 end
