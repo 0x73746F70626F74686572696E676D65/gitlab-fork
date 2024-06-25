@@ -18957,6 +18957,7 @@ A tag from a container repository.
 | <a id="containerrepositorytagcreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp when the tag was created. |
 | <a id="containerrepositorytagdigest"></a>`digest` | [`String`](#string) | Digest of the tag. |
 | <a id="containerrepositorytaglocation"></a>`location` | [`String!`](#string) | URL of the tag. |
+| <a id="containerrepositorytagmediatype"></a>`mediaType` | [`String`](#string) | Media type of the tag. |
 | <a id="containerrepositorytagname"></a>`name` | [`String!`](#string) | Name of the tag. |
 | <a id="containerrepositorytagpath"></a>`path` | [`String!`](#string) | Path of the tag. |
 | <a id="containerrepositorytagpublishedat"></a>`publishedAt` | [`Time`](#time) | Timestamp when the tag was published. |
