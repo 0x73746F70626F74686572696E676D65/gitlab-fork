@@ -62867,9 +62867,6 @@ msgstr ""
 msgid "is not allowed for this project."
 msgstr ""
 
-msgid "is not allowed to add this type of parent"
-msgstr ""
-
 msgid "is not allowed to point to itself"
 msgstr ""
 
@@ -62945,6 +62942,9 @@ msgid "it is too large"
 msgstr ""
 
 msgid "it's already present in this item's hierarchy"
+msgstr ""
+
+msgid "it's not allowed to add this type of parent item"
 msgstr ""
 
 msgid "item"
