@@ -11,3 +11,5 @@ class AddArchivedToNotes < Elastic::Migration
     { archived: { type: 'boolean' } }
   end
 end
+
+AddArchivedToNotes.prepend ::Elastic::MigrationObsolete

@@ -47,16 +47,6 @@ RSpec.describe Elastic::Latest::NoteInstanceProxy, feature_category: :global_sea
         expect(result).to match(common_attributes.merge(issue_attributes))
       end
 
-      context 'when migration add_archived_to_notes is not finished' do
-        before do
-          set_elasticsearch_migration_to :add_archived_to_notes, including: false
-        end
-
-        it 'serializes the object as a hash without archived field' do
-          expect(result).to match(common_attributes.except(:archived, :schema_version).merge(issue_attributes))
-        end
-      end
-
       context 'when migration add_schema_version_to_note is not finished' do
         before do
           set_elasticsearch_migration_to :add_schema_version_to_note, including: false

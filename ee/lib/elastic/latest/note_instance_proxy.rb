@@ -41,9 +41,7 @@ module Elastic
         data['visibility_level'] = target.project&.visibility_level || Gitlab::VisibilityLevel::PRIVATE
         merge_project_feature_access_level(data)
 
-        if target.project && ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_notes)
-          data['archived'] = target.project.archived
-        end
+        data['archived'] = target.project.archived if target.project
 
         if ::Elastic::DataMigrationService.migration_has_finished?(:add_schema_version_to_note)
           data['schema_version'] = SCHEMA_VERSION

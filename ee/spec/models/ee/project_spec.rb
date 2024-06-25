@@ -770,8 +770,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
           },
           {
             association_name: :notes,
-            on_change: :archived,
-            depends_on_finished_migration: :add_archived_to_notes
+            on_change: :archived
           },
           {
             association_name: :milestones,
