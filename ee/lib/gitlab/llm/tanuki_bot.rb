@@ -48,38 +48,6 @@ module Gitlab
         get_completions_ai_gateway(search_documents, &block)
       end
 
-      # Note: a Rake task is using this method to extract embeddings for a test fixture.
-      def embedding_for_question(question)
-        result = vertex_client.text_embeddings(content: question)
-
-        if !result.success? || !result.has_key?('predictions')
-          logger.info_or_debug(current_user, message: "Could not generate embeddings",
-            error: result.dig('error', 'message'))
-          nil
-        else
-          result['predictions'].first&.dig('embeddings', 'values')
-        end
-      end
-
-      # Note: a Rake task is using this method to extract embeddings for a test fixture.
-      def get_nearest_neighbors(embedding)
-        ::Embedding::Vertex::GitlabDocumentation.current.neighbor_for(
-          embedding,
-          limit: RECORD_LIMIT
-        ).map do |item|
-          item.metadata['source_url'] = item.url
-
-          content = Gitlab::Llm::Embeddings::Utils::DocsAbsoluteUrlConverter.convert(item.content, item.url)
-
-          {
-            id: item.id,
-            content: content,
-            metadata: item.metadata
-          }
-        end
-      end
-      traceable :get_nearest_neighbors, name: 'Retrieve GitLab documents', run_type: 'retriever'
-
       def get_search_results(question)
         response = Gitlab::Llm::AiGateway::DocsClient.new(current_user)
           .search(query: question) || {}
@@ -104,26 +72,6 @@ module Gitlab
       def ai_gateway_request
         @ai_gateway_request ||= ::Gitlab::Llm::Chain::Requests::AiGateway.new(current_user,
           tracking_context: tracking_context)
-      end
-
-      def get_completions_anthropic(search_documents)
-        final_prompt = Gitlab::Llm::Anthropic::Templates::TanukiBot
-            .final_prompt(question: question, documents: search_documents)
-
-        final_prompt_result = anthropic_client.stream(
-          prompt: final_prompt[:prompt], **final_prompt[:options]
-        ) do |data|
-          logger.info(message: "Streaming error", error: data&.dig("error")) if data&.dig("error")
-
-          yield data&.dig("completion").to_s if block_given?
-        end
-
-        logger.info_or_debug(current_user, message: "Got Final Result",
-          prompt: final_prompt[:prompt], response: final_prompt_result)
-
-        Gitlab::Llm::Anthropic::ResponseModifiers::TanukiBot.new(
-          { completion: final_prompt_result }.to_json, current_user
-        )
       end
 
       def get_completions_ai_gateway(search_documents)
