@@ -119,7 +119,7 @@ describe('ComplianceFrameworksReport component', () => {
       const maintenanceAlert = findMaintenanceAlert();
 
       expect(maintenanceAlert.exists()).toBe(true);
-      expect(maintenanceAlert.text()).toContain('Compliance pipelines are now in maintenance mode');
+      expect(maintenanceAlert.text()).toContain('Compliance pipelines are deprecated');
     });
 
     it('can dismiss the maintenance-mode-alert', async () => {
