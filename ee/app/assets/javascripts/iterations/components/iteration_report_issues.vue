@@ -9,7 +9,6 @@ import {
   GlPagination,
   GlSkeletonLoader,
   GlTable,
-  GlTooltipDirective,
 } from '@gitlab/ui';
 import { kebabCase } from 'lodash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -28,25 +27,25 @@ export default {
     {
       key: 'title',
       label: __('Title'),
-      class: 'gl-bg-transparent! gl-border-b-1',
-    },
-    {
-      key: 'status',
-      label: __('Status'),
-      class: 'gl-bg-transparent! gl-text-truncate',
-      thClass: 'gl-w-1/8',
+      class: '!gl-bg-transparent gl-border-b-1',
     },
     {
       key: 'weight',
       label: __('Weight'),
-      class: 'gl-bg-transparent! gl-text-center',
+      class: '!gl-bg-transparent',
       thClass: 'gl-w-12',
     },
     {
       key: 'assignees',
       label: __('Assignees'),
-      class: 'gl-bg-transparent! gl-text-right',
-      thClass: 'gl-w-1/8',
+      class: '!gl-bg-transparent',
+      thClass: 'gl-w-1/4 xl:gl-w-1/5',
+    },
+    {
+      key: 'status',
+      label: __('Status'),
+      class: '!gl-bg-transparent gl-truncate',
+      thClass: 'gl-w-1/8 sm:max-xl:gl-w-1/6',
     },
   ],
   components: {
@@ -59,9 +58,6 @@ export default {
     GlPagination,
     GlSkeletonLoader,
     GlTable,
-  },
-  directives: {
-    GlTooltip: GlTooltipDirective,
   },
   apollo: {
     issues: {
@@ -194,14 +190,9 @@ export default {
     },
   },
   methods: {
-    tooltipText(assignee) {
-      return sprintf(__('Assigned to %{assigneeName}'), {
-        assigneeName: assignee.name,
-      });
-    },
     issueState(state, assigneeCount) {
       if (state === STATUS_OPEN && assigneeCount === 0) {
-        return __('Open');
+        return __('Not started');
       }
       if (state === STATUS_OPEN && assigneeCount > 0) {
         return __('In progress');
@@ -280,7 +271,7 @@ export default {
       data-testid="iteration-issues-container"
     >
       <template #cell(title)="{ item: { iid, labels, title, webUrl } }">
-        <div class="gl-text-truncate">
+        <div class="gl-truncate">
           <gl-link
             class="gl-text-gray-900 gl-font-bold"
             :href="webUrl"
@@ -307,20 +298,23 @@ export default {
         </div>
       </template>
 
-      <template #cell(status)="{ item: { state, assignees = [] } }">
-        <span class="gl-w-6 gl-flex-shrink-0">{{ issueState(state, assignees.length) }}</span>
-      </template>
-
       <template #cell(assignees)="{ item: { assignees } }">
-        <span class="assignee-icon gl-w-6">
-          <span
+        <div class="gl-flex gl-flex-col gl-gap-3 max-sm:gl-items-end">
+          <div
             v-for="assignee in assignees"
             :key="assignee.username"
-            v-gl-tooltip="tooltipText(assignee)"
+            class="gl-flex gl-gap-3 gl-items-center"
           >
             <gl-avatar :src="assignee.avatarUrl" :size="24" />
-          </span>
-        </span>
+            <div>
+              {{ assignee.name }}
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <template #cell(status)="{ item: { state, assignees = [] } }">
+        {{ issueState(state, assignees.length) }}
       </template>
     </gl-table>
     <div v-show="isExpanded" class="gl-mt-3">
