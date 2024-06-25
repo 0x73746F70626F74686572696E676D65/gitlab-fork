@@ -269,7 +269,7 @@ export default {
       @sort-changed="handleSortChanged"
     >
       <template #cell(severityLevel)="{ item: { severityLevel } }">
-        <severity-badge class="gl-reset-text-align!" :severity="severityLevel" />
+        <severity-badge class="!gl-text-align-inherit" :severity="severityLevel" />
       </template>
       <template #cell(violationReason)="{ item: { reason, violatingUser, mergeRequest } }">
         <violation-reason
