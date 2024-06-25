@@ -124,7 +124,7 @@ export default {
 <template>
   <div class="epics-filters epics-roadmap-filters epics-roadmap-filters-gl-ui gl-relative">
     <div
-      class="epics-details-filters filtered-search-block gl-display-flex gl-flex-direction-column gl-xl-flex-direction-row gl-p-3 row-content-block second-block"
+      class="epics-details-filters filtered-search-block gl-flex gl-flex-col sm:gl-flex-row gl-p-3 row-content-block second-block"
     >
       <filtered-search-bar
         :namespace="groupFullPath"
@@ -141,7 +141,7 @@ export default {
       />
       <gl-button
         icon="settings"
-        class="gl-xl-ml-3 gl-lg-mt-0 gl-mt-3 !gl-shadow-inner-1-gray-400"
+        class="sm:gl-ml-3 sm:gl-mt-0 gl-mt-3 !gl-shadow-inner-1-gray-400"
         :aria-label="$options.i18n.settings"
         data-testid="settings-button"
         @click="$emit('toggleSettings', $event)"
