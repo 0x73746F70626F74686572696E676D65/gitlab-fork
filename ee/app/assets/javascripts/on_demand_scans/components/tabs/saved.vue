@@ -234,7 +234,7 @@ export default {
           category="tertiary"
           size="small"
           icon="ellipsis_v"
-          class="gl-hidden md:!gl-inline-flex!"
+          class="gl-hidden md:!gl-inline-flex"
           toggle-class="gl-border-0! !gl-shadow-none"
           :toggle-text="$options.i18n.moreActions"
           :title="$options.i18n.moreActions"
