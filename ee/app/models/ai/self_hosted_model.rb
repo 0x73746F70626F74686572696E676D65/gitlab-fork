@@ -26,6 +26,6 @@ module Ai
       algorithm: 'aes-256-gcm',
       encode: true
 
-    enum model: { mistral: 0, mixtral: 1, codegemma: 2 }
+    enum model: { mistral: 0, mixtral: 1, codegemma: 2, codestral: 3 }
   end
 end

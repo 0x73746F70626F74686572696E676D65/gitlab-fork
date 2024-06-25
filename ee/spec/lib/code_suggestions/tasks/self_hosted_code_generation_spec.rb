@@ -121,7 +121,7 @@ RSpec.describe CodeSuggestions::Tasks::SelfHostedCodeGeneration, feature_categor
     let(:code_generations_feature_setting) { create(:ai_feature_setting, self_hosted_model: self_hosted_model) }
 
     where(:model_name) do
-      %w[codegemma mistral mixtral]
+      %w[codestral codegemma mistral mixtral]
     end
 
     with_them do
