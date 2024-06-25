@@ -7,7 +7,7 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
 
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user, developer_of: project) }
-  let(:declared_stages) { %w[.pre build test deploy .post] }
+  let(:declared_stages) { %w[.pipeline-policy-pre .pre build test deploy .post .pipeline-policy-post] }
   let(:pipeline) { build_mock_pipeline({ 'build' => ['build_job'], 'test' => ['rake'] }, declared_stages) }
   let(:execution_policy_pipelines) do
     [
@@ -83,7 +83,7 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
 
   context 'when policy defines additional stages' do
     context 'when custom policy stage is also defined but not used in the main pipeline' do
-      let(:declared_stages) { %w[.pre build test custom .post] }
+      let(:declared_stages) { %w[.pipeline-policy-pre .pre build test custom .post .pipeline-policy-post] }
 
       let(:execution_policy_pipelines) do
         [build_mock_policy_pipeline({ 'custom' => ['docker'] })]
@@ -95,7 +95,7 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
         expect(pipeline.stages.map(&:name)).to contain_exactly('build', 'test', 'custom')
 
         custom_stage = pipeline.stages.find { |stage| stage.name == 'custom' }
-        expect(custom_stage.position).to eq(3)
+        expect(custom_stage.position).to eq(4)
         expect(custom_stage.statuses.map(&:name)).to contain_exactly('docker')
       end
     end
@@ -114,7 +114,7 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
   end
 
   context 'when the policy stage is defined in a different position than the stage in the main pipeline' do
-    let(:declared_stages) { %w[.pre build test .post] }
+    let(:declared_stages) { %w[.pipeline-policy-pre .pre build test .post .pipeline-policy-post] }
     let(:execution_policy_pipelines) do
       [build_mock_policy_pipeline({ 'test' => ['rspec'] })]
     end
@@ -123,14 +123,14 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
       execute
 
       test_stage = pipeline.stages.find { |stage| stage.name == 'test' }
-      expect(test_stage.position).to eq(2)
+      expect(test_stage.position).to eq(3)
       expect(test_stage.statuses.map(&:name)).to contain_exactly('rake', 'rspec')
       expect(test_stage.statuses.map(&:stage_idx)).to all(eq(test_stage.position))
     end
   end
 
   context 'when there are gaps in the main pipeline stages due to them being unused' do
-    let(:declared_stages) { %w[.pre build test deploy .post] }
+    let(:declared_stages) { %w[.pipeline-policy-pre .pre build test deploy .post .pipeline-policy-post] }
     let(:pipeline) { build_mock_pipeline({ 'deploy' => ['package'] }, declared_stages) }
 
     let(:execution_policy_pipelines) do
@@ -143,7 +143,7 @@ RSpec.describe Gitlab::Ci::Pipeline::PipelineExecutionPolicies::JobsMerger, feat
       expect(pipeline.stages.map(&:name)).to contain_exactly('deploy')
 
       deploy_stage = pipeline.stages.find { |stage| stage.name == 'deploy' }
-      expect(deploy_stage.position).to eq(3)
+      expect(deploy_stage.position).to eq(4)
       expect(deploy_stage.statuses.map(&:name)).to contain_exactly('package', 'docker')
       expect(deploy_stage.statuses.map(&:stage_idx)).to all(eq(deploy_stage.position))
     end

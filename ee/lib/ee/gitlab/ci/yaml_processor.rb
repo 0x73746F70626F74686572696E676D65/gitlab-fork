@@ -7,6 +7,11 @@ module EE
         extend ::Gitlab::Utils::Override
         include ::Gitlab::Utils::StrongMemoize
 
+        override :ci_config_opts
+        def ci_config_opts
+          super.merge(pipeline_policy_context: pipeline_policy_context)
+        end
+
         override :validate_job!
         def validate_job!(name, job)
           super
@@ -14,7 +19,21 @@ module EE
           validate_job_identity!(name, job)
         end
 
+        def validate_job_stage!(name, job)
+          super
+          return if pipeline_policy_context.valid_stage?(job[:stage])
+
+          error!("#{name} job: chosen stage `#{job[:stage]}` is reserved for Pipeline Execution Policies")
+        end
+
         private
+
+        def pipeline_policy_context
+          # We instantiate default PipelineContext as fallback to validate reserved stages
+          # in case `pipeline_policy_context` is not defined
+          opts[:pipeline_policy_context] ||
+            ::Gitlab::Ci::Pipeline::PipelineExecutionPolicies::PipelineContext.new(project: project)
+        end
 
         def validate_job_identity!(name, job)
           return if job[:identity].blank?

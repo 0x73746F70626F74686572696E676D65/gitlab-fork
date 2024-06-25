@@ -394,4 +394,102 @@ RSpec.describe Gitlab::Ci::YamlProcessor, feature_category: :pipeline_compositio
       end
     end
   end
+
+  describe 'stages' do
+    subject(:stages) { result.stages }
+
+    let(:config) do
+      {
+        rspec: {
+          script: 'rspec'
+        }
+      }
+    end
+
+    it { is_expected.to eq(%w[.pre build test deploy .post]) }
+
+    context 'with pipeline_policy_context' do
+      include_context 'with pipeline policy context'
+
+      let(:opts) { { pipeline_policy_context: pipeline_policy_context } }
+
+      it { is_expected.to eq(%w[.pre build test deploy .post]) }
+
+      shared_examples_for 'stages including policy reserved stages' do
+        it { is_expected.to eq(%w[.pipeline-policy-pre .pre build test deploy .post .pipeline-policy-post]) }
+
+        context 'when feature flag "pipeline_execution_policy_type" is disabled' do
+          before do
+            stub_feature_flags(pipeline_execution_policy_type: false)
+          end
+
+          it { is_expected.to eq(%w[.pre build test deploy .post]) }
+        end
+      end
+
+      context 'when running in execution_policy_mode' do
+        let(:execution_policy_dry_run) { true }
+
+        it_behaves_like 'stages including policy reserved stages'
+      end
+
+      context 'with execution_policy_pipelines' do
+        let(:execution_policy_pipelines) { build_list(:ci_empty_pipeline, 2) }
+
+        it_behaves_like 'stages including policy reserved stages'
+      end
+    end
+  end
+
+  describe '#validate_job_stage!' do
+    include_context 'with pipeline policy context'
+
+    shared_examples_for 'reserved stage not allowed' do |stage|
+      it 'does not allow usage of reserved stages and returns error' do
+        expect(result.errors).to include(
+          a_string_including("build job: chosen stage `#{stage}` is reserved for Pipeline Execution Policies")
+        )
+      end
+    end
+
+    %w[.pipeline-policy-pre .pipeline-policy-post].each do |stage|
+      context "when stage is #{stage}" do
+        let(:config) do
+          {
+            stages: [stage, 'test'],
+            build: { stage: stage, script: 'build' },
+            test: { stage: 'test', script: 'test' }
+          }
+        end
+
+        context 'without pipeline_policy_context' do
+          it_behaves_like 'reserved stage not allowed', stage
+        end
+
+        context 'with pipeline_policy_context' do
+          let(:opts) { { pipeline_policy_context: pipeline_policy_context } }
+
+          it_behaves_like 'reserved stage not allowed', stage
+
+          context 'with execution_policy_dry_run' do
+            let(:execution_policy_dry_run) { true }
+
+            it 'is valid' do
+              expect(result.errors).to be_empty
+            end
+          end
+
+          context 'when feature flag "pipeline_execution_policy_type" is disabled' do
+            before do
+              stub_feature_flags(pipeline_execution_policy_type: false)
+            end
+
+            it 'is valid' do
+              expect(result.errors).to be_empty
+            end
+          end
+        end
+      end
+    end
+  end
 end
