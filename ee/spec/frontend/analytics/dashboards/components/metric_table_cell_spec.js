@@ -58,6 +58,17 @@ describe('Metric table cell', () => {
           });
         });
 
+        describe('with a blank requestPath', () => {
+          beforeEach(() => {
+            createWrapper({ identifier, isProject, requestPath: '' });
+          });
+
+          it('does not render a link', () => {
+            expect(findMetricLabel().text()).toBe(metricLabel);
+            expect(findMetricLabel().attributes('href')).toBeUndefined();
+          });
+        });
+
         describe('with filter labels', () => {
           beforeEach(() => {
             createWrapper({ identifier, requestPath, isProject, filterLabels });

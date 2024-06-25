@@ -27,6 +27,7 @@ import {
   SUPPORTED_FLOW_METRICS,
   SUPPORTED_VULNERABILITY_METRICS,
   SUPPORTED_AI_METRICS,
+  HIDE_METRIC_DRILL_DOWN,
 } from '../constants';
 import {
   fetchMetricsForTimePeriods,
@@ -107,6 +108,10 @@ export default {
       return {
         'data-testid': `ai-impact-metric-${dasherize(identifier)}`,
       };
+    },
+
+    requestPath(identifier) {
+      return HIDE_METRIC_DRILL_DOWN.includes(identifier) ? '' : this.namespace;
     },
 
     async resolveQueries() {
@@ -237,7 +242,7 @@ export default {
     <template #cell(metric)="{ value: { identifier } }">
       <metric-table-cell
         :identifier="identifier"
-        :request-path="namespace"
+        :request-path="requestPath(identifier)"
         :is-project="isProject"
       />
     </template>

@@ -56,6 +56,9 @@ export default {
     popoverTarget() {
       return `${this.requestPath}__${this.identifier}`.replace('/', '_');
     },
+    hasRequestPath() {
+      return Boolean(this.requestPath.length);
+    },
   },
   i18n: {
     docsLabel: s__('DORA4Metrics|Go to docs'),
@@ -64,9 +67,14 @@ export default {
 </script>
 <template>
   <div>
-    <gl-link :href="link" data-testid="metric_label" @click="$emit('drill-down-clicked', $event)">{{
-      metric.label
-    }}</gl-link>
+    <gl-link
+      v-if="hasRequestPath"
+      :href="link"
+      data-testid="metric_label"
+      @click="$emit('drill-down-clicked', $event)"
+      >{{ metric.label }}</gl-link
+    >
+    <span v-else data-testid="metric_label">{{ metric.label }}</span>
     <gl-icon
       :id="popoverTarget"
       data-testid="info_icon"

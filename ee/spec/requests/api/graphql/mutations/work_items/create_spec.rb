@@ -150,7 +150,7 @@ RSpec.describe 'Create a work item', feature_category: :team_planning do
             end.to not_change(WorkItem, :count)
 
             expect(mutation_response['errors'])
-              .to contain_exactly(/cannot be added: is not allowed to add this type of parent/)
+              .to contain_exactly(/cannot be added: it's not allowed to add this type of parent item/)
             expect(mutation_response['workItem']).to be_nil
           end
         end

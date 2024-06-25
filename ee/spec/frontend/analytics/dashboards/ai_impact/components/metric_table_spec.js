@@ -115,6 +115,26 @@ describe('Metric table', () => {
     wrapper.findAll(`[data-testid="${rowTestId}"] [data-testid="metric-skeleton-loader"]`);
 
   describe.each`
+    identifier                                | testId                                            | requestPath
+    ${DORA_METRICS.DEPLOYMENT_FREQUENCY}      | ${'ai-impact-metric-deployment-frequency'}        | ${namespace}
+    ${DORA_METRICS.CHANGE_FAILURE_RATE}       | ${'ai-impact-metric-change-failure-rate'}         | ${namespace}
+    ${FLOW_METRICS.CYCLE_TIME}                | ${'ai-impact-metric-cycle-time'}                  | ${namespace}
+    ${FLOW_METRICS.LEAD_TIME}                 | ${'ai-impact-metric-lead-time'}                   | ${namespace}
+    ${VULNERABILITY_METRICS.CRITICAL}         | ${'ai-impact-metric-vulnerability-critical'}      | ${namespace}
+    ${AI_METRICS.CODE_SUGGESTIONS_USAGE_RATE} | ${'ai-impact-metric-code-suggestions-usage-rate'} | ${''}
+  `('for the $identifier table row', ({ identifier, testId, requestPath }) => {
+    beforeEach(() => {
+      createWrapper();
+    });
+
+    it('renders the metric name', () => {
+      expect(findMetricTableCell(testId).props()).toEqual(
+        expect.objectContaining({ identifier, requestPath, isProject }),
+      );
+    });
+  });
+
+  describe.each`
     identifier                                | name                                    | testId                                            | change  | hasValueTooltips
     ${DORA_METRICS.DEPLOYMENT_FREQUENCY}      | ${'Deployment frequency'}               | ${'ai-impact-metric-deployment-frequency'}        | ${1}    | ${false}
     ${DORA_METRICS.CHANGE_FAILURE_RATE}       | ${'Change failure rate'}                | ${'ai-impact-metric-change-failure-rate'}         | ${1}    | ${false}
@@ -122,20 +142,10 @@ describe('Metric table', () => {
     ${FLOW_METRICS.LEAD_TIME}                 | ${'Lead time'}                          | ${'ai-impact-metric-lead-time'}                   | ${0}    | ${false}
     ${VULNERABILITY_METRICS.CRITICAL}         | ${'Critical vulnerabilities over time'} | ${'ai-impact-metric-vulnerability-critical'}      | ${-0.5} | ${false}
     ${AI_METRICS.CODE_SUGGESTIONS_USAGE_RATE} | ${'Code Suggestions usage'}             | ${'ai-impact-metric-code-suggestions-usage-rate'} | ${1}    | ${true}
-  `('for the $identifier table row', ({ identifier, name, testId, change, hasValueTooltips }) => {
+  `('for the $identifier table row', ({ name, testId, change, hasValueTooltips }) => {
     describe('when loading data', () => {
       beforeEach(() => {
         createWrapper();
-      });
-
-      it('renders the metric name', () => {
-        expect(findMetricTableCell(testId).props()).toEqual(
-          expect.objectContaining({
-            identifier,
-            requestPath: namespace,
-            isProject,
-          }),
-        );
       });
 
       it('renders a skeleton loader in each cell', () => {
