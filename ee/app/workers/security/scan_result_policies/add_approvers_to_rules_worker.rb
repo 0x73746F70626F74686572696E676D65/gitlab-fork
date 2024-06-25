@@ -11,6 +11,19 @@ module Security
 
       concurrency_limit -> { 200 }
 
+      def self.dispatch?(event)
+        return unless event.data[:project_id]
+
+        project = Project.find_by_id(event.data[:project_id])
+        return unless project
+
+        project.licensed_feature_available?(:security_orchestration_policies) &&
+          project.scan_result_policy_reads.any?
+
+        # TODO: Add check if we have any rules in defined policies that requires this worker to perform
+        # TODO: This will be possible after delivery of https://gitlab.com/groups/gitlab-org/-/epics/9971
+      end
+
       def handle_event(event)
         user_ids = event.data[:user_ids]
         return if user_ids.blank?
