@@ -47,7 +47,7 @@ module DependencyManagement
           attribute_name: column.to_s,
           column_expression: column_expression,
           order_expression: direction == :desc ? order_expression.desc : order_expression.asc,
-          nullable: :not_nullable,
+          nullable: nullable(column, direction),
           order_direction: direction
         )
       end
@@ -138,6 +138,16 @@ module DependencyManagement
 
     def sql_min(column, table_name = 'sbom_occurrences')
       Arel::Nodes::NamedFunction.new('MIN', [column_expression(column, table_name)])
+    end
+
+    def nullable(column_name, direction)
+      column = Sbom::Occurrence.columns_hash[column_name.to_s]
+
+      return :not_nullable unless column.null
+
+      # The default behavior for postgres is to have nulls first
+      # when in descending order, and nulls last otherwise.
+      direction == :desc ? :nulls_first : :nulls_last
     end
 
     def orderings

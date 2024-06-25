@@ -82,21 +82,20 @@ export const receiveDependenciesError = ({ commit }, error) =>
   commit(types.RECEIVE_DEPENDENCIES_ERROR, error);
 
 const queryParametersFor = (state, params) => {
-  if (state.pageInfo.type === 'cursor') {
-    return {
-      cursor: params.cursor || state.pageInfo.currentCursor,
-    };
-  }
-
   const { searchFilterParameters } = state;
   const queryParams = {
     sort_by: state.sortField,
     sort: state.sortOrder,
-    page: state.pageInfo.page || 1,
     filter: state.filter,
     ...searchFilterParameters,
     ...params,
   };
+
+  if (state.pageInfo.type === 'cursor' || (params && 'cursor' in params)) {
+    queryParams.cursor = params.cursor || state.pageInfo.currentCursor;
+  } else {
+    queryParams.page = params?.page || state.pageInfo.page || 1;
+  }
 
   return queryParams;
 };
