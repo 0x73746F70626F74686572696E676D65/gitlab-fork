@@ -51,6 +51,9 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
 
           context 'when project_repository_registry entry does not exist' do
             it 'returns true' do
+              expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                message: "out-of-date", reason: "registry doesn't exist"))
+
               expect(described_class.repository_out_of_date?(project.id)).to be_truthy
             end
           end
@@ -60,6 +63,9 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
               it 'returns false' do
                 registry = create(:geo_project_repository_registry, :synced, project: project)
                 registry.project.update!(last_repository_updated_at: nil)
+
+                expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                  message: "up-to-date", reason: "there is no timestamp for the latest change to the repo"))
 
                 expect(described_class.repository_out_of_date?(registry.project_id)).to be_falsey
               end
@@ -77,6 +83,10 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
                 it 'returns true' do
                   allow(::Gitlab::Geo).to receive(:primary_pipeline_refs)
                     .with(registry.project_id).and_return(secondary_pipeline_refs)
+
+                  expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                    message: "out-of-date", reason: "secondary is missing pipeline refs"))
+
                   expect(described_class.repository_out_of_date?(registry.project_id, true)).to be_truthy
                 end
               end
@@ -85,6 +95,10 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
                 it 'returns false' do
                   allow(::Gitlab::Geo).to receive(:primary_pipeline_refs)
                     .with(registry.project_id).and_return(some_secondary_pipeline_refs)
+
+                  expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                    message: "up-to-date", reason: "secondary has all pipeline refs"))
+
                   expect(described_class.repository_out_of_date?(registry.project_id, true)).to be_falsey
                 end
               end
@@ -93,6 +107,10 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
                 it 'returns false' do
                   allow(::Gitlab::Geo).to receive(:primary_pipeline_refs)
                     .with(registry.project_id).and_return(secondary_pipeline_refs)
+
+                  expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                    message: "up-to-date", reason: "secondary has all pipeline refs"))
+
                   expect(described_class.repository_out_of_date?(registry.project_id, true)).to be_falsey
                 end
               end
@@ -103,6 +121,9 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
                 it 'returns true' do
                   registry = create(:geo_project_repository_registry, :failed, project: project)
 
+                  expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                    message: "out-of-date", reason: "sync failed"))
+
                   expect(described_class.repository_out_of_date?(registry.project_id)).to be_truthy
                 end
               end
@@ -110,6 +131,9 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
               context 'when last_synced_at is not set' do
                 it 'returns true' do
                   registry = create(:geo_project_repository_registry, project: project, last_synced_at: nil)
+
+                  expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                    message: "out-of-date", reason: "it has never been synced"))
 
                   expect(described_class.repository_out_of_date?(registry.project_id)).to be_truthy
                 end
@@ -119,6 +143,9 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
                 it 'returns true' do
                   registry = create(:geo_project_repository_registry, :verification_failed, project: project)
 
+                  expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                    message: "out-of-date", reason: "not verified yet"))
+
                   expect(described_class.repository_out_of_date?(registry.project_id)).to be_truthy
                 end
               end
@@ -127,6 +154,9 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
                 it 'returns false' do
                   registry = create(:geo_project_repository_registry, :verification_succeeded,
                     project: project, last_synced_at: Time.current + 5.minutes)
+
+                  expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                    message: "up-to-date", reason: "last successfully synced after latest change"))
 
                   expect(described_class.repository_out_of_date?(registry.project_id)).to be_falsey
                 end
@@ -151,6 +181,9 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
                   end
 
                   it 'returns the expected value' do
+                    message = expected ? 'out-of-date' : 'up-to-date'
+
+                    expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(message: message))
                     expect(described_class.repository_out_of_date?(project.id)).to eq(expected)
                   end
                 end
