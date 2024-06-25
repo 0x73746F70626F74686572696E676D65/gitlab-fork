@@ -123,6 +123,7 @@ export default {
     },
     actionSecondary: {
       text: __('Cancel'),
+      attributes: { variant: 'default' },
     },
     versionPlaceholder: s__('MlModelRegistry|A semver version like 1.0.0'),
     descriptionPlaceholder: s__('MlModelRegistry|Enter some description'),

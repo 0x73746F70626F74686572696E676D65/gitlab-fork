@@ -134,6 +134,7 @@ describe('ModelVersionCreate', () => {
       it('renders the cancel button in the modal', () => {
         expect(findGlModal().props('actionSecondary')).toEqual({
           text: 'Cancel',
+          attributes: { variant: 'default' },
         });
       });
 
