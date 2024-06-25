@@ -37733,19 +37733,64 @@ msgstr ""
 msgid "PagesDomain|Certificate Key is too long. (Max %d bytes)"
 msgstr ""
 
+msgid "Pages|Active"
+msgstr ""
+
+msgid "Pages|An error occurred while deleting the deployment. Check your connection and try again."
+msgstr ""
+
+msgid "Pages|Created"
+msgstr ""
+
+msgid "Pages|Delete"
+msgstr ""
+
+msgid "Pages|Deploy job"
+msgstr ""
+
 msgid "Pages|Deployments"
 msgstr ""
 
 msgid "Pages|Environment deployments"
 msgstr ""
 
+msgid "Pages|Files"
+msgstr ""
+
 msgid "Pages|Include stopped deployments"
+msgstr ""
+
+msgid "Pages|Last updated"
 msgstr ""
 
 msgid "Pages|No deployments yet"
 msgstr ""
 
+msgid "Pages|Path prefix"
+msgstr ""
+
+msgid "Pages|Primary deployment"
+msgstr ""
+
+msgid "Pages|Restore"
+msgstr ""
+
+msgid "Pages|Restoring the deployment failed. The deployment might be permanently deleted."
+msgstr ""
+
+msgid "Pages|Root directory"
+msgstr ""
+
+msgid "Pages|Scheduled for deletion at"
+msgstr ""
+
+msgid "Pages|Size"
+msgstr ""
+
 msgid "Pages|Some Pages deployments could not be loaded. Try reloading the page."
+msgstr ""
+
+msgid "Pages|Stopped"
 msgstr ""
 
 msgid "Pagination|First"
