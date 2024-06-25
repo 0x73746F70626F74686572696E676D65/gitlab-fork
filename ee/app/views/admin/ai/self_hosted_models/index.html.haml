@@ -2,7 +2,7 @@
 - add_page_specific_style 'page_bundles/labels'
 
 - if Feature.enabled?(:custom_models_vue_app, current_user)
-  #js-custom-models{ data: { custom_models: @custom_models_json.html_safe } }
+  #js-self-hosted-models{ data: { base_path: admin_ai_self_hosted_models_path, new_self_hosted_model_path: new_admin_ai_self_hosted_model_path } }
 - else
   - if @self_hosted_models.present?
     = render Pajamas::CardComponent.new(card_options: { class: 'gl-new-card labels other-labels js-toggle-container js-admin-labels-container' }, header_options: { class: 'gl-new-card-header' }, body_options: { class: 'gl-new-card-body gl-px-0' }) do |c|

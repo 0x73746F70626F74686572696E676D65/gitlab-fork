@@ -1,0 +1,11 @@
+query getSelfHostedModels {
+  aiSelfHostedModels(first: 100) {
+    nodes {
+      id
+      name
+      model
+      endpoint
+      hasApiToken
+    }
+  }
+}
