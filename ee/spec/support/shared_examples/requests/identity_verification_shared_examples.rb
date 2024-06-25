@@ -144,56 +144,31 @@ RSpec.shared_examples 'it ensures verification attempt is allowed' do |method|
   end
 end
 
-RSpec.shared_examples 'sets arkose_challenge_solved session variable' do
-  describe 'arkose_shown_challenge_solved session variable' do
+RSpec.shared_examples 'logs challenge solved event' do
+  using RSpec::Parameterized::TableSyntax
+
+  where(:challenge_shown, :challenge_type) do
+    false | 'transparent'
+    true  | 'interactive'
+  end
+
+  with_them do
     before do
-      mock_arkose_token_verification(success: true, challenge_shown: shown_challenge_solved)
+      mock_arkose_token_verification(success: true, challenge_shown: challenge_shown)
     end
 
-    subject do
+    it "logs the event" do
+      allow(Gitlab::AppLogger).to receive(:info).with(an_instance_of(Hash))
+
+      expect(Gitlab::AppLogger).to receive(:info).with(
+        hash_including(
+          username: an_instance_of(String),
+          message: "Arkose challenge",
+          event: "#{challenge_type} challenge solved"
+        )
+      )
+
       do_request
-
-      request.session[:arkose_challenge_solved]
-    end
-
-    context 'when user solved a shown challenge' do
-      let(:shown_challenge_solved) { true }
-
-      it "logs the event" do
-        allow(Gitlab::AppLogger).to receive(:info).with(an_instance_of(Hash))
-
-        expect(Gitlab::AppLogger).to receive(:info).with(
-          hash_including(
-            username: an_instance_of(String),
-            message: "Arkose challenge",
-            event: "interactive challenge solved"
-          )
-        )
-
-        do_request
-      end
-
-      it { is_expected.to eq true }
-    end
-
-    context 'when user solved a challenge that was not shown' do
-      let(:shown_challenge_solved) { false }
-
-      it "logs the event" do
-        allow(Gitlab::AppLogger).to receive(:info).with(an_instance_of(Hash))
-
-        expect(Gitlab::AppLogger).to receive(:info).with(
-          hash_including(
-            username: an_instance_of(String),
-            message: "Arkose challenge",
-            event: "transparent challenge solved"
-          )
-        )
-
-        do_request
-      end
-
-      it { is_expected.to be_nil }
     end
   end
 end
@@ -238,7 +213,7 @@ RSpec.shared_examples 'it verifies arkose token' do |method|
       expect(response).to have_gitlab_http_status(:ok)
     end
 
-    it_behaves_like 'sets arkose_challenge_solved session variable'
+    it_behaves_like 'logs challenge solved event'
   end
 
   context 'when Arkose is down' do

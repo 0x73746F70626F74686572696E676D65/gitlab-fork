@@ -148,10 +148,8 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   shared_examples 'registering a medium risk user with identity verification' do
     |flow: :standard, skip_email_validation: false|
 
-    let(:challenge_shown) { false }
-
     before do
-      sign_up(flow: flow, arkose: { risk: :medium, challenge_shown: challenge_shown })
+      sign_up(flow: flow, arkose: { risk: :medium, challenge_shown: true })
     end
 
     it 'verifies the user' do
@@ -184,20 +182,6 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
         # from calling expect_verification_completed
 
         expect_to_see_dashboard_page
-      end
-    end
-
-    context 'when user solved an Arkose challenge during signup' do
-      let(:challenge_shown) { true }
-
-      it 'does not require an Arkose challenge before phone verification' do
-        expect_to_see_identity_verification_page
-
-        verify_email unless skip_email_validation
-
-        verify_phone_number
-
-        expect_verification_completed
       end
     end
 

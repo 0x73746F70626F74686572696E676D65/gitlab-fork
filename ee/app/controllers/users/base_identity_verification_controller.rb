@@ -168,11 +168,6 @@ module Users
     end
 
     def arkose_challenge_required?(method:)
-      if Feature.enabled?(:skip_arkose_challenge_when_previously_solved, @user, type: :gitlab_com_derisk) &&
-          session[:arkose_challenge_solved]
-        return false
-      end
-
       # Require the user to solve Arkose challenge before allowing phone number
       # or credit card verification (happens after email verification).
       # Whichever comes first.
