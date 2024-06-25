@@ -43,10 +43,7 @@ describe('RoleSelect component', () => {
     });
 
     it('displays the correct listbox toggle class', () => {
-      expect(findListbox().props('toggleClass')).toEqual([
-        'gl-max-w-30',
-        { '!gl-shadow-inner-1-red-500': false },
-      ]);
+      expect(findListbox().props('toggleClass')).toEqual([{ '!gl-shadow-inner-1-red-500': false }]);
     });
 
     it('displays the correct toggle text', () => {
@@ -64,10 +61,7 @@ describe('RoleSelect component', () => {
     });
 
     it('displays the correct listbox toggle class', () => {
-      expect(findListbox().props('toggleClass')).toEqual([
-        'gl-max-w-30',
-        { '!gl-shadow-inner-1-red-500': true },
-      ]);
+      expect(findListbox().props('toggleClass')).toEqual([{ '!gl-shadow-inner-1-red-500': true }]);
     });
   });
 

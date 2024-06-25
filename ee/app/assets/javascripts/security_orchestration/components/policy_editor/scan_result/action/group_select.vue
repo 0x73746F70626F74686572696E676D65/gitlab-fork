@@ -1,11 +1,12 @@
 <script>
 import { GlAvatarLabeled, GlCollapsibleListbox } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { __ } from '~/locale';
 import searchNamespaceGroups from 'ee/security_orchestration/graphql/queries/get_namespace_groups.query.graphql';
 import searchDescendantGroups from 'ee/security_orchestration/graphql/queries/get_descendant_groups.query.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { GROUP_TYPE } from 'ee/security_orchestration/constants';
+import { renderMultiSelectText } from '../../utils';
 
 const createGroupObject = (group) => ({
   ...group,
@@ -64,6 +65,7 @@ export default {
   },
   data() {
     return {
+      groups: [],
       selectedGroups: this.existingApprovers.map(createGroupObject),
       search: '',
     };
@@ -72,10 +74,19 @@ export default {
     selectedGroupsValues() {
       return this.selectedGroups.map((g) => g.value);
     },
+    groupItems() {
+      return this.groups.reduce((acc, { id, fullName }) => {
+        acc[id] = fullName;
+        return acc;
+      }, {});
+    },
     toggleText() {
-      return this.selectedGroups.length
-        ? this.selectedGroups.map((g) => g.text).join(', ')
-        : s__('SecurityOrchestration|Select groups');
+      return renderMultiSelectText({
+        selected: this.selectedGroupsValues,
+        items: this.groupItems,
+        itemTypeName: __('groups'),
+        useAllSelected: false,
+      });
     },
   },
   methods: {
@@ -115,7 +126,7 @@ export default {
     searchable
     is-check-centered
     multiple
-    :toggle-class="['gl-max-w-30', { '!gl-shadow-inner-1-red-500': !state }]"
+    :toggle-class="[{ '!gl-shadow-inner-1-red-500': !state }]"
     :searching="$apollo.loading"
     :selected="selectedGroupsValues"
     :toggle-text="toggleText"

@@ -116,10 +116,7 @@ describe('UserSelect component', () => {
     });
 
     it('displays the correct listbox toggle class', () => {
-      expect(findListbox().props('toggleClass')).toEqual([
-        'gl-max-w-30',
-        { '!gl-shadow-inner-1-red-500': false },
-      ]);
+      expect(findListbox().props('toggleClass')).toEqual([{ '!gl-shadow-inner-1-red-500': false }]);
     });
 
     it('removes duplicates from user request', () => {
@@ -186,10 +183,7 @@ describe('UserSelect component', () => {
     });
 
     it('displays the correct listbox toggle class', () => {
-      expect(findListbox().props('toggleClass')).toEqual([
-        'gl-max-w-30',
-        { '!gl-shadow-inner-1-red-500': true },
-      ]);
+      expect(findListbox().props('toggleClass')).toEqual([{ '!gl-shadow-inner-1-red-500': true }]);
     });
   });
 

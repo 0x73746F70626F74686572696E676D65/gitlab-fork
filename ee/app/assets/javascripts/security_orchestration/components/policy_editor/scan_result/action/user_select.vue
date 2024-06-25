@@ -80,7 +80,6 @@ export default {
         items: this.userItems,
         itemTypeName: __('users'),
         useAllSelected: false,
-        useSingleOption: true,
       });
     },
   },
@@ -121,7 +120,7 @@ export default {
     searchable
     is-check-centered
     multiple
-    :toggle-class="['gl-max-w-30', { '!gl-shadow-inner-1-red-500': !state }]"
+    :toggle-class="[{ '!gl-shadow-inner-1-red-500': !state }]"
     :searching="$apollo.loading"
     :selected="selectedUsersValues"
     :toggle-text="toggleText"
