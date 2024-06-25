@@ -4,6 +4,7 @@ import {
   GlCollapse,
   GlAvatar,
   GlButton,
+  GlIcon,
   GlLink,
   GlFormInput,
   GlSprintf,
@@ -59,6 +60,7 @@ export default {
     GlCollapse,
     GlAvatar,
     GlButton,
+    GlIcon,
     GlLink,
     GlFormInput,
     GlSprintf,
@@ -178,7 +180,10 @@ export default {
                 : NON_INHERITED_GROUPS,
             };
           case 'access':
-            return { access_level: info.accessLevel, required_approvals: info.approvals };
+            return {
+              access_level: info.accessLevel,
+              required_approvals: info.approvals,
+            };
           default:
             return {};
         }
@@ -202,6 +207,9 @@ export default {
     ),
     accessDropdownLabel: s__('ProtectedEnvironments|Select users'),
     inheritanceLabel: s__('ProtectedEnvironments|Enable group inheritance'),
+    inheritanceTooltip: s__(
+      'ProtectedEnvironments|If a group is invited to the current project, its parent and members inherit the permissions of the invited group.',
+    ),
   },
 };
 </script>
@@ -243,7 +251,15 @@ export default {
       >
         <span class="protected-environment-approvers-label">{{ __('Approvers') }}</span>
         <span>{{ __('Approvals required') }}</span>
-        <span>{{ __('Group inheritance') }}</span>
+        <div class="gl-flex gl-gap-2">
+          <span>{{ $options.i18n.inheritanceLabel }}</span>
+          <gl-icon
+            v-gl-tooltip
+            :title="$options.i18n.inheritanceTooltip"
+            :aria-label="$options.i18n.inheritanceTooltip"
+            name="question-o"
+          />
+        </div>
         <span></span>
         <template v-for="(approver, index) in approverInfo">
           <gl-avatar
