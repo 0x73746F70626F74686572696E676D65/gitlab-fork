@@ -30,7 +30,9 @@ module Llm
       end
 
       def perform_for(message, options = {})
-        with_ip_address_state.perform_async(serialize_message(message), options)
+        session_id = ::Gitlab::Session.current&.id&.private_id
+        # We want to set it even if it is nil, so session will be set and policy check won't be skipped
+        with_ip_address_state.set(set_session_id: session_id).perform_async(serialize_message(message), options)
       end
     end
 
