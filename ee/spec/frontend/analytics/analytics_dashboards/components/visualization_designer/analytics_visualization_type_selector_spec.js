@@ -1,4 +1,4 @@
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlFormSelect } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import AnalyticsVisualizationTypeSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/analytics_visualization_type_selector.vue';
 
@@ -6,45 +6,36 @@ describe('AnalyticsVisualizationTypeSelector', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
-  const createWrapper = (selectedVisualizationType = '', state = null) => {
+  const createWrapper = (value = '', state = null) => {
     wrapper = shallowMountExtended(AnalyticsVisualizationTypeSelector, {
       propsData: {
-        selectedVisualizationType,
+        value,
         state,
       },
     });
   };
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findDropdownItemByText = (text) =>
-    wrapper.findAllComponents(GlDropdownItem).wrappers.find((w) => w.text() === text);
-
-  it('displays the placeholder content when no type is selected', () => {
-    createWrapper();
-
-    expect(findDropdown().props()).toMatchObject({
-      text: 'Select a visualization type',
-      icon: null,
-    });
-  });
+  const findSelect = () => wrapper.findComponent(GlFormSelect);
 
   it.each`
-    type             | icon       | text
-    ${'LineChart'}   | ${'chart'} | ${'Line chart'}
-    ${'ColumnChart'} | ${'chart'} | ${'Column chart'}
-    ${'DataTable'}   | ${'table'} | ${'Data table'}
-    ${'SingleStat'}  | ${'table'} | ${'Single statistic'}
-  `('selects the option "$text" when the type is "$type"', ({ icon, type, text }) => {
-    createWrapper(type);
+    value
+    ${'LineChart'}
+    ${'ColumnChart'}
+    ${'DataTable'}
+    ${'SingleStat'}
+  `('renders select with expected attributes for "$value"', ({ value }) => {
+    createWrapper(value, true);
 
-    expect(findDropdown().props()).toMatchObject({ text, icon });
+    expect(findSelect().attributes('value')).toEqual(value);
+    expect(findSelect().attributes('state')).toEqual('true');
+  });
 
-    const item = findDropdownItemByText(text);
+  it('emits selected value on input', () => {
+    createWrapper();
 
-    expect(item.props('iconName')).toBe(icon);
+    findSelect().vm.$emit('input', 'LineChart');
 
-    item.vm.$emit('click');
-
-    expect(wrapper.emitted('selectVisualizationType')[0]).toStrictEqual([type]);
+    expect(wrapper.emitted('input')).toHaveLength(1);
+    expect(wrapper.emitted('input').at(0)).toEqual(['LineChart']);
   });
 });

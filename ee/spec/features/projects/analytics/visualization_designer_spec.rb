@@ -70,8 +70,8 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
     ].each do |visualization|
       context "with #{visualization[:text]} visualization selected" do
         before do
-          click_button 'Select a visualization type'
-          click_button visualization[:text]
+          dropdown = find_by_testid('visualization-type-dropdown')
+          dropdown.select visualization[:text]
         end
 
         it "shows the #{visualization[:text]} preview" do

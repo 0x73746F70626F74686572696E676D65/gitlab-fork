@@ -78,7 +78,7 @@ describe('AnalyticsVisualizationDesigner', () => {
   };
 
   const setVisualizationType = (type = '') => {
-    findTypeSelector().vm.$emit('selectVisualizationType', type);
+    findTypeSelector().vm.$emit('input', type);
   };
 
   const setAllRequiredFields = async () => {
@@ -323,10 +323,8 @@ describe('AnalyticsVisualizationDesigner', () => {
     });
 
     describe('and there is no visualization type selected', () => {
-      const findDropdownButton = () => findTypeSelector().find('button').element;
-
       beforeEach(() => {
-        findDropdownButton().focus = jest.fn();
+        findTypeSelector().element.focus = jest.fn();
 
         return findSaveButton().vm.$emit('click');
       });
@@ -336,19 +334,19 @@ describe('AnalyticsVisualizationDesigner', () => {
       });
 
       it('shows the invalid state on the type selector', () => {
-        expect(findTypeFormGroup().attributes('state')).toBe(undefined);
+        expect(findTypeSelector().props('state')).toBe(false);
         expect(findTypeFormGroup().attributes('invalid-feedback')).toBe('This field is required.');
       });
 
-      it('sets focus on the dashboard type dropdown button', () => {
-        expect(findDropdownButton().focus).toHaveBeenCalled();
+      it('sets focus on the dashboard type select', () => {
+        expect(findTypeSelector().element.focus).toHaveBeenCalled();
       });
 
       describe('and a user then selects a type', () => {
         beforeEach(() => setVisualizationType('SingleStat'));
 
         it('shows type selector as valid', () => {
-          expect(findTypeFormGroup().attributes('state')).toBe('true');
+          expect(findTypeSelector().props('state')).toBe(true);
         });
       });
     });
@@ -609,7 +607,7 @@ describe('AnalyticsVisualizationDesigner', () => {
   describe('clear fields after saving', () => {
     const expectTitleAndTypeReset = () => {
       expect(findTitleInput().attributes('value')).toBe('');
-      expect(findTypeSelector().props('selectedVisualizationType')).toBe('');
+      expect(findTypeSelector().props('value')).toBe('');
     };
 
     describe('default behaviour', () => {
