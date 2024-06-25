@@ -13,6 +13,7 @@ import { prepareTokens } from '~/vue_shared/components/filtered_search_bar/filte
 import axios from '~/lib/utils/axios_utils';
 import setWindowLocation from 'helpers/set_window_location_helper';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
+import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 
 jest.mock('~/alert');
 jest.mock('~/lib/utils/axios_utils');
@@ -75,12 +76,21 @@ describe('MetricsDetails', () => {
     await waitForPromises();
   };
 
+  const { bindInternalEventDocument } = useMockInternalEventsTracking();
+
   beforeEach(() => {
     jest.spyOn(urlUtility, 'isSafeURL').mockReturnValue(true);
 
     ingestedAtTimeAgo.mockReturnValue('3 days ago');
 
     observabilityClientMock = createMockClient();
+  });
+
+  it('tracks view_metrics_details_page', () => {
+    mountComponent();
+
+    const { trackEventSpy } = bindInternalEventDocument(wrapper.element);
+    expect(trackEventSpy).toHaveBeenCalledWith('view_metrics_details_page', {}, undefined);
   });
 
   it('renders the loading indicator while checking if observability is enabled', () => {
