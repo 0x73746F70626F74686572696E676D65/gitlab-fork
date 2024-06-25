@@ -115,15 +115,11 @@ module Elastic
       end
 
       def maintain_indexed_group_associations!(*groups)
-        group_associations = Epic.elasticsearch_available? ? [:epics] : []
-
-        return if group_associations.empty?
-
         groups.each do |group|
           next unless group.is_a?(Group)
           next unless group.use_elasticsearch?
 
-          ElasticAssociationIndexerWorker.perform_async(group.class.name, group.id, group_associations)
+          ElasticAssociationIndexerWorker.perform_async(group.class.name, group.id, [:epics])
         end
       end
 

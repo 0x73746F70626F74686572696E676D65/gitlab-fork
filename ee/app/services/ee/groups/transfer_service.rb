@@ -90,7 +90,7 @@ module EE
       def process_group_associations(old_root_ancestor_id, group)
         return unless group.use_elasticsearch?
 
-        if ::Epic.elasticsearch_available? && group.licensed_feature_available?(:epics)
+        if group.licensed_feature_available?(:epics)
           group.self_and_descendants.each_batch do |group_batch|
             ::Epic.in_selected_groups(group_batch).each_batch do |epics|
               ::Elastic::ProcessInitialBookkeepingService.track!(*epics)

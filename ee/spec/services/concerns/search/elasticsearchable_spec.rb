@@ -77,26 +77,27 @@ RSpec.describe Search::Elasticsearchable, feature_category: :global_search do
     end
 
     context 'when scope is epics' do
-      using RSpec::Parameterized::TableSyntax
-
       let(:params) { { scope: 'epics' } }
 
-      where(:create_epic_index_finished, :backfill_epics_finished, :result) do
-        true  | true  | true
-        true  | false | false
-        false | true  | false
-        false | false | false
+      context 'if backfill epics migration is finished' do
+        before do
+          allow(Elastic::DataMigrationService).to receive(:migration_has_finished?)
+            .with(:backfill_epics).and_return(true)
+        end
+
+        it 'is true' do
+          expect(class_instance).to be_advanced_epic_search
+        end
       end
 
-      with_them do
-        it 'returns the correct result' do
+      context 'if backfill epics migration is not finished' do
+        before do
           allow(Elastic::DataMigrationService).to receive(:migration_has_finished?)
-          .with(:create_epic_index).and_return(create_epic_index_finished)
+            .with(:backfill_epics).and_return(false)
+        end
 
-          allow(Elastic::DataMigrationService).to receive(:migration_has_finished?)
-          .with(:backfill_epics).and_return(backfill_epics_finished)
-
-          expect(class_instance.advanced_epic_search?).to eq(result)
+        it 'is false' do
+          expect(class_instance).not_to be_advanced_epic_search
         end
       end
     end

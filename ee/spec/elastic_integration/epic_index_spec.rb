@@ -16,8 +16,6 @@ RSpec.describe 'Epic index', feature_category: :global_search do
 
   before do
     allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?).and_return(true)
-    allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
-      .with(:create_epic_index).and_return(true)
     stub_ee_application_setting(elasticsearch_indexing: true)
     allow(::Elastic::ProcessBookkeepingService).to receive(:track!)
   end
@@ -243,7 +241,6 @@ RSpec.describe 'Epic index', feature_category: :global_search do
 
     context 'when the parent of the group is changed', :sidekiq_inline do
       before do
-        allow(Epic).to receive(:elasticsearch_available?).and_return(true)
         stub_licensed_features(epics: true)
       end
 
@@ -260,7 +257,6 @@ RSpec.describe 'Epic index', feature_category: :global_search do
 
     context 'when the group is transferred', :sidekiq_inline do
       before do
-        allow(Epic).to receive(:elasticsearch_available?).and_return(true)
         stub_licensed_features(epics: true)
       end
 
@@ -360,7 +356,6 @@ RSpec.describe 'Epic index', feature_category: :global_search do
 
       context 'if the parent group is removed from the list' do
         before do
-          allow(Epic).to receive(:elasticsearch_available?).and_return(true)
           stub_licensed_features(epics: true)
         end
 

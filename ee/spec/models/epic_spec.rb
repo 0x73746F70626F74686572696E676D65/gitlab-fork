@@ -404,7 +404,6 @@ RSpec.describe Epic, feature_category: :portfolio_management do
 
     context 'when epic indexing is enabled' do
       before do
-        allow(described_class).to receive(:elasticsearch_available?).and_return(true)
         stub_ee_application_setting(elasticsearch_indexing: true)
         Epics::UpdateDatesService.new([epic, another_epic]).execute
         epic.reload
@@ -1364,96 +1363,81 @@ RSpec.describe Epic, feature_category: :portfolio_management do
   describe 'ES related specs' do
     let_it_be(:epic) { create(:epic, group: group) }
 
-    context 'when create epic index migration is not finished' do
+    before do
+      allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
+        .with(:create_work_items_index).and_return(true)
+    end
+
+    context 'when the group has use_elasticsearch? as true' do
       before do
-        allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
-          .with(:create_epic_index).and_return(false)
+        allow(group).to receive(:use_elasticsearch?).and_return(true)
+      end
+
+      it 'use_elasticsearch? is true' do
+        expect(epic).to be_use_elasticsearch
+      end
+
+      context 'with elasticsearch enabled' do
+        before do
+          allow(Gitlab::CurrentSettings.current_application_settings)
+            .to receive(:elasticsearch_indexing?).and_return(true)
+        end
+
+        context 'when elastic_index_work_items flag is disabled' do
+          before do
+            stub_feature_flags(elastic_index_work_items: false)
+          end
+
+          it 'tracks the epic' do
+            expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+            epic.update!(title: 'A new title')
+          end
+        end
+
+        context 'when create_work_items_index migration is not complete' do
+          before do
+            allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
+              .with(:create_work_items_index).and_return(false)
+          end
+
+          it 'tracks the epic' do
+            expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
+            epic.update!(title: 'A new title')
+          end
+        end
+
+        it 'calls ::Elastic::ProcessBookkeepingService.track! when the epic is updated' do
+          expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once do |*tracked_refs|
+            expect(tracked_refs.count).to eq(2)
+            expect(tracked_refs[0].class).to eq(Epic)
+            expect(tracked_refs[0].id).to eq(epic.id)
+            expect(tracked_refs[1]).to be_a_kind_of(Search::Elastic::References::WorkItem)
+            expect(tracked_refs[1].identifier).to eq(epic.issue_id)
+          end
+          epic.update!(title: 'A new title')
+        end
+      end
+    end
+
+    context 'when the group has use_elasticsearch? as false' do
+      before do
+        allow(group).to receive(:use_elasticsearch?).and_return(false)
       end
 
       it 'use_elasticsearch? is false' do
         expect(epic).not_to be_use_elasticsearch
       end
-    end
 
-    context 'when create epic index migration is finished' do
-      before do
-        allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
-          .with(:create_work_items_index).and_return(true)
-        allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
-          .with(:create_epic_index).and_return(true)
-      end
-
-      context 'when the group has use_elasticsearch? as true' do
+      context 'with elasticsearch enabled' do
         before do
-          allow(group).to receive(:use_elasticsearch?).and_return(true)
+          allow(Gitlab::CurrentSettings.current_application_settings)
+            .to receive(:elasticsearch_indexing?).and_return(true)
         end
 
-        it 'use_elasticsearch? is true' do
-          expect(epic).to be_use_elasticsearch
-        end
+        it 'does not call ::Elastic::ProcessBookkeepingService.track! when the epic is updated' do
+          expect(Elastic::ProcessBookkeepingService).not_to receive(:track!).with(*epic)
 
-        context 'with elasticsearch enabled' do
-          before do
-            allow(Gitlab::CurrentSettings.current_application_settings)
-              .to receive(:elasticsearch_indexing?).and_return(true)
-          end
-
-          context 'when elastic_index_work_items flag is disabled' do
-            before do
-              stub_feature_flags(elastic_index_work_items: false)
-            end
-
-            it 'tracks the epic' do
-              expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
-              epic.update!(title: 'A new title')
-            end
-          end
-
-          context 'when create_work_items_index migration is not complete' do
-            before do
-              allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?)
-                .with(:create_work_items_index).and_return(false)
-            end
-
-            it 'tracks the epic' do
-              expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(epic).once
-              epic.update!(title: 'A new title')
-            end
-          end
-
-          it 'calls ::Elastic::ProcessBookkeepingService.track! when the epic is updated' do
-            expect(::Elastic::ProcessBookkeepingService).to receive(:track!).once do |*tracked_refs|
-              expect(tracked_refs.count).to eq(2)
-              expect(tracked_refs[0].class).to eq(Epic)
-              expect(tracked_refs[0].id).to eq(epic.id)
-              expect(tracked_refs[1]).to be_a_kind_of(Search::Elastic::References::WorkItem)
-              expect(tracked_refs[1].identifier).to eq(epic.issue_id)
-            end
-            epic.update!(title: 'A new title')
-          end
-        end
-      end
-
-      context 'when the group has use_elasticsearch? as false' do
-        before do
-          allow(group).to receive(:use_elasticsearch?).and_return(false)
-        end
-
-        it 'use_elasticsearch? is false' do
-          expect(epic).not_to be_use_elasticsearch
-        end
-
-        context 'with elasticsearch enabled' do
-          before do
-            allow(Gitlab::CurrentSettings.current_application_settings)
-              .to receive(:elasticsearch_indexing?).and_return(true)
-          end
-
-          it 'does not call ::Elastic::ProcessBookkeepingService.track! when the epic is updated' do
-            expect(Elastic::ProcessBookkeepingService).not_to receive(:track!).with(*epic)
-
-            epic.update!(title: 'A new title')
-          end
+          epic.update!(title: 'A new title')
         end
       end
     end

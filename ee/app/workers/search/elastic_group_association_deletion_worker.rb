@@ -48,11 +48,7 @@ module Search
     end
 
     def index_epics?(group)
-      return false unless ::Epic.elasticsearch_available?
-
-      return false if group.present? && !group.licensed_feature_available?(:epics)
-
-      true
+      group.present? && group.licensed_feature_available?(:epics)
     end
 
     def process_removal(group_id, ancestor_id, remove_epics:, remove_work_items:)

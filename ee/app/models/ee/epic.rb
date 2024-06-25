@@ -349,10 +349,6 @@ module EE
         fuzzy_search(query, [:title, :description])
       end
 
-      def elasticsearch_available?
-        ::Elastic::DataMigrationService.migration_has_finished?(:create_epic_index)
-      end
-
       override :use_separate_indices?
       def use_separate_indices?
         true
@@ -560,8 +556,6 @@ module EE
     end
 
     def use_elasticsearch?
-      return false unless self.class.elasticsearch_available?
-
       group.use_elasticsearch?
     end
 

@@ -123,7 +123,6 @@ RSpec.describe Search::ElasticGroupAssociationDeletionWorker, :elastic_helpers, 
         let(:sub_group_epic) { create(:epic, group: sub_group) }
 
         before do
-          allow(Epic).to receive(:elasticsearch_available?).and_return(true)
           stub_licensed_features(epics: true)
           group_epic
           sub_group_epic

@@ -13,3 +13,5 @@ class CreateEpicIndex < Elastic::Migration
     Epic
   end
 end
+
+CreateEpicIndex.prepend ::Elastic::MigrationObsolete

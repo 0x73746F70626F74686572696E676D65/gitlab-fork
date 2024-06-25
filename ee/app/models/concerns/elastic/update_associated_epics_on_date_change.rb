@@ -14,8 +14,6 @@ module Elastic
 
     def update_associated_epics
       return unless Gitlab::CurrentSettings.elasticsearch_indexing?
-      return unless ::Epic.elasticsearch_available?
-
       return unless DATE_ATTRIBUTES.any? { |attribute| previous_changes.key?(attribute) }
 
       epics = case self.class.name
