@@ -56880,6 +56880,9 @@ msgstr ""
 msgid "UsageQuota|No projects to display."
 msgstr ""
 
+msgid "UsageQuota|Observability"
+msgstr ""
+
 msgid "UsageQuota|Pending Members"
 msgstr ""
 

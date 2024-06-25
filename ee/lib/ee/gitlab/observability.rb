@@ -7,6 +7,10 @@ module EE
       extend ::Gitlab::Utils::Override
 
       class_methods do
+        def analytics_url(project)
+          "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/analytics"
+        end
+
         def tracing_url(project)
           "#{::Gitlab::Observability.observability_url}/v3/query/#{project.id}/traces"
         end
