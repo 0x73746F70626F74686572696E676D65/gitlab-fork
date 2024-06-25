@@ -9783,9 +9783,6 @@ msgstr ""
 msgid "BulkImport|Group import disabled on source or destination instance. Ask an administrator to enable it on both instances and try again."
 msgstr ""
 
-msgid "BulkImport|History"
-msgstr ""
-
 msgid "BulkImport|Import completed"
 msgstr ""
 
@@ -9922,6 +9919,9 @@ msgid "BulkImport|Unsupported GitLab version. Minimum supported version is '%{ve
 msgstr ""
 
 msgid "BulkImport|Update of import statuses with realtime changes failed"
+msgstr ""
+
+msgid "BulkImport|View import history"
 msgstr ""
 
 msgid "BulkImport|View import results"
