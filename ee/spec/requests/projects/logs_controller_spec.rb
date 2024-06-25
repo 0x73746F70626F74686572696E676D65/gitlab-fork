@@ -88,7 +88,8 @@ RSpec.describe Projects::LogsController, feature_category: :metrics do
         element = Nokogiri::HTML.parse(html_response.body).at_css('#js-observability-logs')
 
         expected_view_model = {
-          apiConfig: expected_api_config
+          apiConfig: expected_api_config,
+          tracingIndexUrl: namespace_project_tracing_index_path(project.group, project)
         }.to_json
         expect(element.attributes['data-view-model'].value).to eq(expected_view_model)
       end

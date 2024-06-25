@@ -1,4 +1,4 @@
-import { GlDrawer } from '@gitlab/ui';
+import { GlDrawer, GlLink } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import LogsDrawer from 'ee/logs/list/logs_drawer.vue';
@@ -30,11 +30,14 @@ describe('LogsDrawer', () => {
     },
   };
 
+  const testTracingIndexUrl = 'https://tracing-index-url.com';
+
   const mountComponent = ({ open = true, log = mockLog } = {}) => {
     wrapper = shallowMountExtended(LogsDrawer, {
       propsData: {
         log,
         open,
+        tracingIndexUrl: testTracingIndexUrl,
       },
     });
   };
@@ -51,6 +54,12 @@ describe('LogsDrawer', () => {
       lines,
     };
   };
+
+  const getSectionLineWrapperByName = (name) =>
+    wrapper
+      .findByTestId('section-log-details')
+      .findAll('[data-testid="section-line"]')
+      .wrappers.find((w) => w.find('[data-testid="section-line-name"]').text() === name);
 
   beforeEach(() => {
     mountComponent();
@@ -120,6 +129,14 @@ describe('LogsDrawer', () => {
   ])('if %s is missing, it does not render %s', (attrKey, sectionId) => {
     mountComponent({ log: { ...mockLog, [attrKey]: undefined } });
     expect(wrapper.findByTestId(sectionId).exists()).toBe(false);
+  });
+
+  it('renders a link to the trace', () => {
+    const traceLine = getSectionLineWrapperByName('trace_id');
+    expect(traceLine.findComponent(GlLink).exists()).toBe(true);
+    expect(traceLine.findComponent(GlLink).attributes('href')).toBe(
+      `${testTracingIndexUrl}/trace-id`,
+    );
   });
 
   describe('with no log', () => {

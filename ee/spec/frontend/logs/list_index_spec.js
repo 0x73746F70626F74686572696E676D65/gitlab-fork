@@ -1,5 +1,6 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ListIndex from 'ee/logs/list_index.vue';
+import LogsList from 'ee/logs/list/logs_list.vue';
 import ProvisionedObservabilityContainer from '~/observability/components/provisioned_observability_container.vue';
 
 describe('ListIndex', () => {
@@ -12,6 +13,7 @@ describe('ListIndex', () => {
       operationsUrl: 'https://example.com/operations',
       metricsUrl: 'https://example.com/metricsUrl',
     },
+    tracingIndexUrl: 'https://example.com/tracing/index',
   };
 
   let wrapper;
@@ -28,5 +30,13 @@ describe('ListIndex', () => {
     const observabilityContainer = wrapper.findComponent(ProvisionedObservabilityContainer);
     expect(observabilityContainer.exists()).toBe(true);
     expect(observabilityContainer.props('apiConfig')).toStrictEqual(props.apiConfig);
+  });
+
+  it('renders the logs list', () => {
+    mountComponent();
+
+    const list = wrapper.findComponent(LogsList);
+    expect(list.exists()).toBe(true);
+    expect(list.props('tracingIndexUrl')).toBe(props.tracingIndexUrl);
   });
 });
