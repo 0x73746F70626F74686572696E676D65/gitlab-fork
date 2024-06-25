@@ -14,7 +14,7 @@ RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::Base, feature_categor
 
     it 'returns url' do
       puts "#{self.class} #{__method__} Gitlab::AiGateway.url: #{Gitlab::AiGateway.url}"
-      expect(subject.url).to eq(
+      expect(config.url).to eq(
         "#{Gitlab::AiGateway.url}/v1/proxy/vertex-ai/v1/projects/PROJECT/locations/LOCATION" \
           "/publishers/google/models/awesome-model:predict"
       )
