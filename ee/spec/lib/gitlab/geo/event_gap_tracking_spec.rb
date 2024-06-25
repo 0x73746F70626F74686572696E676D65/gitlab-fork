@@ -109,7 +109,7 @@ RSpec.describe Gitlab::Geo::EventGapTracking, :clean_gitlab_redis_shared_state, 
     it 'avoids N+1 queries to fetch event logs and their associated events' do
       yielded = []
 
-      blk = lambda do |event_log|
+      blk = ->(event_log) do
         event_log.event
         yielded << event_log
       end

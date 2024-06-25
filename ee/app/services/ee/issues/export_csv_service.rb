@@ -34,7 +34,7 @@ module EE
       end
 
       def epic_issue_safe(attribute)
-        lambda do |issue|
+        ->(issue) do
           epic = redacted_epic_for(issue)
 
           next if epic.nil?

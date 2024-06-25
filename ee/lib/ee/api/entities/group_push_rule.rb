@@ -16,16 +16,16 @@ module EE
         expose :prevent_secrets, documentation: { type: 'boolean' }
         expose :max_file_size, documentation: { type: 'integer', example: 100 }
         expose :commit_committer_check,
-          if: lambda { |push_rule| push_rule.available?(:commit_committer_check) },
+          if: ->(push_rule) { push_rule.available?(:commit_committer_check) },
           documentation: { type: 'boolean' }
         expose :commit_committer_name_check,
-          if: lambda { |push_rule| push_rule.available?(:commit_committer_name_check) },
+          if: ->(push_rule) { push_rule.available?(:commit_committer_name_check) },
           documentation: { type: 'boolean' }
         expose :reject_unsigned_commits,
-          if: lambda { |push_rule| push_rule.available?(:reject_unsigned_commits) },
+          if: ->(push_rule) { push_rule.available?(:reject_unsigned_commits) },
           documentation: { type: 'boolean' }
         expose :reject_non_dco_commits,
-          if: lambda { |push_rule| push_rule.available?(:reject_non_dco_commits) },
+          if: ->(push_rule) { push_rule.available?(:reject_non_dco_commits) },
           documentation: { type: 'boolean' }
       end
     end
