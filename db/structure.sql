@@ -1713,6 +1713,22 @@ RETURN NEW;
 END
 $$;
 
+CREATE FUNCTION trigger_f6c61cdddf31() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+IF NEW."project_id" IS NULL THEN
+  SELECT "project_id"
+  INTO NEW."project_id"
+  FROM "ml_models"
+  WHERE "ml_models"."id" = NEW."model_id";
+END IF;
+
+RETURN NEW;
+
+END
+$$;
+
 CREATE FUNCTION trigger_fb587b1ae7ad() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -12884,6 +12900,7 @@ CREATE TABLE ml_model_metadata (
     model_id bigint NOT NULL,
     name text NOT NULL,
     value text NOT NULL,
+    project_id bigint,
     CONSTRAINT check_26d3322153 CHECK ((char_length(value) <= 5000)),
     CONSTRAINT check_36240c80a7 CHECK ((char_length(name) <= 255))
 );
@@ -27713,6 +27730,8 @@ CREATE UNIQUE INDEX index_ml_experiments_on_project_id_and_name ON ml_experiment
 
 CREATE INDEX index_ml_experiments_on_user_id ON ml_experiments USING btree (user_id);
 
+CREATE INDEX index_ml_model_metadata_on_project_id ON ml_model_metadata USING btree (project_id);
+
 CREATE INDEX index_ml_model_version_metadata_on_project_id ON ml_model_version_metadata USING btree (project_id);
 
 CREATE INDEX index_ml_model_versions_on_created_at_on_model_id ON ml_model_versions USING btree (model_id, created_at);
@@ -31469,6 +31488,8 @@ CREATE TRIGGER trigger_e1da4a738230 BEFORE INSERT OR UPDATE ON vulnerability_ext
 
 CREATE TRIGGER trigger_ebab34f83f1d BEFORE INSERT OR UPDATE ON packages_debian_publications FOR EACH ROW EXECUTE FUNCTION trigger_ebab34f83f1d();
 
+CREATE TRIGGER trigger_f6c61cdddf31 BEFORE INSERT OR UPDATE ON ml_model_metadata FOR EACH ROW EXECUTE FUNCTION trigger_f6c61cdddf31();
+
 CREATE TRIGGER trigger_fb587b1ae7ad BEFORE INSERT OR UPDATE ON merge_requests FOR EACH ROW EXECUTE FUNCTION trigger_fb587b1ae7ad();
 
 CREATE TRIGGER trigger_fbd42ed69453 BEFORE INSERT OR UPDATE ON external_status_checks_protected_branches FOR EACH ROW EXECUTE FUNCTION trigger_fbd42ed69453();
@@ -32912,6 +32933,9 @@ ALTER TABLE ONLY boards_epic_list_user_preferences
 
 ALTER TABLE ONLY user_project_callouts
     ADD CONSTRAINT fk_f62dd11a33 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY ml_model_metadata
+    ADD CONSTRAINT fk_f68c7e109c FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY workspaces
     ADD CONSTRAINT fk_f78aeddc77 FOREIGN KEY (cluster_agent_id) REFERENCES cluster_agents(id) ON DELETE CASCADE;

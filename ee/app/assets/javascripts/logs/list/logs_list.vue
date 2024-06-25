@@ -51,6 +51,10 @@ export default {
       required: true,
       type: Object,
     },
+    tracingIndexUrl: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     const { [OPEN_DRAWER_QUERY_PARAM]: shouldOpenDrawer } = queryToObject(window.location.search);
@@ -263,6 +267,11 @@ export default {
       </template>
     </gl-infinite-scroll>
 
-    <logs-drawer :log="selectedLog" :open="Boolean(selectedLog)" @close="closeDrawer" />
+    <logs-drawer
+      :log="selectedLog"
+      :open="Boolean(selectedLog)"
+      :tracing-index-url="tracingIndexUrl"
+      @close="closeDrawer"
+    />
   </div>
 </template>

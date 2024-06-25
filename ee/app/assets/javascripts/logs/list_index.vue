@@ -12,6 +12,10 @@ export default {
       type: Object,
       required: true,
     },
+    tracingIndexUrl: {
+      type: String,
+      required: true,
+    },
   },
 };
 </script>
@@ -19,7 +23,7 @@ export default {
 <template>
   <provisioned-observability-container :api-config="apiConfig">
     <template #default="{ observabilityClient }">
-      <logs-list :observability-client="observabilityClient" />
+      <logs-list :observability-client="observabilityClient" :tracing-index-url="tracingIndexUrl" />
     </template>
   </provisioned-observability-container>
 </template>

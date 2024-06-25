@@ -167,9 +167,8 @@ export default {
     selectDisplayType(newType) {
       this.selectedDisplayType = newType;
     },
-    selectVisualizationType(newType) {
+    onVisualizationTypeChange() {
       this.selectDisplayType(PANEL_DISPLAY_TYPES.VISUALIZATION);
-      this.selectedVisualizationType = newType;
       this.validateType();
     },
     getRequiredFieldError(fieldValue) {
@@ -198,7 +197,7 @@ export default {
 
       this.validateType(true);
       if (this.typeValidationError) {
-        this.$refs.typeSelector.$el.querySelector('button').focus();
+        this.$refs.typeSelector.$el.focus();
         invalid = true;
       }
 
@@ -380,13 +379,13 @@ export default {
           class="gl-w-full gl-md-max-w-70p gl-lg-w-30p gl-min-w-20 gl-m-0"
           data-testid="visualization-type-form-group"
           :invalid-feedback="typeValidationError"
-          :state="!typeValidationError"
         >
           <visualization-type-selector
             ref="typeSelector"
+            v-model="selectedVisualizationType"
             data-testid="visualization-type-dropdown"
-            :selected-visualization-type="selectedVisualizationType"
-            @selectVisualizationType="selectVisualizationType"
+            :state="!typeValidationError"
+            @input="onVisualizationTypeChange"
           />
         </gl-form-group>
       </div>

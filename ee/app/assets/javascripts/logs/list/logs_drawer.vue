@@ -1,5 +1,5 @@
 <script>
-import { GlDrawer } from '@gitlab/ui';
+import { GlDrawer, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
@@ -14,6 +14,7 @@ const createSectionContent = (obj) =>
 export default {
   components: {
     GlDrawer,
+    GlLink,
   },
   i18n: {
     logDetailsTitle: s__('ObservabilityLogs|Metadata'),
@@ -29,6 +30,10 @@ export default {
     open: {
       required: true,
       type: Boolean,
+    },
+    tracingIndexUrl: {
+      type: String,
+      required: true,
     },
   },
   computed: {
@@ -76,6 +81,14 @@ export default {
       return getContentWrapperHeight();
     },
   },
+  methods: {
+    isTraceId(key) {
+      return key === 'trace_id';
+    },
+    traceIdLink(traceId) {
+      return `${this.tracingIndexUrl}/${traceId}`;
+    },
+  },
   DRAWER_Z_INDEX,
 };
 </script>
@@ -112,7 +125,12 @@ export default {
         >
           <label data-testid="section-line-name">{{ line.name }}</label>
           <div data-testid="section-line-value" class="gl-wrap-anywhere">
-            {{ line.value }}
+            <gl-link v-if="isTraceId(line.name)" :href="traceIdLink(line.value)">
+              {{ line.value }}
+            </gl-link>
+            <template v-else>
+              {{ line.value }}
+            </template>
           </div>
         </div>
       </div>
