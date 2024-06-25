@@ -3264,6 +3264,9 @@ msgstr ""
 msgid "Add request manually"
 msgstr ""
 
+msgid "Add search filter"
+msgstr ""
+
 msgid "Add suggestion to batch"
 msgstr ""
 
@@ -25071,9 +25074,6 @@ msgstr ""
 msgid "Group information"
 msgstr ""
 
-msgid "Group inheritance"
-msgstr ""
-
 msgid "Group invite"
 msgstr ""
 
@@ -42890,7 +42890,7 @@ msgstr ""
 msgid "ProtectedEnvironments|Enable group inheritance"
 msgstr ""
 
-msgid "ProtectedEnvironments|Group inheritance"
+msgid "ProtectedEnvironments|If a group is invited to the current project, its parent and members inherit the permissions of the invited group."
 msgstr ""
 
 msgid "ProtectedEnvironments|Number of approvals must be between 1 and 5"
@@ -43987,6 +43987,9 @@ msgid "Remove reviewer"
 msgstr ""
 
 msgid "Remove runner"
+msgstr ""
+
+msgid "Remove search filter"
 msgstr ""
 
 msgid "Remove secondary email"

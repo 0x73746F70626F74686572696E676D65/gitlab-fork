@@ -4,6 +4,7 @@ import {
   GlButton,
   GlFormGroup,
   GlFormInput,
+  GlIcon,
   GlTooltipDirective as GlTooltip,
   GlToggle,
 } from '@gitlab/ui';
@@ -24,6 +25,7 @@ export default {
     GlButton,
     GlFormGroup,
     GlFormInput,
+    GlIcon,
     GlToggle,
     AccessDropdown,
     ProtectedEnvironments,
@@ -100,7 +102,10 @@ export default {
     editApproverButton: s__('ProtectedEnvironments|Edit'),
     saveApproverButton: s__('ProtectedEnvironments|Save'),
     accessDropdownLabel: s__('ProtectedEnvironments|Select users'),
-    inheritanceLabel: s__('ProtectedEnvironments|Group inheritance'),
+    inheritanceLabel: s__('ProtectedEnvironments|Enable group inheritance'),
+    inheritanceTooltip: s__(
+      'ProtectedEnvironments|If a group is invited to the current project, its parent and members inherit the permissions of the invited group.',
+    ),
   },
   ACCESS_LEVELS,
   DEPLOYER_RULE_KEY,
@@ -205,7 +210,16 @@ export default {
             <span class="gl-w-3/10">{{ $options.i18n.approversHeader }}</span>
             <span class="gl-w-2/10">{{ $options.i18n.usersHeader }}</span>
             <span class="gl-w-2/10">{{ $options.i18n.approvalsHeader }}</span>
-            <span class="gl-w-3/10">{{ $options.i18n.inheritanceLabel }}</span>
+            <div class="gl-w-3/10">
+              <span>{{ $options.i18n.inheritanceLabel }}</span>
+              <gl-icon
+                v-gl-tooltip
+                :title="$options.i18n.inheritanceTooltip"
+                :aria-label="$options.i18n.inheritanceTooltip"
+                name="question-o"
+                class="gl-ml-2"
+              />
+            </div>
           </template>
           <template #rule="{ rule, ruleKey }">
             <span class="gl-w-3/10" data-testid="rule-description">
