@@ -6317,6 +6317,12 @@ msgstr ""
 msgid "Appearance was successfully updated."
 msgstr ""
 
+msgid "AppearanceSettings|Last edit"
+msgstr ""
+
+msgid "AppearanceSettings|Preview last save:"
+msgstr ""
+
 msgid "Append the comment with %{shrug}"
 msgstr ""
 
