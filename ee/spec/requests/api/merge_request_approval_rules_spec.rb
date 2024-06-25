@@ -100,6 +100,7 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
         expect(rule['name']).to eq(mr_approval_rule.name)
         expect(rule['approvals_required']).to eq(mr_approval_rule.approvals_required)
         expect(rule['rule_type']).to eq(mr_approval_rule.rule_type)
+        expect(rule['report_type']).to be_nil
         expect(rule['section']).to be_nil
         expect(rule['contains_hidden_groups']).to eq(false)
         expect(rule['source_rule']).to be_nil
@@ -139,6 +140,18 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
           rule = get_rule.call(json_response)
 
           expect(rule['source_rule']['approvals_required']).to eq(source_rule.approvals_required)
+        end
+      end
+
+      context 'with report_type' do
+        let!(:mr_approval_rule) do
+          create(:report_approver_rule, :code_coverage, merge_request: merge_request)
+        end
+
+        it 'includes report_type' do
+          rule = get_rule.call(json_response)
+
+          expect(rule['report_type']).to eq('code_coverage')
         end
       end
     end

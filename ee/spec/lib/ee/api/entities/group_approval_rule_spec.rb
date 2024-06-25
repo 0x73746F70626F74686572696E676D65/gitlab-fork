@@ -12,6 +12,7 @@ RSpec.describe EE::API::Entities::GroupApprovalRule, feature_category: :source_c
       id
       name
       rule_type
+      report_type
       eligible_approvers
       approvals_required
       users
