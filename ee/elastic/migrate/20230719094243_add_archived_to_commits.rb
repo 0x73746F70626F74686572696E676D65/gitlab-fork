@@ -17,3 +17,5 @@ class AddArchivedToCommits < Elastic::Migration
     }
   end
 end
+
+AddArchivedToCommits.prepend ::Elastic::MigrationObsolete

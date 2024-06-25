@@ -196,8 +196,7 @@ module Gitlab
           c << "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}"
           c << "--schema-version-blob=#{BLOB_SCHEMA_VERSION}"
           c << "--schema-version-commit=#{COMMIT_SCHEMA_VERSION}"
-
-          c << "--archived=#{project.archived}" if migration_finished?(:add_archived_to_commits)
+          c << "--archived=#{project.archived}"
         end
       end
 
