@@ -122,6 +122,9 @@ export default {
     footerMessageHeight() {
       return document.querySelector('.footer-message')?.getBoundingClientRect().height || 0;
     },
+    epicsHaveChildren() {
+      return this.epics.some((epic) => epic.hasChildren);
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -172,6 +175,7 @@ export default {
       :epics="epics"
       :timeframe="timeframe"
       :epics-fetch-next-page-in-progress="epicsFetchNextPageInProgress"
+      :epics-have-children="epicsHaveChildren"
       :has-next-page="hasNextPage"
       :buffer-size="bufferSize"
       @scrolledToEnd="$emit('scrolledToEnd')"

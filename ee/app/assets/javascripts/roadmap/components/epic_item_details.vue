@@ -24,6 +24,11 @@ export default {
       type: Object,
       required: true,
     },
+    epicsHaveChildren: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     timeframeString: {
       type: String,
       required: true,
@@ -168,7 +173,10 @@ export default {
     >
       <span ref="expandCollapseInfo">
         <gl-button
-          :class="{ invisible: isExpandIconHidden }"
+          :class="{
+            invisible: isExpandIconHidden,
+            'gl-hidden': !epicsHaveChildren,
+          }"
           :aria-label="expandIconLabel"
           category="tertiary"
           size="small"
