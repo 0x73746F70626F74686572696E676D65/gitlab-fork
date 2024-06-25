@@ -118,6 +118,7 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
         end
 
         stub_feature_flags(claude_3_code_generation_haiku: false)
+        stub_feature_flags(claude_3_5_code_generation_sonnet: false)
       end
 
       it_behaves_like 'correct task initializer'
@@ -181,6 +182,16 @@ RSpec.describe CodeSuggestions::TaskFactory, feature_category: :code_suggestions
         end
 
         let(:expected_model) { 'claude-3-haiku-20240307' }
+
+        it_behaves_like 'correct task initializer'
+      end
+
+      context 'with claude_3_5_code_generation_sonnet flag is enabled' do
+        before do
+          stub_feature_flags(claude_3_5_code_generation_sonnet: true)
+        end
+
+        let(:expected_model) { 'claude-3-5-sonnet-20240620' }
 
         it_behaves_like 'correct task initializer'
       end
