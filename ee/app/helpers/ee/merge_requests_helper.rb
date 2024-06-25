@@ -44,14 +44,6 @@ module EE
       super.merge({ can_summarize: Ability.allowed?(user, :summarize_draft_code_review, merge_request).to_s })
     end
 
-    def review_llm_summary_allowed?(merge_request, user)
-      Ability.allowed?(user, :summarize_submitted_review, merge_request)
-    end
-
-    def review_llm_summary(merge_request, reviewer)
-      merge_request.latest_merge_request_diff&.latest_review_summary_from_reviewer(reviewer)
-    end
-
     def show_video_component?(project)
       experiment(:issues_mrs_empty_state,
         type: :experiment,

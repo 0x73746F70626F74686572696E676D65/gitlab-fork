@@ -248,9 +248,9 @@ RSpec.shared_examples 'ee protected ref access' do |association|
       :group,            :group_id, :user,            :user_id, :expectation
     ) do
       ref(:test_group) | nil      | nil             | nil     | :group
-      nil              | 1        | nil             | nil     | :group
+      nil              | 0        | nil             | nil     | :group
       nil              | nil      | ref(:test_user) | nil     | :user
-      nil              | nil      | nil             | 1       | :user
+      nil              | nil      | nil             | 0       | :user
     end
 
     with_them do
@@ -274,9 +274,9 @@ RSpec.shared_examples 'ee protected ref access' do |association|
       :group,            :group_id, :user,            :user_id, :expectation
     ) do
       ref(:test_group) | nil      | nil             | nil     | lazy { test_group.name }
-      nil              | 1        | nil             | nil     | 'Group'
+      nil              | 0        | nil             | nil     | 'Group'
       nil              | nil      | ref(:test_user) | nil     | lazy { test_user.name }
-      nil              | nil      | nil             | 1       | 'User'
+      nil              | nil      | nil             | 0       | 'User'
     end
 
     with_them do
@@ -298,37 +298,49 @@ RSpec.shared_examples 'protected ref access configured for users' do |associatio
   let_it_be(:project) { create(:project) }
   let_it_be(:protected_ref) { create(association, project: project) }
 
-  describe '#check_access' do
+  describe '#check_access(current_user, current_project)' do
     let_it_be(:current_user) { create(:user) }
 
-    let(:access_level) { nil }
     let(:user) { nil }
     let(:group) { nil }
+    let(:current_project) { project }
+    let(:described_instance) do
+      described_class.new(
+        association => protected_ref,
+        user: user,
+        group: group
+      )
+    end
 
     before_all do
       project.add_maintainer(current_user)
     end
 
     subject do
-      described_class.new(
-        association => protected_ref,
-        user: user,
-        group: group,
-        access_level: access_level
-      )
+      described_instance.check_access(current_user, current_project)
     end
 
     context 'when user is assigned' do
       context 'when current_user is the user' do
         let(:user) { current_user }
 
-        it { expect(subject.check_access(current_user)).to eq(true) }
+        context 'when user is a project member' do
+          it { is_expected.to eq(true) }
+        end
+
+        context 'when user is not a project member' do
+          before do
+            allow(project).to receive(:member?).with(user).and_return(false)
+          end
+
+          it { is_expected.to eq(false) }
+        end
       end
 
       context 'when current_user is another user' do
         let(:user) { create(:user) }
 
-        it { expect(subject.check_access(current_user)).to eq(false) }
+        it { is_expected.to eq(false) }
       end
     end
   end
@@ -338,24 +350,26 @@ RSpec.shared_examples 'protected ref access configured for groups' do |associati
   let_it_be(:project) { create(:project) }
   let_it_be(:protected_ref) { create(association, project: project) }
 
-  describe '#check_access' do
+  describe '#check_access(current_user, current_project)' do
     let_it_be(:current_user) { create(:user) }
 
-    let(:access_level) { nil }
     let(:user) { nil }
     let(:group) { nil }
+    let(:current_project) { project }
+    let(:described_instance) do
+      described_class.new(
+        association => protected_ref,
+        user: user,
+        group: group
+      )
+    end
 
     before_all do
       project.add_maintainer(current_user)
     end
 
     subject do
-      described_class.new(
-        association => protected_ref,
-        user: user,
-        group: group,
-        access_level: access_level
-      )
+      described_instance.check_access(current_user, current_project)
     end
 
     context 'when group is assigned' do
@@ -366,11 +380,11 @@ RSpec.shared_examples 'protected ref access configured for groups' do |associati
           group.add_developer(current_user)
         end
 
-        it { expect(subject.check_access(current_user)).to eq(true) }
+        it { is_expected.to eq(true) }
       end
 
       context 'when current_user is not in the group' do
-        it { expect(subject.check_access(current_user)).to eq(false) }
+        it { is_expected.to eq(false) }
       end
     end
   end

@@ -5,7 +5,6 @@ require 'spec_helper'
 RSpec.describe GitlabSchema.types['MergeRequestDiff'], feature_category: :code_review_workflow do
   let(:fields) do
     %i[
-      review_llm_summaries
       created_at
       updated_at
     ]

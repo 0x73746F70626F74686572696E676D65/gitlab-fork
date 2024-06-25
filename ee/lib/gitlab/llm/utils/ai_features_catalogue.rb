@@ -95,15 +95,6 @@ module Gitlab
             self_managed: false,
             internal: false
           },
-          summarize_submitted_review: {
-            service_class: ::Gitlab::Llm::VertexAi::Completions::SummarizeSubmittedReview,
-            prompt_class: ::Gitlab::Llm::Templates::SummarizeSubmittedReview,
-            feature_category: :code_review_workflow,
-            execute_method: ::Llm::SummarizeSubmittedReviewService,
-            maturity: :experimental,
-            self_managed: false,
-            internal: true
-          },
           summarize_new_merge_request: {
             service_class: ::Gitlab::Llm::VertexAi::Completions::SummarizeNewMergeRequest,
             prompt_class: ::Gitlab::Llm::Templates::SummarizeNewMergeRequest,

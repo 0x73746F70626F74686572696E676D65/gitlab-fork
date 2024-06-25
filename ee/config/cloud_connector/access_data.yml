@@ -58,4 +58,3 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
           - summarize_issue_discussions
           - summarize_merge_request
           - summarize_review
-          - summarize_submitted_review
