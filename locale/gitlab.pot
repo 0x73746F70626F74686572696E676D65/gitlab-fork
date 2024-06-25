@@ -48020,9 +48020,6 @@ msgstr ""
 msgid "SecurityOrchestration|Select frameworks"
 msgstr ""
 
-msgid "SecurityOrchestration|Select groups"
-msgstr ""
-
 msgid "SecurityOrchestration|Select policy"
 msgstr ""
 
