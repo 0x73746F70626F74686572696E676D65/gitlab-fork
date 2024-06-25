@@ -11,6 +11,7 @@ RSpec.describe Projects::MetricsController, feature_category: :metrics do
   let(:expected_api_config) do
     {
       oauthUrl: Gitlab::Observability.oauth_url,
+      analyticsUrl: ::Gitlab::Observability.analytics_url(project),
       provisioningUrl: Gitlab::Observability.provisioning_url(project),
       tracingUrl: Gitlab::Observability.tracing_url(project),
       tracingAnalyticsUrl: Gitlab::Observability.tracing_analytics_url(project),

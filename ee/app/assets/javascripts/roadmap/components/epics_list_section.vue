@@ -37,6 +37,11 @@ export default {
       type: Boolean,
       required: true,
     },
+    epicsHaveChildren: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     hasNextPage: {
       type: Boolean,
       required: true,
@@ -177,6 +182,7 @@ export default {
       ref="epicItems"
       :key="generateKey(epic)"
       :epic="epic"
+      :epics-have-children="epicsHaveChildren"
       :timeframe="timeframe"
       :client-width="clientWidth"
       :child-level="0"
