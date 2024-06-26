@@ -26,7 +26,7 @@ module Ci
       end
 
       def execute
-        Gitlab::InternalEvents.track_event('export_runner_usage_by_project_as_csv', user: @current_user)
+        Gitlab::InternalEvents.track_event('export_runner_usage_by_project_as_csv', **internal_event_args)
 
         result = process_csv
         return result if result.error?
@@ -60,6 +60,23 @@ module Ci
           user: @current_user, scope: scope, from_date: @from_date, to_date: @to_date,
           csv_data: result.payload[:csv_data], export_status: result.payload[:status]
         ).deliver_now
+      end
+
+      def internal_event_args
+        args = { user: @current_user, additional_properties: { property: @runner_type&.to_s } }
+
+        case scope
+        when ::Group
+          args[:namespace] = scope
+          args[:additional_properties][:label] = 'group'
+        when ::Project
+          args[:project] = scope
+          args[:additional_properties][:label] = 'project'
+        else
+          args[:additional_properties][:label] = 'instance'
+        end
+
+        args
       end
 
       def log_audit_event(message:)

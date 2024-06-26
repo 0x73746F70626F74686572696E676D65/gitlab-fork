@@ -50,7 +50,8 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
 
   it 'creates tracking event' do
     expect(Gitlab::InternalEvents).to receive(:track_event)
-      .with('export_runner_usage_by_project_as_csv', user: current_user)
+      .with('export_runner_usage_by_project_as_csv', user: current_user,
+        additional_properties: { property: 'instance_type', label: 'instance' })
 
     response
   end
@@ -127,6 +128,14 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
         expect(response).to be_success
         expect(response.payload).to eq({ status: expected_status })
       end
+
+      it 'creates tracking event' do
+        expect(Gitlab::InternalEvents).to receive(:track_event)
+          .with('export_runner_usage_by_project_as_csv', user: current_user, namespace: specified_scope,
+            additional_properties: { property: 'instance_type', label: 'group' })
+
+        response
+      end
     end
 
     context 'when scope is a project' do
@@ -147,6 +156,14 @@ RSpec.describe Ci::Runners::SendUsageCsvService, :enable_admin_mode, :click_hous
 
         expect(response).to be_success
         expect(response.payload).to eq({ status: expected_status })
+      end
+
+      it 'creates tracking event' do
+        expect(Gitlab::InternalEvents).to receive(:track_event)
+          .with('export_runner_usage_by_project_as_csv', user: current_user, project: specified_scope,
+            additional_properties: { property: 'instance_type', label: 'project' })
+
+        response
       end
     end
   end

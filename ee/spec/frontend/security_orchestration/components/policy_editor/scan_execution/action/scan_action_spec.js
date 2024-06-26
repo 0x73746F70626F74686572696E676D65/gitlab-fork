@@ -12,10 +12,15 @@ import CiVariablesSelectors from 'ee/security_orchestration/components/policy_ed
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import { buildScannerAction } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { REPORT_TYPE_DAST } from '~/vue_shared/security_reports/constants';
+import {
+  REPORT_TYPE_DAST,
+  REPORT_TYPE_DEPENDENCY_SCANNING,
+  REPORT_TYPE_CONTAINER_SCANNING,
+} from '~/vue_shared/security_reports/constants';
 import {
   DEFAULT_SCANNER,
   SCANNER_HUMANIZED_TEMPLATE,
+  SCANNER_HUMANIZED_TEMPLATE_ALT,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
 import { createMockApolloProvider } from 'ee_jest/security_configuration/dast_profiles/graphql/create_mock_apollo_provider';
 import { RUNNER_TAG_LIST_MOCK } from 'ee_jest/vue_shared/components/runner_tags_dropdown/mocks/mocks';
@@ -101,9 +106,18 @@ describe('PolicyActionBuilder', () => {
     });
   });
 
-  it('renders the action message correctly', () => {
-    factory({ stubs: { GlSprintf: true } });
-    expect(findSprintf().attributes('message')).toBe(SCANNER_HUMANIZED_TEMPLATE);
+  it.each`
+    scanner                            | message
+    ${REPORT_TYPE_DEPENDENCY_SCANNING} | ${SCANNER_HUMANIZED_TEMPLATE_ALT}
+    ${REPORT_TYPE_CONTAINER_SCANNING}  | ${SCANNER_HUMANIZED_TEMPLATE_ALT}
+    ${DEFAULT_SCANNER}                 | ${SCANNER_HUMANIZED_TEMPLATE}
+  `('renders the action message correctly for $scanner', ({ scanner, message }) => {
+    factory({
+      propsData: { initAction: buildScannerAction({ scanner }) },
+      stubs: { GlSprintf: true },
+    });
+
+    expect(findSprintf().attributes('message')).toBe(message);
   });
 
   it('renders the scanner action with the newly selected scanner', async () => {
