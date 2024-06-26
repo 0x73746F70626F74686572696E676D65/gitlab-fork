@@ -29853,11 +29853,11 @@ The amount of time for a job to be picked up by a runner, in percentiles.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="queueinghistorytimeseriesp50"></a>`p50` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in GitLab 16.4. **Status**: Experiment. 50th percentile. 50% of the durations are lower than this value. |
-| <a id="queueinghistorytimeseriesp75"></a>`p75` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in GitLab 16.4. **Status**: Experiment. 75th percentile. 75% of the durations are lower than this value. |
-| <a id="queueinghistorytimeseriesp90"></a>`p90` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in GitLab 16.4. **Status**: Experiment. 90th percentile. 90% of the durations are lower than this value. |
-| <a id="queueinghistorytimeseriesp95"></a>`p95` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in GitLab 16.4. **Status**: Experiment. 95th percentile. 95% of the durations are lower than this value. |
-| <a id="queueinghistorytimeseriesp99"></a>`p99` **{warning-solid}** | [`Duration`](#duration) | **Introduced** in GitLab 16.4. **Status**: Experiment. 99th percentile. 99% of the durations are lower than this value. |
+| <a id="queueinghistorytimeseriesp50"></a>`p50` | [`Duration`](#duration) | 50th percentile. 50% of the durations are lower than this value. |
+| <a id="queueinghistorytimeseriesp75"></a>`p75` | [`Duration`](#duration) | 75th percentile. 75% of the durations are lower than this value. |
+| <a id="queueinghistorytimeseriesp90"></a>`p90` | [`Duration`](#duration) | 90th percentile. 90% of the durations are lower than this value. |
+| <a id="queueinghistorytimeseriesp95"></a>`p95` | [`Duration`](#duration) | 95th percentile. 95% of the durations are lower than this value. |
+| <a id="queueinghistorytimeseriesp99"></a>`p99` | [`Duration`](#duration) | 99th percentile. 99% of the durations are lower than this value. |
 | <a id="queueinghistorytimeseriestime"></a>`time` | [`Time!`](#time) | Start of the time interval. |
 
 ### `RecentFailures`

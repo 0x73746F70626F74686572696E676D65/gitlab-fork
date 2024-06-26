@@ -16,8 +16,7 @@ module Types
 
       PERCENTILES.each do |p|
         field "p#{p}", Types::DurationType,
-          null: true, description: "#{p}th percentile. #{p}% of the durations are lower than this value.",
-          alpha: { milestone: '16.4' }
+          null: true, description: "#{p}th percentile. #{p}% of the durations are lower than this value."
       end
     end
     # rubocop: enable Graphql/AuthorizeTypes
