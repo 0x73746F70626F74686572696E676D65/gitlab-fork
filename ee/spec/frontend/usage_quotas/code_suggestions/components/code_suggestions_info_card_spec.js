@@ -11,6 +11,8 @@ import { createMockClient } from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.vue';
 import { ADD_ON_PURCHASE_FETCH_ERROR_CODE } from 'ee/usage_quotas/error_constants';
+import getGitlabSubscriptionQuery from 'ee/fulfillment/shared_queries/gitlab_subscription.query.graphql';
+import { getMockSubscriptionData } from 'ee_jest/usage_quotas/seats/mock_data';
 
 Vue.use(VueApollo);
 
@@ -24,6 +26,8 @@ const defaultProvide = {
   addDuoProHref: 'http://customers.gitlab.com/namespaces/10/duo_pro_seats',
   isSaaS: true,
   subscriptionName: null,
+  subscriptionStartDate: '2023-03-16',
+  subscriptionEndDate: '2024-03-16',
 };
 
 describe('CodeSuggestionsInfoCard', () => {
@@ -45,14 +49,13 @@ describe('CodeSuggestionsInfoCard', () => {
   });
 
   const findCodeSuggestionsDescription = () => wrapper.findByTestId('description');
+  const findCodeSuggestionsSubscriptionInfo = () => wrapper.findByTestId('subscription-info');
   const findCodeSuggestionsLearnMoreLink = () => wrapper.findComponent(GlLink);
   const findCodeSuggestionsInfoTitle = () => wrapper.findByTestId('title');
   const findAddSeatsButton = () => wrapper.findComponent(GlButton);
   const findLimitedAccessModal = () => wrapper.findComponent(LimitedAccessModal);
 
-  const createComponent = (options = {}) => {
-    const { props = {}, provide = {} } = options;
-
+  const createMockApolloProvider = ({ subscriptionData }) => {
     const mockCustomersDotClient = createMockClient([
       [getSubscriptionPermissionsData, queryHandlerMock],
     ]);
@@ -62,10 +65,21 @@ describe('CodeSuggestionsInfoCard', () => {
       clients: { customersDotClient: mockCustomersDotClient, gitlabClient: mockGitlabClient },
     });
 
+    mockApollo.clients.defaultClient.cache.writeQuery({
+      query: getGitlabSubscriptionQuery,
+      data: subscriptionData,
+    });
+    return mockApollo;
+  };
+
+  const createComponent = (options = {}) => {
+    const { props = {}, provide = {}, subscriptionData = {} } = options;
+    const apolloProvider = createMockApolloProvider(subscriptionData);
+
     wrapper = shallowMountExtended(CodeSuggestionsInfoCard, {
       propsData: { ...defaultProps, ...props },
       provide: { ...defaultProvide, ...provide },
-      apolloProvider: mockApollo,
+      apolloProvider,
       stubs: {
         GlSprintf,
         LimitedAccessModal,
@@ -146,6 +160,62 @@ describe('CodeSuggestionsInfoCard', () => {
       expect(findCodeSuggestionsLearnMoreLink().attributes('href')).toBe(
         `${PROMO_URL}/gitlab-duo/`,
       );
+    });
+
+    describe('with subscription date info', () => {
+      const outputStartDate = 'Mar 16, 2023';
+      const outputEndDate = 'Mar 16, 2024';
+
+      describe('with Saas', () => {
+        beforeEach(async () => {
+          createComponent({
+            subscriptionData: getMockSubscriptionData({ code: 'premium', name: 'Premium' }),
+          });
+
+          // wait for apollo to load
+          await waitForPromises();
+        });
+        it('renders the correct start date text', () => {
+          expect(findCodeSuggestionsSubscriptionInfo().text()).toContain(outputStartDate);
+        });
+
+        it('renders the correct end date text', () => {
+          expect(findCodeSuggestionsSubscriptionInfo().text()).toContain(outputEndDate);
+        });
+      });
+      describe('with SM', () => {
+        beforeEach(async () => {
+          createComponent({ subscriptionData: {} });
+
+          // wait for apollo to load
+          await waitForPromises();
+        });
+        it('renders the correct start date text', () => {
+          expect(findCodeSuggestionsSubscriptionInfo().text()).toContain(outputStartDate);
+        });
+
+        it('renders the correct end date text', () => {
+          expect(findCodeSuggestionsSubscriptionInfo().text()).toContain(outputEndDate);
+        });
+      });
+      describe('with subscription dates not available', () => {
+        beforeEach(async () => {
+          createComponent({
+            subscriptionData: { subscription: { endDate: null, startDate: null } },
+            provide: { subscriptionStartDate: null, subscriptionEndDate: null },
+          });
+
+          // wait for apollo to load
+          await waitForPromises();
+        });
+        it('renders the correct start date text', () => {
+          expect(findCodeSuggestionsSubscriptionInfo().text()).toContain('Not available');
+        });
+
+        it('renders the correct end date text', () => {
+          expect(findCodeSuggestionsSubscriptionInfo().text()).toContain('Not available');
+        });
+      });
     });
   });
 

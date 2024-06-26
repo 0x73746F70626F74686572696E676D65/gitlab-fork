@@ -11,6 +11,9 @@ export const parseProvideData = (el) => {
     duoProTrialHref,
     addDuoProHref,
     duoProBulkUserAssignmentAvailable,
+    subscriptionName,
+    subscriptionStartDate,
+    subscriptionEndDate,
   } = el.dataset;
 
   return {
@@ -20,6 +23,9 @@ export const parseProvideData = (el) => {
     addDuoProHref,
     isSaaS: true,
     isBulkAddOnAssignmentEnabled: parseBoolean(duoProBulkUserAssignmentAvailable),
+    subscriptionName,
+    subscriptionStartDate,
+    subscriptionEndDate,
   };
 };
 

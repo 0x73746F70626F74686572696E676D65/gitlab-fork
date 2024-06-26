@@ -8,7 +8,7 @@ import {
   GlModalDirective,
 } from '@gitlab/ui';
 import * as Sentry from '~/sentry/sentry_browser_wrapper';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
 import UsageStatistics from 'ee/usage_quotas/components/usage_statistics.vue';
 import {
   DUO_PRO,
@@ -24,6 +24,8 @@ import LimitedAccessModal from 'ee/usage_quotas/components/limited_access_modal.
 import { visitUrl } from '~/lib/utils/url_utility';
 import { LIMITED_ACCESS_KEYS } from 'ee/usage_quotas/components/constants';
 import { ADD_ON_PURCHASE_FETCH_ERROR_CODE } from 'ee/usage_quotas/error_constants';
+import getGitlabSubscriptionQuery from 'ee/fulfillment/shared_queries/gitlab_subscription.query.graphql';
+import { localeDateFormat } from '~/lib/utils/datetime_utility';
 
 export default {
   name: 'CodeSuggestionsUsageInfoCard',
@@ -36,6 +38,9 @@ export default {
     ),
     title: s__('CodeSuggestions|%{title}'),
     addSeatsText,
+    subscriptionStartDate: __('Subscription start date'),
+    subscriptionEndDate: __('Subscription end date'),
+    notAvailable: __('Not available'),
   },
   components: {
     GlButton,
@@ -50,7 +55,13 @@ export default {
     GlModalDirective,
   },
   mixins: [Tracking.mixin()],
-  inject: ['addDuoProHref', 'isSaaS', 'subscriptionName'],
+  inject: [
+    'addDuoProHref',
+    'isSaaS',
+    'subscriptionName',
+    'subscriptionStartDate',
+    'subscriptionEndDate',
+  ],
   props: {
     groupId: {
       type: String,
@@ -100,8 +111,30 @@ export default {
     duoTitle() {
       return this.duoTier === DUO_ENTERPRISE ? DUO_ENTERPRISE_TITLE : CODE_SUGGESTIONS_TITLE;
     },
+    startDate() {
+      const date = this.subscription?.startDate || this.subscriptionStartDate;
+      return date ? this.formattedDate(date) : this.$options.i18n.notAvailable;
+    },
+    endDate() {
+      const date = this.subscription?.endDate || this.subscriptionEndDate;
+      return date ? this.formattedDate(date) : this.$options.i18n.notAvailable;
+    },
   },
   apollo: {
+    subscription: {
+      query: getGitlabSubscriptionQuery,
+      variables() {
+        return {
+          namespaceId: this.parsedGroupId,
+        };
+      },
+      skip() {
+        return !this.groupId;
+      },
+      error: (error) => {
+        Sentry.captureException(error);
+      },
+    },
     subscriptionPermissions: {
       query: getSubscriptionPermissionsData,
       client: 'customersDotClient',
@@ -144,6 +177,10 @@ export default {
       this.handleAddDuoProClick();
       visitUrl(this.addDuoProHref);
     },
+    formattedDate(date) {
+      const [year, month, day] = date.split('-');
+      return localeDateFormat.asDate.format(new Date(year, month - 1, day));
+    },
   },
 };
 </script>
@@ -156,7 +193,7 @@ export default {
     </gl-skeleton-loader>
     <usage-statistics v-else>
       <template #description>
-        <h4 class="gl-font-bold gl-mb-0" data-testid="title">
+        <h4 class="gl-font-bold gl-m-0" data-testid="title">
           {{ sprintf($options.i18n.title, { title: duoTitle }) }}
         </h4>
       </template>
@@ -170,6 +207,20 @@ export default {
             </template>
           </gl-sprintf>
         </p>
+        <div data-testid="subscription-info">
+          <div class="gl-flex gl-gap-3">
+            <span class="gl-basis-1/3 gl-font-bold gl-min-w-20">{{
+              $options.i18n.subscriptionStartDate
+            }}</span>
+            <span>{{ startDate }}</span>
+          </div>
+          <div class="gl-flex gl-mt-2 gl-gap-3">
+            <span class="gl-basis-1/3 gl-font-bold gl-min-w-20">{{
+              $options.i18n.subscriptionEndDate
+            }}</span>
+            <span>{{ endDate }}</span>
+          </div>
+        </div>
       </template>
       <template #actions>
         <gl-button
@@ -178,6 +229,7 @@ export default {
           category="primary"
           target="_blank"
           variant="confirm"
+          size="small"
           class="gl-ml-3 gl-align-self-start"
           data-testid="purchase-button"
           @click="handleAddSeats"
