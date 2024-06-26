@@ -21,7 +21,7 @@ RSpec.describe 'admin/application_settings/security_and_compliance.html.haml', f
     it do
       render
 
-      expect(rendered).to have_css '#js-secret-detection-settings'
+      expect(rendered).to have_css('[data-testid="admin-secret-detection-settings"]')
     end
   end
 
@@ -29,7 +29,7 @@ RSpec.describe 'admin/application_settings/security_and_compliance.html.haml', f
     it do
       render
 
-      expect(rendered).not_to have_css '#js-secret-detection-settings'
+      expect(rendered).not_to have_css('[data-testid="admin-secret-detection-settings"]')
     end
   end
 

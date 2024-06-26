@@ -31563,9 +31563,6 @@ msgstr ""
 msgid "Manage rules"
 msgstr ""
 
-msgid "Manage secret detection behavior for all projects in your GitLab instance"
-msgstr ""
-
 msgid "Manage two-factor authentication"
 msgstr ""
 
@@ -49805,9 +49802,6 @@ msgid "Setting enforced"
 msgstr ""
 
 msgid "Settings"
-msgstr ""
-
-msgid "Settings for the License Compliance feature"
 msgstr ""
 
 msgid "Settings saved successfully."

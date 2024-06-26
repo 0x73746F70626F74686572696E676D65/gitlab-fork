@@ -2,22 +2,19 @@
 - page_title _("Security and Compliance")
 - add_page_specific_style 'page_bundles/settings'
 - @force_desktop_expanded_sidebar = true
+- @hide_search_settings = true
 
-= render ::Layouts::SettingsBlockComponent.new(_('License Compliance'),
-  id: 'js-license-compliance-settings',
-  testid: 'admin-license-compliance-settings',
-  expanded: expanded_by_default?) do |c|
-  - c.with_description do
-    = _('Settings for the License Compliance feature')
-  - c.with_body do
-    = render 'license_compliance'
+.settings-section{ data: { testid: 'admin-license-compliance-settings' } }
+  .settings-sticky-header
+    .settings-sticky-header-inner
+      %h2.gl-heading-2{ class: '!gl-mb-2' }
+        = _('License Compliance')
+  = render 'license_compliance'
 
 - if (::Gitlab::CurrentSettings.gitlab_dedicated_instance? || Feature.enabled?(:pre_receive_secret_detection_beta_release)) && License.feature_available?(:pre_receive_secret_detection)
-  = render ::Layouts::SettingsBlockComponent.new(_('Secret Detection'),
-    id: 'js-secret-detection-settings',
-    testid: 'admin-secret-detection-settings',
-    expanded: expanded_by_default?) do |c|
-    - c.with_description do
-      = _('Manage secret detection behavior for all projects in your GitLab instance')
-    - c.with_body do
-      = render 'pre_receive_secret_detection'
+  .settings-section{ data: { testid: 'admin-secret-detection-settings' } }
+    .settings-sticky-header
+      .settings-sticky-header-inner
+        %h2.gl-heading-2{ class: '!gl-mb-2' }
+          = _('Secret Detection')
+    = render 'pre_receive_secret_detection'
