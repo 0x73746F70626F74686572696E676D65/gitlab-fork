@@ -141,7 +141,7 @@ export default {
           <gl-icon name="question-o" :size="12" />
         </gl-link>
         <span
-          class="gl-display-inline-flex gl-align-items-center gl-ml-4"
+          class="gl-inline-flex gl-align-items-center gl-ml-4"
           data-testid="related-jira-issues-count"
         >
           <gl-icon name="issues" class="gl-mr-2 gl-text-gray-500" />
@@ -182,7 +182,7 @@ export default {
             >
               <span
                 v-safe-html="$options.jiraLogo"
-                class="gl-min-h-6 gl-mr-5 gl-display-inline-flex gl-align-items-center"
+                class="gl-min-h-6 gl-mr-5 gl-inline-flex gl-align-items-center"
               >
               </span>
               <gl-link

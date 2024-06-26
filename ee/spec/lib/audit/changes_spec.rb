@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Audit::Changes do
+RSpec.describe Audit::Changes, feature_category: :audit_events do
   subject(:foo_instance) { Class.new { include Audit::Changes }.new }
 
   describe '.audit_changes' do
@@ -40,6 +40,40 @@ RSpec.describe Audit::Changes do
 
     describe 'audit changes' do
       let(:options) { { model: user, event_type: 'audit_operation' } }
+
+      context 'for a sensitive column' do
+        it 'does not audit log the value of a sensitive column' do
+          user.update!(static_object_token: 'super secret')
+
+          foo_instance.audit_changes(:static_object_token, options)
+
+          audit_event = AuditEvent.last
+          expect(audit_event.entity_id).to eq(user.id)
+          expect(audit_event.entity_type).to eq(user.class.name)
+          expect(audit_event.details).to eq({ change: :static_object_token,
+                                              author_name: current_user.name,
+                                              author_class: current_user.class.name,
+                                              event_name: "audit_operation",
+                                              from: nil,
+                                              to: nil,
+                                              target_details: user.name,
+                                              target_id: user.id,
+                                              target_type: user.class.name,
+                                              custom_message: "Changed static_object_token" })
+        end
+
+        it 'logs a message in AppJsonLogger' do
+          user.update!(static_object_token: 'super secret')
+
+          expect(Gitlab::AppJsonLogger).to receive(:warn).with(
+            class: 'User',
+            column: :static_object_token,
+            message: 'Sensitive column `static_object_token`, removing values from audit log'
+          )
+
+          foo_instance.audit_changes(:static_object_token, options)
+        end
+      end
 
       it 'calls the auditor' do
         user.update!(name: 'Scrooge McDuck')

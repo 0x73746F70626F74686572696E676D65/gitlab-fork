@@ -17,6 +17,7 @@ export default {
   QUERY_TOO_SHORT_ERROR: 'QUERY_TOO_SHORT_ERROR',
   NO_RESULTS_ERROR: 'NO_RESULTS_ERROR',
   i18n: {
+    searchPlaceholder: __('Search by full path'),
     defaultPlaceholder: __('Choose a project'),
     errorNetworkMessage: __('Something went wrong, unable to search projects'),
     noResultsText: __('Sorry, no projects matched your search'),
@@ -194,6 +195,7 @@ export default {
     :selected="selected"
     :items="listBoxItems"
     :toggle-text="toggleText"
+    :search-placeholder="$options.i18n.searchPlaceholder"
     @bottom-reached="fetchNextPage"
     @search="fetchProjects"
     @select="selectProject"
