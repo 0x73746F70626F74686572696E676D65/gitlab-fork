@@ -70,7 +70,13 @@ module CodeSuggestions
     end
 
     def anthropic_model
-      Feature.enabled?(:claude_3_code_generation_haiku, current_user) ? 'claude-3-haiku-20240307' : ANTHROPIC_MODEL
+      if Feature.enabled?(:claude_3_5_code_generation_sonnet, current_user)
+        'claude-3-5-sonnet-20240620'
+      elsif Feature.enabled?(:claude_3_code_generation_haiku, current_user)
+        'claude-3-haiku-20240307'
+      else
+        ANTHROPIC_MODEL
+      end
     end
 
     def language

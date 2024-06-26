@@ -39,6 +39,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
     allow(Gitlab::GlobalAnonymousId).to receive(:instance_id).and_return(global_instance_id)
 
     stub_feature_flags(claude_3_code_generation_haiku: false)
+    stub_feature_flags(claude_3_5_code_generation_sonnet: false)
   end
 
   shared_examples 'a response' do |case_name|
