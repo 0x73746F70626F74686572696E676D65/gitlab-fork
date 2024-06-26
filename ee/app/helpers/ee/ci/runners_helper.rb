@@ -21,10 +21,7 @@ module EE
 
       override :group_runners_data_attributes
       def group_runners_data_attributes(group)
-        dashboard_available = ::Feature.enabled?(:runners_dashboard_for_groups, group) &&
-          group.licensed_feature_available?(:runner_performance_insights_for_namespace)
-
-        if dashboard_available
+        if group.licensed_feature_available?(:runner_performance_insights_for_namespace)
           super.merge(runner_dashboard_path: dashboard_group_runners_path(group))
         else
           super

@@ -77,11 +77,9 @@ RSpec.describe Groups::RunnersController, feature_category: :fleet_visibility do
     end
 
     let(:runner) { create(:ci_runner, :group, groups: [group]) }
-    let(:groups_with_dashboard_available) { [group] }
     let(:feature_available) { true }
 
     before do
-      stub_feature_flags(runners_dashboard_for_groups: groups_with_dashboard_available)
       stub_licensed_features(runner_performance_insights_for_namespace: feature_available)
     end
 
@@ -99,17 +97,6 @@ RSpec.describe Groups::RunnersController, feature_category: :fleet_visibility do
 
     context 'when feature is not available' do
       let(:feature_available) { false }
-
-      it 'returns not found' do
-        make_request
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
-    context 'when feature flag is disabled for group' do
-      let(:other_group) { create(:group) }
-      let(:groups_with_dashboard_available) { [other_group] }
 
       it 'returns not found' do
         make_request

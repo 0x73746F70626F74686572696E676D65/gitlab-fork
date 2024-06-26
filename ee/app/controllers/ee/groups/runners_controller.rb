@@ -25,10 +25,7 @@ module EE
       end
 
       def dashboard
-        dashboard_available = ::Feature.enabled?(:runners_dashboard_for_groups, group) &&
-          group.licensed_feature_available?(:runner_performance_insights_for_namespace)
-
-        render_404 unless dashboard_available
+        render_404 unless group.licensed_feature_available?(:runner_performance_insights_for_namespace)
       end
     end
   end

@@ -50,16 +50,6 @@ RSpec.describe EE::Ci::RunnersHelper, feature_category: :fleet_visibility do
       it 'returns dashboard path' do
         expect(data_attributes[:runner_dashboard_path]).to eq expected_path
       end
-
-      context 'when runners_dashboard_for_groups FF is disabled for group' do
-        before do
-          stub_feature_flags(runners_dashboard_for_groups: [create(:group)])
-        end
-
-        it 'has no runner_dashboard_path' do
-          expect(data_attributes[:runner_dashboard_path]).to be_nil
-        end
-      end
     end
   end
 
