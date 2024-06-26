@@ -10463,16 +10463,16 @@ msgstr ""
 msgid "Capacity threshold"
 msgstr ""
 
+msgid "CascadingSettings|An administrator selected this setting for the instance and you cannot change it."
+msgstr ""
+
 msgid "CascadingSettings|Enforce for all subgroups"
 msgstr ""
 
-msgid "CascadingSettings|Setting enforced"
+msgid "CascadingSettings|Setting cannot be changed"
 msgstr ""
 
 msgid "CascadingSettings|Subgroups cannot change this setting."
-msgstr ""
-
-msgid "CascadingSettings|This setting has been enforced by an instance admin."
 msgstr ""
 
 msgid "CascadingSettings|This setting has been enforced by an owner of %{link}."
