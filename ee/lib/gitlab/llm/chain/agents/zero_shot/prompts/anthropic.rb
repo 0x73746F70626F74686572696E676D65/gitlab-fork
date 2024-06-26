@@ -12,8 +12,9 @@ module Gitlab
 
               def self.prompt(options)
                 history = truncated_conversation_list(options[:conversation])
+                base = base_prompt(options)
 
-                text = history + base_prompt(options)
+                text = deduplicate_roles(history + base)
 
                 Requests::Anthropic.prompt(text)
               end
@@ -34,6 +35,27 @@ module Gitlab
                 conversation.map do |message, _|
                   { role: message.role.to_sym, content: message.content }
                 end
+              end
+
+              def self.deduplicate_roles(messages)
+                result = []
+                previous_role = nil
+
+                messages.each do |message|
+                  current_role = message[:role]
+                  current_content = message[:content]
+
+                  if current_role == previous_role
+                    # If the current role is the same as the previous one, update the content
+                    result.last[:content] = current_content
+                  else
+                    # If the role is different, add a new entry
+                    result << { role: current_role, content: current_content }
+                    previous_role = current_role
+                  end
+                end
+
+                result
               end
             end
           end
