@@ -1,6 +1,6 @@
 ---
 key_path: counts.count_total_export_runner_usage_by_project_as_csv_monthly
-description: Monthly count of Runner usage CSV report exports
+description: Monthly count of runner usage CSV report exports
 product_group: runner
 performance_indicator_type: []
 value_type: number
