@@ -88,6 +88,40 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
         expect(assistant_prompts[1][:content]).to eq("response 2")
       end
     end
+
+    context 'when role is duplicated in history' do
+      let(:options) do
+        {
+          tools_definitions: "tool definitions",
+          tool_names: "tool names",
+          user_input: user_input,
+          agent_scratchpad: "some observation",
+          conversation: [
+            build(:ai_message, request_id: 'uuid1', role: 'user', content: 'question 1'),
+            build(:ai_message, request_id: 'uuid1', role: 'assistant', content: 'response 1'),
+            build(:ai_message, request_id: 'uuid1', role: 'user', content: 'question 2'),
+            build(:ai_message, request_id: 'uuid1', role: 'assistant', content: 'duplicated response 1'),
+            build(:ai_message, request_id: 'uuid1', role: 'assistant', content: 'duplicated response 2')
+          ],
+          prompt_version: prompt_version,
+          current_code: "",
+          current_resource: "",
+          resources: "",
+          current_user: user,
+          zero_shot_prompt: zero_shot_prompt,
+          system_prompt: system_prompt,
+          source_template: "source template"
+        }
+      end
+
+      it 'returns last message with role' do
+        prompt = subject
+
+        expect(prompt).to be_instance_of(Array)
+        expect(prompt).not_to include(hash_including(role: :assistant, content: 'duplicated response 1'))
+        expect(prompt).to include(hash_including(role: :assistant, content: 'duplicated response 2'))
+      end
+    end
   end
 
   it_behaves_like 'zero shot prompt'
