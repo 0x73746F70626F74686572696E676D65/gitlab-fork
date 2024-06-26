@@ -16,3 +16,5 @@ class BackfillArchivedOnIssues < Elastic::Migration
     'archived'
   end
 end
+
+BackfillArchivedOnIssues.prepend ::Elastic::MigrationObsolete
