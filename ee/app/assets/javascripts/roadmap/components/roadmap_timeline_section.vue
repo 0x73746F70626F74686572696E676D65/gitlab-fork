@@ -1,4 +1,5 @@
 <script>
+import { debounce } from 'lodash';
 import { EPIC_DETAILS_CELL_WIDTH, TIMELINE_CELL_MIN_WIDTH } from '../constants';
 import eventHub from '../event_hub';
 
@@ -32,6 +33,7 @@ export default {
   data() {
     return {
       scrolledHeaderClass: '',
+      rightSpacing: 16,
     };
   },
   computed: {
@@ -49,9 +51,25 @@ export default {
     },
     sectionContainerStyles() {
       return {
-        width: `${EPIC_DETAILS_CELL_WIDTH + TIMELINE_CELL_MIN_WIDTH * this.timeframe.length}px`,
+        width: `${
+          EPIC_DETAILS_CELL_WIDTH +
+          TIMELINE_CELL_MIN_WIDTH * this.timeframe.length +
+          this.rightSpacing
+        }px`,
       };
     },
+  },
+  created() {
+    this.setRightSpacing();
+
+    const resizeThrottled = debounce(() => {
+      this.setRightSpacing();
+    }, 400);
+
+    window.addEventListener('resize', resizeThrottled);
+  },
+  destroyed() {
+    window.removeEventListener('resize', this.setRightSpacing);
   },
   mounted() {
     eventHub.$on('epicsListScrolled', this.handleEpicsListScroll);
@@ -63,6 +81,19 @@ export default {
     handleEpicsListScroll({ scrollTop }) {
       // Add class only when epics list is scrolled at 1% the height of header
       this.scrolledHeaderClass = scrollTop > this.$el.clientHeight / 100 ? 'scroll-top-shadow' : '';
+    },
+    setRightSpacing() {
+      // To support browsers other than chromium, we need to add 16 or 24px to
+      // the actual width of the timeline section isntead of using utility
+      // classes like "gl-mr-5 xl:gl-mr-6". This will set the specing to 16px
+      // when the viewport is smaller than our xl breakpoint, and 24px if it's
+      // xl or larger.
+      const width = window.innerWidth;
+      if (width >= 1200) {
+        this.rightSpacing = 24;
+      } else {
+        this.rightSpacing = 16;
+      }
     },
   },
 };

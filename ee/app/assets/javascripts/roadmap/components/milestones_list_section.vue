@@ -115,11 +115,11 @@ export default {
 <template>
   <div
     :style="sectionContainerStyles"
-    class="milestones-list-section gl-display-table clearfix"
+    class="milestones-list-section gl-table clearfix"
     data-testid="milestones-list-wrapper"
   >
     <div
-      class="milestones-list-title gl-display-table-cell border-bottom gl-align-top position-sticky gl-pl-2 gl-pr-3 gl-pt-2"
+      class="milestones-list-title gl-table-cell border-bottom gl-align-top position-sticky gl-pl-5 xl:gl-pl-6 gl-pr-3 gl-pt-2"
     >
       <div class="gl-display-flex gl-align-items-center">
         <span
@@ -151,7 +151,7 @@ export default {
         </div>
       </div>
     </div>
-    <div class="milestones-list-items gl-display-table-cell">
+    <div class="milestones-list-items gl-table-cell">
       <milestone-timeline
         :timeframe="timeframe"
         :milestones="milestones"

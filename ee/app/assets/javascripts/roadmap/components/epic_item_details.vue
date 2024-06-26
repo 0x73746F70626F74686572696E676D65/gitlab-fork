@@ -163,11 +163,11 @@ export default {
 
 <template>
   <div
-    class="epic-details-cell gl-display-flex gl-flex-direction-column gl-justify-content-center"
+    class="epic-details-cell gl-flex gl-flex-col gl-justify-center"
     data-testid="epic-details-cell"
   >
     <div
-      class="gl-display-flex align-items-start gl-p-3"
+      class="gl-flex align-items-start gl-p-3 gl-pl-5 xl:gl-pl-6"
       :class="[epic.isChildEpic ? childMarginClassname : '']"
       data-testid="epic-container"
     >
@@ -198,7 +198,7 @@ export default {
         {{ expandIconLabel }}
       </gl-tooltip>
       <div class="flex-grow-1 mx-1 gl-w-13">
-        <div class="gl-display-flex gl-mt-1">
+        <div class="gl-flex gl-mt-1">
           <issuable-blocked-icon
             v-if="epic.blocked"
             :item="epic"
@@ -215,7 +215,7 @@ export default {
             {{ epic.title }}
           </a>
         </div>
-        <div class="epic-group-timeframe gl-display-flex text-secondary">
+        <div class="epic-group-timeframe gl-flex text-secondary">
           <span
             v-if="isEpicGroupDifferent && !epic.hasParent"
             :title="epic.group.fullName"
@@ -246,7 +246,7 @@ export default {
       <template v-if="allowSubEpics">
         <div
           ref="childEpicsCount"
-          class="gl-mt-1 gl-display-flex text-secondary text-nowrap"
+          class="gl-mt-1 gl-flex text-secondary text-nowrap"
           data-testid="child-epics-count"
         >
           <gl-icon name="epic" class="align-text-bottom mr-1" />

@@ -97,10 +97,8 @@ export default {
      * Implementation of this method is identical to
      * MonthsPresetMixin#getTimelineBarWidthForMonths
      */
-    getTimelineBarWidthForWeeks(roadmapItem) {
+    getTimelineBarWidthForWeeks() {
       let timelineBarWidth = 0;
-      const startDate = this.startDateValues.day + getLocaleOffsetDays();
-      const firstDayOfWeek = this.timeframeItem.getDay() + 1;
 
       const indexOfCurrentWeek = this.timeframe.indexOf(this.timeframeItem);
       const { cellWidth } = this.$options;
@@ -125,15 +123,6 @@ export default {
         } else {
           timelineBarWidth += this.getBarWidthForSingleWeek(cellWidth, 7);
         }
-      }
-
-      // Adjust width to balance offset
-      if (
-        roadmapItem.startDateOutOfRange ||
-        roadmapItem.startDateUndefined ||
-        startDate === firstDayOfWeek
-      ) {
-        timelineBarWidth += cellWidth / 7 / 2;
       }
 
       return timelineBarWidth;

@@ -145,12 +145,12 @@ describe('EpicItemDetails', () => {
     });
     it('applies class for level 1 child', () => {
       createWrapper({ epic, childLevel: 1 });
-      expect(getEpicContainer().classes('ml-3')).toBe(true);
+      expect(getEpicContainer().classes('gl-ml-3')).toBe(true);
     });
 
     it('applies class for level 2 child', () => {
       createWrapper({ epic, childLevel: 2 });
-      expect(getEpicContainer().classes('ml-4')).toBe(true);
+      expect(getEpicContainer().classes('gl-ml-5')).toBe(true);
     });
   });
 

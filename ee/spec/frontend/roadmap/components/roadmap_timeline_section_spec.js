@@ -35,7 +35,7 @@ describe('RoadmapTimelineSectionComponent', () => {
     it('`width` value based on epic details cell width, timeline cell width and timeframe length', () => {
       createComponent();
 
-      expect(wrapper.element.style.width).toBe('2480px'); // We now have fixed columns in timeframe.
+      expect(wrapper.element.style.width).toBe('2496px'); // We now have fixed columns in timeframe.
     });
   });
 
