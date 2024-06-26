@@ -451,6 +451,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       before do
         allow(pipeline).to receive(:complete?) { false }
         allow(pipeline).to receive(:blocked?) { false }
+        allow(pipeline).to receive(:canceling?) { false }
       end
 
       it { is_expected.to be_falsy }
@@ -460,6 +461,25 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       before do
         allow(pipeline).to receive(:complete?) { false }
         allow(pipeline).to receive(:blocked?) { true }
+        allow(pipeline).to receive(:canceling?) { false }
+      end
+
+      it { is_expected.to be_truthy }
+
+      context 'when "Pipelines must succeed" is enabled' do
+        before do
+          allow(merge_request).to receive(:only_allow_merge_if_pipeline_succeeds?) { true }
+        end
+
+        it { is_expected.to be_falsy }
+      end
+    end
+
+    context 'when the head pipeline of the pipeline is canceling' do
+      before do
+        allow(pipeline).to receive(:complete?) { false }
+        allow(pipeline).to receive(:blocked?) { false }
+        allow(pipeline).to receive(:canceling?) { true }
       end
 
       it { is_expected.to be_truthy }
