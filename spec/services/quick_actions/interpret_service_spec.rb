@@ -2665,6 +2665,19 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
         end
       end
 
+      shared_examples 'a successful command execution' do
+        it 'converts issue to Service Desk issue' do
+          _, _, message = convert_to_ticket
+
+          expect(message).to eq(s_('ServiceDesk|Converted issue to Service Desk ticket.'))
+          expect(issuable).to have_attributes(
+            confidential: expected_confidentiality,
+            author_id: Users::Internal.support_bot.id,
+            service_desk_reply_to: 'user@example.com'
+          )
+        end
+      end
+
       let_it_be_with_reload(:issuable) { issue }
       let_it_be(:original_author) { issue.author }
 
@@ -2689,16 +2702,46 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
 
       context 'when parameter is an email' do
         let(:content) { '/convert_to_ticket user@example.com' }
+        let(:expected_confidentiality) { true }
 
-        it 'converts issue to Service Desk issue' do
-          _, _, message = convert_to_ticket
+        it_behaves_like 'a successful command execution'
 
-          expect(message).to eq(s_('ServiceDesk|Converted issue to Service Desk ticket.'))
-          expect(issuable).to have_attributes(
-            confidential: true,
-            author_id: Users::Internal.support_bot.id,
-            service_desk_reply_to: 'user@example.com'
-          )
+        context 'when tickets should not be confidential by default' do
+          let_it_be(:service_desk_settings) do
+            create(:service_desk_setting, project: project, tickets_confidential_by_default: false)
+          end
+
+          context 'when issuable is in a public project' do
+            it_behaves_like 'a successful command execution'
+
+            context 'when issuable is already confidential' do
+              before do
+                issuable.update!(confidential: true)
+              end
+
+              it_behaves_like 'a successful command execution'
+            end
+          end
+
+          context 'when issuable is in a private project' do
+            let(:expected_confidentiality) { false }
+
+            before do
+              project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+            end
+
+            it_behaves_like 'a successful command execution'
+          end
+
+          context 'when issuable is already confidential' do
+            let(:expected_confidentiality) { true }
+
+            before do
+              issuable.update!(confidential: true)
+            end
+
+            it_behaves_like 'a successful command execution'
+          end
         end
       end
 
