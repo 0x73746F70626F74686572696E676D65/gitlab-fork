@@ -299,6 +299,7 @@ RSpec.describe 'Query.namespace.addOnEligibleUsers', feature_category: :seat_cos
 
       before do
         other_add_on_purchase.namespace.add_owner(current_user)
+        other_add_on_purchase.namespace.update!(organization: add_on_purchase.namespace.organization)
       end
 
       it "avoids N+1 database queries", :request_store do

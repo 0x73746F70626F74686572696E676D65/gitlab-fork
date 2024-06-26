@@ -175,7 +175,7 @@ RSpec.describe 'getting a list of compliance frameworks for a root namespace', f
     end
 
     context 'when querying multiple namespaces' do
-      let(:group) { create(:group) }
+      let(:group) { create(:group, organization: namespace.organization) }
       let(:sox_framework) { create(:compliance_framework, namespace: group, name: 'SOX') }
       let(:multiple_namespace_query) do
         <<~QUERY

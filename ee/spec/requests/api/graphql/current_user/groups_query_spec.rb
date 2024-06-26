@@ -6,11 +6,12 @@ RSpec.describe 'Query current user groups', feature_category: :groups_and_projec
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:root_parent) { create(:group, :private, name: 'root-1', path: 'root-1') }
-  let_it_be(:guest_group) { create(:group, name: 'public guest', path: 'public-guest', guests: user) }
-  let_it_be(:private_maintainer_group) { create(:group, :private, name: 'b private maintainer', path: 'b-private-maintainer', parent: root_parent, maintainers: user) }
-  let_it_be(:private_developer_group) { create(:group, :private, project_creation_level: nil, name: 'c public developer', path: 'c-public-developer', developers: user) }
-  let_it_be(:public_maintainer_group) { create(:group, :private, name: 'a public maintainer', path: 'a-public-maintainer', maintainers: user) }
+  let_it_be(:organization) { create(:organization) }
+  let_it_be(:root_parent) { create(:group, :private, name: 'root-1', path: 'root-1', organization: organization) }
+  let_it_be(:guest_group) { create(:group, name: 'public guest', path: 'public-guest', guests: user, organization: organization) }
+  let_it_be(:private_maintainer_group) { create(:group, :private, name: 'b private maintainer', path: 'b-private-maintainer', parent: root_parent, maintainers: user, organization: organization) }
+  let_it_be(:private_developer_group) { create(:group, :private, project_creation_level: nil, name: 'c public developer', path: 'c-public-developer', developers: user, organization: organization) }
+  let_it_be(:public_maintainer_group) { create(:group, :private, name: 'a public maintainer', path: 'a-public-maintainer', maintainers: user, organization: organization) }
 
   let(:group_arguments) { {} }
   let(:current_user) { user }
@@ -29,11 +30,11 @@ RSpec.describe 'Query current user groups', feature_category: :groups_and_projec
     it 'avoids N+1 queries', :request_store do
       control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }
 
-      create(:group, :private, maintainers: current_user)
-      create(:group, :private, parent: private_maintainer_group)
+      create(:group, :private, maintainers: current_user, organization: organization)
+      create(:group, :private, parent: private_maintainer_group, organization: organization)
 
       another_root = create(:group, :private, name: 'root-3', path: 'root-3')
-      create(:group, :private, parent: another_root, maintainers: current_user)
+      create(:group, :private, parent: another_root, maintainers: current_user, organization: organization)
 
       expect { post_graphql(query, current_user: current_user) }.not_to exceed_query_limit(control)
     end
