@@ -295,7 +295,6 @@ describe('CreateMemberRole', () => {
         expect(findNameField().element.value).toBe('Custom role');
         expect(findDescriptionField().element.value).toBe('Custom role description');
         expect(findPermissionsSelector().props('permissions')).toEqual(['A', 'B']);
-        expect(findPermissionsSelector().props('baseRoleAccessLevel')).toEqual(30);
       });
 
       it('disables the base role selector', () => {

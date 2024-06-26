@@ -1,24 +1,11 @@
 export const mockDefaultPermissions = [
-  { value: 'A', name: 'A', description: 'A', requirements: null, availableFromAccessLevel: null },
-  { value: 'B', name: 'B', description: 'B', requirements: ['A'], availableFromAccessLevel: null },
-  { value: 'C', name: 'C', description: 'C', requirements: ['B'], availableFromAccessLevel: null }, // Nested dependency: C -> B -> A
-  { value: 'D', name: 'D', description: 'D', requirements: ['C'], availableFromAccessLevel: null }, // Nested dependency: D -> C -> B -> A
-  { value: 'E', name: 'E', description: 'E', requirements: ['F'], availableFromAccessLevel: null }, // Circular dependency
-  { value: 'F', name: 'F', description: 'F', requirements: ['E'], availableFromAccessLevel: null }, // Circular dependency
-  {
-    value: 'G',
-    name: 'G',
-    description: 'G',
-    requirements: ['A', 'B', 'C'],
-    availableFromAccessLevel: null,
-  }, // Multiple dependencies
-  {
-    value: 'H',
-    name: 'H',
-    description: 'H',
-    requirements: null,
-    availableFromAccessLevel: { integerValue: 30 },
-  }, // AvailableFromAccessLevel (no dependencies)
+  { value: 'A', name: 'A', description: 'A', requirements: null },
+  { value: 'B', name: 'B', description: 'B', requirements: ['A'] },
+  { value: 'C', name: 'C', description: 'C', requirements: ['B'] }, // Nested dependency: C -> B -> A
+  { value: 'D', name: 'D', description: 'D', requirements: ['C'] }, // Nested dependency: D -> C -> B -> A
+  { value: 'E', name: 'E', description: 'E', requirements: ['F'] }, // Circular dependency
+  { value: 'F', name: 'F', description: 'F', requirements: ['E'] }, // Circular dependency
+  { value: 'G', name: 'G', description: 'G', requirements: ['A', 'B', 'C'] }, // Multiple dependencies
 ];
 
 export const mockPermissions = {
