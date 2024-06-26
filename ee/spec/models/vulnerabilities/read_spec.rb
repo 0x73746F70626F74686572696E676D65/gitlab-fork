@@ -854,8 +854,8 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     let_it_be(:vulnerability_on_project_on_child_2) { create(:vulnerability_read, project: project_on_child_2) }
     let_it_be(:vulnerability_on_project_on_child_1_1) { create(:vulnerability_read, project: project_on_child_1_1) }
 
-    describe '.in_parent_group_after' do
-      subject { described_class.in_parent_group_after(another_vulnerability_on_project_on_child_1) }
+    describe '.in_parent_group_after_and_including' do
+      subject { described_class.in_parent_group_after_and_including(another_vulnerability_on_project_on_child_1) }
 
       it do
         is_expected.to match_array([
@@ -866,8 +866,8 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
       end
     end
 
-    describe '.in_parent_group_before' do
-      subject { described_class.in_parent_group_before(another_vulnerability_on_project_on_child_1) }
+    describe '.in_parent_group_before_and_including' do
+      subject { described_class.in_parent_group_before_and_including(another_vulnerability_on_project_on_child_1) }
 
       it do
         is_expected.to match_array([

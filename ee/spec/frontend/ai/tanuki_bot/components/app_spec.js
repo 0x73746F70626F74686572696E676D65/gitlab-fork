@@ -484,6 +484,67 @@ describe('GitLab Duo Chat', () => {
       expect(actionSpies.addDuoChatMessage).toHaveBeenCalledTimes(3);
     });
 
+    it('stops streaming in new chunks when requestId was canceled', async () => {
+      const requestId = '123';
+      const firstChunk = MOCK_CHUNK_MESSAGE('first chunk', 1, requestId);
+      const secondChunk = MOCK_CHUNK_MESSAGE('second chunk', 2, requestId);
+
+      helpCenterState.showTanukiBotChatDrawer = true;
+
+      createComponent({
+        initialState: {
+          messages: [
+            {
+              requestId,
+            },
+          ],
+        },
+      });
+      await waitForPromises();
+      perfTrackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+      // message chunk streaming in
+      mockSubscriptionStream.next(firstChunk);
+      await waitForPromises();
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledTimes(1);
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledWith(
+        expect.any(Object),
+        firstChunk.data.aiCompletionResponse,
+      );
+
+      findGlDuoChat().vm.$emit('chat-cancel');
+
+      // another chunk with the same request ID
+      mockSubscriptionStream.next(secondChunk);
+      await waitForPromises();
+      // checking that addDuoChatMessage was not called again since request id was canceled
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('stops adding new message when requestId was canceled', async () => {
+      const requestId = '123';
+
+      helpCenterState.showTanukiBotChatDrawer = true;
+      createComponent({
+        initialState: {
+          messages: [
+            {
+              requestId,
+            },
+          ],
+        },
+      });
+      await waitForPromises();
+
+      findGlDuoChat().vm.$emit('chat-cancel');
+
+      // full message being sent
+      mockSubscriptionComplete.next(GENERATE_MOCK_TANUKI_RES('', requestId));
+      await waitForPromises();
+      // checking that addDuoChatMessage was not called since request id was canceled
+      expect(actionSpies.addDuoChatMessage).toHaveBeenCalledTimes(0);
+    });
+
     it('tracks performance metrics correctly when a chunk is received', async () => {
       const chunkMessage = MOCK_CHUNK_MESSAGE('chunk content', 1, 'requestId-123');
 

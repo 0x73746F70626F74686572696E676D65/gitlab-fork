@@ -98,7 +98,7 @@ export default {
         </h3>
         <div
           v-if="parentIsEpic"
-          class="gl-display-inline-flex gl-leading-1 gl-align-middle gl-ml-3 gl-flex-wrap"
+          class="gl-inline-flex gl-leading-1 gl-align-middle gl-ml-3 gl-flex-wrap"
         >
           <epic-countables
             :allow-sub-epics="allowSubEpics"

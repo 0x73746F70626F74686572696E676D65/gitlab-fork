@@ -66,6 +66,8 @@ module Audit
     end
 
     def audit_event(options)
+      filter_sensitive_column_values!(options)
+
       name = options.fetch(:event_type, 'audit_operation')
       details = additional_details(options)
       audit_context = {
@@ -79,6 +81,21 @@ module Audit
       }
 
       ::Gitlab::Audit::Auditor.audit(audit_context)
+    end
+
+    def filter_sensitive_column_values!(options)
+      return unless options[:from] || options[:to]
+      return unless model
+      return unless model.class.sensitive_attributes.include?(options[:column].to_sym)
+
+      Gitlab::AppJsonLogger.warn(
+        class: model.class.name,
+        column: options[:column],
+        message: "Sensitive column `#{options[:column]}`, removing values from audit log"
+      )
+
+      options[:from] = nil
+      options[:to] = nil
     end
 
     def additional_details(options)

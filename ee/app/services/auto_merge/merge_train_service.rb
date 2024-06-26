@@ -83,6 +83,22 @@ module AutoMerge
 
     private
 
+    override :skippable_available_for_checks
+    def skippable_available_for_checks(merge_request)
+      # Skip the conflict check when coming from
+      # AddToMergeTrainWhenPipelineSucceedsService, because this check fails any
+      # time mergeability is being re-evaluated, even if there is actually no
+      # conflict. When we're already in the middle of an auto-merge in a project
+      # using merge trains, a failure of this check is usually a false positive.
+      # And in the worst case, the conflict will surface when attempting to
+      # build the train ref instead, and the MR will be removed from the train
+      # with a more informative message.
+      super.merge(
+        skip_conflict_check: merge_request.auto_merge_strategy ==
+          AutoMergeService::STRATEGY_ADD_TO_MERGE_TRAIN_WHEN_PIPELINE_SUCCEEDS
+      )
+    end
+
     override :clearable_auto_merge_parameters
     def clearable_auto_merge_parameters
       super + %w[train_ref]

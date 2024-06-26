@@ -81,19 +81,13 @@ export default {
             :to="dashboard.slug"
             >{{ dashboard.title }}</router-link
           >
-          <gl-badge
-            v-if="showBetaBadge"
-            data-testid="dashboard-beta-badge"
-            class="gl-ml-2"
-            size="sm"
-          >
+          <gl-badge v-if="showBetaBadge" data-testid="dashboard-beta-badge" class="gl-ml-2">
             {{ __('Beta') }}
           </gl-badge>
           <gl-badge
             v-if="showErrorsBadge"
             data-testid="dashboard-errors-badge"
             class="gl-ml-2"
-            size="sm"
             icon="error"
             icon-size="sm"
             variant="danger"

@@ -10463,16 +10463,16 @@ msgstr ""
 msgid "Capacity threshold"
 msgstr ""
 
+msgid "CascadingSettings|An administrator selected this setting for the instance and you cannot change it."
+msgstr ""
+
 msgid "CascadingSettings|Enforce for all subgroups"
 msgstr ""
 
-msgid "CascadingSettings|Setting enforced"
+msgid "CascadingSettings|Setting cannot be changed"
 msgstr ""
 
 msgid "CascadingSettings|Subgroups cannot change this setting."
-msgstr ""
-
-msgid "CascadingSettings|This setting has been enforced by an instance admin."
 msgstr ""
 
 msgid "CascadingSettings|This setting has been enforced by an owner of %{link}."
@@ -24708,10 +24708,7 @@ msgstr ""
 msgid "GoogleArtifactRegistry|Virtual size"
 msgstr ""
 
-msgid "GoogleCloud|%{linkStart}Switch to the guided setup%{linkEnd} if you can manage workload identity federation in Google Cloud. %{link2Start}What are the required permissions?%{link2End}"
-msgstr ""
-
-msgid "GoogleCloud|%{linkStart}Switch to the manual setup%{linkEnd} if you cannot manage workload identity federation in Google Cloud. %{link2Start}What are the required permissions?%{link2End}"
+msgid "GoogleCloud|%{linkStart}Install the Google Cloud CLI%{linkEnd}."
 msgstr ""
 
 msgid "GoogleCloud|%{link_start}Explore Google Cloud integration with GitLab%{link_end}, for CI/CD and more."
@@ -24720,13 +24717,22 @@ msgstr ""
 msgid "GoogleCloud|%{link_start}Where’s my project ID? %{icon}%{link_end} Can be 6 to 30 lowercase letters, numbers, or hyphens. Must start with a letter and end with a letter or number. Example: %{code_start}my-sample-project-191923%{code_end}."
 msgstr ""
 
-msgid "GoogleCloud|After Google Cloud workload identity federation has been set up, select %{strongStart}Continue%{strongEnd}."
+msgid "GoogleCloud|1. Connection"
 msgstr ""
 
-msgid "GoogleCloud|After the Google Cloud workload identity federation has been set up, complete the following fields."
+msgid "GoogleCloud|2. Set up workload identity federation"
 msgstr ""
 
-msgid "GoogleCloud|Before you begin, %{linkStart}install the Google Cloud CLI%{linkEnd}."
+msgid "GoogleCloud|After the Google Cloud workload identity federation has been set up, complete the fields in the integration."
+msgstr ""
+
+msgid "GoogleCloud|After the setup is complete, select %{strongStart}Save changes%{strongEnd} to continue."
+msgstr ""
+
+msgid "GoogleCloud|Can be 4 to 32 lowercase letters, numbers, or hyphens."
+msgstr ""
+
+msgid "GoogleCloud|Can be 6 to 30 lowercase letters, numbers, or hyphens. Must start with a letter and end with a letter or number. Example: %{code_open}my-sample-project-191923%{code_close}"
 msgstr ""
 
 msgid "GoogleCloud|Can be up to 63 lowercase letters, numbers, or hyphens. Must start with a letter and end with a letter or number. Repository must be Docker format and Standard mode."
@@ -24738,13 +24744,7 @@ msgstr ""
 msgid "GoogleCloud|Configured region is linked to the selected branch or tag"
 msgstr ""
 
-msgid "GoogleCloud|Connect to Google Cloud"
-msgstr ""
-
-msgid "GoogleCloud|Connect to Google Cloud with workload identity federation for secure access without accounts or keys."
-msgstr ""
-
-msgid "GoogleCloud|Connect to Google Cloud with workload identity federation. Select %{strongStart}Guided setup%{strongEnd} if you can manage workload identity federation in Google Cloud. %{linkStart}What are the required permissions?%{linkEnd}"
+msgid "GoogleCloud|Copy ID"
 msgstr ""
 
 msgid "GoogleCloud|Copy instructions URL"
@@ -24759,10 +24759,13 @@ msgstr ""
 msgid "GoogleCloud|Example: %{code_open}314053285323%{code_close}"
 msgstr ""
 
-msgid "GoogleCloud|Example: %{code_open}my-sample-project-191923%{code_close}"
+msgid "GoogleCloud|Generated service account is linked to the selected branch or tag"
 msgstr ""
 
-msgid "GoogleCloud|Generated service account is linked to the selected branch or tag"
+msgid "GoogleCloud|GitLab group ID"
+msgstr ""
+
+msgid "GoogleCloud|GitLab project ID"
 msgstr ""
 
 msgid "GoogleCloud|Google Artifact Management"
@@ -24789,9 +24792,6 @@ msgstr ""
 msgid "GoogleCloud|Google OAuth2 token revocation requested"
 msgstr ""
 
-msgid "GoogleCloud|Guided setup"
-msgstr ""
-
 msgid "GoogleCloud|I understand the responsibilities involved with managing service account keys"
 msgstr ""
 
@@ -24801,13 +24801,13 @@ msgstr ""
 msgid "GoogleCloud|ID of the Workload Identity Pool."
 msgstr ""
 
-msgid "GoogleCloud|Identify the Google Cloud project with the workload identity pool and provider. %{linkStart}Where are my project ID and project number?%{linkEnd}"
+msgid "GoogleCloud|If workload identity federation is already set up with the %{linkStart}required configuration%{linkEnd}, skip this step and select %{strongStart}Save changes%{strongEnd} to continue."
 msgstr ""
 
-msgid "GoogleCloud|Instructions"
+msgid "GoogleCloud|If you cannot manage workload identity federation in Google Cloud"
 msgstr ""
 
-msgid "GoogleCloud|Invite member to set up"
+msgid "GoogleCloud|If you don't have the %{linkStart}permissions%{linkEnd} to create workload identity pools and providers in Google Cloud:"
 msgstr ""
 
 msgid "GoogleCloud|Manage permissions for Google Cloud resources with Identity and Access Management (IAM)."
@@ -24819,9 +24819,6 @@ msgstr ""
 msgid "GoogleCloud|Manage your artifacts in Google Artifact Registry."
 msgstr ""
 
-msgid "GoogleCloud|Manual setup"
-msgstr ""
-
 msgid "GoogleCloud|New service account is generated for the selected Google Cloud project"
 msgstr ""
 
@@ -24829,6 +24826,9 @@ msgid "GoogleCloud|Pool ID"
 msgstr ""
 
 msgid "GoogleCloud|Project ID"
+msgstr ""
+
+msgid "GoogleCloud|Project for the workload identity pool and provider. %{linkStart}Where are my project ID and project number?%{linkEnd}"
 msgstr ""
 
 msgid "GoogleCloud|Project number"
@@ -24840,13 +24840,10 @@ msgstr ""
 msgid "GoogleCloud|Provider ID"
 msgstr ""
 
+msgid "GoogleCloud|Recommended pool and provider id: %{providerId}"
+msgstr ""
+
 msgid "GoogleCloud|Refs"
-msgstr ""
-
-msgid "GoogleCloud|Replace %{codeStart}your_access_token%{codeEnd} with a %{linkStart}new personal access token%{linkEnd} with the %{strongStart}api%{strongEnd} scope. This token sets up your Google Cloud IAM integration in GitLab."
-msgstr ""
-
-msgid "GoogleCloud|Replace %{codeStart}your_google_cloud_project_id%{codeEnd} with your Google Cloud project ID. To improve security, use a dedicated project for identity management, separate from resources and CI/CD projects. %{linkStart}Where’s my project ID?%{linkEnd}"
 msgstr ""
 
 msgid "GoogleCloud|Repository location"
@@ -24861,13 +24858,13 @@ msgstr ""
 msgid "GoogleCloud|Revoke authorizations granted to GitLab. This does not invalidate service accounts."
 msgstr ""
 
-msgid "GoogleCloud|Run the following command to set up and connect to your Google Cloud project with workload identity federation."
+msgid "GoogleCloud|Run the following commands. You might be prompted to sign in to Google."
 msgstr ""
 
 msgid "GoogleCloud|Setup instructions"
 msgstr ""
 
-msgid "GoogleCloud|Share the following information with someone that can manage Google Cloud workload identity federation. Or %{linkStart}invite them%{linkEnd} to set up."
+msgid "GoogleCloud|Share the following information with someone that can manage workload identity federation or %{linkStart}invite them%{linkEnd} to set up this integration."
 msgstr ""
 
 msgid "GoogleCloud|The Google Cloud Identity and Access Management integration is not configured for this project"
@@ -24879,10 +24876,22 @@ msgstr ""
 msgid "GoogleCloud|The google_cloud_support feature is not available"
 msgstr ""
 
-msgid "GoogleCloud|Workload identity federation"
+msgid "GoogleCloud|To avoid collisions, use unique IDs like this GitLab group ID: %{suggested}"
 msgstr ""
 
-msgid "GoogleCloud|You might be prompted to sign in to Google."
+msgid "GoogleCloud|To avoid collisions, use unique IDs like this GitLab project ID: %{suggested}"
+msgstr ""
+
+msgid "GoogleCloud|To connect to a Google Cloud project, it must have a specific configuration of workload identity federation that you can set up in the next step. To improve security, the project should be just for identity management."
+msgstr ""
+
+msgid "GoogleCloud|To create the workload identity pool and provider in your Google Cloud project, with the required configuration:"
+msgstr ""
+
+msgid "GoogleCloud|What if I cannot manage workload identity federation in Google Cloud?"
+msgstr ""
+
+msgid "GoogleCloud|Workload identity federation"
 msgstr ""
 
 msgid "GoogleCloud|Your identity provider issuer: %{issuer}"
@@ -45102,6 +45111,9 @@ msgstr ""
 msgid "Run manual or delayed jobs"
 msgstr ""
 
+msgid "Run pipeline"
+msgstr ""
+
 msgid "Run tests against your code live using the Web Terminal"
 msgstr ""
 
@@ -46503,6 +46515,9 @@ msgstr ""
 msgid "ScanExecutionPolicy|Override"
 msgstr ""
 
+msgid "ScanExecutionPolicy|Run %{scan} with the following options:"
+msgstr ""
+
 msgid "ScanExecutionPolicy|Run CI/CD code"
 msgstr ""
 
@@ -46954,6 +46969,9 @@ msgid "Search by Git revision"
 msgstr ""
 
 msgid "Search by author"
+msgstr ""
+
+msgid "Search by full path"
 msgstr ""
 
 msgid "Search by message"
@@ -48119,7 +48137,7 @@ msgstr ""
 msgid "SecurityOrchestration|Show more projects"
 msgstr ""
 
-msgid "SecurityOrchestration|Show only security policies projects"
+msgid "SecurityOrchestration|Show only linked security policy projects"
 msgstr ""
 
 msgid "SecurityOrchestration|Something went wrong, unable to fetch policies"
@@ -53214,6 +53232,9 @@ msgstr ""
 msgid "The invitation has already been accepted."
 msgstr ""
 
+msgid "The invitation is not valid"
+msgstr ""
+
 msgid "The invitation was successfully resent."
 msgstr ""
 
@@ -53224,9 +53245,6 @@ msgid "The last owner cannot be set to awaiting"
 msgstr ""
 
 msgid "The latest artifacts created by jobs in the most recent successful pipeline will be stored."
-msgstr ""
-
-msgid "The latest pipeline for this merge request did not succeed. The latest changes are unverified."
 msgstr ""
 
 msgid "The latest pipeline for this merge request has failed."
@@ -53275,6 +53293,9 @@ msgid "The maximum file size is %{size}."
 msgstr ""
 
 msgid "The maximum number of tags that a single worker accepts for cleanup. If the number of tags goes above this limit, the list of tags to delete is truncated to this number. To remove this limit, set it to 0."
+msgstr ""
+
+msgid "The merge checks are incomplete because the latest pipeline failed, the pipeline status cannot be verified, or the merge request target branch was changed. You should run a new pipeline before merging."
 msgstr ""
 
 msgid "The merge conflicts for this merge request cannot be resolved through GitLab. Please try to resolve them locally."
@@ -57515,13 +57536,34 @@ msgstr ""
 msgid "UserList|created %{timeago}"
 msgstr ""
 
+msgid "UserMapping|%{reassigned_by_name} (%{reassigned_by_username}) wants to reassign contributions made by %{source_name} (%{source_username}) on %{source_hostname} to you in %{destination_group}. Review details to approve or reject the reassignment. Learn more about reassignments"
+msgstr ""
+
+msgid "UserMapping|Approve Contributions Reassignment"
+msgstr ""
+
+msgid "UserMapping|Approve reassignment"
+msgstr ""
+
+msgid "UserMapping|Approve reassignment of contributions from %{source_username} on %{source_hostname} to you on %{destination_group}"
+msgstr ""
+
 msgid "UserMapping|Awaiting reassignment"
+msgstr ""
+
+msgid "UserMapping|Contribution details:"
 msgstr ""
 
 msgid "UserMapping|Don't reassign"
 msgstr ""
 
+msgid "UserMapping|Imported to: %{destination_group}"
+msgstr ""
+
 msgid "UserMapping|Kept as placeholder"
+msgstr ""
+
+msgid "UserMapping|Original user: %{source_name} (%{source_username})"
 msgstr ""
 
 msgid "UserMapping|Pending approval"
@@ -57548,10 +57590,19 @@ msgstr ""
 msgid "UserMapping|Reassigned"
 msgstr ""
 
+msgid "UserMapping|Reassigned by: %{reassigned_by_name} (%{reassigned_by_username})"
+msgstr ""
+
 msgid "UserMapping|Reassigned to"
 msgstr ""
 
+msgid "UserMapping|Reassigned to user: %{reassign_to_username}"
+msgstr ""
+
 msgid "UserMapping|Reassigning"
+msgstr ""
+
+msgid "UserMapping|Reassignment details:"
 msgstr ""
 
 msgid "UserMapping|Reassignment failed."
@@ -57575,10 +57626,16 @@ msgstr ""
 msgid "UserMapping|Reassignment was rejected by user."
 msgstr ""
 
+msgid "UserMapping|Reject"
+msgstr ""
+
 msgid "UserMapping|Rejected"
 msgstr ""
 
 msgid "UserMapping|Select user"
+msgstr ""
+
+msgid "UserMapping|Source: %{source_hostname}"
 msgstr ""
 
 msgid "UserProfile|%{count} %{file}"
@@ -61267,6 +61324,9 @@ msgid "You need to verify your primary email first before enabling Two-Factor Au
 msgstr ""
 
 msgid "You see projects here when you're added to a group or project."
+msgstr ""
+
+msgid "You should run a new pipeline, because the target branch has changed for this merge request."
 msgstr ""
 
 msgid "You successfully declined the invitation"

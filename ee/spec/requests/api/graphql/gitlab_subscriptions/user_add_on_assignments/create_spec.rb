@@ -280,6 +280,7 @@ RSpec.describe 'UserAddOnAssignmentCreate', feature_category: :seat_cost_managem
 
       before_all do
         additional_purchase.namespace.add_owner(current_user)
+        additional_purchase.namespace.update!(organization: add_on_purchase.namespace.organization)
       end
 
       it_behaves_like 'avoids N+1 database queries'

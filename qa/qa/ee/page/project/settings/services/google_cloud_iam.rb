@@ -7,8 +7,8 @@ module QA
         module Settings
           module Services
             class GoogleCloudIam < QA::Page::Base
-              view 'ee/app/assets/javascripts/integrations/edit/components/google_cloud_iam/empty_state.vue' do
-                element 'manual-setup-button'
+              view 'ee/app/assets/javascripts/integrations/edit/components/sections/google_cloud_iam.vue' do
+                element 'google-cloud-iam-component'
               end
 
               view 'app/assets/javascripts/integrations/edit/components/dynamic_field.vue' do
@@ -24,10 +24,6 @@ module QA
                 :project_number,
                 :pool_id,
                 :provider_id
-
-              def open_manual_setup
-                click_element('manual-setup-button')
-              end
 
               def fill_in_manual_setup_form
                 set_project_id

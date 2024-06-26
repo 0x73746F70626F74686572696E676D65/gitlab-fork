@@ -73,7 +73,7 @@ export default {
 
 <template>
   <div class="gl-py-5 gl-border-b gl-border-b-gray-100">
-    <gl-badge :variant="badgeVariant" size="md">{{ badgeText }}</gl-badge>
+    <gl-badge :variant="badgeVariant">{{ badgeText }}</gl-badge>
     <span class="gl-ml-2">
       <span data-testid="dast-header-text">{{ headerText }}</span>
       <gl-link v-if="showPipelineLink" :href="pipelinePath" data-testid="help-page-link">

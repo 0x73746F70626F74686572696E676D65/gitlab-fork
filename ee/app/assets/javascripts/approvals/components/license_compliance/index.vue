@@ -50,7 +50,7 @@ export default {
 };
 </script>
 <template>
-  <span class="gl-display-inline-flex gl-align-items-center">
+  <span class="gl-inline-flex gl-align-items-center">
     <gl-button :loading="isLoading" @click="openModal(licenseCheckRule)"
       >{{ s__('LicenseCompliance|Update approvals') }}
     </gl-button>

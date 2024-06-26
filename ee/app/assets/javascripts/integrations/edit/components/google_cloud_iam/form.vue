@@ -1,7 +1,7 @@
 <script>
 import { GlIcon, GlLink, GlSprintf } from '@gitlab/ui';
 import Configuration from '~/integrations/edit/components/sections/configuration.vue';
-import Connection from '~/integrations/edit/components/sections/connection.vue';
+import { s__ } from '~/locale';
 
 export default {
   name: 'GoogleCloudIAMForm',
@@ -10,15 +10,33 @@ export default {
     GlLink,
     GlSprintf,
     Configuration,
-    Connection,
   },
   props: {
     fields: {
       type: Array,
       required: true,
     },
+    suggestedPoolId: {
+      type: String,
+      required: false,
+      default: 'gitlab-wlif',
+    },
+    integrationLevel: {
+      type: String,
+      required: false,
+      default: 'group',
+    },
   },
   computed: {
+    avoidCollisionMessage() {
+      return this.integrationLevel === 'project'
+        ? s__(
+            'GoogleCloud|To avoid collisions, use unique IDs like this GitLab project ID: %{suggested}',
+          )
+        : s__(
+            'GoogleCloud|To avoid collisions, use unique IDs like this GitLab group ID: %{suggested}',
+          );
+    },
     gcProjectFields() {
       return this.fields.filter((field) => field.name.includes('workload_identity_federation'));
     },
@@ -31,14 +49,12 @@ export default {
 
 <template>
   <div>
-    <connection />
-
     <h4 class="gl-mt-0">{{ s__('GoogleCloud|Google Cloud project') }}</h4>
     <p>
       <gl-sprintf
         :message="
           s__(
-            'GoogleCloud|Identify the Google Cloud project with the workload identity pool and provider. %{linkStart}Where are my project ID and project number?%{linkEnd}',
+            'GoogleCloud|Project for the workload identity pool and provider. %{linkStart}Where are my project ID and project number?%{linkEnd}',
           )
         "
       >
@@ -55,23 +71,27 @@ export default {
 
     <configuration
       :fields="gcProjectFields"
-      field-class="gl-form-input-lg gl-flex-grow-1"
-      class="gl-border-b gl-mb-6 sm:gl-flex gl-flex-direction-row gl-gap-5"
+      field-class="gl-flex-grow-1 gl-flex-basis-0"
+      class="gl-mb-6 md:gl-flex gl-flex-direction-row gl-gap-5"
+      v-on="$listeners"
     />
 
     <h4 class="gl-mt-0">{{ s__('GoogleCloud|Workload identity federation') }}</h4>
     <p>
-      {{
-        s__(
-          'GoogleCloud|Connect to Google Cloud with workload identity federation for secure access without accounts or keys.',
-        )
-      }}
+      <gl-sprintf :message="avoidCollisionMessage">
+        <template #suggested>
+          <code>{{ suggestedPoolId }}</code>
+        </template>
+      </gl-sprintf>
     </p>
 
     <configuration
       :fields="workloadIdentityFields"
-      field-class="gl-form-input-lg gl-flex-grow-1"
-      class="gl-mb-6 sm:gl-flex gl-flex-direction-row gl-gap-5"
+      field-class="gl-flex-grow-1 gl-flex-basis-0"
+      class="gl-mb-6 md:gl-flex gl-flex-direction-row gl-gap-5"
+      v-on="$listeners"
     />
+
+    <hr />
   </div>
 </template>

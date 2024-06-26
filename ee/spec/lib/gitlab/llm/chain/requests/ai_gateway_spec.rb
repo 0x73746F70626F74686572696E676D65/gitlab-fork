@@ -12,6 +12,18 @@ RSpec.describe Gitlab::Llm::Chain::Requests::AiGateway, feature_category: :duo_c
     it 'initializes the AI Gateway client' do
       expect(instance.ai_client.class).to eq(::Gitlab::Llm::AiGateway::Client)
     end
+
+    context 'when alternative service name is passed' do
+      it 'creates ai gateway client with different service name' do
+        expect(::Gitlab::Llm::AiGateway::Client).to receive(:new).with(
+          user,
+          service_name: :alternative,
+          tracking_context: tracking_context
+        )
+
+        described_class.new(user, service_name: :alternative, tracking_context: tracking_context)
+      end
+    end
   end
 
   describe '#request' do
@@ -99,6 +111,14 @@ RSpec.describe Gitlab::Llm::Chain::Requests::AiGateway, feature_category: :duo_c
           temperature: 1
         }
       end
+
+      it_behaves_like 'performing request to the AI Gateway'
+    end
+
+    context 'when unit primitive is passed' do
+      let(:endpoint) { "#{described_class::BASE_ENDPOINT}/test" }
+
+      subject(:request) { instance.request(prompt, unit_primitive: :test) }
 
       it_behaves_like 'performing request to the AI Gateway'
     end

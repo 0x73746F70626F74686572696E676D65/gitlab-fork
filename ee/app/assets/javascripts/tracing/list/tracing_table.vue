@@ -110,11 +110,11 @@ export default {
       <template #cell(timestamp)="{ item }">
         {{ item.timestamp }}
         <div class="gl-mt-4 gl-display-flex">
-          <gl-badge variant="info" size="md">{{ matchesBadgeContent(item) }}</gl-badge>
-          <gl-badge v-if="item.in_progress" variant="warning" size="md" class="gl-ml-3">{{
+          <gl-badge variant="info">{{ matchesBadgeContent(item) }}</gl-badge>
+          <gl-badge v-if="item.in_progress" variant="warning" class="gl-ml-3">{{
             $options.i18n.inProgress
           }}</gl-badge>
-          <gl-badge v-if="hasError(item)" variant="danger" size="md" class="gl-ml-2">
+          <gl-badge v-if="hasError(item)" variant="danger" class="gl-ml-2">
             <gl-icon name="status-alert" class="gl-mr-2 gl-text-red-500" />
             {{ errorBadgeContent(item) }}
           </gl-badge>

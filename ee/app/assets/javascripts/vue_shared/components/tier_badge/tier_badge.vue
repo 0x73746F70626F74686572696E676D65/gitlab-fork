@@ -33,7 +33,7 @@ export default {
 </script>
 <template>
   <span class="gl-display-flex gl-align-items-center gl-ml-2" @mouseover="trackHover">
-    <gl-badge :id="$options.popoverTriggerId" data-testid="tier-badge" variant="tier" size="md">
+    <gl-badge :id="$options.popoverTriggerId" data-testid="tier-badge" variant="tier">
       {{ tier }}
     </gl-badge>
     <tier-badge-popover

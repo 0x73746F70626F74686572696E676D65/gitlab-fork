@@ -56,7 +56,7 @@ RSpec.describe WorkItems::RolledupDates::UpdateRolledupDatesEventHandler, featur
           .to receive(:find_by_id)
           .and_return(work_item)
 
-        expect_next_instance_of(service_class, work_item) do |service|
+        expect_next_instance_of(service_class, work_item, event_data[:previous_work_item_parent_id]) do |service|
           expect(service).to receive(:execute)
         end
 
@@ -75,6 +75,13 @@ RSpec.describe WorkItems::RolledupDates::UpdateRolledupDatesEventHandler, featur
       id: 1,
       work_item_parent_id: 2,
       namespace_id: 3
+    }
+
+    it_behaves_like "updates the work_item hierarchy", event_data: {
+      id: 1,
+      work_item_parent_id: 2,
+      namespace_id: 3,
+      previous_work_item_parent_id: 4
     }
   end
 end

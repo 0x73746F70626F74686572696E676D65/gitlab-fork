@@ -90,7 +90,7 @@ export default {
       >
         <template #title>
           <span>{{ __('Open') }}</span>
-          <gl-badge size="sm" class="gl-tab-counter-badge">{{ requirementsCount.OPENED }}</gl-badge>
+          <gl-badge class="gl-tab-counter-badge">{{ requirementsCount.OPENED }}</gl-badge>
         </template>
       </gl-tab>
       <gl-tab
@@ -102,9 +102,7 @@ export default {
       >
         <template #title>
           <span>{{ __('Archived') }}</span>
-          <gl-badge size="sm" class="gl-tab-counter-badge">{{
-            requirementsCount.ARCHIVED
-          }}</gl-badge>
+          <gl-badge class="gl-tab-counter-badge">{{ requirementsCount.ARCHIVED }}</gl-badge>
         </template>
       </gl-tab>
       <gl-tab
@@ -116,7 +114,7 @@ export default {
       >
         <template #title>
           <span>{{ __('All') }}</span>
-          <gl-badge size="sm" class="gl-tab-counter-badge">{{ requirementsCount.ALL }}</gl-badge>
+          <gl-badge class="gl-tab-counter-badge">{{ requirementsCount.ALL }}</gl-badge>
         </template>
       </gl-tab>
     </gl-tabs>

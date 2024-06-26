@@ -2,6 +2,7 @@
 import { GlButton, GlLoadingIcon, GlModal } from '@gitlab/ui';
 // eslint-disable-next-line no-restricted-imports
 import { mapActions, mapState, mapGetters } from 'vuex';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 import { s__, __ } from '~/locale';
 import { REMOVE_SITE_MODAL_ID } from '../constants';
 import GeoSitesFilters from './geo_sites_filters.vue';
@@ -30,6 +31,7 @@ export default {
     noResultsDescription: s__('Geo|Edit your search and try again.'),
   },
   components: {
+    PageHeading,
     GlButton,
     GlLoadingIcon,
     GeoSitesFilters,
@@ -101,21 +103,20 @@ export default {
 
 <template>
   <section>
-    <h3>{{ $options.i18n.geoSites }}</h3>
-    <div
-      class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-md-align-items-center gl-pb-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-100"
-    >
-      <p class="gl-mr-5 gl-mb-0">{{ $options.i18n.helpText }}</p>
-      <gl-button
-        v-if="hasSites"
-        class="gl-w-full gl-md-w-auto gl-ml-auto gl-mr-5 gl-mt-5 gl-md-mt-0"
-        variant="confirm"
-        :href="newSiteUrl"
-        target="_blank"
-        data-testid="add-site-button"
-        >{{ $options.i18n.addSite }}
-      </gl-button>
-    </div>
+    <page-heading v-if="hasSites" :heading="$options.i18n.geoSites">
+      <template #actions>
+        <gl-button
+          variant="confirm"
+          :href="newSiteUrl"
+          target="_blank"
+          data-testid="add-site-button"
+          >{{ $options.i18n.addSite }}
+        </gl-button>
+      </template>
+      <template #description>
+        {{ $options.i18n.helpText }}
+      </template>
+    </page-heading>
     <gl-loading-icon v-if="isLoading" size="xl" class="gl-mt-5" />
     <template v-if="!isLoading">
       <div v-if="hasSites">

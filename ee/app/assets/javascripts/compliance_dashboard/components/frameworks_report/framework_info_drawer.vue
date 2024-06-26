@@ -181,11 +181,7 @@ export default {
               class="gl-m-4 gl-display-flex gl-flex-direction-column gl-align-items-flex-start"
             >
               <gl-link :href="getPolicyEditUrl(policy)">{{ policy.name }}</gl-link>
-              <gl-badge
-                v-if="policy.source.namespace.fullPath !== groupPath"
-                variant="muted"
-                size="sm"
-              >
+              <gl-badge v-if="policy.source.namespace.fullPath !== groupPath" variant="muted">
                 {{ policy.source.namespace.name }}
               </gl-badge>
             </div>

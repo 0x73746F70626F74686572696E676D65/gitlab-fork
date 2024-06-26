@@ -79,6 +79,8 @@ module EE
         mount ::API::Internal::SuggestedReviewers
         mount ::API::Internal::UpcomingReconciliations
         mount ::API::Internal::Ai::XRay::Scan
+
+        mount ::GitlabSubscriptions::API::Internal::API
       end
     end
   end

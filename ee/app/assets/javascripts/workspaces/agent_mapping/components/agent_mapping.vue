@@ -79,7 +79,7 @@ export default {
           <gl-tab data-testid="allowed-agents-tab">
             <template #title>
               <span>{{ s__('Workspaces|Allowed agents') }}</span>
-              <gl-badge size="sm" class="gl-tab-counter-badge">{{ allowedAgents.length }}</gl-badge>
+              <gl-badge class="gl-tab-counter-badge">{{ allowedAgents.length }}</gl-badge>
               <span class="sr-only">{{ __('agents') }}</span>
             </template>
             <agents-table
@@ -94,7 +94,7 @@ export default {
           <gl-tab data-testid="all-agents-tab">
             <template #title>
               <span>{{ s__('Workspaces|All agents') }}</span>
-              <gl-badge size="sm" class="gl-tab-counter-badge">{{ agents.length }}</gl-badge>
+              <gl-badge class="gl-tab-counter-badge">{{ agents.length }}</gl-badge>
               <span class="sr-only">{{ __('agents') }}</span>
             </template>
             <agents-table

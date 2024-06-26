@@ -40,7 +40,7 @@ export default {
     <div class="report-block-list-issue-description-text gl-display-flex gl-w-full">
       <severity-badge
         v-if="issue.severity"
-        class="gl-display-inline-flex gl-align-items-center gl-mr-1"
+        class="gl-inline-flex gl-align-items-center gl-mr-1"
         :severity="issue.severity"
       />
       <modal-open-name :issue="issue" :status="status" />

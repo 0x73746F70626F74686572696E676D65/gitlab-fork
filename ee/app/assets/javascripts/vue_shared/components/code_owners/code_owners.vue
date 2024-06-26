@@ -163,7 +163,7 @@ export default {
       </div>
 
       <template v-if="hasCodeOwners && !isLoading">
-        <gl-badge class="gl-mx-3" size="sm">{{ codeOwnersTotal }}</gl-badge>
+        <gl-badge class="gl-mx-3">{{ codeOwnersTotal }}</gl-badge>
         <gl-button
           variant="link"
           size="small"

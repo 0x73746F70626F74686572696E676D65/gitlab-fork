@@ -90,6 +90,7 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :pipeline_compositio
 
   context 'with cross pipeline artifacts' do
     let!(:dependency) { create(:ci_build, :success, name: 'dependency', project: downstream_project) }
+    let!(:job_artifact) { create(:ci_job_artifact, :dotenv, job: dependency, accessibility: 'public') }
     let!(:dependency_variable) { create(:ci_job_variable, :dotenv_source, job: dependency) }
 
     let(:config) do

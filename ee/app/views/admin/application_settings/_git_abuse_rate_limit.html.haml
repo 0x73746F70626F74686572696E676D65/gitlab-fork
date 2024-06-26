@@ -1,13 +1,11 @@
 - return unless License.feature_available?(:git_abuse_rate_limit)
 
-%section.settings.no-animate#js-git-abuse-rate-limit-settings{ class: ('expanded' if expanded_by_default?), data: {testid: 'git-abuse-rate-limit-settings'} }
-  .settings-header
-    %h4
-      = s_('AdminSettings|Git abuse rate limit')
-    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
-      = expanded_by_default? ? _('Collapse') : _('Expand')
-    %p.gl-text-secondary
-      = s_('AdminSettings|Configure limits on the number of repositories users can download, clone, or fork in a given time.')
-  .settings-content
+= render ::Layouts::SettingsBlockComponent.new(s_('AdminSettings|Git abuse rate limit'),
+  id: 'js-git-abuse-rate-limit-settings',
+  testid: 'git-abuse-rate-limit-settings',
+  expanded: expanded_by_default?) do |c|
+  - c.with_description do
+    = s_('AdminSettings|Configure limits on the number of repositories users can download, clone, or fork in a given time.')
+  - c.with_body do
     #js-git-abuse-rate-limit-settings-form{ data: git_abuse_rate_limit_data }
 

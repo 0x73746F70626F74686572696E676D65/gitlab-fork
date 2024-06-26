@@ -48,6 +48,7 @@ module EE
 
       if integration.is_a?(::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation)
         form_data[:wlif_issuer] = ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.wlif_issuer_url(group || project)
+        form_data[:jwt_claims] = ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.jwt_claim_mapping_script_value
       end
 
       form_data

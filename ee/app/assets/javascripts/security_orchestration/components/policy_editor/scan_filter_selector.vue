@@ -104,7 +104,6 @@ export default {
               v-if="filterDisabled(item.value)"
               v-gl-tooltip.right.viewport
               class="gl-ml-auto"
-              size="sm"
               variant="neutral"
               :title="filterTooltip(item)"
             >

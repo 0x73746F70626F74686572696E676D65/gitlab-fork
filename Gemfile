@@ -58,7 +58,7 @@ gem 'neighbor', '~> 0.3.2', feature_category: :duo_chat
 
 gem 'rugged', '~> 1.6' # rubocop:todo Gemfile/MissingFeatureCategory
 
-gem 'faraday', '~> 1.0' # rubocop:todo Gemfile/MissingFeatureCategory
+gem 'faraday', '~> 1.10.3' # rubocop:todo Gemfile/MissingFeatureCategory
 gem 'marginalia', '~> 1.11.1' # rubocop:todo Gemfile/MissingFeatureCategory
 
 # Authorization
@@ -558,7 +558,7 @@ group :test do
   # Moved in `test` because https://gitlab.com/gitlab-org/gitlab/-/issues/217527
   gem 'derailed_benchmarks', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 
-  gem 'gitlab_quality-test_tooling', '~> 1.29.1', require: false, feature_category: :tooling
+  gem 'gitlab_quality-test_tooling', '~> 1.30.0', require: false, feature_category: :tooling
 end
 
 gem 'octokit', '~> 9.0', feature_category: :importers

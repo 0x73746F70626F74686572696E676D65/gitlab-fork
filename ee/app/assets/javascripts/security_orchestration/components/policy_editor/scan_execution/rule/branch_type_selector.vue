@@ -57,7 +57,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-inline-flex gl-gap-3">
+  <div class="gl-inline-flex gl-gap-3">
     <gl-collapsible-listbox
       id="branch-type-selector"
       :items="defaultBranchTypeItems"

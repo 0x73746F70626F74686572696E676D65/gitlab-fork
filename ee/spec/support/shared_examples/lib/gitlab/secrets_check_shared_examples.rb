@@ -467,14 +467,12 @@ RSpec.shared_examples 'scan detected secrets' do
       expect(::Gitlab::Git::Tree).to receive(:tree_entries)
         .with(**expected_tree_args.merge(sha: new_commit))
         .once
-        .ordered
         .and_return([tree_entries, gitaly_pagination_cursor])
         .and_call_original
 
       expect(::Gitlab::Git::Tree).to receive(:tree_entries)
         .with(**expected_tree_args.merge(sha: commit_with_same_blob))
         .once
-        .ordered
         .and_return([tree_entries, gitaly_pagination_cursor])
         .and_call_original
 
@@ -822,21 +820,18 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
     expect(::Gitlab::Git::Tree).to receive(:tree_entries)
       .with(**expected_tree_args.merge(sha: new_commit))
       .once
-      .ordered
       .and_return([tree_entries, gitaly_pagination_cursor])
       .and_call_original
 
     expect(::Gitlab::Git::Tree).to receive(:tree_entries)
       .with(**expected_tree_args.merge(sha: timed_out_commit))
       .once
-      .ordered
       .and_return([[], nil])
       .and_call_original
 
     expect(::Gitlab::Git::Tree).to receive(:tree_entries)
       .with(**expected_tree_args.merge(sha: failed_to_scan_commit))
       .once
-      .ordered
       .and_return([[], nil])
       .and_call_original
 
@@ -1064,6 +1059,14 @@ RSpec.shared_examples 'scan skipped when a commit has special bypass flag' do
     expect { subject.validate! }.to change { AuditEvent.count }.by(1)
     expect(AuditEvent.last.details[:custom_message]).to eq("Secret push protection skipped via commit message")
   end
+
+  it_behaves_like 'internal event tracking' do
+    let(:event) { 'skip_secret_push_protection' }
+    let(:namespace) { project.namespace }
+    let(:label) { "commit message" }
+    let(:category) { described_class.name }
+    subject { super().validate! }
+  end
 end
 
 RSpec.shared_examples 'scan skipped when secret_detection.skip_all push option is passed' do
@@ -1110,5 +1113,13 @@ RSpec.shared_examples 'scan skipped when secret_detection.skip_all push option i
   it 'creates an audit event' do
     expect { subject.validate! }.to change { AuditEvent.count }.by(1)
     expect(AuditEvent.last.details[:custom_message]).to eq("Secret push protection skipped via push option")
+  end
+
+  it_behaves_like 'internal event tracking' do
+    let(:event) { 'skip_secret_push_protection' }
+    let(:namespace) { project.namespace }
+    let(:label) { "push option" }
+    let(:category) { described_class.name }
+    subject { super().validate! }
   end
 end

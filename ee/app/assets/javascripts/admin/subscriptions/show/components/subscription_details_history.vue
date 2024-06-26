@@ -140,7 +140,7 @@ export default {
         </span>
       </template>
       <template #cell(type)="{ value }">
-        <gl-badge size="md" variant="info">{{ value }}</gl-badge>
+        <gl-badge variant="info">{{ value }}</gl-badge>
       </template>
     </gl-table-lite>
   </section>

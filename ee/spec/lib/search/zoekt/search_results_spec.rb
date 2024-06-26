@@ -284,6 +284,27 @@ RSpec.describe ::Search::Zoekt::SearchResults, :zoekt, feature_category: :global
         end
       end
 
+      context 'without N+1 queries' do
+        it 'does not have N+1 queries for projects' do
+          projects = [project_1, project_2]
+
+          collection = ::Project.id_in(projects.map(&:id))
+
+          control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+            described_class.new(user, query, collection, node_id: node_id, filters: filters).objects('blobs')
+          end
+
+          projects << create(:project, group: create(:group))
+          projects << create(:project, :mirror)
+
+          collection = ::Project.id_in(projects.map(&:id))
+
+          expect do
+            described_class.new(user, query, collection, node_id: node_id, filters: filters).objects('blobs')
+          end.not_to issue_same_number_of_queries_as(control)
+        end
+      end
+
       context 'when no filters are passed' do
         it 'calls search on Gitlab::Search::Zoekt::Client with non archived project ids' do
           expect(Gitlab::Search::Zoekt::Client).to receive(:search).with(
@@ -295,6 +316,41 @@ RSpec.describe ::Search::Zoekt::SearchResults, :zoekt, feature_category: :global
           ).and_call_original
 
           search
+        end
+      end
+
+      context 'when there is a public project with a private repository' do
+        let(:limit_projects) { ::Project.id_in(public_project_with_private_repo.id) }
+        let(:query) { ".*" }
+        let(:public_project_with_private_repo) do
+          create(:project, :public, :repository, :repository_private, :custom_repo,
+            files: { 'foo/a.txt' => 'foo', 'b.txt' => 'bar' })
+        end
+
+        before do
+          zoekt_ensure_project_indexed!(public_project_with_private_repo)
+        end
+
+        it 'does not include results from private repository' do
+          expect(Gitlab::Search::Zoekt::Client).not_to receive(:search)
+
+          expect(search).to be_empty
+        end
+
+        context 'when there are also permitted repositories in project list' do
+          let(:limit_projects) { ::Project.id_in([public_project_with_private_repo.id, project_1.id]) }
+
+          it 'still returns results from permitted repositories' do
+            expect(Gitlab::Search::Zoekt::Client).to receive(:search).with(
+              query,
+              num: described_class::ZOEKT_COUNT_LIMIT,
+              project_ids: [project_1.id],
+              node_id: node_id,
+              search_mode: :exact
+            ).and_call_original
+
+            expect(search).not_to be_empty
+          end
         end
       end
 

@@ -10574,7 +10574,8 @@ CREATE TABLE gitlab_subscription_histories (
     created_at timestamp with time zone,
     trial_starts_on date,
     auto_renew boolean,
-    trial_extension_type smallint
+    trial_extension_type smallint,
+    CONSTRAINT check_6d5f27a106 CHECK ((namespace_id IS NOT NULL))
 );
 
 CREATE SEQUENCE gitlab_subscription_histories_id_seq
@@ -12608,6 +12609,7 @@ CREATE TABLE merge_requests (
     override_requested_changes boolean DEFAULT false NOT NULL,
     head_pipeline_id_convert_to_bigint bigint,
     imported_from smallint DEFAULT 0 NOT NULL,
+    retargeted boolean DEFAULT false NOT NULL,
     CONSTRAINT check_970d272570 CHECK ((lock_version IS NOT NULL))
 );
 
@@ -28392,6 +28394,8 @@ CREATE INDEX index_projects_on_creator_id_import_type_and_created_at_partial ON 
 CREATE INDEX index_projects_on_description_trigram ON projects USING gin (description gin_trgm_ops);
 
 CREATE INDEX index_projects_on_id_and_archived_and_pending_delete ON projects USING btree (id) WHERE ((archived = false) AND (pending_delete = false));
+
+CREATE INDEX index_projects_on_id_and_namespace_id ON projects USING btree (id, namespace_id);
 
 CREATE UNIQUE INDEX index_projects_on_id_partial_for_visibility ON projects USING btree (id) WHERE (visibility_level = ANY (ARRAY[10, 20]));
 
