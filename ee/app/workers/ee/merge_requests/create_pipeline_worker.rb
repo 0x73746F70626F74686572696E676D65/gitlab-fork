@@ -16,7 +16,6 @@ module EE
         return if merge_request.diff_head_pipeline
 
         return unless merge_request.project.licensed_feature_available?(:security_orchestration_policies)
-        return unless ::Feature.enabled?(:merge_request_approval_policies_fallback_behavior, merge_request.project)
 
         # If the MR has no pipeline, unblock its fail-open rules right away.
         ::Security::ScanResultPolicies::UnblockFailOpenApprovalRulesWorker.perform_async(merge_request.id)

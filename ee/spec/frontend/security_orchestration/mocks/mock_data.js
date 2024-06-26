@@ -47,6 +47,7 @@ export const APPROVAL_POLICY_DEFAULT_POLICY = {
     remove_approvals_with_new_commit: true,
     require_password_to_approve: false,
   },
+  fallback_behavior: { fail: 'closed' },
 };
 
 export const APPROVAL_POLICY_DEFAULT_POLICY_WITH_SCOPE = {

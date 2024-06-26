@@ -174,14 +174,6 @@ RSpec.describe Security::UnenforceablePolicyRulesNotificationService, '#execute'
         end
 
         it_behaves_like 'triggers policy bot comment', report_type, false, requires_approval: false
-
-        context 'with feature disabled' do
-          before do
-            stub_feature_flags(merge_request_approval_policies_fallback_behavior: false)
-          end
-
-          it_behaves_like 'triggers policy bot comment', report_type, true, requires_approval: true
-        end
       end
 
       context "without persisted policy" do

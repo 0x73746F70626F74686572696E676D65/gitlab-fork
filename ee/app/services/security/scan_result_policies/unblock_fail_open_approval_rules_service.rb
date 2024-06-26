@@ -15,7 +15,7 @@ module Security
       end
 
       def execute
-        return if feature_disabled? || fail_open_approval_rules.empty?
+        return if fail_open_approval_rules.empty?
 
         ApplicationRecord.transaction do
           ApprovalMergeRequestRule.remove_required_approved(fail_open_approval_rules.map(&:id))
@@ -38,10 +38,6 @@ module Security
 
       def approval_rules
         merge_request.approval_rules.by_report_types(report_types).including_scan_result_policy_read
-      end
-
-      def feature_disabled?
-        Feature.disabled?(:merge_request_approval_policies_fallback_behavior, merge_request.project)
       end
     end
   end

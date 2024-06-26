@@ -21,8 +21,6 @@ module Security
 
           head_pipeline = merge_request.diff_head_pipeline
           unless head_pipeline
-            next unless Feature.enabled?(:merge_request_approval_policies_fallback_behavior, merge_request.project)
-
             next ::Security::ScanResultPolicies::UnblockFailOpenApprovalRulesWorker.perform_async(merge_request.id)
           end
 

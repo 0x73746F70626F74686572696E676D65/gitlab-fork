@@ -9,6 +9,10 @@ const SETTINGS = `approval_settings:
   require_password_to_approve: false
 `;
 
+const FALLBACK = `fallback_behavior:
+  fail: closed
+`;
+
 export const USER = {
   id: 2,
   name: 'Name 1',
@@ -37,7 +41,9 @@ actions:
     approvals_required: 2
     role_approvers:
       - developer
-`.concat(SETTINGS);
+`
+  .concat(SETTINGS)
+  .concat(FALLBACK);
 
 export const mockUserApproversApprovalManifest = `type: approval_policy
 name: ''
@@ -50,7 +56,9 @@ actions:
     approvals_required: 2
     user_approvers_ids:
       - ${USER.id}
-`.concat(SETTINGS);
+`
+  .concat(SETTINGS)
+  .concat(FALLBACK);
 
 export const mockGroupApproversApprovalManifest = `type: approval_policy
 name: ''
@@ -66,7 +74,9 @@ actions:
     approvals_required: 2
     group_approvers_ids:
       - ${GROUP.id}
-`.concat(SETTINGS);
+`
+  .concat(SETTINGS)
+  .concat(FALLBACK);
 
 export const mockLicenseApprovalManifest = `type: approval_policy
 name: ''
@@ -81,7 +91,9 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-`.concat(SETTINGS);
+`
+  .concat(SETTINGS)
+  .concat(FALLBACK);
 
 export const mockSecurityApprovalManifest = `type: approval_policy
 name: ''
@@ -97,7 +109,9 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-`.concat(SETTINGS);
+`
+  .concat(SETTINGS)
+  .concat(FALLBACK);
 
 export const mockAnyMergeRequestApprovalManifest = `type: approval_policy
 name: ''
@@ -110,4 +124,6 @@ rules:
 actions:
   - type: require_approval
     approvals_required: 1
-`.concat(SETTINGS);
+`
+  .concat(SETTINGS)
+  .concat(FALLBACK);

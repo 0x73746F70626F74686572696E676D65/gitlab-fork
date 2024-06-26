@@ -64,18 +64,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsS
 
         subject
       end
-
-      context 'with feature disabled' do
-        before do
-          stub_feature_flags(merge_request_approval_policies_fallback_behavior: false)
-        end
-
-        it 'does not unblock fail-open rules' do
-          expect(::Security::ScanResultPolicies::UnblockFailOpenApprovalRulesWorker).not_to receive(:perform_async)
-
-          subject
-        end
-      end
     end
 
     context 'with head_pipeline' do

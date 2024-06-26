@@ -39,18 +39,6 @@ RSpec.describe MergeRequests::CreatePipelineWorker, "#execute", feature_category
         perform
       end
     end
-
-    context "with feature disabled" do
-      before do
-        stub_feature_flags(merge_request_approval_policies_fallback_behavior: false)
-      end
-
-      it "does not unblock fail-open rules" do
-        expect(worker).not_to receive(:perform_async)
-
-        perform
-      end
-    end
   end
 
   context "when MR gets a pipeline" do
