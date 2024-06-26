@@ -37,7 +37,9 @@ module Integrations
         },
         help: -> {
           format(
-            s_('GoogleCloud|Example: %{code_open}my-sample-project-191923%{code_close}'),
+            s_('GoogleCloud|Can be 6 to 30 lowercase letters, numbers, or hyphens. ' \
+              'Must start with a letter and end with a letter or number. ' \
+              'Example: %{code_open}my-sample-project-191923%{code_close}'),
             {
               code_open: '<code>',
               code_close: '</code>'
@@ -66,13 +68,27 @@ module Integrations
         required: true,
         section: SECTION_TYPE_CONFIGURATION,
         title: -> { s_('GoogleCloud|Pool ID') },
-        description: -> { s_('GoogleCloud|ID of the Workload Identity Pool.') }
+        description: -> {
+          s_('GoogleCloud|ID of the Workload Identity Pool.')
+        },
+        help: -> {
+          format(
+            s_('GoogleCloud|Can be 4 to 32 lowercase letters, numbers, or hyphens.')
+          )
+        }
 
       field :workload_identity_pool_provider_id,
         required: true,
         section: SECTION_TYPE_CONFIGURATION,
         title: -> { s_('GoogleCloud|Provider ID') },
-        description: -> { s_('GoogleCloud|ID of the Workload Identity Pool provider.') }
+        description: -> {
+          s_('GoogleCloud|ID of the Workload Identity Pool provider.')
+        },
+        help: -> {
+          format(
+            s_('GoogleCloud|Can be 4 to 32 lowercase letters, numbers, or hyphens.')
+          )
+        }
 
       def self.title
         s_('GoogleCloud|Google Cloud IAM')
