@@ -254,9 +254,9 @@ export default {
 
     <section-layout @remove="$emit('remove')">
       <template #content>
-        <div class="gl-display-inline-flex gl-w-full gl-gap-3 gl-align-items-center gl-flex-wrap">
+        <div class="gl-inline-flex gl-w-full gl-gap-3 gl-align-items-center gl-flex-wrap">
           <div
-            class="gl-display-inline-flex gl-w-full gl-gap-3 gl-align-items-baseline gl-flex-wrap gl-md-flex-nowrap"
+            class="gl-inline-flex gl-w-full gl-gap-3 gl-align-items-baseline gl-flex-wrap gl-md-flex-nowrap"
           >
             <gl-sprintf :message="$options.i18n.customSectionHeaderCopy">
               <template #bold="{ content }">

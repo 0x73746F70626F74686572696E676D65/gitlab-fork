@@ -80,7 +80,7 @@ export default {
 };
 </script>
 <template>
-  <div v-if="badge" class="gl-display-inline-flex gl-align-bottom">
+  <div v-if="badge" class="gl-inline-flex gl-align-bottom">
     <gl-badge
       ref="badgeRef"
       href="#"

@@ -287,16 +287,16 @@ export default {
             <div
               v-if="isEpic"
               ref="countBadge"
-              class="gl-text-gray-500 gl-display-inline-flex gl-py-0 p-lg-0"
+              class="gl-text-gray-500 gl-inline-flex gl-py-0 p-lg-0"
             >
               <span
                 v-if="allowSubEpics"
-                class="gl-display-inline-flex gl-align-items-center gl-mr-4 gl-mb-1"
+                class="gl-inline-flex gl-align-items-center gl-mr-4 gl-mb-1"
               >
                 <gl-icon name="epic" class="gl-mr-2" />
                 {{ totalEpicsCount }}
               </span>
-              <span class="gl-display-inline-flex gl-align-items-center gl-mr-4 gl-mb-1">
+              <span class="gl-inline-flex gl-align-items-center gl-mr-4 gl-mb-1">
                 <gl-icon name="issues" class="gl-mr-2" />
                 {{ totalIssuesCount }}
               </span>
@@ -325,7 +325,7 @@ export default {
             <item-assignees
               v-if="hasAssignees"
               :assignees="item.assignees"
-              class="item-assignees gl-display-inline-flex gl-align-items-center gl-mr-4 gl-mb-1 flex-xl-grow-0"
+              class="item-assignees gl-inline-flex gl-align-items-center gl-mr-4 gl-mb-1 flex-xl-grow-0"
             />
 
             <epic-health-status

@@ -120,7 +120,7 @@ export default {
 
 <template>
   <div v-if="flatFindings.length" class="gl-relative">
-    <div class="gl-display-inline-flex">
+    <div class="gl-inline-flex">
       <span ref="inlineFindingsIcon">
         <inline-findings-dropdown
           :items="groupedFindings"
@@ -132,7 +132,7 @@ export default {
           @mouseleave="isHoveringFirstIcon = false"
         />
       </span>
-      <span class="inline-findings-transition-container gl-display-inline-flex">
+      <span class="inline-findings-transition-container gl-inline-flex">
         <transition-group name="icons">
           <!--
             The TransitionGroup Component will only apply its classes when first-level children are added/removed to the DOM.

@@ -40,12 +40,12 @@ export default {
     v-gl-tooltip="issue.title"
     :href="issue.webUrl"
     target="__blank"
-    class="gl-display-inline-flex gl-align-items-center gl-flex-shrink-0"
+    class="gl-inline-flex gl-align-items-center gl-flex-shrink-0"
   >
     <span
       v-if="isJira"
       v-safe-html="$options.jiraLogo"
-      class="gl-min-h-6 gl-mr-3 gl-display-inline-flex gl-align-items-center"
+      class="gl-min-h-6 gl-mr-3 gl-inline-flex gl-align-items-center"
       data-testid="jira-logo"
     ></span>
     <gl-icon

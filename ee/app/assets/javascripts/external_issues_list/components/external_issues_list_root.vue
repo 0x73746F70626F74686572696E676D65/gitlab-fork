@@ -286,7 +286,7 @@ export default {
     <template #reference="{ issuable }">
       <span
         v-safe-html="externalIssuesLogo"
-        class="gl-display-inline-flex gl-vertical-align-text-bottom"
+        class="gl-inline-flex gl-vertical-align-text-bottom"
       ></span>
       <span v-if="issuable">
         {{ issuable.references ? issuable.references.relative : issuable.id }}

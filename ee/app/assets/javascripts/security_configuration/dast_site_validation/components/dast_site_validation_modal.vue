@@ -259,7 +259,7 @@ export default {
           category="secondary"
           size="small"
           icon="download"
-          class="gl-display-inline-flex gl-max-w-full"
+          class="gl-inline-flex gl-max-w-full"
           data-testid="download-dast-text-file-validation-button"
           :aria-label="s__('DastSiteValidation|Download validation text file')"
           @click="downloadTextFile()"

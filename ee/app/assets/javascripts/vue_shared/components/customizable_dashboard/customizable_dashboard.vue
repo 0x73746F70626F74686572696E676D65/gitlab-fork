@@ -508,7 +508,7 @@ export default {
           >
             <div class="gl-font-bold gl-text-gray-700 gl-display-flex gl-align-items-center">
               <div
-                class="gl-h-7 gl-w-7 gl-rounded-full gl-bg-gray-100 gl-display-inline-flex gl-align-items-center gl-justify-content-center gl-mr-3"
+                class="gl-h-7 gl-w-7 gl-rounded-full gl-bg-gray-100 gl-inline-flex gl-align-items-center gl-justify-content-center gl-mr-3"
               >
                 <gl-icon name="plus" />
               </div>

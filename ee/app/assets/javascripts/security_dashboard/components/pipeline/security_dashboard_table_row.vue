@@ -221,7 +221,7 @@ export default {
           </span>
           <span
             v-if="isJiraIssueCreationEnabled && hasJiraIssue"
-            class="gl-display-inline-flex gl-align-items-baseline"
+            class="gl-inline-flex gl-align-items-baseline"
           >
             <span
               v-safe-html="$options.jiraLogo"
