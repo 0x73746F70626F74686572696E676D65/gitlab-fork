@@ -46965,6 +46965,9 @@ msgstr ""
 msgid "Search by author"
 msgstr ""
 
+msgid "Search by full path"
+msgstr ""
+
 msgid "Search by message"
 msgstr ""
 
@@ -48128,7 +48131,7 @@ msgstr ""
 msgid "SecurityOrchestration|Show more projects"
 msgstr ""
 
-msgid "SecurityOrchestration|Show only security policies projects"
+msgid "SecurityOrchestration|Show only linked security policy projects"
 msgstr ""
 
 msgid "SecurityOrchestration|Something went wrong, unable to fetch policies"

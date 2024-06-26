@@ -13,7 +13,7 @@ export default {
       description: s__(
         `SecurityOrchestration|Security policy projects store your organization's security policies. They are identified when policies are created, or when a project is linked as a security policy project. %{linkStart}Learn more%{linkEnd}.`,
       ),
-      showOption: s__('SecurityOrchestration|Show only security policies projects'),
+      showOption: s__('SecurityOrchestration|Show only linked security policy projects'),
       saveButtonText: __('Save'),
     },
     save: {
@@ -233,7 +233,7 @@ export default {
         </gl-sprintf>
         <gl-toggle
           v-model="searchOnlyPolicyProjects"
-          class="gl-py-3"
+          class="gl-py-3 gl-flex-direction-column gl-md-flex-direction-row gl-align-items-flex-start gl-md-align-items-center"
           :label="$options.i18n.modal.showOption"
           label-position="left"
         />
