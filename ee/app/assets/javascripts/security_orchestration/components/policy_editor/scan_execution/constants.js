@@ -12,7 +12,7 @@ export const SCAN_EXECUTION_RULES_LABELS = {
   [SCAN_EXECUTION_RULES_SCHEDULE_KEY]: s__('ScanExecutionPolicy|Schedules:'),
 };
 
-export const ADD_CONDITION_LABEL = s__('ScanExecutionPolicy|Add condition');
+export const ADD_CONDITION_LABEL = s__('ScanExecutionPolicy|Add new condition');
 export const CONDITIONS_LABEL = s__('ScanExecutionPolicy|Conditions');
 
 export const SCAN_EXECUTION_PIPELINE_RULE = 'pipeline';
