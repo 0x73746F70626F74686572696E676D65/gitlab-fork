@@ -23,7 +23,7 @@ module Gitlab
 
             logger.info_or_debug(context.current_user, message: "Prompt", class: self.class.to_s, prompt: prompt_text)
 
-            ai_request.request(prompt_str, &block)
+            ai_request.request(prompt_str, unit_primitive: unit_primitive, &block)
           end
 
           def streamed_request_handler(streamed_answer)
@@ -51,6 +51,10 @@ module Gitlab
             ai_provider_name = ai_request.class.name.demodulize.underscore.to_sym
 
             self.class::PROVIDER_PROMPT_CLASSES[ai_provider_name]
+          end
+
+          def unit_primitive
+            nil
           end
         end
       end

@@ -14,7 +14,8 @@ module Gitlab
               unit_primitive: unit_primitive, tracking_context: tracking_context)
           end
 
-          def request(prompt)
+          # TODO: unit primitive param is temporarily added to provide parity with ai_gateway-related method
+          def request(prompt, unit_primitive: nil) # rubocop: disable Lint/UnusedMethodArgument -- added to provide parity with ai_gateway-related method
             ai_client.text(
               content: prompt[:prompt],
               parameters: { **default_options.merge(prompt.fetch(:options, {})) }
