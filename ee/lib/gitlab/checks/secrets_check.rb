@@ -3,6 +3,8 @@
 module Gitlab
   module Checks
     class SecretsCheck < ::Gitlab::Checks::BaseBulkChecker
+      include Gitlab::InternalEventsTracking
+
       ERROR_MESSAGES = {
         failed_to_scan_regex_error: "\n    - Failed to scan blob(id: %{blob_id}) due to regex error.",
         blob_timed_out_error: "\n    - Scanning blob(id: %{blob_id}) timed out.",
@@ -54,12 +56,14 @@ module Gitlab
 
         # Skip if any commit has the special bypass flag `[skip secret detection]`
         if skip_secret_detection_commit_message?
-          log_audit_event(_("commit message"))
+          log_audit_event(_("commit message")) # Keeping this a string and not constant so I18N picks it up
+          track_spp_skipped("commit message")
           return
         end
 
         if skip_secret_detection_push_option?
-          log_audit_event(_("push option"))
+          log_audit_event(_("push option")) # Keeping this a string and not constant so I18N picks it up
+          track_spp_skipped("push option")
           return
         end
 
@@ -136,6 +140,18 @@ module Gitlab
         }
 
         ::Gitlab::Audit::Auditor.audit(audit_context)
+      end
+
+      def track_spp_skipped(skip_method)
+        track_internal_event(
+          "skip_secret_push_protection",
+          user: changes_access.user_access.user,
+          project: project,
+          namespace: project.namespace,
+          additional_properties: {
+            label: skip_method
+          }
+        )
       end
 
       def format_response(response)
