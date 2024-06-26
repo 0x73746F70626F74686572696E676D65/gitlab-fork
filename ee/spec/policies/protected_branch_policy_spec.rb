@@ -32,13 +32,11 @@ RSpec.describe ProtectedBranchPolicy, feature_category: :source_code_management 
           stub_licensed_features(unprotection_restrictions: true)
         end
 
-        it { is_expected.to be_allowed(:read_protected_branch) }
-
         it_behaves_like 'disallows protected branch changes'
 
-        context 'and the user is a member of the group' do
+        context 'and the user is a developer of the group' do
           before do
-            allowed_group.add_guest(user)
+            allowed_group.add_developer(user)
           end
 
           it_behaves_like 'allows protected branch crud'
