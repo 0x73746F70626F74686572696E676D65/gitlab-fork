@@ -3,46 +3,37 @@
 require 'spec_helper'
 
 RSpec.describe Projects::BranchRulePolicy, feature_category: :source_code_management do
-  let_it_be(:name) { 'feature' }
-  let_it_be(:protected_branch) { create(:protected_branch, name: name) }
-  let_it_be(:project) { protected_branch.project }
-  let_it_be(:allowed_group) { create(:group) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:protected_branch) { create(:protected_branch) }
+  let_it_be(:user) { create(:user, maintainer_of: protected_branch.project) }
 
-  let(:branch_rule) { Projects::BranchRule.new(project, protected_branch) }
+  let(:branch_rule) { Projects::BranchRule.new(protected_branch.project, protected_branch) }
 
-  subject { described_class.new(user, branch_rule) }
+  subject(:policy) { described_class.new(user, branch_rule) }
 
-  before_all do
-    project.add_maintainer(user)
-    project.project_group_links.create!(group: allowed_group)
-  end
+  describe 'Abilities' do
+    using RSpec::Parameterized::TableSyntax
 
-  context 'when an unprotect access level for a group is configured' do
-    before_all do
-      protected_branch.unprotect_access_levels.create!(group: allowed_group)
+    where(
+      :unprotect_restrictions_enabled, :can_unprotect, :behavior
+    ) do
+      true                           | true          | 'allows branch rule crud'
+      true                           | false         | 'disallows branch rule changes'
+      false                          | false         | 'allows branch rule crud'
+      false                          | true          | 'allows branch rule crud'
     end
 
-    context 'and unprotection restriction feature is unlicensed' do
-      it_behaves_like 'allows branch rule crud'
-    end
+    it_behaves_like 'allows branch rule crud'
 
-    context 'and unprotection restriction feature is licensed' do
+    with_them do
       before do
-        stub_licensed_features(unprotection_restrictions: true)
+        stub_licensed_features(unprotection_restrictions: unprotect_restrictions_enabled)
+
+        allow(protected_branch)
+          .to receive(:can_unprotect?).with(user)
+          .and_return(can_unprotect)
       end
 
-      it { is_expected.to be_allowed(:read_branch_rule) }
-
-      it_behaves_like 'disallows branch rule changes'
-
-      context 'and the user is a member of the group' do
-        before_all do
-          allowed_group.add_guest(user)
-        end
-
-        it_behaves_like 'allows branch rule crud'
-      end
+      it_behaves_like params[:behavior]
     end
   end
 end
