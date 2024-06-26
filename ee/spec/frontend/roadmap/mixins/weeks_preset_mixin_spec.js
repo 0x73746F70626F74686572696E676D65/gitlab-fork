@@ -211,9 +211,7 @@ describe('WeeksPresetMixin', () => {
         */
         const expectedTimelineBarWidth = 462; // in px;
 
-        expect(Math.floor(wrapper.vm.getTimelineBarWidthForWeeks(mockEpic))).toBe(
-          expectedTimelineBarWidth,
-        );
+        expect(Math.floor(wrapper.vm.getTimelineBarWidthForWeeks())).toBe(expectedTimelineBarWidth);
       });
     });
   });
