@@ -23,8 +23,8 @@ module Gitlab
         found_secrets_docs_link: "\nFor guidance, see %{path}",
         found_secrets_with_errors: 'Secret detection scan completed with one or more findings ' \
                                    'but some errors occured during the scan.',
-        finding_message_occurrence_header: "\nSecret push protection " \
-                                           "found the following secrets in commit: %{sha}\n",
+        finding_message_occurrence_header: "\n\nSecret push protection " \
+                                           "found the following secrets in commit: %{sha}",
         finding_message_occurrence_path: "\n-- %{path}:",
         finding_message_occurrence_line: "%{line_number} | %{description}",
         finding_message: "\n\nSecret leaked in blob: %{blob_id}" \
@@ -268,9 +268,10 @@ module Gitlab
         # Let's create a set to store ids of blobs found in tree entries.
         blobs_found_with_tree_entries = Set.new
 
+        commits = changes_access.commits.map { |commit| commit.id.match(/[a-f0-9]{40}([a-f0-9]{24})?/).to_s }
         # Scanning had found secrets, let's try to look up their file path and commit id. This can be done
         # by using `GetTreeEntries()` RPC, and cross examining blobs with ones where secrets where found.
-        revisions.each do |revision|
+        commits.each do |revision|
           # We could try to handle pagination, but it is likely to timeout way earlier given the
           # huge default limit (100000) of entries, so we log an error if we get too many results.
           entries, cursor = ::Gitlab::Git::Tree.tree_entries(

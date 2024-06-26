@@ -467,14 +467,12 @@ RSpec.shared_examples 'scan detected secrets' do
       expect(::Gitlab::Git::Tree).to receive(:tree_entries)
         .with(**expected_tree_args.merge(sha: new_commit))
         .once
-        .ordered
         .and_return([tree_entries, gitaly_pagination_cursor])
         .and_call_original
 
       expect(::Gitlab::Git::Tree).to receive(:tree_entries)
         .with(**expected_tree_args.merge(sha: commit_with_same_blob))
         .once
-        .ordered
         .and_return([tree_entries, gitaly_pagination_cursor])
         .and_call_original
 
@@ -822,21 +820,18 @@ RSpec.shared_examples 'scan detected secrets but some errors occured' do
     expect(::Gitlab::Git::Tree).to receive(:tree_entries)
       .with(**expected_tree_args.merge(sha: new_commit))
       .once
-      .ordered
       .and_return([tree_entries, gitaly_pagination_cursor])
       .and_call_original
 
     expect(::Gitlab::Git::Tree).to receive(:tree_entries)
       .with(**expected_tree_args.merge(sha: timed_out_commit))
       .once
-      .ordered
       .and_return([[], nil])
       .and_call_original
 
     expect(::Gitlab::Git::Tree).to receive(:tree_entries)
       .with(**expected_tree_args.merge(sha: failed_to_scan_commit))
       .once
-      .ordered
       .and_return([[], nil])
       .and_call_original
 
