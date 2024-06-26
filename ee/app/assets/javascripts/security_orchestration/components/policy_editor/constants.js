@@ -77,7 +77,7 @@ export const INVALID_RULE_MESSAGE = s__(
 export const INVALID_PROTECTED_BRANCHES = s__(
   'SecurityOrchestration|The following branches do not exist on this development project: %{branches}. Please review all protected branches to ensure the values are accurate before updating this policy.',
 );
-export const ADD_RULE_LABEL = s__('SecurityOrchestration|Add rule');
+export const ADD_RULE_LABEL = s__('SecurityOrchestration|Add new rule');
 export const RULES_LABEL = s__('SecurityOrchestration|Rules');
 
 export const ADD_ACTION_LABEL = s__('SecurityOrchestration|Add action');
