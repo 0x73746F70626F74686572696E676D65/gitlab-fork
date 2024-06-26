@@ -117,13 +117,11 @@ module EE
         field :runner_usage_by_project,
           [::Types::Ci::RunnerUsageByProjectType],
           null: true,
-          alpha: { milestone: '16.9' },
           description: 'Runner usage by project.',
           resolver: ::Resolvers::Ci::RunnerUsageByProjectResolver
         field :runner_usage,
           [::Types::Ci::RunnerUsageType],
           null: true,
-          alpha: { milestone: '16.9' },
           description: 'Runner usage by runner.',
           resolver: ::Resolvers::Ci::RunnerUsageResolver
 

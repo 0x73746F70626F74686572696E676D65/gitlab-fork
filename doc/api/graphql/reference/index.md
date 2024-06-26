@@ -896,10 +896,6 @@ Returns [`RunnerSetup`](#runnersetup).
 
 Runner usage by runner.
 
-DETAILS:
-**Introduced** in GitLab 16.9.
-**Status**: Experiment.
-
 Returns [`[CiRunnerUsage!]`](#cirunnerusage).
 
 #### Arguments
@@ -915,10 +911,6 @@ Returns [`[CiRunnerUsage!]`](#cirunnerusage).
 ### `Query.runnerUsageByProject`
 
 Runner usage by project.
-
-DETAILS:
-**Introduced** in GitLab 16.9.
-**Status**: Experiment.
 
 Returns [`[CiRunnerUsageByProject!]`](#cirunnerusagebyproject).
 
@@ -8124,10 +8116,6 @@ Input type: `RunnerUpdateInput`
 | <a id="mutationrunnerupdaterunner"></a>`runner` | [`CiRunner`](#cirunner) | Runner after mutation. |
 
 ### `Mutation.runnersExportUsage`
-
-DETAILS:
-**Introduced** in GitLab 16.7.
-**Status**: Experiment.
 
 Input type: `RunnersExportUsageInput`
 
