@@ -52,17 +52,17 @@ export default {
       </gl-alert>
     </gl-popover>
 
-    <gl-badge :class="$options.badgeClasses" size="sm" variant="success">
+    <gl-badge :class="$options.badgeClasses" variant="success">
       {{ healthStatus.issuesOnTrack }}
       <span class="gl-sr-only">&nbsp;{{ __('issues on track') }}</span>
     </gl-badge>
 
-    <gl-badge :class="$options.badgeClasses" size="sm" variant="warning">
+    <gl-badge :class="$options.badgeClasses" variant="warning">
       {{ healthStatus.issuesNeedingAttention }}
       <span class="gl-sr-only">&nbsp;{{ __('issues need attention') }}</span>
     </gl-badge>
 
-    <gl-badge :class="$options.badgeClasses" size="sm" variant="danger">
+    <gl-badge :class="$options.badgeClasses" variant="danger">
       {{ healthStatus.issuesAtRisk }}
       <span class="gl-sr-only">&nbsp;{{ __('issues at risk') }}</span>
     </gl-badge>

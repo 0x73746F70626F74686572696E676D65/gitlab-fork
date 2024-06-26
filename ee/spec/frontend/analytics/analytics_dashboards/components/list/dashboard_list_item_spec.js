@@ -150,7 +150,6 @@ describe('DashboardsListItem', () => {
 
     it('renders the errors badge', () => {
       expect(findErrorsBadge().props()).toMatchObject({
-        size: 'sm',
         icon: 'error',
         iconSize: 'sm',
         variant: 'danger',

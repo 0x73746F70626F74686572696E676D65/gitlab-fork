@@ -180,7 +180,7 @@ exports[`DetailsDrawer component policy with tags and CI variables renders the c
             class="gl-display-flex gl-flex-wrap gl-gap-2 gl-mt-2"
           >
             <span
-              class="badge badge-info badge-pill gl-badge sm"
+              class="badge badge-info badge-pill gl-badge"
             >
               default
             </span>

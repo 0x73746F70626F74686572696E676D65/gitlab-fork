@@ -34,5 +34,5 @@ export default {
 
 <template>
   <gl-loading-icon v-if="isInProgress" :title="status" size="lg" />
-  <gl-badge v-else :variant="iconVariant" size="lg" :icon="statusIcon" />
+  <gl-badge v-else :variant="iconVariant" :icon="statusIcon" />
 </template>

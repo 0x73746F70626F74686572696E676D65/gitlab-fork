@@ -108,7 +108,6 @@ describe('Role details drawer', () => {
     });
 
     it('shows the custom role badge', () => {
-      expect(findCustomRoleBadge().props('size')).toBe('sm');
       expect(findCustomRoleBadge().text()).toBe('Custom role');
     });
 

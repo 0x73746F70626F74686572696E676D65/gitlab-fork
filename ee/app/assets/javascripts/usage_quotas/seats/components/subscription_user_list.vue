@@ -175,10 +175,10 @@ export default {
               :sub-label="item.user.username"
             >
               <template #meta>
-                <gl-badge v-if="isGroupInvite(item.user)" size="sm" variant="muted">
+                <gl-badge v-if="isGroupInvite(item.user)" variant="muted">
                   {{ s__('Billing|Group invite') }}
                 </gl-badge>
-                <gl-badge v-if="isProjectInvite(item.user)" size="sm" variant="muted">
+                <gl-badge v-if="isProjectInvite(item.user)" variant="muted">
                   {{ s__('Billing|Project invite') }}
                 </gl-badge>
               </template>

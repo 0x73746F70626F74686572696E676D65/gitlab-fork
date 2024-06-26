@@ -99,7 +99,6 @@ describe('Split Button', () => {
       createComponent({ buttons: [{ ...buttons[0], badge }] }, mountExtended);
 
       expect(findButtonBadge().text()).toBe(badge);
-      expect(findButtonBadge().props('size')).toBe('sm');
     });
 
     it('renders the tooltip', () => {
@@ -147,7 +146,6 @@ describe('Split Button', () => {
       createComponent({ buttons: [{ ...buttons[0], badge }, buttons[1]] }, mountExtended);
 
       expect(findListboxBadge().text()).toBe(badge);
-      expect(findListboxBadge().props('size')).toBe('sm');
     });
   });
 });

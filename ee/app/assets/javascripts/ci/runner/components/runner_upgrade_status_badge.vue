@@ -27,11 +27,6 @@ export default {
       required: true,
       type: Object,
     },
-    size: {
-      type: String,
-      default: null,
-      required: false,
-    },
   },
   computed: {
     shouldShowUpgradeStatus() {
@@ -71,9 +66,6 @@ export default {
           return null;
       }
     },
-    icon() {
-      return this.size === 'sm' ? null : 'upgrade';
-    },
   },
   RUNNER_UPGRADE_HELP_PATH,
   RUNNER_VERSION_HELP_PATH,
@@ -81,14 +73,7 @@ export default {
 </script>
 <template>
   <div v-if="badge" class="gl-inline-flex gl-align-bottom">
-    <gl-badge
-      ref="badgeRef"
-      href="#"
-      :variant="badge.variant"
-      :size="size"
-      :icon="icon"
-      v-bind="$attrs"
-    >
+    <gl-badge ref="badgeRef" href="#" :variant="badge.variant" icon="upgrade" v-bind="$attrs">
       {{ badge.label }}
     </gl-badge>
     <gl-popover triggers="focus" :target="() => $refs.badgeRef.$el" :title="badge.label">

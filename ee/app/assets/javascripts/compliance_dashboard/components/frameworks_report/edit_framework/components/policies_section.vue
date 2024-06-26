@@ -258,7 +258,7 @@ export default {
       <template #cell(name)="{ item }">
         {{ item.name }}
         <div v-if="!item.enabled">
-          <gl-badge variant="muted" size="sm">
+          <gl-badge variant="muted">
             {{ __('Disabled') }}
           </gl-badge>
         </div>

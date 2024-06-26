@@ -96,7 +96,7 @@ export default {
       @click="onClick"
     >
       {{ __('Summarize code changes') }}
-      <gl-badge size="sm" variants="neutral" class="gl-ml-2">{{ __('Beta') }}</gl-badge>
+      <gl-badge variants="neutral" class="gl-ml-2">{{ __('Beta') }}</gl-badge>
     </gl-button>
     <user-callout-dismisser feature-name="summarize_code_changes">
       <template #default="{ dismiss, shouldShowCallout }">

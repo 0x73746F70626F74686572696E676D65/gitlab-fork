@@ -129,12 +129,6 @@ describe('RunnerUpgradeStatusBadge', () => {
 
         expect(findBadge().exists()).toBe(false);
       });
-
-      it('Displays no icon when size is "sm"', () => {
-        createComponent({ props: { size: 'sm' } });
-
-        expect(findBadge().props('icon')).toBe(null);
-      });
     },
   );
 });

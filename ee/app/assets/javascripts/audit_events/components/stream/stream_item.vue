@@ -128,7 +128,6 @@ export default {
           icon="filter"
           variant="neutral"
           data-testid="filter-badge"
-          size="sm"
           class="gl-ml-3 gl-mr-auto"
         >
           {{ $options.i18n.FILTER_BADGE_LABEL }}

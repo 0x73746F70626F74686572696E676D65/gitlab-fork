@@ -77,7 +77,7 @@ export default {
     <gl-tab v-for="tab in tabs" :key="tab.text" :query-param-value="tab.status">
       <template #title>
         <span>{{ tab.text }}</span>
-        <gl-badge size="sm" class="gl-tab-counter-badge">{{ tab.count }}</gl-badge>
+        <gl-badge class="gl-tab-counter-badge">{{ tab.count }}</gl-badge>
       </template>
     </gl-tab>
     <div class="gl-pb-3 gl-border-b-1 gl-border-b-solid gl-border-gray-100">

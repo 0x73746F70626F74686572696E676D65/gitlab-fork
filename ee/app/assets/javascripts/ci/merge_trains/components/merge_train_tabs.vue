@@ -34,7 +34,7 @@ export default {
     <gl-tab data-testid="active-cars-tab" @click="$emit('activeTabClicked')">
       <template #title>
         <span class="gl-mr-2">{{ s__('Pipelines|Active') }}</span>
-        <gl-badge size="sm">
+        <gl-badge>
           {{ activeCarCount }}
         </gl-badge>
       </template>
@@ -43,7 +43,7 @@ export default {
     <gl-tab data-testid="merged-cars-tab" @click="$emit('mergedTabClicked')">
       <template #title>
         <span class="gl-mr-2">{{ s__('Pipelines|Merged') }}</span>
-        <gl-badge size="sm">
+        <gl-badge>
           {{ mergedCarCount }}
         </gl-badge>
       </template>

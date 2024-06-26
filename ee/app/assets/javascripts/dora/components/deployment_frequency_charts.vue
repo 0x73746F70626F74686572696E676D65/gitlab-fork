@@ -386,9 +386,7 @@ export default {
             data-testid="data-forecast-toggle"
             @change="onToggleForecast"
           />
-          <gl-badge size="md" variant="neutral" class="gl-ml-3">{{
-            $options.i18n.badgeTitle
-          }}</gl-badge>
+          <gl-badge variant="neutral" class="gl-ml-3">{{ $options.i18n.badgeTitle }}</gl-badge>
         </div>
       </template>
       <template #alerts>

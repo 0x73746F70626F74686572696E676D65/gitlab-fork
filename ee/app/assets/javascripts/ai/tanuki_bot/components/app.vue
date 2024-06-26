@@ -73,9 +73,12 @@ export default {
           };
         },
         result({ data }) {
-          this.addDuoChatMessage(data?.aiCompletionResponse);
-          if (data?.aiCompletionResponse?.role.toLowerCase() === MESSAGE_TYPES.TANUKI) {
-            this.responseCompleted = data?.aiCompletionResponse?.requestId;
+          const requestId = data?.aiCompletionResponse?.requestId;
+          if (requestId && !this.cancelledRequestIds.includes(requestId)) {
+            this.addDuoChatMessage(data.aiCompletionResponse);
+            if (data.aiCompletionResponse.role.toLowerCase() === MESSAGE_TYPES.TANUKI) {
+              this.responseCompleted = requestId;
+            }
           }
         },
         error(err) {
@@ -95,15 +98,20 @@ export default {
           };
         },
         result({ data }) {
-          if (data?.aiCompletionResponse?.requestId !== this.responseCompleted) {
-            this.addDuoChatMessage(data?.aiCompletionResponse);
+          const requestId = data?.aiCompletionResponse?.requestId;
+          if (
+            requestId &&
+            requestId !== this.responseCompleted &&
+            !this.cancelledRequestIds.includes(requestId)
+          ) {
+            this.addDuoChatMessage(data.aiCompletionResponse);
           }
           if (data?.aiCompletionResponse?.chunkId && !this.isResponseTracked) {
             performance.mark('response-received');
             performance.measure('prompt-to-response', 'prompt-sent', 'response-received');
             const [{ duration }] = performance.getEntriesByName('prompt-to-response');
             this.track('ai_response_time', {
-              property: data.aiCompletionResponse.requestId,
+              property: requestId,
               value: duration,
             });
             performance.clearMarks();
@@ -139,6 +147,7 @@ export default {
       error: '',
       responseCompleted: undefined,
       isResponseTracked: false,
+      cancelledRequestIds: [],
     };
   },
   computed: {
@@ -152,6 +161,11 @@ export default {
         GENIE_CHAT_CLEAR_MESSAGE,
         GENIE_CHAT_RESET_MESSAGE,
       ].includes(question);
+    },
+    onChatCancel() {
+      // pushing last requestId of messages to canceled Request Id's
+      this.cancelledRequestIds.push(this.messages[this.messages.length - 1].requestId);
+      this.setLoading(false);
     },
     onSendChatPrompt(question) {
       this.responseCompleted = undefined;
@@ -250,7 +264,9 @@ export default {
       :predefined-prompts="$options.i18n.predefinedPrompts"
       :badge-type="null"
       :tool-name="toolName"
+      :canceled-request-ids="cancelledRequestIds"
       class="duo-chat-container"
+      @chat-cancel="onChatCancel"
       @send-chat-prompt="onSendChatPrompt"
       @chat-hidden="onChatClose"
       @track-feedback="onTrackFeedback"

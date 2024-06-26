@@ -28,13 +28,7 @@ export default {
 </script>
 
 <template>
-  <gl-badge
-    v-gl-tooltip
-    class="gl-font-bold"
-    size="sm"
-    :title="__('Health status')"
-    :variant="statusClass"
-  >
+  <gl-badge v-gl-tooltip class="gl-font-bold" :title="__('Health status')" :variant="statusClass">
     {{ statusText }}
   </gl-badge>
 </template>
