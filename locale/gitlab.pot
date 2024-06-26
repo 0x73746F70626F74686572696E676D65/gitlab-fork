@@ -46503,6 +46503,9 @@ msgstr ""
 msgid "ScanExecutionPolicy|Override"
 msgstr ""
 
+msgid "ScanExecutionPolicy|Run %{scan} with the following options:"
+msgstr ""
+
 msgid "ScanExecutionPolicy|Run CI/CD code"
 msgstr ""
 

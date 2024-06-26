@@ -2,7 +2,11 @@
 import { isEmpty } from 'lodash';
 import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { REPORT_TYPE_DAST } from '~/vue_shared/security_reports/constants';
+import {
+  REPORT_TYPE_DAST,
+  REPORT_TYPE_DEPENDENCY_SCANNING,
+  REPORT_TYPE_CONTAINER_SCANNING,
+} from '~/vue_shared/security_reports/constants';
 import { isProject, isGroup } from 'ee/security_orchestration/components/utils';
 import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../../constants';
@@ -10,6 +14,7 @@ import ScanFilterSelector from '../../scan_filter_selector.vue';
 import {
   DEFAULT_SCANNER,
   SCANNER_HUMANIZED_TEMPLATE,
+  SCANNER_HUMANIZED_TEMPLATE_ALT,
   POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
   POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
 } from '../constants';
@@ -96,6 +101,14 @@ export default {
     tags() {
       return this.initAction.tags || [];
     },
+    scannerHumanizedMessage() {
+      const isScanningReport = [
+        REPORT_TYPE_CONTAINER_SCANNING,
+        REPORT_TYPE_DEPENDENCY_SCANNING,
+      ].includes(this.selectedScanner);
+
+      return isScanningReport ? SCANNER_HUMANIZED_TEMPLATE_ALT : SCANNER_HUMANIZED_TEMPLATE;
+    },
   },
   methods: {
     isFilterSelected(filter) {
@@ -160,7 +173,6 @@ export default {
   },
   i18n: {
     scannersHeaderText: s__('ScanExecutionPolicy|Select a scanner'),
-    scannerHumanizedTemplate: SCANNER_HUMANIZED_TEMPLATE,
   },
 };
 </script>
@@ -178,7 +190,7 @@ export default {
       <template #content>
         <section-layout class="gl-w-full gl-bg-white" @remove="$emit('remove')">
           <template #content>
-            <gl-sprintf :message="$options.i18n.scannerHumanizedTemplate">
+            <gl-sprintf :message="scannerHumanizedMessage">
               <template #scan>
                 <gl-collapsible-listbox
                   data-testid="scan-type-selector"
