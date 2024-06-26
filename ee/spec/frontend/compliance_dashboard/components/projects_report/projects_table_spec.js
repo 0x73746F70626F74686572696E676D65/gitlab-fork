@@ -376,22 +376,11 @@ describe('ProjectsTable component', () => {
       });
     });
 
-    it('does not render bulk operations panel', () => {
-      expect(wrapper.findComponent(SelectionOperations).exists()).toBe(false);
-    });
-
-    it('does not render checkboxes in table', () => {
-      expect(findTableRowData(0).at(0).find('input').exists()).toBe(false);
-    });
-
     it('does not allow framework editing', () => {
-      const COMPLIANCE_FRAMEWORK_COLUMN_IDX_WHEN_NO_CHECKBOX_PRESENT =
-        COMPLIANCE_FRAMEWORK_COLUMN_IDX - 1;
       const badge = findTableRowData(0)
-        .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX_WHEN_NO_CHECKBOX_PRESENT)
+        .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX)
         .findComponent(FrameworkBadge);
 
-      expect(badge.props('closeable')).toBe(false);
       expect(badge.props('showEdit')).toBe(false);
     });
   });

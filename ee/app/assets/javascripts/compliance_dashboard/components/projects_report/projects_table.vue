@@ -75,7 +75,7 @@ export default {
     };
   },
   computed: {
-    isEditingEnabled() {
+    isFrameworkEditingEnabled() {
       return isTopLevelGroup(this.groupPath, this.rootAncestorPath);
     },
 
@@ -218,6 +218,12 @@ export default {
   },
   fields: [
     {
+      key: 'selected',
+      sortable: false,
+      thClass: '!gl-align-middle',
+      tdClass: '!gl-align-middle',
+    },
+    {
       key: 'projectName',
       label: __('Project name'),
       thClass: '!gl-align-middle',
@@ -279,7 +285,6 @@ export default {
       />
     </gl-modal>
     <selection-operations
-      v-if="isEditingEnabled"
       :selection="selectedRows"
       :root-ancestor-path="rootAncestorPath"
       :is-apply-in-progress="isApplyInProgress"
@@ -288,7 +293,7 @@ export default {
       @create="createComplianceFramework($options.BULK_FRAMEWORK_ID)"
     />
     <gl-table
-      :fields="tableFields"
+      :fields="$options.fields"
       :busy="isLoading"
       :items="projects"
       no-local-sorting
@@ -296,7 +301,7 @@ export default {
       stacked="lg"
       hover
       :tbody-tr-attr="qaRowAttributes"
-      :selectable="isEditingEnabled"
+      selectable
       select-mode="multi"
       selected-variant="primary"
       @row-selected="updateSelectedRows"
@@ -329,7 +334,7 @@ export default {
       <template #cell(complianceFramework)="{ item: { id, complianceFrameworks } }">
         <gl-loading-icon v-if="hasPendingSingleOperation(id)" size="sm" inline />
         <framework-selection-box
-          v-else-if="!complianceFrameworks.length && isEditingEnabled"
+          v-else-if="!complianceFrameworks.length"
           :root-ancestor-path="rootAncestorPath"
           @select="
             applySingleItemOperation({
@@ -350,8 +355,8 @@ export default {
           v-for="framework in complianceFrameworks"
           v-else
           :key="framework.id"
-          :closeable="isEditingEnabled"
-          :show-edit="isEditingEnabled"
+          closeable
+          :show-edit="isFrameworkEditingEnabled"
           :framework="framework"
           @close="
             applySingleItemOperation({
