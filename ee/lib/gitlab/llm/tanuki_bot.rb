@@ -131,7 +131,7 @@ module Gitlab
           .final_prompt(question: question, documents: search_documents)
 
         final_prompt_result = ai_gateway_request.request(
-          prompt: final_prompt[:prompt], options: final_prompt[:options]
+          { prompt: final_prompt[:prompt], options: final_prompt[:options] }
         ) do |data|
           yield data if block_given?
         end

@@ -130,8 +130,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
       it 'executes calls and returns ResponseModifier' do
         expect(ai_gateway_request).to receive(:request)
-          .with(prompt: instance_of(Array),
-            options: { model: ::Gitlab::Llm::Anthropic::Client::CLAUDE_3_SONNET, max_tokens: 256 })
+          .with({ prompt: instance_of(Array),
+            options: { model: ::Gitlab::Llm::Anthropic::Client::CLAUDE_3_SONNET, max_tokens: 256 } })
           .once.and_return(completion_response)
         expect(docs_search_client).to receive(:search).with(**docs_search_args).and_return(docs_search_response)
 
@@ -143,8 +143,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :duo_chat do
 
         expect(ai_gateway_request)
           .to receive(:request)
-          .with(prompt: instance_of(Array), options:
-            { model: ::Gitlab::Llm::Anthropic::Client::CLAUDE_3_SONNET, max_tokens: 256 })
+          .with({ prompt: instance_of(Array), options:
+            { model: ::Gitlab::Llm::Anthropic::Client::CLAUDE_3_SONNET, max_tokens: 256 } })
           .once
           .and_yield(answer)
           .and_return(completion_response)

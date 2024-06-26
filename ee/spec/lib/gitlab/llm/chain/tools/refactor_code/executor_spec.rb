@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Llm::Chain::Tools::RefactorCode::Executor, feature_category: :duo_chat do
   let_it_be(:user) { create(:user) }
 
-  let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
+  let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::AiGateway) }
   let(:input) { 'input' }
   let(:options) { { input: input } }
   let(:stream_response_handler) { nil }
