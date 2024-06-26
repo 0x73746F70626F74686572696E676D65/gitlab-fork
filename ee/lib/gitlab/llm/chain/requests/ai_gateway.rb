@@ -14,28 +14,29 @@ module Gitlab
           attr_reader :ai_client, :tracking_context
 
           ENDPOINT = '/v1/chat/agent'
+          BASE_ENDPOINT = '/v1/chat'
           DEFAULT_TYPE = 'prompt'
           DEFAULT_SOURCE = 'GitLab EE'
           TEMPERATURE = 0.1
           STOP_WORDS = ["\n\nHuman", "Observation:"].freeze
           DEFAULT_MAX_TOKENS = 2048
 
-          def initialize(user, tracking_context: {})
+          def initialize(user, service_name: :duo_chat, tracking_context: {})
             @user = user
             @tracking_context = tracking_context
-            @ai_client = ::Gitlab::Llm::AiGateway::Client.new(user, service_name: :duo_chat,
+            @ai_client = ::Gitlab::Llm::AiGateway::Client.new(user, service_name: service_name,
               tracking_context: tracking_context)
             @logger = Gitlab::Llm::Logger.build
           end
 
-          def request(prompt)
+          def request(prompt, unit_primitive: nil)
             options = default_options.merge(prompt.fetch(:options, {}))
             return unless model_provider_valid?(options)
 
             body = request_body(prompt: prompt[:prompt], options: options)
 
             response = ai_client.stream(
-              endpoint: ENDPOINT,
+              endpoint: endpoint(unit_primitive),
               body: body
             ) do |data|
               yield data if block_given?
@@ -73,6 +74,14 @@ module Gitlab
 
           def model_provider_valid?(options)
             provider(options)
+          end
+
+          def endpoint(unit_primitive)
+            if unit_primitive.present?
+              "#{BASE_ENDPOINT}/#{unit_primitive}"
+            else
+              ENDPOINT
+            end
           end
 
           def request_body(prompt:, options: {})

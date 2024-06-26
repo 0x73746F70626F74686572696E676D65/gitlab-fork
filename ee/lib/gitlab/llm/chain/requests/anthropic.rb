@@ -18,7 +18,10 @@ module Gitlab
             @logger = Gitlab::Llm::Logger.build
           end
 
-          def request(prompt)
+          # TODO: unit primitive param is temporarily added to provide parity with ai_gateway-related method
+          def request(prompt, unit_primitive: nil) # rubocop: disable Lint/UnusedMethodArgument -- added to provide parity with ai_gateway-related method
+            return unless prompt[:prompt]
+
             ai_client.stream(
               prompt: prompt[:prompt],
               **default_options.merge(prompt.fetch(:options, {}))

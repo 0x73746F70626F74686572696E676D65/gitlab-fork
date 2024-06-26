@@ -6,7 +6,7 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
   let_it_be(:user) { create(:user) }
 
   let(:options) { { suggestions: "", input: "" } }
-  let(:ai_request) { ::Gitlab::Llm::Chain::Requests::Anthropic.new(user, unit_primitive: 'duo_chat') }
+  let(:ai_request) { ::Gitlab::Llm::Chain::Requests::AiGateway.new(user) }
   let(:context) do
     ::Gitlab::Llm::Chain::GitlabContext.new(
       current_user: user,
@@ -52,10 +52,10 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
       allow(logger).to receive(:info_or_debug)
     end
 
-    it 'passes prompt to the ai_client' do
+    it 'passes prompt and unit primitive to the ai_client' do
       tool = ::Gitlab::Llm::Chain::Tools::IssueReader::Executor.new(context: context, options: options)
 
-      expect(ai_request).to receive(:request).with(tool.prompt)
+      expect(ai_request).to receive(:request).with(tool.prompt, unit_primitive: nil)
 
       tool.request
     end
@@ -64,9 +64,27 @@ RSpec.describe Gitlab::Llm::Chain::Concerns::AiDependent, feature_category: :duo
       b = proc { "something" }
       tool = ::Gitlab::Llm::Chain::Tools::IssueReader::Executor.new(context: context, options: options)
 
-      expect(ai_request).to receive(:request).with(tool.prompt, &b)
+      expect(ai_request).to receive(:request).with(tool.prompt, unit_primitive: nil, &b)
 
       tool.request(&b)
+    end
+
+    it 'passes the customized url' do
+      tool = Class.new(::Gitlab::Llm::Chain::Tools::Tool) do
+        include ::Gitlab::Llm::Chain::Concerns::AiDependent
+
+        def prompt
+          { prompt: [] }
+        end
+
+        def unit_primitive
+          :test
+        end
+      end.new(context: context, options: {})
+
+      expect(ai_request).to receive(:request).with(tool.prompt, unit_primitive: :test)
+
+      tool.request
     end
 
     it 'logs the request', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/463465' do

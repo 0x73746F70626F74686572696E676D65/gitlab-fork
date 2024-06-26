@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_red
   let_it_be(:existing_agent_version) { create(:ai_agent_version) }
 
   let(:input) { 'foo' }
-  let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
+  let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::AiGateway) }
   let(:tool_answer) { instance_double(Gitlab::Llm::Chain::Answer, is_final?: false, content: 'Bar', status: :ok) }
   let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::IssueReader::Executor) }
   let(:tools) { [Gitlab::Llm::Chain::Tools::IssueReader] }
