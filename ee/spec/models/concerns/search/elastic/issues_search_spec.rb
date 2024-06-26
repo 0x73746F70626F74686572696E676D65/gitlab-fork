@@ -13,6 +13,7 @@ RSpec.describe ::Search::Elastic::IssuesSearch, :elastic_helpers, feature_catego
   before do
     issue_epic_type.project = nil # Need to set this to nil as :epic feature is not enforing it.
     allow(Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
+    allow(Gitlab::Saas).to receive(:feature_available?).with(:ai_vertex_embeddings).and_return(false)
   end
 
   describe '#maintain_elasticsearch_update' do
