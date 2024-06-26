@@ -11,6 +11,8 @@ module Dependencies
     belongs_to :pipeline, class_name: 'Ci::Pipeline'
     belongs_to :author, class_name: 'User', foreign_key: :user_id, inverse_of: :dependency_list_exports
 
+    has_many :export_parts, class_name: 'Dependencies::DependencyListExport::Part'
+
     validates :status, presence: true
     validates :file, presence: true, if: :finished?
     validates :export_type, presence: true
