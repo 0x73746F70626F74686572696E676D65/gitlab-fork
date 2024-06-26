@@ -182,7 +182,7 @@ export default {
         trim
         autocomplete="one-time-code"
         data-testid="verification-code-form-input"
-        class="gl-number-as-text-input"
+        class="gl-no-spin"
         @input="checkVerificationCode"
       />
     </gl-form-group>
