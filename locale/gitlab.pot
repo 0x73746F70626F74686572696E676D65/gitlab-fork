@@ -19765,6 +19765,9 @@ msgstr ""
 msgid "Edit wiki page"
 msgstr ""
 
+msgid "Edit your criteria and try again."
+msgstr ""
+
 msgid "Edit your most recent comment in a thread (from an empty textarea)"
 msgstr ""
 
