@@ -36,8 +36,16 @@ module Mutations
           # TODO: Change the superclass to use context.fetch(:current_user) instead of context[:current_user]
           track_usage_event(:users_updating_workspaces, current_user.id)
 
-          service = ::RemoteDevelopment::Workspaces::UpdateService.new(current_user: current_user)
-          response = service.execute(workspace: workspace, params: args)
+          domain_main_class_args = {
+            current_user: current_user,
+            workspace: workspace,
+            params: args
+          }
+
+          response = ::RemoteDevelopment::CommonService.execute(
+            domain_main_class: ::RemoteDevelopment::Workspaces::Update::Main,
+            domain_main_class_args: domain_main_class_args
+          )
 
           response_object = response.success? ? response.payload[:workspace] : nil
 

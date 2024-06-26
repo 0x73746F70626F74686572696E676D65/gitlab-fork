@@ -29,27 +29,31 @@ RSpec.describe 'Remove existing mapping between a cluster and a group', feature_
 
   let(:mutation_args) { all_mutation_args }
 
+  let(:expected_service_args) do
+    {
+      domain_main_class: ::RemoteDevelopment::NamespaceClusterAgentMappings::Delete::Main,
+      domain_main_class_args: {
+        namespace: namespace,
+        cluster_agent: agent
+      }
+    }
+  end
+
   def mutation_response
     graphql_mutation_response(:namespace_delete_remote_development_cluster_agent_mapping)
   end
 
   before do
     stub_licensed_features(remote_development: true)
-    allow_next_instance_of(
-      ::RemoteDevelopment::NamespaceClusterAgentMappings::DeleteService
-    ) do |service_instance|
-      allow(service_instance).to receive(:execute).with(
-        namespace: namespace,
-        cluster_agent: agent
-      ) do
-        stub_service_response
-      end
-    end
   end
 
   context 'when the params are valid' do
     context 'when user has owner access to the group' do
-      it 'creates a mapping' do
+      it 'deletes a mapping' do
+        expect(RemoteDevelopment::CommonService).to receive(:execute).with(expected_service_args) do
+          stub_service_response
+        end
+
         post_graphql_mutation(mutation, current_user: current_user)
 
         expect_graphql_errors_to_be_empty
@@ -59,7 +63,7 @@ RSpec.describe 'Remove existing mapping between a cluster and a group', feature_
     context 'when user is an admin' do
       let_it_be(:current_user) { create(:admin) }
 
-      it 'creates a mapping' do
+      it 'deletes a mapping' do
         post_graphql_mutation(mutation, current_user: current_user)
 
         expect_graphql_errors_to_be_empty
@@ -99,6 +103,12 @@ RSpec.describe 'Remove existing mapping between a cluster and a group', feature_
 
   context 'when a service error is returned' do
     let(:stub_service_response) { ::ServiceResponse.error(message: 'some error', reason: :bad_request) }
+
+    before do
+      allow(RemoteDevelopment::CommonService).to receive(:execute).with(expected_service_args) do
+        stub_service_response
+      end
+    end
 
     it_behaves_like 'a mutation that returns errors in the response', errors: ['some error']
   end

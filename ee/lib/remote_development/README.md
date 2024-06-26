@@ -28,7 +28,11 @@
     - [Result class](#result-class)
     - [Message class and Messages module](#message-class-and-messages-module)
     - [ROP code examples](#rop-code-examples)
+        - [API layer code example](#api-layer-code-example)
+        - [Service layer code example](#service-layer-code-example)
+        - [Domain layer code examples](#domain-layer-code-examples)
     - [Passing information along the ROP chain](#passing-information-along-the-rop-chain)
+- [Enforcement of patterns](#enforcement-of-patterns)
 - [Benefits](#benefits)
 - [Differences from standard GitLab patterns](#differences-from-standard-gitlab-patterns)
 - [Remote Development Settings](#remote-development-settings)
@@ -74,7 +78,7 @@ flowchart TB
                 apis[Grape APIs & GraphQL Resolvers/Mutations]
                 subgraph service[Remote Development: Service layer]
                     direction TB
-                    services[Services]
+                    service[Service]
                     subgraph domainlogiclayer[Remote Development: Domain Logic layer]
                     domainlogic[Domain Logic modules]
                     end
@@ -87,11 +91,11 @@ flowchart TB
         models[ActiveRecord models]
         domainlogic --> otherdomainservices[Other domain services]
         controllers --> apis
-        apis --> services
-        services --> domainlogic
+        apis --> service
+        service --> domainlogic
         domainlogic --> models
         controllers --> settings
-        services --> settings
+        service --> settings
         models --> settings
     end
 ```
@@ -187,6 +191,8 @@ This is because this type+existence checking ensures that the type requirement(s
 As we'll see below in the section on Railway Oriented Programming, this serves the same purpose as the typed F# signatures of the "internal" functions of the [Domain Modeling Made Functional](https://pragprog.com/titles/swdddf/domain-modeling-made-functional/) book's examples, which _do_ specify their explicit dependencies.
 
 This may be a strange concept to people coming from compiled languages, because in Ruby this _does_ happens at runtime, like everything else in an interpreted language like Ruby.
+
+Because of this nature of Ruby, we lean into [enforcement of patterns at runtime](#enforcement-of-patterns).
 
 But, we also have strict adherence to thorough testing at multiple levels of the testing pyramid, which ensures that this type-checking code is always executed during development/CI.
 
@@ -331,23 +337,78 @@ See [this MR comment thread](https://gitlab.com/gitlab-org/gitlab/-/merge_reques
 
 Here is an example of Railway Oriented Programming pattern, with extra code removed to focus on the patterns.
 
-First is the Services layer using `ee/lib/remote_development/workspaces/update/main.rb` as an example, which contains no logic other than calling the `Main` class in the Domain Logic layer, and converting the return value to a `ServiceResponse`:
+#### API layer code example
+
+First, you see the `ee/app/graphql/mutations/remote_development/workspaces/update.rb` class
+from the API layer. The API classes are not technically part of the ROP pattern,
+but we will show a bit of the relevant code from the GraphQL mutation's `#resolve` method,
+which is the entry point to invoke the domain logic:
 
 ```ruby
-class UpdateService
-  attr_reader :current_user
-
-  def initialize(current_user:)
-    @current_user = current_user
+class Update < BaseMutation
+  def resolve(id:, **args)
+    workspace = authorized_find!(id: id)
+  
+    domain_main_class_args = {
+      current_user: current_user,
+      workspace: workspace,
+      params: args
+    }
+  
+    response = ::RemoteDevelopment::CommonService.execute(
+      domain_main_class: ::RemoteDevelopment::Workspaces::Update::Main,
+      domain_main_class_args: domain_main_class_args
+    )
+  
+    response_object = response.success? ? response.payload[:workspace] : nil
+  
+    {
+      workspace: response_object,
+      errors: response.errors
+    }
   end
+end
+````
 
-  def execute(workspace:, params:)
-    response_hash = Update::Main.main(workspace: workspace, current_user: current_user, params: params)
+#### Service layer code example
+
+Next is the Service layer class, `ee/app/services/remote_development/common_service.rb`.
+You will notice this looks very different than the [standard Service class pattern found in the monolith](https://docs.gitlab.com/ee/development/reusing_abstractions.html#service-classes):
+
+Since all of our domain logic is in the domain layer and models, the Service layer is cohesive - it only has a limited set of explicit and specific responsibilities:
+
+1. Accept the arguments passed from the API layer, and pass them to the correct `Main` class in the Domain Logic layer.
+2. Inject additional dependencies, such as [Remote Development Settings](remote-development-settings) and logger, into the Domain Logic layer.
+3. Convert the "`response_hash`" return value from the Domain Logic layer into a `ServiceResponse` object.
+4. [Enforce at runtime](#enforcement-of-patterns) the [Functional Patterns](#functional-patterns) used within the domain.
+
+Given this limited responsiblity and the strictly consistent patterns used in the Domain layer, this means we can use a single, generic `CommonService` class for the entire domain, and do not need to write (or test) individual service classes for each use case.
+The `GitLab::Fp` module stands for "Functional Programming", and contains helper methods used with these patterns. 
+
+Here's what the `CommonService` class looks like:
+
+
+```ruby
+class CommonService
+  extend Gitlab::Fp::RopHelpers
+  extend ServiceResponseFactory
+
+  def self.execute(domain_main_class:, domain_main_class_args:)
+    main_class_method = retrieve_single_public_singleton_method(domain_main_class)
+
+    settings = ::RemoteDevelopment::Settings.get_all_settings
+    logger = RemoteDevelopment::Logger.build
+
+    response_hash = domain_main_class.singleton_method(main_class_method).call(
+      **domain_main_class_args.merge(settings: settings, logger: logger)
+    )
 
     create_service_response(response_hash)
   end
 end
 ```
+
+#### Domain layer code examples
 
 Next, you see the `ee/lib/remote_development/workspaces/update/main.rb` class, which implements an ROP chain with two steps, `authorize` and `update`.
 
@@ -418,6 +479,19 @@ It says:
 
 There are implementation differences for F# vs Ruby, but the sentiment is the same: _hide dependencies in places where they are not used._
 
+## Enforcement of patterns
+
+In the Remote Development domain, we choose to strictly enforce many of the patterns mentioned above, in order to provide a consistent and maintainable codebase.
+
+When possible, we prefer to do this enforcement _at runtime in the production code_, in addition to (or instead of) via specs or linters/static analysis.
+
+This allows the patterns to still be enforced even when writing spike/prototype code, or writing ad-hoc code in `rails console` or `irb` REPLs.
+
+In some cases, we do also enforce these patterns via specs. The `spec/support/matchers/invoke_rop_steps.rb` custom matcher is an example of this - it dynamically enforces aspects of the ROP and functional patterns as a side effect of using the helper.
+
+In the future, we may also add linter or static analysis enforcement (e.g. `rubocop` rules) for these patterns.
+
+This multi
 
 ## Benefits
 
@@ -425,9 +499,11 @@ There are implementation differences for F# vs Ruby, but the sentiment is the sa
 
 These patterns, especially Railway Oriented Programming, allows us to split the Domain Logic layer more easily into small, loosely coupled, highly cohesive classes. This makes the individual classes and their unit tests easier to write and maintain.
 
-### Minimal logic in Service layer
+### No need to write or test service classes
 
-These patterns let all of the Service layer unit test specs be pure mock-based tests, with almost no dependencies on (or testing of) any specifics of the domain logic other than the domain classes' standard API.
+There is only a single, generic `CommonService` class used for all use cases - you do not
+need to write or test individual Service classes for each use case.
+See more details in the [Service layer code example section](#service-layer-code-example).
 
 ### More likely that you can use fast_spec_helper
 
@@ -445,18 +521,27 @@ Also, there are currently several backend engineers on the Remote Development te
 
 ## Differences from standard GitLab patterns
 
-### Stateless Service layer classes
+### Minimal Service Layer
 
-Some of the services do not strictly follow the [currently documented patterns for the GitLab service layer](https://docs.gitlab.com/ee/development/reusing_abstractions.html#service-classes), because in some cases those patterns don't cleanly apply to all of the Remote Development use cases.
+We do not use the [currently documented patterns for the GitLab service layer](https://docs.gitlab.com/ee/development/reusing_abstractions.html#service-classes).
+Instead, there is only a single, generic `CommonService` class used for all use cases.
+See more details in the [Service layer code example section](#service-layer-code-example).
 
-For example, the reconciliation service does not act on any specific model, or any specific user, therefore it does not have any constructor arguments.
+### Stateless classes
 
-In some cases, we do still conform to the convention of passing the current_user
-in the constructor of services which do reference the user, although we may change this too in the future to pass it to `#execute` and thus make it a pure function as well.
+The usage of these [Functional Patterns](#functional-patterns) means we have entirely stateless classes in the Domain Logic layer (other than [Value Objects](#value-objects).
 
-We also don't use any of the provided superclasses like BaseContainerService or its descendants, because the service contains no domain logic, and therefore these superclasses and their instance variables are not useful.
+This means we use all class ("singleton") methods, no instance methods, and no instance variables, and each class must have a single public method which is the entry point to the class. All other class methods must explicitly declared as private using `private_class_method`.
 
-If these service classes need to be changed or standardized in the future (e.g. a standardized constructor for all Service classes across the entire application), it will be straightforward to change.
+This results in the classes' logic being easier to understand, test, and debug.
+
+For consistency, these rules are [enforced at runtime](#enforcement-of-patterns) in the production code, as well as in the specs.
+
+There might be concerns that this approach prevents the usage of existing instance-level mixins from GitLab internal or third-party modules, but we have not found this to be a problem in practice, because most libraries which are intended to be used generically in this way tend to be implemented via singleton class methods anyway, e.g. .
+
+If we do find a need for this in the future, there are other approaches which can be used, such as injecting or instantiating objects which include the modules, or by using the `Module#extend` method to add instance-level methods to the class.
+
+For example, the former approach is already being used to inject the existing GitLab [logger](https://docs.gitlab.com/ee/development/logging.html) framework via the Service Layer.
 
 ### 'describe #method' RSpec blocks are usually unnecessary
 
