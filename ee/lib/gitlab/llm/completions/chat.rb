@@ -74,7 +74,7 @@ module Gitlab
           end
 
           response_handler.execute(response: response_modifier)
-          response_post_processing
+          # response_post_processing # Temp fix for production issue
           response_modifier
         end
         traceable :execute, name: 'Run Duo Chat'
