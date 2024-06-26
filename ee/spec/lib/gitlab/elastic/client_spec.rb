@@ -128,8 +128,7 @@ RSpec.describe Gitlab::Elastic::Client, feature_category: :global_search do
                 'User-Agent' => /^elasticsearch-ruby/,
                 'X-Amz-Content-Sha256' => 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
                 'X-Amz-Date' => '20170303T133952Z',
-                'X-Elastic-Client-Meta' => "es=7.13.3,rb=#{RUBY_VERSION},t=7.13.3,fd=1.10.0,ty=1.4.0",
-                'X-Opaque-Id' => 'new-correlation-id'
+                'X-Elastic-Client-Meta' => "es=7.13.3,rb=#{RUBY_VERSION},t=7.13.3,fd=1.10.3,ty=1.4.0"
               }
             ).to_return(status: 200, body: [:fake_response])
 
