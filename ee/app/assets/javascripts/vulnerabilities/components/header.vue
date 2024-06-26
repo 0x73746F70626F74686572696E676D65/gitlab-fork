@@ -2,7 +2,6 @@
 import { GlLoadingIcon, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import { v4 as uuidv4 } from 'uuid';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import glAbilitiesMixin from '~/vue_shared/mixins/gl_abilities_mixin';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
 import { createAlert } from '~/alert';
@@ -14,6 +13,7 @@ import download from '~/lib/utils/downloader';
 import { visitUrl } from '~/lib/utils/url_utility';
 import UsersCache from '~/lib/utils/users_cache';
 import { __, s__ } from '~/locale';
+import { REPORT_TYPE_SAST } from '~/vue_shared/security_reports/constants';
 import { helpCenterState } from '~/super_sidebar/constants';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
@@ -70,7 +70,7 @@ export default {
   directives: {
     GlTooltip,
   },
-  mixins: [glFeatureFlagsMixin(), glAbilitiesMixin()],
+  mixins: [glFeatureFlagsMixin()],
   props: {
     vulnerability: {
       type: Object,
@@ -102,15 +102,13 @@ export default {
         buttons.push(DOWNLOAD_PATCH_ACTION);
       }
 
-      if (this.glAbilities.resolveVulnerabilityWithAi) {
+      if (this.vulnerability.reportType === REPORT_TYPE_SAST) {
         if (glFeatures.resolveVulnerabilityAiGateway) {
           buttons.push(CREATE_MR_AI_ACTION);
-        } else {
+        } else if (glFeatures.resolveVulnerability) {
           buttons.push(CREATE_MR_AI_ACTION_DEPRECATED);
         }
-      }
 
-      if (this.glAbilities.explainVulnerabilityWithAi) {
         if (glFeatures.explainVulnerabilityTool) {
           buttons.push(EXPLAIN_VULNERABILITY_AI_ACTION);
         }
