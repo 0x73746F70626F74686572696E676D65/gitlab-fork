@@ -19,6 +19,8 @@ function mountCodeSuggestionsUsageApp() {
       addDuoProHref: el.dataset.addDuoProSeatsUrl,
       subscriptionName: el.dataset.subscriptionName,
       isBulkAddOnAssignmentEnabled: parseBoolean(el.dataset.isBulkAddOnAssignmentEnabled),
+      subscriptionStartDate: el.dataset.subscriptionStartDate,
+      subscriptionEndDate: el.dataset.subscriptionEndDate,
     },
     render: (h) => h(CodeSuggestionsUsage),
   });

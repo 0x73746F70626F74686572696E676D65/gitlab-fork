@@ -16,6 +16,8 @@ module Admin
       run_test if CloudConnector::AvailableServices.find_by_name(:code_suggestions)&.purchased?
 
       @subscription_name = License.current.subscription_name
+      @subscription_start_date = License.current.starts_at
+      @subscription_end_date = License.current.expires_at
     end
 
     private
