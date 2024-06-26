@@ -97,5 +97,25 @@ module Arkose
     def data_exchange_blob_decrypted?
       response&.dig('data_exchange', 'blob_decrypted') || false
     end
+
+    def challenge_type
+      response&.dig('session_details', 'challenge_type')
+    end
+
+    def session_is_legit?
+      response&.dig('session_details', 'session_is_legit')
+    end
+
+    def country
+      response&.dig('ip_intelligence', 'country')
+    end
+
+    def vpn?
+      response&.dig('ip_intelligence', 'is_vpn')
+    end
+
+    def bot?
+      response&.dig('ip_intelligence', 'is_bot')
+    end
   end
 end

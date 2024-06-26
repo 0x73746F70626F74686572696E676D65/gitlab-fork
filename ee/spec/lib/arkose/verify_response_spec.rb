@@ -197,6 +197,11 @@ RSpec.describe Arkose::VerifyResponse, feature_category: :instance_resiliency do
         :device_id                     | "gaFCZkxoGZYW6"
         :data_exchange_blob_received?  | true
         :data_exchange_blob_decrypted? | true
+        :challenge_type                | 'visual'
+        :session_is_legit?             | false
+        :country                       | 'AU'
+        :bot?                          | true
+        :vpn?                          | true
       end
 
       with_them do

@@ -27,7 +27,8 @@
       "eng-1362",
       "eng-1362-game3-py-0."
     ],
-    "optional": null
+    "optional": null,
+    "challenge_type": "visual"
   },
   "fingerprint": {
     "browser_characteristics": {
