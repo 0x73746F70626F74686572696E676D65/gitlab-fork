@@ -1,34 +1,26 @@
 import { shallowMount } from '@vue/test-utils';
+import { GlSprintf } from '@gitlab/ui';
 import GcIamForm from 'ee/integrations/edit/components/google_cloud_iam/form.vue';
 import Configuration from '~/integrations/edit/components/sections/configuration.vue';
-import Connection from '~/integrations/edit/components/sections/connection.vue';
 import { createStore } from '~/integrations/edit/store';
 
 describe('IntegrationSectionGoogleCloudIAM', () => {
   let wrapper;
 
-  const createComponent = ({ fields = [], showActive = true } = {}) => {
+  const createComponent = ({ fields = [], suggestedPoolId = null } = {}) => {
     const store = createStore({
-      defaultState: {
-        showActive,
-      },
+      defaultState: {},
     });
 
     wrapper = shallowMount(GcIamForm, {
       store,
-      propsData: { fields },
+      propsData: { fields, suggestedPoolId },
+      stubs: { GlSprintf },
     });
   };
 
   const findConfigurations = () => wrapper.findAllComponents(Configuration);
-  const findConnection = () => wrapper.findComponent(Connection);
   const findHeaders = () => wrapper.findAll('h4');
-
-  it('renders Connection component', () => {
-    createComponent();
-
-    expect(findConnection().exists()).toBe(true);
-  });
 
   it('shows two headers', () => {
     createComponent();
@@ -36,6 +28,12 @@ describe('IntegrationSectionGoogleCloudIAM', () => {
 
     expect(headers.at(0).text()).toBe('Google Cloud project');
     expect(headers.at(1).text()).toBe('Workload identity federation');
+  });
+
+  it('renders suggestedPoolId prop', () => {
+    createComponent({ suggestedPoolId: 'capybara-pool' });
+
+    expect(wrapper.findAll('p').at(1).text()).toMatch(/capybara-pool/);
   });
 
   describe('Configuration components', () => {
