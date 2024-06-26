@@ -599,7 +599,7 @@ RSpec.describe 'Admin updates settings', feature_category: :shared do
       it 'change Repository storage settings' do
         visit repository_admin_application_settings_path
 
-        page.within('.as-repository-storage') do
+        within_testid('repository-storage-settings') do
           fill_in 'application_setting_repository_storages_weighted_default', with: 50
           click_button 'Save changes'
         end
@@ -612,7 +612,7 @@ RSpec.describe 'Admin updates settings', feature_category: :shared do
 
         visit repository_admin_application_settings_path
 
-        page.within('.as-repository-storage') do
+        within_testid('repository-storage-settings') do
           fill_in 'application_setting_repository_storages_weighted_default', with: 50
           click_button 'Save changes'
         end
@@ -627,7 +627,7 @@ RSpec.describe 'Admin updates settings', feature_category: :shared do
 
           visit repository_admin_application_settings_path
 
-          page.within('.as-repository-static-objects') do
+          within_testid('repository-static-objects-settings') do
             fill_in 'application_setting_static_objects_external_storage_url', with: 'http://example.com'
             fill_in 'application_setting_static_objects_external_storage_auth_token', with: 'Token'
             click_button 'Save changes'
