@@ -58,21 +58,28 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
   context 'when arkose_labs_token verification succeeds' do
     it_behaves_like 'creates the user'
 
-    it "records the user's data from Arkose Labs" do
+    it "records the user's data from Arkose Labs and logs the event", :aggregate_failures do
+      allow(Gitlab::AppLogger).to receive(:info)
+
       expect { create_user }.to change { UserCustomAttribute.count }.from(0)
+
+      expect(Gitlab::AppLogger).to have_received(:info).with(
+        hash_including(message: 'Arkose risk band assigned to user')
+      )
     end
 
-    it 'logs challenge solved event', :aggregate_failures do
-      expect(Gitlab::AppLogger).to receive(:info).with(an_instance_of(String))
-      expect(Gitlab::AppLogger).to receive(:info).with(
+    it 'logs challenge solved event' do
+      allow(Gitlab::AppLogger).to receive(:info)
+
+      create_user
+
+      expect(Gitlab::AppLogger).to have_received(:info).with(
         hash_including(
           username: user_attrs[:username],
           message: "Arkose challenge",
           event: "interactive challenge solved"
         )
       )
-
-      create_user
     end
   end
 

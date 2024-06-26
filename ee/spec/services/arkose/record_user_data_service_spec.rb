@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Arkose::RecordUserDataService, feature_category: :instance_resiliency do
-  let(:user) { create(:user) }
+  let_it_be(:user) { create(:user) }
 
   let(:arkose_verify_response) do
     Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json')))
@@ -37,6 +37,15 @@ RSpec.describe Arkose::RecordUserDataService, feature_category: :instance_resili
       expect(Abuse::TrustScoreWorker).to receive(:perform_async).once.ordered.with(
         user.id, :arkose_custom_score, 0.0
       )
+
+      service.execute
+    end
+
+    it 'logs user risk band assignment event' do
+      init_args = { session_token: nil, user: user, verify_response: response }
+      expect_next_instance_of(::Arkose::Logger, init_args) do |logger|
+        expect(logger).to receive(:log_risk_band_assignment)
+      end
 
       service.execute
     end

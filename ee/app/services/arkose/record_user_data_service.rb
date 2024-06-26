@@ -18,6 +18,8 @@ module Arkose
       # Store risk scores as abuse trust scores
       store_risk_scores
 
+      logger.log_risk_band_assignment
+
       ServiceResponse.success
     end
 
@@ -44,6 +46,14 @@ module Arkose
     def store_risk_scores
       Abuse::TrustScoreWorker.perform_async(user.id, :arkose_global_score, response.global_score.to_f)
       Abuse::TrustScoreWorker.perform_async(user.id, :arkose_custom_score, response.custom_score.to_f)
+    end
+
+    def logger
+      @logger ||= ::Arkose::Logger.new(
+        session_token: nil,
+        user: user,
+        verify_response: response
+      )
     end
   end
 end

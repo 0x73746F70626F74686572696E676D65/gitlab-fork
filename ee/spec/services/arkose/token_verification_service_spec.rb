@@ -12,6 +12,10 @@ RSpec.describe Arkose::TokenVerificationService, feature_category: :instance_res
   subject { service.execute }
 
   before do
+    allow_next_instance_of(Arkose::RecordUserDataService) do |service|
+      allow(service).to receive(:execute)
+    end
+
     stub_request(:post, verify_api_url)
       .with(
         body: /.*/,
