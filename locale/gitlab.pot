@@ -53229,6 +53229,9 @@ msgstr ""
 msgid "The invitation has already been accepted."
 msgstr ""
 
+msgid "The invitation is not valid"
+msgstr ""
+
 msgid "The invitation was successfully resent."
 msgstr ""
 
@@ -57530,13 +57533,34 @@ msgstr ""
 msgid "UserList|created %{timeago}"
 msgstr ""
 
+msgid "UserMapping|%{reassigned_by_name} (%{reassigned_by_username}) wants to reassign contributions made by %{source_name} (%{source_username}) on %{source_hostname} to you in %{destination_group}. Review details to approve or reject the reassignment. Learn more about reassignments"
+msgstr ""
+
+msgid "UserMapping|Approve Contributions Reassignment"
+msgstr ""
+
+msgid "UserMapping|Approve reassignment"
+msgstr ""
+
+msgid "UserMapping|Approve reassignment of contributions from %{source_username} on %{source_hostname} to you on %{destination_group}"
+msgstr ""
+
 msgid "UserMapping|Awaiting reassignment"
+msgstr ""
+
+msgid "UserMapping|Contribution details:"
 msgstr ""
 
 msgid "UserMapping|Don't reassign"
 msgstr ""
 
+msgid "UserMapping|Imported to: %{destination_group}"
+msgstr ""
+
 msgid "UserMapping|Kept as placeholder"
+msgstr ""
+
+msgid "UserMapping|Original user: %{source_name} (%{source_username})"
 msgstr ""
 
 msgid "UserMapping|Pending approval"
@@ -57563,10 +57587,19 @@ msgstr ""
 msgid "UserMapping|Reassigned"
 msgstr ""
 
+msgid "UserMapping|Reassigned by: %{reassigned_by_name} (%{reassigned_by_username})"
+msgstr ""
+
 msgid "UserMapping|Reassigned to"
 msgstr ""
 
+msgid "UserMapping|Reassigned to user: %{reassign_to_username}"
+msgstr ""
+
 msgid "UserMapping|Reassigning"
+msgstr ""
+
+msgid "UserMapping|Reassignment details:"
 msgstr ""
 
 msgid "UserMapping|Reassignment failed."
@@ -57590,10 +57623,16 @@ msgstr ""
 msgid "UserMapping|Reassignment was rejected by user."
 msgstr ""
 
+msgid "UserMapping|Reject"
+msgstr ""
+
 msgid "UserMapping|Rejected"
 msgstr ""
 
 msgid "UserMapping|Select user"
+msgstr ""
+
+msgid "UserMapping|Source: %{source_hostname}"
 msgstr ""
 
 msgid "UserProfile|%{count} %{file}"
