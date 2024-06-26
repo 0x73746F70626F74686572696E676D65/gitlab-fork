@@ -1,16 +1,14 @@
 - @force_desktop_expanded_sidebar = true
 
 - if License.feature_available?(:custom_file_templates)
-  %section.settings.as-visibility-access.no-animate#js-visibility-settings{ class: ('expanded' if expanded) }
-    .settings-header
-      %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
-        = _('Templates')
-      = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
-        = expanded ? _('Collapse') : _('Expand')
-      %p.gl-text-secondary
-        = _('Select a repository containing templates for common files.')
-        = link_to _('What templates can I create?'), help_page_path('administration/settings/instance_template_repository', anchor: 'supported-file-types-and-locations'), target: '_blank', rel: 'noopener noreferrer'
-    .settings-content
+  = render ::Layouts::SettingsBlockComponent.new(_('Templates'),
+    id: 'js-templates-settings',
+    testid: 'templates-settings',
+    expanded: expanded) do |c|
+    - c.with_description do
+      = _('Select a repository containing templates for common files.')
+      = link_to _('What templates can I create?'), help_page_path('administration/settings/instance_template_repository', anchor: 'supported-file-types-and-locations'), target: '_blank', rel: 'noopener noreferrer'
+    - c.with_body do
       = gitlab_ui_form_for @application_setting, url: templates_admin_application_settings_path, html: { class: 'fieldset-form' } do |f|
         = form_errors(@application_setting)
 
