@@ -72,3 +72,9 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
         unit_primitives:
           - code_suggestions
           - duo_chat
+  generate_commit_message:
+    backend: 'gitlab-ai-gateway'
+    bundled_with:
+      duo_enterprise:
+        unit_primitives:
+          - generate_commit_message
