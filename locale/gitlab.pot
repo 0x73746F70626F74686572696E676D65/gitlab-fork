@@ -42158,6 +42158,9 @@ msgstr ""
 msgid "Projects in this group can use Git LFS"
 msgstr ""
 
+msgid "Projects list"
+msgstr ""
+
 msgid "Projects shared with %{group_name}"
 msgstr ""
 

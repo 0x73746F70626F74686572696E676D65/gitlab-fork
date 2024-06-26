@@ -2,13 +2,16 @@
 
 require 'spec_helper'
 
-RSpec.describe 'dashboard/projects/index.html.haml', feature_category: :groups_and_projects do
+RSpec.describe 'dashboard/projects/shared/_common.html.haml', feature_category: :groups_and_projects do
   let_it_be(:user) { build(:user) }
 
   before do
+    view.lookup_context.prefixes = ['dashboard/projects']
+
     allow(view).to receive(:limited_counter_with_delimiter)
     allow(view).to receive(:current_user).and_return(user)
     allow(view).to receive(:time_ago_with_tooltip)
+    allow(view).to receive(:empty_page).and_return('starred_empty_state')
   end
 
   context 'when feature :your_work_projects_vue is enabled' do
@@ -41,7 +44,7 @@ RSpec.describe 'dashboard/projects/index.html.haml', feature_category: :groups_a
         render
 
         expect(rendered).not_to have_selector('#js-your-work-projects-app')
-        expect(rendered).to render_template('dashboard/projects/_zero_authorized_projects')
+        expect(rendered).to render_template('dashboard/projects/_starred_empty_state')
       end
     end
   end
@@ -54,7 +57,7 @@ RSpec.describe 'dashboard/projects/index.html.haml', feature_category: :groups_a
     context 'when projects exist' do
       before do
         assign(:projects, [build(:project, name: 'awesome stuff')])
-        allow(view).to receive(:show_projects?).and_return(true)
+        allow(view).to receive(:any_projects?).and_return(true)
         render
       end
 
@@ -66,8 +69,8 @@ RSpec.describe 'dashboard/projects/index.html.haml', feature_category: :groups_a
         expect(rendered).to have_link('New project')
       end
 
-      it 'does not render zero_authorized_projects partial' do
-        expect(rendered).not_to render_template('dashboard/projects/_zero_authorized_projects')
+      it 'does not render starred_empty_state partial' do
+        expect(rendered).not_to render_template('dashboard/projects/_starred_empty_state')
       end
 
       it 'does not render #js-your-work-projects-app' do
@@ -77,16 +80,16 @@ RSpec.describe 'dashboard/projects/index.html.haml', feature_category: :groups_a
 
     context 'when projects do not exist' do
       before do
-        allow(view).to receive(:show_projects?).and_return(false)
+        allow(view).to receive(:any_projects?).and_return(false)
         render
       end
 
-      it 'does not show the "New project" button' do
-        expect(rendered).not_to have_link('New project')
+      it 'does show the "New project" button' do
+        expect(rendered).to have_link('New project')
       end
 
-      it 'does render zero_authorized_projects partial' do
-        expect(rendered).to render_template('dashboard/projects/_zero_authorized_projects')
+      it 'does render starred_empty_state partial' do
+        expect(rendered).to render_template('dashboard/projects/_starred_empty_state')
       end
 
       it 'does not render #js-your-work-projects-app' do
