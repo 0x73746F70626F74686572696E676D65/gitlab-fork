@@ -24,6 +24,11 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
       it 'does not publish Projects::ComplianceFrameworkChangedEvent' do
         expect { update_framework }.not_to publish_event(::Projects::ComplianceFrameworkChangedEvent)
       end
+
+      it 'does not log audit event' do
+        expect { update_framework }
+          .not_to change { AuditEvent.where("details LIKE ?", "%compliance_framework_id_updated%").count }
+      end
     end
 
     shared_examples 'framework update' do
@@ -37,6 +42,11 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
         expect { update_framework }
           .to publish_event(::Projects::ComplianceFrameworkChangedEvent)
                 .with(project_id: project.id, compliance_framework_id: framework.id, event_type: 'added')
+      end
+
+      it 'logs audit event' do
+        expect { update_framework }
+          .to change { AuditEvent.where("details LIKE ?", "%compliance_framework_id_updated%").count }.by(1)
       end
     end
 
@@ -103,6 +113,11 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
               expect { update_framework }
                 .to publish_event(::Projects::ComplianceFrameworkChangedEvent)
                 .with(project_id: project.id, compliance_framework_id: framework.id, event_type: 'removed')
+            end
+
+            it 'logs audit event' do
+              expect { update_framework }
+                .to change { AuditEvent.where("details LIKE ?", "%compliance_framework_deleted%").count }.by(1)
             end
           end
         end

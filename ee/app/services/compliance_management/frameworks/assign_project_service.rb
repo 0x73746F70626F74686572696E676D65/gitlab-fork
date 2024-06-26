@@ -32,18 +32,22 @@ module ComplianceManagement
 
         return error unless framework
 
-        ComplianceManagement::ComplianceFramework::ProjectSettings
+        framework_setting = ComplianceManagement::ComplianceFramework::ProjectSettings
           .find_or_create_by_project(project, framework)
 
         publish_event(::Projects::ComplianceFrameworkChangedEvent::EVENT_TYPES[:added])
+        Audit::ComplianceFrameworkChangesAuditor.new(current_user, framework_setting, project).execute
 
         success
       end
 
       def unassign_compliance_framework
-        project.compliance_framework_settings.each(&:destroy!)
+        deleted_framework_settings = project.compliance_framework_settings.each(&:destroy!)
 
         publish_event(::Projects::ComplianceFrameworkChangedEvent::EVENT_TYPES[:removed])
+        deleted_framework_settings.each do |framework_setting|
+          Audit::ComplianceFrameworkChangesAuditor.new(current_user, framework_setting, project).execute
+        end
 
         success
       end
