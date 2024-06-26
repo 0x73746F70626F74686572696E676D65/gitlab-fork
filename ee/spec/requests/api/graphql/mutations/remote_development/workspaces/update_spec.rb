@@ -36,7 +36,17 @@ RSpec.describe 'Updating a workspace', feature_category: :remote_development do
 
   let(:mutation_args) { { id: global_id_of(workspace), desired_state: RemoteDevelopment::Workspaces::States::STOPPED } }
   let(:mutation) { graphql_mutation(:workspace_update, mutation_args) }
-  let(:expected_service_params) { all_mutation_args.except(:id) }
+  let(:expected_service_args) do
+    {
+      domain_main_class: ::RemoteDevelopment::Workspaces::Update::Main,
+      domain_main_class_args: {
+        current_user: current_user,
+        workspace: workspace,
+        params: all_mutation_args.except(:id)
+      }
+    }
+  end
+
   let(:stub_service_payload) { { workspace: workspace } }
   let(:stub_service_response) do
     ServiceResponse.success(payload: stub_service_payload)
@@ -48,19 +58,13 @@ RSpec.describe 'Updating a workspace', feature_category: :remote_development do
 
   before do
     stub_licensed_features(remote_development: true)
-    allow_next_instance_of(
-      ::RemoteDevelopment::Workspaces::UpdateService
-    ) do |service_instance|
-      allow(service_instance).to receive(:execute).with(
-        workspace: workspace,
-        params: expected_service_params
-      ) do
-        stub_service_response
-      end
-    end
   end
 
   it 'updates the workspace' do
+    expect(RemoteDevelopment::CommonService).to receive(:execute).with(expected_service_args) do
+      stub_service_response
+    end
+
     post_graphql_mutation(mutation, current_user: user)
 
     expect_graphql_errors_to_be_empty
@@ -70,6 +74,12 @@ RSpec.describe 'Updating a workspace', feature_category: :remote_development do
 
   context 'when there are service errors' do
     let(:stub_service_response) { ::ServiceResponse.error(message: 'some error', reason: :bad_request) }
+
+    before do
+      allow(RemoteDevelopment::CommonService).to receive(:execute).with(expected_service_args) do
+        stub_service_response
+      end
+    end
 
     it_behaves_like 'a mutation that returns errors in the response', errors: ['some error']
   end

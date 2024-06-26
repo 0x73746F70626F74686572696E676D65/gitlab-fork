@@ -59,12 +59,19 @@ RSpec.describe 'Creating a workspace', feature_category: :remote_development do
     graphql_mutation(:workspace_create, mutation_args)
   end
 
-  let(:expected_service_params) do
+  let(:expected_service_args) do
     params = all_mutation_args.except(:cluster_agent_id, :project_id)
     params[:agent] = agent
     params[:user] = current_user
     params[:project] = workspace_project
-    params
+
+    {
+      domain_main_class: ::RemoteDevelopment::Workspaces::Create::Main,
+      domain_main_class_args: {
+        current_user: current_user,
+        params: params
+      }
+    }
   end
 
   let(:stub_service_payload) { { workspace: created_workspace } }
@@ -78,15 +85,6 @@ RSpec.describe 'Creating a workspace', feature_category: :remote_development do
 
   before do
     stub_licensed_features(remote_development: true)
-    allow_next_instance_of(
-      ::RemoteDevelopment::Workspaces::CreateService
-    ) do |service_instance|
-      allow(service_instance).to receive(:execute).with(
-        params: expected_service_params
-      ) do
-        stub_service_response
-      end
-    end
 
     # reload projects, so any local debugging performed in the tests has the correct state
     workspace_project.reload
@@ -105,6 +103,10 @@ RSpec.describe 'Creating a workspace', feature_category: :remote_development do
 
     context 'when workspace project and agent project ARE in the same root namespace' do
       it 'creates the workspace' do
+        expect(RemoteDevelopment::CommonService).to receive(:execute).with(expected_service_args) do
+          stub_service_response
+        end
+
         post_graphql_mutation(mutation, current_user: user)
 
         expect_graphql_errors_to_be_empty
@@ -126,6 +128,12 @@ RSpec.describe 'Creating a workspace', feature_category: :remote_development do
 
       context 'when there are service errors' do
         let(:stub_service_response) { ::ServiceResponse.error(message: 'some error', reason: :bad_request) }
+
+        before do
+          allow(RemoteDevelopment::CommonService).to receive(:execute).with(expected_service_args) do
+            stub_service_response
+          end
+        end
 
         it_behaves_like 'a mutation that returns errors in the response', errors: ['some error']
       end
@@ -157,6 +165,10 @@ RSpec.describe 'Creating a workspace', feature_category: :remote_development do
 
     context 'when workspace project and agent project ARE in the same root namespace' do
       it 'creates the workspace' do
+        expect(RemoteDevelopment::CommonService).to receive(:execute).with(expected_service_args) do
+          stub_service_response
+        end
+
         post_graphql_mutation(mutation, current_user: user)
 
         expect_graphql_errors_to_be_empty

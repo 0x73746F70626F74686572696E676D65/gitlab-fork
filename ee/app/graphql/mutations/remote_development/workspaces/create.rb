@@ -115,7 +115,6 @@ module Mutations
           # noinspection RubyNilAnalysis - This is because the superclass #current_user uses #[], which can return nil
           track_usage_event(:users_creating_workspaces, current_user.id)
 
-          service = ::RemoteDevelopment::Workspaces::CreateService.new(current_user: current_user)
           variables = args.fetch(:variables, []).map(&:to_h)
           params = args.merge(
             agent: agent,
@@ -123,7 +122,16 @@ module Mutations
             project: project,
             variables: variables
           )
-          response = service.execute(params: params)
+
+          domain_main_class_args = {
+            current_user: current_user,
+            params: params
+          }
+
+          response = ::RemoteDevelopment::CommonService.execute(
+            domain_main_class: ::RemoteDevelopment::Workspaces::Create::Main,
+            domain_main_class_args: domain_main_class_args
+          )
 
           response_object = response.success? ? response.payload[:workspace] : nil
 

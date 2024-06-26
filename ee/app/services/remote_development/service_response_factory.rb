@@ -2,6 +2,14 @@
 
 module RemoteDevelopment
   module ServiceResponseFactory
+    # @param [Class] base
+    # @return [void]
+    def self.extended(base)
+      base.class_eval do
+        private_class_method :create_service_response, :validate_response_hash
+      end
+    end
+
     # @param [Hash] response_hash
     # @return [ServiceResponse]
     def create_service_response(response_hash)
@@ -27,12 +35,12 @@ module RemoteDevelopment
       ServiceResponse.new(**response_hash)
     end
 
-    private
-
     # @param [Hash] response_hash
     # @return [void]
     # @raise [RuntimeError]
     def validate_response_hash(response_hash)
+      raise "response_hash must not be nil" if response_hash.nil?
+
       # Explicitly assign nil to all valid values, so we can type-check the values using rightward assignment,
       #    which requires that nil values must be explicitly set.
       hash = { status: nil, payload: nil, message: nil, reason: nil }.merge(response_hash)
