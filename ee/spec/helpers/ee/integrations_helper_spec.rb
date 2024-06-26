@@ -130,7 +130,8 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
 
         it 'include wlif_issuer field' do
           is_expected.to include(
-            wlif_issuer: ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.wlif_issuer_url(project)
+            wlif_issuer: ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.wlif_issuer_url(project),
+            jwt_claims: ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.jwt_claim_mapping_script_value
           )
         end
       end
@@ -144,7 +145,8 @@ RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
       context 'with Google Cloud IAM integration' do
         it 'include wlif_issuer field' do
           is_expected.to include(
-            wlif_issuer: ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.wlif_issuer_url(group)
+            wlif_issuer: ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.wlif_issuer_url(group),
+            jwt_claims: ::Integrations::GoogleCloudPlatform::WorkloadIdentityFederation.jwt_claim_mapping_script_value
           )
         end
       end

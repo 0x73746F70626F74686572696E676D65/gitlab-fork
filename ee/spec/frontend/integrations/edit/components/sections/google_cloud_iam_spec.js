@@ -1,26 +1,30 @@
-import { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import IntegrationSectionGoogleCloudIAM from 'ee_component/integrations/edit/components/sections/google_cloud_iam.vue';
-import {
-  STATE_EMPTY,
-  STATE_GUIDED,
-  STATE_MANUAL,
-} from 'ee/integrations/edit/components/google_cloud_iam/constants';
-import EmptyState from 'ee/integrations/edit/components/google_cloud_iam/empty_state.vue';
 import GcIamForm from 'ee/integrations/edit/components/google_cloud_iam/form.vue';
-import GuidedSetup from 'ee/integrations/edit/components/google_cloud_iam/guided_setup.vue';
 import ManualSetup from 'ee/integrations/edit/components/google_cloud_iam/manual_setup.vue';
+import SetupScript from 'ee/integrations/edit/components/google_cloud_iam/setup_script.vue';
+import Connection from '~/integrations/edit/components/sections/connection.vue';
 import { createStore } from '~/integrations/edit/store';
 
 describe('IntegrationSectionGoogleCloudIAM', () => {
   const wlifIssuer = 'https://test.com';
+  const jwtClaims = 'examplegcpattr=exampleglattr';
   let wrapper;
 
-  const createComponent = ({ fields = [] } = {}) => {
+  const createComponent = ({
+    fields = [],
+    integrationLevel = 'project',
+    projectId = 303,
+    groupId = 808,
+  } = {}) => {
     const store = createStore({
       customState: {
         fields,
         wlifIssuer,
+        jwtClaims,
+        integrationLevel,
+        projectId,
+        groupId,
       },
     });
 
@@ -29,17 +33,16 @@ describe('IntegrationSectionGoogleCloudIAM', () => {
     });
   };
 
-  const findEmptyState = () => wrapper.findComponent(EmptyState);
+  const findConnection = () => wrapper.findComponent(Connection);
   const findGcIamForm = () => wrapper.findComponent(GcIamForm);
-  const findGuidedSetup = () => wrapper.findComponent(GuidedSetup);
   const findManualSetup = () => wrapper.findComponent(ManualSetup);
+  const findSetupScript = () => wrapper.findComponent(SetupScript);
 
   describe('when Google Cloud IAM form is empty', () => {
-    it('renders the empty state', () => {
+    it('renders the manual setup state', () => {
       createComponent();
 
-      expect(findEmptyState().exists()).toBe(true);
-      expect(findGcIamForm().exists()).toBe(false);
+      expect(findManualSetup().exists()).toBe(true);
     });
   });
 
@@ -47,51 +50,89 @@ describe('IntegrationSectionGoogleCloudIAM', () => {
     it('renders the Google Cloud IAM form', () => {
       createComponent({ fields: [{ value: '' }, { value: '1' }] });
 
-      expect(findEmptyState().exists()).toBe(false);
       expect(findGcIamForm().exists()).toBe(true);
+    });
+
+    it('passes initial fields values to SetupScript', () => {
+      createComponent({
+        fields: [
+          { name: 'workload_identity_federation_project_id', value: 'capybara' },
+          { name: 'workload_identity_pool_id', value: 'redpanda' },
+          { name: 'workload_identity_pool_provider_id', value: 'weasel' },
+        ],
+      });
+
+      const setupScript = findSetupScript();
+      expect(setupScript.props('googleProjectId')).toBe('capybara');
+      expect(setupScript.props('identityPoolId')).toBe('redpanda');
+      expect(setupScript.props('identityProviderId')).toBe('weasel');
+    });
+
+    it('passes existing identityPoolId as helpTextPoolId to ManualSetup', () => {
+      createComponent({
+        fields: [{ name: 'workload_identity_pool_id', value: 'redpanda' }],
+      });
+
+      const manualSetup = findManualSetup();
+      expect(manualSetup.props('helpTextPoolId')).toBe('redpanda');
     });
   });
 
-  describe('when `show` events are emitted', () => {
-    it.each`
-      initialState    | event           | componentEmitting  | hasEmptyState | hasGuidedSetup | hasManualSetup | hasGcIamForm
-      ${STATE_EMPTY}  | ${STATE_GUIDED} | ${findEmptyState}  | ${false}      | ${true}        | ${false}       | ${false}
-      ${STATE_EMPTY}  | ${STATE_MANUAL} | ${findEmptyState}  | ${false}      | ${false}       | ${true}        | ${true}
-      ${STATE_GUIDED} | ${STATE_MANUAL} | ${findGuidedSetup} | ${false}      | ${false}       | ${true}        | ${true}
-      ${STATE_MANUAL} | ${STATE_GUIDED} | ${findManualSetup} | ${false}      | ${true}        | ${false}       | ${false}
-    `(
-      "render correct components for the '$event' event",
-      async ({
-        initialState,
-        event,
-        componentEmitting,
-        hasEmptyState,
-        hasGuidedSetup,
-        hasManualSetup,
-        hasGcIamForm,
-      }) => {
-        createComponent();
+  it('renders Connection component', () => {
+    createComponent();
 
-        // Initial state
-        findEmptyState().vm.$emit('show', initialState);
-        await nextTick();
-
-        componentEmitting().vm.$emit('show', event);
-        await nextTick();
-
-        expect(findEmptyState().exists()).toBe(hasEmptyState);
-        expect(findGuidedSetup().exists()).toBe(hasGuidedSetup);
-        expect(findManualSetup().exists()).toBe(hasManualSetup);
-        expect(findGcIamForm().exists()).toBe(hasGcIamForm);
-      },
-    );
+    expect(findConnection().exists()).toBe(true);
   });
 
-  it('pass `wlifIssuer` prop to ManualSetup component', async () => {
+  it('pass `wlifIssuer` and `helpTextPoolId` prop to ManualSetup component', () => {
     createComponent();
-    findEmptyState().vm.$emit('show', STATE_MANUAL);
-    await nextTick();
 
     expect(findManualSetup().props('wlifIssuer')).toBe(wlifIssuer);
+    expect(findManualSetup().props('helpTextPoolId')).toBe('gitlab-project-303');
+  });
+
+  it('pass `helpTextPoolId` prop to ManualSetup component when group integration', () => {
+    createComponent({ integrationLevel: 'group', groupId: 111 });
+
+    expect(findManualSetup().props('helpTextPoolId')).toBe('gitlab-group-111');
+  });
+
+  it('pass relevant props to SetupScript component', () => {
+    createComponent();
+
+    const setupScript = findSetupScript();
+    expect(setupScript.exists()).toBe(true);
+    expect(setupScript.props('wlifIssuer')).toBe(wlifIssuer);
+    expect(setupScript.props('jwtClaims')).toBe(jwtClaims);
+  });
+
+  it('pass `suggestedDisplayName` to SetupScript when project integration', () => {
+    createComponent();
+
+    expect(findSetupScript().props('suggestedDisplayName')).toBe('GitLab project ID 303');
+  });
+
+  it('pass `suggestedDisplayName` to SetupScript when group integration', () => {
+    createComponent({ integrationLevel: 'group', groupId: 111 });
+
+    expect(findSetupScript().props('suggestedDisplayName')).toBe('GitLab group ID 111');
+  });
+
+  it('updates SetupScript component when form fields updated', async () => {
+    createComponent({
+      fields: [
+        { name: 'workload_identity_federation_project_id', value: 'my-sample-project' },
+        { name: 'workload_identity_pool_id', value: 'abc123' },
+      ],
+    });
+
+    expect(findSetupScript().props('googleProjectId')).toBe('my-sample-project');
+
+    await findGcIamForm().vm.$emit('update', {
+      field: { name: 'workload_identity_federation_project_id' },
+      value: 'updated-project-id',
+    });
+
+    expect(findSetupScript().props('googleProjectId')).toBe('updated-project-id');
   });
 });
