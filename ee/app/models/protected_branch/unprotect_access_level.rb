@@ -26,19 +26,5 @@ class ProtectedBranch::UnprotectAccessLevel < ApplicationRecord
   def self.allowed_access_levels
     super.excluding(Gitlab::Access::NO_ACCESS)
   end
-  include ProtectedRefAccess
-
-  belongs_to :protected_branch
-  delegate :project, to: :protected_branch, allow_nil: true
-
-  def self.declarative_policy_class
-    'ProtectedBranchPolicy'
-  end
-
-  # We cannot delegate to :protected_branch here (even with allow_nil: true)
-  # like above because it results in
-  # 'undefined method `project_group_links' for nil:NilClass' errors.
-  def protected_branch_group
-    protected_branch.group
-  end
+  include ProtectedBranchAccess
 end
