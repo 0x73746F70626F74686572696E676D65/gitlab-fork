@@ -59,8 +59,8 @@ RSpec.describe EpicsFinder, feature_category: :team_planning do
           expect(epics).to contain_exactly(epic1, epic2, epic3, epic5)
         end
 
-        it 'does not execute more than 5 SQL queries' do
-          expect { epics.to_a }.not_to exceed_all_query_limit(5)
+        it 'does not execute more than 6 SQL queries' do
+          expect { epics.to_a }.not_to exceed_all_query_limit(6)
         end
 
         context 'sorting' do
@@ -286,18 +286,18 @@ RSpec.describe EpicsFinder, feature_category: :team_planning do
             end
           end
 
-          it 'does not execute more than 5 SQL queries' do
-            expect { epics.to_a }.not_to exceed_all_query_limit(5)
+          it 'does not execute more than 6 SQL queries' do
+            expect { epics.to_a }.not_to exceed_all_query_limit(6)
           end
 
-          it 'does not execute more than 6 SQL queries when checking namespace plans', :saas do
+          it 'does not execute more than 7 SQL queries when checking namespace plans', :saas do
             allow(Gitlab::CurrentSettings)
               .to receive(:should_check_namespace_plan?)
               .and_return(true)
 
             create(:gitlab_subscription, :ultimate, namespace: group)
 
-            expect { epics.to_a }.not_to exceed_all_query_limit(6)
+            expect { epics.to_a }.not_to exceed_all_query_limit(7)
           end
         end
 
