@@ -19,11 +19,11 @@ module Projects
       def show
         push_force_frontend_feature_flag(
           :explain_vulnerability,
-          can?(current_user, :explain_vulnerability, vulnerability)
+          can?(current_user, :explain_vulnerability_with_ai, vulnerability)
         )
         push_force_frontend_feature_flag(
           :resolve_vulnerability,
-          can?(current_user, :resolve_vulnerability, vulnerability)
+          can?(current_user, :resolve_vulnerability_with_ai, vulnerability)
         )
 
         push_frontend_feature_flag(:explain_vulnerability_tool, vulnerability.project)
