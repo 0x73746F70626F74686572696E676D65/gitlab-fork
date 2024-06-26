@@ -6,7 +6,8 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:namespace) { create(:group) }
+  let_it_be(:organization) { create(:organization) }
+  let_it_be(:namespace) { create(:group, organization: organization) }
   let_it_be(:add_on_purchase) { create(:gitlab_subscription_add_on_purchase, namespace: namespace) }
   let_it_be(:remove_user) { create(:user) }
 
@@ -74,6 +75,11 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
     before do
       additional_purchase_1.namespace.add_owner(current_user)
       additional_purchase_2.namespace.add_owner(current_user)
+
+      if add_on_purchase.namespace
+        additional_purchase_1.namespace.update!(organization: add_on_purchase.namespace.organization)
+        additional_purchase_2.namespace.update!(organization: add_on_purchase.namespace.organization)
+      end
     end
 
     it "avoids N+1 database queries", :request_store do
@@ -213,8 +219,12 @@ RSpec.describe 'UserAddOnAssignmentRemove', feature_category: :seat_cost_managem
   end
 
   context 'when the namespace is nil' do
-    before_all  do
+    before do
       add_on_purchase.update!(namespace_id: nil)
+    end
+
+    after do
+      add_on_purchase.update!(namespace_id: namespace.id)
     end
 
     context 'when current_user is admin' do

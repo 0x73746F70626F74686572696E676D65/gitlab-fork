@@ -5,20 +5,30 @@ require 'spec_helper'
 RSpec.describe ApprovalRules::GroupFinder, feature_category: :source_code_management do
   let_it_be_with_reload(:rule) { create(:approval_project_rule) }
   let_it_be(:user) { create(:user) }
+  let_it_be(:organization) { create(:organization) }
 
-  let_it_be(:public_group) { create(:group, name: 'public_group') }
-  let_it_be(:private_inaccessible_group) { create(:group, :private, name: 'private_inaccessible_group') }
-  let_it_be(:private_accessible_group) { create(:group, :private, name: 'private_accessible_group', owners: user) }
+  let_it_be(:public_group) { create(:group, name: 'public_group', organization: organization) }
+  let_it_be(:private_inaccessible_group) do
+    create(:group, :private, name: 'private_inaccessible_group', organization: organization)
+  end
+
+  let_it_be(:private_accessible_group) do
+    create(:group, :private, name: 'private_accessible_group', owners: user, organization: organization)
+  end
+
   let_it_be(:private_accessible_subgroup) do
     create(:group, :private, parent: private_accessible_group, name: 'private_accessible_subgroup')
   end
 
-  let_it_be(:private_shared_group) { create(:group, :private, name: 'private_shared_group') }
+  let_it_be(:private_shared_group) do
+    create(:group, :private, name: 'private_shared_group', organization: organization)
+  end
+
   let_it_be(:private_shared_group_link) do
     create(:project_group_link, project: rule.project, group: private_shared_group)
   end
 
-  let_it_be(:public_shared_group) { create(:group, name: 'public_shared_group') }
+  let_it_be(:public_shared_group) { create(:group, name: 'public_shared_group', organization: organization) }
   let_it_be(:public_shared_group_link) do
     create(:project_group_link, project: rule.project, group: public_shared_group)
   end
@@ -106,7 +116,13 @@ RSpec.describe ApprovalRules::GroupFinder, feature_category: :source_code_manage
         rule.reload
         RequestStore.clear!
 
-        rule.groups << create(:group, :private, parent: private_accessible_group, name: 'private_accessible_subgroup2')
+        rule.groups << create(
+          :group,
+          :private,
+          parent: private_accessible_group,
+          name: 'private_accessible_subgroup2',
+          organization: organization
+        )
 
         expect { described_class.new(rule, user).visible_groups }.not_to exceed_query_limit(control)
       end
