@@ -42,11 +42,6 @@ export default {
       type: Boolean,
       required: true,
     },
-    baseRoleAccessLevel: {
-      type: Number,
-      required: false,
-      default: null,
-    },
   },
   data() {
     return {
@@ -82,7 +77,7 @@ export default {
     },
     isAllPermissionsSelected() {
       return (
-        !this.isLoadingPermissions && this.permissions.length >= this.selectablePermissions.length
+        !this.isLoadingPermissions && this.permissions.length >= this.availablePermissions.length
       );
     },
     parentPermissionsLookup() {
@@ -105,20 +100,12 @@ export default {
         return acc;
       }, {});
     },
-    selectablePermissions() {
-      return this.availablePermissions.filter((item) => !this.abilityIncludedInBaseRole(item));
-    },
-    inheritedPermissions() {
-      return this.availablePermissions.filter((item) => this.abilityIncludedInBaseRole(item));
-    },
   },
   methods: {
     isSelected({ value }) {
       return this.permissions.includes(value);
     },
     updatePermissions({ value }) {
-      if (this.inheritedPermissions.some((item) => item.value === value)) return;
-
       const selected = [...this.permissions];
 
       if (selected.includes(value)) {
@@ -134,7 +121,7 @@ export default {
       this.emitPermissionsUpdate(selected);
     },
     toggleAllPermissions() {
-      const permissions = this.isAllPermissionsSelected ? [] : this.selectablePermissions;
+      const permissions = this.isAllPermissionsSelected ? [] : this.availablePermissions;
       this.emitPermissionsUpdate(permissions.map(({ value }) => value));
     },
     emitPermissionsUpdate(permissions) {
@@ -146,7 +133,7 @@ export default {
       parentPermissions?.forEach((parent) => {
         // Only select the parent permission if it's not selected. This prevents an infinite loop if there are
         // circular dependencies, i.e. A depends on B and B depends on A.
-        if (!selected.includes(parent) && !this.inheritedPermissions.includes(parent)) {
+        if (!selected.includes(parent)) {
           selected.push(parent);
           this.selectParentPermissions(parent, selected);
         }
@@ -158,17 +145,11 @@ export default {
       childPermissions?.forEach((child) => {
         // Only unselect the child permission if it's already selected. This prevents an infinite loop if there are
         // circular dependencies, i.e. A depends on B and B depends on A.
-        if (selected.includes(child) && !this.inheritedPermissions.includes(child)) {
+        if (selected.includes(child)) {
           pull(selected, child);
           this.deselectChildPermissions(child, selected);
         }
       });
-    },
-    abilityIncludedInBaseRole(item) {
-      return (
-        item.availableFromAccessLevel &&
-        this.baseRoleAccessLevel >= item.availableFromAccessLevel.integerValue
-      );
     },
   },
   FIELDS,
@@ -176,7 +157,7 @@ export default {
 </script>
 
 <template>
-  <fieldset v-if="baseRoleAccessLevel">
+  <fieldset>
     <legend class="gl-mb-1 gl-border-b-0 gl-font-base">
       <span class="gl-font-bold">{{ $options.i18n.customPermissionsLabel }}</span>
       <span
@@ -185,7 +166,7 @@ export default {
         data-testid="permissions-selected-message"
       >
         <gl-sprintf :message="$options.i18n.permissionsSelected">
-          <template #count>{{ permissions.length + inheritedPermissions.length }}</template>
+          <template #count>{{ permissions.length }}</template>
           <template #total>{{ availablePermissions.length }}</template>
         </gl-sprintf>
       </span>
@@ -235,11 +216,7 @@ export default {
       </template>
 
       <template #cell(checkbox)="{ item }">
-        <gl-form-checkbox
-          :disabled="abilityIncludedInBaseRole(item)"
-          :checked="isSelected(item) || abilityIncludedInBaseRole(item)"
-          @change="updatePermissions(item)"
-        />
+        <gl-form-checkbox :checked="isSelected(item)" @change="updatePermissions(item)" />
       </template>
 
       <template #cell(name)="{ item }">

@@ -7,7 +7,7 @@ module RemoteDevelopment
         include Messages
         extend MessageSupport
 
-        # @param [Has] context
+        # @param [Hash] context
         # @return [Hash]
         # @raise [UnmatchedResultError]
         def self.main(context)

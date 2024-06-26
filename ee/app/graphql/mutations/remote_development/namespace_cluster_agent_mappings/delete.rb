@@ -31,10 +31,14 @@ module Mutations
           cluster_agent_id = args.delete(:cluster_agent_id)
           cluster_agent = authorized_find!(id: cluster_agent_id)
 
-          service = ::RemoteDevelopment::NamespaceClusterAgentMappings::DeleteService.new
-          response = service.execute(
+          domain_main_class_args = {
             namespace: namespace,
             cluster_agent: cluster_agent
+          }
+
+          response = ::RemoteDevelopment::CommonService.execute(
+            domain_main_class: ::RemoteDevelopment::NamespaceClusterAgentMappings::Delete::Main,
+            domain_main_class_args: domain_main_class_args
           )
 
           {

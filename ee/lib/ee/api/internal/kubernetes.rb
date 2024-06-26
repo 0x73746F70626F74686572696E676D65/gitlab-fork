@@ -12,10 +12,42 @@ module EE
               super(agent: agent, config: config)
 
               if ::License.feature_available?(:remote_development)
-                # NOTE: We are explicitly ignoring any failures here. See the comment in the service for more details.
-                ::RemoteDevelopment::AgentConfig::UpdateService.new.execute(agent: agent, config: config)
+                # NOTE: The other existing service called from the `internal/kubernetes/agent_configuration` API
+                #       endpoint (::Clusters::Agents::RefreshAuthorizationService) does not use ServiceResponse, it just
+                #       returns a boolean value. So we do the same from our CommonService (return the ServiceResponse,
+                #       which is truthy) for consistency, even though the return value is ignored, and not even checked
+                #       for errors. The `internal/kubernetes/agent_configuration` endpoint explictly returns
+                #       `no_content!` regardless of the return value, so it wouldn't matter what we returned anyway.
+                #       We _don't_ want to change this behavior for now or return an exception in the case of failure,
+                #       because that could potentially interfere with the existing behavior of the endpoint, which is
+                #       to execute ::Clusters::Agents::RefreshAuthorizationService. So, it's safer to just silently
+                #       fail to save the record, log an error, return a boolean for now.
+                #
+                #       Note that we have abstracted this logic to our domain-layer tier in `lib/remote_development`,
+                #       and still attempt to return an appropriate ServiceResponse object, even though it is ignored,
+                #       so that abstracts us somewhat from whatever we decide to do with this error handling
+                #       at the Service layer.
+                #
+                #       We originally had planned to try to fix this (see
+                #       https://gitlab.com/groups/gitlab-org/-/epics/10461 and
+                #       https://gitlab.com/gitlab-org/gitlab/-/issues/402718, now both closed).
+                #
+                #       However, our current thinking is to instead migrate all settings (except `enabled`) out of the
+                #       AgentConfig and into the UI. And perhaps eventually more `enabled` too. After we do that, we
+                #       will not need this update service anymore, so fixing this error handling is no longer a
+                #       priority.
+                domain_main_class_args = {
+                  agent: agent,
+                  config: config
+                }
+
+                ::RemoteDevelopment::CommonService.execute(
+                  domain_main_class: ::RemoteDevelopment::AgentConfig::Main,
+                  domain_main_class_args: domain_main_class_args
+                )
               end
 
+              # TODO: https://gitlab.com/groups/gitlab-org/-/epics/12225 - Add at least some logging here.
               true
             end
           end
@@ -35,13 +67,20 @@ module EE
                     forbidden!('"remote_development" licensed feature is not available')
                   end
 
-                  service = ::RemoteDevelopment::Workspaces::ReconcileService.new
-                  service_response = service.execute(agent: agent, params: params)
+                  domain_main_class_args = {
+                    original_params: params,
+                    agent: agent
+                  }
 
-                  if service_response.success?
-                    service_response.payload
+                  response = ::RemoteDevelopment::CommonService.execute(
+                    domain_main_class: ::RemoteDevelopment::Workspaces::Reconcile::Main,
+                    domain_main_class_args: domain_main_class_args
+                  )
+
+                  if response.success?
+                    response.payload
                   else
-                    render_api_error!({ error: service_response.message }, service_response.http_status)
+                    render_api_error!({ error: response.message }, response.http_status)
                   end
                 end
               end
@@ -51,7 +90,8 @@ module EE
                   detail 'Idempotently creates a security vulnerability from starboard'
                 end
                 params do
-                  requires :vulnerability, type: Hash, desc: 'Vulnerability details matching the `vulnerability` object on the security report schema' do
+                  requires :vulnerability, type: Hash,
+                    desc: 'Vulnerability details matching the `vulnerability` object on the security report schema' do
                     requires :name, type: String
                     requires :severity, type: String, coerce_with: ->(s) { s.downcase }
                     optional :confidence, type: String, coerce_with: ->(c) { c.downcase }
@@ -91,7 +131,8 @@ module EE
                     optional :links, type: Array
                   end
 
-                  requires :scanner, type: Hash, desc: 'Scanner details matching the `.scan.scanner` field on the security report schema' do
+                  requires :scanner, type: Hash,
+                    desc: 'Scanner details matching the `.scan.scanner` field on the security report schema' do
                     requires :id, type: String
                     requires :name, type: String
                     requires :vendor, type: Hash do
@@ -118,7 +159,8 @@ module EE
                 end
 
                 desc 'POST scan_result' do
-                  detail 'Resolves all active Cluster Image Scanning vulnerabilities with finding UUIDs not present in the payload'
+                  detail 'Resolves all active Cluster Image Scanning vulnerabilities with ' \
+                    'finding UUIDs not present in the payload'
                 end
                 params do
                   requires :uuids, type: Array[String], desc: 'Finding UUIDs collected from a scan'
@@ -147,8 +189,8 @@ module EE
                   end
 
                   policies = ::Security::SecurityOrchestrationPolicies::OperationalVulnerabilitiesConfigurationService
-                    .new(agent)
-                    .execute
+                               .new(agent)
+                               .execute
 
                   present :configurations, policies, with: EE::API::Entities::SecurityPolicyConfiguration
                 end

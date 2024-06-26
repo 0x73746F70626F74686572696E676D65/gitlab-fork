@@ -59,12 +59,24 @@ RSpec.describe API::Internal::Kubernetes, feature_category: :deployment_manageme
   describe 'POST /internal/kubernetes/modules/remote_development/reconcile' do
     let(:method) { :post }
     let(:api_url) { '/internal/kubernetes/modules/remote_development/reconcile' }
+    let(:params) { { some_param: "1" } }
+    let(:expected_service_args) do
+      {
+        domain_main_class: ::RemoteDevelopment::Workspaces::Reconcile::Main,
+        domain_main_class_args: {
+          original_params: params,
+          agent: agent
+        }
+      }
+    end
+
+    let(:stub_service_payload) { { "some_payload" => 1 } }
+    let(:stub_service_response) do
+      ServiceResponse.success(payload: stub_service_payload)
+    end
 
     before do
       stub_licensed_features(remote_development: true)
-      allow_next_instance_of(::RemoteDevelopment::Workspaces::ReconcileService) do |service|
-        allow(service).to receive(:execute).and_return(service_response)
-      end
     end
 
     include_examples 'authorization'
@@ -74,31 +86,38 @@ RSpec.describe API::Internal::Kubernetes, feature_category: :deployment_manageme
       let(:service_response) { ServiceResponse.success(payload: {}) }
 
       it 'returns service response with payload' do
-        send_request(params: {})
+        expect(RemoteDevelopment::CommonService).to receive(:execute).with(expected_service_args) do
+          stub_service_response
+        end
+
+        send_request(params: params)
 
         expect(response).to have_gitlab_http_status(:created)
+        expect(json_response).to eq(stub_service_payload)
       end
     end
 
     context 'when service response is not successful' do
-      let(:service_response) { ServiceResponse.error(message: 'error', reason: :not_found) }
+      let(:stub_service_response) { ServiceResponse.error(message: 'error', reason: :not_found) }
 
       it 'returns service response with error' do
-        send_request(params: {})
+        expect(RemoteDevelopment::CommonService).to receive(:execute).with(expected_service_args) do
+          stub_service_response
+        end
+
+        send_request(params: params)
 
         expect(response).to have_gitlab_http_status(:internal_server_error)
       end
     end
 
     context 'when remote_development feature is unlicensed' do
-      let(:service_response) { ServiceResponse.success(payload: {}) }
-
       before do
         stub_licensed_features(remote_development: false)
       end
 
       it 'returns service response with payload' do
-        send_request(params: {})
+        send_request(params: params)
 
         expect(response).to have_gitlab_http_status(:forbidden)
       end
