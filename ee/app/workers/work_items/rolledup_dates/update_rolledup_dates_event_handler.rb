@@ -32,7 +32,7 @@ module WorkItems
         return if work_item.blank?
 
         ::WorkItems::Widgets::RolledupDatesService::HierarchyUpdateService
-          .new(work_item)
+          .new(work_item, event.data[:previous_work_item_parent_id])
           .execute
       end
     end
