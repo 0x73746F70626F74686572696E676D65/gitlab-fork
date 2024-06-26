@@ -24,6 +24,8 @@ module Mutations
           approval_rule: (approval_rule if result.success?),
           errors: approval_rule.errors.full_messages
         }
+      rescue Gitlab::Access::AccessDeniedError
+        raise_resource_not_available_error!
       end
     end
   end

@@ -268,13 +268,14 @@ module Search
         return Project.all if projects == :any
 
         filtered_projects = projects.without_order
+
         filtered_projects = filtered_projects.non_archived unless filters[:include_archived]
 
         if Feature.enabled?(:search_add_fork_filter_to_zoekt, current_user) && !filters[:include_forked]
           filtered_projects = filtered_projects.not_a_fork
         end
 
-        filtered_projects
+        Project.filter_out_public_projects_with_unauthorized_private_repos(filtered_projects, current_user)
       end
 
       def zoekt_targets

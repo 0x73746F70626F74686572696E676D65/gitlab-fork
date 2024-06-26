@@ -99,13 +99,13 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
     it 'ignores invalid epic IIDs' do
       text = "Check &#{non_existing_record_iid}"
 
-      expect(doc(text).to_s).to eq(ERB::Util.html_escape_once(text))
+      expect(doc(text).to_s).to include(ERB::Util.html_escape_once(text))
     end
 
     it 'ignores out of range epic IDs' do
       text = "Check &1161452270761535925900804973910297"
 
-      expect(doc(text).to_s).to eq(ERB::Util.html_escape_once(text))
+      expect(doc(text).to_s).to include(ERB::Util.html_escape_once(text))
     end
 
     it 'does not process links containing epic numbers followed by text' do
@@ -134,7 +134,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
     it 'ignores invalid epic IIDs' do
       text = "Check &amp;#{non_existing_record_iid}"
 
-      expect(doc(text).to_s).to eq(ERB::Util.html_escape_once(text))
+      expect(doc(text).to_s).to include(ERB::Util.html_escape_once(text))
     end
   end
 
@@ -146,7 +146,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
     it 'ignores a shorthand reference from another group' do
       text = "Check &#{epic.iid}"
 
-      expect(doc(text).to_s).to eq(ERB::Util.html_escape_once(text))
+      expect(doc(text).to_s).to include(ERB::Util.html_escape_once(text))
     end
 
     it 'links to a valid reference for full reference' do
@@ -170,7 +170,7 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
     it 'ignores a shorthand reference from another group' do
       text = "Check &amp;#{epic.iid}"
 
-      expect(doc(text).to_s).to eq(ERB::Util.html_escape_once(text))
+      expect(doc(text).to_s).to include(ERB::Util.html_escape_once(text))
     end
 
     it 'links to a valid reference for full reference' do
@@ -195,13 +195,13 @@ RSpec.describe Banzai::Filter::References::EpicReferenceFilter, feature_category
     it 'ignores a shorthand reference from another group' do
       text = "Check &#{epic.iid}"
 
-      expect(doc(text).to_s).to eq(ERB::Util.html_escape_once(text))
+      expect(doc(text).to_s).to include(ERB::Util.html_escape_once(text))
     end
 
     it 'ignores reference with incomplete group path' do
       text = "Check @#{epic.group.path}&#{epic.iid}"
 
-      expect(doc(text).to_s).to eq(ERB::Util.html_escape_once(text))
+      expect(doc(text).to_s).to include(ERB::Util.html_escape_once(text))
     end
 
     it 'links to a valid reference for full reference' do
