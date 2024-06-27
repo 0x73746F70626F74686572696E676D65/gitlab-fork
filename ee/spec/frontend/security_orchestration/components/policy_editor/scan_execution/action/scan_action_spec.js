@@ -9,6 +9,7 @@ import groupRunnerTags from 'ee/vue_shared/components/runner_tags_dropdown/graph
 import GroupDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/group_dast_profile_selector.vue';
 import RunnerTagsFilter from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/runner_tags_filter.vue';
 import CiVariablesSelectors from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/ci_variables_selectors.vue';
+import TemplateSelector from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/template_selector.vue';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import { buildScannerAction } from 'ee/security_orchestration/components/policy_editor/scan_execution/lib';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
@@ -26,7 +27,9 @@ import { createMockApolloProvider } from 'ee_jest/security_configuration/dast_pr
 import { RUNNER_TAG_LIST_MOCK } from 'ee_jest/vue_shared/components/runner_tags_dropdown/mocks/mocks';
 import {
   CI_VARIABLE,
+  DEFAULT_TEMPLATE,
   FILTERS,
+  LATEST_TEMPLATE,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/constants';
 
 const actionId = 'action_0';
@@ -88,6 +91,7 @@ describe('PolicyActionBuilder', () => {
 
   const findActionSeperator = () => wrapper.findByTestId('action-and-label');
   const findCiVariablesSelectors = () => wrapper.findComponent(CiVariablesSelectors);
+  const findTemplateFilter = () => wrapper.findComponent(TemplateSelector);
   const findSectionLayout = () => wrapper.findAllComponents(SectionLayout).at(1);
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
@@ -192,10 +196,62 @@ describe('PolicyActionBuilder', () => {
       });
     });
 
+    describe('template filter', () => {
+      describe('without the feature flag', () => {
+        it('does not render', () => {
+          factory();
+          expect(findTemplateFilter().exists()).toBe(false);
+        });
+      });
+
+      describe('with the feature flag', () => {
+        describe.each([
+          'scanExecutionPoliciesWithLatestTemplates',
+          'scanExecutionPoliciesWithLatestTemplatesGroup',
+        ])('%s feature flag', (featureFlag) => {
+          it('renders', () => {
+            factory({
+              provide: { glFeatures: { [featureFlag]: true } },
+            });
+            expect(findTemplateFilter().exists()).toBe(true);
+          });
+
+          it('emits "changed" with the updated value when updated', () => {
+            factory({
+              propsData: {
+                initAction: {
+                  ...DEFAULT_ACTION,
+                  template: LATEST_TEMPLATE,
+                },
+              },
+              provide: { glFeatures: { [featureFlag]: true } },
+            });
+            findTemplateFilter().vm.$emit('input', { template: DEFAULT_TEMPLATE });
+            expect(wrapper.emitted('changed')).toEqual([
+              [{ ...DEFAULT_ACTION, template: DEFAULT_TEMPLATE }],
+            ]);
+          });
+
+          it('emits "changed" with the updated value when removed', () => {
+            factory({
+              propsData: {
+                initAction: {
+                  ...DEFAULT_ACTION,
+                  template: LATEST_TEMPLATE,
+                },
+              },
+              provide: { glFeatures: { [featureFlag]: true } },
+            });
+            findTemplateFilter().vm.$emit('remove');
+            expect(wrapper.emitted('changed')).toEqual([[{ ...DEFAULT_ACTION }]]);
+          });
+        });
+      });
+    });
+
     describe('ci variable filter', () => {
       it('initially hides ci variable filter', () => {
         factory();
-
         expect(findCiVariablesSelectors().exists()).toBe(false);
       });
 

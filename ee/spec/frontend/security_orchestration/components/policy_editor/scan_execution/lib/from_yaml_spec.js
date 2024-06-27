@@ -19,6 +19,9 @@ import {
   mockPolicyScopeScanExecutionObject,
   mockCodeBlockFilePathScanExecutionManifest,
   mockCodeBlockFilePathScanExecutionObject,
+  mockTemplateScanExecutionManifest,
+  mockTemplateScanExecutionObject,
+  mockInvalidTemplateScanExecutionManifest,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_execution_policy_data';
 
 jest.mock('lodash/uniqueId', () => jest.fn((prefix) => `${prefix}0`));
@@ -35,6 +38,8 @@ describe('fromYaml', () => {
     ${'returns the policy object for project scope'}                                                     | ${{ manifest: mockPolicyScopeExecutionManifest, validateRuleMode: true }}           | ${mockPolicyScopeScanExecutionObject}       | ${{}}
     ${'returns the policy object for custom code block with file path with enabled ff'}                  | ${{ manifest: mockCodeBlockFilePathScanExecutionManifest, validateRuleMode: true }} | ${mockCodeBlockFilePathScanExecutionObject} | ${{ compliancePipelineInPolicies: true }}
     ${'returns the policy object for custom code block with file path with disabled ff'}                 | ${{ manifest: mockCodeBlockFilePathScanExecutionManifest, validateRuleMode: true }} | ${{ error: true }}                          | ${{ compliancePipelineInPolicies: false }}
+    ${'returns the policy object for valid template value'}                                              | ${{ manifest: mockTemplateScanExecutionManifest, validateRuleMode: true }}          | ${mockTemplateScanExecutionObject}          | ${{ compliancePipelineInPolicies: false }}
+    ${'returns error object for a policy with invalid template value'}                                   | ${{ manifest: mockInvalidTemplateScanExecutionManifest, validateRuleMode: true }}   | ${{ error: true }}                          | ${{}}
   `('$title', ({ input, output, features }) => {
     window.gon = { features };
     expect(fromYaml(input)).toStrictEqual(output);

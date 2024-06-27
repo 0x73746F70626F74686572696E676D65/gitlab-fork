@@ -13,6 +13,7 @@ module Groups
         push_frontend_feature_flag(:compliance_pipeline_in_policies, group)
         push_frontend_feature_flag(:pipeline_execution_policy_type, group)
         push_frontend_feature_flag(:vulnerability_management_policy_type_group, group)
+        push_frontend_feature_flag(:scan_execution_policies_with_latest_templates_group, group)
       end
 
       feature_category :security_policy_management
