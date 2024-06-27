@@ -4,7 +4,7 @@ import { SETTINGS_HUMANIZED_STRINGS } from '../../policy_editor/scan_result/lib/
 
 export default {
   i18n: {
-    title: s__('SecurityOrchestration|Override the following project settings:'),
+    title: s__('SecurityOrchestration|Override the following project settings'),
   },
   props: {
     settings: {
