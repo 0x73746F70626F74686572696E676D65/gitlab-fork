@@ -27,7 +27,7 @@ module Elastic
 
         elastic_search_and_wrap(query, type: es_type, page: page, per: per, options: options,
           preload_method: preload_method) do |result, container|
-          ::Gitlab::Elastic::SearchResults.parse_search_result(result, container)
+          ::Gitlab::Elastic::SearchResults.parse_search_result(result, container, options)
         end
       end
 

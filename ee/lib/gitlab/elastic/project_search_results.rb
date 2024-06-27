@@ -28,7 +28,7 @@ module Gitlab
             query,
             page: (page || 1).to_i,
             per: per_page,
-            options: base_options.merge(count_only: count_only).merge(filters.slice(:language)),
+            options: scope_options(:blobs).merge(count_only: count_only),
             preload_method: preload_method
           )
         end
@@ -88,6 +88,8 @@ module Gitlab
         case scope
         when :users
           super.merge(project_id: project.id)
+        when :blobs
+          base_options.merge(filters.slice(:language, :num_context_lines))
         else
           super
         end

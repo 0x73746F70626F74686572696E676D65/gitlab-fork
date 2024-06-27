@@ -8,6 +8,8 @@ module Gitlab
 
       ELASTIC_COUNT_LIMIT = 10000
       DEFAULT_PER_PAGE = Gitlab::SearchResults::DEFAULT_PER_PAGE
+      DEFAULT_NUM_CONTEXT_LINES = 2
+      MAX_NUM_CONTEXT_LINES = 20
 
       attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters, :root_ancestor_ids
 
@@ -192,12 +194,14 @@ module Gitlab
       alias_method :limited_merge_requests_count, :merge_requests_count
       alias_method :limited_milestones_count, :milestones_count
 
-      def self.parse_search_result(result, container)
+      def self.parse_search_result(result, container, options = {})
         ref = extract_ref_from_result(result['_source'])
         path = extract_path_from_result(result['_source'])
         basename = File.join(File.dirname(path), File.basename(path, '.*'))
         content = extract_content_from_result(result['_source'])
         group_id = result['_source']['group_id']&.to_i
+        num_context_lines = options[:num_context_lines]&.clamp(0, MAX_NUM_CONTEXT_LINES) || DEFAULT_NUM_CONTEXT_LINES
+
         if group_level_result?(result['_source'])
           group = container
           group_level_blob = true
@@ -223,14 +227,14 @@ module Gitlab
           break
         end
 
-        from = if found_line_number >= 2
-                 found_line_number - 2
+        from = if found_line_number >= num_context_lines
+                 found_line_number - num_context_lines
                else
                  found_line_number
                end
 
-        to = if (total_lines - found_line_number) > 3
-               found_line_number + 2
+        to = if (total_lines - found_line_number) > (num_context_lines + 1)
+               found_line_number + num_context_lines
              else
                found_line_number
              end
@@ -314,7 +318,7 @@ module Gitlab
         when :users
           base_options.merge(admin: current_user&.admin?, routing_disabled: true) # rubocop:disable Cop/UserAdmin
         when :blobs
-          base_options.merge(filters.slice(:language, :include_archived))
+          base_options.merge(filters.slice(:language, :include_archived, :num_context_lines))
         when :wiki_blobs
           base_options.merge(root_ancestor_ids: root_ancestor_ids, routing_disabled: !reindex_wikis_to_fix_routing_done?).merge(filters.slice(:include_archived))
         else
