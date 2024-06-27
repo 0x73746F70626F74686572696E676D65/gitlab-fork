@@ -27228,6 +27228,9 @@ msgstr ""
 msgid "Import|GitHub import details"
 msgstr ""
 
+msgid "Import|Import source user has an invalid status for this operation"
+msgstr ""
+
 msgid "Import|Maximum decompressed file size for archives from imports (MiB)"
 msgstr ""
 
@@ -27255,6 +27258,9 @@ msgstr ""
 msgid "Import|No import details"
 msgstr ""
 
+msgid "Import|Only active regular, auditor, or administrator users can be assigned"
+msgstr ""
+
 msgid "Import|Partially completed"
 msgstr ""
 
@@ -27277,6 +27283,9 @@ msgid "Import|Timeout for decompressing archived files."
 msgstr ""
 
 msgid "Import|You can import a Subversion repository by using third-party tools. %{svn_link}."
+msgstr ""
+
+msgid "Import|You have insufficient permissions to update the import source user"
 msgstr ""
 
 msgid "Improve customer support with Service Desk"
