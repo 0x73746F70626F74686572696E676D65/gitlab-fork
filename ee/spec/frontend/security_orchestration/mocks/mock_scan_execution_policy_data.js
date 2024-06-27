@@ -31,6 +31,22 @@ actions:
     scanner_profile: required_scanner_profile
 `;
 
+export const mockDastScanExecutionObject = {
+  type: 'scan_execution_policy',
+  name: 'Scheduled Dast/SAST scan',
+  description: 'This policy enforces pipeline configuration to have a job with DAST scan',
+  enabled: false,
+  rules: [{ type: 'pipeline', branches: ['main'], id: ruleId }],
+  actions: [
+    {
+      scan: 'dast',
+      site_profile: 'required_site_profile',
+      scanner_profile: 'required_scanner_profile',
+      id: actionId,
+    },
+  ],
+};
+
 export const mockBranchExceptionsExecutionManifest = `type: scan_execution_policy
 name: Branch exceptions
 description: This policy enforces pipeline configuration to have branch exceptions
@@ -47,22 +63,6 @@ actions:
     site_profile: required_site_profile
     scanner_profile: required_scanner_profile
 `;
-
-export const mockDastScanExecutionObject = {
-  type: 'scan_execution_policy',
-  name: 'Scheduled Dast/SAST scan',
-  description: 'This policy enforces pipeline configuration to have a job with DAST scan',
-  enabled: false,
-  rules: [{ type: 'pipeline', branches: ['main'], id: ruleId }],
-  actions: [
-    {
-      scan: 'dast',
-      site_profile: 'required_site_profile',
-      scanner_profile: 'required_scanner_profile',
-      id: actionId,
-    },
-  ],
-};
 
 export const mockBranchExceptionsScanExecutionObject = {
   type: 'scan_execution_policy',
@@ -282,3 +282,16 @@ export const mockCodeBlockFilePathScanExecutionObject = {
     },
   ],
 };
+
+export const mockTemplateScanExecutionManifest = mockDastScanExecutionManifest.concat(
+  `    template: default\n`,
+);
+
+export const mockTemplateScanExecutionObject = {
+  ...mockDastScanExecutionObject,
+  actions: [{ ...mockDastScanExecutionObject.actions[0], template: 'default' }],
+};
+
+export const mockInvalidTemplateScanExecutionManifest = mockDastScanExecutionManifest.concat(
+  `    template: not-valid-value\n`,
+);

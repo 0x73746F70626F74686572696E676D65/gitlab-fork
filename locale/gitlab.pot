@@ -47709,6 +47709,12 @@ msgstr ""
 msgid "SecurityOrchestration|Branch: %{boldStart}%{branchName}%{boldEnd} was not found in project: %{boldStart}%{projectName}%{boldEnd}. Edit or remove this entry."
 msgstr ""
 
+msgid "SecurityOrchestration|CI/CD template edition to be enforced. The default template is stable, but may not have all the features of the latest template."
+msgstr ""
+
+msgid "SecurityOrchestration|CI/CD template edition to be enforced. The latest edition may introduce breaking changes."
+msgstr ""
+
 msgid "SecurityOrchestration|Cadence is invalid"
 msgstr ""
 
@@ -48089,6 +48095,9 @@ msgstr ""
 msgid "SecurityOrchestration|Security Scan"
 msgstr ""
 
+msgid "SecurityOrchestration|Security job template"
+msgstr ""
+
 msgid "SecurityOrchestration|Security policy overwrites this setting"
 msgstr ""
 
@@ -48374,6 +48383,9 @@ msgstr ""
 msgid "SecurityOrchestration|compliance frameworks"
 msgstr ""
 
+msgid "SecurityOrchestration|default"
+msgstr ""
+
 msgid "SecurityOrchestration|except projects"
 msgstr ""
 
@@ -48387,6 +48399,9 @@ msgid "SecurityOrchestration|have a fix available"
 msgstr ""
 
 msgid "SecurityOrchestration|have no fix available"
+msgstr ""
+
+msgid "SecurityOrchestration|latest"
 msgstr ""
 
 msgid "SecurityOrchestration|more than %{allowed}"

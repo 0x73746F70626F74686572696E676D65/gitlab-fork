@@ -7,6 +7,7 @@ import {
   REPORT_TYPE_DEPENDENCY_SCANNING,
   REPORT_TYPE_CONTAINER_SCANNING,
 } from '~/vue_shared/security_reports/constants';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { isProject, isGroup } from 'ee/security_orchestration/components/utils';
 import SectionLayout from '../../section_layout.vue';
 import { ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../../constants';
@@ -19,8 +20,9 @@ import {
   POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
 } from '../constants';
 import { buildScannerAction } from '../lib';
-import { CI_VARIABLE, FILTERS } from './scan_filters/constants';
+import { CI_VARIABLE, FILTERS, TEMPLATE } from './scan_filters/constants';
 import CiVariablesSelectors from './scan_filters/ci_variables_selectors.vue';
+import TemplateSelector from './scan_filters/template_selector.vue';
 import GroupDastProfileSelector from './scan_filters/group_dast_profile_selector.vue';
 import ProjectDastProfileSelector from './scan_filters/project_dast_profile_selector.vue';
 import RunnerTagsFilter from './scan_filters/runner_tags_filter.vue';
@@ -30,6 +32,7 @@ export default {
   CI_VARIABLE,
   FILTERS,
   SCANNERS: RULE_MODE_SCANNERS,
+  TEMPLATE,
   POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
   POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
   components: {
@@ -41,7 +44,9 @@ export default {
     GroupDastProfileSelector,
     RunnerTagsFilter,
     ScanFilterSelector,
+    TemplateSelector,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['namespacePath', 'namespaceType'],
   props: {
     initAction: {
@@ -92,6 +97,12 @@ export default {
     isProject() {
       return isProject(this.namespaceType);
     },
+    hasTemplateSelector() {
+      return (
+        this.glFeatures.scanExecutionPoliciesWithLatestTemplates ||
+        this.glFeatures.scanExecutionPoliciesWithLatestTemplatesGroup
+      );
+    },
     siteProfile() {
       return this.initAction.site_profile?.trim() ?? '';
     },
@@ -114,16 +125,17 @@ export default {
     isFilterSelected(filter) {
       return this.filters[filter];
     },
-    emitCiVariableFilterChanges() {
+    emitFilterChanges(filter) {
       const updatedAction = { ...this.initAction };
-      delete updatedAction.variables;
+      if (filter === CI_VARIABLE) delete updatedAction.variables;
+      if (filter === TEMPLATE) delete updatedAction.template;
       this.$emit('changed', updatedAction);
     },
-    removeCiFilter() {
+    removeFilter(filter) {
       const newFilters = { ...this.filters };
-      delete newFilters[CI_VARIABLE];
+      delete newFilters[filter];
       this.filters = newFilters;
-      this.emitCiVariableFilterChanges();
+      this.emitFilterChanges(filter);
     },
     removeYamlProperty(property) {
       const updatedAction = { ...this.initAction };
@@ -231,12 +243,19 @@ export default {
           @error="$emit('parsing-error', $options.POLICY_ACTION_BUILDER_TAGS_ERROR_KEY)"
         />
 
+        <template-selector
+          v-if="hasTemplateSelector"
+          :selected="initAction.template"
+          @input="triggerChanged"
+          @remove="removeFilter($options.TEMPLATE)"
+        />
+
         <ci-variables-selectors
           v-if="isCIVariableSelectorSelected"
           class="gl-bg-white"
           :scan-type="initAction.scan"
           :selected="initAction.variables"
-          @remove="removeCiFilter"
+          @remove="removeFilter($options.CI_VARIABLE)"
           @input="triggerChanged"
         />
 

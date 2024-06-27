@@ -2,6 +2,12 @@ import { s__ } from '~/locale';
 
 export const CI_VARIABLE = 'ci_variable';
 
+export const TEMPLATE = 'template';
+
+export const DEFAULT_TEMPLATE = 'default';
+
+export const LATEST_TEMPLATE = 'latest';
+
 export const FILTERS = [
   {
     text: s__('ScanResultPolicy|Customized CI Variables'),

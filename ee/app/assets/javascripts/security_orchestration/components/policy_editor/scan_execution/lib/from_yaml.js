@@ -1,5 +1,9 @@
 import { safeLoad } from 'js-yaml';
 import { CUSTOM_ACTION_KEY } from 'ee/security_orchestration/components/policy_editor/scan_execution/constants';
+import {
+  DEFAULT_TEMPLATE,
+  LATEST_TEMPLATE,
+} from 'ee/security_orchestration/components/policy_editor/scan_execution/action/scan_filters/constants';
 import { addIdsToPolicy, isValidPolicy, hasInvalidCron } from '../../utils';
 import {
   BRANCH_TYPE_KEY,
@@ -20,6 +24,17 @@ const hasInvalidBranchType = (rules) => {
       BRANCH_TYPE_KEY in rule &&
       !VALID_SCAN_EXECUTION_BRANCH_TYPE_OPTIONS.includes(rule.branch_type),
   );
+};
+
+/**
+ * Check if any action has invalid template type
+ * @param {Array} actions
+ * @returns {Boolean}
+ */
+const hasInvalidTemplate = (actions = []) => {
+  return actions.some(({ template }) => {
+    return (template || template === '') && ![DEFAULT_TEMPLATE, LATEST_TEMPLATE].includes(template);
+  });
 };
 
 /**
@@ -70,7 +85,15 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
         'branch_exceptions',
         'id',
       ];
-      const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables', 'tags', 'id'];
+      const actionsKeys = [
+        'scan',
+        'site_profile',
+        'scanner_profile',
+        'variables',
+        'tags',
+        'id',
+        'template',
+      ];
 
       if (gon?.features?.compliancePipelineInPolicies) {
         actionsKeys.push('ci_configuration');
@@ -79,6 +102,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
       return isValidPolicy({ policy, rulesKeys, actionsKeys }) &&
         !hasInvalidCron(policy) &&
         !hasInvalidBranchType(policy.rules) &&
+        !hasInvalidTemplate(policy.actions) &&
         hasRuleModeSupportedScanners(policy)
         ? policy
         : { error: true };
