@@ -2,6 +2,7 @@
 
 module TrialsHelper
   TRIAL_ONBOARDING_SOURCE_URLS = %w[about.gitlab.com docs.gitlab.com learn.gitlab.com].freeze
+  DUO_PRO_TRIAL_VARIANT = 'duo_pro'
 
   def create_lead_form_data
     _lead_form_data.merge(
@@ -16,7 +17,8 @@ module TrialsHelper
       submit_path: trials_duo_pro_path(
         step: GitlabSubscriptions::Trials::CreateDuoProService::LEAD,
         namespace_id: params[:namespace_id]
-      )
+      ),
+      trial_variant: DUO_PRO_TRIAL_VARIANT
     )
   end
 

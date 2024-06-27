@@ -60,19 +60,17 @@ describe('CompanyForm', () => {
     });
 
     it('displays correct text on submit button', () => {
-      expect(findSubmitButton().text()).toBe('Start free GitLab Ultimate trial');
+      expect(findSubmitButton().text()).toBe('Continue');
     });
 
-    it('displays correct subtext under submit button', () => {
-      expect(findFooterDescriptionText().text()).toBe(
-        "You don't need a credit card to start a trial. After the 30-day trial period, your account automatically becomes a GitLab Free account. You can use your GitLab Free account forever, or upgrade to a paid tier.",
-      );
+    it('does not display footer text', () => {
+      expect(findFooterDescriptionText().text()).toBe('');
     });
   });
 
-  describe('when trial prop false', () => {
+  describe('when initialTrial is false', () => {
     beforeEach(() => {
-      wrapper = createComponent({ trial: false });
+      wrapper = createComponent();
     });
 
     it('displays correct description text', () => {
@@ -82,13 +80,13 @@ describe('CompanyForm', () => {
     });
 
     it('displays correct text on submit button', () => {
-      expect(findSubmitButton().text()).toBe('Start GitLab Ultimate free trial');
+      expect(findSubmitButton().text()).toBe('Start free GitLab Ultimate trial');
     });
 
     it('displays correct footer text', () => {
       expect(findFooterDescriptionText().exists()).toBe(true);
       expect(findFooterDescriptionText().text()).toBe(
-        'Your GitLab Ultimate free trial lasts for 30 days. After this period, you can maintain a GitLab Free account forever or upgrade to a paid plan.',
+        "You don't need a credit card to start a trial. After the 30-day trial period, your account automatically becomes a GitLab Free account. You can use your GitLab Free account forever, or upgrade to a paid tier.",
       );
     });
   });
