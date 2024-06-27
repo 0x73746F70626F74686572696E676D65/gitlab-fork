@@ -15,12 +15,12 @@ import {
   TRACKING_CATEGORY_SHOW,
   EPIC_COLORS,
   DEFAULT_EPIC_COLORS,
-  NEW_WORK_ITEM_GID,
 } from '~/work_items/constants';
 import SidebarColorView from '~/sidebar/components/sidebar_color_view.vue';
 import SidebarColorPicker from '~/sidebar/components/sidebar_color_picker.vue';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import updateNewWorkItemMutation from '~/work_items/graphql/update_new_work_item.mutation.graphql';
+import { newWorkItemId } from '~/work_items/utils';
 import Tracking from '~/tracking';
 
 export default {
@@ -132,7 +132,7 @@ export default {
 
       this.isUpdating = true;
 
-      if (this.workItemId === NEW_WORK_ITEM_GID) {
+      if (this.workItemId === newWorkItemId(this.workItemType)) {
         this.$apollo.mutate({
           mutation: updateNewWorkItemMutation,
           variables: {
@@ -140,6 +140,7 @@ export default {
               isGroup: this.isGroup,
               fullPath: this.fullPath,
               color: this.currentColor,
+              workItemType: this.workItemType,
             },
           },
         });
