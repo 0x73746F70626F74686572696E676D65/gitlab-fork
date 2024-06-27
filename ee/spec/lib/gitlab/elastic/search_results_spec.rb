@@ -1099,6 +1099,61 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
 
       it_behaves_like 'search results filtered by language'
     end
+
+    context 'window size' do
+      let(:blobs) { described_class.new(user, 'const_2', [project_1.id]).objects('blobs') }
+
+      before do
+        project_1.repository.create_file(
+          user,
+          'test.rb',
+          "# a comment
+
+          SOME_CONSTANT = 123
+
+          def const
+            SOME_CONSTANT
+          end
+
+          def const_2
+            SOME_CONSTANT * 2
+          end
+
+          def const_3
+            SOME_CONSTANT * 3
+          end",
+          message: 'added test file',
+          branch_name: 'master')
+
+        project_1.repository.index_commits_and_blobs
+
+        ensure_elasticsearch_index!
+      end
+
+      it 'returns the line along with 2 lines before and after' do
+        expect(blobs.count).to eq(1)
+
+        blob = blobs.first
+
+        expect(blob.highlight_line).to eq(9)
+        expect(blob.data.lines.count).to eq(5)
+        expect(blob.startline).to eq(7)
+      end
+
+      context 'if num_context_lines is 5' do
+        let(:blobs) { described_class.new(user, 'const_2', [project_1.id], filters: { num_context_lines: 5 }).objects('blobs') }
+
+        it 'returns the line along with 5 lines before and after' do
+          expect(blobs.count).to eq(1)
+
+          blob = blobs.first
+
+          expect(blob.highlight_line).to eq(9)
+          expect(blob.data.lines.count).to eq(11)
+          expect(blob.startline).to eq(4)
+        end
+      end
+    end
   end
 
   describe 'wikis', :sidekiq_inline do
