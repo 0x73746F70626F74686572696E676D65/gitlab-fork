@@ -48,7 +48,7 @@ export default {
       return this.targetBranch && this.settings.canEdit && this.settings.allowMultiRule;
     },
     rulesLength() {
-      return this.isMrEdit ? this.rules.length : this.pagination.total;
+      return this.isMrEdit || this.isBranchRulesEdit ? this.rules.length : this.pagination.total;
     },
     canAddApprovalRule() {
       if (this.isBranchRulesEdit) {
