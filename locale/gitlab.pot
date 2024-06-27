@@ -60939,6 +60939,9 @@ msgstr ""
 msgid "You cannot approve your own deployment. This configuration can be adjusted in the protected environment settings."
 msgstr ""
 
+msgid "You cannot assign or unassign frameworks to a project that has more than one associated framework."
+msgstr ""
+
 msgid "You cannot combine replace_ids with add_ids or remove_ids"
 msgstr ""
 

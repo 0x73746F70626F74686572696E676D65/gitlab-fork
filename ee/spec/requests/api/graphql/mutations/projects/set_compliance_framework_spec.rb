@@ -15,6 +15,7 @@ RSpec.describe 'Set project compliance framework', feature_category: :compliance
   let(:mutation) do
     graphql_mutation(:project_set_compliance_framework, variables) do
       <<~QL
+        errors
         project {
           complianceFrameworks {
             nodes {
@@ -46,12 +47,52 @@ RSpec.describe 'Set project compliance framework', feature_category: :compliance
         stub_licensed_features(compliance_framework: true)
       end
 
-      it_behaves_like 'a working GraphQL mutation'
+      context 'when less than 2 frameworks associated with project' do
+        context 'when no framework is associated with the project' do
+          it_behaves_like 'a working GraphQL mutation'
 
-      it 'updates the framework' do
-        expect { post_graphql_mutation(mutation, current_user: current_user) }.to change {
-          project.reload.compliance_management_frameworks
-        }.from([]).to([framework])
+          it 'adds the framework' do
+            expect { post_graphql_mutation(mutation, current_user: current_user) }.to change {
+              project.reload.compliance_management_frameworks
+            }.from([]).to([framework])
+          end
+        end
+
+        context 'when 1 framework is associated with the project' do
+          let_it_be(:framework1) { create(:compliance_framework, name: 'framework1', namespace: namespace) }
+
+          before_all do
+            create(:compliance_framework_project_setting,
+              project: project, compliance_management_framework: framework1)
+          end
+
+          it_behaves_like 'a working GraphQL mutation'
+
+          it 'updates the framework' do
+            expect { post_graphql_mutation(mutation, current_user: current_user) }.to change {
+              project.reload.compliance_management_frameworks
+            }.from([framework1]).to([framework])
+          end
+        end
+      end
+
+      context 'when more than 1 framework is associated with project' do
+        let_it_be(:framework1) { create(:compliance_framework, name: 'framework1', namespace: namespace) }
+        let_it_be(:framework2) { create(:compliance_framework, name: 'framework2', namespace: namespace) }
+
+        before_all do
+          create(:compliance_framework_project_setting,
+            project: project, compliance_management_framework: framework1)
+          create(:compliance_framework_project_setting,
+            project: project, compliance_management_framework: framework2)
+        end
+
+        it 'returns error' do
+          post_graphql_mutation(mutation, current_user: current_user)
+
+          expect(mutation_response['errors']).to contain_exactly("You cannot assign or unassign frameworks to a "\
+            "project that has more than one associated framework.")
+        end
       end
     end
   end

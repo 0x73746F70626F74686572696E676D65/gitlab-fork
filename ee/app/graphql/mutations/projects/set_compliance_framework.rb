@@ -4,7 +4,9 @@ module Mutations
   module Projects
     class SetComplianceFramework < BaseMutation
       graphql_name 'ProjectSetComplianceFramework'
-      description 'Assign (or unset) a compliance framework to a project.'
+      description 'Assign (or unset) a compliance framework to a project. ' \
+        'This mutation raises an error if the project has more than ' \
+        'one compliance framework associated with it.'
 
       authorize :admin_compliance_framework
 
@@ -26,11 +28,11 @@ module Mutations
 
         authorize!(project)
 
-        ::ComplianceManagement::Frameworks::AssignProjectService
-          .new(project, current_user, framework: compliance_framework_id&.model_id)
-          .execute
+        service_response = ::ComplianceManagement::Frameworks::AssignProjectService
+                     .new(project, current_user, framework: compliance_framework_id&.model_id)
+                     .execute
 
-        { project: project, errors: errors_on_object(project) }
+        { project: project, errors: errors_on_object(project) + service_response.errors }
       end
     end
   end

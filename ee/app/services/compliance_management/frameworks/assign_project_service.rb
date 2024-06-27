@@ -12,6 +12,8 @@ module ComplianceManagement
       def execute
         return error unless permitted?
 
+        return multiple_frameworks_error if project.compliance_management_frameworks.count > 1
+
         if removing_framework?
           unassign_compliance_framework
         else
@@ -70,6 +72,11 @@ module ComplianceManagement
 
       def error
         ServiceResponse.error(message: _('Failed to assign the framework to the project'))
+      end
+
+      def multiple_frameworks_error
+        ServiceResponse.error(message: _('You cannot assign or unassign frameworks to a project that has more than ' \
+          'one associated framework.'))
       end
     end
   end
