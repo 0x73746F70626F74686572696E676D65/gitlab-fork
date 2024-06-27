@@ -7609,7 +7609,7 @@ Input type: `ProjectSavedReplyUpdateInput`
 
 ### `Mutation.projectSetComplianceFramework`
 
-Assign (or unset) a compliance framework to a project.
+Assign (or unset) a compliance framework to a project. This mutation raises an error if the project has more than one compliance framework associated with it.
 
 Input type: `ProjectSetComplianceFrameworkInput`
 

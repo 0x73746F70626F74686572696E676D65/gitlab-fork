@@ -11,6 +11,10 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
 
     let(:params) { { framework: framework.id } }
     let(:error_message) { 'Failed to assign the framework to the project' }
+    let(:multiple_frameworks_error_message) do
+      'You cannot assign or unassign frameworks to a project that has ' \
+        'more than one associated framework.'
+    end
 
     let(:service) { described_class.new(project, user, params) }
 
@@ -50,6 +54,27 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
       end
     end
 
+    shared_examples 'more than 1 frameworks for project' do
+      let_it_be(:framework1) { create(:compliance_framework, name: 'framework1', namespace: group) }
+      let_it_be(:framework2) { create(:compliance_framework, name: 'framework2', namespace: group) }
+
+      before_all do
+        create(:compliance_framework_project_setting,
+          project: project, compliance_management_framework: framework1)
+        create(:compliance_framework_project_setting,
+          project: project, compliance_management_framework: framework2)
+      end
+
+      it_behaves_like 'no framework update'
+
+      it 'returns error' do
+        response = update_framework
+
+        expect(response).to be_error
+        expect(response.message).to eq(multiple_frameworks_error_message)
+      end
+    end
+
     context 'when compliance framework feature is available' do
       context 'when user can admin compliance framework for the project' do
         before do
@@ -68,12 +93,16 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
 
             let(:old_framework) { [other_framework] }
 
-            before do
+            before_all do
               create(:compliance_framework_project_setting,
                 project: project, compliance_management_framework: other_framework)
             end
 
             it_behaves_like 'framework update'
+          end
+
+          context 'when more than 1 framework is assigned' do
+            it_behaves_like 'more than 1 frameworks for project'
           end
         end
 
@@ -98,7 +127,7 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
           end
 
           context 'when a framework is assigned' do
-            before do
+            before_all do
               create(:compliance_framework_project_setting,
                 project: project, compliance_management_framework: framework)
             end
@@ -119,6 +148,10 @@ RSpec.describe ComplianceManagement::Frameworks::AssignProjectService, feature_c
               expect { update_framework }
                 .to change { AuditEvent.where("details LIKE ?", "%compliance_framework_deleted%").count }.by(1)
             end
+          end
+
+          context 'when more than 1 framework is assigned' do
+            it_behaves_like 'more than 1 frameworks for project'
           end
         end
       end
