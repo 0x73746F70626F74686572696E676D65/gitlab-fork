@@ -240,6 +240,49 @@ RSpec.describe "User with admin_runners custom role", feature_category: :runner 
     end
   end
 
+  describe API::UserRunners do
+    include ApiHelpers
+
+    context 'with a group membership' do
+      let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, source: group) }
+
+      it 'creates a group runner' do
+        post api("/user/runners", user), params: {
+          runner_type: 'group_type',
+          group_id: group.id
+        }
+
+        expect(response).to have_gitlab_http_status(:created)
+        expect(json_response).to include('id' => a_value, 'token' => a_value)
+      end
+
+      it 'creates a project runner' do
+        post api("/user/runners", user), params: {
+          runner_type: 'project_type',
+          project_id: project.id
+        }
+
+        expect(response).to have_gitlab_http_status(:created)
+        expect(json_response).to include('id' => a_value, 'token' => a_value)
+      end
+    end
+
+    context 'without the admin_runner permission' do
+      let_it_be(:role) { create(:member_role, :guest, namespace: group) }
+      let_it_be(:membership) { create(:group_member, :guest, member_role: role, user: user, source: group) }
+
+      it 'does not create a group runner' do
+        post api("/user/runners", user), params: {
+          runner_type: 'group_type',
+          group_id: group.id
+        }
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(json_response).to include('message' => a_value)
+      end
+    end
+  end
+
   describe Mutations::Ci::Runner::Create do
     include GraphqlHelpers
 
