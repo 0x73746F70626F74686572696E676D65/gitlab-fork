@@ -74,7 +74,10 @@ module Gitlab
           end
 
           response_handler.execute(response: response_modifier)
-          # response_post_processing # Temp fix for production issue
+
+          # This is temporarily commented out due to the following production issue:
+          # https://gitlab.com/gitlab-com/gl-infra/production/-/issues/18191
+          # response_post_processing
           response_modifier
         end
         traceable :execute, name: 'Run Duo Chat'
