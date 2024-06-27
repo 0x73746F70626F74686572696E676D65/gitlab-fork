@@ -305,24 +305,21 @@ module Gitlab
     #
     # - Geo::VerificationBatchWorker will run up to this many instances of
     #   itself, for each Replicator class with verification enabled.
-    # - Geo::RepositoryVerification::Primary::ShardWorker will run up to this
-    #   many concurrent Geo::RepositoryVerification::Primary::SingleWorker
-    #   jobs.
     #
     # On each secondary:
     #
     # - Geo::VerificationBatchWorker will run up to this many instances of
     #   itself, for each Replicator class with verification enabled.
-    # - Geo::RepositoryVerification::Secondary::ShardWorker will run up to this
-    #   many concurrent Geo::RepositoryVerification::Secondary::SingleWorker
-    #   jobs.
     #
     # @return [Integer] the maximum number of concurrent verification jobs per Replicator class
     def self.verification_max_capacity_per_replicator_class
-      num_legacy_verification_schedulers = 1 # it handles both Projects and Wikis
-      num_verifiable_replicator_classes = verification_enabled_replicator_classes.size + num_legacy_verification_schedulers
-
-      capacity = current_node.verification_max_capacity / num_verifiable_replicator_classes
+      num_verifiable_replicator_classes = verification_enabled_replicator_classes.size
+      capacity =
+        if num_verifiable_replicator_classes != 0
+          current_node.verification_max_capacity / num_verifiable_replicator_classes
+        else
+          current_node.verification_max_capacity
+        end
 
       [1, capacity].max # at least 1
     end

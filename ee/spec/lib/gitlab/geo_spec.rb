@@ -722,25 +722,25 @@ RSpec.describe Gitlab::Geo, :geo, :request_store, feature_category: :geo_replica
     end
 
     context 'when there is 1 Replicator class with verification enabled' do
-      it 'returns half capacity' do
+      it 'returns the total capacity' do
         allow(described_class).to receive(:verification_enabled_replicator_classes).and_return(['a replicator class'])
 
-        expect(described_class.verification_max_capacity_per_replicator_class).to eq(verification_max_capacity / 2)
+        expect(described_class.verification_max_capacity_per_replicator_class).to eq(verification_max_capacity / 1)
       end
     end
 
     context 'when there are 2 Replicator classes with verification enabled' do
-      it 'returns a third of total capacity' do
+      it 'returns half of the total capacity' do
         allow(described_class).to receive(:verification_enabled_replicator_classes).and_return(['a replicator class', 'another replicator class'])
 
-        expect(described_class.verification_max_capacity_per_replicator_class).to eq(verification_max_capacity / 3)
+        expect(described_class.verification_max_capacity_per_replicator_class).to eq(verification_max_capacity / 2)
       end
     end
 
     context 'when total capacity is set lower than the number of Replicators' do
       let(:verification_max_capacity) { 1 }
 
-      it 'returns 1' do
+      it 'returns a minimum of 1' do
         expect(described_class.verification_max_capacity_per_replicator_class).to eq(1)
       end
     end
