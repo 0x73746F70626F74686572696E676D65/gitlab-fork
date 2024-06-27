@@ -79,3 +79,5 @@ module SubscriptionsHelper
     }
   end
 end
+
+SubscriptionsHelper.prepend_mod
