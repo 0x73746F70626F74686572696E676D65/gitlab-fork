@@ -62772,6 +62772,12 @@ msgstr ""
 msgid "failed"
 msgstr ""
 
+msgid "failed to assign runner to project"
+msgstr ""
+
+msgid "failed to destroy runner project"
+msgstr ""
+
 msgid "failed to dismiss associated finding(id=%{finding_id}): %{message}"
 msgstr ""
 
@@ -63878,6 +63884,9 @@ msgid_plural "rules"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "runner can only be assigned to projects in the same organization"
+msgstr ""
+
 msgid "running"
 msgstr ""
 
@@ -64119,7 +64128,13 @@ msgstr[1] ""
 msgid "user avatar"
 msgstr ""
 
+msgid "user is not authorized to add runners to project"
+msgstr ""
+
 msgid "user namespace cannot be the parent of another namespace"
+msgstr ""
+
+msgid "user not allowed to assign runner"
 msgstr ""
 
 msgid "username"
