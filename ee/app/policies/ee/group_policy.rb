@@ -566,6 +566,10 @@ module EE
         enable :admin_integrations
       end
 
+      rule { custom_role_enables_read_runners }.policy do
+        enable :read_group_runners
+      end
+
       rule { can?(:admin_group) | can?(:admin_compliance_framework) | can?(:manage_deploy_tokens) | can?(:manage_merge_request_settings) }.policy do
         enable :view_edit_page
       end

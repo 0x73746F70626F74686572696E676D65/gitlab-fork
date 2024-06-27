@@ -1,0 +1,10 @@
+---
+name: read_runners
+description: Allows read-only access to group or project runners,
+  including the runner fleet dashboard.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/468202
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/156798
+feature_category: runner
+milestone: '17.2'
+group_ability: true
+project_ability: true

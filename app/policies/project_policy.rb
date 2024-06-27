@@ -622,6 +622,7 @@ class ProjectPolicy < BasePolicy
   end
 
   rule { can?(:admin_build) }.enable :manage_trigger
+  rule { can?(:admin_runner) }.enable :read_runner
 
   rule { public_project & metrics_dashboard_allowed }.policy do
     enable :metrics_dashboard

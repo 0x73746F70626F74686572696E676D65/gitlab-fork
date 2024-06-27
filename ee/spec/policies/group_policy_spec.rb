@@ -3767,6 +3767,13 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
       it_behaves_like 'custom roles abilities'
     end
+
+    context 'for a member role with read_runners true' do
+      let(:member_role_abilities) { { read_runners: true } }
+      let(:allowed_abilities) { [:read_group_runners] }
+
+      it_behaves_like 'custom roles abilities'
+    end
   end
 
   context 'for :read_limit_alert' do

@@ -304,6 +304,13 @@ module EE
         enable :create_runner
       end
 
+      rule { can?(:admin_runner) }.enable :read_runner
+
+      rule { custom_role_enables_read_runners }.policy do
+        enable :read_project_runners
+        enable :read_runner
+      end
+
       condition(:ci_cancellation_maintainers_only, scope: :subject) do
         project.ci_cancellation_restriction.maintainers_only_allowed?
       end
