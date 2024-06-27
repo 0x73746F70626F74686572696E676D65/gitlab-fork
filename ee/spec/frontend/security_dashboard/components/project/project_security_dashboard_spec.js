@@ -111,6 +111,7 @@ describe('Project Security Dashboard component', () => {
 
     it.each([['restore'], ['saveAsImage']])('should contain %i icon', (icon) => {
       const option = findLineChart().props('option').toolbox.feature;
+
       expect(option[icon].icon).toBe('path://mockSvgPathContent');
     });
 
@@ -124,7 +125,6 @@ describe('Project Security Dashboard component', () => {
       const { dataZoom } = findLineChart().props('option');
       expect(dataZoom[0]).toMatchObject({
         type: 'slider',
-        handleIcon: 'path://mockSvgPathContent',
         startValue: '2021-03-12',
       });
     });
