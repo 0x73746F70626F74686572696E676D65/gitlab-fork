@@ -58,6 +58,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
       context 'when scan_execution_policies_with_latest_templates is disabled' do
         before do
           stub_feature_flags(scan_execution_policies_with_latest_templates: false)
+          stub_feature_flags(scan_execution_policies_with_latest_templates_group: false)
         end
 
         let(:opts) do
