@@ -13,6 +13,8 @@ module EE
           unique_internal(::User.where(user_type: :visual_review_bot), 'visual-review-bot', email_pattern) do |u|
             u.bio = 'The Gitlab Visual Review feedback bot'
             u.name = 'Gitlab Visual Review Bot'
+            u.confirmed_at = Time.zone.now
+            u.private_profile = true
           end
         end
 
@@ -23,6 +25,8 @@ module EE
             ::User.where(user_type: :suggested_reviewers_bot), 'suggested-reviewers-bot', email_pattern) do |u|
             u.bio = 'The GitLab suggested reviewers bot used for suggested reviewers'
             u.name = 'GitLab Suggested Reviewers Bot'
+            u.confirmed_at = Time.zone.now
+            u.private_profile = true
           end
         end
         # rubocop:enable CodeReuse/ActiveRecord
