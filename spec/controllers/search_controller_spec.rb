@@ -235,7 +235,7 @@ RSpec.describe SearchController, feature_category: :global_search do
             it 'succeeds but does NOT do anything' do
               get :show, params: { scope: 'projects', search: '*', repository_ref: '-1%20OR%203%2B640-640-1=0%2B0%2B0%2B1' }
               expect(response).to have_gitlab_http_status(:ok)
-              expect(assigns(:search_results)).to be_a Gitlab::EmptySearchResults
+              expect(assigns(:search_results)).to be_a ::Search::EmptySearchResults
             end
           end
         end
@@ -734,7 +734,7 @@ RSpec.describe SearchController, feature_category: :global_search do
       end
 
       it 'returns EmptySearchResults' do
-        expect(Gitlab::EmptySearchResults).to receive(:new).and_call_original
+        expect(::Search::EmptySearchResults).to receive(:new).and_call_original
         make_abusive_request
         expect(response).to have_gitlab_http_status(:ok)
       end

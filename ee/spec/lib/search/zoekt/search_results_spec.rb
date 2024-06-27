@@ -17,10 +17,6 @@ RSpec.describe ::Search::Zoekt::SearchResults, :zoekt, feature_category: :global
   end
 
   describe 'blobs' do
-    before do
-      zoekt_ensure_project_indexed!(project_1)
-    end
-
     it 'finds blobs by regex search' do
       results = described_class.new(user, 'use.*egex', limit_projects, node_id: node_id)
       blobs = results.objects('blobs')
@@ -436,6 +432,31 @@ RSpec.describe ::Search::Zoekt::SearchResults, :zoekt, feature_category: :global
             it_behaves_like 'a non-filtered search'
           end
         end
+      end
+    end
+  end
+
+  describe 'failed?' do
+    let(:scope) { 'blobs' }
+
+    subject(:results) { described_class.new(user, 'test', limit_projects, node_id: node_id) }
+
+    context 'when no error raised by client' do
+      it 'returns false' do
+        results.objects(scope)
+        expect(results.failed?(scope)).to eq false
+      end
+    end
+
+    context 'when error raised by client' do
+      before do
+        client_error = ::Search::Zoekt::Errors::ClientConnectionError.new('test')
+        allow(::Gitlab::Search::Zoekt::Client).to receive(:search).and_raise(client_error)
+      end
+
+      it 'returns true' do
+        results.objects(scope)
+        expect(results.failed?(scope)).to eq true
       end
     end
   end
