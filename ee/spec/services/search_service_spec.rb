@@ -160,6 +160,73 @@ RSpec.describe SearchService, feature_category: :global_search do
       end
 
       it { is_expected.to eq(expected_type) }
+
+      %w[basic advanced zoekt].each do |search_type|
+        context "with search_type param #{search_type}" do
+          let(:search_service) do
+            described_class.new(user, { scope: scope, project_id: project.id, search_type: search_type })
+          end
+
+          it { is_expected.to eq(search_type) }
+        end
+      end
+    end
+  end
+
+  describe '#search_type_errors' do
+    let_it_be(:user) { create(:user) }
+    let(:search_service) { described_class.new(user, { scope: scope, search_type: search_type }) }
+    let(:scope) { 'blobs' }
+
+    before do
+      allow(search_service).to receive(:scope).and_return(scope)
+    end
+
+    context 'when search_type is basic' do
+      let(:search_type) { 'basic' }
+
+      it 'is nil' do
+        expect(search_service.search_type_errors).to be_nil
+      end
+    end
+
+    context 'when search_type is advanced' do
+      let(:search_type) { 'advanced' }
+
+      it 'is nil if use_elasticsearch?' do
+        allow(search_service).to receive(:use_elasticsearch?).and_return(true)
+
+        expect(search_service.search_type_errors).to be_nil
+      end
+
+      it 'returns an error if not use_elasticsearch?' do
+        allow(search_service).to receive(:use_elasticsearch?).and_return(false)
+
+        expect(search_service.search_type_errors).to eq('Elasticsearch is not available')
+      end
+    end
+
+    context 'when search_type is zoekt' do
+      let(:search_type) { 'zoekt' }
+
+      it 'is nil if use_zoekt?' do
+        allow(search_service).to receive(:use_zoekt?).and_return(true)
+
+        expect(search_service.search_type_errors).to be_nil
+      end
+
+      it 'returns an error if not use_zoekt?' do
+        allow(search_service).to receive(:use_zoekt?).and_return(false)
+
+        expect(search_service.search_type_errors).to eq('Zoekt is not available')
+      end
+
+      it 'returns an error if scope is not blobs' do
+        allow(search_service).to receive(:use_zoekt?).and_return(true)
+        allow(search_service).to receive(:scope).and_return('issues')
+
+        expect(search_service.search_type_errors).to eq('Zoekt can only be used for blobs')
+      end
     end
   end
 end
