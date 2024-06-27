@@ -6,19 +6,19 @@ RSpec.describe Gitlab::Export::SegmentedExportWorker, feature_category: :shared 
   describe '#perform' do
     let(:vulnerability_export) { create(:vulnerability_export) }
     let(:global_id) { vulnerability_export.to_global_id }
-    let(:export_ids) { [1, 2, 3] }
-    let(:export_service_mock) { instance_double(Gitlab::Export::SegmentedExportService) }
+    let(:segment_ids) { [1, 2, 3] }
 
-    it 'calls SegmentedExportService#export' do
-      expect(GlobalID).to receive(:find).with(global_id).and_return(vulnerability_export)
-      expect(::Gitlab::Export::SegmentedExportService).to receive(:new).with(
+    subject(:perform) { described_class.new.perform(global_id, segment_ids) }
+
+    it 'calls SegmentExporterService#export' do
+      expect_next_instance_of(
+        ::Gitlab::SegmentedExport::SegmentExporterService,
         vulnerability_export,
-        :export,
-        segment_ids: export_ids
-      ).and_return(export_service_mock)
-      expect(export_service_mock).to receive(:execute)
+        segment_ids) do |mock_service_object|
+          expect(mock_service_object).to receive(:execute)
+        end
 
-      described_class.new.perform(global_id, export_ids)
+      perform
     end
   end
 end

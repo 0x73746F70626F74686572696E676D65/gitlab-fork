@@ -13,7 +13,7 @@ module Gitlab
       def perform(global_id, segment_ids)
         export_record = GlobalID.find(global_id)
 
-        ::Gitlab::Export::SegmentedExportService.new(export_record, :export, segment_ids: segment_ids).execute
+        ::Gitlab::SegmentedExport::SegmentExporterService.new(export_record, segment_ids).execute
       end
     end
   end
