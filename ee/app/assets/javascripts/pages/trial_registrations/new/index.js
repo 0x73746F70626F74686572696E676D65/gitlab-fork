@@ -11,6 +11,7 @@ import { setupArkoseLabsForSignup } from 'ee/arkose_labs';
 import initPasswordValidator from 'ee/password/password_validator';
 import { initPasswordInput } from '~/authentication/password';
 import { initLanguageSwitcher } from '~/language_switcher';
+import FormErrorTracker from '~/pages/shared/form_error_tracker';
 
 new UsernameValidator(); // eslint-disable-line no-new
 new LengthValidator(); // eslint-disable-line no-new
@@ -29,3 +30,7 @@ initPasswordInput();
 // Warning: initPasswordValidator has to run after initPasswordInput
 initPasswordValidator();
 initLanguageSwitcher();
+
+// Warning: run after all input initializations
+// eslint-disable-next-line no-new
+new FormErrorTracker();
