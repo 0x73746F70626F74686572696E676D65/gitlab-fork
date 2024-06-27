@@ -104,6 +104,19 @@ RSpec.describe Gitlab::Checks::SecretsCheck, feature_category: :secret_detection
             expect(secrets_check.validate!).to be_nil
           end
         end
+
+        context 'when project does not have security settings' do
+          before do
+            stub_licensed_features(pre_receive_secret_detection: true)
+            Gitlab::CurrentSettings.update!(pre_receive_secret_detection_enabled: true)
+          end
+
+          it 'skips the check' do
+            allow(project).to receive(:security_setting).and_return(nil)
+
+            expect(secrets_check.validate!).to be_nil
+          end
+        end
       end
 
       context 'when instance is not dedicated or GitLab.com' do
