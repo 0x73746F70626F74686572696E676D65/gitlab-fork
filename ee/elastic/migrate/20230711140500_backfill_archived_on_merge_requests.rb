@@ -16,3 +16,5 @@ class BackfillArchivedOnMergeRequests < Elastic::Migration
     'archived'
   end
 end
+
+BackfillArchivedOnMergeRequests.prepend ::Elastic::MigrationObsolete
