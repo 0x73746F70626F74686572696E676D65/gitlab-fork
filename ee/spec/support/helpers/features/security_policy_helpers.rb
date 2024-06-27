@@ -12,6 +12,8 @@ module Features
 
     def create_policy_setup
       stub_feature_flags(merge_when_checks_pass: false)
+      stub_feature_flags(bulk_create_scan_result_policies: false)
+      stub_feature_flags(custom_software_license: false)
       stub_licensed_features(security_dashboard: true,
         multiple_approval_rules: true,
         sast: true, report_approver_rules: true,
