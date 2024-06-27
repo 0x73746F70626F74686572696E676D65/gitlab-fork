@@ -169,7 +169,7 @@ export default {
           text-sr-only
           data-testid="dropdown-actions"
           no-caret
-          placement="right"
+          placement="bottom-end"
         >
           <gl-disclosure-dropdown-item
             :item="$options.items.copy"

@@ -227,7 +227,7 @@ export default {
         </h2>
         <gl-disclosure-dropdown
           class="gl-ml-auto"
-          placement="right"
+          placement="bottom-end"
           variant="confirm"
           :toggle-text="$options.i18n.newProfileDropdownLabel"
           :items="newProfileDisclosureItems"

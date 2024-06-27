@@ -322,7 +322,7 @@ export default {
                   class="gl-mr-3 flex-grow"
                   fluid-width
                   is-check-centered
-                  placement="right"
+                  placement="bottom-end"
                   toggle-class="dropdown-menu-toggle"
                   :selected="sortField"
                   :toggle-text="sortFieldDropdownLabel"

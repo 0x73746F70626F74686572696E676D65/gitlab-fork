@@ -72,7 +72,7 @@ export default {
     :toggle-text="__('Add')"
     :items="actions"
     size="small"
-    placement="right"
+    placement="bottom-end"
     data-testid="epic-issue-actions-split-button"
   />
 </template>

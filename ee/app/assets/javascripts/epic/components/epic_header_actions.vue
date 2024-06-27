@@ -248,7 +248,7 @@ export default {
       ref="epicActionsDropdownDesktop"
       v-gl-tooltip="showDropdownTooltip"
       class="gl-hidden md:gl-block"
-      placement="right"
+      placement="bottom-end"
       :auto-close="false"
       data-testid="desktop-dropdown"
       :toggle-text="$options.i18n.dropdownText"

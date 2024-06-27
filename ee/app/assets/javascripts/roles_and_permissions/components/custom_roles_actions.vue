@@ -58,7 +58,7 @@ export default {
     v-gl-tooltip.hover.top.viewport="$options.i18n.actionsText"
     category="tertiary"
     icon="ellipsis_v"
-    placement="right"
+    placement="bottom-end"
     no-caret
     text-sr-only
     :toggle-text="$options.i18n.actionsText"

@@ -33,7 +33,7 @@ describe('CustomRolesActions', () => {
     expect(findDropdown().props()).toMatchObject({
       icon: 'ellipsis_v',
       category: 'tertiary',
-      placement: 'right',
+      placement: 'bottom-end',
     });
   });
 

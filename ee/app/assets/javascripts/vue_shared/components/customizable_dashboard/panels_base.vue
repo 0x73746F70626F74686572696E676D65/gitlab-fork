@@ -153,7 +153,7 @@ export default {
           :toggle-text="__('Actions')"
           text-sr-only
           no-caret
-          placement="right"
+          placement="bottom-end"
           fluid-width
           toggle-class="gl-ml-1"
           category="tertiary"
