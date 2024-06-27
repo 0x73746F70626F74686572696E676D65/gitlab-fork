@@ -6,7 +6,7 @@
 .block.weight
   .sidebar-collapsed-icon.has-tooltip{ title: milestone_weight_tooltip_text(total_weight), data: { container: 'body', placement: 'left' } }
     = sprite_icon('weight')
-    %span
+    %span.gl-text-sm
       - unless total_weight == 0
         = total_weight
       - else
