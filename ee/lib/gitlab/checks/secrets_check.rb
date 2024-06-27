@@ -41,16 +41,16 @@ module Gitlab
 
       def validate!
         # Return early and do not perform the check:
-        #   1. unless application setting is enabled (regardless of whether it's a gitlab dedicated instance or not)
-        #   2. unless we are on GitLab.com or a Dedicated instance
-        #   3. unless feature flag is enabled for this project (when instance type is GitLab.com)
-        #   4. unless license is ultimate
+        #   1. unless license is ultimate
+        #   2. unless application setting is enabled (regardless of whether it's a gitlab dedicated instance or not)
+        #   3. unless we are on GitLab.com or a Dedicated instance
+        #   4. unless feature flag is enabled for this project (when instance type is GitLab.com)
         #   5. if it is a delete branch/tag operation, as it would require scanning the entire revision history
         #   6. if options are passed for us to skip the check
 
-        return unless run_pre_receive_secret_detection?
-
         return unless project.licensed_feature_available?(:pre_receive_secret_detection)
+
+        return unless run_pre_receive_secret_detection?
 
         return if includes_full_revision_history?
 
@@ -104,12 +104,12 @@ module Gitlab
       def enabled_for_gitlabcom_project?
         ::Gitlab::Saas.feature_available?(:beta_rollout_pre_receive_secret_detection) &&
           ::Feature.enabled?(:pre_receive_secret_detection_push_check, project) &&
-          project.security_setting.pre_receive_secret_detection_enabled
+          project.security_setting&.pre_receive_secret_detection_enabled
       end
 
       def enabled_for_dedicated_project?
         ::Gitlab::CurrentSettings.gitlab_dedicated_instance &&
-          project.security_setting.pre_receive_secret_detection_enabled
+          project.security_setting&.pre_receive_secret_detection_enabled
       end
 
       def includes_full_revision_history?
