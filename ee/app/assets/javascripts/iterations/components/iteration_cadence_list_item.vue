@@ -279,7 +279,7 @@ export default {
         category="tertiary"
         data-testid="cadence-options-button"
         icon="ellipsis_v"
-        placement="right"
+        placement="bottom-end"
         no-caret
         text-sr-only
         :items="actionItems"

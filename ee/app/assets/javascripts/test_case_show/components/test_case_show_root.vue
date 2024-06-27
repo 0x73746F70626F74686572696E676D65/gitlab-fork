@@ -208,7 +208,7 @@ export default {
           v-if="canEditTestCase"
           data-testid="actions-dropdown"
           class="md:gl-hidden gl-ml-auto"
-          placement="right"
+          placement="bottom-end"
           category="secondary"
           :toggle-text="__('Options')"
         >

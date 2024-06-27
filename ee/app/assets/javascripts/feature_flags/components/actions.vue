@@ -36,6 +36,6 @@ export default {
     :toggle-text="$options.i18n.moreActions"
     category="secondary"
     no-caret
-    placement="right"
+    placement="bottom-end"
   />
 </template>

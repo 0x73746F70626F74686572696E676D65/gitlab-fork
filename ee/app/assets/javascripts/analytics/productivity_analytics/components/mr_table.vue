@@ -70,7 +70,7 @@ export default {
                 fluid-width
                 class="metric-col"
                 toggle-class="dropdown-menu-toggle !gl-w-full"
-                placement="right"
+                placement="bottom-end"
                 is-check-centered
                 :items="listBoxColumnOptions"
                 :selected="metricType"

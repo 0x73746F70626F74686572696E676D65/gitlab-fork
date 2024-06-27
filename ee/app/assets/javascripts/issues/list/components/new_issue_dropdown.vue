@@ -41,7 +41,7 @@ export default {
     </gl-button>
     <gl-disclosure-dropdown
       :toggle-text="$options.i18n.toggleSrText"
-      placement="right"
+      placement="bottom-end"
       text-sr-only
       variant="confirm"
       toggle-class="!gl-h-7"

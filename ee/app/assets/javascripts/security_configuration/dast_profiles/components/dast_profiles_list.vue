@@ -228,7 +228,7 @@ export default {
               no-caret
               category="tertiary"
               icon="ellipsis_v"
-              placement="right"
+              placement="bottom-end"
               size="small"
             >
               <gl-disclosure-dropdown-item
