@@ -3,11 +3,11 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { __, s__ } from '~/locale';
 import {
-  MWCP_MERGE_STRATEGY,
   MTWPS_MERGE_STRATEGY,
   MT_MERGE_STRATEGY,
   PIPELINE_FAILED_STATE,
 } from '~/vue_merge_request_widget/constants';
+import CEReadyToMergeMixin from '~/vue_merge_request_widget/mixins/ready_to_merge';
 
 export const MERGE_DISABLED_TEXT_UNAPPROVED = s__(
   'mrWidget|Merge blocked: all required approvals must be given.',
@@ -17,14 +17,6 @@ export const PIPELINE_MUST_SUCCEED_CONFLICT_TEXT = __(
 );
 export const MERGE_DISABLED_DEPENDENCIES_TEXT = __(
   'Merge blocked: Merge all open dependent merge requests, and remove all closed dependencies.',
-);
-
-const MERGE_WHEN_PIPELINE_SUCCEEDS_HELP = helpPagePath(
-  '/user/project/merge_requests/merge_when_pipeline_succeeds.html',
-);
-// TODO: Add documentation
-const MERGE_WHEN_CHECKS_PASS_HELP = helpPagePath(
-  '/user/project/merge_requests/merge_when_checks_pass.html',
 );
 const MERGE_TRAINS_HELP = helpPagePath('ci/pipelines/merge_trains.html');
 
@@ -56,11 +48,8 @@ export default {
       if (this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY) {
         return __('Add to merge train');
       }
-      if (this.preferredAutoMergeStrategy === MWCP_MERGE_STRATEGY) {
-        return __('Merge when all merge checks pass');
-      }
 
-      return __('Merge when pipeline succeeds');
+      return CEReadyToMergeMixin.computed.autoMergeHelperText.call(this);
     },
     autoMergePopoverSettings() {
       if (
@@ -75,23 +64,8 @@ export default {
           title: __('Merge trains'),
         };
       }
-      if (this.preferredAutoMergeStrategy === MWCP_MERGE_STRATEGY) {
-        return {
-          helpLink: MERGE_WHEN_CHECKS_PASS_HELP,
-          bodyText: __(
-            'When all the merge checks for this merge request pass, it will %{linkStart}automatically merge%{linkEnd}.',
-          ),
-          title: __('Merge when checks pass'),
-        };
-      }
 
-      return {
-        helpLink: MERGE_WHEN_PIPELINE_SUCCEEDS_HELP,
-        bodyText: __(
-          'When the pipeline for this merge request succeeds, it will %{linkStart}automatically merge%{linkEnd}.',
-        ),
-        title: __('Merge when pipeline succeeds'),
-      };
+      return CEReadyToMergeMixin.computed.autoMergePopoverSettings.call(this);
     },
     pipelineId() {
       return getIdFromGraphQLId(this.pipeline.id);

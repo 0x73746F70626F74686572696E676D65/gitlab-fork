@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Gitlab/BoundedContexts -- Existing module
 module AutoMerge
   class MergeWhenChecksPassService < AutoMerge::BaseService
     extend Gitlab::Utils::Override
@@ -72,3 +73,4 @@ module AutoMerge
     end
   end
 end
+# rubocop:enable Gitlab/BoundedContexts

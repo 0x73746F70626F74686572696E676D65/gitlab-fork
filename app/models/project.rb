@@ -3330,6 +3330,11 @@ class Project < ApplicationRecord
     false
   end
 
+  # Overridden in EE
+  def merge_trains_enabled?
+    false
+  end
+
   private
 
   # overridden in EE

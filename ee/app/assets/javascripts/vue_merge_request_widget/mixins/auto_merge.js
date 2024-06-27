@@ -1,9 +1,6 @@
 import { s__ } from '~/locale';
-import {
-  MT_MERGE_STRATEGY,
-  MTWPS_MERGE_STRATEGY,
-  MWCP_MERGE_STRATEGY,
-} from '~/vue_merge_request_widget/constants';
+import { MT_MERGE_STRATEGY, MTWPS_MERGE_STRATEGY } from '~/vue_merge_request_widget/constants';
+import CEAutoMergeMixin from '~/vue_merge_request_widget/mixins/auto_merge';
 
 export default {
   computed: {
@@ -23,15 +20,8 @@ export default {
           'mrWidget|Set by %{merge_author} to be added to the merge train when the pipeline succeeds',
         );
       }
-      if (autoMergeStrategy === MWCP_MERGE_STRATEGY) {
-        return s__(
-          'mrWidget|Set by %{merge_author} to be merged automatically when all merge checks pass',
-        );
-      }
 
-      return s__(
-        'mrWidget|Set by %{merge_author} to be merged automatically when the pipeline succeeds',
-      );
+      return CEAutoMergeMixin.computed.statusText.call(this);
     },
     cancelButtonText() {
       if (this.state.autoMergeStrategy === MT_MERGE_STRATEGY) {
