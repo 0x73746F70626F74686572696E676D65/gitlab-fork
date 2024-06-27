@@ -53,3 +53,5 @@ class BackfillExistingGroupWiki < Elastic::Migration
     GroupWikiRepository.where('group_id > ?', max_processed_group_id).order(:group_id).limit(batch_size)  # rubocop:disable CodeReuse/ActiveRecord(RuboCop)
   end
 end
+
+BackfillExistingGroupWiki.prepend ::Elastic::MigrationObsolete
