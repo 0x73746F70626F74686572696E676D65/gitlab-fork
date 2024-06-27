@@ -14277,10 +14277,19 @@ msgstr ""
 msgid "ContainerRegistry|Container Registry"
 msgstr ""
 
+msgid "ContainerRegistry|Container Scanning for Registry: Off"
+msgstr ""
+
+msgid "ContainerRegistry|Container Scanning for Registry: On"
+msgstr ""
+
 msgid "ContainerRegistry|Container protection rule deleted."
 msgstr ""
 
 msgid "ContainerRegistry|Container protection rule updated."
+msgstr ""
+
+msgid "ContainerRegistry|Continuous container scanning runs in the registry when any image or database is updated."
 msgstr ""
 
 msgid "ContainerRegistry|Copy build command"
@@ -59537,6 +59546,9 @@ msgid "What is Markdown?"
 msgstr ""
 
 msgid "What is a compute quota?"
+msgstr ""
+
+msgid "What is continuous container scanning?"
 msgstr ""
 
 msgid "What is listed here?"
