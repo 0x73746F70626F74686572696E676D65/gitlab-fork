@@ -149,7 +149,15 @@ module Features
         )
       end
 
-      click_button 'Start free GitLab Ultimate trial'
+      button_text =
+        case trial_type
+        when DUO_PRO_TRIAL
+          'Continue'
+        else
+          'Start free GitLab Ultimate trial'
+        end
+
+      click_button button_text
 
       wait_for_requests
     end

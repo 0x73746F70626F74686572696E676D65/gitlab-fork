@@ -55948,13 +55948,7 @@ msgstr ""
 msgid "TrialDiscoverPage|Your software, deployed your way"
 msgstr ""
 
-msgid "TrialRegistration|Start GitLab Ultimate free trial"
-msgstr ""
-
 msgid "TrialRegistration|To complete registration, we need additional details from you."
-msgstr ""
-
-msgid "TrialRegistration|Your GitLab Ultimate free trial lasts for 30 days. After this period, you can maintain a GitLab Free account forever or upgrade to a paid plan."
 msgstr ""
 
 msgid "Trials|%{planName} Trial"
@@ -55999,6 +55993,9 @@ msgid "Trial| By selecting Continue or registering through a third party, you ac
 msgstr ""
 
 msgid "Trial|Allowed characters: +, 0-9, -, and spaces."
+msgstr ""
+
+msgid "Trial|Continue"
 msgstr ""
 
 msgid "Trial|Cookie Policy"

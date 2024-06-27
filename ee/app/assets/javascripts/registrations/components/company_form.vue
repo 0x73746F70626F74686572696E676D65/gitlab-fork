@@ -14,12 +14,11 @@ import CountryOrRegionSelector from 'ee/trials/components/country_or_region_sele
 import {
   TRIAL_COMPANY_SIZE_PROMPT,
   TRIAL_PHONE_DESCRIPTION,
-  TRIAL_FORM_SUBMIT_TEXT,
-  TRIAL_FOOTER_DESCRIPTION,
+  GENERIC_TRIAL_FORM_SUBMIT_TEXT,
+  ULTIMATE_TRIAL_FOOTER_DESCRIPTION,
   TRIAL_DESCRIPTION,
   TRIAL_REGISTRATION_DESCRIPTION,
-  TRIAL_REGISTRATION_FOOTER_DESCRIPTION,
-  TRIAL_REGISTRATION_FORM_SUBMIT_TEXT,
+  ULTIMATE_TRIAL_FORM_SUBMIT_TEXT,
 } from 'ee/trials/constants';
 import { trackCompanyForm } from 'ee/google_tag_manager';
 
@@ -79,9 +78,7 @@ export default {
         : this.$options.i18n.formSubmitText.registration;
     },
     footerText() {
-      return this.initialTrial
-        ? this.$options.i18n.footerDescription.trial
-        : this.$options.i18n.footerDescription.registration;
+      return this.initialTrial ? '' : this.$options.i18n.footerDescriptionRegistration;
     },
   },
   methods: {
@@ -104,13 +101,10 @@ export default {
       registration: TRIAL_REGISTRATION_DESCRIPTION,
     },
     formSubmitText: {
-      trial: TRIAL_FORM_SUBMIT_TEXT,
-      registration: TRIAL_REGISTRATION_FORM_SUBMIT_TEXT,
+      trial: GENERIC_TRIAL_FORM_SUBMIT_TEXT,
+      registration: ULTIMATE_TRIAL_FORM_SUBMIT_TEXT,
     },
-    footerDescription: {
-      trial: TRIAL_FOOTER_DESCRIPTION,
-      registration: TRIAL_REGISTRATION_FOOTER_DESCRIPTION,
-    },
+    footerDescriptionRegistration: ULTIMATE_TRIAL_FOOTER_DESCRIPTION,
   },
 };
 </script>

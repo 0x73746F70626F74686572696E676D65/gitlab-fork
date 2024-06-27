@@ -22,7 +22,7 @@ RSpec.describe 'Trial flow for user picking company and importing a project', :j
       expect_to_see_company_form
 
       fill_in_company_form(glm: false)
-      click_on 'Start free GitLab Ultimate trial'
+      click_on 'Continue'
 
       expect_to_see_group_and_project_creation_form
 

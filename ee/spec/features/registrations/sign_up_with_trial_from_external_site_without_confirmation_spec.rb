@@ -45,7 +45,7 @@ RSpec.describe 'Sign up with trial from external site without confirmation', :sa
     fill_in 'company_name', with: 'Company name'
     select '1 - 99', from: 'company_size'
     select 'Australia', from: 'country'
-    click_button 'Start GitLab Ultimate free trial'
+    click_button 'Start free GitLab Ultimate trial'
 
     fill_in 'group_name', with: 'Group name'
     fill_in 'blank_project_name', with: 'Project name'

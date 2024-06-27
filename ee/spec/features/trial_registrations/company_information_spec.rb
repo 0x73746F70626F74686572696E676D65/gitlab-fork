@@ -66,7 +66,7 @@ RSpec.describe 'Company Information', :js, feature_category: :activation do
           expect(service).to receive(:execute).and_return(service_response)
         end
 
-        click_button 'Start GitLab Ultimate free trial'
+        click_button 'Start free GitLab Ultimate trial'
 
         expect(page).to have_current_path(current_path, ignore_query: true)
         expect(page).to have_content(page_content)
@@ -80,7 +80,7 @@ RSpec.describe 'Company Information', :js, feature_category: :activation do
         fill_in 'first_name', with: ''
         fill_in 'last_name', with: ''
 
-        click_button 'Start GitLab Ultimate free trial'
+        click_button 'Start free GitLab Ultimate trial'
 
         expect(page).to have_native_text_validation_message('first_name')
         expect(page).to have_native_text_validation_message('last_name')
@@ -97,7 +97,7 @@ RSpec.describe 'Company Information', :js, feature_category: :activation do
           expect(service).to receive(:execute).and_return(ServiceResponse.success)
         end
 
-        click_button 'Start GitLab Ultimate free trial'
+        click_button 'Start free GitLab Ultimate trial'
 
         expect(page).to have_current_path(new_users_sign_up_group_path, ignore_query: true)
         expect(page).to have_content('Create or import your first project')
