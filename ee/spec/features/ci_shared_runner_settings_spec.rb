@@ -52,7 +52,7 @@ RSpec.describe 'CI shared runner settings', feature_category: :fleet_visibility 
   def set_admin_shared_runners_minutes(limit)
     visit ci_cd_admin_application_settings_path
 
-    page.within('.as-ci-cd') do
+    within_testid('ci-cd-settings') do
       fill_in 'application_setting_shared_runners_minutes', with: limit
       click_on 'Save changes'
     end
