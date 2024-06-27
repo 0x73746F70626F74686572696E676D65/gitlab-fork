@@ -198,6 +198,14 @@ describe('EE Approvals App', () => {
           expect(findRulesCount().text()).toBe('1');
         });
 
+        it('when renders on the `Branch rule` project settings page', () => {
+          store.modules.approvals.state.rulesPagination.total = 25;
+
+          factory({ isBranchRulesEdit: true });
+
+          expect(findRulesCount().text()).toBe('1');
+        });
+
         it('when renders on the `Merge requests` project settings page', () => {
           store.modules.approvals.state.rulesPagination.total = 25;
 
