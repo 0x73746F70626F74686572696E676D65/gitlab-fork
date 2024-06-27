@@ -347,7 +347,7 @@ export default {
         >
           <h5>{{ $options.i18n.yamlPreview }}</h5>
           <pre
-            class="security-policies-bg-gray-10 security-policies-pre-min-width gl-white-space-pre-wrap gl-border-none gl-p-0"
+            class="security-policies-bg-gray-10 security-policies-pre-min-width gl-whitespace-pre-wrap gl-border-none gl-p-0"
             :class="{ 'gl-opacity-5': hasParsingError }"
             data-testid="rule-editor-preview-content"
             >{{ yamlEditorValue }}</pre
