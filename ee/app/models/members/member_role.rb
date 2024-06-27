@@ -72,7 +72,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     read_vulnerability
     remove_group
     remove_project
-  ], remove_with: '17.1', remove_after: '2024-05-13'
+  ], remove_with: '17.3', remove_after: '2024-08-15'
 
   jsonb_accessor :permissions, Gitlab::CustomRoles::Definition.all.keys.index_with(:boolean)
 
