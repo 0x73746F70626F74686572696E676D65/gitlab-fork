@@ -12314,7 +12314,7 @@ CREATE TABLE merge_request_context_commits (
     message text,
     merge_request_id bigint,
     trailers jsonb DEFAULT '{}'::jsonb NOT NULL,
-    project_id bigint
+    project_id bigint,
     CONSTRAINT check_1dc6b5f2ac CHECK ((merge_request_id IS NOT NULL))
 );
 
