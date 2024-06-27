@@ -7,5 +7,8 @@ module Security
     belongs_to :project
 
     validates :name, presence: true, uniqueness: { scope: :project_id }, length: { maximum: 255 }
+
+    scope :by_name, ->(names) { where(name: names) }
+    scope :by_project, ->(project) { where(project: project) }
   end
 end
