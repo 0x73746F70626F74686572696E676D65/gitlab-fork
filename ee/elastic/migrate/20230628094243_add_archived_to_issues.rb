@@ -15,3 +15,5 @@ class AddArchivedToIssues < Elastic::Migration
     }
   end
 end
+
+AddArchivedToIssues.prepend ::Elastic::MigrationObsolete

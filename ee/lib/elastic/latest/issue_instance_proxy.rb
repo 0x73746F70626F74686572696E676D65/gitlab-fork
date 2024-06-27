@@ -32,10 +32,7 @@ module Elastic
         data['label_ids'] = target.label_ids.map(&:to_s)
 
         data['hashed_root_namespace_id'] = target.project.namespace.hashed_root_namespace_id
-
-        if ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_issues)
-          data['archived'] = target.project.archived?
-        end
+        data['archived'] = target.project.archived?
 
         if ::Elastic::DataMigrationService.migration_has_finished?(:add_work_item_type_id_to_issues)
           data['work_item_type_id'] = target.work_item_type_id

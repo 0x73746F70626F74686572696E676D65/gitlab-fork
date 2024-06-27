@@ -748,13 +748,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
           },
           {
             association_name: :issues,
-            on_change: :archived,
-            depends_on_finished_migration: :add_archived_to_issues
+            on_change: :archived
           },
           {
             association_name: :work_items,
-            on_change: :archived,
-            depends_on_finished_migration: :add_archived_to_issues
+            on_change: :archived
           },
           {
             association_name: :merge_requests,
