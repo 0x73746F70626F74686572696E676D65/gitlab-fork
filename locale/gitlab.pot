@@ -57629,6 +57629,12 @@ msgstr ""
 msgid "UserMapping|Kept as placeholder"
 msgstr ""
 
+msgid "UserMapping|Notification email sent."
+msgstr ""
+
+msgid "UserMapping|Notify again"
+msgstr ""
+
 msgid "UserMapping|Original user: %{source_name} (%{source_username})"
 msgstr ""
 
