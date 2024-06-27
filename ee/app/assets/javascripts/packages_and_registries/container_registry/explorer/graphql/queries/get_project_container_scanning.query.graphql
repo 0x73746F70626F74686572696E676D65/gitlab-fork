@@ -1,0 +1,9 @@
+query getProjectContainerScanning($fullPath: ID!, $securityConfigurationPath: String!) {
+  project(fullPath: $fullPath) {
+    id
+    containerScanningForRegistry(securityConfigurationPath: $securityConfigurationPath) @client {
+      isEnabled
+      isVisible
+    }
+  }
+}
