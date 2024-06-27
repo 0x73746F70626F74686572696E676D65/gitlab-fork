@@ -45,7 +45,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::DevfileFetcher, feature_
 
     it 'returns an ok Result containing the original params and the devfile_yaml_string' do
       expect(result).to eq(
-        Result.ok({
+        Gitlab::Fp::Result.ok({
           params: params,
           devfile_yaml: devfile_yaml,
           devfile: devfile

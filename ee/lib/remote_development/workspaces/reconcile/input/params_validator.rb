@@ -9,7 +9,7 @@ module RemoteDevelopment
           include UpdateTypes
 
           # @param [Hash] context
-          # @return [Result]
+          # @return [Gitlab::Fp::Result]
           def self.validate(context)
             context => { original_params: Hash => original_params }
 
@@ -20,9 +20,9 @@ module RemoteDevelopment
             errors = validate_original_params_against_schema(original_params.deep_stringify_keys)
 
             if errors.none?
-              Result.ok(context)
+              Gitlab::Fp::Result.ok(context)
             else
-              Result.err(WorkspaceReconcileParamsValidationFailed.new(details: errors.join(". ")))
+              Gitlab::Fp::Result.err(WorkspaceReconcileParamsValidationFailed.new(details: errors.join(". ")))
             end
           end
 

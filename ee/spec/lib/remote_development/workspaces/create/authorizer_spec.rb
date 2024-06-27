@@ -22,7 +22,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::Authorizer, feature_catego
     let(:user_can_create_workspace) { true }
 
     it 'returns an ok Result containing the original context which was passed' do
-      expect(result).to eq(Result.ok(context))
+      expect(result).to eq(Gitlab::Fp::Result.ok(context))
     end
   end
 

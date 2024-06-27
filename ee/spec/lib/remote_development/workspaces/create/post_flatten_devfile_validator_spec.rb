@@ -17,14 +17,14 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PostFlattenDevfileValida
 
   context 'for devfiles containing no violations' do
     it 'returns an ok Result containing the original context' do
-      expect(result).to eq(Result.ok({ processed_devfile: processed_devfile }))
+      expect(result).to eq(Gitlab::Fp::Result.ok({ processed_devfile: processed_devfile }))
     end
 
     context 'when devfile has multiple array entries' do
       let(:flattened_devfile_name) { 'example.multi-entry-devfile.yaml' }
 
       it 'returns an ok Result containing the original context' do
-        expect(result).to eq(Result.ok({ processed_devfile: processed_devfile }))
+        expect(result).to eq(Gitlab::Fp::Result.ok({ processed_devfile: processed_devfile }))
       end
     end
   end
@@ -72,7 +72,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PostFlattenDevfileValida
 
   context 'for multi-array-entry devfiles containing post flatten violations' do
     # NOTE: This context guards against the incorrect usage of
-    #       `return Result.ok(context) unless condition`
+    #       `return Gitlab::Fp::Result.ok(context) unless condition`
     #       guard clauses within iterator blocks in the validator logic.
     #       Because the behavior of `return` in Ruby is to return from the entire containing method,
     #       regardless of how many blocks you are nexted within, this would result in early returns

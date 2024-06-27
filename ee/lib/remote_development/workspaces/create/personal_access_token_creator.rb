@@ -7,7 +7,7 @@ module RemoteDevelopment
         include Messages
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.create(context)
           context => {
             current_user: User => user,
@@ -32,12 +32,12 @@ module RemoteDevelopment
           personal_access_token.save
 
           if personal_access_token.errors.present?
-            return Result.err(
+            return Gitlab::Fp::Result.err(
               PersonalAccessTokenModelCreateFailed.new({ errors: personal_access_token.errors })
             )
           end
 
-          Result.ok(
+          Gitlab::Fp::Result.ok(
             context.merge({
               personal_access_token: personal_access_token
             })

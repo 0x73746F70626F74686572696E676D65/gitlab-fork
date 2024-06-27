@@ -21,7 +21,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Update::Authorizer, feature_catego
 
   context 'when user is authorized' do
     it 'returns an ok Result containing the original context which was passed' do
-      expect(result).to eq(Result.ok(context))
+      expect(result).to eq(Gitlab::Fp::Result.ok(context))
     end
   end
 

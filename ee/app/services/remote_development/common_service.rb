@@ -29,8 +29,6 @@ module RemoteDevelopment
       settings = ::RemoteDevelopment::Settings.get_all_settings
       logger = RemoteDevelopment::Logger.build
 
-      # noinspection RubyMismatchedArgumentType -- This cannot be nil, but RubyMine can't detect when a guard clause
-      #                                            is used to ensure Array#first can't return nil
       response_hash = domain_main_class.singleton_method(main_class_method).call(
         **domain_main_class_args.merge(settings: settings, logger: logger)
       )

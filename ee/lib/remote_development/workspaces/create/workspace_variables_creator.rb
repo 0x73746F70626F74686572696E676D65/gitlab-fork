@@ -7,7 +7,7 @@ module RemoteDevelopment
         include Messages
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.create(context)
           context => {
             workspace: RemoteDevelopment::Workspace => workspace,
@@ -38,13 +38,13 @@ module RemoteDevelopment
             workspace_variable.save
 
             if workspace_variable.errors.present?
-              return Result.err(
+              return Gitlab::Fp::Result.err(
                 WorkspaceVariablesModelCreateFailed.new({ errors: workspace_variable.errors })
               )
             end
           end
 
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
         end
       end
     end

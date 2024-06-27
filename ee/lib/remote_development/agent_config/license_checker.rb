@@ -6,12 +6,12 @@ module RemoteDevelopment
       include Messages
 
       # @param [Hash] context
-      # @return [Result]
+      # @return [Gitlab::Fp::Result]
       def self.check_license(context)
         if License.feature_available?(:remote_development)
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
         else
-          Result.err(LicenseCheckFailed.new)
+          Gitlab::Fp::Result.err(LicenseCheckFailed.new)
         end
       end
     end

@@ -9,7 +9,7 @@ module RemoteDevelopment
         RANDOM_STRING_LENGTH = 6
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.create(context)
           context => {
             current_user: User => user,
@@ -26,7 +26,7 @@ module RemoteDevelopment
           model_errors = nil
 
           updated_value = ApplicationRecord.transaction do
-            initial_result = Result.ok(context)
+            initial_result = Gitlab::Fp::Result.ok(context)
 
             result =
               initial_result
@@ -46,9 +46,9 @@ module RemoteDevelopment
             end
           end
 
-          return Result.err(WorkspaceCreateFailed.new({ errors: model_errors })) if model_errors.present?
+          return Gitlab::Fp::Result.err(WorkspaceCreateFailed.new({ errors: model_errors })) if model_errors.present?
 
-          Result.ok(WorkspaceCreateSuccessful.new(updated_value))
+          Gitlab::Fp::Result.ok(WorkspaceCreateSuccessful.new(updated_value))
         end
       end
     end

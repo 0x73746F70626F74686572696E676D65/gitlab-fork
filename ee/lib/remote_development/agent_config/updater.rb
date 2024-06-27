@@ -16,13 +16,13 @@ module RemoteDevelopment
       MAX_RESOURCES_PER_WORKSPACE_DEFAULT = {}.freeze
 
       # @param [Hash] context
-      # @return [Result]
+      # @return [Gitlab::Fp::Result]
       def self.update(context)
         context => { agent: Clusters::Agent => agent, config: Hash => config }
         config_from_agent_config_file = config[:remote_development]
 
         unless config_from_agent_config_file
-          return Result.ok(
+          return Gitlab::Fp::Result.ok(
             AgentConfigUpdateSkippedBecauseNoConfigFileEntryFound.new({ skipped_reason: :no_config_file_entry_found })
           )
         end
@@ -61,13 +61,15 @@ module RemoteDevelopment
           end
         end
 
-        return Result.err(AgentConfigUpdateFailed.new({ errors: model_errors })) if model_errors.present?
+        return Gitlab::Fp::Result.err(AgentConfigUpdateFailed.new({ errors: model_errors })) if model_errors.present?
 
         if workspaces_update_all_error
-          return Result.err(AgentConfigUpdateFailed.new({ details: workspaces_update_all_error }))
+          return Gitlab::Fp::Result.err(AgentConfigUpdateFailed.new({ details: workspaces_update_all_error }))
         end
 
-        Result.ok(AgentConfigUpdateSuccessful.new({ remote_development_agent_config: remote_development_agent_config }))
+        Gitlab::Fp::Result.ok(
+          AgentConfigUpdateSuccessful.new({ remote_development_agent_config: remote_development_agent_config })
+        )
       end
 
       # @param [Clusters::Agent] agent

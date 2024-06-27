@@ -12,7 +12,7 @@ module RemoteDevelopment
       # @return [Hash]
       # @raise [UnmatchedResultError]
       def self.main(context)
-        initial_result = Result.ok(context)
+        initial_result = Gitlab::Fp::Result.ok(context)
         result =
           initial_result
             # NOTE: We rely on the authentication from the internal kubernetes endpoint and kas so we don't do any

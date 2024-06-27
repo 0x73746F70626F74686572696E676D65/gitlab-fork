@@ -10,7 +10,7 @@ module RemoteDevelopment
         #       but that naming causes errors due to conflicts with `Kernel#load`.
         #
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.fetch(context)
           context => { params: Hash => params }
           params => {
@@ -21,7 +21,7 @@ module RemoteDevelopment
           }
 
           unless agent.remote_development_agent_config
-            return Result.err(WorkspaceCreateParamsValidationFailed.new(
+            return Gitlab::Fp::Result.err(WorkspaceCreateParamsValidationFailed.new(
               details: "No RemoteDevelopmentAgentConfig found for agent '#{agent.name}'"
             ))
           end
@@ -31,7 +31,7 @@ module RemoteDevelopment
           devfile_blob = repository.blob_at_branch(devfile_ref, devfile_path)
 
           unless devfile_blob
-            return Result.err(WorkspaceCreateDevfileLoadFailed.new(
+            return Gitlab::Fp::Result.err(WorkspaceCreateDevfileLoadFailed.new(
               details: "Devfile path '#{devfile_path}' at ref '#{devfile_ref}' does not exist in project repository"
             ))
           end
@@ -39,19 +39,21 @@ module RemoteDevelopment
           devfile_yaml = devfile_blob.data
 
           unless devfile_yaml.present?
-            return Result.err(WorkspaceCreateDevfileLoadFailed.new(details: "Devfile could not be loaded from project"))
+            return Gitlab::Fp::Result.err(
+              WorkspaceCreateDevfileLoadFailed.new(details: "Devfile could not be loaded from project")
+            )
           end
 
           begin
             # convert YAML to JSON to remove YAML vulnerabilities
             devfile = YAML.safe_load(YAML.safe_load(devfile_yaml).to_json)
           rescue RuntimeError, JSON::GeneratorError => e
-            return Result.err(WorkspaceCreateDevfileYamlParseFailed.new(
+            return Gitlab::Fp::Result.err(WorkspaceCreateDevfileYamlParseFailed.new(
               details: "Devfile YAML could not be parsed: #{e.message}"
             ))
           end
 
-          Result.ok(context.merge({
+          Gitlab::Fp::Result.ok(context.merge({
             # NOTE: The devfile_yaml should only be used for storing it in the database and not in any other
             #       subsequent step in the chain.
             devfile_yaml: devfile_yaml,
