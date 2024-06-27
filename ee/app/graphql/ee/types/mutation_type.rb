@@ -208,6 +208,8 @@ module EE
           alpha: { milestone: '17.2' }
         mount_mutation ::Mutations::AuditEvents::Instance::NamespaceFilters::Delete,
           alpha: { milestone: '17.2' }
+        mount_mutation ::Mutations::Ai::SelfHostedModels::Update,
+          alpha: { milestone: '17.2' }
 
         prepend(Types::DeprecatedMutations)
       end

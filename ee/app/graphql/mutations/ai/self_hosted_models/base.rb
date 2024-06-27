@@ -8,7 +8,7 @@ module Mutations
         field :self_hosted_model,
           Types::Ai::SelfHostedModels::SelfHostedModelType,
           null: true,
-          description: 'Created self-hosted model.'
+          description: 'Self-hosted model after mutation.'
 
         private
 
