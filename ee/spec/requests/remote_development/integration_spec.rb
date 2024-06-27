@@ -200,7 +200,7 @@ RSpec.describe "Full workspaces integration request spec", :freeze_time, feature
     )
     agent_token_headers = {
       "Authorization" => "Bearer #{agent_token.token}",
-      Gitlab::Kas::INTERNAL_API_REQUEST_HEADER => jwt_token
+      Gitlab::Kas::INTERNAL_API_KAS_REQUEST_HEADER => jwt_token
     }
 
     post_params = {
