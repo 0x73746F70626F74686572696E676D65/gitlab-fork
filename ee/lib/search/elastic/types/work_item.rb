@@ -22,6 +22,7 @@ module Search
               title: { type: 'text', index_options: 'positions', analyzer: :title_analyzer },
               description: { type: 'text', index_options: 'positions', analyzer: :code_analyzer },
               namespace_id: { type: 'integer' },
+              root_namespace_id: { type: 'integer' },
               created_at: { type: 'date' },
               updated_at: { type: 'date' },
               due_date: { type: 'date' },
