@@ -851,7 +851,6 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
       let(:results) { described_class.new(user, 'foo', project_ids, filters: filters) }
 
       before do
-        set_elasticsearch_migration_to(:backfill_archived_on_merge_requests, including: true)
         ensure_elasticsearch_index!
       end
 

@@ -78,7 +78,6 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     let(:scope) { 'merge_requests' }
 
     before do
-      set_elasticsearch_migration_to(:backfill_archived_on_merge_requests, including: true)
       ensure_elasticsearch_index!
     end
 
