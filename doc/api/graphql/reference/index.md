@@ -17708,8 +17708,11 @@ four standard [pagination arguments](#pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="cicatalogresourcecomponentinputdefault"></a>`default` | [`String`](#string) | Default value for the input. |
+| <a id="cicatalogresourcecomponentinputdescription"></a>`description` | [`String`](#string) | Description of the input. |
 | <a id="cicatalogresourcecomponentinputname"></a>`name` | [`String`](#string) | Name of the input. |
+| <a id="cicatalogresourcecomponentinputregex"></a>`regex` | [`String`](#string) | Pattern that the input value must match. Only applicable to string inputs. |
 | <a id="cicatalogresourcecomponentinputrequired"></a>`required` | [`Boolean`](#boolean) | Indicates if an input is required. |
+| <a id="cicatalogresourcecomponentinputtype"></a>`type` | [`CiCatalogResourceComponentInputType`](#cicatalogresourcecomponentinputtype) | Type of the input. |
 
 ### `CiCatalogResourceVersion`
 
@@ -33396,6 +33399,17 @@ Status of a merge train's car.
 | <a id="carstatusmerging"></a>`MERGING` | Car's status: merging. |
 | <a id="carstatusskip_merged"></a>`SKIP_MERGED` | Car's status: skip_merged. |
 | <a id="carstatusstale"></a>`STALE` | Car's status: stale. |
+
+### `CiCatalogResourceComponentInputType`
+
+Available input types.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="cicatalogresourcecomponentinputtypearray"></a>`ARRAY` | Array input. |
+| <a id="cicatalogresourcecomponentinputtypeboolean"></a>`BOOLEAN` | Boolean input. |
+| <a id="cicatalogresourcecomponentinputtypenumber"></a>`NUMBER` | Number input. |
+| <a id="cicatalogresourcecomponentinputtypestring"></a>`STRING` | String input. |
 
 ### `CiCatalogResourceScope`
 
