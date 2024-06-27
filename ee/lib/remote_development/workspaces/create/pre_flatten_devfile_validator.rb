@@ -10,15 +10,15 @@ module RemoteDevelopment
         REQUIRED_DEVFILE_SCHEMA_VERSION = '2.2.0'
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.validate(context)
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
                 .and_then(method(:validate_schema_version))
                 .and_then(method(:validate_parent))
         end
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.validate_schema_version(context)
           context => { devfile: Hash => devfile }
 
@@ -42,23 +42,23 @@ module RemoteDevelopment
             )
           end
 
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
         end
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.validate_parent(context)
           context => { devfile: Hash => devfile }
 
           return err(_("Inheriting from 'parent' is not yet supported")) if devfile['parent']
 
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
         end
 
         # @param [String] details
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.err(details)
-          Result.err(WorkspaceCreatePreFlattenDevfileValidationFailed.new({ details: details }))
+          Gitlab::Fp::Result.err(WorkspaceCreatePreFlattenDevfileValidationFailed.new({ details: details }))
         end
         private_class_method :validate_schema_version, :validate_parent, :err
       end

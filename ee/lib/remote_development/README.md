@@ -245,7 +245,7 @@ This may be useful in the future for the Remote Development feature, as operatio
 ### Error Handling
 
 The domain logic of the Remote Development feature is based on the
-["Railway Oriented Programming"](https://fsharpforfunandprofit.com/rop/) pattern, through the usage of a standard [`Result` class](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/result.rb) as found in many programming languages (ours is based on the [Rust implementation](https://doc.rust-lang.org/std/result/index.html)).
+["Railway Oriented Programming"](https://fsharpforfunandprofit.com/rop/) pattern, through the usage of a standard [`Result` class](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/fp/result.rb) as found in many programming languages (ours is based on the [Rust implementation](https://doc.rust-lang.org/std/result/index.html)).
 
 This Railway Oriented Programming pattern allows us to keep the business logic decoupled from logging, error handling, and tracking/observability concerns, and chain these cohesive business logic operations together in a decoupled way.
 
@@ -295,7 +295,7 @@ This pattern is also explored further in the book [Domain Modeling Made Function
 
 ### Result class
 
-To support this pattern, we have created a standard, reusable [`Result` class](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/result.rb).
+To support this pattern, we have created a standard, reusable [`Result` class](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/fp/result.rb).
 
 This is a very common pattern in many languages, and our `Result` class naming and usage is based on a subset of the [Rust implementation](https://doc.rust-lang.org/std/result/index.html). It's actually a monad, but you don't have to know anything about that word in order to use it. It's [definitely _not_ a burrito](https://www.google.com/search?q=monads+are+not+burritos).
 
@@ -418,7 +418,7 @@ Note that the `Main` class also has no domain logic in it itself other than invo
 ```ruby
 class Main
   def self.main(context)
-    initial_result = Result.ok(context)
+    initial_result = Gitlab::Fp::Result.ok(context)
     result =
       initial_result
         .and_then(Authorizer.method(:authorize))
@@ -447,9 +447,9 @@ class Updater
   def self.update(context)
     context => { workspace: RemoteDevelopment::Workspace => workspace, params: Hash => params }
     if workspace.update(params)
-      Result.ok(WorkspaceUpdateSuccessful.new({ workspace: workspace }))
+      Gitlab::Fp::Result.ok(WorkspaceUpdateSuccessful.new({ workspace: workspace }))
     else
-      Result.err(WorkspaceUpdateFailed.new({ errors: workspace.errors }))
+      Gitlab::Fp::Result.err(WorkspaceUpdateFailed.new({ errors: workspace.errors }))
     end
   end
 end

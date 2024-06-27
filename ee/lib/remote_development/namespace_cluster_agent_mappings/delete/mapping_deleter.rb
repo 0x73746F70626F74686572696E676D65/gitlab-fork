@@ -7,7 +7,7 @@ module RemoteDevelopment
         include Messages
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.delete(context)
           context => {
             namespace: Namespace => namespace,
@@ -19,9 +19,9 @@ module RemoteDevelopment
             cluster_agent_id: cluster_agent.id
           )
 
-          return Result.err(NamespaceClusterAgentMappingNotFound.new) if delete_count == 0
+          return Gitlab::Fp::Result.err(NamespaceClusterAgentMappingNotFound.new) if delete_count == 0
 
-          Result.ok(NamespaceClusterAgentMappingDeleteSuccessful.new({}))
+          Gitlab::Fp::Result.ok(NamespaceClusterAgentMappingDeleteSuccessful.new({}))
         end
       end
     end

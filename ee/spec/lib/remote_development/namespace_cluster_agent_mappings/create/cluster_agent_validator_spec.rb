@@ -18,7 +18,7 @@ RSpec.describe RemoteDevelopment::NamespaceClusterAgentMappings::Create::Cluster
     let_it_be(:namespace) { cluster_agent.project.group }
 
     it 'returns an ok Result containing the original values that were passed' do
-      expect(result).to eq(Result.ok(context))
+      expect(result).to eq(Gitlab::Fp::Result.ok(context))
     end
   end
 

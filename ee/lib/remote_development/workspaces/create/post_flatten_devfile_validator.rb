@@ -25,9 +25,9 @@ module RemoteDevelopment
         SUPPORTED_EVENTS = %w[preStart].freeze
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.validate(context)
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
                 .and_then(method(:validate_projects))
                 .and_then(method(:validate_components))
                 .and_then(method(:validate_containers))
@@ -38,18 +38,18 @@ module RemoteDevelopment
         end
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.validate_projects(context)
           context => { processed_devfile: Hash => processed_devfile }
 
           return err(_("'starterProjects' is not yet supported")) if processed_devfile['starterProjects']
           return err(_("'projects' is not yet supported")) if processed_devfile['projects']
 
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
         end
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.validate_components(context)
           context => { processed_devfile: Hash => processed_devfile }
 
@@ -93,11 +93,11 @@ module RemoteDevelopment
             end
           end
 
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
         end
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.validate_containers(context)
           context => { processed_devfile: Hash => processed_devfile }
 
@@ -117,11 +117,11 @@ module RemoteDevelopment
             end
           end
 
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
         end
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.validate_endpoints(context)
           context => { processed_devfile: Hash => processed_devfile }
 
@@ -150,16 +150,16 @@ module RemoteDevelopment
 
           return err_result if err_result
 
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
         end
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.validate_commands(context)
           context => { processed_devfile: Hash => processed_devfile }
 
           commands = processed_devfile['commands']
-          return Result.ok(context) if commands.nil?
+          return Gitlab::Fp::Result.ok(context) if commands.nil?
 
           # Ensure no command name starts with restricted_prefix
           commands.each do |command|
@@ -193,16 +193,16 @@ module RemoteDevelopment
             end
           end
 
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
         end
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.validate_events(context)
           context => { processed_devfile: Hash => processed_devfile }
 
           events = processed_devfile['events']
-          return Result.ok(context) if events.nil?
+          return Gitlab::Fp::Result.ok(context) if events.nil?
 
           events.each do |event_type, event_type_events|
             # Ensure no event type other than "preStart" are allowed
@@ -226,16 +226,16 @@ module RemoteDevelopment
             end
           end
 
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
         end
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.validate_variables(context)
           context => { processed_devfile: Hash => processed_devfile }
 
           variables = processed_devfile['variables']
-          return Result.ok(context) if variables.nil?
+          return Gitlab::Fp::Result.ok(context) if variables.nil?
 
           restricted_prefix_underscore = RESTRICTED_PREFIX.tr("-", "_")
 
@@ -254,13 +254,13 @@ module RemoteDevelopment
             end
           end
 
-          Result.ok(context)
+          Gitlab::Fp::Result.ok(context)
         end
 
         # @param [String] details
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.err(details)
-          Result.err(WorkspaceCreatePostFlattenDevfileValidationFailed.new({ details: details }))
+          Gitlab::Fp::Result.err(WorkspaceCreatePostFlattenDevfileValidationFailed.new({ details: details }))
         end
         private_class_method :validate_projects, :validate_components, :validate_containers,
           :validate_endpoints, :validate_commands, :validate_events,

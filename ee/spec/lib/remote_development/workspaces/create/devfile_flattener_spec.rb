@@ -16,7 +16,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, :rd_fast
 
   it "merges flattened devfile to passed context" do
     expect(result).to eq(
-      Result.ok(
+      Gitlab::Fp::Result.ok(
         {
           devfile: devfile,
           processed_devfile: expected_processed_devfile
@@ -33,7 +33,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileFlattener, :rd_fast
 
     it "adds an empty components entry" do
       expect(result).to eq(
-        Result.ok(
+        Gitlab::Fp::Result.ok(
           {
             devfile: devfile,
             processed_devfile: expected_processed_devfile

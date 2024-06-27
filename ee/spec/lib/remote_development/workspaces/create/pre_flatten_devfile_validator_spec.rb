@@ -18,7 +18,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::PreFlattenDevfileValidat
   context 'for devfiles containing no violations' do
     it 'returns an ok Result containing the original context' do
       expect(result).to eq(
-        Result.ok({
+        Gitlab::Fp::Result.ok({
           devfile: devfile
         })
       )

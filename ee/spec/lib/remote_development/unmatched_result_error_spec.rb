@@ -11,7 +11,7 @@ RSpec.describe RemoteDevelopment::UnmatchedResultError, :rd_fast, feature_catego
       expected_msg = "Failed to pattern match 'ok' Result containing message of type: UnmatchedMessage"
 
       expect do
-        raise described_class.new(result: Result.ok(unmatched_message))
+        raise described_class.new(result: Gitlab::Fp::Result.ok(unmatched_message))
       end.to raise_error(described_class, expected_msg)
     end
   end
@@ -21,7 +21,7 @@ RSpec.describe RemoteDevelopment::UnmatchedResultError, :rd_fast, feature_catego
       expected_msg = "Failed to pattern match 'err' Result containing message of type: UnmatchedMessage"
 
       expect do
-        raise described_class.new(result: Result.err(unmatched_message))
+        raise described_class.new(result: Gitlab::Fp::Result.err(unmatched_message))
       end.to raise_error(described_class, expected_msg)
     end
   end

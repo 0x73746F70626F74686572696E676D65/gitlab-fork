@@ -10,7 +10,7 @@ module RemoteDevelopment
         WORKSPACE_PORT = 60001
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.create(context)
           context => {
             devfile_yaml: String => devfile_yaml,
@@ -65,12 +65,12 @@ module RemoteDevelopment
           workspace.save
 
           if workspace.errors.present?
-            return Result.err(
+            return Gitlab::Fp::Result.err(
               WorkspaceModelCreateFailed.new({ errors: workspace.errors })
             )
           end
 
-          Result.ok(
+          Gitlab::Fp::Result.ok(
             context.merge({
               workspace: workspace
             })

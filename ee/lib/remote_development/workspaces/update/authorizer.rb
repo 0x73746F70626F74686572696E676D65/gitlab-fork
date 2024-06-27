@@ -7,14 +7,14 @@ module RemoteDevelopment
         include Messages
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.authorize(context)
           context => { workspace: RemoteDevelopment::Workspace => workspace, current_user: User => current_user }
 
           if current_user.can?(:update_workspace, workspace)
-            Result.ok(context)
+            Gitlab::Fp::Result.ok(context)
           else
-            Result.err(Unauthorized.new)
+            Gitlab::Fp::Result.err(Unauthorized.new)
           end
         end
       end

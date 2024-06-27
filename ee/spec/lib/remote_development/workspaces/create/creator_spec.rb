@@ -47,7 +47,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
 
   describe "happy path" do
     let(:expected_response) do
-      Result.ok(RemoteDevelopment::Messages::WorkspaceCreateSuccessful.new(updated_value))
+      Gitlab::Fp::Result.ok(RemoteDevelopment::Messages::WorkspaceCreateSuccessful.new(updated_value))
     end
 
     it "returns expected response" do
@@ -89,7 +89,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
             step_class: RemoteDevelopment::Workspaces::Create::PersonalAccessTokenCreator,
             returned_message: lazy { Messages::PersonalAccessTokenModelCreateFailed.new(err_message_content) }
           },
-          lazy { Result.err(Messages::WorkspaceCreateFailed.new(err_message_content)) }
+          lazy { Gitlab::Fp::Result.err(Messages::WorkspaceCreateFailed.new(err_message_content)) }
         ],
         [
           "when WorkspaceCreator returns WorkspaceModelCreateFailed",
@@ -97,7 +97,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
             step_class: RemoteDevelopment::Workspaces::Create::WorkspaceCreator,
             returned_message: lazy { Messages::WorkspaceModelCreateFailed.new(err_message_content) }
           },
-          lazy { Result.err(Messages::WorkspaceCreateFailed.new(err_message_content)) }
+          lazy { Gitlab::Fp::Result.err(Messages::WorkspaceCreateFailed.new(err_message_content)) }
         ],
         [
           "when WorkspaceVariablesCreator returns WorkspaceVariablesModelCreateFailed",
@@ -105,7 +105,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::Creator, feature_categor
             step_class: RemoteDevelopment::Workspaces::Create::WorkspaceVariablesCreator,
             returned_message: lazy { Messages::WorkspaceVariablesModelCreateFailed.new(err_message_content) }
           },
-          lazy { Result.err(Messages::WorkspaceCreateFailed.new(err_message_content)) }
+          lazy { Gitlab::Fp::Result.err(Messages::WorkspaceCreateFailed.new(err_message_content)) }
         ],
       ]
     end

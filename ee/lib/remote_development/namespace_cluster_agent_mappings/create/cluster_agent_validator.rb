@@ -7,16 +7,18 @@ module RemoteDevelopment
         include Messages
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.validate(context)
           context => {
             namespace: Namespace => namespace,
             cluster_agent: Clusters::Agent => cluster_agent,
           }
 
-          return Result.ok(context) unless cluster_agent.project.project_namespace.traversal_ids.exclude?(namespace.id)
+          unless cluster_agent.project.project_namespace.traversal_ids.exclude?(namespace.id)
+            return Gitlab::Fp::Result.ok(context)
+          end
 
-          Result.err(NamespaceClusterAgentMappingCreateValidationFailed.new({
+          Gitlab::Fp::Result.err(NamespaceClusterAgentMappingCreateValidationFailed.new({
             details: "Cluster Agent's project must be nested within the namespace"
           }))
         end

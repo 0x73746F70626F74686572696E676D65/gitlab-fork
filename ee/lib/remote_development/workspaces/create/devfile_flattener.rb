@@ -7,14 +7,14 @@ module RemoteDevelopment
         include Messages
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.flatten(context)
           context => { devfile: Hash => devfile }
 
           begin
             flattened_devfile_yaml = Devfile::Parser.flatten(YAML.dump(devfile))
           rescue Devfile::CliError => e
-            return Result.err(WorkspaceCreateDevfileFlattenFailed.new(details: e.message))
+            return Gitlab::Fp::Result.err(WorkspaceCreateDevfileFlattenFailed.new(details: e.message))
           end
 
           # NOTE: We do not attempt to rescue any exceptions from YAML.safe_load here because we assume that the
@@ -25,7 +25,7 @@ module RemoteDevelopment
 
           processed_devfile['components'] ||= []
 
-          Result.ok(context.merge(processed_devfile: processed_devfile))
+          Gitlab::Fp::Result.ok(context.merge(processed_devfile: processed_devfile))
         end
       end
     end

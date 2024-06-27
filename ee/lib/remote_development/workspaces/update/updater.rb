@@ -8,7 +8,7 @@ module RemoteDevelopment
         include States
 
         # @param [Hash] context
-        # @return [Result]
+        # @return [Gitlab::Fp::Result]
         def self.update(context)
           context => { workspace: RemoteDevelopment::Workspace => workspace, params: Hash => params }
           model_errors = nil
@@ -29,9 +29,9 @@ module RemoteDevelopment
             end
           end
 
-          return Result.err(WorkspaceUpdateFailed.new({ errors: model_errors })) if model_errors.present?
+          return Gitlab::Fp::Result.err(WorkspaceUpdateFailed.new({ errors: model_errors })) if model_errors.present?
 
-          Result.ok(WorkspaceUpdateSuccessful.new({ workspace: workspace }))
+          Gitlab::Fp::Result.ok(WorkspaceUpdateSuccessful.new({ workspace: workspace }))
         end
       end
     end
