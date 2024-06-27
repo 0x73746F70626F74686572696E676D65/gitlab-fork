@@ -33,7 +33,10 @@ module Security
 
         def assign_default_stage(job_names)
           job_names.each do |name|
-            @ci_config[name][:stage] = '.pipeline-policy-test' unless @ci_config[name].key?(:stage)
+            unless @ci_config[name].key?(:stage)
+              @ci_config[name][:stage] =
+                ::Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor::DEFAULT_POLICY_TEST_STAGE
+            end
           end
         end
 
