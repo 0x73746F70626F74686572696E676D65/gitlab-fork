@@ -35,10 +35,7 @@ module Elastic
         # Use target.hidden? once the FF hide_merge_requests_from_banned_users is fully rolled out
         # https://gitlab.com/gitlab-org/gitlab/-/issues/410671
         data['hidden'] = target.author&.banned?
-
-        if ::Elastic::DataMigrationService.migration_has_finished?(:add_archived_to_merge_requests)
-          data['archived'] = target.project.archived?
-        end
+        data['archived'] = target.project.archived?
 
         # Schema version. The format is Date.today.strftime('%y_%m')
         # Please update if you're changing the schema of the document
