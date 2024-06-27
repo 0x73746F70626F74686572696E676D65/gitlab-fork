@@ -124,7 +124,6 @@ export default {
       stacked="md"
       :sort-by="sort.sortBy"
       :sort-desc="sort.sortDesc"
-      no-sort-reset
       no-local-sorting
       table-class="gl-table-layout-fixed"
       @sort-changed="$emit('sort-changed', $event)"
