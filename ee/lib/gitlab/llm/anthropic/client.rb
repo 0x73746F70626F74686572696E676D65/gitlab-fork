@@ -58,6 +58,24 @@ module Gitlab
         end
         traceable :stream, name: 'Request to Anthropic', run_type: 'llm'
 
+        def messages_complete(messages:, **options)
+          return unless enabled?
+
+          # We do not allow to set `stream` because the separate `#stream` method should be used for streaming.
+          # The reason is that streaming the response would not work with the exponential backoff mechanism.
+          response = retry_with_exponential_backoff do
+            perform_messages_request(messages: messages, options: options.except(:stream))
+          end
+
+          response_completion = response.dig('content', 0, 'text')
+          logger.info_or_debug(user, message: "Received response from Anthropic", response: response_completion)
+
+          track_prompt_size(token_size(messages))
+          track_response_size(token_size(response_completion))
+
+          response
+        end
+
         private
 
         attr_reader :user, :logger, :tracking_context, :unit_primitive
@@ -78,6 +96,24 @@ module Gitlab
               yield parsed_event if block_given?
             end
           end
+        end
+
+        def perform_messages_request(messages:, options:)
+          logger.info(message: "Performing request to Anthropic", options: options)
+          timeout = options.delete(:timeout) || DEFAULT_TIMEOUT
+
+          response = Gitlab::HTTP.post(
+            "#{url}/v1/messages",
+            headers: request_headers,
+            body: request_body_for_messages(messages: messages, options: options).to_json,
+            timeout: timeout,
+            allow_local_requests: true,
+            stream_body: options.fetch(:stream, false)
+          )
+
+          raise Gitlab::AiGateway::ForbiddenError if response.forbidden?
+
+          response
         end
 
         def enabled?
@@ -107,6 +143,15 @@ module Gitlab
             prompt: prompt,
             model: model,
             max_tokens_to_sample: DEFAULT_MAX_TOKENS,
+            temperature: DEFAULT_TEMPERATURE
+          }.merge(options)
+        end
+
+        def request_body_for_messages(messages:, options: {})
+          {
+            messages: messages,
+            model: model,
+            max_tokens: DEFAULT_MAX_TOKENS,
             temperature: DEFAULT_TEMPERATURE
           }.merge(options)
         end
