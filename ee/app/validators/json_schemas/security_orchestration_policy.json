@@ -64,9 +64,6 @@
                     "project": {
                       "type": "string"
                     },
-                    "id": {
-                      "type": "integer"
-                    },
                     "file": {
                       "type": "string"
                     },
