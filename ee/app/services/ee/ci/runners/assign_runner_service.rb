@@ -21,6 +21,8 @@ module EE
         AUDIT_MESSAGE = 'Assigned CI runner to project'
 
         def audit_event
+          return if quiet
+
           ::AuditEvents::RunnerCustomAuditEventService.new(runner, user, project, AUDIT_MESSAGE).track_event
         end
       end

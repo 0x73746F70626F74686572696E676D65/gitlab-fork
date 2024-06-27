@@ -23,12 +23,12 @@ RSpec.describe ::Ci::Runners::SetRunnerAssociatedProjectsService, '#execute', fe
       expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
 
       expect(execute).to be_error
-      expect(execute.http_status).to eq :forbidden
+      expect(execute.reason).to eq :not_authorized_to_assign_runner
     end
   end
 
   context 'with admin user', :enable_admin_mode do
-    let(:user) { create_default(:user, :admin) }
+    let_it_be(:user) { create(:user, :admin) }
 
     context 'with assign_to returning true' do
       it 'calls audit on Auditor and returns success response', :aggregate_failures do
@@ -69,6 +69,7 @@ RSpec.describe ::Ci::Runners::SetRunnerAssociatedProjectsService, '#execute', fe
         expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
 
         expect(execute).to be_error
+        expect(execute.reason).to eq :runner_error
       end
     end
   end
