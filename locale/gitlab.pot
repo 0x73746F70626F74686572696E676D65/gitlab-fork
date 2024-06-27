@@ -36027,6 +36027,9 @@ msgstr ""
 msgid "Observability|Enable"
 msgstr ""
 
+msgid "Observability|Enable tracing, metrics, or logs on your project."
+msgstr ""
+
 msgid "Observability|Error: Failed to enable GitLab Observability. Please retry later."
 msgstr ""
 
@@ -36073,6 +36076,15 @@ msgid "Observability|Sorry, your filter produced no results"
 msgstr ""
 
 msgid "Observability|To widen your search, change or remove filters above"
+msgstr ""
+
+msgid "Observability|Tracing, Metrics & Logs"
+msgstr ""
+
+msgid "Observability|View our %{docsLink} for further instructions on how to use these features."
+msgstr ""
+
+msgid "Observability|documentation"
 msgstr ""
 
 msgid "Oct"
