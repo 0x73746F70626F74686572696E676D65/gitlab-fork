@@ -12,11 +12,11 @@ import {
   I18N_WORK_ITEM_ERROR_UPDATING,
   sprintfWorkItem,
   TRACKING_CATEGORY_SHOW,
-  NEW_WORK_ITEM_GID,
 } from '~/work_items/constants';
 import WorkItemSidebarDropdownWidget from '~/work_items/components/shared/work_item_sidebar_dropdown_widget.vue';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import updateNewWorkItemMutation from '~/work_items/graphql/update_new_work_item.mutation.graphql';
+import { newWorkItemId } from '~/work_items/utils';
 import Tracking from '~/tracking';
 
 export default {
@@ -93,7 +93,7 @@ export default {
 
       this.updateInProgress = true;
 
-      if (this.workItemId === NEW_WORK_ITEM_GID) {
+      if (this.workItemId === newWorkItemId(this.workItemType)) {
         this.$apollo.mutate({
           mutation: updateNewWorkItemMutation,
           variables: {
@@ -101,6 +101,7 @@ export default {
               isGroup: this.isGroup,
               fullPath: this.fullPath,
               healthStatus,
+              workItemType: this.workItemType,
             },
           },
         });
