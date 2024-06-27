@@ -38,8 +38,20 @@ RSpec.describe MergeRequestPollWidgetEntity, feature_category: :merge_trains do
 
       it 'returns available auto merge strategies' do
         expect(entity[:available_auto_merge_strategies]).to(
-          eq(%w[merge_when_checks_pass merge_when_pipeline_succeeds])
+          eq(%w[merge_when_checks_pass])
         )
+      end
+
+      context 'when merge_when_checks_pass is false' do
+        before do
+          stub_feature_flags(merge_when_checks_pass: false)
+        end
+
+        it 'returns available auto merge strategies' do
+          expect(entity[:available_auto_merge_strategies]).to(
+            eq(%w[merge_when_pipeline_succeeds])
+          )
+        end
       end
     end
 
