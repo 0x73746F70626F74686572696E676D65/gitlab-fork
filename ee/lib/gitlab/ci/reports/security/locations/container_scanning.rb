@@ -33,10 +33,13 @@ module Gitlab
               "#{docker_image_name_without_tag}:#{package_name}"
             end
 
+            def image_with_package_name
+              "#{docker_image_name_without_tag(image)}:#{package_name}"
+            end
+
             private
 
-            def docker_image_name_without_tag
-              image_name = prepare_image_name
+            def docker_image_name_without_tag(image_name = prepare_image_name)
               base_name, _, version = image_name.rpartition(':')
 
               return image_name if version_semver_like?(version)

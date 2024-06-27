@@ -9,6 +9,14 @@ module Gitlab
 
           private
 
+          def finding_name(data, identifiers, location)
+            return data['name'] if data['name'].present?
+
+            identifier = identifiers.find(&:cve?) || identifiers.find(&:cwe?) || identifiers.first
+
+            "#{identifier.name} in #{location.image_with_package_name}"
+          end
+
           def create_location(location_data)
             ::Gitlab::Ci::Reports::Security::Locations::ContainerScanning.new(
               image: location_data['image'],
