@@ -2,6 +2,8 @@
 
 module Gitlab
   module AiGateway
+    ForbiddenError = Class.new(StandardError)
+
     def self.url
       ENV['AI_GATEWAY_URL'] || "#{::CloudConnector::Config.base_url}/ai"
     end

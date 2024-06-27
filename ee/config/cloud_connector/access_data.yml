@@ -37,6 +37,7 @@ services: # Cloud connector features (i.e. code_suggestions, duo_chat...)
           - categorize_duo_chat_question
           - documentation_search
           - explain_vulnerability
+          - resolve_vulnerability
           - generate_issue_description
           - summarize_issue_discussions
   vertex_ai_proxy:
