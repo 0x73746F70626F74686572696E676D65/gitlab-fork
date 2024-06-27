@@ -139,26 +139,103 @@ RSpec.describe Geo::ProjectRepositoryRegistry, :geo, type: :model, feature_categ
                 end
               end
 
-              context 'when verification failed' do
-                it 'returns true' do
-                  registry = create(:geo_project_repository_registry, :verification_failed, project: project)
+              context 'when FF geo_relax_criteria_for_proxying_git_fetch is enabled' do
+                context 'when verification failed' do
+                  it 'returns true' do
+                    registry = create(:geo_project_repository_registry, :verification_failed, project: project)
 
-                  expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
-                    message: "out-of-date", reason: "not verified yet"))
+                    expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                      message: "out-of-date", reason: "verification failed"))
 
-                  expect(described_class.repository_out_of_date?(registry.project_id)).to be_truthy
+                    expect(described_class.repository_out_of_date?(registry.project_id)).to be_truthy
+                  end
+                end
+
+                context 'when verification pending' do
+                  it 'returns false' do
+                    registry = create(:geo_project_repository_registry, :synced, project: project,
+                      last_synced_at: Time.current + 5.minutes,
+                      verification_state: described_class.verification_state_value(:verification_pending))
+
+                    expect(described_class.repository_out_of_date?(registry.project_id)).to be_falsey
+                  end
+                end
+
+                context 'when verification started' do
+                  it 'returns false' do
+                    registry = create(:geo_project_repository_registry, :synced, project: project,
+                      last_synced_at: Time.current + 5.minutes,
+                      verification_state: described_class.verification_state_value(:verification_started))
+
+                    expect(described_class.repository_out_of_date?(registry.project_id)).to be_falsey
+                  end
+                end
+
+                context 'when verification succeeded' do
+                  it 'returns false' do
+                    registry = create(:geo_project_repository_registry, :verification_succeeded,
+                      project: project, last_synced_at: Time.current + 5.minutes)
+
+                    expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                      message: "up-to-date", reason: "last successfully synced after latest change"))
+
+                    expect(described_class.repository_out_of_date?(registry.project_id)).to be_falsey
+                  end
                 end
               end
 
-              context 'when verification succeeded' do
-                it 'returns false' do
-                  registry = create(:geo_project_repository_registry, :verification_succeeded,
-                    project: project, last_synced_at: Time.current + 5.minutes)
+              context 'when FF geo_relax_criteria_for_proxying_git_fetch is disabled' do
+                before do
+                  stub_feature_flags(geo_relax_criteria_for_proxying_git_fetch: false)
+                end
 
-                  expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
-                    message: "up-to-date", reason: "last successfully synced after latest change"))
+                context 'when verification failed' do
+                  it 'returns true' do
+                    registry = create(:geo_project_repository_registry, :verification_failed, project: project)
 
-                  expect(described_class.repository_out_of_date?(registry.project_id)).to be_falsey
+                    expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                      message: "out-of-date", reason: "not verified yet"))
+
+                    expect(described_class.repository_out_of_date?(registry.project_id)).to be_truthy
+                  end
+                end
+
+                context 'when verification pending' do
+                  it 'returns true' do
+                    registry = create(:geo_project_repository_registry, :synced, project: project,
+                      last_synced_at: Time.current + 5.minutes,
+                      verification_state: described_class.verification_state_value(:verification_pending))
+
+                    expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                      message: "out-of-date", reason: "not verified yet"))
+
+                    expect(described_class.repository_out_of_date?(registry.project_id)).to be_truthy
+                  end
+                end
+
+                context 'when verification started' do
+                  it 'returns true' do
+                    registry = create(:geo_project_repository_registry, :synced, project: project,
+                      last_synced_at: Time.current + 5.minutes,
+                      verification_state: described_class.verification_state_value(:verification_started))
+
+                    expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                      message: "out-of-date", reason: "not verified yet"))
+
+                    expect(described_class.repository_out_of_date?(registry.project_id)).to be_truthy
+                  end
+                end
+
+                context 'when verification succeeded' do
+                  it 'returns false' do
+                    registry = create(:geo_project_repository_registry, :verification_succeeded,
+                      project: project, last_synced_at: Time.current + 5.minutes)
+
+                    expect(Gitlab::Geo::Logger).to receive(:info).with(hash_including(
+                      message: "up-to-date", reason: "last successfully synced after latest change"))
+
+                    expect(described_class.repository_out_of_date?(registry.project_id)).to be_falsey
+                  end
                 end
               end
 
