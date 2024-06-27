@@ -121,6 +121,7 @@ module EE
       has_many :resource_weight_events
 
       has_one :synced_epic, class_name: 'Epic', foreign_key: 'issue_id', inverse_of: :work_item
+      alias_method :sync_object, :synced_epic
 
       validates :weight, allow_nil: true, numericality: { greater_than_or_equal_to: 0 }
       validate :validate_confidential_epic

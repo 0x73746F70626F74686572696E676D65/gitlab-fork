@@ -191,13 +191,25 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
   end
 
   context 'when requesting awardEmoji' do
-    let_it_be(:epic) { create(:epic, group: group) }
-    let_it_be(:award_emoji) { create(:award_emoji, awardable: epic, user: user) }
+    let_it_be(:epic) do
+      create(:epic, group: group) do |epic|
+        create(:award_emoji, name: 'rocket', awardable: epic)
+        create(:award_emoji, name: 'eyes', awardable: epic.sync_object)
+        create(:award_emoji, name: 'thumbsup', awardable: epic)
+        create(:award_emoji, name: 'thumbsup', awardable: epic.sync_object)
+        create(:award_emoji, name: 'thumbsdown', awardable: epic)
+        create(:award_emoji, name: 'thumbsdown', awardable: epic)
+        create(:award_emoji, name: 'thumbsdown', awardable: epic.sync_object)
+      end
+    end
+
     let_it_be(:query) do
       <<-GQL
       query {
         group(fullPath: "#{group.full_path}") {
           epic(iid: #{epic.iid}) {
+            upvotes
+            downvotes
             awardEmoji {
               nodes {
                 user {
@@ -212,14 +224,25 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
       GQL
     end
 
-    it 'includes award emojis' do
+    it 'includes unified award emojis with sync work item' do
       post_graphql(query, current_user: user)
 
       response = graphql_data_at(:group, :epic, :award_emoji, :nodes)
 
-      expect(response.length).to eq(1)
-      expect(response.first['user']['username']).to eq(user.username)
-      expect(response.first['name']).to eq(award_emoji.name)
+      expect(response.length).to eq(7)
+      expect(response.map do |emoji|
+               emoji['user']['username']
+             end.uniq).to match_array(epic.award_emoji.map(&:user).map(&:username).uniq)
+      expect(response.pluck('name').uniq).to match_array(%w[eyes rocket thumbsup thumbsdown])
+    end
+
+    it 'includes unified upvotes and downvotes' do
+      post_graphql(query, current_user: user)
+
+      response = graphql_data_at(:group, :epic)
+
+      expect(response['upvotes']).to eq(2)
+      expect(response['downvotes']).to eq(3)
     end
   end
 
@@ -243,14 +266,18 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
     end
 
     context 'when requesting `award_emoji`' do
-      let(:requested_fields) { 'awardEmoji { nodes { name } }' }
+      let(:requested_fields) { 'upvotes downvotes awardEmoji { nodes { name } }' }
 
       before do
         create(:award_emoji, awardable: epic_a, user: user)
         create(:award_emoji, awardable: epic_b, user: user)
+        create(:award_emoji, name: 'thumbsup', awardable: epic_a)
+        create(:award_emoji, name: 'thumbsup', awardable: epic_a.sync_object)
+        create(:award_emoji, name: 'thumbsup', awardable: epic_b)
+        create(:award_emoji, name: 'thumbsdown', awardable: epic_b.sync_object)
       end
 
-      include_examples 'N+1 query check'
+      include_examples 'N+1 query check', threshold: 1
 
       it 'N+1 query test contains data' do
         execute_query

@@ -31,7 +31,7 @@ module EE
 
       condition(:can_edit_synced_epic_work_item, scope: :subject) do
         next true unless @subject.work_item_type&.epic?
-        next true unless @subject.synced_epic.present?
+        next true unless @subject.sync_object.present?
 
         scope = group_issue? ? subject_container : subject_container.group
 
