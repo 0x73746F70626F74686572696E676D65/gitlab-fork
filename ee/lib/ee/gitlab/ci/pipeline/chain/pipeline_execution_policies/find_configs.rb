@@ -26,6 +26,7 @@ module EE
               def perform!
                 return if ::Feature.disabled?(:pipeline_execution_policy_type, project.group)
                 return if command.execution_policy_mode?
+                return if pipeline.dangling?
                 return if pipeline_execution_policy_contents.empty?
 
                 command.execution_policy_pipelines = []
@@ -57,7 +58,7 @@ module EE
               def create_pipeline(content)
                 ::Ci::CreatePipelineService
                   .new(command.project, command.current_user, ref: command.ref)
-                  .execute(:security_orchestration_policy,
+                  .execute(command.source,
                     execution_policy_dry_run: true,
                     content: content,
                     merge_request: command.merge_request, # This is for supporting merge request pipelines
