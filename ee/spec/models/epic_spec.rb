@@ -23,6 +23,84 @@ RSpec.describe Epic, feature_category: :portfolio_management do
     it { is_expected.to have_many(:user_mentions).class_name('EpicUserMention') }
     it { is_expected.to have_many(:boards_epic_user_preferences).class_name('Boards::EpicUserPreference').inverse_of(:epic) }
     it { is_expected.to have_many(:epic_board_positions).class_name('Boards::EpicBoardPosition').inverse_of(:epic) }
+
+    context 'award_emoji' do
+      let_it_be_with_refind(:epic) { create(:epic) }
+      let_it_be_with_refind(:work_item) { epic.work_item }
+      let_it_be(:emoji_1) { create(:award_emoji, :upvote, awardable: work_item, user: create(:user)) }
+      let_it_be(:emoji_2) { create(:award_emoji, :downvote, awardable: epic, user: create(:user)) }
+
+      it 'returns union of award emoji from epic and its associated work item', :aggregate_failures do
+        expect(epic.award_emoji.pluck(:name)).to match_array(%w[thumbsup thumbsdown])
+        expect(work_item.award_emoji.pluck(:name)).to match_array(%w[thumbsup thumbsdown])
+      end
+
+      it 'reads participants from award emoji on epic and its associated work item' do
+        expect(epic.participants).to match_array([epic.author, emoji_1.user, emoji_2.user])
+        expect(work_item.participants).to match_array([work_item.author, emoji_1.user, emoji_2.user])
+      end
+
+      describe '#find' do
+        it 'also returns emojis from work item associated with the epic' do
+          expect(epic.award_emoji.find(emoji_1.id)).to eq(emoji_1)
+          expect(epic.award_emoji.find(emoji_2.id)).to eq(emoji_2)
+          expect(work_item.award_emoji.find(emoji_1.id)).to eq(emoji_1)
+          expect(work_item.award_emoji.find(emoji_2.id)).to eq(emoji_2)
+        end
+
+        context 'when epic_and_work_item_unification is disabled' do
+          before do
+            stub_feature_flags(epic_and_work_item_associations_unification: false)
+          end
+
+          it 'only returns own award emoji' do
+            expect(epic.award_emoji.find(emoji_2.id)).to eq(emoji_2)
+            expect(work_item.award_emoji.find(emoji_1.id)).to eq(emoji_1)
+            expect { epic.award_emoji.find(emoji_1.id) }.to raise_error(ActiveRecord::RecordNotFound)
+            expect { work_item.award_emoji.find(emoji_2.id) }.to raise_error(ActiveRecord::RecordNotFound)
+          end
+        end
+      end
+
+      context 'when epic is deleted' do
+        context 'and associated legacy epic has award emojis' do
+          let_it_be_with_refind(:epic) { create(:epic) }
+          let_it_be_with_reload(:work_item) { epic.work_item }
+          let_it_be(:emoji_1) { create(:award_emoji, awardable: epic) }
+          let_it_be(:emoji_2) { create(:award_emoji, awardable: work_item) }
+          let_it_be(:emoji_3) { create(:award_emoji, awardable: epic) }
+          let_it_be(:emoji_4) { create(:award_emoji) } # Not to be deleted
+
+          it 'also deletes award emoji from legacy epic' do
+            expect { epic.destroy! }.to change { ::AwardEmoji.count }.by(-3)
+            expect(emoji_4.reload).to be_persisted
+          end
+        end
+      end
+
+      context 'when epic_and_work_item_unification is disabled' do
+        before do
+          stub_feature_flags(epic_and_work_item_associations_unification: false)
+        end
+
+        it 'reads emojis only from epic' do
+          expect(epic.award_emoji.pluck(:name)).to match_array(%w[thumbsdown])
+          expect(work_item.award_emoji.pluck(:name)).to match_array(%w[thumbsup])
+        end
+      end
+
+      context 'when epic does not have associated work item' do
+        before do
+          allow(epic).to receive(:sync_object).and_return(nil)
+          allow(work_item).to receive(:sync_object).and_return(nil)
+        end
+
+        it 'returns award emoji only from epic' do
+          expect(epic.award_emoji.pluck(:name)).to match_array(%w[thumbsdown])
+          expect(work_item.award_emoji.pluck(:name)).to match_array(%w[thumbsup])
+        end
+      end
+    end
   end
 
   describe 'default values' do

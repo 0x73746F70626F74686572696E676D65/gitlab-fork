@@ -597,4 +597,20 @@ RSpec.describe WorkItem, :elastic_helpers, feature_category: :team_planning do
       expect(work_item.es_parent).to eq("group_#{namespace.root_ancestor.id}")
     end
   end
+
+  context 'when deleting a work item' do
+    context 'and associated legacy epic has award emojis' do
+      let_it_be_with_reload(:work_item) { create(:work_item, :epic_with_legacy_epic) }
+      let_it_be_with_reload(:epic) { work_item.sync_object }
+      let_it_be(:emoji_1) { create(:award_emoji, awardable: work_item) }
+      let_it_be(:emoji_2) { create(:award_emoji, awardable: epic) }
+      let_it_be(:emoji_3) { create(:award_emoji, awardable: epic) }
+      let_it_be(:emoji_4) { create(:award_emoji) } # Not to be deleted
+
+      it 'also deletes award emoji from legacy epic' do
+        expect { work_item.destroy! }.to change { ::AwardEmoji.count }.by(-3)
+        expect(emoji_4.reload).to be_persisted
+      end
+    end
+  end
 end

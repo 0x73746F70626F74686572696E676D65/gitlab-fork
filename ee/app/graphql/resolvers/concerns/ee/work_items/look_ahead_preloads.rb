@@ -21,7 +21,8 @@ module EE
       def unconditional_includes
         [
           *super,
-          :sync_object
+          :sync_object,
+          :namespace
         ]
       end
     end

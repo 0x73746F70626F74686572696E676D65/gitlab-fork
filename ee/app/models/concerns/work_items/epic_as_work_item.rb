@@ -7,6 +7,7 @@ module WorkItems
     included do
       include Gitlab::Utils::StrongMemoize
       include ::WorkItems::UnifiedAssociations::Labels
+      include ::WorkItems::UnifiedAssociations::AwardEmoji
 
       # this overrides the scope in Issuable by removing the labels association from it as labels are now preloaded
       # by loading labels for epic and for epic work item

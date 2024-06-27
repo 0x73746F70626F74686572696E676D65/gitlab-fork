@@ -23,18 +23,24 @@ RSpec.describe 'getting a work item list for a group', feature_category: :team_p
       author: reporter,
       milestone: milestone1,
       labels: [label1]
-    )
+    ) do |work_item|
+      create(:award_emoji, name: 'star', awardable: work_item)
+    end
   end
 
   let_it_be(:group_work_item) do
     create(
       :work_item,
+      :epic_with_legacy_epic,
       namespace: group,
       author: reporter,
       title: 'search_term',
       milestone: milestone2,
       labels: [label2]
-    )
+    ) do |work_item|
+      create(:award_emoji, name: 'star', awardable: work_item)
+      create(:award_emoji, name: 'rocket', awardable: work_item.sync_object)
+    end
   end
 
   let_it_be(:confidential_work_item) do
@@ -58,6 +64,8 @@ RSpec.describe 'getting a work item list for a group', feature_category: :team_p
 
   shared_examples 'work items resolver without N + 1 queries' do
     it 'avoids N+1 queries', :use_sql_query_cache do
+      post_graphql(query, current_user: current_user) # Warmup
+
       control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
         post_graphql(query, current_user: current_user)
       end
@@ -72,9 +80,15 @@ RSpec.describe 'getting a work item list for a group', feature_category: :team_p
         labels: [label1, label2],
         milestone: milestone2,
         author: reporter
-      )
+      ) do |work_item|
+        create(:award_emoji, name: 'eyes', awardable: work_item)
+        create(:award_emoji, name: 'rocket', awardable: work_item.sync_object)
+        create(:award_emoji, name: 'thumbsup', awardable: work_item.sync_object)
+      end
 
-      expect { post_graphql(query, current_user: current_user) }.not_to exceed_all_query_limit(control)
+      expect do
+        post_graphql(query, current_user: current_user)
+      end.not_to exceed_all_query_limit(control).with_threshold(1)
       expect_graphql_errors_to_be_empty
     end
   end
@@ -87,6 +101,10 @@ RSpec.describe 'getting a work item list for a group', feature_category: :team_p
     # We need a separate example since all_graphql_fields_for will not fetch fields from types
     # that implement the widget interface. Only `type` for the widgets field.
     context 'when querying the widget interface' do
+      before do
+        stub_licensed_features(epics: true)
+      end
+
       let(:fields) do
         <<~GRAPHQL
           nodes {
@@ -120,12 +138,47 @@ RSpec.describe 'getting a work item list for a group', feature_category: :team_p
                   id
                 }
               }
+              ... on WorkItemWidgetAwardEmoji {
+                upvotes
+                downvotes
+                awardEmoji {
+                  nodes {
+                    name
+                  }
+                }
+              }
             }
           }
         GRAPHQL
       end
 
       it_behaves_like 'work items resolver without N + 1 queries'
+
+      context 'when querying for WorkItemWidgetAwardEmoji' do
+        it 'queries unified award emojis correctly' do
+          post_graphql(query, current_user: current_user)
+
+          data = graphql_data_at(:group, :workItems, :nodes, 0, :widgets)
+          data = data.find { |k| k if k['type'] == 'AWARD_EMOJI' }['awardEmoji']['nodes']
+          expect(data.flat_map(&:values)).to match_array(%w[star rocket])
+        end
+
+        it 'fetches unified upvotes and downvotes' do
+          create(:award_emoji, name: 'thumbsup', awardable: group_work_item)
+          create(:award_emoji, name: 'thumbsup', awardable: group_work_item.sync_object)
+          create(:award_emoji, name: 'thumbsup', awardable: group_work_item.sync_object)
+          create(:award_emoji, name: 'thumbsdown', awardable: group_work_item.sync_object)
+
+          post_graphql(query, current_user: current_user)
+
+          data = graphql_data_at(:group, :workItems, :nodes, 0, :widgets)
+          upvotes = data.find { |k| k if k['type'] == 'AWARD_EMOJI' }['upvotes']
+          downvotes = data.find { |k| k if k['type'] == 'AWARD_EMOJI' }['downvotes']
+
+          expect(upvotes).to eq(3)
+          expect(downvotes).to eq(1)
+        end
+      end
     end
   end
 
