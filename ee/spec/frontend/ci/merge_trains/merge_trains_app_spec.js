@@ -8,7 +8,6 @@ import { createAlert } from '~/alert';
 import MergeTrainsApp from 'ee/ci/merge_trains/merge_trains_app.vue';
 import MergeTrainBranchSelector from 'ee/ci/merge_trains/components/merge_train_branch_selector.vue';
 import MergeTrainTabs from 'ee/ci/merge_trains/components/merge_train_tabs.vue';
-import MergeTrainsTable from 'ee/ci/merge_trains/components/merge_trains_table.vue';
 import getActiveMergeTrainsQuery from 'ee/ci/merge_trains/graphql/queries/get_active_merge_trains.query.graphql';
 import getCompletedMergeTrainsQuery from 'ee/ci/merge_trains/graphql/queries/get_completed_merge_trains.query.graphql';
 import { activeTrain, mergedTrain } from './mock_data';
@@ -20,13 +19,13 @@ jest.mock('~/alert');
 describe('MergeTrainsApp', () => {
   let wrapper;
 
-  const activeTrainsHanlder = jest.fn().mockResolvedValue(activeTrain);
-  const mergedTrainsHanlder = jest.fn().mockResolvedValue(mergedTrain);
+  const activeTrainsHandler = jest.fn().mockResolvedValue(activeTrain);
+  const mergedTrainsHandler = jest.fn().mockResolvedValue(mergedTrain);
   const errorHandler = jest.fn().mockRejectedValue(new Error('GraphQL error'));
 
   const defaultHandlers = [
-    [getActiveMergeTrainsQuery, activeTrainsHanlder],
-    [getCompletedMergeTrainsQuery, mergedTrainsHanlder],
+    [getActiveMergeTrainsQuery, activeTrainsHandler],
+    [getCompletedMergeTrainsQuery, mergedTrainsHandler],
   ];
 
   const createMockApolloProvider = (handlers) => {
@@ -45,8 +44,9 @@ describe('MergeTrainsApp', () => {
 
   const findBranchSelector = () => wrapper.findComponent(MergeTrainBranchSelector);
   const findTabs = () => wrapper.findComponent(MergeTrainTabs);
-  const findTable = () => wrapper.findComponent(MergeTrainsTable);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findActiveTable = () => wrapper.findByTestId('active-merge-trains-table');
+  const findCompletedTable = () => wrapper.findByTestId('completed-merge-trains-table');
 
   describe('loading', () => {
     it('shows loading icon', () => {
@@ -54,7 +54,8 @@ describe('MergeTrainsApp', () => {
 
       expect(findLoadingIcon().exists()).toBe(true);
       expect(findTabs().exists()).toBe(false);
-      expect(findTable().exists()).toBe(false);
+      expect(findActiveTable().exists()).toBe(false);
+      expect(findCompletedTable().exists()).toBe(false);
       expect(findBranchSelector().exists()).toBe(false);
     });
   });
@@ -71,8 +72,9 @@ describe('MergeTrainsApp', () => {
       expect(findLoadingIcon().exists()).toBe(false);
     });
 
-    it('renders the merge trains table', () => {
-      expect(findTable().exists()).toBe(true);
+    it('renders the merge trains tables', () => {
+      expect(findActiveTable().exists()).toBe(true);
+      expect(findCompletedTable().exists()).toBe(true);
       expect(findLoadingIcon().exists()).toBe(false);
     });
 
@@ -82,14 +84,19 @@ describe('MergeTrainsApp', () => {
     });
 
     it('calls queries with correct variables', () => {
-      expect(activeTrainsHanlder).toHaveBeenCalledWith({
+      const expectedVariables = {
         fullPath: 'namespace/project',
         targetBranch: 'master',
-      });
-      expect(mergedTrainsHanlder).toHaveBeenCalledWith({
-        fullPath: 'namespace/project',
+        after: null,
+        before: null,
+        first: 20,
+        last: null,
+      };
+
+      expect(activeTrainsHandler).toHaveBeenCalledWith(expectedVariables);
+      expect(mergedTrainsHandler).toHaveBeenCalledWith({
         status: 'COMPLETED',
-        targetBranch: 'master',
+        ...expectedVariables,
       });
     });
   });
@@ -102,14 +109,44 @@ describe('MergeTrainsApp', () => {
 
       findBranchSelector().vm.$emit('branchChanged', 'feature-branch');
 
-      expect(activeTrainsHanlder).toHaveBeenCalledWith({
+      await waitForPromises();
+
+      const expectedVariables = {
         fullPath: 'namespace/project',
         targetBranch: 'feature-branch',
-      });
-      expect(mergedTrainsHanlder).toHaveBeenCalledWith({
-        fullPath: 'namespace/project',
+        after: null,
+        before: null,
+        first: 20,
+        last: null,
+      };
+
+      expect(activeTrainsHandler).toHaveBeenCalledWith(expectedVariables);
+      expect(mergedTrainsHandler).toHaveBeenCalledWith({
         status: 'COMPLETED',
-        targetBranch: 'feature-branch',
+        ...expectedVariables,
+      });
+    });
+
+    it('refetches query on pageChange event', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      const paginationInfo = {
+        first: 20,
+        after: 'eyJpZCI6IjUzIn0',
+        last: null,
+        before: null,
+      };
+
+      findActiveTable().vm.$emit('pageChange', paginationInfo);
+
+      await waitForPromises();
+
+      expect(activeTrainsHandler).toHaveBeenCalledWith({
+        fullPath: 'namespace/project',
+        targetBranch: 'master',
+        ...paginationInfo,
       });
     });
   });
@@ -117,7 +154,7 @@ describe('MergeTrainsApp', () => {
   describe('errors', () => {
     it('shows query error for completed merge trains', async () => {
       createComponent([
-        [getActiveMergeTrainsQuery, activeTrainsHanlder],
+        [getActiveMergeTrainsQuery, activeTrainsHandler],
         [getCompletedMergeTrainsQuery, errorHandler],
       ]);
 
@@ -131,7 +168,7 @@ describe('MergeTrainsApp', () => {
     it('shows query error for active merge trains', async () => {
       createComponent([
         [getActiveMergeTrainsQuery, errorHandler],
-        [getCompletedMergeTrainsQuery, mergedTrainsHanlder],
+        [getCompletedMergeTrainsQuery, mergedTrainsHandler],
       ]);
 
       await waitForPromises();

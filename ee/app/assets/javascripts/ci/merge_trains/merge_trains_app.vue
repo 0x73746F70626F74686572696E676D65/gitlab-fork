@@ -8,6 +8,7 @@ import MergeTrainTabs from './components/merge_train_tabs.vue';
 import MergeTrainsTable from './components/merge_trains_table.vue';
 import getActiveMergeTrains from './graphql/queries/get_active_merge_trains.query.graphql';
 import getCompletedMergeTrains from './graphql/queries/get_completed_merge_trains.query.graphql';
+import { DEFAULT_CURSOR } from './constants';
 
 export default {
   name: 'MergeTrainsApp',
@@ -32,7 +33,8 @@ export default {
       variables() {
         return {
           fullPath: this.fullPath,
-          targetBranch: this.defaultBranch,
+          targetBranch: this.selectedBranch,
+          ...this.activeCursor,
         };
       },
       update(data) {
@@ -55,7 +57,8 @@ export default {
       variables() {
         return {
           fullPath: this.fullPath,
-          targetBranch: this.defaultBranch,
+          targetBranch: this.selectedBranch,
+          ...this.mergedCursor,
         };
       },
       update(data) {
@@ -81,6 +84,8 @@ export default {
       activeMergeTrains: { train: {} },
       completedMergeTrains: { train: {} },
       selectedBranch: this.defaultBranch,
+      activeCursor: DEFAULT_CURSOR,
+      mergedCursor: DEFAULT_CURSOR,
     };
   },
   computed: {
@@ -89,13 +94,6 @@ export default {
         this.$apollo.queries.activeMergeTrains.loading ||
         this.$apollo.queries.completedMergeTrains.loading
       );
-    },
-  },
-  methods: {
-    fetchNewTrain(branchName) {
-      this.selectedBranch = branchName;
-      this.$apollo.queries.activeMergeTrains.refetch({ targetBranch: branchName });
-      this.$apollo.queries.completedMergeTrains.refetch({ targetBranch: branchName });
     },
   },
 };
@@ -112,7 +110,7 @@ export default {
         <h1 class="gl-font-size-h1">{{ s__('Pipelines|Merge train') }}</h1>
         <merge-train-branch-selector
           :selected-branch="selectedBranch"
-          @branchChanged="fetchNewTrain"
+          @branchChanged="selectedBranch = $event"
         />
       </div>
 
@@ -122,10 +120,20 @@ export default {
         :merged-train="completedMergeTrains.train"
       >
         <template #active>
-          <merge-trains-table :train="activeMergeTrains.train" />
+          <merge-trains-table
+            :train="activeMergeTrains.train"
+            :cursor="activeCursor"
+            data-testid="active-merge-trains-table"
+            @pageChange="activeCursor = $event"
+          />
         </template>
         <template #merged>
-          <merge-trains-table :train="completedMergeTrains.train" />
+          <merge-trains-table
+            :train="completedMergeTrains.train"
+            :cursor="mergedCursor"
+            data-testid="completed-merge-trains-table"
+            @pageChange="mergedCursor = $event"
+          />
         </template>
       </merge-train-tabs>
     </template>
