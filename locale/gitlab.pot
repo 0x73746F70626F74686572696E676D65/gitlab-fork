@@ -32214,6 +32214,9 @@ msgstr ""
 msgid "MemberRole|No description"
 msgstr ""
 
+msgid "MemberRole|Overridden"
+msgstr ""
+
 msgid "MemberRole|Permission"
 msgstr ""
 
@@ -32242,6 +32245,9 @@ msgid "MemberRole|Select at least one permission."
 msgstr ""
 
 msgid "MemberRole|Standard roles"
+msgstr ""
+
+msgid "MemberRole|This role has been manually selected and will not sync to the LDAP sync role."
 msgstr ""
 
 msgid "MemberRole|To delete custom role, remove role from all group members."

@@ -1,8 +1,7 @@
-import { within } from '@testing-library/dom';
-import { mount, createWrapper } from '@vue/test-utils';
 import Vue from 'vue';
 // eslint-disable-next-line no-restricted-imports
 import Vuex from 'vuex';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import {
   upgradedMember as memberMock,
   directMember,
@@ -11,6 +10,9 @@ import {
 } from 'ee_jest/members/mock_data';
 import MembersTable from '~/members/components/table/members_table.vue';
 import { MEMBERS_TAB_TYPES, TAB_QUERY_PARAM_VALUES } from '~/members/constants';
+import RoleBadges from 'ee/members/components/table/role_badges.vue';
+import UserLimitReachedAlert from 'ee/members/components/table/user_limit_reached_alert.vue';
+import waitForPromises from 'helpers/wait_for_promises';
 
 Vue.use(Vuex);
 
@@ -24,6 +26,7 @@ describe('MemberList', () => {
           namespaced: true,
           state: {
             members: [],
+            memberPath: 'member/path/:id',
             tableFields: [],
             tableAttrs: {
               tr: { 'data-testid': 'member-row' },
@@ -37,7 +40,7 @@ describe('MemberList', () => {
   };
 
   const createComponent = (state, props = {}) => {
-    wrapper = mount(MembersTable, {
+    wrapper = mountExtended(MembersTable, {
       store: createStore(state),
       propsData: {
         tabQueryParamValue: TAB_QUERY_PARAM_VALUES.group,
@@ -48,32 +51,43 @@ describe('MemberList', () => {
         currentUserId: 1,
         namespace: MEMBERS_TAB_TYPES.user,
         canManageMembers: true,
+        group: {},
+        canApproveAccessRequests: true,
+        namespaceUserLimit: true,
+        glFeatures: { showRoleDetailsInDrawer: true },
       },
-      stubs: [
-        'user-limit-reached-alert',
-        'member-avatar',
-        'member-source',
-        'expires-at',
-        'created-at',
-        'member-action-buttons',
-        'max-role',
-        'disable-two-factor-modal',
-        'remove-group-link-modal',
-        'remove-member-modal',
-        'expiration-datepicker',
-        'ldap-override-confirmation-modal',
-      ],
+      stubs: {
+        MemberAvatar: true,
+        MemberSource: true,
+        ExpiresAt: true,
+        CreatedAt: true,
+        MemberActionButtons: true,
+        MaxRole: true,
+        DisableTwoFactorModal: true,
+        RemoveGroupLinkModal: true,
+        RemoveMemberModal: true,
+        ExpirationDatepicker: true,
+        LdapOverrideConfirmationModal: true,
+      },
     });
+    // Need this to await components imported using import('ee_component/...').
+    return waitForPromises();
   };
 
-  const getByTestId = (id, options) =>
-    createWrapper(within(wrapper.element).getByTestId(id, options));
   const findTableCellByMemberId = (tableCellLabel, memberId) =>
-    getByTestId(`members-table-row-${memberId}`).find(
-      `[data-label="${tableCellLabel}"][role="cell"]`,
-    );
+    wrapper
+      .findByTestId(`members-table-row-${memberId}`)
+      .find(`[data-label="${tableCellLabel}"][role="cell"]`);
 
   describe('fields', () => {
+    describe('Max role field', () => {
+      it('shows role badges component', async () => {
+        await createComponent({ members: [memberMock], tableFields: ['maxRole'] });
+
+        expect(wrapper.findComponent(RoleBadges).exists()).toBe(true);
+      });
+    });
+
     describe('"Actions" field', () => {
       const memberCanOverride = {
         ...directMember,
@@ -106,7 +120,7 @@ describe('MemberList', () => {
             tableFields: ['actions'],
           });
 
-          expect(within(wrapper.element).queryByTestId('col-actions')).not.toBe(null);
+          expect(wrapper.findByTestId('col-actions').exists()).toBe(true);
 
           expect(
             findTableCellByMemberId('Actions', memberNoPermissions.id).classes(),
@@ -123,7 +137,7 @@ describe('MemberList', () => {
           it('does not render the "Actions" field', () => {
             createComponent({ members, tableFields: ['actions'] });
 
-            expect(within(wrapper.element).queryByTestId('col-actions')).toBe(null);
+            expect(wrapper.findByTestId('col-actions').exists()).toBe(false);
           });
         },
       );
@@ -131,24 +145,14 @@ describe('MemberList', () => {
   });
 
   describe('User limit reached alert', () => {
-    describe('when on the access request tab', () => {
-      it('shows the alert', () => {
-        createComponent({}, { tabQueryParamValue: TAB_QUERY_PARAM_VALUES.accessRequest });
+    it.each`
+      phrase             | tabQueryParamValue                      | isShown
+      ${'shows'}         | ${TAB_QUERY_PARAM_VALUES.accessRequest} | ${true}
+      ${'does not show'} | ${TAB_QUERY_PARAM_VALUES.group}         | ${false}
+    `('$phrase alert when the tab is $tab', async ({ tabQueryParamValue, isShown }) => {
+      await createComponent({}, { tabQueryParamValue });
 
-        expect(wrapper.html()).toContain(
-          '<user-limit-reached-alert-stub></user-limit-reached-alert-stub>',
-        );
-      });
-    });
-
-    describe('when user is not on the acccess request tab', () => {
-      it('does not show the alert', () => {
-        createComponent();
-
-        expect(wrapper.html()).not.toContain(
-          '<user-limit-reached-alert-stub></user-limit-reached-alert-stub>',
-        );
-      });
+      expect(wrapper.findComponent(UserLimitReachedAlert).exists()).toBe(isShown);
     });
   });
 });

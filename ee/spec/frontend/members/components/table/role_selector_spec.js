@@ -1,7 +1,7 @@
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { roleDropdownItems } from 'ee/members/utils';
-import RoleSelector from '~/members/components/table/role_selector.vue';
+import RoleSelector from '~/members/components/table/drawer/role_selector.vue';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { upgradedMember } from '../../mock_data';
 
