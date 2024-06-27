@@ -13,14 +13,16 @@ module GitlabSubscriptions
 
     enum name: {
       code_suggestions: 1,
-      product_analytics: 2
+      product_analytics: 2,
+      duo_enterprise: 3
     }
 
     # Note: If a new enum is added, make sure to update this method to reflect that as well.
     def self.descriptions
       {
         code_suggestions: 'Add-on for GitLab Duo Pro.',
-        product_analytics: 'Add-on for product analytics. Quantity suggests multiple of available stored event.'
+        product_analytics: 'Add-on for product analytics. Quantity suggests multiple of available stored event.',
+        duo_enterprise: 'Add-on for GitLab Duo Enterprise.'
       }
     end
 
