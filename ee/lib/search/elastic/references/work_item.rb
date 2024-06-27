@@ -80,7 +80,6 @@ module Search
           [
             :id,
             :iid,
-            :namespace_id,
             :created_at,
             :updated_at,
             :title,
@@ -96,11 +95,17 @@ module Search
 
           data['label_ids'] = target.label_ids.map(&:to_s)
           data['hidden'] = target.hidden?
+          if ::Elastic::DataMigrationService.migration_has_finished?(:add_root_namespace_id_to_work_item)
+            data['root_namespace_id'] = target.namespace.root_ancestor.id
+          end
+
           data['traversal_ids'] = target.namespace.elastic_namespace_ancestry
           data['hashed_root_namespace_id'] = target.namespace.hashed_root_namespace_id
           data['work_item_type_id'] = target.work_item_type_id
           data['upvotes'] = target.upvotes_count
           data['namespace_visibility_level'] = target.namespace.visibility_level
+
+          data['namespace_id'] = target.namespace_id if target.namespace.group_namespace?
 
           if target.project.present?
             data['archived'] = target.project.archived?

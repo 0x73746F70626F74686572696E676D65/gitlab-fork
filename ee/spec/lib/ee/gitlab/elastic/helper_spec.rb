@@ -512,6 +512,7 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
         {
           id: [Project, Issue, MergeRequest, Commit, Epic, User, WorkItem],
           project_id: :all,
+          root_namespace_id: :all,
           target_project_id: :all,
           source_project_id: :all,
           author_id: :all,
