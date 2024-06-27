@@ -19624,6 +19624,7 @@ CREATE TABLE work_item_widget_definitions (
     widget_type smallint NOT NULL,
     disabled boolean DEFAULT false,
     name text,
+    widget_options jsonb,
     CONSTRAINT check_050f2e2328 CHECK ((char_length(name) <= 255))
 );
 
