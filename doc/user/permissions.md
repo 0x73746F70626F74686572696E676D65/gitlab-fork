@@ -56,7 +56,7 @@ For more information about how to manage project members, see
 
 The following table lists project permissions available for each role:
 
-<!-- Keep this tables sorted: By category first, then by minimum role, then alphabetically by action. -->
+<!-- Keep these tables sorted: By category first, then by minimum role, then alphabetically by action. -->
 
 | Action                                                                                                                                                                                       | Guest | Reporter | Developer | Maintainer | Owner | Notes |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|----------|-----------|------------|-------|-------|
@@ -300,7 +300,7 @@ the group.
 
 The following table lists group permissions available for each role:
 
-<!-- Keep this tables sorted: By category first, then by minimum role, then alphabetically by action. -->
+<!-- Keep these tables sorted: By category first, then by minimum role, then alphabetically by action. -->
 
 | Action                                                                                  | Guest | Reporter | Developer | Maintainer | Owner | Notes |
 |-----------------------------------------------------------------------------------------|-------|----------|-----------|------------|-------|-------|
