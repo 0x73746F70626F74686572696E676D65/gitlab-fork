@@ -99,7 +99,7 @@ RSpec.describe 'Groups > Usage Quotas > Code Suggestions tab', :js, :saas, featu
         end
 
         it 'unassigns the selected users' do
-          expect(add_on_purchase.assigned_users.map(&:user)).to eq(users)
+          expect(add_on_purchase.reload.assigned_users.map(&:user)).to eq(users)
 
           find_by_testid('select-all-users').click
           expect(find_by_testid('select-all-users')).to be_checked
