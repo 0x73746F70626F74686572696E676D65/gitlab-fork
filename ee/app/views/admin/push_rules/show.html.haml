@@ -3,7 +3,7 @@
 - add_page_specific_style 'page_bundles/settings'
 
 %section.settings.no-animate#js-push-rule-settings{ class: ('expanded' if expanded_by_default?) }
-  .settings-header
+  .settings-header{ data: { event_tracking_load: 'true', event_tracking: 'view_admin_push_rule_pageload' } }
     %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = _('Push Rules')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
