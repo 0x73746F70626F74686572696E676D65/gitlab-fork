@@ -175,7 +175,7 @@ export default {
       <div
         v-for="section in firstBlockSections"
         :key="section"
-        class="gl-mt-5 col-sm-12 col-mb-6 col-lg-3"
+        class="gl-mt-5 col-sm-12 col-mb-6 col-lg-4"
       >
         <learn-gitlab-section-card
           :section="section"

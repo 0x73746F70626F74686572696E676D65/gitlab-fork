@@ -47,7 +47,7 @@ exports[`Learn GitLab Initial rendering concerns renders correctly 1`] = `
     class="row"
   >
     <div
-      class="col-lg-3 col-mb-6 col-sm-12 gl-mt-5"
+      class="col-lg-4 col-mb-6 col-sm-12 gl-mt-5"
     >
       <div
         class="gl-card gl-h-full gl-pt-0"
