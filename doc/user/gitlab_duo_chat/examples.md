@@ -230,3 +230,18 @@ To start a new conversation, but keep the previous conversations visible in the 
 
 In both cases, the conversation history will not be considered when you ask new questions.
 Deleting or resetting might help improve the answers when you switch contexts, because Duo Chat will not get confused by the unrelated conversations.
+
+## Supported slash commands
+
+Duo Chat has a list of supported commands, each of which is preceded by a slash (`/`).
+Use the following commands to quickly accomplish specific tasks.
+
+| Command                | Purpose                                                                             |
+|------------------------|-------------------------------------------------------------------------------------|
+| /clear                 | [Delete all conversations permanently and clear the chat window](#delete-or-reset-the-conversation)  |
+| /reset                 | [Start a new conversation, but keep the previous conversations visible in the chat window](#delete-or-reset-the-conversation)  |
+| /tests                 | [Write tests](#write-tests-in-the-ide)                                              |
+| /explain               | [Explain code](../gitlab_duo_chat/examples.md#explain-code-in-the-ide)              |
+| /vulnerability_explain | [Explain current vulnerability](../gitlab_duo/index.md#vulnerability-explanation)   |
+|                        | [Explain current vulnerability](../application_security/vulnerabilities/index.md#explaining-a-vulnerability) |
+| /refactor              | [Refactor the code](../gitlab_duo_chat/examples.md#refactor-code-in-the-ide)        |
