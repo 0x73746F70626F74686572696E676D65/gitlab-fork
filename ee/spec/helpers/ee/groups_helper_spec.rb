@@ -439,7 +439,8 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
         full_path: group.full_path,
         group_id: group.id,
         duo_pro_trial_href: ::Gitlab::Routing.url_helpers.new_trials_duo_pro_path(namespace_id: group.id),
-        add_duo_pro_href: ::Gitlab::Routing.url_helpers.subscription_portal_add_saas_duo_pro_seats_url(group.id)
+        add_duo_pro_href: ::Gitlab::Routing.url_helpers.subscription_portal_add_saas_duo_pro_seats_url(group.id),
+        hand_raise_lead: helper.code_suggestions_usage_app_hand_raise_lead_data
       }
     end
 

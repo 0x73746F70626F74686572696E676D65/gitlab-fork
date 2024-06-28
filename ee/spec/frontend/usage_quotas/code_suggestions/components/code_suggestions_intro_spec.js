@@ -3,6 +3,7 @@ import { GlEmptyState, GlIntersectionObserver, GlSprintf } from '@gitlab/ui';
 import CodeSuggestionsIntro from 'ee/usage_quotas/code_suggestions/components/code_suggestions_intro.vue';
 import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import { mockTracking } from 'helpers/tracking_helper';
+import { mockHandRaiseLeadData } from 'ee_jest/usage_quotas/code_suggestions/mock_data';
 
 describe('Code Suggestions Intro', () => {
   let wrapper;
@@ -18,30 +19,18 @@ describe('Code Suggestions Intro', () => {
       stubs: { GlSprintf },
       provide: {
         ...provideProps,
+        handRaiseLeadData: mockHandRaiseLeadData,
       },
     });
   };
 
   describe('when rendering', () => {
-    beforeEach(() => {
-      return createComponent({ createHandRaiseLeadPath: 'some-path' });
-    });
-
     it('renders gl-empty-state component with hand raise lead', () => {
+      createComponent();
+
       const buttonProps = {
-        buttonAttributes: {
-          variant: 'confirm',
-          category: 'secondary',
-          class: 'gl-sm-w-auto gl-w-full gl-sm-ml-3 gl-sm-mt-0 gl-mt-3',
-          'data-testid': 'code-suggestions-hand-raise-lead-button',
-        },
-        glmContent: 'code-suggestions',
+        ...mockHandRaiseLeadData,
         buttonText: 'Contact sales',
-        productInteraction: 'Requested Contact-Duo Pro Add-On',
-        ctaTracking: {
-          action: 'click_button',
-          label: 'duo_pro_contact_sales',
-        },
       };
 
       expect(emptyState().exists()).toBe(true);

@@ -251,3 +251,10 @@ export const mockProjects = {
     },
   },
 };
+
+export const mockHandRaiseLeadData = {
+  glmContent: 'code-suggestions',
+  productInteraction: 'Requested Contact-Duo Pro Add-On',
+  buttonAttributes: {},
+  ctaTracking: {},
+};

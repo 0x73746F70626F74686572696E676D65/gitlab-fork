@@ -14,7 +14,26 @@ export const parseProvideData = (el) => {
     subscriptionName,
     subscriptionStartDate,
     subscriptionEndDate,
+    handRaiseLeadGlmContent,
+    handRaiseLeadProductInteraction,
+    handRaiseLeadButtonAttributes,
+    handRaiseLeadCtaTracking,
   } = el.dataset;
+
+  let handRaiseLeadButtonAttributesParsed;
+  let handRaiseLeadCtaTrackingParsed;
+
+  try {
+    handRaiseLeadButtonAttributesParsed = JSON.parse(handRaiseLeadButtonAttributes);
+  } catch {
+    handRaiseLeadButtonAttributesParsed = {};
+  }
+
+  try {
+    handRaiseLeadCtaTrackingParsed = JSON.parse(handRaiseLeadCtaTracking);
+  } catch {
+    handRaiseLeadCtaTrackingParsed = {};
+  }
 
   return {
     fullPath,
@@ -26,6 +45,12 @@ export const parseProvideData = (el) => {
     subscriptionName,
     subscriptionStartDate,
     subscriptionEndDate,
+    handRaiseLeadData: {
+      glmContent: handRaiseLeadGlmContent,
+      productInteraction: handRaiseLeadProductInteraction,
+      buttonAttributes: handRaiseLeadButtonAttributesParsed,
+      ctaTracking: handRaiseLeadCtaTrackingParsed,
+    },
   };
 };
 

@@ -4,6 +4,7 @@ module EE
   module GroupsHelper
     extend ::Gitlab::Utils::Override
     include ::GitlabSubscriptions::CodeSuggestionsHelper
+    include ::Subscriptions::HandRaiseLeadsHelper
 
     def size_limit_message_for_group(group)
       show_lfs = group.lfs_enabled? ? 'including LFS files' : ''
@@ -111,7 +112,8 @@ module EE
         full_path: group.full_path,
         group_id: group.id,
         add_duo_pro_href: duo_pro_url(group),
-        duo_pro_bulk_user_assignment_available: duo_pro_bulk_user_assignment_available?(group).to_s
+        duo_pro_bulk_user_assignment_available: duo_pro_bulk_user_assignment_available?(group).to_s,
+        hand_raise_lead: code_suggestions_usage_app_hand_raise_lead_data
       }.merge(duo_pro_trial_link(group))
     end
 
