@@ -60,6 +60,7 @@ module Ci
 
         ServiceResponse.error(
           message: s_('Runners|The deployment name is invalid'),
+          payload: { deployment_name: deployment_name },
           reason: :internal_error
         )
       end

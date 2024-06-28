@@ -7,7 +7,7 @@ RSpec.describe Ci::Runners::CreateGoogleCloudProvisioningStepsService, feature_c
 
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
-  let_it_be(:runner) { create(:ci_runner, :project, projects: [project]) }
+  let_it_be(:runner) { create(:ci_runner, :project, projects: [project], token: 'v__x-zPvFbogsYEgaCq-') }
   let_it_be(:group_maintainer) { create(:user, maintainer_of: group) }
   let_it_be(:project_maintainer) { create(:user, maintainer_of: project) }
   let_it_be(:group_owner) { create(:user, owner_of: group) }
