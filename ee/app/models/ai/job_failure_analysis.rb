@@ -8,7 +8,7 @@ module Ai
 
     def save_content(data)
       with_redis do |redis|
-        redis.set(key, data, ex: 1.day)
+        redis.set(key, data, ex: 30.seconds)
       end
     end
 
