@@ -2,8 +2,9 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
-import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
 import { InternalEvents } from '~/tracking';
+import { visitUrl, setUrlParams, getNormalizedURL } from '~/lib/utils/url_utility';
+import { logsQueryFromAttributes } from 'ee/logs/list/filter_bar/filters';
 import { mapTraceToSpanTrees } from '../trace_utils';
 import { VIEW_TRACING_DETAILS_PAGE } from '../events';
 import TracingChart from './tracing_chart.vue';
@@ -33,7 +34,10 @@ export default {
     tracingIndexUrl: {
       required: true,
       type: String,
-      validator: (val) => isSafeURL(val),
+    },
+    logsIndexUrl: {
+      required: true,
+      type: String,
     },
   },
   data() {
@@ -44,6 +48,15 @@ export default {
       isDrawerOpen: false,
       selectedSpan: null,
     };
+  },
+  computed: {
+    logsLink() {
+      return setUrlParams(
+        logsQueryFromAttributes({ traceId: this.traceId }),
+        getNormalizedURL(this.logsIndexUrl),
+        true,
+      );
+    },
   },
   created() {
     this.validateAndFetch();
@@ -115,7 +128,7 @@ export default {
   </div>
 
   <div v-else-if="trace" data-testid="trace-details" class="gl-mx-7">
-    <tracing-header :trace="trace" :incomplete="spanTrees.incomplete" />
+    <tracing-header :trace="trace" :incomplete="spanTrees.incomplete" :logs-link="logsLink" />
     <tracing-chart
       :span-trees="spanTrees.roots"
       :trace="trace"

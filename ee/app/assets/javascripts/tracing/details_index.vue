@@ -16,6 +16,10 @@ export default {
       required: true,
       type: String,
     },
+    logsIndexUrl: {
+      required: true,
+      type: String,
+    },
     apiConfig: {
       type: Object,
       required: true,
@@ -30,6 +34,7 @@ export default {
       <tracing-details
         :trace-id="traceId"
         :tracing-index-url="tracingIndexUrl"
+        :logs-index-url="logsIndexUrl"
         :observability-client="observabilityClient"
       />
     </template>

@@ -111,7 +111,8 @@ RSpec.describe Projects::TracingController, feature_category: :tracing do
         expected_view_model = {
           apiConfig: expected_api_config,
           traceId: 'test-trace-id',
-          tracingIndexUrl: project_tracing_index_path(project)
+          tracingIndexUrl: project_tracing_index_path(project),
+          logsIndexUrl: namespace_project_logs_path(project.group, project)
         }.to_json
 
         expect(element.attributes['data-view-model'].value).to eq(expected_view_model)

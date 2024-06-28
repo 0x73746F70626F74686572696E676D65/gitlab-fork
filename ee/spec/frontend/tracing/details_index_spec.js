@@ -7,6 +7,7 @@ describe('DetailsIndex', () => {
   const props = {
     traceId: 'test-trace-id',
     tracingIndexUrl: 'https://example.com/tracing/index',
+    logsIndexUrl: 'https://example.com/logs/index',
     apiConfig: {
       oauthUrl: 'https://example.com/oauth',
       tracingUrl: 'https://example.com/tracing',
@@ -41,5 +42,6 @@ describe('DetailsIndex', () => {
     expect(detailsCmp.exists()).toBe(true);
     expect(detailsCmp.props('traceId')).toBe(props.traceId);
     expect(detailsCmp.props('tracingIndexUrl')).toBe(props.tracingIndexUrl);
+    expect(detailsCmp.props('logsIndexUrl')).toBe(props.logsIndexUrl);
   });
 });

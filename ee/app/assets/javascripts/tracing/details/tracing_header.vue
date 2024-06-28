@@ -1,7 +1,8 @@
 <script>
-import { GlCard, GlBadge } from '@gitlab/ui';
+import { GlCard, GlBadge, GlButton } from '@gitlab/ui';
 import { formatDate } from '~/lib/utils/datetime/date_format_utility';
 import { s__ } from '~/locale';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 import { formatTraceDuration } from '../trace_utils';
 
 const CARD_CLASS = 'gl-mr-7 gl-w-3/20 gl-min-w-fit';
@@ -16,9 +17,12 @@ export default {
   components: {
     GlCard,
     GlBadge,
+    PageHeading,
+    GlButton,
   },
   i18n: {
     inProgress: s__('Tracing|In progress'),
+    logsButtonTitle: s__('Tracing|View Logs'),
   },
   props: {
     trace: {
@@ -28,6 +32,10 @@ export default {
     incomplete: {
       required: true,
       type: Boolean,
+    },
+    logsLink: {
+      required: true,
+      type: String,
     },
   },
   computed: {
@@ -49,13 +57,21 @@ export default {
 
 <template>
   <div class="gl-mb-6">
-    <h1>
-      {{ title }}
-      <gl-badge v-if="incomplete" variant="warning" class="gl-ml-3 gl-align-middle">{{
-        $options.i18n.inProgress
-      }}</gl-badge>
-    </h1>
-
+    <header>
+      <page-heading>
+        <template #heading>
+          {{ title }}
+          <gl-badge v-if="incomplete" variant="warning" class="gl-ml-3 gl-align-middle">{{
+            $options.i18n.inProgress
+          }}</gl-badge>
+        </template>
+        <template #actions>
+          <gl-button :title="$options.i18n.logsButtonTitle" :href="logsLink">{{
+            $options.i18n.logsButtonTitle
+          }}</gl-button>
+        </template>
+      </page-heading>
+    </header>
     <div class="gl-display-flex gl-flex-wrap gl-justify-content-center gl-my-7 gl-gap-y-6">
       <gl-card
         data-testid="trace-date-card"

@@ -4,6 +4,7 @@ import {
   filterObjToQuery,
   queryToFilterObj,
   selectedLogQueryObject,
+  logsQueryFromAttributes,
 } from 'ee/logs/list/filter_bar/filters';
 
 describe('utils', () => {
@@ -192,6 +193,74 @@ describe('utils', () => {
         traceFlags: null,
         traceId: ['test-trace-id'],
         timestamp: '2024-02-19T16:10:15.4433398Z',
+      });
+    });
+  });
+
+  describe('logsQueryFromAttributes', () => {
+    it('returns an empty object when no arguments are provided', () => {
+      const result = logsQueryFromAttributes({});
+      expect(result).toMatchObject({});
+    });
+
+    it('returns an object with traceId filter when traceId is provided', () => {
+      const result = logsQueryFromAttributes({ traceId: 'abc123' });
+      expect(result).toMatchObject({
+        traceId: ['abc123'],
+      });
+    });
+
+    it('returns an object with spanId filter when spanId is provided', () => {
+      const result = logsQueryFromAttributes({ spanId: 'def456' });
+      expect(result).toMatchObject({
+        spanId: ['def456'],
+      });
+    });
+
+    it('returns an object with service filter when service is provided', () => {
+      const result = logsQueryFromAttributes({ service: 'my-service' });
+      expect(result).toMatchObject({
+        service: ['my-service'],
+      });
+    });
+
+    it('returns an object with severityNumber filter when severityNumber is provided', () => {
+      const result = logsQueryFromAttributes({ severityNumber: 2 });
+      expect(result).toMatchObject({
+        severityNumber: [2],
+      });
+    });
+
+    it('returns an object with fingerprint filter when fingerprint is provided', () => {
+      const result = logsQueryFromAttributes({ fingerprint: 'xyz789' });
+      expect(result).toMatchObject({
+        fingerprint: ['xyz789'],
+      });
+    });
+
+    it('returns an object with timestamp filter when timestamp is provided', () => {
+      const result = logsQueryFromAttributes({ timestamp: '2023-04-01T12:00:00Z' });
+      expect(result).toMatchObject({
+        timestamp: '2023-04-01T12:00:00Z',
+      });
+    });
+
+    it('returns an object with multiple filters when multiple arguments are provided', () => {
+      const result = logsQueryFromAttributes({
+        traceId: 'abc123',
+        spanId: 'def456',
+        service: 'my-service',
+        severityNumber: 2,
+        fingerprint: 'xyz789',
+        timestamp: '2023-04-01T12:00:00Z',
+      });
+      expect(result).toMatchObject({
+        traceId: ['abc123'],
+        spanId: ['def456'],
+        service: ['my-service'],
+        severityNumber: [2],
+        fingerprint: ['xyz789'],
+        timestamp: '2023-04-01T12:00:00Z',
       });
     });
   });

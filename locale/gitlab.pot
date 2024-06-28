@@ -55735,6 +55735,9 @@ msgstr ""
 msgid "Tracing|Tracing"
 msgstr ""
 
+msgid "Tracing|View Logs"
+msgstr ""
+
 msgid "Tracing|You must select a Service and Operation first."
 msgstr ""
 
