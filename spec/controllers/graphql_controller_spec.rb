@@ -341,6 +341,19 @@ RSpec.describe GraphqlController, feature_category: :integrations do
         end
       end
 
+      context 'with an revoked token' do
+        let(:token) { create(:personal_access_token, :revoked, user: user, scopes: [:api]) }
+
+        it_behaves_like 'invalid token'
+
+        it 'registers token_expire in application context' do
+          subject
+
+          expect(app_context['meta.auth_fail_reason']).to eq('token_revoked')
+          expect(app_context['meta.auth_fail_token_id']).to eq("PersonalAccessToken/#{token.id}")
+        end
+      end
+
       context 'with an invalid token' do
         context 'with auth header' do
           subject do
