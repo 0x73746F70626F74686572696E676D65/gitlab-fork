@@ -50,7 +50,7 @@ RSpec.describe 'Query.project.mergeTrains.cars', feature_category: :merge_trains
   let_it_be(:maintainer) { create(:user) }
   let(:query) { graphql_query_for(:project, { full_path: target_project.full_path }, train_query) }
   let(:user) { reporter }
-  let(:params) { {} }
+  let(:params) { { status: ::MergeTrains::Train::STATUSES[:active].upcase.to_sym } }
   let(:car_params) { {} }
   let(:post_query) { post_graphql(query, current_user: user) }
   let(:data) { graphql_data }
@@ -147,7 +147,12 @@ RSpec.describe 'Query.project.mergeTrains.cars', feature_category: :merge_trains
     end
 
     context 'when target_branches are provided' do
-      let(:params) { { target_branches: %w[feature-1 feature-2] } }
+      let(:params) do
+        {
+          target_branches: %w[feature-1 feature-2],
+          status: ::MergeTrains::Train::STATUSES[:active].upcase.to_sym
+        }
+      end
 
       it_behaves_like 'fetches the requested trains' do
         let(:expected_branches) { %w[feature-1] }

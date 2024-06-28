@@ -13,14 +13,14 @@ module Resolvers
       argument :status,
         ::Types::MergeTrains::TrainStatusEnum,
         required: false,
-        description: 'Filter merge trains by a specific status. Defaults to ACTIVE.',
-        default_value: "active"
+        description: 'Filter merge trains by a specific status.'
+
       argument :target_branches,
         [GraphQL::Types::String],
         required: false,
         description: 'Filter merge trains by a list of target branches.'
 
-      def resolve(status:, target_branches: [])
+      def resolve(status: nil, target_branches: [])
         ensure_feature_available
 
         authorize!

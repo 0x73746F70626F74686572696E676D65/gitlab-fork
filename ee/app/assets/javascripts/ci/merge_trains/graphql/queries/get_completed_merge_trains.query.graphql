@@ -3,7 +3,7 @@
 
 query getCompletedMergeTrains(
   $fullPath: ID!
-  $status: MergeTrainStatus = COMPLETED
+  $activityStatus: MergeTrainStatus = COMPLETED
   $targetBranch: String!
   $after: String
   $before: String
@@ -12,10 +12,16 @@ query getCompletedMergeTrains(
 ) {
   project(fullPath: $fullPath) {
     id
-    mergeTrains(status: $status, targetBranches: [$targetBranch]) {
+    mergeTrains(targetBranches: [$targetBranch]) {
       nodes {
         targetBranch
-        cars(activityStatus: $status, after: $after, before: $before, first: $first, last: $last) {
+        cars(
+          activityStatus: $activityStatus
+          after: $after
+          before: $before
+          first: $first
+          last: $last
+        ) {
           count
           nodes {
             ...Car

@@ -28785,7 +28785,7 @@ four standard [pagination arguments](#pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectmergetrainsstatus"></a>`status` | [`MergeTrainStatus`](#mergetrainstatus) | Filter merge trains by a specific status. Defaults to ACTIVE. |
+| <a id="projectmergetrainsstatus"></a>`status` | [`MergeTrainStatus`](#mergetrainstatus) | Filter merge trains by a specific status. |
 | <a id="projectmergetrainstargetbranches"></a>`targetBranches` | [`[String!]`](#string) | Filter merge trains by a list of target branches. |
 
 ##### `Project.milestones`

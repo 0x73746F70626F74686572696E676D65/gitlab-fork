@@ -4,6 +4,7 @@
 query getActiveMergeTrains(
   $fullPath: ID!
   $targetBranch: String!
+  $status: MergeTrainStatus = ACTIVE
   $after: String
   $before: String
   $first: Int
@@ -11,7 +12,7 @@ query getActiveMergeTrains(
 ) {
   project(fullPath: $fullPath) {
     id
-    mergeTrains(targetBranches: [$targetBranch]) {
+    mergeTrains(targetBranches: [$targetBranch], status: $status) {
       nodes {
         targetBranch
         cars(after: $after, before: $before, first: $first, last: $last) {

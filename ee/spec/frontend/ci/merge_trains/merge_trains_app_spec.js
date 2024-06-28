@@ -93,9 +93,12 @@ describe('MergeTrainsApp', () => {
         last: null,
       };
 
-      expect(activeTrainsHandler).toHaveBeenCalledWith(expectedVariables);
+      expect(activeTrainsHandler).toHaveBeenCalledWith({
+        status: 'ACTIVE',
+        ...expectedVariables,
+      });
       expect(mergedTrainsHandler).toHaveBeenCalledWith({
-        status: 'COMPLETED',
+        activityStatus: 'COMPLETED',
         ...expectedVariables,
       });
     });
@@ -120,9 +123,12 @@ describe('MergeTrainsApp', () => {
         last: null,
       };
 
-      expect(activeTrainsHandler).toHaveBeenCalledWith(expectedVariables);
+      expect(activeTrainsHandler).toHaveBeenCalledWith({
+        status: 'ACTIVE',
+        ...expectedVariables,
+      });
       expect(mergedTrainsHandler).toHaveBeenCalledWith({
-        status: 'COMPLETED',
+        activityStatus: 'COMPLETED',
         ...expectedVariables,
       });
     });
@@ -146,6 +152,7 @@ describe('MergeTrainsApp', () => {
       expect(activeTrainsHandler).toHaveBeenCalledWith({
         fullPath: 'namespace/project',
         targetBranch: 'master',
+        status: 'ACTIVE',
         ...paginationInfo,
       });
     });
