@@ -6,15 +6,13 @@ export const headerData = {
 };
 
 export const imageData = {
-  name:
-    'projects/dev-package-container-96a3ff34/locations/us-east1/repositories/myrepo/dockerImages/alpine@sha256:6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
+  name: 'projects/dev-package-container-96a3ff34/locations/us-east1/repositories/myrepo/dockerImages/alpine@sha256:6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
   image: 'alpine',
   digest: 'sha256:1234567890abcdef1234567890abcdef12345678',
   tags: ['latest', 'v1.0.0', 'v1.0.1'],
   uploadTime: '2019-01-01T00:00:00Z',
   updateTime: '2020-01-01T00:00:00Z',
-  uri:
-    'us-east1-docker.pkg.dev/dev-package-container-96a3ff34/myrepo/alpine@sha256:6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
+  uri: 'us-east1-docker.pkg.dev/dev-package-container-96a3ff34/myrepo/alpine@sha256:6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
 };
 
 export const imageDetailsFields = {

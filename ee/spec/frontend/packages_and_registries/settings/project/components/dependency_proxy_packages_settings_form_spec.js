@@ -26,11 +26,8 @@ describe('Dependency proxy packages settings form', () => {
     data: { ...dependencyProxyPackagesSettingsData },
   };
 
-  const {
-    enabled,
-    mavenExternalRegistryUrl,
-    mavenExternalRegistryUsername,
-  } = dependencyProxyPackagesSettingsData;
+  const { enabled, mavenExternalRegistryUrl, mavenExternalRegistryUsername } =
+    dependencyProxyPackagesSettingsData;
 
   const defaultProvidedValues = {
     projectPath: 'path',

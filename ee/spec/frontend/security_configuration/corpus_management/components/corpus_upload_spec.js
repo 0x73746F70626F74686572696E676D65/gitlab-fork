@@ -10,12 +10,14 @@ describe('Corpus Upload', () => {
   const findTotalSizeText = () => wrapper.find('[data-testid="total-size"]');
   const defaultProps = { totalSize: 4e8 };
 
-  const createComponentFactory = (mountFn = mount) => (options = {}) => {
-    wrapper = mountFn(CorpusUpload, {
-      propsData: defaultProps,
-      ...options,
-    });
-  };
+  const createComponentFactory =
+    (mountFn = mount) =>
+    (options = {}) => {
+      wrapper = mountFn(CorpusUpload, {
+        propsData: defaultProps,
+        ...options,
+      });
+    };
 
   const createComponent = createComponentFactory();
 

@@ -56,49 +56,51 @@ describe('EE - DAST Configuration Form', () => {
   const findPreScanVerificationConfigurator = () =>
     wrapper.findComponent(PreScanVerificationConfigurator);
 
-  const createComponentFactory = (mountFn = shallowMount) => (options = {}, glFeatures = {}) => {
-    const defaultMocks = {
-      $apollo: {
-        queries: {
-          siteProfiles: {},
-          scannerProfiles: {},
+  const createComponentFactory =
+    (mountFn = shallowMount) =>
+    (options = {}, glFeatures = {}) => {
+      const defaultMocks = {
+        $apollo: {
+          queries: {
+            siteProfiles: {},
+            scannerProfiles: {},
+          },
         },
-      },
-    };
+      };
 
-    wrapper = extendedWrapper(
-      mountFn(
-        ConfigurationForm,
-        merge(
-          {},
-          {
-            mocks: defaultMocks,
-            provide: {
-              securityConfigurationPath,
-              gitlabCiYamlEditPath,
-              scannerProfilesLibraryPath,
-              siteProfilesLibraryPath,
-              projectPath,
-              scannerProfile: savedScannerProfile,
-              siteProfile: savedSiteProfile,
-              ...glFeatures,
+      wrapper = extendedWrapper(
+        mountFn(
+          ConfigurationForm,
+          merge(
+            {},
+            {
+              mocks: defaultMocks,
+              provide: {
+                securityConfigurationPath,
+                gitlabCiYamlEditPath,
+                scannerProfilesLibraryPath,
+                siteProfilesLibraryPath,
+                projectPath,
+                scannerProfile: savedScannerProfile,
+                siteProfile: savedSiteProfile,
+                ...glFeatures,
+              },
+              stubs: {
+                GlSprintf,
+              },
             },
-            stubs: {
-              GlSprintf,
+            options,
+            {
+              data() {
+                return {
+                  ...options.data,
+                };
+              },
             },
-          },
-          options,
-          {
-            data() {
-              return {
-                ...options.data,
-              };
-            },
-          },
+          ),
         ),
-      ),
-    );
-  };
+      );
+    };
 
   const createComponent = createComponentFactory();
   const createFullComponent = createComponentFactory(mount);

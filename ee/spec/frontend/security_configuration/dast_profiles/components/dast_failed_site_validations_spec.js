@@ -35,27 +35,29 @@ describe('EE - DastFailedSiteValidations', () => {
     ]);
   };
 
-  const createComponentFactory = (mountFn = shallowMount) => (options = {}, handlers) => {
-    const defaultProps = {
-      fullPath: TEST_PROJECT_FULL_PATH,
-    };
+  const createComponentFactory =
+    (mountFn = shallowMount) =>
+    (options = {}, handlers) => {
+      const defaultProps = {
+        fullPath: TEST_PROJECT_FULL_PATH,
+      };
 
-    wrapper = extendedWrapper(
-      mountFn(
-        DastFailedSiteValidations,
-        merge(
-          {
-            propsData: defaultProps,
-            apolloProvider: createMockApolloProvider(handlers),
-            stubs: {
-              GlModal,
+      wrapper = extendedWrapper(
+        mountFn(
+          DastFailedSiteValidations,
+          merge(
+            {
+              propsData: defaultProps,
+              apolloProvider: createMockApolloProvider(handlers),
+              stubs: {
+                GlModal,
+              },
             },
-          },
-          options,
+            options,
+          ),
         ),
-      ),
-    );
-  };
+      );
+    };
 
   const createFullComponent = createComponentFactory(mount);
 

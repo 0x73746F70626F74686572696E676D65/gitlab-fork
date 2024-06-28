@@ -115,9 +115,8 @@ export default {
       return this.mappedParticipants[userIndex].class;
     },
     getActionName(rule) {
-      return (this.hasEscalationSchedule(rule)
-        ? ACTIONS[EMAIL_ONCALL_SCHEDULE_USER]
-        : ACTIONS[EMAIL_USER]
+      return (
+        this.hasEscalationSchedule(rule) ? ACTIONS[EMAIL_ONCALL_SCHEDULE_USER] : ACTIONS[EMAIL_USER]
       ).toLowerCase();
     },
     getArrowLength(index) {

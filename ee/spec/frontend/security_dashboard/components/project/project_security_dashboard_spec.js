@@ -84,14 +84,14 @@ describe('Project Security Dashboard component', () => {
         const series = findLineChart()
           .props('data')
           .find(({ key }) => key === severity);
-        const trendingData = mockProjectSecurityChartsWithData().data.project
-          .vulnerabilitiesCountByDay.nodes;
+        const trendingData =
+          mockProjectSecurityChartsWithData().data.project.vulnerabilitiesCountByDay.nodes;
 
         const todaysTrendingSeverityCount = trendingData.find(({ date }) => date === todayIso)[
           severity
         ];
-        const latestSeverityCount = mockSeverityCountsWithData().data.project
-          .vulnerabilitySeveritiesCount[severity];
+        const latestSeverityCount =
+          mockSeverityCountsWithData().data.project.vulnerabilitySeveritiesCount[severity];
 
         const [lastSeriesDate, lastSeriesCount] = series.data.at(-1);
 

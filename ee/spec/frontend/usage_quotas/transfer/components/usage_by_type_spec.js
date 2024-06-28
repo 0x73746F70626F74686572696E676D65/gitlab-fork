@@ -14,9 +14,8 @@ import { getProjectDataTransferEgressResponse } from '../mock_data';
 describe('UsageByType', () => {
   let wrapper;
 
-  const {
-    nodes: egressNodes,
-  } = getProjectDataTransferEgressResponse.data.project.dataTransfer.egressNodes;
+  const { nodes: egressNodes } =
+    getProjectDataTransferEgressResponse.data.project.dataTransfer.egressNodes;
 
   const defaultPropsData = {
     egressNodes,

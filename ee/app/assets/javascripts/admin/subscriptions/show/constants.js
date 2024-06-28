@@ -106,8 +106,10 @@ export const SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT = 'subscription-activation-
 export const INVALID_ACTIVATION_CODE_SERVER_ERROR = 'invalid activation code';
 export const EXPIRED_LICENSE_SERVER_ERROR = 'This license has already expired.';
 export const SUBSCRIPTION_NOT_FOUND_SERVER_ERROR = 'without cloud compatible subscription';
-export const SUBSCRIPTION_OVERAGES_SERVER_ERROR_REGEX = /(This GitLab installation currently has|During the year before this license started, this GitLab installation had) (\d+) active users?, exceeding this license's limit of (\d+) by (\d+) users?\. Please add a license for at least (\d+) users? or contact sales at https:\/\/about\.gitlab\.com\/sales\//;
-export const SUBSCRIPTION_INSUFFICIENT_TRUE_UP_SERVER_ERROR_REGEX = /You have applied a True-up for (\d+) users? but you need one for (\d+) users?\. Please contact sales at https:\/\/about\.gitlab\.com\/sales\//;
+export const SUBSCRIPTION_OVERAGES_SERVER_ERROR_REGEX =
+  /(This GitLab installation currently has|During the year before this license started, this GitLab installation had) (\d+) active users?, exceeding this license's limit of (\d+) by (\d+) users?\. Please add a license for at least (\d+) users? or contact sales at https:\/\/about\.gitlab\.com\/sales\//;
+export const SUBSCRIPTION_INSUFFICIENT_TRUE_UP_SERVER_ERROR_REGEX =
+  /You have applied a True-up for (\d+) users? but you need one for (\d+) users?\. Please contact sales at https:\/\/about\.gitlab\.com\/sales\//;
 
 export const CONNECTIVITY_ERROR = 'CONNECTIVITY_ERROR';
 export const INVALID_CODE_ERROR = 'INVALID_CODE_ERROR';

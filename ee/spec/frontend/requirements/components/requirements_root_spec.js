@@ -763,9 +763,8 @@ describe('RequirementsRoot', () => {
         findFilteredSearchBarRoot().vm.$emit('onFilter', mockFilters);
         await nextTick();
 
-        const [author1, author2, status, search] = findFilteredSearchBarRoot().props(
-          'initialFilterValue',
-        );
+        const [author1, author2, status, search] =
+          findFilteredSearchBarRoot().props('initialFilterValue');
 
         expect(author1).toEqual({ type: 'author', value: { data: 'root' } });
         expect(author2).toEqual({ type: 'author', value: { data: 'john.doe' } });
@@ -798,9 +797,8 @@ describe('RequirementsRoot', () => {
 
         findFilteredSearchBarRoot().vm.$emit('onFilter', []);
 
-        const [author1, author2, status, search] = findFilteredSearchBarRoot().props(
-          'initialFilterValue',
-        );
+        const [author1, author2, status, search] =
+          findFilteredSearchBarRoot().props('initialFilterValue');
 
         expect(author1).toEqual({ type: 'author', value: { data: 'root' } });
         expect(author2).toEqual({ type: 'author', value: { data: 'john.doe' } });

@@ -46,18 +46,20 @@ describe('EE - DastSiteProfileList', () => {
     return createApolloProvider([[dastSiteValidationsQuery, requestHandlers.dastSiteValidations]]);
   };
 
-  const wrapperFactory = (mountFn = shallowMount) => (options = {}, handlers) => {
-    apolloProvider = handlers && createMockApolloProvider(handlers);
-    wrapper = mountFn(
-      Component,
-      merge(
-        {
-          propsData: defaultProps,
-        },
-        { ...options, apolloProvider },
-      ),
-    );
-  };
+  const wrapperFactory =
+    (mountFn = shallowMount) =>
+    (options = {}, handlers) => {
+      apolloProvider = handlers && createMockApolloProvider(handlers);
+      wrapper = mountFn(
+        Component,
+        merge(
+          {
+            propsData: defaultProps,
+          },
+          { ...options, apolloProvider },
+        ),
+      );
+    };
   const createComponent = wrapperFactory();
   const createFullComponent = wrapperFactory(mount);
 

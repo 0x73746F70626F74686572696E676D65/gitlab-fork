@@ -134,9 +134,8 @@ describe('Insights chart component', () => {
             `(
               'filterLabels=$filterLabels, groupBy=$groupBy and collectionLabels=$collectionLabels',
               ({ filterLabels, collectionLabels, groupBy, chartItemData, expectedParams }) => {
-                const { groupPathSuffix, projectPathSuffix } = INSIGHTS_CHART_ITEM_SETTINGS[
-                  dataSourceType
-                ];
+                const { groupPathSuffix, projectPathSuffix } =
+                  INSIGHTS_CHART_ITEM_SETTINGS[dataSourceType];
                 const mockRelativeUrl = '/gitlab';
 
                 it('should emit `chart-item-clicked` event', () => {
@@ -278,9 +277,8 @@ describe('Insights chart component', () => {
             `(
               'filterLabels=$filterLabels, groupBy=$groupBy and collectionLabels=$collectionLabels',
               ({ filterLabels, collectionLabels, groupBy, chartItemData, expectedParams }) => {
-                const { groupPathSuffix, projectPathSuffix } = INSIGHTS_CHART_ITEM_SETTINGS[
-                  dataSourceType
-                ];
+                const { groupPathSuffix, projectPathSuffix } =
+                  INSIGHTS_CHART_ITEM_SETTINGS[dataSourceType];
                 const mockRelativeUrl = '/gitlab';
 
                 it('should emit `chart-item-clicked` event', () => {

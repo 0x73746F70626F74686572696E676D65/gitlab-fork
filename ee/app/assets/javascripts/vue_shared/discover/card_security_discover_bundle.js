@@ -8,15 +8,8 @@ export default () => {
     return null;
   }
 
-  const {
-    groupId,
-    groupName,
-    projectId,
-    projectName,
-    projectPersonal,
-    linkMain,
-    linkSecondary,
-  } = securityTab.dataset;
+  const { groupId, groupName, projectId, projectName, projectPersonal, linkMain, linkSecondary } =
+    securityTab.dataset;
 
   const props = {
     project: {

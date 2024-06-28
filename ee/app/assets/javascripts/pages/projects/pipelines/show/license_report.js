@@ -13,12 +13,8 @@ export default () => {
   const licensesTab = document.getElementById('js-licenses-app');
 
   if (licensesTab) {
-    const {
-      canManageLicenses,
-      apiUrl,
-      licensesApiPath,
-      securityPoliciesPath,
-    } = licensesTab.dataset;
+    const { canManageLicenses, apiUrl, licensesApiPath, securityPoliciesPath } =
+      licensesTab.dataset;
 
     // eslint-disable-next-line no-new
     new Vue({

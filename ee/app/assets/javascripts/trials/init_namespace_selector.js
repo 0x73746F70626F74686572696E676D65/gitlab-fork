@@ -12,12 +12,8 @@ export const initNamespaceSelector = () => {
   }
 
   const items = JSON.parse(el.dataset.items);
-  const {
-    anyTrialEligibleNamespaces,
-    newGroupName,
-    initialValue,
-    namespaceCreateErrors,
-  } = el.dataset;
+  const { anyTrialEligibleNamespaces, newGroupName, initialValue, namespaceCreateErrors } =
+    el.dataset;
 
   return new Vue({
     el,

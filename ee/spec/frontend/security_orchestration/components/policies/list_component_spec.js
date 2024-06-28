@@ -26,35 +26,37 @@ const namespacePath = 'path/to/project/or/group';
 describe('List component', () => {
   let wrapper;
 
-  const factory = (mountFn = mountExtended) => ({ props = {}, provide = {} } = {}) => {
-    wrapper = mountFn(ListComponent, {
-      propsData: {
-        policiesByType: {
-          [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: mockScanExecutionPoliciesResponse,
-          [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: mockScanResultPoliciesResponse,
-        },
-        ...props,
-      },
-      provide: {
-        disableScanPolicyUpdate: false,
-        namespacePath,
-        namespaceType: NAMESPACE_TYPES.PROJECT,
-        ...provide,
-      },
-      stubs: {
-        DrawerWrapper: stubComponent(DrawerWrapper, {
-          props: {
-            ...DrawerWrapper.props,
-            ...GlDrawer.props,
+  const factory =
+    (mountFn = mountExtended) =>
+    ({ props = {}, provide = {} } = {}) => {
+      wrapper = mountFn(ListComponent, {
+        propsData: {
+          policiesByType: {
+            [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]: mockScanExecutionPoliciesResponse,
+            [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: mockScanResultPoliciesResponse,
           },
-        }),
-        NoPoliciesEmptyState: true,
-      },
-    });
+          ...props,
+        },
+        provide: {
+          disableScanPolicyUpdate: false,
+          namespacePath,
+          namespaceType: NAMESPACE_TYPES.PROJECT,
+          ...provide,
+        },
+        stubs: {
+          DrawerWrapper: stubComponent(DrawerWrapper, {
+            props: {
+              ...DrawerWrapper.props,
+              ...GlDrawer.props,
+            },
+          }),
+          NoPoliciesEmptyState: true,
+        },
+      });
 
-    document.title = 'Test title';
-    jest.spyOn(urlUtils, 'updateHistory');
-  };
+      document.title = 'Test title';
+      jest.spyOn(urlUtils, 'updateHistory');
+    };
   const mountShallowWrapper = factory(shallowMountExtended);
   const mountWrapper = factory();
 
@@ -326,11 +328,11 @@ describe('List component', () => {
           mountWrapper({
             props: {
               policiesByType: {
-                [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION
-                  .value]: mockScanExecutionPoliciesResponse,
+                [POLICY_TYPE_FILTER_OPTIONS.SCAN_EXECUTION.value]:
+                  mockScanExecutionPoliciesResponse,
                 [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: mockScanResultPoliciesResponse,
-                [PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION
-                  .value]: mockPipelineExecutionPoliciesResponse,
+                [PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value]:
+                  mockPipelineExecutionPoliciesResponse,
               },
             },
             provide: {

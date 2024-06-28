@@ -191,9 +191,8 @@ export default {
       return this.isProject ? this.fullPath : joinPaths('groups', this.fullPath);
     },
     drillThroughPathSuffix() {
-      const { groupPathSuffix, projectPathSuffix } = INSIGHTS_CHART_ITEM_SETTINGS[
-        this.dataSourceType
-      ];
+      const { groupPathSuffix, projectPathSuffix } =
+        INSIGHTS_CHART_ITEM_SETTINGS[this.dataSourceType];
 
       return this.isProject ? projectPathSuffix : groupPathSuffix;
     },

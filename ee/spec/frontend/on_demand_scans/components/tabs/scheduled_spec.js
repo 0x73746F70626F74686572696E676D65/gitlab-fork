@@ -43,32 +43,34 @@ describe('Scheduled tab', () => {
     return createMockApollo([[scheduledDastProfilesQuery, requestHandler]]);
   };
 
-  const createComponentFactory = (mountFn = shallowMountExtended) => (options = {}) => {
-    router = createRouter();
-    wrapper = mountFn(
-      ScheduledTab,
-      merge(
-        {
-          apolloProvider: createMockApolloProvider(),
-          router,
-          propsData: {
-            isActive: true,
-            itemsCount,
+  const createComponentFactory =
+    (mountFn = shallowMountExtended) =>
+    (options = {}) => {
+      router = createRouter();
+      wrapper = mountFn(
+        ScheduledTab,
+        merge(
+          {
+            apolloProvider: createMockApolloProvider(),
+            router,
+            propsData: {
+              isActive: true,
+              itemsCount,
+            },
+            provide: {
+              canEditOnDemandScans: false,
+              projectPath,
+              projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
+              timezones: mockTimezones,
+            },
+            stubs: {
+              BaseTab,
+            },
           },
-          provide: {
-            canEditOnDemandScans: false,
-            projectPath,
-            projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
-            timezones: mockTimezones,
-          },
-          stubs: {
-            BaseTab,
-          },
-        },
-        options,
-      ),
-    );
-  };
+          options,
+        ),
+      );
+    };
 
   const createComponent = createComponentFactory();
   const createFullComponent = createComponentFactory(mountExtended);

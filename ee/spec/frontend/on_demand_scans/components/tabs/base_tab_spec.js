@@ -69,32 +69,31 @@ describe('BaseTab', () => {
     await nextTick();
   };
 
-  const createComponentFactory = (mountFn = shallowMountExtended) => (
-    options = {},
-    canEditOnDemandScans = true,
-  ) => {
-    router = createRouter();
-    wrapper = mountFn(
-      BaseTab,
-      merge(
-        {
-          apolloProvider: createMockApolloProvider(),
-          router,
-          propsData: {
-            isActive: true,
-            title: 'All',
-            query: onDemandScansQuery,
-            itemsCount: 0,
-            fields: BASE_TABS_TABLE_FIELDS,
-          },
-          provide: {
-            canEditOnDemandScans,
-            projectPath,
-            projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
-          },
-          stubs: {
-            GlTab: stubComponent(GlTab, {
-              template: `
+  const createComponentFactory =
+    (mountFn = shallowMountExtended) =>
+    (options = {}, canEditOnDemandScans = true) => {
+      router = createRouter();
+      wrapper = mountFn(
+        BaseTab,
+        merge(
+          {
+            apolloProvider: createMockApolloProvider(),
+            router,
+            propsData: {
+              isActive: true,
+              title: 'All',
+              query: onDemandScansQuery,
+              itemsCount: 0,
+              fields: BASE_TABS_TABLE_FIELDS,
+            },
+            provide: {
+              canEditOnDemandScans,
+              projectPath,
+              projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
+            },
+            stubs: {
+              GlTab: stubComponent(GlTab, {
+                template: `
             <div>
               <span data-testid="tab-title">
                 <slot name="title" />
@@ -102,16 +101,16 @@ describe('BaseTab', () => {
               <slot />
             </div>
           `,
-            }),
-            GlTable: stubComponent(GlTable, {
-              props: ['items', 'busy'],
-            }),
+              }),
+              GlTable: stubComponent(GlTable, {
+                props: ['items', 'busy'],
+              }),
+            },
           },
-        },
-        options,
-      ),
-    );
-  };
+          options,
+        ),
+      );
+    };
 
   const createComponent = createComponentFactory();
   const createFullComponent = createComponentFactory(mountExtended);
@@ -355,7 +354,8 @@ describe('BaseTab', () => {
     beforeEach(() => {
       const allPipelinesWithPipelinesMockCopy = cloneDeep(allPipelinesWithPipelinesMock);
       const pipelineWithoutDastProfile = { ...firstPipeline, dastProfile: null };
-      allPipelinesWithPipelinesMockCopy.data.project.pipelines.nodes[0] = pipelineWithoutDastProfile;
+      allPipelinesWithPipelinesMockCopy.data.project.pipelines.nodes[0] =
+        pipelineWithoutDastProfile;
 
       requestHandler = jest.fn().mockResolvedValue(allPipelinesWithPipelinesMockCopy);
       createFullComponent({

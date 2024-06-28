@@ -22,8 +22,7 @@ export default function createRouter(base, breadCrumbState) {
       },
       {
         name: 'details',
-        path:
-          '/projects/:projectId/locations/:location/repositories/:repository/dockerImages/:image',
+        path: '/projects/:projectId/locations/:location/repositories/:repository/dockerImages/:image',
         component: Details,
         meta: {
           nameGenerator: () => breadCrumbState.name,

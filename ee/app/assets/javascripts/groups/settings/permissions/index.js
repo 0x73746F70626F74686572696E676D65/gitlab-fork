@@ -64,9 +64,8 @@ const onGroupPermissionsFormSubmit = (event) => {
   if (!newUserSignupsCapInput) {
     return;
   }
-  const {
-    dirtySubmitOriginalValue: newUserSignupsCapOriginalValue,
-  } = newUserSignupsCapInput.dataset;
+  const { dirtySubmitOriginalValue: newUserSignupsCapOriginalValue } =
+    newUserSignupsCapInput.dataset;
 
   if (
     shouldShowConfirmModal(

@@ -208,14 +208,8 @@ export default {
         : this.$options.DAST_PROXY_MASKING_PATH;
     },
     mutationVariables() {
-      const {
-        profileName,
-        targetUrl,
-        targetType,
-        requestHeaders,
-        scanMethod,
-        scanFilePath,
-      } = serializeFormObject(this.form.fields);
+      const { profileName, targetUrl, targetType, requestHeaders, scanMethod, scanFilePath } =
+        serializeFormObject(this.form.fields);
 
       return {
         ...(this.isEdit ? { id: this.profile.id } : { fullPath: this.projectFullPath }),

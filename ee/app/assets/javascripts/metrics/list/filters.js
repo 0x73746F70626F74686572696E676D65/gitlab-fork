@@ -41,10 +41,8 @@ export function filterObjToFilterToken(filters) {
 }
 
 export function filterTokensToFilterObj(tokens) {
-  const {
-    [FILTERED_SEARCH_TERM]: search,
-    [ATTRIBUTE_FILTER_TOKEN_TYPE]: attribute,
-  } = processFilters(tokens);
+  const { [FILTERED_SEARCH_TERM]: search, [ATTRIBUTE_FILTER_TOKEN_TYPE]: attribute } =
+    processFilters(tokens);
 
   return {
     search,

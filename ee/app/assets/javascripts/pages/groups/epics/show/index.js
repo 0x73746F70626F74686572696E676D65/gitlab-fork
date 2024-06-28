@@ -8,9 +8,7 @@ import initAwardsApp from '~/emoji/awards_app';
 initNotesApp();
 initEpicApp();
 
-import('ee/linked_epics/linked_epics_bundle')
-  .then((m) => m.default())
-  .catch(() => {});
+import('ee/linked_epics/linked_epics_bundle').then((m) => m.default()).catch(() => {});
 
 requestIdleCallback(() => {
   addShortcutsExtension(ShortcutsEpic);

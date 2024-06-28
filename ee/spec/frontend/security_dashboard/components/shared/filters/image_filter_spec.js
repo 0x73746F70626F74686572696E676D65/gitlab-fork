@@ -183,9 +183,10 @@ describe('ImageFilter component', () => {
   describe('agent page', () => {
     const agentName = 'test-agent-name';
 
-    const agentMockImages = agentVulnerabilityImages.data.project.clusterAgent.vulnerabilityImages.nodes.map(
-      ({ name }) => name,
-    );
+    const agentMockImages =
+      agentVulnerabilityImages.data.project.clusterAgent.vulnerabilityImages.nodes.map(
+        ({ name }) => name,
+      );
 
     beforeEach(async () => {
       createWrapper({ provide: { agentName } });

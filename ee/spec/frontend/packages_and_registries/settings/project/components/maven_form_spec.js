@@ -6,10 +6,8 @@ import { dependencyProxyPackagesSettingsData } from '../mock_data';
 describe('maven form', () => {
   let wrapper;
 
-  const {
-    mavenExternalRegistryUrl,
-    mavenExternalRegistryUsername,
-  } = dependencyProxyPackagesSettingsData;
+  const { mavenExternalRegistryUrl, mavenExternalRegistryUsername } =
+    dependencyProxyPackagesSettingsData;
 
   const defaultProps = {
     value: {

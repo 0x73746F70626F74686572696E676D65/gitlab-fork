@@ -10,12 +10,8 @@ export default () => {
     return;
   }
 
-  const {
-    projectFullPath,
-    profilesLibraryPath,
-    onDemandScanFormPath,
-    dastConfigurationPath,
-  } = el.dataset;
+  const { projectFullPath, profilesLibraryPath, onDemandScanFormPath, dastConfigurationPath } =
+    el.dataset;
 
   const props = { projectFullPath };
 

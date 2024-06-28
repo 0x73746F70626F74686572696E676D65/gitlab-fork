@@ -79,9 +79,9 @@ export const SCAN_EXECUTION_ACTIONS = {
   [EXECUTE_YAML_ACTION]: s__('ScanExecutionPolicy|Run CI/CD code'),
 };
 
-export const SCAN_EXECUTION_ACTIONS_LISTBOX_ITEMS = Object.entries(
-  SCAN_EXECUTION_ACTIONS,
-).map(([value, text]) => ({ value, text }));
+export const SCAN_EXECUTION_ACTIONS_LISTBOX_ITEMS = Object.entries(SCAN_EXECUTION_ACTIONS).map(
+  ([value, text]) => ({ value, text }),
+);
 export const SCAN_EXECUTION_ACTIONS_KEYS = Object.keys(SCAN_EXECUTION_ACTIONS);
 
 export const INSERTED_CODE_BLOCK = 'inserted_code_block';
@@ -94,9 +94,9 @@ export const CUSTOM_ACTION_OPTIONS = {
 };
 
 export const CUSTOM_ACTION_OPTIONS_KEYS = Object.keys(CUSTOM_ACTION_OPTIONS);
-export const CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS = Object.entries(
-  CUSTOM_ACTION_OPTIONS,
-).map(([value, text]) => ({ value, text }));
+export const CUSTOM_ACTION_OPTIONS_LISTBOX_ITEMS = Object.entries(CUSTOM_ACTION_OPTIONS).map(
+  ([value, text]) => ({ value, text }),
+);
 
 export const INJECT = 'inject_ci';
 export const OVERRIDE = 'override_project_ci';
@@ -107,6 +107,6 @@ export const CUSTOM_STRATEGY_OPTIONS = {
 };
 
 export const CUSTOM_STRATEGY_OPTIONS_KEYS = Object.keys(CUSTOM_STRATEGY_OPTIONS);
-export const CUSTOM_STRATEGY_OPTIONS_LISTBOX_ITEMS = Object.entries(
-  CUSTOM_STRATEGY_OPTIONS,
-).map(([value, text]) => ({ value, text }));
+export const CUSTOM_STRATEGY_OPTIONS_LISTBOX_ITEMS = Object.entries(CUSTOM_STRATEGY_OPTIONS).map(
+  ([value, text]) => ({ value, text }),
+);

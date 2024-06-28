@@ -20,13 +20,8 @@ const router = new VueRouter({ mode: 'history' });
 const codeOwnersEl = document.querySelector('#js-code-owners');
 
 if (codeOwnersEl) {
-  const {
-    blobPath,
-    projectPath,
-    branch,
-    canViewBranchRules,
-    branchRulesPath,
-  } = codeOwnersEl.dataset;
+  const { blobPath, projectPath, branch, canViewBranchRules, branchRulesPath } =
+    codeOwnersEl.dataset;
 
   // eslint-disable-next-line no-new
   new Vue({

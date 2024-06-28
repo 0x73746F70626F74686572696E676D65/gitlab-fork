@@ -71,13 +71,15 @@ export function removeAuditEventsStreamingDestination({ store, fullPath, destina
 
   const data = produce(sourceData, (draftData) => {
     if (fullPath === 'instance') {
-      draftData.instanceExternalAuditEventDestinations.nodes = draftData.instanceExternalAuditEventDestinations.nodes.filter(
-        (node) => node.id !== destinationId,
-      );
+      draftData.instanceExternalAuditEventDestinations.nodes =
+        draftData.instanceExternalAuditEventDestinations.nodes.filter(
+          (node) => node.id !== destinationId,
+        );
     } else {
-      draftData.group.externalAuditEventDestinations.nodes = draftData.group.externalAuditEventDestinations.nodes.filter(
-        (node) => node.id !== destinationId,
-      );
+      draftData.group.externalAuditEventDestinations.nodes =
+        draftData.group.externalAuditEventDestinations.nodes.filter(
+          (node) => node.id !== destinationId,
+        );
     }
   });
   store.writeQuery({ query: getDestinationQuery, variables: { fullPath }, data });
@@ -232,13 +234,15 @@ export function removeGcpLoggingAuditEventsStreamingDestination({
 
   const data = produce(sourceData, (draftData) => {
     if (fullPath === 'instance') {
-      draftData.instanceGoogleCloudLoggingConfigurations.nodes = draftData.instanceGoogleCloudLoggingConfigurations.nodes.filter(
-        (node) => node.id !== destinationId,
-      );
+      draftData.instanceGoogleCloudLoggingConfigurations.nodes =
+        draftData.instanceGoogleCloudLoggingConfigurations.nodes.filter(
+          (node) => node.id !== destinationId,
+        );
     } else {
-      draftData.group.googleCloudLoggingConfigurations.nodes = draftData.group.googleCloudLoggingConfigurations.nodes.filter(
-        (node) => node.id !== destinationId,
-      );
+      draftData.group.googleCloudLoggingConfigurations.nodes =
+        draftData.group.googleCloudLoggingConfigurations.nodes.filter(
+          (node) => node.id !== destinationId,
+        );
     }
   });
 
@@ -284,13 +288,13 @@ export function removeAmazonS3AuditEventsStreamingDestination({ store, fullPath,
 
   const data = produce(sourceData, (draftData) => {
     if (fullPath === 'instance') {
-      draftData.auditEventsInstanceAmazonS3Configurations.nodes = draftData.auditEventsInstanceAmazonS3Configurations.nodes.filter(
-        (node) => node.id !== destinationId,
-      );
+      draftData.auditEventsInstanceAmazonS3Configurations.nodes =
+        draftData.auditEventsInstanceAmazonS3Configurations.nodes.filter(
+          (node) => node.id !== destinationId,
+        );
     } else {
-      draftData.group.amazonS3Configurations.nodes = draftData.group.amazonS3Configurations.nodes.filter(
-        (node) => node.id !== destinationId,
-      );
+      draftData.group.amazonS3Configurations.nodes =
+        draftData.group.amazonS3Configurations.nodes.filter((node) => node.id !== destinationId);
     }
   });
 

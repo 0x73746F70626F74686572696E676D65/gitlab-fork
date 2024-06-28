@@ -19,17 +19,19 @@ import DependencyLocationCount from './dependency_location_count.vue';
 import DependencyProjectCount from './dependency_project_count.vue';
 import DependencyVulnerabilities from './dependency_vulnerabilities.vue';
 
-const tdClass = (defaultClasses = []) => (value, key, item) => {
-  const classes = [...defaultClasses];
+const tdClass =
+  (defaultClasses = []) =>
+  (value, key, item) => {
+    const classes = [...defaultClasses];
 
-  // Don't draw a border between a row and its `row-details` slot
-  // eslint-disable-next-line no-underscore-dangle
-  if (item._showDetails) {
-    classes.push('border-bottom-0');
-  }
+    // Don't draw a border between a row and its `row-details` slot
+    // eslint-disable-next-line no-underscore-dangle
+    if (item._showDetails) {
+      classes.push('border-bottom-0');
+    }
 
-  return classes;
-};
+    return classes;
+  };
 
 const sharedFields = [
   { key: 'component', label: DEPENDENCIES_TABLE_I18N.component, tdClass: tdClass() },

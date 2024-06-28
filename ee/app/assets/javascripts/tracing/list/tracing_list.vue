@@ -100,16 +100,14 @@ export default {
       try {
         this.loadingTraces = true;
         this.fetchTracesAbortController = new AbortController();
-        const {
-          traces,
-          next_page_token: nextPageToken,
-        } = await this.observabilityClient.fetchTraces({
-          filters: this.filters,
-          pageToken: this.nextPageToken,
-          pageSize: PAGE_SIZE,
-          sortBy: this.sortBy,
-          abortController: this.fetchTracesAbortController,
-        });
+        const { traces, next_page_token: nextPageToken } =
+          await this.observabilityClient.fetchTraces({
+            filters: this.filters,
+            pageToken: this.nextPageToken,
+            pageSize: PAGE_SIZE,
+            sortBy: this.sortBy,
+            abortController: this.fetchTracesAbortController,
+          });
         this.traces = [...this.traces, ...traces];
         if (nextPageToken) {
           this.nextPageToken = nextPageToken;

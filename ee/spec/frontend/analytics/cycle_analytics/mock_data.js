@@ -54,7 +54,8 @@ export const endpoints = {
   groupLabels: /groups\/[A-Z|a-z|\d|\-|_]+\/-\/labels.json/,
   recentActivityData: /analytics\/value_stream_analytics\/summary/,
   timeMetricsData: /analytics\/value_stream_analytics\/time_summary/,
-  durationData: /analytics\/value_stream_analytics\/value_streams\/\w+\/stages\/\w+\/average_duration_chart/,
+  durationData:
+    /analytics\/value_stream_analytics\/value_streams\/\w+\/stages\/\w+\/average_duration_chart/,
   stageData: /analytics\/value_stream_analytics\/value_streams\/\w+\/stages\/\w+\/records/,
   stageMedian: /analytics\/value_stream_analytics\/value_streams\/\w+\/stages\/\w+\/median/,
   stageCount: /analytics\/value_stream_analytics\/value_streams\/\w+\/stages\/\w+\/count/,

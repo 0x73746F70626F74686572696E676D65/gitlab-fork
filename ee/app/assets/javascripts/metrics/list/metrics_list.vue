@@ -106,13 +106,11 @@ export default {
     async fetchMetrics() {
       this.loading = true;
       try {
-        const {
-          metrics,
-          all_available_attributes: allAttributes = [],
-        } = await this.observabilityClient.fetchMetrics({
-          filters: this.filters,
-          limit: LIST_SEARCH_LIMIT,
-        });
+        const { metrics, all_available_attributes: allAttributes = [] } =
+          await this.observabilityClient.fetchMetrics({
+            filters: this.filters,
+            limit: LIST_SEARCH_LIMIT,
+          });
         this.metrics = metrics;
         this.allAttributes = allAttributes;
       } catch (e) {

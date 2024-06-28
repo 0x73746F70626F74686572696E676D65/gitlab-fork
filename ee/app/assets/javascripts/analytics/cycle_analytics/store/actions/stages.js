@@ -76,12 +76,8 @@ const fetchStageMedian = ({ namespacePath, valueStreamId, stageId, params }) =>
   });
 
 export const fetchStageMedianValues = ({ dispatch, commit, getters }) => {
-  const {
-    namespacePath,
-    cycleAnalyticsRequestParams,
-    activeStages,
-    currentValueStreamId,
-  } = getters;
+  const { namespacePath, cycleAnalyticsRequestParams, activeStages, currentValueStreamId } =
+    getters;
   const stageIds = activeStages.map((s) => s.id);
 
   dispatch('requestStageMedianValues');
@@ -113,12 +109,8 @@ const fetchStageCount = ({ namespacePath, valueStreamId, stageId, params }) =>
   });
 
 export const fetchStageCountValues = ({ commit, getters }) => {
-  const {
-    namespacePath,
-    cycleAnalyticsRequestParams,
-    activeStages,
-    currentValueStreamId,
-  } = getters;
+  const { namespacePath, cycleAnalyticsRequestParams, activeStages, currentValueStreamId } =
+    getters;
   const stageIds = activeStages.map((s) => s.id);
 
   commit(types.REQUEST_STAGE_COUNTS);

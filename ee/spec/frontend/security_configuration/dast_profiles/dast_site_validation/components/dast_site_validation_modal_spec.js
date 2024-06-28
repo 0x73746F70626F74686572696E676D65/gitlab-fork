@@ -42,32 +42,31 @@ describe('DastSiteValidationModal', () => {
 
   const pendingHandler = jest.fn(() => new Promise(() => {}));
 
-  const componentFactory = (mountFn = shallowMount) => ({
-    mountOptions = {},
-    handlers = {},
-  } = {}) => {
-    requestHandlers = { ...defaultRequestHandlers, ...handlers };
-    wrapper = mountFn(
-      DastSiteValidationModal,
-      merge(
-        {},
-        {
-          propsData: defaultProps,
-          attrs: {
-            static: true,
-            visible: true,
+  const componentFactory =
+    (mountFn = shallowMount) =>
+    ({ mountOptions = {}, handlers = {} } = {}) => {
+      requestHandlers = { ...defaultRequestHandlers, ...handlers };
+      wrapper = mountFn(
+        DastSiteValidationModal,
+        merge(
+          {},
+          {
+            propsData: defaultProps,
+            attrs: {
+              static: true,
+              visible: true,
+            },
           },
-        },
-        mountOptions,
-        {
-          apolloProvider: createApolloProvider([
-            [dastSiteTokenCreateMutation, requestHandlers.dastSiteTokenCreate],
-            [dastSiteValidationCreateMutation, requestHandlers.dastSiteValidationCreate],
-          ]),
-        },
-      ),
-    );
-  };
+          mountOptions,
+          {
+            apolloProvider: createApolloProvider([
+              [dastSiteTokenCreateMutation, requestHandlers.dastSiteTokenCreate],
+              [dastSiteValidationCreateMutation, requestHandlers.dastSiteValidationCreate],
+            ]),
+          },
+        ),
+      );
+    };
   const createComponent = componentFactory();
   const createFullComponent = componentFactory(mount);
 

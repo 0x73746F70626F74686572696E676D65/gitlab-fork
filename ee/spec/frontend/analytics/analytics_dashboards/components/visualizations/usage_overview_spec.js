@@ -160,8 +160,7 @@ describe('Usage Overview Visualization', () => {
             {
               description:
                 'To see usage overview, you must %{linkStart}enable background aggregation%{linkEnd}.',
-              link:
-                '/help/user/analytics/value_streams_dashboard.html#enable-or-disable-overview-background-aggregation',
+              link: '/help/user/analytics/value_streams_dashboard.html#enable-or-disable-overview-background-aggregation',
             },
           ],
         }),

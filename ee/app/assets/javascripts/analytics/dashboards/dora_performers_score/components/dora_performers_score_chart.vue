@@ -61,8 +61,11 @@ export default {
         return !this.fullPath;
       },
       update(data) {
-        const { noDoraDataProjectsCount = 0, nodes: items = [], totalProjectsCount = 0 } =
-          data?.group?.doraPerformanceScoreCounts || {};
+        const {
+          noDoraDataProjectsCount = 0,
+          nodes: items = [],
+          totalProjectsCount = 0,
+        } = data?.group?.doraPerformanceScoreCounts || {};
 
         return {
           totalProjectsCount,

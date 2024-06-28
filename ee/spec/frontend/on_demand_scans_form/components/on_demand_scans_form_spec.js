@@ -129,70 +129,68 @@ describe('OnDemandScansForm', () => {
     ]);
   };
 
-  const createComponentFactory = (mountFn = shallowMountExtended) => (
-    options = {},
-    withHandlers,
-    glFeatures = {},
-  ) => {
-    localVue = createLocalVue();
-    let defaultMocks = {
-      $apollo: {
-        mutate: jest.fn(),
-        queries: {
-          scannerProfiles: {},
-          siteProfiles: {},
+  const createComponentFactory =
+    (mountFn = shallowMountExtended) =>
+    (options = {}, withHandlers, glFeatures = {}) => {
+      localVue = createLocalVue();
+      let defaultMocks = {
+        $apollo: {
+          mutate: jest.fn(),
+          queries: {
+            scannerProfiles: {},
+            siteProfiles: {},
+          },
+          addSmartQuery: jest.fn(),
         },
-        addSmartQuery: jest.fn(),
-      },
+      };
+      let apolloProvider;
+      if (withHandlers) {
+        apolloProvider = createMockApolloProvider(withHandlers);
+        defaultMocks = {};
+      }
+      wrapper = mountFn(
+        OnDemandScansForm,
+        merge(
+          {},
+          {
+            propsData: {
+              defaultBranch,
+            },
+            mocks: defaultMocks,
+            provide: {
+              canEditRunnerTags: true,
+              projectPath,
+              onDemandScansPath,
+              scannerProfilesLibraryPath,
+              siteProfilesLibraryPath,
+              newScannerProfilePath,
+              newSiteProfilePath,
+              dastSiteValidationDocsPath,
+              ...glFeatures,
+            },
+            stubs: {
+              GlFormInput: GlFormInputStub,
+              RefSelector: RefSelectorStub,
+              ScanSchedule: true,
+              SectionLayout,
+              SectionLoader,
+              ConfigurationPageLayout,
+            },
+          },
+          { ...options, localVue, apolloProvider },
+          {
+            data() {
+              return {
+                scannerProfiles,
+                siteProfiles,
+                ...options.data,
+              };
+            },
+          },
+        ),
+      );
+      return wrapper;
     };
-    let apolloProvider;
-    if (withHandlers) {
-      apolloProvider = createMockApolloProvider(withHandlers);
-      defaultMocks = {};
-    }
-    wrapper = mountFn(
-      OnDemandScansForm,
-      merge(
-        {},
-        {
-          propsData: {
-            defaultBranch,
-          },
-          mocks: defaultMocks,
-          provide: {
-            canEditRunnerTags: true,
-            projectPath,
-            onDemandScansPath,
-            scannerProfilesLibraryPath,
-            siteProfilesLibraryPath,
-            newScannerProfilePath,
-            newSiteProfilePath,
-            dastSiteValidationDocsPath,
-            ...glFeatures,
-          },
-          stubs: {
-            GlFormInput: GlFormInputStub,
-            RefSelector: RefSelectorStub,
-            ScanSchedule: true,
-            SectionLayout,
-            SectionLoader,
-            ConfigurationPageLayout,
-          },
-        },
-        { ...options, localVue, apolloProvider },
-        {
-          data() {
-            return {
-              scannerProfiles,
-              siteProfiles,
-              ...options.data,
-            };
-          },
-        },
-      ),
-    );
-    return wrapper;
-  };
   const createComponent = createComponentFactory(mountExtended);
   const createShallowComponent = createComponentFactory();
 

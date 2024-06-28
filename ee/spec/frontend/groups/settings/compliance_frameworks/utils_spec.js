@@ -7,7 +7,8 @@ import {
   HTTP_STATUS_OK,
 } from '~/lib/utils/http_status';
 
-const GET_RAW_FILE_ENDPOINT = /\/api\/(.*)\/projects\/bar%2Fbaz\/repository\/files\/foo\.ya?ml\/raw/;
+const GET_RAW_FILE_ENDPOINT =
+  /\/api\/(.*)\/projects\/bar%2Fbaz\/repository\/files\/foo\.ya?ml\/raw/;
 
 describe('Utils', () => {
   let mock;

@@ -10,19 +10,21 @@ describe('Action buttons', () => {
   const findCorpusDownloadButton = () => wrapper.find('[data-testid="download-corpus"]');
   const findCorpusDestroyButton = () => wrapper.find('[data-testid="destroy-corpus"]');
 
-  const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
-    const defaultProps = {
-      corpus: corpuses[0],
+  const createComponentFactory =
+    (mountFn = shallowMount) =>
+    (options = {}) => {
+      const defaultProps = {
+        corpus: corpuses[0],
+      };
+      wrapper = mountFn(Actions, {
+        propsData: defaultProps,
+        provide: {
+          canReadCorpus: true,
+          canDestroyCorpus: true,
+        },
+        ...options,
+      });
     };
-    wrapper = mountFn(Actions, {
-      propsData: defaultProps,
-      provide: {
-        canReadCorpus: true,
-        canDestroyCorpus: true,
-      },
-      ...options,
-    });
-  };
 
   const createComponent = createComponentFactory();
 

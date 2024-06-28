@@ -52,43 +52,45 @@ describe('DastProfilesConfigurator', () => {
     await waitForPromises();
   };
 
-  const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
-    const apolloProvider = createMockApolloProvider();
+  const createComponentFactory =
+    (mountFn = shallowMount) =>
+    (options = {}) => {
+      const apolloProvider = createMockApolloProvider();
 
-    wrapper = extendedWrapper(
-      mountFn(
-        DastProfilesConfigurator,
-        merge(
-          {},
-          {
-            propsData: {
-              ...options,
+      wrapper = extendedWrapper(
+        mountFn(
+          DastProfilesConfigurator,
+          merge(
+            {},
+            {
+              propsData: {
+                ...options,
+              },
+              stubs: {
+                SectionLayout,
+                ScannerProfileSelector,
+                SiteProfileSelector,
+                GlModal: true,
+              },
+              provide: {
+                projectPath,
+              },
             },
-            stubs: {
-              SectionLayout,
-              ScannerProfileSelector,
-              SiteProfileSelector,
-              GlModal: true,
+            { ...options, apolloProvider },
+            {
+              data() {
+                return {
+                  scannerProfiles,
+                  siteProfiles,
+                  ...options.data,
+                };
+              },
             },
-            provide: {
-              projectPath,
-            },
-          },
-          { ...options, apolloProvider },
-          {
-            data() {
-              return {
-                scannerProfiles,
-                siteProfiles,
-                ...options.data,
-              };
-            },
-          },
+          ),
         ),
-      ),
-    );
-    return wrapper;
-  };
+      );
+      return wrapper;
+    };
   const createComponent = createComponentFactory(mount);
   const createShallowComponent = createComponentFactory();
 

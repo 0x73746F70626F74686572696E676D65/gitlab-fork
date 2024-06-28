@@ -5,13 +5,15 @@ import Target from 'ee/security_configuration/corpus_management/components/colum
 describe('Target', () => {
   let wrapper;
 
-  const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
-    const defaultProps = { target: '294444-apollo-management-table' };
-    wrapper = mountFn(Target, {
-      propsData: defaultProps,
-      ...options,
-    });
-  };
+  const createComponentFactory =
+    (mountFn = shallowMount) =>
+    (options = {}) => {
+      const defaultProps = { target: '294444-apollo-management-table' };
+      wrapper = mountFn(Target, {
+        propsData: defaultProps,
+        ...options,
+      });
+    };
 
   const createComponent = createComponentFactory();
 

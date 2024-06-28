@@ -57,12 +57,10 @@ export default {
           return;
         }
 
-        const {
-          clusterAgents,
-          errors,
-        } = (await this.fetchRemoteDevelopmentNamespaceAgentAuthorizationFeatureFlag(group.id))
-          ? await this.fetchRemoteDevelopmentClusterAgents(group.fullPath)
-          : await this.fetchClusterAgentsForGroupHierarchy(group.fullPath);
+        const { clusterAgents, errors } =
+          (await this.fetchRemoteDevelopmentNamespaceAgentAuthorizationFeatureFlag(group.id))
+            ? await this.fetchRemoteDevelopmentClusterAgents(group.fullPath)
+            : await this.fetchClusterAgentsForGroupHierarchy(group.fullPath);
 
         if (Array.isArray(errors) && errors.length) {
           errors.forEach((error) => logError(error));

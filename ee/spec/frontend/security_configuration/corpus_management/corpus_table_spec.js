@@ -15,21 +15,23 @@ const CORPUS = {
 describe('Corpus table', () => {
   let wrapper;
 
-  const createComponentFactory = () => (options = {}) => {
-    const defaultProps = {
-      corpuses,
-    };
+  const createComponentFactory =
+    () =>
+    (options = {}) => {
+      const defaultProps = {
+        corpuses,
+      };
 
-    wrapper = mount(CorpusTable, {
-      propsData: defaultProps,
-      provide: {
-        projectFullPath: TEST_PROJECT_FULL_PATH,
-        canReadCorpus: true,
-        canDestroyCorpus: true,
-      },
-      ...options,
-    });
-  };
+      wrapper = mount(CorpusTable, {
+        propsData: defaultProps,
+        provide: {
+          projectFullPath: TEST_PROJECT_FULL_PATH,
+          canReadCorpus: true,
+          canDestroyCorpus: true,
+        },
+        ...options,
+      });
+    };
 
   const createComponent = createComponentFactory();
 

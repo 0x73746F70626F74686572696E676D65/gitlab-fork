@@ -8,9 +8,11 @@ describe('EE - DastScanTypeBadge', () => {
 
   const findBadge = () => wrapper.findComponent(GlBadge);
 
-  const wrapperFactory = (mountFn = shallowMount) => (options = {}) => {
-    wrapper = mountFn(DastScanTypeBadge, options);
-  };
+  const wrapperFactory =
+    (mountFn = shallowMount) =>
+    (options = {}) => {
+      wrapper = mountFn(DastScanTypeBadge, options);
+    };
   const createComponent = wrapperFactory();
 
   it.each`

@@ -94,23 +94,25 @@ describe('DastSiteProfileForm', () => {
     return radio.trigger('change');
   };
 
-  const createComponentFactory = (mountFn = mountExtended) => (options = {}) => {
-    const apolloProvider = createMockApollo([], resolvers, { typePolicies });
+  const createComponentFactory =
+    (mountFn = mountExtended) =>
+    (options = {}) => {
+      const apolloProvider = createMockApollo([], resolvers, { typePolicies });
 
-    const mountOpts = merge(
-      {},
-      {
-        propsData: defaultProps,
-        provide: { glFeatures: { dastOdsBrowserBasedScanner: false } },
-      },
-      {
-        apolloProvider,
-      },
-      options,
-    );
+      const mountOpts = merge(
+        {},
+        {
+          propsData: defaultProps,
+          provide: { glFeatures: { dastOdsBrowserBasedScanner: false } },
+        },
+        {
+          apolloProvider,
+        },
+        options,
+      );
 
-    wrapper = mountFn(DastSiteProfileForm, mountOpts);
-  };
+      wrapper = mountFn(DastSiteProfileForm, mountOpts);
+    };
   const createShallowComponent = createComponentFactory(shallowMountExtended);
   const createComponent = createComponentFactory();
 

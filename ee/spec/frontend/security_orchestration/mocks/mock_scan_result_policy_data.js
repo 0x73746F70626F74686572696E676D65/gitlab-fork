@@ -32,7 +32,8 @@ actions:
       - the.one
 `;
 
-export const mockDefaultBranchesScanResultManifest = mockNoFallbackScanResultManifest.concat(`fallback_behavior:
+export const mockDefaultBranchesScanResultManifest =
+  mockNoFallbackScanResultManifest.concat(`fallback_behavior:
   fail: open
 `);
 
@@ -458,13 +459,11 @@ export const mockProjectWithAllApproverTypesScanResultPolicy = {
   },
 };
 
-export const mockProjectFallbackOpenScanResultManifest = mockDefaultBranchesScanResultManifest.concat(
-  `fallback_behavior:\n  fail: open`,
-);
+export const mockProjectFallbackOpenScanResultManifest =
+  mockDefaultBranchesScanResultManifest.concat(`fallback_behavior:\n  fail: open`);
 
-export const mockProjectFallbackClosedScanResultManifest = mockDefaultBranchesScanResultManifest.concat(
-  `fallback_behavior:\n  fail: closed`,
-);
+export const mockProjectFallbackClosedScanResultManifest =
+  mockDefaultBranchesScanResultManifest.concat(`fallback_behavior:\n  fail: closed`);
 
 export const mockScanResultPoliciesResponse = [
   mockProjectScanResultPolicy,
@@ -493,5 +492,6 @@ export const createRequiredApprovers = (count) => {
   return approvers;
 };
 
-export const mockFallbackInvalidScanResultManifest = mockDefaultBranchesScanResultManifest.concat(`fallback_behavior:
+export const mockFallbackInvalidScanResultManifest =
+  mockDefaultBranchesScanResultManifest.concat(`fallback_behavior:
   fail: something_else`);

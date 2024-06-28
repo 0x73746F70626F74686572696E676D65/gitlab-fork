@@ -9,15 +9,17 @@ describe('Name', () => {
   const findName = () => wrapper.find('[data-testid="corpus-name"]');
   const findFileSize = () => wrapper.find('[data-testid="file-size"]');
 
-  const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
-    const defaultProps = {
-      corpus: corpuses[0],
+  const createComponentFactory =
+    (mountFn = shallowMount) =>
+    (options = {}) => {
+      const defaultProps = {
+        corpus: corpuses[0],
+      };
+      wrapper = mountFn(Name, {
+        propsData: defaultProps,
+        ...options,
+      });
     };
-    wrapper = mountFn(Name, {
-      propsData: defaultProps,
-      ...options,
-    });
-  };
 
   const createComponent = createComponentFactory();
 

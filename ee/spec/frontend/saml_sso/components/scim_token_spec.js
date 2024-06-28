@@ -91,9 +91,8 @@ describe('ScimToken', () => {
 
       await waitForPromises();
 
-      const [tokenInput, apiEndpointInput] = wrapper.findAllComponents(
-        InputCopyToggleVisibility,
-      ).wrappers;
+      const [tokenInput, apiEndpointInput] =
+        wrapper.findAllComponents(InputCopyToggleVisibility).wrappers;
 
       expectInputRenderedWithProps(tokenInput, {
         formInputGroupProps: { id: ScimToken.tokenInputId, class: 'gl-form-input-xl' },
@@ -203,9 +202,8 @@ describe('ScimToken', () => {
     });
 
     it('displays hidden token and SCIM API endpoint URL', () => {
-      const [tokenInput, apiEndpointInput] = wrapper.findAllComponents(
-        InputCopyToggleVisibility,
-      ).wrappers;
+      const [tokenInput, apiEndpointInput] =
+        wrapper.findAllComponents(InputCopyToggleVisibility).wrappers;
 
       expectInputRenderedWithProps(tokenInput, {
         formInputGroupProps: { id: ScimToken.tokenInputId, class: 'gl-form-input-xl' },

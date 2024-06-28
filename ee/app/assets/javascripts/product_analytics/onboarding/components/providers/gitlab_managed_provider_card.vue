@@ -95,11 +95,8 @@ export default {
       });
 
       this.clearSettingsModalIsLoading = false;
-      const {
-        errors,
-        __typename,
-        ...updatedProjectSetting
-      } = data.productAnalyticsProjectSettingsUpdate;
+      const { errors, __typename, ...updatedProjectSetting } =
+        data.productAnalyticsProjectSettingsUpdate;
 
       if (errors?.length) {
         this.clearSettingsModalHasError = true;

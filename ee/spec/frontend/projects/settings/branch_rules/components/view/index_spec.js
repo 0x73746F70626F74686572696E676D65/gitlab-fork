@@ -119,7 +119,8 @@ describe('View branch rules in enterprise edition', () => {
       'renders code owners approval section with the correct iconTitle and description',
       async ({ codeOwnerApprovalRequired, iconTitle, description }) => {
         const mockResponse = branchProtectionsMockResponse;
-        mockResponse.data.project.branchRules.nodes[0].branchProtection.codeOwnerApprovalRequired = codeOwnerApprovalRequired;
+        mockResponse.data.project.branchRules.nodes[0].branchProtection.codeOwnerApprovalRequired =
+          codeOwnerApprovalRequired;
         await createComponent({ editBranchRules: true }, { showCodeOwners: true }, mockResponse);
 
         expect(findCodeOwnersToggle().props('iconTitle')).toEqual(iconTitle);
@@ -186,7 +187,8 @@ describe('View branch rules in enterprise edition', () => {
       'renders code owners approval section with the correct title and description',
       async ({ codeOwnerApprovalRequired, title, description }) => {
         const mockResponse = branchProtectionsMockResponse;
-        mockResponse.data.project.branchRules.nodes[0].branchProtection.codeOwnerApprovalRequired = codeOwnerApprovalRequired;
+        mockResponse.data.project.branchRules.nodes[0].branchProtection.codeOwnerApprovalRequired =
+          codeOwnerApprovalRequired;
         await createComponent({ editBranchRules: false }, { showCodeOwners: true }, mockResponse);
 
         expect(findCodeOwnersToggle().props('iconTitle')).toEqual(title);

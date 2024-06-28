@@ -47,11 +47,10 @@ const updateEscalationPolicyInStore = (store, query, { escalationPolicyUpdate },
   });
 
   const data = produce(sourceData, (draftData) => {
-    draftData.project.incidentManagementEscalationPolicies.nodes = draftData.project.incidentManagementEscalationPolicies.nodes.map(
-      (policyToUpdate) => {
+    draftData.project.incidentManagementEscalationPolicies.nodes =
+      draftData.project.incidentManagementEscalationPolicies.nodes.map((policyToUpdate) => {
         return policyToUpdate.id === policy.id ? policy : policyToUpdate;
-      },
-    );
+      });
   });
 
   store.writeQuery({
@@ -74,9 +73,10 @@ const deleteEscalationPolicFromStore = (store, query, { escalationPolicyDestroy 
   });
 
   const data = produce(sourceData, (draftData) => {
-    draftData.project.incidentManagementEscalationPolicies.nodes = draftData.project.incidentManagementEscalationPolicies.nodes.filter(
-      ({ id }) => id !== escalationPolicy.id,
-    );
+    draftData.project.incidentManagementEscalationPolicies.nodes =
+      draftData.project.incidentManagementEscalationPolicies.nodes.filter(
+        ({ id }) => id !== escalationPolicy.id,
+      );
   });
 
   store.writeQuery({
