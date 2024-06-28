@@ -265,6 +265,10 @@ module EE
       ::Feature.enabled?(:epic_and_work_item_associations_unification, self, type: :wip)
     end
 
+    def epic_and_work_item_notes_unification_enabled?
+      ::Feature.enabled?(:epic_and_work_item_notes_unification, self, type: :wip)
+    end
+
     def epic_and_work_item_labels_unification_enabled?
       ::Feature.enabled?(:epic_and_work_item_labels_unification, self, type: :wip)
     end

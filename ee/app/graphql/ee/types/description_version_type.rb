@@ -33,7 +33,6 @@ module EE
           deprecated: { reason: DEPRECATION_REASON, milestone: '15.7' }
         field :deleted, GraphQL::Types::Boolean,
           null: true,
-          method: :deleted?,
           description: 'Whether description version associated to the note metadata is deleted.',
           deprecated: { reason: DEPRECATION_REASON, milestone: '15.7' }
 
@@ -53,7 +52,11 @@ module EE
           return unless object.issuable.present? && description_diff_available?
 
           rule = "admin_#{object.issuable.class.to_ability_name}"
-          Ability.allowed?(current_user, rule, object.issuable.resource_parent)
+          Ability.allowed?(current_user, rule, object.issuable)
+        end
+
+        def deleted
+          object.deleted_at?
         end
       end
 

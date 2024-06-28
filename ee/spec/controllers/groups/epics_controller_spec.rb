@@ -472,6 +472,20 @@ RSpec.describe Groups::EpicsController, feature_category: :portfolio_management 
   it_behaves_like DescriptionDiffActions do
     let_it_be(:group)    { create(:group, :public) }
     let_it_be(:issuable) { create(:epic, group: group) }
+    let_it_be(:version_1) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
+    let_it_be(:version_2) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
+    let_it_be(:version_3) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
+
+    let(:base_params) { { group_id: group, id: issuable } }
+  end
+
+  it_behaves_like DescriptionDiffActions do
+    let_it_be(:group) { create(:group, :public) }
+    let_it_be(:epic) { create(:epic, group: group) }
+    let_it_be(:issuable) { epic.work_item }
+    let_it_be(:version_1) { create(:description_version, epic.base_class_name.underscore.to_sym => epic) }
+    let_it_be(:version_2) { create(:description_version, issuable.base_class_name.underscore.to_sym => issuable) }
+    let_it_be(:version_3) { create(:description_version, epic.base_class_name.underscore.to_sym => epic) }
 
     let(:base_params) { { group_id: group, id: issuable } }
   end

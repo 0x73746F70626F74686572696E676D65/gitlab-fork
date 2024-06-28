@@ -31,6 +31,10 @@ module EE
       def with_web_entity_associations
         super.preload(project: [:group, { namespace: :route }])
       end
+
+      def inc_relations_for_view(noteable = nil)
+        super.preload({ system_note_metadata: { description_version: [:epic] } })
+      end
     end
 
     def search_index

@@ -464,9 +464,16 @@ RSpec.describe WorkItem, :elastic_helpers, feature_category: :team_planning do
         create(:work_item, description: 'Original description', work_item_type: type, project: reusable_project)
       end
 
-      it 'does not create a versioned description' do
+      it 'creates a versioned description on epic work item' do
         expect { work_item.update!(description: 'Another description') }
-          .not_to change { work_item.description_versions.count }
+          .to change { work_item.own_description_versions.count }
+      end
+
+      context 'when set to skip description version' do
+        it 'does not create a versioned description on epic work item' do
+          expect { work_item.update!(description: 'Another description', skip_description_version: true) }
+            .not_to change { work_item.own_description_versions.count }
+        end
       end
     end
   end

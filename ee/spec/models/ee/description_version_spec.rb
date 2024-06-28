@@ -56,7 +56,8 @@ RSpec.describe DescriptionVersion do
     it 'broadcasts notes update' do
       version = epic.description_versions.last
 
-      expect(epic).to receive(:broadcast_notes_changed)
+      expect(version.issuable).to receive(:broadcast_notes_changed)
+      expect(version.issuable.sync_object).to receive(:broadcast_notes_changed)
 
       version.delete!
     end
