@@ -20,6 +20,11 @@ export default {
     SectionLayout,
   },
   props: {
+    isErrorSource: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     scanType: {
       type: String,
       required: true,
@@ -60,6 +65,9 @@ export default {
           !currentlySelectedVariables.includes(value)
         );
       });
+    },
+    isKeyInvalid() {
+      return this.isErrorSource && !this.variable;
     },
     scanOptions() {
       return OPTIONS[RULE_MODE_SCANNERS[this.scanType]]?.map((s) => ({ text: s, value: s })) || [];
@@ -108,7 +116,7 @@ export default {
           v-if="!isCustomVariable"
           fluid-width
           searchable
-          toggle-class="gl-display-grid"
+          :toggle-class="['gl-grid', { '!gl-shadow-inner-1-red-500': isKeyInvalid }]"
           :items="availableScanOptions"
           :selected="variable"
           :toggle-text="toggleText"
@@ -125,6 +133,7 @@ export default {
         <gl-form-input
           v-else
           data-testid="custom-variable-input"
+          :state="!isKeyInvalid"
           :value="variable"
           @input="selectVariable($event, true)"
         />

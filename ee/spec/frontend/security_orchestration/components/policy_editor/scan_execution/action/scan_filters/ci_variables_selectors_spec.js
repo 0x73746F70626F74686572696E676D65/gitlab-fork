@@ -48,6 +48,7 @@ describe('CiVariablesSelectors', () => {
     describe('ci variable selector', () => {
       it('initially displays a single ci variable', () => {
         expect(findAllCiVariableSelectors()).toHaveLength(1);
+        expect(findCiVariableSelector().props('isErrorSource')).toEqual(false);
       });
 
       it('emits "input" with the updated variable when a variable is updated', () => {
@@ -70,6 +71,13 @@ describe('CiVariablesSelectors', () => {
       createComponent({ propsData: { selected: { [VARIABLES.key]: VARIABLES.value } } });
       findCiVariableSelector().vm.$emit('remove', VARIABLES.key);
       expect(wrapper.emitted('remove')).toEqual([[CI_VARIABLE]]);
+    });
+  });
+
+  describe('error', () => {
+    it('emits "input" with the updated variable when a variable is updated', () => {
+      createComponent({ propsData: { errorSources: [['actions', '0', 'variables']] } });
+      expect(findCiVariableSelector().props('isErrorSource')).toEqual(true);
     });
   });
 });

@@ -5,6 +5,7 @@ import {
   modifyPolicy,
   createHumanizedScanners,
   findBranchesWithErrors,
+  isCauseOfError,
   isValidPolicy,
   hasInvalidCron,
   hasDuplicates,
@@ -17,6 +18,7 @@ import {
   mapExceptionsListBoxItem,
   mapBranchesToString,
   mapBranchesToExceptions,
+  parseError,
   removeIdsFromPolicy,
   validateBranchProjectFormat,
 } from 'ee/security_orchestration/components/policy_editor/utils';
@@ -170,6 +172,18 @@ describe('createHumanizedScanners', () => {
   });
 });
 
+describe('isCauseOfError', () => {
+  it.each`
+    title                                                         | errorSources             | primaryKey   | index | location     | expectedOutput
+    ${'return false for no errors'}                               | ${[]}                    | ${''}        | ${0}  | ${''}        | ${false}
+    ${'return false for no errors that match any inputs'}         | ${[['foo', '0', 'bar']]} | ${undefined} | ${1}  | ${undefined} | ${false}
+    ${'return false for no errors that match some of the inputs'} | ${[['foo', '0', 'bar']]} | ${'foo'}     | ${0}  | ${'other'}   | ${false}
+    ${'return true for errors that match the inputs'}             | ${[['foo', '0', 'bar']]} | ${'foo'}     | ${0}  | ${'bar'}     | ${true}
+  `('$title', ({ errorSources, primaryKey, index, location, expectedOutput }) => {
+    expect(isCauseOfError({ errorSources, primaryKey, index, location })).toBe(expectedOutput);
+  });
+});
+
 describe('isValidPolicy', () => {
   it.each`
     input                                                                                                                                          | output
@@ -266,6 +280,31 @@ describe('validation', () => {
     ${true}         | ${['project1']}                         | ${{}}                                                                      | ${''}
   `('renders correct multiple label', ({ useSingleOption, commonItems, items, expectedText }) => {
     expect(renderMultiselectLabel({ useSingleOption, commonItems, items })).toBe(expectedText);
+  });
+});
+
+describe('parseError', () => {
+  const errorExample = {
+    message: "Title \n first error '/type/policyNum/actions/0/variables/' ",
+    output: [['actions', '0', 'variables']],
+  };
+  const errorsExample = {
+    message:
+      "Title \n first error '/type/policyNum/actions/0/variables/' \n second error '/type/policyNum/rules/1/type/'",
+    output: [
+      ['actions', '0', 'variables'],
+      ['rules', '1', 'type'],
+    ],
+  };
+  it.each`
+    title                                                  | input                                 | expectedOutput
+    ${'returns an empty array if no error is passed'}      | ${undefined}                          | ${[]}
+    ${'returns an empty array if the error parsing fails'} | ${{}}                                 | ${[]}
+    ${'returns an empty array if the error parsing fails'} | ${{ message: 'Title' }}               | ${[]}
+    ${'returns the parsed error for a single error'}       | ${{ message: errorExample.message }}  | ${errorExample.output}
+    ${'returns the parsed error for multiple errors'}      | ${{ message: errorsExample.message }} | ${errorsExample.output}
+  `('$title', ({ input, expectedOutput }) => {
+    expect(parseError(input)).toEqual(expectedOutput);
   });
 });
 

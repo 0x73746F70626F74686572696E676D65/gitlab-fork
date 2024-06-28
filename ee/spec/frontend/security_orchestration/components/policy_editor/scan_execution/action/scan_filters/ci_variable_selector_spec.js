@@ -35,11 +35,13 @@ describe('CiVariableSelector', () => {
   const findCreateCustomVariableOption = () => wrapper.findComponent(GlDropdownItem);
 
   describe('empty variable', () => {
-    beforeEach(() => {
-      createComponent({ propsData: { selected: { [PREVIOUSLY_SELECTED_VARIABLE_EXAMPLE]: '' } } });
-    });
-
     describe('dropdown', () => {
+      beforeEach(() => {
+        createComponent({
+          propsData: { selected: { [PREVIOUSLY_SELECTED_VARIABLE_EXAMPLE]: '' } },
+        });
+      });
+
       it('displays the dropdown with the correct props based on scan type', () => {
         expect(findDropdown().props('toggleText')).toBe('Select or Create a Key');
         expect(findDropdown().props('items')).toContainEqual({
@@ -72,9 +74,21 @@ describe('CiVariableSelector', () => {
         expect(findDropdown().exists()).toBe(false);
         expect(findCustomVariableInput().exists()).toBe(true);
       });
+
+      it('does not display the validation outline', () => {
+        expect(findDropdown().props('toggleClass')).toEqual(
+          expect.arrayContaining([{ '!gl-shadow-inner-1-red-500': false }]),
+        );
+      });
     });
 
     describe('value input', () => {
+      beforeEach(() => {
+        createComponent({
+          propsData: { selected: { [PREVIOUSLY_SELECTED_VARIABLE_EXAMPLE]: '' } },
+        });
+      });
+
       it('displays the form input with the correct props', () => {
         expect(findValueInput().attributes('value')).toBe('');
       });
@@ -83,15 +97,34 @@ describe('CiVariableSelector', () => {
         findValueInput().vm.$emit('input', VALUE);
         expect(wrapper.emitted('input')).toEqual([[['', VALUE]]]);
       });
+
+      it('does not display the custom variable input', () => {
+        expect(findCustomVariableInput().exists()).toBe(false);
+      });
     });
 
-    it('emits "remove" event when a user removes the variable', () => {
-      findSectionLayout().vm.$emit('remove');
-      expect(wrapper.emitted('remove')).toEqual([['']]);
+    describe('removal', () => {
+      it('emits "remove" event when a user removes the variable', () => {
+        createComponent({
+          propsData: { selected: { [PREVIOUSLY_SELECTED_VARIABLE_EXAMPLE]: '' } },
+        });
+        findSectionLayout().vm.$emit('remove');
+        expect(wrapper.emitted('remove')).toEqual([['']]);
+      });
     });
 
-    it('does not display the custom variable input', () => {
-      expect(findCustomVariableInput().exists()).toBe(false);
+    describe('error', () => {
+      it('does display the validation outline', () => {
+        createComponent({
+          propsData: {
+            isErrorSource: true,
+            selected: { [PREVIOUSLY_SELECTED_VARIABLE_EXAMPLE]: '' },
+          },
+        });
+        expect(findDropdown().props('toggleClass')).toEqual(
+          expect.arrayContaining([{ '!gl-shadow-inner-1-red-500': true }]),
+        );
+      });
     });
   });
 

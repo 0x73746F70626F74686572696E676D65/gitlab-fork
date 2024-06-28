@@ -27,6 +27,16 @@ export default {
   },
   inject: ['namespaceType'],
   props: {
+    errorSources: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    index: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
     initRule: {
       type: Object,
       required: true,
@@ -98,7 +108,11 @@ export default {
           <template #content>
             <gl-sprintf :message="$options.emptyRuleCopy">
               <template #scanners>
-                <scan-type-select @select="selectScanType" />
+                <scan-type-select
+                  :error-sources="errorSources"
+                  :index="index"
+                  @select="selectScanType"
+                />
               </template>
 
               <template #branches>

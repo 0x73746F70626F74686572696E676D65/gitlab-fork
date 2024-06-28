@@ -16,7 +16,7 @@ import {
 } from '../constants';
 import EditorLayout from '../editor_layout.vue';
 import DimDisableContainer from '../dim_disable_container.vue';
-import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
+import { assignSecurityPolicyProject, modifyPolicy, parseError } from '../utils';
 import RuleSection from './rule/rule_section.vue';
 import ScanAction from './action/scan_action.vue';
 import ActionSection from './action/action_section.vue';
@@ -107,6 +107,7 @@ export default {
     const parsingError = hasParsingError ? this.$options.i18n.PARSING_ERROR_MESSAGE : '';
 
     return {
+      errorSources: [],
       isCreatingMR: false,
       isRemovingPolicy: false,
       newlyCreatedPolicyProject: null,
@@ -155,11 +156,15 @@ export default {
       this.mode = mode;
     },
     handleError(error) {
+      // Emit error for alert
       if (error.message.toLowerCase().includes('graphql')) {
         this.$emit('error', GRAPHQL_ERROR_MESSAGE);
       } else {
         this.$emit('error', error.message);
       }
+
+      // Process error to pass to specific component
+      this.errorSources = parseError(error);
     },
     handleActionBuilderParsingError(key) {
       this.hasParsingError = true;
@@ -303,6 +308,7 @@ export default {
             :data-testid="`action-${index}`"
             :action-index="index"
             :init-action="action"
+            :error-sources="errorSources"
             @changed="updateActionOrRule($options.ACTION, index, $event)"
             @remove="removeActionOrRule($options.ACTION, index)"
             @parsing-error="handleActionBuilderParsingError"
@@ -325,6 +331,7 @@ export default {
             class="gl-mb-4"
             :init-action="action"
             :action-index="index"
+            :error-sources="errorSources"
             @changed="updateActionOrRule($options.ACTION, index, $event)"
             @remove="removeActionOrRule($options.ACTION, index)"
             @parsing-error="handleActionBuilderParsingError"

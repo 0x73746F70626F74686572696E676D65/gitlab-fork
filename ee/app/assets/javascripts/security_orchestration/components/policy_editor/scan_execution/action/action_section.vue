@@ -19,6 +19,11 @@ export default {
       required: false,
       default: 0,
     },
+    errorSources: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   computed: {
     isCustomAction() {
@@ -45,6 +50,7 @@ export default {
     class="gl-mb-4"
     :init-action="initAction"
     :action-index="actionIndex"
+    :error-sources="errorSources"
     @changed="updateAction"
     @remove="removeAction"
     @parsing-error="parseError"
