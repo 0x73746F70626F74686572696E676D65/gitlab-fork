@@ -868,9 +868,8 @@ GEM
     grape_logging (1.8.4)
       grape
       rack
-    graphiql-rails (1.8.0)
+    graphiql-rails (1.10.0)
       railties
-      sprockets-rails
     graphlient (0.6.0)
       faraday (>= 1.0)
       faraday_middleware
@@ -2050,7 +2049,7 @@ DEPENDENCIES
   grape-swagger (~> 2.1.0)
   grape-swagger-entity (~> 0.5.1)
   grape_logging (~> 1.8, >= 1.8.4)
-  graphiql-rails (~> 1.8.0)
+  graphiql-rails (~> 1.10)
   graphlient (~> 0.6.0)
   graphlyte (~> 1.0.0)
   graphql (~> 2.3.5)
@@ -2230,6 +2229,7 @@ DEPENDENCIES
   spring-commands-rspec (~> 1.0.4)
   sprite-factory (~> 1.7)
   sprockets (~> 3.7.0)
+  sprockets-rails (~> 3.5.1)
   ssh_data (~> 1.3)
   stackprof (~> 0.2.25)
   state_machines-activerecord (~> 0.8.0)
