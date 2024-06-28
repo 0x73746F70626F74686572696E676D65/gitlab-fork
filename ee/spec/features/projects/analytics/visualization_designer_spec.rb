@@ -42,7 +42,7 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
 
   shared_examples 'selected measure behavior' do
     it 'selected measure behavior' do
-      expect(find_by_testid('grid-stack-panel'))
+      expect(find_by_testid('preview-visualization'))
         .to have_content('Event Count 335')
     end
 

@@ -12,7 +12,11 @@ import {
   convertObjectPropsToSnakeCase,
   parseBoolean,
 } from '~/lib/utils/common_utils';
-import { DASHBOARD_SCHEMA_VERSION } from 'ee/analytics/analytics_dashboards/constants';
+import {
+  DASHBOARD_SCHEMA_VERSION,
+  VISUALIZATION_TYPE_DATA_TABLE,
+  VISUALIZATION_TYPE_SINGLE_STAT,
+} from 'ee/analytics/analytics_dashboards/constants';
 import {
   DATE_RANGE_OPTIONS,
   CUSTOM_DATE_RANGE_KEY,
@@ -89,10 +93,10 @@ export const availableVisualizationsValidator = ({ loading, hasError, visualizat
  * Get the category key for visualizations by their type. Default is "charts".
  */
 export const getVisualizationCategory = (visualization) => {
-  if (visualization.type === 'SingleStat') {
+  if (visualization.type === VISUALIZATION_TYPE_SINGLE_STAT) {
     return CATEGORY_SINGLE_STATS;
   }
-  if (visualization.type === 'DataTable') {
+  if (visualization.type === VISUALIZATION_TYPE_DATA_TABLE) {
     return CATEGORY_TABLES;
   }
   return CATEGORY_CHARTS;

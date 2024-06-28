@@ -8,6 +8,10 @@ import {
   RETURNING_USERS_TABLE_NAME,
   SESSIONS_TABLE_NAME,
   TRACKED_EVENTS_KEY,
+  VISUALIZATION_TYPE_DATA_TABLE,
+  VISUALIZATION_TYPE_LINE_CHART,
+  VISUALIZATION_TYPE_COLUMN_CHART,
+  VISUALIZATION_TYPE_SINGLE_STAT,
 } from 'ee/analytics/analytics_dashboards/constants';
 
 // This can be any value because the cube proxy adds the real API token.
@@ -141,10 +145,10 @@ const buildCubeQuery = (query, queryOverrides, filters) => ({
 });
 
 const VISUALIZATION_PARSERS = {
-  LineChart: convertToCommonChartFormat,
-  ColumnChart: convertToCommonChartFormat,
-  DataTable: convertToTableFormat,
-  SingleStat: convertToSingleValue,
+  [VISUALIZATION_TYPE_LINE_CHART]: convertToCommonChartFormat,
+  [VISUALIZATION_TYPE_COLUMN_CHART]: convertToCommonChartFormat,
+  [VISUALIZATION_TYPE_DATA_TABLE]: convertToTableFormat,
+  [VISUALIZATION_TYPE_SINGLE_STAT]: convertToSingleValue,
 };
 
 export const createCubeApi = (projectId) =>

@@ -7,8 +7,6 @@ import {
   PANEL_VISUALIZATION_HEIGHT,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import DataTable from 'ee/analytics/analytics_dashboards/components/visualizations/data_table.vue';
-import { convertToTableFormat } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { TEST_VISUALIZATION } from '../../mock_data';
 
 jest.mock('js-yaml', () => ({
@@ -19,16 +17,13 @@ describe('AnalyticsVisualizationPreview', () => {
   /** @type {import('helpers/vue_test_utils_helper').ExtendedWrapper} */
   let wrapper;
 
-  const findDataButton = () => wrapper.findByTestId('select-data-button');
   const findVisualizationButton = () => wrapper.findByTestId('select-visualization-button');
   const findCodeButton = () => wrapper.findByTestId('select-code-button');
   const findAiCubeQueryFeedback = () => wrapper.findComponent(AiCubeQueryFeedback);
-  const findDataTable = () => wrapper.findComponent(DataTable);
 
   const selectDisplayType = jest.fn();
 
   const resultVisualization = TEST_VISUALIZATION();
-  const resultSet = { tableColumns: () => [], tablePivot: () => [] };
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(AnalyticsVisualizationPreview, {
@@ -38,7 +33,6 @@ describe('AnalyticsVisualizationPreview', () => {
         selectDisplayType,
         isQueryPresent: false,
         loading: false,
-        resultSet,
         resultVisualization,
         aiPromptCorrelationId: null,
         ...props,
@@ -66,7 +60,7 @@ describe('AnalyticsVisualizationPreview', () => {
     });
   });
 
-  describe('when it has a resultSet', () => {
+  describe('when it has a resultVisualization', () => {
     describe('default behaviour', () => {
       beforeEach(() => {
         createWrapper({
@@ -75,14 +69,8 @@ describe('AnalyticsVisualizationPreview', () => {
       });
 
       it('should render overview buttons', () => {
-        expect(findDataButton().exists()).toBe(true);
         expect(findVisualizationButton().exists()).toBe(true);
         expect(findCodeButton().exists()).toBe(true);
-      });
-
-      it('should be able to select data section', () => {
-        findDataButton().vm.$emit('click');
-        expect(wrapper.emitted('selectedDisplayType')).toEqual([[PANEL_DISPLAY_TYPES.DATA]]);
       });
 
       it('should be able to select visualization section', () => {
@@ -124,25 +112,6 @@ describe('AnalyticsVisualizationPreview', () => {
       it('should not render the AI cube query feedback component', () => {
         expect(findAiCubeQueryFeedback().exists()).toBe(false);
       });
-    });
-  });
-
-  describe('resultSet and data is selected', () => {
-    beforeEach(() => {
-      createWrapper({
-        isQueryPresent: true,
-        displayType: PANEL_DISPLAY_TYPES.DATA,
-      });
-    });
-
-    it('renders the data table', () => {
-      expect(findDataTable().props('data')).toStrictEqual(convertToTableFormat(resultSet));
-    });
-
-    it('renders data table wrapper', () => {
-      expect(wrapper.findByTestId('preview-datatable-wrapper').attributes('style')).toBe(
-        `height: ${PANEL_VISUALIZATION_HEIGHT};`,
-      );
     });
   });
 

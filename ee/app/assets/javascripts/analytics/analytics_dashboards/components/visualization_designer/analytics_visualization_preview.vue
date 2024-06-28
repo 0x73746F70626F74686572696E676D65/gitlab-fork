@@ -3,8 +3,6 @@ import { GlButton, GlButtonGroup, GlLoadingIcon } from '@gitlab/ui';
 import { safeDump } from 'js-yaml';
 import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
-import { convertToTableFormat } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
-import DataTable from '../visualizations/data_table.vue';
 import AnalyticsDashboardPanel from '../analytics_dashboard_panel.vue';
 
 import {
@@ -24,7 +22,6 @@ export default {
     GlButtonGroup,
     GlLoadingIcon,
     AnalyticsDashboardPanel,
-    DataTable,
   },
   props: {
     selectedVisualizationType: {
@@ -43,11 +40,6 @@ export default {
       type: Boolean,
       required: true,
     },
-    resultSet: {
-      type: Object,
-      required: false,
-      default: null,
-    },
     resultVisualization: {
       type: Object,
       required: false,
@@ -65,9 +57,6 @@ export default {
     },
   },
   computed: {
-    dataTableResults() {
-      return convertToTableFormat(this.resultSet);
-    },
     previewYamlConfiguration() {
       return this.resultVisualization && safeDump(this.resultVisualization);
     },
@@ -105,7 +94,7 @@ export default {
         </div>
       </div>
     </div>
-    <div v-if="resultSet && isQueryPresent">
+    <div v-if="resultVisualization && isQueryPresent">
       <div
         class="gl-m-5 gl-gap-5 gl-display-flex gl-flex-wrap-reverse gl-justify-content-space-between gl-align-items-center"
       >
@@ -127,25 +116,6 @@ export default {
         />
       </div>
       <div class="border-light gl-border gl-rounded-base gl-m-5 gl-shadow-sm gl-overflow-auto">
-        <div
-          v-if="displayType === $options.PANEL_DISPLAY_TYPES.DATA"
-          data-testid="grid-stack-panel"
-        >
-          <div
-            class="gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column gl-bg-white"
-            data-testid="preview-datatable-wrapper"
-            :style="{ height: $options.PANEL_VISUALIZATION_HEIGHT }"
-          >
-            <strong class="gl-mb-2">{{ s__('Analytics|Resulting Data') }}</strong>
-            <!-- Using Datatable specifically for data preview here -->
-            <data-table
-              :data="dataTableResults"
-              class="gl-overflow-y-auto"
-              @error="(error) => handleVisualizationError('TITLE', error)"
-            />
-          </div>
-        </div>
-
         <div v-if="displayType === $options.PANEL_DISPLAY_TYPES.VISUALIZATION">
           <analytics-dashboard-panel
             v-if="selectedVisualizationType"

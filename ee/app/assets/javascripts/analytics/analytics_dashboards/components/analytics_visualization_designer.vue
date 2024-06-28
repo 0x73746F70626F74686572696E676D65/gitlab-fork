@@ -24,7 +24,7 @@ import {
   EVENT_LABEL_USER_CREATED_CUSTOM_VISUALIZATION,
   DEFAULT_VISUALIZATION_QUERY_STATE,
   DEFAULT_VISUALIZATION_TITLE,
-  DEFAULT_SELECTED_VISUALIZATION_TYPE,
+  VISUALIZATION_TYPE_DATA_TABLE,
 } from '../constants';
 import MeasureSelector from './visualization_designer/selectors/product_analytics/measure_selector.vue';
 import DimensionSelector from './visualization_designer/selectors/product_analytics/dimension_selector.vue';
@@ -71,9 +71,8 @@ export default {
       queryState: DEFAULT_VISUALIZATION_QUERY_STATE(),
       visualizationTitle: '',
       titleValidationError: null,
-      typeValidationError: null,
-      selectedDisplayType: PANEL_DISPLAY_TYPES.DATA,
-      selectedVisualizationType: '',
+      selectedDisplayType: PANEL_DISPLAY_TYPES.VISUALIZATION,
+      selectedVisualizationType: VISUALIZATION_TYPE_DATA_TABLE,
       hasTimeDimension: false,
       isSaving: false,
       alert: null,
@@ -115,7 +114,7 @@ export default {
     changesMade() {
       return (
         this.visualizationTitle !== DEFAULT_VISUALIZATION_TITLE ||
-        this.selectedVisualizationType !== DEFAULT_SELECTED_VISUALIZATION_TYPE ||
+        this.selectedVisualizationType !== VISUALIZATION_TYPE_DATA_TABLE ||
         this.queryStateHasChanges
       );
     },
@@ -169,16 +168,9 @@ export default {
     },
     onVisualizationTypeChange() {
       this.selectDisplayType(PANEL_DISPLAY_TYPES.VISUALIZATION);
-      this.validateType();
     },
     getRequiredFieldError(fieldValue) {
       return fieldValue.length > 0 ? '' : __('This field is required.');
-    },
-    validateType(isSubmitting) {
-      // Don't validate if the type has not been submitted
-      if (this.typeValidationError !== null || isSubmitting) {
-        this.typeValidationError = this.getRequiredFieldError(this.selectedVisualizationType);
-      }
     },
     validateTitle(submitting) {
       // Don't validate if the title has not been submitted
@@ -194,12 +186,6 @@ export default {
     },
     async saveVisualization() {
       let invalid = false;
-
-      this.validateType(true);
-      if (this.typeValidationError) {
-        this.$refs.typeSelector.$el.focus();
-        invalid = true;
-      }
 
       this.validateTitle(true);
       if (this.titleValidationError) {
@@ -316,7 +302,7 @@ export default {
     resetToInitialState() {
       this.queryState = DEFAULT_VISUALIZATION_QUERY_STATE();
       this.visualizationTitle = '';
-      this.selectedVisualizationType = '';
+      this.selectedVisualizationType = VISUALIZATION_TYPE_DATA_TABLE;
       this.aiPromptCorrelationId = null;
       this.aiPrompt = '';
     },
@@ -378,13 +364,11 @@ export default {
           :label="s__('Analytics|Visualization type')"
           class="gl-w-full gl-md-max-w-70p gl-lg-w-30p gl-min-w-20 gl-m-0"
           data-testid="visualization-type-form-group"
-          :invalid-feedback="typeValidationError"
         >
           <visualization-type-selector
             ref="typeSelector"
             v-model="selectedVisualizationType"
             data-testid="visualization-type-dropdown"
-            :state="!typeValidationError"
             @input="onVisualizationTypeChange"
           />
         </gl-form-group>
@@ -474,7 +458,6 @@ export default {
               :display-type="selectedDisplayType"
               :is-query-present="isQueryPresent ? isQueryPresent : false"
               :loading="loading"
-              :result-set="resultSet ? resultSet : null"
               :result-visualization="resultSet && isQueryPresent ? resultVisualization : null"
               :title="visualizationTitle"
               :ai-prompt-correlation-id="aiPromptCorrelationId"
