@@ -5,9 +5,9 @@ import projectsHistoryQuery from 'ee/security_dashboard/graphql/queries/project_
 import severitiesCountQuery from 'ee/security_dashboard/graphql/queries/vulnerability_severities_count.query.graphql';
 import SecurityTrainingPromoBanner from 'ee/security_dashboard/components/project/security_training_promo_banner.vue';
 import { PROJECT_LOADING_ERROR_MESSAGE } from 'ee/security_dashboard/helpers';
+import { getToolboxOptions } from '~/lib/utils/chart_utils';
 import { createAlert } from '~/alert';
 import { formatDate, getDateInPast } from '~/lib/utils/datetime_utility';
-import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
 import { s__, __ } from '~/locale';
 
 const CHART_DEFAULT_DAYS = 30;
@@ -75,7 +75,7 @@ export default {
     return {
       chartWidth: 0,
       trendsByDay: [],
-      svgs: {},
+      toolboxOptions: {},
     };
   },
   computed: {
@@ -146,37 +146,14 @@ export default {
           {
             type: 'slider',
             startValue: this.chartStartDate,
-            handleIcon: this.svgs['scroll-handle'],
           },
         ],
-        toolbox: {
-          feature: {
-            dataZoom: {
-              icon: { zoom: this.svgs['marquee-selection'], back: this.svgs.redo },
-            },
-            restore: {
-              icon: this.svgs.repeat,
-            },
-            saveAsImage: {
-              icon: this.svgs.download,
-            },
-          },
-        },
+        ...this.toolboxOptions,
       };
     },
   },
-  created() {
-    ['marquee-selection', 'redo', 'repeat', 'download', 'scroll-handle'].forEach(this.setSvg);
-  },
-  methods: {
-    async setSvg(name) {
-      try {
-        this.$set(this.svgs, name, `path://${await getSvgIconPathContent(name)}`);
-      } catch (e) {
-        // eslint-disable-next-line no-console, @gitlab/require-i18n-strings
-        console.error('SVG could not be rendered correctly: ', e);
-      }
-    },
+  async created() {
+    this.toolboxOptions = await getToolboxOptions();
   },
 };
 </script>
