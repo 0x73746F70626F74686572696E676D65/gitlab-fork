@@ -25,7 +25,7 @@ RSpec.describe Gitlab::Geo::RepoSyncRequest,
       expect(token).to start_with(described_class::GITLAB_GEO_AUTH_TOKEN_TYPE)
     end
 
-    it 'defaults to 60-minute expiration time', :freeze_time do
+    it 'defaults to 120-minute expiration time', :freeze_time do
       expect(jwt.first['exp']).to eq(120.minutes.from_now.to_i)
     end
   end
