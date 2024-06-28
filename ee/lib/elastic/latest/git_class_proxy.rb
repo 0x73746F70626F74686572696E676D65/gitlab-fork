@@ -178,8 +178,7 @@ module Elastic
       end
 
       def archived_filter_applicable_for_commit_search?(options)
-        !options[:include_archived] && options[:search_scope] != 'project' &&
-          ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_field_in_commits)
+        !options[:include_archived] && options[:search_scope] != 'project'
       end
 
       def search_blob(query, type: 'blob', page: 1, per: 20, options: {})
@@ -377,8 +376,7 @@ module Elastic
       # rubocop:enable Metrics/CyclomaticComplexity
 
       def archived_filter_applicable_for_blob_search?(options)
-        !options[:include_archived] && options[:search_scope] != 'project' &&
-          ::Elastic::DataMigrationService.migration_has_finished?(:backfill_archived_field_in_blob)
+        !options[:include_archived] && options[:search_scope] != 'project'
       end
 
       def disable_project_joins_for_blob?

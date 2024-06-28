@@ -17,3 +17,5 @@ class AddArchivedToMainIndex < Elastic::Migration
     }
   end
 end
+
+AddArchivedToMainIndex.prepend ::Elastic::MigrationObsolete

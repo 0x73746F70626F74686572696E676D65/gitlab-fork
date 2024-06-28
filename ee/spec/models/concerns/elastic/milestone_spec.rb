@@ -56,16 +56,6 @@ RSpec.describe Milestone, :elastic, feature_category: :global_search do
     it 'returns json with all needed elements' do
       expect(milestone.__elasticsearch__.as_indexed_json).to eq(expected_hash)
     end
-
-    context 'when migration add_archived_to_main_index is not finished' do
-      before do
-        set_elasticsearch_migration_to :add_archived_to_main_index, including: false
-      end
-
-      it 'returns json with all needed elements except archived' do
-        expect(milestone.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('archived'))
-      end
-    end
   end
 
   it_behaves_like 'no results when the user cannot read cross project' do
