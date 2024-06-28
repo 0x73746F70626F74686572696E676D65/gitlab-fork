@@ -113,10 +113,6 @@ The following table lists project permissions available for each role:
 | [Issues](project/issues/index.md):<br>Archive [Design Management](project/issues/design_management.md) files                                                                                 |       | ✓        | ✓         | ✓          | ✓     |       |
 | [Issues](project/issues/index.md):<br>Upload [Design Management](project/issues/design_management.md) files                                                                                  |       | ✓        | ✓         | ✓          | ✓     |       |
 | [Issues](project/issues/index.md):<br>Delete                                                                                                                                                 |       |          |           |            | ✓     |       |
-| [License Scanning](compliance/license_scanning_of_cyclonedx_files/index.md):<br>View allowed and denied licenses                                                                             | ✓     | ✓        | ✓         | ✓          | ✓     | On self-managed GitLab instances, users with the Guest role are able to perform this action only on public and internal projects (not on private projects). [External users](../administration/external_users.md) must be given explicit access (at least the **Reporter** role) even if the project is internal. Users with the Guest role on GitLab.com are only able to perform this action on public projects because internal visibility is not available. |
-| [License Scanning](compliance/license_scanning_of_cyclonedx_files/index.md):<br>View License Compliance reports                                                                              | ✓     | ✓        | ✓         | ✓          | ✓     | On self-managed GitLab instances, users with the Guest role are able to perform this action only on public and internal projects (not on private projects). [External users](../administration/external_users.md) must be given explicit access (at least the **Reporter** role) even if the project is internal. Users with the Guest role on GitLab.com are only able to perform this action on public projects because internal visibility is not available. |
-| [License Scanning](compliance/license_scanning_of_cyclonedx_files/index.md):<br>View License list                                                                                            |       | ✓        | ✓         | ✓          | ✓     |       |
-| [License approval policies](../user/compliance/license_approval_policies.md):<br>Manage license policy                                                                                       |       |          |           | ✓          | ✓     |       |
 | [Merge requests](project/merge_requests/index.md):<br>View a merge request                                                                                                                   | ✓     | ✓        | ✓         | ✓          | ✓     | On self-managed GitLab instances, users with the Guest role are able to perform this action only on public and internal projects (not on private projects). [External users](../administration/external_users.md) must be given explicit access (at least the **Reporter** role) even if the project is internal. Users with the Guest role on GitLab.com are only able to perform this action on public projects because internal visibility is not available. |
 | [Merge requests](project/merge_requests/index.md):<br>Assign reviewer                                                                                                                        |       |          | ✓         | ✓          | ✓     |       |
 | [Merge requests](project/merge_requests/index.md):<br>View list                                                                                                                              |       | ✓        | ✓         | ✓          | ✓     | Members with the Guest role can view the list of MRs in public projects. Private projects restrict Guests from viewing MR lists. |
@@ -158,7 +154,6 @@ The following table lists project permissions available for each role:
 | [Projects](project/index.md):<br>Create, edit, delete [releases](project/releases/index.md)                                                                                                  |       |          | ✓         | ✓          | ✓     | If the [tag is protected](project/protected_tags.md), this depends on the access given to Developers and Maintainers. |
 | [Projects](project/index.md):<br>Create, edit [wiki](project/wiki/index.md) pages                                                                                                            |       |          | ✓         | ✓          | ✓     |       |
 | [Projects](project/index.md):<br>Enable [review apps](../ci/review_apps/index.md)                                                                                                            |       |          | ✓         | ✓          | ✓     |       |
-| [Projects](project/index.md):<br>View project [Audit Events](../administration/audit_event_reports.md)                                                                                              |       |          | ✓         | ✓          | ✓     | Users can only view events based on their individual actions. |
 | [Projects](project/index.md):<br>Add [deploy keys](project/deploy_keys/index.md)                                                                                                             |       |          |           | ✓          | ✓     |       |
 | [Projects](project/index.md):<br>Add new [team members](project/members/index.md)                                                                                                            |       |          |           | ✓          | ✓     |       |
 | [Projects](project/index.md):<br>Manage [team members](project/members/index.md)                                                                                                             |       |          |           | ✓          | ✓     | Maintainers cannot create, demote, or remove Owners, and they cannot promote users to the Owner role. They also cannot approve Owner role access requests. |
@@ -174,7 +169,6 @@ The following table lists project permissions available for each role:
 | [Projects](project/index.md):<br>Rename project                                                                                                                                              |       |          |           | ✓          | ✓     |       |
 | [Projects](project/index.md):<br>Share (invite) projects with groups                                                                                                                         |       |          |           | ✓          | ✓     | When [Share Group Lock](group/access_and_permissions.md#prevent-a-project-from-being-shared-with-groups) is enabled the project can't be shared with other groups. It does not affect group with group sharing. |
 | [Projects](project/index.md):<br>View 2FA status of members                                                                                                                                  |       |          |           | ✓          | ✓     |       |
-| [Projects](project/index.md):<br>Assign project to a [compliance framework](project/working_with_projects.md#add-a-compliance-framework-to-a-project)                                        |       |          |           |            | ✓     |       |
 | [Projects](project/index.md):<br>Archive project                                                                                                                                             |       |          |           |            | ✓     |       |
 | [Projects](project/index.md):<br>Change project visibility level                                                                                                                             |       |          |           |            | ✓     |       |
 | [Projects](project/index.md):<br>Delete project                                                                                                                                              |       |          |           |            | ✓     |       |
@@ -232,6 +226,18 @@ Project permissions for [Application Security](application_security/secure_your_
 | Change vulnerability status                                                                                                        |       |          |           | ✓          | ✓     | The `admin_vulnerability` permission was [removed](https://gitlab.com/gitlab-org/gitlab/-/issues/412693) from the Developer role in GitLab 17.0. |
 | Create or assign [security policy project](application_security/policies/index.md)                                                 |       |          |           |            | ✓     |       |
 | Manage [security configurations](application_security/configuration/index.md)                                                      |       |          |           |            | ✓     |       |
+
+### Compliance
+
+Project permissions for [compliance](compliance/index.md) features including compliance center, audit events, compliance frameworks, and licenses.
+
+| Action                                                                                  | Guest | Reporter | Developer | Maintainer | Owner | Notes |
+|-----------------------------------------------------------------------------------------|:-------:|:----------:|:-----------:|:------------:|:-------:|-------|
+| View [allowed and denied licenses in MR](compliance/license_scanning_of_cyclonedx_files/index.md)   | ✓     | ✓        | ✓         | ✓          | ✓     | On self-managed GitLab instances, users with the Guest role are able to perform this action only on public and internal projects (not on private projects). [External users](../administration/external_users.md) must be have at least the Reporter role, even if the project is internal. Users with the Guest role on GitLab.com are able to perform this action only on public projects because internal visibility is not available. |
+| View [audit events](../administration/audit_event_reports.md)  | | | ✓ | ✓  | ✓ | Users can only view events based on their individual actions. |
+| View licenses in [dependency list](application_security/dependency_list/index.md)                                                  |       |          | ✓         | ✓          | ✓     |       |
+| Create, edit, and delete license approval policies                              | | | ✓  | ✓  | ✓ |       |
+| Manage [audit streams](compliance/audit_event_streaming.md)    | | |   |    | ✓ | |
 
 ## GitLab CI/CD permissions
 
@@ -380,6 +386,19 @@ Group permissions for [Application Security](application_security/secure_your_ap
 | View [vulnerability report](application_security/vulnerability_report/index.md)    |       |          | ✓         | ✓          | ✓     |       |
 | View [security dashboard](application_security/security_dashboard/index.md)        |       |          | ✓         | ✓          | ✓     |       |
 | Create or assign [security policy project](application_security/policies/index.md)                                                 |       |          |           |            | ✓     |       |
+
+### Compliance
+
+Groups permissions for [compliance](compliance/index.md) features including compliance center, audit events, compliance frameworks, and licenses.
+
+| Action                                                                                  | Guest | Reporter | Developer | Maintainer | Owner | Notes |
+|-----------------------------------------------------------------------------------------|:-------:|:----------:|:-----------:|:------------:|:-------:|-------|
+| View [audit events](../administration/audit_event_reports.md)  | | | ✓ | ✓  | ✓ | Users can view only events based on their individual actions. |
+| View licenses in the [dependency list](application_security/dependency_list/index.md)                                                  |       |          | ✓         | ✓          | ✓     |       |
+| Manage [audit streams](compliance/audit_event_streaming.md)    | | |   |    | ✓ | |
+| View the [compliance center](compliance/compliance_center/index.md)    | | |   |    | ✓ | |
+| Manage [compliance frameworks](group/compliance_frameworks.md)    | | |   |    | ✓ | |
+| Assign [compliance frameworks](group/compliance_frameworks.md) to projects  | | |   |    | ✓ | |
 
 ### Subgroup permissions
 
