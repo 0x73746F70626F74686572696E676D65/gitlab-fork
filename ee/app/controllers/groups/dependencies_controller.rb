@@ -141,6 +141,8 @@ module Groups
         :component_name
       when 'packager'
         :package_manager
+      when 'license'
+        :licenses
       when 'severity'
         :highest_severity
       else

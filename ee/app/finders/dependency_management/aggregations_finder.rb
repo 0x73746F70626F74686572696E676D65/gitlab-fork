@@ -8,7 +8,7 @@ module DependencyManagement
     DEFAULT_PAGE_SIZE = 20
     MAX_PAGE_SIZE = 20
     DEFAULT_SORT_COLUMNS = %i[component_id component_version_id].freeze
-    SUPPORTED_SORT_COLUMNS = %i[component_name highest_severity package_manager].freeze
+    SUPPORTED_SORT_COLUMNS = %i[component_name highest_severity package_manager licenses].freeze
 
     def initialize(namespace, params: {})
       @namespace = namespace
@@ -16,7 +16,7 @@ module DependencyManagement
     end
 
     def execute
-      group_columns = distinct_columns.map { |column| "outer_occurrences.#{column}" }
+      group_columns = distinct_columns.map { |column| column_expression(column, 'outer_occurrences') }
 
       Sbom::Occurrence.with(namespaces_cte.to_arel)
         .select(
@@ -38,10 +38,6 @@ module DependencyManagement
 
     attr_reader :namespace, :params
 
-    def distinct_columns
-      orderings.keys
-    end
-
     def keyset_order(column_expression_evaluator:, order_expression_evaluator:)
       order_definitions = orderings.map do |column, direction|
         column_expression = column_expression_evaluator.call(column)
@@ -61,8 +57,8 @@ module DependencyManagement
 
     def outer_order
       keyset_order(
-        column_expression_evaluator: ->(column) { Sbom::Occurrence.arel_table.alias('outer_occurrences')[column] },
-        order_expression_evaluator: ->(column) { Arel.sql("MIN(outer_occurrences.#{column})") }
+        column_expression_evaluator: ->(column) { column_expression(column, 'outer_occurrences') },
+        order_expression_evaluator: ->(column) { sql_min(column, 'outer_occurrences') }
       )
     end
 
@@ -74,12 +70,13 @@ module DependencyManagement
       Sbom::Occurrence.where('sbom_occurrences.traversal_ids = namespaces.traversal_ids::bigint[]')
         .unarchived
         .order(inner_order)
-        .select_distinct(on: distinct_columns)
+        .select(distinct(on: distinct_columns))
         .keyset_paginate(cursor: cursor, per_page: page_size)
     end
 
     def inner_order
-      evaluator = ->(column) { Sbom::Occurrence.arel_table[column] }
+      evaluator = ->(column) { column_expression(column) }
+
       keyset_order(
         column_expression_evaluator: evaluator,
         order_expression_evaluator: evaluator
@@ -88,10 +85,11 @@ module DependencyManagement
 
     def outer_occurrences
       order = orderings.map do |column, direction|
-        "inner_occurrences.#{column} #{direction.to_s.upcase}"
+        column_expression = column_expression(column, 'inner_occurrences')
+        direction == :desc ? column_expression.desc : column_expression.asc
       end
 
-      Sbom::Occurrence.select_distinct(on: distinct_columns, table_name: '"inner_occurrences"')
+      Sbom::Occurrence.select(distinct(on: distinct_columns, table_name: 'inner_occurrences'))
       .from("namespaces, LATERAL (#{inner_occurrences.to_sql}) inner_occurrences")
       .order(*order)
       .limit(page_size + 1)
@@ -112,6 +110,34 @@ module DependencyManagement
 
     def cursor
       params[:cursor]
+    end
+
+    def distinct_columns
+      orderings.keys
+    end
+
+    def column_expression(column, table_name = 'sbom_occurrences')
+      if column == :licenses
+        Sbom::Occurrence.connection.quote_table_name(table_name)
+          .then { |table_name| Arel.sql("(#{table_name}.\"licenses\" -> 0 ->> 'spdx_identifier')::text") }
+      else
+        Sbom::Occurrence.arel_table.alias(table_name)[column]
+      end
+    end
+
+    def distinct(on:, table_name: 'sbom_occurrences')
+      select_values = Sbom::Occurrence.column_names.map do |column|
+        Sbom::Occurrence.connection.quote_table_name("#{table_name}.#{column}")
+      end
+      distinct_values = on.map { |column| column_expression(column, table_name) }
+
+      distinct_sql = Arel::Nodes::DistinctOn.new(distinct_values).to_sql
+
+      "#{distinct_sql} #{select_values.join(', ')}"
+    end
+
+    def sql_min(column, table_name = 'sbom_occurrences')
+      Arel::Nodes::NamedFunction.new('MIN', [column_expression(column, table_name)])
     end
 
     def orderings
