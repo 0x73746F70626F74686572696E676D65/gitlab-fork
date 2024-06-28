@@ -3,8 +3,9 @@
 - minutes_usage_presenter = Ci::Minutes::UsagePresenter.new(minutes_usage)
 
 - if minutes_usage_presenter.display_shared_runners_data?
-  %li
-    %span.light= _('Compute quota:')
-    %strong
-      = ci_minutes_report(minutes_usage_presenter.monthly_minutes_report)
-      = link_to sprite_icon('question-o', css_class: 'gl-text-blue-500'), help_page_path('ci/pipelines/compute_minutes'), target: '_blank', rel: 'noopener noreferrer'
+  %li{ class: '!gl-grid md:gl-grid-cols-3 gl-gap-x-3' }
+    %span.gl-text-secondary= _('Compute quota:')
+    .gl-col-span-2
+      %strong
+        = ci_minutes_report(minutes_usage_presenter.monthly_minutes_report)
+        = link_to sprite_icon('question-o', css_class: 'gl-text-blue-600'), help_page_path('ci/pipelines/compute_minutes'), target: '_blank', rel: 'noopener noreferrer'

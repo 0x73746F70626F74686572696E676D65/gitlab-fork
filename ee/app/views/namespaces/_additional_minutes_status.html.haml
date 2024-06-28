@@ -7,7 +7,7 @@
 
 
 - if minutes_usage_presenter.display_shared_runners_data?
-  %li
-    %span.light= _('Additional compute minutes:')
-    %strong
-      = ci_minutes_report(minutes_usage_presenter.purchased_minutes_report)
+  %li{ class: '!gl-grid md:gl-grid-cols-3 gl-gap-x-3' }
+    %span.gl-text-secondary= _('Additional compute minutes:')
+    .gl-col-span-2
+      %strong= ci_minutes_report(minutes_usage_presenter.purchased_minutes_report)
