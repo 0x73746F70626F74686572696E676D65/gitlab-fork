@@ -7779,16 +7779,16 @@ msgstr ""
 msgid "AutoDevOps|Auto DevOps documentation"
 msgstr ""
 
+msgid "AutoDevOps|Automatically build, test, and deploy your application based on a predefined CI/CD configuration."
+msgstr ""
+
 msgid "AutoDevOps|Dismiss Auto DevOps box"
 msgstr ""
 
 msgid "AutoDevOps|Enable in settings"
 msgstr ""
 
-msgid "AutoDevOps|It will automatically build, test, and deploy your application based on a predefined CI/CD configuration."
-msgstr ""
-
-msgid "AutoDevOps|Learn more in the %{link_to_documentation}"
+msgid "AutoDevOps|Learn more in the %{link_to_documentation}."
 msgstr ""
 
 msgid "AutoDevOps|The Auto DevOps pipeline has been enabled and will be used if no alternative CI configuration file is found."
