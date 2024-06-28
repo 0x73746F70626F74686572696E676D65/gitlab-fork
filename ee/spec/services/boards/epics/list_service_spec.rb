@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Boards::Epics::ListService do
+RSpec.describe Boards::Epics::ListService, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:board) { create(:epic_board, group: group) }
@@ -39,6 +39,40 @@ RSpec.describe Boards::Epics::ListService do
       let(:all_items) { backlog_items + list1_items + closed_items + [list2_epic1] }
       let(:list_factory) { :epic_list }
       let(:new_list) { create(:epic_list, epic_board: board) }
+    end
+
+    context 'when labels are shared between epic and epic work item' do
+      let_it_be(:list1_epic4) { create(:labeled_epic, group: group, labels: []) }
+
+      before do
+        list1_epic4.work_item.labels << development
+      end
+
+      it_behaves_like 'items list service' do
+        let(:parent) { group }
+        let(:backlog_items) { [backlog_epic1] }
+        let(:list1_items) { [list1_epic1, list1_epic2, list1_epic3, list1_epic4] }
+        let(:closed_items) { [closed_epic1, closed_epic2, closed_epic3] }
+        let(:all_items) { backlog_items + list1_items + closed_items + [list2_epic1] }
+        let(:list_factory) { :epic_list }
+        let(:new_list) { create(:epic_list, epic_board: board) }
+      end
+
+      context 'when label unification is disabled' do
+        before do
+          stub_feature_flags(epic_and_work_item_labels_unification: false)
+        end
+
+        it_behaves_like 'items list service' do
+          let(:parent) { group }
+          let(:backlog_items) { [backlog_epic1, list1_epic4] }
+          let(:list1_items) { [list1_epic1, list1_epic2, list1_epic3] }
+          let(:closed_items) { [closed_epic1, closed_epic2, closed_epic3] }
+          let(:all_items) { backlog_items + list1_items + closed_items + [list2_epic1] }
+          let(:list_factory) { :epic_list }
+          let(:new_list) { create(:epic_list, epic_board: board) }
+        end
+      end
     end
 
     it 'returns epics sorted by position on the board' do
