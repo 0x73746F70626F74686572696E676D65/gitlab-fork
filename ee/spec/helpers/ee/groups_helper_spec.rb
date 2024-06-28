@@ -697,7 +697,7 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
   end
 
   describe '#access_level_roles_user_can_assign' do
-    subject { helper.access_level_roles_user_can_assign(group) }
+    subject { helper.access_level_roles_user_can_assign(group, roles) }
 
     let_it_be(:group) { create(:group) }
     let_it_be_with_reload(:user) { create(:user) }
@@ -712,20 +712,23 @@ RSpec.describe GroupsHelper, feature_category: :source_code_management do
           group.add_developer(user)
         end
 
-        context 'when the minimal access role is available' do
+        context 'when the passed roles include the minimal access role and the minimal access role is available' do
+          let(:roles) { group.access_level_roles }
+
           before do
             stub_licensed_features(minimal_access_role: true)
           end
 
           it 'includes the minimal access role' do
-            expect(subject).to eq(
-              {
-                'Minimal Access' => 5,
-                'Guest' => 10,
-                'Reporter' => 20,
-                'Developer' => 30
-              }
-            )
+            expect(subject).to include(EE::Gitlab::Access::MINIMAL_ACCESS_HASH)
+          end
+        end
+
+        context 'when the passed roles do not include the minimal access role' do
+          let(:roles) { GroupMember.access_level_roles }
+
+          it 'does not include the minimal access role' do
+            expect(subject).not_to include(EE::Gitlab::Access::MINIMAL_ACCESS_HASH)
           end
         end
       end
