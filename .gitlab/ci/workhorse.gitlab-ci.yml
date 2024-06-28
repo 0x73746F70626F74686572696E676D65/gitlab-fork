@@ -33,6 +33,10 @@ workhorse:verify:
     - sed -i 's|URL.*$|URL = "redis://redis:6379"|g' workhorse/config.toml
   script:
     - make -C workhorse test
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - log/gitaly-test.log
 
 workhorse:test go:
   extends: .workhorse:test
@@ -47,6 +51,7 @@ workhorse:test go:
     expire_in: 30 days
     paths:
       - workhorse/coverage.html
+      - log/gitaly-test.log
 
 workhorse:test no_gitaly_transactions:
   extends:
