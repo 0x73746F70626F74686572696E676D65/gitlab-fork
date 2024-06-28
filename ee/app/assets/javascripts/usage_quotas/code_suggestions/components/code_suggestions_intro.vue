@@ -14,23 +14,12 @@ export default {
     codeSuggestionsLearnMoreLink,
   },
   i18n: {
-    contactSales: __('Contact sales'),
     purchaseSeats: __('Purchase seats'),
     trial: __('Start a trial'),
     description: s__(
       `CodeSuggestions|Enhance your coding experience with intelligent recommendations. %{linkStart}GitLab Duo Pro%{linkEnd} offers features that use generative AI to suggest code.`,
     ),
     title: s__('CodeSuggestions|Introducing GitLab Duo Pro'),
-  },
-  handRaiseLeadAttributes: {
-    variant: 'confirm',
-    category: 'secondary',
-    class: 'gl-sm-w-auto gl-w-full gl-sm-ml-3 gl-sm-mt-0 gl-mt-3',
-    'data-testid': 'code-suggestions-hand-raise-lead-button',
-  },
-  ctaTracking: {
-    action: 'click_button',
-    label: 'duo_pro_contact_sales',
   },
   directives: {
     SafeHtml,
@@ -47,6 +36,7 @@ export default {
   inject: {
     duoProTrialHref: { default: null },
     addDuoProHref: { default: null },
+    handRaiseLeadData: { default: {} },
   },
   computed: {
     purchaseSeatsBtnCategory() {
@@ -117,10 +107,10 @@ export default {
           {{ $options.i18n.purchaseSeats }}
         </gl-button>
         <hand-raise-lead-button
-          :button-attributes="$options.handRaiseLeadAttributes"
-          glm-content="code-suggestions"
-          product-interaction="Requested Contact-Duo Pro Add-On"
-          :cta-tracking="$options.ctaTracking"
+          :button-attributes="handRaiseLeadData.buttonAttributes"
+          :glm-content="handRaiseLeadData.glmContent"
+          :product-interaction="handRaiseLeadData.productInteraction"
+          :cta-tracking="handRaiseLeadData.ctaTracking"
         />
       </template>
     </gl-empty-state>
