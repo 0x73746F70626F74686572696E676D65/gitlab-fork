@@ -11,7 +11,6 @@ export const MOCK_UNSORTED_REPLICABLE_TYPES = [
     titlePlural: 'Repositories',
     name: 'repository',
     namePlural: 'repositories',
-    customReplicationUrl: 'admin/geo/replication/projects',
     verificationEnabled: true,
   },
   {
@@ -22,7 +21,6 @@ export const MOCK_UNSORTED_REPLICABLE_TYPES = [
     titlePlural: 'Designs',
     name: 'design',
     namePlural: 'designs',
-    customReplicationUrl: 'admin/geo/replication/designs',
   },
   {
     dataType: 'container_repository',
@@ -64,7 +62,6 @@ export const MOCK_SORTED_REPLICABLE_TYPES = [
     titlePlural: 'Designs',
     name: 'design',
     namePlural: 'designs',
-    customReplicationUrl: 'admin/geo/replication/designs',
   },
   {
     dataType: 'repository',
@@ -74,7 +71,6 @@ export const MOCK_SORTED_REPLICABLE_TYPES = [
     titlePlural: 'Repositories',
     name: 'repository',
     namePlural: 'repositories',
-    customReplicationUrl: 'admin/geo/replication/projects',
     verificationEnabled: true,
   },
   {

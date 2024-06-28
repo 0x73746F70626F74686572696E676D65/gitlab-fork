@@ -4,6 +4,7 @@ import { GlLink, GlButton, GlSprintf } from '@gitlab/ui';
 import { mapGetters } from 'vuex';
 import { GEO_REPLICATION_SUPPORTED_TYPES_URL } from 'ee/geo_sites/constants';
 import { s__ } from '~/locale';
+import { joinPaths } from '~/lib/utils/url_utility';
 import GeoSiteReplicationDetailsResponsive from './geo_site_replication_details_responsive.vue';
 import GeoSiteReplicationStatusMobile from './geo_site_replication_status_mobile.vue';
 
@@ -71,11 +72,10 @@ export default {
         return null;
       }
 
-      const path = replicable.customReplicationUrl
-        ? `${this.site.url}${replicable.customReplicationUrl}`
-        : `${this.site.url}admin/geo/sites/${this.site.id}/replication/${replicable.namePlural}`;
-
-      return new URL(path).toString();
+      return joinPaths(
+        gon.relative_url_root || '/',
+        `/admin/geo/sites/${this.site.id}/replication/${replicable.namePlural}`,
+      );
     },
   },
   GEO_REPLICATION_SUPPORTED_TYPES_URL,
