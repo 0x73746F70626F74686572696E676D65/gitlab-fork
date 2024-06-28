@@ -129,16 +129,13 @@ RSpec.describe Issues::ReopenService, feature_category: :team_planning do
         end
       end
 
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(sync_work_item_to_epic: false, synced_epic_work_item_editable: true)
-        end
+      context 'when it has no legacy epic' do
+        let_it_be_with_reload(:work_item) { create(:work_item, :closed, :epic, namespace: group) }
 
-        it 'does not change the epic' do
+        it 'closes the work item' do
           execute
 
           expect(work_item.reload.state).to eq('opened')
-          expect(epic.reload.state).to eq('closed')
         end
       end
     end

@@ -109,7 +109,6 @@ module EE
         def sync_related_epic_link?
           !synced_work_item &&
             issuable.epic_work_item? &&
-            issuable.namespace.work_item_sync_to_epic_enabled? &&
             issuable.synced_epic.present?
         end
       end

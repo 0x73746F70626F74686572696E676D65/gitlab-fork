@@ -4,7 +4,6 @@ module EE
   module Issues
     module ReopenService
       extend ::Gitlab::Utils::Override
-      include ::Gitlab::Utils::StrongMemoize
 
       private
 
@@ -20,7 +19,7 @@ module EE
       def reopen_issue(issue)
         set_work_item(issue)
 
-        return super unless sync_to_epic?
+        return super unless work_item.synced_epic
         # In case the epic and work item went out of sync but the epic is open, we don't want to error but just return.
         return super if work_item.synced_epic.open?
 
@@ -48,7 +47,7 @@ module EE
       # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
       def after_reopen(issue)
-        return super unless sync_to_epic?
+        return super unless work_item.synced_epic
 
         super
         # Creating a system note changes `updated_at` for the issue
@@ -60,14 +59,6 @@ module EE
           })
         )
       end
-
-      def sync_to_epic?
-        return false unless work_item.work_item_type == ::WorkItems::Type.default_by_type(:epic)
-        return false unless work_item.synced_epic
-
-        work_item.namespace.work_item_sync_to_epic_enabled?
-      end
-      strong_memoize_attr :sync_to_epic?
     end
   end
 end

@@ -74,7 +74,6 @@ module EE
         def sync_to_epic?(link, adjacent_work_item)
           return false if synced_work_item
           return false if link.work_item_parent.synced_epic.nil?
-          return false unless link.work_item.namespace.root_ancestor.work_item_sync_to_epic_enabled?
 
           synced_object_for(link.work_item) && synced_object_for(adjacent_work_item)
         end

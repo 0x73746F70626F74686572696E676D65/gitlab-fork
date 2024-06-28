@@ -255,10 +255,6 @@ module EE
       def service_accounts
         provisioned_users.service_account
       end
-
-      def work_item_sync_to_epic_enabled?
-        ::Feature.enabled?(:sync_work_item_to_epic, self, type: :wip)
-      end
     end
 
     def epic_and_work_item_associations_unification_enabled?

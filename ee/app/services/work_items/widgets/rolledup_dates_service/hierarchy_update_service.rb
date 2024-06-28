@@ -53,8 +53,7 @@ module WorkItems
         end
 
         def update_synced_epic!
-          return unless work_item.synced_epic
-          return unless work_item.namespace.work_item_sync_to_epic_enabled?
+          return unless work_item.synced_epic.present?
 
           dates_source = work_item.dates_source
           epic = work_item.synced_epic

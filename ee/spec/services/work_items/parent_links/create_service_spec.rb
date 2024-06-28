@@ -248,29 +248,6 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
                 .to eq("added #{parent_work_item.to_reference(full: true)} as parent epic")
             end
 
-            context 'when sync_work_item_to_epic feature flag is disabled' do
-              before do
-                stub_feature_flags(sync_work_item_to_epic: false)
-              end
-
-              it_behaves_like 'creates parent link only'
-
-              context 'when issue already has an epic' do
-                let(:child_work_item) { work_item_issue }
-                let(:child_issue) { Issue.find_by_id(child_work_item.id) }
-
-                before do
-                  create(:epic_issue, issue: child_work_item, epic: other_parent_epic)
-                end
-
-                it_behaves_like 'creates parent link and deletes legacy link' do
-                  let(:legacy_child) { child_issue }
-                  let(:relationship) { :epic }
-                  let(:link_service_class) { ::EpicIssues }
-                end
-              end
-            end
-
             it_behaves_like 'link creation with failures' do
               let(:link_service_class) { ::EpicIssues::CreateService }
               let(:legacy_child) { child_issue }
@@ -370,29 +347,6 @@ RSpec.describe WorkItems::ParentLinks::CreateService, feature_category: :portfol
 
               expect(parent_work_item.notes.last.note).to eq("added #{child_work_item.to_reference} as child epic")
               expect(child_work_item.notes.last.note).to eq("added #{parent_work_item.to_reference} as parent epic")
-            end
-
-            context 'when sync_work_item_to_epic feature flag is disabled' do
-              before do
-                stub_feature_flags(sync_work_item_to_epic: false)
-              end
-
-              it_behaves_like 'creates parent link only'
-
-              context 'when legacy epic already has a parent epic' do
-                let(:child_work_item) { other_child_epic.work_item }
-
-                before do
-                  create(:parent_link, work_item_parent: other_parent_epic.work_item,
-                    work_item: child_work_item)
-                end
-
-                it_behaves_like 'creates parent link and deletes legacy link' do
-                  let(:legacy_child) { other_child_epic }
-                  let(:relationship) { :parent }
-                  let(:link_service_class) { ::Epics::EpicLinks }
-                end
-              end
             end
 
             it_behaves_like 'link creation with failures' do

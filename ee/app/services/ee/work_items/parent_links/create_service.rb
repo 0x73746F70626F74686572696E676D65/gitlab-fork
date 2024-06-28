@@ -122,7 +122,7 @@ module EE
         end
 
         def sync_epic_link?
-          issuable.synced_epic && issuable.namespace.work_item_sync_to_epic_enabled?
+          issuable.synced_epic.present?
         end
       end
     end
