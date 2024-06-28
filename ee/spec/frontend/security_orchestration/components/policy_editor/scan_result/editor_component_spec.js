@@ -20,6 +20,7 @@ import {
   DEFAULT_SCAN_RESULT_POLICY,
   DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE,
   DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE,
+  DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_BOT_MESSAGE,
   getInvalidBranches,
   fromYaml,
   REQUIRE_APPROVAL_TYPE,
@@ -400,7 +401,7 @@ describe('EditorComponent', () => {
       });
     });
 
-    describe('action section  when the "approvalPolicyDisableBotComment" feature is on', () => {
+    describe('action section  when the "approvalPolicyDisableBotComment" or "approvalPolicyDisableBotCommentGroup" feature is on', () => {
       beforeEach(() => {
         uniqueId
           .mockImplementationOnce(jest.fn((prefix) => `${prefix}0`))
@@ -438,7 +439,7 @@ describe('EditorComponent', () => {
 
         it.each`
           namespaceType              | manifest
-          ${NAMESPACE_TYPES.GROUP}   | ${DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE}
+          ${NAMESPACE_TYPES.GROUP}   | ${DEFAULT_SCAN_RESULT_POLICY_WITH_SCOPE_WITH_BOT_MESSAGE}
           ${NAMESPACE_TYPES.PROJECT} | ${DEFAULT_SCAN_RESULT_POLICY_WITH_BOT_MESSAGE}
         `(
           'should use the correct default policy yaml for a $namespaceType',
@@ -462,11 +463,11 @@ describe('EditorComponent', () => {
 
         it('displays the approver action and the add action button on the group-level', () => {
           factory({
-            glFeatures: { approvalPolicyDisableBotComment: true },
+            glFeatures: { approvalPolicyDisableBotCommentGroup: true },
             provide: { namespaceType: NAMESPACE_TYPES.GROUP },
           });
-          expect(findActionSection().exists()).toBe(false);
-          expect(findApproverAction().exists()).toBe(true);
+          expect(findActionSection().exists()).toBe(true);
+          expect(findApproverAction().exists()).toBe(false);
         });
 
         it('displays multiple action sections', () => {

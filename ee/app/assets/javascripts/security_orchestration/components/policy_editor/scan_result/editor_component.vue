@@ -128,7 +128,9 @@ export default {
     },
   },
   data() {
-    const includeBotComment = this.glFeatures.approvalPolicyDisableBotComment;
+    const includeBotComment =
+      this.glFeatures.approvalPolicyDisableBotComment ||
+      this.glFeatures.approvalPolicyDisableBotCommentGroup;
 
     const newPolicyYaml = getPolicyYaml({
       includeBotComment,
@@ -203,7 +205,7 @@ export default {
       return this.policy.actions?.some(({ type }) => type === REQUIRE_APPROVAL_TYPE);
     },
     hasEmptyActions() {
-      return this.glFeatures.approvalPolicyDisableBotComment
+      return this.showBotMessageAction
         ? this.policy.actions?.every(({ type, enabled }) => type === BOT_MESSAGE_TYPE && !enabled)
         : !this.policy.actions?.length;
     },
@@ -244,7 +246,7 @@ export default {
         };
       }
 
-      if (this.glFeatures.approvalPolicyDisableBotComment) {
+      if (this.showBotMessageAction) {
         return {
           variant: 'warning',
           title: this.$options.i18n.settingWarningTitle,
@@ -259,7 +261,10 @@ export default {
       };
     },
     showBotMessageAction() {
-      return this.isProject && this.glFeatures.approvalPolicyDisableBotComment;
+      return (
+        this.glFeatures.approvalPolicyDisableBotComment ||
+        this.glFeatures.approvalPolicyDisableBotCommentGroup
+      );
     },
   },
   watch: {
@@ -276,7 +281,7 @@ export default {
       return BRANCHES_KEY in rule;
     },
     oldAddAction(type) {
-      // TODO: Remove with the approvalPolicyDisableBotComment feature flag
+      // TODO: Remove with the approvalPolicyDisableBotComment feature flags
       const newAction = buildAction(type);
       this.policy = {
         ...this.policy,
@@ -285,7 +290,7 @@ export default {
       this.updateYamlEditorValue(this.policy);
     },
     oldRemoveAction(index) {
-      // TODO: Remove with the approvalPolicyDisableBotComment feature flag
+      // TODO: Remove with the approvalPolicyDisableBotComment feature flags
       const { actions, ...newPolicy } = this.policy;
       actions.splice(index, 1);
       this.policy = { ...newPolicy, ...(actions.length ? { actions } : {}) };
@@ -293,7 +298,7 @@ export default {
       this.updatePolicyApprovers({});
     },
     oldUpdateAction(actionIndex, values) {
-      // TODO: Remove with the approvalPolicyDisableBotComment feature flag
+      // TODO: Remove with the approvalPolicyDisableBotComment feature flags
       this.policy.actions.splice(actionIndex, 1, values);
       this.errors = {
         ...this.errors,

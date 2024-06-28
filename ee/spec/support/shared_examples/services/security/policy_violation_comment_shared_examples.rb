@@ -24,7 +24,10 @@ RSpec.shared_examples_for 'triggers policy bot comment' do |report_type, expecte
 
         context 'when feature flag approval_policy_disable_bot_comment is disabled' do
           before do
-            stub_feature_flags(approval_policy_disable_bot_comment: false)
+            stub_feature_flags(
+              approval_policy_disable_bot_comment: false,
+              approval_policy_disable_bot_comment_group: false
+            )
           end
 
           it 'enqueues Security::GeneratePolicyViolationCommentWorker' do
