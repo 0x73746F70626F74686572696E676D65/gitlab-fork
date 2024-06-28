@@ -254,6 +254,28 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
               expect(recording).not_to exceed_all_query_limit(1).for_model(::Sbom::Source)
             end
 
+            context 'when sorted by license in ascending order' do
+              let(:params) { { group_id: group.to_param, sort_by: 'license', sort: 'asc' } }
+
+              it 'returns sorted list' do
+                subject
+
+                expect(json_response['dependencies'].first['licenses'].first['spdx_identifier']).to eq('Apache-2.0')
+                expect(json_response['dependencies'].last['licenses'].first['spdx_identifier']).to eq('MIT')
+              end
+            end
+
+            context 'when sorted by license in descending order' do
+              let(:params) { { group_id: group.to_param, sort_by: 'license', sort: 'desc' } }
+
+              it 'returns sorted list' do
+                subject
+
+                expect(json_response['dependencies'].first['licenses'].first['spdx_identifier']).to eq('MIT')
+                expect(json_response['dependencies'].last['licenses'].first['spdx_identifier']).to eq('Apache-2.0')
+              end
+            end
+
             context 'when sorted by name in ascending order' do
               let(:params) { { group_id: group.to_param, sort_by: 'name', sort: 'asc' } }
 

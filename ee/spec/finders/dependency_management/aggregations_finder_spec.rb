@@ -69,18 +69,19 @@ RSpec.describe DependencyManagement::AggregationsFinder, feature_category: :depe
 
     describe 'sorting' do
       let_it_be(:project) { target_projects.first }
-      let_it_be(:occurrence_1) { occurrence(packager: :npm, name: 'c', severity: 'low') }
-      let_it_be(:occurrence_2) { occurrence(packager: :bundler, name: 'b', severity: 'medium') }
-      let_it_be(:occurrence_3) { occurrence(packager: :nuget, name: 'a', severity: 'high') }
-      let_it_be(:occurrence_4) { occurrence(packager: :yarn, name: 'd', severity: 'critical') }
+      let_it_be(:occurrence_1) { occurrence(traits: [:npm], name: 'c', severity: 'low') }
+      let_it_be(:occurrence_2) { occurrence(traits: [:mit, :apache_2, :bundler], name: 'b', severity: 'medium') }
+      let_it_be(:occurrence_3) { occurrence(traits: [:mpl_2, :nuget], name: 'a', severity: 'high') }
+      let_it_be(:occurrence_4) { occurrence(traits: [:apache_2, :yarn], name: 'd', severity: 'critical') }
 
       before_all do
         Sbom::Occurrence.id_in(target_occurrences.map(&:id)).delete_all
       end
 
-      def occurrence(packager:, name:, severity:)
-        component = create(:sbom_component, name: name)
-        create(:sbom_occurrence, packager, component: component, highest_severity: severity, project: project)
+      def occurrence(name:, severity:, traits: [])
+        params = { component: create(:sbom_component, name: name), highest_severity: severity, project: project }
+
+        create(:sbom_occurrence, *traits, **params)
       end
 
       shared_examples 'can sort in both asc and desc order' do |sort_by|
@@ -124,6 +125,18 @@ RSpec.describe DependencyManagement::AggregationsFinder, feature_category: :depe
 
           let(:expected_asc) { [low, medium, high, critical] }
           let(:expected_desc) { [critical, high, medium, low] }
+        end
+      end
+
+      context 'when sorting by license id' do
+        it_behaves_like 'can sort in both asc and desc order', :licenses do
+          let_it_be(:blank_license_array) { occurrence_1 }
+          let_it_be(:mit_apache) { occurrence_2 }
+          let_it_be(:mpl) { occurrence_3 }
+          let_it_be(:apache) { occurrence_4 }
+
+          let(:expected_asc) { [apache, mit_apache, mpl, blank_license_array] }
+          let(:expected_desc) { [blank_license_array, mpl, mit_apache, apache] }
         end
       end
 

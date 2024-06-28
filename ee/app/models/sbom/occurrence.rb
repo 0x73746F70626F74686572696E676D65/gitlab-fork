@@ -146,16 +146,6 @@ module Sbom
         .where(project_authorizations: { user_id: user.id })
     end
 
-    def self.select_distinct(on:, table_name: quoted_table_name)
-      quote = ->(column) { "#{table_name}.#{connection.quote_column_name(column)}" }
-
-      distinct_values = on.map { |column| quote.call(column) }
-
-      select_values = column_names.map { |column| quote.call(column) }
-
-      select("DISTINCT ON (#{distinct_values.join(', ')}) #{select_values.join(', ')}")
-    end
-
     def location
       {
         blob_path: input_file_blob_path,
