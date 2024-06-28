@@ -4,7 +4,10 @@ import { stubComponent, RENDER_ALL_SLOTS_TEMPLATE } from 'helpers/stub_component
 import BranchSelector from 'ee/security_orchestration/components/policy_editor/branch_selector.vue';
 import BranchExceptionSelector from 'ee/security_orchestration/components/policy_editor/branch_exception_selector.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { NO_EXCEPTION_KEY, EXCEPTION_KEY } from 'ee/security_orchestration/components/constants';
+import {
+  NO_EXCEPTION_KEY,
+  EXCEPTION_KEY,
+} from 'ee/security_orchestration/components/policy_editor/constants';
 
 describe('BranchExceptionSelector', () => {
   let wrapper;

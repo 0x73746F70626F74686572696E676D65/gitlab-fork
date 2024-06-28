@@ -213,3 +213,16 @@ export const BRANCH_TYPES_ITEMS = Object.entries(BRANCH_TYPES).map(([value, text
   value,
   text,
 }));
+
+export const EXCEPTION_KEY = 'exception';
+export const NO_EXCEPTION_KEY = 'no_exception';
+export const EXCEPTION_TYPE_ITEMS = [
+  {
+    value: EXCEPTION_KEY,
+    text: s__('SecurityOrchestration|Exceptions'),
+  },
+  {
+    value: NO_EXCEPTION_KEY,
+    text: s__('SecurityOrchestration|No exceptions'),
+  },
+];

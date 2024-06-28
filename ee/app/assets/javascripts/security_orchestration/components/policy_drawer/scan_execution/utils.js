@@ -9,6 +9,7 @@ import {
   SCAN_EXECUTION_BRANCH_TYPE_OPTIONS,
 } from '../../policy_editor/constants';
 import { createHumanizedScanners } from '../../policy_editor/utils';
+import { DEFAULT_TEMPLATE } from '../../policy_editor/scan_execution/action/scan_filters/constants';
 import { buildBranchExceptionsString, humanizedBranchExceptions } from '../utils';
 
 const createTagsMessage = (tags) => {
@@ -21,11 +22,10 @@ const createTagsMessage = (tags) => {
     : s__('SecurityOrchestration|Automatically selected runners');
 };
 
-const createTemplateMessage = (template) => {
-  return template === 'default'
-    ? s__('SecurityOrchestration|With the default security job template')
-    : s__('SecurityOrchestration|With the latest security job template');
-};
+const createTemplateMessage = (template = DEFAULT_TEMPLATE) =>
+  sprintf(s__('SecurityOrchestration|With the %{template} security job template'), {
+    template,
+  });
 
 /**
  * Create a human-readable list of runner tags, adding the necessary punctuation and conjunctions
@@ -223,10 +223,8 @@ export const humanizeActions = (actions) => {
   // de-duplicate scanners and merge tags (if any)
   const scanners = actions.reduce((acc, action) => {
     if (!acc[action.scan]) {
-      acc[action.scan] = { tags: [], template: 'default', variables: [] };
+      acc[action.scan] = { tags: [], template: action.template || DEFAULT_TEMPLATE, variables: [] };
     }
-
-    acc[action.scan].template = action.template || 'default';
 
     if (action.tags) {
       acc[action.scan].tags = [...acc[action.scan].tags, ...action.tags];

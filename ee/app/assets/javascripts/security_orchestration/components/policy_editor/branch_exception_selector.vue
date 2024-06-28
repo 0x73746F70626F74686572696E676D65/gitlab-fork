@@ -2,7 +2,7 @@
 import { GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { isGroup } from 'ee/security_orchestration/components/utils';
-import { EXCEPTION_TYPE_ITEMS, NO_EXCEPTION_KEY, EXCEPTION_KEY } from '../constants';
+import { EXCEPTION_TYPE_ITEMS, NO_EXCEPTION_KEY, EXCEPTION_KEY } from './constants';
 import BranchSelector from './branch_selector.vue';
 
 export default {
