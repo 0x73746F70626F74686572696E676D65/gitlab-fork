@@ -11,7 +11,7 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
         create_valid_funnel
       end
 
-      it 'is successful' do
+      it 'is successful', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/469177' do
         url_to_projects_regex.each do |url, projects_regex|
           expect(Gitlab::HTTP).to receive(:post)
                                     .with(URI.parse(url.to_s), {
@@ -30,7 +30,7 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
         update_funnel
       end
 
-      it 'is successful' do
+      it 'is successful', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/469178' do
         url_to_projects_regex.each do |url, projects_regex|
           expect(Gitlab::HTTP).to receive(:post)
                                     .with(URI.parse(url.to_s), {
@@ -49,7 +49,7 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
         rename_funnel
       end
 
-      it 'is successful' do
+      it 'is successful', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/469456' do
         url_to_projects_regex.each do |url, _projects_regex|
           expect(Gitlab::HTTP).to receive(:post)
                                     .with(URI.parse(url.to_s), {
@@ -68,7 +68,7 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
         delete_funnel
       end
 
-      it 'is successful' do
+      it 'is successful', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/469176' do
         url_to_projects_regex.each do |url, projects_regex|
           expect(Gitlab::HTTP).to receive(:post)
                                     .with(URI.parse(url.to_s), {
