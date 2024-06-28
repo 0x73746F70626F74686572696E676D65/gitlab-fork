@@ -2055,6 +2055,12 @@ msgstr ""
 msgid "AI Agent was successfully deleted"
 msgstr ""
 
+msgid "AI Gateway URL:"
+msgstr ""
+
+msgid "AI gateway URL"
+msgstr ""
+
 msgid "AI-generated summary"
 msgstr ""
 
@@ -34737,6 +34743,9 @@ msgid "No %{providerTitle} repositories found"
 msgstr ""
 
 msgid "No %{title} have been added."
+msgstr ""
+
+msgid "No AI gateway available."
 msgstr ""
 
 msgid "No Epic"
