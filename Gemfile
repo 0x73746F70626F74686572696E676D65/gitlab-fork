@@ -436,7 +436,7 @@ group :development do
   gem 'rubocop', feature_category: :tooling
   gem 'solargraph', '~> 0.47.2', require: false # rubocop:todo Gemfile/MissingFeatureCategory
 
-  gem 'letter_opener_web', '~> 2.0.0' # rubocop:todo Gemfile/MissingFeatureCategory
+  gem 'letter_opener_web', '~> 3.0.0' # rubocop:todo Gemfile/MissingFeatureCategory
   gem 'lookbook', '~> 2.3' # rubocop:todo Gemfile/MissingFeatureCategory
 
   # Better errors handler
