@@ -71,7 +71,6 @@ Layout/LineBreakAfterFinalMixin:
     - 'ee/app/models/approval_project_rules_protected_branch.rb'
     - 'ee/app/models/approval_rules/approval_group_rule.rb'
     - 'ee/app/models/approval_rules/approval_group_rules_protected_branch.rb'
-    - 'ee/app/models/ldap_group_link.rb'
     - 'ee/app/models/namespace_limit.rb'
     - 'ee/app/models/vulnerabilities/scanner.rb'
     - 'ee/app/models/vulnerabilities/statistic.rb'
