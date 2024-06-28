@@ -51719,6 +51719,24 @@ msgstr ""
 msgid "SubscriptionBanner|Upload new license"
 msgstr ""
 
+msgid "SubscriptionGroupsNew|Select a group for your %{planName} subscription"
+msgstr ""
+
+msgid "SubscriptionGroupsNew|Select a group for your subscription"
+msgstr ""
+
+msgid "SubscriptionGroupsNew|The group is a top-level group on a Free tier"
+msgstr ""
+
+msgid "SubscriptionGroupsNew|Why can't I find my group?"
+msgstr ""
+
+msgid "SubscriptionGroupsNew|You're assigned the Owner role of the group"
+msgstr ""
+
+msgid "SubscriptionGroupsNew|Your group will only be displayed in the list above if:"
+msgstr ""
+
 msgid "SubscriptionMangement|If you'd like to add more seats, upgrade your plan, or purchase additional products, contact your GitLab sales representative."
 msgstr ""
 
