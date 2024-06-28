@@ -3,7 +3,7 @@ import { GlLoadingIcon, GlEmptyState, GlSprintf } from '@gitlab/ui';
 import EMPTY_CHART_SVG from '@gitlab/svgs/dist/illustrations/chart-empty-state.svg?url';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
-import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
+import { visitUrl } from '~/lib/utils/url_utility';
 import {
   prepareTokens,
   processFilters as processFilteredSearchFilters,
@@ -57,7 +57,6 @@ export default {
     metricsIndexUrl: {
       required: true,
       type: String,
-      validator: (val) => isSafeURL(val),
     },
   },
   data() {

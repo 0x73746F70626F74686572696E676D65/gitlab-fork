@@ -1,5 +1,7 @@
+import { GlBadge, GlButton } from '@gitlab/ui';
 import TracingHeader from 'ee/tracing/details/tracing_header.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import PageHeading from '~/vue_shared/components/page_heading.vue';
 
 describe('TracingHeader', () => {
   let wrapper;
@@ -21,6 +23,7 @@ describe('TracingHeader', () => {
       propsData: {
         trace,
         incomplete,
+        logsLink: 'testLogsLink',
       },
     });
   };
@@ -28,12 +31,16 @@ describe('TracingHeader', () => {
     createComponent();
   });
 
+  const findHeading = () => wrapper.findComponent(PageHeading);
+
   it('renders the correct title', () => {
-    expect(wrapper.find('h1').text()).toBe('Service : Operation');
+    expect(findHeading().text()).toContain('Service : Operation');
   });
 
   it('does not show the in progress label if incomplete=false', () => {
-    expect(wrapper.find('h1').text()).not.toContain('In progress');
+    expect(findHeading().findComponent(GlBadge).exists()).toBe(false);
+
+    expect(findHeading().text()).not.toContain('In progress');
   });
 
   it('shows the in progress label when incomplete=true', () => {
@@ -44,7 +51,14 @@ describe('TracingHeader', () => {
       true,
     );
 
-    expect(wrapper.find('h1').text()).toContain('In progress');
+    expect(findHeading().findComponent(GlBadge).exists()).toBe(true);
+    expect(findHeading().text()).toContain('In progress');
+  });
+
+  it('renders the correct logs link', () => {
+    const button = findHeading().findComponent(GlButton);
+    expect(button.text()).toBe('View Logs');
+    expect(button.attributes('href')).toBe('testLogsLink');
   });
 
   it('renders the correct trace date', () => {

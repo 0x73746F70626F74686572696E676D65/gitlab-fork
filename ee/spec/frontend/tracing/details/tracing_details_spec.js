@@ -7,12 +7,11 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import TracingDetails from 'ee/tracing/details/tracing_details.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
-import { visitUrl, isSafeURL } from '~/lib/utils/url_utility';
+import * as urlUtility from '~/lib/utils/url_utility';
 import { mapTraceToSpanTrees } from 'ee/tracing/trace_utils';
 import { useMockInternalEventsTracking } from 'helpers/tracking_internal_events_helper';
 
 jest.mock('~/alert');
-jest.mock('~/lib/utils/url_utility');
 jest.mock('ee/tracing/trace_utils');
 
 describe('TracingDetails', () => {
@@ -21,6 +20,7 @@ describe('TracingDetails', () => {
 
   const TRACE_ID = 'test-trace-id';
   const TRACING_INDEX_URL = 'https://www.gitlab.com/flightjs/Flight/-/tracing';
+  const LOGS_INDEX_URL = 'https://www.gitlab.com/flightjs/Flight/-/logs';
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
@@ -34,6 +34,7 @@ describe('TracingDetails', () => {
   const props = {
     traceId: TRACE_ID,
     tracingIndexUrl: TRACING_INDEX_URL,
+    logsIndexUrl: LOGS_INDEX_URL,
   };
 
   const mountComponent = async () => {
@@ -49,7 +50,8 @@ describe('TracingDetails', () => {
   const { bindInternalEventDocument } = useMockInternalEventsTracking();
 
   beforeEach(() => {
-    isSafeURL.mockReturnValue(true);
+    jest.spyOn(urlUtility, 'visitUrl');
+    jest.spyOn(urlUtility, 'isSafeURL').mockReturnValue(true);
 
     observabilityClientMock = createMockClient();
   });
@@ -101,6 +103,7 @@ describe('TracingDetails', () => {
       expect(header.exists()).toBe(true);
       expect(header.props('incomplete')).toBe(mockTree.incomplete);
       expect(header.props('trace')).toEqual(mockTrace);
+      expect(header.props('logsLink')).toBe(`${LOGS_INDEX_URL}?traceId=test-trace-id&search=`);
     });
 
     describe('details drawer', () => {
@@ -166,7 +169,7 @@ describe('TracingDetails', () => {
     });
 
     it('redirects to tracingIndexUrl', () => {
-      expect(visitUrl).toHaveBeenCalledWith(props.tracingIndexUrl);
+      expect(urlUtility.visitUrl).toHaveBeenCalledWith(props.tracingIndexUrl);
     });
   });
 

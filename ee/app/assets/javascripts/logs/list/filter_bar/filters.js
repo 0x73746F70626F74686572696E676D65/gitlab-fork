@@ -124,17 +124,38 @@ export function filterObjToQuery({ attributes, dateRange }) {
   };
 }
 
-export function selectedLogQueryObject(selectedLog) {
+export function logsQueryFromAttributes({
+  traceId,
+  spanId,
+  service,
+  severityNumber,
+  fingerprint,
+  timestamp,
+}) {
   const attributes = {
-    service: [{ value: selectedLog.service_name, operator: '=' }],
-    severityNumber: [{ value: selectedLog.severity_number, operator: '=' }],
-    traceId: [{ value: selectedLog.trace_id, operator: '=' }],
-    fingerprint: [{ value: selectedLog.fingerprint, operator: '=' }],
+    traceId: traceId ? [{ value: traceId, operator: '=' }] : undefined,
+    spanId: spanId ? [{ value: spanId, operator: '=' }] : undefined,
+    service: service ? [{ value: service, operator: '=' }] : undefined,
+    severityNumber: severityNumber ? [{ value: severityNumber, operator: '=' }] : undefined,
+    fingerprint: fingerprint ? [{ value: fingerprint, operator: '=' }] : undefined,
   };
+  const dateRange = timestamp
+    ? {
+        timestamp,
+      }
+    : undefined;
+  return filterObjToQuery({
+    attributes,
+    dateRange,
+  });
+}
 
-  const dateRange = {
+export function selectedLogQueryObject(selectedLog) {
+  return logsQueryFromAttributes({
+    traceId: selectedLog.trace_id,
+    fingerprint: selectedLog.fingerprint,
+    severityNumber: selectedLog.severity_number,
+    service: selectedLog.service_name,
     timestamp: selectedLog.timestamp,
-  };
-
-  return filterObjToQuery({ attributes, dateRange });
+  });
 }

@@ -41,7 +41,8 @@ RSpec.describe Projects::ObservabilityHelper, type: :helper, feature_category: :
       expected_json = {
         apiConfig: expected_api_config,
         traceId: "trace-id",
-        tracingIndexUrl: namespace_project_tracing_index_path(project.group, project)
+        tracingIndexUrl: namespace_project_tracing_index_path(project.group, project),
+        logsIndexUrl: namespace_project_logs_path(project.group, project)
       }.to_json
 
       expect(helper.observability_tracing_details_model(project, "trace-id")).to eq(expected_json)
