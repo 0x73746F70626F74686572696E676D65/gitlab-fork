@@ -7,7 +7,6 @@ import {
 } from '@gitlab/ui/dist/charts';
 
 import { isNumber } from 'lodash';
-import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import ChartTooltipText from 'ee/analytics/shared/components/chart_tooltip_text.vue';
 import { visitUrl, mergeUrlParams, joinPaths } from '~/lib/utils/url_utility';
@@ -129,7 +128,6 @@ export default {
   },
   data() {
     return {
-      svgs: {},
       tooltipTitle: null,
       tooltipValue: null,
       tooltipContent: [],
@@ -138,11 +136,6 @@ export default {
     };
   },
   computed: {
-    dataZoomConfig() {
-      const handleIcon = this.svgs['scroll-handle'];
-
-      return handleIcon ? { handleIcon } : {};
-    },
     seriesInfo() {
       return generateInsightsSeriesInfo(this.data.datasets);
     },
@@ -180,7 +173,7 @@ export default {
         };
       }
 
-      return { dataZoom: [this.dataZoomConfig], ...options };
+      return { dataZoom: [{ type: 'slider' }], ...options };
     },
     isColumnChart() {
       return [this.$options.chartTypes.BAR, this.$options.chartTypes.PIE].includes(this.type);
@@ -226,21 +219,8 @@ export default {
     }
   },
   methods: {
-    setSvg(name) {
-      return getSvgIconPathContent(name)
-        .then((path) => {
-          if (path) {
-            this.$set(this.svgs, name, `path://${path}`);
-          }
-        })
-        .catch((e) => {
-          // eslint-disable-next-line no-console, @gitlab/require-i18n-strings
-          console.error('SVG could not be rendered correctly: ', e);
-        });
-    },
     onChartCreated(chart) {
       this.chart = chart;
-      this.setSvg('scroll-handle');
 
       if (this.supportsDrillDown) {
         this.chart.on('mouseover', 'series', this.onChartDataSeriesMouseOver);
