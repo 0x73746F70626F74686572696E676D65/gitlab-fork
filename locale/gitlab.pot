@@ -838,9 +838,6 @@ msgstr ""
 msgid "%{group_name}&%{epic_iid} &middot; created %{epic_created} by %{author}"
 msgstr ""
 
-msgid "%{group} is a top level group and cannot be immediately deleted from here.  Please visit the %{linkStart}Group Settings%{linkEnd} to immediately delete this group."
-msgstr ""
-
 msgid "%{host} sign-in from new location"
 msgstr ""
 

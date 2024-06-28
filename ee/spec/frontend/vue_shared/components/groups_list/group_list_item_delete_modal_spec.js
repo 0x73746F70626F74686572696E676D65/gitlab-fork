@@ -2,7 +2,6 @@ import { GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
 import GroupListItemDeleteModal from 'ee/vue_shared/components/groups_list/group_list_item_delete_modal.vue';
-import GroupListItemDeletionDisabledModal from 'ee/vue_shared/components/groups_list/group_list_item_deletion_disabled_modal.vue';
 import GroupListItemDelayedDeletionModalFooter from 'ee/vue_shared/components/groups_list/group_list_item_delayed_deletion_modal_footer.vue';
 import DangerConfirmModal from '~/vue_shared/components/confirm_danger/confirm_danger_modal.vue';
 import { groups } from 'jest/vue_shared/components/groups_list/mock_data';
@@ -36,69 +35,24 @@ describe('GroupListItemDeleteModalEE', () => {
     });
   };
 
-  const findDeletionDisabledModal = () => wrapper.findComponent(GroupListItemDeletionDisabledModal);
   const findDangerConfirmModal = () => wrapper.findComponent(DangerConfirmModal);
   const findDelayedDeletionModalFooter = () =>
     wrapper.findComponent(GroupListItemDelayedDeletionModalFooter);
+
+  it('renders modal footer', () => {
+    createComponent({ props: { visible: true } });
+
+    expect(findDelayedDeletionModalFooter().props('group')).toEqual(group);
+  });
 
   describe('when visible is false', () => {
     beforeEach(() => {
       createComponent({ props: { visible: false } });
     });
 
-    it('does not render either modal', () => {
-      expect(findDeletionDisabledModal().exists()).toBe(false);
-      expect(findDangerConfirmModal().exists()).toBe(false);
-      expect(findDelayedDeletionModalFooter().exists()).toBe(false);
+    it('does not show modal', () => {
+      expect(findDangerConfirmModal().props('visible')).toBe(false);
     });
-  });
-
-  describe('when visible is true', () => {
-    describe.each`
-      isAdjournedDeletionEnabled | markedForDeletionOn | parent       | renderDeletionModal | renderDisabledDeletionModal
-      ${false}                   | ${false}            | ${null}      | ${false}            | ${true}
-      ${false}                   | ${false}            | ${{ id: 1 }} | ${true}             | ${false}
-      ${false}                   | ${'2024-03-24'}     | ${null}      | ${false}            | ${true}
-      ${false}                   | ${'2024-03-24'}     | ${{ id: 1 }} | ${true}             | ${false}
-      ${true}                    | ${false}            | ${null}      | ${true}             | ${false}
-      ${true}                    | ${false}            | ${{ id: 1 }} | ${true}             | ${false}
-      ${true}                    | ${'2024-03-24'}     | ${null}      | ${false}            | ${true}
-      ${true}                    | ${'2024-03-24'}     | ${{ id: 1 }} | ${true}             | ${false}
-    `(
-      'when group isAdjournedDeletionEnabled is $isAdjournedDeletionEnabled, markedForDeletionOn is $markedForDeletionOn, and parent is $parent',
-      ({
-        isAdjournedDeletionEnabled,
-        markedForDeletionOn,
-        parent,
-        renderDeletionModal,
-        renderDisabledDeletionModal,
-      }) => {
-        beforeEach(() => {
-          createComponent({
-            props: {
-              visible: true,
-              group: {
-                ...group,
-                isAdjournedDeletionEnabled,
-                markedForDeletionOn,
-                parent,
-              },
-            },
-          });
-        });
-
-        it(`${renderDeletionModal ? 'does' : 'does not'} render deletion modal`, () => {
-          expect(findDangerConfirmModal().exists()).toBe(renderDeletionModal);
-          expect(findDelayedDeletionModalFooter().exists()).toBe(renderDeletionModal);
-        });
-
-        it(`${
-          renderDisabledDeletionModal ? 'does' : 'does not'
-        } render disabled deletion modal`, () => {
-          expect(findDeletionDisabledModal().exists()).toBe(renderDisabledDeletionModal);
-        });
-      },
-    );
   });
 
   describe('delete modal overrides', () => {
@@ -168,30 +122,6 @@ describe('GroupListItemDeleteModalEE', () => {
       describe('when change is emitted', () => {
         beforeEach(() => {
           findDangerConfirmModal().vm.$emit('change', false);
-        });
-
-        it('emits `change` event to parent', () => {
-          expect(wrapper.emitted('change')).toMatchObject([[false]]);
-        });
-      });
-    });
-
-    describe('deletion disabled modal events', () => {
-      beforeEach(() => {
-        createComponent({
-          props: {
-            visible: true,
-            group: {
-              ...group,
-              parent: null,
-            },
-          },
-        });
-      });
-
-      describe('when change is emitted', () => {
-        beforeEach(() => {
-          findDeletionDisabledModal().vm.$emit('change', false);
         });
 
         it('emits `change` event to parent', () => {

@@ -2,7 +2,6 @@
 import { GlSprintf } from '@gitlab/ui';
 import { __ } from '~/locale';
 import DangerConfirmModal from '~/vue_shared/components/confirm_danger/confirm_danger_modal.vue';
-import GroupListItemDeletionDisabledModal from './group_list_item_deletion_disabled_modal.vue';
 import GroupListItemDelayedDeletionModalFooter from './group_list_item_delayed_deletion_modal_footer.vue';
 
 export default {
@@ -16,7 +15,6 @@ export default {
   components: {
     GlSprintf,
     DangerConfirmModal,
-    GroupListItemDeletionDisabledModal,
     GroupListItemDelayedDeletionModalFooter,
   },
   props: {
@@ -44,23 +42,11 @@ export default {
     },
   },
   computed: {
-    isSubgroup() {
-      return Boolean(this.group.parent);
-    },
     isMarkedForDeletion() {
       return Boolean(this.group.markedForDeletionOn);
     },
     groupWillBeImmediatelyDeleted() {
       return !this.group.isAdjournedDeletionEnabled || this.isMarkedForDeletion;
-    },
-    deletionDisabled() {
-      return !this.isSubgroup && this.groupWillBeImmediatelyDeleted;
-    },
-    useDeletionDisabledModal() {
-      return this.visible && this.deletionDisabled;
-    },
-    useDeletionModal() {
-      return this.visible && !this.deletionDisabled;
     },
     deleteModalOverride() {
       return this.groupWillBeImmediatelyDeleted
@@ -72,17 +58,8 @@ export default {
 </script>
 
 <template>
-  <group-list-item-deletion-disabled-modal
-    v-if="useDeletionDisabledModal"
-    visible
-    :modal-id="modalId"
-    :group="group"
-    @change="$emit('change', $event)"
-  />
-
   <danger-confirm-modal
-    v-else-if="useDeletionModal"
-    visible
+    :visible="visible"
     :modal-title="deleteModalOverride"
     :modal-id="modalId"
     :phrase="phrase"
