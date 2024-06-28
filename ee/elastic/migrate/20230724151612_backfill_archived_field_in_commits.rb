@@ -189,3 +189,5 @@ class BackfillArchivedFieldInCommits < Elastic::Migration
     [get_number_of_shards(index_name: index_name), MAX_PROJECTS_TO_PROCESS].min
   end
 end
+
+BackfillArchivedFieldInCommits.prepend ::Elastic::MigrationObsolete

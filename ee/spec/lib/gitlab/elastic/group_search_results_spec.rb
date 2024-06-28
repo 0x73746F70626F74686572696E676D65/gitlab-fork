@@ -119,7 +119,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
       let(:archived_result) { instance_double(Gitlab::Search::FoundBlob, project: archived_project) }
       let(:query) { 'something went wrong' }
 
-      include_examples 'search results filtered by archived', nil, 'backfill_archived_field_in_blob'
+      include_examples 'search results filtered by archived', nil, nil
     end
   end
 
@@ -147,7 +147,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
       ensure_elasticsearch_index!
     end
 
-    include_examples 'search results filtered by archived', nil, :backfill_archived_field_in_commits
+    include_examples 'search results filtered by archived', nil, nil
   end
 
   context 'for wiki_blobs', :sidekiq_inline do

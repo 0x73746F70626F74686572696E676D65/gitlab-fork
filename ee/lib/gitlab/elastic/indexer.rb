@@ -197,8 +197,7 @@ module Gitlab
           c << "--schema-version-blob=#{BLOB_SCHEMA_VERSION}"
           c << "--schema-version-commit=#{COMMIT_SCHEMA_VERSION}"
 
-          c << "--archived=#{project.archived}" if migration_finished?(:add_archived_to_commits) &&
-            migration_finished?(:add_archived_to_main_index)
+          c << "--archived=#{project.archived}" if migration_finished?(:add_archived_to_commits)
         end
       end
 
