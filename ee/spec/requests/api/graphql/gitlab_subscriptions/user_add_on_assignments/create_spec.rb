@@ -183,14 +183,6 @@ RSpec.describe 'UserAddOnAssignmentCreate', feature_category: :seat_cost_managem
       namespace.add_developer(assignee_user)
     end
 
-    context 'with feature flag disabled' do
-      before do
-        stub_feature_flags(hamilton_seat_management: false)
-      end
-
-      it_behaves_like 'empty response'
-    end
-
     it_behaves_like 'validates the query'
 
     it_behaves_like 'success response'

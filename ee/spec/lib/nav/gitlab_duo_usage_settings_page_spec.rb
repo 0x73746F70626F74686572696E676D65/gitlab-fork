@@ -50,41 +50,22 @@ RSpec.describe Nav::GitlabDuoUsageSettingsPage, feature_category: :duo_chat do
         create(:gitlab_subscription_add_on_purchase, :gitlab_duo_pro, :trial, namespace: group_with_duo_pro)
       end
 
-      context 'when hamilton_seat_management is enabled' do
-        where(:has_free_or_no_subscription?, :group_with_duo_pro, :result) do
-          true | ref(:another_group) | false
-          false | ref(:another_group) | true
-          true | ref(:group) | true
-          false | ref(:group) | true
-        end
-
-        with_them do
-          it { expect(show_gitlab_duo_usage_app?(group)).to eq(result) }
-
-          context 'when feature not available' do
-            before do
-              stub_licensed_features(code_suggestions: false)
-            end
-
-            it { expect(show_gitlab_duo_usage_app?(group)).to be_falsy }
-          end
-        end
+      where(:has_free_or_no_subscription?, :group_with_duo_pro, :result) do
+        true  | ref(:another_group) | false
+        false | ref(:another_group) | true
+        true  | ref(:group)         | true
+        false | ref(:group)         | true
       end
 
-      context 'when hamilton_seat_management is disabled' do
-        before do
-          stub_feature_flags(hamilton_seat_management: false)
-        end
+      with_them do
+        it { expect(show_gitlab_duo_usage_app?(group)).to eq(result) }
 
-        where(:has_free_or_no_subscription?, :group_with_duo_pro, :result) do
-          true  | ref(:another_group) | false
-          false | ref(:another_group) | false
-          true  | ref(:group)         | false
-          false | ref(:group)         | false
-        end
+        context 'when feature not available' do
+          before do
+            stub_licensed_features(code_suggestions: false)
+          end
 
-        with_them do
-          it { expect(show_gitlab_duo_usage_app?(group)).to eq(result) }
+          it { expect(show_gitlab_duo_usage_app?(group)).to be_falsy }
         end
       end
     end

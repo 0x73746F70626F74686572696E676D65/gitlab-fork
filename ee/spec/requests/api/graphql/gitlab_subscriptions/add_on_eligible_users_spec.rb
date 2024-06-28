@@ -83,25 +83,6 @@ RSpec.describe 'Query.namespace.addOnEligibleUsers', feature_category: :seat_cos
       create(:gitlab_subscription_user_add_on_assignment, user: developer, add_on_purchase: add_on_purchase)
     end
 
-    context 'when the :hamilton_seat_management FF is disabled' do
-      let(:query) do
-        graphql_query_for(
-          :namespace, { full_path: add_on_purchase.namespace.full_path },
-          query_graphql_field(:addOnEligibleUsers, { add_on_type: :CODE_SUGGESTIONS }, query_fields)
-        )
-      end
-
-      before do
-        stub_feature_flags(hamilton_seat_management: false)
-      end
-
-      it 'returns an empty collection' do
-        post_graphql(query, current_user: current_user)
-
-        expect(graphql_data_at(:namespace, :add_on_eligible_users, :nodes)).to match_array([])
-      end
-    end
-
     context 'when there are search args' do
       let(:query) do
         graphql_query_for(
