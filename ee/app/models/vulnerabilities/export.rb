@@ -104,7 +104,7 @@ module Vulnerabilities
 
     def make_instance_level_export
       self.project = self.group = nil
-      self.organization_id = set_organization(author.namespace)
+      self.organization_id = set_organization(author&.namespace)
     end
 
     def set_organization(namespace)
