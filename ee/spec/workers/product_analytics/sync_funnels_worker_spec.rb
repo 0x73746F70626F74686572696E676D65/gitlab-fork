@@ -11,7 +11,11 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
         create_valid_funnel
       end
 
-      it 'is successful', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/469177' do
+      after do
+        delete_funnel("example1.yml")
+      end
+
+      it 'is successful' do
         url_to_projects_regex.each do |url, projects_regex|
           expect(Gitlab::HTTP).to receive(:post)
                                     .with(URI.parse(url.to_s), {
@@ -27,10 +31,15 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
 
     context 'when an updated funnel is in the commit' do
       before do
+        create_valid_funnel
         update_funnel
       end
 
-      it 'is successful', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/469178' do
+      after do
+        delete_funnel("example1.yml")
+      end
+
+      it 'is successful' do
         url_to_projects_regex.each do |url, projects_regex|
           expect(Gitlab::HTTP).to receive(:post)
                                     .with(URI.parse(url.to_s), {
@@ -46,10 +55,15 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
 
     context 'when an renamed funnel is in the commit' do
       before do
+        create_valid_funnel
         rename_funnel
       end
 
-      it 'is successful', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/469456' do
+      after do
+        delete_funnel("example2.yml")
+      end
+
+      it 'is successful' do
         url_to_projects_regex.each do |url, _projects_regex|
           expect(Gitlab::HTTP).to receive(:post)
                                     .with(URI.parse(url.to_s), {
@@ -65,10 +79,11 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
 
     context 'when a deleted funnel is in the commit' do
       before do
-        delete_funnel
+        create_valid_funnel
+        delete_funnel("example1.yml")
       end
 
-      it 'is successful', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/469176' do
+      it 'is successful' do
         url_to_projects_regex.each do |url, projects_regex|
           expect(Gitlab::HTTP).to receive(:post)
                                     .with(URI.parse(url.to_s), {
@@ -279,10 +294,10 @@ RSpec.describe ProductAnalytics::SyncFunnelsWorker, feature_category: :product_a
     )
   end
 
-  def delete_funnel
+  def delete_funnel(filename)
     project.repository.delete_file(
       project.creator,
-      '.gitlab/analytics/funnels/example2.yml',
+      ".gitlab/analytics/funnels/#{filename}",
       message: 'delete funnel',
       branch_name: 'master'
     )
