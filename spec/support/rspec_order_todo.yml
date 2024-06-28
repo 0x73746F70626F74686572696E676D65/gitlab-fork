@@ -4856,7 +4856,6 @@
 - './spec/lib/banzai/filter/math_filter_spec.rb'
 - './spec/lib/banzai/filter/mermaid_filter_spec.rb'
 - './spec/lib/banzai/filter/normalize_source_filter_spec.rb'
-- './spec/lib/banzai/filter/output_safety_spec.rb'
 - './spec/lib/banzai/filter/plantuml_filter_spec.rb'
 - './spec/lib/banzai/filter/reference_redactor_filter_spec.rb'
 - './spec/lib/banzai/filter/references/abstract_reference_filter_spec.rb'
