@@ -9,6 +9,7 @@ module GitlabSubscriptions
         end
 
         mount ::GitlabSubscriptions::API::Internal::Subscriptions
+        mount ::GitlabSubscriptions::API::Internal::Users
       end
     end
   end
