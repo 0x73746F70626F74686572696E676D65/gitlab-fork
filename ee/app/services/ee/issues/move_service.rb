@@ -17,17 +17,17 @@ module EE
         new_issue = super(issue, target_project, move_any_issue_type)
         # The epic_issue update is not included in `update_old_entity` because it needs to run in a separate
         # transaction that can be rolled back without aborting the move.
-        rewrite_epic_issue(issue, new_issue) if new_entity.persisted?
+        move_epic_issue(issue, new_issue) if new_entity.persisted?
 
         new_issue
       end
 
       private
 
-      def rewrite_epic_issue(original_issue, new_issue)
+      def move_epic_issue(original_issue, new_issue)
         return unless epic_issue = original_issue.epic_issue
         return unless can?(current_user, :update_epic, epic_issue.epic.group)
-        return unless update_epic_issue(epic_issue, new_issue)
+        return unless recreate_epic_issue(epic_issue, new_issue)
 
         original_entity.reset
 
@@ -42,13 +42,6 @@ module EE
         )
       end
 
-      def log_error_for(epic_issue)
-        message = "Cannot create association with epic ID: #{epic_issue.epic.id}. " \
-          "Error: #{epic_issue.errors.full_messages.to_sentence}"
-
-        log_error(message)
-      end
-
       def rewrite_related_vulnerability_issues
         issue_links = Vulnerabilities::IssueLink.for_issue(original_entity)
         issue_links.update_all(issue_id: new_entity.id)
@@ -58,30 +51,49 @@ module EE
         original_entity.pending_escalations.delete_all(:delete_all)
       end
 
-      def update_epic_issue(epic_issue, new_issue)
+      def recreate_epic_issue(epic_issue, new_issue)
         ApplicationRecord.transaction do
-          parent_link = ::WorkItems::ParentLink.for_children(epic_issue.issue).first
+          new_epic_issue = ::EpicIssue.new(epic: epic_issue.epic, issue: new_issue)
 
-          unless epic_issue.update(issue: new_issue)
-            log_error_for(epic_issue)
-
-            raise ActiveRecord::Rollback
-          end
-
-          unless parent_link&.update(work_item_id: new_issue.id, namespace_id: new_issue.project.namespace_id)
-            log_error_for(epic_issue)
-
-            ::Gitlab::EpicWorkItemSync::Logger.error(
-              message: "Not able to update work item link",
-              error_message: parent_link&.errors&.full_messages&.to_sentence,
-              work_item_id: original_entity.id
-            )
+          unless epic_issue.destroy && new_epic_issue.save
+            log_error_for(epic_issue, epic_issue.epic)
+            log_error_for(new_epic_issue, epic_issue.epic)
 
             raise ActiveRecord::Rollback
           end
 
-          true
+          parent_link = ::WorkItems::ParentLink.find_by_work_item_id(epic_issue.issue_id)
+          next true unless parent_link
+
+          new_parent_link = ::WorkItems::ParentLink.new(
+            work_item_id: new_issue.id,
+            work_item_parent_id: parent_link.work_item_parent_id
+          )
+
+          next true if parent_link.destroy && new_parent_link.save
+
+          log_error_for(parent_link, epic_issue.epic)
+          log_error_for(new_parent_link, epic_issue.epic)
+          log_epic_work_item_sync_error(new_parent_link)
+          raise ActiveRecord::Rollback
         end
+      end
+
+      def log_error_for(record, affected_epic)
+        return unless record.errors.present?
+
+        message = "Cannot create association with epic ID: #{affected_epic.id}. " \
+          "Error: #{record.errors.full_messages.to_sentence}"
+
+        log_error(message)
+      end
+
+      def log_epic_work_item_sync_error(parent_link)
+        ::Gitlab::EpicWorkItemSync::Logger.error(
+          message: "Not able to update work item link",
+          error_message: parent_link.errors.full_messages.to_sentence,
+          work_item_id: original_entity.id
+        )
       end
     end
   end

@@ -81,8 +81,7 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
           create(
             :parent_link,
             work_item: WorkItem.find(old_issue.id),
-            work_item_parent: epic.work_item,
-            namespace_id: old_project.namespace_id
+            work_item_parent: epic.work_item
           )
         end
       end
@@ -96,12 +95,21 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
           end
         end
 
-        it 'updates epic issue reference' do
+        it 'create a new epic issue and parent link with updated references' do
           new_issue = move_service.execute(old_issue, new_project)
+          new_epic_issue = new_issue.epic_issue
 
-          expect(new_issue.epic_issue).to eq(epic_issue)
-          expect(parent_link.reload.work_item).to eq(WorkItem.find(new_issue.id))
-          expect(parent_link.namespace_id).to eq(new_project.namespace_id)
+          expect(EpicIssue.find_by_id(epic_issue.id)).to be_nil
+          expect(new_epic_issue).not_to eq(epic_issue)
+          expect(new_epic_issue.epic).to eq(epic)
+          expect(new_epic_issue.issue).to eq(new_issue)
+
+          new_work_item = WorkItem.find(new_issue.id)
+          new_parent_link = new_work_item.parent_link
+
+          expect(::WorkItems::ParentLink.find_by_id(parent_link.id)).to be_nil
+          expect(new_parent_link.work_item).to eq(new_work_item)
+          expect(new_parent_link.work_item_parent).to eq(epic.work_item)
         end
 
         it 'tracks usage data for changed epic action', :clean_gitlab_redis_shared_state do
@@ -148,22 +156,18 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
           epic_issue.epic.group.add_reporter(user)
         end
 
-        context 'when epic_issue update fails' do
-          before do
-            allow(epic_issue).to receive(:update).and_return(false)
-            errors = ActiveModel::Errors.new(epic_issue).tap { |e| e.add(:base, 'epic_issue error message') }
-            allow(epic_issue).to receive(:errors).and_return(errors)
-          end
+        shared_examples 'successfully handles error case' do |expected_error:|
+          it 'does not delete the existing epic_issue or work_item_parent_link' do
+            new_issue = move_service.execute(old_issue, new_project)
 
-          it 'does not update epic_issue or synced parent_link' do
-            expect(Gitlab::AppLogger).to receive(:error)
-              .with("Cannot create association with epic ID: #{epic_issue.epic_id}. Error: epic_issue error message")
-
-            expect { move_service.execute(old_issue, new_project) }.to change { Issue.count }.by(1)
-
+            expect(new_issue).to be_persisted
             expect(epic_issue.reload.issue).to eq(old_issue)
             expect(parent_link.reload.work_item).to eq(WorkItem.find(old_issue.id))
-            expect(parent_link.namespace_id).to eq(old_project.namespace_id)
+
+            new_work_item = WorkItem.find(new_issue.id)
+
+            expect(new_issue.reload.epic_issue).to be_nil
+            expect(new_work_item.parent_link).to be_nil
           end
 
           it 'does not send usage data for epic issue actions' do
@@ -173,42 +177,72 @@ RSpec.describe Issues::MoveService, feature_category: :team_planning do
                 Gitlab::UsageDataCounters::EpicActivityUniqueCounter::EPIC_ISSUE_MOVED_FROM_PROJECT
               )
           end
+
+          it 'logs an error' do
+            expect(Gitlab::AppLogger).to receive(:error)
+              .with("Cannot create association with epic ID: #{epic_issue.epic_id}. Error: #{expected_error}")
+
+            move_service.execute(old_issue, new_project)
+          end
         end
 
-        context 'when synced parent_link update fails' do
+        context 'when creating new epic_issue fails' do
           before do
-            allow_next_found_instance_of(WorkItems::ParentLink) do |instance|
-              allow(instance).to receive(:update).and_return(false)
+            allow_next_instance_of(EpicIssue) do |instance|
+              allow(instance).to receive(:save).and_return(false)
 
-              errors = ActiveModel::Errors.new(instance).tap { |e| e.add(:base, 'parent_link error message') }
+              errors = ActiveModel::Errors.new(epic_issue).tap { |e| e.add(:base, 'epic_issue error') }
               allow(instance).to receive(:errors).and_return(errors)
             end
           end
 
-          it 'does not send usage data for epic issue actions' do
-            expect { move_service.execute(old_issue, new_project) }
-              .to not_trigger_internal_events(Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC)
-              .and not_trigger_internal_events(
-                Gitlab::UsageDataCounters::EpicActivityUniqueCounter::EPIC_ISSUE_MOVED_FROM_PROJECT
-              )
+          it_behaves_like 'successfully handles error case', expected_error: 'epic_issue error'
+        end
+
+        context 'when creating a new parent_link fails' do
+          before do
+            allow_next_instance_of(WorkItems::ParentLink) do |instance|
+              allow(instance).to receive(:save).and_return(false)
+
+              errors = ActiveModel::Errors.new(epic_issue).tap { |e| e.add(:base, 'parent_link error') }
+              allow(instance).to receive(:errors).and_return(errors)
+            end
           end
 
-          it 'does not update parent_link or epic_issue' do
+          it_behaves_like 'successfully handles error case', expected_error: "parent_link error"
+          it 'logs a sync error' do
             expect(Gitlab::EpicWorkItemSync::Logger).to receive(:error).with(
-              error_message: 'parent_link error message',
+              error_message: 'parent_link error',
               message: 'Not able to update work item link',
               work_item_id: old_issue.id
             )
 
-            expect(Gitlab::AppLogger).to receive(:error)
-              .with("Cannot create association with epic ID: #{epic_issue.epic_id}. Error: ")
-
-            expect { move_service.execute(old_issue, new_project) }.to change { Issue.count }.by(1)
-
-            expect(epic_issue.reload.issue).to eq(old_issue)
-            expect(parent_link.reload.work_item).to eq(WorkItem.find(old_issue.id))
-            expect(parent_link.namespace_id).to eq(old_project.namespace_id)
+            move_service.execute(old_issue, new_project)
           end
+        end
+
+        context 'when destroying the existing epic_issue fails' do
+          before do
+            errors = ActiveModel::Errors.new(epic_issue).tap { |e| e.add(:base, 'epic_issue destroy error') }
+
+            allow(epic_issue).to receive(:destroy).and_return(false)
+            allow(epic_issue).to receive(:errors).and_return(errors)
+          end
+
+          it_behaves_like 'successfully handles error case', expected_error: "epic_issue destroy error"
+        end
+
+        context 'when destroying the existing parent link fails' do
+          before do
+            allow_next_found_instance_of(WorkItems::ParentLink) do |instance|
+              errors = ActiveModel::Errors.new(parent_link).tap { |e| e.add(:base, 'parent_link destroy error') }
+
+              allow(instance).to receive(:destroy).and_return(false)
+              allow(instance).to receive(:errors).and_return(errors)
+            end
+          end
+
+          it_behaves_like 'successfully handles error case', expected_error: "parent_link destroy error"
         end
       end
     end
