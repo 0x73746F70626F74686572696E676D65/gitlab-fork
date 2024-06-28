@@ -217,3 +217,16 @@ You can ask about a specific GitLab epic. For example:
 
 NOTE:
 If the epic contains a large amount of text (more than 40,000 words), GitLab Duo Chat might not be able to consider every word. The AI model has a limit to the amount of input it can process at one time.
+
+## Delete or reset the conversation
+
+To delete all conversations permanently and clear the chat window:
+
+- In the text box, type `/clear` and select **Send**.
+
+To start a new conversation, but keep the previous conversations visible in the chat window:
+
+- In the text box, type `/reset` and select **Send**.
+
+In both cases, the conversation history will not be considered when you ask new questions.
+Deleting or resetting might help improve the answers when you switch contexts, because Duo Chat will not get confused by the unrelated conversations.
