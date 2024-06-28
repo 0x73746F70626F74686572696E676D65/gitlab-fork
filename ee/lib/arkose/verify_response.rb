@@ -102,7 +102,7 @@ module Arkose
       response&.dig('session_details', 'challenge_type')
     end
 
-    def session_is_legit?
+    def session_is_legit
       response&.dig('session_details', 'session_is_legit')
     end
 
@@ -110,11 +110,11 @@ module Arkose
       response&.dig('ip_intelligence', 'country')
     end
 
-    def vpn?
+    def is_vpn # rubocop:disable Naming/PredicateName -- Match field name. Can also return nil if Arkose returns unexpected response
       response&.dig('ip_intelligence', 'is_vpn')
     end
 
-    def bot?
+    def is_bot # rubocop:disable Naming/PredicateName -- Match field name. Can also return nil if Arkose returns unexpected response
       response&.dig('ip_intelligence', 'is_bot')
     end
   end

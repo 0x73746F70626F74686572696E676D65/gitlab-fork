@@ -52,7 +52,7 @@ module Arkose
     def arkose_payload
       {
         'arkose.session_id': response.session_id,
-        'arkose.session_is_legit': response.session_is_legit?,
+        'arkose.session_is_legit': response.session_is_legit,
         'arkose.global_score': response.global_score,
         'arkose.global_telltale_list': response.global_telltale_list,
         'arkose.custom_score': response.custom_score,
@@ -61,8 +61,8 @@ module Arkose
         'arkose.risk_category': response.risk_category,
         'arkose.challenge_type': response.challenge_type,
         'arkose.country': response.country,
-        'arkose.is_bot': response.bot?,
-        'arkose.is_vpn': response.vpn?,
+        'arkose.is_bot': response.is_bot,
+        'arkose.is_vpn': response.is_vpn,
         'arkose.data_exchange_blob_received': response.data_exchange_blob_received?,
         'arkose.data_exchange_blob_decrypted': response.data_exchange_blob_decrypted?
       }
