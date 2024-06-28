@@ -24,7 +24,7 @@ describe('ScanTypeSelect', () => {
   const findListBox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findListBoxItems = () => findListBox().findAllComponents(GlListboxItem);
 
-  it('can render defaultOptions', () => {
+  it('can render default options', () => {
     createComponent();
     expect(findListBoxItems()).toHaveLength(3);
     expect(
@@ -47,5 +47,20 @@ describe('ScanTypeSelect', () => {
     });
 
     expect(findListBox().props('selected')).toBe(LICENSE_FINDING);
+  });
+
+  describe('error', () => {
+    it('does not show error validation by default', () => {
+      createComponent();
+      expect(findListBox().props('toggleClass')).toEqual(
+        expect.arrayContaining([{ '!gl-shadow-inner-1-red-500': false }]),
+      );
+    });
+    it('does show error validation', () => {
+      createComponent({ errorSources: [['rules', '0', 'type']] });
+      expect(findListBox().props('toggleClass')).toEqual(
+        expect.arrayContaining([{ '!gl-shadow-inner-1-red-500': true }]),
+      );
+    });
   });
 });

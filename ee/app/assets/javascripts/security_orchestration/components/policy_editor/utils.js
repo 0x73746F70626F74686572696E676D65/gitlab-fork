@@ -511,3 +511,39 @@ export const getPolicyLimitDetails = ({
     },
   };
 };
+
+const isEqualOrUndefined = (value1, value2) => !value1 || value1 === value2;
+
+/**
+ * Determine if one of the errors is from the given source
+ * @param {Array} errorSources array of [primaryKey, index, location]
+ * @param {String} primaryKey a primary key in the policy
+ * @param {Number} index the index of the action/rule/condition
+ * @param {String} location the sub-location inside the primary key
+ * @returns {Boolean}
+ */
+export const isCauseOfError = ({ errorSources, primaryKey, index = 0, location }) => {
+  return errorSources.some(([sourcePrimaryKey, sourceIndex, sourceLocation]) => {
+    return (
+      isEqualOrUndefined(primaryKey, sourcePrimaryKey) &&
+      isEqualOrUndefined(index, Number(sourceIndex)) &&
+      isEqualOrUndefined(location, sourceLocation)
+    );
+  });
+};
+
+/**
+ * Parses error from the backend and returns an array of [primaryKey, index, location]
+ * @param {Object} error https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
+ * @returns {Array} e.g. [['actions', 0, 'name']]
+ */
+export const parseError = (error) => {
+  if (!error) return [];
+
+  try {
+    const [, ...messages] = error.message.split('\n');
+    return messages.map((e) => e.split(`'`)[1].split(`/`).splice(3, 3));
+  } catch {
+    return [];
+  }
+};

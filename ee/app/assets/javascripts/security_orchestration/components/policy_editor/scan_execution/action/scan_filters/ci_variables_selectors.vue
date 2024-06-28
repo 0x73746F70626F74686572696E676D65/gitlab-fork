@@ -3,6 +3,7 @@ import { isEmpty, uniqueId } from 'lodash';
 import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import SectionLayout from 'ee/security_orchestration/components/policy_editor/section_layout.vue';
+import { isCauseOfError } from 'ee/security_orchestration/components/policy_editor/utils';
 import { CI_VARIABLE } from './constants';
 import CiVariableSelector from './ci_variable_selector.vue';
 
@@ -22,6 +23,16 @@ export default {
   },
   directives: { GlTooltip: GlTooltipDirective },
   props: {
+    actionIndex: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    errorSources: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
     scanType: {
       type: String,
       required: true,
@@ -38,6 +49,14 @@ export default {
     };
   },
   computed: {
+    isErrorSource() {
+      return isCauseOfError({
+        errorSources: this.errorSources,
+        primaryKey: 'actions',
+        index: this.actionIndex,
+        location: 'variables',
+      });
+    },
     hasEmptyVariable() {
       return this.variables.some(([key]) => key === '');
     },
@@ -95,6 +114,7 @@ export default {
         :value="value"
         :scan-type="scanType"
         :selected="selected"
+        :is-error-source="isErrorSource"
         @input="updateVariable($event, index)"
         @remove="removeVariable($event, index)"
       />

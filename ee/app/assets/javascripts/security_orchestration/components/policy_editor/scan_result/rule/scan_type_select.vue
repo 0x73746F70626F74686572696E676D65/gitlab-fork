@@ -1,6 +1,7 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { isCauseOfError } from 'ee/security_orchestration/components/policy_editor/utils';
 import { ANY_MERGE_REQUEST, SCAN_FINDING, LICENSE_FINDING } from '../lib';
 
 export default {
@@ -26,6 +27,16 @@ export default {
     GlCollapsibleListbox,
   },
   props: {
+    errorSources: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    index: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
     scanType: {
       type: String,
       required: false,
@@ -33,6 +44,14 @@ export default {
     },
   },
   computed: {
+    isErrorSource() {
+      return isCauseOfError({
+        errorSources: this.errorSources,
+        primaryKey: 'rules',
+        index: this.index,
+        location: 'type',
+      });
+    },
     scanRuleTypeToggleText() {
       return this.scanType ? '' : this.$options.i18n.scanRuleTypeToggleText;
     },
@@ -49,6 +68,7 @@ export default {
   <gl-collapsible-listbox
     id="scanType"
     class="gl-display-inline! gl-w-auto gl-align-middle"
+    :toggle-class="[{ '!gl-shadow-inner-1-red-500': isErrorSource }]"
     :items="$options.scanTypeOptions"
     :selected="scanType"
     :toggle-text="scanRuleTypeToggleText"

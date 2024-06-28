@@ -20,7 +20,7 @@ import {
   MAX_ALLOWED_RULES_LENGTH,
 } from '../constants';
 import EditorLayout from '../editor_layout.vue';
-import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
+import { assignSecurityPolicyProject, modifyPolicy, parseError } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
 import ScanFilterSelector from '../scan_filter_selector.vue';
 import SettingsSection from './settings/settings_section.vue';
@@ -141,6 +141,7 @@ export default {
 
     return {
       errors: { action: [] },
+      errorSources: [],
       invalidBranches: [],
       isCreatingMR: false,
       isRemovingPolicy: false,
@@ -362,6 +363,7 @@ export default {
       this.updateYamlEditorValue(this.policy);
     },
     handleError(error) {
+      // Emit error for alert
       if (this.isActiveRuleMode && error.cause?.length) {
         const ACTION_ERROR_FIELDS = ['approvers_ids'];
         const action = error.cause.filter((cause) => ACTION_ERROR_FIELDS.includes(cause.field));
@@ -378,6 +380,9 @@ export default {
       } else {
         this.$emit('error', error.message);
       }
+
+      // Process error to pass to specific component
+      this.errorSources = parseError(error);
     },
     handleParsingError() {
       this.hasParsingError = true;
@@ -517,6 +522,8 @@ export default {
           :key="rule.id"
           :data-testid="`rule-${index}`"
           class="gl-mb-4"
+          :error-sources="errorSources"
+          :index="index"
           :init-rule="rule"
           @changed="updateRule(index, $event)"
           @remove="removeRule(index)"

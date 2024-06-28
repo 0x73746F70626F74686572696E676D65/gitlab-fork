@@ -16,6 +16,16 @@ export default {
     LicenseScanRuleBuilder,
   },
   props: {
+    errorSources: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    index: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
     initRule: {
       type: Object,
       required: true,
@@ -91,6 +101,8 @@ export default {
 
     <default-rule-builder
       v-if="isEmptyRule"
+      :error-sources="errorSources"
+      :index="index"
       :init-rule="initRule"
       @error="handleError"
       @changed="updateRule"

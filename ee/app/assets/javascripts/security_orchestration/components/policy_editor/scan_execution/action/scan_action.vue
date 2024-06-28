@@ -58,6 +58,11 @@ export default {
       required: false,
       default: 0,
     },
+    errorSources: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -255,8 +260,10 @@ export default {
           class="gl-bg-white"
           :scan-type="initAction.scan"
           :selected="initAction.variables"
-          @remove="removeFilter($options.CI_VARIABLE)"
+          :action-index="actionIndex"
+          :error-sources="errorSources"
           @input="triggerChanged"
+          @remove="removeFilter($options.CI_VARIABLE)"
         />
 
         <scan-filter-selector
