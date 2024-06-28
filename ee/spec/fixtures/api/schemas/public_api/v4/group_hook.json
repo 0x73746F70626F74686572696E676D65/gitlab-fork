@@ -28,7 +28,8 @@
     "url_variables",
     "custom_webhook_template",
     "custom_headers",
-    "resource_access_token_events"
+    "resource_access_token_events",
+    "branch_filter_strategy"
   ],
   "properties": {
     "id": {
@@ -171,6 +172,9 @@
           }
         }
       }
+    },
+    "branch_filter_strategy": {
+      "type": "string"
     }
   },
   "additionalProperties": false
