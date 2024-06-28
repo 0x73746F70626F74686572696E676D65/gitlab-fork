@@ -1736,7 +1736,7 @@
         KNAPSACK_GENERATE_REPORT: "true"
         QA_SAVE_TEST_METRICS: "true"
         QA_EXPORT_TEST_METRICS: "false"
-        COVERBAND_ENABLED: "false" #Will open a separate MR to set to true
+        COVERBAND_ENABLED: "true" # Record Coverage in scheduled master pipelines
 
 
 .qa:rules:e2e:test-on-cng:
