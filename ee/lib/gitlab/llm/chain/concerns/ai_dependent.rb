@@ -6,15 +6,7 @@ module Gitlab
       module Concerns
         module AiDependent
           def prompt
-            if claude_3_enabled? && provider_prompt_class.respond_to?(:claude_3_prompt)
-              provider_prompt_class.claude_3_prompt(prompt_options)
-            else
-              provider_prompt_class.prompt(prompt_options)
-            end
-          end
-
-          def claude_3_enabled?
-            Feature.enabled?(:ai_claude_3_ci_editor, context.current_user)
+            provider_prompt_class.prompt(prompt_options)
           end
 
           def request(&block)
