@@ -48356,13 +48356,10 @@ msgstr ""
 msgid "SecurityOrchestration|When license scanner finds any license matching %{licenses}%{detection} in an open merge request %{targeting}%{branches}%{branchExceptionsString}"
 msgstr ""
 
-msgid "SecurityOrchestration|With the default security job template"
+msgid "SecurityOrchestration|With the %{template} security job template"
 msgstr ""
 
 msgid "SecurityOrchestration|With the following customized CI variables:"
-msgstr ""
-
-msgid "SecurityOrchestration|With the latest security job template"
 msgstr ""
 
 msgid "SecurityOrchestration|YAML"
