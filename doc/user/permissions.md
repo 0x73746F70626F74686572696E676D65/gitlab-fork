@@ -56,7 +56,7 @@ For more information about how to manage project members, see
 
 The following table lists project permissions available for each role:
 
-<!-- Keep this table sorted: By topic first, then by minimum role, then alphabetically. -->
+<!-- Keep this tables sorted: By category first, then by minimum role, then alphabetically by action. -->
 
 | Action                                                                                                                                                                                       | Guest | Reporter | Developer | Maintainer | Owner | Notes |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|----------|-----------|------------|-------|-------|
@@ -67,12 +67,6 @@ The following table lists project permissions available for each role:
 | [Analytics](analytics/index.md):<br>View [code review analytics](analytics/code_review_analytics.md)                                                                                         |       | ✓        | ✓         | ✓          | ✓     |       |
 | [Analytics](analytics/index.md):<br>View [merge request analytics](analytics/merge_request_analytics.md)                                                                                     |       | ✓        | ✓         | ✓          | ✓     |       |
 | [Analytics](analytics/index.md):<br>View [repository analytics](analytics/repository_analytics.md)                                                                                           |       | ✓        | ✓         | ✓          | ✓     |       |
-| [Application security](application_security/index.md):<br>View licenses in [dependency list](application_security/dependency_list/index.md)                                                  |       |          | ✓         | ✓          | ✓     |       |
-| [Application security](application_security/index.md):<br>Create and run [on-demand DAST scans](application_security/dast/on-demand_scan.md)                                                 |       |          | ✓         | ✓          | ✓     |       |
-| [Application security](application_security/index.md):<br>View [dependency list](application_security/dependency_list/index.md)                                                              |       |          | ✓         | ✓          | ✓     |       |
-| [Application security](application_security/index.md):<br>Create a [CVE ID Request](application_security/cve_id_request.md)                                                                  |       |          |           | ✓          | ✓     |       |
-| [Application security](application_security/index.md):<br>Create or assign [security policy project](application_security/policies/index.md)                                                 |       |          |           |            | ✓     |       |
-| [Application security](application_security/index.md):<br>Create, edit, delete [individual security policies](application_security/policies/index.md)                                        |       |          | ✓         | ✓          | ✓     |       |
 | [Container Registry](packages/container_registry/index.md):<br>Create, edit, delete [cleanup policies](packages/container_registry/delete_container_registry_images.md#use-a-cleanup-policy) |       |          |           | ✓          | ✓     |       |
 | [Container registry](packages/container_registry/index.md):<br>Push an image to the container registry                                                                                       |       |          | ✓         | ✓          | ✓     |       |
 | [Container registry](packages/container_registry/index.md):<br>Pull an image from the container registry                                                                                     | ✓     | ✓        | ✓         | ✓          | ✓     | The ability to view the container registry and pull images is controlled by the [container registry's visibility permissions](packages/container_registry/index.md#container-registry-visibility-permissions). |
@@ -208,11 +202,6 @@ The following table lists project permissions available for each role:
 | [Requirements Management](project/requirements/index.md):<br>Archive / reopen                                                                                                                |       | ✓        | ✓         | ✓          | ✓     | Authors and assignees can archive and re-open even if they don’t have the Reporter role. |
 | [Requirements Management](project/requirements/index.md):<br>Create / edit                                                                                                                   |       | ✓        | ✓         | ✓          | ✓     |  Authors and assignees can modify the title and description even if they don’t have the Reporter role.|
 | [Requirements Management](project/requirements/index.md):<br>Import / export                                                                                                                 |       | ✓        | ✓         | ✓          | ✓     |       |
-| [Security dashboard](application_security/security_dashboard/index.md):<br>Create issue from vulnerability finding                                                                           |       |          | ✓         | ✓          | ✓     |       |
-| [Security dashboard](application_security/security_dashboard/index.md):<br>Create vulnerability from vulnerability finding                                                                   |       |          | ✓         | ✓          | ✓     |       |
-| [Security dashboard](application_security/security_dashboard/index.md):<br>Use security dashboard                                                                                            |       |          | ✓         | ✓          | ✓     |       |
-| [Security dashboard](application_security/security_dashboard/index.md):<br>View vulnerability                                                                                                |       |          | ✓         | ✓          | ✓     |       |
-| [Security dashboard](application_security/security_dashboard/index.md):<br>View vulnerability findings in [dependency list](application_security/dependency_list/index.md)                   |       |          | ✓         | ✓          | ✓     |       |
 | [Tasks](tasks.md):<br>Add a linked item                                                                                                                                                      | ✓     | ✓        | ✓         | ✓          | ✓     |       |
 | [Tasks](tasks.md):<br>Create                                                                                                                                                                 |       | ✓        | ✓         | ✓          | ✓     | Authors and assignees can modify the title and description even if they don't have the Reporter role. |
 | [Tasks](tasks.md):<br>Edit                                                                                                                                                                   |       | ✓        | ✓         | ✓          | ✓     |       |
@@ -224,7 +213,25 @@ The following table lists project permissions available for each role:
 | [Test cases](../ci/test_cases/index.md):<br>Create                                                                                                                                           |       | ✓        | ✓         | ✓          | ✓     |       |
 | [Test cases](../ci/test_cases/index.md):<br>Move                                                                                                                                             |       | ✓        | ✓         | ✓          | ✓     |       |
 | [Test cases](../ci/test_cases/index.md):<br>Reopen                                                                                                                                           |       | ✓        | ✓         | ✓          | ✓     |       |
-| [Vulnerability](application_security/vulnerabilities/index.md#change-the-status-of-a-vulnerability):<br>Change vulnerability status                                                                                             |       |          |           | ✓          | ✓     | The `admin_vulnerability` permission was [removed](https://gitlab.com/gitlab-org/gitlab/-/issues/412693) from the Developer role in GitLab 17.0. |
+
+### Application Security
+
+Project permissions for [Application Security](application_security/secure_your_application.md) features including dependency management, security analyzers, security policies, and vulnerability management.
+
+| Action | Guest | Reporter | Developer | Maintainer | Owner | Notes |
+|--------|:-----:|:--------:|:---------:|:----------:|:-----:|-------|
+| View licenses in [dependency list](application_security/dependency_list/index.md)                                                  |       |          | ✓         | ✓          | ✓     |       |
+| View [dependency list](application_security/dependency_list/index.md)                                                              |       |          | ✓         | ✓          | ✓     |       |
+| View [vulnerability report](application_security/vulnerability_report/index.md)                                                    |       |          | ✓         | ✓          | ✓     |       |
+| View [security dashboard](application_security/security_dashboard/index.md)                                                        |       |          | ✓         | ✓          | ✓     |       |
+| [Create issue](application_security/vulnerabilities/index.md#create-a-gitlab-issue-for-a-vulnerability) from vulnerability finding |       |          | ✓         | ✓          | ✓     |       |
+| Manually [create a vulnerability](application_security/vulnerability_report/index.md#manually-add-a-vulnerability)                 |       |          | ✓         | ✓          | ✓     |       |
+| Create and run [on-demand DAST scans](application_security/dast/on-demand_scan.md)                                                 |       |          | ✓         | ✓          | ✓     |       |
+| Create, edit, delete [individual security policies](application_security/policies/index.md)                                        |       |          | ✓         | ✓          | ✓     |       |
+| Create a [CVE ID Request](application_security/cve_id_request.md)                                                                  |       |          |           | ✓          | ✓     |       |
+| Change vulnerability status                                                                                                        |       |          |           | ✓          | ✓     | The `admin_vulnerability` permission was [removed](https://gitlab.com/gitlab-org/gitlab/-/issues/412693) from the Developer role in GitLab 17.0. |
+| Create or assign [security policy project](application_security/policies/index.md)                                                 |       |          |           |            | ✓     |       |
+| Manage [security configurations](application_security/configuration/index.md)                                                      |       |          |           |            | ✓     |       |
 
 ## GitLab CI/CD permissions
 
@@ -293,7 +300,7 @@ the group.
 
 The following table lists group permissions available for each role:
 
-<!-- Keep this table sorted: first, by minimum role, then alphabetically. -->
+<!-- Keep this tables sorted: By category first, then by minimum role, then alphabetically by action. -->
 
 | Action                                                                                  | Guest | Reporter | Developer | Maintainer | Owner | Notes |
 |-----------------------------------------------------------------------------------------|-------|----------|-----------|------------|-------|-------|
@@ -323,10 +330,9 @@ The following table lists group permissions available for each role:
 | Create and edit [group wiki](project/wiki/group.md) pages                               |       |          | ✓         | ✓          | ✓     |       |
 | Create project in group                                                                 |       |          | ✓         | ✓          | ✓     | Developers, Maintainers and Owners: Only if the project creation role is set at the [instance level](../administration/settings/visibility_and_access_controls.md#define-which-roles-can-create-projects) or the [group level](group/index.md#specify-who-can-add-projects-to-a-group).<br><br>Developers: Developers can push commits to the default branch of a new project only if the [default branch protection](group/manage.md#change-the-default-branch-protection-of-a-group) is set to "Partially protected" or "Not protected". |
 | Create/edit/delete metrics dashboard annotations                                        |       |          | ✓         | ✓          | ✓     |       |
-| Use [security dashboard](application_security/security_dashboard/index.md)              |       |          | ✓         | ✓          | ✓     |       |
 | View group Audit Events                                                                 |       |          | ✓         | ✓          | ✓     | Developers and Maintainers can only view events based on their individual actions. |
 | Delete [group wiki](project/wiki/group.md) pages                                        |       |          | ✓         | ✓          | ✓     |       |
-| Create subgroup                                                                         |       |          |           | ✓          | ✓     | Maintainers: Only if users with the Maintainer role are [allowed to create subgroups](group/subgroups/index.md#change-who-can-create-subgroups). |
+| Create subgroup                                                                         |       |          |           | ✓          | ✓     | Maintainers: Only if users with the Maintainer role [can create subgroups](group/subgroups/index.md#change-who-can-create-subgroups). |
 | Create/edit/delete [Maven](packages/maven_repository/index.md#do-not-allow-duplicate-maven-packages), [generic](packages/generic_packages/index.md#do-not-allow-duplicate-generic-packages), [NuGet](packages/nuget_repository/index.md#do-not-allow-duplicate-nuget-packages), and [Terraform Modules](packages/terraform_module_registry/index.md#allow-duplicate-terraform-modules) package duplicate settings |  |  |  |   | ✓ |       |
 | Create/edit/delete dependency proxy [cleanup policies](packages/dependency_proxy/reduce_dependency_proxy_storage.md#cleanup-policies)         |  |  |  |   | ✓ |       |
 | Delete [packages](packages/index.md)                                                    |       |          |           | ✓          | ✓     |       |
@@ -363,6 +369,17 @@ The following table lists group permissions available for each role:
 | View group [Usage Quotas](usage_quotas.md) page                                         |       |          |           |            | ✓     | Does not apply to subgroups |
 | Map or unmap workspace cluster agents to and from a group                               |       |          |           |            | ✓     |       |
 | View workspace cluster agents mapped to a group                                         |       |          |           | ✓          | ✓     |       |
+
+### Application Security
+
+Group permissions for [Application Security](application_security/secure_your_application.md) features including dependency management, security analyzers, security policies, and vulnerability management.
+
+| Action                                                                             | Guest | Reporter | Developer | Maintainer | Owner | Notes |
+|------------------------------------------------------------------------------------|:-----:|:--------:|:---------:|:----------:|:-----:|-------|
+| View [dependency list](application_security/dependency_list/index.md)              |       |          | ✓         | ✓          | ✓     |       |
+| View [vulnerability report](application_security/vulnerability_report/index.md)    |       |          | ✓         | ✓          | ✓     |       |
+| View [security dashboard](application_security/security_dashboard/index.md)        |       |          | ✓         | ✓          | ✓     |       |
+| Create or assign [security policy project](application_security/policies/index.md)                                                 |       |          |           |            | ✓     |       |
 
 ### Subgroup permissions
 
