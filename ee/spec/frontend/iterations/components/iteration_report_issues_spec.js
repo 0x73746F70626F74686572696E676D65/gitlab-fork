@@ -124,7 +124,7 @@ describe('Iterations report issues', () => {
     const findIssues = () => wrapper.findAll('table tbody tr');
     const findAssigneesForIssue = (index) => findIssues().at(index).findAllComponents(GlAvatar);
     const findLabelsForIssue = (index) => findIssues().at(index).findAllComponents(GlLabel);
-    const findWeightsForIssue = (index) => findIssues().at(index).findAll('td').at(2);
+    const findWeightsForIssue = (index) => findIssues().at(index).findAll('td').at(1);
 
     describe('issue_list', () => {
       beforeEach(() => {
