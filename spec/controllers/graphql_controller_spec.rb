@@ -341,7 +341,7 @@ RSpec.describe GraphqlController, feature_category: :integrations do
         end
       end
 
-      context 'with an revoked token' do
+      context 'with a revoked token' do
         let(:token) { create(:personal_access_token, :revoked, user: user, scopes: [:api]) }
 
         it_behaves_like 'invalid token'
