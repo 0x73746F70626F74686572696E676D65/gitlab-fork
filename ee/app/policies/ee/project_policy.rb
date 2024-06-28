@@ -855,12 +855,24 @@ module EE
         enable :read_tracing
       end
 
+      rule { can?(:developer_access) & tracing_enabled }.policy do
+        enable :write_tracing
+      end
+
       rule { can?(:reporter_access) & observability_metrics_enabled }.policy do
         enable :read_observability_metrics
       end
 
+      rule { can?(:developer_access) & observability_metrics_enabled }.policy do
+        enable :write_observability_metrics
+      end
+
       rule { can?(:reporter_access) & observability_logs_enabled }.policy do
         enable :read_observability_logs
+      end
+
+      rule { can?(:developer_access) & observability_logs_enabled }.policy do
+        enable :write_observability_logs
       end
 
       rule { ci_cancellation_maintainers_only & ~can?(:maintainer_access) }.policy do
