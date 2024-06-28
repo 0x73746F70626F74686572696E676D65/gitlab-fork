@@ -74,11 +74,17 @@ const mockRules = [
   },
   { type: 'pipeline', branch_type: 'default' },
 ];
-const mockDefaultTagsAction = {
+const mockDefaultTagsCriteria = {
   message: 'Automatically selected runners',
   tags: [],
   action: ACTIONS.tags,
 };
+
+const mockDefaultSecurityTemplateCriteria = {
+  message: 'With the default security job template',
+};
+
+const mockDefaultCriteria = [mockDefaultTagsCriteria, mockDefaultSecurityTemplateCriteria];
 
 const mockRulesBranchType = [
   { type: 'pipeline', branch_type: 'invalid' },
@@ -100,7 +106,7 @@ describe('humanizeActions', () => {
     expect(humanizeActions([mockActions[0]])).toStrictEqual([
       {
         message: 'Run %{scannerStart}DAST%{scannerEnd} with the following options:',
-        criteriaList: [mockDefaultTagsAction],
+        criteriaList: mockDefaultCriteria,
       },
     ]);
   });
@@ -109,15 +115,15 @@ describe('humanizeActions', () => {
     expect(humanizeActions(mockActions)).toStrictEqual([
       {
         message: 'Run %{scannerStart}DAST%{scannerEnd} with the following options:',
-        criteriaList: [mockDefaultTagsAction],
+        criteriaList: mockDefaultCriteria,
       },
       {
         message: 'Run %{scannerStart}Secret Detection%{scannerEnd} with the following options:',
-        criteriaList: [mockDefaultTagsAction],
+        criteriaList: mockDefaultCriteria,
       },
       {
         message: 'Run %{scannerStart}Container Scanning%{scannerEnd} with the following options:',
-        criteriaList: [mockDefaultTagsAction],
+        criteriaList: mockDefaultCriteria,
       },
     ]);
   });
@@ -131,9 +137,26 @@ describe('humanizeActions', () => {
 
     it.each`
       title                   | input                       | output
-      ${'one tag'}            | ${[mockActionsWithTags[0]]} | ${[{ message: 'Run %{scannerStart}SAST%{scannerEnd} with the following options:', criteriaList: [{ message: 'On runners with tag:', tags: mockActionsWithTags[0].tags, action: ACTIONS.tags }] }]}
-      ${'two tags'}           | ${[mockActionsWithTags[1]]} | ${[{ message: 'Run %{scannerStart}Secret Detection%{scannerEnd} with the following options:', criteriaList: [{ message: 'On runners with the tags:', tags: mockActionsWithTags[1].tags, action: ACTIONS.tags }] }]}
-      ${'more than two tags'} | ${[mockActionsWithTags[2]]} | ${[{ message: 'Run %{scannerStart}Container Scanning%{scannerEnd} with the following options:', criteriaList: [{ message: 'On runners with the tags:', tags: mockActionsWithTags[2].tags, action: ACTIONS.tags }] }]}
+      ${'one tag'}            | ${[mockActionsWithTags[0]]} | ${[{ message: 'Run %{scannerStart}SAST%{scannerEnd} with the following options:', criteriaList: [{ message: 'On runners with tag:', tags: mockActionsWithTags[0].tags, action: ACTIONS.tags }, mockDefaultSecurityTemplateCriteria] }]}
+      ${'two tags'}           | ${[mockActionsWithTags[1]]} | ${[{ message: 'Run %{scannerStart}Secret Detection%{scannerEnd} with the following options:', criteriaList: [{ message: 'On runners with the tags:', tags: mockActionsWithTags[1].tags, action: ACTIONS.tags }, mockDefaultSecurityTemplateCriteria] }]}
+      ${'more than two tags'} | ${[mockActionsWithTags[2]]} | ${[{ message: 'Run %{scannerStart}Container Scanning%{scannerEnd} with the following options:', criteriaList: [{ message: 'On runners with the tags:', tags: mockActionsWithTags[2].tags, action: ACTIONS.tags }, mockDefaultSecurityTemplateCriteria] }]}
+    `('$title', ({ input, output }) => {
+      expect(humanizeActions(input)).toStrictEqual(output);
+    });
+  });
+
+  describe('with security template', () => {
+    const mockActionsWithSecurityTemplate = [
+      { scan: 'dast' },
+      { scan: 'sast', template: 'default' },
+      { scan: 'secret_detection', template: 'latest' },
+    ];
+
+    it.each`
+      title            | input                                   | output
+      ${'no template'} | ${[mockActionsWithSecurityTemplate[0]]} | ${[{ message: 'Run %{scannerStart}DAST%{scannerEnd} with the following options:', criteriaList: mockDefaultCriteria }]}
+      ${'default'}     | ${[mockActionsWithSecurityTemplate[1]]} | ${[{ message: 'Run %{scannerStart}SAST%{scannerEnd} with the following options:', criteriaList: mockDefaultCriteria }]}
+      ${'latest'}      | ${[mockActionsWithSecurityTemplate[2]]} | ${[{ message: 'Run %{scannerStart}Secret Detection%{scannerEnd} with the following options:', criteriaList: [mockDefaultTagsCriteria, { message: 'With the latest security job template' }] }]}
     `('$title', ({ input, output }) => {
       expect(humanizeActions(input)).toStrictEqual(output);
     });
@@ -147,8 +170,8 @@ describe('humanizeActions', () => {
 
     it.each`
       title             | input                            | output
-      ${'no variables'} | ${[mockActionsWithVariables[0]]} | ${[{ message: 'Run %{scannerStart}SAST%{scannerEnd} with the following options:', criteriaList: [mockDefaultTagsAction] }]}
-      ${'variables'}    | ${[mockActionsWithVariables[1]]} | ${[{ message: 'Run %{scannerStart}Secret Detection%{scannerEnd} with the following options:', criteriaList: [mockDefaultTagsAction, { message: 'With the following customized CI variables:', variables: [{ variable: 'variable1', value: 'value1' }, { variable: 'variable2', value: 'value2' }], action: ACTIONS.variables }] }]}
+      ${'no variables'} | ${[mockActionsWithVariables[0]]} | ${[{ message: 'Run %{scannerStart}SAST%{scannerEnd} with the following options:', criteriaList: mockDefaultCriteria }]}
+      ${'variables'}    | ${[mockActionsWithVariables[1]]} | ${[{ message: 'Run %{scannerStart}Secret Detection%{scannerEnd} with the following options:', criteriaList: [mockDefaultTagsCriteria, mockDefaultSecurityTemplateCriteria, { message: 'With the following customized CI variables:', variables: [{ variable: 'variable1', value: 'value1' }, { variable: 'variable2', value: 'value2' }], action: ACTIONS.variables }] }]}
     `('$title', ({ input, output }) => {
       expect(humanizeActions(input)).toStrictEqual(output);
     });

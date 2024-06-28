@@ -11,6 +11,22 @@ import {
 import { createHumanizedScanners } from '../../policy_editor/utils';
 import { buildBranchExceptionsString, humanizedBranchExceptions } from '../utils';
 
+const createTagsMessage = (tags) => {
+  return tags.length > 0
+    ? n__(
+        'SecurityOrchestration|On runners with tag:',
+        'SecurityOrchestration|On runners with the tags:',
+        tags.length,
+      )
+    : s__('SecurityOrchestration|Automatically selected runners');
+};
+
+const createTemplateMessage = (template) => {
+  return template === 'default'
+    ? s__('SecurityOrchestration|With the default security job template')
+    : s__('SecurityOrchestration|With the latest security job template');
+};
+
 /**
  * Create a human-readable list of runner tags, adding the necessary punctuation and conjunctions
  * @param {string} scanner humanized scanner
@@ -19,24 +35,14 @@ import { buildBranchExceptionsString, humanizedBranchExceptions } from '../utils
  */
 const humanizeCriteria = (scanner, originalActions) => {
   const tags = originalActions?.tags ? [...originalActions.tags] : [];
+  const template = originalActions?.template;
   const variables = originalActions?.variables ? { ...originalActions.variables } : {};
 
-  const tagsMessage =
-    tags.length > 0
-      ? n__(
-          'SecurityOrchestration|On runners with tag:',
-          'SecurityOrchestration|On runners with the tags:',
-          tags.length,
-        )
-      : s__('SecurityOrchestration|Automatically selected runners');
-
   const criteriaList = [
-    {
-      message: tagsMessage,
-      tags,
-      action: ACTIONS.tags,
-    },
+    { message: createTagsMessage(tags), tags, action: ACTIONS.tags },
+    { message: createTemplateMessage(template) },
   ];
+
   if (Object.keys(variables).length) {
     criteriaList.push({
       message: s__('SecurityOrchestration|With the following customized CI variables:'),
@@ -217,11 +223,15 @@ export const humanizeActions = (actions) => {
   // de-duplicate scanners and merge tags (if any)
   const scanners = actions.reduce((acc, action) => {
     if (!acc[action.scan]) {
-      acc[action.scan] = { tags: [], variables: [] };
+      acc[action.scan] = { tags: [], template: 'default', variables: [] };
     }
+
+    acc[action.scan].template = action.template || 'default';
+
     if (action.tags) {
       acc[action.scan].tags = [...acc[action.scan].tags, ...action.tags];
     }
+
     if (action.variables) {
       acc[action.scan].variables = { ...acc[action.scan].variables, ...action.variables };
     }
