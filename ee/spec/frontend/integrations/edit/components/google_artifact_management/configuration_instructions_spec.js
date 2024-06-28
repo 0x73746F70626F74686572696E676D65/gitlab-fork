@@ -61,8 +61,7 @@ describe('ConfigurationInstructions', () => {
 
   it('renders link to Google Cloud IAM permissions', () => {
     expect(findLinks().at(3).attributes()).toMatchObject({
-      href:
-        'https://cloud.google.com/iam/docs/granting-changing-revoking-access#required-permissions',
+      href: 'https://cloud.google.com/iam/docs/granting-changing-revoking-access#required-permissions',
       target: '_blank',
     });
   });

@@ -32,31 +32,30 @@ describe('DastSiteValidationRevokeModal', () => {
   let wrapper;
   let requestHandlers;
 
-  const componentFactory = (mountFn = shallowMount) => ({
-    mountOptions = {},
-    handlers = {},
-  } = {}) => {
-    requestHandlers = { ...defaultRequestHandlers, ...handlers };
-    wrapper = mountFn(
-      DastSiteValidationRevokeModal,
-      merge(
-        {},
-        {
-          propsData: defaultProps,
-          attrs: {
-            static: true,
-            visible: true,
+  const componentFactory =
+    (mountFn = shallowMount) =>
+    ({ mountOptions = {}, handlers = {} } = {}) => {
+      requestHandlers = { ...defaultRequestHandlers, ...handlers };
+      wrapper = mountFn(
+        DastSiteValidationRevokeModal,
+        merge(
+          {},
+          {
+            propsData: defaultProps,
+            attrs: {
+              static: true,
+              visible: true,
+            },
           },
-        },
-        mountOptions,
-        {
-          apolloProvider: createApolloProvider([
-            [dastSiteValidationRevokeMutation, requestHandlers.dastSiteValidationRevoke],
-          ]),
-        },
-      ),
-    );
-  };
+          mountOptions,
+          {
+            apolloProvider: createApolloProvider([
+              [dastSiteValidationRevokeMutation, requestHandlers.dastSiteValidationRevoke],
+            ]),
+          },
+        ),
+      );
+    };
   const createComponent = componentFactory();
   const createFullComponent = componentFactory(mount);
 

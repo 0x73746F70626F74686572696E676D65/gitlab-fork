@@ -71,8 +71,7 @@ describe('Details', () => {
       expect(findDetailsHeader().props()).toMatchObject({
         data: {
           title: 'alpine@1234567890ab',
-          uri:
-            'us-east1-docker.pkg.dev/dev-package-container-96a3ff34/myrepo/alpine@sha256:6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
+          uri: 'us-east1-docker.pkg.dev/dev-package-container-96a3ff34/myrepo/alpine@sha256:6a0657acfef760bd9e293361c9b558e98e7d740ed0dffca823d17098a4ffddf5',
         },
         isLoading: false,
         showError: false,

@@ -11,12 +11,8 @@ Vue.use(GlToast);
 export const initGroupRunnersDashboard = (selector = '#js-group-runners-dashboard') => {
   const el = document.querySelector(selector);
 
-  const {
-    groupFullPath,
-    groupRunnersPath,
-    newRunnerPath,
-    clickhouseCiAnalyticsAvailable,
-  } = el.dataset;
+  const { groupFullPath, groupRunnersPath, newRunnerPath, clickhouseCiAnalyticsAvailable } =
+    el.dataset;
 
   const apolloProvider = new VueApollo({
     defaultClient: createDefaultClient(),

@@ -30,9 +30,8 @@ function initRefSwitcher() {
         },
         on: {
           input(selectedRef) {
-            document.getElementById(
-              'projects_target_branch_rule_target_branch',
-            ).value = selectedRef.replace(/^refs\/(tags|heads)\//, '');
+            document.getElementById('projects_target_branch_rule_target_branch').value =
+              selectedRef.replace(/^refs\/(tags|heads)\//, '');
           },
         },
       });

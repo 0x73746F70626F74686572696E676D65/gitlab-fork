@@ -53,25 +53,25 @@ describe('EE - DastProfiles', () => {
     ]);
   };
 
-  const createComponentFactory = (mountFn = shallowMount) => ({
-    handlers = defaultHandlers,
-  } = {}) => {
-    const defaultProps = {
-      createNewProfilePaths: {
-        scannerProfile: TEST_NEW_DAST_SCANNER_PROFILE_PATH,
-        siteProfile: TEST_NEW_DAST_SITE_PROFILE_PATH,
-      },
-      projectFullPath: TEST_PROJECT_FULL_PATH,
-    };
+  const createComponentFactory =
+    (mountFn = shallowMount) =>
+    ({ handlers = defaultHandlers } = {}) => {
+      const defaultProps = {
+        createNewProfilePaths: {
+          scannerProfile: TEST_NEW_DAST_SCANNER_PROFILE_PATH,
+          siteProfile: TEST_NEW_DAST_SITE_PROFILE_PATH,
+        },
+        projectFullPath: TEST_PROJECT_FULL_PATH,
+      };
 
-    wrapper = mountFn(DastProfiles, {
-      stubs: {
-        DastFailedSiteValidations: true,
-      },
-      propsData: defaultProps,
-      apolloProvider: createMockApolloProvider(handlers),
-    });
-  };
+      wrapper = mountFn(DastProfiles, {
+        stubs: {
+          DastFailedSiteValidations: true,
+        },
+        propsData: defaultProps,
+        apolloProvider: createMockApolloProvider(handlers),
+      });
+    };
 
   const createComponent = createComponentFactory();
   const createFullComponent = createComponentFactory(mount);

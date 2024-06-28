@@ -86,35 +86,34 @@ describe('Saved tab', () => {
     },
   });
 
-  const createComponentFactory = (mountFn = shallowMountExtended) => (
-    options = {},
-    glFeatures = {},
-  ) => {
-    router = createRouter();
-    wrapper = mountFn(
-      SavedTab,
-      merge(
-        {
-          apolloProvider: createMockApolloProvider(),
-          router,
-          propsData: {
-            isActive: true,
-            itemsCount,
+  const createComponentFactory =
+    (mountFn = shallowMountExtended) =>
+    (options = {}, glFeatures = {}) => {
+      router = createRouter();
+      wrapper = mountFn(
+        SavedTab,
+        merge(
+          {
+            apolloProvider: createMockApolloProvider(),
+            router,
+            propsData: {
+              isActive: true,
+              itemsCount,
+            },
+            provide: {
+              canEditOnDemandScans: true,
+              projectPath,
+              projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
+              ...glFeatures,
+            },
+            stubs: {
+              BaseTab,
+            },
           },
-          provide: {
-            canEditOnDemandScans: true,
-            projectPath,
-            projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
-            ...glFeatures,
-          },
-          stubs: {
-            BaseTab,
-          },
-        },
-        options,
-      ),
-    );
-  };
+          options,
+        ),
+      );
+    };
 
   const createComponent = createComponentFactory();
   const createFullComponent = createComponentFactory(mountExtended);

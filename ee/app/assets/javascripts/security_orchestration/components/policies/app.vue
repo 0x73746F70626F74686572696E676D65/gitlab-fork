@@ -150,8 +150,8 @@ export default {
         [POLICY_TYPE_FILTER_OPTIONS.APPROVAL.value]: this.scanResultPolicies,
         ...(this.pipelineExecutionPolicyEnabled
           ? {
-              [PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value]: this
-                .pipelineExecutionPolicies,
+              [PIPELINE_EXECUTION_FILTER_OPTION.PIPELINE_EXECUTION.value]:
+                this.pipelineExecutionPolicies,
             }
           : {}),
       };

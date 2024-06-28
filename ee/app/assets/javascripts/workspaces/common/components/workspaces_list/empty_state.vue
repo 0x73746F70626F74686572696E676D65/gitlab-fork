@@ -4,7 +4,8 @@ import { s__ } from '~/locale';
 
 export const i18n = {
   title: s__('Workspaces|Develop anywhere'),
-  description: s__(`Workspaces|GitLab Workspaces is a powerful collaborative platform that provides a
+  description:
+    s__(`Workspaces|GitLab Workspaces is a powerful collaborative platform that provides a
                       comprehensive set of tools for software development
                       teams to manage their entire development lifecycle.`),
   primaryButtonText: s__('Workspaces|New workspace'),

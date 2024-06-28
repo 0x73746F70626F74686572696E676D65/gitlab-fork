@@ -12,9 +12,8 @@ import { getProjectDataTransferEgressResponse } from '../mock_data';
 describe('ProjectTransferApp', () => {
   let wrapper;
 
-  const {
-    nodes: egressNodes,
-  } = getProjectDataTransferEgressResponse.data.project.dataTransfer.egressNodes;
+  const { nodes: egressNodes } =
+    getProjectDataTransferEgressResponse.data.project.dataTransfer.egressNodes;
 
   const defaultProvide = {
     fullPath: 'h5bp/html5-boilerplate',

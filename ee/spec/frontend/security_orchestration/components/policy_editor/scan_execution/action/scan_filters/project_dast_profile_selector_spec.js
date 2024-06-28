@@ -12,21 +12,23 @@ import SectionLayout from 'ee/security_orchestration/components/policy_editor/se
 
 describe('ProjectDastProfileSelector', () => {
   let wrapper;
-  const createComponent = (mountFn) => ({ props = {}, handlers = [] } = {}) => {
-    wrapper = mountFn(ProjectDastProfileSelector, {
-      propsData: {
-        ...props,
-      },
-      apolloProvider: createMockApolloProvider(handlers),
-      provide: {
-        namespacePath: 'path/to/project',
-      },
-      stubs: {
-        SectionLayout,
-        GlSprintf,
-      },
-    });
-  };
+  const createComponent =
+    (mountFn) =>
+    ({ props = {}, handlers = [] } = {}) => {
+      wrapper = mountFn(ProjectDastProfileSelector, {
+        propsData: {
+          ...props,
+        },
+        apolloProvider: createMockApolloProvider(handlers),
+        provide: {
+          namespacePath: 'path/to/project',
+        },
+        stubs: {
+          SectionLayout,
+          GlSprintf,
+        },
+      });
+    };
 
   const createFullComponent = createComponent(mountExtended);
   const createShallowComponent = createComponent(shallowMountExtended);

@@ -109,10 +109,8 @@ describe('Add On Eligible User List', () => {
     });
 
     it('displays add-on eligible user list', () => {
-      const {
-        pageInfo,
-        nodes: users,
-      } = mockPaginatedAddOnEligibleUsers.data.namespace.addOnEligibleUsers;
+      const { pageInfo, nodes: users } =
+        mockPaginatedAddOnEligibleUsers.data.namespace.addOnEligibleUsers;
       const expectedProps = {
         addOnPurchaseId,
         duoTier,
@@ -236,10 +234,8 @@ describe('Add On Eligible User List', () => {
   });
 
   describe('pagination', () => {
-    const {
-      startCursor,
-      endCursor,
-    } = mockPaginatedAddOnEligibleUsers.data.namespace.addOnEligibleUsers.pageInfo.endCursor;
+    const { startCursor, endCursor } =
+      mockPaginatedAddOnEligibleUsers.data.namespace.addOnEligibleUsers.pageInfo.endCursor;
     beforeEach(() => {
       return createComponent();
     });

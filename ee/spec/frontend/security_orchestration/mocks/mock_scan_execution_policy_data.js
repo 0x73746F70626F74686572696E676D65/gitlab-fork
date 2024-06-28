@@ -283,9 +283,8 @@ export const mockCodeBlockFilePathScanExecutionObject = {
   ],
 };
 
-export const mockTemplateScanExecutionManifest = mockDastScanExecutionManifest.concat(
-  `    template: default\n`,
-);
+export const mockTemplateScanExecutionManifest =
+  mockDastScanExecutionManifest.concat(`    template: default\n`);
 
 export const mockTemplateScanExecutionObject = {
   ...mockDastScanExecutionObject,

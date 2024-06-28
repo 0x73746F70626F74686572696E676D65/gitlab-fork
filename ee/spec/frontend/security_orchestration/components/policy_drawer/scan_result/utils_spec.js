@@ -19,15 +19,11 @@ import {
   AGE_WEEK,
 } from 'ee/security_orchestration/components/policy_editor/scan_result/rule/scan_filters/constants';
 
-const {
-  branch_type: defaultSecurityScanBranchType,
-  ...securityScanBuildRuleWithoutBranchType
-} = securityScanBuildRule();
+const { branch_type: defaultSecurityScanBranchType, ...securityScanBuildRuleWithoutBranchType } =
+  securityScanBuildRule();
 
-const {
-  branch_type: defaultLicenseScanBranchType,
-  ...licenseScanBuildRuleWithoutBranchType
-} = licenseScanBuildRule();
+const { branch_type: defaultLicenseScanBranchType, ...licenseScanBuildRuleWithoutBranchType } =
+  licenseScanBuildRule();
 
 const singleValuedSecurityScannerRule = {
   rule: {
@@ -362,9 +358,9 @@ describe('humanizeRules', () => {
     );
 
     it('returns a single rule as a human-readable string for rules with branch exceptions', () => {
-      expect(
-        humanizeRules([branchExceptionLicenseScanRule(['test', 'test1']).rule]),
-      ).toStrictEqual([branchExceptionLicenseScanRule(['test', 'test1']).humanized]);
+      expect(humanizeRules([branchExceptionLicenseScanRule(['test', 'test1']).rule])).toStrictEqual(
+        [branchExceptionLicenseScanRule(['test', 'test1']).humanized],
+      );
     });
   });
 

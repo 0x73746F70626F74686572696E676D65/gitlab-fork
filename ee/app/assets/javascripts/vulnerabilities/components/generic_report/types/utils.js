@@ -20,7 +20,10 @@ const isSupportedType = ({ type }) => REPORT_TYPES.includes(type);
  * @param {*} typeToCheck
  * @returns
  */
-const isOfType = (typeToCheck) => ({ type }) => type === typeToCheck;
+const isOfType =
+  (typeToCheck) =>
+  ({ type }) =>
+    type === typeToCheck;
 
 /**
  * Check if the given report is of type 'list'
@@ -89,16 +92,18 @@ const deepFilterListItems = (items, { condition, currentDepth = 0 }) =>
  * @param {function} condition
  * @returns {{*}}
  */
-const filterNestedListsItems = (condition) => ([label, reportItem]) => {
-  const filtered = isOfTypeList(reportItem)
-    ? {
-        ...reportItem,
-        items: deepFilterListItems(reportItem.items, { condition }),
-      }
-    : reportItem;
+const filterNestedListsItems =
+  (condition) =>
+  ([label, reportItem]) => {
+    const filtered = isOfTypeList(reportItem)
+      ? {
+          ...reportItem,
+          items: deepFilterListItems(reportItem.items, { condition }),
+        }
+      : reportItem;
 
-  return [label, filtered];
-};
+    return [label, filtered];
+  };
 
 /**
  * Takes an entry from the vulnerability's details object and removes unsupported
@@ -108,16 +113,18 @@ const filterNestedListsItems = (condition) => ([label, reportItem]) => {
  * @param {number} maxDepth
  * @returns
  */
-const overEveryNamedListItem = (fn) => ([label, reportItem]) => {
-  const filtered = isOfTypeNamedList(reportItem)
-    ? {
-        ...reportItem,
-        items: fn(reportItem.items),
-      }
-    : reportItem;
+const overEveryNamedListItem =
+  (fn) =>
+  ([label, reportItem]) => {
+    const filtered = isOfTypeNamedList(reportItem)
+      ? {
+          ...reportItem,
+          items: fn(reportItem.items),
+        }
+      : reportItem;
 
-  return [label, filtered];
-};
+    return [label, filtered];
+  };
 
 /**
  * Takes an object of the shape

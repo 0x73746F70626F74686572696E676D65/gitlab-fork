@@ -531,10 +531,8 @@ export default {
         mutation: this.destinationVariables.namespaceFilterAddMutation,
         variables,
         update(cache, { data: updateData }) {
-          const {
-            errors,
-            namespaceFilter,
-          } = updateData.auditEventsStreamingHttpNamespaceFiltersAdd;
+          const { errors, namespaceFilter } =
+            updateData.auditEventsStreamingHttpNamespaceFiltersAdd;
 
           if (errors.length) {
             return;
@@ -561,10 +559,8 @@ export default {
 
       try {
         const errors = [];
-        const {
-          errors: destinationErrors = [],
-          externalAuditEventDestination,
-        } = await this.addDestinationUrl();
+        const { errors: destinationErrors = [], externalAuditEventDestination } =
+          await this.addDestinationUrl();
 
         errors.push(...destinationErrors);
         destinationId = externalAuditEventDestination?.id;
@@ -650,10 +646,11 @@ export default {
 
         if (this.isNamespaceUpdated) {
           if (this.item?.namespaceFilter?.id) {
-            const removeDestinationNamespaceFiltersErrors = await this.removeDestinationNamespaceFilters(
-              this.item?.id,
-              this.item?.namespaceFilter?.id,
-            );
+            const removeDestinationNamespaceFiltersErrors =
+              await this.removeDestinationNamespaceFilters(
+                this.item?.id,
+                this.item?.namespaceFilter?.id,
+              );
             if (removeDestinationNamespaceFiltersErrors?.length)
               errors.push(...removeDestinationNamespaceFiltersErrors);
           }

@@ -181,9 +181,8 @@ describe('Audit Events GraphQL cache updates', () => {
 
   describe('Group Cache', () => {
     describe('addAuditEventsStreamingDestination', () => {
-      const {
-        externalAuditEventDestination: newDestination,
-      } = destinationCreateMutationPopulator().data.externalAuditEventDestinationCreate;
+      const { externalAuditEventDestination: newDestination } =
+        destinationCreateMutationPopulator().data.externalAuditEventDestinationCreate;
 
       it('adds new destination to beginning of list of destinations for specific fullPath', () => {
         const { length: originalDestinationsLengthForGroup1 } = getDestinations(GROUP1_PATH);
@@ -241,8 +240,8 @@ describe('Audit Events GraphQL cache updates', () => {
     });
 
     describe('addAuditEventStreamingHeader', () => {
-      const newHeader = destinationHeaderCreateMutationPopulator().data
-        .auditEventsStreamingHeadersCreate.header;
+      const newHeader =
+        destinationHeaderCreateMutationPopulator().data.auditEventsStreamingHeadersCreate.header;
 
       it('adds new header to destination', () => {
         const [firstDestination] = getDestinations(GROUP1_PATH);
@@ -411,17 +410,14 @@ describe('Audit Events GraphQL cache updates', () => {
     });
 
     describe('addGcpLoggingAuditEventsStreamingDestination', () => {
-      const {
-        googleCloudLoggingConfiguration: newGcpLoggingDestination,
-      } = gcpLoggingDestinationCreateMutationPopulator().data.googleCloudLoggingConfigurationCreate;
+      const { googleCloudLoggingConfiguration: newGcpLoggingDestination } =
+        gcpLoggingDestinationCreateMutationPopulator().data.googleCloudLoggingConfigurationCreate;
 
       it('adds new GCP configuration to beginning of list of destinations for specific fullPath', () => {
-        const { length: originalDestinationsLengthForGroup1 } = getGcpLoggingDestinations(
-          GCP_GROUP1_PATH,
-        );
-        const { length: originalDestinationsLengthForGroup2 } = getGcpLoggingDestinations(
-          GCP_GROUP2_PATH,
-        );
+        const { length: originalDestinationsLengthForGroup1 } =
+          getGcpLoggingDestinations(GCP_GROUP1_PATH);
+        const { length: originalDestinationsLengthForGroup2 } =
+          getGcpLoggingDestinations(GCP_GROUP2_PATH);
 
         addGcpLoggingAuditEventsStreamingDestination({
           store: cache,
@@ -452,9 +448,8 @@ describe('Audit Events GraphQL cache updates', () => {
     describe('removeGcpLoggingAuditEventsStreamingDestination', () => {
       it('removes new destination to list of destinations for specific fullPath', () => {
         const [firstDestination, ...restDestinations] = getGcpLoggingDestinations(GCP_GROUP1_PATH);
-        const { length: originalDestinationsLengthForGroup2 } = getGcpLoggingDestinations(
-          GCP_GROUP2_PATH,
-        );
+        const { length: originalDestinationsLengthForGroup2 } =
+          getGcpLoggingDestinations(GCP_GROUP2_PATH);
 
         removeGcpLoggingAuditEventsStreamingDestination({
           store: cache,
@@ -483,17 +478,14 @@ describe('Audit Events GraphQL cache updates', () => {
     });
 
     describe('addAmazonS3AuditEventsStreamingDestination', () => {
-      const {
-        amazonS3Configuration: newAmazonS3Destination,
-      } = amazonS3DestinationCreateMutationPopulator().data.auditEventsAmazonS3ConfigurationCreate;
+      const { amazonS3Configuration: newAmazonS3Destination } =
+        amazonS3DestinationCreateMutationPopulator().data.auditEventsAmazonS3ConfigurationCreate;
 
       it('adds new amazon S3 configuration to beginning of list of destinations for specific fullPath', () => {
-        const { length: originalDestinationsLengthForGroup1 } = getAmazonS3Destinations(
-          AMAZON_S3_GROUP1_PATH,
-        );
-        const { length: originalDestinationsLengthForGroup2 } = getAmazonS3Destinations(
-          AMAZON_S3_GROUP2_PATH,
-        );
+        const { length: originalDestinationsLengthForGroup1 } =
+          getAmazonS3Destinations(AMAZON_S3_GROUP1_PATH);
+        const { length: originalDestinationsLengthForGroup2 } =
+          getAmazonS3Destinations(AMAZON_S3_GROUP2_PATH);
 
         addAmazonS3AuditEventsStreamingDestination({
           store: cache,
@@ -525,12 +517,10 @@ describe('Audit Events GraphQL cache updates', () => {
 
     describe('removeAmazonS3AuditEventsStreamingDestination', () => {
       it('removes new destination to list of destinations for specific fullPath', () => {
-        const [firstDestination, ...restDestinations] = getAmazonS3Destinations(
-          AMAZON_S3_GROUP1_PATH,
-        );
-        const { length: originalDestinationsLengthForGroup2 } = getAmazonS3Destinations(
-          AMAZON_S3_GROUP2_PATH,
-        );
+        const [firstDestination, ...restDestinations] =
+          getAmazonS3Destinations(AMAZON_S3_GROUP1_PATH);
+        const { length: originalDestinationsLengthForGroup2 } =
+          getAmazonS3Destinations(AMAZON_S3_GROUP2_PATH);
 
         removeAmazonS3AuditEventsStreamingDestination({
           store: cache,
@@ -563,9 +553,9 @@ describe('Audit Events GraphQL cache updates', () => {
 
   describe('Instance Cache', () => {
     describe('addAuditEventsStreamingDestination', () => {
-      const {
-        instanceExternalAuditEventDestination: newDestination,
-      } = destinationInstanceCreateMutationPopulator().data.instanceExternalAuditEventDestinationCreate;
+      const { instanceExternalAuditEventDestination: newDestination } =
+        destinationInstanceCreateMutationPopulator().data
+          .instanceExternalAuditEventDestinationCreate;
 
       it('adds new destination to list of destinations for specific fullPath', () => {
         const { length: originalInstanceDestinationsLength } = getInstanceDestinations();
@@ -623,8 +613,9 @@ describe('Audit Events GraphQL cache updates', () => {
     });
 
     describe('addAuditEventStreamingHeader', () => {
-      const newHeader = destinationInstanceHeaderCreateMutationPopulator().data
-        .auditEventsStreamingInstanceHeadersCreate.header;
+      const newHeader =
+        destinationInstanceHeaderCreateMutationPopulator().data
+          .auditEventsStreamingInstanceHeadersCreate.header;
 
       it('adds new header to destination', () => {
         const [firstDestination] = getInstanceDestinations();
@@ -747,9 +738,9 @@ describe('Audit Events GraphQL cache updates', () => {
     });
 
     describe('addGcpLoggingAuditEventsStreamingDestination', () => {
-      const {
-        instanceGoogleCloudLoggingConfiguration: newInstanceGcpLoggingDestination,
-      } = instanceGcpLoggingDestinationCreateMutationPopulator().data.instanceGoogleCloudLoggingConfigurationCreate;
+      const { instanceGoogleCloudLoggingConfiguration: newInstanceGcpLoggingDestination } =
+        instanceGcpLoggingDestinationCreateMutationPopulator().data
+          .instanceGoogleCloudLoggingConfigurationCreate;
 
       it('adds new GCP configuration to beginning of list of destinations', () => {
         const { length: originalDestinationsLength } = getInstanceGcpLoggingDestinations();
@@ -783,9 +774,9 @@ describe('Audit Events GraphQL cache updates', () => {
     });
 
     describe('addAmazonS3AuditEventsStreamingDestination', () => {
-      const {
-        instanceAmazonS3Configuration: newInstanceAmazonS3Destination,
-      } = instanceAmazonS3DestinationCreateMutationPopulator().data.auditEventsInstanceAmazonS3ConfigurationCreate;
+      const { instanceAmazonS3Configuration: newInstanceAmazonS3Destination } =
+        instanceAmazonS3DestinationCreateMutationPopulator().data
+          .auditEventsInstanceAmazonS3ConfigurationCreate;
 
       it('adds new GCP configuration to beginning of list of destinations', () => {
         const { length: originalDestinationsLength } = getInstanceAmazonS3Destinations();

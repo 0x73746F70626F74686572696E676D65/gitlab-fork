@@ -79,8 +79,7 @@ export default [
     links: [
       {
         name: 'Cipher does not check for integrity first?',
-        url:
-          'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first',
+        url: 'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first',
       },
     ],
     instances: [
@@ -148,8 +147,7 @@ export default [
     links: [
       {
         name: 'Cipher does not check for integrity first?',
-        url:
-          'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first',
+        url: 'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first',
       },
     ],
   },
@@ -229,8 +227,7 @@ export default [
     links: [
       {
         name: 'Cipher does not check for integrity first?',
-        url:
-          'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first',
+        url: 'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first',
       },
     ],
   },
@@ -275,8 +272,7 @@ export default [
   {
     id: 5,
     report_type: 'sast',
-    name:
-      'Remote command execution due to flaw in the include params attribute of URL and Anchor tags for org.apache.struts/struts2core',
+    name: 'Remote command execution due to flaw in the include params attribute of URL and Anchor tags for org.apache.struts/struts2core',
     severity: 'low',
     confidence: '',
     url: '/testgroup/testproject/-/security/vulnerabilities/5',
@@ -348,8 +344,7 @@ export default [
     links: [
       {
         name: 'Cipher does not check for integrity first?',
-        url:
-          'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first',
+        url: 'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first',
       },
     ],
   },
@@ -405,8 +400,7 @@ export default [
     links: [
       {
         name: 'Cipher does not check for integrity first?',
-        url:
-          'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first',
+        url: 'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first',
       },
     ],
   },
@@ -462,8 +456,7 @@ export default [
     links: [
       {
         name: 'Cipher does not check for integrity first?',
-        url:
-          'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first',
+        url: 'https://crypto.stackexchange.com/questions/31428/pbewithmd5anddes-cipher-does-not-check-for-integrity-first',
       },
     ],
   },

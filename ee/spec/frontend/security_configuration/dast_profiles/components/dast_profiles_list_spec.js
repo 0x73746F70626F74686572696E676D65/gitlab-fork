@@ -12,35 +12,37 @@ const TEST_ERROR_MESSAGE = 'something went wrong';
 describe('EE - DastProfilesList', () => {
   let wrapper;
 
-  const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
-    const defaultProps = {
-      profiles: [],
-      tableLabel: 'Profiles Table',
-      fields: [{ key: 'profileName' }, { key: 'targetUrl' }, { key: 'validationStatus' }],
-      noProfilesMessage: 'no profiles created yet',
-      hasMorePages: false,
-      profilesPerPage: 10,
-      errorMessage: '',
-      errorDetails: [],
-      fullPath: '/namespace/project',
-    };
+  const createComponentFactory =
+    (mountFn = shallowMount) =>
+    (options = {}) => {
+      const defaultProps = {
+        profiles: [],
+        tableLabel: 'Profiles Table',
+        fields: [{ key: 'profileName' }, { key: 'targetUrl' }, { key: 'validationStatus' }],
+        noProfilesMessage: 'no profiles created yet',
+        hasMorePages: false,
+        profilesPerPage: 10,
+        errorMessage: '',
+        errorDetails: [],
+        fullPath: '/namespace/project',
+      };
 
-    wrapper = mountFn(
-      DastProfilesList,
-      merge(
-        {},
-        {
-          propsData: defaultProps,
-        },
-        options,
-        {
-          directives: {
-            GlTooltip: createMockDirective('gl-tooltip'),
+      wrapper = mountFn(
+        DastProfilesList,
+        merge(
+          {},
+          {
+            propsData: defaultProps,
           },
-        },
-      ),
-    );
-  };
+          options,
+          {
+            directives: {
+              GlTooltip: createMockDirective('gl-tooltip'),
+            },
+          },
+        ),
+      );
+    };
 
   const createComponent = createComponentFactory();
   const createFullComponent = createComponentFactory(mount);

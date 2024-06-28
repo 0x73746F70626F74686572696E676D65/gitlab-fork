@@ -43,11 +43,13 @@ const isSupported = () => Boolean(window.dataLayer);
 // window.dataLayer is set by adding partials to the appropriate view found in
 // ee/app/views/layouts/_google_tag_manager_body.html.haml and _google_tag_manager_head.html.haml
 
-const callIfSupported = (callback) => (...args) => {
-  if (isSupported()) {
-    callback(...args);
-  }
-};
+const callIfSupported =
+  (callback) =>
+  (...args) => {
+    if (isSupported()) {
+      callback(...args);
+    }
+  };
 
 const pushEvent = (event, args = {}) => {
   if (!window.dataLayer) {

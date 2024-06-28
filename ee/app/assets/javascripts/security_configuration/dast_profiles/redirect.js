@@ -11,25 +11,23 @@ const getReferrerPath = (referrer) => {
   return new URL(referrer).pathname;
 };
 
-export const returnToPreviousPageFactory = ({
-  allowedPaths,
-  profilesLibraryPath,
-  urlParamKey,
-}) => ({ id } = {}) => {
-  const referrerPath = getReferrerPath(document.referrer);
-  const redirectPath = allowedPaths.find((allowedPath) => referrerPath === allowedPath);
+export const returnToPreviousPageFactory =
+  ({ allowedPaths, profilesLibraryPath, urlParamKey }) =>
+  ({ id } = {}) => {
+    const referrerPath = getReferrerPath(document.referrer);
+    const redirectPath = allowedPaths.find((allowedPath) => referrerPath === allowedPath);
 
-  // when previous page is not an allowed path
-  if (!redirectPath) return visitUrl(profilesLibraryPath);
+    // when previous page is not an allowed path
+    if (!redirectPath) return visitUrl(profilesLibraryPath);
 
-  // otherwise redirect to the previous page along
-  // with the given profile id
-  const redirectPathWithId = id
-    ? setUrlParams(
-        { [urlParamKey]: getIdFromGraphQLId(id) },
-        relativePathToAbsolute(redirectPath, getBaseURL()),
-      )
-    : redirectPath;
+    // otherwise redirect to the previous page along
+    // with the given profile id
+    const redirectPathWithId = id
+      ? setUrlParams(
+          { [urlParamKey]: getIdFromGraphQLId(id) },
+          relativePathToAbsolute(redirectPath, getBaseURL()),
+        )
+      : redirectPath;
 
-  return visitUrl(redirectPathWithId);
-};
+    return visitUrl(redirectPathWithId);
+  };

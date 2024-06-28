@@ -16,13 +16,8 @@ export function initEpicForm() {
     return null;
   }
 
-  const {
-    groupPath,
-    groupEpicsPath,
-    labelsManagePath,
-    markdownDocsPath,
-    markdownPreviewPath,
-  } = el.dataset;
+  const { groupPath, groupEpicsPath, labelsManagePath, markdownDocsPath, markdownPreviewPath } =
+    el.dataset;
 
   return new Vue({
     el,

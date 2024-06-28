@@ -172,13 +172,8 @@ describe('AdherencesBaseTable component', () => {
 
     describe('when check is `PREVENT_APPROVAL_BY_MERGE_REQUEST_AUTHOR`', () => {
       it('renders the table row properly', () => {
-        const [
-          rowStatus,
-          rowCheck,
-          rowStandard,
-          rowProject,
-          rowDate,
-        ] = findFirstTableRowData().wrappers.map((e) => e.text());
+        const [rowStatus, rowCheck, rowStandard, rowProject, rowDate] =
+          findFirstTableRowData().wrappers.map((e) => e.text());
 
         expect(rowStatus).toContain('Success');
         expect(rowProject).toContain('Example Project');
@@ -203,13 +198,8 @@ describe('AdherencesBaseTable component', () => {
       });
 
       it('renders the table row properly', () => {
-        const [
-          rowStatus,
-          rowCheck,
-          rowStandard,
-          rowProject,
-          rowDate,
-        ] = findFirstTableRowData().wrappers.map((e) => e.text());
+        const [rowStatus, rowCheck, rowStandard, rowProject, rowDate] =
+          findFirstTableRowData().wrappers.map((e) => e.text());
 
         expect(rowStatus).toContain('Success');
         expect(rowProject).toContain('Example Project');
@@ -232,13 +222,8 @@ describe('AdherencesBaseTable component', () => {
       });
 
       it('renders the table row properly', () => {
-        const [
-          rowStatus,
-          rowCheck,
-          rowStandard,
-          rowProject,
-          rowDate,
-        ] = findFirstTableRowData().wrappers.map((e) => e.text());
+        const [rowStatus, rowCheck, rowStandard, rowProject, rowDate] =
+          findFirstTableRowData().wrappers.map((e) => e.text());
 
         expect(rowStatus).toContain('Success');
         expect(rowProject).toContain('Example Project');

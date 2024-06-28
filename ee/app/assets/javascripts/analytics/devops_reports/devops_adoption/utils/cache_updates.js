@@ -28,9 +28,10 @@ export const deleteEnabledNamespacesFromCache = (store, enabledNamespaceIds, var
   });
 
   const updatedData = produce(sourceData, (draftData) => {
-    draftData.devopsAdoptionEnabledNamespaces.nodes = draftData.devopsAdoptionEnabledNamespaces.nodes.filter(
-      ({ id }) => !enabledNamespaceIds.includes(id),
-    );
+    draftData.devopsAdoptionEnabledNamespaces.nodes =
+      draftData.devopsAdoptionEnabledNamespaces.nodes.filter(
+        ({ id }) => !enabledNamespaceIds.includes(id),
+      );
   });
 
   store.writeQuery({

@@ -20,17 +20,19 @@ describe('EE - DastScannerProfileList', () => {
     isLoading: false,
   };
 
-  const wrapperFactory = (mountFn = shallowMount) => (options = {}) => {
-    wrapper = mountFn(
-      Component,
-      merge(
-        {
-          propsData: defaultProps,
-        },
-        options,
-      ),
-    );
-  };
+  const wrapperFactory =
+    (mountFn = shallowMount) =>
+    (options = {}) => {
+      wrapper = mountFn(
+        Component,
+        merge(
+          {
+            propsData: defaultProps,
+          },
+          options,
+        ),
+      );
+    };
   const createFullComponent = wrapperFactory(mount);
 
   const findProfileList = () => wrapper.findComponent(ProfilesList);

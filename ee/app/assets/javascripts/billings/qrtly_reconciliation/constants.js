@@ -11,7 +11,8 @@ export const i18n = {
 On %{qrtlyDate}, quarterly reconciliation occurs and you are automatically billed a prorated amount
 for the overage. No action is needed from you. If you have a credit card on file, it will be charged.
 Otherwise, you will receive an invoice. For more information about the timing of the invoicing process, view the documentation.`),
-    usesNamespacePlan: s__(`Admin|The number of max seats in your namespace exceeds the number of seats in your subscription.
+    usesNamespacePlan:
+      s__(`Admin|The number of max seats in your namespace exceeds the number of seats in your subscription.
 On %{qrtlyDate}, quarterly reconciliation occurs and you are automatically billed a prorated amount
 for the overage. No action is needed from you. If you have a credit card on file, it will be charged.
 Otherwise, you will receive an invoice. For more information about the timing of the invoicing process, view the documentation.`),

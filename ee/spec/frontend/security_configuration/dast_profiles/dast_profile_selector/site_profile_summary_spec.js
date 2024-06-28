@@ -49,22 +49,24 @@ describe('DastScannerProfileSummary', () => {
     return createApolloProvider([[dastSiteValidationsQuery, requestHandlers.dastSiteValidations]]);
   };
 
-  const createComponentFactory = (mountFn = shallowMountExtended) => (options = {}, handlers) => {
-    apolloProvider = handlers && createMockApolloProvider(handlers);
-    wrapper = mountFn(
-      App,
-      merge(
-        {
-          propsData: defaultProps,
-          provide: defaultProvide,
-          stubs: {
-            DastProfileSummaryCard,
+  const createComponentFactory =
+    (mountFn = shallowMountExtended) =>
+    (options = {}, handlers) => {
+      apolloProvider = handlers && createMockApolloProvider(handlers);
+      wrapper = mountFn(
+        App,
+        merge(
+          {
+            propsData: defaultProps,
+            provide: defaultProvide,
+            stubs: {
+              DastProfileSummaryCard,
+            },
           },
-        },
-        { ...options, apolloProvider },
-      ),
-    );
-  };
+          { ...options, apolloProvider },
+        ),
+      );
+    };
 
   const createComponent = createComponentFactory();
   const createFullComponent = createComponentFactory(mountExtended);

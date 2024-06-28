@@ -77,17 +77,19 @@ describe('EE - CorpusManagement', () => {
     await nextTick();
   };
 
-  const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
-    wrapper = mountFn(CorpusManagement, {
-      provide: {
-        projectFullPath: TEST_PROJECT_FULL_PATH,
-        corpusHelpPath: TEST_CORPUS_HELP_PATH,
-        emptyStateSvgPath: TEST_EMPTY_STATE_SVG_PATH,
-      },
-      apolloProvider: createMockApolloProvider(),
-      ...options,
-    });
-  };
+  const createComponentFactory =
+    (mountFn = shallowMount) =>
+    (options = {}) => {
+      wrapper = mountFn(CorpusManagement, {
+        provide: {
+          projectFullPath: TEST_PROJECT_FULL_PATH,
+          corpusHelpPath: TEST_CORPUS_HELP_PATH,
+          emptyStateSvgPath: TEST_EMPTY_STATE_SVG_PATH,
+        },
+        apolloProvider: createMockApolloProvider(),
+        ...options,
+      });
+    };
 
   const createComponent = createComponentFactory();
 

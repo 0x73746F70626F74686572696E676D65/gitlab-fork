@@ -77,9 +77,8 @@ export default {
   methods: {
     ...mapActions('filters', ['setFilters', 'fetchMilestones', 'fetchLabels']),
     handleFilter(filters) {
-      const { [TOKEN_TYPE_LABEL]: labels, [TOKEN_TYPE_MILESTONE]: milestone } = processFilters(
-        filters,
-      );
+      const { [TOKEN_TYPE_LABEL]: labels, [TOKEN_TYPE_MILESTONE]: milestone } =
+        processFilters(filters);
 
       this.setFilters({
         selectedMilestone: milestone ? milestone[0] : null,

@@ -175,9 +175,8 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
   });
 
   it('shows the description of the rule', async () => {
-    const [
-      { deploy_access_levels: deployAccessLevels, approval_rules: approvalRules },
-    ] = DEFAULT_ENVIRONMENTS;
+    const [{ deploy_access_levels: deployAccessLevels, approval_rules: approvalRules }] =
+      DEFAULT_ENVIRONMENTS;
 
     const ruleDescriptions = [
       ...deployAccessLevels.map((d) => d.access_level_description),

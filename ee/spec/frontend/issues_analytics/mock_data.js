@@ -447,11 +447,11 @@ export const getMockTotalIssuesAnalyticsCountsResponse = (isProject = false) => 
   ...getMockIssuesClosedCountsResponse({ isProject }),
 });
 
-export const mockGroupIssuesAnalyticsCountsResponseData = getMockTotalIssuesAnalyticsCountsResponse();
+export const mockGroupIssuesAnalyticsCountsResponseData =
+  getMockTotalIssuesAnalyticsCountsResponse();
 
-export const mockProjectIssuesAnalyticsCountsResponseData = getMockTotalIssuesAnalyticsCountsResponse(
-  true,
-);
+export const mockProjectIssuesAnalyticsCountsResponseData =
+  getMockTotalIssuesAnalyticsCountsResponse(true);
 
 export const mockIssuesAnalyticsCountsChartData = [
   { name: 'Opened', data: [18, 38, 51, 39, 45, 40, 44, 44, 34, 48, 40, 39, 20] },

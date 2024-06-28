@@ -32,12 +32,8 @@ export default () => {
   const store = createStore();
 
   const pagination = extractPaginationQueryParameters(window.location.search);
-  const {
-    selectedAuthor,
-    selectedMilestone,
-    selectedAssigneeList,
-    selectedLabelList,
-  } = extractFilterQueryParameters(window.location.search);
+  const { selectedAuthor, selectedMilestone, selectedAssigneeList, selectedLabelList } =
+    extractFilterQueryParameters(window.location.search);
 
   store.dispatch('initializeCycleAnalytics', {
     ...initialData,

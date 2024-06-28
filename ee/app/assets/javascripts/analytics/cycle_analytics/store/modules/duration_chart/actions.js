@@ -17,12 +17,8 @@ export const receiveDurationDataError = ({ commit }, error) => {
 
 export const fetchDurationData = ({ dispatch, commit, rootGetters }) => {
   dispatch('requestDurationData');
-  const {
-    cycleAnalyticsRequestParams,
-    activeStages,
-    namespacePath,
-    currentValueStreamId,
-  } = rootGetters;
+  const { cycleAnalyticsRequestParams, activeStages, namespacePath, currentValueStreamId } =
+    rootGetters;
   return Promise.all(
     activeStages.map((stage) => {
       const { id, name } = stage;

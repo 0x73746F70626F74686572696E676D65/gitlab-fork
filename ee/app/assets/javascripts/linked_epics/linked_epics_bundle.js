@@ -8,12 +8,8 @@ export default function initRelatedEpics() {
   const relatedEpicsRootEl = document.querySelector('#js-related-epics');
 
   if (relatedEpicsRootEl) {
-    const {
-      endpoint,
-      canAddRelatedEpics,
-      helpPath,
-      showCategorizedEpics,
-    } = relatedEpicsRootEl.dataset;
+    const { endpoint, canAddRelatedEpics, helpPath, showCategorizedEpics } =
+      relatedEpicsRootEl.dataset;
 
     // eslint-disable-next-line no-new
     new Vue({

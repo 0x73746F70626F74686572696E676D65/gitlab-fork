@@ -107,24 +107,16 @@ export default {
       return SUBSCRIPTION_OVERAGES_SERVER_ERROR_REGEX.test(this.error);
     },
     subscriptionOveragesErrorValues() {
-      const [
-        ,
-        ,
-        userCount,
-        licenseUserCount,
-        overageCount,
-      ] = SUBSCRIPTION_OVERAGES_SERVER_ERROR_REGEX.exec(this.error);
+      const [, , userCount, licenseUserCount, overageCount] =
+        SUBSCRIPTION_OVERAGES_SERVER_ERROR_REGEX.exec(this.error);
       return { userCount, licenseUserCount, overageCount };
     },
     hasTrueUpOveragesError() {
       return SUBSCRIPTION_INSUFFICIENT_TRUE_UP_SERVER_ERROR_REGEX.test(this.error);
     },
     trueUpOveragesErrorValues() {
-      const [
-        ,
-        trueUpQuantity,
-        expectedTrueUpQuantity,
-      ] = SUBSCRIPTION_INSUFFICIENT_TRUE_UP_SERVER_ERROR_REGEX.exec(this.error);
+      const [, trueUpQuantity, expectedTrueUpQuantity] =
+        SUBSCRIPTION_INSUFFICIENT_TRUE_UP_SERVER_ERROR_REGEX.exec(this.error);
       return { trueUpQuantity, expectedTrueUpQuantity };
     },
     hasError() {

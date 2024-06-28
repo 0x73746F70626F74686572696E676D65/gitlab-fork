@@ -21,16 +21,18 @@ describe('JiraIssueCreationVulnerabilities', () => {
     { id: '3', name: 'epic', description: 'epic' },
   ];
 
-  const createComponent = (mountFn) => ({ isInheriting = false, props = {} } = {}) => {
-    store = createStore({
-      defaultState: isInheriting ? {} : undefined,
-    });
+  const createComponent =
+    (mountFn) =>
+    ({ isInheriting = false, props = {} } = {}) => {
+      store = createStore({
+        defaultState: isInheriting ? {} : undefined,
+      });
 
-    return mountFn(JiraIssueCreationVulnerabilities, {
-      store,
-      propsData: { ...defaultProps, ...props },
-    });
-  };
+      return mountFn(JiraIssueCreationVulnerabilities, {
+        store,
+        propsData: { ...defaultProps, ...props },
+      });
+    };
 
   const createShallowComponent = createComponent(shallowMountExtended);
   const createFullComponent = createComponent(mountExtended);

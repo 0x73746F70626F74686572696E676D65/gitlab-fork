@@ -7,7 +7,10 @@ export const isLoading = (state) =>
   state.isLoadingLicenseReport ||
   state.isLoadingLicenseCheckApprovalRule;
 
-export const isLicenseBeingUpdated = (state) => (id = null) => state.pendingLicenses.includes(id);
+export const isLicenseBeingUpdated =
+  (state) =>
+  (id = null) =>
+    state.pendingLicenses.includes(id);
 
 export const isAddingNewLicense = (_, getters) => getters.isLicenseBeingUpdated();
 

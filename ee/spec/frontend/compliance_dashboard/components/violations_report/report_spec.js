@@ -384,10 +384,8 @@ describe('ComplianceViolationsReport component', () => {
 
     describe('pagination', () => {
       it('renders and configures the pagination', () => {
-        const {
-          __typename,
-          ...paginationProps
-        } = violationsResponse.data.group.mergeRequestViolations.pageInfo;
+        const { __typename, ...paginationProps } =
+          violationsResponse.data.group.mergeRequestViolations.pageInfo;
 
         expect(findPagination().props()).toMatchObject({
           ...paginationProps,

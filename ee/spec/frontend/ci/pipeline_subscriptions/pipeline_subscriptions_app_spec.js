@@ -88,10 +88,8 @@ describe('Pipeline subscriptions app', () => {
 
       await waitForPromises();
 
-      const {
-        id,
-        upstreamProject,
-      } = mockUpstreamSubscriptions.data.project.ciSubscriptionsProjects.nodes[0];
+      const { id, upstreamProject } =
+        mockUpstreamSubscriptions.data.project.ciSubscriptionsProjects.nodes[0];
 
       const expectedFormat = [
         {

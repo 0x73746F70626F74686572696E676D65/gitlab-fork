@@ -13,11 +13,8 @@ export const initMergeRequestMergeChecksApp = async () => {
   );
   const { sourceType, settings, parentGroupName } = el.dataset;
 
-  const {
-    allowMergeOnSkippedPipeline,
-    onlyAllowMergeIfAllResolved,
-    pipelineMustSucceed,
-  } = convertObjectPropsToCamelCase(JSON.parse(settings));
+  const { allowMergeOnSkippedPipeline, onlyAllowMergeIfAllResolved, pipelineMustSucceed } =
+    convertObjectPropsToCamelCase(JSON.parse(settings));
 
   return new Vue({
     el,

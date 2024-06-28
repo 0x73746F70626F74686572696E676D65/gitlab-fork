@@ -50,9 +50,10 @@ const deleteScheduleFromStore = (store, query, { oncallScheduleDestroy }, variab
   });
 
   const data = produce(sourceData, (draftData) => {
-    draftData.project.incidentManagementOncallSchedules.nodes = draftData.project.incidentManagementOncallSchedules.nodes.filter(
-      ({ iid }) => iid !== schedule.iid,
-    );
+    draftData.project.incidentManagementOncallSchedules.nodes =
+      draftData.project.incidentManagementOncallSchedules.nodes.filter(
+        ({ iid }) => iid !== schedule.iid,
+      );
   });
 
   store.writeQuery({
@@ -74,11 +75,10 @@ const updateScheduleFromStore = (store, query, { oncallScheduleUpdate }, variabl
   });
 
   const data = produce(sourceData, (draftData) => {
-    draftData.project.incidentManagementOncallSchedules.nodes = draftData.project.incidentManagementOncallSchedules.nodes.map(
-      (scheduleToUpdate) => {
+    draftData.project.incidentManagementOncallSchedules.nodes =
+      draftData.project.incidentManagementOncallSchedules.nodes.map((scheduleToUpdate) => {
         return scheduleToUpdate.iid === schedule.iid ? schedule : scheduleToUpdate;
-      },
-    );
+      });
   });
 
   store.writeQuery({

@@ -6,19 +6,21 @@ import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 describe('EE - DastScanSchedule', () => {
   let wrapper;
 
-  const wrapperFactory = (mountFn = shallowMount) => (schedule) => {
-    wrapper = mountFn(DastScanSchedule, {
-      provide: {
-        timezones: mockTimezones,
-      },
-      propsData: {
-        schedule,
-      },
-      directives: {
-        GlTooltip: createMockDirective('gl-tooltip'),
-      },
-    });
-  };
+  const wrapperFactory =
+    (mountFn = shallowMount) =>
+    (schedule) => {
+      wrapper = mountFn(DastScanSchedule, {
+        provide: {
+          timezones: mockTimezones,
+        },
+        propsData: {
+          schedule,
+        },
+        directives: {
+          GlTooltip: createMockDirective('gl-tooltip'),
+        },
+      });
+    };
   const createComponent = wrapperFactory();
 
   it.each`

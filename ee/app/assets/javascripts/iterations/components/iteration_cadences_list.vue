@@ -146,9 +146,8 @@ export default {
             });
 
             const data = produce(sourceData, (draftData) => {
-              draftData.workspace.iterationCadences.nodes = draftData.workspace.iterationCadences.nodes.filter(
-                ({ id }) => id !== cadenceId,
-              );
+              draftData.workspace.iterationCadences.nodes =
+                draftData.workspace.iterationCadences.nodes.filter(({ id }) => id !== cadenceId);
             });
 
             store.writeQuery({

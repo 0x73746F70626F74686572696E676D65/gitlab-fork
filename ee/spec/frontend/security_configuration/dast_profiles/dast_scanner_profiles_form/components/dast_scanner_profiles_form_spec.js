@@ -18,14 +18,8 @@ const profilesLibraryPath = `${TEST_HOST}/${projectFullPath}/-/security/configur
 const onDemandScansPath = `${TEST_HOST}/${projectFullPath}/-/on_demand_scans`;
 const defaultProfile = scannerProfiles[0];
 
-const {
-  profileName,
-  spiderTimeout,
-  targetTimeout,
-  scanType,
-  useAjaxSpider,
-  showDebugMessages,
-} = defaultProfile;
+const { profileName, spiderTimeout, targetTimeout, scanType, useAjaxSpider, showDebugMessages } =
+  defaultProfile;
 
 const defaultProps = {
   profilesLibraryPath,
@@ -52,24 +46,26 @@ describe('DastScannerProfileForm', () => {
     field.trigger('blur');
   };
 
-  const createComponentFactory = (mountFn = mountExtended) => (options) => {
-    wrapper = mountFn(
-      DastScannerProfileForm,
-      merge(
-        {},
-        {
-          propsData: defaultProps,
-          provide: { glFeatures: { dastOdsBrowserBasedScanner: false } },
-          mocks: {
-            $apollo: {
-              mutate: jest.fn(),
+  const createComponentFactory =
+    (mountFn = mountExtended) =>
+    (options) => {
+      wrapper = mountFn(
+        DastScannerProfileForm,
+        merge(
+          {},
+          {
+            propsData: defaultProps,
+            provide: { glFeatures: { dastOdsBrowserBasedScanner: false } },
+            mocks: {
+              $apollo: {
+                mutate: jest.fn(),
+              },
             },
           },
-        },
-        options,
-      ),
-    );
-  };
+          options,
+        ),
+      );
+    };
   const createShallowComponent = createComponentFactory(shallowMountExtended);
   const createComponent = createComponentFactory();
 

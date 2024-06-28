@@ -296,12 +296,8 @@ describe('TestCaseShowRoot', () => {
       });
 
       it('renders IssuableShow', () => {
-        const {
-          descriptionPreviewPath,
-          descriptionHelpPath,
-          updatePath,
-          lockVersion,
-        } = mockProvide;
+        const { descriptionPreviewPath, descriptionHelpPath, updatePath, lockVersion } =
+          mockProvide;
         const issuableShowEl = findIssuableShow();
 
         expect(findLoadingIcon().exists()).toBe(false);
