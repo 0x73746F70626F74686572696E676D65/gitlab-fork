@@ -75,10 +75,20 @@ module Groups
 
     def dependencies
       if using_new_query?
-        ::DependencyManagement::AggregationsFinder.new(group, params: dependencies_finder_params).execute
-          .with_component
-          .with_version
-          .keyset_paginate(cursor: params[:cursor], per_page: per_page)
+        finder = ::DependencyManagement::AggregationsFinder.new(group, params: dependencies_finder_params)
+        relation = finder.execute
+                         .with_component
+                         .with_version
+
+        paginator = Gitlab::Pagination::Keyset::Paginator.new(
+          scope: relation.dup,
+          cursor: params[:cursor],
+          per_page: per_page
+        )
+
+        apply_pagination_headers!(paginator)
+
+        relation
       else
         ::Sbom::DependenciesFinder.new(group, params: dependencies_finder_params).execute
           .with_component
@@ -111,9 +121,9 @@ module Groups
     end
 
     def dependencies_serializer
-      DependencyListSerializer
-        .new(project: nil, group: group, user: current_user)
-        .with_pagination(request, response)
+      serializer = DependencyListSerializer.new(project: nil, group: group, user: current_user)
+      serializer = serializer.with_pagination(request, response) unless using_new_query?
+      serializer
     end
 
     def render_not_authorized
@@ -133,6 +143,14 @@ module Groups
           render json: { message: message }, status: status
         end
       end
+    end
+
+    def apply_pagination_headers!(paginator)
+      response.header['X-Next-Page'] = paginator.cursor_for_next_page
+      response.header['X-Page'] = params[:cursor]
+      response.header['X-Page-Type'] = 'cursor'
+      response.header['X-Prev-Page'] = paginator.cursor_for_previous_page
+      response.header['X-Per-Page'] = per_page
     end
 
     def map_sort_by(sort_by)

@@ -283,8 +283,15 @@ describe('Dependencies actions', () => {
             startCursor: cursorHeaders['X-Prev-Page'],
           };
 
+          const expectedParams = {
+            sort_by: state.sortField,
+            sort: state.sortOrder,
+            filter: state.filter,
+            cursor: state.pageInfo.currentCursor,
+          };
+
           mock
-            .onGet(state.endpoint, { params: { cursor: state.pageInfo.currentCursor } })
+            .onGet(state.endpoint, { params: expectedParams })
             .replyOnce(HTTP_STATUS_OK, mockDependenciesResponse, cursorHeaders);
         });
 
@@ -316,6 +323,38 @@ describe('Dependencies actions', () => {
           sort: SORT_DESCENDING,
           page: 4,
           filter: FILTER.vulnerable,
+        };
+
+        beforeEach(() => {
+          mock
+            .onGet(state.endpoint, { params: paramsGiven })
+            .replyOnce(HTTP_STATUS_OK, dependenciesPackagerDescending, headers);
+        });
+
+        it('overrides default params', () =>
+          testAction(
+            actions.fetchDependencies,
+            paramsGiven,
+            state,
+            [],
+            [
+              {
+                type: 'requestDependencies',
+              },
+              {
+                type: 'receiveDependenciesSuccess',
+                payload: expect.objectContaining({ data: dependenciesPackagerDescending, headers }),
+              },
+            ],
+          ));
+      });
+
+      describe('given params with cursor', () => {
+        const paramsGiven = {
+          sort_by: 'packager',
+          sort: SORT_DESCENDING,
+          filter: FILTER.vulnerable,
+          cursor: 'eyJpZCI6IjQzIiwiX2tkIjoibiJ9Cg%2b%2b',
         };
 
         beforeEach(() => {

@@ -198,32 +198,8 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
             it 'includes pagination headers in the response' do
               subject
 
-              expect(response).to include_keyset_url_params
-              expect(response).to include_limited_pagination_headers
+              expect(response.headers).to include('X-Per-Page', 'X-Page', 'X-Next-Page', 'X-Prev-Page')
               expect(response.headers['X-Page-Type']).to eq('cursor')
-            end
-
-            context 'when params are given' do
-              include KeysetPaginationHelpers
-
-              let(:params) do
-                { per_page: '1', sort_by: 'severity', sort: 'asc', filter: 'all' }
-              end
-
-              it 'preserves params in link header' do
-                subject
-
-                next_url_params = pagination_params_from_next_url(response)
-                expect(next_url_params).to match(
-                  {
-                    'cursor' => String,
-                    'per_page' => '1',
-                    'sort_by' => 'severity',
-                    'sort' => 'asc',
-                    'filter' => 'all'
-                  }
-                )
-              end
             end
 
             context 'when using a cursor' do
@@ -243,6 +219,22 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
 
                 expect(dependencies.size).to eq(1)
                 expect(dependencies.first['name']).to eq(sbom_occurrence_bundler.name)
+              end
+
+              context 'when cursor contains nulls' do
+                before_all do
+                  sbom_occurrence_bundler.update!(highest_severity: nil)
+                  sbom_occurrence_npm.update!(highest_severity: nil)
+                end
+
+                it 'returns data at the cursor' do
+                  subject
+
+                  dependencies = json_response['dependencies']
+
+                  expect(dependencies.size).to eq(1)
+                  expect(dependencies.first['name']).to eq(sbom_occurrence_bundler.name)
+                end
               end
             end
 
